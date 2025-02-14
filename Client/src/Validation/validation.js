@@ -161,6 +161,9 @@ const monitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
+	expectedValue: joi.string().allow(""),
+	jsonPath: joi.string().allow(""),
+	matchMethod: joi.string(),
 });
 
 const imageValidation = joi.object({

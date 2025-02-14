@@ -88,6 +88,9 @@ export const updateUptimeMonitor = createAsyncThunk(
 				description: monitor.description,
 				interval: monitor.interval,
 				notifications: monitor.notifications,
+				matchMethod: monitor.matchMethod,
+				expectedValue: monitor.expectedValue,
+				jsonPath: monitor.jsonPath,
 			};
 			const res = await networkService.updateMonitor({
 				authToken: authToken,
