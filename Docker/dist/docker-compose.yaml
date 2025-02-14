@@ -21,6 +21,8 @@ services:
     environment:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
       - REDIS_HOST=redis
+    env_file:
+      - server.env
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
   redis:
@@ -29,7 +31,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis/data:/data
+      - checkmate-redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -40,7 +42,13 @@ services:
     image: bluewaveuptime/uptime_database_mongo:latest
     restart: always
     volumes:
-      - ./mongo/data:/data/db
+      - checkmate-mongo-data:/data/db
     command: ["mongod", "--quiet"]
     ports:
       - "27017:27017"
+
+volumes:
+  checkmate-mongo-data:
+    name: checkmate-mongo-data
+  checkmate-redis-data:
+    name: checkmate-redis-data
