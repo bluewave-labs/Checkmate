@@ -121,7 +121,7 @@ const ChartBoxes = ({
 					) : (
 						// Centered layout for "No incidents" message
 						<Box m="auto" marginY="25%">
-							<Typography component="span">
+							<Typography variant="h2">
 								Great. No incidents, yet!
 							</Typography>
 						</Box>
