@@ -55,5 +55,9 @@
   "authRegisterCreateAccount": "Create your account to get started",
   "authRegisterCreateSuperAdminAccount": "Create your Super admin account to get started",
   "authRegisterSignUpWithEmail": "Sign up with Email",
-  "authRegisterBySigningUp": "By signing up, you agree to our"
+  "authRegisterBySigningUp": "By signing up, you agree to our",
+  "uploadImage": "Upload image",
+  "selectImage": "Select an image to upload.",
+  "update": "Update"
+
 }
