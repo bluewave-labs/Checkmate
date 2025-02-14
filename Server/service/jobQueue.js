@@ -28,10 +28,21 @@ class NewJobQueue {
 		Worker
 	) {
 		const settings = settingsService.getSettings() || {};
-		const { redisHost = "127.0.0.1", redisPort = 6379 } = settings;
+		const { 
+			redisHost = "127.0.0.1", 
+			redisPort = 6379,
+			redisUser = null,
+			redisPassword = null,
+			redisDb = 0,
+			redisPrefix = ""
+		} = settings;
 		const connection = {
 			host: redisHost,
 			port: redisPort,
+			username: redisUser,
+  			password: redisPassword,
+  			db: redisDb,
+  			keyPrefix: redisPrefix,
 		};
 
 		this.queues = {};

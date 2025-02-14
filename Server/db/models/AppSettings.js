@@ -46,6 +46,20 @@ const AppSettingsSchema = mongoose.Schema(
 			type: Number,
 			default: "6379",
 		},
+		redisUser: {
+			type: String,
+		},
+		redisPassword: {
+			type: String,
+		},
+		redisDb: {
+			type: Number,
+			default: 0
+		},
+		redisPrefix: {
+			type: String,
+			default: "",
+		},
 		jwtTTL: {
 			type: String,
 			required: true,

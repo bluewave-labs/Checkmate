@@ -108,10 +108,21 @@ const shutdown = async () => {
 		const settings =
 			ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings() || {};
 
-		const { redisHost = "127.0.0.1", redisPort = 6379 } = settings;
+		const { 
+			redisHost = "127.0.0.1", 
+			redisPort = 6379,
+			redisUser = null,
+			redisPassword = null,
+			redisDb = 0,
+			redisPrefix = ""
+		} = settings;
 		const redis = new IORedis({
 			host: redisHost,
 			port: redisPort,
+			username: redisUser,
+  			password: redisPassword,
+  			db: redisDb,
+  			keyPrefix: redisPrefix,
 		});
 		logger.info({ message: "Flushing Redis" });
 		await redis.flushall();
