@@ -97,26 +97,35 @@ const ChartBoxes = ({
 				header="Incidents"
 			>
 				<Stack width={"100%"}>
-					<Box position="relative">
-						<Typography component="span">
-							{hoveredIncidentsData !== null
-								? hoveredIncidentsData.totalChecks
-								: (monitor?.groupedDownChecks?.reduce((count, checkGroup) => {
-										return count + checkGroup.totalChecks;
-									}, 0) ?? 0)}
-						</Typography>
-						{hoveredIncidentsData !== null && hoveredIncidentsData.time !== null && (
-							<Typography
-								component="h5"
-								position="absolute"
-								top="100%"
-								fontSize={11}
-								color={theme.palette.primary.contrastTextTertiary}
-							>
-								{formatDateWithTz(hoveredIncidentsData._id, dateFormat, uiTimezone)}
+					{hoveredIncidentsData !== null ||
+						(monitor?.groupedDownChecks?.reduce((count, checkGroup) => count + checkGroup.totalChecks, 0) > 0) ? (
+						// Original layout for when incidents exist
+						<Box position="relative">
+							<Typography component="span">
+								{hoveredIncidentsData !== null
+									? hoveredIncidentsData.totalChecks
+									: monitor?.groupedDownChecks?.reduce((count, checkGroup) => count + checkGroup.totalChecks, 0)}
 							</Typography>
-						)}
-					</Box>
+							{hoveredIncidentsData !== null && hoveredIncidentsData.time !== null && (
+								<Typography
+									component="h5"
+									position="absolute"
+									top="100%"
+									fontSize={11}
+									color={theme.palette.primary.contrastTextTertiary}
+								>
+									{formatDateWithTz(hoveredIncidentsData._id, dateFormat, uiTimezone)}
+								</Typography>
+							)}
+						</Box>
+					) : (
+						// Centered layout for "No incidents" message
+						<Box m="auto" marginY="25%">
+							<Typography component="span">
+								Great. No incidents, yet!
+							</Typography>
+						</Box>
+					)}
 				</Stack>
 				<DownBarChart
 					monitor={monitor}
