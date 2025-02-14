@@ -1,4 +1,5 @@
 const SERVICE_NAME = "NotificationService";
+const TELEGRAM_API_BASE_URL = "https://api.telegram.org/bot";
 
 class NotificationService {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -9,13 +10,70 @@ class NotificationService {
 	 * @param {Object} db - The database instance for storing notification data.
 	 * @param {Object} logger - The logger instance for logging activities.
 	 */
-	constructor(emailService, db, logger) {
+	constructor(emailService, db, logger, networkService) {
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.emailService = emailService;
 		this.db = db;
 		this.logger = logger;
+		this.networkService = networkService;
 	}
 
+	formatNotificationMessage(monitor, status, platform, chatId) {
+		const messageText = `Monitor ${monitor.name} is ${status ? "up" : "down"}. URL: ${monitor.url}`;
+	
+		if (platform === 'telegram') {
+			return { chat_id: chatId, text: messageText };
+		}
+		if (platform === 'slack') {
+			return { text: messageText };
+		}
+		if (platform === 'discord') {
+			return { content: messageText };
+		}
+		return null;
+	}
+
+	async sendWebhookNotification(networkResponse, config) {
+		const { monitor, status } = networkResponse;
+		const { type, webhookUrl, botToken, chatId } = config;
+		let url = webhookUrl;
+	
+		const message = this.formatNotificationMessage(monitor, status, type, chatId);
+		if (message === null) {
+			this.logger.warn({
+				message: `Unsupported webhook type: ${type}`,
+				service: this.SERVICE_NAME,
+				method: 'sendWebhookNotification',
+				type
+			});
+			return false;
+		}
+	
+		if (type === 'telegram') {
+			if (!botToken || !chatId) {
+				return false;
+			}
+			url = `${TELEGRAM_API_BASE_URL}${botToken}/sendMessage`;
+		}
+	
+		try {
+			const response = await this.networkService.requestWebhook(type, url, message);
+			return response.status;
+		} catch (error) {
+			this.logger.error({
+				message: `Error sending ${type} notification`,
+				service: this.SERVICE_NAME,
+				method: 'sendWebhookNotification',
+				error: error.message,
+				stack: error.stack,
+				url,
+				type,
+				requestPayload: message
+			});
+			return false;
+		}
+	}
+		
 	/**
 	 * Sends an email notification for hardware infrastructure alerts
 	 *
@@ -59,19 +117,20 @@ class NotificationService {
 		try {
 			//If status hasn't changed, we're done
 			if (networkResponse.statusChanged === false) return false;
-
 			// if prevStatus is undefined, monitor is resuming, we're done
 			if (networkResponse.prevStatus === undefined) return false;
-			const notifications = await this.db.getNotificationsByMonitorId(
-				networkResponse.monitorId
-			);
-
+	
+			const notifications = await this.db.getNotificationsByMonitorId(networkResponse.monitorId);
+	
 			for (const notification of notifications) {
 				if (notification.type === "email") {
 					this.sendEmail(networkResponse, notification.address);
-				}
+				} else if (notification.type === "webhook") {
+					this.sendWebhookNotification(networkResponse, notification.address, notification.type);
+				
 				// Handle other types of notifications here
 			}
+		}
 			return true;
 		} catch (error) {
 			this.logger.warn({

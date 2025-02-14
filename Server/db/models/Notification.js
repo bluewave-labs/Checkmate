@@ -8,8 +8,14 @@ const NotificationSchema = mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: ["email", "sms"],
+			enum: ["email", "sms", "webhook"],
 		},
+		config: {
+			type: String,  
+			webhookUrl: String,
+			botToken: String,
+			chatId: String
+		  },
 		address: {
 			type: String,
 		},
@@ -76,4 +82,5 @@ NotificationSchema.pre("findOneAndUpdate", function (next) {
 	}
 	next();
 });
+
 export default mongoose.model("Notification", NotificationSchema);

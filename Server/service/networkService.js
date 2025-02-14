@@ -418,6 +418,52 @@ class NetworkService {
 		throw err;
 	}
 
+	async requestWebhook(platform, url, message) {
+		try {
+			const { response, responseTime, error } = await this.timeRequest(() =>
+				this.axios.post(url, message, {
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				})
+			);
+	
+			const webhookResponse = {
+				type: 'webhook',
+				responseTime,
+				payload: response?.data
+			};
+	
+			if (error) {
+				webhookResponse.status = false;
+				webhookResponse.code = error.response?.status || this.NETWORK_ERROR;
+				webhookResponse.message = `Failed to send ${platform} notification`;
+				this.logger.warn({
+					message: error.message,
+					service: this.SERVICE_NAME,
+					method: 'requestWebhook',
+					url,
+					platform,
+					error: error.message,
+					statusCode: error.response?.status,
+					responseData: error.response?.data,
+					requestPayload: message
+				});
+				return webhookResponse;
+			}
+	
+			webhookResponse.status = true;
+			webhookResponse.code = response.status;
+			webhookResponse.message = `Successfully sent ${platform} notification`;
+			return webhookResponse;
+		} catch (error) {
+			error.service = this.SERVICE_NAME;
+			error.method = 'requestWebhook';
+			throw error;
+		}
+	}
+	
+
 	/**
 	 * Gets the status of a job based on its type and returns the appropriate response.
 	 *

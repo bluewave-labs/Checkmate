@@ -475,6 +475,59 @@ const imageValidation = joi
 		"any.required": "Image file is required",
 	});
 
+	const telegramWebhookConfigValidation = joi.object({
+		type: joi.string().valid('telegram').required(),
+		botToken: joi.string().required().messages({
+			'string.empty': 'Telegram bot token is required',
+			'any.required': 'Telegram bot token is required'
+		}),
+		chatId: joi.string().required().messages({
+			'string.empty': 'Telegram chat ID is required',
+			'any.required': 'Telegram chat ID is required'
+		})
+	});
+	
+	const discordWebhookConfigValidation = joi.object({
+		type: joi.string().valid('discord').required(),
+		webhookUrl: joi.string().uri().required().messages({
+			'string.empty': 'Discord webhook URL is required',
+			'string.uri': 'Discord webhook URL must be a valid URL',
+			'any.required': 'Discord webhook URL is required'
+		})
+	});
+	
+	const slackWebhookConfigValidation = joi.object({
+		type: joi.string().valid('slack').required(),
+		webhookUrl: joi.string().uri().required().messages({
+			'string.empty': 'Slack webhook URL is required',
+			'string.uri': 'Slack webhook URL must be a valid URL',
+			'any.required': 'Slack webhook URL is required'
+		})
+	});
+	
+	const triggerNotificationBodyValidation = joi.object({
+		monitorId: joi.string().required().messages({
+			'string.empty': 'Monitor ID is required',
+			'any.required': 'Monitor ID is required'
+		}),
+		type: joi.string().valid('webhook').required().messages({
+			'string.empty': 'Notification type is required',
+			'any.required': 'Notification type is required',
+			'any.only': 'Notification type must be webhook'
+		}),
+		config: joi.alternatives()
+			.conditional('type', {
+				is: 'webhook',
+				then: joi.alternatives().try(
+					telegramWebhookConfigValidation,
+					discordWebhookConfigValidation,
+					slackWebhookConfigValidation
+				).required().messages({
+					'any.required': 'Webhook configuration is required'
+				})
+			})
+	});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -533,5 +586,9 @@ export {
 	createStatusPageBodyValidation,
 	getStatusPageParamValidation,
 	getStatusPageQueryValidation,
-	imageValidation,
+	imageValidation, 
+	triggerNotificationBodyValidation,
+    telegramWebhookConfigValidation,
+    discordWebhookConfigValidation,
+    slackWebhookConfigValidation
 };
