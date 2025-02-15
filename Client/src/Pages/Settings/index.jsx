@@ -368,7 +368,7 @@ const Settings = () => {
 						<Box>
 							<Typography component="h1">Wallet</Typography>
 							<Typography sx={{ mt: theme.spacing(2) }}>
-								Connect your wallet here
+								Connect your wallet here. This is required for the Distributed Uptime monitor to connect to multiple nodes globally.  
 							</Typography>
 						</Box>
 						<Box>
