@@ -1,0 +1,38 @@
+.account h1.MuiTypography-root,
+.account p.MuiTypography-root,
+.account input,
+.account button,
+.account td,
+.account .MuiSelect-select {
+	font-size: var(--env-var-font-size-medium);
+}
+.account h1.MuiTypography-root {
+	font-weight: 600;
+}
+.account .MuiTabPanel-root {
+	padding: 0;
+	margin-top: 50px;
+}
+.account button:not(.MuiIconButton-root) {
+	min-height: 34px;
+}
+.account .field {
+	flex: 1;
+}
+#modal-delete-account,
+#modal-edit-org-name,
+#modal-invite-member {
+	font-size: var(--env-var-font-size-large);
+}
+
+.account .MuiStack-root:has(span.MuiTypography-root.input-error) {
+	position: relative;
+}
+.account:not(:has(#modal-invite-member)) span.MuiTypography-root.input-error {
+	position: absolute;
+	top: 100%;
+}
+
+.account .MuiTableBody-root .MuiTableCell-root {
+	padding: var(--env-var-spacing-1-plus) var(--env-var-spacing-2);
+}

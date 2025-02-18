@@ -1,0 +1,9 @@
+.configure-pagespeed button {
+	height: var(--env-var-height-2);
+}
+
+.configure-pagespeed .field,
+.configure-pagespeed .section-disabled,
+.configure-pagespeed .select-wrapper {
+	flex: 1;
+}

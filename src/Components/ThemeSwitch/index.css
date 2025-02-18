@@ -1,0 +1,64 @@
+.sun-and-moon > :is(.moon, .sun, .sun-beams) {
+	transform-origin: center;
+}
+
+.theme-toggle .sun-and-moon > .sun-beams {
+	stroke-width: 2px;
+}
+
+.theme-dark .sun-and-moon > .sun {
+	transform: scale(1.75);
+}
+
+.theme-dark .sun-and-moon > .sun-beams {
+	opacity: 0;
+}
+
+.theme-dark .sun-and-moon > .moon > circle {
+	transform: translateX(-7px);
+}
+
+@supports (cx: 1) {
+	.theme-dark .sun-and-moon > .moon > circle {
+		cx: 17;
+		transform: translateX(0);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sun-and-moon > .sun {
+		transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+	}
+
+	.sun-and-moon > .sun-beams {
+		transition:
+			transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+			opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+	}
+
+	.sun-and-moon .moon > circle {
+		transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	@supports (cx: 1) {
+		.sun-and-moon .moon > circle {
+			transition: cx 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+	}
+
+	.theme-dark .sun-and-moon > .sun {
+		transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+		transition-duration: 0.25s;
+		transform: scale(1.75);
+	}
+
+	.theme-dark .sun-and-moon > .sun-beams {
+		transition-duration: 0.15s;
+		transform: rotateZ(-25deg);
+	}
+
+	.theme-dark .sun-and-moon > .moon > circle {
+		transition-duration: 0.5s;
+		transition-delay: 0.25s;
+	}
+}

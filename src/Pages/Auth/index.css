@@ -1,0 +1,120 @@
+/* AUTH */
+.auth {
+	height: 100vh;
+}
+.auth h1 {
+	font-size: var(--env-var-font-size-xlarge);
+	font-weight: 600;
+}
+.auth button:not(.MuiIconButton-root) {
+	font-size: var(--env-var-font-size-medium-plus);
+}
+
+.auth p + span {
+	opacity: 0.8;
+	cursor: pointer;
+	transition: opacity 300ms ease-in;
+}
+.auth p > span:not(.email-sent-to) {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	cursor: pointer;
+	transition: all 200ms;
+}
+.auth p > span:not(.email-sent-to):hover {
+	text-underline-offset: 4px;
+}
+.auth p + span:hover {
+	opacity: 1;
+}
+.auth button:not(.MuiIconButton-root) {
+	user-select: none;
+	border-radius: var(--env-var-radius-2);
+	line-height: 1;
+}
+.auth button:not(.MuiIconButton-root),
+.auth .field .MuiInputBase-root:has(input) {
+	height: 38px;
+}
+.auth .field svg {
+	width: 24px;
+	height: 24px;
+}
+.auth .field h3.MuiTypography-root,
+.auth .field .input-error,
+.auth .check span.MuiTypography-root {
+	font-size: var(--env-var-font-size-medium);
+}
+.auth form + form {
+	margin: var(--env-var-spacing-1-plus) 0;
+}
+.auth .email-sent-to {
+	font-weight: 600;
+	cursor: default;
+}
+
+.auth > .MuiStack-root:nth-of-type(2) {
+	height: var(--env-var-nav-bar-height);
+}
+.auth .background-pattern-svg {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translate(-50%, -30%);
+	z-index: -1;
+
+	width: 100%;
+	max-width: 800px;
+	height: 100%;
+	max-height: 800px;
+
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+.auth .field {
+	position: relative;
+}
+.auth .input-error {
+	position: absolute;
+	top: calc(100% - 2px);
+}
+
+@media (max-width: 800px) {
+	.auth h1 {
+		font-size: var(--env-var-font-size-large-plus);
+	}
+	.auth button:not(.MuiIconButton-root),
+	.auth .field input,
+	.auth p,
+	.auth span {
+		font-size: var(--env-var-font-size-medium);
+	}
+	.auth button:not(.MuiIconButton-root),
+	.auth .field .MuiInputBase-root:has(input) {
+		height: 36px;
+	}
+	.auth .check span.MuiTypography-root,
+	.auth .field .input-error,
+	.auth .field h3.MuiTypography-root {
+		font-size: var(--env-var-font-size-small-plus);
+	}
+	.auth .check span > span {
+		display: none;
+	}
+	.auth form + form {
+		margin: var(--env-var-spacing-1-plus) 0;
+	}
+	.auth .background-pattern-svg {
+		max-width: 750px;
+		max-height: 750px;
+	}
+
+	.forgot-password-page h1,
+	.check-email-page h1,
+	.password-confirmed-page h1,
+	.set-new-password-page h1 {
+		font-size: 18px;
+	}
+}

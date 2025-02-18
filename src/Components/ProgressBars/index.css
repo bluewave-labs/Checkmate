@@ -1,0 +1,10 @@
+.progress-bar-container h2.MuiTypography-root,
+.progress-bar-container p.MuiTypography-root {
+	font-size: var(--env-var-font-size-medium);
+}
+.progress-bar-container p.MuiTypography-root:has(span) {
+	font-size: 12px;
+}
+.progress-bar-container p.MuiTypography-root span {
+	padding-left: 2px;
+}

@@ -1,0 +1,14 @@
+.radial-chart {
+	position: relative;
+	display: inline-block;
+}
+
+.radial-chart-base {
+	opacity: 0.3;
+}
+
+.radial-chart-progress {
+	transform: rotate(-90deg);
+	transform-origin: center;
+	transition: stroke-dashoffset 1.5s ease-in-out;
+}

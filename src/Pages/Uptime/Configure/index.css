@@ -1,0 +1,11 @@
+.configure-monitor button.MuiButtonBase-root {
+	height: var(--env-var-height-2);
+}
+
+.configure-monitor .MuiStack-root:has(span.MuiTypography-root.input-error) {
+	position: relative;
+}
+.configure-monitor span.MuiTypography-root.input-error {
+	position: absolute;
+	top: 100%;
+}

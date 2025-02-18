@@ -1,0 +1,18 @@
+.MuiStack-root:has(#modal-update-picture) h1.MuiTypography-root {
+	font-weight: 600;
+}
+.image-field-wrapper h2.MuiTypography-root,
+.MuiStack-root:has(#modal-update-picture) button,
+.MuiStack-root:has(#modal-update-picture) h1.MuiTypography-root {
+	font-size: var(--env-var-font-size-medium);
+}
+.image-field-wrapper h2.MuiTypography-root {
+	margin-top: 10px;
+}
+.image-field-wrapper + p.MuiTypography-root {
+	margin-top: 8px;
+}
+.image-field-wrapper + p.MuiTypography-root,
+.image-field-wrapper p.MuiTypography-root {
+	font-size: var(--env-var-font-size-small-plus);
+}

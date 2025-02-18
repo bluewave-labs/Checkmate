@@ -1,0 +1,10 @@
+.integrations h1.MuiTypography-root {
+	font-size: var(--env-var-font-size-large);
+	font-weight: 600;
+}
+.integrations p.MuiTypography-root {
+	font-size: var(--env-var-font-size-medium);
+}
+.integrations button {
+	height: var(--env-var-height-2);
+}

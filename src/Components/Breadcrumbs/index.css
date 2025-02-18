@@ -1,0 +1,22 @@
+.MuiBreadcrumbs-root {
+	min-height: 34px;
+}
+.MuiBreadcrumbs-root svg {
+	width: 16px;
+	min-height: 16px;
+}
+.MuiBreadcrumbs-root .MuiBreadcrumbs-li a {
+	font-size: var(--env-var-font-size-medium);
+	font-weight: 400;
+}
+.MuiBreadcrumbs-root .MuiBreadcrumbs-li:not(:last-child) {
+	cursor: pointer;
+}
+.MuiBreadcrumbs-root .MuiBreadcrumbs-li:last-child a {
+	font-weight: 500;
+	opacity: 1;
+	cursor: default;
+}
+.MuiBreadcrumbs-root .MuiBreadcrumbs-separator {
+	margin: 0;
+}

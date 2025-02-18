@@ -1,0 +1,28 @@
+.home-layout {
+	position: relative;
+	min-height: 100vh;
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: var(--env-var-spacing-2);
+}
+
+/* TODO go for this approach for responsiveness. The aside needs to be taken care of */
+/* @media (max-width: 1000px) {
+	.home-layout {
+		flex-direction: column !important;
+	}
+} */
+
+.home-layout aside {
+	position: sticky;
+	top: var(--env-var-spacing-2);
+	left: 0;
+
+	height: calc(100vh - var(--env-var-spacing-2) * 2);
+	max-width: var(--env-var-side-bar-width);
+}
+
+.home-layout > div {
+	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
+	flex: 1;
+}

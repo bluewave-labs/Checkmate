@@ -1,0 +1,169 @@
+{
+	"id": "43f36e14-e3f5-43c1-84c0-50a9c80dc5c7",
+	"name": "MapLibre",
+	"zoom": 0.861983335785597,
+	"pitch": 0,
+	"center": [17.6543171043124, 32.9541203267468],
+	"glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+	"layers": [
+		{
+			"id": "background",
+			"type": "background",
+			"paint": {
+				"background-color": "#121217"
+			},
+			"filter": ["all"],
+			"layout": {
+				"visibility": "visible"
+			},
+			"maxzoom": 24
+		},
+		{
+			"id": "coastline",
+			"type": "line",
+			"paint": {
+				"line-blur": 0.5,
+				"line-color": "#000000",
+				"line-width": {
+					"stops": [
+						[0, 2],
+						[6, 6],
+						[14, 9],
+						[22, 18]
+					]
+				}
+			},
+			"filter": ["all"],
+			"layout": {
+				"line-cap": "round",
+				"line-join": "round",
+				"visibility": "visible"
+			},
+			"source": "maplibre",
+			"maxzoom": 24,
+			"minzoom": 0,
+			"source-layer": "countries"
+		},
+		{
+			"id": "countries-fill",
+			"type": "fill",
+			"paint": {
+				"fill-color": "#292929"
+			},
+			"filter": ["all"],
+			"layout": {
+				"visibility": "visible"
+			},
+			"source": "maplibre",
+			"maxzoom": 24,
+			"source-layer": "countries"
+		},
+		{
+			"id": "countries-boundary",
+			"type": "line",
+			"paint": {
+				"line-color": "#484848",
+				"line-width": {
+					"stops": [
+						[1, 1],
+						[6, 2],
+						[14, 6],
+						[22, 12]
+					]
+				},
+				"line-opacity": {
+					"stops": [
+						[3, 0.5],
+						[6, 1]
+					]
+				}
+			},
+			"layout": {
+				"line-cap": "round",
+				"line-join": "round",
+				"visibility": "visible"
+			},
+			"source": "maplibre",
+			"maxzoom": 24,
+			"source-layer": "countries"
+		},
+		{
+			"id": "countries-label",
+			"type": "symbol",
+			"paint": {
+				"text-color": "rgba(8, 37, 77, 1)",
+				"text-halo-blur": {
+					"stops": [
+						[2, 0.2],
+						[6, 0]
+					]
+				},
+				"text-halo-color": "rgba(255, 255, 255, 1)",
+				"text-halo-width": {
+					"stops": [
+						[2, 1],
+						[6, 1.6]
+					]
+				}
+			},
+			"filter": ["all"],
+			"layout": {
+				"text-font": ["Open Sans Semibold"],
+				"text-size": {
+					"stops": [
+						[2, 10],
+						[4, 12],
+						[6, 16]
+					]
+				},
+				"text-field": {
+					"stops": [
+						[2, "{ABBREV}"],
+						[4, "{NAME}"]
+					]
+				},
+				"visibility": "visible",
+				"text-max-width": 10,
+				"text-transform": {
+					"stops": [
+						[0, "uppercase"],
+						[2, "none"]
+					]
+				}
+			},
+			"source": "maplibre",
+			"maxzoom": 24,
+			"minzoom": 2,
+			"source-layer": "centroids"
+		},
+		{
+			"id": "data-dots",
+			"type": "circle",
+			"source": "data-dots",
+			"paint": {
+				"circle-radius": 3,
+				"circle-color": ["get", "color"],
+				"circle-opacity": 0.5
+			}
+		}
+	],
+	"bearing": 0,
+	"sources": {
+		"maplibre": {
+			"url": "https://demotiles.maplibre.org/tiles/tiles.json",
+			"type": "vector"
+		},
+		"data-dots": {
+			"type": "geojson",
+			"data": {
+				"type": "FeatureCollection",
+				"features": []
+			}
+		}
+	},
+	"version": 8,
+	"metadata": {
+		"maptiler:copyright": "This style was generated on MapTiler Cloud. Usage is governed by the license terms in https://github.com/maplibre/demotiles/blob/gh-pages/LICENSE",
+		"openmaptiles:version": "3.x"
+	}
+}
