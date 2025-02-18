@@ -52,6 +52,12 @@ import Settings from "../Pages/Settings";
 
 import Maintenance from "../Pages/Maintenance";
 
+// Landing page
+import Landing from "../Pages/Landing";
+
+// About page
+import About from "../Pages/About";
+
 import ProtectedRoute from "../Components/ProtectedRoute";
 import ProtectedDistributedUptimeRoute from "../Components/ProtectedDistributedUptimeRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
@@ -61,6 +67,14 @@ const Routes = () => {
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
 	return (
 		<LibRoutes>
+			<Route
+				path="/"
+				element={<Landing />}
+			/>
+			<Route
+				path="/about"
+				element={<About />}
+			/>
 			<Route
 				path="/"
 				element={
