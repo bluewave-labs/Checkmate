@@ -132,6 +132,9 @@ StatBox.propTypes = {
 	gradient: PropTypes.bool,
 	status: PropTypes.string,
 	sx: PropTypes.object,
+	icon: PropTypes.node,
+	img: PropTypes.node,
+	alt: PropTypes.string,
 };
 
 export default StatBox;
