@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-const Dot = ({ color = "gray", size = "4px" }) => {
+const Dot = ({ color = "gray", size = "4px", style }) => {
 	return (
 		<span
 			style={{
@@ -10,6 +10,7 @@ const Dot = ({ color = "gray", size = "4px" }) => {
 				borderRadius: "50%",
 				backgroundColor: color,
 				opacity: 0.8,
+				...style,
 			}}
 		/>
 	);
