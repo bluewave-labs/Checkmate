@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import maplibregl from "maplibre-gl";
 import { useSelector } from "react-redux";
 import buildStyle from "./buildStyle";
+import { ColContainer } from "../../../../../Components/StandardContainer";
 
 const DistributedUptimeMap = ({ width = "100%", checks }) => {
 	const mapContainer = useRef(null);
@@ -87,6 +88,10 @@ const DistributedUptimeMap = ({ width = "100%", checks }) => {
 			ref={mapContainer}
 			style={{
 				width: width,
+				borderRadius: theme.spacing(4),
+				borderColor: theme.palette.primary.lowContrast,
+				borderStyle: "solid",
+				borderWidth: 1,
 			}}
 		/>
 	);

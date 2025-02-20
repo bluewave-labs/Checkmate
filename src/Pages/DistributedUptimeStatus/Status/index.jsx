@@ -15,6 +15,7 @@ import SkeletonLayout from "./Components/Skeleton";
 import StatBox from "../../../Components/StatBox";
 import UptLogo from "../../../assets/icons/upt_logo.png";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import InfoBox from "../../../Components/InfoBox";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -175,14 +176,14 @@ const DistributedUptimeStatus = () => {
 						direction="row"
 						gap={theme.spacing(8)}
 					>
-						<StatBox
+						<InfoBox
 							heading="Devices"
 							subHeading={monitor?.totalChecks ?? 0}
 							icon={PeopleAltOutlinedIcon}
 							alt="Upt Logo"
 							sx={{ width: "50%" }}
 						/>
-						<StatBox
+						<InfoBox
 							heading="UPT Burned"
 							subHeading={monitor?.totalUptBurnt ?? 0}
 							img={UptLogo}

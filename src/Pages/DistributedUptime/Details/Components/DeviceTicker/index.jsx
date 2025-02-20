@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PulseDot from "../../../../../Components/Animated/PulseDot";
 import "flag-icons/css/flag-icons.min.css";
-import { styled } from "@mui/material/styles";
+import { ColContainer } from "../../../../../Components/StandardContainer";
 
 const BASE_BOX_PADDING_VERTICAL = 16;
 const BASE_BOX_PADDING_HORIZONTAL = 8;
@@ -15,19 +15,7 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 	};
 
 	return (
-		<Stack
-			direction="column"
-			gap={theme.spacing(2)}
-			width={width}
-			sx={{
-				padding: `${theme.spacing(BASE_BOX_PADDING_VERTICAL)} ${theme.spacing(BASE_BOX_PADDING_HORIZONTAL)}`,
-				backgroundColor: theme.palette.background.main,
-				border: 1,
-				borderStyle: "solid",
-				borderRadius: theme.spacing(4),
-				borderColor: theme.palette.primary.lowContrast,
-			}}
-		>
+		<ColContainer>
 			<Stack
 				direction="row"
 				gap={theme.spacing(4)}
@@ -88,7 +76,7 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 					})}
 				</tbody>
 			</table>
-		</Stack>
+		</ColContainer>
 	);
 };
 
