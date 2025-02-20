@@ -49,7 +49,6 @@ const DistributedUptimeStatus = () => {
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
 		useSubscribeToDetails({ monitorId, dateRange, isPublic, isPublished });
 
-	console.log(monitor);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(() => {
 		navigate("/distributed-uptime");
 	}, url);
