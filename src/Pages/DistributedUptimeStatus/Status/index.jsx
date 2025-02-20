@@ -19,7 +19,7 @@ import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeade
 
 //Utils
 import { useTheme } from "@mui/material/styles";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
 import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
@@ -31,6 +31,7 @@ const DistributedUptimeStatus = () => {
 	const location = useLocation();
 	const isPublic = location.pathname.startsWith("/status/distributed/public");
 
+	const elementToCapture = useRef(null);
 	// Local State
 	const [dateRange, setDateRange] = useState("day");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -135,9 +136,12 @@ const DistributedUptimeStatus = () => {
 
 	return (
 		<Stack
+			ref={elementToCapture}
 			direction="column"
 			gap={theme.spacing(10)}
-			sx={sx}
+			sx={{
+				...sx,
+			}}
 		>
 			{!isPublic && <Breadcrumbs list={BREADCRUMBS} />}
 			<ControlsHeader
@@ -153,6 +157,7 @@ const DistributedUptimeStatus = () => {
 			<StatusHeader
 				monitor={monitor}
 				connectionStatus={connectionStatus}
+				elementToCapture={elementToCapture}
 			/>
 
 			<NextExpectedCheck
