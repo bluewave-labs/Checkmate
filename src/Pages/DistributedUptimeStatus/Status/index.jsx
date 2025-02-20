@@ -12,6 +12,10 @@ import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import GenericFallback from "../../../Components/GenericFallback";
 import Dialog from "../../../Components/Dialog";
 import SkeletonLayout from "./Components/Skeleton";
+import StatBox from "../../../Components/StatBox";
+import UptLogo from "../../../assets/icons/upt_logo.png";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+
 //Utils
 import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
@@ -45,6 +49,7 @@ const DistributedUptimeStatus = () => {
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
 		useSubscribeToDetails({ monitorId, dateRange, isPublic, isPublished });
 
+	console.log(monitor);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(() => {
 		navigate("/distributed-uptime");
 	}, url);
@@ -144,10 +149,7 @@ const DistributedUptimeStatus = () => {
 				url={url}
 				type="distributed"
 			/>
-			<StatBoxes
-				monitor={monitor}
-				lastUpdateTrigger={lastUpdateTrigger}
-			/>
+
 			<NextExpectedCheck
 				lastUpdateTime={monitor?.timeSinceLastCheck ?? 0}
 				interval={monitor?.interval ?? 0}
@@ -157,7 +159,6 @@ const DistributedUptimeStatus = () => {
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
-			<DistributedUptimeResponseChart checks={monitor?.groupedChecks ?? []} />
 			<Stack
 				direction="row"
 				gap={theme.spacing(8)}
@@ -165,14 +166,43 @@ const DistributedUptimeStatus = () => {
 				<DistributedUptimeMap
 					checks={monitor?.groupedMapChecks ?? []}
 					height={"100%"}
-					width={"100%"}
+					width={"50%"}
 				/>
-				<DeviceTicker
-					width={"25vw"}
-					data={monitor?.latestChecks ?? []}
-					connectionStatus={connectionStatus}
-				/>
+				<Stack
+					width={"50%"}
+					gap={theme.spacing(8)}
+				>
+					<Stack
+						direction="row"
+						gap={theme.spacing(8)}
+					>
+						<StatBox
+							heading="Devices"
+							subHeading={monitor?.totalChecks ?? 0}
+							icon={PeopleAltOutlinedIcon}
+							alt="Upt Logo"
+							sx={{ width: "50%" }}
+						/>
+						<StatBox
+							heading="UPT Burned"
+							subHeading={monitor?.totalUptBurnt ?? 0}
+							img={UptLogo}
+							alt="Upt Logo"
+							sx={{ width: "50%" }}
+						/>
+					</Stack>
+
+					<DeviceTicker
+						data={monitor?.latestChecks ?? []}
+						connectionStatus={connectionStatus}
+					/>
+				</Stack>
 			</Stack>
+			<DistributedUptimeResponseChart checks={monitor?.groupedChecks ?? []} />
+			<StatBoxes
+				monitor={monitor}
+				lastUpdateTrigger={lastUpdateTrigger}
+			/>
 			<Footer />
 			<Dialog
 				// open={isOpen.deleteStats}
