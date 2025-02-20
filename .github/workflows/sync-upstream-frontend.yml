@@ -1,0 +1,41 @@
+name: Sync Upstream (Frontend)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get Current Date and Day
+        id: date
+        run: echo "BRANCH_NAME=shadow/$(date +%A-%Y-%m-%d)" >> $GITHUB_ENV
+
+      - name: Add Upstream Remote and Fetch Latest Changes
+        run: |
+          git remote add upstream https://github.com/bluewave-labs/checkmate.git
+          git fetch upstream main
+
+      - name: Create and Checkout New Shadow Branch
+        run: |
+          git checkout -b ${{ env.BRANCH_NAME }}
+          git merge --no-ff upstream/main || true  # Allow conflicts for review
+
+      - name: Push Shadow Branch to Private Repo
+        run: |
+          git push origin ${{ env.BRANCH_NAME }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "Sync Upstream (Frontend) - ${{ env.BRANCH_NAME }}"
+          body: "Automated upstream sync for frontend repository. Please review and merge if needed."
+          branch: ${{ env.BRANCH_NAME }}
+          base: main
+          labels: "sync, upstream"
+          reviewers: "ridvankaratas, ajhollid"
