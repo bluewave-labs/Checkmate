@@ -266,6 +266,29 @@ const newSemanticColors = {
 			dark: undefined,
 		},
 	},
+
+	distributedStatusHeader: {
+		up: {
+			light: "#073C2D",
+			dark: "#073C2D",
+		},
+		down: {
+			light: newColors.red700,
+			dark: newColors.red700,
+		},
+		primaryText: {
+			light: "#34D399",
+			dark: "#34D399",
+		},
+		primaryTextBackground: {
+			light: "#094434",
+			dark: "#094434",
+		},
+		secondaryText: {
+			light: "#22946C",
+			dark: "#22946C",
+		},
+	},
 };
 
 export { typographyLevels, semanticColors as colors, newSemanticColors };
