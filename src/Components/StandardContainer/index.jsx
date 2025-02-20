@@ -17,7 +17,6 @@ const Container = ({ children, direction, backgroundColor, sx }) => {
 			gap={theme.spacing(2)}
 			border={1}
 			borderColor={theme.palette.primary.lowContrast}
-			borderStyle="solid"
 			borderRadius={theme.spacing(4)}
 			backgroundColor={bgColor}
 			sx={{ ...sx }}
