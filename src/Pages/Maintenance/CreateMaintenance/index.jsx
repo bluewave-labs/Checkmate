@@ -178,7 +178,7 @@ const CreateMaintenance = () => {
 		setSearch(value);
 	};
 
-	const handleSelectMonitors = (_, monitors) => {
+	const handleSelectMonitors = (monitors) => {
 		setForm({ ...form, monitors });
 		const { error } = maintenanceWindowValidation.validate(
 			{ monitors },
@@ -359,7 +359,7 @@ const CreateMaintenance = () => {
 									disablePast
 									disableHighlightToday
 									value={form.startDate}
-									slots={{ openPickerIcon: CalendarIcon }}
+									slots={{ openPickerIcon: () => <CalendarIcon /> }}
 									slotProps={{
 										switchViewButton: { sx: { display: "none" } },
 										nextIconButton: { sx: { ml: theme.spacing(2) } },
