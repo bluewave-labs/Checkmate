@@ -16,7 +16,7 @@ jobs:
         id: date
         run: echo "BRANCH_NAME=shadow/$(date +%A-%Y-%m-%d)" >> $GITHUB_ENV
 
-      - name: Add Upstream Remote and Fetch Latest Changes
+      - name: Add Upstream Remote and Fetch Changes
         run: |
           git remote add upstream https://github.com/bluewave-labs/checkmate.git || true
           git fetch upstream develop --prune
@@ -28,29 +28,22 @@ jobs:
       - name: Ensure Local Develop is Up-to-Date
         run: |
           git checkout develop
-          git pull origin develop
+          git pull origin develop --prune
 
-      - name: Create and Checkout New Shadow Branch
+      - name: Create Shadow Branch
         run: |
           git checkout -b ${{ env.BRANCH_NAME }} develop
-          git merge --no-ff upstream/develop || echo "Merge conflicts detected, resolving via PR."
 
-      - name: Check for New Changes Before Pushing
+      - name: Merge Upstream Changes into Shadow Branch
         run: |
-          if git diff --quiet develop ${{ env.BRANCH_NAME }}; then
-            echo "No new changes detected. Skipping PR creation."
-            exit 0
-          fi
-
-      - name: Push Shadow Branch to Private Repo
-        run: |
+          git merge --no-ff upstream/develop -m "Merge latest upstream changes from checkmate"
           git push origin ${{ env.BRANCH_NAME }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           title: "Sync Upstream (Frontend) - ${{ env.BRANCH_NAME }}"
-          body: "Automated upstream sync for frontend repository. Please review and resolve conflicts before merging."
+          body: "Automated upstream sync for frontend repository. Please review and merge."
           branch: ${{ env.BRANCH_NAME }}
           base: develop
           labels: "sync, upstream"
