@@ -1,4 +1,4 @@
-name: Sync Upstream (Frontend)
+name: Sync Upstream (Backend)
 
 on:
   workflow_dispatch:
@@ -18,18 +18,16 @@ jobs:
 
       - name: Add Upstream Remote and Fetch Latest Changes
         run: |
-          git remote add upstream https://github.com/bluewave-labs/checkmate.git || true
+          git remote add upstream https://github.com/bluewave-labs/checkmate-backend.git || true
           git fetch upstream develop --prune
           if ! git show-ref --quiet refs/remotes/upstream/develop; then
             exit 1
           fi
-          git checkout upstream/develop
-          git reset --hard origin/develop
 
       - name: Create and Checkout New Shadow Branch
         run: |
           git checkout -b ${{ env.BRANCH_NAME }} develop
-          git rebase upstream/develop || (git rebase --abort && exit 1)
+          git merge --no-ff upstream/develop || echo "Merge conflicts detected, resolving via PR."
 
       - name: Check for New Changes Before Pushing
         run: |
@@ -44,8 +42,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "Sync Upstream (Frontend) - ${{ env.BRANCH_NAME }}"
-          body: "Automated upstream sync for frontend repository. Please review and merge if needed."
+          title: "Sync Upstream (Backend) - ${{ env.BRANCH_NAME }}"
+          body: "Automated upstream sync for backend repository. Please review and resolve conflicts before merging."
           branch: ${{ env.BRANCH_NAME }}
           base: develop
           labels: "sync, upstream"
