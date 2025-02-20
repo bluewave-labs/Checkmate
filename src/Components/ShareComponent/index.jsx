@@ -3,7 +3,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import { Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 
-const ShareComponent = ({ elementToCapture, fileName }) => {
+const ShareComponent = ({ elementToCapture, fileName = "screenshot" }) => {
 	const theme = useTheme();
 	const captureAndShare = async () => {
 		try {

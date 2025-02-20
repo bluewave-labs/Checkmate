@@ -74,7 +74,10 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 						</Typography>
 					</Stack>
 				</Stack>
-				<ShareComponent elementToCapture={elementToCapture} />
+				<ShareComponent
+					elementToCapture={elementToCapture}
+					fileName={monitor.name}
+				/>
 			</Stack>
 			<ChatBot sx={{ marginTop: theme.spacing(10) }} />
 		</ColContainer>
