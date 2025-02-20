@@ -200,6 +200,20 @@ const newSemanticColors = {
 			dark: newColors.green200,
 		},
 	},
+	successSecondary: {
+		main: {
+			light: undefined,
+			dark: "#073C2D",
+		},
+		contrastText: {
+			light: undefined,
+			dark: "#34D399",
+		},
+		lowContrast: {
+			light: undefined,
+			dark: "#094434",
+		},
+	},
 	warning: {
 		main: {
 			light: newColors.orange700,
@@ -264,29 +278,6 @@ const newSemanticColors = {
 		highContrast: {
 			light: newColors.gray500,
 			dark: undefined,
-		},
-	},
-
-	distributedStatusHeader: {
-		up: {
-			light: "#073C2D",
-			dark: "#073C2D",
-		},
-		down: {
-			light: newColors.red700,
-			dark: newColors.red700,
-		},
-		textPrimary: {
-			light: "#34D399",
-			dark: "#34D399",
-		},
-		textPrimaryBackground: {
-			light: "#094434",
-			dark: "#094434",
-		},
-		textSecondary: {
-			light: "#22946C",
-			dark: "#22946C",
 		},
 	},
 

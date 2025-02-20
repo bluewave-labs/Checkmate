@@ -5,7 +5,6 @@ import { useTheme } from "@mui/material/styles";
 import maplibregl from "maplibre-gl";
 import { useSelector } from "react-redux";
 import buildStyle from "./buildStyle";
-import { ColContainer } from "../../../../../Components/StandardContainer";
 
 const DistributedUptimeMap = ({ width = "100%", checks }) => {
 	const mapContainer = useRef(null);
@@ -29,12 +28,17 @@ const DistributedUptimeMap = ({ width = "100%", checks }) => {
 	useEffect(() => {
 		if (mapContainer.current && !map.current) {
 			const initialStyle = buildStyle(initialTheme.current, initialMode.current);
+
 			map.current = new maplibregl.Map({
 				container: mapContainer.current,
 				style: initialStyle,
 				center: [0, 20],
 				zoom: 0.8,
 				attributionControl: false,
+				canvasContextAttributes: {
+					antialias: true,
+					preserveDrawingBuffer: true,
+				},
 			});
 		}
 		map.current.on("load", () => {
