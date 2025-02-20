@@ -34,9 +34,19 @@ jobs:
         run: |
           git checkout -b ${{ env.BRANCH_NAME }} develop
 
-      - name: Merge Upstream Changes into Shadow Branch
+      - name: Identify New Commits
+        id: check_commits
         run: |
-          git merge --no-ff upstream/develop -m "Merge latest upstream changes from checkmate"
+          NEW_COMMITS=$(git log develop..upstream/develop --pretty=format:"%H" | wc -l)
+          echo "New commits: $NEW_COMMITS"
+          if [ "$NEW_COMMITS" -eq 0 ]; then
+            echo "No new commits. Exiting."
+            exit 0
+          fi
+
+      - name: Cherry-pick New Commits
+        run: |
+          git cherry-pick develop..upstream/develop || (git cherry-pick --abort && exit 1)
           git push origin ${{ env.BRANCH_NAME }}
 
       - name: Create Pull Request
