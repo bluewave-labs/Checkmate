@@ -12,10 +12,10 @@ import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import GenericFallback from "../../../Components/GenericFallback";
 import Dialog from "../../../Components/Dialog";
 import SkeletonLayout from "./Components/Skeleton";
-import StatBox from "../../../Components/StatBox";
 import UptLogo from "../../../assets/icons/upt_logo.png";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import InfoBox from "../../../Components/InfoBox";
+import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -148,6 +148,11 @@ const DistributedUptimeStatus = () => {
 				setIsDeleteOpen={setIsDeleteOpen}
 				url={url}
 				type="distributed"
+			/>
+
+			<StatusHeader
+				monitor={monitor}
+				connectionStatus={connectionStatus}
 			/>
 
 			<NextExpectedCheck
