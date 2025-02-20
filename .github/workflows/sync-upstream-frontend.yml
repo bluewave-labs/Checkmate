@@ -1,4 +1,4 @@
-name: Sync Upstream (Backend)
+name: Sync Upstream (Frontend)
 
 on:
   workflow_dispatch:
@@ -18,11 +18,17 @@ jobs:
 
       - name: Add Upstream Remote and Fetch Latest Changes
         run: |
-          git remote add upstream https://github.com/bluewave-labs/checkmate-backend.git || true
+          git remote add upstream https://github.com/bluewave-labs/checkmate.git || true
           git fetch upstream develop --prune
           if ! git show-ref --quiet refs/remotes/upstream/develop; then
+            echo "ERROR: upstream/develop not found"
             exit 1
           fi
+
+      - name: Ensure Local Develop is Up-to-Date
+        run: |
+          git checkout develop
+          git pull origin develop
 
       - name: Create and Checkout New Shadow Branch
         run: |
@@ -32,6 +38,7 @@ jobs:
       - name: Check for New Changes Before Pushing
         run: |
           if git diff --quiet develop ${{ env.BRANCH_NAME }}; then
+            echo "No new changes detected. Skipping PR creation."
             exit 0
           fi
 
@@ -42,8 +49,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "Sync Upstream (Backend) - ${{ env.BRANCH_NAME }}"
-          body: "Automated upstream sync for backend repository. Please review and resolve conflicts before merging."
+          title: "Sync Upstream (Frontend) - ${{ env.BRANCH_NAME }}"
+          body: "Automated upstream sync for frontend repository. Please review and resolve conflicts before merging."
           branch: ${{ env.BRANCH_NAME }}
           base: develop
           labels: "sync, upstream"
