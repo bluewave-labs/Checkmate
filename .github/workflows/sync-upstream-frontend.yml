@@ -18,13 +18,25 @@ jobs:
 
       - name: Add Upstream Remote and Fetch Latest Changes
         run: |
-          git remote add upstream https://github.com/bluewave-labs/checkmate.git
-          git fetch upstream develop 
+          git remote add upstream https://github.com/bluewave-labs/checkmate.git || true
+          git fetch upstream develop --prune
+          if ! git show-ref --quiet refs/remotes/upstream/develop; then
+            exit 1
+          fi
+          git checkout upstream/develop
+          git reset --hard origin/develop
 
       - name: Create and Checkout New Shadow Branch
         run: |
-          git checkout -b ${{ env.BRANCH_NAME }}
-          git merge --no-ff upstream/develop || true 
+          git checkout -b ${{ env.BRANCH_NAME }} develop
+          git rebase upstream/develop || (git rebase --abort && exit 1)
+
+      - name: Check for New Changes Before Pushing
+        run: |
+          if git diff --quiet develop ${{ env.BRANCH_NAME }}; then
+            exit 0
+          fi
+
       - name: Push Shadow Branch to Private Repo
         run: |
           git push origin ${{ env.BRANCH_NAME }}
@@ -35,6 +47,6 @@ jobs:
           title: "Sync Upstream (Frontend) - ${{ env.BRANCH_NAME }}"
           body: "Automated upstream sync for frontend repository. Please review and merge if needed."
           branch: ${{ env.BRANCH_NAME }}
-          base: develop 
+          base: develop
           labels: "sync, upstream"
           reviewers: "ridvankaratas, ajhollid"
