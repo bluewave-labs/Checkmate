@@ -276,17 +276,28 @@ const newSemanticColors = {
 			light: newColors.red700,
 			dark: newColors.red700,
 		},
-		primaryText: {
+		textPrimary: {
 			light: "#34D399",
 			dark: "#34D399",
 		},
-		primaryTextBackground: {
+		textPrimaryBackground: {
 			light: "#094434",
 			dark: "#094434",
 		},
-		secondaryText: {
+		textSecondary: {
 			light: "#22946C",
 			dark: "#22946C",
+		},
+	},
+
+	chatbot: {
+		background: {
+			light: "#112B2B",
+			dark: "#112B2B",
+		},
+		textAccent: {
+			light: "#C084FC",
+			dark: "#C084FC",
 		},
 	},
 };
