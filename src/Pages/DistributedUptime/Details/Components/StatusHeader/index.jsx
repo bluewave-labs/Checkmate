@@ -3,6 +3,7 @@ import { ColContainer } from "../../../../../Components/StandardContainer";
 import { Stack, Typography } from "@mui/material";
 import PulseDot from "../../../../../Components/Animated/PulseDot";
 import LastUpdate from "../LastUpdate";
+import ChatBot from "../Chatbot";
 
 // Utils
 import { useTheme } from "@emotion/react";
@@ -44,7 +45,7 @@ const StatusHeader = ({ monitor, connectionStatus }) => {
 					>
 						<Typography
 							variant="h1"
-							color={theme.palette.distributedStatusHeader.primaryText}
+							color={theme.palette.distributedStatusHeader.textPrimary}
 						>
 							{MSG_MAP[connectionStatus]}
 						</Typography>
@@ -53,16 +54,16 @@ const StatusHeader = ({ monitor, connectionStatus }) => {
 							borderRadius={theme.spacing(8)}
 							padding={theme.spacing(4)}
 							backgroundColor={
-								theme.palette.distributedStatusHeader.primaryTextBackground
+								theme.palette.distributedStatusHeader.textPrimaryBackground
 							}
-							color={theme.palette.distributedStatusHeader.primaryText}
+							color={theme.palette.distributedStatusHeader.textPrimary}
 						>
 							Uptime: {(monitor.totalUptime * 100).toFixed(2)}%
 						</Typography>
 					</Stack>
 					<Typography
 						variant="body2"
-						color={theme.palette.distributedStatusHeader.secondaryText}
+						color={theme.palette.distributedStatusHeader.textSecondary}
 					>
 						Last updated{" "}
 						<LastUpdate
@@ -72,6 +73,7 @@ const StatusHeader = ({ monitor, connectionStatus }) => {
 					</Typography>
 				</Stack>
 			</Stack>
+			<ChatBot sx={{ marginTop: theme.spacing(10) }} />
 		</ColContainer>
 	);
 };
