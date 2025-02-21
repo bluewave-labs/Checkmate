@@ -8,7 +8,7 @@ import { StatusLabel } from "../../../../../Components/Label";
 import { useTheme } from "@mui/material/styles";
 import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
 import PropTypes from "prop-types";
-const MonitorsList = ({ monitors = [] }) => {
+const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] }) => {
 	const theme = useTheme();
 	const { determineState } = useUtils();
 	return (
@@ -24,7 +24,7 @@ const MonitorsList = ({ monitors = [] }) => {
 						<Host
 							key={monitor._id}
 							url={monitor.url}
-							title={monitor.title}
+							title={monitor.name}
 							percentageColor={monitor.percentageColor}
 							percentage={monitor.percentage}
 						/>
