@@ -1,32 +1,55 @@
-import { Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import { useTheme } from "@emotion/react";
+import { Box, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { setGreeting } from "../Features/UI/uiSlice";
+
+
 
 /**
- * A heading component that renders text with a specific heading level.
+
  *
- * @param {Object} props - The properties passed to the Heading component.
- * @param {('h1'|'h2'|'h3')} props.component - The heading level for the component.
- * @param {Object} props.style - Custom styles to apply to the heading.
- * @param {string} props.children - The content to display inside the heading.
- * @returns {JSX.Element} The Typography component with specified heading properties.
+ * @component
+ * @example
+ *
+ * @param {Object} props
+ * @param {string} props.type - The type of monitor to be displayed in the message
+ * @returns {JSX.Element} The rendered component
  */
 
-function Subheader({ component, style, children }) {
-	return (
-		<Typography
-			component={component}
-			variant="h2"
-			fontWeight={600}
-			style={style}
-		>
-			{children}
-		</Typography>
-	);
-}
+const Greeting = ({ type = "" }) => {
+	const theme = useTheme();
+	const dispatch = useDispatch();
 
-Subheader.propTypes = {
-	component: PropTypes.oneOf(["h1", "h2", "h3"]).isRequired,
-	style: PropTypes.object,
-	children: PropTypes.string.isRequired,
+	return (
+		<Box>
+			<Typography
+				component="h1"
+				variant="h1"
+				mb={theme.spacing(1)}
+			>
+				<Typography
+					component="span"
+					fontSize="inherit"
+					color={theme.palette.primary.contrastTextTertiary}
+				>
+					Real-time, real-device coverage
+				</Typography>
+			</Typography>
+			<Typography
+				variant="h2"
+				lineHeight={1}
+				color={theme.palette.primary.contrastTextTertiary}
+			>
+				Powered by millions of devices worldwide, view a system's performance by global region, country or city.
+			</Typography>
+		</Box>
+	);
 };
-export { Subheader };
+
+Greeting.propTypes = {
+	type: PropTypes.string,
+};
+
+export default Greeting;
