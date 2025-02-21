@@ -28,12 +28,17 @@ const DistributedUptimeMap = ({ width = "100%", checks }) => {
 	useEffect(() => {
 		if (mapContainer.current && !map.current) {
 			const initialStyle = buildStyle(initialTheme.current, initialMode.current);
+
 			map.current = new maplibregl.Map({
 				container: mapContainer.current,
 				style: initialStyle,
 				center: [0, 20],
 				zoom: 0.8,
 				attributionControl: false,
+				canvasContextAttributes: {
+					antialias: true,
+					preserveDrawingBuffer: true,
+				},
 			});
 		}
 		map.current.on("load", () => {
@@ -87,6 +92,10 @@ const DistributedUptimeMap = ({ width = "100%", checks }) => {
 			ref={mapContainer}
 			style={{
 				width: width,
+				borderRadius: theme.spacing(4),
+				borderColor: theme.palette.primary.lowContrast,
+				borderStyle: "solid",
+				borderWidth: 1,
 			}}
 		/>
 	);
