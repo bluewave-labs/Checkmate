@@ -200,6 +200,20 @@ const newSemanticColors = {
 			dark: newColors.green200,
 		},
 	},
+	successSecondary: {
+		main: {
+			light: undefined,
+			dark: "#073C2D",
+		},
+		contrastText: {
+			light: undefined,
+			dark: "#34D399",
+		},
+		lowContrast: {
+			light: undefined,
+			dark: "#094434",
+		},
+	},
 	warning: {
 		main: {
 			light: newColors.orange700,
@@ -264,6 +278,16 @@ const newSemanticColors = {
 		highContrast: {
 			light: newColors.gray500,
 			dark: undefined,
+		},
+	},
+	chatbot: {
+		background: {
+			light: "#112B2B",
+			dark: "#112B2B",
+		},
+		textAccent: {
+			light: "#C084FC",
+			dark: "#C084FC",
 		},
 	},
 };
