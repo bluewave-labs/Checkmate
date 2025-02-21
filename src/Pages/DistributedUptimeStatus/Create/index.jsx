@@ -7,6 +7,8 @@ import VisuallyHiddenInput from "./Components/VisuallyHiddenInput";
 import Image from "../../../Components/Image";
 import LogoPlaceholder from "../../../assets/Images/logo_placeholder.svg";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
+import Search from "../../../Components/Inputs/Search";
+import MonitorList from "../../StatusPage/Create/Components/MonitorList";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useState, useEffect } from "react";
@@ -17,6 +19,7 @@ import { statusPageValidation } from "../../../Validation/validation";
 import { buildErrors } from "../../../Validation/error";
 import { createToast } from "../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
+import { useMonitorsFetch } from "../../StatusPage/Create/Hooks/useMonitorsFetch";
 
 const CreateStatus = () => {
 	const theme = useTheme();
@@ -27,6 +30,8 @@ const CreateStatus = () => {
 
 	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
 		useStatusPageFetch(isCreate, url);
+
+	const [monitors, monitorsIsLoading, monitorsNetworkError] = useMonitorsFetch();
 
 	const BREADCRUMBS = [
 		{ name: "distributed uptime", path: "/distributed-uptime" },
@@ -43,6 +48,8 @@ const CreateStatus = () => {
 		monitors: [monitorId],
 	});
 	const [errors, setErrors] = useState({});
+	const [search, setSearch] = useState("");
+	const [selectedMonitors, setSelectedMonitors] = useState([]);
 
 	const handleFormChange = (e) => {
 		const { name, value, checked, type } = e.target;
@@ -60,6 +67,16 @@ const CreateStatus = () => {
 			return;
 		}
 		setForm({ ...form, [name]: value });
+	};
+
+	const handleMonitorsChange = (selectedMonitors) => {
+		handleFormChange({
+			target: {
+				name: "subMonitors",
+				value: selectedMonitors.map((monitor) => monitor._id),
+			},
+		});
+		setSelectedMonitors(selectedMonitors);
 	};
 
 	const handleImageUpload = (e) => {
@@ -85,7 +102,6 @@ const CreateStatus = () => {
 		if (typeof logoToSubmit !== "undefined") {
 			formToSubmit.logo = logoToSubmit;
 		}
-
 		// Validate
 		const { error } = statusPageValidation.validate(formToSubmit, { abortEarly: false });
 		if (typeof error === "undefined") {
@@ -133,6 +149,12 @@ const CreateStatus = () => {
 			};
 		});
 	}, [isCreate, statusPage, statusPageMonitors]);
+
+	const imgSrc = form?.logo?.src
+		? form.logo.src
+		: form.logo
+			? URL.createObjectURL(form.logo)
+			: undefined;
 
 	return (
 		<Stack gap={theme.spacing(10)}>
@@ -212,7 +234,7 @@ const CreateStatus = () => {
 					alignItems="center"
 				>
 					<Image
-						src={form.logo ? URL.createObjectURL(form.logo) : undefined}
+						src={imgSrc}
 						alt="Logo"
 						minWidth={"300px"}
 						minHeight={"100px"}
@@ -232,6 +254,30 @@ const CreateStatus = () => {
 							<VisuallyHiddenInput onChange={handleImageUpload} />
 						</Button>
 					</Box>
+				</Stack>
+			</ConfigBox>
+			<ConfigBox>
+				<Stack>
+					<Typography component="h2">Standard Monitors</Typography>
+					<Typography component="p">
+						Attach standard monitors to your status page.
+					</Typography>
+				</Stack>
+				<Stack gap={theme.spacing(18)}>
+					<Search
+						options={monitors ?? []}
+						multiple={true}
+						filteredBy="name"
+						value={selectedMonitors}
+						inputValue={search}
+						handleInputChange={setSearch}
+						handleChange={handleMonitorsChange}
+					/>
+					<MonitorList
+						monitors={monitors}
+						selectedMonitors={selectedMonitors}
+						setSelectedMonitors={handleMonitorsChange}
+					/>
 				</Stack>
 			</ConfigBox>
 			<Stack

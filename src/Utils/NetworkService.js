@@ -1041,6 +1041,10 @@ class NetworkService {
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
 			});
+		form.subMonitors &&
+			form.subMonitors.forEach((monitorId) => {
+				fd.append("subMonitors[]", monitorId);
+			});
 		if (form?.logo?.src && form?.logo?.src !== "") {
 			const imageResult = await axios.get(form.logo.src, {
 				responseType: "blob",
