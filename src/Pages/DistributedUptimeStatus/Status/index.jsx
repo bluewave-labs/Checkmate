@@ -16,7 +16,7 @@ import UptLogo from "../../../assets/icons/upt_logo.png";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import InfoBox from "../../../Components/InfoBox";
 import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
-import MonitorsList from "../../StatusPage/Status/Components/MonitorsList";
+import MonitorsList from "./Components/MonitorsList";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -27,6 +27,7 @@ import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import TimeFrameHeader from "./Components/TimeframeHeader";
 
 const DistributedUptimeStatus = () => {
 	const { url } = useParams();
@@ -37,6 +38,7 @@ const DistributedUptimeStatus = () => {
 	// Local State
 	const [dateRange, setDateRange] = useState("day");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [timeFrame, setTimeFrame] = useState(30);
 	// Utils
 	const theme = useTheme();
 	const navigate = useNavigate();
@@ -49,6 +51,7 @@ const DistributedUptimeStatus = () => {
 		isPublished,
 	] = useStatusPageFetchByUrl({
 		url,
+		timeFrame,
 	});
 
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
@@ -217,7 +220,14 @@ const DistributedUptimeStatus = () => {
 				monitor={monitor}
 				lastUpdateTrigger={lastUpdateTrigger}
 			/>
-			<MonitorsList monitors={statusPage?.subMonitors} />
+			<TimeFrameHeader
+				timeFrame={timeFrame}
+				setTimeFrame={setTimeFrame}
+			/>
+			<MonitorsList
+				monitors={statusPage?.subMonitors}
+				timeFrame={timeFrame}
+			/>
 			<Footer />
 			<Dialog
 				// open={isOpen.deleteStats}
