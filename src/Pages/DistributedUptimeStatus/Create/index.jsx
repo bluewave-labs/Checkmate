@@ -13,7 +13,7 @@ import MonitorList from "../../StatusPage/Create/Components/MonitorList";
 import { useTheme } from "@emotion/react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useStatusPageFetch } from "../../StatusPage/Status/Hooks/useStatusPageFetch";
+import { useDUStatusPageFetch } from "./Hooks/useDUStatusPageFetch";
 import { useCreateStatusPage } from "../../StatusPage/Create/Hooks/useCreateStatusPage";
 import { statusPageValidation } from "../../../Validation/validation";
 import { buildErrors } from "../../../Validation/error";
@@ -26,10 +26,13 @@ const CreateStatus = () => {
 	const { monitorId, url } = useParams();
 	const navigate = useNavigate();
 	const isCreate = typeof url === "undefined";
+
 	const [createStatusPage, isLoading, networkError] = useCreateStatusPage(isCreate);
 
-	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
-		useStatusPageFetch(isCreate, url);
+	const [statusPage, statusPageIsLoading, statusPageNetworkError] = useDUStatusPageFetch(
+		isCreate,
+		url
+	);
 
 	const [monitors, monitorsIsLoading, monitorsNetworkError] = useMonitorsFetch();
 
@@ -90,13 +93,15 @@ const CreateStatus = () => {
 		let logoToSubmit = undefined;
 
 		// Handle image
-		if (typeof form.logo !== "undefined") {
+		if (typeof form.logo !== "undefined" && typeof form.logo.src === "undefined") {
 			logoToSubmit = {
 				src: URL.createObjectURL(form.logo),
 				name: form.logo.name,
 				type: form.logo.type,
 				size: form.logo.size,
 			};
+		} else if (typeof form.logo !== "undefined") {
+			logoToSubmit = form.logo;
 		}
 		const formToSubmit = { ...form };
 		if (typeof logoToSubmit !== "undefined") {
@@ -143,12 +148,14 @@ const CreateStatus = () => {
 				companyName: statusPage?.companyName,
 				isPublished: statusPage?.isPublished,
 				timezone: statusPage?.timezone,
-				monitors: statusPageMonitors.map((monitor) => monitor._id),
+				monitors: statusPage?.monitors,
+				subMonitors: statusPage?.subMonitors.map((monitor) => monitor._id),
 				color: statusPage?.color,
 				logo: newLogo,
 			};
 		});
-	}, [isCreate, statusPage, statusPageMonitors]);
+		setSelectedMonitors(statusPage?.subMonitors);
+	}, [isCreate, statusPage]);
 
 	const imgSrc = form?.logo?.src
 		? form.logo.src
