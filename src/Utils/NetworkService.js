@@ -1041,6 +1041,15 @@ class NetworkService {
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
 			});
+		// Handle subMonitors, even if it's an empty array
+		if (form.subMonitors && form.subMonitors.length > 0) {
+			form.subMonitors.forEach((monitorId) => {
+				fd.append("subMonitors[]", monitorId);
+			});
+		} else {
+			fd.append("deleteSubmonitors", true);
+		}
+
 		if (form?.logo?.src && form?.logo?.src !== "") {
 			const imageResult = await axios.get(form.logo.src, {
 				responseType: "blob",
@@ -1051,6 +1060,7 @@ class NetworkService {
 				URL.revokeObjectURL(form.logo.src);
 			}
 		}
+
 		if (isCreate) {
 			return this.axiosInstance.post(`/status-page`, fd, {
 				headers: {

@@ -16,6 +16,7 @@ import UptLogo from "../../../assets/icons/upt_logo.png";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import InfoBox from "../../../Components/InfoBox";
 import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
+import MonitorsList from "../../StatusPage/Status/Components/MonitorsList";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -26,6 +27,7 @@ import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+
 const DistributedUptimeStatus = () => {
 	const { url } = useParams();
 	const location = useLocation();
@@ -38,6 +40,7 @@ const DistributedUptimeStatus = () => {
 	// Utils
 	const theme = useTheme();
 	const navigate = useNavigate();
+
 	const [
 		statusPageIsLoading,
 		statusPageNetworkError,
@@ -54,6 +57,7 @@ const DistributedUptimeStatus = () => {
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(() => {
 		navigate("/distributed-uptime");
 	}, url);
+
 	// Constants
 	const BREADCRUMBS = [
 		{ name: "Distributed Uptime", path: "/distributed-uptime" },
@@ -213,6 +217,7 @@ const DistributedUptimeStatus = () => {
 				monitor={monitor}
 				lastUpdateTrigger={lastUpdateTrigger}
 			/>
+			<MonitorsList monitors={statusPage?.subMonitors} />
 			<Footer />
 			<Dialog
 				// open={isOpen.deleteStats}
