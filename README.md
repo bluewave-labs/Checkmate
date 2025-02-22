@@ -31,7 +31,7 @@ See [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username
 
 ## 🔗 User's guide
 
-Usage instructions can be found [here](https://docs.checkmate.so/). It's still WIP and some of the information there might be outdated. Rest assured, we are doing our best! :)
+Usage instructions can be found [here](https://docs.checkmate.so/). It's still WIP and some of the information there might be outdated as we continuously add features weekly. Rest assured, we are doing our best! :)
 
 ## 🛠️ Installation
 
