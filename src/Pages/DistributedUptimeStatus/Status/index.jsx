@@ -24,8 +24,10 @@ import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
 import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
+
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import SubHeader from "../../DistributedUptime/Details/Components/Subheader";
 const DistributedUptimeStatus = () => {
 	const { url } = useParams();
 	const location = useLocation();
@@ -153,13 +155,21 @@ const DistributedUptimeStatus = () => {
 				url={url}
 				type="distributed"
 			/>
-
+		
 			<StatusHeader
 				monitor={monitor}
 				connectionStatus={connectionStatus}
 				elementToCapture={elementToCapture}
 			/>
-
+			
+			
+			
+			<SubHeader 
+				headerText="Real-time, real-device coverage" 
+				subHeaderText="Powered by millions devices worldwide, view a system performance by global region, country or city"
+				rightCatagoryTitle="Monitor"
+					rightDescription = "Mainnet Beta Cluster"
+			/>
 			<NextExpectedCheck
 				lastUpdateTime={monitor?.timeSinceLastCheck ?? 0}
 				interval={monitor?.interval ?? 0}
