@@ -55,5 +55,10 @@
   "authRegisterCreateAccount": "Create your account to get started",
   "authRegisterCreateSuperAdminAccount": "Create your Super admin account to get started",
   "authRegisterSignUpWithEmail": "Sign up with Email",
-  "authRegisterBySigningUp": "By signing up, you agree to our"
+  "authRegisterBySigningUp": "By signing up, you agree to our",
+  "monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
+  "monitorStatusDown": "Monitor {name} ({url}) is DOWN and not responding",
+  "webhookSendSuccess": "Webhook notification sent successfully",
+  "webhookSendError": "Error sending webhook notification to {platform}",
+  "webhookUnsupportedPlatform": "Unsupported platform: {platform}"
 }
