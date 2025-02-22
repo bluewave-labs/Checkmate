@@ -226,6 +226,7 @@ const statusPageValidation = joi.object({
 		"array.empty": "At least one monitor is required",
 		"any.required": "At least one monitor is required",
 	}),
+	subMonitors: joi.array().optional(),
 	logo: logoImageValidation,
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
