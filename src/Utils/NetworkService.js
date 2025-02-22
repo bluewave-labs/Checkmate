@@ -1011,6 +1011,21 @@ class NetworkService {
 			},
 		});
 	}
+	async getDistributedStatusPageByUrl(config) {
+		const { authToken, url, type, timeFrame } = config;
+		const params = new URLSearchParams();
+		params.append("type", type);
+		params.append("timeFrame", timeFrame);
+		return this.axiosInstance.get(
+			`/status-page/distributed/${url}?${params.toString()}`,
+			{
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	}
 
 	async getStatusPagesByTeamId(config) {
 		const { authToken, teamId } = config;
