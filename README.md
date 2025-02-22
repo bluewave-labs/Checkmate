@@ -139,4 +139,3 @@ Also check other developer and contributor-friendly projects of BlueWave:
 - [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.
 - [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
 
-![image](https://badges.pufler.dev/visits/bluewave-labs/checkmate) since 14 Jan, 2025
