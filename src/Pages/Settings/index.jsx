@@ -375,9 +375,10 @@ const Settings = () => {
 							<Stack
 								direction="row"
 								spacing={2}
+								sx={{ flexWrap: "wrap", justifyContent: "center", gap: theme.spacing(2) }}
 							>
-								<WalletMultiButton />
-								<WalletDisconnectButton />
+								<WalletMultiButton sx={{ minWidth: "120px", maxWidth: "100%", whiteSpace: "nowrap" }} />
+								<WalletDisconnectButton sx={{ minWidth: "120px", maxWidth: "100%", whiteSpace: "nowrap" }} />
 							</Stack>
 						</Box>
 					</ConfigBox>
