@@ -64,5 +64,7 @@
 	"distributedStatusHeaderText": "Real-time, real-device coverage",
 	"distributedStatusSubHeaderText": "Powered by millions devices worldwide, view a system performance by global region, country or city",
 	"distributedRightCatagoryTitle": "Monitor",
-	"distributedRightCatagoryDescription": "Mainnet Beta Cluster"
+	"distributedRightCatagoryDescription": "Mainnet Beta Cluster",
+	"distributedStatusServerMonitors": "Server Monitors",
+	"distributedStatusServerMonitorsDescription": "Monitor status of related servers"
 }
