@@ -20,26 +20,24 @@ import { RowContainer } from "../StandardContainer";
  * @returns {JSX.Element} The rendered component
  */
 
-const SubHeader = ({ 
-		headerText='',
-		headerLevel = 1, 
-		subHeaderText = '', 
-		subHeaderLevel = 1 , 
-		rightCatagoryTitle = '',
-		rightCatagoryTitleLevel = 2,
-		rightDescription='', 
-		rightDescriptionLevel = 2
-	}) => {
+const SubHeader = ({
+	headerText,
+	headerLevel = 1,
+	subHeaderText,
+	subHeaderLevel = 1,
+	rightCatagoryTitle,
+	rightCatagoryTitleLevel = 2,
+	rightDescription,
+	rightDescriptionLevel = 2,
+}) => {
 	const theme = useTheme();
-	
+
 	return (
-		<Stack 
-			direction="row" 
+		<Stack
+			direction="row"
 			justifyContent="space-between"
-			>
-			<Stack 
-				direction={"column"}
-			>
+		>
+			<Stack direction={"column"}>
 				<Typography
 					component={`h${headerLevel}`}
 					variant={`h${headerLevel}`}
@@ -60,33 +58,32 @@ const SubHeader = ({
 					{subHeaderText}
 				</Typography>
 			</Stack>
-			
-			{rightCatagoryTitle &&
+
+			{rightCatagoryTitle && (
 				<RowContainer sx={{ width: "20%" }}>
 					<Stack>
-						<Typography variant={`body${rightCatagoryTitleLevel}`}>{rightCatagoryTitle}</Typography>
+						<Typography variant={`body${rightCatagoryTitleLevel}`}>
+							{rightCatagoryTitle}
+						</Typography>
 						<Typography variant={`h${rightDescriptionLevel}`}>
 							{rightDescription}
 						</Typography>
 					</Stack>
 				</RowContainer>
-			}
-
-
-
+			)}
 		</Stack>
 	);
 };
 
 SubHeader.propTypes = {
-	headerText:PropTypes.string,
-	headerLevel : PropTypes.number , 
-	subHeaderText :PropTypes.string, 
-	subHeaderLevel : PropTypes.number, 
-	rightCatagoryTitle :PropTypes.string,
-	rightCatagoryTitleLevel : PropTypes.number,
-	rightDescription:PropTypes.string, 
-	rightDescriptionLevel : PropTypes.number
+	headerText: PropTypes.string,
+	headerLevel: PropTypes.number,
+	subHeaderText: PropTypes.string,
+	subHeaderLevel: PropTypes.number,
+	rightCatagoryTitle: PropTypes.string,
+	rightCatagoryTitleLevel: PropTypes.number,
+	rightDescription: PropTypes.string,
+	rightDescriptionLevel: PropTypes.number,
 };
 
 export default SubHeader;
