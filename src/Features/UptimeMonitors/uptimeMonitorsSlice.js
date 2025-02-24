@@ -32,7 +32,9 @@ export const checkEndpointResolution = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorURL } = data;
-			const res = await networkService.checkEndpointResolution({ monitorURL: monitorURL, });
+			const res = await networkService.checkEndpointResolution({
+				monitorURL: monitorURL,
+			});
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -52,7 +54,7 @@ export const getUptimeMonitorById = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorId } = data;
-			const res = await networkService.getMonitorById({ monitorId: monitorId, });
+			const res = await networkService.getMonitorById({ monitorId: monitorId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -104,7 +106,7 @@ export const deleteUptimeMonitor = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitor } = data;
-			const res = await networkService.deleteMonitorById({ monitorId: monitor._id, });
+			const res = await networkService.deleteMonitorById({ monitorId: monitor._id });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -124,7 +126,7 @@ export const pauseUptimeMonitor = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorId } = data;
-			const res = await networkService.pauseMonitorById({ monitorId: monitorId, });
+			const res = await networkService.pauseMonitorById({ monitorId: monitorId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -144,7 +146,7 @@ export const deleteMonitorChecksByTeamId = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { teamId } = data;
-			const res = await networkService.deleteChecksByTeamId({ teamId: teamId, });
+			const res = await networkService.deleteChecksByTeamId({ teamId: teamId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {

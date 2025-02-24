@@ -42,7 +42,7 @@ const CreateMonitor = () => {
 	const expectedValuePlaceholders = {
 		regex: "^[\w.-]+@gmail.com$",
 		equal: "janet@gmail.com",
-		include: "@gmail.com"
+		include: "@gmail.com",
 	};
 
 	const monitorTypeMaps = {
@@ -416,8 +416,8 @@ const CreateMonitor = () => {
 							onChange={(event) => handleChange(event, "interval")}
 							items={SELECT_VALUES}
 						/>
-						{
-							monitor.type === "http" && <>
+						{monitor.type === "http" && (
+							<>
 								<Select
 									id="match-method"
 									label="Match Method"
@@ -431,7 +431,9 @@ const CreateMonitor = () => {
 										id="expected-value"
 										label="Expected value"
 										isOptional={true}
-										placeholder={expectedValuePlaceholders[monitor.matchMethod || "equal"]}
+										placeholder={
+											expectedValuePlaceholders[monitor.matchMethod || "equal"]
+										}
 										value={monitor.expectedValue}
 										onChange={(event) => handleChange(event, "expectedValue")}
 										error={errors["expectedValue"] ? true : false}
@@ -442,7 +444,8 @@ const CreateMonitor = () => {
 										color={theme.palette.primary.contrastTextTertiary}
 										opacity={0.8}
 									>
-										The expected value is used to match against response result, and the match determines the status.
+										The expected value is used to match against response result, and the
+										match determines the status.
 									</Typography>
 								</Stack>
 								<Stack>
@@ -462,15 +465,21 @@ const CreateMonitor = () => {
 										color={theme.palette.primary.contrastTextTertiary}
 										opacity={0.8}
 									>
-										This expression will be evaluated against the reponse JSON data and the result will be used to match against the expected value. See&nbsp;
-										<Typography component="a" href="https://jmespath.org/" target="_blank" color="info">
+										This expression will be evaluated against the reponse JSON data and
+										the result will be used to match against the expected value. See&nbsp;
+										<Typography
+											component="a"
+											href="https://jmespath.org/"
+											target="_blank"
+											color="info"
+										>
 											jmespath.org
 										</Typography>
 										&nbsp;for query language documentation.
 									</Typography>
 								</Stack>
 							</>
-						}
+						)}
 					</Stack>
 				</ConfigBox>
 				<Stack

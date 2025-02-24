@@ -107,7 +107,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 ## 🤝 Contributing
 
-We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 3700+ stars and attracted 45+ contributors from around the globe. 
+We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 3700+ stars and attracted 45+ contributors from around the globe.
 
 Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes and NEC**, so don’t hold back — jump in, contribute and learn with us!
 
@@ -138,4 +138,8 @@ Also check other developer and contributor-friendly projects of BlueWave:
 - [Headcount](https://github.com/bluewave-labs/bluewave-hrm), a complete Human Resource Management platform.
 - [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.
 - [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
+  <<<<<<< HEAD
 
+=======
+
+> > > > > > > prism/develop

@@ -63,6 +63,7 @@ export const useMonitorFetch = ({
 		rowsPerPage,
 		theme,
 		triggerUpdate,
+		getMonitorWithPercentage,
 	]);
 	return {
 		monitors,

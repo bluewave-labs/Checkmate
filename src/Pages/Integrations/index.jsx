@@ -132,7 +132,7 @@ const Integrations = () => {
 		>
 			<Typography component="h1">Integrations</Typography>
 			<Typography mb={theme.spacing(12)}>
-				Connect Checkmate to your favorite service.
+				Connect Prism to your favorite service.
 			</Typography>
 			<Grid
 				container
