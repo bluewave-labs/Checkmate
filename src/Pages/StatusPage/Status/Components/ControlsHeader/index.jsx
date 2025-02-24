@@ -102,6 +102,7 @@ const ControlsHeader = ({
 					shouldRender={statusPage?.logo?.data ? true : false}
 					alt={"Company logo"}
 					maxWidth={"300px"}
+					maxHeight={"50px"}
 					base64={statusPage?.logo?.data}
 				/>
 				<Typography variant="h2">{statusPage?.companyName}</Typography>
