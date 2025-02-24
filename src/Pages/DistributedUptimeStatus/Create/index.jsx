@@ -13,13 +13,13 @@ import MonitorList from "../../StatusPage/Create/Components/MonitorList";
 import { useTheme } from "@emotion/react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useDUStatusPageFetch } from "./Hooks/useDUStatusPageFetch";
 import { useCreateStatusPage } from "../../StatusPage/Create/Hooks/useCreateStatusPage";
 import { statusPageValidation } from "../../../Validation/validation";
 import { buildErrors } from "../../../Validation/error";
 import { createToast } from "../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { useMonitorsFetch } from "../../StatusPage/Create/Hooks/useMonitorsFetch";
+import { useStatusPageFetchByUrl } from "../Status/Hooks/useStatusPageFetchByUrl";
 
 const CreateStatus = () => {
 	const theme = useTheme();
@@ -29,10 +29,11 @@ const CreateStatus = () => {
 
 	const [createStatusPage, isLoading, networkError] = useCreateStatusPage(isCreate);
 
-	const [statusPage, statusPageIsLoading, statusPageNetworkError] = useDUStatusPageFetch(
-		isCreate,
-		url
-	);
+	const [statusPageIsLoading, statusPageNetworkError, statusPage, _, isPublished] =
+		useStatusPageFetchByUrl({
+			url,
+			timeFrame: 30,
+		});
 
 	const [monitors, monitorsIsLoading, monitorsNetworkError] = useMonitorsFetch();
 
