@@ -16,6 +16,7 @@ import UptLogo from "../../../assets/icons/upt_logo.png";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import InfoBox from "../../../Components/InfoBox";
 import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
+import MonitorsList from "./Components/MonitorsList";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -24,20 +25,27 @@ import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
 import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import TimeFrameHeader from "./Components/TimeframeHeader";
+import SubHeader from "../../../Components/Subheader";
+
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 const DistributedUptimeStatus = () => {
 	const { url } = useParams();
 	const location = useLocation();
+	const { t } = useTranslation();
 	const isPublic = location.pathname.startsWith("/status/distributed/public");
 
 	const elementToCapture = useRef(null);
 	// Local State
 	const [dateRange, setDateRange] = useState("day");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [timeFrame, setTimeFrame] = useState(30);
 	// Utils
 	const theme = useTheme();
 	const navigate = useNavigate();
+
 	const [
 		statusPageIsLoading,
 		statusPageNetworkError,
@@ -46,6 +54,7 @@ const DistributedUptimeStatus = () => {
 		isPublished,
 	] = useStatusPageFetchByUrl({
 		url,
+		timeFrame,
 	});
 
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
@@ -153,11 +162,18 @@ const DistributedUptimeStatus = () => {
 				url={url}
 				type="distributed"
 			/>
-
+		
 			<StatusHeader
 				monitor={monitor}
 				connectionStatus={connectionStatus}
 				elementToCapture={elementToCapture}
+			/>
+			
+			<SubHeader 
+				headerText={t("distributedStatusHeaderText")} 
+				subHeaderText={t("distributedStatusSubHeaderText")}
+				rightCatagoryTitle={t("distributedRightCatagoryTitle")}
+				rightDescription = {t("distributedRightCatagoryDescription")}
 			/>
 
 			<NextExpectedCheck
@@ -212,6 +228,14 @@ const DistributedUptimeStatus = () => {
 			<StatBoxes
 				monitor={monitor}
 				lastUpdateTrigger={lastUpdateTrigger}
+			/>
+			<TimeFrameHeader
+				timeFrame={timeFrame}
+				setTimeFrame={setTimeFrame}
+			/>
+			<MonitorsList
+				monitors={statusPage?.subMonitors}
+				timeFrame={timeFrame}
 			/>
 			<Footer />
 			<Dialog

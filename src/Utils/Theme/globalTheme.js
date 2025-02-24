@@ -118,6 +118,7 @@ const baseTheme = (palette) => ({
 							},
 						},
 					],
+					height: 34,
 					fontWeight: 400,
 					borderRadius: 4,
 					boxShadow: "none",
