@@ -138,8 +138,3 @@ Also check other developer and contributor-friendly projects of BlueWave:
 - [Headcount](https://github.com/bluewave-labs/bluewave-hrm), a complete Human Resource Management platform.
 - [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.
 - [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
-  <<<<<<< HEAD
-
-=======
-
-> > > > > > > prism/develop
