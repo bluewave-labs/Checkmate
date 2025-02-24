@@ -919,6 +919,21 @@ class NetworkService {
 			},
 		});
 	}
+	async getDistributedStatusPageByUrl(config) {
+		const { authToken, url, type, timeFrame } = config;
+		const params = new URLSearchParams();
+		params.append("type", type);
+		params.append("timeFrame", timeFrame);
+		return this.axiosInstance.get(
+			`/status-page/distributed/${url}?${params.toString()}`,
+			{
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	}
 
 	async getStatusPagesByTeamId(config) {
 		const { teamId } = config;
@@ -948,6 +963,15 @@ class NetworkService {
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
 			});
+		// Handle subMonitors, even if it's an empty array
+		if (form.subMonitors && form.subMonitors.length > 0) {
+			form.subMonitors.forEach((monitorId) => {
+				fd.append("subMonitors[]", monitorId);
+			});
+		} else {
+			fd.append("deleteSubmonitors", true);
+		}
+
 		if (form?.logo?.src && form?.logo?.src !== "") {
 			const imageResult = await axios.get(form.logo.src, {
 				responseType: "blob",

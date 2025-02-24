@@ -1,14 +1,19 @@
 // Components
 import { Stack, Box } from "@mui/material";
 import Host from "../../../../../Components/Host";
-import StatusPageBarChart from "../../../../../Components/Charts/StatusPageBarChart";
+import DePINStatusPageBarChart from "../../../../../Components/Charts/DePINStatusPageBarChart";
 import { StatusLabel } from "../../../../../Components/Label";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
 import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
 import PropTypes from "prop-types";
-const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] }) => {
+const MonitorsList = ({
+	isLoading = false,
+	shouldRender = true,
+	monitors = [],
+	timeFrame,
+}) => {
 	const theme = useTheme();
 	const { determineState } = useUtils();
 	return (
@@ -34,7 +39,10 @@ const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] })
 							gap={theme.spacing(20)}
 						>
 							<Box flex={9}>
-								<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
+								<DePINStatusPageBarChart
+									checks={monitor?.checks?.slice().reverse()}
+									daysToShow={timeFrame}
+								/>
 							</Box>
 							<Box flex={1}>
 								<StatusLabel

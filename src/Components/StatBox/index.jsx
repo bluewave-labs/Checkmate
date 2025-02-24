@@ -32,6 +32,7 @@ import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
 
 const StatBox = ({
 	img,
+	icon: Icon,
 	alt,
 	heading,
 	subHeading,
@@ -114,6 +115,9 @@ const StatBox = ({
 					sx={{ marginRight: theme.spacing(8) }}
 				/>
 			)}
+			{Icon && (
+				<Icon sx={{ width: "30px", height: "30px", marginRight: theme.spacing(8) }} />
+			)}
 			<Stack>
 				<Typography component="h2">{heading}</Typography>
 				<Typography>{subHeading}</Typography>
@@ -128,6 +132,9 @@ StatBox.propTypes = {
 	gradient: PropTypes.bool,
 	status: PropTypes.string,
 	sx: PropTypes.object,
+	icon: PropTypes.elementType,
+	img: PropTypes.node,
+	alt: PropTypes.string,
 };
 
 export default StatBox;

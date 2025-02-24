@@ -60,5 +60,9 @@
   "monitorStatusDown": "Monitor {name} ({url}) is DOWN and not responding",
   "webhookSendSuccess": "Webhook notification sent successfully",
   "webhookSendError": "Error sending webhook notification to {platform}",
-  "webhookUnsupportedPlatform": "Unsupported platform: {platform}"
+  "webhookUnsupportedPlatform": "Unsupported platform: {platform}",
+  "distributedStatusHeaderText": "Real-time, real-device coverage",
+  "distributedStatusSubHeaderText": "Powered by millions devices worldwide, view a system performance by global region, country or city",
+  "distributedRightCatagoryTitle" : "Monitor",
+  "distributedRightCatagoryDescription" : "Mainnet Beta Cluster"
 }
