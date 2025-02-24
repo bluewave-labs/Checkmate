@@ -19,7 +19,7 @@ import { buildErrors } from "../../../Validation/error";
 import { createToast } from "../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { useMonitorsFetch } from "../../StatusPage/Create/Hooks/useMonitorsFetch";
-import { useStatusPageFetchByUrl } from "../Status/Hooks/useStatusPageFetchByUrl";
+import { useDUStatusPageFetchByUrl } from "../Status/Hooks/useDUStatusPageFetchByUrl";
 
 const CreateStatus = () => {
 	const theme = useTheme();
@@ -30,7 +30,7 @@ const CreateStatus = () => {
 	const [createStatusPage, isLoading, networkError] = useCreateStatusPage(isCreate);
 
 	const [statusPageIsLoading, statusPageNetworkError, statusPage, _, isPublished] =
-		useStatusPageFetchByUrl({
+		useDUStatusPageFetchByUrl({
 			url,
 			timeFrame: 30,
 		});
