@@ -373,28 +373,46 @@ const Settings = () => {
 						</Box>
 						<Box
 							sx={{
-								display: "flex",
-								flexWrap: "wrap",
-								justifyContent: "center",
-								gap: theme.spacing(2)
+								display: 'flex',
+								flexWrap: 'wrap',
+								gap: theme.spacing(2),
+								mt: theme.spacing(4),
 							}}
 						>
 							<WalletMultiButton
 								sx={{
-									width: { xs: "100%", sm: "auto" }, 
-									minWidth: "fit-content", 
-									maxWidth: "100%", 
-									whiteSpace: "nowrap",
-									padding: theme.spacing(1, 3), 
+									minWidth: theme.spacing(32),
+									height: theme.spacing(10),
+									fontSize: theme.typography.body2.fontSize,
+									fontWeight: theme.typography.fontWeightMedium,
+									'&:not(:disabled)': {
+										backgroundColor: theme.palette.accent.main,
+										'&:hover': {
+											backgroundColor: theme.palette.accent.dark,
+										},
+									},
+									[theme.breakpoints.down('sm')]: {
+										minWidth: '100%',
+										fontSize: theme.typography.body2.fontSize,
+									},
 								}}
 							/>
 							<WalletDisconnectButton
 								sx={{
-									width: { xs: "100%", sm: "auto" },
-									minWidth: "fit-content",
-									maxWidth: "100%",
-									whiteSpace: "nowrap",
-									padding: theme.spacing(1, 3),
+									minWidth: theme.spacing(32),
+									height: theme.spacing(10),
+									fontSize: theme.typography.body2.fontSize,
+									fontWeight: theme.typography.fontWeightMedium,
+									'&:not(:disabled)': {
+										backgroundColor: theme.palette.error.main,
+										'&:hover': {
+											backgroundColor: theme.palette.error.dark,
+										},
+									},
+									[theme.breakpoints.down('sm')]: {
+										minWidth: '100%',
+										fontSize: theme.typography.body2.fontSize,
+									},
 								}}
 							/>
 						</Box>
