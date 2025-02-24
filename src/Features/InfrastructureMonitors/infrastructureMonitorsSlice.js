@@ -32,7 +32,9 @@ export const checkInfrastructureEndpointResolution = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorURL } = data;
-			const res = await networkService.checkEndpointResolution({ monitorURL: monitorURL, });
+			const res = await networkService.checkEndpointResolution({
+				monitorURL: monitorURL,
+			});
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -127,7 +129,7 @@ export const deleteInfrastructureMonitor = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitor } = data;
-			const res = await networkService.deleteMonitorById({ monitorId: monitor._id, });
+			const res = await networkService.deleteMonitorById({ monitorId: monitor._id });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -147,7 +149,7 @@ export const pauseInfrastructureMonitor = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorId } = data;
-			const res = await networkService.pauseMonitorById({ monitorId: monitorId, });
+			const res = await networkService.pauseMonitorById({ monitorId: monitorId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -167,7 +169,7 @@ export const deleteInfrastructureMonitorChecksByTeamId = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { teamId } = data;
-			const res = await networkService.deleteChecksByTeamId({ teamId: teamId, });
+			const res = await networkService.deleteChecksByTeamId({ teamId: teamId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {

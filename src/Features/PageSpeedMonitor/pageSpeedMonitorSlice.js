@@ -12,7 +12,7 @@ export const createPageSpeed = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitor } = data;
-			const res = await networkService.createMonitor({ monitor: monitor, });
+			const res = await networkService.createMonitor({ monitor: monitor });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -32,7 +32,9 @@ export const checkEndpointResolution = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorURL } = data;
-			const res = await networkService.checkEndpointResolution({ monitorURL: monitorURL, });
+			const res = await networkService.checkEndpointResolution({
+				monitorURL: monitorURL,
+			});
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -52,7 +54,7 @@ export const getPagespeedMonitorById = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorId } = data;
-			const res = await networkService.getMonitorById({ monitorId: monitorId, });
+			const res = await networkService.getMonitorById({ monitorId: monitorId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -124,7 +126,7 @@ export const deletePageSpeed = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitor } = data;
-			const res = await networkService.deleteMonitorById({ monitorId: monitor._id, });
+			const res = await networkService.deleteMonitorById({ monitorId: monitor._id });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -143,7 +145,7 @@ export const pausePageSpeed = createAsyncThunk(
 	async (data, thunkApi) => {
 		try {
 			const { monitorId } = data;
-			const res = await networkService.pauseMonitorById({ monitorId: monitorId, });
+			const res = await networkService.pauseMonitorById({ monitorId: monitorId });
 			return res.data;
 		} catch (error) {
 			if (error.response && error.response.data) {

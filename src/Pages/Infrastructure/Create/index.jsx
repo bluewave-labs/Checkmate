@@ -147,9 +147,7 @@ const CreateInfrastructureMonitor = () => {
 			thresholds,
 		};
 
-		const action = await dispatch(
-			createInfrastructureMonitor({ monitor: form })
-		);
+		const action = await dispatch(createInfrastructureMonitor({ monitor: form }));
 		if (action.meta.requestStatus === "fulfilled") {
 			createToast({ body: "Infrastructure monitor created successfully!" });
 			navigate("/infrastructure");

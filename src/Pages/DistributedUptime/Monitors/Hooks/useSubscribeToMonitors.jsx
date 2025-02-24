@@ -56,7 +56,7 @@ const useSubscribeToMonitors = () => {
 			});
 			setNetworkError(true);
 		}
-	}, [user, getMonitorWithPercentage, theme]);
+	}, [user, getMonitorWithPercentage, theme, isLoading]);
 	return [isLoading, networkError, monitors, monitorsSummary, filteredMonitors];
 };
 export { useSubscribeToMonitors };

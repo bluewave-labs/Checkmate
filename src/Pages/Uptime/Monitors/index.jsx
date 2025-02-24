@@ -124,7 +124,6 @@ const UptimeMonitors = () => {
 		!monitorsAreLoading &&
 		(totalMonitors === 0 || typeof totalMonitors === "undefined")
 	) {
-
 		return (
 			<Fallback
 				vowelStart={true}

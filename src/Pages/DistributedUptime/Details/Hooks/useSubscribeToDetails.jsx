@@ -110,6 +110,8 @@ const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) 
 		networkError,
 		devices,
 		isLoading,
+		isPublic,
+		isPublished,
 	]);
 
 	useEffect(() => {

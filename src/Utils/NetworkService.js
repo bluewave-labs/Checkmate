@@ -801,7 +801,7 @@ class NetworkService {
 			"https://api.github.com/repos/bluewave-labs/bluewave-uptime/releases/latest",
 			{
 				headers: {
-					Authorization: null,
+					Authorization: null, // No authorization header for this request
 				},
 			}
 		);
@@ -923,7 +923,7 @@ class NetworkService {
 		});
 	}
 	async getDistributedStatusPageByUrl(config) {
-		const { authToken, url, type, timeFrame } = config;
+		const { url, type, timeFrame } = config;
 		const params = new URLSearchParams();
 		params.append("type", type);
 		params.append("timeFrame", timeFrame);
@@ -931,7 +931,6 @@ class NetworkService {
 			`/status-page/distributed/${url}?${params.toString()}`,
 			{
 				headers: {
-					Authorization: `Bearer ${authToken}`,
 					"Content-Type": "application/json",
 				},
 			}
@@ -985,18 +984,19 @@ class NetworkService {
 				URL.revokeObjectURL(form.logo.src);
 			}
 		}
+
 		if (isCreate) {
-			return this.axiosInstance.post(`/status-page`, fd);
+			return this.axiosInstance.post(`/status-page`, fd, {});
 		}
 
-		return this.axiosInstance.put(`/status-page`, fd);
+		return this.axiosInstance.put(`/status-page`, fd, {});
 	}
 
 	async deleteStatusPage(config) {
 		const { url } = config;
 		const encodedUrl = encodeURIComponent(url);
 
-		return this.axiosInstance.delete(`/status-page/${encodedUrl}`);
+		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
 	}
 }
 

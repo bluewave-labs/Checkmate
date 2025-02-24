@@ -2,12 +2,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
-export const useChecksFetch = ({
-	monitorId,
-	dateRange,
-	page,
-	rowsPerPage,
-}) => {
+export const useChecksFetch = ({ monitorId, dateRange, page, rowsPerPage }) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);

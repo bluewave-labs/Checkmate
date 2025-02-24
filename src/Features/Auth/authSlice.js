@@ -80,7 +80,7 @@ export const deleteUser = createAsyncThunk("auth/delete", async (_, thunkApi) =>
 	const user = thunkApi.getState().auth.user;
 
 	try {
-		const res = await networkService.deleteUser({ userId: user._id, });
+		const res = await networkService.deleteUser({ userId: user._id });
 		return res.data;
 	} catch (error) {
 		if (error.response && error.response.data) {

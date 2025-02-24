@@ -13,10 +13,8 @@ import { RowContainer } from "../StandardContainer";
  * @param {number} props.headerLevel - Font characteristic of the header
  * @param {string} props.subHeaderText - Subheader text
  * @param {number} props.subHeaderLevel - Font characteristic of the subheader
- * @param {string} props.rightCatagoryTitle - Message for right section
- * @param {number} props.rightCatagoryTitleLevel - Font characteristic of the right section header
- * @param {string} props.rightDescription - Description for right section
- * @param {number} props.rightDescriptionLevel - Font characteristic of the right section description
+ * @param {string} props.alignItems - Align items
+ * @param {node} props.children - Children
  * @returns {JSX.Element} The rendered component
  */
 
@@ -25,16 +23,14 @@ const SubHeader = ({
 	headerLevel = 1,
 	subHeaderText,
 	subHeaderLevel = 1,
-	rightCatagoryTitle,
-	rightCatagoryTitleLevel = 2,
-	rightDescription,
-	rightDescriptionLevel = 2,
+	alignItems = "center",
+	children,
 }) => {
 	const theme = useTheme();
-
 	return (
 		<Stack
 			direction="row"
+			alignItems={alignItems}
 			justifyContent="space-between"
 		>
 			<Stack direction={"column"}>
@@ -58,19 +54,7 @@ const SubHeader = ({
 					{subHeaderText}
 				</Typography>
 			</Stack>
-
-			{rightCatagoryTitle && (
-				<RowContainer sx={{ width: "20%" }}>
-					<Stack>
-						<Typography variant={`body${rightCatagoryTitleLevel}`}>
-							{rightCatagoryTitle}
-						</Typography>
-						<Typography variant={`h${rightDescriptionLevel}`}>
-							{rightDescription}
-						</Typography>
-					</Stack>
-				</RowContainer>
-			)}
+			{children}
 		</Stack>
 	);
 };
@@ -80,10 +64,8 @@ SubHeader.propTypes = {
 	headerLevel: PropTypes.number,
 	subHeaderText: PropTypes.string,
 	subHeaderLevel: PropTypes.number,
-	rightCatagoryTitle: PropTypes.string,
-	rightCatagoryTitleLevel: PropTypes.number,
-	rightDescription: PropTypes.string,
-	rightDescriptionLevel: PropTypes.number,
+	alignItems: PropTypes.string,
+	children: PropTypes.node,
 };
 
 export default SubHeader;

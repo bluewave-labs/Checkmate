@@ -17,6 +17,7 @@ import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import InfoBox from "../../../Components/InfoBox";
 import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
 import MonitorsList from "./Components/MonitorsList";
+import { RowContainer } from "../../../Components/StandardContainer";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -162,19 +163,27 @@ const DistributedUptimeStatus = () => {
 				url={url}
 				type="distributed"
 			/>
-		
 			<StatusHeader
 				monitor={monitor}
 				connectionStatus={connectionStatus}
 				elementToCapture={elementToCapture}
 			/>
-			
-			<SubHeader 
-				headerText={t("distributedStatusHeaderText")} 
+
+			<SubHeader
+				headerText={t("distributedStatusHeaderText")}
 				subHeaderText={t("distributedStatusSubHeaderText")}
-				rightCatagoryTitle={t("distributedRightCatagoryTitle")}
-				rightDescription = {t("distributedRightCatagoryDescription")}
-			/>
+			>
+				<RowContainer>
+					<Stack>
+						<Typography variant={`body2`}>
+							{t("distributedRightCatagoryTitle")}
+						</Typography>
+						<Typography variant={`h2`}>
+							{t("distributedRightCatagoryDescription")}
+						</Typography>
+					</Stack>
+				</RowContainer>
+			</SubHeader>
 
 			<NextExpectedCheck
 				lastUpdateTime={monitor?.timeSinceLastCheck ?? 0}
@@ -229,10 +238,18 @@ const DistributedUptimeStatus = () => {
 				monitor={monitor}
 				lastUpdateTrigger={lastUpdateTrigger}
 			/>
-			<TimeFrameHeader
-				timeFrame={timeFrame}
-				setTimeFrame={setTimeFrame}
-			/>
+
+			<SubHeader
+				headerText={t("distributedStatusServerMonitors")}
+				subHeaderText={t("distributedStatusServerMonitorsDescription")}
+				alignItems="end"
+			>
+				<TimeFrameHeader
+					timeFrame={timeFrame}
+					setTimeFrame={setTimeFrame}
+				/>
+			</SubHeader>
+
 			<MonitorsList
 				monitors={statusPage?.subMonitors}
 				timeFrame={timeFrame}

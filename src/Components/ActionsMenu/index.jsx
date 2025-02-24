@@ -31,9 +31,7 @@ const ActionsMenu = ({
 		event.preventDefault();
 		event.stopPropagation();
 		let monitor = { _id: actions.id };
-		const action = await dispatch(
-			deleteUptimeMonitor({ monitor })
-		);
+		const action = await dispatch(deleteUptimeMonitor({ monitor }));
 		if (action.meta.requestStatus === "fulfilled") {
 			setIsOpen(false); // close modal
 			updateRowCallback();
@@ -46,9 +44,7 @@ const ActionsMenu = ({
 	const handlePause = async () => {
 		try {
 			setIsLoading(true);
-			const action = await dispatch(
-				pauseUptimeMonitor({ monitorId: monitor._id })
-			);
+			const action = await dispatch(pauseUptimeMonitor({ monitorId: monitor._id }));
 			if (pauseUptimeMonitor.fulfilled.match(action)) {
 				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
 				createToast({ body: `Monitor ${state} successfully.` });
