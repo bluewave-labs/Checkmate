@@ -1,6 +1,6 @@
 // Components
 import { Stack } from "@mui/material";
-import StatBox from "../../../../../Components/StatBox";
+import InfoBox from "../../../../../Components/InfoBox";
 import LastUpdate from "../LastUpdate";
 import UptLogo from "../../../../../assets/icons/upt_logo.png";
 
@@ -14,17 +14,21 @@ const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 	return (
 		<Stack
 			direction="row"
+			justifyContent="space-between"
 			gap={theme.spacing(8)}
 		>
-			<StatBox
+			<InfoBox
+				sx={{ flex: 1 }}
 				heading="Avg Response Time"
 				subHeading={`${Math.floor(monitor?.avgResponseTime ?? 0)} ms`}
 			/>
-			<StatBox
+			<InfoBox
+				sx={{ flex: 1 }}
 				heading="Checking every"
 				subHeading={`${(monitor?.interval ?? 0) / 1000} seconds`}
 			/>
-			<StatBox
+			<InfoBox
+				sx={{ flex: 1 }}
 				heading={"Last check"}
 				subHeading={
 					<LastUpdate
@@ -33,7 +37,8 @@ const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 					/>
 				}
 			/>
-			<StatBox
+			<InfoBox
+				sx={{ flex: 1 }}
 				heading="Last server push"
 				subHeading={
 					<LastUpdate
@@ -42,13 +47,6 @@ const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 						trigger={lastUpdateTrigger}
 					/>
 				}
-			/>
-
-			<StatBox
-				heading="UPT Burned"
-				subHeading={monitor?.totalUptBurnt ?? 0}
-				img={UptLogo}
-				alt="Upt Logo"
 			/>
 		</Stack>
 	);

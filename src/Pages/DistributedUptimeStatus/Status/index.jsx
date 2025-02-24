@@ -12,9 +12,14 @@ import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import GenericFallback from "../../../Components/GenericFallback";
 import Dialog from "../../../Components/Dialog";
 import SkeletonLayout from "./Components/Skeleton";
+import UptLogo from "../../../assets/icons/upt_logo.png";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import InfoBox from "../../../Components/InfoBox";
+import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
+
 //Utils
 import { useTheme } from "@mui/material/styles";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
 import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
@@ -26,6 +31,7 @@ const DistributedUptimeStatus = () => {
 	const location = useLocation();
 	const isPublic = location.pathname.startsWith("/status/distributed/public");
 
+	const elementToCapture = useRef(null);
 	// Local State
 	const [dateRange, setDateRange] = useState("day");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -130,9 +136,12 @@ const DistributedUptimeStatus = () => {
 
 	return (
 		<Stack
+			ref={elementToCapture}
 			direction="column"
 			gap={theme.spacing(10)}
-			sx={sx}
+			sx={{
+				...sx,
+			}}
 		>
 			{!isPublic && <Breadcrumbs list={BREADCRUMBS} />}
 			<ControlsHeader
@@ -144,10 +153,13 @@ const DistributedUptimeStatus = () => {
 				url={url}
 				type="distributed"
 			/>
-			<StatBoxes
+
+			<StatusHeader
 				monitor={monitor}
-				lastUpdateTrigger={lastUpdateTrigger}
+				connectionStatus={connectionStatus}
+				elementToCapture={elementToCapture}
 			/>
+
 			<NextExpectedCheck
 				lastUpdateTime={monitor?.timeSinceLastCheck ?? 0}
 				interval={monitor?.interval ?? 0}
@@ -157,7 +169,6 @@ const DistributedUptimeStatus = () => {
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
-			<DistributedUptimeResponseChart checks={monitor?.groupedChecks ?? []} />
 			<Stack
 				direction="row"
 				gap={theme.spacing(8)}
@@ -165,14 +176,43 @@ const DistributedUptimeStatus = () => {
 				<DistributedUptimeMap
 					checks={monitor?.groupedMapChecks ?? []}
 					height={"100%"}
-					width={"100%"}
+					width={"50%"}
 				/>
-				<DeviceTicker
-					width={"25vw"}
-					data={monitor?.latestChecks ?? []}
-					connectionStatus={connectionStatus}
-				/>
+				<Stack
+					width={"50%"}
+					gap={theme.spacing(8)}
+				>
+					<Stack
+						direction="row"
+						gap={theme.spacing(8)}
+					>
+						<InfoBox
+							heading="Devices"
+							subHeading={monitor?.totalChecks ?? 0}
+							icon={PeopleAltOutlinedIcon}
+							alt="Upt Logo"
+							sx={{ width: "50%" }}
+						/>
+						<InfoBox
+							heading="UPT Burned"
+							subHeading={monitor?.totalUptBurnt ?? 0}
+							img={UptLogo}
+							alt="Upt Logo"
+							sx={{ width: "50%" }}
+						/>
+					</Stack>
+
+					<DeviceTicker
+						data={monitor?.latestChecks ?? []}
+						connectionStatus={connectionStatus}
+					/>
+				</Stack>
 			</Stack>
+			<DistributedUptimeResponseChart checks={monitor?.groupedChecks ?? []} />
+			<StatBoxes
+				monitor={monitor}
+				lastUpdateTrigger={lastUpdateTrigger}
+			/>
 			<Footer />
 			<Dialog
 				// open={isOpen.deleteStats}
