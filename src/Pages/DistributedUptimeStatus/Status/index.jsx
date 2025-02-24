@@ -25,13 +25,16 @@ import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
 import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import TimeFrameHeader from "./Components/TimeframeHeader";
+import SubHeader from "../../../Components/Subheader";
+
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const DistributedUptimeStatus = () => {
 	const { url } = useParams();
 	const location = useLocation();
+	const { t } = useTranslation();
 	const isPublic = location.pathname.startsWith("/status/distributed/public");
 
 	const elementToCapture = useRef(null);
@@ -160,11 +163,18 @@ const DistributedUptimeStatus = () => {
 				url={url}
 				type="distributed"
 			/>
-
+		
 			<StatusHeader
 				monitor={monitor}
 				connectionStatus={connectionStatus}
 				elementToCapture={elementToCapture}
+			/>
+			
+			<SubHeader 
+				headerText={t("distributedStatusHeaderText")} 
+				subHeaderText={t("distributedStatusSubHeaderText")}
+				rightCatagoryTitle={t("distributedRightCatagoryTitle")}
+				rightDescription = {t("distributedRightCatagoryDescription")}
 			/>
 
 			<NextExpectedCheck
@@ -172,10 +182,12 @@ const DistributedUptimeStatus = () => {
 				interval={monitor?.interval ?? 0}
 				trigger={lastUpdateTrigger}
 			/>
+
 			<MonitorTimeFrameHeader
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
+
 			<Stack
 				direction="row"
 				gap={theme.spacing(8)}
