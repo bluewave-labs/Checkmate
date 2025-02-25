@@ -202,6 +202,10 @@ const CreateMonitor = () => {
 		}));
 	};
 
+	const handleAddNotification = () => {
+		console.log("Add notification clicked");
+	  };
+
 	useEffect(() => {
 		const fetchMonitor = async () => {
 			if (monitorId) {
@@ -402,6 +406,17 @@ const CreateMonitor = () => {
 							value={user?.email}
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
+
+					<Box mt={theme.spacing(2)}>
+					<Button
+						variant="contained"
+						color="accent"
+						onClick={handleAddNotification}
+					>
+						Notification Integration
+					</Button>
+					</Box>
+
 					</Stack>
 				</ConfigBox>
 				<ConfigBox>
