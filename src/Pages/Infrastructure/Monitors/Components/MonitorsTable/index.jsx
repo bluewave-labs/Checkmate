@@ -126,7 +126,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 						transition: "background-color .3s ease",
 					},
 				},
-				onRowClick: (row) => openDetails(row._id),
+				onRowClick: (row) => openDetails(row.id),
 			}}
 		/>
 	);
