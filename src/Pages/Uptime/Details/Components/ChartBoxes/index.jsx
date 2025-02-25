@@ -97,7 +97,7 @@ const ChartBoxes = ({
 				icon={<IncidentsIcon />}
 				header="Incidents"
 				noDataMessage="Great. No Incidents, yet!"
-				isEmpty={!monitor?.groupedDownChecks?.length}
+				isEmpty={monitor?.groupedDownChecks?.length === 0}
 			>
 				<Stack width={"100%"}>
 					<Box position="relative">

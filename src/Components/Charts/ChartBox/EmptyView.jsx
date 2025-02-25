@@ -8,10 +8,9 @@ const EmptyView = ({
     icon,
     header,
     message = "No Data",
-    size = "h2",
-    borderRadiusRight = 4,
+    headingLevel = "h2",
     justifyContent = "flex-start",
-    height = "300px"
+    height = "100%"
 }) => {
     const theme = useTheme();
     return (
@@ -25,8 +24,8 @@ const EmptyView = ({
                 borderStyle: "solid",
                 borderColor: theme.palette.primary.lowContrast,
                 borderRadius: 2,
-                borderTopRightRadius: borderRadiusRight,
-                borderBottomRightRadius: borderRadiusRight,
+                borderTopRightRadius: 4,
+                borderBottomRightRadius: 4,
             }}
         >
             <Stack
@@ -37,7 +36,6 @@ const EmptyView = ({
                     justifyContent,
                     gap: theme.spacing(8),
                     height,
-                    minWidth: 250,
                     "& h2": {
                         color: theme.palette.primary.contrastTextSecondary,
                         fontSize: 15,
@@ -63,7 +61,7 @@ const EmptyView = ({
                     justifyContent="center"
                     alignItems="center"               
                 >
-                    <Typography component={size}>
+                    <Typography component={headingLevel}>
                         {message}
                     </Typography>
                 </Stack>
@@ -76,7 +74,7 @@ EmptyView.propTypes = {
     message: PropTypes.string,
     icon: PropTypes.node,
     header: PropTypes.string,
-    size: PropTypes.oneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2'])
+    headingLevel: PropTypes.oneOf(['h1', 'h2', 'h3'])
 };
 
 export default EmptyView;
