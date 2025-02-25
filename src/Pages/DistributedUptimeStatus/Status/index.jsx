@@ -24,7 +24,7 @@ import { useTheme } from "@mui/material/styles";
 import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
-import { useStatusPageFetchByUrl } from "./Hooks/useStatusPageFetchByUrl";
+import { useDUStatusPageFetchByUrl } from "./Hooks/useDUStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
 import TimeFrameHeader from "./Components/TimeframeHeader";
 import SubHeader from "../../../Components/Subheader";
@@ -53,7 +53,7 @@ const DistributedUptimeStatus = () => {
 		statusPage,
 		monitorId,
 		isPublished,
-	] = useStatusPageFetchByUrl({
+	] = useDUStatusPageFetchByUrl({
 		url,
 		timeFrame,
 	});

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
 
-const useStatusPageFetchByUrl = ({ url, timeFrame }) => {
+const useDUStatusPageFetchByUrl = ({ url, timeFrame, isCreate = false }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [statusPage, setStatusPage] = useState(undefined);
@@ -16,6 +16,7 @@ const useStatusPageFetchByUrl = ({ url, timeFrame }) => {
 	const { getMonitorWithPercentage } = useMonitorUtils();
 
 	useEffect(() => {
+		if (isCreate) return;
 		const fetchStatusPageByUrl = async () => {
 			try {
 				const response = await networkService.getDistributedStatusPageByUrl({
@@ -54,4 +55,4 @@ const useStatusPageFetchByUrl = ({ url, timeFrame }) => {
 	return [isLoading, networkError, statusPage, monitorId, isPublished];
 };
 
-export { useStatusPageFetchByUrl };
+export { useDUStatusPageFetchByUrl };
