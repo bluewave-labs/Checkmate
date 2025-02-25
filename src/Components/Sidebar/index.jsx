@@ -38,7 +38,7 @@ import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
 import Folder from "../../assets/icons/folder.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
-import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
+import Discussions from "../../assets/icons/discussions.svg?react";
 import DistributedUptimeIcon from "../../assets/icons/distributed-uptime.svg?react";
 import "./index.css";
 
@@ -86,7 +86,7 @@ const menu = [
 			{
 				name: "Discussions",
 				path: "discussions",
-				icon: <ChatBubbleOutlineRoundedIcon />,
+				icon: <Discussions />,
 			},
 			{ name: "Docs", path: "docs", icon: <Docs /> },
 			{ name: "Changelog", path: "changelog", icon: <ChangeLog /> },
