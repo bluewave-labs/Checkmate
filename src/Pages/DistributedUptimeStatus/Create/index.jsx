@@ -33,6 +33,7 @@ const CreateStatus = () => {
 		useDUStatusPageFetchByUrl({
 			url,
 			timeFrame: 30,
+			isCreate,
 		});
 
 	const [monitors, monitorsIsLoading, monitorsNetworkError] = useMonitorsFetch();
