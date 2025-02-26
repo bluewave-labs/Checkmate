@@ -94,9 +94,9 @@ const ControlsHeader = ({
 			alignItems="flex-end"
 		>
 			<Stack
-				direction={{ s: "column", md: "row" }}
+				direction="row"
 				gap={theme.spacing(8)}
-				alignItems={{ s: "flex-start", md: "flex-end" }}
+				alignItems="flex-end"
 			>
 				<Image
 					shouldRender={statusPage?.logo?.data ? true : false}
@@ -105,7 +105,7 @@ const ControlsHeader = ({
 					maxHeight={"50px"}
 					base64={statusPage?.logo?.data}
 				/>
-				<Typography variant="h2">{statusPage?.companyName}</Typography>
+				<Typography variant="h1">{statusPage?.companyName}</Typography>
 			</Stack>
 			<Controls
 				isDeleting={isDeleting}
