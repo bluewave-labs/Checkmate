@@ -40,7 +40,10 @@ const CreateStatus = () => {
 
 	const BREADCRUMBS = [
 		{ name: "distributed uptime", path: "/distributed-uptime" },
-		{ name: "details", path: `/distributed-uptime/${monitorId}` },
+		{
+			name: "details",
+			path: `/distributed-uptime/${isCreate ? monitorId : statusPage?.monitors[0]}`,
+		},
 		{ name: isCreate ? "create status page" : "edit status page", path: `` },
 	];
 	// Local state
@@ -173,7 +176,7 @@ const CreateStatus = () => {
 					component="span"
 					fontSize="inherit"
 				>
-					Create your{" "}
+					{isCreate ? "Create your" : "Edit your"}{" "}
 				</Typography>
 				<Typography
 					component="span"
