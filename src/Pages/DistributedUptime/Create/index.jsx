@@ -42,8 +42,9 @@ const CreateDistributedUptime = () => {
 	const { monitorId } = useParams();
 	const isCreate = typeof monitorId === "undefined";
 
-	const BREADCRUMBS = [
+	let BREADCRUMBS = [
 		{ name: `distributed uptime`, path: "/distributed-uptime" },
+		...(isCreate ? [] : [{ name: "details", path: `/distributed-uptime/${monitorId}` }]),
 		{ name: isCreate ? "create" : "configure", path: `` },
 	];
 
@@ -182,7 +183,7 @@ const CreateDistributedUptime = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						Create your{" "}
+						{isCreate ? "Create your" : "Edit your"}{" "}
 					</Typography>
 					<Typography
 						component="span"
