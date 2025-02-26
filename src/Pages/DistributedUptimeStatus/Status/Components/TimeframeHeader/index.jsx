@@ -1,13 +1,14 @@
 import { Stack, Button, ButtonGroup } from "@mui/material";
-import { RowContainer } from "../../../../../Components/StandardContainer";
 import { useTheme } from "@emotion/react";
 
-const TimeFrameHeader = ({ timeFrame, setTimeFrame }) => {
+const TimeFrameHeader = ({ timeFrame, setTimeFrame, sx, ...props }) => {
 	const theme = useTheme();
 	return (
 		<Stack
 			direction="row"
 			justifyContent="flex-end"
+			sx={{ ...sx }}
+			{...props}
 		>
 			<ButtonGroup>
 				<Button

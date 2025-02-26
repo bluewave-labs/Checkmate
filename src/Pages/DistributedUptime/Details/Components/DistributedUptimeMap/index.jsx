@@ -6,7 +6,12 @@ import maplibregl from "maplibre-gl";
 import { useSelector } from "react-redux";
 import buildStyle from "./buildStyle";
 
-const DistributedUptimeMap = ({ width = "100%", checks }) => {
+const DistributedUptimeMap = ({
+	width = "100%",
+	checks,
+	height,
+	minHeight = "350px",
+}) => {
 	const mapContainer = useRef(null);
 	const map = useRef(null);
 	const theme = useTheme();
@@ -92,6 +97,8 @@ const DistributedUptimeMap = ({ width = "100%", checks }) => {
 			ref={mapContainer}
 			style={{
 				width: width,
+				height: height,
+				minHeight: minHeight,
 				borderRadius: theme.spacing(4),
 				borderColor: theme.palette.primary.lowContrast,
 				borderStyle: "solid",
@@ -105,6 +112,7 @@ DistributedUptimeMap.propTypes = {
 	checks: PropTypes.array,
 	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	minHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default DistributedUptimeMap;

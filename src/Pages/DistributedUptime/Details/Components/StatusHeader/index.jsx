@@ -32,7 +32,7 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 	return (
 		<ColContainer backgroundColor={bgColor}>
 			<Stack
-				direction="row"
+				direction={{ s: "column", md: "row" }}
 				justifyContent="space-between"
 				gap={theme.spacing(8)}
 			>

@@ -1,14 +1,17 @@
+// Components
 import { Stack, Typography } from "@mui/material";
-import { useTheme } from "@emotion/react";
 import PulseDot from "../../../../../Components/Animated/PulseDot";
 import "flag-icons/css/flag-icons.min.css";
 import { ColContainer } from "../../../../../Components/StandardContainer";
 
-const BASE_BOX_PADDING_VERTICAL = 16;
-const BASE_BOX_PADDING_HORIZONTAL = 8;
-
+// Utils
+import { useMediaQuery } from "@mui/material";
+import { useTheme } from "@emotion/react";
+import { safelyParseFloat } from "../../../../../Utils/utils";
 const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 	const theme = useTheme();
+	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
 	const statusColor = {
 		up: theme.palette.success.main,
 		down: theme.palette.error.main,
@@ -43,7 +46,7 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 							<Typography>RESPONSE</Typography>
 						</th>
 						<th style={{ textAlign: "right" }}>
-							<Typography>UPT BURNED</Typography>
+							<Typography>{isSmallScreen ? "UPT" : "UPT BURNED"}</Typography>
 						</th>
 					</tr>
 				</thead>
@@ -68,7 +71,10 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 								</td>
 								<td style={{ textAlign: "right" }}>
 									<Typography color={theme.palette.warning.main}>
-										+{dataPoint.uptBurnt}
+										+
+										{isSmallScreen
+											? safelyParseFloat(dataPoint.uptBurnt).toFixed(4)
+											: dataPoint.uptBurnt}
 									</Typography>
 								</td>
 							</tr>

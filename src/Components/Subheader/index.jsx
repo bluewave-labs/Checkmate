@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import { Box, Stack, Typography } from "@mui/material";
-import { RowContainer } from "../StandardContainer";
+import { Stack, Typography } from "@mui/material";
 
 /**
 
@@ -9,6 +8,7 @@ import { RowContainer } from "../StandardContainer";
  * @component
  * @example
  *
+ * @param {string} props.direction - Direction of the subheader
  * @param {string} props.headerText - Header text
  * @param {number} props.headerLevel - Font characteristic of the header
  * @param {string} props.subHeaderText - Subheader text
@@ -19,19 +19,22 @@ import { RowContainer } from "../StandardContainer";
  */
 
 const SubHeader = ({
+	direction = "row",
 	headerText,
 	headerLevel = 1,
 	subHeaderText,
 	subHeaderLevel = 1,
 	alignItems = "center",
 	children,
+	...props
 }) => {
 	const theme = useTheme();
 	return (
 		<Stack
-			direction="row"
+			direction={direction}
 			alignItems={alignItems}
 			justifyContent="space-between"
+			{...props}
 		>
 			<Stack direction={"column"}>
 				<Typography
@@ -60,11 +63,12 @@ const SubHeader = ({
 };
 
 SubHeader.propTypes = {
+	direction: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	headerText: PropTypes.string,
 	headerLevel: PropTypes.number,
 	subHeaderText: PropTypes.string,
 	subHeaderLevel: PropTypes.number,
-	alignItems: PropTypes.string,
+	alignItems: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	children: PropTypes.node,
 };
 
