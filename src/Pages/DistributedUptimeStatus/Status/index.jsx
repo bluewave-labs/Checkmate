@@ -246,6 +246,7 @@ const DistributedUptimeStatus = () => {
 			/>
 
 			<SubHeader
+				shouldRender={statusPage?.subMonitors?.length > 0}
 				direction={{ s: "column", md: "row" }}
 				headerText={t("distributedStatusServerMonitors")}
 				subHeaderText={t("distributedStatusServerMonitorsDescription")}

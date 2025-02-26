@@ -8,6 +8,7 @@ import { Stack, Typography } from "@mui/material";
  * @component
  * @example
  *
+ * @param {boolean} props.shouldRender - Whether to render the subheader
  * @param {string} props.direction - Direction of the subheader
  * @param {string} props.headerText - Header text
  * @param {number} props.headerLevel - Font characteristic of the header
@@ -19,6 +20,7 @@ import { Stack, Typography } from "@mui/material";
  */
 
 const SubHeader = ({
+	shouldRender = true,
 	direction = "row",
 	headerText,
 	headerLevel = 1,
@@ -29,6 +31,11 @@ const SubHeader = ({
 	...props
 }) => {
 	const theme = useTheme();
+
+	if (!shouldRender) {
+		return null;
+	}
+
 	return (
 		<Stack
 			direction={direction}
@@ -63,6 +70,7 @@ const SubHeader = ({
 };
 
 SubHeader.propTypes = {
+	shouldRender: PropTypes.bool,
 	direction: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	headerText: PropTypes.string,
 	headerLevel: PropTypes.number,
