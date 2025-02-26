@@ -94,9 +94,9 @@ const ControlsHeader = ({
 			alignItems="flex-end"
 		>
 			<Stack
-				direction="row"
+				direction={{ s: "column", md: "row" }}
 				gap={theme.spacing(8)}
-				alignItems="flex-end"
+				alignItems={{ s: "flex-start", md: "flex-end" }}
 			>
 				<Image
 					shouldRender={statusPage?.logo?.data ? true : false}
