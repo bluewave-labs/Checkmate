@@ -28,9 +28,12 @@ import { useDUStatusPageFetchByUrl } from "./Hooks/useDUStatusPageFetchByUrl";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
 import TimeFrameHeader from "./Components/TimeframeHeader";
 import SubHeader from "../../../Components/Subheader";
-
+import { safelyParseFloat } from "../../../Utils/utils";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
+// Responsive
+import { useMediaQuery } from "@mui/material";
 
 const DistributedUptimeStatus = () => {
 	const { url } = useParams();
@@ -45,6 +48,7 @@ const DistributedUptimeStatus = () => {
 	const [timeFrame, setTimeFrame] = useState(30);
 	// Utils
 	const theme = useTheme();
+	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 	const navigate = useNavigate();
 
 	const [
@@ -170,8 +174,11 @@ const DistributedUptimeStatus = () => {
 			/>
 
 			<SubHeader
+				direction={{ s: "column", md: "row" }}
 				headerText={t("distributedStatusHeaderText")}
 				subHeaderText={t("distributedStatusSubHeaderText")}
+				gap={isSmallScreen ? theme.spacing(10) : 0}
+				alignItems={{ s: "flex-start", md: "flex-end" }}
 			>
 				<RowContainer>
 					<Stack>
@@ -195,16 +202,15 @@ const DistributedUptimeStatus = () => {
 				setDateRange={setDateRange}
 			/>
 			<Stack
-				direction="row"
 				gap={theme.spacing(8)}
+				direction={{ s: "column", md: "row" }}
 			>
 				<DistributedUptimeMap
 					checks={monitor?.groupedMapChecks ?? []}
-					height={"100%"}
-					width={"50%"}
+					width={isSmallScreen ? "100%" : "50%"}
 				/>
 				<Stack
-					width={"50%"}
+					width={{ s: "100%", md: "50%" }}
 					gap={theme.spacing(8)}
 				>
 					<Stack
@@ -219,8 +225,8 @@ const DistributedUptimeStatus = () => {
 							sx={{ width: "50%" }}
 						/>
 						<InfoBox
-							heading="UPT Burned"
-							subHeading={monitor?.totalUptBurnt ?? 0}
+							heading={isSmallScreen ? "UPT" : "UPT Burned"}
+							subHeading={safelyParseFloat(monitor?.totalUptBurnt).toFixed(4)}
 							img={UptLogo}
 							alt="Upt Logo"
 							sx={{ width: "50%" }}
@@ -240,13 +246,16 @@ const DistributedUptimeStatus = () => {
 			/>
 
 			<SubHeader
+				direction={{ s: "column", md: "row" }}
 				headerText={t("distributedStatusServerMonitors")}
 				subHeaderText={t("distributedStatusServerMonitorsDescription")}
-				alignItems="end"
+				gap={isSmallScreen ? theme.spacing(10) : 0}
+				alignItems={{ s: "flex-start", md: "flex-end" }}
 			>
 				<TimeFrameHeader
 					timeFrame={timeFrame}
 					setTimeFrame={setTimeFrame}
+					alignSelf="flex-start"
 				/>
 			</SubHeader>
 

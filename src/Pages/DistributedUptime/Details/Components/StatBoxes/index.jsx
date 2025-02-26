@@ -2,7 +2,6 @@
 import { Stack } from "@mui/material";
 import InfoBox from "../../../../../Components/InfoBox";
 import LastUpdate from "../LastUpdate";
-import UptLogo from "../../../../../assets/icons/upt_logo.png";
 
 // Utils
 import { useTheme } from "@mui/material/styles";
@@ -15,6 +14,7 @@ const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 		<Stack
 			direction="row"
 			justifyContent="space-between"
+			flexWrap="wrap"
 			gap={theme.spacing(8)}
 		>
 			<InfoBox
