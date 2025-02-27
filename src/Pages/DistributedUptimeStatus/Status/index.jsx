@@ -183,11 +183,9 @@ const DistributedUptimeStatus = () => {
 				<RowContainer>
 					<Stack>
 						<Typography variant={`body2`}>
-							{t("distributedRightCatagoryTitle")}
+							{t("distributedRightCategoryTitle")}
 						</Typography>
-						<Typography variant={`h2`}>
-							{t("distributedRightCatagoryDescription")}
-						</Typography>
+						<Typography variant={`h2`}>{statusPage.companyName}</Typography>
 					</Stack>
 				</RowContainer>
 			</SubHeader>
