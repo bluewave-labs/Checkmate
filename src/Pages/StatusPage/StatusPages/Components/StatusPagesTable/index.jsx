@@ -28,17 +28,6 @@ const StatusPagesTable = ({ data }) => {
 					navigate(url);
 				}
 			},
-			getCellSx: (row) => {
-				return {
-					...(row.isPublished && {
-						"&.MuiTableCell-root:hover": {
-							backgroundColor: `${theme.palette.primary.light}`,
-							cursor: "pointer",
-							borderRadius: 1,
-						},
-					}),
-				};
-			},
 			render: (row) => {
 				const content = row.isPublished ? `/${row.url}` : "Unpublished";
 				return (
@@ -46,6 +35,18 @@ const StatusPagesTable = ({ data }) => {
 						direction="row"
 						alignItems="center"
 						gap={theme.spacing(2)}
+						paddingLeft={theme.spacing(2)}
+						paddingRight={theme.spacing(2)}
+						borderRadius={theme.spacing(4)}
+						sx={{
+							...(row.isPublished && {
+								":hover": {
+									backgroundColor: `${theme.palette.primary.light}`,
+									cursor: "pointer",
+									borderRadius: 1,
+								},
+							}),
+						}}
 					>
 						<Typography>{content}</Typography>
 						{row.isPublished && <ArrowOutwardIcon />}
