@@ -21,7 +21,7 @@ import IconBox from "../../IconBox";
  * <EmptyView
  *   icon={<SomeIcon />}
  *   header="Average Response Time"
- *   message="No Resposne Time Available"
+ *   message="No Response Time Available"
  *   headingLevel="h2"
  *   justifyContent="center"
  *   height="50%"
