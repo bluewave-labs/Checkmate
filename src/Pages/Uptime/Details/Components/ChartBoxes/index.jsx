@@ -35,6 +35,7 @@ const ChartBoxes = ({
 	const denominator =
 		totalUpChecks + totalDownChecks > 0 ? totalUpChecks + totalDownChecks : 1;
 	const groupedUptimePercentage = (totalUpChecks / denominator) * 100;
+	const noIncidentsMessage = "Great. No Incidents, yet!";
 
 	return (
 		<Stack
@@ -96,7 +97,7 @@ const ChartBoxes = ({
 			<ChartBox
 				icon={<IncidentsIcon />}
 				header="Incidents"
-				noDataMessage="Great. No Incidents, yet!"
+				noDataMessage={noIncidentsMessage}
 				isEmpty={monitor?.groupedDownChecks?.length === 0}
 			>
 				<Stack width={"100%"}>

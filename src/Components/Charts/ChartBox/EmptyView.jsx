@@ -4,6 +4,32 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import IconBox from "../../IconBox";
 
+/**
+ * `EmptyView` is a functional React component that displays an empty state view with an optional icon, header, and message.
+ *
+ * @component
+ * @param {Object} props - The properties that define the `EmptyView` component.
+ * @param {React.ReactNode} [props.icon] - An optional icon to display at the top of the empty view.
+ * @param {string} [props.header] - An optional header text displayed next to the icon.
+ * @param {string} [props.message="No Data"] - The message to be displayed in the empty view.
+ * @param {'h1' | 'h2' | 'h3'} [props.headingLevel="h2"] - The heading level for the message text.
+ * @param {string} [props.justifyContent="flex-start"] - The CSS `justify-content` value to align elements vertically.
+ * @param {string} [props.height="100%"] - The height of the empty view container.
+ *
+ * @example
+ * // Example usage of EmptyView component:
+ * <EmptyView
+ *   icon={<SomeIcon />}
+ *   header="Average Response Time"
+ *   message="No Resposne Time Available"
+ *   headingLevel="h2"
+ *   justifyContent="center"
+ *   height="50%"
+ * />
+ *
+ * @returns {React.Element} The `EmptyView` component with customizable icon, header, and message.
+ */
+
 const EmptyView = ({
     icon,
     header,
@@ -74,7 +100,9 @@ EmptyView.propTypes = {
     message: PropTypes.string,
     icon: PropTypes.node,
     header: PropTypes.string,
-    headingLevel: PropTypes.oneOf(['h1', 'h2', 'h3'])
+    headingLevel: PropTypes.oneOf(['h1', 'h2', 'h3']),
+    justifyContent: PropTypes.string,
+    height: PropTypes.string
 };
 
 export default EmptyView;
