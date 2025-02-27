@@ -15,6 +15,8 @@ import { useTheme } from "@emotion/react";
  * @typedef {Object} Header
  * @property {number|string} id - The unique identifier for the header.
  * @property {React.ReactNode} content - The content to display in the header cell.
+ * @property {Function} onClick - A function to be called when this cell is clicked, receiving the event and row data as an argument.
+ * @property {Object} getCellSx - Function that takes a row and returns a style object for the table cell.
  * @property {Function} render - A function to render the cell content for a given row.
  */
 
@@ -107,6 +109,8 @@ const DataTable = ({
 											<TableCell
 												align={index === 0 ? "left" : "center"}
 												key={header.id}
+												onClick={header.onClick ? (e) => header.onClick(e, row) : null}
+												sx={header.getCellSx ? header.getCellSx(row) : {}}
 											>
 												{header.render(row)}
 											</TableCell>
