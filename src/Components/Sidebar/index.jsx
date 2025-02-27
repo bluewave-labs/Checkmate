@@ -715,7 +715,7 @@ function Sidebar() {
 					}}
 				>
 					{collapsed && (
-						<MenuItem sx={{ cursor: "default", minWidth: "150px" }}>
+						<MenuItem sx={{ cursor: "default", minWidth: "50%" }}>
 							<Box
 								mb={theme.spacing(2)}
 								sx={{ maxWidth: "50%", overflow: "hidden" }}
