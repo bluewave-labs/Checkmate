@@ -5,7 +5,7 @@ import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
 import { createToast } from "../../../../Utils/toastUtils";
 
-const useSubscribeToMonitors = () => {
+const useSubscribeToMonitors = (page, rowsPerPage) => {
 	// Redux
 	const { user } = useSelector((state) => state.auth);
 
@@ -25,8 +25,8 @@ const useSubscribeToMonitors = () => {
 				teamId: user.teamId,
 				limit: 25,
 				types: ["distributed_http"],
-				page: 0,
-				rowsPerPage: 10,
+				page,
+				rowsPerPage,
 				filter: null,
 				field: null,
 				order: null,
@@ -56,7 +56,7 @@ const useSubscribeToMonitors = () => {
 			});
 			setNetworkError(true);
 		}
-	}, [user, getMonitorWithPercentage, theme, isLoading]);
+	}, [user, getMonitorWithPercentage, theme, isLoading, page, rowsPerPage]);
 	return [isLoading, networkError, monitors, monitorsSummary, filteredMonitors];
 };
 export { useSubscribeToMonitors };
