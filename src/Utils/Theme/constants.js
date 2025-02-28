@@ -282,7 +282,7 @@ const newSemanticColors = {
 	},
 	chatbot: {
 		background: {
-			light: "#112B2B",
+			light: newColors.gray200,
 			dark: "#112B2B",
 		},
 		textAccent: {
