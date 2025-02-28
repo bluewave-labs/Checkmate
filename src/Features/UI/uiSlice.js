@@ -53,8 +53,8 @@ const uiSlice = createSlice({
 			state.timezone = action.payload.timezone;
 		},
 		setLanguage(state, action) {
-            state.language = action.payload;
-        },
+			state.language = action.payload;
+		},
 	},
 });
 
