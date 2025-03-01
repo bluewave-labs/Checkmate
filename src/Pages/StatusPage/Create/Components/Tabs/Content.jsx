@@ -91,7 +91,6 @@ const Content = ({
 					</Stack>
 				</SectionStack>
 			</Stack>
-			<Stack gap={theme.spacing(6)}></Stack>
 		</TabPanel>
 	);
 };
