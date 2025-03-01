@@ -34,6 +34,7 @@ export const updateAppSettings = createAsyncThunk(
 			const parsedSettings = {
 				apiBaseUrl: settings.apiBaseUrl,
 				logLevel: settings.logLevel,
+				language: settings.language,
 				clientHost: settings.clientHost,
 				jwtSecret: settings.jwtSecret,
 				dbType: settings.dbType,
