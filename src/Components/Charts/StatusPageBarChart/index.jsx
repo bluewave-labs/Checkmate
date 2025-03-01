@@ -24,6 +24,21 @@ const StatusPageBarChart = ({ checks = [] }) => {
 		checks = [...checks, ...placeholders];
 	}
 
+	const BarBox = ({ width, height, backgroundColor, borderRadius, children }) => (
+		<Box
+			marginRight="5px"
+			position="relative"
+			width={width}
+			height={height}
+			backgroundColor={backgroundColor}
+			sx={{
+				borderRadius: borderRadius || theme.spacing(1.5),
+			}}
+		>
+			{children}
+		</Box>
+	);
+
 	return (
 		<Stack
 			direction="row"
@@ -41,15 +56,11 @@ const StatusPageBarChart = ({ checks = [] }) => {
 					/* TODO what is the purpose of this box? 	*/
 					// CAIO_REVIEW the purpose of this box is to make sure there are always at least 25 bars
 					// even if there are less than 25 checks
-					<Box
+					<BarBox
 						key={`${check}-${index}`}
-						position="relative"
-						width="calc(30vw / 25)"
+						width="calc(30rem / 25)"
 						height="100%"
 						backgroundColor={theme.palette.primary.lowContrast}
-						sx={{
-							borderRadius: theme.spacing(1.5),
-						}}
 					/>
 				) : (
 					<Tooltip
@@ -140,14 +151,10 @@ const StatusPageBarChart = ({ checks = [] }) => {
 							},
 						}}
 					>
-						<Box
-							position="relative"
-							width="calc(30vw / 25)"
+						<BarBox
+							width="calc(30rem / 25)"
 							height="100%"
-							backgroundColor={theme.palette.primary.lowContrast} // CAIO_REVIEW
-							sx={{
-								borderRadius: theme.spacing(1.5),
-							}}
+							backgroundColor={theme.palette.primary.lowContrast}
 						>
 							<Box
 								position="absolute"
@@ -164,7 +171,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 									transition: "height 600ms cubic-bezier(0.4, 0, 0.2, 1)",
 								}}
 							/>
-						</Box>
+						</BarBox>
 					</Tooltip>
 				)
 			)}
