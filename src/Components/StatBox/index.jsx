@@ -3,6 +3,7 @@ import Image from "../Image";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
+import { lighten } from "@mui/material/styles";
 
 /**
  * StatBox Component
@@ -50,7 +51,7 @@ const StatBox = ({
 				borderColor: theme.palette[themeColor].lowContrast,
 			}
 		: {
-				background: `linear-gradient(340deg, ${theme.palette.tertiary.main} 20%, ${theme.palette.primary.main} 45%)`,
+				background: `linear-gradient(340deg, ${theme.palette.tertiary.main} 10%, ${theme.palette.primary.main} 45%)`,
 				borderColor: theme.palette.primary.lowContrast,
 			};
 
@@ -62,7 +63,7 @@ const StatBox = ({
 				color: theme.palette.primary.contrastTextSecondary,
 			};
 
-	const spanFixedStyles = { marginLeft: theme.spacing(2), fontSize: 15 };
+	const spanFixedStyles = { marginLeft: theme.spacing(2), fontSize: 15, fontWeight: 600};
 	const detailTextStyles = gradient
 		? {
 				color: theme.palette[themeColor].contrastText,
@@ -120,7 +121,7 @@ const StatBox = ({
 			)}
 			<Stack>
 				<Typography component="h2">{heading}</Typography>
-				<Typography>{subHeading}</Typography>
+				<Typography sx={{fontWeight: 600}}>{subHeading}</Typography>
 			</Stack>
 		</Stack>
 	);
