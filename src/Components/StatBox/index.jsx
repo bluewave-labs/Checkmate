@@ -3,7 +3,6 @@ import Image from "../Image";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
-import { lighten } from "@mui/material/styles";
 
 /**
  * StatBox Component
