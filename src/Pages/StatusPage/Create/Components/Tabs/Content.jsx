@@ -1,13 +1,13 @@
 // Components
-import { Stack, Typography, Button } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { TabPanel } from "@mui/lab";
-import ConfigBox from "../../../../../Components/ConfigBox";
 import MonitorList from "../MonitorList";
 import Search from "../../../../../Components/Inputs/Search";
 import Checkbox from "../../../../../Components/Inputs/Checkbox";
 // Utils
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
+import SectionStack from "./SectionStack";
 const Content = ({
 	tabValue,
 	form,
@@ -34,14 +34,10 @@ const Content = ({
 	return (
 		<TabPanel value={tabValue}>
 			<Stack gap={theme.spacing(10)}>
-				<ConfigBox>
-					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">Status page servers</Typography>
-						<Typography component="p">
-							You can add any number of servers that you monitor to your status page. You
-							can also reorder them for the best viewing experience.
-						</Typography>
-					</Stack>
+				<SectionStack
+					title="Status page servers"
+					description="You can add any number of servers that you monitor to your status page. You can also reorder them for the best viewing experience."
+				>
 					<Stack>
 						<Stack
 							direction="row"
@@ -72,13 +68,12 @@ const Content = ({
 							setSelectedMonitors={handleMonitorsChange}
 						/>
 					</Stack>
-				</ConfigBox>{" "}
-				<ConfigBox>
-					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">Features</Typography>
-						<Typography component="p">Show more details on the status page</Typography>
-					</Stack>
-					<Stack sx={{ margin: theme.spacing(6) }}>
+				</SectionStack>
+				<SectionStack
+					title="Features"
+					description="Show more details on the status page"
+				>
+					<Stack>
 						<Checkbox
 							id="showCharts"
 							name="showCharts"
@@ -94,7 +89,7 @@ const Content = ({
 							onChange={handleFormChange}
 						/>
 					</Stack>
-				</ConfigBox>
+				</SectionStack>
 			</Stack>
 			<Stack gap={theme.spacing(6)}></Stack>
 		</TabPanel>
