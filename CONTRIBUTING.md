@@ -77,7 +77,7 @@ Once it's filed:
 This section guides you through submitting an enhancement suggestion for the application, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community understand your enhancements and find related suggestions.
 
 - Make sure that you are using the latest version.
-- Make sure you run the code locally. The Checkmate [documentation](https://bluewavelabs.gitbook.io/checkmate) covers it.
+- Make sure you run the code locally. The Checkmate [documentation](https://docs.checkmate.so) covers it.
 - Find out if the functionality is already covered, maybe by an individual configuration.
 - Perform a [search](/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
 - Find out whether your idea fits with the scope and aims of the project. It's up to you to make a strong case to convince the project's developers of the merits of this feature. Keep in mind that we want features that will be useful to the majority of our users and not just a small subset. If you're just targeting a minority of users, consider writing an add-on/plugin library.
@@ -92,14 +92,7 @@ Enhancement suggestions are tracked as [GitHub issues](/issues).
 - You may want to **include screenshots and animated GIFs** which help you demonstrate the steps or point out the part which the suggestion is related to.
 - **Explain why this enhancement would be useful** to most CONTRIBUTING.md users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
 
-We have a Figma file that includes: 
-
-- All the dashboard elements and components
-- The design guideline for the app
-
-You can see it [here](https://www.figma.com/design/RPSfaw66HjzSwzntKcgDUV/Uptime-Genie?node-id=0-1&t=WqOFv9jqNTFGItpL-1). Since it is read-only, we encourage you to copy to your own Figma page, then work on it.
- 
-[This document](https://docs.google.com/document/d/1Gy3LiimGUNoSiWAMbwyK3SeMADcCMjCLu6cQYoawtSE/edit#heading=h.1lj2lgut6m7h) outlines the process every developer should follow for managing the issues lifecycle. Also make sure you read the [document about how to make a good pull request](/PULLREQUESTS.md).
+Also make sure you read the [document about how to make a good pull request](/PULLREQUESTS.md).
 
 ## Attribution
 This guide is based on the **contributing.md**. [Make your own](https://contributing.md/)!
