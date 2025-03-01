@@ -371,53 +371,18 @@ const Settings = () => {
 								monitor to connect to multiple nodes globally.
 							</Typography>
 						</Box>
-						<Box
-							sx={{
-								display: 'flex',
-								flexWrap: 'wrap',
-								gap: theme.spacing(2),
-								mt: theme.spacing(4),
-							}}
-						>
-							<WalletMultiButton
-								sx={{
-									minWidth: theme.spacing(32),
-									height: theme.spacing(10),
-									fontSize: theme.typography.body2.fontSize,
-									fontWeight: theme.typography.fontWeightMedium,
-									'&:not(:disabled)': {
-										backgroundColor: theme.palette.accent.main,
-										'&:hover': {
-											backgroundColor: theme.palette.accent.dark,
-										},
-									},
-									[theme.breakpoints.down('sm')]: {
-										minWidth: '100%',
-										fontSize: theme.typography.body2.fontSize,
-									},
-								}}
-							/>
-							<WalletDisconnectButton
-								sx={{
-									minWidth: theme.spacing(32),
-									height: theme.spacing(10),
-									fontSize: theme.typography.body2.fontSize,
-									fontWeight: theme.typography.fontWeightMedium,
-									'&:not(:disabled)': {
-										backgroundColor: theme.palette.error.main,
-										'&:hover': {
-											backgroundColor: theme.palette.error.dark,
-										},
-									},
-									[theme.breakpoints.down('sm')]: {
-										minWidth: '100%',
-										fontSize: theme.typography.body2.fontSize,
-									},
-								}}
-							/>
+						<Box>
+							<Stack
+								direction="row"
+								spacing={2}
+							>
+								<WalletMultiButton />
+								<WalletDisconnectButton />
+							</Stack>
 						</Box>
 					</ConfigBox>
 				)}
+
 
 				<ConfigBox>
 					<Box>
