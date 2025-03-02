@@ -14,7 +14,6 @@ const LanguageSelector = () => {
 		i18n.changeLanguage(newLang);
 	};
 
-	// i18n instance'ından mevcut dilleri al
 	const languages = Object.keys(i18n.options.resources || {});
 
 	return (
