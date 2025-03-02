@@ -290,6 +290,16 @@ const newSemanticColors = {
 			dark: "#C084FC",
 		},
 	},
+	alert: {
+		background: {
+			light: newColors.gray200,
+			dark: "#1c1c1c",
+		},
+		border: {
+			light: newColors.blueGray600,
+			dark: "#515151",
+		},
+	},
 };
 
 export { typographyLevels, semanticColors as colors, newSemanticColors };
