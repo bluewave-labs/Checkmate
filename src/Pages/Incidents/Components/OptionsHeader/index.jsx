@@ -20,6 +20,14 @@ const OptionsHeader = ({
 	const theme = useTheme();
 	const monitorNames = typeof monitors !== "undefined" ? Object.values(monitors) : [];
 
+	// The stacks below which are three in number have the same style so
+	const stackStyles = {
+		direction: "row",
+		alignItems: "center",
+		gap: theme.spacing(6),
+		marginLeft: "5px",
+	};
+
 	if (!shouldRender) return <SkeletonLayout />;
 
 	return (
@@ -27,17 +35,13 @@ const OptionsHeader = ({
 			direction="row"
 			justifyContent="space-between"
 		>
-			<Stack
-				direction="row"
-				alignItems="center"
-				gap={theme.spacing(6)}
-			>
+			<Stack {...stackStyles}>
 				<Typography
 					display="inline-block"
 					component="h1"
 					color={theme.palette.primary.contrastTextSecondary}
 				>
-					Incidents for
+					Incidents for:
 				</Typography>
 				<Select
 					id="incidents-select-monitor"
@@ -49,13 +53,10 @@ const OptionsHeader = ({
 						backgroundColor: theme.palette.primary.main,
 						color: theme.palette.primary.contrastTextSecondary,
 					}}
+					truncate={true}
 				/>
 			</Stack>
-			<Stack
-				direction="row"
-				alignItems="center"
-				gap={theme.spacing(6)}
-			>
+			<Stack {...stackStyles}>
 				<Typography
 					display="inline-block"
 					component="h1"
@@ -66,7 +67,15 @@ const OptionsHeader = ({
 				<ButtonGroup
 					sx={{
 						ml: "auto",
-						"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
+						alignItems: "stretch",
+						"& .MuiButtonBase-root": {
+							whiteSpace: "nowrap",
+							height: "auto",
+							"&.MuiButton-group": {
+								borderColor: theme.palette.primary.lowContrast,
+							},
+						},
+						"& .MuiButtonBase-root:hover": {
 							borderColor: theme.palette.primary.lowContrast,
 						},
 					}}
@@ -94,11 +103,7 @@ const OptionsHeader = ({
 					</Button>
 				</ButtonGroup>
 			</Stack>
-			<Stack
-				direction="row"
-				alignItems="center"
-				gap={theme.spacing(6)}
-			>
+			<Stack {...stackStyles}>
 				<Typography
 					display="inline-block"
 					component="h1"
@@ -109,7 +114,15 @@ const OptionsHeader = ({
 				<ButtonGroup
 					sx={{
 						ml: "auto",
-						"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
+						alignItems: "stretch",
+						"& .MuiButtonBase-root": {
+							whiteSpace: "nowrap",
+							height: "auto",
+							"&.MuiButton-group": {
+								borderColor: theme.palette.primary.lowContrast,
+							},
+						},
+						"& .MuiButtonBase-root:hover": {
 							borderColor: theme.palette.primary.lowContrast,
 						},
 					}}
