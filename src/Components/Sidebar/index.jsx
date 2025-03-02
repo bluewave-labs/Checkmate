@@ -63,35 +63,29 @@ const menu = [
 
 	{ name: "Status pages", path: "status", icon: <StatusPages /> },
 	{ name: "Maintenance", path: "maintenance", icon: <Maintenance /> },
-	// { name: "Integrations", path: "integrations", icon: <Integrations /> },
-	{
-		name: "Account",
-		icon: <Account />,
-		nested: [
-			{ name: "Profile", path: "account/profile", icon: <UserSvg /> },
-			{ name: "Password", path: "account/password", icon: <LockSvg /> },
-			{ name: "Team", path: "account/team", icon: <TeamSvg /> },
-		],
-	},
+	{ name: "Integrations", path: "integrations", icon: <Integrations /> },
 	{
 		name: "Settings",
 		icon: <Settings />,
 		path: "settings",
 	},
+];
+
+const otherMenuItems = [
+	{ name: "Support", path: "support", icon: <Support /> },
 	{
-		name: "Other",
-		icon: <Folder />,
-		nested: [
-			{ name: "Support", path: "support", icon: <Support /> },
-			{
-				name: "Discussions",
-				path: "discussions",
-				icon: <Discussions />,
-			},
-			{ name: "Docs", path: "docs", icon: <Docs /> },
-			{ name: "Changelog", path: "changelog", icon: <ChangeLog /> },
-		],
+		name: "Discussions",
+		path: "discussions",
+		icon: <Discussions />,
 	},
+	{ name: "Docs", path: "docs", icon: <Docs /> },
+	{ name: "Changelog", path: "changelog", icon: <ChangeLog /> },
+];
+
+const accountMenuItems = [
+	{ name: "Profile", path: "account/profile", icon: <UserSvg /> },
+	{ name: "Password", path: "account/password", icon: <LockSvg /> },
+	{ name: "Team", path: "account/team", icon: <TeamSvg /> },
 ];
 
 /* TODO this could be a key in nested Path would be the link */
@@ -133,12 +127,38 @@ function Sidebar() {
 		(state) => state.ui.distributedUptimeEnabled
 	);
 
-	const accountMenuItem = menu.find((item) => item.name === "Account");
-	if (user.role?.includes("demo") && accountMenuItem) {
-		accountMenuItem.nested = accountMenuItem.nested.filter((item) => {
-			return item.name !== "Password";
-		});
-	}
+	const renderAccountMenuItems = () => {
+		let filteredAccountMenuItems = [...accountMenuItems];
+
+		// If the user is in demo mode, remove the "Password" option
+		if (user.role?.includes("demo")) {
+			filteredAccountMenuItems = filteredAccountMenuItems.filter(
+				(item) => item.name !== "Password"
+			);
+		}
+
+		// If the user is NOT a superadmin, remove the "Team" option
+		if (user.role && !user.role.includes("superadmin")) {
+			filteredAccountMenuItems = filteredAccountMenuItems.filter(
+				(item) => item.name !== "Team"
+			);
+		}
+
+		return filteredAccountMenuItems.map((item) => (
+			<MenuItem
+				key={item.name}
+				onClick={() => navigate(item.path)}
+				sx={{
+					gap: theme.spacing(2),
+					borderRadius: theme.shape.borderRadius,
+					pl: theme.spacing(4),
+				}}
+			>
+				{item.icon}
+				{item.name}
+			</MenuItem>
+		));
+	};
 
 	const openPopup = (event, id) => {
 		setAnchorEl(event.currentTarget);
@@ -260,7 +280,6 @@ function Sidebar() {
 			>
 				{collapsed ? <ArrowRight /> : <ArrowLeft />}
 			</IconButton>
-
 			{/* TODO Alignment done using padding. Use single source of truth to that*/}
 			<Stack
 				pt={theme.spacing(6)}
@@ -588,8 +607,59 @@ function Sidebar() {
 					})}
 				</List>
 			</Box>
-			<Divider sx={{ mt: "auto", borderColor: theme.palette.primary.lowContrast }} />
 
+			<List
+				component="nav"
+				disablePadding
+				sx={{ px: theme.spacing(6) }}
+			>
+				{otherMenuItems.map((item) => {
+					return item.path ? (
+						<Tooltip
+							key={item.path}
+							placement="right"
+							title={collapsed ? item.name : ""}
+							slotProps={{
+								popper: {
+									modifiers: [
+										{
+											name: "offset",
+											options: {
+												offset: [0, -16],
+											},
+										},
+									],
+								},
+							}}
+							disableInteractive
+						>
+							<ListItemButton
+								className={
+									location.pathname.startsWith(`/ $ { item.path }`) ? "selected-path" : ""
+								}
+								onClick={() => {
+									const url = URL_MAP[item.path];
+									if (url) {
+										window.open(url, "_blank", "noreferrer");
+									} else {
+										navigate(`/${item.path}`);
+									}
+								}}
+								sx={{
+									height: "37px",
+									gap: theme.spacing(4),
+									borderRadius: theme.shape.borderRadius,
+									px: theme.spacing(4),
+								}}
+							>
+								<ListItemIcon sx={{ minWidth: 0 }}>{item.icon} </ListItemIcon>
+								<ListItemText>{item.name} </ListItemText>{" "}
+							</ListItemButton>
+						</Tooltip>
+					) : null;
+				})}
+			</List>
+			<Divider sx={{ mt: "auto", borderColor: theme.palette.primary.lowContrast }} />
 			<Stack
 				direction="row"
 				height="50px"
@@ -715,10 +785,15 @@ function Sidebar() {
 					}}
 				>
 					{collapsed && (
-						<MenuItem sx={{ cursor: "default", minWidth: "50%" }}>
+						<MenuItem sx={{ cursor: "default", minWidth: "200px" }}>
 							<Box
 								mb={theme.spacing(2)}
-								sx={{ maxWidth: "50%", overflow: "hidden" }}
+								sx={{
+									minWidth: "200px",
+									maxWidth: "max-content",
+									overflow: "visible",
+									whiteSpace: "nowrap",
+								}}
 							>
 								<Typography
 									component="span"
@@ -727,13 +802,22 @@ function Sidebar() {
 									sx={{
 										display: "block",
 										whiteSpace: "nowrap",
-										overflow: "hidden",
-										textOverflow: "ellipsis",
+										overflow: "visible",
+										// wordBreak: "break-word",
+										textOverflow: "clip",
 									}}
 								>
 									{authState.user?.firstName} {authState.user?.lastName}
 								</Typography>
-								<Typography sx={{ textTransform: "capitalize", fontSize: 12 }}>
+								<Typography
+									sx={{
+										textTransform: "capitalize",
+										fontSize: 12,
+										whiteSpace: "nowrap",
+										overflow: "visible",
+										// wordBreak: "break-word",
+									}}
+								>
 									{authState.user?.role}
 								</Typography>
 							</Box>
@@ -742,6 +826,7 @@ function Sidebar() {
 					{/* TODO Do we need two dividers? */}
 					{collapsed && <Divider />}
 					<Divider />
+					{renderAccountMenuItems()}
 					<MenuItem
 						onClick={logout}
 						sx={{
