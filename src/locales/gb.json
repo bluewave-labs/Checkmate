@@ -63,8 +63,7 @@
 	"webhookUnsupportedPlatform": "Unsupported platform: {platform}",
 	"distributedStatusHeaderText": "Real-time, real-device coverage",
 	"distributedStatusSubHeaderText": "Powered by millions devices worldwide, view a system performance by global region, country or city",
-	"distributedRightCatagoryTitle": "Monitor",
-	"distributedRightCatagoryDescription": "Mainnet Beta Cluster",
+	"distributedRightCategoryTitle": "Monitor",
 	"distributedStatusServerMonitors": "Server Monitors",
 	"distributedStatusServerMonitorsDescription": "Monitor status of related servers"
 }
