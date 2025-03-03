@@ -27,8 +27,6 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 			backgroundColor={backgroundColor}
 			sx={{
 				borderRadius: borderRadius || theme.spacing(1.5),
-				gap: "2px",
-				display: "flex",
 			}}
 		>
 			{children}
