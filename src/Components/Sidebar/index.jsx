@@ -635,7 +635,7 @@ function Sidebar() {
 						>
 							<ListItemButton
 								className={
-									location.pathname.startsWith(`/ $ { item.path }`) ? "selected-path" : ""
+									location.pathname.startsWith(`/${item.path}`) ? "selected-path" : ""
 								}
 								onClick={() => {
 									const url = URL_MAP[item.path];
@@ -785,11 +785,11 @@ function Sidebar() {
 					}}
 				>
 					{collapsed && (
-						<MenuItem sx={{ cursor: "default", minWidth: "200px" }}>
+						<MenuItem sx={{ cursor: "default", minWidth: "50%" }}>
 							<Box
 								mb={theme.spacing(2)}
 								sx={{
-									minWidth: "200px",
+									minWidth: "50%",
 									maxWidth: "max-content",
 									overflow: "visible",
 									whiteSpace: "nowrap",
