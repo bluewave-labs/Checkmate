@@ -10,7 +10,7 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 	const theme = useTheme();
 
 	const valueStyle = {
-		borderRadius: 2,
+		borderRadius: theme.spacing(2),
 		backgroundColor: theme.palette.tertiary.main,
 		width: "40%",
 		mb: theme.spacing(2),
