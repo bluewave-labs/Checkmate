@@ -9,13 +9,13 @@ import PropTypes from "prop-types";
 const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => {
 	const theme = useTheme();
 
-	const boxStyle = {
+	const valueStyle = {
 		borderRadius: 2,
 		backgroundColor: theme.palette.tertiary.main,
 		width: "40%",
-		mb: 2,
-		mt: 2,
-		pr: 2,
+		mb: theme.spacing(2),
+		mt: theme.spacing(2),
+		pr: theme.spacing(2),
 		textAlign: 'right'
 	}
 
@@ -54,7 +54,7 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 						gap={theme.spacing(2)}
 					>
 						<Typography>{metricOne}</Typography>
-						<Typography sx={boxStyle}>{valueOne}</Typography>
+						<Typography sx={valueStyle}>{valueOne}</Typography>
 					</Stack>
 					<Stack
 						justifyContent={"space-between"}
@@ -63,7 +63,7 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 						gap={theme.spacing(2)}
 					>
 						<Typography>{metricTwo}</Typography>
-						<Typography sx={boxStyle}>{valueTwo}</Typography>
+						<Typography sx={valueStyle}>{valueTwo}</Typography>
 					</Stack>
 				</Box>
 			</Stack>
