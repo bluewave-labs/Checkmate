@@ -17,16 +17,40 @@ const StatusPagesTable = ({ data }) => {
 		},
 		{
 			id: "url",
-			content: "URL",
+			content: "Public URL",
+			onClick: (e, row) => {
+				if (row.isPublished) {
+					e.stopPropagation();
+					const url =
+						row.type === "distributed"
+							? `/status/distributed/public/${row.url}`
+							: `/status/uptime/public/${row.url}`;
+					navigate(url);
+				}
+			},
 			render: (row) => {
+				const content = row.isPublished ? `/${row.url}` : "Unpublished";
 				return (
 					<Stack
 						direction="row"
 						alignItems="center"
+						justifyContent="center"
 						gap={theme.spacing(2)}
+						paddingLeft={theme.spacing(2)}
+						paddingRight={theme.spacing(2)}
+						borderRadius={theme.spacing(4)}
+						sx={{
+							...(row.isPublished && {
+								":hover": {
+									backgroundColor: `${theme.palette.primary.light}`,
+									cursor: "pointer",
+									borderRadius: 1,
+								},
+							}),
+						}}
 					>
-						<Typography>{`/${row.url}`}</Typography>
-						<ArrowOutwardIcon />
+						<Typography>{content}</Typography>
+						{row.isPublished && <ArrowOutwardIcon />}
 					</Stack>
 				);
 			},

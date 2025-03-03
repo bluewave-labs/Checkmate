@@ -3,10 +3,12 @@ import { Stack, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
 import MonitorTable from "./Components/MonitorTable";
+import Pagination from "../../../Components/Table/TablePagination";
 import Fallback from "../../../Components/Fallback";
 import GenericFallback from "../../../Components/GenericFallback";
 
 // Utils
+import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useSubscribeToMonitors } from "./Hooks/useSubscribeToMonitors";
@@ -16,11 +18,23 @@ const BREADCRUMBS = [{ name: `Distributed Uptime`, path: "/distributed-uptime" }
 
 const DistributedUptimeMonitors = () => {
 	// Local state
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
+
 	// Utils
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 	const [isLoading, networkError, monitors, monitorsSummary, filteredMonitors] =
-		useSubscribeToMonitors();
+		useSubscribeToMonitors(page, rowsPerPage);
+	// Handlers
+	const handleChangePage = (event, newPage) => {
+		setPage(newPage);
+	};
+
+	const handleChangeRowsPerPage = (event) => {
+		setRowsPerPage(event.target.value);
+		setPage(0);
+	};
 
 	if (isLoading) {
 		return <SkeletonLayout />;
@@ -68,6 +82,14 @@ const DistributedUptimeMonitors = () => {
 			<MonitorTable
 				isLoading={isLoading}
 				monitors={filteredMonitors}
+			/>
+			<Pagination
+				itemCount={monitorsSummary?.totalMonitors ?? 0}
+				paginationLabel="monitors"
+				page={page}
+				rowsPerPage={rowsPerPage}
+				handleChangePage={handleChangePage}
+				handleChangeRowsPerPage={handleChangeRowsPerPage}
 			/>
 		</Stack>
 	);

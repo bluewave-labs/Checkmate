@@ -1,6 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import IconBox from "../../IconBox";
+import EmptyView from "./EmptyView";
 import PropTypes from "prop-types";
 
 const ChartBox = ({
@@ -12,8 +13,13 @@ const ChartBox = ({
 	Legend,
 	borderRadiusRight = 4,
 	sx,
+	noDataMessage,
+	isEmpty = false,
 }) => {
 	const theme = useTheme();
+	if (isEmpty) {
+		return <EmptyView icon={icon} header={header} message={noDataMessage} />; 
+	}
 	return (
 		<Stack
 			flex={1}
@@ -88,4 +94,6 @@ ChartBox.propTypes = {
 	icon: PropTypes.node,
 	header: PropTypes.string,
 	height: PropTypes.string,
+	noDataMessage: PropTypes.string,
+	isEmpty: PropTypes.bool
 };

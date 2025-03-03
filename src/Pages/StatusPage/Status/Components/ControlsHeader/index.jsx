@@ -2,7 +2,7 @@
 import { Box, Stack, Typography, Button } from "@mui/material";
 import Image from "../../../../../Components/Image";
 import SettingsIcon from "../../../../../assets/icons/settings-bold.svg?react";
-
+import ThemeSwitch from "../../../../../Components/ThemeSwitch";
 //Utils
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -76,6 +76,7 @@ Controls.propTypes = {
 
 const ControlsHeader = ({
 	statusPage,
+	isPublic,
 	isDeleting,
 	isDeleteOpen,
 	setIsDeleteOpen,
@@ -105,7 +106,16 @@ const ControlsHeader = ({
 					maxHeight={"50px"}
 					base64={statusPage?.logo?.data}
 				/>
-				<Typography variant="h1">{statusPage?.companyName}</Typography>
+				<Typography
+					variant="h1"
+					overflow="hidden"
+					textOverflow="ellipsis"
+					sx={{
+						maxWidth: { xs: "200px", sm: "100%" },
+					}}
+				>
+					{statusPage?.companyName}
+				</Typography>
 			</Stack>
 			<Controls
 				isDeleting={isDeleting}
@@ -114,6 +124,7 @@ const ControlsHeader = ({
 				url={url}
 				type={type}
 			/>
+			{isPublic && <ThemeSwitch />}
 		</Stack>
 	);
 };
@@ -121,6 +132,7 @@ const ControlsHeader = ({
 ControlsHeader.propTypes = {
 	url: PropTypes.string,
 	statusPage: PropTypes.object,
+	isPublic: PropTypes.bool,
 	isDeleting: PropTypes.bool,
 	isDeleteOpen: PropTypes.bool.isRequired,
 	setIsDeleteOpen: PropTypes.func.isRequired,

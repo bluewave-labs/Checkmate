@@ -51,6 +51,7 @@ const StatusPages = () => {
 			/>
 		);
 	}
+
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />

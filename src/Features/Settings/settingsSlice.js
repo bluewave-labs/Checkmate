@@ -5,6 +5,7 @@ const initialState = {
 	isLoading: false,
 	apiBaseUrl: "",
 	logLevel: "debug",
+	language: "",
 };
 
 export const getAppSettings = createAsyncThunk(
@@ -34,6 +35,7 @@ export const updateAppSettings = createAsyncThunk(
 			const parsedSettings = {
 				apiBaseUrl: settings.apiBaseUrl,
 				logLevel: settings.logLevel,
+				language: settings.language,
 				clientHost: settings.clientHost,
 				jwtSecret: settings.jwtSecret,
 				dbType: settings.dbType,
@@ -68,6 +70,7 @@ const handleGetSettingsFulfilled = (state, action) => {
 	state.msg = action.payload.msg;
 	state.apiBaseUrl = action.payload.data.apiBaseUrl;
 	state.logLevel = action.payload.data.logLevel;
+	state.language = action.payload.data.language;
 };
 const handleGetSettingsRejected = (state, action) => {
 	state.isLoading = false;
