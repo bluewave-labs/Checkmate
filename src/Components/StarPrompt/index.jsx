@@ -1,141 +1,118 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, IconButton, Paper } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import { useTheme } from '@emotion/react';
+import './index.css';
 
-const StarPrompt = ({
-  repoUrl = 'https://github.com/bluewave-labs/checkmate',
-  title = 'Star Checkmate',
-  description = 'See the latest releases and help grow the community on GitHub',
-  storageKey = 'starPromptClosed'
-}) => {
+const StarPrompt = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [starCount, setStarCount] = useState('0');
+  const STORAGE_KEY = 'starPromptClosed';
+  const theme = useTheme();
 
   useEffect(() => {
-    const fetchStarCount = async () => {
-      try {
-        const owner = 'bluewave-labs';
-        const repo = 'checkmate';
-        
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-        const data = await response.json();
-        
-        const count = data.stargazers_count;
-        const formattedCount = count >= 1000 
-          ? `${(count / 1000).toFixed(1)}k`
-          : count.toString();
-        
-        setStarCount(formattedCount);
-      } catch (error) {
-        console.error('Error fetching star count:', error);
-      }
-    };
-
-    fetchStarCount();
-    
-    const hasClosedPrompt = localStorage.getItem(storageKey);
+    const hasClosedPrompt = localStorage.getItem(STORAGE_KEY);
     if (!hasClosedPrompt) {
       setIsVisible(true);
     }
-  }, [storageKey]);
+  }, []);
 
   const handleClose = () => {
-    localStorage.setItem(storageKey, 'true');
+    localStorage.setItem(STORAGE_KEY, 'true');
     setIsVisible(false);
   };
 
   const handleStarClick = () => {
-    window.open(repoUrl, '_blank');
+    window.open('https://github.com/bluewave-labs/checkmate', '_blank');
   };
 
   if (!isVisible) return null;
 
   return (
-    <Paper
-      elevation={0}
+    <Box
+      className="star-prompt"
       sx={{
-        p: 2,
-        mb: 2,
-        mx: 2,
-        borderRadius: '8px',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        width: '100%',
         backgroundColor: 'background.paper',
-        width: 'auto',
       }}
     >
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: 1 
-      }}>
-        <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <Typography variant="h6" sx={{ fontSize: '14px', fontWeight: 600, color: 'primary.contrastText' }}>
-            {title}
+      <Box
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          px: theme.spacing(8),
+          py: 2
+        }}
+      >
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          mb: '10px'
+        }}>
+          <Typography 
+            sx={{ 
+              fontFamily: 'Inter',
+              fontWeight: 500,
+              lineHeight: '14.52px',
+              letterSpacing: '0%',
+              color: '#344054',
+              pt: '19px'
+            }}
+          >
+            Star Checkmate
           </Typography>
           <IconButton
             size="small"
             onClick={handleClose}
             sx={{ 
-              mt: -1, 
+              color: theme.palette.primary.contrastTextTertiary,
+              pt: 0,
+              pr: 0,
+              pb: 0,
+              pl: 0,
               mr: -1,
-              color: 'primary.contrastTextSecondary',
               '&:hover': {
-                color: 'primary.contrastText'
+                backgroundColor: 'transparent',
+                color: theme.palette.primary.contrastTextSecondary
               }
             }}
           >
-            <CloseIcon fontSize="small" />
+            <CloseIcon sx={{ fontSize: '18px' }} />
           </IconButton>
         </Box>
-        
-        <Typography sx={{ fontSize: '13px', color: 'primary.contrastTextSecondary' }}>
-          {description}
+
+        <Typography 
+          sx={{ 
+            fontFamily: 'Inter',
+            fontWeight: 400,
+            lineHeight: '14.53px',
+            letterSpacing: '0%',
+            color: '#344054',
+            opacity: 0.8,
+            mb: '15px'
+          }}
+        >
+          See the latest releases and help grow the community on GitHub
         </Typography>
 
         <Box 
+          component="img"
+          src="https://img.shields.io/github/stars/bluewave-labs/checkmate?label=checkmate&style=social"
+          alt="GitHub stars"
           onClick={handleStarClick}
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            mt: 1,
             cursor: 'pointer',
-            '&:hover': { opacity: 0.8 },
-            width: '100%'
+            width: 'fit-content',
+            pb: '18px',
+            '&:hover': {
+              opacity: 0.8
+            }
           }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              border: '1px solid',
-              borderColor: 'primary.lowContrastBorder',
-              borderRadius: '6px',
-              px: 1.5,
-              py: 0.5,
-              backgroundColor: 'background.paper',
-            }}
-          >
-            <GitHubIcon sx={{ fontSize: 20, color: 'primary.contrastText' }} />
-            <Typography sx={{ fontSize: '13px', color: 'primary.contrastText' }}>Checkmate</Typography>
-          </Box>
-          <Box
-            sx={{
-              border: '1px solid',
-              borderColor: 'primary.lowContrastBorder',
-              borderRadius: '6px',
-              px: 1.5,
-              py: 0.5,
-              backgroundColor: 'background.paper',
-            }}
-          >
-            <Typography sx={{ fontSize: '13px', color: 'primary.contrastText' }}>{starCount}</Typography>
-          </Box>
-        </Box>
+        />
       </Box>
-    </Paper>
+    </Box>
   );
 };
 
