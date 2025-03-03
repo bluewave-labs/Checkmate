@@ -9,6 +9,16 @@ import PropTypes from "prop-types";
 const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => {
 	const theme = useTheme();
 
+	const valueStyle = {
+		borderRadius: theme.spacing(2),
+		backgroundColor: theme.palette.tertiary.main,
+		width: "40%",
+		mb: theme.spacing(2),
+		mt: theme.spacing(2),
+		pr: theme.spacing(2),
+		textAlign: 'right'
+	}
+
 	return (
 		<BaseContainer>
 			<Stack
@@ -16,12 +26,21 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 				gap={theme.spacing(2)}
 				alignItems="center"
 			>
-				<CustomGauge
-					progress={value}
-					radius={100}
-					color={theme.palette.primary.main}
-				/>
-				<Typography component="h2">{heading}</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						width: "100%",
+						backgroundColor: theme.palette.gradient.color1
+					}}
+				>
+					<CustomGauge
+						progress={value}
+						radius={100}
+					/>
+					<Typography component="h2" sx={{ fontWeight: 600 }}>{heading}</Typography>
+				</Box>
 				<Box
 					sx={{
 						width: "100%",
@@ -31,18 +50,20 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 					<Stack
 						justifyContent={"space-between"}
 						direction="row"
+						alignItems="center"
 						gap={theme.spacing(2)}
 					>
 						<Typography>{metricOne}</Typography>
-						<Typography>{valueOne}</Typography>
+						<Typography sx={valueStyle}>{valueOne}</Typography>
 					</Stack>
 					<Stack
 						justifyContent={"space-between"}
 						direction="row"
+						alignItems="center"
 						gap={theme.spacing(2)}
 					>
 						<Typography>{metricTwo}</Typography>
-						<Typography>{valueTwo}</Typography>
+						<Typography sx={valueStyle}>{valueTwo}</Typography>
 					</Stack>
 				</Box>
 			</Stack>
