@@ -57,10 +57,6 @@ const Account = ({ open = "profile" }) => {
 			className="account"
 			px={theme.spacing(20)}
 			py={theme.spacing(12)}
-			backgroundColor={theme.palette.primary.main}
-			border={1}
-			borderColor={theme.palette.primary.lowContrast}
-			borderRadius={theme.shape.borderRadius}
 		>
 			<TabContext value={tab}>
 				<Box
