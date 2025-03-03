@@ -36,8 +36,8 @@ const Alert = ({ variant, title, body, isToast, hasIcon = true, onClick }) => {
 	*/
 
 	const text = theme.palette.secondary.contrastText;
-	const border = theme.palette.alert.border;
-	const bg = theme.palette.alert.background;
+	const border = theme.palette.alert.contrastText;
+	const bg = theme.palette.alert.main;
 	const icon = icons[variant];
 
 	return (

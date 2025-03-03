@@ -7,7 +7,7 @@ import Checkbox from "../../../../../Components/Inputs/Checkbox";
 // Utils
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
-import SectionStack from "./SectionStack";
+import ConfigStack from "./ConfigStack";
 const Content = ({
 	tabValue,
 	form,
@@ -34,7 +34,7 @@ const Content = ({
 	return (
 		<TabPanel value={tabValue}>
 			<Stack gap={theme.spacing(10)}>
-				<SectionStack
+				<ConfigStack
 					title="Status page servers"
 					description="You can add any number of servers that you monitor to your status page. You can also reorder them for the best viewing experience."
 				>
@@ -68,8 +68,8 @@ const Content = ({
 							setSelectedMonitors={handleMonitorsChange}
 						/>
 					</Stack>
-				</SectionStack>
-				<SectionStack
+				</ConfigStack>
+				<ConfigStack
 					title="Features"
 					description="Show more details on the status page"
 				>
@@ -89,7 +89,7 @@ const Content = ({
 							onChange={handleFormChange}
 						/>
 					</Stack>
-				</SectionStack>
+				</ConfigStack>
 			</Stack>
 		</TabPanel>
 	);

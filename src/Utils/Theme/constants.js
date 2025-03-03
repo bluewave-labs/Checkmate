@@ -292,11 +292,11 @@ const newSemanticColors = {
 		},
 	},
 	alert: {
-		background: {
+		main: {
 			light: newColors.gray200,
 			dark: newColors.gray900,
 		},
-		border: {
+		contrastText: {
 			light: newColors.blueGray600,
 			dark: newColors.blueGray900,
 		},

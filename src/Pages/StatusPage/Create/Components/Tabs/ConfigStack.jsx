@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 
 // This can be used to add any extra/additional section/stacks on top of existing sections on the tab
-const SectionStack = ({ title, description, children }) => {
+const ConfigStack = ({ title, description, children }) => {
 	const theme = useTheme();
 	return (
 		<ConfigBox>
@@ -17,10 +17,10 @@ const SectionStack = ({ title, description, children }) => {
 	);
 };
 
-SectionStack.propTypes = {
+ConfigStack.propTypes = {
 	title: PropTypes.string.isRequired, // Title must be a string and is required
 	description: PropTypes.string.isRequired, // Description must be a string and is required
 	children: PropTypes.node.isRequired,
 };
 
-export default SectionStack;
+export default ConfigStack;
