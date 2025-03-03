@@ -94,6 +94,7 @@ const newColors = {
 	blueGray600: "#344054",
 	blueGray800: "#1C2130",
 	blueBlueWave: "#1570EF",
+	lightBlueWave: "#CDE2FF",
 	/* I changed green 100 and green 700. Need to change red and warning as well, and refactor the object following the structure */
 	green100: "#67cd78",
 	green200: "#4B9B77",
@@ -170,6 +171,10 @@ const newSemanticColors = {
 		main: {
 			light: newColors.gray200,
 			dark: "#313131" /* newColors.blueGray600 */,
+		},
+		light: {
+			light: newColors.lightBlueWave,
+			dark: newColors.lightBlueWave,
 		},
 		contrastText: {
 			light: newColors.blueGray600,

@@ -64,6 +64,7 @@ const useHardwareUtils = () => {
 			return (
 				<>
 					{Number(MB.toFixed(0))}
+					{space ? " " : ""}
 					<Typography component="span">MB</Typography>
 				</>
 			);

@@ -62,7 +62,7 @@ const InfrastructureDetails = () => {
 					monitor={monitor}
 				/>
 				<GenericFallback>
-					<Typography>No check history for htis monitor yet.</Typography>
+					<Typography>No check history for this monitor yet.</Typography>
 				</GenericFallback>
 			</Stack>
 		);
