@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import ThemeSwitch from "../ThemeSwitch";
 import Avatar from "../Avatar";
+import StarPrompt from "../StarPrompt";
 import LockSvg from "../../assets/icons/lock.svg?react";
 import UserSvg from "../../assets/icons/user.svg?react";
 import TeamSvg from "../../assets/icons/user-two.svg?react";
@@ -590,6 +591,8 @@ function Sidebar() {
 			</Box>
 			<Divider sx={{ mt: "auto", borderColor: theme.palette.primary.lowContrast }} />
 
+			{!collapsed && <StarPrompt />}
+			
 			<Stack
 				direction="row"
 				height="50px"
