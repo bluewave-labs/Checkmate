@@ -1,0 +1,41 @@
+.wallet-adapter-dropdown {
+  width: 100%;
+}
+
+.wallet-adapter-button {
+  width: 100%;
+  justify-content: center;
+  height: var(--button-height) !important;
+  font-size: var(--font-size-body) !important;
+  font-weight: var(--font-weight-medium) !important;
+  margin: var(--spacing-xs) 0;
+  white-space: nowrap;
+}
+
+.wallet-adapter-modal-title {
+  font-size: var(--font-size-h5) !important;
+}
+
+/* Separator styling */
+.wallet-adapter-modal-divider {
+  background-color: var(--border-color) !important;
+  margin: var(--spacing-md) 0 !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 1093px) {
+  .wallet-adapter-button {
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+    font-size: calc(var(--font-size-body) * 0.9) !important;
+  }
+}
+
+@media (max-width: 910px) {
+  .wallet-adapter-modal-wrapper {
+    flex-direction: column !important;
+  }
+  
+  .wallet-adapter-modal-divider {
+    margin: var(--spacing-sm) 0 !important;
+  }
+}

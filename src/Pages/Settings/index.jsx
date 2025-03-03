@@ -398,6 +398,7 @@ const Settings = () => {
 					</ConfigBox>
 				)}
 
+
 				<ConfigBox>
 					<Box>
 						<Typography component="h1">{t("settingsAbout")}</Typography>
