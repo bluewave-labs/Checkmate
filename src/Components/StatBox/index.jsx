@@ -120,7 +120,7 @@ const StatBox = ({
 			)}
 			<Stack>
 				<Typography component="h2">{heading}</Typography>
-				<Typography sx={{fontWeight: 600}}>{subHeading}</Typography>
+				<Typography sx={{fontWeight: 500}}>{subHeading}</Typography>
 			</Stack>
 		</Stack>
 	);

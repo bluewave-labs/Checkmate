@@ -139,14 +139,6 @@ const newSemanticColors = {
 			light: newColors.offWhite,
 			dark: newColors.offWhite,
 		},
-		base: {
-			light: newColors.lightBlueWave,
-			dark: newColors.lightBlueWave,
-		},
-		baseBackground: {
-			light: paletteColors.white,
-			dark: newColors.offBlack,
-		}
 	},
 	primary: {
 		main: {
@@ -179,6 +171,10 @@ const newSemanticColors = {
 		main: {
 			light: newColors.gray200,
 			dark: "#313131" /* newColors.blueGray600 */,
+		},
+		light: {
+			light: newColors.lightBlueWave,
+			dark: newColors.lightBlueWave,
 		},
 		contrastText: {
 			light: newColors.blueGray600,

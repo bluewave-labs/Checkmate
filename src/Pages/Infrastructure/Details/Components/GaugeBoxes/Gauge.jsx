@@ -15,9 +15,8 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 		width: "40%",
 		mb: 2,
 		mt: 2,
-		pr: 4,
-		textAlign: 'right',
-		fontWeight: 600
+		pr: 2,
+		textAlign: 'right'
 	}
 
 	return (

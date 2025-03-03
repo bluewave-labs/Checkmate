@@ -62,7 +62,7 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 			className="radial-chart"
 			width={radius}
 			height={radius}
-			sx={{ backgroundColor: theme.palette.accent.baseBackground, borderRadius: "50%" }}
+			sx={{ backgroundColor: theme.palette.primary.main, borderRadius: "50%" }}
 		>
 			<svg
 				viewBox={`0 0 ${totalSize} ${totalSize}`}
@@ -71,7 +71,7 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 			>
 				<circle
 					className="radial-chart-base"
-					stroke={theme.palette.accent.base} // CAIO_REVIEW
+					stroke={theme.palette.secondary.light} // CAIO_REVIEW
 					strokeWidth={strokeWidth}
 					fill="none"
 					cx={totalSize / 2} // Center the circle
@@ -101,7 +101,6 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 					transform: "translate(-50%, -50%)",
 					...theme.typography.h2,
 					fill: theme.typography.h2.color,
-					fontWeight: 500,
 				}}
 			>
 				{`${progressWithinRange.toFixed(1)}%`}
