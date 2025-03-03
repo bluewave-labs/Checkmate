@@ -24,7 +24,11 @@ const useSubscribeToMonitors = (page, rowsPerPage) => {
 			const cleanup = networkService.subscribeToDistributedUptimeMonitors({
 				teamId: user.teamId,
 				limit: 25,
-				types: ["distributed_http"],
+				types: [
+					typeof import.meta.env.VITE_DEPIN_TESTING === "undefined"
+						? "distributed_http"
+						: "distributed_test",
+				],
 				page,
 				rowsPerPage,
 				filter: null,

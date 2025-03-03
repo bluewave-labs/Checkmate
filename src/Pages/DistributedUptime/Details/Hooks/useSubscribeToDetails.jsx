@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { networkService } from "../../../../main";
-import { useSelector } from "react-redux";
 
 const getRandomDevice = () => {
 	const manufacturers = {
