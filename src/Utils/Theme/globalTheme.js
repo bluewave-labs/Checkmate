@@ -382,6 +382,18 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+		MuiButtonGroup: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					ml: "auto",
+					"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
+						borderColor: theme.palette.primary.lowContrast,
+						width: "auto",
+						whiteSpace: "nowrap",
+					},
+				}),
+			},
+		},
 	},
 	shape: {
 		borderRadius: 2,
