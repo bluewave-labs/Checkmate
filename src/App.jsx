@@ -12,17 +12,28 @@ import { logger } from "./Utils/Logger"; // Import the logger
 import { networkService } from "./main";
 import { Routes } from "./Routes";
 import WalletProvider from "./Components/WalletProvider";
+import { useTranslation } from "react-i18next";
+import { setLanguage } from "./Features/UI/uiSlice";
 
 function App() {
 	const mode = useSelector((state) => state.ui.mode);
 	const { authToken } = useSelector((state) => state.auth);
 	const dispatch = useDispatch();
+	const { i18n } = useTranslation();
 
 	useEffect(() => {
 		if (authToken) {
-			dispatch(getAppSettings({ authToken }));
+			dispatch(getAppSettings({ authToken })).then((action) => {
+				if (action.payload && action.payload.success) {
+					const { language } = action.payload.data;
+					if (language) {
+						dispatch(setLanguage(language));
+						i18n.changeLanguage(language);
+					}
+				}
+			});
 		}
-	}, [dispatch, authToken]);
+	}, [dispatch, authToken, i18n]);
 
 	// Cleanup
 	useEffect(() => {
