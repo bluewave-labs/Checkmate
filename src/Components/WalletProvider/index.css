@@ -1,15 +1,23 @@
 .wallet-adapter-dropdown {
-  width: 100%;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap; 
+	justify-content: center; 
+	align-items: center; 
+	gap: var(--env-var-spacing-1); 
 }
 
 .wallet-adapter-button {
-  width: 100%;
-  justify-content: center;
-  height: var(--button-height) !important;
-  font-size: var(--font-size-body) !important;
-  font-weight: var(--font-weight-medium) !important;
-  margin: var(--spacing-xs) 0;
-  white-space: nowrap;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	height: var(--env-var-height-2) !important;
+	font-size: var(--env-var-font-size-medium-plus) !important;
+	font-weight: 500 !important;
+	margin: 0; 
+	padding: calc((var(--env-var-height-2) - var(--env-var-font-size-medium-plus) * 1.2) / 2) var(--env-var-spacing-1);
+	white-space: nowrap;
 }
 
 .wallet-adapter-modal-title {
@@ -24,10 +32,12 @@
 
 /* Responsive fixes */
 @media (max-width: 1093px) {
-  .wallet-adapter-button {
-    padding: var(--spacing-xs) var(--spacing-sm) !important;
-    font-size: calc(var(--font-size-body) * 0.9) !important;
-  }
+	.wallet-adapter-button {
+		font-size: var(--env-var-font-size-medium) !important;
+		padding: calc((var(--env-var-height-2) - var(--env-var-font-size-medium) * 1.2) / 2)
+			var(--env-var-spacing-1-minus) !important;
+		
+	}
 }
 
 @media (max-width: 910px) {
