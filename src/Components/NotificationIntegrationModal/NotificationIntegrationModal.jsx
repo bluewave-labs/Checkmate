@@ -18,6 +18,8 @@ import Checkbox from "../Inputs/Checkbox";
 
 // Tab Panel component
 function TabPanel({ children, value, index, ...other }) {
+  const theme = useTheme(); 
+  
   return (
     <div
       role="tabpanel"
@@ -27,7 +29,7 @@ function TabPanel({ children, value, index, ...other }) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ pt: 3 }}>
+        <Box sx={{ pt: theme.spacing(3) }}>
           {children}
         </Box>
       )}
