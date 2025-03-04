@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { networkService } from "../../../../main";
+import { createToast } from "../../../../Utils/toastUtils";
 
 const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) => {
 	const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +18,35 @@ const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) 
 		if (isPublic && isPublished === false) {
 			return;
 		}
+
+		// Get initial data
+
+		const fetchInitialData = async () => {
+			try {
+				const res = await networkService.getDistributedUptimeDetails({
+					monitorId,
+					dateRange: dateRange,
+					normalize: true,
+				});
+				const responseData = res?.data?.data;
+
+				if (typeof responseData === "undefined") {
+					throw new Error("No data");
+				}
+
+				setLastUpdateTrigger(Date.now());
+				setMonitor(responseData);
+			} catch (error) {
+				setNetworkError(true);
+				createToast({
+					body: error.message,
+				});
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchInitialData();
 
 		try {
 			const cleanup = networkService.subscribeToDistributedUptimeDetails({
