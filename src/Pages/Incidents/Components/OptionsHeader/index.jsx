@@ -25,7 +25,6 @@ const OptionsHeader = ({
 		direction: "row",
 		alignItems: "center",
 		gap: theme.spacing(6),
-		marginLeft: "5px",
 	};
 
 	if (!shouldRender) return <SkeletonLayout />;
@@ -68,15 +67,10 @@ const OptionsHeader = ({
 					sx={{
 						ml: "auto",
 						alignItems: "stretch",
-						"& .MuiButtonBase-root": {
-							whiteSpace: "nowrap",
-							height: "auto",
-							"&.MuiButton-group": {
-								borderColor: theme.palette.primary.lowContrast,
-							},
-						},
-						"& .MuiButtonBase-root:hover": {
+						"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
 							borderColor: theme.palette.primary.lowContrast,
+							width: "auto",
+							whiteSpace: "nowrap",
 						},
 					}}
 				>
@@ -115,15 +109,10 @@ const OptionsHeader = ({
 					sx={{
 						ml: "auto",
 						alignItems: "stretch",
-						"& .MuiButtonBase-root": {
-							whiteSpace: "nowrap",
-							height: "auto",
-							"&.MuiButton-group": {
-								borderColor: theme.palette.primary.lowContrast,
-							},
-						},
-						"& .MuiButtonBase-root:hover": {
+						"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
 							borderColor: theme.palette.primary.lowContrast,
+							width: "auto",
+							whiteSpace: "nowrap",
 						},
 					}}
 				>

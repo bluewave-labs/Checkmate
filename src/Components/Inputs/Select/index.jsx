@@ -158,7 +158,7 @@ Select.propTypes = {
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
 	truncate: PropTypes.bool, // New prop: enable/disable truncation
-	maxTruncateLength: PropTypes.number, // New prop: configurable length
+	maxTruncateLength: PropTypes.number, // New prop: deafult is 15
 };
 
 export default Select;
