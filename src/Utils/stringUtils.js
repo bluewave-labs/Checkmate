@@ -42,14 +42,5 @@ export const toLowerCaseFirstLetter = (str) => {
  */
 export const isEmpty = (str) => {
 	// Check if string is null, undefined, or empty (including whitespace only)
-	return str === null || str === undefined || str.trim().length === 0;
-};
-
-/**
- * Checks if a string is not null, undefined, and not empty (including strings with only whitespace).
- * @param {string} str - The string to check.
- * @returns {boolean} - Returns true if the string is not null, undefined, and not empty.
- */
-export const isNotEmpty = (str) => {
-	return !isEmpty(str);
+	return str === null || typeof str === "undefined" || str.trim().length === 0;
 };

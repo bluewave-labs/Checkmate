@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { MenuItem, Select as MuiSelect, Stack, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { renderTruncatedValue } from "../../../Utils/Input/utils";
 import "./index.css";
 
 /**
@@ -50,8 +49,6 @@ const Select = ({
 	sx,
 	name = "",
 	labelControlSpacing = 2,
-	truncate = false,
-	maxTruncateLength = 15,
 }) => {
 	const theme = useTheme();
 
@@ -63,10 +60,6 @@ const Select = ({
 		color: theme.palette.primary.contrastTextTertiary,
 		borderRadius: theme.shape.borderRadius,
 		margin: theme.spacing(2),
-	};
-
-	const renderShortValue = () => {
-		return renderTruncatedValue(displayName, truncate, maxTruncateLength, placeholder);
 	};
 
 	return (
@@ -109,7 +102,6 @@ const Select = ({
 					},
 					...sx,
 				}}
-				renderValue={renderShortValue}
 			>
 				{placeholder && (
 					<MenuItem

@@ -63,17 +63,7 @@ const OptionsHeader = ({
 				>
 					Filter by:
 				</Typography>
-				<ButtonGroup
-					sx={{
-						ml: "auto",
-						alignItems: "stretch",
-						"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
-							borderColor: theme.palette.primary.lowContrast,
-							width: "auto",
-							whiteSpace: "nowrap",
-						},
-					}}
-				>
+				<ButtonGroup>
 					<Button
 						variant="group"
 						filled={(filter === "all").toString()}
@@ -105,17 +95,7 @@ const OptionsHeader = ({
 				>
 					Show:
 				</Typography>
-				<ButtonGroup
-					sx={{
-						ml: "auto",
-						alignItems: "stretch",
-						"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
-							borderColor: theme.palette.primary.lowContrast,
-							width: "auto",
-							whiteSpace: "nowrap",
-						},
-					}}
-				>
+				<ButtonGroup>
 					<Button
 						variant="group"
 						filled={(dateRange === "hour").toString()}
