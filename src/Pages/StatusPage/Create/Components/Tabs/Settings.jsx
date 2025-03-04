@@ -73,6 +73,8 @@ const TabSettings = ({
 							label="Your status page address"
 							value={form.url}
 							onChange={handleFormChange}
+							helperText={errors["url"]}
+							error={errors["url"] ? true : false}
 						/>
 					</Stack>
 				</ConfigBox>

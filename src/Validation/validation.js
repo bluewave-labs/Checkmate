@@ -222,7 +222,14 @@ const statusPageValidation = joi.object({
 		.string()
 		.trim()
 		.messages({ "string.empty": "Company name is required." }),
-	url: joi.string().trim().messages({ "string.empty": "URL is required." }),
+	url: joi
+		.string()
+		.pattern(/^[a-zA-Z0-9_-]+$/) // Only allow alphanumeric, underscore, and hyphen
+		.required()
+		.messages({
+			"string.pattern.base":
+				"URL can only contain letters, numbers, underscores, and hyphens",
+		}),
 	timezone: joi.string().trim().messages({ "string.empty": "Timezone is required." }),
 	color: joi.string().trim().messages({ "string.empty": "Color is required." }),
 	theme: joi.string(),
