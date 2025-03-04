@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { isEmpty } from "../stringUtils";
 
 /**
  * Utility function to render a truncated value with an optional title.
@@ -15,7 +16,7 @@ export const renderTruncatedValue = function (
 	maxLength,
 	placeholder
 ) {
-	if (!displayName || displayName === "0") return placeholder;
+	if (isEmpty(displayName)) return placeholder;
 
 	const truncateTextWithDottedEnds = function (text, maxLength) {
 		if (!text || text.length <= maxLength) return text;
