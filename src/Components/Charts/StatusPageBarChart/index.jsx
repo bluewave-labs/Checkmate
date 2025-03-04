@@ -3,7 +3,45 @@ import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { formatDateWithTz } from "../../../Utils/timeUtils";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Bar from "../Bar";
+import PropTypes from "prop-types";
+
+/**
+ * A customizable Bar component that renders a colored bar with optional children.
+ * @component
+ *
+ * @param {string} width The width of the bar (e.g., "100px").
+ * @param {string} height The height of the bar (e.g., "50px").
+ * @param {string} backgroundColor The background color of the bar (e.g., "#FF5733").
+ * @param {string} [borderRadius] Optional border radius for the bar (e.g., "8px").
+ * @param {node} children The content to be rendered inside the bar.
+ * @returns {JSX.Element} The Bar component.
+ */
+
+const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
+	const theme = useTheme();
+
+	return (
+		<Box
+			position="relative"
+			width={width}
+			height={height}
+			backgroundColor={backgroundColor}
+			sx={{
+				borderRadius: borderRadius || theme.spacing(1.5),
+			}}
+		>
+			{children}
+		</Box>
+	);
+};
+
+Bar.propTypes = {
+	width: PropTypes.string.isRequired,
+	height: PropTypes.string.isRequired,
+	backgroundColor: PropTypes.string.isRequired,
+	borderRadius: PropTypes.string,
+	children: PropTypes.node,
+};
 
 /* TODO add prop validation and jsdocs */
 const StatusPageBarChart = ({ checks = [] }) => {
@@ -44,7 +82,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 					// even if there are less than 25 checks
 					<Bar
 						key={`${check}-${index}`}
-						width="calc(85% / 25)"
+						width="calc(60% / 25)"
 						height="100%"
 						backgroundColor={theme.palette.primary.lowContrast}
 					/>
@@ -138,7 +176,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 						}}
 					>
 						<Bar
-							width="calc(85% / 25)"
+							width="calc(60% / 25)"
 							height="100%"
 							backgroundColor={theme.palette.primary.lowContrast}
 						>
