@@ -52,7 +52,6 @@ const Select = ({
 	labelControlSpacing = 2,
 }) => {
 	const theme = useTheme();
-
 	const itemStyles = {
 		fontSize: "var(--env-var-font-size-medium)",
 		color: theme.palette.primary.contrastTextTertiary,
