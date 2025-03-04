@@ -63,7 +63,7 @@ const menu = [
 
 	{ name: "Status pages", path: "status", icon: <StatusPages /> },
 	{ name: "Maintenance", path: "maintenance", icon: <Maintenance /> },
-	{ name: "Integrations", path: "integrations", icon: <Integrations /> },
+	// { name: "Integrations", path: "integrations", icon: <Integrations /> },
 	{
 		name: "Settings",
 		icon: <Settings />,
