@@ -27,19 +27,24 @@ import {
 	setTimezone,
 	setMode,
 	setDistributedUptimeEnabled,
+	setLanguage,
 } from "../../Features/UI/uiSlice";
 import timezones from "../../Utils/timezones.json";
 import { useState, useEffect } from "react";
 import { networkService } from "../../main";
 import { settingsValidation } from "../../Validation/validation";
+import { updateAppSettings } from "../../Features/Settings/settingsSlice";
+import { useTranslation } from "react-i18next";
 
 // Constants
 const SECONDS_PER_DAY = 86400;
 
 const Settings = () => {
 	const theme = useTheme();
+	const { t, i18n } = useTranslation();
 	const isAdmin = useIsAdmin();
 	const { user } = useSelector((state) => state.auth);
+	const { language } = useSelector((state) => state.ui);
 	const { checkTTL } = user;
 	const { isLoading } = useSelector((state) => state.uptimeMonitors);
 	const { isLoading: authIsLoading } = useSelector((state) => state.auth);
@@ -119,10 +124,13 @@ const Settings = () => {
 			});
 			const updatedUser = { ...user, checkTTL: form.ttl };
 			const action = await dispatch(update({ localData: updatedUser }));
+			const settingsAction = await dispatch(
+				updateAppSettings({ settings: { language: language } })
+			);
 
-			if (action.payload.success) {
+			if (action.payload.success && settingsAction.payload.success) {
 				createToast({
-					body: "Settings saved successfully",
+					body: t("settingsSuccessSaved"),
 				});
 			} else {
 				if (action.payload) {
@@ -139,7 +147,7 @@ const Settings = () => {
 			}
 		} catch (error) {
 			console.log(error);
-			createToast({ body: "Failed to save settings" });
+			createToast({ body: t("settingsFailedToSave") });
 		} finally {
 			setChecksIsLoading(false);
 		}
@@ -147,18 +155,16 @@ const Settings = () => {
 
 	const handleClearStats = async () => {
 		try {
-			const action = await dispatch(
-				deleteMonitorChecksByTeamId({ teamId: user.teamId })
-			);
+			const action = await dispatch(deleteMonitorChecksByTeamId({ teamId: user.teamId }));
 
 			if (deleteMonitorChecksByTeamId.fulfilled.match(action)) {
-				createToast({ body: "Stats cleared successfully" });
+				createToast({ body: t("settingsStatsCleared") });
 			} else {
-				createToast({ body: "Failed to clear stats" });
+				createToast({ body: t("settingsFailedToClearStats") });
 			}
 		} catch (error) {
 			logger.error(error);
-			createToast({ body: "Failed to clear stats" });
+			createToast({ body: t("settingsFailedToClearStats") });
 		} finally {
 			setIsOpen(deleteStatsMonitorsInitState);
 		}
@@ -168,13 +174,13 @@ const Settings = () => {
 		try {
 			const action = await dispatch(addDemoMonitors());
 			if (addDemoMonitors.fulfilled.match(action)) {
-				createToast({ body: "Successfully added demo monitors" });
+				createToast({ body: t("settingsDemoMonitorsAdded") });
 			} else {
-				createToast({ body: "Failed to add demo monitors" });
+				createToast({ body: t("settingsFailedToAddDemoMonitors") });
 			}
 		} catch (error) {
 			logger.error(error);
-			createToast({ Body: "Failed to add demo monitors" });
+			createToast({ Body: t("settingsFailedToAddDemoMonitors") });
 		}
 	};
 
@@ -182,17 +188,19 @@ const Settings = () => {
 		try {
 			const action = await dispatch(deleteAllMonitors());
 			if (deleteAllMonitors.fulfilled.match(action)) {
-				createToast({ body: "Successfully deleted all monitors" });
+				createToast({ body: t("settingsMonitorsDeleted") });
 			} else {
-				createToast({ body: "Failed to add demo monitors" });
+				createToast({ body: t("settingsFailedToDeleteMonitors") });
 			}
 		} catch (error) {
 			logger.error(error);
-			createToast({ Body: "Failed to delete all monitors" });
+			createToast({ Body: t("settingsFailedToDeleteMonitors") });
 		} finally {
 			setIsOpen(deleteStatsMonitorsInitState);
 		}
 	};
+
+	const languages = Object.keys(i18n.options.resources || {});
 
 	return (
 		<Box
@@ -209,16 +217,16 @@ const Settings = () => {
 			>
 				<ConfigBox>
 					<Box>
-						<Typography component="h1">General settings</Typography>
+						<Typography component="h1">{t("settingsGeneralSettings")}</Typography>
 						<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
-							<Typography component="span">Display timezone</Typography>- The timezone of
-							the dashboard you publicly display.
+							<Typography component="span">{t("settingsDisplayTimezone")}</Typography>-{" "}
+							{t("settingsDisplayTimezoneDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(20)}>
 						<Select
 							id="display-timezones"
-							label="Display timezone"
+							label={t("settingsDisplayTimezone")}
 							value={timezone}
 							onChange={(e) => {
 								dispatch(setTimezone({ timezone: e.target.value }));
@@ -229,15 +237,15 @@ const Settings = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h1">Appearance</Typography>
+						<Typography component="h1">{t("settingsAppearance")}</Typography>
 						<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
-							Switch between light and dark mode.
+							{t("settingsAppearanceDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(20)}>
 						<Select
 							id="theme-mode"
-							label="Theme Mode"
+							label={t("settingsThemeMode")}
 							value={mode}
 							onChange={(e) => {
 								dispatch(setMode(e.target.value));
@@ -247,14 +255,24 @@ const Settings = () => {
 								{ _id: "dark", name: "Dark" },
 							]}
 						></Select>
+						<Select
+							id="language"
+							label={t("settingsLanguage")}
+							value={language}
+							onChange={(e) => {
+								dispatch(setLanguage(e.target.value));
+								i18n.changeLanguage(e.target.value);
+							}}
+							items={languages.map((lang) => ({ _id: lang, name: lang.toUpperCase() }))}
+						></Select>
 					</Stack>
 				</ConfigBox>
 				{isAdmin && (
 					<ConfigBox>
 						<Box>
-							<Typography component="h1">Distributed uptime</Typography>
+							<Typography component="h1">{t("settingsDistributedUptime")}</Typography>
 							<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
-								Enable/disable distributed uptime monitoring.
+								{t("settingsDistributedUptimeDescription")}
 							</Typography>
 						</Box>
 						<Box>
@@ -266,109 +284,18 @@ const Settings = () => {
 									dispatch(setDistributedUptimeEnabled(e.target.checked));
 								}}
 							/>
-							{distributedUptimeEnabled === true ? "Enabled" : "Disabled"}
+							{distributedUptimeEnabled === true
+								? t("settingsEnabled")
+								: t("settingsDisabled")}
 						</Box>
 					</ConfigBox>
 				)}
 				{isAdmin && (
 					<ConfigBox>
 						<Box>
-							<Typography component="h1">History and monitoring</Typography>
+							<Typography component="h1">{t("settingsWallet")}</Typography>
 							<Typography sx={{ mt: theme.spacing(2) }}>
-								Define here for how long you want to keep the data. You can also remove
-								all past data.
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(20)}>
-							<TextInput
-								id="ttl"
-								label="The days you want to keep monitoring history."
-								optionalLabel="0 for infinite"
-								value={form.ttl}
-								onChange={handleChange}
-								error={errors.ttl ? true : false}
-								helperText={errors.ttl}
-							/>
-							<Box>
-								<Typography>Clear all stats. This is irreversible.</Typography>
-								<Button
-									variant="contained"
-									color="error"
-									onClick={() =>
-										setIsOpen({ ...deleteStatsMonitorsInitState, deleteStats: true })
-									}
-									sx={{ mt: theme.spacing(4) }}
-								>
-									Clear all stats
-								</Button>
-							</Box>
-						</Stack>
-						<Dialog
-							open={isOpen.deleteStats}
-							theme={theme}
-							title="Do you want to clear all stats?"
-							description="Once deleted, your monitors cannot be retrieved."
-							onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
-							confirmationButtonLabel="Yes, clear all stats"
-							onConfirm={handleClearStats}
-							isLoading={isLoading || authIsLoading || checksIsLoading}
-						/>
-					</ConfigBox>
-				)}
-				{isAdmin && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h1">Demo monitors</Typography>
-							<Typography sx={{ mt: theme.spacing(2) }}>
-								Here you can add and remove demo monitors.
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(20)}>
-							<Box>
-								<Typography>Add demo monitors</Typography>
-								<Button
-									variant="contained"
-									color="accent"
-									loading={isLoading || authIsLoading || checksIsLoading}
-									onClick={handleInsertDemoMonitors}
-									sx={{ mt: theme.spacing(4) }}
-								>
-									Add demo monitors
-								</Button>
-							</Box>
-							<Box>
-								<Typography>Remove all monitors</Typography>
-								<Button
-									variant="contained"
-									color="error"
-									loading={isLoading || authIsLoading || checksIsLoading}
-									onClick={() =>
-										setIsOpen({ ...deleteStatsMonitorsInitState, deleteMonitors: true })
-									}
-									sx={{ mt: theme.spacing(4) }}
-								>
-									Remove all monitors
-								</Button>
-							</Box>
-						</Stack>
-						<Dialog
-							open={isOpen.deleteMonitors}
-							theme={theme}
-							title="Do you want to remove all monitors?"
-							onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
-							confirmationButtonLabel="Yes, clear all monitors"
-							onConfirm={handleDeleteAllMonitors}
-							isLoading={isLoading || authIsLoading || checksIsLoading}
-						/>
-					</ConfigBox>
-				)}
-				{isAdmin && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h1">Wallet</Typography>
-							<Typography sx={{ mt: theme.spacing(2) }}>
-								Connect your wallet here. This is required for the Distributed Uptime
-								monitor to connect to multiple nodes globally.
+								{t("settingsWalletDescription")}
 							</Typography>
 						</Box>
 						<Box>
@@ -382,15 +309,106 @@ const Settings = () => {
 						</Box>
 					</ConfigBox>
 				)}
+				{isAdmin && (
+					<ConfigBox>
+						<Box>
+							<Typography component="h1">{t("settingsHistoryAndMonitoring")}</Typography>
+							<Typography sx={{ mt: theme.spacing(2) }}>
+								{t("settingsHistoryAndMonitoringDescription")}
+							</Typography>
+						</Box>
+						<Stack gap={theme.spacing(20)}>
+							<TextInput
+								id="ttl"
+								label={t("settingsTTLLabel")}
+								optionalLabel={t("settingsTTLOptionalLabel")}
+								value={form.ttl}
+								onChange={handleChange}
+								error={errors.ttl ? true : false}
+								helperText={errors.ttl}
+							/>
+							<Box>
+								<Typography>{t("settingsClearAllStats")}</Typography>
+								<Button
+									variant="contained"
+									color="error"
+									onClick={() =>
+										setIsOpen({ ...deleteStatsMonitorsInitState, deleteStats: true })
+									}
+									sx={{ mt: theme.spacing(4) }}
+								>
+									{t("settingsClearAllStatsButton")}
+								</Button>
+							</Box>
+						</Stack>
+						<Dialog
+							open={isOpen.deleteStats}
+							theme={theme}
+							title={t("settingsClearAllStatsDialogTitle")}
+							description={t("settingsClearAllStatsDialogDescription")}
+							onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
+							confirmationButtonLabel={t("settingsClearAllStatsDialogConfirm")}
+							onConfirm={handleClearStats}
+							isLoading={isLoading || authIsLoading || checksIsLoading}
+						/>
+					</ConfigBox>
+				)}
+				{isAdmin && (
+					<ConfigBox>
+						<Box>
+							<Typography component="h1">{t("settingsDemoMonitors")}</Typography>
+							<Typography sx={{ mt: theme.spacing(2) }}>
+								{t("settingsDemoMonitorsDescription")}
+							</Typography>
+						</Box>
+						<Stack gap={theme.spacing(20)}>
+							<Box>
+								<Typography>{t("settingsAddDemoMonitors")}</Typography>
+								<Button
+									variant="contained"
+									color="accent"
+									loading={isLoading || authIsLoading || checksIsLoading}
+									onClick={handleInsertDemoMonitors}
+									sx={{ mt: theme.spacing(4) }}
+								>
+									{t("settingsAddDemoMonitorsButton")}
+								</Button>
+							</Box>
+							<Box>
+								<Typography>{t("settingsRemoveAllMonitors")}</Typography>
+								<Button
+									variant="contained"
+									color="error"
+									loading={isLoading || authIsLoading || checksIsLoading}
+									onClick={() =>
+										setIsOpen({ ...deleteStatsMonitorsInitState, deleteMonitors: true })
+									}
+									sx={{ mt: theme.spacing(4) }}
+								>
+									{t("settingsRemoveAllMonitorsButton")}
+								</Button>
+							</Box>
+						</Stack>
+						<Dialog
+							open={isOpen.deleteMonitors}
+							theme={theme}
+							title={t("settingsRemoveAllMonitorsDialogTitle")}
+							onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
+							confirmationButtonLabel={t("settingsRemoveAllMonitorsDialogConfirm")}
+							onConfirm={handleDeleteAllMonitors}
+							isLoading={isLoading || authIsLoading || checksIsLoading}
+						/>
+					</ConfigBox>
+				)}
 
 				<ConfigBox>
 					<Box>
-						<Typography component="h1">About</Typography>
+						<Typography component="h1">{t("settingsAbout")}</Typography>
 					</Box>
 					<Box>
 						<Typography component="h2">Checkmate {version}</Typography>
 						<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(6), opacity: 0.6 }}>
-							Developed by Bluewave Labs.
+							{t("settingsDevelopedBy")}
 						</Typography>
 						<Link
 							level="secondary"
@@ -411,7 +429,7 @@ const Settings = () => {
 						sx={{ px: theme.spacing(12), mt: theme.spacing(20) }}
 						onClick={handleSave}
 					>
-						Save
+						{t("settingsSave")}
 					</Button>
 				</Stack>
 			</Stack>
