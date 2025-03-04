@@ -219,7 +219,8 @@ const Settings = () => {
 					<Box>
 						<Typography component="h1">{t("settingsGeneralSettings")}</Typography>
 						<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
-							<Typography component="span">{t("settingsDisplayTimezone")}</Typography>- {t("settingsDisplayTimezoneDescription")}
+							<Typography component="span">{t("settingsDisplayTimezone")}</Typography>-{" "}
+							{t("settingsDisplayTimezoneDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(20)}>
@@ -242,17 +243,17 @@ const Settings = () => {
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(20)}>
-								<Select
-									id="theme-mode"
-									label={t("settingsThemeMode")}
-									value={mode}
-									onChange={(e) => {
-										dispatch(setMode(e.target.value));
-									}}
-									items={[
-										{ _id: "light", name: "Light" },
-										{ _id: "dark", name: "Dark" },
-									]}
+						<Select
+							id="theme-mode"
+							label={t("settingsThemeMode")}
+							value={mode}
+							onChange={(e) => {
+								dispatch(setMode(e.target.value));
+							}}
+							items={[
+								{ _id: "light", name: "Light" },
+								{ _id: "dark", name: "Dark" },
+							]}
 						></Select>
 						<Select
 							id="language"
@@ -283,7 +284,28 @@ const Settings = () => {
 									dispatch(setDistributedUptimeEnabled(e.target.checked));
 								}}
 							/>
-							{distributedUptimeEnabled === true ? t("settingsEnabled") : t("settingsDisabled")}
+							{distributedUptimeEnabled === true
+								? t("settingsEnabled")
+								: t("settingsDisabled")}
+						</Box>
+					</ConfigBox>
+				)}
+				{isAdmin && (
+					<ConfigBox>
+						<Box>
+							<Typography component="h1">{t("settingsWallet")}</Typography>
+							<Typography sx={{ mt: theme.spacing(2) }}>
+								{t("settingsWalletDescription")}
+							</Typography>
+						</Box>
+						<Box>
+							<Stack
+								direction="row"
+								spacing={2}
+							>
+								<WalletMultiButton />
+								<WalletDisconnectButton />
+							</Stack>
 						</Box>
 					</ConfigBox>
 				)}
@@ -376,25 +398,6 @@ const Settings = () => {
 							onConfirm={handleDeleteAllMonitors}
 							isLoading={isLoading || authIsLoading || checksIsLoading}
 						/>
-					</ConfigBox>
-				)}
-				{isAdmin && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h1">{t("settingsWallet")}</Typography>
-							<Typography sx={{ mt: theme.spacing(2) }}>
-								{t("settingsWalletDescription")}
-							</Typography>
-						</Box>
-						<Box>
-							<Stack
-								direction="row"
-								spacing={2}
-							>
-								<WalletMultiButton />
-								<WalletDisconnectButton />
-							</Stack>
-						</Box>
 					</ConfigBox>
 				)}
 

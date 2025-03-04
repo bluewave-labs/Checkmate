@@ -20,11 +20,52 @@ const useSubscribeToMonitors = (page, rowsPerPage) => {
 	const { getMonitorWithPercentage } = useMonitorUtils();
 
 	useEffect(() => {
+		const fetchInitialData = async () => {
+			try {
+				const initialDataRes = await networkService.getDistributedUptimeMonitors({
+					teamId: user.teamId,
+					limit: 25,
+					types: [
+						typeof import.meta.env.VITE_DEPIN_TESTING === "undefined"
+							? "distributed_http"
+							: "distributed_test",
+					],
+					page,
+					rowsPerPage,
+				});
+				const responseData = initialDataRes?.data?.data;
+				if (typeof responseData === "undefined") throw new Error("No data");
+
+				const { monitors, filteredMonitors, summary } = responseData;
+
+				const mappedMonitors = filteredMonitors?.map((monitor) =>
+					getMonitorWithPercentage(monitor, theme)
+				);
+
+				setMonitors(monitors);
+				setMonitorsSummary(summary);
+				setFilteredMonitors(mappedMonitors);
+			} catch (error) {
+				setNetworkError(true);
+				createToast({
+					body: error.message,
+				});
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchInitialData();
+
 		try {
 			const cleanup = networkService.subscribeToDistributedUptimeMonitors({
 				teamId: user.teamId,
 				limit: 25,
-				types: ["distributed_http"],
+				types: [
+					typeof import.meta.env.VITE_DEPIN_TESTING === "undefined"
+						? "distributed_http"
+						: "distributed_test",
+				],
 				page,
 				rowsPerPage,
 				filter: null,

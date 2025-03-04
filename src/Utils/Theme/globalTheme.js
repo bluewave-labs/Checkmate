@@ -382,6 +382,18 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+		MuiButtonGroup: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					ml: "auto",
+					"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
+						borderColor: theme.palette.primary.lowContrast,
+						width: "auto",
+						whiteSpace: "nowrap",
+					},
+				}),
+			},
+		},
 
 		// This code is added for clock in maintenance page
 		// code starts from here.

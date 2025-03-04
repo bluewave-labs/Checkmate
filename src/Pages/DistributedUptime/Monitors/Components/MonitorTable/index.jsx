@@ -20,7 +20,6 @@ const MonitorTable = ({ isLoading, monitors }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const { determineState } = useMonitorUtils();
-
 	const headers = [
 		{
 			id: "name",

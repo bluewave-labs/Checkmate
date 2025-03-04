@@ -807,6 +807,31 @@ class NetworkService {
 		);
 	}
 
+	getDistributedUptimeMonitors(config) {
+		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+
+		const params = new URLSearchParams();
+
+		if (limit) params.append("limit", limit);
+		if (types) {
+			types.forEach((type) => {
+				params.append("type", type);
+			});
+		}
+		if (page) params.append("page", page);
+		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
+		if (filter) params.append("filter", filter);
+		if (field) params.append("field", field);
+		if (order) params.append("order", order);
+
+		if (this.eventSource) {
+			this.eventSource.close();
+		}
+
+		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/${teamId}/initial?${params.toString()}`;
+		return this.axiosInstance.get(url);
+	}
+
 	subscribeToDistributedUptimeMonitors(config) {
 		const {
 			teamId,

@@ -40,7 +40,6 @@ const paletteColors = {
 	blueGray150: "#667085",
 	blueGray200: "#475467",
 	blueGray400: "#344054",
-	blueGray900: "#1c2130",
 	blueBlueWave: "#1570EF",
 	blue700: "#4E5BA6",
 	purple300: "#664EFF",
@@ -89,11 +88,14 @@ const newColors = {
 	gray100: "#F3F3F3",
 	gray200: "#EFEFEF",
 	gray500: "#A2A3A3",
+	gray900: "#1c1c1c",
 	blueGray50: "#E8F0FE",
 	blueGray500: "#475467",
 	blueGray600: "#344054",
 	blueGray800: "#1C2130",
+	blueGray900: "#515151",
 	blueBlueWave: "#1570EF",
+	lightBlueWave: "#CDE2FF",
 	/* I changed green 100 and green 700. Need to change red and warning as well, and refactor the object following the structure */
 	green100: "#67cd78",
 	green200: "#4B9B77",
@@ -170,6 +172,10 @@ const newSemanticColors = {
 		main: {
 			light: newColors.gray200,
 			dark: "#313131" /* newColors.blueGray600 */,
+		},
+		light: {
+			light: newColors.lightBlueWave,
+			dark: newColors.lightBlueWave,
 		},
 		contrastText: {
 			light: newColors.blueGray600,
@@ -288,6 +294,16 @@ const newSemanticColors = {
 		textAccent: {
 			light: "#C084FC",
 			dark: "#C084FC",
+		},
+	},
+	alert: {
+		main: {
+			light: newColors.gray200,
+			dark: newColors.gray900,
+		},
+		contrastText: {
+			light: newColors.blueGray600,
+			dark: newColors.blueGray900,
 		},
 	},
 };
