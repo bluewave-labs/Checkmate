@@ -23,7 +23,7 @@ import Radio from "../../../Components/Inputs/Radio";
 import Checkbox from "../../../Components/Inputs/Checkbox";
 import Select from "../../../Components/Inputs/Select";
 import ConfigBox from "../../../Components/ConfigBox";
-import NotificationIntegrationModal from "../Details/Components/NotificationIntegrationModal/NotificationIntegrationModal";
+import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/NotificationIntegrationModal";
 const CreateMonitor = () => {
 	const MS_PER_MINUTE = 60000;
 	const SELECT_VALUES = [

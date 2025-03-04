@@ -13,8 +13,8 @@ import {
   Divider
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import TextInput from "../../../../../../src/Components/Inputs/TextInput";
-import Checkbox from "../../../../../../src/Components/Inputs/Checkbox";
+import TextInput from "../Inputs/TextInput";
+import Checkbox from "../Inputs/Checkbox";
 
 // Tab Panel component
 function TabPanel({ children, value, index, ...other }) {
@@ -96,20 +96,18 @@ const NotificationIntegrationModal = ({
 
   const handleTestNotification = (type) => {
     console.log(`Testing ${type} notification`);
-    // Here you would implement the actual test notification functionality
+    //implement the test notification functionality
   };
 
   const handleSave = () => {
-    // Create notifications array based on selected integrations
+    //notifications array for selected integrations
     const notifications = [...(monitor?.notifications || [])];
     
-    // Filter out existing integrations that will be updated
     const existingTypes = ["slack", "discord", "telegram", "webhook"];
     const filteredNotifications = notifications.filter(
       notification => !existingTypes.includes(notification.type)
     );
 
-    // Add selected integrations
     if (integrations.slack) {
       filteredNotifications.push({
         type: "slack",
@@ -157,13 +155,14 @@ const NotificationIntegrationModal = ({
       sx={{
         '& .MuiDialog-paper': {
           backgroundColor: theme.palette.primary.main,
-          color: '#344054'
+          color: '#344054',
+          maxWidth: '775px'
         }
       }}
     >
    
       <DialogContent>
-        <Box sx={{ display: 'flex', height: '500px' }}>
+        <Box sx={{ display: 'flex', height: '300px' }}>
           {/* Left sidebar with tabs */}
           <Box sx={{ 
             borderRight: 1, 
@@ -194,7 +193,7 @@ const NotificationIntegrationModal = ({
                   borderRight: 'none',
                   '&.Mui-selected': {
                     color: theme.palette.primary.contrastText,
-                    backgroundColor: theme.palette.primary.main,
+                    backgroundColor: theme.palette.tertiary.main, // Match the hover background color
                     opacity: 1,
                     border: 'none',
                     borderBottom: 'none',
@@ -397,11 +396,20 @@ const NotificationIntegrationModal = ({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: theme.spacing(4) }}>
+      <DialogActions sx={{ 
+        p: theme.spacing(4),
+        display: 'flex',
+        justifyContent: 'flex-end',  
+        mb: theme.spacing(10),
+        mr: theme.spacing(10)
+}}>
         <Button 
           variant="contained" 
           color="accent" 
           onClick={handleSave}
+          sx={{ 
+            width: '120px'
+          }}
         >
           Save
         </Button>
