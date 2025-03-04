@@ -781,7 +781,7 @@ function Sidebar() {
 						},
 					}}
 					sx={{
-						ml: theme.spacing(8),
+						ml: theme.spacing(4),
 					}}
 				>
 					{collapsed && (
@@ -825,7 +825,7 @@ function Sidebar() {
 					)}
 					{/* TODO Do we need two dividers? */}
 					{collapsed && <Divider />}
-					<Divider />
+					{/* <Divider /> */}
 					{renderAccountMenuItems()}
 					<MenuItem
 						onClick={logout}
