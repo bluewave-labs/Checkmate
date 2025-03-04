@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { MenuItem, Select as MuiSelect, Stack, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
 import "./index.css";
 
 /**
@@ -51,9 +52,6 @@ const Select = ({
 	labelControlSpacing = 2,
 }) => {
 	const theme = useTheme();
-
-	const selectedItem = items.find((item) => item._id === value);
-	const displayName = selectedItem ? selectedItem.name : "";
 
 	const itemStyles = {
 		fontSize: "var(--env-var-font-size-medium)",
@@ -149,8 +147,6 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
-	truncate: PropTypes.bool, // New prop: enable/disable truncation
-	maxTruncateLength: PropTypes.number, // New prop: deafult is 15
 };
 
 export default Select;
