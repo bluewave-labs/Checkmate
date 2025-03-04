@@ -807,6 +807,31 @@ class NetworkService {
 		);
 	}
 
+	getDistributedUptimeMonitors(config) {
+		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+
+		const params = new URLSearchParams();
+
+		if (limit) params.append("limit", limit);
+		if (types) {
+			types.forEach((type) => {
+				params.append("type", type);
+			});
+		}
+		if (page) params.append("page", page);
+		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
+		if (filter) params.append("filter", filter);
+		if (field) params.append("field", field);
+		if (order) params.append("order", order);
+
+		if (this.eventSource) {
+			this.eventSource.close();
+		}
+
+		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/${teamId}/initial?${params.toString()}`;
+		return this.axiosInstance.get(url);
+	}
+
 	subscribeToDistributedUptimeMonitors(config) {
 		const {
 			teamId,
@@ -870,6 +895,15 @@ class NetworkService {
 				console.log("Nothing to cleanup");
 			};
 		};
+	}
+
+	getDistributedUptimeDetails(config) {
+		const params = new URLSearchParams();
+		const { monitorId, onUpdate, onOpen, onError, dateRange, normalize } = config;
+		if (dateRange) params.append("dateRange", dateRange);
+		if (normalize) params.append("normalize", normalize);
+		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}/initial?${params.toString()}`;
+		return this.axiosInstance.get(url);
 	}
 
 	subscribeToDistributedUptimeDetails(config) {
