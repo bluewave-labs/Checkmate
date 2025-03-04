@@ -25,9 +25,13 @@ const useMonitorsFetch = ({ teamId }) => {
 					field: null,
 					order: null,
 				});
-				if (res?.data?.data?.monitors?.length > 0) {
-					const monitorLookup = res.data.data.monitors.reduce((acc, monitor) => {
-						acc[monitor._id] = monitor;
+				if (res?.data?.data?.filteredMonitors?.length > 0) {
+					const monitorLookup = res.data.data.filteredMonitors.reduce((acc, monitor) => {
+						acc[monitor._id] = {
+							_id: monitor._id,
+							name: monitor.name,
+							type: monitor.type
+						};
 						return acc;
 					}, {});
 					setMonitors(monitorLookup);

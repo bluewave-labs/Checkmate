@@ -567,6 +567,7 @@ class NetworkService {
 
 	async getChecksByMonitor(config) {
 		const params = new URLSearchParams();
+		if (config.type) params.append("type", config.type);
 		if (config.sortOrder) params.append("sortOrder", config.sortOrder);
 		if (config.limit) params.append("limit", config.limit);
 		if (config.dateRange) params.append("dateRange", config.dateRange);
