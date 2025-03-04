@@ -382,6 +382,90 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
+		// This code is added for clock in maintenance page
+		// code starts from here.
+		MuiClockPicker: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+					"& .MuiTypography-root": {
+						color: theme.palette.primary.lowContrast,
+					},
+					"& .MuiClock-clock": {
+						backgroundColor: theme.palette.primary.dark,
+						borderColor: theme.palette.primary.lowContrast,
+					},
+				}),
+			},
+		},
+		// The clock pointer ( pointer to number like hour/minute hand)
+		MuiClockPointer: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.accent.main,
+					"& .MuiClock-pointer": {
+						backgroundColor: theme.palette.accent.main,
+					},
+				}),
+			},
+		},
+		// This is for numbers in the clock (circular one's)
+		MuiClockNumber: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					color: theme.palette.primary.contrastText,
+					"&.Mui-selected": {
+						color: theme.palette.accent.contrastText,
+						backgroundColor: theme.palette.accent.main,
+					},
+				}),
+			},
+		},
+		// This is for 00:00 am and pm (top bar)
+		MuiTimePickerToolbar: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.secondary.main,
+					"& .MuiTypography-root": {
+						color: theme.palette.secondary.contrastText,
+					},
+				}),
+			},
+		},
+		// left and right direction style
+		MuiPickersArrowSwitcher: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiIconButton-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		// cancel and okay actions style
+		MuiDialogActions: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+					"& .MuiButton-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		// code ends here.
+
+		// For labels of input fields
+		MuiInputLabel: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"&.Mui-focused": {
+						color: theme.palette.accent.main,
+					},
+				}),
+			},
+		},
 	},
 	shape: {
 		borderRadius: 2,
