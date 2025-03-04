@@ -49,6 +49,11 @@ const StatusPageBarChart = ({ checks = [] }) => {
 	const [animate, setAnimate] = useState(false);
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
+	const barWidth = {
+		xs: "calc(60% / 25)",
+		xl: "calc(40% / 25)",
+	};
+
 	useEffect(() => {
 		setAnimate(true);
 	}, []);
@@ -82,7 +87,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 					// even if there are less than 25 checks
 					<Bar
 						key={`${check}-${index}`}
-						width="calc(60% / 25)"
+						width={barWidth}
 						height="100%"
 						backgroundColor={theme.palette.primary.lowContrast}
 					/>
@@ -176,7 +181,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 						}}
 					>
 						<Bar
-							width="calc(60% / 25)"
+							width={barWidth}
 							height="100%"
 							backgroundColor={theme.palette.primary.lowContrast}
 						>
