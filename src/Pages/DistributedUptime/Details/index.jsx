@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 const DistributedUptimeDetails = () => {
 	const { monitorId } = useParams();
 	// Local State
-	const [dateRange, setDateRange] = useState("day");
+	const [dateRange, setDateRange] = useState("recent");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
 	// Utils
