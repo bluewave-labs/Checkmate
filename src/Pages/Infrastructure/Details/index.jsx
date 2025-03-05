@@ -24,11 +24,10 @@ const InfrastructureDetails = () => {
 	// Redux state
 
 	// Local state
-	const [dateRange, setDateRange] = useState("day");
+	const [dateRange, setDateRange] = useState("recent");
 
 	// Utils
 	const theme = useTheme();
-	const isAdmin = useIsAdmin();
 	const { monitorId } = useParams();
 
 	const { isLoading, networkError, monitor } = useHardwareMonitorsFetch({
