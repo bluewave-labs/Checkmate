@@ -1,9 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+title: 'Status to public url view issue with design'
+labels: 'good first issue'
+assignees: 'Ojhanaveen'
 
 ---
 
