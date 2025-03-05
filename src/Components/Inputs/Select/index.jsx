@@ -87,7 +87,7 @@ const Select = ({
 
 	const selectedItemName = truncate
 		? items.find((item) => item._id === value)?.name // Only calculate if truncate is true
-		: null;
+		: "";
 
 	return (
 		<Stack
