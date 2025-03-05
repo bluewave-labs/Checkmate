@@ -1,5 +1,5 @@
 // src/utils/truncateUtils.js
-import { isEmpty } from "./stringUtils"; // assuming you have the stringUtils file
+import { isEmpty } from "./stringUtils";
 
 /**
  * Utility function to render a truncated value with an optional title.

@@ -55,8 +55,8 @@ const Select = ({
 	truncate = false,
 	maxStringLength = 10,
 }) => {
-	const [maxLength, setMaxLength] = useState(0); // Initially set maxLength to 0
-	const selectRef = useRef(null); // Reference for the Select container
+	const [maxLength, setMaxLength] = useState(0);
+	const selectRef = useRef(null);
 
 	const theme = useTheme();
 	const itemStyles = {
@@ -85,7 +85,6 @@ const Select = ({
 		};
 	}, [maxStringLength, truncate]);
 
-	// Get the selected item's name
 	const selectedItemName = truncate
 		? items.find((item) => item._id === value)?.name // Only calculate if truncate is true
 		: null;
