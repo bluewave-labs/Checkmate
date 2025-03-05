@@ -29,10 +29,14 @@ const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) 
 					normalize: true,
 				});
 				const responseData = res?.data?.data;
-
 				if (typeof responseData === "undefined") {
 					throw new Error("No data");
 				}
+
+				if (responseData.explainResults) {
+					console.log(responseData.explainResults);
+				}
+
 				setConnectionStatus("up");
 				setLastUpdateTrigger(Date.now());
 				setMonitor(responseData);
