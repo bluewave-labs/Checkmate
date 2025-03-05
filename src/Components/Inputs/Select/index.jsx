@@ -4,8 +4,6 @@ import { MenuItem, Select as MuiSelect, Stack, Typography } from "@mui/material"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import "./index.css";
-import { useEffect, useRef, useState } from "react";
-import { renderTruncatedValue } from "../../../Utils/truncateUtils.jsx";
 
 /**
  * @component
@@ -52,12 +50,8 @@ const Select = ({
 	sx,
 	name = "",
 	labelControlSpacing = 2,
-	truncate = false,
-	maxStringLength = 10,
+	maxWidthValue = 250,
 }) => {
-	const [maxLength, setMaxLength] = useState(0);
-	const selectRef = useRef(null);
-
 	const theme = useTheme();
 	const itemStyles = {
 		fontSize: "var(--env-var-font-size-medium)",
@@ -65,29 +59,6 @@ const Select = ({
 		borderRadius: theme.shape.borderRadius,
 		margin: theme.spacing(2),
 	};
-
-	// Dynamically adjust maxLength based on window width
-	useEffect(() => {
-		if (!truncate) return; // If truncate is false, do not run this effect
-
-		const calculateMaxLength = () => {
-			if (selectRef.current) {
-				const width = selectRef.current.offsetWidth;
-				const calculatedMaxLength = Math.floor(width / maxStringLength);
-				setMaxLength(calculatedMaxLength);
-			}
-		};
-		calculateMaxLength();
-		window.addEventListener("resize", calculateMaxLength);
-
-		return () => {
-			window.removeEventListener("resize", calculateMaxLength); // Cleanup on unmount
-		};
-	}, [maxStringLength, truncate]);
-
-	const selectedItemName = truncate
-		? items.find((item) => item._id === value)?.name // Only calculate if truncate is true
-		: "";
 
 	return (
 		<Stack
@@ -105,7 +76,6 @@ const Select = ({
 				</Typography>
 			)}
 			<MuiSelect
-				ref={selectRef}
 				className="select-component"
 				value={value}
 				onChange={onChange}
@@ -118,6 +88,12 @@ const Select = ({
 				sx={{
 					fontSize: 13,
 					minWidth: "125px",
+					maxWidth: {
+						xs: `${maxWidthValue * 0.5}px`,
+						sm: `${maxWidthValue * 0.75}px`,
+						md: `${maxWidthValue * 0.9}px`,
+						lg: `${maxWidthValue}`,
+					},
 					"& fieldset": {
 						borderRadius: theme.shape.borderRadius,
 						borderColor: theme.palette.primary.lowContrast,
@@ -130,9 +106,22 @@ const Select = ({
 					},
 					...sx,
 				}}
-				renderValue={() =>
-					renderTruncatedValue(selectedItemName, truncate, maxLength, placeholder)
-				}
+				renderValue={(selected) => {
+					const selectedItem = items.find((item) => item._id === selected);
+					const displayName = selectedItem ? selectedItem.name : placeholder;
+					return (
+						<Typography
+							sx={{
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+								whiteSpace: "nowrap",
+							}}
+							title={displayName}
+						>
+							{displayName}
+						</Typography>
+					);
+				}}
 			>
 				{placeholder && (
 					<MenuItem
@@ -180,8 +169,7 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
-	truncate: PropTypes.bool,
-	maxStringLength: PropTypes.number,
+	maxWidthValue: PropTypes.number,
 };
 
 export default Select;

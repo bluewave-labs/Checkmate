@@ -52,7 +52,6 @@ const OptionsHeader = ({
 						backgroundColor: theme.palette.primary.main,
 						color: theme.palette.primary.contrastTextSecondary,
 					}}
-					truncate={true}
 				/>
 			</Stack>
 			<Stack {...stackStyles}>
