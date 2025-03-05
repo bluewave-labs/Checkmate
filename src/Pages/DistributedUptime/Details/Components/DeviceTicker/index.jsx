@@ -5,16 +5,14 @@ import "flag-icons/css/flag-icons.min.css";
 import { ColContainer } from "../../../../../Components/StandardContainer";
 
 // Utils
-import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import { safelyParseFloat } from "../../../../../Utils/utils";
 const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 	const theme = useTheme();
-	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
 	const statusColor = {
 		up: theme.palette.success.main,
 		down: theme.palette.error.main,
+		undefined: theme.palette.warning.main,
 	};
 
 	return (
@@ -30,7 +28,7 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 					mb={theme.spacing(8)}
 					sx={{ alignSelf: "center" }}
 				>
-					{connectionStatus === "up" ? "Connected" : "No connection"}
+					{connectionStatus === "up" ? "Connected" : "Connecting..."}
 				</Typography>
 			</Stack>
 			<div
