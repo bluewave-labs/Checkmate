@@ -18,7 +18,6 @@ import InfoBox from "../../../Components/InfoBox";
 import StatusHeader from "../../DistributedUptime/Details/Components/StatusHeader";
 import MonitorsList from "./Components/MonitorsList";
 import { RowContainer } from "../../../Components/StandardContainer";
-import ThemeSwitch from "../../../Components/ThemeSwitch";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
@@ -50,7 +49,7 @@ const DistributedUptimeStatus = () => {
 	const originalModeRef = useRef(null);
 
 	// Local State
-	const [dateRange, setDateRange] = useState("day");
+	const [dateRange, setDateRange] = useState("recent");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	const [timeFrame, setTimeFrame] = useState(30);
 	// Utils
