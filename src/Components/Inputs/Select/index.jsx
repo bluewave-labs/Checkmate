@@ -4,6 +4,8 @@ import { MenuItem, Select as MuiSelect, Stack, Typography } from "@mui/material"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import "./index.css";
+import { useEffect, useRef, useState } from "react";
+import { renderTruncatedValue } from "../../../Utils/truncateUtils.jsx";
 
 /**
  * @component
@@ -50,7 +52,12 @@ const Select = ({
 	sx,
 	name = "",
 	labelControlSpacing = 2,
+	truncate = false,
+	maxStringLength = 10,
 }) => {
+	const [maxLength, setMaxLength] = useState(0); // Initially set maxLength to 0
+	const selectRef = useRef(null); // Reference for the Select container
+
 	const theme = useTheme();
 	const itemStyles = {
 		fontSize: "var(--env-var-font-size-medium)",
@@ -58,6 +65,31 @@ const Select = ({
 		borderRadius: theme.shape.borderRadius,
 		margin: theme.spacing(2),
 	};
+
+	// Dynamically adjust maxLength based on window width
+	useEffect(() => {
+		if (!truncate) return; // If truncate is false, do not run this effect
+
+		const calculateMaxLength = () => {
+			console.log(selectRef);
+			if (selectRef.current) {
+				const width = selectRef.current.offsetWidth;
+				const calculatedMaxLength = Math.floor(width / maxStringLength);
+				setMaxLength(calculatedMaxLength);
+			}
+		};
+		calculateMaxLength();
+		window.addEventListener("resize", calculateMaxLength);
+
+		return () => {
+			window.removeEventListener("resize", calculateMaxLength); // Cleanup on unmount
+		};
+	}, [maxStringLength, truncate]);
+
+	// Get the selected item's name
+	const selectedItemName = truncate
+		? items.find((item) => item._id === value)?.name // Only calculate if truncate is true
+		: null;
 
 	return (
 		<Stack
@@ -75,6 +107,7 @@ const Select = ({
 				</Typography>
 			)}
 			<MuiSelect
+				ref={selectRef}
 				className="select-component"
 				value={value}
 				onChange={onChange}
@@ -99,6 +132,9 @@ const Select = ({
 					},
 					...sx,
 				}}
+				renderValue={() =>
+					renderTruncatedValue(selectedItemName, truncate, maxLength, placeholder)
+				}
 			>
 				{placeholder && (
 					<MenuItem
@@ -146,6 +182,8 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
+	truncate: PropTypes.bool,
+	maxStringLength: PropTypes.number,
 };
 
 export default Select;
