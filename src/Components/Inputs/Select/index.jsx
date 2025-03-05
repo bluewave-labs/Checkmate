@@ -50,6 +50,7 @@ const Select = ({
 	sx,
 	name = "",
 	labelControlSpacing = 2,
+	maxWidth,
 }) => {
 	const theme = useTheme();
 	const itemStyles = {
@@ -57,6 +58,13 @@ const Select = ({
 		color: theme.palette.primary.contrastTextTertiary,
 		borderRadius: theme.shape.borderRadius,
 		margin: theme.spacing(2),
+	};
+
+	const responsiveMaxWidth = {
+		xs: `${maxWidth * 0.5}px`,
+		sm: `${maxWidth * 0.75}px`,
+		md: `${maxWidth * 0.9}px`,
+		lg: `${maxWidth}px`,
 	};
 
 	return (
@@ -87,6 +95,7 @@ const Select = ({
 				sx={{
 					fontSize: 13,
 					minWidth: "125px",
+					...(maxWidth && { maxWidth: responsiveMaxWidth }),
 					"& fieldset": {
 						borderRadius: theme.shape.borderRadius,
 						borderColor: theme.palette.primary.lowContrast,
@@ -98,6 +107,22 @@ const Select = ({
 						fill: theme.palette.primary.contrastTextTertiary,
 					},
 					...sx,
+				}}
+				renderValue={(selected) => {
+					const selectedItem = items.find((item) => item._id === selected);
+					const displayName = selectedItem ? selectedItem.name : placeholder;
+					return (
+						<Typography
+							sx={{
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+								whiteSpace: "nowrap",
+							}}
+							title={displayName}
+						>
+							{displayName}
+						</Typography>
+					);
 				}}
 			>
 				{placeholder && (
@@ -146,6 +171,7 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
+	maxWidth: PropTypes.number,
 };
 
 export default Select;
