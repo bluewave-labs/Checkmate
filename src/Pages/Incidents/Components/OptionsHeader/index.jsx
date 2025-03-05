@@ -52,6 +52,7 @@ const OptionsHeader = ({
 						backgroundColor: theme.palette.primary.main,
 						color: theme.palette.primary.contrastTextSecondary,
 					}}
+					maxWidth={250}
 				/>
 			</Stack>
 			<Stack {...stackStyles}>

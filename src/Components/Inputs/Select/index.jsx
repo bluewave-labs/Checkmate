@@ -50,7 +50,7 @@ const Select = ({
 	sx,
 	name = "",
 	labelControlSpacing = 2,
-	maxWidthValue = 250,
+	maxWidth,
 }) => {
 	const theme = useTheme();
 	const itemStyles = {
@@ -58,6 +58,13 @@ const Select = ({
 		color: theme.palette.primary.contrastTextTertiary,
 		borderRadius: theme.shape.borderRadius,
 		margin: theme.spacing(2),
+	};
+
+	const responsiveMaxWidth = {
+		xs: `${maxWidth * 0.5}px`,
+		sm: `${maxWidth * 0.75}px`,
+		md: `${maxWidth * 0.9}px`,
+		lg: `${maxWidth}px`,
 	};
 
 	return (
@@ -88,12 +95,7 @@ const Select = ({
 				sx={{
 					fontSize: 13,
 					minWidth: "125px",
-					maxWidth: {
-						xs: `${maxWidthValue * 0.5}px`,
-						sm: `${maxWidthValue * 0.75}px`,
-						md: `${maxWidthValue * 0.9}px`,
-						lg: `${maxWidthValue}`,
-					},
+					...(maxWidth && { maxWidth: responsiveMaxWidth }),
 					"& fieldset": {
 						borderRadius: theme.shape.borderRadius,
 						borderColor: theme.palette.primary.lowContrast,
@@ -169,7 +171,7 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
-	maxWidthValue: PropTypes.number,
+	maxWidth: PropTypes.number,
 };
 
 export default Select;
