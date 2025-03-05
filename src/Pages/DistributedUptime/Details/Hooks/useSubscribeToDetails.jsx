@@ -33,11 +33,12 @@ const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) 
 				if (typeof responseData === "undefined") {
 					throw new Error("No data");
 				}
-
+				setConnectionStatus("up");
 				setLastUpdateTrigger(Date.now());
 				setMonitor(responseData);
 			} catch (error) {
 				setNetworkError(true);
+				setConnectionStatus("down");
 				createToast({
 					body: error.message,
 				});
