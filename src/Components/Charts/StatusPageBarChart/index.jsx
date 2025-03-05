@@ -3,12 +3,56 @@ import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { formatDateWithTz } from "../../../Utils/timeUtils";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
+
+/**
+ * A customizable Bar component that renders a colored bar with optional children.
+ * @component
+ *
+ * @param {string} width The width of the bar (e.g., "100px").
+ * @param {string} height The height of the bar (e.g., "50px").
+ * @param {string} backgroundColor The background color of the bar (e.g., "#FF5733").
+ * @param {string} [borderRadius] Optional border radius for the bar (e.g., "8px").
+ * @param {node} children The content to be rendered inside the bar.
+ * @returns {JSX.Element} The Bar component.
+ */
+
+const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
+	const theme = useTheme();
+
+	return (
+		<Box
+			position="relative"
+			width={width}
+			height={height}
+			backgroundColor={backgroundColor}
+			sx={{
+				borderRadius: borderRadius || theme.spacing(1.5),
+			}}
+		>
+			{children}
+		</Box>
+	);
+};
+
+Bar.propTypes = {
+	width: PropTypes.string.isRequired,
+	height: PropTypes.string.isRequired,
+	backgroundColor: PropTypes.string.isRequired,
+	borderRadius: PropTypes.string,
+	children: PropTypes.node,
+};
 
 /* TODO add prop validation and jsdocs */
 const StatusPageBarChart = ({ checks = [] }) => {
 	const theme = useTheme();
 	const [animate, setAnimate] = useState(false);
 	const uiTimezone = useSelector((state) => state.ui.timezone);
+
+	const barWidth = {
+		xs: "calc(60% / 25)",
+		xl: "calc(40% / 25)",
+	};
 
 	useEffect(() => {
 		setAnimate(true);
@@ -41,15 +85,11 @@ const StatusPageBarChart = ({ checks = [] }) => {
 					/* TODO what is the purpose of this box? 	*/
 					// CAIO_REVIEW the purpose of this box is to make sure there are always at least 25 bars
 					// even if there are less than 25 checks
-					<Box
+					<Bar
 						key={`${check}-${index}`}
-						position="relative"
-						width="calc(30vw / 25)"
+						width={barWidth}
 						height="100%"
 						backgroundColor={theme.palette.primary.lowContrast}
-						sx={{
-							borderRadius: theme.spacing(1.5),
-						}}
 					/>
 				) : (
 					<Tooltip
@@ -140,14 +180,10 @@ const StatusPageBarChart = ({ checks = [] }) => {
 							},
 						}}
 					>
-						<Box
-							position="relative"
-							width="calc(30vw / 25)"
+						<Bar
+							width={barWidth}
 							height="100%"
-							backgroundColor={theme.palette.primary.lowContrast} // CAIO_REVIEW
-							sx={{
-								borderRadius: theme.spacing(1.5),
-							}}
+							backgroundColor={theme.palette.primary.lowContrast}
 						>
 							<Box
 								position="absolute"
@@ -164,7 +200,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 									transition: "height 600ms cubic-bezier(0.4, 0, 0.2, 1)",
 								}}
 							/>
-						</Box>
+						</Bar>
 					</Tooltip>
 				)
 			)}
