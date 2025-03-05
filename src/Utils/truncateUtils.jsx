@@ -21,7 +21,6 @@ export const renderTruncatedValue = function (
 	maxLength,
 	placeholder
 ) {
-	console.log(maxLength);
 	if (isEmpty(displayName)) return placeholder;
 
 	return truncate ? (

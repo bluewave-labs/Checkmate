@@ -71,7 +71,6 @@ const Select = ({
 		if (!truncate) return; // If truncate is false, do not run this effect
 
 		const calculateMaxLength = () => {
-			console.log(selectRef);
 			if (selectRef.current) {
 				const width = selectRef.current.offsetWidth;
 				const calculatedMaxLength = Math.floor(width / maxStringLength);
