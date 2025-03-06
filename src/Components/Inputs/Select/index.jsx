@@ -83,25 +83,10 @@ const Select = ({
 				name={name}
 				inputProps={{ id: id }}
 				IconComponent={KeyboardArrowDownIcon}
-				renderValue={(selected) => {
-					return (
-						<Typography
-							noWrap
-							sx={{
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								whiteSpace: "nowrap",
-							}}
-						>
-							{items.find((item) => item._id === selected)?.name}
-						</Typography>
-					);
-				}}
+				MenuProps={{ disableScrollLock: true }}
 				sx={{
 					fontSize: 13,
-					maxWidth: "200px",
 					minWidth: "125px",
-
 					"& fieldset": {
 						borderRadius: theme.shape.borderRadius,
 						borderColor: theme.palette.primary.lowContrast,
