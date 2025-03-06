@@ -36,9 +36,6 @@ const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) 
 				setConnectionStatus("up");
 				setLastUpdateTrigger(Date.now());
 				setMonitor(responseData);
-				if (responseData.explainResults) {
-					console.log(responseData.explainResults);
-				}
 			} catch (error) {
 				setNetworkError(true);
 				setConnectionStatus("down");
