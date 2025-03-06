@@ -9,6 +9,11 @@ import PropTypes from "prop-types";
 
 const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 	const theme = useTheme();
+	let timeSinceLastCheck = 0;
+
+	if (monitor?.lastCheckTimestamp) {
+		timeSinceLastCheck = Date.now() - monitor?.lastCheckTimestamp;
+	}
 
 	return (
 		<Stack
@@ -32,7 +37,7 @@ const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 				heading={"Last check"}
 				subHeading={
 					<LastUpdate
-						lastUpdateTime={monitor?.timeSinceLastCheck ?? 0}
+						lastUpdateTime={timeSinceLastCheck}
 						suffix={"seconds ago"}
 					/>
 				}
