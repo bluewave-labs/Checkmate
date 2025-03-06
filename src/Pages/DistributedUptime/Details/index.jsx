@@ -75,7 +75,6 @@ const DistributedUptimeDetails = () => {
 			</Stack>
 		);
 	}
-
 	return (
 		<Stack
 			direction="column"
@@ -114,7 +113,7 @@ const DistributedUptimeDetails = () => {
 				gap={theme.spacing(8)}
 			>
 				<DistributedUptimeMap
-					checks={monitor?.groupedMapChecks ?? []}
+					checks={monitor?.groupedChecks ?? []}
 					height={"100%"}
 					width={"100%"}
 				/>

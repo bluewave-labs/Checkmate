@@ -25,11 +25,7 @@ const useSubscribeToMonitors = (page, rowsPerPage) => {
 				const initialDataRes = await networkService.getDistributedUptimeMonitors({
 					teamId: user.teamId,
 					limit: 25,
-					types: [
-						typeof import.meta.env.VITE_DEPIN_TESTING === "undefined"
-							? "distributed_http"
-							: "distributed_test",
-					],
+					types: ["distributed_http"],
 					page,
 					rowsPerPage,
 				});
