@@ -254,7 +254,7 @@ const DistributedUptimeStatus = () => {
 						/>
 						<InfoBox
 							heading={isSmallScreen ? "UPT" : "UPT Burned"}
-							subHeading={safelyParseFloat(monitor?.totalUptBurnt).toFixed(4)}
+							subHeading={safelyParseFloat(monitor?.uptBurnt).toFixed(4)}
 							img={UptLogo}
 							alt="Upt Logo"
 							sx={{ width: "50%" }}

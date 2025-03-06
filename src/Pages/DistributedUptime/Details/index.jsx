@@ -75,7 +75,6 @@ const DistributedUptimeDetails = () => {
 			</Stack>
 		);
 	}
-
 	return (
 		<Stack
 			direction="column"

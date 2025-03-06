@@ -67,7 +67,7 @@ const DistributedUptimeResponseBarChart = ({ checks }) => {
 				/>
 				<XAxis
 					stroke={theme.palette.primary.lowContrast}
-					dataKey="_id"
+					dataKey="_id.date"
 					tick={<CustomTick />}
 					minTickGap={0}
 					axisLine={false}
