@@ -53,10 +53,6 @@ const StarPrompt = () => {
         }}>
           <Typography 
             sx={{ 
-              fontFamily: 'Inter',
-              fontWeight: 500,
-              lineHeight: '14.52px',
-              letterSpacing: '0%',
               color: '#344054',
               pt: '19px'
             }}
@@ -84,11 +80,8 @@ const StarPrompt = () => {
         </Box>
 
         <Typography 
+          className="description"
           sx={{ 
-            fontFamily: 'Inter',
-            fontWeight: 400,
-            lineHeight: '14.53px',
-            letterSpacing: '0%',
             color: '#344054',
             opacity: 0.8,
             mb: '15px'

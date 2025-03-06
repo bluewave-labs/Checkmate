@@ -1,3 +1,11 @@
 .star-prompt .MuiTypography-root {
   font-size: var(--env-var-font-size-medium);
 }
+
+.star-prompt .description {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14.53px;
+  letter-spacing: 0%;
+}
