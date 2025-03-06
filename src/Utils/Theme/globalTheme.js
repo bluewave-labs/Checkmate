@@ -397,16 +397,28 @@ const baseTheme = (palette) => ({
 
 		// This code is added for clock in maintenance page
 		// code starts from here.
+		MuiClock: {
+			// Directly target the clock component
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main, // Alternative target
+					"& .MuiClock-clock": {
+						// Inner clock face
+						backgroundColor: theme.palette.secondary.main,
+					},
+				}),
+			},
+		},
 		MuiClockPicker: {
 			styleOverrides: {
 				root: ({ theme }) => ({
-					backgroundColor: theme.palette.primary.main,
-					"& .MuiTypography-root": {
+					backgroundColor: theme.palette.secondary.main, // Outer container background
+					"& .MuiClock-root": {
 						color: theme.palette.primary.lowContrast,
 					},
 					"& .MuiClock-clock": {
-						backgroundColor: theme.palette.primary.dark,
-						borderColor: theme.palette.primary.lowContrast,
+						backgroundColor: theme.palette.background.default, // Clock face background
+						borderColor: theme.palette.secondary.lowContrast,
 					},
 				}),
 			},
@@ -415,9 +427,10 @@ const baseTheme = (palette) => ({
 		MuiClockPointer: {
 			styleOverrides: {
 				root: ({ theme }) => ({
+					// Main pointer line color
 					backgroundColor: theme.palette.accent.main,
-					"& .MuiClock-pointer": {
-						backgroundColor: theme.palette.accent.main,
+					"& .MuiClockPointer-thumb": {
+						backgroundColor: theme.palette.grey[500], // Use your desired grey
 					},
 				}),
 			},
@@ -439,8 +452,19 @@ const baseTheme = (palette) => ({
 			styleOverrides: {
 				root: ({ theme }) => ({
 					backgroundColor: theme.palette.secondary.main,
+					// General text color
 					"& .MuiTypography-root": {
-						color: theme.palette.secondary.contrastText,
+						color: theme.palette.secondary.darker,
+					},
+					// Selected time (hour/minute) color
+					"& .Mui-selected": {
+						color: `${theme.palette.accent.main} !important`, // Use your accent color
+					},
+					// AM/PM buttons color
+					"& .MuiButtonBase-root": {
+						"&.Mui-selected": {
+							backgroundColor: theme.palette.accent.main,
+						},
 					},
 				}),
 			},
