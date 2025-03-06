@@ -75,7 +75,7 @@ CustomToolTip.propTypes = {
 		PropTypes.shape({
 			value: PropTypes.number,
 			payload: PropTypes.shape({
-				_id: PropTypes.string,
+				_id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 				avgResponseTime: PropTypes.number,
 				originalAvgResponseTime: PropTypes.number,
 			}),
