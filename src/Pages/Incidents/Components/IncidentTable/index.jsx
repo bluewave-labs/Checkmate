@@ -27,8 +27,11 @@ const IncidentTable = ({
 	//Local state
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const selectedMonitorDetails = monitors?.[selectedMonitor];
+	const selectedMonitorType = selectedMonitorDetails?.type;
 	const { isLoading, networkError, checks, checksCount } = useChecksFetch({
 		selectedMonitor,
+		selectedMonitorType,
 		filter,
 		dateRange,
 		page,

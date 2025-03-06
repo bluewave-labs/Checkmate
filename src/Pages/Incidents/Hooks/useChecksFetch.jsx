@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
 import { useSelector } from "react-redux";
-const useChecksFetch = ({ selectedMonitor, filter, dateRange, page, rowsPerPage }) => {
+const useChecksFetch = ({ selectedMonitor, selectedMonitorType, filter, dateRange, page, rowsPerPage }) => {
 	//Redux
 	const { user } = useSelector((state) => state.auth);
 
@@ -33,6 +33,7 @@ const useChecksFetch = ({ selectedMonitor, filter, dateRange, page, rowsPerPage 
 					res = await networkService.getChecksByMonitor({
 						status: false,
 						monitorId: selectedMonitor,
+						type: selectedMonitorType,
 						sortOrder: "desc",
 						limit: null,
 						dateRange,
@@ -51,7 +52,7 @@ const useChecksFetch = ({ selectedMonitor, filter, dateRange, page, rowsPerPage 
 			}
 		};
 		fetchChecks();
-	}, [user, dateRange, page, rowsPerPage, filter, selectedMonitor]);
+	}, [user, dateRange, page, rowsPerPage, filter, selectedMonitor, selectedMonitorType]);
 	return { isLoading, networkError, checks, checksCount };
 };
 

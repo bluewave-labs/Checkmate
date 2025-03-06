@@ -22,6 +22,13 @@ const MonitorTimeFrameHeader = ({
 			<ButtonGroup sx={{ height: 32 }}>
 				<Button
 					variant="group"
+					filled={(dateRange === "recent").toString()}
+					onClick={() => setDateRange("recent")}
+				>
+					Recent
+				</Button>
+				<Button
+					variant="group"
 					filled={(dateRange === "day").toString()}
 					onClick={() => setDateRange("day")}
 				>
@@ -55,7 +62,14 @@ const MonitorTimeFrameHeader = ({
 		>
 			<Typography variant="body2">
 				Showing statistics for past{" "}
-				{dateRange === "day" ? "24 hours" : dateRange === "week" ? "7 days" : "30 days"}.
+				{dateRange === "recent"
+					? "2 hours"
+					: dateRange === "day"
+						? "24 hours"
+						: dateRange === "week"
+							? "7 days"
+							: "30 days"}
+				.
 			</Typography>
 			{timeFramePicker}
 		</Stack>
