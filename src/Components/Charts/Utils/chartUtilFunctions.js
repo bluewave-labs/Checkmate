@@ -13,6 +13,7 @@ export const tooltipDateFormatLookup = (dateRange) => {
 
 export const tickDateFormatLookup = (dateRange) => {
 	const tickFormatLookup = {
+		recent: "h:mm A",
 		day: "h:mm A",
 		week: "MM/D, h:mm A",
 		month: "ddd. M/D",
