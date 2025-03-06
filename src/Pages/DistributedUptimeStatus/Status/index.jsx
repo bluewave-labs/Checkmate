@@ -234,7 +234,7 @@ const DistributedUptimeStatus = () => {
 				direction={{ s: "column", md: "row" }}
 			>
 				<DistributedUptimeMap
-					checks={monitor?.groupedChecks ?? []}
+					checks={monitor?.groupedMapChecks ?? []}
 					width={isSmallScreen ? "100%" : "50%"}
 				/>
 				<Stack
