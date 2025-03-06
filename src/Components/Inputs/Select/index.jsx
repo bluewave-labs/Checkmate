@@ -18,6 +18,7 @@ import "./index.css";
  *    @param {string} props.items.name - The display name of each item.
  * @param {function} props.onChange - The function to handle onChange event.
  * @param {object} props.sx - The custom styles object for MUI Select component.
+ * @param {number} props.maxWidth - Maximum width in pixels for the select component. Enables responsive text truncation.
  * @returns {JSX.Element}
  *
  * @example
@@ -171,6 +172,10 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	sx: PropTypes.object,
 	labelControlSpacing: PropTypes.number,
+	/**
+	 * Maximum width in pixels. Used to control text truncation and element width.
+	 * Responsive breakpoints will be calculated as percentages of this value.
+	 */
 	maxWidth: PropTypes.number,
 };
 
