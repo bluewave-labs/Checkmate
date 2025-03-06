@@ -113,7 +113,7 @@ const DistributedUptimeDetails = () => {
 				gap={theme.spacing(8)}
 			>
 				<DistributedUptimeMap
-					checks={monitor?.groupedChecks ?? []}
+					checks={monitor?.groupedMapChecks ?? []}
 					height={"100%"}
 					width={"100%"}
 				/>
