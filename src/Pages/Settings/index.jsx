@@ -371,7 +371,7 @@ const Settings = () => {
 								monitor to connect to multiple nodes globally.
 							</Typography>
 						</Box>
-						<Box>
+						<Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 2 }}>
 							<Stack
 								direction="row"
 								spacing={2}

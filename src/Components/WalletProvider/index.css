@@ -31,7 +31,7 @@
 }
 
 /* Responsive fixes */
-@media (max-width: 1093px) {
+@media (max-width: 1200px) { 
 	.wallet-adapter-button {
 		font-size: var(--env-var-font-size-medium) !important;
 		padding: calc((var(--env-var-height-2) - var(--env-var-font-size-medium) * 1.2) / 2)
@@ -40,7 +40,7 @@
 	}
 }
 
-@media (max-width: 910px) {
+@media (max-width: 900px) { 
   .wallet-adapter-modal-wrapper {
     flex-direction: column !important;
   }
