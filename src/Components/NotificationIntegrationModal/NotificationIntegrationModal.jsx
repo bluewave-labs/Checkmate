@@ -135,13 +135,10 @@ const NotificationIntegrationModal = ({
       maxWidth="md"
       sx={{
         '& .MuiDialog-paper': {
-          backgroundColor: theme.palette.primary.main,
-          color: '#344054',
           maxWidth: '775px'
         }
       }}
     >
-   
       <DialogContent>
         <Box sx={{ display: 'flex', height: '300px' }}>
           {/* Left sidebar with tabs */}
@@ -149,10 +146,15 @@ const NotificationIntegrationModal = ({
             borderRight: 1, 
             borderColor: 'divider', 
             minWidth: '200px',
-            pr: 20
+            pr: theme.spacing(10)
           }}>
-            <Typography variant="subtitle1" sx={{ my: 2, fontWeight: 'bold', fontSize: '0.9rem', color: '#344054'}}>
-            Add or edit notifications
+            <Typography variant="subtitle1" sx={{ 
+              my: theme.spacing(1), 
+              fontWeight: 'bold', 
+              fontSize: '0.9rem', 
+              color: theme.palette.primary.contrastTextSecondary 
+            }}>
+              Add or edit notifications
             </Typography>
             
             <Tabs
@@ -170,25 +172,36 @@ const NotificationIntegrationModal = ({
           </Box>
 
           {/* Right side content */}
-          <Box sx={{ flex: 1, pl: theme.spacing(15) }}>
+          <Box sx={{ flex: 1, pl: theme.spacing(7.5) }}>
             {/* Slack Tab */}
             <TabPanel value={tabValue} index={0}>
-              <Typography variant="subtitle1" component="h4" sx={{ fontWeight: 'bold' }}>Slack</Typography>
-              <Typography sx={{ mt: 1, mb: 3 }}>
+              <Typography variant="subtitle1" component="h4" sx={{ 
+                fontWeight: 'bold',
+                color: theme.palette.primary.contrastTextSecondary
+              }}>Slack</Typography>
+              <Typography sx={{ 
+                mt: theme.spacing(0.5), 
+                mb: theme.spacing(1.5),
+                color: theme.palette.primary.contrastTextTertiary 
+              }}>
                 To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.
               </Typography>
               
-              <Box sx={{ pl: 3 }}> 
-              <Checkbox
-                id="enable-slack"
-                label="Enable Slack notifications"
-                isChecked={integrations.slack}
-                onChange={(e) => handleIntegrationChange('slack', e.target.checked)}
-              />
-            </Box>
+              <Box sx={{ pl: theme.spacing(1.5) }}> 
+                <Checkbox
+                  id="enable-slack"
+                  label="Enable Slack notifications"
+                  isChecked={integrations.slack}
+                  onChange={(e) => handleIntegrationChange('slack', e.target.checked)}
+                />
+              </Box>
               
-              <Box sx={{ mt: 2 }}>
-                <Typography sx={{ mb: 4, fontWeight: 'bold' }}>Webhook URL</Typography>
+              <Box sx={{ mt: theme.spacing(1) }}>
+                <Typography sx={{ 
+                  mb: theme.spacing(2), 
+                  fontWeight: 'bold',
+                  color: theme.palette.primary.contrastTextSecondary
+                }}>Webhook URL</Typography>
                 <TextInput
                   id="slack-webhook"
                   type="text"
@@ -199,7 +212,7 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: theme.spacing(1) }}>
                 <Button 
                   variant="text" 
                   color="info"
@@ -213,12 +226,19 @@ const NotificationIntegrationModal = ({
 
             {/* Discord Tab */}
             <TabPanel value={tabValue} index={1}>
-              <Typography variant="subtitle1" component="h4" sx={{ fontWeight: 'bold' }}>Discord</Typography>
-              <Typography sx={{ mt: 1, mb: 3 }}>
+              <Typography variant="subtitle1" component="h4" sx={{ 
+                fontWeight: 'bold',
+                color: theme.palette.primary.contrastTextSecondary
+              }}>Discord</Typography>
+              <Typography sx={{ 
+                mt: theme.spacing(0.5), 
+                mb: theme.spacing(1.5),
+                color: theme.palette.primary.contrastTextTertiary
+              }}>
                 To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord's incoming Webhooks feature.
               </Typography>
               
-              <Box sx={{ pl: 3 }}>
+              <Box sx={{ pl: theme.spacing(1.5) }}>
                 <Checkbox
                   id="enable-discord"
                   label="Enable Discord notifications"
@@ -227,8 +247,12 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
-                <Typography sx={{ mb: 4, fontWeight: 'bold' }}>Discord Webhook URL</Typography>
+              <Box sx={{ mt: theme.spacing(1) }}>
+                <Typography sx={{ 
+                  mb: theme.spacing(2), 
+                  fontWeight: 'bold',
+                  color: theme.palette.primary.contrastTextSecondary
+                }}>Discord Webhook URL</Typography>
                 <TextInput
                   id="discord-webhook"
                   type="text"
@@ -239,7 +263,7 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: theme.spacing(1) }}>
                 <Button 
                   variant="text" 
                   color="info"
@@ -253,12 +277,19 @@ const NotificationIntegrationModal = ({
 
             {/* Telegram Tab */}
             <TabPanel value={tabValue} index={2}>
-              <Typography variant="subtitle1" component="h4" sx={{ fontWeight: 'bold' }}>Telegram</Typography>
-              <Typography sx={{ mt: 1, mb: 3 }}>
+              <Typography variant="subtitle1" component="h4" sx={{ 
+                fontWeight: 'bold',
+                color: theme.palette.primary.contrastTextSecondary
+              }}>Telegram</Typography>
+              <Typography sx={{ 
+                mt: theme.spacing(0.5), 
+                mb: theme.spacing(1.5),
+                color: theme.palette.primary.contrastTextTertiary
+              }}>
                 To enable Telegram notifications, create a Telegram bot using BotFather, an official bot for creating and managing Telegram bots. Then, get the API token and chat ID and write them down here.
               </Typography>
               
-              <Box sx={{ pl: 3 }}>
+              <Box sx={{ pl: theme.spacing(1.5) }}>
                 <Checkbox
                   id="enable-telegram"
                   label="Enable Telegram notifications"
@@ -267,8 +298,12 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
-                <Typography sx={{ mb: 4, fontWeight: 'bold' }}>Your bot token</Typography>
+              <Box sx={{ mt: theme.spacing(1) }}>
+                <Typography sx={{ 
+                  mb: theme.spacing(2), 
+                  fontWeight: 'bold',
+                  color: theme.palette.primary.contrastTextSecondary
+                }}>Your bot token</Typography>
                 <TextInput
                   id="telegram-token"
                   type="text"
@@ -279,8 +314,12 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
-                <Typography sx={{ mb: 4, fontWeight: 'bold' }}>Your Chat ID</Typography>
+              <Box sx={{ mt: theme.spacing(1) }}>
+                <Typography sx={{ 
+                  mb: theme.spacing(2), 
+                  fontWeight: 'bold',
+                  color: theme.palette.primary.contrastTextSecondary
+                }}>Your Chat ID</Typography>
                 <TextInput
                   id="telegram-chat-id"
                   type="text"
@@ -291,7 +330,7 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: theme.spacing(1) }}>
                 <Button 
                   variant="text" 
                   color="info"
@@ -305,12 +344,19 @@ const NotificationIntegrationModal = ({
 
             {/* Webhooks Tab */}
             <TabPanel value={tabValue} index={3}>
-              <Typography variant="subtitle1" component="h4" sx={{ fontWeight: 'bold' }}>Webhooks</Typography>
-              <Typography sx={{ mt: 1, mb: 3 }}>
+              <Typography variant="subtitle1" component="h4" sx={{ 
+                fontWeight: 'bold',
+                color: theme.palette.primary.contrastTextSecondary
+              }}>Webhooks</Typography>
+              <Typography sx={{ 
+                mt: theme.spacing(0.5), 
+                mb: theme.spacing(1.5),
+                color: theme.palette.primary.contrastTextTertiary
+              }}>
                 You can set up a custom webhook to receive notifications when incidents occur.
               </Typography>
               
-              <Box sx={{ pl: 3 }}>
+              <Box sx={{ pl: theme.spacing(1.5) }}>
                 <Checkbox
                   id="enable-webhook"
                   label="Enable Webhook notifications"
@@ -319,8 +365,12 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
-                <Typography sx={{ mb: 4, fontWeight: 'bold' }}>Webhook URL</Typography>
+              <Box sx={{ mt: theme.spacing(1) }}>
+                <Typography sx={{ 
+                  mb: theme.spacing(2), 
+                  fontWeight: 'bold',
+                  color: theme.palette.primary.contrastTextSecondary
+                }}>Webhook URL</Typography>
                 <TextInput
                   id="webhook-url"
                   type="text"
@@ -331,7 +381,7 @@ const NotificationIntegrationModal = ({
                 />
               </Box>
               
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: theme.spacing(1) }}>
                 <Button 
                   variant="text" 
                   color="info"
@@ -349,9 +399,9 @@ const NotificationIntegrationModal = ({
         p: theme.spacing(4),
         display: 'flex',
         justifyContent: 'flex-end',  
-        mb: theme.spacing(10),
-        mr: theme.spacing(10)
-}}>
+        mb: theme.spacing(5),
+        mr: theme.spacing(5)
+      }}>
         <Button 
           variant="contained" 
           color="accent" 
