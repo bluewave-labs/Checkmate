@@ -328,35 +328,61 @@ const baseTheme = (palette) => ({
 		},
 		MuiTab: {
 			styleOverrides: {
-				root: ({ theme }) => ({
-					fontSize: 13,
-					color: theme.palette.tertiary.contrastText,
-					backgroundColor: theme.palette.tertiary.main,
-					textTransform: "none",
-					minWidth: "fit-content",
-					paddingY: theme.spacing(6),
-					fontWeight: 400,
-					borderBottom: "2px solid transparent",
-					borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
-					"&:first-of-type": { borderTopLeftRadius: "8px" },
-					"&:last-child": { borderTopRightRadius: "8px", borderRight: 0 },
-					"&:focus-visible": {
-						color: theme.palette.primary.contrastText,
-						borderColor: theme.palette.tertiary.contrastText,
-						borderRightColor: theme.palette.primary.lowContrast,
-					},
-					"&.Mui-selected": {
-						backgroundColor: theme.palette.secondary.main,
-						color: theme.palette.secondary.contrastText,
-						borderColor: theme.palette.secondary.contrastText,
-						borderRightColor: theme.palette.primary.lowContrast,
-					},
-					"&:hover": {
-						borderColor: theme.palette.primary.lowContrast,
-					},
-				}),
+			  root: ({ theme }) => ({
+				fontSize: 13,
+				color: theme.palette.tertiary.contrastText,
+				backgroundColor: theme.palette.tertiary.main,
+				textTransform: "none",
+				minWidth: "fit-content",
+				paddingY: theme.spacing(6),
+				fontWeight: 400,
+				borderBottom: "2px solid transparent",
+				borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
+				"&:first-of-type": { borderTopLeftRadius: "8px" },
+				"&:last-child": { borderTopRightRadius: "8px", borderRight: 0 },
+				"&:focus-visible": {
+				  color: theme.palette.primary.contrastText,
+				  borderColor: theme.palette.tertiary.contrastText,
+				  borderRightColor: theme.palette.primary.lowContrast,
+				},
+				"&.Mui-selected": {
+				  backgroundColor: theme.palette.secondary.main,
+				  color: theme.palette.secondary.contrastText,
+				  borderColor: theme.palette.secondary.contrastText,
+				  borderRightColor: theme.palette.primary.lowContrast,
+				},
+				"&:hover": {
+				  borderColor: theme.palette.primary.lowContrast,
+				},
+			  }),
 			},
-		},
+			variants: [
+			  {
+				props: { orientation: 'vertical' },
+				style: ({ theme }) => ({
+				  alignItems: 'flex-start',
+				  padding: theme.spacing(2),
+				  color: theme.palette.primary.contrastText,
+				  backgroundColor: theme.palette.primary.main,
+				  border: 'none',
+				  borderBottom: 'none',
+				  borderRight: 'none',
+				  '&.Mui-selected': {
+					color: theme.palette.primary.contrastText,
+					backgroundColor: theme.palette.tertiary.main,
+					opacity: 1,
+					border: 'none',
+					borderBottom: 'none',
+					borderRight: 'none'
+				  },
+				  '&:hover': {
+					backgroundColor: theme.palette.tertiary.main,
+					border: 'none'
+				  }
+				}),
+			  },
+			],
+		  },
 		MuiSvgIcon: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -366,13 +392,23 @@ const baseTheme = (palette) => ({
 		},
 		MuiTabs: {
 			styleOverrides: {
-				root: ({ theme }) => ({
-					"& .MuiTabs-indicator": {
-						backgroundColor: theme.palette.tertiary.contrastText,
-					},
-				}),
+			  root: ({ theme }) => ({
+				"& .MuiTabs-indicator": {
+				  backgroundColor: theme.palette.tertiary.contrastText,
+				},
+			  }),
 			},
-		},
+			variants: [
+			  {
+				props: { orientation: 'vertical' },
+				style: {
+				  "& .MuiTabs-indicator": {
+					display: 'none', 
+				  }
+				},
+			  },
+			],
+		  },
 		MuiSwitch: {
 			styleOverrides: {
 				root: ({ theme }) => ({

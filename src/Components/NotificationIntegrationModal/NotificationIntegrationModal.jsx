@@ -182,39 +182,11 @@ const NotificationIntegrationModal = ({
               value={tabValue}
               onChange={handleChangeTab}
               aria-label="Notification tabs"
-              sx={{ 
-                backgroundColor: theme.palette.primary.main,
-                '& .MuiTab-root': { 
-                  alignItems: 'flex-start',
-                  px: 2,
-                  fontSize: '0.9rem',
-                  color: theme.palette.primary.contrastText,
-                  backgroundColor: theme.palette.primary.main,
-                  border: 'none',
-                  borderBottom: 'none',
-                  borderRight: 'none',
-                  '&.Mui-selected': {
-                    color: theme.palette.primary.contrastText,
-                    backgroundColor: theme.palette.tertiary.main, // Match the hover background color
-                    opacity: 1,
-                    border: 'none',
-                    borderBottom: 'none',
-                    borderRight: 'none'
-                  },
-                  '&:hover': {
-                    backgroundColor: theme.palette.tertiary.main,
-                    border: 'none'
-                  }
-                },
-                '& .MuiTabs-indicator': {
-                  backgroundColor: 'transparent'
-                }
-              }}
             >
-              <Tab label="Slack" />
-              <Tab label="Discord" />
-              <Tab label="Telegram" />
-              <Tab label="Webhooks" />
+              <Tab label="Slack" orientation="vertical" />
+              <Tab label="Discord" orientation="vertical" />
+              <Tab label="Telegram" orientation="vertical" />
+              <Tab label="Webhooks" orientation="vertical" />
             </Tabs>
           </Box>
 
