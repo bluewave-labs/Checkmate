@@ -11,6 +11,7 @@ import Logo from "../../assets/icons/checkmate-icon.svg?react";
 import Key from "../../assets/icons/key.svg?react";
 import Background from "../../assets/Images/background-grid.svg?react";
 import IconBox from "../../Components/IconBox";
+import { useTranslation } from "react-i18next";
 import "./index.css";
 
 const ForgotPassword = () => {
@@ -28,6 +29,8 @@ const ForgotPassword = () => {
 		const email = sessionStorage.getItem("email");
 		email && setForm({ email: sessionStorage.getItem("email") });
 	}, []);
+
+	const { t } = useTranslation();
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -162,7 +165,7 @@ const ForgotPassword = () => {
 								<Key alt="password key icon" />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">Forgot password?</Typography>
+						<Typography component="h1">{t("authForgotPasswordTitle")}</Typography>
 						<Typography>No worries, we&apos;ll send you reset instructions.</Typography>
 					</Box>
 					<Box
@@ -195,7 +198,7 @@ const ForgotPassword = () => {
 								mt: theme.spacing(15),
 							}}
 						>
-							Send instructions
+							{t("continue")}
 						</Button>
 					</Box>
 				</Stack>
@@ -204,15 +207,15 @@ const ForgotPassword = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">Go back to —</Typography>
+				<Typography display="inline-block">{t("goBackTo")}</Typography>
 				<Typography
 					component="span"
-					color={theme.palette.primary.main}
+					color={theme.palette.accent.main}
 					ml={theme.spacing(2)}
 					onClick={handleNavigate}
 					sx={{ userSelect: "none" }}
 				>
-					Log In
+					{t("authLoginTitle")}
 				</Typography>
 			</Box>
 		</Stack>

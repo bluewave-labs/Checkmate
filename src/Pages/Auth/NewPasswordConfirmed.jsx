@@ -8,12 +8,14 @@ import Background from "../../assets/Images/background-grid.svg?react";
 import ConfirmIcon from "../../assets/icons/check-outlined.svg?react";
 import Logo from "../../assets/icons/checkmate-icon.svg?react";
 import IconBox from "../../Components/IconBox";
+import { useTranslation } from "react-i18next";
 import "./index.css";
 
 const NewPasswordConfirmed = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 
 	const handleNavigate = () => {
 		dispatch(clearAuthState());
@@ -97,9 +99,9 @@ const NewPasswordConfirmed = () => {
 								<ConfirmIcon alt="password confirm icon" />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">Password reset</Typography>
+						<Typography component="h1">{t("passwordreset")}</Typography>
 						<Typography mb={theme.spacing(2)}>
-							Your password has been successfully reset. Click below to log in magically.
+							{t("authNewPasswordConfirmed")}
 						</Typography>
 					</Box>
 					<Button
@@ -110,7 +112,7 @@ const NewPasswordConfirmed = () => {
 							maxWidth: 400,
 						}}
 					>
-						Continue
+						{t("continue")}
 					</Button>
 				</Stack>
 			</Stack>
@@ -118,7 +120,7 @@ const NewPasswordConfirmed = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">Go back to —</Typography>
+				<Typography display="inline-block">{t("goBack-")}</Typography>
 				<Typography
 					component="span"
 					color={theme.palette.primary.main}
@@ -126,7 +128,7 @@ const NewPasswordConfirmed = () => {
 					onClick={handleNavigate}
 					sx={{ userSelect: "none" }}
 				>
-					Log In
+					{t("authLoginTitle")}
 				</Typography>
 			</Box>
 		</Stack>
