@@ -56,27 +56,6 @@ const NotificationIntegrationModal = ({
     webhook: monitor?.notifications?.some(n => n.type === "webhook") || false,
     webhookUrl: monitor?.notifications?.find(n => n.type === "webhook")?.url || "",
   });
-  
-  const testNotificationButtonStyle = {
-    textDecoration: 'underline',
-    color: '#344054',
-    textTransform: 'none',
-    padding: '0 !important',
-    margin: 0,
-    fontSize: '0.9rem',
-    fontWeight: 'normal',
-    backgroundColor: 'transparent !important',
-    '&:hover': {
-      backgroundColor: 'transparent !important',
-      textDecoration: 'underline'
-    },
-    '&.Mui-disabled': {
-      backgroundColor: 'transparent !important'
-    },
-    minWidth: '0 !important',
-    boxShadow: 'none !important',
-    border: 'none !important'
-  };
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
@@ -226,7 +205,6 @@ const NotificationIntegrationModal = ({
                   color="info"
                   onClick={() => handleTestNotification('slack')}
                   disabled={!integrations.slack || !integrations.slackWebhook}
-                  sx={testNotificationButtonStyle}
                 >
                   Test notification
                 </Button>
@@ -267,7 +245,6 @@ const NotificationIntegrationModal = ({
                   color="info"
                   onClick={() => handleTestNotification('discord')}
                   disabled={!integrations.discord || !integrations.discordWebhook}
-                  sx={testNotificationButtonStyle}
                 >
                   Test notification
                 </Button>
@@ -320,7 +297,6 @@ const NotificationIntegrationModal = ({
                   color="info"
                   onClick={() => handleTestNotification('telegram')}
                   disabled={!integrations.telegram || !integrations.telegramToken || !integrations.telegramChatId}
-                  sx={testNotificationButtonStyle}
                 >
                   Test notification
                 </Button>
@@ -361,7 +337,6 @@ const NotificationIntegrationModal = ({
                   color="info"
                   onClick={() => handleTestNotification('webhook')}
                   disabled={!integrations.webhook || !integrations.webhookUrl}
-                  sx={testNotificationButtonStyle}
                 >
                   Test notification
                 </Button>

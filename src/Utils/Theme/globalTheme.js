@@ -117,6 +117,33 @@ const baseTheme = (palette) => ({
 								color: `${theme.palette.secondary.contrastText} !important`,
 							},
 						},
+						
+						{
+							props: { variant: 'text', color: 'info' },
+							style: {
+							  textDecoration: 'underline',
+							  color: '#344054',
+							  padding: 0,
+							  margin: 0,
+							  fontSize: '0.9rem',
+							  fontWeight: 'normal',
+							  backgroundColor: 'transparent',
+							  '&:hover': {
+								backgroundColor: 'transparent',
+								textDecoration: 'underline'
+							  },
+							  "&.Mui-disabled": {
+								backgroundColor: theme.palette.secondary.main,
+								color: theme.palette.primary.contrastText,
+								"&.MuiButton-text": {
+									backgroundColor: 'transparent'
+								}
+							  },
+							  minWidth: 0,
+							  boxShadow: 'none',
+							  border: 'none'
+							},
+						  },
 					],
 					height: 34,
 					fontWeight: 400,
