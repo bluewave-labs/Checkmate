@@ -59,7 +59,7 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 								backgroundColor={theme.palette.successSecondary.lowContrast}
 								color={theme.palette.success.lowContrast}
 							>
-								Uptime: {(monitor.totalUptime * 100).toFixed(2)}%
+								Uptime: {(monitor.uptimePercentage * 100).toFixed(2)}%
 							</Typography>
 						</Stack>
 						<Typography
@@ -69,7 +69,7 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 							Last updated{" "}
 							<LastUpdate
 								suffix={"seconds ago"}
-								lastUpdateTime={monitor.timeSinceLastCheck}
+								lastUpdateTime={monitor?.timeSinceLastCheck}
 							/>
 						</Typography>
 					</Stack>
