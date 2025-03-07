@@ -1,111 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
+import React from 'react';
+import { Typography, IconButton, Stack, Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@emotion/react';
-import './index.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { setStarPromptClosed } from '../../Features/UI/uiSlice';
 
-const StarPrompt = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const STORAGE_KEY = 'starPromptClosed';
+const StarPrompt = ({
+  repoUrl = 'https://github.com/bluewave-labs/checkmate'
+}) => {
   const theme = useTheme();
-
-  useEffect(() => {
-    const hasClosedPrompt = localStorage.getItem(STORAGE_KEY);
-    if (!hasClosedPrompt) {
-      setIsVisible(true);
-    }
-  }, []);
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const isClosed = useSelector((state) => state.ui?.starPrompt?.closed ?? false);
+  const mode = useSelector((state) => state.ui.mode);
 
   const handleClose = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
-    setIsVisible(false);
+    dispatch(setStarPromptClosed(true));
   };
 
   const handleStarClick = () => {
-    window.open('https://github.com/bluewave-labs/checkmate', '_blank');
+    window.open(repoUrl, '_blank');
   };
 
-  if (!isVisible) return null;
+  if (isClosed) return null;
 
   return (
-    <Box
-      className="star-prompt"
+    <Stack
+      direction="column"
       sx={{
-        borderBottom: '1px solid',
-        borderColor: 'divider',
         width: '100%',
-        backgroundColor: 'background.paper',
+        padding: `${theme.spacing(6)} ${theme.spacing(6)}`,
+        borderTop: `1px solid ${theme.palette.primary.lowContrast}`,
+        borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
+        borderRadius: 0,
+        gap: theme.spacing(1.5),
+        backgroundColor: theme.palette.primary.main,
       }}
     >
-      <Box
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          px: theme.spacing(8),
-          py: 2
-        }}
-      >
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'flex-start',
-          mb: '10px'
-        }}>
-          <Typography 
-            sx={{ 
-              color: '#344054',
-              pt: '19px'
-            }}
-          >
-            Star Checkmate
-          </Typography>
-          <IconButton
-            size="small"
-            onClick={handleClose}
-            sx={{ 
-              color: theme.palette.primary.contrastTextTertiary,
-              pt: 0,
-              pr: 0,
-              pb: 0,
-              pl: 0,
-              mr: -1,
-              '&:hover': {
-                backgroundColor: 'transparent',
-                color: theme.palette.primary.contrastTextSecondary
-              }
-            }}
-          >
-            <CloseIcon sx={{ fontSize: '18px' }} />
-          </IconButton>
-        </Box>
-
+      <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%" pl={theme.spacing(4)}>
         <Typography 
-          className="description"
+          variant="subtitle2" 
           sx={{ 
-            color: '#344054',
-            opacity: 0.8,
-            mb: '15px'
+            color: mode === 'dark' ? theme.palette.primary.contrastText : theme.palette.text.primary,
+            mt: theme.spacing(3)
           }}
         >
-          See the latest releases and help grow the community on GitHub
+          {t('starPrompt.title')}
         </Typography>
-
-        <Box 
-          component="img"
-          src="https://img.shields.io/github/stars/bluewave-labs/checkmate?label=checkmate&style=social"
-          alt="GitHub stars"
-          onClick={handleStarClick}
+        <IconButton
+          onClick={handleClose}
+          size="small"
           sx={{
-            cursor: 'pointer',
-            width: 'fit-content',
-            pb: '18px',
+            color: theme.palette.text.primary,
+            padding: 0,
+            marginTop: theme.spacing(-5),
             '&:hover': {
+              backgroundColor: 'transparent',
               opacity: 0.8
-            }
+            },
           }}
-        />
-      </Box>
-    </Box>
+        >
+          <CloseIcon sx={{ fontSize: '1.25rem' }} />
+        </IconButton>
+      </Stack>
+
+      <Typography 
+        variant="body1"
+        sx={{ 
+          color: theme.palette.text.secondary,
+          fontSize: '0.938rem',
+          lineHeight: 1.5,
+          mb: 1,
+          px: theme.spacing(4)
+        }}
+      >
+        {t('starPrompt.description')}
+      </Typography>
+
+      <Box 
+        component="img"
+        src={`https://img.shields.io/github/stars/bluewave-labs/checkmate?label=checkmate&style=social${mode === 'dark' ? '&color=white' : ''}`}
+        alt="GitHub stars"
+        onClick={handleStarClick}
+        sx={{
+          cursor: 'pointer',
+          transform: 'scale(0.65)',
+          transformOrigin: 'left center',
+          '&:hover': {
+            opacity: 0.8
+          },
+          pl: theme.spacing(4),
+          filter: mode === 'dark' ? 'invert(1)' : 'none'
+        }}
+      />
+    </Stack>
   );
 };
 

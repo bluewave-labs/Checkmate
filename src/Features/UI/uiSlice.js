@@ -24,6 +24,9 @@ const initialState = {
 	timezone: "America/Toronto",
 	distributedUptimeEnabled: false,
 	language: "gb",
+	starPrompt: {
+		closed: false
+	},
 };
 
 const uiSlice = createSlice({
@@ -55,6 +58,9 @@ const uiSlice = createSlice({
 		setLanguage(state, action) {
 			state.language = action.payload;
 		},
+		setStarPromptClosed(state, action) {
+			state.starPrompt.closed = action.payload;
+		},
 	},
 });
 
@@ -67,4 +73,5 @@ export const {
 	setTimezone,
 	setDistributedUptimeEnabled,
 	setLanguage,
+	setStarPromptClosed,
 } = uiSlice.actions;

@@ -107,5 +107,9 @@
 	"settingsDemoMonitorsAdded": "Successfully added demo monitors",
 	"settingsFailedToAddDemoMonitors": "Failed to add demo monitors",
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
-	"settingsFailedToDeleteMonitors": "Failed to delete all monitors"
+	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
+	"starPrompt": {
+    "title": "Star Checkmate",
+    "description": "See the latest releases and help grow the community on GitHub"
+  }
 }
