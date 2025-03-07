@@ -24,11 +24,10 @@ const InfrastructureDetails = () => {
 	// Redux state
 
 	// Local state
-	const [dateRange, setDateRange] = useState("day");
+	const [dateRange, setDateRange] = useState("recent");
 
 	// Utils
 	const theme = useTheme();
-	const isAdmin = useIsAdmin();
 	const { monitorId } = useParams();
 
 	const { isLoading, networkError, monitor } = useHardwareMonitorsFetch({
@@ -62,7 +61,7 @@ const InfrastructureDetails = () => {
 					monitor={monitor}
 				/>
 				<GenericFallback>
-					<Typography>No check history for htis monitor yet.</Typography>
+					<Typography>No check history for this monitor yet.</Typography>
 				</GenericFallback>
 			</Stack>
 		);

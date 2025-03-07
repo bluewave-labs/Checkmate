@@ -21,7 +21,7 @@ import { RowContainer } from "../../../Components/StandardContainer";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
 import { useDUStatusPageFetchByUrl } from "./Hooks/useDUStatusPageFetchByUrl";
@@ -31,6 +31,8 @@ import SubHeader from "../../../Components/Subheader";
 import { safelyParseFloat } from "../../../Utils/utils";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useSelector, useDispatch } from "react-redux";
+import { setMode } from "../../../Features/UI/uiSlice";
 
 // Responsive
 import { useMediaQuery } from "@mui/material";
@@ -40,16 +42,21 @@ const DistributedUptimeStatus = () => {
 	const location = useLocation();
 	const { t } = useTranslation();
 	const isPublic = location.pathname.startsWith("/status/distributed/public");
-
 	const elementToCapture = useRef(null);
+
+	// Redux state
+	const mode = useSelector((state) => state.ui.mode);
+	const originalModeRef = useRef(null);
+
 	// Local State
-	const [dateRange, setDateRange] = useState("day");
+	const [dateRange, setDateRange] = useState("recent");
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	const [timeFrame, setTimeFrame] = useState(30);
 	// Utils
 	const theme = useTheme();
 	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	const [
 		statusPageIsLoading,
@@ -84,6 +91,28 @@ const DistributedUptimeStatus = () => {
 			paddingLeft: "10vw",
 		};
 	}
+
+	// Default to dark mode
+	useEffect(() => {
+		const cleanup = () => {
+			if (originalModeRef.current === null) {
+				originalModeRef.current = mode;
+			}
+
+			if (isPublic) {
+				dispatch(setMode(originalModeRef.current));
+			}
+		};
+
+		if (isPublic) {
+			dispatch(setMode("dark"));
+		}
+
+		window.addEventListener("beforeunload", cleanup);
+		return () => {
+			window.removeEventListener("beforeunload", cleanup);
+		};
+	}, [dispatch, isPublic]);
 
 	// Done loading, a status page doesn't exist
 	if (!statusPageIsLoading && typeof statusPage === "undefined") {
@@ -158,9 +187,10 @@ const DistributedUptimeStatus = () => {
 			}}
 		>
 			{!isPublic && <Breadcrumbs list={BREADCRUMBS} />}
+
 			<ControlsHeader
-				shouldShow={!isPublic}
 				statusPage={statusPage}
+				isPublic={isPublic}
 				isDeleting={isDeleting}
 				isDeleteOpen={isDeleteOpen}
 				setIsDeleteOpen={setIsDeleteOpen}
@@ -224,7 +254,7 @@ const DistributedUptimeStatus = () => {
 						/>
 						<InfoBox
 							heading={isSmallScreen ? "UPT" : "UPT Burned"}
-							subHeading={safelyParseFloat(monitor?.totalUptBurnt).toFixed(4)}
+							subHeading={safelyParseFloat(monitor?.uptBurnt).toFixed(4)}
 							img={UptLogo}
 							alt="Upt Logo"
 							sx={{ width: "50%" }}

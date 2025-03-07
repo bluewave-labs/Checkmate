@@ -34,14 +34,15 @@ const UptimeDetails = () => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
 	// Local state
-	const [dateRange, setDateRange] = useState("day");
+	const [dateRange, setDateRange] = useState("recent");
 	const [hoveredUptimeData, setHoveredUptimeData] = useState(null);
 	const [hoveredIncidentsData, setHoveredIncidentsData] = useState(null);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 
 	// Utils
-	const dateFormat = dateRange === "day" ? "MMM D, h A" : "MMM D";
+	const dateFormat =
+		dateRange === "day" || dateRange === "recent" ? "MMM D, h A" : "MMM D";
 	const { monitorId } = useParams();
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();

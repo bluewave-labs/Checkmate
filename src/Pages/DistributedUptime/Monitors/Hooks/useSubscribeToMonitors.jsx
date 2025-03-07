@@ -5,7 +5,7 @@ import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
 import { createToast } from "../../../../Utils/toastUtils";
 
-const useSubscribeToMonitors = () => {
+const useSubscribeToMonitors = (page, rowsPerPage) => {
 	// Redux
 	const { user } = useSelector((state) => state.auth);
 
@@ -20,13 +20,50 @@ const useSubscribeToMonitors = () => {
 	const { getMonitorWithPercentage } = useMonitorUtils();
 
 	useEffect(() => {
+		const fetchInitialData = async () => {
+			try {
+				const initialDataRes = await networkService.getDistributedUptimeMonitors({
+					teamId: user.teamId,
+					limit: 25,
+					types: ["distributed_http"],
+					page,
+					rowsPerPage,
+				});
+				const responseData = initialDataRes?.data?.data;
+				if (typeof responseData === "undefined") throw new Error("No data");
+
+				const { monitors, filteredMonitors, summary } = responseData;
+
+				const mappedMonitors = filteredMonitors?.map((monitor) =>
+					getMonitorWithPercentage(monitor, theme)
+				);
+
+				setMonitors(monitors);
+				setMonitorsSummary(summary);
+				setFilteredMonitors(mappedMonitors);
+			} catch (error) {
+				setNetworkError(true);
+				createToast({
+					body: error.message,
+				});
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchInitialData();
+
 		try {
 			const cleanup = networkService.subscribeToDistributedUptimeMonitors({
 				teamId: user.teamId,
 				limit: 25,
-				types: ["distributed_http"],
-				page: 0,
-				rowsPerPage: 10,
+				types: [
+					typeof import.meta.env.VITE_DEPIN_TESTING === "undefined"
+						? "distributed_http"
+						: "distributed_test",
+				],
+				page,
+				rowsPerPage,
 				filter: null,
 				field: null,
 				order: null,
@@ -56,7 +93,7 @@ const useSubscribeToMonitors = () => {
 			});
 			setNetworkError(true);
 		}
-	}, [user, getMonitorWithPercentage, theme, isLoading]);
+	}, [user, getMonitorWithPercentage, theme, isLoading, page, rowsPerPage]);
 	return [isLoading, networkError, monitors, monitorsSummary, filteredMonitors];
 };
 export { useSubscribeToMonitors };
