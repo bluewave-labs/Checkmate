@@ -59,6 +59,9 @@ const uiSlice = createSlice({
 			state.language = action.payload;
 		},
 		setStarPromptClosed(state, action) {
+			if (!state.starPrompt) {
+				state.starPrompt = {};
+			}
 			state.starPrompt.closed = action.payload;
 		},
 	},
