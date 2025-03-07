@@ -170,7 +170,7 @@ const NotificationIntegrationModal = ({
           </Box>
 
           {/* Right side content */}
-          <Box sx={{ flex: 1, pl: 15 }}>
+          <Box sx={{ flex: 1, pl: theme.spacing(15) }}>
             {/* Slack Tab */}
             <TabPanel value={tabValue} index={0}>
               <Typography variant="subtitle1" component="h4" sx={{ fontWeight: 'bold' }}>Slack</Typography>
