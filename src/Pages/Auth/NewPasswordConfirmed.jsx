@@ -120,10 +120,10 @@ const NewPasswordConfirmed = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">{t("goBack-")}</Typography>
+				<Typography display="inline-block">{t("goBackTo")}</Typography>
 				<Typography
 					component="span"
-					color={theme.palette.primary.main}
+					color={theme.palette.accent.main}
 					ml={theme.spacing(2)}
 					onClick={handleNavigate}
 					sx={{ userSelect: "none" }}
