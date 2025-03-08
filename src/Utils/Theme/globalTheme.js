@@ -384,31 +384,38 @@ const baseTheme = (palette) => ({
 			  }),
 			},
 			variants: [
-			  {
-				props: { orientation: 'vertical' },
-				style: ({ theme }) => ({
-				  alignItems: 'flex-start',
-				  padding: theme.spacing(2),
-				  color: theme.palette.primary.contrastText,
-				  backgroundColor: theme.palette.primary.main,
-				  border: 'none',
-				  borderBottom: 'none',
-				  borderRight: 'none',
-				  '&.Mui-selected': {
+				{
+				  props: { orientation: 'vertical' },
+				  style: ({ theme }) => ({
+					alignItems: 'flex-start',
+					padding: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(1)}px ${theme.spacing(6)}px`, 
+					minHeight: theme.spacing(12), 
 					color: theme.palette.primary.contrastText,
-					backgroundColor: theme.palette.tertiary.main,
-					opacity: 1,
+					backgroundColor: theme.palette.primary.main,
 					border: 'none',
 					borderBottom: 'none',
-					borderRight: 'none'
-				  },
-				  '&:hover': {
-					backgroundColor: theme.palette.tertiary.main,
-					border: 'none'
-				  }
-				}),
-			  },
-			],
+					borderRight: 'none',
+					borderRadius: theme.shape.borderRadius * 3, 
+					margin: `${theme.spacing(1)}px ${theme.spacing(2)}px`, 
+					'&.Mui-selected': {
+					  color: theme.palette.primary.contrastText,
+					  backgroundColor: theme.palette.tertiary.main,
+					  opacity: 1,
+					  border: 'none',
+					  borderBottom: 'none',
+					  borderRight: 'none',
+					  borderRadius: theme.shape.borderRadius * 3, 
+					  minHeight: theme.spacing(14) 
+					},
+					'&:hover': {
+					  backgroundColor: theme.palette.tertiary.main,
+					  border: 'none',
+					  borderRadius: theme.shape.borderRadius * 3, 
+					  minHeight: theme.spacing(14) 
+					}
+				  }),
+				},
+			  ],
 		  },
 		MuiSvgIcon: {
 			styleOverrides: {
