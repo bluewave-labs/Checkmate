@@ -12,27 +12,7 @@ import {
 import { useTheme } from "@emotion/react";
 import TextInput from "../Inputs/TextInput";
 import Checkbox from "../Inputs/Checkbox";
-
-// Tab Panel component
-function TabPanel({ children, value, index, ...other }) {
-  const theme = useTheme(); 
-  
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`notification-tabpanel-${index}`}
-      aria-labelledby={`notification-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ pt: theme.spacing(3) }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
+import TabPanel from "./TabPanel";
 
 const NotificationIntegrationModal = ({ 
   open, 
