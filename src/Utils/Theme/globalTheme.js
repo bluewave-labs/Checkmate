@@ -122,11 +122,11 @@ const baseTheme = (palette) => ({
 							props: { variant: 'text', color: 'info' },
 							style: {
 							  textDecoration: 'underline',
-							  color: '#344054',
+							  color: theme.palette.text.primary,
 							  padding: 0,
 							  margin: 0,
-							  fontSize: '0.9rem',
-							  fontWeight: 'normal',
+							  fontSize: typographyLevels.m,
+							  fontWeight: theme.typography.body2.fontWeight,
 							  backgroundColor: 'transparent',
 							  '&:hover': {
 								backgroundColor: 'transparent',
