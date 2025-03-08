@@ -10,9 +10,8 @@ import {
   Tab
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import TextInput from "../Inputs/TextInput";
-import Checkbox from "../Inputs/Checkbox";
 import TabPanel from "./TabPanel";
+import TabComponent from "./TabComponent";
 
 // Configuration for notification tabs
 const NOTIFICATION_TYPES = [
@@ -205,7 +204,7 @@ const NotificationIntegrationModal = ({
               onChange={handleChangeTab}
               aria-label="Notification tabs"
             >
-              {notificationTypes.map((type, index) => (
+              {notificationTypes.map((type) => (
                 <Tab key={type.id} label={type.label} orientation="vertical" />
               ))}
             </Tabs>
@@ -215,62 +214,13 @@ const NotificationIntegrationModal = ({
           <Box sx={{ flex: 1, pl: theme.spacing(7.5) }}>
             {notificationTypes.map((type, index) => (
               <TabPanel key={type.id} value={tabValue} index={index}>
-                <Typography variant="subtitle1" component="h4" sx={{ 
-                  fontWeight: 'bold',
-                  color: theme.palette.primary.contrastTextSecondary
-                }}>{type.label}</Typography>
-                <Typography sx={{ 
-                  mt: theme.spacing(0.5), 
-                  mb: theme.spacing(1.5),
-                  color: theme.palette.primary.contrastTextTertiary 
-                }}>
-                  {type.description}
-                </Typography>
-                
-                <Box sx={{ pl: theme.spacing(1.5) }}> 
-                  <Checkbox
-                    id={`enable-${type.id}`}
-                    label={`Enable ${type.label} notifications`}
-                    isChecked={integrations[type.id]}
-                    onChange={(e) => handleIntegrationChange(type.id, e.target.checked)}
-                  />
-                </Box>
-                
-                {type.fields.map(field => {
-                  const fieldKey = `${type.id}${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
-                  
-                  return (
-                    <Box key={field.id} sx={{ mt: theme.spacing(1) }}>
-                      <Typography sx={{ 
-                        mb: theme.spacing(2), 
-                        fontWeight: 'bold',
-                        color: theme.palette.primary.contrastTextSecondary
-                      }}>{field.label}</Typography>
-                      <TextInput
-                        id={`${type.id}-${field.id}`}
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={integrations[fieldKey]}
-                        onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-                        disabled={!integrations[type.id]}
-                      />
-                    </Box>
-                  );
-                })}
-                
-                <Box sx={{ mt: theme.spacing(1) }}>
-                  <Button 
-                    variant="text" 
-                    color="info"
-                    onClick={() => handleTestNotification(type.id)}
-                    disabled={!integrations[type.id] || !type.fields.every(field => {
-                      const fieldKey = `${type.id}${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
-                      return integrations[fieldKey];
-                    })}
-                  >
-                    Test notification
-                  </Button>
-                </Box>
+                <TabComponent
+                  type={type}
+                  integrations={integrations}
+                  handleIntegrationChange={handleIntegrationChange}
+                  handleInputChange={handleInputChange}
+                  handleTestNotification={handleTestNotification}
+                />
               </TabPanel>
             ))}
           </Box>
