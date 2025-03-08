@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { 
   Dialog, 
-  DialogTitle, 
   DialogContent, 
   DialogActions,
   Button, 
-  Stack, 
   Typography, 
   Box,
   Tabs,
-  Tab,
-  Divider
+  Tab
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import TextInput from "../Inputs/TextInput";
