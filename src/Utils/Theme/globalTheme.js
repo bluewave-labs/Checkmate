@@ -356,17 +356,17 @@ const baseTheme = (palette) => ({
 		MuiTab: {
 			styleOverrides: {
 			  root: ({ theme }) => ({
-				fontSize: 13,
+				fontSize: theme.typography.fontSize - 1,
 				color: theme.palette.tertiary.contrastText,
 				backgroundColor: theme.palette.tertiary.main,
 				textTransform: "none",
 				minWidth: "fit-content",
-				paddingY: theme.spacing(6),
+				padding: `${theme.spacing(6)}px ${theme.spacing(4)}px`,
 				fontWeight: 400,
-				borderBottom: "2px solid transparent",
-				borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
-				"&:first-of-type": { borderTopLeftRadius: "8px" },
-				"&:last-child": { borderTopRightRadius: "8px", borderRight: 0 },
+				borderBottom: `${theme.shape.borderThick}px solid transparent`, 
+				borderRight: `${theme.shape.borderRadius / 2}px solid ${theme.palette.primary.lowContrast}`, 
+				"&:first-of-type": { borderTopLeftRadius: theme.shape.borderRadius * 4 },
+				"&:last-child": { borderTopRightRadius: theme.shape.borderRadius * 4, borderRight: 0 }, 
 				"&:focus-visible": {
 				  color: theme.palette.primary.contrastText,
 				  borderColor: theme.palette.tertiary.contrastText,
