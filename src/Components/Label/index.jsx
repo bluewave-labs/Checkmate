@@ -128,6 +128,8 @@ const statusToTheme = {
 	paused: "warning",
 	pending: "warning",
 	"cannot resolve": "error",
+	published: "success",
+	unpublished: "error",
 };
 
 const StatusLabel = ({ status, text, customStyles }) => {
@@ -156,7 +158,7 @@ const StatusLabel = ({ status, text, customStyles }) => {
 };
 
 StatusLabel.propTypes = {
-	status: PropTypes.oneOf(["up", "down", "paused", "pending", "cannot resolve"]),
+	status: PropTypes.oneOf(["up", "down", "paused", "pending", "cannot resolve", "published", "unpublished"]),
 	text: PropTypes.string,
 	customStyles: PropTypes.object,
 };

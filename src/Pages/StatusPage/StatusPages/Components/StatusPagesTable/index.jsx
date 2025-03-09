@@ -66,7 +66,7 @@ const StatusPagesTable = ({ data }) => {
 			id: "status",
 			content: "Status",
 			render: (row) => {
-				const status = row.isPublished ? "up" : "down";
+				const status = row.isPublished ? "published" : "unpublished";
 				return (
 					<StatusLabel
 						status={status}
