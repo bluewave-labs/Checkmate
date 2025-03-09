@@ -454,7 +454,7 @@ const baseTheme = (palette) => ({
 					backgroundColor: theme.palette.secondary.lowContrast,
 					// General text color
 					"& .MuiTypography-root": {
-						color: theme.palette.gradient.color6,
+						color: theme.palette.text.timePicker,
 					},
 					// Selected time (hour/minute) color
 					"& .Mui-selected": {
