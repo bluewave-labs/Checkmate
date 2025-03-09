@@ -13,6 +13,7 @@ import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useSubscribeToMonitors } from "./Hooks/useSubscribeToMonitors";
 import SkeletonLayout from "./Components/Skeleton";
+import { useTranslation } from "react-i18next";
 // Constants
 const BREADCRUMBS = [{ name: `Distributed Uptime`, path: "/distributed-uptime" }];
 
@@ -24,6 +25,7 @@ const DistributedUptimeMonitors = () => {
 	// Utils
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
+	const { t } = useTranslation();
 	const [isLoading, networkError, monitors, monitorsSummary, filteredMonitors] =
 		useSubscribeToMonitors(page, rowsPerPage);
 	// Handlers
@@ -48,9 +50,9 @@ const DistributedUptimeMonitors = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}

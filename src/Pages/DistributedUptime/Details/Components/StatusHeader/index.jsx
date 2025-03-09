@@ -9,9 +9,11 @@ import ShareComponent from "../../../../../Components/ShareComponent";
 // Utils
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const COLOR_MAP = {
 		up: theme.palette.successSecondary.main,
 		down: theme.palette.error.lowContrast,
@@ -59,14 +61,14 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 								backgroundColor={theme.palette.successSecondary.lowContrast}
 								color={theme.palette.success.lowContrast}
 							>
-								Uptime: {(monitor.totalUptime * 100).toFixed(2)}%
+								{t("distributedUptimeDetailsStatusHeaderUptime")} {(monitor.totalUptime * 100).toFixed(2)}%
 							</Typography>
 						</Stack>
 						<Typography
 							variant="body2"
 							color={theme.palette.success.lowContrast}
 						>
-							Last updated{" "}
+							{t("distributedUptimeDetailsStatusHeaderLastUpdate")}{" "}
 							<LastUpdate
 								suffix={"seconds ago"}
 								lastUpdateTime={monitor.timeSinceLastCheck}

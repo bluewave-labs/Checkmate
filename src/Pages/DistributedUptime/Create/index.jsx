@@ -19,6 +19,7 @@ import { monitorValidation } from "../../../Validation/validation";
 import { useParams } from "react-router-dom";
 import { useCreateDistributedUptimeMonitor } from "./Hooks/useCreateDistributedUptimeMonitor";
 import { useMonitorFetch } from "./Hooks/useMonitorFetch";
+import { useTranslation } from "react-i18next";
 
 // Constants
 const MS_PER_MINUTE = 60000;
@@ -41,6 +42,7 @@ const parseUrl = (url) => {
 const CreateDistributedUptime = () => {
 	const { monitorId } = useParams();
 	const isCreate = typeof monitorId === "undefined";
+	const { t } = useTranslation();
 
 	let BREADCRUMBS = [
 		{ name: `distributed uptime`, path: "/distributed-uptime" },
@@ -191,14 +193,14 @@ const CreateDistributedUptime = () => {
 						fontSize="inherit"
 						fontWeight="inherit"
 					>
-						monitor
+						{t("monitor")}
 					</Typography>
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">General settings</Typography>
+						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">
-							Here you can select the URL of the host, together with the type of monitor.
+							{t("distributedUptimeCreateSelectURL")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
@@ -232,9 +234,9 @@ const CreateDistributedUptime = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Checks to perform</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateChecks")}</Typography>
 						<Typography component="p">
-							You can always add or remove checks after adding your site.
+							{t("distributedUptimeCreateChecksDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
@@ -259,14 +261,14 @@ const CreateDistributedUptime = () => {
 										filled={https.toString()}
 										onClick={() => setHttps(true)}
 									>
-										HTTPS
+										{t("https")}
 									</Button>
 									<Button
 										variant="group"
 										filled={(!https).toString()}
 										onClick={() => setHttps(false)}
 									>
-										HTTP
+										{t("http")}
 									</Button>
 								</ButtonGroup>
 							) : (
@@ -291,9 +293,9 @@ const CreateDistributedUptime = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Incident notifications</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 						<Typography component="p">
-							When there is an incident, notify users.
+							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(6)}>
@@ -310,7 +312,7 @@ const CreateDistributedUptime = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Advanced settings</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select

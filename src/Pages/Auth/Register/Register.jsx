@@ -35,7 +35,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">Sign Up</Typography>
+					<Typography component="h1">{t("signUP")}</Typography>
 					<Typography>
 						{isSuperAdmin
 							? t("authRegisterCreateSuperAdminAccount")
@@ -67,7 +67,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				</Box>
 				<Box maxWidth={400}>
 					<Typography className="tos-p">
-						{t("authRegisterBySigningUp")}
+						{t("authRegisterBySigningUp")}{" "}
 						<Typography
 							component="span"
 							onClick={() => {

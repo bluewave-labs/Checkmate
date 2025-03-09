@@ -22,6 +22,7 @@ import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useSubscribeToDetails } from "./Hooks/useSubscribeToDetails";
 import { useDeleteMonitor } from "./Hooks/useDeleteMonitor";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const DistributedUptimeDetails = () => {
 	const { monitorId } = useParams();
@@ -32,6 +33,7 @@ const DistributedUptimeDetails = () => {
 	// Utils
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
 		useSubscribeToDetails({ monitorId, dateRange });
@@ -55,9 +57,9 @@ const DistributedUptimeDetails = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -70,7 +72,7 @@ const DistributedUptimeDetails = () => {
 			<Stack gap={theme.spacing(10)}>
 				<Breadcrumbs list={BREADCRUMBS} />
 				<GenericFallback>
-					<Typography>There is no check history for this monitor yet.</Typography>
+					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
