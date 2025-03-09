@@ -114,7 +114,7 @@ ColoredLabel.propTypes = {
 /**
  * @component
  * @param {Object} props
- * @param { 'up' | 'down' | 'cannot resolve'} props.status - The status for the label
+ * @param {'up' | 'down' | 'paused' | 'pending' | 'cannot resolve' | 'published' | 'unpublished'} props.status - The status for the label
  * @param {string} props.text - The text of the label
  * @returns {JSX.Element}
  * @example
@@ -128,6 +128,8 @@ const statusToTheme = {
 	paused: "warning",
 	pending: "warning",
 	"cannot resolve": "error",
+	published: "success",
+	unpublished: "error",
 };
 
 const StatusLabel = ({ status, text, customStyles }) => {
@@ -156,7 +158,7 @@ const StatusLabel = ({ status, text, customStyles }) => {
 };
 
 StatusLabel.propTypes = {
-	status: PropTypes.oneOf(["up", "down", "paused", "pending", "cannot resolve"]),
+	status: PropTypes.oneOf(["up", "down", "paused", "pending", "cannot resolve", "published", "unpublished"]),
 	text: PropTypes.string,
 	customStyles: PropTypes.object,
 };

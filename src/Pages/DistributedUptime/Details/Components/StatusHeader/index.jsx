@@ -71,7 +71,7 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 							{t("distributedUptimeDetailsStatusHeaderLastUpdate")}{" "}
 							<LastUpdate
 								suffix={"seconds ago"}
-								lastUpdateTime={monitor.timeSinceLastCheck}
+								lastUpdateTime={monitor?.timeSinceLastCheck}
 							/>
 						</Typography>
 					</Stack>
