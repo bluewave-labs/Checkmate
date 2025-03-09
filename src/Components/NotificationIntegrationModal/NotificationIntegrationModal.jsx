@@ -175,24 +175,30 @@ const NotificationIntegrationModal = ({
       maxWidth="md"
       sx={{
         '& .MuiDialog-paper': {
-          maxWidth: '775px'
+          width: `calc(90% - ${theme.spacing(40)})`, 
+          maxWidth: theme.breakpoints.values.md 
         }
       }}
     >
       <DialogContent>
-        <Box sx={{ display: 'flex', height: '300px' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          height: `calc(26vh - ${theme.spacing(20)})` 
+        }}>
           {/* Left sidebar with tabs */}
           <Box sx={{ 
             borderRight: 1, 
-            borderColor: 'divider', 
-            minWidth: '200px',
+            borderColor: theme.palette.primary.lowContrast, 
+            width: '30%',
+            maxWidth: theme.spacing(120), 
             pr: theme.spacing(10)
           }}>
             <Typography variant="subtitle1" sx={{ 
               my: theme.spacing(1), 
               fontWeight: 'bold', 
-              fontSize: '0.9rem', 
-              color: theme.palette.primary.contrastTextSecondary 
+              fontSize: theme.typography.fontSize * 0.9, 
+              color: theme.palette.primary.contrastTextSecondary,
+              pl: theme.spacing(4)
             }}>
               Add or edit notifications
             </Typography>
@@ -205,13 +211,22 @@ const NotificationIntegrationModal = ({
               aria-label="Notification tabs"
             >
               {notificationTypes.map((type) => (
-                <Tab key={type.id} label={type.label} orientation="vertical" />
+                <Tab 
+                  key={type.id} 
+                  label={type.label} 
+                  orientation="vertical"
+                  disableRipple
+                />
               ))}
             </Tabs>
           </Box>
 
           {/* Right side content */}
-          <Box sx={{ flex: 1, pl: theme.spacing(7.5) }}>
+          <Box sx={{ 
+            flex: 1,
+            pl: theme.spacing(7.5),
+            overflowY: 'auto'
+          }}>
             {notificationTypes.map((type, index) => (
               <TabPanel key={type.id} value={tabValue} index={index}>
                 <TabComponent
@@ -238,7 +253,9 @@ const NotificationIntegrationModal = ({
           color="accent" 
           onClick={handleSave}
           sx={{ 
-            width: '120px'
+            width: 'auto', 
+            minWidth: theme.spacing(60), 
+            px: theme.spacing(8) 
           }}
         >
           Save
