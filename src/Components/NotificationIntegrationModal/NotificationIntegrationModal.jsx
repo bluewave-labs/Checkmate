@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { 
   Dialog, 
   DialogContent, 
@@ -86,8 +86,8 @@ const NotificationIntegrationModal = ({
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   
-  // Initialize integrations state based on available notification types
-  const initializeIntegrationsState = () => {
+  // Memoized function to initialize integrations state
+  const initialIntegrationsState = useMemo(() => {
     const state = {};
     
     notificationTypes.forEach(type => {
@@ -102,9 +102,9 @@ const NotificationIntegrationModal = ({
     });
     
     return state;
-  };
+  }, [monitor, notificationTypes]); // Only recompute when these dependencies change
   
-  const [integrations, setIntegrations] = useState(initializeIntegrationsState());
+  const [integrations, setIntegrations] = useState(initialIntegrationsState);
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
