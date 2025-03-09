@@ -114,7 +114,7 @@ ColoredLabel.propTypes = {
 /**
  * @component
  * @param {Object} props
- * @param { 'up' | 'down' | 'cannot resolve'} props.status - The status for the label
+ * @param {'up' | 'down' | 'paused' | 'pending' | 'cannot resolve' | 'published' | 'unpublished'} props.status - The status for the label
  * @param {string} props.text - The text of the label
  * @returns {JSX.Element}
  * @example
