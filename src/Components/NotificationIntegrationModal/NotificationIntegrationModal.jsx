@@ -175,8 +175,8 @@ const NotificationIntegrationModal = ({
       maxWidth="md"
       sx={{
         '& .MuiDialog-paper': {
-          width: `calc(90% - ${theme.spacing(40)})`, 
-          maxWidth: theme.breakpoints.values.md 
+          width: `calc(80% - ${theme.spacing(40)})`, 
+          maxWidth: `${theme.breakpoints.values.md - 70}px` 
         }
       }}
     >
