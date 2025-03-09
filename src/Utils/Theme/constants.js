@@ -270,6 +270,10 @@ const newSemanticColors = {
 			light: paletteColors.gray50,
 			dark: paletteColors.gray850,
 		},
+		color6: {
+			light: paletteColors.gray300,
+			dark: paletteColors.gray600,
+		},
 	},
 
 	map: {
