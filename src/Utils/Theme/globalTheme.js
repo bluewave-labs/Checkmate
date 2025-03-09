@@ -451,14 +451,14 @@ const baseTheme = (palette) => ({
 		MuiTimePickerToolbar: {
 			styleOverrides: {
 				root: ({ theme }) => ({
-					backgroundColor: theme.palette.secondary.main,
+					backgroundColor: theme.palette.secondary.lowContrast,
 					// General text color
 					"& .MuiTypography-root": {
-						color: theme.palette.secondary.darker,
+						color: theme.palette.gradient.color6,
 					},
 					// Selected time (hour/minute) color
 					"& .Mui-selected": {
-						color: `${theme.palette.accent.main} !important`, // Use your accent color
+						color: `${theme.palette.accent.main} !important`,
 					},
 					// AM/PM buttons color
 					"& .MuiButtonBase-root": {
