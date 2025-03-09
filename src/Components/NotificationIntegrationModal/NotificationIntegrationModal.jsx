@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { 
   Dialog, 
   DialogContent, 
@@ -18,12 +19,16 @@ const NOTIFICATION_TYPES = [
   {
     id: 'slack',
     label: 'Slack',
+    labelKey: 'notifications.slack.label',
     description: 'To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.',
+    descriptionKey: 'notifications.slack.description',
     fields: [
       {
         id: 'webhook',
         label: 'Webhook URL',
+        labelKey: 'notifications.slack.webhookLabel',
         placeholder: 'https://hooks.slack.com/services/...',
+        placeholderKey: 'notifications.slack.webhookPlaceholder',
         type: 'text'
       }
     ]
@@ -31,12 +36,16 @@ const NOTIFICATION_TYPES = [
   {
     id: 'discord',
     label: 'Discord',
+    labelKey: 'notifications.discord.label',
     description: 'To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord\'s incoming Webhooks feature.',
+    descriptionKey: 'notifications.discord.description',
     fields: [
       {
         id: 'webhook',
         label: 'Discord Webhook URL',
+        labelKey: 'notifications.discord.webhookLabel',
         placeholder: 'https://discord.com/api/webhooks/...',
+        placeholderKey: 'notifications.discord.webhookPlaceholder',
         type: 'text'
       }
     ]
@@ -44,18 +53,24 @@ const NOTIFICATION_TYPES = [
   {
     id: 'telegram',
     label: 'Telegram',
+    labelKey: 'notifications.telegram.label',
     description: 'To enable Telegram notifications, create a Telegram bot using BotFather, an official bot for creating and managing Telegram bots. Then, get the API token and chat ID and write them down here.',
+    descriptionKey: 'notifications.telegram.description',
     fields: [
       {
         id: 'token',
         label: 'Your bot token',
+        labelKey: 'notifications.telegram.tokenLabel',
         placeholder: '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
+        placeholderKey: 'notifications.telegram.tokenPlaceholder',
         type: 'text'
       },
       {
         id: 'chatId',
         label: 'Your Chat ID',
+        labelKey: 'notifications.telegram.chatIdLabel',
         placeholder: '-1001234567890',
+        placeholderKey: 'notifications.telegram.chatIdPlaceholder',
         type: 'text'
       }
     ]
@@ -63,12 +78,16 @@ const NOTIFICATION_TYPES = [
   {
     id: 'webhook',
     label: 'Webhooks',
+    labelKey: 'notifications.webhook.label',
     description: 'You can set up a custom webhook to receive notifications when incidents occur.',
+    descriptionKey: 'notifications.webhook.description',
     fields: [
       {
         id: 'url',
         label: 'Webhook URL',
+        labelKey: 'notifications.webhook.urlLabel',
         placeholder: 'https://your-server.com/webhook',
+        placeholderKey: 'notifications.webhook.urlPlaceholder',
         type: 'text'
       }
     ]
@@ -83,6 +102,7 @@ const NotificationIntegrationModal = ({
   // Optional prop to configure available notification types
   notificationTypes = NOTIFICATION_TYPES
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   
@@ -200,7 +220,7 @@ const NotificationIntegrationModal = ({
               color: theme.palette.primary.contrastTextSecondary,
               pl: theme.spacing(4)
             }}>
-              Add or edit notifications
+              {t('notifications.addOrEditNotifications', 'Add or edit notifications')}
             </Typography>
             
             <Tabs
@@ -213,7 +233,7 @@ const NotificationIntegrationModal = ({
               {notificationTypes.map((type) => (
                 <Tab 
                   key={type.id} 
-                  label={type.label} 
+                  label={t(type.labelKey, type.label)} 
                   orientation="vertical"
                   disableRipple
                 />
@@ -230,7 +250,16 @@ const NotificationIntegrationModal = ({
             {notificationTypes.map((type, index) => (
               <TabPanel key={type.id} value={tabValue} index={index}>
                 <TabComponent
-                  type={type}
+                  type={{
+                    ...type,
+                    label: t(type.labelKey, type.label),
+                    description: t(type.descriptionKey, type.description),
+                    fields: type.fields.map(field => ({
+                      ...field,
+                      label: t(field.labelKey, field.label),
+                      placeholder: t(field.placeholderKey, field.placeholder)
+                    }))
+                  }}
                   integrations={integrations}
                   handleIntegrationChange={handleIntegrationChange}
                   handleInputChange={handleInputChange}
@@ -258,7 +287,7 @@ const NotificationIntegrationModal = ({
             px: theme.spacing(8) 
           }}
         >
-          Save
+          {t('common.save', 'Save')}
         </Button>
       </DialogActions>
     </Dialog>

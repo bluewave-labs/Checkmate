@@ -4,9 +4,11 @@ import {
   Box,
   Button
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 import TextInput from "../../../src/Components/Inputs/TextInput";
 import Checkbox from "../../../src/Components/Inputs/Checkbox";
+
 const TabComponent = ({ 
   type, 
   integrations, 
@@ -15,6 +17,7 @@ const TabComponent = ({
   handleTestNotification 
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   
   // Helper to get the field state key (e.g., slackWebhook, telegramToken)
   const getFieldKey = (typeId, fieldId) => {
@@ -49,7 +52,7 @@ const TabComponent = ({
       <Box sx={{ pl: theme.spacing(1.5) }}> 
         <Checkbox
           id={`enable-${type.id}`}
-          label={`Enable ${type.label} notifications`}
+          label={t('notifications.enableNotifications', { platform: type.label })}
           isChecked={integrations[type.id]}
           onChange={(e) => handleIntegrationChange(type.id, e.target.checked)}
         />
@@ -87,7 +90,7 @@ const TabComponent = ({
           onClick={() => handleTestNotification(type.id)}
           disabled={!integrations[type.id] || !areAllFieldsFilled()}
         >
-          Test notification
+          {t('notifications.testNotification')}
         </Button>
       </Box>
     </>
