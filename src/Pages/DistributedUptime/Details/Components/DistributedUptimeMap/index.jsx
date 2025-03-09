@@ -75,7 +75,7 @@ const DistributedUptimeMap = ({
 						type: "Feature",
 						geometry: {
 							type: "Point",
-							coordinates: [check.lng, check.lat],
+							coordinates: [check._id.lng, check._id.lat],
 						},
 						properties: {
 							color: theme.palette.accent.main,

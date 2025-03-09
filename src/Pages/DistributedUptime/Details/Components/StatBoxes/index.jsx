@@ -32,7 +32,7 @@ const StatBoxes = ({ monitor, lastUpdateTrigger }) => {
 				heading={"Last check"}
 				subHeading={
 					<LastUpdate
-						lastUpdateTime={monitor?.timeSinceLastCheck ?? 0}
+						lastUpdateTime={monitor?.timeSinceLastCheck}
 						suffix={"seconds ago"}
 					/>
 				}
