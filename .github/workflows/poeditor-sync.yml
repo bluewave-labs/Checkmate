@@ -1,0 +1,91 @@
+name: POEditor Translation Synchronization
+
+on:
+  # For manual triggering
+  workflow_dispatch:
+    inputs:
+      languages:
+        description: "Languages to synchronize (comma separated, e.g.: tr,en,es)"
+        required: false
+        default: "tr,en"
+      format:
+        description: "Export format (key_value_json or json)"
+        required: false
+        default: "key_value_json"
+
+  # For automatic execution at a specific time (every day at midnight)
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  sync-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Create package.json for scripts
+        run: |
+          mkdir -p .github/scripts
+          cat > .github/scripts/package.json << EOF
+          {
+            "name": "poeditor-scripts",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "axios": "^1.6.0",
+              "fs-extra": "^11.1.1"
+            }
+          }
+          EOF
+
+      - name: Install dependencies
+        run: |
+          cd .github/scripts
+          npm install
+
+      - name: Download translations from POEditor
+        env:
+          POEDITOR_API_TOKEN: ${{ secrets.POEDITOR_API_TOKEN }}
+          POEDITOR_PROJECT_ID: ${{ secrets.POEDITOR_PROJECT_ID }}
+          LANGUAGES: ${{ github.event.inputs.languages || 'tr,en' }}
+          EXPORT_FORMAT: ${{ github.event.inputs.format || 'key_value_json' }}
+        run: |
+          mkdir -p temp
+          node .github/scripts/download-translations.js
+
+      - name: Verify translation files
+        run: |
+          echo "Verifying translation files..."
+          for file in temp/*.json; do
+            echo "Checking $file"
+            if [ ! -s "$file" ]; then
+              echo "Error: $file is empty or does not exist"
+              exit 1
+            fi
+            # Validate JSON format
+            cat "$file" | jq . > /dev/null || { echo "Error: $file is not valid JSON"; exit 1; }
+          done
+          echo "All translation files are valid"
+
+      - name: Copy translations to project
+        run: |
+          mkdir -p src/locales
+          cp -r temp/* src/locales/
+          echo "Translation files copied to src/locales/"
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/locales/*.json
+          git diff --staged --quiet || git commit -m "Translations updated from POEditor"
+          git push
