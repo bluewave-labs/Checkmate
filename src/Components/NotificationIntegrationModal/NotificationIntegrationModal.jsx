@@ -14,103 +14,88 @@ import { useTheme } from "@emotion/react";
 import TabPanel from "./TabPanel";
 import TabComponent from "./TabComponent";
 
-// Configuration for notification tabs
-const NOTIFICATION_TYPES = [
-  {
-    id: 'slack',
-    label: 'Slack',
-    labelKey: 'notifications.slack.label',
-    description: 'To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.',
-    descriptionKey: 'notifications.slack.description',
-    fields: [
-      {
-        id: 'webhook',
-        label: 'Webhook URL',
-        labelKey: 'notifications.slack.webhookLabel',
-        placeholder: 'https://hooks.slack.com/services/...',
-        placeholderKey: 'notifications.slack.webhookPlaceholder',
-        type: 'text'
-      }
-    ]
-  },
-  {
-    id: 'discord',
-    label: 'Discord',
-    labelKey: 'notifications.discord.label',
-    description: 'To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord\'s incoming Webhooks feature.',
-    descriptionKey: 'notifications.discord.description',
-    fields: [
-      {
-        id: 'webhook',
-        label: 'Discord Webhook URL',
-        labelKey: 'notifications.discord.webhookLabel',
-        placeholder: 'https://discord.com/api/webhooks/...',
-        placeholderKey: 'notifications.discord.webhookPlaceholder',
-        type: 'text'
-      }
-    ]
-  },
-  {
-    id: 'telegram',
-    label: 'Telegram',
-    labelKey: 'notifications.telegram.label',
-    description: 'To enable Telegram notifications, create a Telegram bot using BotFather, an official bot for creating and managing Telegram bots. Then, get the API token and chat ID and write them down here.',
-    descriptionKey: 'notifications.telegram.description',
-    fields: [
-      {
-        id: 'token',
-        label: 'Your bot token',
-        labelKey: 'notifications.telegram.tokenLabel',
-        placeholder: '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
-        placeholderKey: 'notifications.telegram.tokenPlaceholder',
-        type: 'text'
-      },
-      {
-        id: 'chatId',
-        label: 'Your Chat ID',
-        labelKey: 'notifications.telegram.chatIdLabel',
-        placeholder: '-1001234567890',
-        placeholderKey: 'notifications.telegram.chatIdPlaceholder',
-        type: 'text'
-      }
-    ]
-  },
-  {
-    id: 'webhook',
-    label: 'Webhooks',
-    labelKey: 'notifications.webhook.label',
-    description: 'You can set up a custom webhook to receive notifications when incidents occur.',
-    descriptionKey: 'notifications.webhook.description',
-    fields: [
-      {
-        id: 'url',
-        label: 'Webhook URL',
-        labelKey: 'notifications.webhook.urlLabel',
-        placeholder: 'https://your-server.com/webhook',
-        placeholderKey: 'notifications.webhook.urlPlaceholder',
-        type: 'text'
-      }
-    ]
-  }
-];
-
 const NotificationIntegrationModal = ({ 
   open, 
   onClose, 
   monitor,
   setMonitor,
   // Optional prop to configure available notification types
-  notificationTypes = NOTIFICATION_TYPES
+  notificationTypes = null
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   
+  // Define notification types
+  const DEFAULT_NOTIFICATION_TYPES = [
+    {
+      id: 'slack',
+      label: t('notifications.slack.label'),
+      description: t('notifications.slack.description'),
+      fields: [
+        {
+          id: 'webhook',
+          label: t('notifications.slack.webhookLabel'),
+          placeholder: t('notifications.slack.webhookPlaceholder'),
+          type: 'text'
+        }
+      ]
+    },
+    {
+      id: 'discord',
+      label: t('notifications.discord.label'),
+      description: t('notifications.discord.description'),
+      fields: [
+        {
+          id: 'webhook',
+          label: t('notifications.discord.webhookLabel'),
+          placeholder: t('notifications.discord.webhookPlaceholder'),
+          type: 'text'
+        }
+      ]
+    },
+    {
+      id: 'telegram',
+      label: t('notifications.telegram.label'),
+      description: t('notifications.telegram.description'),
+      fields: [
+        {
+          id: 'token',
+          label: t('notifications.telegram.tokenLabel'),
+          placeholder: t('notifications.telegram.tokenPlaceholder'),
+          type: 'text'
+        },
+        {
+          id: 'chatId',
+          label: t('notifications.telegram.chatIdLabel'),
+          placeholder: t('notifications.telegram.chatIdPlaceholder'),
+          type: 'text'
+        }
+      ]
+    },
+    {
+      id: 'webhook',
+      label: t('notifications.webhook.label'),
+      description: t('notifications.webhook.description'),
+      fields: [
+        {
+          id: 'url',
+          label: t('notifications.webhook.urlLabel'),
+          placeholder: t('notifications.webhook.urlPlaceholder'),
+          type: 'text'
+        }
+      ]
+    }
+  ];
+
+  // Use provided notification types or default to our translated ones
+  const activeNotificationTypes = notificationTypes || DEFAULT_NOTIFICATION_TYPES;
+  
   // Memoized function to initialize integrations state
   const initialIntegrationsState = useMemo(() => {
     const state = {};
     
-    notificationTypes.forEach(type => {
+    activeNotificationTypes.forEach(type => {
       // Add enabled flag for each notification type
       state[type.id] = monitor?.notifications?.some(n => n.type === type.id) || false;
       
@@ -122,7 +107,7 @@ const NotificationIntegrationModal = ({
     });
     
     return state;
-  }, [monitor, notificationTypes]); // Only recompute when these dependencies change
+  }, [monitor, activeNotificationTypes]); // Only recompute when these dependencies change
   
   const [integrations, setIntegrations] = useState(initialIntegrationsState);
 
@@ -154,7 +139,7 @@ const NotificationIntegrationModal = ({
     const notifications = [...(monitor?.notifications || [])];
     
     // Get all notification types IDs
-    const existingTypes = notificationTypes.map(type => type.id);
+    const existingTypes = activeNotificationTypes.map(type => type.id);
     
     // Filter out notifications that are configurable in this modal
     const filteredNotifications = notifications.filter(
@@ -162,7 +147,7 @@ const NotificationIntegrationModal = ({
     );
 
     // Add each enabled notification with its configured fields
-    notificationTypes.forEach(type => {
+    activeNotificationTypes.forEach(type => {
       if (integrations[type.id]) {
         const notificationObject = {
           type: type.id
@@ -220,7 +205,7 @@ const NotificationIntegrationModal = ({
               color: theme.palette.primary.contrastTextSecondary,
               pl: theme.spacing(4)
             }}>
-              {t('notifications.addOrEditNotifications', 'Add or edit notifications')}
+              {t('notifications.addOrEditNotifications')}
             </Typography>
             
             <Tabs
@@ -230,10 +215,10 @@ const NotificationIntegrationModal = ({
               onChange={handleChangeTab}
               aria-label="Notification tabs"
             >
-              {notificationTypes.map((type) => (
+              {activeNotificationTypes.map((type) => (
                 <Tab 
                   key={type.id} 
-                  label={t(type.labelKey, type.label)} 
+                  label={type.label} 
                   orientation="vertical"
                   disableRipple
                 />
@@ -247,19 +232,10 @@ const NotificationIntegrationModal = ({
             pl: theme.spacing(7.5),
             overflowY: 'auto'
           }}>
-            {notificationTypes.map((type, index) => (
+            {activeNotificationTypes.map((type, index) => (
               <TabPanel key={type.id} value={tabValue} index={index}>
                 <TabComponent
-                  type={{
-                    ...type,
-                    label: t(type.labelKey, type.label),
-                    description: t(type.descriptionKey, type.description),
-                    fields: type.fields.map(field => ({
-                      ...field,
-                      label: t(field.labelKey, field.label),
-                      placeholder: t(field.placeholderKey, field.placeholder)
-                    }))
-                  }}
+                  type={type}
                   integrations={integrations}
                   handleIntegrationChange={handleIntegrationChange}
                   handleInputChange={handleInputChange}
