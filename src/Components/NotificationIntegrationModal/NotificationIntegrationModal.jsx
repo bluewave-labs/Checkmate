@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from 'react-toastify';
+
 import { 
   Dialog, 
   DialogContent, 
@@ -129,11 +131,87 @@ const NotificationIntegrationModal = ({
     }));
   };
 
-  const handleTestNotification = (type) => {
-    console.log(`Testing ${type} notification`);
-    //implement the test notification functionality
-  };
+  const handleTestNotification = async (type) => {
+    // Get the notification type details
+    const notificationType = activeNotificationTypes.find(t => t.id === type);
+    
+    if (notificationType === undefined) {
+      return;
+    }
+    
+    // Helper to get the field state key
+    const getFieldKey = (typeId, fieldId) => {
+      return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
+    };
+    
+    // Prepare request payload based on notification type
+    let payload = { platform: type };
+    
+    switch(type) {
+      case 'slack':
+        payload.webhookUrl = integrations[getFieldKey('slack', 'webhook')];
+        if (!payload.webhookUrl) {
+          toast.error('Please enter a Slack webhook URL first.');
+          return;
+        }
+        break;
+        
+      case 'discord':
+        payload.webhookUrl = integrations[getFieldKey('discord', 'webhook')];
+        if (!payload.webhookUrl) {
+          toast.error('Please enter a Discord webhook URL first.');
+          return;
+        }
+        break;
+        
+      case 'telegram':
+        payload.botToken = integrations[getFieldKey('telegram', 'token')];
+        payload.chatId = integrations[getFieldKey('telegram', 'chatId')];
+        if (!payload.botToken || !payload.chatId) {
+          toast.error('Please enter both Telegram bot token and chat ID.');
+          return;
+        }
+        break;
+        
+      case 'webhook':
+        payload.webhookUrl = integrations[getFieldKey('webhook', 'url')];
+        payload.platform = 'slack'; // Use slack as platform for webhooks
+        if (!payload.webhookUrl) {
+          toast.error('Please enter a webhook URL first.');
+          return;
+        }
+        break;
+        
+      default:
+        toast.error('This notification type cannot be tested.');
+        return;
+    }
+    
+    try {
+        const apiUrl = `${import.meta.env.VITE_APP_API_BASE_URL || 'http://localhost:5000'}/api/v1/notifications/test-webhook`;
 
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        toast.success('Test notification sent successfully!');
+      } else {
+        throw new Error(data.msg || 'Failed to send test notification');
+      }
+    } catch (error) {
+      toast.error(`Failed to send test notification: ${error.message}`);
+    }
+  };
+  
+  
   const handleSave = () => {
     //notifications array for selected integrations
     const notifications = [...(monitor?.notifications || [])];
