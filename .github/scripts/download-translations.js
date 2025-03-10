@@ -46,10 +46,10 @@ async function downloadTranslations() {
       const translations = downloadResponse.data;
       console.log(`Downloaded translations for ${language}`);
 
-      // POEditor'den dönen veri formatını kontrol et ve gerekirse dönüştür
+      // Check the format of data returned from POEditor and convert if necessary
       let formattedTranslations = translations;
 
-      // Eğer dizi formatında geldiyse, key-value formatına dönüştür
+      // If data is in array format, convert it to key-value format
       if (Array.isArray(translations)) {
         console.log(`Converting array format to key-value format for ${language}`);
         formattedTranslations = {};
