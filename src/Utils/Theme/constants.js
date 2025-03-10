@@ -306,12 +306,6 @@ const newSemanticColors = {
 			dark: newColors.blueGray900,
 		},
 	},
-	text: {
-		timePicker: {
-			light: paletteColors.gray300,
-			dark: paletteColors.gray600,
-		},
-	},
 };
 
 export { typographyLevels, semanticColors as colors, newSemanticColors };
