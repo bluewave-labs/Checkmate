@@ -40,6 +40,7 @@ jobs:
             "name": "poeditor-scripts",
             "version": "1.0.0",
             "private": true,
+            "type": "module",
             "dependencies": {
               "axios": "^1.6.0",
               "fs-extra": "^11.1.1"
@@ -54,7 +55,7 @@ jobs:
 
       - name: Download translations from POEditor
         env:
-          POEDITOR_API_TOKEN: ${{ secrets.POEDITOR_API_TOKEN }}
+          POEDITOR_API_TOKEN: ${{ secrets.POEDITOR_API }}
           POEDITOR_PROJECT_ID: ${{ secrets.POEDITOR_PROJECT_ID }}
           LANGUAGES: ${{ github.event.inputs.languages || 'tr,en' }}
           EXPORT_FORMAT: ${{ github.event.inputs.format || 'key_value_json' }}
