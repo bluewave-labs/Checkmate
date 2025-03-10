@@ -394,6 +394,114 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
+		// This code is added for clock in maintenance page
+		// code starts from here.
+		MuiClock: {
+			// Directly target the clock component
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main, // Alternative target
+					"& .MuiClock-clock": {
+						// Inner clock face
+						backgroundColor: theme.palette.secondary.main,
+					},
+				}),
+			},
+		},
+		MuiClockPicker: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.secondary.main, // Outer container background
+					"& .MuiClock-root": {
+						color: theme.palette.primary.lowContrast,
+					},
+					"& .MuiClock-clock": {
+						backgroundColor: theme.palette.background.default, // Clock face background
+						borderColor: theme.palette.secondary.lowContrast,
+					},
+				}),
+			},
+		},
+		// The clock pointer ( pointer to number like hour/minute hand)
+		MuiClockPointer: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					// Main pointer line color
+					backgroundColor: theme.palette.accent.main,
+					"& .MuiClockPointer-thumb": {
+						backgroundColor: theme.palette.grey[500], // Use your desired grey
+					},
+				}),
+			},
+		},
+		// This is for numbers in the clock (circular one's)
+		MuiClockNumber: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					color: theme.palette.primary.contrastText,
+					"&.Mui-selected": {
+						color: theme.palette.accent.contrastText,
+						backgroundColor: theme.palette.accent.main,
+					},
+				}),
+			},
+		},
+		// This is for 00:00 am and pm (top bar)
+		MuiTimePickerToolbar: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.secondary.lowContrast,
+					// General text color
+					"& .MuiTypography-root": {
+						color: theme.palette.primary.contrastTextTertiary,
+					},
+					// Selected time (hour/minute) color
+					"& .Mui-selected": {
+						color: `${theme.palette.accent.main} !important`,
+					},
+					// AM/PM buttons color
+					"& .MuiButtonBase-root": {
+						"&.Mui-selected": {
+							backgroundColor: theme.palette.accent.main,
+						},
+					},
+				}),
+			},
+		},
+		// left and right direction style
+		MuiPickersArrowSwitcher: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiIconButton-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		// cancel and okay actions style
+		MuiDialogActions: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+					"& .MuiButton-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		// code ends here.
+
+		// For labels of input fields
+		MuiInputLabel: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"&.Mui-focused": {
+						color: theme.palette.accent.main,
+					},
+				}),
+			},
+		},
 	},
 	shape: {
 		borderRadius: 2,
