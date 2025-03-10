@@ -239,7 +239,6 @@ const Register = ({ isSuperAdmin }) => {
 		const action = await dispatch(register(registerForm));
 		if (action.payload.success) {
 			const authToken = action.payload.data;
-			localStorage.setItem("token", JSON.stringify(authToken));
 			navigate("/uptime");
 			createToast({
 				body: "Welcome! Your account was created successfully.",
