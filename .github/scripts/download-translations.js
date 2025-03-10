@@ -1,10 +1,7 @@
-import axios from 'axios';
-import fs from 'fs-extra';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Get current directory
-const __filename = fileURLToPath(import.meta.url);
+const axios = require('axios');
+const fs = require('fs-extra');
+const path = require('path');
+const { URLSearchParams } = require('url');
 
 // POEditor API information
 const API_TOKEN = process.env.POEDITOR_API;
