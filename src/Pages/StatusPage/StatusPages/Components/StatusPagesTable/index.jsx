@@ -1,7 +1,7 @@
 import DataTable from "../../../../../Components/Table";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import { ColoredLabel } from "../../../../../Components/Label";
+import { StatusLabel } from "../../../../../Components/Label";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { Stack, Typography } from "@mui/material";
 const StatusPagesTable = ({ data }) => {
@@ -66,12 +66,11 @@ const StatusPagesTable = ({ data }) => {
 			id: "status",
 			content: "Status",
 			render: (row) => {
+				const status = row.isPublished ? "published" : "unpublished";
 				return (
-					<ColoredLabel
-						label={row.isPublished ? "Published" : "Unpublished"}
-						color={
-							row.isPublished ? theme.palette.success.main : theme.palette.warning.main
-						}
+					<StatusLabel
+						status={status}
+						text={row.isPublished ? "Published" : "Unpublished"}
 					/>
 				);
 			},
