@@ -1,7 +1,8 @@
 .home-layout {
 	position: relative;
 	min-height: 100vh;
-	max-width: 1400px;
+	width: 95%;
+	max-width: 2000px;
 	margin: 0 auto;
 	padding: var(--env-var-spacing-2);
 }
@@ -12,6 +13,21 @@
 		flex-direction: column !important;
 	}
 } */
+
+/* Media query for larger screens */
+@media (min-width: 2560px) {
+	.home-layout {
+		width: 90%;
+		max-width: 2400px;
+	}
+}
+
+/* Media query for smaller screens */
+@media (max-width: 1400px) {
+	.home-layout {
+		width: 98%;
+	}
+}
 
 .home-layout aside {
 	position: sticky;
