@@ -22,7 +22,7 @@ You can add these secrets in the "Settings > Secrets and variables > Actions" se
 
 When running the workflow manually, you can specify which languages to download. Languages should be entered as comma-separated values (e.g., `tr,gb,es`).
 
-If you don't specify any languages, the default languages `tr` and `gb` will be downloaded.
+If you don't specify any languages, the default languages `tr` and `en` will be downloaded.
 
 ## Output
 

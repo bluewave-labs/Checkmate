@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 
 // POEditor API information
-const API_TOKEN = process.env.POEDITOR_API_TOKEN;
+const API_TOKEN = process.env.POEDITOR_API;
 const PROJECT_ID = process.env.POEDITOR_PROJECT_ID;
 const LANGUAGES = (process.env.LANGUAGES || 'tr,en').split(',');
 const EXPORT_FORMAT = process.env.EXPORT_FORMAT || 'key_value_json';
