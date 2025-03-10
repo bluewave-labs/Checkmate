@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { createToast } from "../../Utils/toastUtils";
 import { forgotPassword } from "../../Features/Auth/authSlice";
+import { useTranslation } from "react-i18next";
 import Background from "../../assets/Images/background-grid.svg?react";
 import EmailIcon from "../../assets/icons/email.svg?react";
 import Logo from "../../assets/icons/checkmate-icon.svg?react";
@@ -15,6 +16,7 @@ const CheckEmail = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 
 	const [email, setEmail] = useState();
 	const [disabled, setDisabled] = useState(false);
@@ -161,9 +163,9 @@ const CheckEmail = () => {
 								<EmailIcon alt="email icon" />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">Check your email</Typography>
+						<Typography component="h1">{t("authCheckEmailTitle")}</Typography>
 						<Typography>
-							We sent a password reset link to{" "}
+							{t("authCheckEmailDescription")}{" "}
 							<Typography
 								className="email-sent-to"
 								component="span"
@@ -181,22 +183,22 @@ const CheckEmail = () => {
 							maxWidth: 400,
 						}}
 					>
-						Open email app
+						{t("authCheckEmailOpenEmailButton")}
 					</Button>
 					<Typography sx={{ alignSelf: "center", mt: theme.spacing(6) }}>
-						Didn&apos;t receive the email?{" "}
+						{t("authCheckEmailDidntReceiveEmail")}{" "}
 						<Typography
 							component="span"
 							onClick={resendToken}
 							sx={{
-								color: theme.palette.primary.main,
+								color: theme.palette.accent.main,
 								userSelect: "none",
 								pointerEvents: disabled ? "none" : "auto",
 								cursor: disabled ? "default" : "pointer",
 								opacity: disabled ? 0.5 : 1,
 							}}
 						>
-							Click to resend
+							{t("authCheckEmailClickToResend")}
 						</Typography>
 					</Typography>
 				</Stack>
@@ -205,15 +207,15 @@ const CheckEmail = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">Go back to —</Typography>
+				<Typography display="inline-block">{t("goBackTo")}</Typography>
 				<Typography
 					component="span"
 					ml={theme.spacing(2)}
-					color={theme.palette.primary.main}
+					color={theme.palette.accent.main}
 					onClick={handleNavigate}
 					sx={{ userSelect: "none" }}
 				>
-					Log In
+					{t("authLoginTitle")}
 				</Typography>
 			</Box>
 		</Stack>
