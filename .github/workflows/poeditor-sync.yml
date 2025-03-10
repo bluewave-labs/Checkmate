@@ -54,7 +54,7 @@ jobs:
 
       - name: Download translations from POEditor
         env:
-          POEDITOR_API_TOKEN: ${{ secrets.POEDITOR_API_TOKEN }}
+          POEDITOR_API_TOKEN: ${{ secrets.POEDITOR_API }}
           POEDITOR_PROJECT_ID: ${{ secrets.POEDITOR_PROJECT_ID }}
           LANGUAGES: ${{ github.event.inputs.languages || 'tr,en' }}
           EXPORT_FORMAT: ${{ github.event.inputs.format || 'key_value_json' }}
