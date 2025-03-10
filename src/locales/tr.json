@@ -102,6 +102,6 @@
 	"settingsFailedToAddDemoMonitors": "Demo monitörler eklenemedi",
 	"settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
 	"settingsFailedToDeleteMonitors": "Monitörler silinemedi",
-  "starPromptTitle": "Checkmate yıldızla değerlendirin",
-  "starPromptDescription": "En son sürümleri görün ve GitHub'daki topluluğun büyümesine yardımcı olun"
+    "starPromptTitle": "Checkmate yıldızla değerlendirin",
+   "starPromptDescription": "En son sürümleri görün ve GitHub'daki topluluğun büyümesine yardımcı olun"
 }
