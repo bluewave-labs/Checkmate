@@ -109,9 +109,6 @@
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
 	"starPromptTitle": "Star Checkmate",
-	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
-	"starPrompt": {
-    "title": "Star Checkmate",
-    "description": "See the latest releases and help grow the community on GitHub"
-  }
+	"starPromptDescription": "See the latest releases and help grow the community on GitHub"
+	
 }
