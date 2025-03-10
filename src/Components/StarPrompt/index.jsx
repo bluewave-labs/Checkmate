@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@emotion/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { setStarPromptClosed } from '../../Features/UI/uiSlice';
+import { setStarPromptOpen } from '../../Features/UI/uiSlice';
 
 const StarPrompt = ({
   repoUrl = 'https://github.com/bluewave-labs/checkmate'
@@ -12,18 +12,18 @@ const StarPrompt = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const isClosed = useSelector((state) => state.ui?.starPrompt?.closed ?? false);
+  const isOpen = useSelector((state) => state.ui?.starPromptOpen ?? true);
   const mode = useSelector((state) => state.ui.mode);
 
   const handleClose = () => {
-    dispatch(setStarPromptClosed(true));
+    dispatch(setStarPromptOpen(false));
   };
 
   const handleStarClick = () => {
     window.open(repoUrl, '_blank');
   };
 
-  if (isClosed) return null;
+  if (!isOpen) return null;
 
   return (
     <Stack
@@ -46,7 +46,7 @@ const StarPrompt = ({
             mt: theme.spacing(3)
           }}
         >
-          {t('starPrompt.title')}
+          {t('starPromptTitle')}
         </Typography>
         <IconButton
           onClick={handleClose}
@@ -75,7 +75,7 @@ const StarPrompt = ({
           px: theme.spacing(4)
         }}
       >
-        {t('starPrompt.description')}
+        {t('starPromptDescription')}
       </Typography>
 
       <Box 
