@@ -43,7 +43,7 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("signUP")}</Typography>
+					<Typography component="h1">{t("signUp")}</Typography>
 					<Typography>{t("enterEmail")}</Typography>
 				</Box>
 
