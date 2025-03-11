@@ -332,13 +332,13 @@ const baseTheme = (palette) => ({
 						color: palette.error.main,
 						opacity: 0.8,
 						fontSize: "var(--env-var-font-size-medium)",
-
 						marginLeft: 0,
 					},
 					"& .MuiFormHelperText-root.Mui-error": {
 						opacity: 0.8,
 						fontSize: "var(--env-var-font-size-medium)",
 						color: palette.error.main,
+						whiteSpace: 'nowrap',
 					},
 				}),
 			},
