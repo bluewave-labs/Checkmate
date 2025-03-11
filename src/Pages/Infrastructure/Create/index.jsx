@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
 import { createInfrastructureMonitor } from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
+import { useTranslation } from "react-i18next";
 
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
@@ -52,6 +53,7 @@ const CreateInfrastructureMonitor = () => {
 	const monitorState = useSelector((state) => state.infrastructureMonitor);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -233,7 +235,7 @@ const CreateInfrastructureMonitor = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						Create your{" "}
+						{t("infrastructureCreateYour")}{" "}
 					</Typography>
 					<Typography
 						component="span"
@@ -241,18 +243,17 @@ const CreateInfrastructureMonitor = () => {
 						fontSize="inherit"
 						fontWeight="inherit"
 					>
-						monitor
+						{t("monitor")}
 					</Typography>
 				</Typography>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">General settings</Typography>
+						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">
-							Here you can select the URL of the host, together with the friendly name and
-							authorization secret to connect to the server agent.
+							{t("infrastructureCreateGeneralSettingsDescription")}
 						</Typography>
 						<Typography component="p">
-							The server you are monitoring must be running the{" "}
+							{t("infrastructureServerRequirement")}{" "}
 							<Link
 								level="primary"
 								url="https://github.com/bluewave-labs/checkmate-agent"
@@ -267,7 +268,7 @@ const CreateInfrastructureMonitor = () => {
 							name="url"
 							startAdornment={<HttpAdornment https={https} />}
 							placeholder={"localhost:59232/api/v1/metrics"}
-							label="Server URL"
+							label={t("infrastructureServerUrlLabel")}
 							https={https}
 							value={infrastructureMonitor.url}
 							onChange={handleChange}
@@ -275,21 +276,21 @@ const CreateInfrastructureMonitor = () => {
 							helperText={errors["url"]}
 						/>
 						<Box>
-							<Typography component="p">Protocol</Typography>
+							<Typography component="p">{t("infrastructureProtocol")}</Typography>
 							<ButtonGroup>
 								<Button
 									variant="group"
 									filled={https.toString()}
 									onClick={() => setHttps(true)}
 								>
-									HTTPS
+									{t("https")}
 								</Button>
 								<Button
 									variant="group"
 									filled={(!https).toString()}
 									onClick={() => setHttps(false)}
 								>
-									HTTP
+									{t("http")}
 								</Button>
 							</ButtonGroup>
 						</Box>
@@ -297,7 +298,7 @@ const CreateInfrastructureMonitor = () => {
 							type="text"
 							id="name"
 							name="name"
-							label="Display name"
+							label={t("infrastructureDisplayNameLabel")}
 							placeholder="Google"
 							isOptional={true}
 							value={infrastructureMonitor.name}
@@ -308,7 +309,7 @@ const CreateInfrastructureMonitor = () => {
 							type="text"
 							id="secret"
 							name="secret"
-							label="Authorization secret"
+							label={t("infrastructureAuthorizationSecretLabel")}
 							value={infrastructureMonitor.secret}
 							onChange={handleChange}
 							error={errors["secret"] ? true : false}
@@ -318,9 +319,9 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Incident notifications</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 						<Typography component="p">
-							When there is an incident, notify users.
+							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(6)}>
@@ -337,10 +338,9 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Customize alerts</Typography>
+						<Typography component="h2">{t("infrastructureCustomizeAlerts")}</Typography>
 						<Typography component="p">
-							Send a notification to user(s) when thresholds exceed a specified
-							percentage.
+							{t("infrastructureAlertNotificationDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(6)}>
@@ -385,7 +385,7 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Advanced settings</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select
@@ -408,7 +408,7 @@ const CreateInfrastructureMonitor = () => {
 						onClick={handleCreateInfrastructureMonitor}
 						loading={monitorState?.isLoading}
 					>
-						Create infrastructure monitor
+						{t("infrastructureCreateMonitor")}
 					</Button>
 				</Stack>
 			</Stack>

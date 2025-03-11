@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import useChecksFetch from "../../Hooks/useChecksFetch";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const IncidentTable = ({
 	shouldRender,
@@ -38,6 +39,8 @@ const IncidentTable = ({
 		rowsPerPage,
 	});
 
+	const { t } = useTranslation();
+
 	//Handlers
 	const handleChangePage = (_, newPage) => {
 		setPage(newPage);
@@ -50,12 +53,12 @@ const IncidentTable = ({
 	const headers = [
 		{
 			id: "monitorName",
-			content: "Monitor Name",
+			content: t("incidentsTableMonitorName"),
 			render: (row) => monitors[row.monitorId]?.name ?? "N/A",
 		},
 		{
 			id: "status",
-			content: "Status",
+			content: t("incidentsTableStatus"),
 			render: (row) => {
 				const status = row.status === true ? "up" : "down";
 				return (
@@ -69,7 +72,7 @@ const IncidentTable = ({
 		},
 		{
 			id: "dateTime",
-			content: "Date & Time",
+			content: t("incidentsTableDateTime"),
 			render: (row) => {
 				const formattedDate = formatDateWithTz(
 					row.createdAt,
@@ -81,10 +84,10 @@ const IncidentTable = ({
 		},
 		{
 			id: "statusCode",
-			content: "Status Code",
+			content: t("incidentsTableStatusCode"),
 			render: (row) => <HttpStatusLabel status={row.statusCode} />,
 		},
-		{ id: "message", content: "Message", render: (row) => row.message },
+		{ id: "message", content: t("incidentsTableMessage"), render: (row) => row.message },
 	];
 
 	if (!shouldRender || isLoading) return <TableSkeleton />;
@@ -98,7 +101,7 @@ const IncidentTable = ({
 	}
 
 	if (!isLoading && typeof checksCount === "undefined") {
-		return <GenericFallback>No incidents recorded</GenericFallback>;
+		return <GenericFallback>{t("incidentsTableNoIncidents")}</GenericFallback>;
 	}
 
 	return (
@@ -108,7 +111,7 @@ const IncidentTable = ({
 				data={checks}
 			/>
 			<Pagination
-				paginationLabel="incidents"
+				paginationLabel={t("incidentsTablePaginationLabel")}
 				itemCount={checksCount}
 				page={page}
 				rowsPerPage={rowsPerPage}

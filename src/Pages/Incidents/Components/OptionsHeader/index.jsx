@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 //Utils
 import { useTheme } from "@emotion/react";
 import SkeletonLayout from "./skeleton";
+import { useTranslation } from "react-i18next";
 
 const OptionsHeader = ({
 	shouldRender,
@@ -18,6 +19,7 @@ const OptionsHeader = ({
 	setDateRange,
 }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const monitorNames = typeof monitors !== "undefined" ? Object.values(monitors) : [];
 
 	// The stacks below which are three in number have the same style so
@@ -40,11 +42,11 @@ const OptionsHeader = ({
 					component="h1"
 					color={theme.palette.primary.contrastTextSecondary}
 				>
-					Incidents for:
+					{t("incidentsOptionsHeader")}
 				</Typography>
 				<Select
 					id="incidents-select-monitor"
-					placeholder="All servers"
+					placeholder={t("incidentsOptionsPlaceholderAllServers")}
 					value={selectedMonitor}
 					onChange={(e) => setSelectedMonitor(e.target.value)}
 					items={monitorNames}
@@ -61,7 +63,7 @@ const OptionsHeader = ({
 					component="h1"
 					color={theme.palette.primary.contrastTextSecondary}
 				>
-					Filter by:
+					{t("incidentsOptionsHeaderFilterBy")}
 				</Typography>
 				<ButtonGroup>
 					<Button
@@ -69,21 +71,21 @@ const OptionsHeader = ({
 						filled={(filter === "all").toString()}
 						onClick={() => setFilter("all")}
 					>
-						All
+						{t("incidentsOptionsHeaderFilterAll")}
 					</Button>
 					<Button
 						variant="group"
 						filled={(filter === "down").toString()}
 						onClick={() => setFilter("down")}
 					>
-						Down
+						{t("incidentsOptionsHeaderFilterDown")}
 					</Button>
 					<Button
 						variant="group"
 						filled={(filter === "resolve").toString()}
 						onClick={() => setFilter("resolve")}
 					>
-						Cannot resolve
+						{t("incidentsOptionsHeaderFilterCannotResolve")}
 					</Button>
 				</ButtonGroup>
 			</Stack>
@@ -93,7 +95,7 @@ const OptionsHeader = ({
 					component="h1"
 					color={theme.palette.primary.contrastTextSecondary}
 				>
-					Show:
+					{t("incidentsOptionsHeaderShow")}
 				</Typography>
 				<ButtonGroup>
 					<Button
@@ -101,28 +103,28 @@ const OptionsHeader = ({
 						filled={(dateRange === "hour").toString()}
 						onClick={() => setDateRange("hour")}
 					>
-						Last hour
+						{t("incidentsOptionsHeaderLastHour")}
 					</Button>
 					<Button
 						variant="group"
 						filled={(dateRange === "day").toString()}
 						onClick={() => setDateRange("day")}
 					>
-						Last day
+						{t("incidentsOptionsHeaderLastDay")}
 					</Button>
 					<Button
 						variant="group"
 						filled={(dateRange === "week").toString()}
 						onClick={() => setDateRange("week")}
 					>
-						Last week
+						{t("incidentsOptionsHeaderLastWeek")}
 					</Button>
 					<Button
 						variant="group"
 						filled={(dateRange === "all").toString()}
 						onClick={() => setDateRange("all")}
 					>
-						All
+						{t("incidentsOptionsHeaderFilterAll")}
 					</Button>
 				</ButtonGroup>
 			</Stack>
