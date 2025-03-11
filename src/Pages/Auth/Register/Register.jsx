@@ -83,7 +83,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 								},
 							}}
 						>
-							Terms of Service
+							{t("authRegisterTerms")}
 						</Typography>{" "}
 						and{" "}
 						<Typography
@@ -101,7 +101,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 								},
 							}}
 						>
-							Privacy Policy.
+							{t("authRegisterPrivacy")}
 						</Typography>
 					</Typography>
 				</Box>
@@ -283,7 +283,7 @@ const Register = ({ isSuperAdmin }) => {
 			overflow="hidden"
 			sx={{
 				"& h1": {
-					color: theme.palette.primary.main,
+					color: theme.palette.primary.contrastText,
 					fontWeight: 600,
 					fontSize: 28,
 				},
@@ -370,7 +370,7 @@ const Register = ({ isSuperAdmin }) => {
 				p={theme.spacing(12)}
 			>
 				<Typography display="inline-block">
-					{t("authRegisterAlreadyHaveAccount")} -
+					{t("authRegisterAlreadyHaveAccount")}
 				</Typography>
 				<Typography
 					component="span"
@@ -378,7 +378,7 @@ const Register = ({ isSuperAdmin }) => {
 					onClick={() => {
 						navigate("/login");
 					}}
-					sx={{ userSelect: "none", color: theme.palette.primary.main }}
+					sx={{ userSelect: "none", color: theme.palette.accent.main }}
 				>
 					{t("authLoginTitle")}
 				</Typography>

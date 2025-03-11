@@ -38,6 +38,8 @@
 	"commonAppName": "Checkmate",
 	"authLoginEnterEmail": "Enter your email",
 	"authRegisterTitle": "Create an account",
+	"authRegisterTerms": "Terms of Service",
+	"authRegisterPrivacy": "Privacy Policy.",
 	"authRegisterStepOneTitle": "Create your account",
 	"authRegisterStepOnePersonalDetails": "Enter your personal details",
 	"authRegisterStepOneDescription": "Enter your details to get started",

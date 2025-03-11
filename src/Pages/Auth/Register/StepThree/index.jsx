@@ -39,7 +39,7 @@ function StepThree({ onSubmit, onBack }) {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("signUp")}</Typography>
+					<Typography component="h1">{t("signUP")}</Typography>
 					<Typography>{t("createPassword")}</Typography>
 				</Box>
 				<Box

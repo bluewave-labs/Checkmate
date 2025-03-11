@@ -142,7 +142,7 @@ const Login = () => {
 			overflow="hidden"
 			sx={{
 				"& h1": {
-					color: theme.palette.primary.main,
+					color: theme.palette.primary.contrastText,
 					fontWeight: 600,
 					fontSize: 28,
 				},
