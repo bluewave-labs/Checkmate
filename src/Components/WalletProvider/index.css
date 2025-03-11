@@ -1,0 +1,51 @@
+.wallet-adapter-dropdown {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap; 
+	justify-content: center; 
+	align-items: center; 
+	gap: var(--env-var-spacing-1); 
+}
+
+.wallet-adapter-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	height: var(--env-var-height-2) !important;
+	font-size: var(--env-var-font-size-medium-plus) !important;
+	font-weight: 500 !important;
+	margin: 0; 
+	padding: calc((var(--env-var-height-2) - var(--env-var-font-size-medium-plus) * 1.2) / 2) var(--env-var-spacing-1);
+	white-space: nowrap;
+}
+
+.wallet-adapter-modal-title {
+  font-size: var(--font-size-h5) !important;
+}
+
+/* Separator styling */
+.wallet-adapter-modal-divider {
+  background-color: var(--border-color) !important;
+  margin: var(--spacing-md) 0 !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 1200px) { 
+	.wallet-adapter-button {
+		font-size: var(--env-var-font-size-medium) !important;
+		padding: calc((var(--env-var-height-2) - var(--env-var-font-size-medium) * 1.2) / 2)
+			var(--env-var-spacing-1-minus) !important;
+		
+	}
+}
+
+@media (max-width: 900px) { 
+  .wallet-adapter-modal-wrapper {
+    flex-direction: column !important;
+  }
+  
+  .wallet-adapter-modal-divider {
+    margin: var(--spacing-sm) 0 !important;
+  }
+}

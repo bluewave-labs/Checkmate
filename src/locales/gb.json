@@ -142,7 +142,8 @@
 	"settingsFailedToAddDemoMonitors": "Failed to add demo monitors",
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
-
+	"starPromptTitle": "Star Checkmate",
+	"starPromptDescription": "See the latest releases and help grow the community on GitHub"
 	"notifications": {
 		"enableNotifications": "Enable {{platform}} notifications",
 		"testNotification": "Test notification",
