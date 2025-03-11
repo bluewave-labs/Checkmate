@@ -30,7 +30,6 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 	};
 
 	let bgColor = COLOR_MAP[connectionStatus];
-
 	return (
 		<ColContainer backgroundColor={bgColor}>
 			<Stack
@@ -61,7 +60,8 @@ const StatusHeader = ({ monitor, connectionStatus, elementToCapture }) => {
 								backgroundColor={theme.palette.successSecondary.lowContrast}
 								color={theme.palette.success.lowContrast}
 							>
-								{t("distributedUptimeDetailsStatusHeaderUptime")} {(monitor.totalUptime * 100).toFixed(2)}%
+								{t("distributedUptimeDetailsStatusHeaderUptime")}{" "}
+								{(monitor.uptimePercentage * 100).toFixed(2)}%
 							</Typography>
 						</Stack>
 						<Typography
