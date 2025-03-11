@@ -60,7 +60,6 @@
 	"distributedStatusSubHeaderText": "Dünya çapında milyonlarca cihaz tarafından desteklenen sistem performansını küresel bölgeye, ülkeye veya şehre göre görüntüleyin",
 	"distributedRightCatagoryTitle": "Monitör",
 	"distributedRightCatagoryDescription": "Mainnet Beta Kümesi",
-	
 	"settingsGeneralSettings": "Genel ayarlar",
 	"settingsDisplayTimezone": "Görüntüleme saat dilimi",
 	"settingsDisplayTimezoneDescription": "Herkese açık olarak görüntülediğiniz kontrol panelinin saat dilimi.",
@@ -102,6 +101,7 @@
 	"settingsFailedToAddDemoMonitors": "Demo monitörler eklenemedi",
 	"settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
 	"settingsFailedToDeleteMonitors": "Monitörler silinemedi",
-    "starPromptTitle": "Checkmate yıldızla değerlendirin",
-   "starPromptDescription": "En son sürümleri görün ve GitHub'daki topluluğun büyümesine yardımcı olun"
+	"starPromptTitle": "Checkmate yıldızla değerlendirin",
+	"starPromptDescription": "En son sürümleri görün ve GitHub'daki topluluğun büyümesine yardımcı olun",
+	"testLocale": "TEST1211 UPLOAD"
 }

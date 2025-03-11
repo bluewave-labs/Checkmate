@@ -39,3 +39,31 @@ If the workflow fails:
 1. Check the GitHub Actions logs
 2. Make sure your POEditor API token and project ID are correct
 3. Ensure that the languages you specified exist in your POEditor project
+
+# POEditor Upload Workflow
+
+## Summary of Implemented Translation Workflow
+
+We have successfully created a GitHub Actions workflow that automatically uploads translation files to POEditor when changes are merged to the develop branch. Here's a summary of what we've implemented:
+### Created Files
+
+1. .github/scripts/upload-translations.js
+
+- A Node.js script that handles the upload of translation files to POEditor
+- Uses the POEditor API to upload JSON translation files
+- Validates file existence and JSON format before uploading
+- Provides detailed logging of the upload process
+
+2. .github/workflows/poeditor-upload-on-merge.yml - A GitHub Actions workflow that triggers when PRs are merged to the develop branch - Only runs when changes are made to files in the src/locales directory - Detects which translation files were changed in the PR - Extracts language codes from filenames (e.g., tr.json → "tr") - Calls the upload script for each changed file
+   ### Workflow Process
+1. When a PR is merged to the develop branch, the workflow checks if any files in src/locales were modified.
+
+1. If translation files were changed, the workflow:
+
+- Sets up the necessary Node.js environment
+- Installs required dependencies
+- Identifies which specific translation files were changed
+- For each changed file, extracts the language code and uploads to POEditor
+- Provides status notifications about the upload process
+
+This automated workflow ensures that your translations are always in sync between your codebase and POEditor, eliminating the need for manual uploads and reducing the risk of translation inconsistencies.
