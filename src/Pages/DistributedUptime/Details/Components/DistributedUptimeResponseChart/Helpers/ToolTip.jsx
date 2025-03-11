@@ -4,9 +4,12 @@ import { formatDateWithTz } from "../../../../../../Utils/timeUtils";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { useTranslation } from "react-i18next";
+
 const CustomToolTip = ({ active, payload, label }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 	const theme = useTheme();
+	const { t } = useTranslation();
 	if (active && payload && payload.length) {
 		const responseTime = payload[0]?.payload?.originalAvgResponseTime
 			? payload[0]?.payload?.originalAvgResponseTime
@@ -51,7 +54,7 @@ const CustomToolTip = ({ active, payload, label }) => {
 						component="span"
 						sx={{ opacity: 0.8 }}
 					>
-						Response time:
+						{t("responseTime")}
 					</Typography>
 					<Typography component="span">
 						{Math.floor(responseTime)}
@@ -59,7 +62,7 @@ const CustomToolTip = ({ active, payload, label }) => {
 							component="span"
 							sx={{ opacity: 0.8 }}
 						>
-							ms
+							{t("ms")}
 						</Typography>
 					</Typography>
 				</Stack>

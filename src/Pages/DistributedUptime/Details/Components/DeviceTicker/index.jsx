@@ -6,9 +6,11 @@ import { ColContainer } from "../../../../../Components/StandardContainer";
 
 // Utils
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
+
 const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 	const theme = useTheme();
-
+	const { t } = useTranslation();
 	const statusColor = {
 		up: theme.palette.success.main,
 		down: theme.palette.error.main,
@@ -44,13 +46,13 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 					<thead>
 						<tr>
 							<th style={{ textAlign: "left", paddingLeft: theme.spacing(4) }}>
-								<Typography>COUNTRY</Typography>
+								<Typography>{t("country")}</Typography>
 							</th>
 							<th style={{ textAlign: "left", paddingLeft: theme.spacing(4) }}>
-								<Typography>CITY</Typography>
+								<Typography>{t("city")}</Typography>
 							</th>
 							<th style={{ textAlign: "right", paddingLeft: theme.spacing(4) }}>
-								<Typography>RESPONSE</Typography>
+								<Typography>{t("response")}</Typography>
 							</th>
 							<th style={{ textAlign: "right", paddingLeft: theme.spacing(4) }}>
 								<Typography sx={{ whiteSpace: "nowrap" }}>{"UPT BURNED"}</Typography>
@@ -74,7 +76,7 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 										<Typography>{city}</Typography>
 									</td>
 									<td style={{ textAlign: "right", paddingLeft: theme.spacing(4) }}>
-										<Typography>{Math.floor(dataPoint.responseTime)} ms</Typography>
+										<Typography>{Math.floor(dataPoint.responseTime)} {t("ms")}</Typography>
 									</td>
 									<td style={{ textAlign: "right", paddingLeft: theme.spacing(4) }}>
 										<Typography color={theme.palette.warning.main}>

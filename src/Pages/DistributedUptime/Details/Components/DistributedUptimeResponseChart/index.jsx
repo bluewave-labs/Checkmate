@@ -8,8 +8,11 @@ import ResponseTimeIcon from "../../../../../assets/icons/response-time-icon.svg
 
 // Utils
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+
 const DistributedUptimeResponseChart = ({ checks }) => {
 	const [chartType, setChartType] = useState("bar");
+	const { t } = useTranslation();
 	let Chart = null;
 	if (chartType === "area") {
 		Chart = DistributedUptimeResponseAreaChart;
@@ -23,13 +26,13 @@ const DistributedUptimeResponseChart = ({ checks }) => {
 				direction="row"
 				alignItems="center"
 			>
-				<Typography>Bar</Typography>
+				<Typography>{t("bar")}</Typography>
 				<Switch
 					color="main"
 					value={chartType}
 					onChange={(e) => setChartType(e.target.checked ? "area" : "bar")}
 				/>
-				<Typography>Area</Typography>
+				<Typography>{t("area")}</Typography>
 			</Stack>
 			<ChartBox
 				icon={<ResponseTimeIcon />}

@@ -4,6 +4,7 @@ import { useTheme } from "@emotion/react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import TextInput from "../../../../Components/Inputs/TextInput";
+import { useTranslation } from "react-i18next";
 
 StepOne.propTypes = {
 	form: PropTypes.object,
@@ -28,6 +29,7 @@ StepOne.propTypes = {
 function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 	const theme = useTheme();
 	const inputRef = useRef(null);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (inputRef.current) {
@@ -43,8 +45,8 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">Sign Up</Typography>
-					<Typography>Enter your personal details</Typography>
+					<Typography component="h1">{t("signUp")}</Typography>
+					<Typography>{t("authRegisterStepOnePersonalDetails")}</Typography>
 				</Box>
 
 				<Box
@@ -107,7 +109,7 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 							}}
 						>
 							<ArrowBackRoundedIcon />
-							Back
+							{t("commonBack")}
 						</Button>
 						<Button
 							variant="contained"
@@ -123,7 +125,7 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 								},
 							}}
 						>
-							Continue
+							{t("continue")}
 						</Button>
 					</Stack>
 				</Box>

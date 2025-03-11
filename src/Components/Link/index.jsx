@@ -14,7 +14,14 @@ const Link = ({ level, label, url }) => {
 	const theme = useTheme();
 
 	const levelConfig = {
-		primary: {},
+		primary: {
+			color: theme.palette.primary.contrastTextTertiary,
+			sx: {
+				":hover": {
+					color: theme.palette.primary.contrastTextSecondary,
+				},
+			},
+		},
 		secondary: {
 			color: theme.palette.primary.contrastTextSecondary,
 			sx: {

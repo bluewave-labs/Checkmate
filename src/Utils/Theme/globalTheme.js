@@ -117,6 +117,33 @@ const baseTheme = (palette) => ({
 								color: `${theme.palette.secondary.contrastText} !important`,
 							},
 						},
+						
+						{
+							props: { variant: 'text', color: 'info' },
+							style: {
+							  textDecoration: 'underline',
+							  color: theme.palette.text.primary,
+							  padding: 0,
+							  margin: 0,
+							  fontSize: typographyLevels.m,
+							  fontWeight: theme.typography.body2.fontWeight,
+							  backgroundColor: 'transparent',
+							  '&:hover': {
+								backgroundColor: 'transparent',
+								textDecoration: 'underline'
+							  },
+							  "&.Mui-disabled": {
+								backgroundColor: theme.palette.secondary.main,
+								color: theme.palette.primary.contrastText,
+								"&.MuiButton-text": {
+									backgroundColor: 'transparent'
+								}
+							  },
+							  minWidth: 0,
+							  boxShadow: 'none',
+							  border: 'none'
+							},
+						  },
 					],
 					height: 34,
 					fontWeight: 400,
@@ -305,13 +332,13 @@ const baseTheme = (palette) => ({
 						color: palette.error.main,
 						opacity: 0.8,
 						fontSize: "var(--env-var-font-size-medium)",
-
 						marginLeft: 0,
 					},
 					"& .MuiFormHelperText-root.Mui-error": {
 						opacity: 0.8,
 						fontSize: "var(--env-var-font-size-medium)",
 						color: palette.error.main,
+						whiteSpace: 'nowrap',
 					},
 				}),
 			},
@@ -328,35 +355,68 @@ const baseTheme = (palette) => ({
 		},
 		MuiTab: {
 			styleOverrides: {
-				root: ({ theme }) => ({
-					fontSize: 13,
-					color: theme.palette.tertiary.contrastText,
-					backgroundColor: theme.palette.tertiary.main,
-					textTransform: "none",
-					minWidth: "fit-content",
-					paddingY: theme.spacing(6),
-					fontWeight: 400,
-					borderBottom: "2px solid transparent",
-					borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
-					"&:first-of-type": { borderTopLeftRadius: "8px" },
-					"&:last-child": { borderTopRightRadius: "8px", borderRight: 0 },
-					"&:focus-visible": {
-						color: theme.palette.primary.contrastText,
-						borderColor: theme.palette.tertiary.contrastText,
-						borderRightColor: theme.palette.primary.lowContrast,
-					},
-					"&.Mui-selected": {
-						backgroundColor: theme.palette.secondary.main,
-						color: theme.palette.secondary.contrastText,
-						borderColor: theme.palette.secondary.contrastText,
-						borderRightColor: theme.palette.primary.lowContrast,
-					},
-					"&:hover": {
-						borderColor: theme.palette.primary.lowContrast,
-					},
-				}),
+			  root: ({ theme }) => ({
+				fontSize: theme.typography.fontSize - 1,
+				color: theme.palette.tertiary.contrastText,
+				backgroundColor: theme.palette.tertiary.main,
+				textTransform: "none",
+				minWidth: "fit-content",
+				padding: `${theme.spacing(6)}px ${theme.spacing(4)}px`,
+				fontWeight: 400,
+				borderBottom: `${theme.shape.borderThick}px solid transparent`, 
+				borderRight: `${theme.shape.borderRadius / 2}px solid ${theme.palette.primary.lowContrast}`, 
+				"&:first-of-type": { borderTopLeftRadius: theme.shape.borderRadius * 4 },
+				"&:last-child": { borderTopRightRadius: theme.shape.borderRadius * 4, borderRight: 0 }, 
+				"&:focus-visible": {
+				  color: theme.palette.primary.contrastText,
+				  borderColor: theme.palette.tertiary.contrastText,
+				  borderRightColor: theme.palette.primary.lowContrast,
+				},
+				"&.Mui-selected": {
+				  backgroundColor: theme.palette.secondary.main,
+				  color: theme.palette.secondary.contrastText,
+				  borderColor: theme.palette.secondary.contrastText,
+				  borderRightColor: theme.palette.primary.lowContrast,
+				},
+				"&:hover": {
+				  borderColor: theme.palette.primary.lowContrast,
+				},
+			  }),
 			},
-		},
+			variants: [
+				{
+				  props: { orientation: 'vertical' },
+				  style: ({ theme }) => ({
+					alignItems: 'flex-start',
+					padding: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(1)}px ${theme.spacing(6)}px`, 
+					minHeight: theme.spacing(12), 
+					color: theme.palette.primary.contrastText,
+					backgroundColor: theme.palette.primary.main,
+					border: 'none',
+					borderBottom: 'none',
+					borderRight: 'none',
+					borderRadius: theme.shape.borderRadius * 3, 
+					margin: `${theme.spacing(1)}px ${theme.spacing(2)}px`, 
+					'&.Mui-selected': {
+					  color: theme.palette.primary.contrastText,
+					  backgroundColor: theme.palette.tertiary.main,
+					  opacity: 1,
+					  border: 'none',
+					  borderBottom: 'none',
+					  borderRight: 'none',
+					  borderRadius: theme.shape.borderRadius * 3, 
+					  minHeight: theme.spacing(14) 
+					},
+					'&:hover': {
+					  backgroundColor: theme.palette.tertiary.main,
+					  border: 'none',
+					  borderRadius: theme.shape.borderRadius * 3, 
+					  minHeight: theme.spacing(14) 
+					}
+				  }),
+				},
+			  ],
+		  },
 		MuiSvgIcon: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -366,13 +426,23 @@ const baseTheme = (palette) => ({
 		},
 		MuiTabs: {
 			styleOverrides: {
-				root: ({ theme }) => ({
-					"& .MuiTabs-indicator": {
-						backgroundColor: theme.palette.tertiary.contrastText,
-					},
-				}),
+			  root: ({ theme }) => ({
+				"& .MuiTabs-indicator": {
+				  backgroundColor: theme.palette.tertiary.contrastText,
+				},
+			  }),
 			},
-		},
+			variants: [
+			  {
+				props: { orientation: 'vertical' },
+				style: {
+				  "& .MuiTabs-indicator": {
+					display: 'none', 
+				  }
+				},
+			  },
+			],
+		  },
 		MuiSwitch: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -390,6 +460,114 @@ const baseTheme = (palette) => ({
 						borderColor: theme.palette.primary.lowContrast,
 						width: "auto",
 						whiteSpace: "nowrap",
+					},
+				}),
+			},
+		},
+
+		// This code is added for clock in maintenance page
+		// code starts from here.
+		MuiClock: {
+			// Directly target the clock component
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main, // Alternative target
+					"& .MuiClock-clock": {
+						// Inner clock face
+						backgroundColor: theme.palette.secondary.main,
+					},
+				}),
+			},
+		},
+		MuiClockPicker: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.secondary.main, // Outer container background
+					"& .MuiClock-root": {
+						color: theme.palette.primary.lowContrast,
+					},
+					"& .MuiClock-clock": {
+						backgroundColor: theme.palette.background.default, // Clock face background
+						borderColor: theme.palette.secondary.lowContrast,
+					},
+				}),
+			},
+		},
+		// The clock pointer ( pointer to number like hour/minute hand)
+		MuiClockPointer: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					// Main pointer line color
+					backgroundColor: theme.palette.accent.main,
+					"& .MuiClockPointer-thumb": {
+						backgroundColor: theme.palette.grey[500], // Use your desired grey
+					},
+				}),
+			},
+		},
+		// This is for numbers in the clock (circular one's)
+		MuiClockNumber: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					color: theme.palette.primary.contrastText,
+					"&.Mui-selected": {
+						color: theme.palette.accent.contrastText,
+						backgroundColor: theme.palette.accent.main,
+					},
+				}),
+			},
+		},
+		// This is for 00:00 am and pm (top bar)
+		MuiTimePickerToolbar: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.secondary.lowContrast,
+					// General text color
+					"& .MuiTypography-root": {
+						color: theme.palette.primary.contrastTextTertiary,
+					},
+					// Selected time (hour/minute) color
+					"& .Mui-selected": {
+						color: `${theme.palette.accent.main} !important`,
+					},
+					// AM/PM buttons color
+					"& .MuiButtonBase-root": {
+						"&.Mui-selected": {
+							backgroundColor: theme.palette.accent.main,
+						},
+					},
+				}),
+			},
+		},
+		// left and right direction style
+		MuiPickersArrowSwitcher: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiIconButton-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		// cancel and okay actions style
+		MuiDialogActions: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+					"& .MuiButton-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		// code ends here.
+
+		// For labels of input fields
+		MuiInputLabel: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"&.Mui-focused": {
+						color: theme.palette.accent.main,
 					},
 				}),
 			},

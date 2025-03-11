@@ -59,8 +59,11 @@ const UptimeDetails = () => {
 		uiTimezone,
 	});
 
+	const monitorType = monitor?.type;
+
 	const [checks, checksCount, checksAreLoading, checksNetworkError] = useChecksFetch({
 		monitorId,
+		monitorType,
 		dateRange,
 		page,
 		rowsPerPage,

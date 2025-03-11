@@ -35,7 +35,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">Sign Up</Typography>
+					<Typography component="h1">{t("signUP")}</Typography>
 					<Typography>
 						{isSuperAdmin
 							? t("authRegisterCreateSuperAdminAccount")
@@ -67,7 +67,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				</Box>
 				<Box maxWidth={400}>
 					<Typography className="tos-p">
-						{t("authRegisterBySigningUp")}
+						{t("authRegisterBySigningUp")}{" "}
 						<Typography
 							component="span"
 							onClick={() => {
@@ -239,7 +239,6 @@ const Register = ({ isSuperAdmin }) => {
 		const action = await dispatch(register(registerForm));
 		if (action.payload.success) {
 			const authToken = action.payload.data;
-			localStorage.setItem("token", authToken);
 			navigate("/uptime");
 			createToast({
 				body: "Welcome! Your account was created successfully.",
