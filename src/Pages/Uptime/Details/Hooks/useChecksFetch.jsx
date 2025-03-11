@@ -9,7 +9,9 @@ export const useChecksFetch = ({ monitorId, monitorType, dateRange, page, rowsPe
 	const [networkError, setNetworkError] = useState(false);
 
 	useEffect(() => {
-		if (!monitorType) return;
+		if (!monitorType) {
+			throw new Error('Monitor Type is not provided. Fetching checks will not proceed.');
+		}
 
 		const fetchChecks = async () => {
 			try {
