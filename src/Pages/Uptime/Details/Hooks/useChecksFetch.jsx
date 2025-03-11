@@ -2,7 +2,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
-export const useChecksFetch = ({ monitorId, monitorType, dateRange, page, rowsPerPage }) => {
+export const useChecksFetch = ({
+	monitorId,
+	monitorType,
+	dateRange,
+	page,
+	rowsPerPage,
+}) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +16,8 @@ export const useChecksFetch = ({ monitorId, monitorType, dateRange, page, rowsPe
 
 	useEffect(() => {
 		if (!monitorType) {
-			throw new Error('Monitor Type is not provided. Fetching checks will not proceed.');
+			console.warn("Monitor Type is not provided. Fetching checks will not proceed.");
+			return;
 		}
 
 		const fetchChecks = async () => {
