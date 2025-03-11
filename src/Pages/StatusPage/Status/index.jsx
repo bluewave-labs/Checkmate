@@ -24,7 +24,6 @@ const PublicStatus = () => {
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	// Utils
 	const theme = useTheme();
-	const isAdmin = useIsAdmin();
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -33,7 +32,6 @@ const PublicStatus = () => {
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
 	// Setup
-	const currentPath = location.pathname;
 	let sx = { paddingLeft: theme.spacing(20), paddingRight: theme.spacing(20) };
 	let link = undefined;
 	const isPublic = location.pathname.startsWith("/status/uptime/public");
