@@ -100,7 +100,7 @@
 	"distributedUptimeDetailsMonitorHeader": "Distributed Uptime Monitoring powered by DePIN",
 	"distributedUptimeDetailsStatusHeaderUptime": "Uptime:",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Last updated",
-	
+
 	"settingsGeneralSettings": "General settings",
 	"settingsDisplayTimezone": "Display timezone",
 	"settingsDisplayTimezoneDescription": "The timezone of the dashboard you publicly display.",
@@ -143,37 +143,36 @@
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
 	"starPromptTitle": "Star Checkmate",
-	"starPromptDescription": "See the latest releases and help grow the community on GitHub"
+	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
 	"notifications": {
 		"enableNotifications": "Enable {{platform}} notifications",
 		"testNotification": "Test notification",
 		"addOrEditNotifications": "Add or edit notifications",
 		"slack": {
-		"label": "Slack",
-		"description": "To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.",
-		"webhookLabel": "Webhook URL",
-		"webhookPlaceholder": "https://hooks.slack.com/services/..."
+			"label": "Slack",
+			"description": "To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.",
+			"webhookLabel": "Webhook URL",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
 		"discord": {
-		"label": "Discord",
-		"description": "To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord's incoming Webhooks feature.",
-		"webhookLabel": "Discord Webhook URL",
-		"webhookPlaceholder": "https://discord.com/api/webhooks/..."
+			"label": "Discord",
+			"description": "To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord's incoming Webhooks feature.",
+			"webhookLabel": "Discord Webhook URL",
+			"webhookPlaceholder": "https://discord.com/api/webhooks/..."
 		},
 		"telegram": {
-		"label": "Telegram",
-		"description": "To enable Telegram notifications, create a Telegram bot using BotFather, an official bot for creating and managing Telegram bots. Then, get the API token and chat ID and write them down here.",
-		"tokenLabel": "Your bot token",
-		"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
-		"chatIdLabel": "Your Chat ID",
-		"chatIdPlaceholder": "-1001234567890"
+			"label": "Telegram",
+			"description": "To enable Telegram notifications, create a Telegram bot using BotFather, an official bot for creating and managing Telegram bots. Then, get the API token and chat ID and write them down here.",
+			"tokenLabel": "Your bot token",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+			"chatIdLabel": "Your Chat ID",
+			"chatIdPlaceholder": "-1001234567890"
 		},
 		"webhook": {
-		"label": "Webhooks",
-		"description": "You can set up a custom webhook to receive notifications when incidents occur.",
-		"urlLabel": "Webhook URL",
-		"urlPlaceholder": "https://your-server.com/webhook"
+			"label": "Webhooks",
+			"description": "You can set up a custom webhook to receive notifications when incidents occur.",
+			"urlLabel": "Webhook URL",
+			"urlPlaceholder": "https://your-server.com/webhook"
 		}
 	}
-	  
 }
