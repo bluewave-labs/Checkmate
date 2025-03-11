@@ -188,8 +188,8 @@ const Search = ({
 								color: "red",
 							},
 						"& li.MuiAutocomplete-option:hover:not([aria-selected='true'])": {
-							color: theme.palette.primary.main,
-							backgroundColor: theme.palette.primary.contrastTextSecondary,
+							color: theme.palette.secondary.contrastText,
+							backgroundColor: theme.palette.secondary.main,
 						},
 						"& .MuiAutocomplete-noOptions": {
 							px: theme.spacing(6),
