@@ -3,6 +3,22 @@ import { toast } from 'react-toastify';
 import { useTranslation } from "react-i18next";
 import { networkService } from '../../../Utils/NetworkService'; 
 
+// Define constants for notification types to avoid magic values
+const NOTIFICATION_TYPES = {
+  SLACK: 'slack',
+  DISCORD: 'discord',
+  TELEGRAM: 'telegram',
+  WEBHOOK: 'webhook'
+};
+
+// Define constants for field IDs
+const FIELD_IDS = {
+  WEBHOOK: 'webhook',
+  TOKEN: 'token',
+  CHAT_ID: 'chatId',
+  URL: 'url'
+};
+
 /**
  * Custom hook for notification-related operations
  */
@@ -26,35 +42,36 @@ const useNotifications = () => {
     let errorMessage = '';
     
     switch(type) {
-      case 'slack':
+      case NOTIFICATION_TYPES.SLACK:
         payload.webhookUrl = config.webhook;
-        if (!payload.webhookUrl) {
+        if (typeof payload.webhookUrl === 'undefined' || payload.webhookUrl === '') {
           isValid = false;
           errorMessage = t('notifications.slack.webhookRequired', 'Please enter a Slack webhook URL first.');
         }
         break;
         
-      case 'discord':
+      case NOTIFICATION_TYPES.DISCORD:
         payload.webhookUrl = config.webhook;
-        if (!payload.webhookUrl) {
+        if (typeof payload.webhookUrl === 'undefined' || payload.webhookUrl === '') {
           isValid = false;
           errorMessage = t('notifications.discord.webhookRequired', 'Please enter a Discord webhook URL first.');
         }
         break;
         
-      case 'telegram':
+      case NOTIFICATION_TYPES.TELEGRAM:
         payload.botToken = config.token;
         payload.chatId = config.chatId;
-        if (!payload.botToken || !payload.chatId) {
+        if (typeof payload.botToken === 'undefined' || payload.botToken === '' || 
+            typeof payload.chatId === 'undefined' || payload.chatId === '') {
           isValid = false;
           errorMessage = t('notifications.telegram.fieldsRequired', 'Please enter both Telegram bot token and chat ID.');
         }
         break;
         
-      case 'webhook':
+      case NOTIFICATION_TYPES.WEBHOOK:
         payload.webhookUrl = config.url;
-        payload.platform = 'slack';
-        if (!payload.webhookUrl) {
+        payload.platform = NOTIFICATION_TYPES.SLACK; // Use slack as platform for webhooks
+        if (typeof payload.webhookUrl === 'undefined' || payload.webhookUrl === '') {
           isValid = false;
           errorMessage = t('notifications.webhook.urlRequired', 'Please enter a webhook URL first.');
         }
@@ -66,17 +83,16 @@ const useNotifications = () => {
     }
 
     // If validation fails, show error and return
-    if (!isValid) {
+    if (isValid === false) {
       toast.error(errorMessage);
       setLoading(false);
       return;
     }
 
     try {
-      // Use your existing NetworkService to make the API call
       const response = await networkService.axiosInstance.post('/notifications/test-webhook', payload);
       
-      if (response.data.success) {
+      if (response.data.success === true) {
         toast.success(t('notifications.testSuccess', 'Test notification sent successfully!'));
       } else {
         throw new Error(response.data.msg || t('notifications.testFailed', 'Failed to send test notification'));
