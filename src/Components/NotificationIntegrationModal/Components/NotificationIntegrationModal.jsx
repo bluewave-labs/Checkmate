@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from 'react-toastify';
 
 import { 
   Dialog, 
@@ -10,11 +9,13 @@ import {
   Typography, 
   Box,
   Tabs,
-  Tab
+  Tab,
+  CircularProgress
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import TabPanel from "./TabPanel";
 import TabComponent from "./TabComponent";
+import useNotifications from "../Hooks/useNotification";
 
 const NotificationIntegrationModal = ({ 
   open, 
@@ -27,6 +28,8 @@ const NotificationIntegrationModal = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
+  
+  const { loading, sendTestNotification } = useNotifications();
   
   // Define notification types
   const DEFAULT_NOTIFICATION_TYPES = [
@@ -144,73 +147,17 @@ const NotificationIntegrationModal = ({
       return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
     };
     
-    // Prepare request payload based on notification type
-    let payload = { platform: type };
+    // Prepare config object based on notification type
+    const config = {};
     
-    switch(type) {
-      case 'slack':
-        payload.webhookUrl = integrations[getFieldKey('slack', 'webhook')];
-        if (!payload.webhookUrl) {
-          toast.error('Please enter a Slack webhook URL first.');
-          return;
-        }
-        break;
-        
-      case 'discord':
-        payload.webhookUrl = integrations[getFieldKey('discord', 'webhook')];
-        if (!payload.webhookUrl) {
-          toast.error('Please enter a Discord webhook URL first.');
-          return;
-        }
-        break;
-        
-      case 'telegram':
-        payload.botToken = integrations[getFieldKey('telegram', 'token')];
-        payload.chatId = integrations[getFieldKey('telegram', 'chatId')];
-        if (!payload.botToken || !payload.chatId) {
-          toast.error('Please enter both Telegram bot token and chat ID.');
-          return;
-        }
-        break;
-        
-      case 'webhook':
-        payload.webhookUrl = integrations[getFieldKey('webhook', 'url')];
-        payload.platform = 'slack'; // Use slack as platform for webhooks
-        if (!payload.webhookUrl) {
-          toast.error('Please enter a webhook URL first.');
-          return;
-        }
-        break;
-        
-      default:
-        toast.error('This notification type cannot be tested.');
-        return;
-    }
+    // Add each field value to the config object
+    notificationType.fields.forEach(field => {
+      const fieldKey = getFieldKey(type, field.id);
+      config[field.id] = integrations[fieldKey];
+    });
     
-    try {
-        const apiUrl = `${import.meta.env.VITE_APP_API_BASE_URL || 'http://localhost:5000'}/api/v1/notifications/test-webhook`;
-
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        toast.success('Test notification sent successfully!');
-      } else {
-        throw new Error(data.msg || 'Failed to send test notification');
-      }
-    } catch (error) {
-      toast.error(`Failed to send test notification: ${error.message}`);
-    }
+    await sendTestNotification(type, config);
   };
-  
   
   const handleSave = () => {
     //notifications array for selected integrations
@@ -318,6 +265,7 @@ const NotificationIntegrationModal = ({
                   handleIntegrationChange={handleIntegrationChange}
                   handleInputChange={handleInputChange}
                   handleTestNotification={handleTestNotification}
+                  isLoading={loading}
                 />
               </TabPanel>
             ))}
@@ -335,13 +283,14 @@ const NotificationIntegrationModal = ({
           variant="contained" 
           color="accent" 
           onClick={handleSave}
+          disabled={loading}
           sx={{ 
             width: 'auto', 
             minWidth: theme.spacing(60), 
             px: theme.spacing(8) 
           }}
         >
-          {t('common.save', 'Save')}
+          {loading ? <CircularProgress size={24} color="inherit" /> : t('common.save', 'Save')}
         </Button>
       </DialogActions>
     </Dialog>

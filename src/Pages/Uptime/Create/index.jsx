@@ -23,7 +23,7 @@ import Radio from "../../../Components/Inputs/Radio";
 import Checkbox from "../../../Components/Inputs/Checkbox";
 import Select from "../../../Components/Inputs/Select";
 import ConfigBox from "../../../Components/ConfigBox";
-import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/NotificationIntegrationModal";
+import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
 const CreateMonitor = () => {
 	const MS_PER_MINUTE = 60000;
 	const SELECT_VALUES = [
@@ -413,7 +413,7 @@ const CreateMonitor = () => {
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
 
-					{/* <Box mt={theme.spacing(2)}>
+					<Box mt={theme.spacing(2)}>
 					<Button
 						variant="contained"
 						color="accent"
@@ -421,7 +421,7 @@ const CreateMonitor = () => {
 					>
 						Notification Integration
 					</Button>
-					</Box> */}
+					</Box>
 
 					</Stack>
 				</ConfigBox>
