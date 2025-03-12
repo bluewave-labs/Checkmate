@@ -12,6 +12,7 @@ import { useTheme } from "@emotion/react";
 import { useMonitorFetch } from "./Hooks/useMonitorFetch";
 import { useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
+import { useTranslation } from "react-i18next";
 // Constants
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
@@ -24,6 +25,7 @@ const InfrastructureMonitors = () => {
 	// Utils
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
+	const { t } = useTranslation();
 
 	// Handlers
 	const handleActionMenuDelete = () => {
@@ -52,9 +54,9 @@ const InfrastructureMonitors = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -96,7 +98,7 @@ const InfrastructureMonitors = () => {
 			/>
 			<Pagination
 				itemCount={summary?.totalMonitors}
-				paginationLabel="monitors"
+				paginationLabel={t("monitors")}
 				page={page}
 				rowsPerPage={rowsPerPage}
 				handleChangePage={handleChangePage}

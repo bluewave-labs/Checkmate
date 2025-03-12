@@ -6,10 +6,12 @@ import SkeletonLayout from "./skeleton";
 // Utils
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 const Gauges = ({ shouldRender, monitor }) => {
 	const { decimalToPercentage, formatBytes } = useHardwareUtils();
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	if (!shouldRender) {
 		return <SkeletonLayout />;
@@ -28,19 +30,19 @@ const Gauges = ({ shouldRender, monitor }) => {
 		{
 			type: "memory",
 			value: decimalToPercentage(memoryUsagePercent),
-			heading: "Memory usage",
-			metricOne: "Used",
+			heading: t("memoryUsage"),
+			metricOne: t("used"),
 			valueOne: formatBytes(memoryUsedBytes, true),
-			metricTwo: "Total",
+			metricTwo: t("total"),
 			valueTwo: formatBytes(memoryTotalBytes, true),
 		},
 		{
 			type: "cpu",
 			value: decimalToPercentage(cpuUsagePercent),
-			heading: "CPU usage",
-			metricOne: "Cores",
+			heading: t("cpuUsage"),
+			metricOne: t("cores"),
 			valueOne: cpuPhysicalCores ?? 0,
-			metricTwo: "Frequency",
+			metricTwo: t("frequency"),
 			valueTwo: `${(cpuFrequency / 1000).toFixed(2)} Ghz`,
 		},
 		...(latestCheck?.disk ?? []).map((disk, idx) => ({
@@ -48,9 +50,9 @@ const Gauges = ({ shouldRender, monitor }) => {
 			diskIndex: idx,
 			value: decimalToPercentage(disk.usage_percent),
 			heading: `Disk${idx} usage`,
-			metricOne: "Used",
+			metricOne: t("used"),
 			valueOne: formatBytes(disk.total_bytes - disk.free_bytes, true),
-			metricTwo: "Total",
+			metricTwo: t("total"),
 			valueTwo: formatBytes(disk.total_bytes, true),
 		})),
 	];

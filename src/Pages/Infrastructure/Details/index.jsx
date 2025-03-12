@@ -13,6 +13,7 @@ import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useHardwareMonitorsFetch } from "./Hooks/useHardwareMonitorsFetch";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 // Constants
@@ -29,6 +30,7 @@ const InfrastructureDetails = () => {
 	// Utils
 	const theme = useTheme();
 	const { monitorId } = useParams();
+	const { t } = useTranslation();
 
 	const { isLoading, networkError, monitor } = useHardwareMonitorsFetch({
 		monitorId,
@@ -43,9 +45,9 @@ const InfrastructureDetails = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -61,7 +63,7 @@ const InfrastructureDetails = () => {
 					monitor={monitor}
 				/>
 				<GenericFallback>
-					<Typography>No check history for this monitor yet.</Typography>
+					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);

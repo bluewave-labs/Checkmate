@@ -4,6 +4,7 @@ import { useTheme } from "@emotion/react";
 import Discord from "../../assets/icons/discord-icon.svg?react";
 import Slack from "../../assets/icons/slack-icon.svg?react";
 import Zapier from "../../assets/icons/zapier-icon.svg?react";
+import { useTranslation } from "react-i18next";
 
 import "./index.css";
 
@@ -18,6 +19,7 @@ import "./index.css";
  */
 const IntegrationsComponent = ({ icon, header, info, onClick }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<Grid
@@ -59,7 +61,7 @@ const IntegrationsComponent = ({ icon, header, info, onClick }) => {
 					sx={{ alignSelf: "center" }}
 					disabled={true}
 				>
-					Add
+					{t("add")}
 				</Button>
 			</Stack>
 		</Grid>
@@ -81,6 +83,7 @@ IntegrationsComponent.propTypes = {
 
 const Integrations = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const integrations = [
 		{
@@ -90,8 +93,8 @@ const Integrations = () => {
 					style={{ width: "45px", height: "45px", alignSelf: "center" }}
 				/>
 			),
-			header: "Slack",
-			info: "Connect with Slack and see incidents in a channel",
+			header: t("integrationsSlack"),
+			info: t("integrationsSlackInfo"),
 			onClick: () => {},
 		},
 		{
@@ -101,8 +104,8 @@ const Integrations = () => {
 					style={{ width: "42px", height: "42px", alignSelf: "center" }}
 				/>
 			),
-			header: "Discord",
-			info: "Connect with Discord and view incidents directly in a channel",
+			header: t("integrationsDiscord"),
+			info: t("integrationsDiscordInfo"),
 			onClick: () => {},
 		},
 		{
@@ -112,8 +115,8 @@ const Integrations = () => {
 					style={{ width: "42px", height: "42px", alignSelf: "center" }}
 				/>
 			),
-			header: "Zapier",
-			info: "Send all incidents to Zapier, and then see them everywhere",
+			header: t("integrationsZapier"),
+			info: t("integrationsZapierInfo"),
 			onClick: () => {},
 		},
 		// Add more integrations as needed
@@ -130,9 +133,9 @@ const Integrations = () => {
 				},
 			}}
 		>
-			<Typography component="h1">Integrations</Typography>
+			<Typography component="h1">{t("integrations")}</Typography>
 			<Typography mb={theme.spacing(12)}>
-				Connect Prism to your favorite service.
+				{t("integrationsPrism")}
 			</Typography>
 			<Grid
 				container

@@ -6,11 +6,13 @@ import StatBox from "../../../../../Components/StatBox";
 //Utils
 import useUtils from "../../../../../Pages/Uptime/Monitors/Hooks/useUtils";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useTranslation } from "react-i18next";
 
 const InfraStatBoxes = ({ shouldRender, monitor }) => {
 	// Utils
 	const { formatBytes } = useHardwareUtils();
 	const { statusStyles, determineState } = useUtils();
+	const { t } = useTranslation();
 
 	const { stats, uptimePercentage } = monitor ?? {};
 	const latestCheck = stats?.aggregateData?.latestCheck;
@@ -40,11 +42,11 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 		>
 			<StatBox
 				sx={statusStyles[determineState(monitor)]}
-				heading="Status"
+				heading={t("status")}
 				subHeading={determineState(monitor)}
 			/>
 			<StatBox
-				heading="CPU (Physical)"
+				heading={t("cpuPhysical")}
 				subHeading={
 					<>
 						{physicalCores}
@@ -54,7 +56,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 			/>
 			<StatBox
 				key={2}
-				heading="CPU (Logical)"
+				heading={t("cpuLogical")}
 				subHeading={
 					<>
 						{logicalCores}
@@ -63,7 +65,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				}
 			/>
 			<StatBox
-				heading="CPU Frequency"
+				heading={t("cpuFrequency")}
 				subHeading={
 					<>
 						{(cpuFrequency / 1000).toFixed(2)}
@@ -72,7 +74,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				}
 			/>
 			<StatBox
-				heading="Average CPU Temperature"
+				heading={t("avgCpuTemperature")}
 				subHeading={
 					<>
 						{cpuTemperature.toFixed(2)}
@@ -81,15 +83,15 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				}
 			/>
 			<StatBox
-				heading="Memory"
+				heading={t("memory")}
 				subHeading={formatBytes(memoryTotalBytes)}
 			/>
 			<StatBox
-				heading="Disk"
+				heading={t("disk")}
 				subHeading={formatBytes(diskTotalBytes)}
 			/>
 			<StatBox
-				heading="Uptime"
+				heading={t("uptime")}
 				subHeading={
 					<>
 						{(uptimePercentage * 100).toFixed(2)}
@@ -99,7 +101,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 			/>
 			<StatBox
 				key={8}
-				heading="OS"
+				heading={t("os")}
 				subHeading={osPlatform}
 			/>
 		</StatusBoxes>
