@@ -31,6 +31,20 @@ const NotificationIntegrationModal = ({
   
   const { loading, sendTestNotification } = useNotifications();
   
+  // Helper to get the field state key with error handling
+  const getFieldKey = (typeId, fieldId) => {
+    try {
+      if (typeof typeId !== 'string' || typeId === '' || 
+          typeof fieldId !== 'string' || fieldId === '') {
+        return '';
+      }
+      return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
+    } catch (error) {
+      console.error('Error generating field key:', error);
+      return '';
+    }
+  };
+  
   // Define notification types
   const DEFAULT_NOTIFICATION_TYPES = [
     {
@@ -106,7 +120,7 @@ const NotificationIntegrationModal = ({
       
       // Add state for each field in the notification type
       type.fields.forEach(field => {
-        const fieldKey = `${type.id}${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
+        const fieldKey = getFieldKey(type.id, field.id);
         state[fieldKey] = monitor?.notifications?.find(n => n.type === type.id)?.[field.id] || "";
       });
     });
@@ -138,14 +152,9 @@ const NotificationIntegrationModal = ({
     // Get the notification type details
     const notificationType = activeNotificationTypes.find(t => t.id === type);
     
-    if (typeof notificationType === undefined) {
+    if (typeof notificationType === "undefined") {
       return;
     }
-    
-    // Helper to get the field state key
-    const getFieldKey = (typeId, fieldId) => {
-      return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
-    };
     
     // Prepare config object based on notification type
     const config = {};
@@ -180,7 +189,7 @@ const NotificationIntegrationModal = ({
         
         // Add each field value to the notification object
         type.fields.forEach(field => {
-          const fieldKey = `${type.id}${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
+          const fieldKey = getFieldKey(type.id, field.id);
           notificationObject[field.id] = integrations[fieldKey];
         });
         
