@@ -53,7 +53,7 @@ const useNotifications = () => {
         
       case 'webhook':
         payload.webhookUrl = config.url;
-        payload.platform = 'slack'; // Use slack as platform for webhooks
+        payload.platform = 'slack';
         if (!payload.webhookUrl) {
           isValid = false;
           errorMessage = t('notifications.webhook.urlRequired', 'Please enter a webhook URL first.');

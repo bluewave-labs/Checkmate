@@ -17,6 +17,22 @@ import TabPanel from "./TabPanel";
 import TabComponent from "./TabComponent";
 import useNotifications from "../Hooks/useNotification";
 
+// Define constants for notification types to avoid magic values
+const NOTIFICATION_TYPES = {
+  SLACK: 'slack',
+  DISCORD: 'discord',
+  TELEGRAM: 'telegram',
+  WEBHOOK: 'webhook'
+};
+
+// Define constants for field IDs
+const FIELD_IDS = {
+  WEBHOOK: 'webhook',
+  TOKEN: 'token',
+  CHAT_ID: 'chatId',
+  URL: 'url'
+};
+
 const NotificationIntegrationModal = ({ 
   open, 
   onClose, 
@@ -48,12 +64,12 @@ const NotificationIntegrationModal = ({
   // Define notification types
   const DEFAULT_NOTIFICATION_TYPES = [
     {
-      id: 'slack',
+      id: NOTIFICATION_TYPES.SLACK,
       label: t('notifications.slack.label'),
       description: t('notifications.slack.description'),
       fields: [
         {
-          id: 'webhook',
+          id: FIELD_IDS.WEBHOOK,
           label: t('notifications.slack.webhookLabel'),
           placeholder: t('notifications.slack.webhookPlaceholder'),
           type: 'text'
@@ -61,12 +77,12 @@ const NotificationIntegrationModal = ({
       ]
     },
     {
-      id: 'discord',
+      id: NOTIFICATION_TYPES.DISCORD,
       label: t('notifications.discord.label'),
       description: t('notifications.discord.description'),
       fields: [
         {
-          id: 'webhook',
+          id: FIELD_IDS.WEBHOOK,
           label: t('notifications.discord.webhookLabel'),
           placeholder: t('notifications.discord.webhookPlaceholder'),
           type: 'text'
@@ -74,18 +90,18 @@ const NotificationIntegrationModal = ({
       ]
     },
     {
-      id: 'telegram',
+      id: NOTIFICATION_TYPES.TELEGRAM,
       label: t('notifications.telegram.label'),
       description: t('notifications.telegram.description'),
       fields: [
         {
-          id: 'token',
+          id: FIELD_IDS.TOKEN,
           label: t('notifications.telegram.tokenLabel'),
           placeholder: t('notifications.telegram.tokenPlaceholder'),
           type: 'text'
         },
         {
-          id: 'chatId',
+          id: FIELD_IDS.CHAT_ID,
           label: t('notifications.telegram.chatIdLabel'),
           placeholder: t('notifications.telegram.chatIdPlaceholder'),
           type: 'text'
@@ -93,12 +109,12 @@ const NotificationIntegrationModal = ({
       ]
     },
     {
-      id: 'webhook',
+      id: NOTIFICATION_TYPES.WEBHOOK,
       label: t('notifications.webhook.label'),
       description: t('notifications.webhook.description'),
       fields: [
         {
-          id: 'url',
+          id: FIELD_IDS.URL,
           label: t('notifications.webhook.urlLabel'),
           placeholder: t('notifications.webhook.urlPlaceholder'),
           type: 'text'
