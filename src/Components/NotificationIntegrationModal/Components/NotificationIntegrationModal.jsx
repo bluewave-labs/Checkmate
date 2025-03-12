@@ -138,7 +138,7 @@ const NotificationIntegrationModal = ({
     // Get the notification type details
     const notificationType = activeNotificationTypes.find(t => t.id === type);
     
-    if (notificationType === undefined) {
+    if (typeof notificationType === undefined) {
       return;
     }
     
