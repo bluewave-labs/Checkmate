@@ -3,12 +3,14 @@ import { useState, useRef, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import { parse } from "papaparse";
 import { bulkMonitorsValidation } from "../../../Validation/validation";
+import { useTranslation } from "react-i18next";
 
 export function Upload({ onComplete }) {
 	const theme = useTheme();
 	const [file, setFile] = useState();
 	const [error, setError] = useState("");
 	const inputRef = useRef();
+	const { t } = useTranslation();
 
 	const handleSelectFile = () => {
 		inputRef.current.click();
@@ -35,12 +37,16 @@ export function Upload({ onComplete }) {
 			},
 			complete: ({ data, errors }) => {
 				if (errors.length > 0) {
-					setError("Parsing failed");
+					setError(t("uptime.bulkImport.parsingFailed"));
 					return;
 				}
 				const { error } = bulkMonitorsValidation.validate(data);
 				if (error) {
-					setError(error.details?.[0]?.message || error.message || "Validation Error");
+					setError(
+						error.details?.[0]?.message ||
+							error.message ||
+							t("uptime.bulkImport.validationFailed")
+					);
 					return;
 				}
 				onComplete(data);
@@ -76,7 +82,7 @@ export function Upload({ onComplete }) {
 				color="accent"
 				onClick={handleSelectFile}
 			>
-				Select File
+				{t("uptime.bulkImport.selectFile")}
 			</Button>
 		</div>
 	);

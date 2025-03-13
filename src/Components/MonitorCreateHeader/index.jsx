@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 import SkeletonLayout from "./skeleton";
+import { useTranslation } from "react-i18next";
 
 const CreateMonitorHeader = ({
 	isAdmin,
@@ -10,6 +11,7 @@ const CreateMonitorHeader = ({
 	shouldRender = true,
 	path,
 }) => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const theme = useTheme();
 
@@ -36,7 +38,7 @@ const CreateMonitorHeader = ({
 					navigate("/uptime/bulk-import");
 				}}
 			>
-				Bulk Import
+				{t("uptime.bulkImport.title")}
 			</Button>
 		</Stack>
 	);

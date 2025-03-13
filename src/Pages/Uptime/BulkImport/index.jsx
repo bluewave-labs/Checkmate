@@ -12,17 +12,19 @@ import ConfigBox from "../../../Components/ConfigBox";
 import { Upload } from "./Upload";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Trans, useTranslation } from "react-i18next";
 
 const BulkImport = () => {
 	const theme = useTheme();
-	
+
 	const [monitors, setMonitors] = useState([]);
 	const { user } = useSelector((state) => state.auth);
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	const crumbs = [
-		{ name: "uptime", path: "/uptime" },
-		{ name: "bulk import", path: `/uptime/bulk-import` },
+		{ name: t("uptime.title"), path: "/uptime" },
+		{ name: t("uptime.bulkImport.title"), path: `/uptime/bulk-import` },
 	];
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +38,7 @@ const BulkImport = () => {
 				userId: user._id,
 			}));
 			await networkService.createBulkMonitors({ monitors: monitorsWithUser });
-			createToast({ body: "Monitors created successfully!" });
+			createToast({ body: t("uptime.bulkImport.uploadSuccess") });
 			navigate("/uptime");
 		} catch (error) {
 			createToast({ body: error?.response?.data?.msg ?? error.message });
@@ -57,29 +59,33 @@ const BulkImport = () => {
 					component="h1"
 					variant="h1"
 				>
-					Bulk Import
+					{t("uptime.bulkImport.title")}
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Select CSV file to upload</Typography>
+						<Typography component="h2">
+							{t("uptime.bulkImport.selectFileTips")}
+						</Typography>
 						<Typography component="p">
-							You can download our&nbsp;
-							<Link
-								color="info"
-								download
-								href="bulk_import_monitors_template.csv"
-							>
-								template
-							</Link>
-							&nbsp;or&nbsp;
-							<Link
-								color="info"
-								download
-								href="bulk_import_monitors_sample.csv"
-							>
-								sample
-							</Link>
-							.
+							<Trans
+								i18nKey="uptime.bulkImport.selectFileDescription"
+								components={{
+									template: (
+										<Link
+											color="info"
+											download
+											href="bulk_import_monitors_template.csv"
+										/>
+									),
+									sample: (
+										<Link
+											color="info"
+											download
+											href="bulk_import_monitors_sample.csv"
+										/>
+									),
+								}}
+							/>
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
@@ -99,7 +105,7 @@ const BulkImport = () => {
 						disabled={!monitors?.length}
 						loading={isLoading}
 					>
-						Submit
+						{t("submit")}
 					</Button>
 				</Stack>
 			</Stack>
