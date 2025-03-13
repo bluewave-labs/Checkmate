@@ -1033,6 +1033,10 @@ class NetworkService {
 
 		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
 	}
+
+	async createBulkMonitors({ monitors }) {
+		return this.axiosInstance.post(`/monitors/bulk`, monitors);
+	}
 }
 
 export default NetworkService;
