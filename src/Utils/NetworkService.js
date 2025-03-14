@@ -1056,6 +1056,35 @@ class NetworkService {
 			}
 		);
 	}
+
+	// ************************************
+	// Fetch monitors with checks by TeamID
+	// ************************************
+	async getMonitorsWithChecksByTeamId(config) {
+		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+		const params = new URLSearchParams();
+
+		if (limit) params.append("limit", limit);
+		if (types) {
+			types.forEach((type) => {
+				params.append("type", type);
+			});
+		}
+		if (page) params.append("page", page);
+		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
+		if (filter) params.append("filter", filter);
+		if (field) params.append("field", field);
+		if (order) params.append("order", order);
+
+		return this.axiosInstance.get(
+			`/monitors/team/${teamId}/with-checks?${params.toString()}`,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	}
 }
 
 export default NetworkService;
