@@ -1033,6 +1033,29 @@ class NetworkService {
 
 		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
 	}
+
+	// ************************************
+	// Fetch monitors with summary by TeamID
+	// ************************************
+	async getMonitorsWithSummaryByTeamId(config) {
+		const { teamId, types } = config;
+		const params = new URLSearchParams();
+
+		if (types) {
+			types.forEach((type) => {
+				params.append("type", type);
+			});
+		}
+
+		return this.axiosInstance.get(
+			`/monitors/summary/team/${teamId}?${params.toString()}`,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	}
 }
 
 export default NetworkService;
