@@ -1033,6 +1033,58 @@ class NetworkService {
 
 		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
 	}
+
+	// ************************************
+	// Fetch monitors with summary by TeamID
+	// ************************************
+	async getMonitorsWithSummaryByTeamId(config) {
+		const { teamId, types } = config;
+		const params = new URLSearchParams();
+
+		if (types) {
+			types.forEach((type) => {
+				params.append("type", type);
+			});
+		}
+
+		return this.axiosInstance.get(
+			`/monitors/summary/team/${teamId}?${params.toString()}`,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	}
+
+	// ************************************
+	// Fetch monitors with checks by TeamID
+	// ************************************
+	async getMonitorsWithChecksByTeamId(config) {
+		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+		const params = new URLSearchParams();
+
+		if (limit) params.append("limit", limit);
+		if (types) {
+			types.forEach((type) => {
+				params.append("type", type);
+			});
+		}
+		if (page) params.append("page", page);
+		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
+		if (filter) params.append("filter", filter);
+		if (field) params.append("field", field);
+		if (order) params.append("order", order);
+
+		return this.axiosInstance.get(
+			`/monitors/team/${teamId}/with-checks?${params.toString()}`,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+	}
 }
 
 export default NetworkService;
