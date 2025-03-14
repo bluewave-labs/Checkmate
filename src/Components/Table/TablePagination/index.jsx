@@ -15,6 +15,14 @@ Pagination.propTypes = {
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 15, 25];
 
+// Determine whether pagination buttons should be shown
+const shouldShowPaginationButtons = (itemCount, rowsPerPage) => {
+	return Math.ceil(itemCount / rowsPerPage) > 1;
+};
+
+// Empty action component for pagination (no-op component)
+const EmptyPaginationActions = () => <div />;
+
 /**
  * Pagination component for table navigation with customized styling and behavior.
  *
@@ -41,6 +49,8 @@ function Pagination({
 	const end = Math.min(page * rowsPerPage + rowsPerPage, itemCount);
 	const range = `${start} - ${end}`;
 
+	const showPaginationButtons = shouldShowPaginationButtons(itemCount, rowsPerPage);
+
 	return (
 		<Stack
 			direction="row"
@@ -64,7 +74,9 @@ function Pagination({
 				rowsPerPage={rowsPerPage}
 				rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
 				onRowsPerPageChange={handleChangeRowsPerPage}
-				ActionsComponent={TablePaginationActions}
+				ActionsComponent={
+					showPaginationButtons ? TablePaginationActions : EmptyPaginationActions
+				}
 				labelRowsPerPage="Rows per page"
 				labelDisplayedRows={({ page, count }) =>
 					`Page ${page + 1} of ${Math.max(0, Math.ceil(count / rowsPerPage))}`
