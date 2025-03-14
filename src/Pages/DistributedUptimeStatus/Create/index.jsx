@@ -19,9 +19,8 @@ import { buildErrors } from "../../../Validation/error";
 import { createToast } from "../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { useMonitorsFetch } from "../../StatusPage/Create/Hooks/useMonitorsFetch";
-import { useDUStatusPageFetchByUrl } from "../Status/Hooks/useDUStatusPageFetchByUrl";
 import { useTranslation } from "react-i18next";
-
+import { useFetchDepinStatusPage } from "../../../Hooks/useFetchDepinStatusPage";
 const CreateStatus = () => {
 	const theme = useTheme();
 	const { monitorId, url } = useParams();
@@ -32,7 +31,7 @@ const CreateStatus = () => {
 	const [createStatusPage, isLoading, networkError] = useCreateStatusPage(isCreate);
 
 	const [statusPageIsLoading, statusPageNetworkError, statusPage, _, isPublished] =
-		useDUStatusPageFetchByUrl({
+		useFetchDepinStatusPage({
 			url,
 			timeFrame: 30,
 			isCreate,
@@ -178,7 +177,9 @@ const CreateStatus = () => {
 					component="span"
 					fontSize="inherit"
 				>
-					{isCreate ? t("distributedUptimeStatusCreateYour") : t("distributedUptimeStatusEditYour")}{" "}
+					{isCreate
+						? t("distributedUptimeStatusCreateYour")
+						: t("distributedUptimeStatusEditYour")}{" "}
 				</Typography>
 				<Typography
 					component="span"
@@ -191,7 +192,9 @@ const CreateStatus = () => {
 			</Typography>
 			<ConfigBox>
 				<Stack>
-					<Typography component="h2">{t("distributedUptimeStatusCreateStatusPageAccess")}</Typography>
+					<Typography component="h2">
+						{t("distributedUptimeStatusCreateStatusPageAccess")}
+					</Typography>
 					<Typography component="p">
 						{t("distributedUptimeStatusCreateStatusPageReady")}
 					</Typography>
@@ -208,7 +211,9 @@ const CreateStatus = () => {
 			</ConfigBox>
 			<ConfigBox>
 				<Stack gap={theme.spacing(6)}>
-					<Typography component="h2">{t("distributedUptimeStatusBasicInfoHeader")}</Typography>
+					<Typography component="h2">
+						{t("distributedUptimeStatusBasicInfoHeader")}
+					</Typography>
 					<Typography component="p">
 						{t("distributedUptimeStatusBasicInfoDescription")}
 					</Typography>
@@ -241,7 +246,9 @@ const CreateStatus = () => {
 			<ConfigBox>
 				<Stack gap={theme.spacing(6)}>
 					<Typography component="h2">{t("distributedUptimeStatusLogoHeader")}</Typography>
-					<Typography component="p">{t("distributedUptimeStatusLogoDescription")} </Typography>
+					<Typography component="p">
+						{t("distributedUptimeStatusLogoDescription")}{" "}
+					</Typography>
 				</Stack>
 				<Stack
 					gap={theme.spacing(18)}
@@ -272,7 +279,9 @@ const CreateStatus = () => {
 			</ConfigBox>
 			<ConfigBox>
 				<Stack>
-					<Typography component="h2">{t("distributedUptimeStatusStandardMonitorsHeader")}</Typography>
+					<Typography component="h2">
+						{t("distributedUptimeStatusStandardMonitorsHeader")}
+					</Typography>
 					<Typography component="p">
 						{t("distributedUptimeStatusStandardMonitorsDescription")}
 					</Typography>
