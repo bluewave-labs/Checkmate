@@ -9,7 +9,7 @@ const MonitorsConfig = ({
 	error,
 	isEditMode,
 	onSelectMonitors,
-	secondaryLabelText,
+	secondaryLabel,
 }) => {
 	const [search, setSearch] = useState("");
 	const handleSearch = (value) => {
@@ -25,7 +25,7 @@ const MonitorsConfig = ({
 				isAdorned={false}
 				options={monitors || []}
 				filteredBy="name"
-				secondaryLabel={secondaryLabelText}
+				secondaryLabel={secondaryLabel}
 				inputValue={search}
 				value={selectedMonitors}
 				handleInputChange={handleSearch}
@@ -43,7 +43,7 @@ MonitorsConfig.propTypes = {
 	error: PropTypes.string,
 	isEditMode: PropTypes.bool.isRequired,
 	onSelectMonitors: PropTypes.func.isRequired,
-	secondaryLabelText: PropTypes.string,
+	secondaryLabel: PropTypes.string,
 };
 
 export default MonitorsConfig;
