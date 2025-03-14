@@ -13,7 +13,6 @@ export const useFetchMonitorsWithChecks = ({
 	filter,
 	field,
 	order,
-	triggerUpdate,
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [count, setCount] = useState(undefined);

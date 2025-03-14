@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { networkService } from "../../../../main";
-import { createToast } from "../../../../Utils/toastUtils";
+import { networkService } from "../main";
+import { createToast } from "../Utils/toastUtils";
 
-const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) => {
+const useSubscribeToDepinDetails = ({ monitorId, isPublic, isPublished, dateRange }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [connectionStatus, setConnectionStatus] = useState(undefined);
 	const [retryCount, setRetryCount] = useState(0);
@@ -92,4 +92,4 @@ const useSubscribeToDetails = ({ monitorId, isPublic, isPublished, dateRange }) 
 	return [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger];
 };
 
-export { useSubscribeToDetails };
+export { useSubscribeToDepinDetails };
