@@ -20,6 +20,7 @@ export const useFetchMonitorsWithSummary = ({ teamId, types }) => {
 				setMonitors(monitors);
 				setMonitorsSummary(summary);
 			} catch (error) {
+				console.error(error);
 				setNetworkError(true);
 				createToast({
 					body: error.message,
