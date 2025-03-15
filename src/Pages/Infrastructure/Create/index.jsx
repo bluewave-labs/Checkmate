@@ -61,7 +61,7 @@ const CreateInfrastructureMonitor = () => {
 	const isCreate = typeof monitorId === "undefined";
 
 	// Fetch monitor details if editing
-	const { monitor, isLoading, networkError } = useHardwareMonitorsFetch({ monitorId });
+	const { monitor, isLoading, networkError } = isCreate ? {} : useHardwareMonitorsFetch({ monitorId });
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -113,7 +113,7 @@ const CreateInfrastructureMonitor = () => {
 	const handleCreateInfrastructureMonitor = async (event) => {
 		event.preventDefault();
 
-		 const formattedNotifications = infrastructureMonitor.notifications.map((n) =>
+		const formattedNotifications = infrastructureMonitor.notifications.map((n) =>
 			typeof n === "string" ? { type: "email", address: n } : n
 		);
 
@@ -177,10 +177,10 @@ const CreateInfrastructureMonitor = () => {
 		} = form;
 
 		const thresholds = {
-			...(infrastructureMonitor.cpu ? { usage_cpu: parseFloat(infrastructureMonitor.usage_cpu) / 100 } : {}),
-			...(infrastructureMonitor.memory ? { usage_memory: parseFloat(infrastructureMonitor.usage_memory) / 100 } : {}),
-			...(infrastructureMonitor.disk ? { usage_disk: parseFloat(infrastructureMonitor.usage_disk) / 100 } : {}),
-			...(infrastructureMonitor.temperature ? { usage_temperature: parseFloat(infrastructureMonitor.usage_temperature) / 100 } : {}),
+			...(cpu ? { usage_cpu: usage_cpu / 100 } : {}),
+			...(memory ? { usage_memory: usage_memory / 100 } : {}),
+			...(disk ? { usage_disk: usage_disk / 100 } : {}),
+			...(temperature ? { usage_temperature: usage_temperature / 100 } : {}),
 		};
 
 		form = {
@@ -408,7 +408,7 @@ const CreateInfrastructureMonitor = () => {
 									isChecked={infrastructureMonitor[metric]}
 									fieldId={METRIC_PREFIX + metric}
 									fieldName={METRIC_PREFIX + metric}
-									fieldValue={infrastructureMonitor[METRIC_PREFIX + metric]}
+									fieldValue={String(infrastructureMonitor[METRIC_PREFIX + metric])}
 									onFieldChange={handleChange}
 									alertUnit={metric == "temperature" ? "°C" : "%"}
 								/>
