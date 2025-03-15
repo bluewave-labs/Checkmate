@@ -1,12 +1,13 @@
 // React, Redux, Router
 import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
-import { createInfrastructureMonitor } from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
+import { createInfrastructureMonitor, updateInfrastructureMonitor } from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
+import { useHardwareMonitorsFetch } from "../Details/Hooks/useHardwareMonitorsFetch";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
 
@@ -53,7 +54,14 @@ const CreateInfrastructureMonitor = () => {
 	const monitorState = useSelector((state) => state.infrastructureMonitor);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { monitorId } = useParams();
+	const { t } = useTranslation();	
+
+	// Determine if we are creating or editing
+	const isCreate = typeof monitorId === "undefined";
+
+	// Fetch monitor details if editing
+	const { monitor, isLoading, networkError } = useHardwareMonitorsFetch({ monitorId });
 
 	// State
 	const [errors, setErrors] = useState({});
