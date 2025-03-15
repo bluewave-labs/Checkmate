@@ -19,7 +19,7 @@ import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import { useSubscribeToDetails } from "./Hooks/useSubscribeToDetails";
+import { useSubscribeToDepinDetails } from "../../../Hooks/useSubscribeToDepinDetails";
 import { useDeleteMonitor } from "./Hooks/useDeleteMonitor";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,7 @@ const DistributedUptimeDetails = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
-		useSubscribeToDetails({ monitorId, dateRange });
+		useSubscribeToDepinDetails({ monitorId, dateRange });
 
 	const [deleteMonitor, isDeleting] = useDeleteMonitor({ monitorId });
 	// Constants

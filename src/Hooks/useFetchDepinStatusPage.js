@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { networkService } from "../../../../main";
-import { createToast } from "../../../../Utils/toastUtils";
+import { networkService } from "../main";
+import { createToast } from "../Utils/toastUtils";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
-import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
+import { useMonitorUtils } from "./useMonitorUtils";
 
-const useDUStatusPageFetchByUrl = ({ url, timeFrame, isCreate = false }) => {
+const useFetchDepinStatusPage = ({ url, timeFrame, isCreate = false }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [statusPage, setStatusPage] = useState(undefined);
@@ -50,9 +50,9 @@ const useDUStatusPageFetchByUrl = ({ url, timeFrame, isCreate = false }) => {
 			}
 		};
 		fetchStatusPageByUrl();
-	}, [authToken, url, getMonitorWithPercentage, theme, timeFrame]);
+	}, [authToken, url, getMonitorWithPercentage, theme, timeFrame, isCreate]);
 
 	return [isLoading, networkError, statusPage, monitorId, isPublished];
 };
 
-export { useDUStatusPageFetchByUrl };
+export { useFetchDepinStatusPage };
