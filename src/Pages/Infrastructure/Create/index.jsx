@@ -314,7 +314,9 @@ const CreateInfrastructureMonitor = () => {
 							onChange={handleChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
+							disabled={!isCreate}
 						/>
+						{isCreate && (
 						<Box>
 							<Typography component="p">{t("infrastructureProtocol")}</Typography>
 							<ButtonGroup>
@@ -334,6 +336,7 @@ const CreateInfrastructureMonitor = () => {
 								</Button>
 							</ButtonGroup>
 						</Box>
+						)}
 						<TextInput
 							type="text"
 							id="name"
