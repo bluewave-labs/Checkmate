@@ -270,7 +270,7 @@ const CreateInfrastructureMonitor = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						{t("infrastructureCreateYour")}{" "}
+						{t(isCreate? "infrastructureCreateYour": "infrastructureEditYour")}{" "}
 					</Typography>
 					<Typography
 						component="span"
@@ -443,7 +443,7 @@ const CreateInfrastructureMonitor = () => {
 						onClick={handleCreateInfrastructureMonitor}
 						loading={monitorState?.isLoading}
 					>
-						{t("infrastructureCreateMonitor")}
+						{t(isCreate? "infrastructureCreateMonitor": "infrastructureEditMonitor")}
 					</Button>
 				</Stack>
 			</Stack>
