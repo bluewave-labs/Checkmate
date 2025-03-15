@@ -167,7 +167,10 @@ const Search = ({
 								: {}
 						}
 					>
-						{option[filteredBy] + (secondaryLabel ? ` (${option[secondaryLabel]})` : "")}
+						{option[filteredBy] +
+							(secondaryLabel && option[secondaryLabel]
+								? ` (${option[secondaryLabel]})`
+								: "")}
 					</ListItem>
 				);
 			}}
