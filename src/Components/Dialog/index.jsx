@@ -29,9 +29,13 @@ const Dialog = ({
 				justifyContent="flex-end"
 			>
 				<Button
-					variant="text"
-					color="info"
+					variant="contained"
 					onClick={onCancel}
+					sx={{
+						"&:hover": {
+							backgroundColor: theme.palette.primary.lowContrast,
+						},
+					}}
 				>
 					Cancel
 				</Button>
