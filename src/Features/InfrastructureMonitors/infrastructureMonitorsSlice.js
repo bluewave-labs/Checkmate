@@ -96,9 +96,8 @@ export const getInfrastructureMonitorsByTeamId = createAsyncThunk(
 
 export const updateInfrastructureMonitor = createAsyncThunk(
 	"infrastructureMonitors/updateMonitor",
-	async (data, thunkApi) => {
+	async ({ monitorId, monitor }, thunkApi) => {
 		try {
-			const { monitor } = data;
 			const updatedFields = {
 				name: monitor.name,
 				description: monitor.description,
@@ -107,8 +106,9 @@ export const updateInfrastructureMonitor = createAsyncThunk(
 				threshold: monitor.threshold,
 			};
 			const res = await networkService.updateMonitor({
-				monitorId: monitor._id,
-				updatedFields: updatedFields,
+				monitorId,
+				monitor,
+				updatedFields,
 			});
 			return res.data;
 		} catch (error) {

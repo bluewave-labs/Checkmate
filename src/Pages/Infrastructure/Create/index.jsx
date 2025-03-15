@@ -70,6 +70,7 @@ const CreateInfrastructureMonitor = () => {
 		url: "",
 		name: "",
 		notifications: [],
+		notify_email: false,
 		interval: 0.25,
 		cpu: false,
 		usage_cpu: "",
@@ -89,7 +90,8 @@ const CreateInfrastructureMonitor = () => {
 		setInfrastructureMonitor({
 			url: monitor.url.replace(/^https?:\/\//, ""),
 			name: monitor.name || "",
-			notifications: monitor.notifications || [],
+			notifications: monitor.notifications?.filter(n => typeof n === "object") || [],
+			notify_email: (monitor.notifications?.length ?? 0) > 0,
 			interval: monitor.interval / MS_PER_MINUTE,
 			cpu: monitor.cpu || false,
 			usage_cpu: monitor.usage_cpu || "",
@@ -107,6 +109,14 @@ const CreateInfrastructureMonitor = () => {
 	// Handlers
 	const handleCreateInfrastructureMonitor = async (event) => {
 		event.preventDefault();
+
+		 const formattedNotifications = infrastructureMonitor.notifications.map((n) =>
+			typeof n === "string" ? { type: "email", address: n } : n
+		);
+
+		if (infrastructureMonitor.notify_email) {
+			formattedNotifications.push({ type: "email", address: user.email });
+		}
 
 		// Build the form
 		let form = {
@@ -133,6 +143,7 @@ const CreateInfrastructureMonitor = () => {
 				? { usage_temperature: infrastructureMonitor.usage_temperature }
 				: {}),
 			secret: infrastructureMonitor.secret,
+			notifications: formattedNotifications,
 		};
 
 		const { error } = infrastructureMonitorValidation.validate(form, {
@@ -220,30 +231,24 @@ const CreateInfrastructureMonitor = () => {
 	};
 
 	const handleNotifications = (event, type) => {
-		const { value } = event.target;
+		const { value, checked } = event.target;
 		let notifications = [...infrastructureMonitor.notifications];
-		const notificationExists = notifications.some((notification) => {
-			if (notification.type === type && notification.address === value) {
-				return true;
+	
+		if (checked) {
+			if (!notifications.some((n) => n.type === type && n.address === value)) {
+				notifications.push({ type, address: value });
 			}
-			return false;
-		});
-		if (notificationExists) {
-			notifications = notifications.filter((notification) => {
-				if (notification.type === type && notification.address === value) {
-					return false;
-				}
-				return true;
-			});
 		} else {
-			notifications.push({ type, address: value });
+			notifications = notifications.filter((n) => !(n.type === type && n.address === value));
 		}
-
+	
 		setInfrastructureMonitor((prev) => ({
 			...prev,
 			notifications,
+			notify_email: checked,
 		}));
 	};
+	
 
 	return (
 		<Box className="create-infrastructure-monitor">
@@ -363,9 +368,7 @@ const CreateInfrastructureMonitor = () => {
 						<Checkbox
 							id="notify-email-default"
 							label={`Notify via email (to ${user.email})`}
-							isChecked={infrastructureMonitor.notifications.some(
-								(notification) => notification.type === "email"
-							)}
+							isChecked={infrastructureMonitor.notify_email}
 							value={user?.email}
 							onChange={(event) => handleNotifications(event, "email")}
 						/>

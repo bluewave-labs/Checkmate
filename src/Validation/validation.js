@@ -349,6 +349,12 @@ const infrastructureMonitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
+	notifications: joi.array().items(
+		joi.object({
+			type: joi.string().valid("email").required(),
+			address: joi.string().email({ tlds: { allow: false } }).required(),
+		})
+	)
 });
 
 export {
