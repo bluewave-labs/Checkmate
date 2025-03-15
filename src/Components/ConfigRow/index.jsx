@@ -1,7 +1,22 @@
 import { Box, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import ConfigBox from "../../../../../Components/ConfigBox";
+import ConfigBox from "../ConfigBox";
+
+/**
+ * ConfigRow is a styled container used to layout content in a row format with specific padding, border, and spacing.
+ * It serves as the wrapper for ConfigBox, with the left section displaying the title and description,
+ * and the right section displaying the children.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <ConfigBox>
+ *     <div>Left content (Title + Description)</div>
+ *     <div>Right content (Children)</div>
+ *   </ConfigBox>
+ * );
+ */
 
 const ConfigRow = ({ title, description, children }) => {
   const theme = useTheme();
@@ -28,7 +43,7 @@ const ConfigRow = ({ title, description, children }) => {
 ConfigRow.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 export default ConfigRow;
