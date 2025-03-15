@@ -179,12 +179,17 @@ const CreateInfrastructureMonitor = () => {
 			thresholds,
 		};
 
-		const action = await dispatch(createInfrastructureMonitor({ monitor: form }));
+		// Handle create or update
+		const action = isCreate
+			? await dispatch(createInfrastructureMonitor({ monitor: form }))
+			: await dispatch(updateInfrastructureMonitor({ monitorId, monitor: form }));
 		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Infrastructure monitor created successfully!" });
+			createToast({
+				body: isCreate ? "Infrastructure monitor created successfully!" : "Infrastructure monitor updated successfully!",
+			});
 			navigate("/infrastructure");
 		} else {
-			createToast({ body: "Failed to create monitor." });
+			createToast({ body: "Failed to save monitor." });
 		}
 	};
 
