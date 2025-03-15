@@ -103,7 +103,8 @@ export const updateInfrastructureMonitor = createAsyncThunk(
 				description: monitor.description,
 				interval: monitor.interval,
 				notifications: monitor.notifications,
-				threshold: monitor.threshold,
+				thresholds: monitor.thresholds,
+				secret: monitor.secret,
 			};
 			const res = await networkService.updateMonitor({
 				monitorId,
