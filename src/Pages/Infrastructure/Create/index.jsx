@@ -93,14 +93,17 @@ const CreateInfrastructureMonitor = () => {
 			notifications: monitor.notifications?.filter(n => typeof n === "object") || [],
 			notify_email: (monitor.notifications?.length ?? 0) > 0,
 			interval: monitor.interval / MS_PER_MINUTE,
-			cpu: monitor.cpu || false,
-			usage_cpu: monitor.usage_cpu || "",
-			memory: monitor.memory || false,
-			usage_memory: monitor.usage_memory || "",
-			disk: monitor.disk || false,
-			usage_disk: monitor.usage_disk || "",
-			temperature: monitor.temperature || false,
-			usage_temperature: monitor.usage_temperature || "",
+			cpu: monitor.thresholds?.usage_cpu !== undefined,
+			usage_cpu: monitor.thresholds?.usage_cpu ? monitor.thresholds.usage_cpu * 100 : "",
+		
+			memory: monitor.thresholds?.usage_memory !== undefined,
+			usage_memory: monitor.thresholds?.usage_memory ? monitor.thresholds.usage_memory * 100 : "",
+		
+			disk: monitor.thresholds?.usage_disk !== undefined,
+			usage_disk: monitor.thresholds?.usage_disk ? monitor.thresholds.usage_disk * 100 : "",
+		
+			temperature: monitor.thresholds?.usage_temperature !== undefined,
+			usage_temperature: monitor.thresholds?.usage_temperature ? monitor.thresholds.usage_temperature * 100 : "",
 			secret: monitor.secret || "",
 		});
 		setHttps(monitor.url.startsWith("https"));
@@ -174,10 +177,10 @@ const CreateInfrastructureMonitor = () => {
 		} = form;
 
 		const thresholds = {
-			...(cpu ? { usage_cpu: usage_cpu / 100 } : {}),
-			...(memory ? { usage_memory: usage_memory / 100 } : {}),
-			...(disk ? { usage_disk: usage_disk / 100 } : {}),
-			...(temperature ? { usage_temperature: usage_temperature / 100 } : {}),
+			...(infrastructureMonitor.cpu ? { usage_cpu: parseFloat(infrastructureMonitor.usage_cpu) / 100 } : {}),
+			...(infrastructureMonitor.memory ? { usage_memory: parseFloat(infrastructureMonitor.usage_memory) / 100 } : {}),
+			...(infrastructureMonitor.disk ? { usage_disk: parseFloat(infrastructureMonitor.usage_disk) / 100 } : {}),
+			...(infrastructureMonitor.temperature ? { usage_temperature: parseFloat(infrastructureMonitor.usage_temperature) / 100 } : {}),
 		};
 
 		form = {
