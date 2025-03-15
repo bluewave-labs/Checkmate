@@ -31,6 +31,7 @@ const InfrastructureDetails = () => {
 	const theme = useTheme();
 	const { monitorId } = useParams();
 	const { t } = useTranslation();
+	const isAdmin = useIsAdmin();
 
 	const { isLoading, networkError, monitor } = useHardwareMonitorsFetch({
 		monitorId,
@@ -74,7 +75,7 @@ const InfrastructureDetails = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<MonitorStatusHeader
 				path={"infrastructure"}
-				isAdmin={false}
+				isAdmin={isAdmin}
 				shouldRender={!isLoading}
 				monitor={monitor}
 			/>
