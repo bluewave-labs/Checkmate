@@ -71,7 +71,6 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 - Status pages (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1131
 - Translations (i18n) (**in progress**)
 - Better notification options (Webhooks, Discord, Telegram, Slack) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1545
-- Command line interface (CLI) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1558
 - JSON query monitoring https://github.com/bluewave-labs/Checkmate/issues/1573
 - Tagging/grouping monitors https://github.com/bluewave-labs/Checkmate/issues/1546
 - More configuration options
