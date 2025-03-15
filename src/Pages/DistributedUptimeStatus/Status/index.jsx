@@ -23,8 +23,8 @@ import { RowContainer } from "../../../Components/StandardContainer";
 import { useTheme } from "@mui/material/styles";
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
-import { useDUStatusPageFetchByUrl } from "./Hooks/useDUStatusPageFetchByUrl";
+import { useFetchDepinStatusPage } from "../../../Hooks/useFetchDepinStatusPage";
+import { useSubscribeToDepinDetails } from "../../../Hooks/useSubscribeToDepinDetails";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
 import TimeFrameHeader from "./Components/TimeframeHeader";
 import SubHeader from "../../../Components/Subheader";
@@ -64,13 +64,13 @@ const DistributedUptimeStatus = () => {
 		statusPage,
 		monitorId,
 		isPublished,
-	] = useDUStatusPageFetchByUrl({
+	] = useFetchDepinStatusPage({
 		url,
 		timeFrame,
 	});
 
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
-		useSubscribeToDetails({ monitorId, dateRange, isPublic, isPublished });
+		useSubscribeToDepinDetails({ monitorId, dateRange, isPublic, isPublished });
 
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(() => {
 		navigate("/distributed-uptime");
@@ -253,7 +253,11 @@ const DistributedUptimeStatus = () => {
 							sx={{ width: "50%" }}
 						/>
 						<InfoBox
-							heading={isSmallScreen ? t("distributedUptimeStatusUpt") : t("distributedUptimeStatusUptBurned")}
+							heading={
+								isSmallScreen
+									? t("distributedUptimeStatusUpt")
+									: t("distributedUptimeStatusUptBurned")
+							}
 							subHeading={safelyParseFloat(monitor?.uptBurnt).toFixed(4)}
 							img={UptLogo}
 							alt={t("distributedUptimeStatusUptLogo")}
