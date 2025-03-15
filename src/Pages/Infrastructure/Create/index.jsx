@@ -82,6 +82,28 @@ const CreateInfrastructureMonitor = () => {
 		secret: "",
 	});
 
+	// Populate form fields if editing
+	useEffect(() => {
+		if (isCreate || !monitor) return;
+
+		setInfrastructureMonitor({
+			url: monitor.url.replace(/^https?:\/\//, ""),
+			name: monitor.name || "",
+			notifications: monitor.notifications || [],
+			interval: monitor.interval / MS_PER_MINUTE,
+			cpu: monitor.cpu || false,
+			usage_cpu: monitor.usage_cpu || "",
+			memory: monitor.memory || false,
+			usage_memory: monitor.usage_memory || "",
+			disk: monitor.disk || false,
+			usage_disk: monitor.usage_disk || "",
+			temperature: monitor.temperature || false,
+			usage_temperature: monitor.usage_temperature || "",
+			secret: monitor.secret || "",
+		});
+		setHttps(monitor.url.startsWith("https"));
+	}, [isCreate, monitor]);
+
 	// Handlers
 	const handleCreateInfrastructureMonitor = async (event) => {
 		event.preventDefault();
