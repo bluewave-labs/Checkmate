@@ -258,7 +258,10 @@ const CreateInfrastructureMonitor = () => {
 			<Breadcrumbs
 				list={[
 					{ name: "Infrastructure monitors", path: "/infrastructure" },
-					{ name: isCreate ? "Create" : "Configure", path: `/infrastructure/${isCreate ? "create" : `configure/${monitorId}`}` },
+					...(isCreate
+						? [{ name: "Create", path: "/infrastructure/create" }]
+						: [{ name: "Details", path: `/infrastructure/${monitorId}` }, { name: "Configure", path: `/infrastructure/configure/${monitorId}` }]
+					),
 				]}
 			/>
 			<Stack
