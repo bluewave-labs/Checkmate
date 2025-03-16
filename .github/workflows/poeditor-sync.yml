@@ -83,10 +83,47 @@ jobs:
           cp -r temp/* src/locales/
           echo "Translation files copied to src/locales/"
 
-      - name: Commit changes
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Create a new branch
+          BRANCH_NAME="translation-update-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $BRANCH_NAME
+
+          # Configure git and commit changes
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add src/locales/*.json
-          git diff --staged --quiet || git commit -m "Translations updated from POEditor"
-          git push
+
+          # If there are changes
+          if ! git diff --staged --quiet; then
+            git commit -m "feat: translations updated from POEditor"
+            
+            # Push the branch
+            git push origin $BRANCH_NAME
+            
+            # Create Pull Request
+            gh auth login --with-token <<< "$GITHUB_TOKEN"
+            
+            # PR title and description
+            PR_TITLE="🌐 Updated Translations from POEditor"
+            PR_BODY="This PR contains the latest translations from POEditor.
+
+            📅 Update Date: $(date +'%Y-%m-%d %H:%M:%S')
+            
+            ⚠️ Please review the translations and approve the PR if everything looks correct."
+            
+            # Create PR
+            gh pr create \
+              --title "$PR_TITLE" \
+              --body "$PR_BODY" \
+              --base develop \
+              --head $BRANCH_NAME \
+              --label "translations" \
+              --label "automated pr"
+            
+            echo "✅ Pull Request created successfully!"
+          else
+            echo "No changes to commit"
+          fi
