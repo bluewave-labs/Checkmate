@@ -49,16 +49,15 @@ const NotificationIntegrationModal = ({
   
   // Helper to get the field state key with error handling
   const getFieldKey = (typeId, fieldId) => {
-    try {
-      if (typeof typeId !== 'string' || typeId === '' || 
-          typeof fieldId !== 'string' || fieldId === '') {
-        return '';
-      }
-      return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
-    } catch (error) {
-      console.error('Error generating field key:', error);
-      return '';
+    if (typeof typeId !== 'string' || typeId === '') {
+      throw new Error('Invalid typeId provided to getFieldKey');
     }
+    
+    if (typeof fieldId !== 'string' || fieldId === '') {
+      throw new Error('Invalid fieldId provided to getFieldKey');
+    }
+    
+    return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
   };
   
   // Define notification types
