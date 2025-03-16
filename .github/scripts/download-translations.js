@@ -57,11 +57,12 @@ async function downloadTranslations() {
         });
       }
 
-      // Save file
-      const outputPath = path.join(process.cwd(), 'temp', `${language}.json`);
+      // Determine the output filename based on language
+      const filename = language === 'en' ? 'gb.json' : `${language}.json`;
+      const outputPath = path.join(process.cwd(), 'temp', filename);
       await fs.writeJson(outputPath, formattedTranslations, { spaces: 2 });
 
-      console.log(`Translations for ${language} language successfully downloaded and saved: ${outputPath}`);
+      console.log(`Translations for ${language} language successfully downloaded and saved as: ${filename}`);
     }
 
     console.log('All translations successfully downloaded!');

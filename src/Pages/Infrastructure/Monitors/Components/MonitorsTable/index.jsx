@@ -13,10 +13,12 @@ import { useTheme } from "@emotion/react";
 import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete }) => {
 	// Utils
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { determineState } = useUtils();
 	const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 	const headers = [
 		{
 			id: "host",
-			content: "Host",
+			content: t("host"),
 			render: (row) => (
 				<Host
 					title={row.name}
@@ -39,7 +41,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 		},
 		{
 			id: "status",
-			content: "Status",
+			content: t("incidentsTableStatus"),
 			render: (row) => (
 				<StatusLabel
 					status={row.status}
@@ -49,7 +51,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 		},
 		{
 			id: "frequency",
-			content: "Frequency",
+			content: t("frequency"),
 			render: (row) => (
 				<Stack
 					direction={"row"}
@@ -65,12 +67,12 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 				</Stack>
 			),
 		},
-		{ id: "cpu", content: "CPU", render: (row) => <CustomGauge progress={row.cpu} /> },
-		{ id: "mem", content: "Mem", render: (row) => <CustomGauge progress={row.mem} /> },
-		{ id: "disk", content: "Disk", render: (row) => <CustomGauge progress={row.disk} /> },
+		{ id: "cpu", content: t("cpu"), render: (row) => <CustomGauge progress={row.cpu} /> },
+		{ id: "mem", content: t("mem"), render: (row) => <CustomGauge progress={row.mem} /> },
+		{ id: "disk", content: t("disk"), render: (row) => <CustomGauge progress={row.disk} /> },
 		{
 			id: "actions",
-			content: "Actions",
+			content: t("actions"),
 			render: (row) => (
 				<InfrastructureMenu
 					monitor={row}

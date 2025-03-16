@@ -1,3 +1,8 @@
+// Required Data
+// 1. Monitor summary
+// 2. List of monitors filtered by search term with 25 checks each
+// 2a.List of monitors must have the total number of monitors that match.
+
 // Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import Greeting from "../../../Utils/greeting";
@@ -23,9 +28,11 @@ import useMonitorsFetch from "./Hooks/useMonitorsFetch";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 import PropTypes from "prop-types";
+import useFetchMonitorsWithSummary from "../../../Hooks/useFetchMonitorsWithSummary";
+import useFetchMonitorsWithChecks from "../../../Hooks/useFetchMonitorsWithChecks";
 
 const BREADCRUMBS = [{ name: `Uptime`, path: "/uptime" }];
-
+const TYPES = ["http", "ping", "docker", "port"];
 const CreateMonitorButton = ({ shouldRender }) => {
 	// Utils
 	const navigate = useNavigate();
@@ -89,23 +96,32 @@ const UptimeMonitors = () => {
 	}, []);
 
 	const teamId = user.teamId;
-	const {
-		monitorsAreLoading,
-		monitors,
-		filteredMonitors,
-		monitorsSummary,
-		networkError,
-	} = useMonitorsFetch({
+
+	const [monitors, monitorsSummary, monitorsWithSummaryIsLoading, networkError] =
+		useFetchMonitorsWithSummary({
+			teamId,
+			types: TYPES,
+		});
+
+	const [
+		monitorsWithChecks,
+		monitorsWithChecksCount,
+		monitorsWithChecksIsLoading,
+		monitorsWithChecksNetworkError,
+	] = useFetchMonitorsWithChecks({
 		teamId,
+		types: TYPES,
 		limit: 25,
 		page: page,
 		rowsPerPage: rowsPerPage,
 		filter: search,
 		field: sort?.field,
 		order: sort?.order,
-		triggerUpdate: monitorUpdateTrigger,
+		triggerUpdate,
 	});
-	const totalMonitors = monitorsSummary?.totalMonitors;
+
+	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
+
 	if (networkError) {
 		return (
 			<GenericFallback>
@@ -121,8 +137,9 @@ const UptimeMonitors = () => {
 		);
 	}
 	if (
-		!monitorsAreLoading &&
-		(totalMonitors === 0 || typeof totalMonitors === "undefined")
+		!isLoading &&
+		(monitorsSummary?.totalMonitors === 0 ||
+			typeof monitorsSummary?.totalMonitors === "undefined")
 	) {
 		return (
 			<Fallback
@@ -147,19 +164,19 @@ const UptimeMonitors = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<CreateMonitorHeader
 				isAdmin={isAdmin}
-				shouldRender={!monitorsAreLoading}
+				shouldRender={!isLoading}
 				path="/uptime/create"
 			/>
 			<Greeting type="uptime" />
 			<StatusBoxes
 				monitorsSummary={monitorsSummary}
-				shouldRender={!monitorsAreLoading}
+				shouldRender={!monitorsWithSummaryIsLoading}
 			/>
 
 			<Stack direction={"row"}>
 				<MonitorCountHeader
-					shouldRender={monitors?.length > 0 && !monitorsAreLoading}
-					monitorCount={totalMonitors}
+					shouldRender={monitors?.length > 0 && !monitorsWithSummaryIsLoading}
+					monitorCount={monitorsSummary?.totalMonitors}
 					heading={"Uptime monitors"}
 				></MonitorCountHeader>
 				<SearchComponent
@@ -170,19 +187,14 @@ const UptimeMonitors = () => {
 			</Stack>
 			<UptimeDataTable
 				isAdmin={isAdmin}
-				isLoading={monitorsAreLoading}
-				filteredMonitors={filteredMonitors}
-				monitors={monitors}
-				monitorCount={totalMonitors}
+				isSearching={isSearching}
+				filteredMonitors={monitorsWithChecks}
 				sort={sort}
 				setSort={setSort}
-				setSearch={setSearch}
-				isSearching={isSearching}
-				monitorsAreLoading={monitorsAreLoading}
-				triggerUpdate={triggerUpdate}
+				monitorsAreLoading={monitorsWithChecksIsLoading}
 			/>
 			<Pagination
-				itemCount={totalMonitors}
+				itemCount={monitorsWithChecksCount}
 				paginationLabel="monitors"
 				page={page}
 				rowsPerPage={rowsPerPage}

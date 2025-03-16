@@ -12,8 +12,10 @@ import {
 } from "../../../../../Components/Charts/Utils/chartUtils";
 import { useTheme } from "@emotion/react";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useTranslation } from "react-i18next";
 const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { buildTemps } = useHardwareUtils();
 
 	if (!shouldRender) {
@@ -31,10 +33,10 @@ const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 			type: "memory",
 			data: checks,
 			dataKeys: ["avgMemoryUsage"],
-			heading: "Memory usage",
+			heading: t("memoryUsage"),
 			strokeColor: theme.palette.accent.main, // CAIO_REVIEW
 			gradientStartColor: theme.palette.accent.main, // CAIO_REVIEW
-			yLabel: "Memory usage",
+			yLabel: t("memoryUsage"),
 			yDomain: [0, 1],
 			yTick: <PercentTick />,
 			xTick: <TzTick dateRange={dateRange} />,
@@ -51,10 +53,10 @@ const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 			type: "cpu",
 			data: checks,
 			dataKeys: ["avgCpuUsage"],
-			heading: "CPU usage",
+			heading: t("cpuUsage"),
 			strokeColor: theme.palette.success.main,
 			gradientStartColor: theme.palette.success.main,
-			yLabel: "CPU usage",
+			yLabel: t("cpuUsage"),
 			yDomain: [0, 1],
 			yTick: <PercentTick />,
 			xTick: <TzTick dateRange={dateRange} />,
@@ -73,7 +75,7 @@ const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 			dataKeys: tempKeys,
 			strokeColor: theme.palette.error.main,
 			gradientStartColor: theme.palette.error.main,
-			heading: "CPU Temperature",
+			heading: t("cpuTemperature"),
 			yLabel: "Temperature",
 			xTick: <TzTick dateRange={dateRange} />,
 			yDomain: [
@@ -96,7 +98,7 @@ const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 			heading: `Disk${idx} usage`,
 			strokeColor: theme.palette.warning.main,
 			gradientStartColor: theme.palette.warning.main,
-			yLabel: "Disk Usage",
+			yLabel: t("diskUsage"),
 			yDomain: [0, 1],
 			yTick: <PercentTick />,
 			xTick: <TzTick dateRange={dateRange} />,

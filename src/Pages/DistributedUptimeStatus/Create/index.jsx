@@ -19,18 +19,19 @@ import { buildErrors } from "../../../Validation/error";
 import { createToast } from "../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { useMonitorsFetch } from "../../StatusPage/Create/Hooks/useMonitorsFetch";
-import { useDUStatusPageFetchByUrl } from "../Status/Hooks/useDUStatusPageFetchByUrl";
-
+import { useTranslation } from "react-i18next";
+import { useFetchDepinStatusPage } from "../../../Hooks/useFetchDepinStatusPage";
 const CreateStatus = () => {
 	const theme = useTheme();
 	const { monitorId, url } = useParams();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const isCreate = typeof url === "undefined";
 
 	const [createStatusPage, isLoading, networkError] = useCreateStatusPage(isCreate);
 
 	const [statusPageIsLoading, statusPageNetworkError, statusPage, _, isPublished] =
-		useDUStatusPageFetchByUrl({
+		useFetchDepinStatusPage({
 			url,
 			timeFrame: 30,
 			isCreate,
@@ -176,7 +177,9 @@ const CreateStatus = () => {
 					component="span"
 					fontSize="inherit"
 				>
-					{isCreate ? "Create your" : "Edit your"}{" "}
+					{isCreate
+						? t("distributedUptimeStatusCreateYour")
+						: t("distributedUptimeStatusEditYour")}{" "}
 				</Typography>
 				<Typography
 					component="span"
@@ -184,21 +187,23 @@ const CreateStatus = () => {
 					fontSize="inherit"
 					fontWeight="inherit"
 				>
-					status page
+					{t("distributedUptimeStatusCreateStatusPage")}
 				</Typography>
 			</Typography>
 			<ConfigBox>
 				<Stack>
-					<Typography component="h2">Access</Typography>
+					<Typography component="h2">
+						{t("distributedUptimeStatusCreateStatusPageAccess")}
+					</Typography>
 					<Typography component="p">
-						If your status page is ready, you can mark it as published.
+						{t("distributedUptimeStatusCreateStatusPageReady")}
 					</Typography>
 				</Stack>
 				<Stack gap={theme.spacing(18)}>
 					<Checkbox
 						id="publish"
 						name="isPublished"
-						label={`Published and visible to the public`}
+						label={t("distributedUptimeStatusPublishedLabel")}
 						isChecked={form.isPublished}
 						onChange={handleFormChange}
 					/>
@@ -206,9 +211,11 @@ const CreateStatus = () => {
 			</ConfigBox>
 			<ConfigBox>
 				<Stack gap={theme.spacing(6)}>
-					<Typography component="h2">Basic Information</Typography>
+					<Typography component="h2">
+						{t("distributedUptimeStatusBasicInfoHeader")}
+					</Typography>
 					<Typography component="p">
-						Define company name and the subdomain that your status page points to.
+						{t("distributedUptimeStatusBasicInfoDescription")}
 					</Typography>
 				</Stack>
 				<Stack gap={theme.spacing(18)}>
@@ -216,7 +223,7 @@ const CreateStatus = () => {
 						id="companyName"
 						name="companyName"
 						type="text"
-						label="Company name"
+						label={t("distributedUptimeStatusCompanyNameLabel")}
 						placeholder="Company name"
 						value={form.companyName}
 						onChange={handleFormChange}
@@ -227,7 +234,7 @@ const CreateStatus = () => {
 						id="url"
 						name="url"
 						type="url"
-						label="Your status page address"
+						label={t("distributedUptimeStatusPageAddressLabel")}
 						disabled={!isCreate}
 						value={form.url}
 						onChange={handleFormChange}
@@ -238,8 +245,10 @@ const CreateStatus = () => {
 			</ConfigBox>
 			<ConfigBox>
 				<Stack gap={theme.spacing(6)}>
-					<Typography component="h2">Logo</Typography>
-					<Typography component="p">Upload a logo for your status page </Typography>
+					<Typography component="h2">{t("distributedUptimeStatusLogoHeader")}</Typography>
+					<Typography component="p">
+						{t("distributedUptimeStatusLogoDescription")}{" "}
+					</Typography>
 				</Stack>
 				<Stack
 					gap={theme.spacing(18)}
@@ -262,7 +271,7 @@ const CreateStatus = () => {
 							color="accent"
 							tabIndex={-1}
 						>
-							Upload logo
+							{t("distributedUptimeStatusLogoUploadButton")}
 							<VisuallyHiddenInput onChange={handleImageUpload} />
 						</Button>
 					</Box>
@@ -270,9 +279,11 @@ const CreateStatus = () => {
 			</ConfigBox>
 			<ConfigBox>
 				<Stack>
-					<Typography component="h2">Standard Monitors</Typography>
+					<Typography component="h2">
+						{t("distributedUptimeStatusStandardMonitorsHeader")}
+					</Typography>
 					<Typography component="p">
-						Attach standard monitors to your status page.
+						{t("distributedUptimeStatusStandardMonitorsDescription")}
 					</Typography>
 				</Stack>
 				<Stack gap={theme.spacing(18)}>
@@ -301,7 +312,7 @@ const CreateStatus = () => {
 					color="accent"
 					onClick={handleSubmit}
 				>
-					Save
+					{t("settingsSave")}
 				</Button>
 			</Stack>
 		</Stack>

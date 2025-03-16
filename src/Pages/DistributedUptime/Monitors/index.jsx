@@ -11,7 +11,7 @@ import GenericFallback from "../../../Components/GenericFallback";
 import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import { useSubscribeToMonitors } from "./Hooks/useSubscribeToMonitors";
+import { useSubscribeToDepinMonitors } from "../../../Hooks/useSubscribeToDepinMonitors";
 import SkeletonLayout from "./Components/Skeleton";
 import { useTranslation } from "react-i18next";
 // Constants
@@ -26,8 +26,10 @@ const DistributedUptimeMonitors = () => {
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 	const { t } = useTranslation();
-	const [isLoading, networkError, monitors, monitorsSummary, filteredMonitors] =
-		useSubscribeToMonitors(page, rowsPerPage);
+	const [monitors, count, isLoading, networkError] = useSubscribeToDepinMonitors(
+		page,
+		rowsPerPage
+	);
 	// Handlers
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -57,7 +59,7 @@ const DistributedUptimeMonitors = () => {
 		);
 	}
 
-	if (typeof monitorsSummary === "undefined" || monitorsSummary.totalMonitors === 0) {
+	if (count === 0) {
 		return (
 			<Fallback
 				vowelStart={false}
@@ -83,10 +85,10 @@ const DistributedUptimeMonitors = () => {
 			/>
 			<MonitorTable
 				isLoading={isLoading}
-				monitors={filteredMonitors}
+				monitors={monitors}
 			/>
 			<Pagination
-				itemCount={monitorsSummary?.totalMonitors ?? 0}
+				itemCount={count}
 				paginationLabel="monitors"
 				page={page}
 				rowsPerPage={rowsPerPage}

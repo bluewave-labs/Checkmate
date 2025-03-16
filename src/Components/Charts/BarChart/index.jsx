@@ -58,7 +58,7 @@ const BarChart = ({ checks = [] }) => {
 							<>
 								<Typography>
 									{formatDateWithTz(
-										check.createdAt,
+										check.updatedAt,
 										"ddd, MMMM D, YYYY, HH:mm A",
 										uiTimezone
 									)}

@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 // Constants
 const BASE_BOX_PADDING_VERTICAL = 4;
@@ -9,6 +10,7 @@ const CHART_CONTAINER_HEIGHT = 300;
 
 const useHardwareUtils = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const getDimensions = () => {
 		const totalTypographyPadding = parseInt(theme.spacing(TYPOGRAPHY_PADDING), 10) * 2;
@@ -29,7 +31,7 @@ const useHardwareUtils = () => {
 				<>
 					{0}
 					{space ? " " : ""}
-					<Typography component="span">GB</Typography>
+					<Typography component="span">{t("gb")}</Typography>
 				</>
 			);
 		if (typeof bytes !== "number")
@@ -37,7 +39,7 @@ const useHardwareUtils = () => {
 				<>
 					{0}
 					{space ? " " : ""}
-					<Typography component="span">GB</Typography>
+					<Typography component="span">{t("gb")}</Typography>
 				</>
 			);
 		if (bytes === 0)
@@ -45,7 +47,7 @@ const useHardwareUtils = () => {
 				<>
 					{0}
 					{space ? " " : ""}
-					<Typography component="span">GB</Typography>
+					<Typography component="span">{t("gb")}</Typography>
 				</>
 			);
 
@@ -57,7 +59,7 @@ const useHardwareUtils = () => {
 				<>
 					{Number(GB.toFixed(0))}
 					{space ? " " : ""}
-					<Typography component="span">GB</Typography>
+					<Typography component="span">{t("gb")}</Typography>
 				</>
 			);
 		} else {
@@ -65,7 +67,7 @@ const useHardwareUtils = () => {
 				<>
 					{Number(MB.toFixed(0))}
 					{space ? " " : ""}
-					<Typography component="span">MB</Typography>
+					<Typography component="span">{t("mb")}</Typography>
 				</>
 			);
 		}

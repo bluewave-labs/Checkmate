@@ -23,8 +23,8 @@ import { RowContainer } from "../../../Components/StandardContainer";
 import { useTheme } from "@mui/material/styles";
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useSubscribeToDetails } from "../../DistributedUptime/Details/Hooks/useSubscribeToDetails";
-import { useDUStatusPageFetchByUrl } from "./Hooks/useDUStatusPageFetchByUrl";
+import { useFetchDepinStatusPage } from "../../../Hooks/useFetchDepinStatusPage";
+import { useSubscribeToDepinDetails } from "../../../Hooks/useSubscribeToDepinDetails";
 import { useStatusPageDelete } from "../../StatusPage/Status/Hooks/useStatusPageDelete";
 import TimeFrameHeader from "./Components/TimeframeHeader";
 import SubHeader from "../../../Components/Subheader";
@@ -64,13 +64,13 @@ const DistributedUptimeStatus = () => {
 		statusPage,
 		monitorId,
 		isPublished,
-	] = useDUStatusPageFetchByUrl({
+	] = useFetchDepinStatusPage({
 		url,
 		timeFrame,
 	});
 
 	const [isLoading, networkError, connectionStatus, monitor, lastUpdateTrigger] =
-		useSubscribeToDetails({ monitorId, dateRange, isPublic, isPublished });
+		useSubscribeToDepinDetails({ monitorId, dateRange, isPublic, isPublished });
 
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(() => {
 		navigate("/distributed-uptime");
@@ -124,9 +124,9 @@ const DistributedUptimeStatus = () => {
 						marginY={theme.spacing(4)}
 						color={theme.palette.primary.contrastTextTertiary}
 					>
-						A status page is not set up.
+						{t("distributedUptimeStatusPageNotSetUp")}
 					</Typography>
-					<Typography>Please contact your administrator</Typography>
+					<Typography>{t("distributedUptimeStatusContactAdmin")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
@@ -137,7 +137,7 @@ const DistributedUptimeStatus = () => {
 		return (
 			<Stack sx={sx}>
 				<GenericFallback>
-					<Typography>This status page is not public.</Typography>
+					<Typography>{t("distributedUptimeStatusPageNotPublic")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
@@ -155,9 +155,9 @@ const DistributedUptimeStatus = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -171,7 +171,7 @@ const DistributedUptimeStatus = () => {
 			<Stack gap={theme.spacing(10)}>
 				<Breadcrumbs list={BREADCRUMBS} />
 				<GenericFallback>
-					<Typography>There is no check history for this monitor yet.</Typography>
+					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
@@ -246,17 +246,21 @@ const DistributedUptimeStatus = () => {
 						gap={theme.spacing(8)}
 					>
 						<InfoBox
-							heading="Devices"
+							heading={t("distributedUptimeStatusDevices")}
 							subHeading={monitor?.totalChecks ?? 0}
 							icon={PeopleAltOutlinedIcon}
 							alt="Upt Logo"
 							sx={{ width: "50%" }}
 						/>
 						<InfoBox
-							heading={isSmallScreen ? "UPT" : "UPT Burned"}
+							heading={
+								isSmallScreen
+									? t("distributedUptimeStatusUpt")
+									: t("distributedUptimeStatusUptBurned")
+							}
 							subHeading={safelyParseFloat(monitor?.uptBurnt).toFixed(4)}
 							img={UptLogo}
-							alt="Upt Logo"
+							alt={t("distributedUptimeStatusUptLogo")}
 							sx={{ width: "50%" }}
 						/>
 					</Stack>
@@ -295,7 +299,7 @@ const DistributedUptimeStatus = () => {
 			<Footer />
 			<Dialog
 				// open={isOpen.deleteStats}
-				title="Do you want to delete this status page?"
+				title={t("distributedUptimeStatusPageDeleteDialog")}
 				onConfirm={() => {
 					deleteStatusPage();
 					setIsDeleteOpen(false);
@@ -304,8 +308,8 @@ const DistributedUptimeStatus = () => {
 					setIsDeleteOpen(false);
 				}}
 				open={isDeleteOpen}
-				confirmationButtonLabel="Yes, delete status page"
-				description="Once deleted, your status page cannot be retrieved."
+				confirmationButtonLabel={t("distributedUptimeStatusPageDeleteConfirm")}
+				description={t("distributedUptimeStatusPageDeleteDescription")}
 				isLoading={isDeleting || isLoading}
 			/>
 		</Stack>
