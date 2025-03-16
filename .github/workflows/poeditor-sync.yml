@@ -89,7 +89,7 @@ jobs:
 
       - name: Create Pull Request
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Create a new branch
           BRANCH_NAME="translation-update-$(date +%Y%m%d-%H%M%S)"
@@ -115,14 +115,31 @@ jobs:
             
             ⚠️ Please review the translations and approve the PR if everything looks correct."
             
-            # Create PR using gh cli
-            gh pr create \
-              --title "$PR_TITLE" \
-              --body "$PR_BODY" \
-              --base develop \
-              --head $BRANCH_NAME \
-              --label "translations" \
-              --label "automated pr"
+            # Create PR using GitHub REST API
+            curl -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/$GITHUB_REPOSITORY/pulls \
+              -d "{
+                \"title\": \"$PR_TITLE\",
+                \"body\": \"$PR_BODY\",
+                \"head\": \"$BRANCH_NAME\",
+                \"base\": \"develop\"
+              }"
+
+            # Add labels using GitHub REST API
+            PR_NUMBER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?head=$GITHUB_REPOSITORY_OWNER:$BRANCH_NAME&state=open" \
+              | jq '.[0].number')
+
+            curl -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels" \
+              -d '{
+                "labels": ["translations", "automated pr"]
+              }'
             
             echo "✅ Pull Request created successfully!"
           else
