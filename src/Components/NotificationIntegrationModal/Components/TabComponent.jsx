@@ -94,7 +94,11 @@ const TabComponent = ({
           disabled={!integrations[type.id] || !areAllFieldsFilled() || isLoading}
         >
           {isLoading ? (
-            <CircularProgress size={16} color="inherit" sx={{ mr: 1 }} />
+            <CircularProgress 
+              size={theme.spacing(8)} 
+              color="inherit" 
+              sx={{ mr: theme.spacing(1) }} 
+            />
           ) : null}
           {t('notifications.testNotification')}
         </Button>
