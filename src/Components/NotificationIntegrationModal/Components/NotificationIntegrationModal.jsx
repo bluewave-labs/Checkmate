@@ -45,7 +45,7 @@ const NotificationIntegrationModal = ({
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   
-  const { loading, sendTestNotification } = useNotifications();
+  const [loading, _, sendTestNotification] = useNotifications();
   
   // Helper to get the field state key with error handling
   const getFieldKey = (typeId, fieldId) => {

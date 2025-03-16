@@ -106,11 +106,11 @@ const useNotifications = () => {
     }
   };
 
-  return {
+  return [
     loading,
     error,
     sendTestNotification
-  };
+  ];
 };
 
 export default useNotifications;
