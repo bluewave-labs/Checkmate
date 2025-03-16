@@ -17,6 +17,10 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   sync-translations:
     runs-on: ubuntu-latest
@@ -85,7 +89,7 @@ jobs:
 
       - name: Create Pull Request
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Create a new branch
           BRANCH_NAME="translation-update-$(date +%Y%m%d-%H%M%S)"
@@ -103,9 +107,6 @@ jobs:
             # Push the branch
             git push origin $BRANCH_NAME
             
-            # Create Pull Request
-            gh auth login --with-token <<< "$GITHUB_TOKEN"
-            
             # PR title and description
             PR_TITLE="🌐 Updated Translations from POEditor"
             PR_BODY="This PR contains the latest translations from POEditor.
@@ -114,7 +115,7 @@ jobs:
             
             ⚠️ Please review the translations and approve the PR if everything looks correct."
             
-            # Create PR
+            # Create PR using gh cli
             gh pr create \
               --title "$PR_TITLE" \
               --body "$PR_BODY" \
