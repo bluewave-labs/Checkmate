@@ -96,8 +96,7 @@ const TabComponent = ({
           {isLoading ? (
             <CircularProgress 
               size={theme.spacing(8)} 
-              color="inherit" 
-              sx={{ mr: theme.spacing(1) }} 
+              sx={{ mr: theme.spacing(1), color: theme.palette.accent.main}} 
             />
           ) : null}
           {t('notifications.testNotification')}
