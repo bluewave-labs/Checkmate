@@ -90,7 +90,10 @@ const useNotifications = () => {
     }
 
     try {
-      const response = await networkService.axiosInstance.post('/notifications/test-webhook', payload);
+      const response = await networkService.testNotification({ 
+        platform: type, 
+        payload: payload 
+      });
       
       if (response.data.success === true) {
         toast.success(t('notifications.testSuccess'));

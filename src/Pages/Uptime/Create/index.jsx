@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 // Utility and Network
 import { checkEndpointResolution } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
@@ -74,6 +75,7 @@ const CreateMonitor = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { monitorId } = useParams();
 	const crumbs = [
 		{ name: "uptime", path: "/uptime" },
@@ -418,8 +420,8 @@ const CreateMonitor = () => {
 						variant="contained"
 						color="accent"
 						onClick={handleOpenNotificationModal}
-					>
-						Notification Integration
+						>
+						{t('notifications.integrationButton')}
 					</Button>
 					</Box>
 
