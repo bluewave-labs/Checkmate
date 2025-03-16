@@ -24,7 +24,7 @@ const FIELD_IDS = {
  */
 const useNotifications = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(undefined);
   const { t } = useTranslation();
 
   /**
@@ -34,7 +34,7 @@ const useNotifications = () => {
    */
   const sendTestNotification = async (type, config) => {
     setLoading(true);
-    setError(null);
+    setError(undefined);
     
     // Validation based on notification type
     let payload = { platform: type };
