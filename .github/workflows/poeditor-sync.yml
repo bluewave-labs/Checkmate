@@ -112,6 +112,7 @@ jobs:
           branch: translation-update-${{ github.run_number }}
           delete-branch: true
           base: develop
-          labels: |
-            translations
-            automated pr
+          add-paths: |
+            src/locales/*.json
+          committer: GitHub Action <github-actions[bot]@users.noreply.github.com>
+          author: GitHub Action <github-actions[bot]@users.noreply.github.com>
