@@ -46,7 +46,7 @@ const useNotifications = () => {
         payload.webhookUrl = config.webhook;
         if (typeof payload.webhookUrl === 'undefined' || payload.webhookUrl === '') {
           isValid = false;
-          errorMessage = t('notifications.slack.webhookRequired', 'Please enter a Slack webhook URL first.');
+          errorMessage = t('notifications.slack.webhookRequired');
         }
         break;
         
@@ -54,7 +54,7 @@ const useNotifications = () => {
         payload.webhookUrl = config.webhook;
         if (typeof payload.webhookUrl === 'undefined' || payload.webhookUrl === '') {
           isValid = false;
-          errorMessage = t('notifications.discord.webhookRequired', 'Please enter a Discord webhook URL first.');
+          errorMessage = t('notifications.discord.webhookRequired');
         }
         break;
         
@@ -64,7 +64,7 @@ const useNotifications = () => {
         if (typeof payload.botToken === 'undefined' || payload.botToken === '' || 
             typeof payload.chatId === 'undefined' || payload.chatId === '') {
           isValid = false;
-          errorMessage = t('notifications.telegram.fieldsRequired', 'Please enter both Telegram bot token and chat ID.');
+          errorMessage = t('notifications.telegram.fieldsRequired');
         }
         break;
         
@@ -73,13 +73,13 @@ const useNotifications = () => {
         payload.platform = NOTIFICATION_TYPES.SLACK; 
         if (typeof payload.webhookUrl === 'undefined' || payload.webhookUrl === '') {
           isValid = false;
-          errorMessage = t('notifications.webhook.urlRequired', 'Please enter a webhook URL first.');
+          errorMessage = t('notifications.webhook.urlRequired');
         }
         break;
         
       default:
         isValid = false;
-        errorMessage = t('notifications.unsupportedType', 'This notification type cannot be tested.');
+        errorMessage = t('notifications.unsupportedType');
     }
 
     // If validation fails, show error and return
@@ -93,13 +93,13 @@ const useNotifications = () => {
       const response = await networkService.axiosInstance.post('/notifications/test-webhook', payload);
       
       if (response.data.success === true) {
-        toast.success(t('notifications.testSuccess', 'Test notification sent successfully!'));
+        toast.success(t('notifications.testSuccess'));
       } else {
-        throw new Error(response.data.msg || t('notifications.testFailed', 'Failed to send test notification'));
+        throw new Error(response.data.msg || t('notifications.testFailed'));
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.msg || error.message || t('notifications.networkError', 'Network error occurred');
-      toast.error(`${t('notifications.testFailed', 'Failed to send test notification')}: ${errorMsg}`);
+      const errorMsg = error.response?.data?.msg || error.message || t('notifications.networkError');
+      toast.error(`${t('notifications.testFailed')}: ${errorMsg}`);
       setError(errorMsg);
     } finally {
       setLoading(false);
