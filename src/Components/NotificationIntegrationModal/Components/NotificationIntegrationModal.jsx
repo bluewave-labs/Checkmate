@@ -314,7 +314,15 @@ const NotificationIntegrationModal = ({
             px: theme.spacing(8) 
           }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : t('common.save', 'Save')}
+          {loading ? 
+            <CircularProgress 
+              size={theme.spacing(12)} 
+              sx={{ 
+                color: theme.palette.accent.main 
+              }} 
+            /> 
+            : t('common.save', 'Save')
+        }   
         </Button>
       </DialogActions>
     </Dialog>
