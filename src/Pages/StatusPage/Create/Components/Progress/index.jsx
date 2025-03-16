@@ -1,9 +1,10 @@
 import { Button, Box } from "@mui/material";
 import ProgressUpload from "../../../../../Components/ProgressBars";
 import ImageIcon from "@mui/icons-material/Image";
-
+import { useTranslation } from "react-i18next";
 import { formatBytes } from "../../../../../Utils/fileUtils";
 const Progress = ({ isLoading, progressValue, logo, logoType, removeLogo, errors }) => {
+	const { t } = useTranslation();
 	if (isLoading) {
 		return (
 			<ProgressUpload
@@ -27,7 +28,7 @@ const Progress = ({ isLoading, progressValue, logo, logoType, removeLogo, errors
 					color="secondary"
 					onClick={removeLogo}
 				>
-					Remove Logo
+					{t("removeLogo")}
 				</Button>
 			</Box>
 		);

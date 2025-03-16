@@ -14,7 +14,7 @@ import { createToast } from "../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch";
 import { useParams } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 //Constants
 const TAB_LIST = ["General settings", "Contents"];
 
@@ -54,6 +54,7 @@ const CreateStatusPage = () => {
 	const [createStatusPage, createStatusIsLoading, createStatusPageNetworkError] =
 		useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
+	const { t }  = useTranslation();
 
 	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
 		useStatusPageFetch(isCreate, url);
@@ -205,9 +206,9 @@ const CreateStatusPage = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -241,7 +242,7 @@ const CreateStatusPage = () => {
 					color="accent"
 					onClick={handleSubmit}
 				>
-					Save
+					{t("settingsSave")}
 				</Button>
 			</Stack>
 		</Stack>

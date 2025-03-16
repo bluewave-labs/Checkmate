@@ -6,6 +6,7 @@ import { Box, Stack, Tooltip, Typography, Button } from "@mui/material";
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
+import { useTranslation } from "react-i18next";
 import ConfigBox from "../../../Components/ConfigBox";
 import {
 	updateUptimeMonitor,
@@ -207,6 +208,8 @@ const Configure = () => {
 		undefined: "Pending...",
 	};
 
+	const { t } = useTranslation();
+
 	return (
 		<Stack
 			className="configure-monitor"
@@ -293,7 +296,7 @@ const Configure = () => {
 											},
 										}}
 									>
-										Editing...
+										{t("editing")}
 									</Typography>
 								</Stack>
 							</Box>
@@ -326,12 +329,12 @@ const Configure = () => {
 									{monitor?.isActive ? (
 										<>
 											<PauseIcon />
-											Pause
+											{t("pause")}
 										</>
 									) : (
 										<>
 											<ResumeIcon />
-											Resume
+											{t("resume")}
 										</>
 									)}
 								</Button>
@@ -342,16 +345,15 @@ const Configure = () => {
 									sx={{ px: theme.spacing(8) }}
 									onClick={() => setIsOpen(true)}
 								>
-									Remove
+									{t("remove")}
 								</Button>
 							</Box>
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">General settings</Typography>
+								<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
 								<Typography component="p">
-									Here you can select the URL of the host, together with the type of
-									monitor.
+									{t("distributedUptimeCreateSelectURL")}
 								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
@@ -364,7 +366,7 @@ const Configure = () => {
 										)
 									}
 									id="monitor-url"
-									label="URL to monitor"
+									label={t("urlMonitor")}
 									placeholder="google.com"
 									value={parsedUrl?.host || monitor?.url || ""}
 									disabled={true}
@@ -372,7 +374,7 @@ const Configure = () => {
 								<TextInput
 									type="text"
 									id="monitor-name"
-									label="Display name"
+									label={t("displayName")}
 									isOptional={true}
 									placeholder="Google"
 									value={monitor?.name || ""}
@@ -384,13 +386,13 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">Incident notifications</Typography>
+								<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 								<Typography component="p">
-									When there is an incident, notify users.
+									{t("distributedUptimeCreateIncidentDescription")}
 								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(6)}>
-								<Typography component="p">When there is a new incident,</Typography>
+								<Typography component="p">{t("whenNewIncident")}</Typography>
 								{/* {Leaving components commented for future funtionality implimentation} */}
 								{/* <Checkbox
 									id="notify-sms"
@@ -441,12 +443,12 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">Advanced settings</Typography>
+								<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select
 									id="monitor-interval-configure"
-									label="Check frequency"
+									label={t("checkFrequency")}
 									value={monitor?.interval / MS_PER_MINUTE || 1}
 									onChange={(event) => handleChange(event, "interval")}
 									items={frequencies}
@@ -455,7 +457,7 @@ const Configure = () => {
 									<>
 										<Select
 											id="match-method"
-											label="Match Method"
+											label={t("matchMethod")}
 											value={monitor.matchMethod || "equal"}
 											onChange={(event) => handleChange(event, "matchMethod")}
 											items={matchMethodOptions}
@@ -464,7 +466,7 @@ const Configure = () => {
 											<TextInput
 												type="text"
 												id="expected-value"
-												label="Expected value"
+												label={t("expectedValue")}
 												isOptional={true}
 												placeholder={
 													expectedValuePlaceholders[monitor.matchMethod || "equal"]
@@ -479,8 +481,7 @@ const Configure = () => {
 												color={theme.palette.primary.contrastTextTertiary}
 												opacity={0.8}
 											>
-												The expected value is used to match against response result, and
-												the match determines the status.
+												{t("uptimeCreate")}
 											</Typography>
 										</Stack>
 										<Stack>
@@ -500,9 +501,7 @@ const Configure = () => {
 												color={theme.palette.primary.contrastTextTertiary}
 												opacity={0.8}
 											>
-												This expression will be evaluated against the reponse JSON data
-												and the result will be used to match against the expected value.
-												See&nbsp;
+												{t("uptimeCreateJsonPath")}&nbsp;
 												<Typography
 													component="a"
 													href="https://jmespath.org/"
@@ -511,7 +510,7 @@ const Configure = () => {
 												>
 													jmespath.org
 												</Typography>
-												&nbsp;for query language documentation.
+												&nbsp;{t("uptimeCreateJsonPathQuery")}
 											</Typography>
 										</Stack>
 									</>
@@ -530,7 +529,7 @@ const Configure = () => {
 								sx={{ px: theme.spacing(12) }}
 								onClick={handleSubmit}
 							>
-								Save
+								{t("settingsSave")}
 							</Button>
 						</Stack>
 					</Stack>

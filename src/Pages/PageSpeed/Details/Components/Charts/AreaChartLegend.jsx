@@ -2,11 +2,12 @@ import { Box, Typography, Divider } from "@mui/material";
 import Checkbox from "../../../../../Components/Inputs/Checkbox";
 import MetricsIcon from "../../../../../assets/icons/ruler-icon.svg?react";
 import LegendBox from "../../../../../Components/Charts/LegendBox";
-
+import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 
 const AreaChartLegend = ({ metrics, handleMetrics }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	return (
 		<LegendBox
 			icon={<MetricsIcon />}
@@ -17,7 +18,7 @@ const AreaChartLegend = ({ metrics, handleMetrics }) => {
 					fontSize={11}
 					fontWeight={500}
 				>
-					Shown
+					{t("shown")}
 				</Typography>
 				<Divider sx={{ mt: theme.spacing(2) }} />
 			</Box>

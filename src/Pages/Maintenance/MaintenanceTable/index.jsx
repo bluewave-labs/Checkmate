@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { formatDurationRounded } from "../../../Utils/timeUtils";
 import { StatusLabel } from "../../../Components/Label";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 /**
  * Component for pagination actions (first, previous, next, last).
@@ -49,13 +50,15 @@ const MaintenanceTable = ({
 		);
 		setPage(0);
 	};
+	
+	const { t } = useTranslation();
 
 	const headers = [
 		{
 			id: "name",
 			content: (
 				<Box onClick={() => handleSort("name")}>
-					Maintenance Window Name
+					{t("maintenanceWindowName")}
 					<span
 						style={{
 							visibility: sort.field === "name" ? "visible" : "hidden",
@@ -76,7 +79,7 @@ const MaintenanceTable = ({
 			content: (
 				<Box onClick={() => handleSort("status")}>
 					{" "}
-					Status
+					{t("status")}
 					<span
 						style={{
 							visibility: sort.field === "active" ? "visible" : "hidden",
@@ -105,21 +108,21 @@ const MaintenanceTable = ({
 		},
 		{
 			id: "nextWindow",
-			content: "Next window",
+			content: t("nextWindow"),
 			render: (row) => {
 				return getTimeToNextWindow(row.start, row.end, row.repeat);
 			},
 		},
 		{
 			id: "repeat",
-			content: "Repeat",
+			content: t("repeat"),
 			render: (row) => {
 				return row.repeat === 0 ? "N/A" : formatDurationRounded(row.repeat);
 			},
 		},
 		{
 			id: "actions",
-			content: "Actions",
+			content: t("actions"),
 			render: (row) => (
 				<ActionsMenu
 					maintenanceWindow={row}

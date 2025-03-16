@@ -13,6 +13,7 @@ import {
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
+import { useTranslation } from "react-i18next";
 import ConfigBox from "../../../Components/ConfigBox";
 import TextInput from "../../../Components/Inputs/TextInput";
 import Select from "../../../Components/Inputs/Select";
@@ -28,6 +29,7 @@ import Dialog from "../../../Components/Dialog";
 
 const PageSpeedConfigure = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const MS_PER_MINUTE = 60000;
@@ -256,7 +258,7 @@ const PageSpeedConfigure = () => {
 											},
 										}}
 									>
-										Editing...
+										{t("editing")}
 									</Typography>
 								</Stack>
 							</Box>
@@ -284,12 +286,12 @@ const PageSpeedConfigure = () => {
 									{monitor?.isActive ? (
 										<>
 											<PauseCircleOutlineIcon />
-											Pause
+											{t("pause")}
 										</>
 									) : (
 										<>
 											<PlayCircleOutlineRoundedIcon />
-											Resume
+											{t("resume")}
 										</>
 									)}
 								</Button>
@@ -302,16 +304,15 @@ const PageSpeedConfigure = () => {
 										ml: theme.spacing(6),
 									}}
 								>
-									Remove
+									{t("remove")}
 								</Button>
 							</Box>
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">General settings</Typography>
+								<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
 								<Typography component="p">
-									Here you can select the URL of the host, together with the type of
-									monitor.
+									{t("pageSpeedConfigureSettingsDescription")}
 								</Typography>
 							</Box>
 							<Stack
@@ -325,7 +326,7 @@ const PageSpeedConfigure = () => {
 								<TextInput
 									type="url"
 									id="monitor-url"
-									label="URL"
+									label={t("url")}
 									placeholder="random.website.com"
 									value={monitor?.url || ""}
 									onChange={handleChange}
@@ -336,7 +337,7 @@ const PageSpeedConfigure = () => {
 								<TextInput
 									type="text"
 									id="monitor-name"
-									label="Monitor display name"
+									label={t("monitorDisplayName")}
 									placeholder="Example monitor"
 									isOptional={true}
 									value={monitor?.name || ""}
@@ -348,16 +349,16 @@ const PageSpeedConfigure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">Incident notifications</Typography>
+								<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 								<Typography component="p">
-									When there is an incident, notify users.
+									{t("distributedUptimeCreateIncidentDescription")}
 								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(6)}>
-								<Typography component="p">When there is a new incident,</Typography>
+								<Typography component="p">{t("whenNewIncident")}</Typography>
 								<Checkbox
 									id="notify-sms"
-									label="Notify via SMS (coming soon)"
+									label={t("notifySMS")}
 									isChecked={false}
 									value=""
 									onChange={() => logger.warn("disabled")}
@@ -376,7 +377,7 @@ const PageSpeedConfigure = () => {
 								/>
 								<Checkbox
 									id="notify-email"
-									label="Also notify via email to multiple addresses (coming soon)"
+									label={t("notifyEmails")}
 									isChecked={false}
 									value=""
 									onChange={() => logger.warn("disabled")}
@@ -394,7 +395,7 @@ const PageSpeedConfigure = () => {
 											onChange={() => logger.warn("disabled")}
 										/>
 										<Typography mt={theme.spacing(4)}>
-											You can separate multiple emails with a comma
+											{t("seperateEmails")}
 										</Typography>
 									</Box>
 								) : (
@@ -404,12 +405,12 @@ const PageSpeedConfigure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">Advanced settings</Typography>
+								<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select
 									id="monitor-frequency"
-									label="Check frequency"
+									label={t("checkFrequency")}
 									items={frequencies}
 									value={monitor?.interval / MS_PER_MINUTE || 3}
 									onChange={(event) => handleChange(event, "interval")}
@@ -429,7 +430,7 @@ const PageSpeedConfigure = () => {
 								onClick={handleSave}
 								sx={{ px: theme.spacing(12) }}
 							>
-								Save
+								{t("settingsSave")}
 							</Button>
 						</Stack>
 					</Stack>
@@ -438,8 +439,8 @@ const PageSpeedConfigure = () => {
 			<Dialog
 				open={isOpen}
 				theme={theme}
-				title={"Do you really want to delete this monitor?"}
-				description={"Once deleted, this monitor cannot be retrieved."}
+				title={t("deleteDialogTitle")}
+				description={t("deleteDialogDescription")}
 				onCancel={() => setIsOpen(false)}
 				confirmationButtonLabel={"Delete"}
 				onConfirm={handleRemove}

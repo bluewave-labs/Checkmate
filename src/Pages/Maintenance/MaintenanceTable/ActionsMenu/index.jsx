@@ -8,6 +8,7 @@ import Settings from "../../../../assets/icons/settings-bold.svg?react";
 import PropTypes from "prop-types";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 
 import Dialog from "../../../../Components/Dialog";
 
@@ -18,6 +19,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
@@ -124,7 +126,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 						handleEdit();
 					}}
 				>
-					Edit
+					{t("edit")}
 				</MenuItem>
 				<MenuItem
 					onClick={(e) => {
@@ -142,7 +144,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 						openRemove(e);
 					}}
 				>
-					Remove
+					{t("remove")}
 				</MenuItem>
 			</Menu>
 			<Dialog

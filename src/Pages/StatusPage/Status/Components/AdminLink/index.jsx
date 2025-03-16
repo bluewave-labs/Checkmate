@@ -4,9 +4,11 @@ import { Box, Typography } from "@mui/material";
 // Utils
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const AdminLink = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	return (
@@ -16,7 +18,7 @@ const AdminLink = () => {
 				display="inline-block"
 				color={theme.palette.primary.contrastText}
 			>
-				Administrator?
+				{t("administrator")}
 			</Typography>
 			<Typography
 				component="span"
@@ -25,7 +27,7 @@ const AdminLink = () => {
 				sx={{ cursor: "pointer" }}
 				onClick={() => navigate("/login")}
 			>
-				Login here
+				{t("loginHere")}
 			</Typography>
 		</Box>
 	);
