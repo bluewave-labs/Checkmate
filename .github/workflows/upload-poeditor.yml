@@ -51,14 +51,26 @@ jobs:
         id: changed-files
         if: github.event_name == 'pull_request'
         run: |
-          # Get list of changed files in src/locales directory
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- src/locales/*.json)
-          echo "Changed files: $CHANGED_FILES"
+          # Get base and head commits
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+          HEAD_SHA=${{ github.event.pull_request.head.sha }}
 
-          # Create a JSON array of changed files with language codes
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-          echo "$CHANGED_FILES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "Base SHA: $BASE_SHA"
+          echo "Head SHA: $HEAD_SHA"
+
+          # Get list of changed files in src/locales directory
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA..$HEAD_SHA -- 'src/locales/*.json' || git ls-files 'src/locales/*.json')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No changes detected in locale files"
+            echo "CHANGED_FILES=" >> $GITHUB_ENV
+          else
+            echo "Changed files:"
+            echo "$CHANGED_FILES"
+            echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+            echo "$CHANGED_FILES" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          fi
 
       - name: Upload changed translations to POEditor
         if: env.CHANGED_FILES != ''
