@@ -409,7 +409,7 @@ const CreateMaintenance = () => {
 														backgroundColor: theme.palette.accent.light, // Hover background
 													},
 													"&.Mui-disabled": {
-														color: theme.palette.primary.ContrastTextTertiary, // Disabled day color
+														color: theme.palette.secondary.main, // Disabled day color
 													},
 												},
 												"& .MuiDayCalendar-weekDayLabel": {
