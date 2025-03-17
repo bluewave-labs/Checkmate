@@ -11,6 +11,7 @@
   "authLoginTitle": "Log In",
   "authLoginEnterPassword": "Enter your password",
   "commonPassword": "Password",
+  "commonSave": "Save",
   "commonBack": "Back",
   "authForgotPasswordTitle": "Forgot password?",
   "authForgotPasswordResetPassword": "Reset password",

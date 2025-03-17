@@ -314,7 +314,7 @@ const NotificationIntegrationModal = ({
             px: theme.spacing(8) 
           }}
         >
-          {t('common.save', 'Save')}
+          {t('commonSave')}
         </Button>
       </DialogActions>
     </Dialog>
