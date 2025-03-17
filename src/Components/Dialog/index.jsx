@@ -30,7 +30,7 @@ const Dialog = ({
 			>
 				<Button
 					variant="text"
-					color="info"
+					color="main"
 					onClick={onCancel}
 				>
 					Cancel
