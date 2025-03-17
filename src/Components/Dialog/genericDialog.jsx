@@ -13,14 +13,18 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 			open={open}
 			onClose={onClose}
 			onClick={(e) => e.stopPropagation()}
+			sx={{
+				position: 'absolute',
+				display: 'flex',
+				left: "20%",
+				alignItems: 'center',
+				justifyContent: 'center',
+			}}
 		>
 			<Stack
 				gap={theme.spacing(2)}
 				sx={{
-					position: "absolute",
-					top: "50%",
-					left: "50%",
-					transform: "translate(-50%, -50%)",
+					position: "relative",
 					width: 400,
 					bgcolor: theme.palette.primary.main,
 					border: 1,
