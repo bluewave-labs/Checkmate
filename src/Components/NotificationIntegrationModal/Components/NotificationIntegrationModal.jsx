@@ -307,22 +307,14 @@ const NotificationIntegrationModal = ({
           variant="contained" 
           color="accent" 
           onClick={handleSave}
-          disabled={loading}
+          loading={loading}
           sx={{ 
             width: 'auto', 
             minWidth: theme.spacing(60), 
             px: theme.spacing(8) 
           }}
         >
-          {loading ? 
-            <CircularProgress 
-              size={theme.spacing(12)} 
-              sx={{ 
-                color: theme.palette.accent.main 
-              }} 
-            /> 
-            : t('common.save', 'Save')
-        }   
+          {t('common.save', 'Save')}
         </Button>
       </DialogActions>
     </Dialog>
