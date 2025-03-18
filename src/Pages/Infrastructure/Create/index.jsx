@@ -248,7 +248,7 @@ const CreateInfrastructureMonitor = () => {
 		setInfrastructureMonitor((prev) => ({
 			...prev,
 			notifications,
-			notify_email: checked,
+			...(type === "email" ? { notify_email: checked } : {})
 		}));
 	};
 	
