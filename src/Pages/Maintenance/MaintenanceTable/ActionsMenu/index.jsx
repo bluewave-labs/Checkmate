@@ -135,7 +135,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 						e.stopPropagation();
 					}}
 				>
-					{`${maintenanceWindow.active === true ? "Pause" : "Resume"}`}
+					{`${maintenanceWindow.active === true ? t("pause") : t("resume")}`}
 				</MenuItem>
 
 				<MenuItem
@@ -150,12 +150,12 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 			<Dialog
 				open={isOpen}
 				theme={theme}
-				title={"Do you really want to remove this maintenance window?"}
+				title={t("maintenanceTableActionMenuDialogTitle")}
 				onCancel={(e) => {
 					e.stopPropagation();
 					setIsOpen(false);
 				}}
-				confirmationButtonLabel={"Delete"}
+				confirmationButtonLabel={t("delete")}
 				onConfirm={(e) => {
 					e.stopPropagation(e);
 					handleRemove(e);

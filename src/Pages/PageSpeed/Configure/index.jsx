@@ -442,7 +442,7 @@ const PageSpeedConfigure = () => {
 				title={t("deleteDialogTitle")}
 				description={t("deleteDialogDescription")}
 				onCancel={() => setIsOpen(false)}
-				confirmationButtonLabel={"Delete"}
+				confirmationButtonLabel={t("delete")}
 				onConfirm={handleRemove}
 				isLoading={buttonLoading}
 			/>

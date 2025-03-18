@@ -200,7 +200,7 @@
   "notFoundButton": "Go to the main dashboard",
   "pageSpeedConfigureSettingsDescription": "Here you can select the URL of the host, together with the type of monitor.",
   "monitorDisplayName": "Monitor display name",
-  "whenNewIncident,": "When there is a new incident,",
+  "whenNewIncident": "When there is a new incident,",
   "notifySMS": "Notify via SMS (coming soon)",
   "notifyEmails": "Also notify via email to multiple addresses (coming soon)",
   "seperateEmails": "You can separate multiple emails with a comma",
@@ -240,6 +240,7 @@
   "uptimeCreate": "The expected value is used to match against response result, and the match determines the status.",
   "uptimeCreateJsonPath": "This expression will be evaluated against the reponse JSON data and the result will be used to match against the expected value. See",
   "uptimeCreateJsonPathQuery": "for query language documentation.",
+  "maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
   "notifications": {
     "enableNotifications": "Enable {{platform}} notifications",
     "testNotification": "Test notification",
