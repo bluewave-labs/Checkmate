@@ -61,7 +61,7 @@ const CreateInfrastructureMonitor = () => {
 	const isCreate = typeof monitorId === "undefined";
 
 	// Fetch monitor details if editing
-	const { monitor, isLoading, networkError } = isCreate ? {} : useHardwareMonitorsFetch({ monitorId });
+	const { monitor, isLoading, networkError } = useHardwareMonitorsFetch({ monitorId });
 
 	// State
 	const [errors, setErrors] = useState({});
