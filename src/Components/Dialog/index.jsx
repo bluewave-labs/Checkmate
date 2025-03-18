@@ -29,8 +29,8 @@ const Dialog = ({
 				justifyContent="flex-end"
 			>
 				<Button
-					variant="text"
-					color="info"
+					variant="contained"
+					color="secondary"
 					onClick={onCancel}
 				>
 					Cancel
