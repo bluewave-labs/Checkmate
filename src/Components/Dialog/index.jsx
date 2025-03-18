@@ -30,12 +30,8 @@ const Dialog = ({
 			>
 				<Button
 					variant="contained"
+					color="secondary"
 					onClick={onCancel}
-					sx={{
-						"&:hover": {
-							backgroundColor: theme.palette.primary.lowContrast,
-						},
-					}}
 				>
 					Cancel
 				</Button>
