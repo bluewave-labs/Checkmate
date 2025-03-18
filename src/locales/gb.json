@@ -11,6 +11,7 @@
   "authLoginTitle": "Log In",
   "authLoginEnterPassword": "Enter your password",
   "commonPassword": "Password",
+  "commonSave": "Save",
   "commonBack": "Back",
   "authForgotPasswordTitle": "Forgot password?",
   "authForgotPasswordResetPassword": "Reset password",
@@ -147,6 +148,7 @@
     "enableNotifications": "Enable {{platform}} notifications",
     "testNotification": "Test notification",
     "addOrEditNotifications": "Add or edit notifications",
+    "integrationButton": "Notification Integration",
     "slack": {
       "label": "Slack",
       "description": "To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.",
