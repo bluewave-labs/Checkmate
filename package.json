@@ -24,7 +24,7 @@
 		"@reduxjs/toolkit": "2.6.1",
 		"@solana/wallet-adapter-base": "0.9.23",
 		"@solana/wallet-adapter-material-ui": "0.16.35",
-		"@solana/wallet-adapter-react": "0.15.35",
+		"@solana/wallet-adapter-react": "0.15.36",
 		"@solana/wallet-adapter-react-ui": "0.9.36",
 		"@solana/wallet-adapter-wallets": "0.19.33",
 		"@solana/web3.js": "1.98.0",
