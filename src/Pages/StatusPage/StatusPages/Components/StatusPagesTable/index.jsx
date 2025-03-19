@@ -41,10 +41,11 @@ const StatusPagesTable = ({ data }) => {
 						borderRadius={theme.spacing(4)}
 						sx={{
 							...(row.isPublished && {
+								display: "inline-flex",
 								":hover": {
-									backgroundColor: `${theme.palette.primary.light}`,
 									cursor: "pointer",
-									borderRadius: 1,
+									borderBottom: 1,
+									borderRadius: 0,
 								},
 							}),
 						}}
