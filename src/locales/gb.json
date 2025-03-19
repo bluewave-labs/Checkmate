@@ -326,6 +326,8 @@
   "infrastructureAlertNotificationDescription": "Send a notification to user(s) when thresholds exceed a specified percentage.",
   "infrastructureCreateMonitor": "Create Infrastructure Monitor",
   "infrastructureEditMonitor": "Save Infrastructure Monitor",
+  "infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
+  "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
   "infrastructureProtocol": "Protocol",
   "infrastructureServerUrlLabel": "Server URL",
   "infrastructureDisplayNameLabel": "Display name",

@@ -199,7 +199,7 @@ const CreateInfrastructureMonitor = () => {
 			: await dispatch(updateInfrastructureMonitor({ monitorId, monitor: form }));
 		if (action.meta.requestStatus === "fulfilled") {
 			createToast({
-				body: isCreate ? "Infrastructure monitor created successfully!" : "Infrastructure monitor updated successfully!",
+				body: isCreate ? t("infrastructureMonitorCreated") : t("infrastructureMonitorUpdated"),
 			});
 			navigate("/infrastructure");
 		} else {
