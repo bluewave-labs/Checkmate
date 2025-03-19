@@ -2,19 +2,21 @@ import React from "react";
 import { 
   Typography, 
   Box,
-  Button
+  Button,
+  CircularProgress
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
-import TextInput from "../../../src/Components/Inputs/TextInput";
-import Checkbox from "../../../src/Components/Inputs/Checkbox";
+import TextInput from "../../../Components/Inputs/TextInput";
+import Checkbox from "../../../Components/Inputs/Checkbox";
 
 const TabComponent = ({ 
   type, 
   integrations, 
   handleIntegrationChange, 
   handleInputChange, 
-  handleTestNotification 
+  handleTestNotification,
+  isLoading 
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -55,6 +57,7 @@ const TabComponent = ({
           label={t('notifications.enableNotifications', { platform: type.label })}
           isChecked={integrations[type.id]}
           onChange={(e) => handleIntegrationChange(type.id, e.target.checked)}
+          disabled={isLoading}
         />
       </Box>
       
@@ -77,7 +80,7 @@ const TabComponent = ({
               placeholder={field.placeholder}
               value={integrations[fieldKey]}
               onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-              disabled={!integrations[type.id]}
+              disabled={!integrations[type.id] || isLoading}
             />
           </Box>
         );
@@ -88,8 +91,14 @@ const TabComponent = ({
           variant="text" 
           color="info"
           onClick={() => handleTestNotification(type.id)}
-          disabled={!integrations[type.id] || !areAllFieldsFilled()}
+          disabled={!integrations[type.id] || !areAllFieldsFilled() || isLoading}
         >
+          {isLoading ? (
+            <CircularProgress 
+              size={theme.spacing(8)} 
+              sx={{ mr: theme.spacing(1), color: theme.palette.accent.main}} 
+            />
+          ) : null}
           {t('notifications.testNotification')}
         </Button>
       </Box>

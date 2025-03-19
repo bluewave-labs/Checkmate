@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "../../../../../Utils/timeUtils";
 import SkeletonLayout from "./skeleton";
 const ResponseTable = ({
-	shouldRender = true,
+	isLoading = false,
 	checks = [],
 	checksCount,
 	uiTimezone,
@@ -18,7 +18,7 @@ const ResponseTable = ({
 	setRowsPerPage,
 }) => {
 	const { t } = useTranslation();
-	if (!shouldRender) {
+	if (isLoading) {
 		return <SkeletonLayout />;
 	}
 
@@ -78,7 +78,7 @@ const ResponseTable = ({
 };
 
 ResponseTable.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	checks: PropTypes.array,
 	checksCount: PropTypes.number,
 	uiTimezone: PropTypes.string.isRequired,

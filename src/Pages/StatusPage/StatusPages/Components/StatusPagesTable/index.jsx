@@ -27,7 +27,7 @@ const StatusPagesTable = ({ data }) => {
 						row.type === "distributed"
 							? `/status/distributed/public/${row.url}`
 							: `/status/uptime/public/${row.url}`;
-						window.open(url, "_blank", "noopener,noreferrer")
+					window.open(url, "_blank", "noopener,noreferrer");
 				}
 			},
 			render: (row) => {
@@ -40,13 +40,12 @@ const StatusPagesTable = ({ data }) => {
 						gap={theme.spacing(2)}
 						paddingLeft={theme.spacing(2)}
 						paddingRight={theme.spacing(2)}
-						borderRadius={theme.spacing(4)}
 						sx={{
 							...(row.isPublished && {
+								display: "inline-flex",
 								":hover": {
-									backgroundColor: `${theme.palette.primary.light}`,
 									cursor: "pointer",
-									borderRadius: 1,
+									borderBottom: 1,
 								},
 							}),
 						}}

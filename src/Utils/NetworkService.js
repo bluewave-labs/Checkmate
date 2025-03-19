@@ -669,6 +669,28 @@ class NetworkService {
 		});
 	}
 
+		/**
+	 * ************************************
+	 * Test a notification integration
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.platform - The notification platform (slack, discord, telegram, webhook).
+	 * @param {Object} config.payload - The payload with configuration for the notification.
+	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
+	 */
+	async testNotification(config) {
+		return this.axiosInstance.post('/notifications/test-webhook', {
+		platform: config.platform,
+		...config.payload
+		}, {
+		headers: {
+			"Content-Type": "application/json",
+		},
+		});
+	}
+
 	/**
 	 * ************************************
 	 * Creates a maintenance window

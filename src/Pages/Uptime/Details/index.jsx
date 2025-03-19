@@ -16,7 +16,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import useMonitorFetch from "./Hooks/useMonitorFetch";
+import useFetchUptimeMonitorDetails from "../../../Hooks/useFetchUptimeMonitorDetails";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
 import useChecksFetch from "./Hooks/useChecksFetch";
 import { useTranslation } from "react-i18next";
@@ -36,8 +36,7 @@ const UptimeDetails = () => {
 
 	// Local state
 	const [dateRange, setDateRange] = useState("recent");
-	const [hoveredUptimeData, setHoveredUptimeData] = useState(null);
-	const [hoveredIncidentsData, setHoveredIncidentsData] = useState(null);
+
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -49,10 +48,13 @@ const UptimeDetails = () => {
 	const isAdmin = useIsAdmin();
 	const { t } = useTranslation();
 
-	const [monitor, monitorIsLoading, monitorNetworkError] = useMonitorFetch({
-		monitorId,
-		dateRange,
-	});
+	const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError] =
+		useFetchUptimeMonitorDetails({
+			monitorId,
+			dateRange,
+		});
+
+	const monitor = monitorData?.monitor;
 
 	const [certificateExpiry, certificateIsLoading] = useCertificateFetch({
 		monitor,
@@ -62,7 +64,6 @@ const UptimeDetails = () => {
 	});
 
 	const monitorType = monitor?.type;
-
 	const [checks, checksCount, checksAreLoading, checksNetworkError] = useChecksFetch({
 		monitorId,
 		monitorType,
@@ -70,6 +71,8 @@ const UptimeDetails = () => {
 		page,
 		rowsPerPage,
 	});
+
+	console.log("render");
 
 	// Handlers
 	const handlePageChange = (_, newPage) => {
@@ -119,38 +122,35 @@ const UptimeDetails = () => {
 			<MonitorStatusHeader
 				path={"uptime"}
 				isAdmin={isAdmin}
-				shouldRender={!monitorIsLoading}
+				isLoading={monitorIsLoading}
 				monitor={monitor}
 			/>
 			<UptimeStatusBoxes
-				shouldRender={!monitorIsLoading}
+				isLoading={monitorIsLoading}
 				monitor={monitor}
+				monitorStats={monitorStats}
 				certificateExpiry={certificateExpiry}
 			/>
 			<MonitorTimeFrameHeader
-				shouldRender={!monitorIsLoading}
+				isLoading={monitorIsLoading}
 				hasDateRange={true}
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
 			<ChartBoxes
-				shouldRender={!monitorIsLoading}
-				monitor={monitor}
+				isLoading={monitorIsLoading}
+				monitorData={monitorData}
 				uiTimezone={uiTimezone}
 				dateRange={dateRange}
 				dateFormat={dateFormat}
-				hoveredUptimeData={hoveredUptimeData}
-				setHoveredUptimeData={setHoveredUptimeData}
-				hoveredIncidentsData={hoveredIncidentsData}
-				setHoveredIncidentsData={setHoveredIncidentsData}
 			/>
 			<ResponseTimeChart
-				shouldRender={!monitorIsLoading}
-				monitor={monitor}
+				isLoading={monitorIsLoading}
+				groupedChecks={monitorData?.groupedChecks}
 				dateRange={dateRange}
 			/>
 			<ResponseTable
-				shouldRender={!checksAreLoading}
+				isLoading={checksAreLoading}
 				checks={checks}
 				uiTimezone={uiTimezone}
 				page={page}
