@@ -83,8 +83,11 @@ export const getHumanReadableDuration = (ms) => {
 		const days = Math.floor(durationObj.asDays());
 		return { time: days, units: days === 1 ? "day" : "days" };
 	} else if (durationObj.asHours() >= 1) {
-		const hours = Math.floor(durationObj.asHours());
-		return { time: hours, units: hours === 1 ? "hour" : "hours" };
+		const hoursRounded = Math.round(durationObj.asHours() * 10) / 10;
+		const hours = Number.isInteger(hoursRounded)
+			? Math.floor(hoursRounded)
+			: hoursRounded;
+		return { time: hours, units: hours <= 1 ? "hour" : "hours" };
 	} else if (durationObj.asMinutes() >= 1) {
 		const minutes = Math.floor(durationObj.asMinutes());
 		return { time: minutes, units: minutes === 1 ? "minute" : "minutes" };
