@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 // Utility and Network
 import { checkEndpointResolution } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
@@ -23,7 +24,7 @@ import Radio from "../../../Components/Inputs/Radio";
 import Checkbox from "../../../Components/Inputs/Checkbox";
 import Select from "../../../Components/Inputs/Select";
 import ConfigBox from "../../../Components/ConfigBox";
-import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/NotificationIntegrationModal";
+import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
 const CreateMonitor = () => {
 	const MS_PER_MINUTE = 60000;
 	const SELECT_VALUES = [
@@ -74,6 +75,7 @@ const CreateMonitor = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { monitorId } = useParams();
 	const crumbs = [
 		{ name: "uptime", path: "/uptime" },
@@ -415,15 +417,15 @@ const CreateMonitor = () => {
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
 
-					{/* <Box mt={theme.spacing(2)}>
+					<Box mt={theme.spacing(2)}>
 					<Button
 						variant="contained"
 						color="accent"
 						onClick={handleOpenNotificationModal}
-					>
-						Notification Integration
+						>
+						{t('notifications.integrationButton')}
 					</Button>
-					</Box> */}
+					</Box>
 
 					</Stack>
 				</ConfigBox>
