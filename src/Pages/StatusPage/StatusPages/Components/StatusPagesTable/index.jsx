@@ -38,14 +38,12 @@ const StatusPagesTable = ({ data }) => {
 						gap={theme.spacing(2)}
 						paddingLeft={theme.spacing(2)}
 						paddingRight={theme.spacing(2)}
-						borderRadius={theme.spacing(4)}
 						sx={{
 							...(row.isPublished && {
 								display: "inline-flex",
 								":hover": {
 									cursor: "pointer",
 									borderBottom: 1,
-									borderRadius: 0,
 								},
 							}),
 						}}
