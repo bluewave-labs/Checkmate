@@ -72,8 +72,6 @@ const UptimeDetails = () => {
 		rowsPerPage,
 	});
 
-	console.log("render");
-
 	// Handlers
 	const handlePageChange = (_, newPage) => {
 		setPage(newPage);

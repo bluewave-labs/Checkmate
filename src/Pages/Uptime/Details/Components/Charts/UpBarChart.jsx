@@ -31,7 +31,7 @@ const UpBarChart = memo(({ groupedUpChecks = [], type, onBarHover }) => {
 				data={groupedUpChecks}
 				onMouseEnter={() => {
 					setChartHovered(true);
-					onBarHover({ time: null, totalChecks: 0, avgResponseTime: 0 });
+					onBarHover({ time: null, totalChecks: 0, originalAvgResponseTime: 0 });
 				}}
 				onMouseLeave={() => {
 					setChartHovered(false);
@@ -61,7 +61,7 @@ const UpBarChart = memo(({ groupedUpChecks = [], type, onBarHover }) => {
 					background={{ fill: "transparent" }}
 				>
 					{groupedUpChecks?.map((entry, index) => {
-						const themeColor = getThemeColor(entry.avgResponseTime);
+						const themeColor = getThemeColor(entry.originalAvgResponseTime);
 						return (
 							<Cell
 								key={`cell-${entry.time}`}
@@ -69,7 +69,7 @@ const UpBarChart = memo(({ groupedUpChecks = [], type, onBarHover }) => {
 									hoveredBarIndex === index
 										? theme.palette[themeColor].main
 										: chartHovered
-											? theme.palette[themeColor].light // CAIO_REVIEW
+											? theme.palette[themeColor].light
 											: theme.palette[themeColor].main
 								}
 								onMouseEnter={() => {

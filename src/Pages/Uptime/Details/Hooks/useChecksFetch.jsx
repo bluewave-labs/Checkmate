@@ -16,7 +16,6 @@ export const useChecksFetch = ({
 
 	useEffect(() => {
 		if (!monitorType) {
-			console.warn("Monitor Type is not provided. Fetching checks will not proceed.");
 			return;
 		}
 
