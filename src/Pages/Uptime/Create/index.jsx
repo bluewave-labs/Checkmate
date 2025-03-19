@@ -11,7 +11,6 @@ import { checkEndpointResolution } from "../../../Features/UptimeMonitors/uptime
 import { monitorValidation } from "../../../Validation/validation";
 import { getUptimeMonitorById } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { createUptimeMonitor } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
-import { useTranslation } from "react-i18next";
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
 
@@ -75,7 +74,6 @@ const CreateMonitor = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const theme = useTheme();
-	const { t } = useTranslation();
 	const { monitorId } = useParams();
 	const crumbs = [
 		{ name: "uptime", path: "/uptime" },
@@ -86,8 +84,8 @@ const CreateMonitor = () => {
 	const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
 	const handleOpenNotificationModal = () => {
-  		setIsNotificationModalOpen(true);
-		};
+		setIsNotificationModalOpen(true);
+	};
 	const [errors, setErrors] = useState({});
 	const [https, setHttps] = useState(true);
 	const [monitor, setMonitor] = useState({
@@ -212,7 +210,7 @@ const CreateMonitor = () => {
 
 	const handleAddNotification = () => {
 		console.log("Add notification clicked");
-	  };
+	};
 
 	useEffect(() => {
 		const fetchMonitor = async () => {
@@ -356,9 +354,7 @@ const CreateMonitor = () => {
 				<ConfigBox>
 					<Box>
 						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
-						<Typography component="p">
-							{t("distributedUptimeCreateSelectURL")}
-						</Typography>
+						<Typography component="p">{t("distributedUptimeCreateSelectURL")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<TextInput
@@ -401,7 +397,9 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+						<Typography component="h2">
+							{t("distributedUptimeCreateIncidentNotification")}
+						</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
@@ -417,21 +415,22 @@ const CreateMonitor = () => {
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
 
-					<Box mt={theme.spacing(2)}>
-					<Button
-						variant="contained"
-						color="accent"
-						onClick={handleOpenNotificationModal}
-						>
-						{t('notifications.integrationButton')}
-					</Button>
-					</Box>
-
+						<Box mt={theme.spacing(2)}>
+							<Button
+								variant="contained"
+								color="accent"
+								onClick={handleOpenNotificationModal}
+							>
+								{t("notifications.integrationButton")}
+							</Button>
+						</Box>
 					</Stack>
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+						<Typography component="h2">
+							{t("distributedUptimeCreateAdvancedSettings")}
+						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select
@@ -522,11 +521,11 @@ const CreateMonitor = () => {
 			</Stack>
 
 			<NotificationIntegrationModal
-      		open={isNotificationModalOpen}
-			onClose={() => setIsNotificationModalOpen(false)}
-			monitor={monitor}
-			setMonitor={setMonitor}
-    		/>
+				open={isNotificationModalOpen}
+				onClose={() => setIsNotificationModalOpen(false)}
+				monitor={monitor}
+				setMonitor={setMonitor}
+			/>
 		</Box>
 	);
 };
