@@ -17,12 +17,8 @@ const ResponseTable = ({
 	rowsPerPage,
 	setRowsPerPage,
 }) => {
-<<<<<<< Updated upstream
 	const { t } = useTranslation();
-	if (!shouldRender) {
-=======
 	if (isLoading) {
->>>>>>> Stashed changes
 		return <SkeletonLayout />;
 	}
 
