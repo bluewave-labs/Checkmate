@@ -148,6 +148,10 @@ const Routes = () => {
 					path="infrastructure/create"
 					element={<InfrastructureCreate />}
 				/>
+				<Route 
+					path="/infrastructure/configure/:monitorId" 
+					element={<InfrastructureCreate />} 
+				/>
 				<Route
 					path="infrastructure/:monitorId"
 					element={<InfrastructureDetails />}

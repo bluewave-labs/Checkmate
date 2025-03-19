@@ -257,14 +257,14 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
 	 */
 	async updateMonitor(config) {
-		const { monitorId, monitor } = config;
-		const updatedFields = {
+		const { monitorId, monitor, updatedFields } = config;
+		const payload = updatedFields ?? {
 			name: monitor.name,
 			description: monitor.description,
 			interval: monitor.interval,
 			notifications: monitor.notifications,
 		};
-		return this.axiosInstance.put(`/monitors/${monitorId}`, updatedFields, {
+		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {
 				"Content-Type": "application/json",
 			},

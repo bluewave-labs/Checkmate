@@ -1,12 +1,13 @@
 // React, Redux, Router
 import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
-import { createInfrastructureMonitor } from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
+import { createInfrastructureMonitor, updateInfrastructureMonitor } from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
+import { useHardwareMonitorsFetch } from "../Details/Hooks/useHardwareMonitorsFetch";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
 
@@ -53,7 +54,14 @@ const CreateInfrastructureMonitor = () => {
 	const monitorState = useSelector((state) => state.infrastructureMonitor);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { monitorId } = useParams();
+	const { t } = useTranslation();	
+
+	// Determine if we are creating or editing
+	const isCreate = typeof monitorId === "undefined";
+
+	// Fetch monitor details if editing
+	const { monitor, isLoading, networkError } = useHardwareMonitorsFetch({ monitorId });
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -62,6 +70,7 @@ const CreateInfrastructureMonitor = () => {
 		url: "",
 		name: "",
 		notifications: [],
+		notify_email: false,
 		interval: 0.25,
 		cpu: false,
 		usage_cpu: "",
@@ -74,9 +83,43 @@ const CreateInfrastructureMonitor = () => {
 		secret: "",
 	});
 
+	// Populate form fields if editing
+	useEffect(() => {
+		if (isCreate || !monitor) return;
+
+		setInfrastructureMonitor({
+			url: monitor.url.replace(/^https?:\/\//, ""),
+			name: monitor.name || "",
+			notifications: monitor.notifications?.filter(n => typeof n === "object") || [],
+			notify_email: (monitor.notifications?.length ?? 0) > 0,
+			interval: monitor.interval / MS_PER_MINUTE,
+			cpu: monitor.thresholds?.usage_cpu !== undefined,
+			usage_cpu: monitor.thresholds?.usage_cpu ? monitor.thresholds.usage_cpu * 100 : "",
+		
+			memory: monitor.thresholds?.usage_memory !== undefined,
+			usage_memory: monitor.thresholds?.usage_memory ? monitor.thresholds.usage_memory * 100 : "",
+		
+			disk: monitor.thresholds?.usage_disk !== undefined,
+			usage_disk: monitor.thresholds?.usage_disk ? monitor.thresholds.usage_disk * 100 : "",
+		
+			temperature: monitor.thresholds?.usage_temperature !== undefined,
+			usage_temperature: monitor.thresholds?.usage_temperature ? monitor.thresholds.usage_temperature * 100 : "",
+			secret: monitor.secret || "",
+		});
+		setHttps(monitor.url.startsWith("https"));
+	}, [isCreate, monitor]);
+
 	// Handlers
 	const handleCreateInfrastructureMonitor = async (event) => {
 		event.preventDefault();
+
+		const formattedNotifications = infrastructureMonitor.notifications.map((n) =>
+			typeof n === "string" ? { type: "email", address: n } : n
+		);
+
+		if (infrastructureMonitor.notify_email) {
+			formattedNotifications.push({ type: "email", address: user.email });
+		}
 
 		// Build the form
 		let form = {
@@ -103,6 +146,7 @@ const CreateInfrastructureMonitor = () => {
 				? { usage_temperature: infrastructureMonitor.usage_temperature }
 				: {}),
 			secret: infrastructureMonitor.secret,
+			notifications: formattedNotifications,
 		};
 
 		const { error } = infrastructureMonitorValidation.validate(form, {
@@ -149,12 +193,17 @@ const CreateInfrastructureMonitor = () => {
 			thresholds,
 		};
 
-		const action = await dispatch(createInfrastructureMonitor({ monitor: form }));
+		// Handle create or update
+		const action = isCreate
+			? await dispatch(createInfrastructureMonitor({ monitor: form }))
+			: await dispatch(updateInfrastructureMonitor({ monitorId, monitor: form }));
 		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Infrastructure monitor created successfully!" });
+			createToast({
+				body: isCreate ? t("infrastructureMonitorCreated") : t("infrastructureMonitorUpdated"),
+			});
 			navigate("/infrastructure");
 		} else {
-			createToast({ body: "Failed to create monitor." });
+			createToast({ body: "Failed to save monitor." });
 		}
 	};
 
@@ -185,37 +234,34 @@ const CreateInfrastructureMonitor = () => {
 	};
 
 	const handleNotifications = (event, type) => {
-		const { value } = event.target;
+		const { value, checked } = event.target;
 		let notifications = [...infrastructureMonitor.notifications];
-		const notificationExists = notifications.some((notification) => {
-			if (notification.type === type && notification.address === value) {
-				return true;
+	
+		if (checked) {
+			if (!notifications.some((n) => n.type === type && n.address === value)) {
+				notifications.push({ type, address: value });
 			}
-			return false;
-		});
-		if (notificationExists) {
-			notifications = notifications.filter((notification) => {
-				if (notification.type === type && notification.address === value) {
-					return false;
-				}
-				return true;
-			});
 		} else {
-			notifications.push({ type, address: value });
+			notifications = notifications.filter((n) => !(n.type === type && n.address === value));
 		}
-
+	
 		setInfrastructureMonitor((prev) => ({
 			...prev,
 			notifications,
+			...(type === "email" ? { notify_email: checked } : {})
 		}));
 	};
+	
 
 	return (
 		<Box className="create-infrastructure-monitor">
 			<Breadcrumbs
 				list={[
 					{ name: "Infrastructure monitors", path: "/infrastructure" },
-					{ name: "create", path: `/infrastructure/create` },
+					...(isCreate
+						? [{ name: "Create", path: "/infrastructure/create" }]
+						: [{ name: "Details", path: `/infrastructure/${monitorId}` }, { name: "Configure", path: `/infrastructure/configure/${monitorId}` }]
+					),
 				]}
 			/>
 			<Stack
@@ -235,7 +281,7 @@ const CreateInfrastructureMonitor = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						{t("infrastructureCreateYour")}{" "}
+						{t(isCreate? "infrastructureCreateYour": "infrastructureEditYour")}{" "}
 					</Typography>
 					<Typography
 						component="span"
@@ -274,7 +320,9 @@ const CreateInfrastructureMonitor = () => {
 							onChange={handleChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
+							disabled={!isCreate}
 						/>
+						{isCreate && (
 						<Box>
 							<Typography component="p">{t("infrastructureProtocol")}</Typography>
 							<ButtonGroup>
@@ -294,6 +342,7 @@ const CreateInfrastructureMonitor = () => {
 								</Button>
 							</ButtonGroup>
 						</Box>
+						)}
 						<TextInput
 							type="text"
 							id="name"
@@ -328,9 +377,7 @@ const CreateInfrastructureMonitor = () => {
 						<Checkbox
 							id="notify-email-default"
 							label={`Notify via email (to ${user.email})`}
-							isChecked={infrastructureMonitor.notifications.some(
-								(notification) => notification.type === "email"
-							)}
+							isChecked={infrastructureMonitor.notify_email}
 							value={user?.email}
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
@@ -361,7 +408,7 @@ const CreateInfrastructureMonitor = () => {
 									isChecked={infrastructureMonitor[metric]}
 									fieldId={METRIC_PREFIX + metric}
 									fieldName={METRIC_PREFIX + metric}
-									fieldValue={infrastructureMonitor[METRIC_PREFIX + metric]}
+									fieldValue={String(infrastructureMonitor[METRIC_PREFIX + metric])}
 									onFieldChange={handleChange}
 									alertUnit={metric == "temperature" ? "°C" : "%"}
 								/>
@@ -408,7 +455,7 @@ const CreateInfrastructureMonitor = () => {
 						onClick={handleCreateInfrastructureMonitor}
 						loading={monitorState?.isLoading}
 					>
-						{t("infrastructureCreateMonitor")}
+						{t(isCreate? "infrastructureCreateMonitor": "infrastructureEditMonitor")}
 					</Button>
 				</Stack>
 			</Stack>
