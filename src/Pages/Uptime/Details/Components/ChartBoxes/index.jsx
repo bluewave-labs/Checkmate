@@ -40,7 +40,7 @@ const ChartBoxes = ({
 			<ChartBox
 				icon={<UptimeIcon />}
 				header="Uptime"
-				isEmpty={false} // TODO
+				isEmpty={monitorData?.groupedUpChecks?.length === 0}
 			>
 				<Stack
 					width={"100%"}
