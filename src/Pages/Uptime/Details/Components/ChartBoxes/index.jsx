@@ -74,7 +74,7 @@ const ChartBoxes = ({
 						</Typography>
 						<Typography component="span">
 							{hoveredUptimeData !== null
-								? Math.floor(hoveredUptimeData?.avgResponseTime ?? 0)
+								? Math.floor(hoveredUptimeData?.originalAvgResponseTime ?? 0)
 								: Math.floor(monitorData?.groupedUptimePercentage ?? 0 * 100)}
 							<Typography component="span">
 								{hoveredUptimeData !== null ? " ms" : " %"}
