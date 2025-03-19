@@ -12,29 +12,23 @@ import SkeletonLayout from "./skeleton";
 import { formatDateWithTz } from "../../../../../Utils/timeUtils";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
+import { useState } from "react";
 
 const ChartBoxes = ({
-	shouldRender = true,
-	monitor,
+	isLoading = false,
+	monitorData,
 	dateRange,
 	uiTimezone,
 	dateFormat,
-	hoveredUptimeData,
-	setHoveredUptimeData,
-	hoveredIncidentsData,
-	setHoveredIncidentsData,
 }) => {
+	// Local state
+	const [hoveredUptimeData, setHoveredUptimeData] = useState(null);
+	const [hoveredIncidentsData, setHoveredIncidentsData] = useState(null);
 	const theme = useTheme();
-
-	if (!shouldRender) {
+	if (isLoading) {
 		return <SkeletonLayout />;
 	}
 
-	const totalUpChecks = monitor?.upChecks?.totalChecks ?? 0;
-	const totalDownChecks = monitor?.downChecks?.totalChecks ?? 0;
-	const denominator =
-		totalUpChecks + totalDownChecks > 0 ? totalUpChecks + totalDownChecks : 1;
-	const groupedUptimePercentage = (totalUpChecks / denominator) * 100;
 	const noIncidentsMessage = "Great. No Incidents, yet!";
 
 	return (
@@ -46,7 +40,7 @@ const ChartBoxes = ({
 			<ChartBox
 				icon={<UptimeIcon />}
 				header="Uptime"
-				isEmpty={monitor?.uptimePercentage === 0 && !monitor?.upChecks?.length}
+				isEmpty={monitorData?.groupedUpChecks?.length === 0}
 			>
 				<Stack
 					width={"100%"}
@@ -58,7 +52,7 @@ const ChartBoxes = ({
 						<Typography component="span">
 							{hoveredUptimeData !== null
 								? hoveredUptimeData.totalChecks
-								: (monitor?.groupedUpChecks?.reduce((count, checkGroup) => {
+								: (monitorData?.groupedUpChecks?.reduce((count, checkGroup) => {
 										return count + checkGroup.totalChecks;
 									}, 0) ?? 0)}
 						</Typography>
@@ -81,7 +75,7 @@ const ChartBoxes = ({
 						<Typography component="span">
 							{hoveredUptimeData !== null
 								? Math.floor(hoveredUptimeData?.avgResponseTime ?? 0)
-								: Math.floor(groupedUptimePercentage)}
+								: Math.floor(monitorData?.groupedUptimePercentage * 100 ?? 0)}
 							<Typography component="span">
 								{hoveredUptimeData !== null ? " ms" : " %"}
 							</Typography>
@@ -89,7 +83,7 @@ const ChartBoxes = ({
 					</Box>
 				</Stack>
 				<UpBarChart
-					monitor={monitor}
+					groupedUpChecks={monitorData?.groupedUpChecks}
 					type={dateRange}
 					onBarHover={setHoveredUptimeData}
 				/>
@@ -98,14 +92,14 @@ const ChartBoxes = ({
 				icon={<IncidentsIcon />}
 				header="Incidents"
 				noDataMessage={noIncidentsMessage}
-				isEmpty={monitor?.groupedDownChecks?.length === 0}
+				isEmpty={monitorData?.groupedDownChecks?.length === 0}
 			>
 				<Stack width={"100%"}>
 					<Box position="relative">
 						<Typography component="span">
 							{hoveredIncidentsData !== null
 								? hoveredIncidentsData.totalChecks
-								: (monitor?.groupedDownChecks?.reduce((count, checkGroup) => {
+								: (monitorData?.groupedDownChecks?.reduce((count, checkGroup) => {
 										return count + checkGroup.totalChecks;
 									}, 0) ?? 0)}
 						</Typography>
@@ -123,7 +117,7 @@ const ChartBoxes = ({
 					</Box>
 				</Stack>
 				<DownBarChart
-					monitor={monitor}
+					groupedDownChecks={monitorData?.groupedDownChecks}
 					type={dateRange}
 					onBarHover={setHoveredIncidentsData}
 				/>
@@ -132,7 +126,7 @@ const ChartBoxes = ({
 				icon={<AverageResponseIcon />}
 				header="Average Response Time"
 			>
-				<ResponseGaugeChart avgResponseTime={monitor?.avgResponseTime ?? 0} />
+				<ResponseGaugeChart avgResponseTime={monitorData?.groupedAvgResponseTime ?? 0} />
 			</ChartBox>
 		</Stack>
 	);
@@ -141,8 +135,8 @@ const ChartBoxes = ({
 export default ChartBoxes;
 
 ChartBoxes.propTypes = {
-	shouldRender: PropTypes.bool,
-	monitor: PropTypes.object,
+	isLoading: PropTypes.bool,
+	monitorData: PropTypes.object,
 	dateRange: PropTypes.string.isRequired,
 	uiTimezone: PropTypes.string.isRequired,
 	dateFormat: PropTypes.string.isRequired,

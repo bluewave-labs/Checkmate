@@ -4,8 +4,8 @@ import ResponseTimeIcon from "../../../../../assets/icons/response-time-icon.svg
 import SkeletonLayout from "./ResponseTimeChartSkeleton";
 import PropTypes from "prop-types";
 
-const ResponseTImeChart = ({ shouldRender = true, monitor, dateRange }) => {
-	if (!shouldRender) {
+const ResponseTImeChart = ({ isLoading = false, groupedChecks = [], dateRange }) => {
+	if (isLoading) {
 		return <SkeletonLayout />;
 	}
 
@@ -15,7 +15,7 @@ const ResponseTImeChart = ({ shouldRender = true, monitor, dateRange }) => {
 			header="Response Times"
 		>
 			<MonitorDetailsAreaChart
-				checks={monitor?.groupedChecks ?? []}
+				checks={groupedChecks}
 				dateRange={dateRange}
 			/>
 		</ChartBox>
@@ -23,8 +23,8 @@ const ResponseTImeChart = ({ shouldRender = true, monitor, dateRange }) => {
 };
 
 ResponseTImeChart.propTypes = {
-	shouldRender: PropTypes.bool,
-	monitor: PropTypes.object,
+	isLoading: PropTypes.bool,
+	groupedChecks: PropTypes.array,
 	dateRange: PropTypes.string,
 };
 
