@@ -13,6 +13,7 @@ import Progress from "../Progress";
 import { useTheme } from "@emotion/react";
 import timezones from "../../../../../Utils/timezones.json";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const TabSettings = ({
 	isCreate,
@@ -26,22 +27,23 @@ const TabSettings = ({
 }) => {
 	// Utils
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<TabPanel value={tabValue}>
 			<Stack gap={theme.spacing(10)}>
 				<ConfigBox>
 					<Stack>
-						<Typography component="h2">Access</Typography>
+						<Typography component="h2">{t("access")}</Typography>
 						<Typography component="p">
-							If your status page is ready, you can mark it as published.
+							{t("statusPageCreateSettings")}
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(18)}>
 						<Checkbox
 							id="publish"
 							name="isPublished"
-							label={`Published and visible to the public`}
+							label={t("statusPageCreateSettingsCheckboxLabel")}
 							isChecked={form.isPublished}
 							onChange={handleFormChange}
 						/>
@@ -49,9 +51,9 @@ const TabSettings = ({
 				</ConfigBox>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">Basic Information</Typography>
+						<Typography component="h2">{t("basicInformation")}</Typography>
 						<Typography component="p">
-							Define company name and the subdomain that your status page points to.
+							{t("statusPageCreateBasicInfoDescription")}
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(18)}>
@@ -59,7 +61,7 @@ const TabSettings = ({
 							id="companyName"
 							name="companyName"
 							type="text"
-							label="Company name"
+							label={t("companyName")}
 							value={form.companyName}
 							onChange={handleFormChange}
 							helperText={errors["companyName"]}
@@ -70,7 +72,7 @@ const TabSettings = ({
 							name="url"
 							type="url"
 							disabled={!isCreate}
-							label="Your status page address"
+							label={t("statusPageCreateBasicInfoStatusPageAddress")}
 							value={form.url}
 							onChange={handleFormChange}
 							helperText={errors["url"]}
@@ -80,16 +82,16 @@ const TabSettings = ({
 				</ConfigBox>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">Timezone</Typography>
+						<Typography component="h2">{t("timezone")}</Typography>
 						<Typography component="p">
-							Select the timezone that your status page will be displayed in.
+							{t("statusPageCreateSelectTimeZoneDescription")}
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(6)}>
 						<Select
 							id="timezone"
 							name="timezone"
-							label="Display timezone"
+							label={t("settingsDisplayTimezone")}
 							items={timezones}
 							value={form.timezone}
 							onChange={handleFormChange}
@@ -98,9 +100,9 @@ const TabSettings = ({
 				</ConfigBox>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">Appearance</Typography>
+						<Typography component="h2">{t("settingsAppearance")}</Typography>
 						<Typography component="p">
-							Define the default look and feel of your public status page.
+							{t("statusPageCreateAppearanceDescription")}
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(6)}>

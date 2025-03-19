@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material";
 import { ResponsiveContainer, RadialBarChart, RadialBar, Cell } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const ResponseGaugeChart = ({ avgResponseTime }) => {
 	const theme = useTheme();
-
+	const { t } = useTranslation();
 	let max = 1000; // max ms
 
 	const data = [
@@ -61,7 +62,7 @@ const ResponseGaugeChart = ({ avgResponseTime }) => {
 					textAnchor="start"
 					fontSize={11}
 				>
-					low
+					{t("low")}
 				</text>
 				<text
 					x="100%"
@@ -71,7 +72,7 @@ const ResponseGaugeChart = ({ avgResponseTime }) => {
 					textAnchor="end"
 					fontSize={11}
 				>
-					high
+					{t("high")}
 				</text>
 				<text
 					x="50%"

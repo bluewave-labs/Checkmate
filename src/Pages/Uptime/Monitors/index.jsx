@@ -30,6 +30,7 @@ import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 import PropTypes from "prop-types";
 import useFetchMonitorsWithSummary from "../../../Hooks/useFetchMonitorsWithSummary";
 import useFetchMonitorsWithChecks from "../../../Hooks/useFetchMonitorsWithChecks";
+import { useTranslation } from "react-i18next";
 
 const BREADCRUMBS = [{ name: `Uptime`, path: "/uptime" }];
 const TYPES = ["http", "ping", "docker", "port"];
@@ -75,6 +76,7 @@ const UptimeMonitors = () => {
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 
 	// Handlers
 	const handleChangePage = (event, newPage) => {
@@ -130,9 +132,9 @@ const UptimeMonitors = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}

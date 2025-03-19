@@ -16,6 +16,7 @@ import { useTheme } from "@emotion/react";
 import useUtils from "../../Hooks/useUtils";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 /**
  * UptimeDataTable displays a table of uptime monitors with sorting, searching, and action capabilities
@@ -59,6 +60,7 @@ const UptimeDataTable = ({
 	const navigate = useNavigate();
 	const { determineState } = useUtils();
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	// Local state
 	// Handlers
@@ -82,7 +84,7 @@ const UptimeDataTable = ({
 					direction="row"
 					onClick={() => handleSort("name")}
 				>
-					Host
+					{t("host")}
 					<Stack
 						justifyContent="center"
 						style={{
@@ -118,7 +120,7 @@ const UptimeDataTable = ({
 					onClick={() => handleSort("status")}
 				>
 					{" "}
-					Status
+					{t("status")}
 					<Stack
 						justifyContent="center"
 						style={{
@@ -146,12 +148,12 @@ const UptimeDataTable = ({
 		},
 		{
 			id: "responseTime",
-			content: "Response Time",
+			content: t("responseTime"),
 			render: (row) => <BarChart checks={row.monitor.checks.slice().reverse()} />,
 		},
 		{
 			id: "type",
-			content: "Type",
+			content: t("type"),
 			render: (row) => (
 				<span style={{ textTransform: "uppercase" }}>
 					{row.monitor.type === "http" ? "HTTP(s)" : row.monitor.type}
@@ -160,7 +162,7 @@ const UptimeDataTable = ({
 		},
 		{
 			id: "actions",
-			content: "Actions",
+			content: t("actions"),
 			render: (row) => (
 				<ActionsMenu
 					monitor={row.monitor}

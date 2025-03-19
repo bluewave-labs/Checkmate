@@ -17,15 +17,24 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   sync-translations:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -83,10 +92,27 @@ jobs:
           cp -r temp/* src/locales/
           echo "Translation files copied to src/locales/"
 
-      - name: Commit changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add src/locales/*.json
-          git diff --staged --quiet || git commit -m "Translations updated from POEditor"
-          git push
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: translations updated from POEditor"
+          title: "🌐 Updated Translations from POEditor"
+          body: |
+            This PR contains the latest translations from POEditor.
+
+            📅 Update Date: ${{ steps.date.outputs.date }}
+            🔄 Updated Languages: ${{ github.event.inputs.languages || 'tr,en' }}
+
+            ⚠️ Please review the translations and approve the PR if everything looks correct.
+          branch: translation-update-${{ github.run_number }}
+          delete-branch: true
+          base: develop
+          add-paths: |
+            src/locales/*.json
+          committer: GitHub Action <github-actions[bot]@users.noreply.github.com>
+          author: GitHub Action <github-actions[bot]@users.noreply.github.com>

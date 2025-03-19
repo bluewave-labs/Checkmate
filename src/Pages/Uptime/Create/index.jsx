@@ -10,7 +10,7 @@ import { checkEndpointResolution } from "../../../Features/UptimeMonitors/uptime
 import { monitorValidation } from "../../../Validation/validation";
 import { getUptimeMonitorById } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { createUptimeMonitor } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
-
+import { useTranslation } from "react-i18next";
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
 
@@ -240,6 +240,8 @@ const CreateMonitor = () => {
 		fetchMonitor();
 	}, [monitorId, dispatch, navigate]);
 
+	const { t } = useTranslation();
+
 	return (
 		<Box className="create-monitor">
 			<Breadcrumbs list={crumbs} />
@@ -257,7 +259,7 @@ const CreateMonitor = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						Create your{" "}
+						{t("createYour")}{" "}
 					</Typography>
 					<Typography
 						component="span"
@@ -265,22 +267,22 @@ const CreateMonitor = () => {
 						fontSize="inherit"
 						fontWeight="inherit"
 					>
-						monitor
+						{t("monitor")}
 					</Typography>
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Checks to perform</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateChecks")}</Typography>
 						<Typography component="p">
-							You can always add or remove checks after adding your site.
+							{t("distributedUptimeCreateChecksDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Stack gap={theme.spacing(6)}>
 							<Radio
 								id="monitor-checks-http"
-								title="Website monitoring"
-								desc="Use HTTP(s) to monitor your website or API endpoint."
+								title={t("websiteMonitoring")}
+								desc={t("websiteMonitoringDescription")}
 								size="small"
 								value="http"
 								checked={monitor.type === "http"}
@@ -293,14 +295,14 @@ const CreateMonitor = () => {
 										filled={https.toString()}
 										onClick={() => setHttps(true)}
 									>
-										HTTPS
+										{t("https")}
 									</Button>
 									<Button
 										variant="group"
 										filled={(!https).toString()}
 										onClick={() => setHttps(false)}
 									>
-										HTTP
+										{t("http")}
 									</Button>
 								</ButtonGroup>
 							) : (
@@ -309,8 +311,8 @@ const CreateMonitor = () => {
 						</Stack>
 						<Radio
 							id="monitor-checks-ping"
-							title="Ping monitoring"
-							desc="Check whether your server is available or not."
+							title={t("pingMonitoring")}
+							desc={t("pingMonitoringDescription")}
 							size="small"
 							value="ping"
 							checked={monitor.type === "ping"}
@@ -318,8 +320,8 @@ const CreateMonitor = () => {
 						/>
 						<Radio
 							id="monitor-checks-docker"
-							title="Docker container monitoring"
-							desc="Check whether your container is running or not."
+							title={t("dockerContainerMonitoring")}
+							desc={t("dockerContainerMonitoringDescription")}
 							size="small"
 							value="docker"
 							checked={monitor.type === "docker"}
@@ -327,8 +329,8 @@ const CreateMonitor = () => {
 						/>
 						<Radio
 							id="monitor-checks-port"
-							title="Port monitoring"
-							desc="Check whether your port is open or not."
+							title={t("portMonitoring")}
+							desc={t("portMonitoringDescription")}
 							size="small"
 							value="port"
 							checked={monitor.type === "port"}
@@ -351,9 +353,9 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">General settings</Typography>
+						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">
-							Here you can select the URL of the host, together with the type of monitor.
+							{t("distributedUptimeCreateSelectURL")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
@@ -374,7 +376,7 @@ const CreateMonitor = () => {
 						<TextInput
 							type="number"
 							id="monitor-port"
-							label="Port to monitor"
+							label={t("portToMonitor")}
 							placeholder="5173"
 							value={monitor.port}
 							onChange={(event) => handleChange(event, "port")}
@@ -385,7 +387,7 @@ const CreateMonitor = () => {
 						<TextInput
 							type="text"
 							id="monitor-name"
-							label="Display name"
+							label={t("displayName")}
 							isOptional={true}
 							placeholder={monitorTypeMaps[monitor.type].namePlaceholder || ""}
 							value={monitor.name}
@@ -397,9 +399,9 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Incident notifications</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 						<Typography component="p">
-							When there is an incident, notify users.
+							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(6)}>
@@ -427,7 +429,7 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Advanced settings</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select
@@ -465,8 +467,7 @@ const CreateMonitor = () => {
 										color={theme.palette.primary.contrastTextTertiary}
 										opacity={0.8}
 									>
-										The expected value is used to match against response result, and the
-										match determines the status.
+										{t("uptimeCreate")}
 									</Typography>
 								</Stack>
 								<Stack>
@@ -486,8 +487,7 @@ const CreateMonitor = () => {
 										color={theme.palette.primary.contrastTextTertiary}
 										opacity={0.8}
 									>
-										This expression will be evaluated against the reponse JSON data and
-										the result will be used to match against the expected value. See&nbsp;
+										{t("uptimeCreateJsonPath")}&nbsp;
 										<Typography
 											component="a"
 											href="https://jmespath.org/"
@@ -496,7 +496,7 @@ const CreateMonitor = () => {
 										>
 											jmespath.org
 										</Typography>
-										&nbsp;for query language documentation.
+										&nbsp;{t("uptimeCreateJsonPathQuery")}
 									</Typography>
 								</Stack>
 							</>
@@ -514,7 +514,7 @@ const CreateMonitor = () => {
 						disabled={!Object.values(errors).every((value) => value === undefined)}
 						loading={isLoading}
 					>
-						Create monitor
+						{t("createMonitor")}
 					</Button>
 				</Stack>
 			</Stack>

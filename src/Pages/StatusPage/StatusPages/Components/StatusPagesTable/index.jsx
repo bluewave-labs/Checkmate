@@ -4,20 +4,22 @@ import { useNavigate } from "react-router-dom";
 import { StatusLabel } from "../../../../../Components/Label";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { Stack, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 const StatusPagesTable = ({ data }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const headers = [
 		{
 			id: "name",
-			content: "Status page name",
+			content: t("statusPageName"),
 			render: (row) => {
 				return row.companyName;
 			},
 		},
 		{
 			id: "url",
-			content: "Public URL",
+			content: t("publicURL"),
 			onClick: (e, row) => {
 				if (row.isPublished) {
 					e.stopPropagation();
@@ -57,14 +59,14 @@ const StatusPagesTable = ({ data }) => {
 		},
 		{
 			id: "type",
-			content: "Type",
+			content: t("type"),
 			render: (row) => {
 				return row.type;
 			},
 		},
 		{
 			id: "status",
-			content: "Status",
+			content: t("status"),
 			render: (row) => {
 				const status = row.isPublished ? "published" : "unpublished";
 				return (

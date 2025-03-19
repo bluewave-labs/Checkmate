@@ -7,6 +7,7 @@ import Checkbox from "../../../../../Components/Inputs/Checkbox";
 // Utils
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 import ConfigStack from "./ConfigStack";
 const Content = ({
 	tabValue,
@@ -30,13 +31,14 @@ const Content = ({
 
 	// Utils
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<TabPanel value={tabValue}>
 			<Stack gap={theme.spacing(10)}>
 				<ConfigStack
-					title="Status page servers"
-					description="You can add any number of servers that you monitor to your status page. You can also reorder them for the best viewing experience."
+					title={t("statusPageCreateTabsContent")}
+					description={t("statusPageCreateTabsContentDescription")}
 				>
 					<Stack>
 						<Stack
@@ -70,21 +72,21 @@ const Content = ({
 					</Stack>
 				</ConfigStack>
 				<ConfigStack
-					title="Features"
-					description="Show more details on the status page"
+					title={t("features")}
+					description={t("statusPageCreateTabsContentFeaturesDescription")}
 				>
 					<Stack>
 						<Checkbox
 							id="showCharts"
 							name="showCharts"
-							label={`Show charts`}
+							label={t("showCharts")}
 							isChecked={form.showCharts}
 							onChange={handleFormChange}
 						/>
 						<Checkbox
 							id="showUptimePercentage"
 							name="showUptimePercentage"
-							label={`Show uptime percentage`}
+							label={t("showUptimePercentage")}
 							isChecked={form.showUptimePercentage}
 							onChange={handleFormChange}
 						/>

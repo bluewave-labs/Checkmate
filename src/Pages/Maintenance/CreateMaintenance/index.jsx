@@ -28,6 +28,7 @@ import {
 } from "../../../Utils/timeUtils";
 import { useNavigate, useParams } from "react-router-dom";
 import { buildErrors, hasValidationErrors } from "../../../Validation/error";
+import { useTranslation } from "react-i18next";
 
 const getDurationAndUnit = (durationInMs) => {
 	if (durationInMs % MS_PER_DAY === 0) {
@@ -113,6 +114,7 @@ const CreateMaintenance = () => {
 	const { maintenanceWindowId } = useParams();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { user } = useSelector((state) => state.auth);
 	const [monitors, setMonitors] = useState([]);
 	const [search, setSearch] = useState("");
@@ -293,7 +295,7 @@ const CreateMaintenance = () => {
 							component="span"
 							fontSize="inherit"
 						>
-							{`${maintenanceWindowId === undefined ? "Create a" : "Edit"}`}{" "}
+							{`${maintenanceWindowId === undefined ? t("createA") : t("edit")}`}{" "}
 						</Typography>
 						<Typography
 							component="span"
@@ -301,13 +303,13 @@ const CreateMaintenance = () => {
 							fontSize="inherit"
 							fontWeight="inherit"
 						>
-							maintenance{" "}
+							{t("maintenance")}{" "}
 						</Typography>
 						<Typography
 							component="span"
 							fontSize="inherit"
 						>
-							window
+							{t("window")}
 						</Typography>
 					</Typography>
 					<Typography
@@ -315,7 +317,7 @@ const CreateMaintenance = () => {
 						variant="body2"
 						fontSize={14}
 					>
-						Your pings won&apos;t be sent during this time frame
+						{t("maintenanceWindowDescription")}
 					</Typography>
 				</Box>
 				<ConfigBox>
@@ -324,14 +326,14 @@ const CreateMaintenance = () => {
 							component="h2"
 							variant="h2"
 						>
-							General Settings
+							{t("settingsGeneralSettings")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<TextInput
 							id="name"
-							label="Friendly name"
-							placeholder="Maintenance at __ : __ for ___ minutes"
+							label={t("friendlyNameInput")}
+							placeholder={t("friendlyNamePlaceholder")}
 							value={form.name}
 							onChange={(event) => {
 								handleFormChange("name", event.target.value);
@@ -342,7 +344,7 @@ const CreateMaintenance = () => {
 						<Select
 							id="repeat"
 							name="maintenance-repeat"
-							label="Maintenance Repeat"
+							label={t("maintenanceRepeat")}
 							value={getIdByValue(repeatConfig, form.repeat)}
 							onChange={(event) => {
 								handleFormChange(
@@ -409,7 +411,7 @@ const CreateMaintenance = () => {
 														backgroundColor: theme.palette.accent.light, // Hover background
 													},
 													"&.Mui-disabled": {
-														color: theme.palette.primary.ContrastTextTertiary, // Disabled day color
+														color: theme.palette.secondary.main, // Disabled day color
 													},
 												},
 												"& .MuiDayCalendar-weekDayLabel": {
@@ -437,15 +439,15 @@ const CreateMaintenance = () => {
 							component="h2"
 							variant="h2"
 						>
-							Start time
+							{t("startTime")}
 						</Typography>
-						<Typography>All dates and times are in GMT+0 time zone.</Typography>
+						<Typography>{t("timeZoneInfo")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<LocalizationProvider dateAdapter={AdapterDayjs}>
 							<MobileTimePicker
 								id="startTime"
-								label="Start time"
+								label={t("startTime")}
 								value={form.startTime}
 								onChange={(newTime) => {
 									handleTimeChange("startTime", newTime);
@@ -486,7 +488,7 @@ const CreateMaintenance = () => {
 							<TextInput
 								type="number"
 								id="duration"
-								label="Duration"
+								label={t("duration")}
 								value={form.duration}
 								onChange={(event) => {
 									handleFormChange("duration", event.target.value);
@@ -516,13 +518,13 @@ const CreateMaintenance = () => {
 							component="h2"
 							variant="h2"
 						>
-							Monitors to apply maintenance window to
+							{t("monitorsToApply")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<Search
 							id={"monitors"}
-							label="Add monitors"
+							label={t("addMonitors")}
 							multiple={true}
 							isAdorned={false}
 							options={monitors ? monitors : []}
@@ -547,7 +549,7 @@ const CreateMaintenance = () => {
 						onClick={() => navigate("/maintenance")}
 						sx={{ mr: theme.spacing(6) }}
 					>
-						Cancel
+						{t("cancel")}
 					</Button>
 					<Button
 						loading={isLoading}
@@ -558,8 +560,8 @@ const CreateMaintenance = () => {
 					>
 						{`${
 							maintenanceWindowId === undefined
-								? "Create maintenance"
-								: "Edit maintenance"
+								? t("createMaintenance")
+								: t("editMaintenance")
 						}`}
 					</Button>
 				</Box>

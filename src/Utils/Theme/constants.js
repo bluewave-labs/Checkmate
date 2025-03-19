@@ -1,6 +1,6 @@
 import { lighten, darken } from "@mui/material/styles"; // CAIO_REVIEW
 
-const typographyBase = 14;
+const typographyBase = 13;
 
 /* TODO
 Check for px in codebase. All font sizes should be in REM and should live here.

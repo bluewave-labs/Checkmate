@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useMonitorFetch } from "./Hooks/useMonitorFetch";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 // Constants
 const BREADCRUMBS = [
 	{ name: "pagespeed", path: "/pagespeed" },
@@ -23,6 +24,7 @@ const BREADCRUMBS = [
 
 const PageSpeedDetails = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 	const { monitorId } = useParams();
 
@@ -50,9 +52,9 @@ const PageSpeedDetails = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -68,7 +70,7 @@ const PageSpeedDetails = () => {
 					monitor={monitor}
 				/>
 				<GenericFallback>
-					<Typography>There is no check history for this monitor yet.</Typography>
+					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
