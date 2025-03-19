@@ -27,7 +27,7 @@ const StatusPagesTable = ({ data }) => {
 						row.type === "distributed"
 							? `/status/distributed/public/${row.url}`
 							: `/status/uptime/public/${row.url}`;
-						window.open(url, "_blank", "noopener,noreferrer")
+					window.open(url, "_blank", "noopener,noreferrer");
 				}
 			},
 			render: (row) => {

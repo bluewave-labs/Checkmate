@@ -4,7 +4,7 @@ import { ResponsiveContainer, BarChart, XAxis, Bar, Cell } from "recharts";
 import PropTypes from "prop-types";
 import CustomLabels from "./CustomLabels";
 
-const DownBarChart = memo(({ monitor, type, onBarHover }) => {
+const DownBarChart = memo(({ groupedDownChecks = [], type, onBarHover }) => {
 	const theme = useTheme();
 
 	const [chartHovered, setChartHovered] = useState(false);
@@ -19,7 +19,7 @@ const DownBarChart = memo(({ monitor, type, onBarHover }) => {
 			<BarChart
 				width="100%"
 				height="100%"
-				data={monitor?.groupedDownChecks}
+				data={groupedDownChecks}
 				onMouseEnter={() => {
 					setChartHovered(true);
 					onBarHover({ time: null, totalChecks: 0 });
@@ -40,10 +40,8 @@ const DownBarChart = memo(({ monitor, type, onBarHover }) => {
 							y={0}
 							width="100%"
 							height="100%"
-							firstDataPoint={monitor?.groupedDownChecks?.[0] ?? {}}
-							lastDataPoint={
-								monitor?.groupedDownChecks?.[monitor?.groupedDownChecks?.length - 1] ?? {}
-							}
+							firstDataPoint={groupedDownChecks?.[0] ?? {}}
+							lastDataPoint={groupedDownChecks?.[groupedDownChecks?.length - 1] ?? {}}
 							type={type}
 						/>
 					}
@@ -53,7 +51,7 @@ const DownBarChart = memo(({ monitor, type, onBarHover }) => {
 					maxBarSize={7}
 					background={{ fill: "transparent" }}
 				>
-					{monitor?.groupedDownChecks?.map((entry, index) => {
+					{groupedDownChecks?.map((entry, index) => {
 						return (
 							<Cell
 								key={`cell-${entry.time}`}

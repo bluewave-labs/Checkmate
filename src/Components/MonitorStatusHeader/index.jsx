@@ -8,10 +8,10 @@ import ConfigButton from "./ConfigButton";
 import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
 
-const MonitorStatusHeader = ({ path, shouldRender = true, isAdmin, monitor }) => {
+const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 	const theme = useTheme();
-	const { statusColor, statusMsg, determineState } = useUtils();
-	if (!shouldRender) {
+	const { statusColor, determineState } = useUtils();
+	if (isLoading) {
 		return <SkeletonLayout />;
 	}
 
@@ -48,7 +48,7 @@ const MonitorStatusHeader = ({ path, shouldRender = true, isAdmin, monitor }) =>
 
 MonitorStatusHeader.propTypes = {
 	path: PropTypes.string.isRequired,
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	isAdmin: PropTypes.bool,
 	monitor: PropTypes.object,
 };

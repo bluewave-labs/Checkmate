@@ -4,14 +4,14 @@ import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
 
 const MonitorTimeFrameHeader = ({
-	shouldRender = true,
+	isLoading = false,
 	hasDateRange = true,
 	dateRange,
 	setDateRange,
 }) => {
 	const theme = useTheme();
 
-	if (!shouldRender) {
+	if (isLoading) {
 		return <SkeletonLayout />;
 	}
 
@@ -77,7 +77,7 @@ const MonitorTimeFrameHeader = ({
 };
 
 MonitorTimeFrameHeader.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	hasDateRange: PropTypes.bool,
 	dateRange: PropTypes.string,
 	setDateRange: PropTypes.func,
