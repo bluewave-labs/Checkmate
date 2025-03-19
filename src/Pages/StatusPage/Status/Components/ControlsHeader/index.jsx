@@ -8,9 +8,11 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const location = useLocation();
 	const currentPath = location.pathname;
 	const navigate = useNavigate();
@@ -35,7 +37,7 @@ const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 					onClick={() => setIsDeleteOpen(!isDeleteOpen)}
 					loading={isDeleting}
 				>
-					Delete
+					{t("delete")}
 				</Button>
 			</Box>
 			<Box>
@@ -59,7 +61,7 @@ const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 						},
 					}}
 				>
-					<SettingsIcon /> Configure
+					<SettingsIcon /> {t("configure")}
 				</Button>
 			</Box>
 		</Stack>

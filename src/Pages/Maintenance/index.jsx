@@ -9,9 +9,11 @@ import { networkService } from "../../main";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
+import { useTranslation } from "react-i18next";
 
 const Maintenance = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { rowsPerPage } = useSelector((state) => state.ui.maintenance);
 	const isAdmin = useIsAdmin();
@@ -74,7 +76,7 @@ const Maintenance = () => {
 					}}
 					sx={{ fontWeight: 500 }}
 				>
-					Create maintenance window
+					{t("createMaintenanceWindow")}
 				</Button>
 			</Stack>
 			<MaintenanceTable

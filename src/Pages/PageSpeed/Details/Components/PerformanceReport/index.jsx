@@ -5,10 +5,12 @@ import { Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PieChartLegend from "../Charts/PieChartLegend";
 import SkeletonLayout from "./skeleton";
+import { useTranslation } from "react-i18next";
 
 const PerformanceReport = ({ shouldRender, audits }) => {
 	const theme = useTheme();
-
+	const { t } = useTranslation();
+	
 	if (!shouldRender) {
 		return <SkeletonLayout />;
 	}
@@ -25,7 +27,7 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 				variant="body1"
 				mt="auto"
 			>
-				Values are estimated and may vary.{" "}
+				{t("pageSpeedDetailsPerformanceReport")}{" "}
 				<Typography
 					component="span"
 					fontSize="inherit"
@@ -41,7 +43,7 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 						},
 					}}
 				>
-					See calculator
+					{t("pageSpeedDetailsPerformanceReportCalculator")}
 				</Typography>
 			</Typography>
 		</ChartBox>

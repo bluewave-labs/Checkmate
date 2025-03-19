@@ -17,6 +17,7 @@ import { useStatusPageDelete } from "./Hooks/useStatusPageDelete";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 const PublicStatus = () => {
 	const { url } = useParams();
 
@@ -24,6 +25,7 @@ const PublicStatus = () => {
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	// Utils
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -59,9 +61,9 @@ const PublicStatus = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -76,9 +78,9 @@ const PublicStatus = () => {
 						marginY={theme.spacing(4)}
 						color={theme.palette.primary.contrastTextTertiary}
 					>
-						A public status page is not set up.
+						{t("statusPageStatus")}
 					</Typography>
-					<Typography>Please contact to your administrator</Typography>
+					<Typography>{t("statusPageStatusContactAdmin")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
@@ -94,9 +96,9 @@ const PublicStatus = () => {
 						marginY={theme.spacing(4)}
 						color={theme.palette.primary.contrastTextTertiary}
 					>
-						This status page is not public.
+						{t("statusPageStatusNotPublic")}
 					</Typography>
-					<Typography>Please contact to your administrator</Typography>
+					<Typography>{t("statusPageStatusContactAdmin")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);
@@ -111,9 +113,9 @@ const PublicStatus = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					There's no status page here.
+					{t("statusPageStatusNoPage")}
 				</Typography>
-				<Typography>Please contact to your administrator</Typography>
+				<Typography>{t("statusPageStatusContactAdmin")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -131,12 +133,12 @@ const PublicStatus = () => {
 				setIsDeleteOpen={setIsDeleteOpen}
 				url={url}
 			/>
-			<Typography variant="h2">Service status</Typography>
+			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
 			<MonitorsList monitors={monitors} />
 			{link}
 			<Dialog
-				title="Do you want to delete this status page?"
+				title={t("deleteStatusPage")}
 				onConfirm={() => {
 					deleteStatusPage();
 					setIsDeleteOpen(false);
@@ -146,8 +148,8 @@ const PublicStatus = () => {
 					setIsDeleteOpen(false);
 				}}
 				open={isDeleteOpen}
-				confirmationButtonLabel="Yes, delete status page"
-				description="Once deleted, your status page cannot be retrieved."
+				confirmationButtonLabel={t("deleteStatusPageConfirm")}
+				description={t("deleteStatusPageDescription")}
 				isLoading={isDeleting || isLoading}
 			/>
 		</Stack>

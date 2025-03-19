@@ -8,6 +8,7 @@ import StatusPagesTable from "./Components/StatusPagesTable";
 import SkeletonLayout from "../../../Components/Skeletons/FullPage";
 // Utils
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 import { useStatusPagesFetch } from "./Hooks/useStatusPagesFetch";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 const BREADCRUMBS = [{ name: `Status Pages`, path: "" }];
@@ -15,6 +16,7 @@ const BREADCRUMBS = [{ name: `Status Pages`, path: "" }];
 const StatusPages = () => {
 	// Utils
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 	const [isLoading, networkError, statusPages] = useStatusPagesFetch();
 
@@ -30,9 +32,9 @@ const StatusPages = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}

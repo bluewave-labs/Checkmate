@@ -8,6 +8,7 @@ import Settings from "../../../../assets/icons/settings-bold.svg?react";
 import PropTypes from "prop-types";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 
 import Dialog from "../../../../Components/Dialog";
 
@@ -18,6 +19,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
@@ -124,7 +126,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 						handleEdit();
 					}}
 				>
-					Edit
+					{t("edit")}
 				</MenuItem>
 				<MenuItem
 					onClick={(e) => {
@@ -133,7 +135,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 						e.stopPropagation();
 					}}
 				>
-					{`${maintenanceWindow.active === true ? "Pause" : "Resume"}`}
+					{`${maintenanceWindow.active === true ? t("pause") : t("resume")}`}
 				</MenuItem>
 
 				<MenuItem
@@ -142,18 +144,18 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 						openRemove(e);
 					}}
 				>
-					Remove
+					{t("remove")}
 				</MenuItem>
 			</Menu>
 			<Dialog
 				open={isOpen}
 				theme={theme}
-				title={"Do you really want to remove this maintenance window?"}
+				title={t("maintenanceTableActionMenuDialogTitle")}
 				onCancel={(e) => {
 					e.stopPropagation();
 					setIsOpen(false);
 				}}
-				confirmationButtonLabel={"Delete"}
+				confirmationButtonLabel={t("delete")}
 				onConfirm={(e) => {
 					e.stopPropagation(e);
 					handleRemove(e);

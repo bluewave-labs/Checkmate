@@ -19,6 +19,7 @@ import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import useMonitorFetch from "./Hooks/useMonitorFetch";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
 import useChecksFetch from "./Hooks/useChecksFetch";
+import { useTranslation } from "react-i18next";
 
 // Constants
 const BREADCRUMBS = [
@@ -46,6 +47,7 @@ const UptimeDetails = () => {
 	const { monitorId } = useParams();
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
+	const { t } = useTranslation();
 
 	const [monitor, monitorIsLoading, monitorNetworkError] = useMonitorFetch({
 		monitorId,
@@ -86,9 +88,9 @@ const UptimeDetails = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -105,7 +107,7 @@ const UptimeDetails = () => {
 					monitor={monitor}
 				/>
 				<GenericFallback>
-					<Typography>There is no check history for this monitor yet.</Typography>
+					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>
 			</Stack>
 		);

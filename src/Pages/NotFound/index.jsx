@@ -4,6 +4,7 @@ import NotFoundSvg from "../../../src/assets/Images/sushi_404.svg";
 import { Button, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Support for defaultProps will be removed from function components in a future major release
@@ -33,6 +34,7 @@ const DefaultValue = {
 const NotFound = ({ title = DefaultValue.title, desc = DefaultValue.desc }) => {
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<Stack
@@ -62,7 +64,7 @@ const NotFound = ({ title = DefaultValue.title, desc = DefaultValue.desc }) => {
 					sx={{ mt: theme.spacing(10) }}
 					onClick={() => navigate("/")}
 				>
-					Go to the main dashboard
+					{t("notFoundButton")}
 				</Button>
 			</Stack>
 		</Stack>

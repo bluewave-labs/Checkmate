@@ -10,6 +10,7 @@ import {
 	checkEndpointResolution,
 } from "../../../Features/PageSpeedMonitor/pageSpeedMonitorSlice";
 import { parseDomainName } from "../../../Utils/monitorUtils";
+import { useTranslation } from "react-i18next";
 
 // MUI
 import { useTheme } from "@emotion/react";
@@ -173,6 +174,8 @@ const CreatePageSpeed = () => {
 		}
 	};
 
+	const { t } = useTranslation();
+
 	return (
 		<Box
 			className="create-monitor"
@@ -200,7 +203,7 @@ const CreatePageSpeed = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						Create your{" "}
+						{t("createYour")}{" "}
 					</Typography>
 					<Typography
 						component="span"
@@ -208,14 +211,14 @@ const CreatePageSpeed = () => {
 						fontWeight="inherit"
 						color={theme.palette.primary.contrastTextSecondary}
 					>
-						PageSpeed monitor
+						{t("pageSpeedMonitor")}
 					</Typography>
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">General settings</Typography>
+						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">
-							Here you can select the URL of the host, together with the type of monitor.
+							{t("distributedUptimeCreateSelectURL")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
@@ -248,9 +251,9 @@ const CreatePageSpeed = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Checks to perform</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateChecks")}</Typography>
 						<Typography component="p">
-							You can always add or remove checks after adding your site.
+							{t("distributedUptimeCreateChecksDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
@@ -269,14 +272,14 @@ const CreatePageSpeed = () => {
 									filled={https.toString()}
 									onClick={() => setHttps(true)}
 								>
-									HTTPS
+									{t("https")}
 								</Button>
 								<Button
 									variant="group" // Why does this work?
 									filled={(!https).toString()} // There's nothing in the docs about this either
 									onClick={() => setHttps(false)}
 								>
-									HTTP
+									{t("http")}
 								</Button>
 							</ButtonGroup>
 						</Stack>
@@ -297,13 +300,13 @@ const CreatePageSpeed = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Incident notifications</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 						<Typography component="p">
-							When there is an incident, notify users.
+							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="p">When there is a new incident,</Typography>
+						<Typography component="p">{t("whenNewIncident")}</Typography>
 						<Checkbox
 							id="notify-email-default"
 							label={`Notify via email (to ${user.email})`}
@@ -317,7 +320,7 @@ const CreatePageSpeed = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">Advanced settings</Typography>
+						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select
@@ -341,7 +344,7 @@ const CreatePageSpeed = () => {
 						disabled={!Object.values(errors).every((value) => value === undefined)}
 						loading={isLoading}
 					>
-						Create monitor
+						{t("createMonitor")}
 					</Button>
 				</Stack>
 			</Stack>

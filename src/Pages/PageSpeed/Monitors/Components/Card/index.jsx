@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { formatDateWithTz, formatDurationSplit } from "../../../../../Utils/timeUtils";
 import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import IconBox from "../../../../../Components/IconBox";
 /**
  * CustomToolTip displays a tooltip with formatted date and score information.
@@ -207,6 +208,7 @@ PagespeedAreaChart.propTypes = {
 const Card = ({ monitor }) => {
 	const { determineState, pagespeedStatusMsg } = useUtils();
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const monitorState = determineState(monitor);
 
@@ -297,7 +299,7 @@ const Card = ({ monitor }) => {
 						fontSize={11}
 						color={theme.palette.primary.contrastTextSecondary}
 					>
-						Checking every{" "}
+						{t("checkingEvery")}{" "}
 						{(() => {
 							const { time, format } = formatDurationSplit(monitor?.interval);
 							return (

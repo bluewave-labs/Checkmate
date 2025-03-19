@@ -12,12 +12,13 @@ import { useSelector } from "react-redux";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import useMonitorsFetch from "./Hooks/useMonitorsFetch";
 import GenericFallback from "../../../Components/GenericFallback";
-
+import { useTranslation } from "react-i18next";
 // Constants
 const BREADCRUMBS = [{ name: `pagespeed`, path: "/pagespeed" }];
 
 const PageSpeed = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 	const { user } = useSelector((state) => state.auth);
 
@@ -33,9 +34,9 @@ const PageSpeed = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					Network error
+					{t("networkError")}
 				</Typography>
-				<Typography>Please check your connection</Typography>
+				<Typography>{t("checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}

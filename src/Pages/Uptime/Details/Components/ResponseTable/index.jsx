@@ -4,6 +4,7 @@ import HistoryIcon from "../../../../../assets/icons/history-icon.svg?react";
 import Table from "../../../../../Components/Table";
 import TablePagination from "../../../../../Components/Table/TablePagination";
 import { StatusLabel } from "../../../../../Components/Label";
+import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "../../../../../Utils/timeUtils";
 import SkeletonLayout from "./skeleton";
 const ResponseTable = ({
@@ -16,6 +17,7 @@ const ResponseTable = ({
 	rowsPerPage,
 	setRowsPerPage,
 }) => {
+	const { t } = useTranslation();
 	if (!shouldRender) {
 		return <SkeletonLayout />;
 	}
@@ -23,7 +25,7 @@ const ResponseTable = ({
 	const headers = [
 		{
 			id: "status",
-			content: "Status",
+			content: t("status"),
 			render: (row) => {
 				const status = row.status === true ? "up" : "down";
 
@@ -38,18 +40,18 @@ const ResponseTable = ({
 		},
 		{
 			id: "date",
-			content: "Date & Time",
+			content: t("date&Time"),
 			render: (row) =>
 				formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone),
 		},
 		{
 			id: "statusCode",
-			content: "Status code",
+			content: t("statusCode"),
 			render: (row) => (row.statusCode ? row.statusCode : "N/A"),
 		},
 		{
 			id: "message",
-			content: "Message",
+			content: t("message"),
 			render: (row) => row.message,
 		},
 	];
