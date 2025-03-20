@@ -30,7 +30,9 @@ export const getAppSettings = createAsyncThunk(
 export const updateAppSettings = createAsyncThunk(
 	"settings/updateSettings",
 	async ({ settings }, thunkApi) => {
-		networkService.setBaseUrl(settings.apiBaseUrl);
+ 		// The reason for commenting is that, previously, we had the flexibility to set the API base. 
+  		// However, now this could lead to an issue where it gets set to undefined.
+		// networkService.setBaseUrl(settings.apiBaseUrl);
 		try {
 			const parsedSettings = {
 				apiBaseUrl: settings.apiBaseUrl,
