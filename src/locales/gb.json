@@ -147,17 +147,23 @@
     "enableNotifications": "Enable {{platform}} notifications",
     "testNotification": "Test notification",
     "addOrEditNotifications": "Add or edit notifications",
+    "testSuccess": "Test notification sent successfully!",
+    "testFailed": "Failed to send test notification",
+    "unsupportedType": "Unsupported notification type",
+    "networkError": "Network error occurred",
     "slack": {
       "label": "Slack",
       "description": "To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.",
       "webhookLabel": "Webhook URL",
-      "webhookPlaceholder": "https://hooks.slack.com/services/..."
+      "webhookPlaceholder": "https://hooks.slack.com/services/...",
+      "webhookRequired": "Slack webhook URL is required"
     },
     "discord": {
       "label": "Discord",
       "description": "To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord's incoming Webhooks feature.",
       "webhookLabel": "Discord Webhook URL",
-      "webhookPlaceholder": "https://discord.com/api/webhooks/..."
+      "webhookPlaceholder": "https://discord.com/api/webhooks/...",
+      "webhookRequired": "Discord webhook URL is required"
     },
     "telegram": {
       "label": "Telegram",
@@ -165,13 +171,15 @@
       "tokenLabel": "Your bot token",
       "tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
       "chatIdLabel": "Your Chat ID",
-      "chatIdPlaceholder": "-1001234567890"
+      "chatIdPlaceholder": "-1001234567890",
+      "fieldsRequired": "Telegram token and chat ID are required"
     },
     "webhook": {
       "label": "Webhooks",
       "description": "You can set up a custom webhook to receive notifications when incidents occur.",
       "urlLabel": "Webhook URL",
-      "urlPlaceholder": "https://your-server.com/webhook"
+      "urlPlaceholder": "https://your-server.com/webhook",
+      "urlRequired": "Webhook URL is required"
     },
     "testNotificationDevelop": "Test notification 2",
     "integrationButton": "Notification Integration"

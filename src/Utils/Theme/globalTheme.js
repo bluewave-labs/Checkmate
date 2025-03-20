@@ -122,7 +122,7 @@ const baseTheme = (palette) => ({
 							props: { variant: 'text', color: 'info' },
 							style: {
 							  textDecoration: 'underline',
-							  color: theme.palette.text.primary,
+							  color: theme.palette.primary.contrastText,
 							  padding: 0,
 							  margin: 0,
 							  fontSize: typographyLevels.m,
@@ -133,10 +133,11 @@ const baseTheme = (palette) => ({
 								textDecoration: 'underline'
 							  },
 							  "&.Mui-disabled": {
-								backgroundColor: theme.palette.secondary.main,
-								color: theme.palette.primary.contrastText,
+								backgroundColor: 'transparent',
+								color: theme.palette.text.primary,
+								opacity: 0.5,  
 								"&.MuiButton-text": {
-									backgroundColor: 'transparent'
+								  backgroundColor: 'transparent'
 								}
 							  },
 							  minWidth: 0,
@@ -554,9 +555,6 @@ const baseTheme = (palette) => ({
 			styleOverrides: {
 				root: ({ theme }) => ({
 					backgroundColor: theme.palette.primary.main,
-					"& .MuiButton-root": {
-						color: theme.palette.primary.contrastText,
-					},
 				}),
 			},
 		},

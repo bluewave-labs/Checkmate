@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 import { useTranslation } from "react-i18next";
 import { networkService } from '../../../Utils/NetworkService'; 
+import { createToast } from '../../../Utils/toastUtils';
 
 // Define constants for notification types to avoid magic values
 const NOTIFICATION_TYPES = {
@@ -84,7 +84,10 @@ const useNotifications = () => {
 
     // If validation fails, show error and return
     if (isValid === false) {
-      toast.error(errorMessage);
+      createToast({
+        body: errorMessage,
+        variant: "error"
+      });
       setLoading(false);
       return;
     }
@@ -96,13 +99,19 @@ const useNotifications = () => {
       });
       
       if (response.data.success === true) {
-        toast.success(t('notifications.testSuccess'));
+        createToast({
+          body: t('notifications.testSuccess'),
+          variant: "info"
+        });
       } else {
         throw new Error(response.data.msg || t('notifications.testFailed'));
       }
     } catch (error) {
       const errorMsg = error.response?.data?.msg || error.message || t('notifications.networkError');
-      toast.error(`${t('notifications.testFailed')}: ${errorMsg}`);
+      createToast({
+        body: `${t('notifications.testFailed')}: ${errorMsg}`,
+        variant: "error"
+      });
       setError(errorMsg);
     } finally {
       setLoading(false);
