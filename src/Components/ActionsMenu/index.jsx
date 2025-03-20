@@ -46,7 +46,7 @@ const ActionsMenu = ({
 			setIsLoading(true);
 			const action = await dispatch(pauseUptimeMonitor({ monitorId: monitor._id }));
 			if (pauseUptimeMonitor.fulfilled.match(action)) {
-				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
+				const state = action?.payload?.data.isActive === false ? "resumed" : "paused";
 				createToast({ body: `Monitor ${state} successfully.` });
 				pauseCallback();
 			} else {

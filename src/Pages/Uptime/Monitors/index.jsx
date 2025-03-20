@@ -24,14 +24,12 @@ import { useState, useCallback } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import useMonitorsFetch from "./Hooks/useMonitorsFetch";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 import PropTypes from "prop-types";
 import useFetchMonitorsWithSummary from "../../../Hooks/useFetchMonitorsWithSummary";
 import useFetchMonitorsWithChecks from "../../../Hooks/useFetchMonitorsWithChecks";
 import { useTranslation } from "react-i18next";
-
 const BREADCRUMBS = [{ name: `Uptime`, path: "/uptime" }];
 const TYPES = ["http", "ping", "docker", "port"];
 const CreateMonitorButton = ({ shouldRender }) => {
@@ -103,6 +101,7 @@ const UptimeMonitors = () => {
 		useFetchMonitorsWithSummary({
 			teamId,
 			types: TYPES,
+			monitorUpdateTrigger,
 		});
 
 	const [
@@ -119,11 +118,10 @@ const UptimeMonitors = () => {
 		filter: search,
 		field: sort?.field,
 		order: sort?.order,
-		triggerUpdate,
+		monitorUpdateTrigger,
 	});
 
 	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
-
 	if (networkError) {
 		return (
 			<GenericFallback>
@@ -194,6 +192,7 @@ const UptimeMonitors = () => {
 				sort={sort}
 				setSort={setSort}
 				monitorsAreLoading={monitorsWithChecksIsLoading}
+				triggerUpdate={triggerUpdate}
 			/>
 			<Pagination
 				itemCount={monitorsWithChecksCount}

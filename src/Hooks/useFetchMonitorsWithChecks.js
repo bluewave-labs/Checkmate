@@ -13,6 +13,7 @@ export const useFetchMonitorsWithChecks = ({
 	filter,
 	field,
 	order,
+	monitorUpdateTrigger,
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [count, setCount] = useState(undefined);
@@ -63,6 +64,7 @@ export const useFetchMonitorsWithChecks = ({
 		teamId,
 		theme,
 		types,
+		monitorUpdateTrigger,
 	]);
 	return [monitors, count, isLoading, networkError];
 };
