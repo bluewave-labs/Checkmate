@@ -10,7 +10,6 @@ import {
   Box,
   Tabs,
   Tab,
-  CircularProgress
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import TabPanel from "./TabPanel";
@@ -311,7 +310,7 @@ const NotificationIntegrationModal = ({
           sx={{ 
             width: 'auto', 
             minWidth: theme.spacing(60), 
-            px: theme.spacing(8) 
+            px: theme.spacing(8)
           }}
         >
           {t('commonSave')}

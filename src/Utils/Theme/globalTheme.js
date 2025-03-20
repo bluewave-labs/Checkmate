@@ -554,9 +554,6 @@ const baseTheme = (palette) => ({
 			styleOverrides: {
 				root: ({ theme }) => ({
 					backgroundColor: theme.palette.primary.main,
-					"& .MuiButton-root": {
-						color: theme.palette.primary.contrastText,
-					},
 				}),
 			},
 		},
