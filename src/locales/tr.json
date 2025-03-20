@@ -360,5 +360,9 @@
   "uptimeCreate": "",
   "uptimeCreateJsonPath": "",
   "uptimeCreateJsonPathQuery": "",
-  "maintenanceTableActionMenuDialogTitle": "Gerçekten bu bakım aralığını silmek istiyor musunuz?"
+  "maintenanceTableActionMenuDialogTitle": "Gerçekten bu bakım aralığını silmek istiyor musunuz?",
+  "infrastructureEditYour": "",
+  "infrastructureEditMonitor": "",
+  "infrastructureMonitorCreated": "",
+  "infrastructureMonitorUpdated": ""
 }

@@ -225,15 +225,11 @@
   "incidentsOptionsHeaderLastWeek": "Last week",
   "incidentsOptionsPlaceholderAllServers": "All servers",
   "infrastructureCreateYour": "Create your",
-  "infrastructureEditYour": "Edit your",
   "infrastructureCreateGeneralSettingsDescription": "Here you can select the URL of the host, together with the friendly name and authorization secret to connect to the server agent.",
   "infrastructureServerRequirement": "The server you are monitoring must be running the",
   "infrastructureCustomizeAlerts": "Customize alerts",
   "infrastructureAlertNotificationDescription": "Send a notification to user(s) when thresholds exceed a specified percentage.",
   "infrastructureCreateMonitor": "Create Infrastructure Monitor",
-  "infrastructureEditMonitor": "Save Infrastructure Monitor",
-  "infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
-  "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
   "infrastructureProtocol": "Protocol",
   "infrastructureServerUrlLabel": "Server URL",
   "infrastructureDisplayNameLabel": "Display name",
@@ -364,5 +360,9 @@
   "uptimeCreate": "The expected value is used to match against response result, and the match determines the status.",
   "uptimeCreateJsonPath": "This expression will be evaluated against the reponse JSON data and the result will be used to match against the expected value. See",
   "uptimeCreateJsonPathQuery": "for query language documentation.",
-  "maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?"
+  "maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
+  "infrastructureEditYour": "Edit your",
+  "infrastructureEditMonitor": "Save Infrastructure Monitor",
+  "infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
+  "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!"
 }
