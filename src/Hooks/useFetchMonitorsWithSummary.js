@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
 
-export const useFetchMonitorsWithSummary = ({ teamId, types }) => {
+export const useFetchMonitorsWithSummary = ({ teamId, types, monitorUpdateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [monitors, setMonitors] = useState(undefined);
 	const [monitorsSummary, setMonitorsSummary] = useState(undefined);
@@ -30,7 +30,7 @@ export const useFetchMonitorsWithSummary = ({ teamId, types }) => {
 			}
 		};
 		fetchMonitors();
-	}, [teamId, types]);
+	}, [teamId, types, monitorUpdateTrigger]);
 	return [monitors, monitorsSummary, isLoading, networkError];
 };
 
