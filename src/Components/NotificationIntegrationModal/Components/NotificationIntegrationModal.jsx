@@ -182,43 +182,64 @@ const NotificationIntegrationModal = ({
     await sendTestNotification(type, config);
   };
   
-  const handleSave = () => {
-    //notifications array for selected integrations
-    const notifications = [...(monitor?.notifications || [])];
-    
-    // Get all notification types IDs
-    const existingTypes = activeNotificationTypes.map(type => type.id);
-    
-    // Filter out notifications that are configurable in this modal
-    const filteredNotifications = notifications.filter(
-      notification => !existingTypes.includes(notification.type)
-    );
+  // In NotificationIntegrationModal.jsx, update the handleSave function:
 
-    // Add each enabled notification with its configured fields
-    activeNotificationTypes.forEach(type => {
-      if (integrations[type.id]) {
-        const notificationObject = {
-          type: type.id
-        };
-        
-        // Add each field value to the notification object
-        type.fields.forEach(field => {
-          const fieldKey = getFieldKey(type.id, field.id);
-          notificationObject[field.id] = integrations[fieldKey];
-        });
-        
-        filteredNotifications.push(notificationObject);
+const handleSave = () => {
+  // Get existing notifications
+  const notifications = [...(monitor?.notifications || [])];
+  
+  // Get all notification types IDs
+  const existingTypes = activeNotificationTypes.map(type => type.id);
+  
+  // Filter out notifications that are configurable in this modal
+  const filteredNotifications = notifications.filter(
+    notification => {
+    
+      if (notification.platform) {
+        return !existingTypes.includes(notification.platform);
       }
-    });
+     
+      return !existingTypes.includes(notification.type);
+    }
+  );
 
-    // Update monitor with new notifications
-    setMonitor(prev => ({
-      ...prev,
-      notifications: filteredNotifications
-    }));
-    
-    onClose();
-  };
+  // Add each enabled notification with its configured fields
+  activeNotificationTypes.forEach(type => {
+    if (integrations[type.id]) {
+      // Create a notification object
+      let notificationObject = {
+        type: "webhook", // All platform integrations use webhook type
+        platform: type.id, // Set platform to identify the specific service
+        config: {}
+      };
+      
+      // Configure based on notification type
+      switch(type.id) {
+        case "slack":
+        case "discord":
+          notificationObject.config.webhookUrl = integrations[getFieldKey(type.id, 'webhook')];
+          break;
+        case "telegram":
+          notificationObject.config.botToken = integrations[getFieldKey(type.id, 'token')];
+          notificationObject.config.chatId = integrations[getFieldKey(type.id, 'chatId')];
+          break;
+        case "webhook":
+          notificationObject.config.webhookUrl = integrations[getFieldKey(type.id, 'url')];
+          break;
+      }
+      
+      filteredNotifications.push(notificationObject);
+    }
+  });
+
+  // Update monitor with new notifications
+  setMonitor(prev => ({
+    ...prev,
+    notifications: filteredNotifications
+  }));
+  
+  onClose();
+};
 
   return (
     <Dialog 
