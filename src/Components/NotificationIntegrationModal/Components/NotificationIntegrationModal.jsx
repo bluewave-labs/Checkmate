@@ -206,9 +206,9 @@ const handleSave = () => {
   // Add each enabled notification with its configured fields
   activeNotificationTypes.forEach(type => {
     if (integrations[type.id]) {
-      // Create a notification object
+
       let notificationObject = {
-        type: "webhook", // All platform integrations use webhook type
+        type: "webhook", 
         platform: type.id, // Set platform to identify the specific service
         config: {}
       };
