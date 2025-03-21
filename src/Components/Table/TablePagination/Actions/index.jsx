@@ -4,6 +4,7 @@ import LeftArrowDouble from "../../../../assets/icons/left-arrow-double.svg?reac
 import RightArrowDouble from "../../../../assets/icons/right-arrow-double.svg?react";
 import LeftArrow from "../../../../assets/icons/left-arrow.svg?react";
 import RightArrow from "../../../../assets/icons/right-arrow.svg?react";
+import { useTheme } from "@emotion/react";
 
 TablePaginationActions.propTypes = {
 	count: PropTypes.number.isRequired,
@@ -39,8 +40,10 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
 		onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
 	};
 
+	const theme = useTheme();
+
 	return (
-		<Box sx={{ flexShrink: 0, ml: "24px" }}>
+		<Box sx={{ flexShrink: 0, ml: "24px", display: "flex", gap: theme.spacing(2) }}>
 			<Button
 				variant="group"
 				onClick={handleFirstPageButtonClick}
