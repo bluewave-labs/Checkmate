@@ -134,6 +134,7 @@ const Settings = () => {
 				});
 			} else {
 				if (action.payload) {
+					console.log(action.payload);
 					// dispatch errors
 					createToast({
 						body: action.payload.msg,
@@ -298,7 +299,14 @@ const Settings = () => {
 								{t("settingsWalletDescription")}
 							</Typography>
 						</Box>
-						<Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 2 }}>
+						<Box
+							sx={{
+								display: "flex",
+								flexWrap: "wrap",
+								justifyContent: "flex-start",
+								gap: 2,
+							}}
+						>
 							<Stack
 								direction="row"
 								spacing={2}
@@ -400,7 +408,6 @@ const Settings = () => {
 						/>
 					</ConfigBox>
 				)}
-
 
 				<ConfigBox>
 					<Box>
