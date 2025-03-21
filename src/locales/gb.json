@@ -147,10 +147,6 @@
     "enableNotifications": "Enable {{platform}} notifications",
     "testNotification": "Test notification",
     "addOrEditNotifications": "Add or edit notifications",
-    "testSuccess": "Test notification sent successfully!",
-    "testFailed": "Failed to send test notification",
-    "unsupportedType": "Unsupported notification type",
-    "networkError": "Network error occurred",
     "slack": {
       "label": "Slack",
       "description": "To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.",
@@ -182,9 +178,13 @@
       "urlRequired": "Webhook URL is required"
     },
     "testNotificationDevelop": "Test notification 2",
-    "integrationButton": "Notification Integration"
+    "integrationButton": "Notification Integration",
+    "testSuccess": "Test notification sent successfully!",
+    "testFailed": "Failed to send test notification",
+    "unsupportedType": "Unsupported notification type",
+    "networkError": "Network error occurred"
   },
-  "testLocale": "",
+  "testLocale": "testLocale",
   "add": "Add",
   "monitors": "monitors",
   "distributedUptimeStatusCreateStatusPage": "status page",
