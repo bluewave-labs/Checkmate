@@ -109,8 +109,6 @@ const newColors = {
 	red400: "#D92020",
 	red600: "#9B4B4B",
 	red700: "#980303",
-	sidebarLight: "#F9F9FB",
-	sidebarDark: "#1A1A1D",
 };
 
 /* 
@@ -168,10 +166,6 @@ const newSemanticColors = {
 		lowContrast: {
 			light: newColors.gray200,
 			dark: newColors.blueGray600,
-		},
-		sidebar: {
-			light: newColors.sidebarLight,
-			dark: newColors.sidebarDark,
 		},
 	},
 	secondary: {
