@@ -1,9 +1,9 @@
 .home-layout {
 	position: relative;
 	min-height: 100vh;
-	max-width: 1400px;
+	/* max-width: 1400px; */
 	margin: 0 auto;
-	padding: var(--env-var-spacing-2);
+	padding: 0;
 }
 
 /* TODO go for this approach for responsiveness. The aside needs to be taken care of */
@@ -15,14 +15,21 @@
 
 .home-layout aside {
 	position: sticky;
-	top: var(--env-var-spacing-2);
+	top: 0;
 	left: 0;
-
-	height: calc(100vh - var(--env-var-spacing-2) * 2);
+	height: 100vh;
 	max-width: var(--env-var-side-bar-width);
 }
 
 .home-layout > div {
 	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
+	flex: 1;
+}
+
+.home-layout > :nth-child(2) {
+	padding: var(--env-var-spacing-2);
+	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
+	max-width: 1400px;
+	margin: 0 auto;
 	flex: 1;
 }
