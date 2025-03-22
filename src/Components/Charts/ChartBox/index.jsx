@@ -25,7 +25,7 @@ const ChartBox = ({
 			flex={1}
 			direction="row"
 			sx={{
-				backgroundColor: theme.palette.primary.main,
+				backgroundColor: theme.palette.tertiary.main,
 
 				border: 1,
 				borderStyle: "solid",
