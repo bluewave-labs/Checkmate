@@ -1,7 +1,6 @@
 .home-layout {
 	position: relative;
 	min-height: 100vh;
-	/* max-width: 1400px; */
 	margin: 0 auto;
 	padding: 0;
 }
@@ -15,7 +14,7 @@
 
 .home-layout aside {
 	position: sticky;
-	top: 0;
+	top: var(--env-var-spacing-2);
 	left: 0;
 	height: 100vh;
 	max-width: var(--env-var-side-bar-width);
@@ -26,9 +25,8 @@
 	flex: 1;
 }
 
-.home-layout > :nth-child(2) {
+.home-content-wrapper {
 	padding: var(--env-var-spacing-2);
-	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
 	max-width: 1400px;
 	margin: 0 auto;
 	flex: 1;
