@@ -205,9 +205,9 @@ function Sidebar() {
 			*/
 			sx={{
 				position: "relative",
-				border: 1,
+				borderRight: `1px solid ${theme.palette.primary.lowContrast}`, 
 				borderColor: theme.palette.primary.lowContrast,
-				borderRadius: theme.shape.borderRadius,
+				borderRadius: 0,
 				"& :is(p, span, .MuiListSubheader-root)": {
 					/* 
 					Text color for unselected menu items and menu headings
