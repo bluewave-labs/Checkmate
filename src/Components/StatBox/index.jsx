@@ -62,7 +62,7 @@ const StatBox = ({
 				color: theme.palette.primary.contrastTextSecondary,
 			};
 
-	const spanFixedStyles = { marginLeft: theme.spacing(2), fontSize: 15, fontWeight: 600};
+	const spanFixedStyles = { marginLeft: theme.spacing(2), fontSize: 15, fontWeight: 600 };
 	const detailTextStyles = gradient
 		? {
 				color: theme.palette[themeColor].contrastText,
@@ -79,6 +79,12 @@ const StatBox = ({
 				},
 			};
 
+	const responsiveWidths = {
+		default: "calc(95% / 4)",
+		xl: "calc(95% / 3)",
+		md: "calc(95% / 2)",
+	};
+
 	return (
 		<Stack
 			direction="row"
@@ -86,7 +92,14 @@ const StatBox = ({
 				padding: `${theme.spacing(4)} ${theme.spacing(8)}`,
 				/* TODO why are we using width and min width here? */
 				minWidth: 200,
-				width: 225,
+				// this is for status box to be reponsive on diff screens
+				width: responsiveWidths.default, // Default: 4 items per row
+				[theme.breakpoints.down("xl")]: {
+					width: responsiveWidths.xl, // 3 items per row
+				},
+				[theme.breakpoints.down("md")]: {
+					width: responsiveWidths.md, // 2 items per row
+				},
 				border: 1,
 				borderStyle: "solid",
 				borderRadius: 4,
@@ -120,7 +133,7 @@ const StatBox = ({
 			)}
 			<Stack>
 				<Typography component="h2">{heading}</Typography>
-				<Typography sx={{fontWeight: 500}}>{subHeading}</Typography>
+				<Typography sx={{ fontWeight: 500 }}>{subHeading}</Typography>
 			</Stack>
 		</Stack>
 	);
