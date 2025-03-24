@@ -415,7 +415,7 @@ const CreateMonitor = () => {
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
 
-						<Box mt={theme.spacing(2)}>
+						{/* <Box mt={theme.spacing(2)}>
 							<Button
 								variant="contained"
 								color="accent"
@@ -423,7 +423,7 @@ const CreateMonitor = () => {
 							>
 								{t("notifications.integrationButton")}
 							</Button>
-						</Box>
+						</Box> */}
 					</Stack>
 				</ConfigBox>
 				<ConfigBox>
