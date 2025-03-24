@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 import { 
   Dialog, 
@@ -49,11 +50,11 @@ const NotificationIntegrationModal = ({
   // Helper to get the field state key with error handling
   const getFieldKey = (typeId, fieldId) => {
     if (typeof typeId !== 'string' || typeId === '') {
-      throw new Error('Invalid typeId provided to getFieldKey');
+      throw new Error(t('errorInvalidTypeId'));
     }
     
     if (typeof fieldId !== 'string' || fieldId === '') {
-      throw new Error('Invalid fieldId provided to getFieldKey');
+      throw new Error(t('errorInvalidFieldId'));
     }
     
     return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
@@ -182,43 +183,64 @@ const NotificationIntegrationModal = ({
     await sendTestNotification(type, config);
   };
   
-  const handleSave = () => {
-    //notifications array for selected integrations
-    const notifications = [...(monitor?.notifications || [])];
-    
-    // Get all notification types IDs
-    const existingTypes = activeNotificationTypes.map(type => type.id);
-    
-    // Filter out notifications that are configurable in this modal
-    const filteredNotifications = notifications.filter(
-      notification => !existingTypes.includes(notification.type)
-    );
+  // In NotificationIntegrationModal.jsx, update the handleSave function:
 
-    // Add each enabled notification with its configured fields
-    activeNotificationTypes.forEach(type => {
-      if (integrations[type.id]) {
-        const notificationObject = {
-          type: type.id
-        };
-        
-        // Add each field value to the notification object
-        type.fields.forEach(field => {
-          const fieldKey = getFieldKey(type.id, field.id);
-          notificationObject[field.id] = integrations[fieldKey];
-        });
-        
-        filteredNotifications.push(notificationObject);
+const handleSave = () => {
+  // Get existing notifications
+  const notifications = [...(monitor?.notifications || [])];
+  
+  // Get all notification types IDs
+  const existingTypes = activeNotificationTypes.map(type => type.id);
+  
+  // Filter out notifications that are configurable in this modal
+  const filteredNotifications = notifications.filter(
+    notification => {
+    
+      if (notification.platform) {
+        return !existingTypes.includes(notification.platform);
       }
-    });
+     
+      return !existingTypes.includes(notification.type);
+    }
+  );
 
-    // Update monitor with new notifications
-    setMonitor(prev => ({
-      ...prev,
-      notifications: filteredNotifications
-    }));
-    
-    onClose();
-  };
+  // Add each enabled notification with its configured fields
+  activeNotificationTypes.forEach(type => {
+    if (integrations[type.id]) {
+
+      let notificationObject = {
+        type: "webhook", 
+        platform: type.id, // Set platform to identify the specific service
+        config: {}
+      };
+      
+      // Configure based on notification type
+      switch(type.id) {
+        case "slack":
+        case "discord":
+          notificationObject.config.webhookUrl = integrations[getFieldKey(type.id, 'webhook')];
+          break;
+        case "telegram":
+          notificationObject.config.botToken = integrations[getFieldKey(type.id, 'token')];
+          notificationObject.config.chatId = integrations[getFieldKey(type.id, 'chatId')];
+          break;
+        case "webhook":
+          notificationObject.config.webhookUrl = integrations[getFieldKey(type.id, 'url')];
+          break;
+      }
+      
+      filteredNotifications.push(notificationObject);
+    }
+  });
+
+  // Update monitor with new notifications
+  setMonitor(prev => ({
+    ...prev,
+    notifications: filteredNotifications
+  }));
+  
+  onClose();
+};
 
   return (
     <Dialog 
@@ -318,6 +340,14 @@ const NotificationIntegrationModal = ({
       </DialogActions>
     </Dialog>
   );
+};
+
+NotificationIntegrationModal.propTypes = {
+  open: PropTypes.bool.isRequired, 
+  onClose: PropTypes.func.isRequired, 
+  monitor: PropTypes.object.isRequired, 
+  setMonitor: PropTypes.func.isRequired, 
+  notificationTypes: PropTypes.array 
 };
 
 export default NotificationIntegrationModal;
