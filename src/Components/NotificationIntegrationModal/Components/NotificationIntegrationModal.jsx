@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 import { 
   Dialog, 
@@ -339,6 +340,14 @@ const handleSave = () => {
       </DialogActions>
     </Dialog>
   );
+};
+
+NotificationIntegrationModal.propTypes = {
+  open: PropTypes.bool.isRequired, 
+  onClose: PropTypes.func.isRequired, 
+  monitor: PropTypes.object.isRequired, 
+  setMonitor: PropTypes.func.isRequired, 
+  notificationTypes: PropTypes.array 
 };
 
 export default NotificationIntegrationModal;
