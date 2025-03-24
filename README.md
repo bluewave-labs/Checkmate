@@ -37,6 +37,10 @@ Usage instructions can be found [here](https://docs.checkmate.so/). It's still W
 
 See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/quickstart). Alternatively, you can also use [Coolify](https://coolify.io/) or [Elestio](https://elest.io/open-source/checkmate) for a one click Docker deployment. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
+## 🏁 Translations
+
+If you would like to use Checkmate in your language, please [go to this page](https://poeditor.com/join/project/lRUoGZFCsJ) and register for the language you would like to translate Checkmate to. 
+
 ## 🚀 Performance
 
 Thanks to extensive optimizations, Checkmate operates with an exceptionally small memory footprint, requiring minimal memory and CPU resources. Here’s the memory usage of a Node.js instance running on a server that monitors 323 servers every minute:
