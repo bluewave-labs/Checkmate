@@ -669,7 +669,7 @@ class NetworkService {
 		});
 	}
 
-		/**
+	/**
 	 * ************************************
 	 * Test a notification integration
 	 * ************************************
@@ -681,14 +681,18 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
 	 */
 	async testNotification(config) {
-		return this.axiosInstance.post('/notifications/test-webhook', {
-		platform: config.platform,
-		...config.payload
-		}, {
-		headers: {
-			"Content-Type": "application/json",
-		},
-		});
+		return this.axiosInstance.post(
+			"/notifications/test-webhook",
+			{
+				platform: config.platform,
+				...config.payload,
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
 	}
 
 	/**

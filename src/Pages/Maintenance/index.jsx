@@ -10,6 +10,8 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
+import { Typography } from "@mui/material";
+import GenericFallback from "../../Components/GenericFallback";
 
 const Maintenance = () => {
 	const theme = useTheme();
@@ -22,6 +24,7 @@ const Maintenance = () => {
 	const [page, setPage] = useState(0);
 	const [sort, setSort] = useState({});
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [networkError, setNetworkError] = useState(false);
 
 	const handleActionMenuDelete = () => {
 		setUpdateTrigger((prev) => !prev);
@@ -38,12 +41,26 @@ const Maintenance = () => {
 				setMaintenanceWindows(maintenanceWindows);
 				setMaintenanceWindowCount(maintenanceWindowCount);
 			} catch (error) {
-				console.log(error);
+				setNetworkError(true);
 			}
 		};
 		fetchMaintenanceWindows();
 	}, [page, rowsPerPage, updateTrigger]);
 
+	if (networkError) {
+		return (
+			<GenericFallback>
+				<Typography
+					variant="h1"
+					marginY={theme.spacing(4)}
+					color={theme.palette.primary.contrastTextTertiary}
+				>
+					{t("networkError")}
+				</Typography>
+				<Typography>{t("checkConnection")}</Typography>
+			</GenericFallback>
+		);
+	}
 	if (maintenanceWindows.length === 0) {
 		return (
 			<Fallback

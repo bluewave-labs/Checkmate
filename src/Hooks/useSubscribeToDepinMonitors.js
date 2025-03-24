@@ -78,6 +78,7 @@ const useSubscribeToDepinMonitors = (page, rowsPerPage) => {
 				},
 				onError: () => {
 					setIsLoading(false);
+					setNetworkError(true);
 				},
 			});
 
