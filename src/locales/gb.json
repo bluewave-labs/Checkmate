@@ -184,6 +184,8 @@
     "unsupportedType": "Unsupported notification type",
     "networkError": "Network error occurred"
   },
+  "errorInvalidTypeId": "Invalid notification type provided",
+  "errorInvalidFieldId": "Invalid field ID provided",
   "testLocale": "testLocale",
   "add": "Add",
   "monitors": "monitors",
