@@ -78,6 +78,10 @@ const Account = ({ open = "profile" }) => {
 								onKeyDown={handleKeyDown}
 								onFocus={() => handleFocus(label.toLowerCase())}
 								tabIndex={index}
+								sx={{
+									minHeight: "34px",
+									height: "34px",
+								  }}
 							/>
 						))}
 					</TabList>
