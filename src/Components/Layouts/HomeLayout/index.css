@@ -14,7 +14,7 @@
 
 .home-layout aside {
 	position: sticky;
-	top: var(--env-var-spacing-2);
+	top: 0;
 	left: 0;
 	height: 100vh;
 	max-width: var(--env-var-side-bar-width);
