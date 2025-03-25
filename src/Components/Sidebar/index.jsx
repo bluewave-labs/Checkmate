@@ -400,6 +400,7 @@ function Sidebar() {
 										gap: theme.spacing(4),
 										borderRadius: theme.shape.borderRadius,
 										px: theme.spacing(4),
+										pl: theme.spacing(5),
 									}}
 								>
 									<ListItemIcon sx={{ minWidth: 0 }}>{item.icon}</ListItemIcon>
@@ -654,6 +655,7 @@ function Sidebar() {
 									gap: theme.spacing(4),
 									borderRadius: theme.shape.borderRadius,
 									px: theme.spacing(4),
+									pl: theme.spacing(5),
 								}}
 							>
 								<ListItemIcon sx={{ minWidth: 0 }}>{item.icon} </ListItemIcon>
