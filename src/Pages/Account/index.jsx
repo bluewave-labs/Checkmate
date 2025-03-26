@@ -69,6 +69,20 @@ const Account = ({ open = "profile" }) => {
 					<TabList
 						onChange={handleTabChange}
 						aria-label="account tabs"
+						sx={{
+							display: 'inline-flex',
+							border: 1,
+							borderColor: theme.palette.primary.lowContrast,
+							borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
+							'& .MuiTab-root': {
+							  backgroundColor: theme.palette.primary.main,
+							  height: '34px',
+							  borderColor: theme.palette.primary.lowContrast,
+							},
+							'& .MuiTab-root.Mui-selected': {
+							  borderRadius: 0,
+							},
+						  }}
 					>
 						{tabList.map((label, index) => (
 							<Tab
@@ -78,10 +92,6 @@ const Account = ({ open = "profile" }) => {
 								onKeyDown={handleKeyDown}
 								onFocus={() => handleFocus(label.toLowerCase())}
 								tabIndex={index}
-								sx={{
-									minHeight: "34px",
-									height: "34px",
-								  }}
 							/>
 						))}
 					</TabList>
