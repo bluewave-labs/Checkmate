@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { networkService } from "../main";
+import { useTranslation } from "react-i18next";
+
 const CLIENT_HOST = import.meta.env.VITE_CLIENT_HOST;
 
 const useGetInviteToken = () => {
+	const { t } = useTranslation();
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(undefined);
 	const [token, setToken] = useState(undefined);
@@ -19,7 +23,7 @@ const useGetInviteToken = () => {
 			});
 			const token = response?.data?.data?.token;
 			if (typeof token === "undefined") {
-				throw new Error("No token");
+				throw new Error(t("inviteNoTokenFound"));
 			}
 
 			let inviteLink = token;
