@@ -926,10 +926,15 @@ class NetworkService {
 
 	getDistributedUptimeDetails(config) {
 		const params = new URLSearchParams();
-		const { monitorId, onUpdate, onOpen, onError, dateRange, normalize } = config;
+		const { monitorId, dateRange, normalize, isPublic } = config;
 		if (dateRange) params.append("dateRange", dateRange);
 		if (normalize) params.append("normalize", normalize);
-		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}/initial?${params.toString()}`;
+		let url;
+		if (isPublic) {
+			url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/public/${monitorId}/initial?${params.toString()}`;
+		} else {
+			url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}/initial?${params.toString()}`;
+		}
 		return this.axiosInstance.get(url);
 	}
 
