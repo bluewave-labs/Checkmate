@@ -77,7 +77,6 @@ const Account = ({ open = "profile" }) => {
 							'& .MuiTab-root': {
 							  backgroundColor: theme.palette.primary.main,
 							  height: '34px',
-							  borderColor: theme.palette.primary.lowContrast,
 							},
 							'& .MuiTab-root.Mui-selected': {
 							  borderRadius: 0,
