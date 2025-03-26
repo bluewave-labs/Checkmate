@@ -71,7 +71,9 @@ const Account = ({ open = "profile" }) => {
 						aria-label="account tabs"
 						sx={{
 							display: 'inline-flex',
-							border: 1,
+							borderTop: 1,
+							borderLeft: 1,
+							borderRight: 1,
 							borderColor: theme.palette.primary.lowContrast,
 							borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
 							'& .MuiTab-root': {
