@@ -41,9 +41,9 @@ const CreateMonitor = () => {
 	];
 
 	const expectedValuePlaceholders = {
-		regex: "^[\w.-]+@gmail.com$",
-		equal: "janet@gmail.com",
-		include: "@gmail.com",
+		regex: "^2[0-9]{2}$",
+		equal: "200",
+		include: "success",
 	};
 
 	const monitorTypeMaps = {
@@ -465,8 +465,7 @@ const CreateMonitor = () => {
 										color={theme.palette.primary.contrastTextTertiary}
 										opacity={0.8}
 									>
-										The expected value is used to match against response result, and the
-										match determines the status.
+										The expected value to check in the response. Examples: HTTP status code, text in response body, or specific value from JSON data.
 									</Typography>
 								</Stack>
 								<Stack>
@@ -475,7 +474,7 @@ const CreateMonitor = () => {
 										id="json-path"
 										label="JSON Path"
 										isOptional={true}
-										placeholder="data.email"
+										placeholder="data.status"
 										value={monitor.jsonPath}
 										onChange={(event) => handleChange(event, "jsonPath")}
 										error={errors["jsonPath"] ? true : false}
@@ -486,8 +485,8 @@ const CreateMonitor = () => {
 										color={theme.palette.primary.contrastTextTertiary}
 										opacity={0.8}
 									>
-										This expression will be evaluated against the reponse JSON data and
-										the result will be used to match against the expected value. See&nbsp;
+										Optional path to extract specific data from JSON responses. Common examples: "status", "data.status", "meta.code". Leave empty to check the entire response.
+										See&nbsp;
 										<Typography
 											component="a"
 											href="https://jmespath.org/"
