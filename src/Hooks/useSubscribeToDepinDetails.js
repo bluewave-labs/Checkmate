@@ -27,6 +27,7 @@ const useSubscribeToDepinDetails = ({ monitorId, isPublic, isPublished, dateRang
 					monitorId,
 					dateRange: dateRange,
 					normalize: true,
+					isPublic,
 				});
 				const responseData = res?.data?.data;
 
