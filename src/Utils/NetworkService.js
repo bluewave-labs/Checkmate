@@ -45,7 +45,7 @@ class NetworkService {
 		this.axiosInstance.interceptors.response.use(
 			(response) => response,
 			(error) => {
-				if (!error.request && error.response && error.response.status === 401) {
+				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					dispatch(clearUptimeMonitorState());
 					navigate("/login");
