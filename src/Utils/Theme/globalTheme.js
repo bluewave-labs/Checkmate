@@ -359,7 +359,9 @@ const baseTheme = (palette) => ({
 			  root: ({ theme }) => ({
 				fontSize: theme.typography.fontSize - 1,
 				color: theme.palette.tertiary.contrastText,
-				backgroundColor: theme.palette.tertiary.main,
+				backgroundColor: theme.palette.primary.main,
+				height: '34px',
+				borderRadius: 0,
 				textTransform: "none",
 				minWidth: "fit-content",
 				padding: `${theme.spacing(6)}px ${theme.spacing(4)}px`,
@@ -378,6 +380,7 @@ const baseTheme = (palette) => ({
 				  color: theme.palette.secondary.contrastText,
 				  borderColor: theme.palette.secondary.contrastText,
 				  borderRightColor: theme.palette.primary.lowContrast,
+				  borderRadius: 0,
 				},
 				"&:hover": {
 				  borderColor: theme.palette.primary.lowContrast,
@@ -428,6 +431,12 @@ const baseTheme = (palette) => ({
 		MuiTabs: {
 			styleOverrides: {
 			  root: ({ theme }) => ({
+				display: 'inline-flex',
+				borderTop: '1px solid',
+				borderLeft: '1px solid',
+				borderRight: '1px solid',
+				borderColor: theme.palette.primary.lowContrast,
+				borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
 				"& .MuiTabs-indicator": {
 				  backgroundColor: theme.palette.tertiary.contrastText,
 				},
