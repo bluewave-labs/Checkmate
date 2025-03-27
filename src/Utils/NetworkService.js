@@ -530,6 +530,24 @@ class NetworkService {
 	async requestInvitationToken(config) {
 		return this.axiosInstance.post(`/invite`, { email: config.email, role: config.role });
 	}
+	/**
+	 * ************************************
+	 * Sends an invitation token
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.email - The email of the user to be invited.
+	 * @param {string} config.role - The role of the user to be invited.
+	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
+	 *
+	 */
+	async sendInvitationToken(config) {
+		return this.axiosInstance.post(`/invite/send`, {
+			email: config.email,
+			role: config.role,
+		});
+	}
 
 	/**
 	 * ************************************

@@ -21,7 +21,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 					top: "50%",
 					left: "50%",
 					transform: "translate(-50%, -50%)",
-					width: 400,
+					minWidth: 400,
 					bgcolor: theme.palette.primary.main,
 					border: 1,
 					borderColor: theme.palette.primary.lowContrast,
