@@ -13,6 +13,7 @@ import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
 import Fallback from "../../../Components/Fallback";
 import GenericFallback from "../../../Components/GenericFallback";
 import SearchComponent from "./Components/SearchComponent";
+import Filter from "./Components/Filter";
 
 import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 
@@ -69,6 +70,9 @@ const UptimeMonitors = () => {
 	const [sort, setSort] = useState(undefined);
 	const [isSearching, setIsSearching] = useState(false);
 	const [monitorUpdateTrigger, setMonitorUpdateTrigger] = useState(false);
+	const [selectedTypes, setSelectedTypes] = useState([]);
+	const [toFilterStatus, setToFilterStatus] = useState(null);
+	const [toFilterActive, setToFilterActive] = useState(null);
 
 	// Utils
 	const theme = useTheme();
@@ -103,6 +107,19 @@ const UptimeMonitors = () => {
 			types: TYPES,
 			monitorUpdateTrigger,
 		});
+	
+	let field = sort?.field;
+	let filter = search;
+	if (toFilterStatus !== null) {
+		field = "status";
+		filter = toFilterStatus;
+	} else if (toFilterActive !== null) {
+		field = "isActive";
+		filter = toFilterActive;
+	} else {
+		field = sort?.field;
+		filter = search;
+	}
 
 	const [
 		monitorsWithChecks,
@@ -111,12 +128,12 @@ const UptimeMonitors = () => {
 		monitorsWithChecksNetworkError,
 	] = useFetchMonitorsWithChecks({
 		teamId,
-		types: TYPES,
+		types: selectedTypes && selectedTypes.length > 0 ? selectedTypes : TYPES,
 		limit: 25,
 		page: page,
 		rowsPerPage: rowsPerPage,
-		filter: search,
-		field: sort?.field,
+		filter: filter,
+		field: field,
 		order: sort?.order,
 		monitorUpdateTrigger,
 	});
@@ -179,6 +196,13 @@ const UptimeMonitors = () => {
 					monitorCount={monitorsSummary?.totalMonitors}
 					heading={"Uptime monitors"}
 				></MonitorCountHeader>
+				<Filter
+					selectedTypes={selectedTypes}
+					setSelectedTypes={setSelectedTypes}
+					toFilterStatus={toFilterStatus}
+					setToFilterStatus={setToFilterStatus}
+					setToFilterActive={setToFilterActive}
+				/>
 				<SearchComponent
 					monitors={monitors}
 					onSearchChange={setSearch}
