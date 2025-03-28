@@ -41,9 +41,9 @@ const CreateMonitor = () => {
 	];
 
 	const expectedValuePlaceholders = {
-		regex: "^[\w.-]+@gmail.com$",
-		equal: "janet@gmail.com",
-		include: "@gmail.com",
+		regex: "^(success|ok)$",
+		equal: "success",
+		include: "ok",
 	};
 
 	const monitorTypeMaps = {
@@ -477,7 +477,7 @@ const CreateMonitor = () => {
 										id="json-path"
 										label="JSON Path"
 										isOptional={true}
-										placeholder="data.email"
+										placeholder="data.status"
 										value={monitor.jsonPath}
 										onChange={(event) => handleChange(event, "jsonPath")}
 										error={errors["jsonPath"] ? true : false}
