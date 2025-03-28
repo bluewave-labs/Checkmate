@@ -374,5 +374,6 @@
   "infrastructureMonitorCreated": "",
   "infrastructureMonitorUpdated": "",
   "errorInvalidTypeId": "",
-  "errorInvalidFieldId": ""
+  "errorInvalidFieldId": "",
+  "inviteNoTokenFound": ""
 }
