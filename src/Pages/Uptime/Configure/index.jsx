@@ -479,7 +479,7 @@ const Configure = () => {
 												color={theme.palette.primary.contrastTextTertiary}
 												opacity={0.8}
 											>
-												The expected value to check in the response. Examples: HTTP status code, text in response body, or specific value from JSON data.
+												The expected value to check in the response body content. Examples: specific text, HTML elements, or JSON values in the response.
 											</Typography>
 										</Stack>
 										<Stack>

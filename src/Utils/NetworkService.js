@@ -263,6 +263,9 @@ class NetworkService {
 			description: monitor.description,
 			interval: monitor.interval,
 			notifications: monitor.notifications,
+			matchMethod: monitor.matchMethod,
+			expectedValue: monitor.expectedValue,
+			jsonPath: monitor.jsonPath,
 		};
 		return this.axiosInstance.put(`/monitors/${monitorId}`, updatedFields, {
 			headers: {
