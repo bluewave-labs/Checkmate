@@ -98,8 +98,7 @@ export const forgotPassword = createAsyncThunk(
 	"auth/forgotPassword",
 	async (form, thunkApi) => {
 		try {
-			const newForm = {...form, email: form.toLowerCase()};
-			const res = await networkService.forgotPassword(newForm);
+			const res = await networkService.forgotPassword(form);
 			return res.data;
 		} catch (error) {
 			if (error.response.data) {
