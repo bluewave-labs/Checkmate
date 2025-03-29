@@ -12,8 +12,7 @@ const initialState = {
 
 export const register = createAsyncThunk("auth/register", async (form, thunkApi) => {
 	try {
-		const newForm = {...form, email: form.email.toLowerCase()}
-		const res = await networkService.registerUser(newForm);
+		const res = await networkService.registerUser(form);
 		return res.data;
 	} catch (error) {
 		if (error.response.data) {
@@ -29,8 +28,7 @@ export const register = createAsyncThunk("auth/register", async (form, thunkApi)
 
 export const login = createAsyncThunk("auth/login", async (form, thunkApi) => {
 	try {
-		const newForm = {...form, email: form.email.toLowerCase()}
-		const res = await networkService.loginUser(newForm);
+		const res = await networkService.loginUser(form);
 		return res.data;
 	} catch (error) {
 		if (error.response && error.response.data) {
@@ -100,7 +98,8 @@ export const forgotPassword = createAsyncThunk(
 	"auth/forgotPassword",
 	async (form, thunkApi) => {
 		try {
-			const res = await networkService.forgotPassword(form);
+			const newForm = {...form, email: form.toLowerCase()};
+			const res = await networkService.forgotPassword(newForm);
 			return res.data;
 		} catch (error) {
 			if (error.response.data) {
