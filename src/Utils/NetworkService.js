@@ -27,9 +27,6 @@ class NetworkService {
 		this.axiosInstance.interceptors.request.use(
 			(config) => {
 				const currentLanguage = i18next.language || "en";
-				if (config.data?.email) {
-					config.data.email = config.data.email.toLowerCase();
-				}
 
 				const { authToken } = store.getState().auth;
 
