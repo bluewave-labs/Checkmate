@@ -18,13 +18,13 @@ const ResponseGaugeChart = ({ avgResponseTime }) => {
 			? {
 					category: "Excellent",
 					main: theme.palette.success.main,
-					bg: theme.palette.success.contrastText,
+					bg: theme.palette.success.lowContrast,
 				}
 			: responseTime <= 500
 				? {
 						category: "Fair",
 						main: theme.palette.success.main,
-						bg: theme.palette.success.contrastText,
+						bg: theme.palette.success.lowContrast,
 					}
 				: responseTime <= 600
 					? {
@@ -35,7 +35,7 @@ const ResponseGaugeChart = ({ avgResponseTime }) => {
 					: {
 							category: "Poor",
 							main: theme.palette.error.main,
-							bg: theme.palette.error.contrastText,
+							bg: theme.palette.error.lowContrast,
 						};
 
 	return (
