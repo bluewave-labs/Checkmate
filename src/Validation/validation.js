@@ -65,7 +65,6 @@ const credentials = joi.object({
 		.string()
 		.trim()
 		.email({ tlds: { allow: false } })
-		.lowercase()
 		.messages({
 			"string.empty": "Email is required",
 			"string.email": "Must be a valid email address",
