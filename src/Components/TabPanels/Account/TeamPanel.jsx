@@ -153,7 +153,7 @@ const TeamPanel = () => {
 
 		try {
 			await networkService.sendInvitationToken({
-				email: toInvite.email,
+				email: toInvite.email.toLowerCase(),
 				role: toInvite.role,
 			});
 			closeInviteModal();
