@@ -205,9 +205,10 @@ function Sidebar() {
 			*/
 			sx={{
 				position: "relative",
-				border: 1,
+				borderRight: `1px solid ${theme.palette.primary.lowContrast}`, 
 				borderColor: theme.palette.primary.lowContrast,
-				borderRadius: theme.shape.borderRadius,
+				borderRadius: 0,
+				backgroundColor: theme.palette.primary.main,
 				"& :is(p, span, .MuiListSubheader-root)": {
 					/* 
 					Text color for unselected menu items and menu headings
@@ -399,6 +400,7 @@ function Sidebar() {
 										gap: theme.spacing(4),
 										borderRadius: theme.shape.borderRadius,
 										px: theme.spacing(4),
+										pl: theme.spacing(5),
 									}}
 								>
 									<ListItemIcon sx={{ minWidth: 0 }}>{item.icon}</ListItemIcon>
@@ -653,6 +655,7 @@ function Sidebar() {
 									gap: theme.spacing(4),
 									borderRadius: theme.shape.borderRadius,
 									px: theme.spacing(4),
+									pl: theme.spacing(5),
 								}}
 							>
 								<ListItemIcon sx={{ minWidth: 0 }}>{item.icon} </ListItemIcon>

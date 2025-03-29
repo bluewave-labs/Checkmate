@@ -45,7 +45,7 @@ class NetworkService {
 		this.axiosInstance.interceptors.response.use(
 			(response) => response,
 			(error) => {
-				if (!error.request && error.response && error.response.status === 401) {
+				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					dispatch(clearUptimeMonitorState());
 					navigate("/login");
@@ -263,6 +263,9 @@ class NetworkService {
 			description: monitor.description,
 			interval: monitor.interval,
 			notifications: monitor.notifications,
+			matchMethod: monitor.matchMethod,
+			expectedValue: monitor.expectedValue,
+			jsonPath: monitor.jsonPath,
 		};
 		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {
@@ -529,6 +532,24 @@ class NetworkService {
 	 */
 	async requestInvitationToken(config) {
 		return this.axiosInstance.post(`/invite`, { email: config.email, role: config.role });
+	}
+	/**
+	 * ************************************
+	 * Sends an invitation token
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.email - The email of the user to be invited.
+	 * @param {string} config.role - The role of the user to be invited.
+	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
+	 *
+	 */
+	async sendInvitationToken(config) {
+		return this.axiosInstance.post(`/invite/send`, {
+			email: config.email,
+			role: config.role,
+		});
 	}
 
 	/**
@@ -926,10 +947,15 @@ class NetworkService {
 
 	getDistributedUptimeDetails(config) {
 		const params = new URLSearchParams();
-		const { monitorId, onUpdate, onOpen, onError, dateRange, normalize } = config;
+		const { monitorId, dateRange, normalize, isPublic } = config;
 		if (dateRange) params.append("dateRange", dateRange);
 		if (normalize) params.append("normalize", normalize);
-		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}/initial?${params.toString()}`;
+		let url;
+		if (isPublic) {
+			url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/public/${monitorId}/initial?${params.toString()}`;
+		} else {
+			url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}/initial?${params.toString()}`;
+		}
 		return this.axiosInstance.get(url);
 	}
 

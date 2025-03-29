@@ -12,7 +12,9 @@ const HomeLayout = () => {
 			gap={14}
 		>
 			<Sidebar />
-			<Outlet />
+			<Stack className="home-content-wrapper">
+				<Outlet />
+			</Stack>
 		</Stack>
 	);
 };
