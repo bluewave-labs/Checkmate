@@ -372,5 +372,8 @@
   "infrastructureEditYour": "Edit your",
   "infrastructureEditMonitor": "Save Infrastructure Monitor",
   "infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
-  "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!"
+  "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
+  "errorInvalidTypeId": "Invalid notification type provided",
+  "errorInvalidFieldId": "Invalid field ID provided",
+  "inviteNoTokenFound": "No invite token found"
 }

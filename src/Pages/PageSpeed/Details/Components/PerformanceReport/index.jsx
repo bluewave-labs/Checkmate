@@ -32,7 +32,7 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 					component="span"
 					fontSize="inherit"
 					sx={{
-						color: theme.palette.primary.main,
+						color: theme.palette.primary.contrastTextTertiary,
 						fontWeight: 500,
 						textDecoration: "underline",
 						textUnderlineOffset: 2,

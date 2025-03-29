@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import Select from "../../Inputs/Select";
 import { GenericDialog } from "../../Dialog/genericDialog";
 import DataTable from "../../Table/";
+import { useGetInviteToken } from "../../../Hooks/inviteHooks";
 /**
  * TeamPanel component manages the organization and team members,
  * providing functionalities like renaming the organization, managing team members,
@@ -20,7 +21,6 @@ import DataTable from "../../Table/";
 
 const TeamPanel = () => {
 	const theme = useTheme();
-
 	const SPACING_GAP = theme.spacing(12);
 
 	const [toInvite, setToInvite] = useState({
@@ -33,6 +33,8 @@ const TeamPanel = () => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [errors, setErrors] = useState({});
 	const [isSendingInvite, setIsSendingInvite] = useState(false);
+
+	const [getInviteToken, clearToken, isLoading, error, token] = useGetInviteToken();
 
 	const headers = [
 		{
@@ -124,6 +126,10 @@ const TeamPanel = () => {
 		});
 	};
 
+	const handleGetToken = async () => {
+		await getInviteToken({ email: toInvite.email, role: toInvite.role });
+	};
+
 	const handleInviteMember = async () => {
 		if (!toInvite.email) {
 			setErrors((prev) => ({ ...prev, email: "Email is required." }));
@@ -146,7 +152,7 @@ const TeamPanel = () => {
 		}
 
 		try {
-			await networkService.requestInvitationToken({
+			await networkService.sendInvitationToken({
 				email: toInvite.email,
 				role: toInvite.role,
 			});
@@ -165,6 +171,7 @@ const TeamPanel = () => {
 
 	const closeInviteModal = () => {
 		setIsOpen(false);
+		clearToken();
 		setToInvite({ email: "", role: ["0"] });
 		setErrors({});
 	};
@@ -275,6 +282,13 @@ const TeamPanel = () => {
 						{ _id: "user", name: "User" },
 					]}
 				/>
+				{token && <Typography>Invite link</Typography>}
+				{token && (
+					<TextInput
+						id="invite-token"
+						value={token}
+					/>
+				)}
 				<Stack
 					direction="row"
 					gap={theme.spacing(4)}
@@ -292,11 +306,20 @@ const TeamPanel = () => {
 					<Button
 						variant="contained"
 						color="accent"
+						onClick={handleGetToken}
+						loading={isSendingInvite}
+						disabled={isDisabled}
+					>
+						Get token
+					</Button>
+					<Button
+						variant="contained"
+						color="accent"
 						onClick={handleInviteMember}
 						loading={isSendingInvite}
 						disabled={isDisabled}
 					>
-						Send invite
+						E-mail token
 					</Button>
 				</Stack>
 			</GenericDialog>

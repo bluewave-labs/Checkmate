@@ -35,6 +35,7 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 			overflow="hidden"
 			sx={{
 				borderStyle: "dashed",
+				minHeight: "calc(100vh - var(--env-var-spacing-2) * 2)",
 			}}
 		>
 			<Stack

@@ -372,5 +372,8 @@
   "infrastructureEditYour": "",
   "infrastructureEditMonitor": "",
   "infrastructureMonitorCreated": "",
-  "infrastructureMonitorUpdated": ""
+  "infrastructureMonitorUpdated": "",
+  "errorInvalidTypeId": "",
+  "errorInvalidFieldId": "",
+  "inviteNoTokenFound": ""
 }
