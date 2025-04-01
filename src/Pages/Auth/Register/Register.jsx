@@ -259,13 +259,14 @@ const Register = ({ isSuperAdmin }) => {
 	const handleChange = (event) => {
 		const { value, id } = event.target;
 		const name = idMap[id];
+		const lowerCasedValue = name === idMap["register-email-input"]?  value?.toLowerCase() || value : value
 		setForm((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: lowerCasedValue,
 		}));
 
 		const { error } = credentials.validate(
-			{ [name]: value },
+			{ [name]: lowerCasedValue },
 			{ abortEarly: false, context: { password: form.password } }
 		);
 

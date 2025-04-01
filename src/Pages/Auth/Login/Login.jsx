@@ -63,12 +63,13 @@ const Login = () => {
 	const handleChange = (event) => {
 		const { value, id } = event.target;
 		const name = idMap[id];
+		const lowerCasedValue = name === idMap["login-email-input"]? value?.toLowerCase()||value : value
 		setForm((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: lowerCasedValue,
 		}));
 
-		const { error } = credentials.validate({ [name]: value }, { abortEarly: false });
+		const { error } = credentials.validate({ [name]: lowerCasedValue }, { abortEarly: false });
 
 		setErrors((prev) => {
 			const prevErrors = { ...prev };

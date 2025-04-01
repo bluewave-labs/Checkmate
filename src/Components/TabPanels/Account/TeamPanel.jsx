@@ -107,12 +107,13 @@ const TeamPanel = () => {
 
 	const handleChange = (event) => {
 		const { value } = event.target;
+		const newEmail = value?.toLowerCase() || value
 		setToInvite((prev) => ({
 			...prev,
-			email: value,
+			email: newEmail,
 		}));
 
-		const validation = credentials.validate({ email: value }, { abortEarly: false });
+		const validation = credentials.validate({ email: newEmail }, { abortEarly: false });
 
 		setErrors((prev) => {
 			const updatedErrors = { ...prev };
