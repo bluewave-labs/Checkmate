@@ -70,7 +70,9 @@ const UptimeMonitors = () => {
 	const [sort, setSort] = useState(undefined);
 	const [isSearching, setIsSearching] = useState(false);
 	const [monitorUpdateTrigger, setMonitorUpdateTrigger] = useState(false);
-	const [selectedTypes, setSelectedTypes] = useState([]);
+	const [selectedTypes, setSelectedTypes] = useState(undefined);
+	const [selectedState, setSelectedState] = useState(undefined);
+	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(null);
 	const [toFilterActive, setToFilterActive] = useState(null);
 
@@ -107,19 +109,28 @@ const UptimeMonitors = () => {
 			types: TYPES,
 			monitorUpdateTrigger,
 		});
-	
-	let field = sort?.field;
-	let filter = search;
-	if (toFilterStatus !== null) {
-		field = "status";
-		filter = toFilterStatus;
-	} else if (toFilterActive !== null) {
-		field = "isActive";
-		filter = toFilterActive;
-	} else {
-		field = sort?.field;
-		filter = search;
-	}
+
+	const handleReset = () => {
+		setSelectedState(undefined);
+		setSelectedTypes(undefined);
+		setSelectedStatus(undefined);
+		setToFilterStatus(null);
+		setToFilterActive(null);
+	};
+
+	const field =
+		toFilterStatus !== null
+			? "status"
+			: toFilterActive !== null
+				? "isActive"
+				: sort?.field;
+
+	const filter =
+		toFilterStatus !== null
+			? toFilterStatus
+			: toFilterActive !== null
+				? toFilterActive
+				: search;
 
 	const [
 		monitorsWithChecks,
@@ -199,9 +210,13 @@ const UptimeMonitors = () => {
 				<Filter
 					selectedTypes={selectedTypes}
 					setSelectedTypes={setSelectedTypes}
-					toFilterStatus={toFilterStatus}
+					selectedStatus={selectedStatus}
+					setSelectedStatus={setSelectedStatus}
+					selectedState={selectedState}
+					setSelectedState={setSelectedState}
 					setToFilterStatus={setToFilterStatus}
 					setToFilterActive={setToFilterActive}
+					handleReset={handleReset}
 				/>
 				<SearchComponent
 					monitors={monitors}
