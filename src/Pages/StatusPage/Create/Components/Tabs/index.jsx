@@ -31,23 +31,22 @@ const Tabs = ({
 					borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
 					"& .MuiTabs-root": { height: "fit-content", minHeight: "0" },
 				}}
-				>
-
-			<TabList
-				onChange={(_, tab) => {
-					setTab(TAB_LIST.indexOf(tab));
-				}}
 			>
-				{TAB_LIST.map((tab, idx) => {
-					return (
-						<Tab
-							key={tab}
-							label={TAB_LIST[idx]}
-							value={TAB_LIST[idx]}
-						/>
-					);
-				})}
-			</TabList>
+				<TabList
+					onChange={(_, tab) => {
+						setTab(TAB_LIST.indexOf(tab));
+					}}
+				>
+					{TAB_LIST.map((tab, idx) => {
+						return (
+							<Tab
+								key={tab}
+								label={TAB_LIST[idx]}
+								value={TAB_LIST[idx]}
+							/>
+						);
+					})}
+				</TabList>
 			</Box>
 			{tab === 0 ? (
 				<Settings
