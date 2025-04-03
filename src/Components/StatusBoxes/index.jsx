@@ -20,6 +20,8 @@ const StatusBoxes = ({ shouldRender, flexWrap = "nowrap", children }) => {
 			direction="row"
 			flexWrap={flexWrap}
 			gap={theme.spacing(8)}
+			justifyContent="space-between"
+            display="flex"
 		>
 			{children}
 		</Stack>
