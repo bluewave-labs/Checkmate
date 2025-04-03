@@ -28,6 +28,7 @@ const SearchComponent = ({ monitors = [], onSearchChange, setIsSearching }) => {
 			width="25%"
 			minWidth={150}
 			ml="auto"
+			mt={2}
 		>
 			<Search
 				options={monitors}

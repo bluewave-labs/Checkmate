@@ -225,6 +225,15 @@ const baseTheme = (palette) => ({
 				},
 			},
 		},
+		MuiListItemText: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiTypography-root": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
 		MuiMenuItem: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -458,6 +467,28 @@ const baseTheme = (palette) => ({
 				root: ({ theme }) => ({
 					"& .MuiSwitch-track": {
 						backgroundColor: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		MuiSelect: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiOutlinedInput-input": {
+						color: theme.palette.primary.contrastText,
+					},
+					"& .MuiOutlinedInput-notchedOutline": {
+						borderColor: theme.palette.primary.lowContrast,
+						borderRadius: theme.shape.borderRadius,
+					},
+					"& .MuiSelect-icon": {
+						color: theme.palette.primary.contrastTextSecondary, // Dropdown + color
+					},
+					"&:hover": {
+						backgroundColor: theme.palette.primary.main, // Background on hover
+					},
+					"&:hover .MuiOutlinedInput-notchedOutline": {
+						borderColor: theme.palette.primary.lowContrast,
 					},
 				}),
 			},

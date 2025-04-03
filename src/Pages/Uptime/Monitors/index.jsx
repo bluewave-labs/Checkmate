@@ -13,6 +13,7 @@ import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
 import Fallback from "../../../Components/Fallback";
 import GenericFallback from "../../../Components/GenericFallback";
 import SearchComponent from "./Components/SearchComponent";
+import Filter from "./Components/Filter";
 
 import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 
@@ -69,6 +70,11 @@ const UptimeMonitors = () => {
 	const [sort, setSort] = useState(undefined);
 	const [isSearching, setIsSearching] = useState(false);
 	const [monitorUpdateTrigger, setMonitorUpdateTrigger] = useState(false);
+	const [selectedTypes, setSelectedTypes] = useState(undefined);
+	const [selectedState, setSelectedState] = useState(undefined);
+	const [selectedStatus, setSelectedStatus] = useState(undefined);
+	const [toFilterStatus, setToFilterStatus] = useState(undefined);
+	const [toFilterActive, setToFilterActive] = useState(undefined);
 
 	// Utils
 	const theme = useTheme();
@@ -104,6 +110,25 @@ const UptimeMonitors = () => {
 			monitorUpdateTrigger,
 		});
 
+	const handleReset = () => {
+		setSelectedState(undefined);
+		setSelectedTypes(undefined);
+		setSelectedStatus(undefined);
+		setToFilterStatus(undefined);
+		setToFilterActive(undefined);
+	};
+
+	const filterLookup = new Map([
+		[toFilterStatus, "status"],
+		[toFilterActive, "isActive"]
+	]);
+
+	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
+	const field = activeFilter?.[1] || sort?.field;
+	const filter = activeFilter?.[0] || search;
+
+	const effectiveTypes = selectedTypes?.length ? selectedTypes : TYPES;
+
 	const [
 		monitorsWithChecks,
 		monitorsWithChecksCount,
@@ -111,12 +136,12 @@ const UptimeMonitors = () => {
 		monitorsWithChecksNetworkError,
 	] = useFetchMonitorsWithChecks({
 		teamId,
-		types: TYPES,
+		types: effectiveTypes,
 		limit: 25,
 		page: page,
 		rowsPerPage: rowsPerPage,
-		filter: search,
-		field: sort?.field,
+		filter: filter,
+		field: field,
 		order: sort?.order,
 		monitorUpdateTrigger,
 	});
@@ -179,6 +204,17 @@ const UptimeMonitors = () => {
 					monitorCount={monitorsSummary?.totalMonitors}
 					heading={"Uptime monitors"}
 				></MonitorCountHeader>
+				<Filter
+					selectedTypes={selectedTypes}
+					setSelectedTypes={setSelectedTypes}
+					selectedStatus={selectedStatus}
+					setSelectedStatus={setSelectedStatus}
+					selectedState={selectedState}
+					setSelectedState={setSelectedState}
+					setToFilterStatus={setToFilterStatus}
+					setToFilterActive={setToFilterActive}
+					handleReset={handleReset}
+				/>
 				<SearchComponent
 					monitors={monitors}
 					onSearchChange={setSearch}
