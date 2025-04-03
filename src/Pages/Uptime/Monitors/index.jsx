@@ -73,8 +73,8 @@ const UptimeMonitors = () => {
 	const [selectedTypes, setSelectedTypes] = useState(undefined);
 	const [selectedState, setSelectedState] = useState(undefined);
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
-	const [toFilterStatus, setToFilterStatus] = useState(null);
-	const [toFilterActive, setToFilterActive] = useState(null);
+	const [toFilterStatus, setToFilterStatus] = useState(undefined);
+	const [toFilterActive, setToFilterActive] = useState(undefined);
 
 	// Utils
 	const theme = useTheme();
@@ -114,23 +114,20 @@ const UptimeMonitors = () => {
 		setSelectedState(undefined);
 		setSelectedTypes(undefined);
 		setSelectedStatus(undefined);
-		setToFilterStatus(null);
-		setToFilterActive(null);
+		setToFilterStatus(undefined);
+		setToFilterActive(undefined);
 	};
 
-	const field =
-		toFilterStatus !== null
-			? "status"
-			: toFilterActive !== null
-				? "isActive"
-				: sort?.field;
+	const filterLookup = new Map([
+		[toFilterStatus, "status"],
+		[toFilterActive, "isActive"]
+	]);
 
-	const filter =
-		toFilterStatus !== null
-			? toFilterStatus
-			: toFilterActive !== null
-				? toFilterActive
-				: search;
+	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
+	const field = activeFilter?.[1] || sort?.field;
+	const filter = activeFilter?.[0] || search;
+
+	const effectiveTypes = selectedTypes?.length ? selectedTypes : TYPES;
 
 	const [
 		monitorsWithChecks,
@@ -139,7 +136,7 @@ const UptimeMonitors = () => {
 		monitorsWithChecksNetworkError,
 	] = useFetchMonitorsWithChecks({
 		teamId,
-		types: selectedTypes && selectedTypes.length > 0 ? selectedTypes : TYPES,
+		types: effectiveTypes,
 		limit: 25,
 		page: page,
 		rowsPerPage: rowsPerPage,

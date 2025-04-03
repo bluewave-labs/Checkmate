@@ -19,6 +19,8 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 const FilterHeader = ({ header, options, value, onChange, multiple = true }) => {
 	const theme = useTheme();
 
+	const controlledValue = value === undefined ? [] : value; // Ensure value is always treated as an array for controlled component purposes
+
 	return (
 		<FormControl
 			sx={{ m: theme.spacing(2), minWidth: "10%" }}
@@ -33,7 +35,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 					/>
 				)}
 				displayEmpty
-				value={value ?? []}
+				value={controlledValue}
 				onChange={onChange}
 				renderValue={(selected) => {
 					if (!selected?.length) {
@@ -52,7 +54,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						value={option.value}
 					>
 						<Checkbox
-							checked={value?.includes(option.value)}
+							checked={controlledValue.includes(option.value)}
 							size="small"
 						/>
 						<ListItemText primary={option.label} />

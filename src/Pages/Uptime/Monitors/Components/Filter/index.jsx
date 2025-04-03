@@ -51,7 +51,7 @@ const Filter = ({
 		setSelectedStatus(selectedValues.length > 0 ? selectedValues : undefined);
 
 		if (selectedValues.length === 0 || selectedValues.length === 2) {
-			setToFilterStatus(null);
+			setToFilterStatus(undefined);
 		} else {
 			setToFilterStatus(selectedValues[0] === "Up" ? "true" : "false");
 		}
@@ -62,7 +62,7 @@ const Filter = ({
 		setSelectedState(selectedValues);
 
 		if (selectedValues.length === 0 || selectedValues.length === 2) {
-			setToFilterActive(null);
+			setToFilterActive(undefined);
 		} else {
 			setToFilterActive(selectedValues[0] === "Active" ? "true" : "false");
 		}
@@ -137,11 +137,11 @@ const Filter = ({
 };
 
 Filter.propTypes = {
-	selectedTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+	selectedTypes: PropTypes.arrayOf(PropTypes.string),
 	setSelectedTypes: PropTypes.func.isRequired,
-	selectedStatus: PropTypes.arrayOf(PropTypes.string).isRequired,
+	selectedStatus: PropTypes.arrayOf(PropTypes.string),
 	setSelectedStatus: PropTypes.func.isRequired,
-	selectedState: PropTypes.arrayOf(PropTypes.string).isRequired,
+	selectedState: PropTypes.arrayOf(PropTypes.string),
 	setSelectedState: PropTypes.func.isRequired,
 	setToFilterStatus: PropTypes.func.isRequired,
 	setToFilterActive: PropTypes.func.isRequired,
