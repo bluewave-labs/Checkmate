@@ -27,6 +27,23 @@ import { useTranslation } from "react-i18next";
  * @returns {JSX.Element} The rendered Filter component.
  */
 
+const typeOptions = [
+	{ value: "http", label: "HTTP(S)" },
+	{ value: "ping", label: "Ping" },
+	{ value: "docker", label: "Docker" },
+	{ value: "port", label: "Port" },
+];
+
+const statusOptions = [
+	{ value: "Up", label: "Up" },
+	{ value: "Down", label: "Down" },
+];
+
+const stateOptions = [
+	{ value: "Active", label: "Active" },
+	{ value: "Paused", label: "Paused" },
+];
+
 const Filter = ({
 	selectedTypes,
 	setSelectedTypes,
@@ -75,23 +92,6 @@ const Filter = ({
 			(selectedStatus?.length ?? 0) > 0
 		);
 	}, [selectedState, selectedTypes, selectedStatus]);
-
-	const typeOptions = [
-		{ value: "http", label: "HTTP(S)" },
-		{ value: "ping", label: "Ping" },
-		{ value: "docker", label: "Docker" },
-		{ value: "port", label: "Port" },
-	];
-
-	const statusOptions = [
-		{ value: "Up", label: "Up" },
-		{ value: "Down", label: "Down" },
-	];
-
-	const stateOptions = [
-		{ value: "Active", label: "Active" },
-		{ value: "Paused", label: "Paused" },
-	];
 
 	return (
 		<Box
