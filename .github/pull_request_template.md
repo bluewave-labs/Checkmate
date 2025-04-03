@@ -6,7 +6,7 @@ Briefly describe the changes you made and their purpose.
 
 ## Write your issue number after "Fixes: "
 
-Fixes: #123 
+Fixes #123 
 
 ## Please ensure all items are checked off before requesting a review. "Checked off" means you need to add an "x" character between brackets so they turn into checkmarks.
 
