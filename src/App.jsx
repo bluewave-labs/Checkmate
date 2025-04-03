@@ -25,10 +25,14 @@ function App() {
 		if (authToken) {
 			dispatch(getAppSettings({ authToken })).then((action) => {
 				if (action.payload && action.payload.success) {
-					const { language } = action.payload.data;
-					if (language) {
+						const { language } = action.payload.data;
+				const availableLanguages = Object.keys(i18n.options.resources || {});
+					if (language && availableLanguages.includes(language)) {
 						dispatch(setLanguage(language));
 						i18n.changeLanguage(language);
+					} else {
+						dispatch(setLanguage(availableLanguages[0]));
+						i18n.changeLanguage(availableLanguages[0]);
 					}
 				}
 			});
