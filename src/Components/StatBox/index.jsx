@@ -80,9 +80,8 @@ const StatBox = ({
 			};
 
 	const responsiveWidths = {
-		default: "calc(95% / 4)",
-		xl: "calc(95% / 3)",
-		md: "calc(95% / 2)",
+		default: `calc(25% - (3 * ${theme.spacing(8)} / 4))`, 
+		md: `calc(50% - (1 * ${theme.spacing(8)} / 2))`,
 	};
 
 	return (
@@ -94,9 +93,6 @@ const StatBox = ({
 				minWidth: 200,
 				// this is for status box to be reponsive on diff screens
 				width: responsiveWidths.default, // Default: 4 items per row
-				[theme.breakpoints.down("xl")]: {
-					width: responsiveWidths.xl, // 3 items per row
-				},
 				[theme.breakpoints.down("md")]: {
 					width: responsiveWidths.md, // 2 items per row
 				},
