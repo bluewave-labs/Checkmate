@@ -4,7 +4,7 @@
 
 Briefly describe the changes you made and their purpose. 
 
-## Write your issue number after "Fixes: "
+## Write your issue number after "Fixes "
 
 Fixes #123 
 
