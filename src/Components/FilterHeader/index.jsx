@@ -66,7 +66,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 							height: theme.spacing(20),
 							padding: 0,
 						}}
-					>cd
+					>
 						<Checkbox
 							checked={controlledValue.includes(option.value)}
 							size="small"
