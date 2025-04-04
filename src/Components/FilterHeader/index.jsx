@@ -47,12 +47,26 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						.filter(Boolean)
 						.join(", ");
 				}}
+				MenuProps={{
+					anchorOrigin: {
+						vertical: "bottom",
+						horizontal: "left",
+					},
+					transformOrigin: {
+						vertical: "top",
+						horizontal: "left",
+					},
+				}}
 			>
 				{options.map((option) => (
 					<MenuItem
 						key={option.value}
 						value={option.value}
-					>
+						sx={{
+							height: theme.spacing(20),
+							padding: 0,
+						}}
+					>cd
 						<Checkbox
 							checked={controlledValue.includes(option.value)}
 							size="small"
