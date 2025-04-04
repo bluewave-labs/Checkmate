@@ -370,6 +370,7 @@ const baseTheme = (palette) => ({
 				color: theme.palette.tertiary.contrastText,
 				backgroundColor: theme.palette.primary.main,
 				height: '34px',
+				minHeight: '34px',
 				borderRadius: 0,
 				textTransform: "none",
 				minWidth: "fit-content",

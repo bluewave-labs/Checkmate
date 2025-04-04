@@ -1,6 +1,6 @@
 // Components
 import { TabContext, TabList } from "@mui/lab";
-import { Tab } from "@mui/material";
+import { Box, Tab, useTheme } from "@mui/material";
 import Settings from "./Settings";
 import Content from "./Content";
 
@@ -22,23 +22,32 @@ const Tabs = ({
 	setTab,
 	TAB_LIST,
 }) => {
+
+	const theme = useTheme();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
-			<TabList
-				onChange={(_, tab) => {
-					setTab(TAB_LIST.indexOf(tab));
+			<Box
+				sx={{
+					borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
+					"& .MuiTabs-root": { height: "fit-content", minHeight: "0" },
 				}}
 			>
-				{TAB_LIST.map((tab, idx) => {
-					return (
-						<Tab
-							key={tab}
-							label={TAB_LIST[idx]}
-							value={TAB_LIST[idx]}
-						/>
-					);
-				})}
-			</TabList>
+				<TabList
+					onChange={(_, tab) => {
+						setTab(TAB_LIST.indexOf(tab));
+					}}
+				>
+					{TAB_LIST.map((tab, idx) => {
+						return (
+							<Tab
+								key={tab}
+								label={TAB_LIST[idx]}
+								value={TAB_LIST[idx]}
+							/>
+						);
+					})}
+				</TabList>
+			</Box>
 			{tab === 0 ? (
 				<Settings
 					tabValue={TAB_LIST[0]}
@@ -61,6 +70,7 @@ const Tabs = ({
 					setSelectedMonitors={setSelectedMonitors}
 				/>
 			)}
+			
 		</TabContext>
 	);
 };
