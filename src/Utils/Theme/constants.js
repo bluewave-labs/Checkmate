@@ -63,6 +63,8 @@ const paletteColors = {
 	orange500: "#E88C30",
 	orange600: "#DC6803",
 	orange800: "#624711",
+	yellow50: "#FFFCF5",
+	yellow300: "#FEC84B",
 };
 
 const semanticColors = {
@@ -248,6 +250,20 @@ const newSemanticColors = {
 			dark: newColors.red600,
 		},
 	},
+	pageSpeedWarning: {
+		main: {
+			light: newColors.yellow50,
+			dark: newColors.yellow300,
+		},
+		contrastText: {
+			light: newColors.offBlack,
+			dark: newColors.offWhite,
+		},
+		lowContrast: {
+			light: newColors.yellow300,
+			dark: newColors.yellow50,
+		},
+	},
 	/* These are temporary, just for everything not to break */
 	gradient: {
 		color1: {
@@ -308,4 +324,4 @@ const newSemanticColors = {
 	},
 };
 
-export { typographyLevels, semanticColors as colors, newSemanticColors };
+export { typographyLevels, semanticColors as colors, newSemanticColors, paletteColors };

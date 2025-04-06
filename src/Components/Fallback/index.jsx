@@ -1,12 +1,14 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography, Link } from "@mui/material";
 import Skeleton from "../../assets/Images/create-placeholder.svg?react";
 import SkeletonDark from "../../assets/Images/create-placeholder-dark.svg?react";
 import Background from "../../assets/Images/background-grid.svg?react";
 import Check from "../Check/Check";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { paletteColors } from "../../Utils/Theme/constants";
+import Alert from "../Alert";
 import "./index.css";
 
 /**
@@ -24,6 +26,29 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const mode = useSelector((state) => state.ui.mode);
+
+	// Custom warning message with clickable link
+	const renderWarningMessage = () => {
+		return (
+			<>
+				Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function. {" "}
+				<Link 
+					href="https://docs.checkmate.so/users-guide/quickstart#env-vars-server"
+					sx={{ 
+						textDecoration: "underline",
+						color: "inherit",
+						fontWeight: "inherit",
+						"&:hover": {
+							textDecoration: "underline",
+						}
+					}}
+				>
+					Click here to learn
+				</Link>
+				{" "}how to add your API key.
+			</>
+		);
+	};
 
 	return (
 		<Box
@@ -80,14 +105,42 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 				</Stack>
 				{/* TODO - display a different fallback if user is not an admin*/}
 				{isAdmin && (
-					<Button
-						variant="contained"
-						color="accent"
-						sx={{ alignSelf: "center" }}
-						onClick={() => navigate(link)}
-					>
-						Let's create your first {title}
-					</Button>
+					<>
+						<Button
+							variant="contained"
+							color="accent"
+							sx={{ alignSelf: "center" }}
+							onClick={() => navigate(link)}
+						>
+							Let's create your first {title}
+						</Button>
+						
+						{/* Warning box for PageSpeed monitor */}
+						{title === "pagespeed monitor" && (
+							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
+								<style>
+									{`
+										/* Only apply custom icon color in light mode */
+										${mode === 'light' ? `
+											.pagespeed-warning .alert.row-stack > .MuiBox-root > svg {
+												color: ${paletteColors.orange600} !important;
+											}
+										` : ''}
+									`}
+								</style>
+								<div className="pagespeed-warning">
+									<Alert
+										variant="warning"
+										hasIcon={true}
+										body={renderWarningMessage()}
+										customTextColor={mode === 'light' ? paletteColors.orange600 : undefined}
+										customBgColor={mode === 'light' ? paletteColors.yellow50 : undefined}
+										customBorderColor={mode === 'light' ? paletteColors.yellow300 : undefined}
+									/>
+								</div>
+							</Box>
+						)}
+					</>
 				)}
 			</Stack>
 		</Box>
