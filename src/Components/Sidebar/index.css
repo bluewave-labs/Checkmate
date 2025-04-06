@@ -79,6 +79,17 @@ aside .MuiListSubheader-root {
 	transition: padding 200ms ease;
 }
 
+.sidebar-delay-fade {
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease;
+}
+
+aside.sidebar-ready .sidebar-delay-fade {
+	opacity: 1;
+	visibility: visible;
+}
+
 @keyframes fadeIn {
 	0% {
 		opacity: 0;

@@ -743,6 +743,7 @@ function Sidebar() {
 							</Typography>
 						</Box>
 						<Stack
+							className="sidebar-delay-fade"
 							flexDirection={"row"}
 							marginLeft={"auto"}
 							columnGap={theme.spacing(2)}
