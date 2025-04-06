@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	Box,
 	Collapse,
@@ -127,6 +127,8 @@ function Sidebar() {
 	const distributedUptimeEnabled = useSelector(
 		(state) => state.ui.distributedUptimeEnabled
 	);
+	const sidebarRef = useRef(null);
+
 
 	const renderAccountMenuItems = () => {
 		let filteredAccountMenuItems = [...accountMenuItems];
@@ -196,6 +198,7 @@ function Sidebar() {
 	return (
 		<Stack
 			component="aside"
+			ref={sidebarRef}
 			className={collapsed ? "collapsed" : "expanded"}
 			/* TODO general padding should be here */
 			py={theme.spacing(6)}
