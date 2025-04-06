@@ -133,7 +133,7 @@ function Sidebar() {
 		const el = sidebarRef.current;
 		if (!el) return;
 	
-		const TRANSITION_DURATION = 650;
+		const TRANSITION_DURATION = 200;
 	
 		if (!collapsed) {
 			const timeout = setTimeout(() => {
