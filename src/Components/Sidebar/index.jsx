@@ -129,6 +129,21 @@ function Sidebar() {
 	);
 	const sidebarRef = useRef(null);
 
+	useEffect(() => {
+		const el = sidebarRef.current;
+		if (!el) return;
+	
+		const TRANSITION_DURATION = 650;
+	
+		if (!collapsed) {
+			const timeout = setTimeout(() => {
+				el.classList.add("sidebar-ready");
+			}, TRANSITION_DURATION);
+			return () => clearTimeout(timeout);
+		} else {
+			el.classList.remove("sidebar-ready");
+		}
+	}, [collapsed]);	
 
 	const renderAccountMenuItems = () => {
 		let filteredAccountMenuItems = [...accountMenuItems];
