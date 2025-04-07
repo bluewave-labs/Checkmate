@@ -22,7 +22,7 @@
 		"@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
 		"@mui/material": "6.4.10",
 		"@reduxjs/toolkit": "2.6.1",
-		"@solana/wallet-adapter-base": "0.9.23",
+		"@solana/wallet-adapter-base": "0.9.24",
 		"@solana/wallet-adapter-material-ui": "0.16.35",
 		"@solana/wallet-adapter-react": "0.15.36",
 		"@solana/wallet-adapter-react-ui": "0.9.36",
