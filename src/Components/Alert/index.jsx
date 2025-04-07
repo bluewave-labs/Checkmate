@@ -26,9 +26,6 @@ const icons = {
  * @param {boolean} [props.isToast] - Indicates if the alert is used as a toast notification.
  * @param {boolean} [props.hasIcon] - Whether to display an icon in the alert.
  * @param {function} props.onClick - Toast dismiss function.
- * @param {string} [props.customBgColor] - Custom background color for the alert.
- * @param {string} [props.customTextColor] - Custom text color for the alert.
- * @param {string} [props.customBorderColor] - Custom border color for the alert.
  * @returns {JSX.Element}
  */
 
@@ -39,9 +36,6 @@ const Alert = ({
 	isToast, 
 	hasIcon = true, 
 	onClick,
-	customBgColor,
-	customTextColor,
-	customBorderColor 
 }) => {
 	const theme = useTheme();
 	/* TODO 
@@ -49,9 +43,9 @@ const Alert = ({
 	*/
 
 	// Use custom colors if provided, otherwise use theme colors
-	const text = customTextColor || theme.palette.secondary.contrastText;
-	const border = customBorderColor || theme.palette.alert.contrastText;
-	const bg = customBgColor || theme.palette.alert.main;
+	const text =  theme.palette.secondary.contrastText;
+	const border = theme.palette.alert.contrastText;
+	const bg = theme.palette.alert.main;
 	const icon = icons[variant];
 
 	return (
@@ -128,9 +122,6 @@ Alert.propTypes = {
 	body: PropTypes.string,
 	isToast: PropTypes.bool,
 	hasIcon: PropTypes.bool,
-	customBgColor: PropTypes.string,
-	customTextColor: PropTypes.string,
-	customBorderColor: PropTypes.string,
 	onClick: function (props, propName, componentName) {
 		if (props.isToast && !props[propName]) {
 			return new Error(

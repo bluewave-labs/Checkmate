@@ -7,7 +7,6 @@ import Background from "../../assets/Images/background-grid.svg?react";
 import Check from "../Check/Check";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { paletteColors } from "../../Utils/Theme/constants";
 import Alert from "../Alert";
 import "./index.css";
 
@@ -118,26 +117,24 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 						{/* Warning box for PageSpeed monitor */}
 						{title === "pagespeed monitor" && (
 							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
-								<style>
-									{`
-										/* Only apply custom icon color in light mode */
-										${mode === 'light' ? `
-											.pagespeed-warning .alert.row-stack > .MuiBox-root > svg {
-												color: ${paletteColors.orange600} !important;
-											}
-										` : ''}
-									`}
-								</style>
-								<div className="pagespeed-warning">
+								<Box sx={{
+									'& .alert.row-stack': {
+										backgroundColor: theme.palette.warning.main,
+										borderColor: theme.palette.warning.lowContrast,
+										'& .MuiTypography-root': {
+											color: theme.palette.warning.contrastText
+										},
+										'& .MuiBox-root > svg': {
+											color: theme.palette.warning.contrastText
+										}
+									}
+								}}>
 									<Alert
 										variant="warning"
 										hasIcon={true}
 										body={renderWarningMessage()}
-										customTextColor={mode === 'light' ? paletteColors.orange600 : undefined}
-										customBgColor={mode === 'light' ? paletteColors.yellow50 : undefined}
-										customBorderColor={mode === 'light' ? paletteColors.yellow300 : undefined}
 									/>
-								</div>
+								</Box>
 							</Box>
 						)}
 					</>
