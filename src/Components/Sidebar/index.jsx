@@ -211,7 +211,7 @@ function Sidebar() {
 		<Stack
 			component="aside"
 			ref={sidebarRef}
-			className={collapsed ? "collapsed" : "expanded"}
+			className={`${collapsed ? "collapsed" : "expanded"} ${sidebarReady ? "sidebar-ready" : ""}`}
 			/* TODO general padding should be here */
 			py={theme.spacing(6)}
 			gap={theme.spacing(6)}
