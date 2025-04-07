@@ -82,12 +82,12 @@ aside .MuiListSubheader-root {
 .sidebar-delay-fade {
 	opacity: 0;
 	visibility: hidden;
+	transition: opacity 0.3s ease;
 }
 
 aside.expanded.sidebar-ready .sidebar-delay-fade {
 	opacity: 1;
 	visibility: visible;
-	transition: opacity 0.3s ease;
 }
 
 @keyframes fadeIn {
