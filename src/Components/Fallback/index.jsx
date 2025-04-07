@@ -33,6 +33,7 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 				Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function. {" "}
 				<Link 
 					href="https://docs.checkmate.so/users-guide/quickstart#env-vars-server"
+					target="_blank"
 					sx={{ 
 						textDecoration: "underline",
 						color: "inherit",
