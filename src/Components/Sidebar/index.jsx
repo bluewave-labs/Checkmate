@@ -129,13 +129,14 @@ function Sidebar() {
 	);
 	const sidebarRef = useRef(null);
 	const [sidebarReady, setSidebarReady] = useState(false);
+	const TRANSITION_DURATION = 200;
 
 	useEffect(() => {
 		if (!collapsed) {
 			setSidebarReady(false);
 			const timeout = setTimeout(() => {
 				setSidebarReady(true);
-			}, 200);
+			}, TRANSITION_DURATION);
 			return () => clearTimeout(timeout);
 		} else {
 			setSidebarReady(false);
@@ -205,13 +206,14 @@ function Sidebar() {
 	}, [location]);
 
 	const iconColor = theme.palette.primary.contrastTextTertiary;
+	const sidebarClassName = `${collapsed ? "collapsed" : "expanded"} ${sidebarReady ? "sidebar-ready" : ""}`;
 
 	/* TODO refactor this, there are a some ternaries and comments in the return  */
 	return (
 		<Stack
 			component="aside"
 			ref={sidebarRef}
-			className={`${collapsed ? "collapsed" : "expanded"} ${sidebarReady ? "sidebar-ready" : ""}`}
+			className={sidebarClassName}
 			/* TODO general padding should be here */
 			py={theme.spacing(6)}
 			gap={theme.spacing(6)}
