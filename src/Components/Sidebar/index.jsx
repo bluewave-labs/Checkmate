@@ -128,7 +128,7 @@ function Sidebar() {
 		(state) => state.ui.distributedUptimeEnabled
 	);
 	const sidebarRef = useRef(null);
-	const [sidebarReady, setSidebarReady] = useState(!collapsed);
+	const [sidebarReady, setSidebarReady] = useState(false);
 
 	useEffect(() => {
 		if (!collapsed) {
