@@ -128,20 +128,17 @@ function Sidebar() {
 		(state) => state.ui.distributedUptimeEnabled
 	);
 	const sidebarRef = useRef(null);
+	const [sidebarReady, setSidebarReady] = useState(!collapsed);
 
 	useEffect(() => {
-		const el = sidebarRef.current;
-		if (!el) return;
-	
-		const TRANSITION_DURATION = 200;
-	
 		if (!collapsed) {
+			setSidebarReady(false);
 			const timeout = setTimeout(() => {
-				el.classList.add("sidebar-ready");
-			}, TRANSITION_DURATION);
+				setSidebarReady(true);
+			}, 200);
 			return () => clearTimeout(timeout);
 		} else {
-			el.classList.remove("sidebar-ready");
+			setSidebarReady(false);
 		}
 	}, [collapsed]);	
 
