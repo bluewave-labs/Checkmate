@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	Box,
 	Collapse,
@@ -127,6 +127,23 @@ function Sidebar() {
 	const distributedUptimeEnabled = useSelector(
 		(state) => state.ui.distributedUptimeEnabled
 	);
+	const sidebarRef = useRef(null);
+
+	useEffect(() => {
+		const el = sidebarRef.current;
+		if (!el) return;
+	
+		const TRANSITION_DURATION = 200;
+	
+		if (!collapsed) {
+			const timeout = setTimeout(() => {
+				el.classList.add("sidebar-ready");
+			}, TRANSITION_DURATION);
+			return () => clearTimeout(timeout);
+		} else {
+			el.classList.remove("sidebar-ready");
+		}
+	}, [collapsed]);	
 
 	const renderAccountMenuItems = () => {
 		let filteredAccountMenuItems = [...accountMenuItems];
@@ -196,6 +213,7 @@ function Sidebar() {
 	return (
 		<Stack
 			component="aside"
+			ref={sidebarRef}
 			className={collapsed ? "collapsed" : "expanded"}
 			/* TODO general padding should be here */
 			py={theme.spacing(6)}
@@ -725,6 +743,7 @@ function Sidebar() {
 							</Typography>
 						</Box>
 						<Stack
+							className="sidebar-delay-fade"
 							flexDirection={"row"}
 							marginLeft={"auto"}
 							columnGap={theme.spacing(2)}
