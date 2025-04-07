@@ -63,7 +63,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						key={option.value}
 						value={option.value}
 						sx={{
-							height: theme.spacing(20),
+							height: theme.spacing(17),
 							padding: 0,
 						}}
 					>
