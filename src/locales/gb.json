@@ -62,8 +62,6 @@
   "settingsDisplayTimezone": "Display timezone",
   "settingsDisplayTimezoneDescription": "The timezone of the dashboard you publicly display.",
   "settingsAppearance": "Appearance",
-  "state": "State",
-  "reset": "Reset",
   "settingsAppearanceDescription": "Switch between light and dark mode, or change user interface language",
   "settingsThemeMode": "Theme Mode",
   "settingsLanguage": "Language",
