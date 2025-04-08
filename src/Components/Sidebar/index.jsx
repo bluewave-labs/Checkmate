@@ -359,21 +359,6 @@ function Sidebar() {
 					component="nav"
 					aria-labelledby="nested-menu-subheader"
 					disablePadding
-					subheader={
-						<ListSubheader
-							component="div"
-							id="nested-menu-subheader"
-							sx={{
-								py: theme.spacing(4),
-								/* TODO px should be centralized in container */
-								px: collapsed ? theme.spacing(2) : theme.spacing(4),
-								backgroundColor: "transparent",
-								position: "static",
-							}}
-						>
-							Menu
-						</ListSubheader>
-					}
 					sx={{
 						px: theme.spacing(6),
 						height: "100%",
