@@ -149,7 +149,7 @@ function Sidebar() {
 			<MenuItem
 				key={item.name}
 				onClick={() => {
-				     closePopup();
+				     closePopup()
 					 navigate(item.path)
 				}}
 				sx={{
