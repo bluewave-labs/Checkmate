@@ -148,7 +148,10 @@ function Sidebar() {
 		return filteredAccountMenuItems.map((item) => (
 			<MenuItem
 				key={item.name}
-				onClick={() => navigate(item.path)}
+				onClick={() => {
+				     closePopup();
+					 navigate(item.path)
+				}}
 				sx={{
 					gap: theme.spacing(2),
 					borderRadius: theme.shape.borderRadius,
