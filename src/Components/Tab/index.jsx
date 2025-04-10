@@ -4,18 +4,6 @@ import PropTypes from "prop-types";
 
 /**
  * CustomTabList component
- *
- * Wraps MUI's TabList inside a Box to apply consistent styling, specifically a bottom border,
- * while avoiding the default top, left, and right borders applied through global MuiTabs overrides.
- * This is used to match our tab layout across pages like Account and StatusPage.
- *
- * @component
- * @example
- * <CustomTabList value={value} onChange={handleChange}>
- *   <Tab label="General" value="general" />
- *   <Tab label="Settings" value="settings" />
- * </CustomTabList>
- *
  * @param {string} value - The currently selected tab's value.
  * @param {function} onChange - Callback when a different tab is selected.
  * @param {React.ReactNode} children - Tab components to render inside the TabList.
