@@ -1,7 +1,6 @@
 // Components
 import { TabContext, TabList } from "@mui/lab";
 import { Box, Tab, useTheme } from "@mui/material";
-import TabListWrapper from "../../../../../Components/Tab";
 import Settings from "./Settings";
 import Content from "./Content";
 
