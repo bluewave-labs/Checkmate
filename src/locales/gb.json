@@ -186,6 +186,8 @@
   },
   "testLocale": "testLocale",
   "add": "Add",
+  "state": "State",
+  "reset": "Reset",
   "monitors": "monitors",
   "distributedUptimeStatusCreateStatusPage": "status page",
   "distributedUptimeStatusCreateStatusPageAccess": "Access",
