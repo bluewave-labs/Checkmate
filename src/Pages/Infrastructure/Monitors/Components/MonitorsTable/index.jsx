@@ -68,7 +68,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 			),
 		},
 		{ id: "cpu", content: t("cpu"), render: (row) => <CustomGauge progress={row.cpu} /> },
-		{ id: "mem", content: t("mem"), render: (row) => <CustomGauge progress={row.mem} /> },
+		{ id: "memory", content: t("memory"), render: (row) => <CustomGauge progress={row.mem} /> },
 		{ id: "disk", content: t("disk"), render: (row) => <CustomGauge progress={row.disk} /> },
 		{
 			id: "actions",
