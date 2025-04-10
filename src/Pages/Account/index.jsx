@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
 import CustomTabList from "../../Components/Tab";
 import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
 import ProfilePanel from "../../Components/TabPanels/Account/ProfilePanel";
 import PasswordPanel from "../../Components/TabPanels/Account/PasswordPanel";
 import TeamPanel from "../../Components/TabPanels/Account/TeamPanel";

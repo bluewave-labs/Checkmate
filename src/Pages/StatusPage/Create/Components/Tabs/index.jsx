@@ -1,6 +1,6 @@
 // Components
-import { TabContext, TabList } from "@mui/lab";
-import { Box, Tab, useTheme } from "@mui/material";
+import { TabContext } from "@mui/lab";
+import { Tab, useTheme } from "@mui/material";
 import Settings from "./Settings";
 import Content from "./Content";
 
