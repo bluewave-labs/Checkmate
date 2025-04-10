@@ -2,7 +2,7 @@ import { Box, useTheme } from "@mui/material";
 import { TabList } from "@mui/lab";
 import PropTypes from "prop-types";
 
-const TabListWrapper = ({ value, onChange, children, ...props }) => {
+const CustomTabList = ({ value, onChange, children, ...props }) => {
 	const theme = useTheme();
 
 	return (
@@ -19,10 +19,10 @@ const TabListWrapper = ({ value, onChange, children, ...props }) => {
 	);
 };
 
-TabListWrapper.propTypes = {
+CustomTabList.propTypes = {
 	value: PropTypes.string,
 	onChange: PropTypes.func,
 	children: PropTypes.node,
 };
 
-export default TabListWrapper;
+export default CustomTabList;

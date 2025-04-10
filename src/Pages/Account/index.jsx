@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
-import TabListWrapper from "../../Components/Tab";
+import CustomTabList from "../../Components/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import ProfilePanel from "../../Components/TabPanels/Account/ProfilePanel";
@@ -60,7 +60,7 @@ const Account = ({ open = "profile" }) => {
 			py={theme.spacing(12)}
 		>
 			<TabContext value={tab}>
-				<TabListWrapper value={tab} onChange={handleTabChange} aria-label="account tabs">
+				<CustomTabList value={tab} onChange={handleTabChange} aria-label="account tabs">
 					{tabList.map((label, index) => (
 						<Tab
 							label={label}
@@ -71,7 +71,7 @@ const Account = ({ open = "profile" }) => {
 							tabIndex={index}
 						/>
 					))}
-				</TabListWrapper>
+				</CustomTabList>
 				<ProfilePanel />
 				{user.role.includes("superadmin") && <PasswordPanel />}
 				{!hideTeams && <TeamPanel />}

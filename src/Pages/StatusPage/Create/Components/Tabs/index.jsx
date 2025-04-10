@@ -6,7 +6,7 @@ import Content from "./Content";
 
 // Utils
 import PropTypes from "prop-types";
-import TabListWrapper from "../../../../../Components/Tab";
+import CustomTabList from "../../../../../Components/Tab";
 
 const Tabs = ({
 	isCreate,
@@ -27,7 +27,7 @@ const Tabs = ({
 	const theme = useTheme();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
-			<TabListWrapper
+			<CustomTabList
 				onChange={(_, selected) => {
 					setTab(TAB_LIST.indexOf(selected));
 				}}
@@ -40,7 +40,7 @@ const Tabs = ({
 						value={tabLabel}
 					/>
 				))}
-			</TabListWrapper>
+			</CustomTabList>
 			{tab === 0 ? (
 				<Settings
 					tabValue={TAB_LIST[0]}
