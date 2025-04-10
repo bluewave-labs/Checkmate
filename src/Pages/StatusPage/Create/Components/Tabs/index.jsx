@@ -1,11 +1,13 @@
 // Components
 import { TabContext, TabList } from "@mui/lab";
 import { Box, Tab, useTheme } from "@mui/material";
+import TabListWrapper from "../../../../../Components/Tab";
 import Settings from "./Settings";
 import Content from "./Content";
 
 // Utils
 import PropTypes from "prop-types";
+import TabListWrapper from "../../../../../Components/Tab";
 
 const Tabs = ({
 	isCreate,
@@ -26,28 +28,20 @@ const Tabs = ({
 	const theme = useTheme();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
-			<Box
-				sx={{
-					borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
-					"& .MuiTabs-root": { height: "fit-content", minHeight: "0" },
+			<TabListWrapper
+				onChange={(_, selected) => {
+					setTab(TAB_LIST.indexOf(selected));
 				}}
+				aria-label="status page tabs"
 			>
-				<TabList
-					onChange={(_, tab) => {
-						setTab(TAB_LIST.indexOf(tab));
-					}}
-				>
-					{TAB_LIST.map((tab, idx) => {
-						return (
-							<Tab
-								key={tab}
-								label={TAB_LIST[idx]}
-								value={TAB_LIST[idx]}
-							/>
-						);
-					})}
-				</TabList>
-			</Box>
+				{TAB_LIST.map((tabLabel, idx) => (
+					<Tab
+						key={tabLabel}
+						label={tabLabel}
+						value={tabLabel}
+					/>
+				))}
+			</TabListWrapper>
 			{tab === 0 ? (
 				<Settings
 					tabValue={TAB_LIST[0]}
