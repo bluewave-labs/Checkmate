@@ -87,7 +87,6 @@ const InfrastructureMonitors = () => {
 			/>
 			<MonitorCountHeader
 				shouldRender={!isLoading}
-				heading="Infrastructure monitors"
 				monitorCount={summary?.totalMonitors ?? 0}
 			/>
 			<MonitorsTable
