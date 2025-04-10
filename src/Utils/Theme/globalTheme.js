@@ -386,7 +386,6 @@ const baseTheme = (palette) => ({
 				  borderRightColor: theme.palette.primary.lowContrast,
 				},
 				"&.Mui-selected": {
-				  backgroundColor: theme.palette.secondary.main,
 				  color: theme.palette.secondary.contrastText,
 				  borderColor: theme.palette.secondary.contrastText,
 				  borderRightColor: theme.palette.primary.lowContrast,
