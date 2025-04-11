@@ -121,7 +121,7 @@ const ProfilePanel = () => {
 	// Opens the picture update modal
 	const openPictureModal = () => {
 		setIsOpen("picture");
-		setFile({ delete: localData.deleteProfileImage });
+		setFile(undefined);
 	};
 
 	// Closes the picture update modal and resets related states
@@ -176,6 +176,7 @@ const ProfilePanel = () => {
 			...prev,
 			deleteProfileImage: true,
 		}));
+		setFile(undefined);
 		errors["unchanged"] && clearError("unchanged");
 	};
 
