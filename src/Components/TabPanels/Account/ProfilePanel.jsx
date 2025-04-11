@@ -5,7 +5,6 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Avatar from "../../Avatar";
 import TextInput from "../../Inputs/TextInput";
 import ImageField from "../../Inputs/Image";
-import ImageUpload from "../../Inputs/ImageUpload";
 import { credentials, imageValidation } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
@@ -50,6 +49,8 @@ const ProfilePanel = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [file, setFile] = useState();
+	const intervalRef = useRef(null);
+	const [progress, setProgress] = useState({ value: 0, isLoading: false });
 
 	// Handles input field changes and performs validation
 	const handleChange = (event) => {
@@ -65,43 +66,43 @@ const ProfilePanel = () => {
 	};
 
 	// Handles image file
-	// const handlePicture = (event) => {
-	// 	const pic = event.target.files[0];
-	// 	let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
-	// 	if (error) return;
+	const handlePicture = (event) => {
+		const pic = event.target.files[0];
+		let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
+		if (error) return;
 
-	// 	setProgress((prev) => ({ ...prev, isLoading: true }));
-	// 	setFile({
-	// 		src: URL.createObjectURL(pic),
-	// 		name: pic.name,
-	// 		size: formatBytes(pic.size),
-	// 		delete: false,
-	// 	});
+		setProgress((prev) => ({ ...prev, isLoading: true }));
+		setFile({
+			src: URL.createObjectURL(pic),
+			name: pic.name,
+			size: formatBytes(pic.size),
+			delete: false,
+		});
 
-	// 	//TODO - potentitally remove, will revisit in the future
-	// 	intervalRef.current = setInterval(() => {
-	// 		const buffer = 12;
-	// 		setProgress((prev) => {
-	// 			if (prev.value + buffer >= 100) {
-	// 				clearInterval(intervalRef.current);
-	// 				return { value: 100, isLoading: false };
-	// 			}
-	// 			return { ...prev, value: prev.value + buffer };
-	// 		});
-	// 	}, 120);
-	// };
+		//TODO - potentitally remove, will revisit in the future
+		intervalRef.current = setInterval(() => {
+			const buffer = 12;
+			setProgress((prev) => {
+				if (prev.value + buffer >= 100) {
+					clearInterval(intervalRef.current);
+					return { value: 100, isLoading: false };
+				}
+				return { ...prev, value: prev.value + buffer };
+			});
+		}, 120);
+	};
 
 	// Validates input against provided schema and updates error state
-	// const validateField = (toValidate, schema, name = "picture") => {
-	// 	const { error } = schema.validate(toValidate, { abortEarly: false });
-	// 	setErrors((prev) => {
-	// 		const prevErrors = { ...prev };
-	// 		if (error) prevErrors[name] = error.details[0].message;
-	// 		else delete prevErrors[name];
-	// 		return prevErrors;
-	// 	});
-	// 	if (error) return true;
-	// };
+	const validateField = (toValidate, schema, name = "picture") => {
+		const { error } = schema.validate(toValidate, { abortEarly: false });
+		setErrors((prev) => {
+			const prevErrors = { ...prev };
+			if (error) prevErrors[name] = error.details[0].message;
+			else delete prevErrors[name];
+			return prevErrors;
+		});
+		if (error) return true;
+	};
 
 	// Clears specific error from errors state
 	const clearError = (err) => {
@@ -113,12 +114,12 @@ const ProfilePanel = () => {
 	};
 
 	// Resets picture-related states and clears interval
-	// const removePicture = () => {
-	// 	errors["picture"] && clearError("picture");
-	// 	setFile({ delete: true });
-	// 	clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
-	// 	setProgress({ value: 0, isLoading: false });
-	// };
+	const removePicture = () => {
+		errors["picture"] && clearError("picture");
+		setFile({ delete: true });
+		clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
+		setProgress({ value: 0, isLoading: false });
+	};
 
 	// Opens the picture update modal
 	const openPictureModal = () => {
@@ -137,17 +138,15 @@ const ProfilePanel = () => {
 
 	// Updates profile image displayed on UI
 	const handleUpdatePicture = () => {
-		if (!file?.src) return;
-	  
+		setProgress({ value: 0, isLoading: false });
 		setLocalData((prev) => ({
-		  ...prev,
-		  file: file.src,
-		  deleteProfileImage: false,
+			...prev,
+			file: file.src,
+			deleteProfileImage: false,
 		}));
 		setIsOpen("");
-		clearError("unchanged");
-	  };
-	  
+		errors["unchanged"] && clearError("unchanged");
+	};
 
 	// Handles form submission to update user profile
 	const handleSaveProfile = async (event) => {
@@ -409,27 +408,34 @@ const ProfilePanel = () => {
 				onClose={closePictureModal}
 				theme={theme}
 			>
-				<ImageUpload
+				<ImageField
+					id="update-profile-picture"
 					src={
-						file?.src
-						  ? file.src
-						  : localData?.file
-							? localData.file
-							: user?.avatarImage
-							  ? `data:image/png;base64,${user.avatarImage}`
-							  : ""
-					  }					  
-					onChange={(newFile) => {
-						setFile(newFile);
-						clearError("unchanged");
-					}}
-					onError={(msg) => {
-						setErrors((prev) => ({ ...prev, picture: msg }));
-					}}
-					validationSchema={imageValidation}
-					previewIsRound
-					maxSize={3 * 1024 * 1024}
+						file?.delete
+							? ""
+							: file?.src
+								? file.src
+								: localData?.file
+									? localData.file
+									: user?.avatarImage
+										? `data:image/png;base64,${user.avatarImage}`
+										: ""
+					}
+					loading={progress.isLoading && progress.value !== 100}
+					onChange={handlePicture}
+				/>
+				{progress.isLoading || progress.value !== 0 || errors["picture"] ? (
+					<ProgressUpload
+						icon={<ImageIcon />}
+						label={file?.name}
+						size={file?.size}
+						progress={progress.value}
+						onClick={removePicture}
+						error={errors["picture"]}
 					/>
+				) : (
+					""
+				)}
 				<Stack
 					direction="row"
 					mt={theme.spacing(10)}
@@ -439,16 +445,7 @@ const ProfilePanel = () => {
 					<Button
 						variant="text"
 						color="info"
-						onClick={() => {
-							setFile(undefined);
-							setLocalData((prev) => ({
-							  ...prev,
-							  deleteProfileImage: true,
-							  file: undefined,
-							}));
-							clearError("unchanged");
-						  }}
-						  
+						onClick={removePicture}
 					>
 						Remove
 					</Button>
@@ -457,9 +454,11 @@ const ProfilePanel = () => {
 						color="accent"
 						onClick={handleUpdatePicture}
 						disabled={
-							(errors?.picture || !file?.src)
-						  }						  
-						  
+							(Object.keys(errors).length !== 0 && errors?.picture) ||
+							progress.value !== 100
+								? true
+								: false
+						}
 					>
 						Update
 					</Button>
