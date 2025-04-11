@@ -50,8 +50,6 @@ const ProfilePanel = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [file, setFile] = useState();
-	const intervalRef = useRef(null);
-	const [progress, setProgress] = useState({ value: 0, isLoading: false });
 
 	// Handles input field changes and performs validation
 	const handleChange = (event) => {
@@ -67,31 +65,31 @@ const ProfilePanel = () => {
 	};
 
 	// Handles image file
-	const handlePicture = (event) => {
-		const pic = event.target.files[0];
-		let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
-		if (error) return;
+	// const handlePicture = (event) => {
+	// 	const pic = event.target.files[0];
+	// 	let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
+	// 	if (error) return;
 
-		setProgress((prev) => ({ ...prev, isLoading: true }));
-		setFile({
-			src: URL.createObjectURL(pic),
-			name: pic.name,
-			size: formatBytes(pic.size),
-			delete: false,
-		});
+	// 	setProgress((prev) => ({ ...prev, isLoading: true }));
+	// 	setFile({
+	// 		src: URL.createObjectURL(pic),
+	// 		name: pic.name,
+	// 		size: formatBytes(pic.size),
+	// 		delete: false,
+	// 	});
 
-		//TODO - potentitally remove, will revisit in the future
-		intervalRef.current = setInterval(() => {
-			const buffer = 12;
-			setProgress((prev) => {
-				if (prev.value + buffer >= 100) {
-					clearInterval(intervalRef.current);
-					return { value: 100, isLoading: false };
-				}
-				return { ...prev, value: prev.value + buffer };
-			});
-		}, 120);
-	};
+	// 	//TODO - potentitally remove, will revisit in the future
+	// 	intervalRef.current = setInterval(() => {
+	// 		const buffer = 12;
+	// 		setProgress((prev) => {
+	// 			if (prev.value + buffer >= 100) {
+	// 				clearInterval(intervalRef.current);
+	// 				return { value: 100, isLoading: false };
+	// 			}
+	// 			return { ...prev, value: prev.value + buffer };
+	// 		});
+	// 	}, 120);
+	// };
 
 	// Validates input against provided schema and updates error state
 	const validateField = (toValidate, schema, name = "picture") => {
@@ -116,11 +114,9 @@ const ProfilePanel = () => {
 
 	// Resets picture-related states and clears interval
 	const removePicture = () => {
-		errors["picture"] && clearError("picture");
+		if (errors["picture"]) clearError("picture");
 		setFile({ delete: true });
-		clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
-		setProgress({ value: 0, isLoading: false });
-	};
+	};	  
 
 	// Opens the picture update modal
 	const openPictureModal = () => {
@@ -130,25 +126,22 @@ const ProfilePanel = () => {
 
 	// Closes the picture update modal and resets related states
 	const closePictureModal = () => {
-		errors["picture"] && clearError("picture");
-		setFile(); //reset file
-		clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
-		setProgress({ value: 0, isLoading: false });
-		setIsOpen("");
-	};
+		if (errors["picture"]) clearError("picture");
+		setFile(undefined); // reset uploaded image
+		setIsOpen("");      // close modal
+	};	
 
 	// Updates profile image displayed on UI
 	const handleUpdatePicture = () => {
-		setProgress({ value: 0, isLoading: false });
 		setLocalData((prev) => ({
 			...prev,
-			file: file.src,
+			file: file?.src,
 			deleteProfileImage: false,
 		}));
 		setIsOpen("");
-		errors["unchanged"] && clearError("unchanged");
+		if (errors["unchanged"]) clearError("unchanged");
 	};
-
+	
 	// Handles form submission to update user profile
 	const handleSaveProfile = async (event) => {
 		event.preventDefault();
@@ -433,18 +426,6 @@ const ProfilePanel = () => {
 					previewIsRound
 					maxSize={3 * 1024 * 1024}
 				/>
-				{progress.isLoading || progress.value !== 0 || errors["picture"] ? (
-					<ProgressUpload
-						icon={<ImageIcon />}
-						label={file?.name}
-						size={file?.size}
-						progress={progress.value}
-						onClick={removePicture}
-						error={errors["picture"]}
-					/>
-				) : (
-					""
-				)}
 				<Stack
 					direction="row"
 					mt={theme.spacing(10)}
@@ -462,12 +443,7 @@ const ProfilePanel = () => {
 						variant="contained"
 						color="accent"
 						onClick={handleUpdatePicture}
-						disabled={
-							(Object.keys(errors).length !== 0 && errors?.picture) ||
-							progress.value !== 100
-								? true
-								: false
-						}
+						disabled={!!errors.picture || !file?.src}
 					>
 						Update
 					</Button>
