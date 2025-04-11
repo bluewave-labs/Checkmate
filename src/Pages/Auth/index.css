@@ -34,7 +34,7 @@
 }
 .auth button:not(.MuiIconButton-root),
 .auth .field .MuiInputBase-root:has(input) {
-	height: 38px;
+	height: 34px;
 }
 .auth .field svg {
 	width: 24px;
@@ -93,7 +93,7 @@
 	}
 	.auth button:not(.MuiIconButton-root),
 	.auth .field .MuiInputBase-root:has(input) {
-		height: 36px;
+		height: 34px;
 	}
 	.auth .check span.MuiTypography-root,
 	.auth .field .input-error,
