@@ -67,43 +67,43 @@ const ProfilePanel = () => {
 	};
 
 	// Handles image file
-	const handlePicture = (event) => {
-		const pic = event.target.files[0];
-		let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
-		if (error) return;
+	// const handlePicture = (event) => {
+	// 	const pic = event.target.files[0];
+	// 	let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
+	// 	if (error) return;
 
-		setProgress((prev) => ({ ...prev, isLoading: true }));
-		setFile({
-			src: URL.createObjectURL(pic),
-			name: pic.name,
-			size: formatBytes(pic.size),
-			delete: false,
-		});
+	// 	setProgress((prev) => ({ ...prev, isLoading: true }));
+	// 	setFile({
+	// 		src: URL.createObjectURL(pic),
+	// 		name: pic.name,
+	// 		size: formatBytes(pic.size),
+	// 		delete: false,
+	// 	});
 
-		//TODO - potentitally remove, will revisit in the future
-		intervalRef.current = setInterval(() => {
-			const buffer = 12;
-			setProgress((prev) => {
-				if (prev.value + buffer >= 100) {
-					clearInterval(intervalRef.current);
-					return { value: 100, isLoading: false };
-				}
-				return { ...prev, value: prev.value + buffer };
-			});
-		}, 120);
-	};
+	// 	//TODO - potentitally remove, will revisit in the future
+	// 	intervalRef.current = setInterval(() => {
+	// 		const buffer = 12;
+	// 		setProgress((prev) => {
+	// 			if (prev.value + buffer >= 100) {
+	// 				clearInterval(intervalRef.current);
+	// 				return { value: 100, isLoading: false };
+	// 			}
+	// 			return { ...prev, value: prev.value + buffer };
+	// 		});
+	// 	}, 120);
+	// };
 
 	// Validates input against provided schema and updates error state
-	const validateField = (toValidate, schema, name = "picture") => {
-		const { error } = schema.validate(toValidate, { abortEarly: false });
-		setErrors((prev) => {
-			const prevErrors = { ...prev };
-			if (error) prevErrors[name] = error.details[0].message;
-			else delete prevErrors[name];
-			return prevErrors;
-		});
-		if (error) return true;
-	};
+	// const validateField = (toValidate, schema, name = "picture") => {
+	// 	const { error } = schema.validate(toValidate, { abortEarly: false });
+	// 	setErrors((prev) => {
+	// 		const prevErrors = { ...prev };
+	// 		if (error) prevErrors[name] = error.details[0].message;
+	// 		else delete prevErrors[name];
+	// 		return prevErrors;
+	// 	});
+	// 	if (error) return true;
+	// };
 
 	// Clears specific error from errors state
 	const clearError = (err) => {
