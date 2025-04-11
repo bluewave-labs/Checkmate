@@ -5,6 +5,7 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Avatar from "../../Avatar";
 import TextInput from "../../Inputs/TextInput";
 import ImageField from "../../Inputs/Image";
+import ImageUpload from "../../Inputs/ImageUpload";
 import { credentials, imageValidation } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
@@ -408,21 +409,29 @@ const ProfilePanel = () => {
 				onClose={closePictureModal}
 				theme={theme}
 			>
-				<ImageField
-					id="update-profile-picture"
+				<ImageUpload
 					src={
-						file?.delete
-							? ""
-							: file?.src
-								? file.src
-								: localData?.file
-									? localData.file
-									: user?.avatarImage
-										? `data:image/png;base64,${user.avatarImage}`
-										: ""
+						file?.src
+							? file.src
+							: localData?.file
+								? localData.file
+								: user?.avatarImage
+									? `data:image/png;base64,${user.avatarImage}`
+									: ""
 					}
-					loading={progress.isLoading && progress.value !== 100}
-					onChange={handlePicture}
+					onChange={(newFile) => {
+						if (newFile) {
+							setFile({
+								src: URL.createObjectURL(newFile),
+								name: newFile.name,
+								size: formatBytes(newFile.size),
+								file: newFile,
+							});
+							clearError("unchanged");
+						}
+					}}
+					previewIsRound
+					maxSize={3 * 1024 * 1024}
 				/>
 				{progress.isLoading || progress.value !== 0 || errors["picture"] ? (
 					<ProgressUpload
