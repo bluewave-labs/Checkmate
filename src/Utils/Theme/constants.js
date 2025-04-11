@@ -235,6 +235,21 @@ const newSemanticColors = {
 			dark: newColors.orange600,
 		},
 	},
+	/* Custom palette for PageSpeed warning box */
+	pageSpeedWarning: {
+		main: {
+			light: paletteColors.orange50,
+			dark: paletteColors.orange800,
+		},
+		contrastText: {
+			light: paletteColors.orange600,
+			dark: paletteColors.orange100,
+		},
+		lowContrast: {
+			light: paletteColors.orange300,
+			dark: paletteColors.orange400,
+		},
+	},
 	error: {
 		main: {
 			light: newColors.red700,
