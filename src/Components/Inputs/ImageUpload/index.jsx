@@ -22,6 +22,8 @@ import { useTheme } from "@emotion/react";
  * @param {number} [props.maxSize=3145728] - Maximum file size allowed in bytes (default is 3MB)
  * @param {Array<string>} [props.accept=['jpg', 'jpeg', 'png']] - Array of accepted file formats
  * @param {Object} [props.errors] - Object containing error messages
+ * @param {function} props.onError - Called with validation error message
+ * @param {object} props.validationSchema - A schema object
  * @returns {JSX.Element} The rendered component
  */
 const ImageUpload = ({
@@ -31,6 +33,8 @@ const ImageUpload = ({
 	maxSize = 3 * 1024 * 1024,
 	accept = ["jpg", "jpeg", "png"],
 	error,
+    validationSchema,
+    onError,
 }) => {
 	const theme = useTheme();
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
