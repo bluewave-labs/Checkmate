@@ -11,7 +11,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import PropTypes from "prop-types";
 import { createToast } from "../../../Utils/toastUtils";
 import { formatBytes } from "../../../Utils/fileUtils";
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 
 /**
@@ -37,6 +37,9 @@ const ImageUpload = ({
 	error,
 }) => {
 	const theme = useTheme();
+
+    const [uploadComplete, setUploadComplete] = useState(false);
+    const [completedFile, setCompletedFile] = useState(null);
 
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState({ value: 0, isLoading: false });
@@ -67,15 +70,24 @@ const ImageUpload = ({
               const buffer = 12;
               if (prev.value + buffer >= 100) {
                 clearInterval(intervalRef.current);
-                onChange(previewFile); // notify parent after complete
+                setUploadComplete(true);           
+                setCompletedFile(previewFile);    
                 return { value: 100, isLoading: false };
-              }
+            }            
               return { value: prev.value + buffer, isLoading: true };
             });
           }, 120);
         },
         [maxSize, onChange]
     );
+
+    useEffect(() => {
+        if (uploadComplete && completedFile) {
+            onChange?.(completedFile);
+            setUploadComplete(false);
+            setCompletedFile(null);
+        }
+    }, [uploadComplete, completedFile, onChange]);  
 
 	if (src) {
         return (
@@ -92,7 +104,7 @@ const ImageUpload = ({
             />
             </Stack>
         );
-    }
+    }  
       
 	return (
         <>

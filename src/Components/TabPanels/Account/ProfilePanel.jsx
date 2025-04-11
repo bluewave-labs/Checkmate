@@ -414,15 +414,10 @@ const ProfilePanel = () => {
 					}
 					onChange={(newFile) => {
 						if (newFile) {
-							setFile({
-								src: URL.createObjectURL(newFile),
-								name: newFile.name,
-								size: formatBytes(newFile.size),
-								file: newFile,
-							});
+							setFile(newFile); // newFile already has src, name, size, file
 							clearError("unchanged");
 						}
-					}}
+					}}								
 					previewIsRound
 					maxSize={3 * 1024 * 1024}
 				/>
