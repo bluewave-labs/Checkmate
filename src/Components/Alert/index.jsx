@@ -29,20 +29,12 @@ const icons = {
  * @returns {JSX.Element}
  */
 
-const Alert = ({ 
-	variant, 
-	title, 
-	body, 
-	isToast, 
-	hasIcon = true, 
-	onClick,
-}) => {
+const Alert = ({ variant, title, body, isToast, hasIcon = true, onClick }) => {
 	const theme = useTheme();
 	/* TODO 
 	Do we need other variants for alert?
 	*/
 
-	// Use custom colors if provided, otherwise use theme colors
 	const text =  theme.palette.secondary.contrastText;
 	const border = theme.palette.alert.contrastText;
 	const bg = theme.palette.alert.main;
