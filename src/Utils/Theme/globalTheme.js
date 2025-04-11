@@ -477,7 +477,6 @@ const baseTheme = (palette) => ({
 				root: ({ theme }) => ({
 					"& .MuiOutlinedInput-input": {
 						color: theme.palette.primary.contrastText,
-						paddingLeft: theme.spacing(14),
 					},
 					"& .MuiOutlinedInput-notchedOutline": {
 						borderColor: theme.palette.primary.lowContrast,
@@ -485,7 +484,6 @@ const baseTheme = (palette) => ({
 					},
 					"& .MuiSelect-icon": {
 						color: theme.palette.primary.contrastTextSecondary, // Dropdown + color
-						left: theme.spacing(4),
 					},
 					"&:hover": {
 						backgroundColor: theme.palette.primary.main, // Background on hover
