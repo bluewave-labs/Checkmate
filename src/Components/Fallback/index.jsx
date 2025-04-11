@@ -19,10 +19,11 @@ import "./index.css";
  * @param {Array<string>} props.checks - An array of strings representing the checks to display.
  * @param {string} [props.link="/"] - The link to navigate to.
  * @param {boolean} [props.vowelStart=false] - Whether the title starts with a vowel.
+ * @param {boolean} [props.showPageSpeedWarning=false] - Whether to show the PageSpeed API warning.
  * @returns {JSX.Element} The rendered fallback UI.
  */
 
-const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) => {
+const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, showPageSpeedWarning = false }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const mode = useSelector((state) => state.ui.mode);
@@ -36,6 +37,7 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 				<Link 
 					href="https://docs.checkmate.so/users-guide/quickstart#env-vars-server"
 					target="_blank"
+					rel="noopener noreferrer"
 					sx={{ 
 						textDecoration: "underline",
 						color: "inherit",
@@ -45,9 +47,9 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 						}
 					}}
 				>
-					{t("pageSpeedLearnMore")}
+					{t("pageSpeedLearnMoreLink")}
 				</Link>
-				{" "} {t("pageSpeedAddApiKey")}
+				{" "}{t("pageSpeedAddApiKey")}
 			</>
 		);
 	};
@@ -118,7 +120,7 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 						</Button>
 						
 						{/* Warning box for PageSpeed monitor */}
-						{title === "pagespeed monitor" && (
+						{(title === "pagespeed monitor" && showPageSpeedWarning) && (
 							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
 								<Box sx={{
 									'& .alert.row-stack': {
@@ -153,6 +155,7 @@ Fallback.propTypes = {
 	link: PropTypes.string,
 	isAdmin: PropTypes.bool,
 	vowelStart: PropTypes.bool,
+	showPageSpeedWarning: PropTypes.bool,
 };
 
 export default Fallback;
