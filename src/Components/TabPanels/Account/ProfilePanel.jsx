@@ -137,15 +137,17 @@ const ProfilePanel = () => {
 
 	// Updates profile image displayed on UI
 	const handleUpdatePicture = () => {
-		setProgress({ value: 0, isLoading: false });
+		if (!file?.src) return;
+	  
 		setLocalData((prev) => ({
-			...prev,
-			file: file.src,
-			deleteProfileImage: false,
+		  ...prev,
+		  file: file.src,
+		  deleteProfileImage: false,
 		}));
 		setIsOpen("");
-		errors["unchanged"] && clearError("unchanged");
-	};
+		clearError("unchanged");
+	  };
+	  
 
 	// Handles form submission to update user profile
 	const handleSaveProfile = async (event) => {
@@ -437,7 +439,16 @@ const ProfilePanel = () => {
 					<Button
 						variant="text"
 						color="info"
-						onClick={() => setFile(undefined)}
+						onClick={() => {
+							setFile(undefined);
+							setLocalData((prev) => ({
+							  ...prev,
+							  deleteProfileImage: true,
+							  file: undefined,
+							}));
+							clearError("unchanged");
+						  }}
+						  
 					>
 						Remove
 					</Button>
