@@ -375,5 +375,8 @@
   "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
   "errorInvalidTypeId": "Invalid notification type provided",
   "errorInvalidFieldId": "Invalid field ID provided",
-  "inviteNoTokenFound": "No invite token found"
+  "inviteNoTokenFound": "No invite token found",
+  "pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function.",
+  "pageSpeedLearnMore": "Click here to learn",
+  "pageSpeedAddApiKey": "how to add your API key."
 }

@@ -8,6 +8,7 @@ import Check from "../Check/Check";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Alert from "../Alert";
+import { useTranslation } from "react-i18next";
 import "./index.css";
 
 /**
@@ -25,12 +26,13 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const mode = useSelector((state) => state.ui.mode);
+	const { t } = useTranslation();
 
 	// Custom warning message with clickable link
 	const renderWarningMessage = () => {
 		return (
 			<>
-				Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function. {" "}
+				{t("pageSpeedWarning")} {" "}
 				<Link 
 					href="https://docs.checkmate.so/users-guide/quickstart#env-vars-server"
 					target="_blank"
@@ -43,9 +45,9 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false }) =>
 						}
 					}}
 				>
-					Click here to learn
+					{t("pageSpeedLearnMore")}
 				</Link>
-				{" "}how to add your API key.
+				{" "} {t("pageSpeedAddApiKey")}
 			</>
 		);
 	};
