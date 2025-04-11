@@ -4,12 +4,14 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Image from "../../../Components/Image";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
+import ProgressUpload from "../../ProgressBars";
+import ImageIcon from "@mui/icons-material/Image";
 
 // Utils
 import PropTypes from "prop-types";
 import { createToast } from "../../../Utils/toastUtils";
 import { formatBytes } from "../../../Utils/fileUtils";
-import { useCallback } from "react";
+import { useCallback, useState, useRef } from "react";
 import { useTheme } from "@emotion/react";
 
 /**
@@ -35,20 +37,45 @@ const ImageUpload = ({
 	error,
 }) => {
 	const theme = useTheme();
+
+    const [file, setFile] = useState(null);
+    const [progress, setProgress] = useState({ value: 0, isLoading: false });
+    const intervalRef = useRef(null);
+
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
 
 	const handleImageChange = useCallback(
-		(file) => {
-			if (file.size > maxSize) {
-				createToast({
-					body: "File size is too large",
-				});
-				return;
-			}
-			onChange(file);
-		},
-		[maxSize, onChange]
-	);
+        (file) => {
+          if (!file) return;
+          if (file.size > maxSize) {
+            createToast({ body: "File size is too large" });
+            return;
+          }
+      
+          const previewFile = {
+            src: URL.createObjectURL(file),
+            name: file.name,
+            size: formatBytes(file.size),
+            file,
+          };
+      
+          setFile(previewFile);
+          setProgress({ value: 0, isLoading: true });
+      
+          intervalRef.current = setInterval(() => {
+            setProgress((prev) => {
+              const buffer = 12;
+              if (prev.value + buffer >= 100) {
+                clearInterval(intervalRef.current);
+                onChange(previewFile); // notify parent after complete
+                return { value: 100, isLoading: false };
+              }
+              return { value: prev.value + buffer, isLoading: true };
+            });
+          }, 120);
+        },
+        [maxSize, onChange]
+    );
 
 	if (src) {
         return (
@@ -163,6 +190,21 @@ const ImageUpload = ({
                   </Typography>
                 </Stack>
               </Box>
+              {(progress.isLoading || progress.value !== 0) && file && (
+                <ProgressUpload
+                    icon={<ImageIcon />}
+                    label={file.name}
+                    size={file.size}
+                    progress={progress.value}
+                    onClick={() => {
+                    clearInterval(intervalRef.current);
+                    setFile(null);
+                    setProgress({ value: 0, isLoading: false });
+                    onChange(undefined); // notify parent
+                    }}
+                    error={error}
+                />
+              )}
               <Typography
                 component="p"
                 color={theme.palette.primary.contrastTextTertiary}
