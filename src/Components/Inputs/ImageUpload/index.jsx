@@ -1,5 +1,5 @@
 // Components
-import { Button, Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Image from "../../../Components/Image";
 import TextField from "@mui/material/TextField";
@@ -37,10 +37,8 @@ const ImageUpload = ({
 	error,
 }) => {
 	const theme = useTheme();
-
     const [uploadComplete, setUploadComplete] = useState(false);
     const [completedFile, setCompletedFile] = useState(null);
-
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState({ value: 0, isLoading: false });
     const intervalRef = useRef(null);

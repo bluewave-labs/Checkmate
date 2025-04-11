@@ -1,17 +1,13 @@
 import { useTheme } from "@emotion/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Avatar from "../../Avatar";
 import TextInput from "../../Inputs/TextInput";
-import ImageField from "../../Inputs/Image";
 import ImageUpload from "../../Inputs/ImageUpload";
 import { credentials, imageValidation } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
-import ImageIcon from "@mui/icons-material/Image";
-import ProgressUpload from "../../ProgressBars";
-import { formatBytes } from "../../../Utils/fileUtils";
 import { clearUptimeMonitorState } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
@@ -64,33 +60,6 @@ const ProfilePanel = () => {
 		validateField({ [name]: value }, credentials, name);
 	};
 
-	// Handles image file
-	// const handlePicture = (event) => {
-	// 	const pic = event.target.files[0];
-	// 	let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
-	// 	if (error) return;
-
-	// 	setProgress((prev) => ({ ...prev, isLoading: true }));
-	// 	setFile({
-	// 		src: URL.createObjectURL(pic),
-	// 		name: pic.name,
-	// 		size: formatBytes(pic.size),
-	// 		delete: false,
-	// 	});
-
-	// 	//TODO - potentitally remove, will revisit in the future
-	// 	intervalRef.current = setInterval(() => {
-	// 		const buffer = 12;
-	// 		setProgress((prev) => {
-	// 			if (prev.value + buffer >= 100) {
-	// 				clearInterval(intervalRef.current);
-	// 				return { value: 100, isLoading: false };
-	// 			}
-	// 			return { ...prev, value: prev.value + buffer };
-	// 		});
-	// 	}, 120);
-	// };
-
 	// Validates input against provided schema and updates error state
 	const validateField = (toValidate, schema, name = "picture") => {
 		const { error } = schema.validate(toValidate, { abortEarly: false });
@@ -134,8 +103,8 @@ const ProfilePanel = () => {
 	// Closes the picture update modal and resets related states
 	const closePictureModal = () => {
 		if (errors["picture"]) clearError("picture");
-		setFile(undefined); // reset uploaded image
-		setIsOpen("");      // close modal
+		setFile(undefined); 
+		setIsOpen("");     
 	};	
 
 	// Updates profile image displayed on UI
