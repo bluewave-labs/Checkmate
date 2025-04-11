@@ -67,7 +67,6 @@ const PageSpeed = () => {
 			<MonitorCountHeader
 				shouldRender={!isLoading}
 				monitorCount={summary?.totalMonitors}
-				heading="PageSpeed monitors"
 				sx={{ mb: theme.spacing(8) }}
 			/>
 			<MonitorGrid

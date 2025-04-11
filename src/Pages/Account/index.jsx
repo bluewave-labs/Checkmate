@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
+import CustomTabList from "../../Components/Tab";
 import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
 import ProfilePanel from "../../Components/TabPanels/Account/ProfilePanel";
 import PasswordPanel from "../../Components/TabPanels/Account/PasswordPanel";
 import TeamPanel from "../../Components/TabPanels/Account/TeamPanel";
@@ -59,29 +59,18 @@ const Account = ({ open = "profile" }) => {
 			py={theme.spacing(12)}
 		>
 			<TabContext value={tab}>
-				<Box
-					sx={{
-						borderBottom: 1,
-						borderColor: theme.palette.primary.lowContrast,
-						"& .MuiTabs-root": { height: "fit-content", minHeight: "0" },
-					}}
-				>
-					<TabList
-						onChange={handleTabChange}
-						aria-label="account tabs"
-					>
-						{tabList.map((label, index) => (
-							<Tab
-								label={label}
-								key={index}
-								value={label.toLowerCase()}
-								onKeyDown={handleKeyDown}
-								onFocus={() => handleFocus(label.toLowerCase())}
-								tabIndex={index}
-							/>
-						))}
-					</TabList>
-				</Box>
+				<CustomTabList value={tab} onChange={handleTabChange} aria-label="account tabs">
+					{tabList.map((label, index) => (
+						<Tab
+							label={label}
+							key={index}
+							value={label.toLowerCase()}
+							onKeyDown={handleKeyDown}
+							onFocus={() => handleFocus(label.toLowerCase())}
+							tabIndex={index}
+						/>
+					))}
+				</CustomTabList>
 				<ProfilePanel />
 				{user.role.includes("superadmin") && <PasswordPanel />}
 				{!hideTeams && <TeamPanel />}

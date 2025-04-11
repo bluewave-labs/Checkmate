@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	Box,
 	Collapse,
@@ -127,6 +127,21 @@ function Sidebar() {
 	const distributedUptimeEnabled = useSelector(
 		(state) => state.ui.distributedUptimeEnabled
 	);
+	const sidebarRef = useRef(null);
+	const [sidebarReady, setSidebarReady] = useState(false);
+	const TRANSITION_DURATION = 200;
+
+	useEffect(() => {
+		if (!collapsed) {
+			setSidebarReady(false);
+			const timeout = setTimeout(() => {
+				setSidebarReady(true);
+			}, TRANSITION_DURATION);
+			return () => clearTimeout(timeout);
+		} else {
+			setSidebarReady(false);
+		}
+	}, [collapsed]);	
 
 	const renderAccountMenuItems = () => {
 		let filteredAccountMenuItems = [...accountMenuItems];
@@ -148,7 +163,10 @@ function Sidebar() {
 		return filteredAccountMenuItems.map((item) => (
 			<MenuItem
 				key={item.name}
-				onClick={() => navigate(item.path)}
+				onClick={() => {
+				     closePopup()
+					 navigate(item.path)
+				}}
 				sx={{
 					gap: theme.spacing(2),
 					borderRadius: theme.shape.borderRadius,
@@ -191,12 +209,14 @@ function Sidebar() {
 	}, [location]);
 
 	const iconColor = theme.palette.primary.contrastTextTertiary;
+	const sidebarClassName = `${collapsed ? "collapsed" : "expanded"} ${sidebarReady ? "sidebar-ready" : ""}`;
 
 	/* TODO refactor this, there are a some ternaries and comments in the return  */
 	return (
 		<Stack
 			component="aside"
-			className={collapsed ? "collapsed" : "expanded"}
+			ref={sidebarRef}
+			className={sidebarClassName}
 			/* TODO general padding should be here */
 			py={theme.spacing(6)}
 			gap={theme.spacing(6)}
@@ -342,21 +362,6 @@ function Sidebar() {
 					component="nav"
 					aria-labelledby="nested-menu-subheader"
 					disablePadding
-					subheader={
-						<ListSubheader
-							component="div"
-							id="nested-menu-subheader"
-							sx={{
-								py: theme.spacing(4),
-								/* TODO px should be centralized in container */
-								px: collapsed ? theme.spacing(2) : theme.spacing(4),
-								backgroundColor: "transparent",
-								position: "static",
-							}}
-						>
-							Menu
-						</ListSubheader>
-					}
 					sx={{
 						px: theme.spacing(6),
 						height: "100%",
@@ -725,6 +730,7 @@ function Sidebar() {
 							</Typography>
 						</Box>
 						<Stack
+							className="sidebar-delay-fade"
 							flexDirection={"row"}
 							marginLeft={"auto"}
 							columnGap={theme.spacing(2)}

@@ -1,6 +1,4 @@
-import { Stack } from "@mui/material";
-import { Heading } from "../Heading";
-import CircularCount from "../CircularCount";
+import { Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import SkeletonLayout from "./skeleton";
@@ -8,22 +6,36 @@ import SkeletonLayout from "./skeleton";
 const MonitorCountHeader = ({
 	shouldRender = true,
 	monitorCount,
-	heading,
+	heading = "monitors",
 	sx,
 	children,
 }) => {
 	const theme = useTheme();
 	if (!shouldRender) return <SkeletonLayout />;
 
+	if (monitorCount === 1) {
+		heading = "monitor";
+	}
+
 	return (
 		<Stack
 			direction="row"
 			alignItems="center"
+			display="flex"
+			width="fit-content"
+			height={theme.spacing(18)}
 			gap={theme.spacing(2)}
-			sx={{ ...sx }}
+			mt={theme.spacing(2)}
+			px={theme.spacing(4)}
+			pt={theme.spacing(2)}
+			pb={theme.spacing(3)}
+			borderRadius={theme.spacing(1)}
+			sx={{
+				...sx,
+				backgroundColor: theme.palette.secondary.main,
+			}}
 		>
-			<Heading component="h2">{heading}</Heading>
-			<CircularCount count={monitorCount} />
+			{monitorCount} <Typography component="h2">{heading}</Typography>
 			{children}
 		</Stack>
 	);

@@ -120,7 +120,7 @@ const UptimeMonitors = () => {
 
 	const filterLookup = new Map([
 		[toFilterStatus, "status"],
-		[toFilterActive, "isActive"]
+		[toFilterActive, "isActive"],
 	]);
 
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
@@ -202,7 +202,6 @@ const UptimeMonitors = () => {
 				<MonitorCountHeader
 					shouldRender={monitors?.length > 0 && !monitorsWithSummaryIsLoading}
 					monitorCount={monitorsSummary?.totalMonitors}
-					heading={"Uptime monitors"}
 				></MonitorCountHeader>
 				<Filter
 					selectedTypes={selectedTypes}

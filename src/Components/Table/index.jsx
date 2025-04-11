@@ -65,7 +65,7 @@ const DataTable = ({
 						backgroundColor: theme.palette.secondary.main,
 						color: theme.palette.secondary.contrastText,
 						fontWeight: 600,
-						fontSize: "12px",
+						fontSize: "13px",
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.primary.main,
