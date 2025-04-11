@@ -50,8 +50,6 @@ const ProfilePanel = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [file, setFile] = useState();
-	const intervalRef = useRef(null);
-	const [progress, setProgress] = useState({ value: 0, isLoading: false });
 
 	// Handles input field changes and performs validation
 	const handleChange = (event) => {
@@ -115,12 +113,12 @@ const ProfilePanel = () => {
 	};
 
 	// Resets picture-related states and clears interval
-	const removePicture = () => {
-		errors["picture"] && clearError("picture");
-		setFile({ delete: true });
-		clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
-		setProgress({ value: 0, isLoading: false });
-	};
+	// const removePicture = () => {
+	// 	errors["picture"] && clearError("picture");
+	// 	setFile({ delete: true });
+	// 	clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
+	// 	setProgress({ value: 0, isLoading: false });
+	// };
 
 	// Opens the picture update modal
 	const openPictureModal = () => {
@@ -411,16 +409,14 @@ const ProfilePanel = () => {
 			>
 				<ImageUpload
 					src={
-						file?.delete
-						? ""
-						: file?.src
-							? file.src
-							: localData?.file
+						file?.src
+						  ? file.src
+						  : localData?.file
 							? localData.file
 							: user?.avatarImage
-								? `data:image/png;base64,${user.avatarImage}`
-								: ""
-					}
+							  ? `data:image/png;base64,${user.avatarImage}`
+							  : ""
+					  }					  
 					onChange={(newFile) => {
 						setFile(newFile);
 						clearError("unchanged");
@@ -432,18 +428,6 @@ const ProfilePanel = () => {
 					previewIsRound
 					maxSize={3 * 1024 * 1024}
 					/>
-				{progress.isLoading || progress.value !== 0 || errors["picture"] ? (
-					<ProgressUpload
-						icon={<ImageIcon />}
-						label={file?.name}
-						size={file?.size}
-						progress={progress.value}
-						onClick={removePicture}
-						error={errors["picture"]}
-					/>
-				) : (
-					""
-				)}
 				<Stack
 					direction="row"
 					mt={theme.spacing(10)}
@@ -453,7 +437,7 @@ const ProfilePanel = () => {
 					<Button
 						variant="text"
 						color="info"
-						onClick={removePicture}
+						onClick={() => setFile(undefined)}
 					>
 						Remove
 					</Button>
@@ -462,11 +446,9 @@ const ProfilePanel = () => {
 						color="accent"
 						onClick={handleUpdatePicture}
 						disabled={
-							(Object.keys(errors).length !== 0 && errors?.picture) ||
-							progress.value !== 100
-								? true
-								: false
-						}
+							(errors?.picture || !file?.src)
+						  }						  
+						  
 					>
 						Update
 					</Button>
