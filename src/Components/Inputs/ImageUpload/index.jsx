@@ -40,17 +40,54 @@ const ImageUpload = ({
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
 
 	const handleImageChange = useCallback(
-		(file) => {
-			if (file.size > maxSize) {
-				createToast({
-					body: "File size is too large",
-				});
-				return;
-			}
-			onChange(file);
-		},
-		[maxSize, onChange]
-	);
+        (file) => {
+            if (!file) return;
+        
+            const mimeType = file.type;
+            const isValidFormat = accept.some((format) =>
+            mimeType.toLowerCase().includes(format.toLowerCase())
+            );
+        
+            if (!isValidFormat) {
+            const msg = `Unsupported file type. Supported: ${accept.join(", ").toUpperCase()}`;
+            createToast({ body: msg });
+            onError?.(msg);
+            return;
+            }
+        
+            if (file.size > maxSize) {
+            const msg = `File size too large. Max allowed: ${formatBytes(maxSize)}`;
+            createToast({ body: msg });
+            onError?.(msg);
+            return;
+            }
+        
+            if (validationSchema) {
+            const { error: validationError } = validationSchema.validate(
+                { type: file.type, size: file.size },
+                { abortEarly: false }
+            );
+        
+            if (validationError) {
+                const msg = validationError.details?.[0]?.message;
+                createToast({ body: msg });
+                onError?.(msg);
+                return;
+            }
+            }
+        
+            const previewFile = {
+            src: URL.createObjectURL(file),
+            name: file.name,
+            size: formatBytes(file.size),
+            file,
+            };
+        
+            onChange(previewFile);
+        },
+        [accept, maxSize, validationSchema, onChange, onError]
+    );
+      
 
 	if (src) {
 		return (
