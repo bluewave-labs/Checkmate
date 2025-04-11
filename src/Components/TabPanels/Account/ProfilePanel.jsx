@@ -114,9 +114,16 @@ const ProfilePanel = () => {
 
 	// Resets picture-related states and clears interval
 	const removePicture = () => {
-		if (errors["picture"]) clearError("picture");
-		setFile({ delete: true });
-	};	  
+		errors["picture"] && clearError("picture");
+		setFile(undefined); 
+		setLocalData((prev) => ({
+			...prev,
+			file: undefined,
+			deleteProfileImage: true, 
+		}));
+		clearInterval(intervalRef.current);
+		setProgress({ value: 0, isLoading: false });
+	};	 
 
 	// Opens the picture update modal
 	const openPictureModal = () => {
@@ -407,12 +414,14 @@ const ProfilePanel = () => {
 					src={
 						file?.src
 							? file.src
-							: localData?.file
-								? localData.file
-								: user?.avatarImage
-									? `data:image/png;base64,${user.avatarImage}`
-									: ""
-					}
+							: localData?.deleteProfileImage
+								? ""
+								: localData?.file
+									? localData.file
+									: user?.avatarImage
+										? `data:image/png;base64,${user.avatarImage}`
+										: ""
+					}					
 					onChange={(newFile) => {
 						if (newFile) {
 							setFile(newFile); // newFile already has src, name, size, file
