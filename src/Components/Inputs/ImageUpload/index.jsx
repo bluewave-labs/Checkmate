@@ -2,12 +2,14 @@
 import { Button, Box, Stack, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Image from "../../../Components/Image";
+import ProgressUpload from "../../ProgressBars";
+import ImageIcon from "@mui/icons-material/Image";
 
 // Utils
 import PropTypes from "prop-types";
 import { createToast } from "../../../Utils/toastUtils";
 import { formatBytes } from "../../../Utils/fileUtils";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTheme } from "@emotion/react";
 
 /**
@@ -37,7 +39,15 @@ const ImageUpload = ({
     onError,
 }) => {
 	const theme = useTheme();
+    const [file, setFile] = useState(null);
+    const intervalRef = useRef(null);
+    const [progress, setProgress] = useState({ value: 0, isLoading: false });
+
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
+
+    useEffect(() => {
+        return () => clearInterval(intervalRef.current);
+      }, []);      
 
 	const handleImageChange = useCallback(
         (file) => {
@@ -83,7 +93,20 @@ const ImageUpload = ({
             file,
             };
         
-            onChange(previewFile);
+            setFile(previewFile);
+            setProgress({ value: 0, isLoading: true });
+
+            intervalRef.current = setInterval(() => {
+            setProgress((prev) => {
+                const buffer = 12;
+                if (prev.value + buffer >= 100) {
+                clearInterval(intervalRef.current);
+                onChange(previewFile); // fire only after reaching 100%
+                return { value: 100, isLoading: false };
+                }
+                return { value: prev.value + buffer, isLoading: true };
+            });
+            }, 120);
         },
         [accept, maxSize, validationSchema, onChange, onError]
     );
@@ -162,6 +185,21 @@ const ImageUpload = ({
 							(maximum size: {formatBytes(maxSize)})
 						</Typography>
 					</Stack>
+                    {(progress.isLoading || progress.value !== 0 || error) && file ? (
+                    <ProgressUpload
+                        icon={<ImageIcon />}
+                        label={file.name}
+                        size={file.size}
+                        progress={progress.value}
+                        onClick={() => {
+                        clearInterval(intervalRef.current);
+                        setProgress({ value: 0, isLoading: false });
+                        setFile(null);
+                        onChange(undefined); // notify parent image was removed
+                        }}
+                        error={error}
+                    />
+                    ) : null}
 					<input
 						style={{
 							clip: "rect(0 0 0 0)",
