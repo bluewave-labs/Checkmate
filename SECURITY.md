@@ -1,6 +1,4 @@
 # Security Policy
 
-If you find a vulnerability, send it to hello@bluewavelabs.ca 
-
-Please do not create an issue for security vulnerabilities.
+If you find a vulnerability, [create an issue here](https://github.com/bluewave-labs/checkmate/security/advisories/new).
 
