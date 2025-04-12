@@ -9,8 +9,6 @@ import ImageIcon from "@mui/icons-material/Image";
 
 // Utils
 import PropTypes from "prop-types";
-import { createToast } from "../../../Utils/toastUtils";
-import { formatBytes } from "../../../Utils/fileUtils";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 
@@ -48,15 +46,10 @@ const ImageUpload = ({
 	const handleImageChange = useCallback(
         (file) => {
           if (!file) return;
-          if (file.size > maxSize) {
-            createToast({ body: "File size is too large" });
-            return;
-          }
       
           const previewFile = {
             src: URL.createObjectURL(file),
             name: file.name,
-            size: formatBytes(file.size),
             file,
           };
       
@@ -90,15 +83,12 @@ const ImageUpload = ({
 	if (src) {
         return (
             <Stack direction="row" justifyContent="center">
-            <Box
-                sx={{
-                width: "250px",
-                height: "250px",
-                overflow: "hidden",
-                backgroundImage: `url(${src})`,
-                backgroundSize: "cover",
-                ...roundStyle,
-                }}
+            <Image
+                alt="Uploaded preview"
+                src={src}
+                width="250px"
+                height="250px"
+                sx={{ ...roundStyle }}
             />
             </Stack>
         );
@@ -108,16 +98,13 @@ const ImageUpload = ({
         <>
           {src ? (
             <Stack direction="row" justifyContent="center">
-              <Box
-                sx={{
-                  width: "250px",
-                  height: "250px",
-                  overflow: "hidden",
-                  backgroundImage: `url(${src})`,
-                  backgroundSize: "cover",
-                  ...roundStyle,
-                }}
-              />
+              <Image
+                alt="Uploaded preview"
+                src={src}
+                width="250px"
+                height="250px"
+                sx={{ ...roundStyle }}
+            />
             </Stack>
           ) : (
             <>
@@ -196,7 +183,6 @@ const ImageUpload = ({
                     color={theme.palette.primary.contrastTextTertiary}
                     sx={{ opacity: 0.6 }}
                   >
-                    (maximum size: {formatBytes(maxSize)})
                   </Typography>
                 </Stack>
               </Box>
@@ -204,13 +190,12 @@ const ImageUpload = ({
                 <ProgressUpload
                     icon={<ImageIcon />}
                     label={file.name}
-                    size={file.size}
                     progress={progress.value}
                     onClick={() => {
                     clearInterval(intervalRef.current);
                     setFile(null);
                     setProgress({ value: 0, isLoading: false });
-                    onChange(undefined); // notify parent
+                    onChange(undefined);
                     }}
                     error={error}
                 />
