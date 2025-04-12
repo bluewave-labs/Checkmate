@@ -11,6 +11,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import PropTypes from "prop-types";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useTheme } from "@emotion/react";
+import { imageValidation } from "../../../Validation/validation";
 
 /**
  * ImageUpload component allows users to upload images with drag-and-drop functionality.
@@ -40,12 +41,25 @@ const ImageUpload = ({
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState({ value: 0, isLoading: false });
     const intervalRef = useRef(null);
+    const [localError, setLocalError] = useState(null);
 
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
 
 	const handleImageChange = useCallback(
         (file) => {
           if (!file) return;
+
+          const { error } = imageValidation.validate(
+            { type: file.type, size: file.size },
+            { abortEarly: false }
+          );
+      
+          if (error) {
+            setLocalError(error.details[0].message);
+            return;
+          } else {
+            setLocalError(null);
+          }
       
           const previewFile = {
             src: URL.createObjectURL(file),
@@ -207,17 +221,17 @@ const ImageUpload = ({
               >
                 Supported formats: {accept.join(", ").toUpperCase()}
               </Typography>
-              {error && (
+              {localError && (
                 <Typography
-                  component="span"
-                  className="input-error"
-                  color={theme.palette.error.main}
-                  mt={theme.spacing(2)}
-                  sx={{
+                    component="span"
+                    className="input-error"
+                    color={theme.palette.error.main}
+                    mt={theme.spacing(2)}
+                    sx={{
                     opacity: 0.8,
-                  }}
+                    }}
                 >
-                  {error}
+                    {localError}
                 </Typography>
               )}
             </>
