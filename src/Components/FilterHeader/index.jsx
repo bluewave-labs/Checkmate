@@ -42,7 +42,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						return header;
 					}
 
-					return selected
+					return header + " | " + selected
 						.map((value) => options.find((option) => option.value === value)?.label)
 						.filter(Boolean)
 						.join(", ");
