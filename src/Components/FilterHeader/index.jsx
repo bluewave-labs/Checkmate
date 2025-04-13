@@ -57,14 +57,6 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						horizontal: "left",
 					},
 				}}
-				sx={{
-					"& .MuiOutlinedInput-input": {
-						paddingLeft: theme.spacing(14),
-					},
-					"& .MuiSelect-icon": {
-						left: theme.spacing(4),
-					},
-				}}
 			>
 				{options.map((option) => (
 					<MenuItem
