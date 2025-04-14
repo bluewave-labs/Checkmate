@@ -121,17 +121,20 @@ const ProfilePanel = () => {
 	// Handles form submission to update user profile
 	const handleSaveProfile = async (event) => {
 		event.preventDefault();
-		if (
-			localData.firstName === user.firstName &&
-			localData.lastName === user.lastName &&
-			localData.deleteProfileImage === undefined &&
-			localData.file === undefined
-		) {
-			createToast({
-				body: "Unable to update profile — no changes detected.",
-			});
-			setErrors({ unchanged: "unable to update profile" });
-			return;
+		const nameChanged =
+		localData.firstName !== user.firstName ||
+		localData.lastName !== user.lastName;
+
+		const avatarChanged =
+		localData.deleteProfileImage === true ||
+		(localData.file && localData.file !== `data:image/png;base64,${user.avatarImage}`);
+
+		if (!nameChanged && !avatarChanged) {
+		createToast({
+			body: "Unable to update profile — no changes detected.",
+		});
+		setErrors({ unchanged: "unable to update profile" });
+		return;
 		}
 
 		const action = await dispatch(update({ localData }));
