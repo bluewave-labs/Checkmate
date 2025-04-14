@@ -5,7 +5,7 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Avatar from "../../Avatar";
 import TextInput from "../../Inputs/TextInput";
 import ImageUpload from "../../Inputs/ImageUpload";
-import { credentials, imageValidation } from "../../../Validation/validation";
+import { credentials } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
 import { clearUptimeMonitorState } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
@@ -90,8 +90,6 @@ const ProfilePanel = () => {
 			file: undefined,
 			deleteProfileImage: true, 
 		}));
-		clearInterval(intervalRef.current);
-		setProgress({ value: 0, isLoading: false });
 	};	 
 
 	// Opens the picture update modal
@@ -396,7 +394,7 @@ const ProfilePanel = () => {
 					}					
 					onChange={(newFile) => {
 						if (newFile) {
-							setFile(newFile); // newFile already has src, name, size, file
+							setFile(newFile);
 							clearError("unchanged");
 						}
 					}}								

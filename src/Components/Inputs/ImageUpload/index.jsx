@@ -98,20 +98,7 @@ const ImageUpload = ({
         }
     }, [uploadComplete, completedFile, onChange]);  
 
-	if (src) {
-        return (
-            <Stack direction="row" justifyContent="center">
-            <Image
-                alt="Uploaded preview"
-                src={src}
-                width="250px"
-                height="250px"
-                sx={{ ...roundStyle }}
-            />
-            </Stack>
-        );
-    }  
-      
+
 	return (
         <>
           {src ? (
@@ -140,6 +127,9 @@ const ImageUpload = ({
                   borderColor: isDragging
                     ? theme.palette.primary.main
                     : theme.palette.primary.lowContrast,
+                  backgroundColor: isDragging
+                    ? "hsl(215, 87%, 51%, 0.05)"
+                    : "transparent",
                   borderWidth: "2px",
                   transition: "0.2s",
                   "&:hover": {
