@@ -124,13 +124,13 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
 								<Box sx={{
 									'& .alert.row-stack': {
-										backgroundColor: theme.palette.pageSpeedWarning.main,
-										borderColor: theme.palette.pageSpeedWarning.lowContrast,
+										backgroundColor: theme.palette.warningSecondary.main,
+										borderColor: theme.palette.warningSecondary.lowContrast,
 										'& .MuiTypography-root': {
-											color: theme.palette.pageSpeedWarning.contrastText
+											color: theme.palette.warningSecondary.contrastText
 										},
 										'& .MuiBox-root > svg': {
-											color: theme.palette.pageSpeedWarning.contrastText
+											color: theme.palette.warningSecondary.contrastText
 										}
 									}
 								}}>

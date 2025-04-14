@@ -236,7 +236,7 @@ const newSemanticColors = {
 		},
 	},
 	/* Custom palette for PageSpeed warning box */
-	pageSpeedWarning: {
+	warningSecondary: {
 		main: {
 			light: paletteColors.orange50,
 			dark: paletteColors.orange800,
