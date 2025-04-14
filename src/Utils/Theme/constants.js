@@ -63,6 +63,7 @@ const paletteColors = {
 	orange500: "#E88C30",
 	orange600: "#DC6803",
 	orange800: "#624711",
+
 };
 
 const semanticColors = {
@@ -234,6 +235,21 @@ const newSemanticColors = {
 			dark: newColors.orange600,
 		},
 	},
+	/* Custom palette for PageSpeed warning box */
+	warningSecondary: {
+		main: {
+			light: paletteColors.orange50,
+			dark: paletteColors.orange800,
+		},
+		contrastText: {
+			light: paletteColors.orange600,
+			dark: paletteColors.orange100,
+		},
+		lowContrast: {
+			light: paletteColors.orange300,
+			dark: paletteColors.orange400,
+		},
+	},
 	error: {
 		main: {
 			light: newColors.red700,
@@ -248,6 +264,7 @@ const newSemanticColors = {
 			dark: newColors.red600,
 		},
 	},
+	
 	/* These are temporary, just for everything not to break */
 	gradient: {
 		color1: {
