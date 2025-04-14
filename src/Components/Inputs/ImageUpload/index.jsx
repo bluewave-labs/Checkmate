@@ -11,7 +11,6 @@ import ImageIcon from "@mui/icons-material/Image";
 import PropTypes from "prop-types";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useTheme } from "@emotion/react";
-import { imageValidation } from "../../../Validation/validation";
 
 /**
  * ImageUpload component allows users to upload images with drag-and-drop functionality.
@@ -49,17 +48,21 @@ const ImageUpload = ({
         (file) => {
           if (!file) return;
 
-          const { error } = imageValidation.validate(
-            { type: file.type, size: file.size },
-            { abortEarly: false }
+          const isValidType = accept.some((type) =>
+            file.type.includes(type)
           );
-      
-          if (error) {
-            setLocalError(error.details[0].message);
+          const isValidSize = file.size <= maxSize;
+          
+          if (!isValidType) {
+            setLocalError("Unsupported file format.");
             return;
-          } else {
-            setLocalError(null);
           }
+          if (!isValidSize) {
+            setLocalError("File size is too large.");
+            return;
+          }
+          
+          setLocalError(null);          
       
           const previewFile = {
             src: URL.createObjectURL(file),
