@@ -106,7 +106,7 @@ const ImageUpload = ({
               <Image
                 alt="Uploaded preview"
                 src={src}
-                width="250px"
+                width="auto"
                 height="250px"
                 sx={{ ...roundStyle }}
             />
