@@ -7,6 +7,7 @@ import SkeletonLayout from "./Components/Skeleton";
 import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
 import Dialog from "../../../Components/Dialog";
+import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 
 // Utils
 import { useStatusPageFetch } from "./Hooks/useStatusPageFetch";
@@ -28,6 +29,10 @@ const PublicStatus = () => {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const navigate = useNavigate();
+	const crumbs = [
+		{ name: "status pages", path: "/status" },
+		{ name: "details", path: "" },
+	];
 
 	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =
 		useStatusPageFetch(false, url);
@@ -123,9 +128,9 @@ const PublicStatus = () => {
 	return (
 		<Stack
 			gap={theme.spacing(10)}
-			alignItems="center"
 			sx={{ ...sx, position: "relative" }}
 		>
+			{!isPublic && <Breadcrumbs list={crumbs} />}
 			<ControlsHeader
 				statusPage={statusPage}
 				isDeleting={isDeleting}
