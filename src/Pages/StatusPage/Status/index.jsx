@@ -30,8 +30,8 @@ const PublicStatus = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const crumbs = [
-		{ name: "status pages", path: "/status" },
-		{ name: "details", path: "" },
+		{ name: t("statusPages"), path: "/status" },
+		{ name: t("details"), path: "" },
 	];
 
 	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =

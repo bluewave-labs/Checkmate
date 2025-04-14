@@ -375,5 +375,8 @@
   "infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
   "errorInvalidTypeId": "Invalid notification type provided",
   "errorInvalidFieldId": "Invalid field ID provided",
-  "inviteNoTokenFound": "No invite token found"
+  "inviteNoTokenFound": "No invite token found",
+  "details": "Details",
+  "create": "Create",
+  "statusPages": "Status Pages"
 }
