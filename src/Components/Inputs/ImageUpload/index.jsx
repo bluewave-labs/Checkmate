@@ -126,6 +126,7 @@ const ImageUpload = ({
           ) : (
             <>
               <Box
+                className="image-field-wrapper"
                 mt={theme.spacing(8)}
                 sx={{
                   position: "relative",
@@ -199,22 +200,24 @@ const ImageUpload = ({
                     component="p"
                     color={theme.palette.primary.contrastTextTertiary}
                     sx={{ opacity: 0.6 }}
-                  >
+                  >(maximum size: {Math.round(maxSize / 1024 / 1024)}MB)
                   </Typography>
                 </Stack>
               </Box>
-              {(progress.isLoading || progress.value !== 0) && file && (
+              {(localError || progress.isLoading || progress.value !== 0) && (
                 <ProgressUpload
-                    icon={<ImageIcon />}
-                    label={file.name}
-                    progress={progress.value}
-                    onClick={() => {
+                  icon={<ImageIcon />}
+                  label={file?.name || "Upload failed"}
+                  size={file?.size}
+                  progress={progress.value}
+                  onClick={() => {
                     clearInterval(intervalRef.current);
                     setFile(null);
                     setProgress({ value: 0, isLoading: false });
+                    setLocalError(null);
                     onChange(undefined);
-                    }}
-                    error={error}
+                  }}
+                  error={localError || error}
                 />
               )}
               <Typography
@@ -224,19 +227,6 @@ const ImageUpload = ({
               >
                 Supported formats: {accept.join(", ").toUpperCase()}
               </Typography>
-              {localError && (
-                <Typography
-                    component="span"
-                    className="input-error"
-                    color={theme.palette.error.main}
-                    mt={theme.spacing(2)}
-                    sx={{
-                    opacity: 0.8,
-                    }}
-                >
-                    {localError}
-                </Typography>
-              )}
             </>
           )}
         </>
