@@ -23,7 +23,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 
 	return (
 		<FormControl
-			sx={{ m: theme.spacing(2), minWidth: "10%" }}
+			sx={{ minWidth: "10%" }}
 			size="small"
 		>
 			<Select

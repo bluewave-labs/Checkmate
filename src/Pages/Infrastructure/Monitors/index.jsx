@@ -7,6 +7,7 @@ import MonitorsTable from "./Components/MonitorsTable";
 import Pagination from "../../..//Components/Table/TablePagination";
 import GenericFallback from "../../../Components/GenericFallback";
 import Fallback from "../../../Components/Fallback";
+import Filter from "./Components/Filters";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useMonitorFetch } from "./Hooks/useMonitorFetch";
@@ -21,6 +22,8 @@ const InfrastructureMonitors = () => {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [selectedStatus, setSelectedStatus] = useState(undefined);
+	const [toFilterStatus, setToFilterStatus] = useState(undefined);
 
 	// Utils
 	const theme = useTheme();
@@ -40,8 +43,17 @@ const InfrastructureMonitors = () => {
 		setRowsPerPage(event.target.value);
 	};
 
+	const handleReset = () => {
+		setSelectedStatus(undefined);
+		setToFilterStatus(undefined);
+	};
+
+	const field = toFilterStatus !== undefined ? "status" : undefined;
+
 	const { monitors, summary, isLoading, networkError } = useMonitorFetch({
 		page,
+		field: field,
+		filter: toFilterStatus,
 		rowsPerPage,
 		updateTrigger,
 	});
@@ -88,6 +100,12 @@ const InfrastructureMonitors = () => {
 			<MonitorCountHeader
 				shouldRender={!isLoading}
 				monitorCount={summary?.totalMonitors ?? 0}
+			/>
+			<Filter
+				selectedStatus={selectedStatus}
+				setSelectedStatus={setSelectedStatus}
+				setToFilterStatus={setToFilterStatus}
+				handleReset={handleReset}
 			/>
 			<MonitorsTable
 				shouldRender={!isLoading}
