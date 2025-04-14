@@ -41,6 +41,7 @@ const ImageUpload = ({
     const [progress, setProgress] = useState({ value: 0, isLoading: false });
     const intervalRef = useRef(null);
     const [localError, setLocalError] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
 
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
 
@@ -128,12 +129,17 @@ const ImageUpload = ({
               <Box
                 className="image-field-wrapper"
                 mt={theme.spacing(8)}
+                onDragEnter={() => setIsDragging(true)}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={() => setIsDragging(false)}
                 sx={{
                   position: "relative",
                   height: "fit-content",
                   border: "dashed",
                   borderRadius: theme.shape.borderRadius,
-                  borderColor: theme.palette.primary.lowContrast,
+                  borderColor: isDragging
+                    ? theme.palette.primary.main
+                    : theme.palette.primary.lowContrast,
                   borderWidth: "2px",
                   transition: "0.2s",
                   "&:hover": {
