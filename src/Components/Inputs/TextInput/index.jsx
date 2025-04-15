@@ -6,19 +6,19 @@ import PropTypes from "prop-types";
 const getSx = (theme, type, maxWidth) => {
 	const sx = {
 		maxWidth: maxWidth,
-		"&  .MuiOutlinedInput-root ": {
-			"&:hover .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.primary.contrastText, // Adjust hover border color
-			},
-			"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.accent.main, // Adjust focus border color
-			},
-			"&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.primary.contrastText, // CAIO_REVIEW
-				opacity: 0.5,
-			},
+		"& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+			borderColor: theme.palette.grey[500], // Default gray border
 		},
-
+		"& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+			borderColor: theme.palette.grey[700], // Slightly darker on hover
+		},
+		"& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+			borderColor: theme.palette.common.black, // Dark color when focused
+		},
+		"& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+			borderColor: theme.palette.grey[400], // Lighter gray when disabled
+			opacity: 0.5,
+		},
 		"& .MuiFormHelperText-root": {
 			position: "absolute",
 			bottom: `-${theme.spacing(24)}`,
