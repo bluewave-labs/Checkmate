@@ -84,7 +84,6 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 							onChange={onChange}
 							error={errors.lastName ? true : false}
 							helperText={errors.lastName}
-							ref={inputRef}
 						/>
 					</Box>
 					<Stack

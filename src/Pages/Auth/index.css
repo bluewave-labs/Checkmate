@@ -32,10 +32,6 @@
 	border-radius: var(--env-var-radius-2);
 	line-height: 1;
 }
-.auth button:not(.MuiIconButton-root),
-.auth .field .MuiInputBase-root:has(input) {
-	height: 38px;
-}
 .auth .field svg {
 	width: 24px;
 	height: 24px;
@@ -90,10 +86,6 @@
 	.auth p,
 	.auth span {
 		font-size: var(--env-var-font-size-medium);
-	}
-	.auth button:not(.MuiIconButton-root),
-	.auth .field .MuiInputBase-root:has(input) {
-		height: 36px;
 	}
 	.auth .check span.MuiTypography-root,
 	.auth .field .input-error,
