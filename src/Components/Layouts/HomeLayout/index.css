@@ -6,7 +6,7 @@
 }
 
 /* TODO go for this approach for responsiveness. The aside needs to be taken care of */
-/* @media (max-width: 1000px) {
+/* @media (max-width: 62.5rem) {
 	.home-layout {
 		flex-direction: column !important;
 	}
@@ -27,7 +27,7 @@
 
 .home-content-wrapper {
 	padding: var(--env-var-spacing-2);
-	max-width: 1400px;
+	max-width: 87.5rem;
 	margin: 0 auto;
 	flex: 1;
 }

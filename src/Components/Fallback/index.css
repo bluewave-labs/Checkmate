@@ -1,7 +1,7 @@
 [class*="fallback__"] {
 	width: fit-content;
 	margin: auto;
-	margin-top: 100px;
+	margin-top: 6.25rem;
 }
 [class*="fallback__"] h1.MuiTypography-root {
 	font-size: var(--env-var-font-size-large);
@@ -12,7 +12,7 @@
 	width: max-content;
 }
 [class*="fallback__"] button.MuiButtonBase-root {
-	min-height: 34px;
+	min-height: 2.125rem;
 }
 [class*="fallback__"] .check span.MuiTypography-root,
 [class*="fallback__"] button.MuiButtonBase-root {
@@ -27,9 +27,9 @@
 	z-index: 0;
 
 	width: 100%;
-	max-width: 800px;
+	max-width: 50.0rem;
 	height: 100%;
-	max-height: 800px;
+	max-height: 50.0rem;
 
 	background-position: center;
 	background-size: cover;

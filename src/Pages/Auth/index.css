@@ -17,12 +17,12 @@
 }
 .auth p > span:not(.email-sent-to) {
 	text-decoration: underline;
-	text-underline-offset: 2px;
+	text-underline-offset: 0.125rem;
 	cursor: pointer;
 	transition: all 200ms;
 }
 .auth p > span:not(.email-sent-to):hover {
-	text-underline-offset: 4px;
+	text-underline-offset: 0.25rem;
 }
 .auth p + span:hover {
 	opacity: 1;
@@ -34,11 +34,11 @@
 }
 .auth button:not(.MuiIconButton-root),
 .auth .field .MuiInputBase-root:has(input) {
-	height: 38px;
+	height: 2.375rem;
 }
 .auth .field svg {
-	width: 24px;
-	height: 24px;
+	width: 1.5rem;
+	height: 1.5rem;
 }
 .auth .field h3.MuiTypography-root,
 .auth .field .input-error,
@@ -64,9 +64,9 @@
 	z-index: -1;
 
 	width: 100%;
-	max-width: 800px;
+	max-width: 50.0rem;
 	height: 100%;
-	max-height: 800px;
+	max-height: 50.0rem;
 
 	background-position: center;
 	background-size: cover;
@@ -78,10 +78,10 @@
 }
 .auth .input-error {
 	position: absolute;
-	top: calc(100% - 2px);
+	top: calc(100% - 0.125rem);
 }
 
-@media (max-width: 800px) {
+@media (max-width: 50.0rem) {
 	.auth h1 {
 		font-size: var(--env-var-font-size-large-plus);
 	}
@@ -93,7 +93,7 @@
 	}
 	.auth button:not(.MuiIconButton-root),
 	.auth .field .MuiInputBase-root:has(input) {
-		height: 36px;
+		height: 2.25rem;
 	}
 	.auth .check span.MuiTypography-root,
 	.auth .field .input-error,
@@ -107,14 +107,14 @@
 		margin: var(--env-var-spacing-1-plus) 0;
 	}
 	.auth .background-pattern-svg {
-		max-width: 750px;
-		max-height: 750px;
+		max-width: 46.875rem;
+		max-height: 46.875rem;
 	}
 
 	.forgot-password-page h1,
 	.check-email-page h1,
 	.password-confirmed-page h1,
 	.set-new-password-page h1 {
-		font-size: 18px;
+		font-size: 1.125rem;
 	}
 }

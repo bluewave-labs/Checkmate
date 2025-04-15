@@ -7,10 +7,10 @@
 	font-size: var(--env-var-font-size-medium);
 }
 .image-field-wrapper h2.MuiTypography-root {
-	margin-top: 10px;
+	margin-top: 0.625rem;
 }
 .image-field-wrapper + p.MuiTypography-root {
-	margin-top: 8px;
+	margin-top: 0.5rem;
 }
 .image-field-wrapper + p.MuiTypography-root,
 .image-field-wrapper p.MuiTypography-root {

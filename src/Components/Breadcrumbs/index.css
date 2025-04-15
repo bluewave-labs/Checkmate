@@ -1,9 +1,9 @@
 .MuiBreadcrumbs-root {
-	min-height: 34px;
+	min-height: 2.125rem;
 }
 .MuiBreadcrumbs-root svg {
-	width: 16px;
-	min-height: 16px;
+	width: 1.0rem;
+	min-height: 1.0rem;
 }
 .MuiBreadcrumbs-root .MuiBreadcrumbs-li a {
 	font-size: var(--env-var-font-size-medium);

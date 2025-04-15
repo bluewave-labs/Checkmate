@@ -1,6 +1,6 @@
 .select-wrapper .select-component > .MuiSelect-select {
-	padding: 0 10px;
-	min-height: 34px;
+	padding: 0 0.625rem;
+	min-height: 2.125rem;
 	display: flex;
 	align-items: center;
 	line-height: 1;

@@ -3,7 +3,7 @@
 }
 
 .theme-toggle .sun-and-moon > .sun-beams {
-	stroke-width: 2px;
+	stroke-width: 0.125rem;
 }
 
 .theme-dark .sun-and-moon > .sun {
@@ -15,7 +15,7 @@
 }
 
 .theme-dark .sun-and-moon > .moon > circle {
-	transform: translateX(-7px);
+	transform: translateX(-0.4375rem);
 }
 
 @supports (cx: 1) {

@@ -11,10 +11,10 @@
 }
 .account .MuiTabPanel-root {
 	padding: 0;
-	margin-top: 50px;
+	margin-top: 3.125rem;
 }
 .account button:not(.MuiIconButton-root) {
-	min-height: 34px;
+	min-height: 2.125rem;
 }
 .account .field {
 	flex: 1;

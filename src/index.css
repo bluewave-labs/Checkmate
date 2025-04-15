@@ -15,45 +15,45 @@ html {
 	-moz-osx-font-smoothing: grayscale;
 
 	/* Generalized Stylings */
-	--env-var-radius-1: 4px;
-	--env-var-radius-2: 8px;
+	--env-var-radius-1: 0.25rem;
+	--env-var-radius-2: 0.5rem;
 
 	--env-var-width-1: 100vw;
-	--env-var-width-2: 360px;
-	--env-var-width-3: 250px;
-	--env-var-width-4: 100px;
+	--env-var-width-2: 22.5rem;
+	--env-var-width-3: 15.625rem;
+	--env-var-width-4: 6.25rem;
 
 	--env-var-height-1: 100vh;
-	--env-var-height-2: 34px;
+	--env-var-height-2: 2.125rem;
 
-	--env-var-nav-bar-height: 70px;
-	--env-var-side-bar-width: 250px;
+	--env-var-nav-bar-height: 4.375rem;
+	--env-var-side-bar-width: 15.625rem;
 
-	--env-var-spacing-1: 12px;
-	--env-var-spacing-1-plus: 16px;
-	--env-var-spacing-1-minus: 10px;
-	--env-var-spacing-2: 24px;
-	--env-var-spacing-3: 32px;
-	--env-var-spacing-4: 40px;
-	--env-var-spacing-5: 65px;
+	--env-var-spacing-1: 0.75rem;
+	--env-var-spacing-1-plus: 1.0rem;
+	--env-var-spacing-1-minus: 0.625rem;
+	--env-var-spacing-2: 1.5rem;
+	--env-var-spacing-3: 2.0rem;
+	--env-var-spacing-4: 2.5rem;
+	--env-var-spacing-5: 4.0625rem;
 
-	--env-var-font-size-small: 11px;
-	--env-var-font-size-small-plus: 12px;
-	--env-var-font-size-medium: 13px;
-	--env-var-font-size-medium-plus: 14px;
-	--env-var-font-size-large: 16px;
-	--env-var-font-size-large-plus: 22px;
-	--env-var-font-size-xlarge: 30px;
+	--env-var-font-size-small: 0.6875rem;
+	--env-var-font-size-small-plus: 0.75rem;
+	--env-var-font-size-medium: 0.8125rem;
+	--env-var-font-size-medium-plus: 0.875rem;
+	--env-var-font-size-large: 1.0rem;
+	--env-var-font-size-large-plus: 1.375rem;
+	--env-var-font-size-xlarge: 1.875rem;
 
-	--env-var-img-width-1: 20px;
-	--env-var-img-width-2: 16px;
-	--env-var-img-width-3: 12px;
+	--env-var-img-width-1: 1.25rem;
+	--env-var-img-width-2: 1.0rem;
+	--env-var-img-width-3: 0.75rem;
 
-	--env-var-default-1: 24px;
-	--env-var-default-2: 40px;
+	--env-var-default-1: 1.5rem;
+	--env-var-default-2: 2.5rem;
 
-	--env-var-shadow-1: 0px 4px 24px -4px rgba(16, 24, 40, 0.08),
-		0px 3px 3px -3px rgba(16, 24, 40, 0.03);
+	--env-var-shadow-1: 0.0rem 0.25rem 1.5rem -0.25rem rgba(16, 24, 40, 0.08),
+		0.0rem 0.1875rem 0.1875rem -0.1875rem rgba(16, 24, 40, 0.03);
 }
 
 .MuiInputBase-root.Mui-disabled input {
@@ -64,8 +64,8 @@ html {
 	width: auto;
 }
 .Toastify__toast-body .alert {
-	min-width: 150px;
-	padding: 5px 10px;
+	min-width: 9.375rem;
+	padding: 0.3125rem 0.625rem;
 	align-items: center;
 }
 .Toastify [class^="Toastify__toast"] {
@@ -74,7 +74,7 @@ html {
 }
 .Toastify__toast {
 	min-height: 0;
-	border-radius: 4px;
+	border-radius: 0.25rem;
 }
 .Toastify [class*="Toastify__toast-theme"] {
 	background-color: transparent;
