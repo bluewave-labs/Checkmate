@@ -376,7 +376,7 @@
   "errorInvalidTypeId": "",
   "errorInvalidFieldId": "",
   "inviteNoTokenFound": "",
-  "pageSpeedWarning": "Uyarı: Google PageSpeed API anahtarı eklemediniz. Bu olmadan, PageSpeed monitörü çalışmayacaktır.",
-  "pageSpeedLearnMoreLink": "API anahtarınızı nasıl ekleyeceğinizi",
-  "pageSpeedAddApiKey": "öğrenmek için buraya tıklayın."
+  "pageSpeedWarning": "",
+  "pageSpeedLearnMoreLink": "",
+  "pageSpeedAddApiKey": ""
 }
