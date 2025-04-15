@@ -48,7 +48,7 @@ const Filter = ({
 	};
 
 	const isFilterActive = useMemo(() => {
-		return selectedStatus?.length ?? 0 > 0;
+		return (selectedStatus?.length ?? 0) > 0;
 	}, [selectedStatus]);
 
 	return (
