@@ -376,7 +376,7 @@
   "errorInvalidTypeId": "Invalid notification type provided",
   "errorInvalidFieldId": "Invalid field ID provided",
   "inviteNoTokenFound": "No invite token found",
-  "details": "Details",
-  "create": "Create",
-  "statusPages": "Status Pages"
+  "statusBredCrumbsDetails": "Details",
+  "statusBredCrumbsCreate": "Create",
+  "statusBredCrumbsStatusPages": "Status Pages"
 }

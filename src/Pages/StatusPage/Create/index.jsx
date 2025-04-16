@@ -62,13 +62,13 @@ const CreateStatusPage = () => {
 	
 	// Breadcrumbs
 	const crumbs = [
-		{ name: t("statusPages"), path: "/status" },
+		{ name: t("statusBredCrumbsStatusPages"), path: "/status" },
 	];
 	if (isCreate) {
-		crumbs.push({ name: t("create"), path: "/status/create" });
+		crumbs.push({ name: t("statusBredCrumbsCreate"), path: "/status/uptime/create" });
 	} else {
 		crumbs.push(
-			{ name: t("details"), path: `/status/uptime/${statusPage?.url}` },
+			{ name: t("statusBredCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
 			{ name: t("configure"), path: "" }
 		);
 	}
