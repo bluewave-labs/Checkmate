@@ -29,14 +29,16 @@ const PublicStatus = () => {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const navigate = useNavigate();
-	const crumbs = [
-		{ name: t("statusBredCrumbsStatusPages"), path: "/status" },
-		{ name: t("statusBredCrumbsDetails"), path: "" },
-	];
 
 	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =
 		useStatusPageFetch(false, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
+	
+	// Breadcrumbs
+	const crumbs = [
+		{ name: t("statusBredCrumbsStatusPages"), path: "/status" },
+		{ name: t("statusBredCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
+	];
 
 	// Setup
 	let sx = { paddingLeft: theme.spacing(20), paddingRight: theme.spacing(20) };

@@ -69,7 +69,7 @@ const CreateStatusPage = () => {
 	} else {
 		crumbs.push(
 			{ name: t("statusBredCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
-			{ name: t("configure"), path: "" }
+			{ name: t("configure"), path: `/status/uptime/configure/${statusPage?.url}` }
 		);
 	}
 
