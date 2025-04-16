@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
 
-const useMonitorFetch = ({ page, rowsPerPage, updateTrigger }) => {
+const useMonitorFetch = ({ page, field, filter, rowsPerPage, updateTrigger }) => {
 	// Redux state
 	const { user } = useSelector((state) => state.auth);
 
@@ -19,6 +19,8 @@ const useMonitorFetch = ({ page, rowsPerPage, updateTrigger }) => {
 				const response = await networkService.getMonitorsByTeamId({
 					teamId: user.teamId,
 					limit: 1,
+					field: field,
+					filter: filter,
 					types: ["hardware"],
 					page: page,
 					rowsPerPage: rowsPerPage,
@@ -36,7 +38,7 @@ const useMonitorFetch = ({ page, rowsPerPage, updateTrigger }) => {
 		};
 
 		fetchMonitors();
-	}, [page, rowsPerPage, user.teamId, updateTrigger]);
+	}, [page, field, filter, rowsPerPage, user.teamId, updateTrigger]);
 
 	return { monitors, summary, isLoading, networkError };
 };

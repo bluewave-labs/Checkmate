@@ -99,6 +99,7 @@ const Filter = ({
 				display: "flex",
 				flexDirection: "row",
 				alignItems: "center",
+				m: theme.spacing(2),
 				ml: theme.spacing(4),
 				gap: theme.spacing(2),
 			}}
