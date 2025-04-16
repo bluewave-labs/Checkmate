@@ -26,7 +26,7 @@
 		"@solana/wallet-adapter-material-ui": "0.16.35",
 		"@solana/wallet-adapter-react": "0.15.37",
 		"@solana/wallet-adapter-react-ui": "0.9.36",
-		"@solana/wallet-adapter-wallets": "0.19.34",
+		"@solana/wallet-adapter-wallets": "0.19.35",
 		"@solana/web3.js": "1.98.0",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
