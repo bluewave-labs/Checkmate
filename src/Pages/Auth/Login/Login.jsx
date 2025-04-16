@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Alert, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { credentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
@@ -18,10 +18,6 @@ import ForgotPasswordLabel from "./Components/ForgotPasswordLabel";
 import LanguageSelector from "../../../Components/LanguageSelector";
 
 const DEMO = import.meta.env.VITE_APP_DEMO;
-
-/**
- * Displays the login page.
- */
 
 const Login = () => {
 	const dispatch = useDispatch();
@@ -42,28 +38,44 @@ const Login = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [step, setStep] = useState(0);
+	const [backendAvailable, setBackendAvailable] = useState(true);
+	const [loading, setLoading] = useState(true);
+
+	const checkBackendConnection = () => {
+		setLoading(true);
+		networkService
+			.doesSuperAdminExist()
+			.then((response) => {
+				setBackendAvailable(true);
+				if (response.data.data === false) {
+					navigate("/register");
+				}
+			})
+			.catch((error) => {
+				logger.error("Backend connection failed:", {
+					error: error.message,
+					stack: error.stack,
+					timestamp: new Date().toISOString()
+				});
+				setBackendAvailable(false);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
+	};
 
 	useEffect(() => {
 		if (authToken) {
 			navigate("/uptime");
 			return;
 		}
-		networkService
-			.doesSuperAdminExist()
-			.then((response) => {
-				if (response.data.data === false) {
-					navigate("/register");
-				}
-			})
-			.catch((error) => {
-				logger.error(error);
-			});
+		checkBackendConnection();
 	}, [authToken, navigate]);
 
 	const handleChange = (event) => {
 		const { value, id } = event.target;
 		const name = idMap[id];
-		const lowerCasedValue = name === idMap["login-email-input"]? value?.toLowerCase()||value : value
+		const lowerCasedValue = name === idMap["login-email-input"] ? value?.toLowerCase() || value : value;
 		setForm((prev) => ({
 			...prev,
 			[name]: lowerCasedValue,
@@ -81,7 +93,7 @@ const Login = () => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-
+		if (!backendAvailable) return;
 		if (step === 0) {
 			const { error } = credentials.validate(
 				{ email: form.email },
@@ -136,6 +148,138 @@ const Login = () => {
 			}
 		}
 	};
+
+	if (loading) {
+		return (
+			<Stack
+				className="login-page auth"
+				overflow="hidden"
+				sx={{
+					"& h1": {
+						color: theme.palette.primary.contrastText,
+						fontWeight: 600,
+						fontSize: 28,
+					},
+					"& p": { fontSize: 14, color: theme.palette.primary.contrastTextSecondary },
+					"& span": { fontSize: "inherit" },
+				}}
+			>
+				<Box className="background-pattern-svg">
+					<Background style={{ width: "100%" }} />
+				</Box>
+				<Stack
+					direction="row"
+					alignItems="center"
+					justifyContent="space-between"
+					px={theme.spacing(12)}
+					gap={theme.spacing(4)}
+				>
+					<Stack direction="row" alignItems="center" gap={theme.spacing(4)}>
+						<Logo style={{ borderRadius: theme.shape.borderRadius }} />
+						<Typography sx={{ userSelect: "none" }}>Checkmate</Typography>
+					</Stack>
+					<Stack direction="row" spacing={2} alignItems="center">
+						<LanguageSelector />
+						<ThemeSwitch />
+					</Stack>
+				</Stack>
+				<Stack
+					width="100%"
+					maxWidth={600}
+					flex={1}
+					justifyContent="center"
+					alignItems="center"
+					px={{ xs: theme.spacing(12), lg: theme.spacing(20) }}
+					pb={theme.spacing(20)}
+					mx="auto"
+				>
+					<Typography>Checking server connection...</Typography>
+				</Stack>
+			</Stack>
+		);
+	}
+
+	if (!backendAvailable) {
+		return (
+			<Stack
+				className="login-page auth"
+				overflow="hidden"
+				sx={{
+					"& h1": {
+						color: theme.palette.primary.contrastText,
+						fontWeight: 600,
+						fontSize: 28,
+					},
+					"& p": { fontSize: 14, color: theme.palette.primary.contrastTextSecondary },
+					"& span": { fontSize: "inherit" },
+				}}
+			>
+				<Box
+					className="background-pattern-svg"
+					sx={{
+						"& svg g g:last-of-type path": {
+							stroke: theme.palette.primary.lowContrast,
+						},
+					}}
+				>
+					<Background style={{ width: "100%" }} />
+				</Box>
+				<Stack
+					direction="row"
+					alignItems="center"
+					justifyContent="space-between"
+					px={theme.spacing(12)}
+					gap={theme.spacing(4)}
+				>
+					<Stack direction="row" alignItems="center" gap={theme.spacing(4)}>
+						<Logo style={{ borderRadius: theme.shape.borderRadius }} />
+						<Typography sx={{ userSelect: "none" }}>Checkmate</Typography>
+					</Stack>
+					<Stack direction="row" spacing={2} alignItems="center">
+						<LanguageSelector />
+						<ThemeSwitch />
+					</Stack>
+				</Stack>
+				<Stack
+					width="100%"
+					maxWidth={600}
+					flex={1}
+					justifyContent="center"
+					px={{ xs: theme.spacing(12), lg: theme.spacing(20) }}
+					pb={theme.spacing(20)}
+					mx="auto"
+					rowGap={theme.spacing(8)}
+				>
+					<Alert severity="error" sx={{ mb: 2 }}>
+						<Typography variant="body1" fontWeight="bold">
+							Checkmate server is not reachable
+						</Typography>
+						<Typography variant="body2">
+							Please check:
+							<ul>
+								<li>Is the backend service running?</li>
+								<li>Are the API endpoints correctly configured?</li>
+								<li>Is there a network connectivity issue?</li>
+							</ul>
+						</Typography>
+					</Alert>
+					<Button
+						variant="contained"
+						onClick={checkBackendConnection}
+						sx={{
+							mt: 2,
+							backgroundColor: theme.palette.primary.button,
+							'&:hover': {
+								backgroundColor: theme.palette.primary.buttonHover,
+							}
+						}}
+					>
+						Retry Connection
+					</Button>
+				</Stack>
+			</Stack>
+		);
+	}
 
 	return (
 		<Stack
