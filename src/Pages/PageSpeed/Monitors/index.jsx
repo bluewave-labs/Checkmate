@@ -52,6 +52,7 @@ const PageSpeed = () => {
 				]}
 				link="/pagespeed/create"
 				isAdmin={isAdmin}
+				showPageSpeedWarning={true}
 			/>
 		);
 	}

@@ -107,7 +107,7 @@ Follow the [pull request checklist](#pull-request-checklist). Your PR should:
 
 Before submitting your pull request, please confirm the following:
 
-- You have tested the app locally and confirmed your changes work.
+- **You have tested the app locally and confirmed your changes work.**
 - You reviewed your code and removed debug logs or leftover code.
 - The GitHub issue is assigned to you.
 - You included the related issue number in the PR description (e.g. `Fixes #123`).
