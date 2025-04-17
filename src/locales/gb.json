@@ -378,5 +378,8 @@
   "inviteNoTokenFound": "No invite token found",
   "pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function.",
   "pageSpeedLearnMoreLink": "Click here to learn",
-  "pageSpeedAddApiKey": "how to add your API key."
+  "pageSpeedAddApiKey": "how to add your API key.",
+  "statusBreadCrumbsDetails": "Details",
+  "statusBreadCrumbsCreate": "Create",
+  "statusBreadCrumbsStatusPages": "Status Pages"
 }
