@@ -70,6 +70,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(filter === "all").toString()}
 						onClick={() => setFilter("all")}
+						style={{fontSize: "13px"}} 
 					>
 						{t("incidentsOptionsHeaderFilterAll")}
 					</Button>
@@ -77,6 +78,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(filter === "down").toString()}
 						onClick={() => setFilter("down")}
+						style={{fontSize: "13px"}}
 					>
 						{t("incidentsOptionsHeaderFilterDown")}
 					</Button>
@@ -84,6 +86,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(filter === "resolve").toString()}
 						onClick={() => setFilter("resolve")}
+						style={{fontSize: "13px"}}
 					>
 						{t("incidentsOptionsHeaderFilterCannotResolve")}
 					</Button>
@@ -102,6 +105,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(dateRange === "hour").toString()}
 						onClick={() => setDateRange("hour")}
+						style={{fontSize: "13px"}}
 					>
 						{t("incidentsOptionsHeaderLastHour")}
 					</Button>
@@ -109,6 +113,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(dateRange === "day").toString()}
 						onClick={() => setDateRange("day")}
+						style={{fontSize: "13px"}}
 					>
 						{t("incidentsOptionsHeaderLastDay")}
 					</Button>
@@ -116,6 +121,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(dateRange === "week").toString()}
 						onClick={() => setDateRange("week")}
+						style={{fontSize: "13px"}}
 					>
 						{t("incidentsOptionsHeaderLastWeek")}
 					</Button>
@@ -123,6 +129,7 @@ const OptionsHeader = ({
 						variant="group"
 						filled={(dateRange === "all").toString()}
 						onClick={() => setDateRange("all")}
+						style={{fontSize: "13px"}}
 					>
 						{t("incidentsOptionsHeaderFilterAll")}
 					</Button>
