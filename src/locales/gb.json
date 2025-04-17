@@ -379,7 +379,7 @@
   "pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function.",
   "pageSpeedLearnMoreLink": "Click here to learn",
   "pageSpeedAddApiKey": "how to add your API key.",
-  "statusBredCrumbsDetails": "Details",
-  "statusBredCrumbsCreate": "Create",
-  "statusBredCrumbsStatusPages": "Status Pages"
+  "statusBreadCrumbsDetails": "Details",
+  "statusBreadCrumbsCreate": "Create",
+  "statusBreadCrumbsStatusPages": "Status Pages"
 }

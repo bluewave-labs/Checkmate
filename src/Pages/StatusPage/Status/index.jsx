@@ -36,8 +36,8 @@ const PublicStatus = () => {
 	
 	// Breadcrumbs
 	const crumbs = [
-		{ name: t("statusBredCrumbsStatusPages"), path: "/status" },
-		{ name: t("statusBredCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
+		{ name: t("statusBreadCrumbsStatusPages"), path: "/status" },
+		{ name: t("statusBreadCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
 	];
 
 	// Setup
