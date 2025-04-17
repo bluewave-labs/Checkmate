@@ -516,7 +516,6 @@ class NetworkService {
 		try {
 			// Create a temporary instance that doesn't follow redirects and has a short timeout
 			const tempInstance = axios.create({
-				timeout: 5000,
 				maxRedirects: 0,
 				baseURL: this.axiosInstance.defaults.baseURL,
 			});
