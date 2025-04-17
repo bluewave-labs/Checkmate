@@ -22,7 +22,7 @@ jobs:
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate-frontend:staging \
-            -f ./docker/staging/server.Dockerfile \
+            -f ./docker/staging/client.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             .
 
