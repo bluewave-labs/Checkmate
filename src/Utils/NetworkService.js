@@ -506,6 +506,41 @@ class NetworkService {
 
 	/**
 	 * ************************************
+	 * Checks if the backend server is reachable
+	 * ************************************
+	 *
+	 * @async
+	 * @returns {Promise<boolean>} True if backend is reachable, false otherwise
+	 */
+	async checkBackendReachability() {
+		try {
+			// Create a temporary instance that doesn't follow redirects and has a short timeout
+			const tempInstance = axios.create({
+				timeout: 5000,
+				maxRedirects: 0,
+				baseURL: this.axiosInstance.defaults.baseURL,
+			});
+			
+			// Make a simple GET request to the root endpoint
+			await tempInstance.get('/', {
+				headers: {
+					Authorization: undefined  // Prevent sending the auth token
+				}
+			});
+			
+			return true;
+		} catch (error) {
+			// If we get a successful HTTP status or redirect, the backend is reachable
+			if (error.response) {
+				return true; // Server responded with any status code, so it's reachable
+			}
+			console.error("Backend connection failed:", error);
+			return false;
+		}
+	}
+
+	/**
+	 * ************************************
 	 * Get all users
 	 * ************************************
 	 *
