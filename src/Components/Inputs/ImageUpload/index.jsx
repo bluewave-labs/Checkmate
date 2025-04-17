@@ -11,6 +11,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import PropTypes from "prop-types";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 /**
  * ImageUpload component allows users to upload images with drag-and-drop functionality.
@@ -35,13 +36,14 @@ const ImageUpload = ({
 	error,
 }) => {
 	const theme = useTheme();
-    const [uploadComplete, setUploadComplete] = useState(false);
-    const [completedFile, setCompletedFile] = useState(null);
-    const [file, setFile] = useState(null);
-    const [progress, setProgress] = useState({ value: 0, isLoading: false });
-    const intervalRef = useRef(null);
-    const [localError, setLocalError] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
+  const { t } = useTranslation();
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [completedFile, setCompletedFile] = useState(null);
+  const [file, setFile] = useState(null);
+  const [progress, setProgress] = useState({ value: 0, isLoading: false });
+  const intervalRef = useRef(null);
+  const [localError, setLocalError] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
 	const roundStyle = previewIsRound ? { borderRadius: "50%" } : {};
 
@@ -55,11 +57,11 @@ const ImageUpload = ({
           const isValidSize = file.size <= maxSize;
           
           if (!isValidType) {
-            setLocalError("Unsupported file format.");
+            setLocalError(t('invalidFileFormat'));
             return;
           }
           if (!isValidSize) {
-            setLocalError("File size is too large.");
+            setLocalError(t('invalidFileSize'));
             return;
           }
           
@@ -188,15 +190,15 @@ const ImageUpload = ({
                       color="info"
                       fontWeight={500}
                     >
-                      Click to upload
+                      {t('ClickUpload')}
                     </Typography>{" "}
-                    or drag and drop
+                    or {t('DragandDrop')}
                   </Typography>
                   <Typography
                     component="p"
                     color={theme.palette.primary.contrastTextTertiary}
                     sx={{ opacity: 0.6 }}
-                  >(maximum size: {Math.round(maxSize / 1024 / 1024)}MB)
+                  >({t('MaxSize')}: {Math.round(maxSize / 1024 / 1024)}MB)
                   </Typography>
                 </Stack>
               </Box>
@@ -221,7 +223,7 @@ const ImageUpload = ({
                 color={theme.palette.primary.contrastTextTertiary}
                 sx={{ opacity: 0.6 }}
               >
-                Supported formats: {accept.join(", ").toUpperCase()}
+                {t('SupportedFormats')}: {accept.join(", ").toUpperCase()}
               </Typography>
             </>
           )}

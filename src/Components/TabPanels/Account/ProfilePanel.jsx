@@ -13,6 +13,7 @@ import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
 import { GenericDialog } from "../../Dialog/genericDialog";
 import Dialog from "../../Dialog";
+import { useTranslation } from "react-i18next";
 
 /**
  * ProfilePanel component displays a form for editing user profile information
@@ -25,7 +26,7 @@ import Dialog from "../../Dialog";
 const ProfilePanel = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-
+	const { t } = useTranslation();
 	const SPACING_GAP = theme.spacing(12);
 
 	//redux state
@@ -204,7 +205,7 @@ const ProfilePanel = () => {
 				>
 					{/* This 0.9 is a bit magic numbering, refactor */}
 					<Box flex={0.9}>
-						<Typography component="h1">First name</Typography>
+						<Typography component="h1">{t('FirstName')}</Typography>
 					</Box>
 					<TextInput
 						id="edit-first-name"
@@ -222,7 +223,7 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Box flex={0.9}>
-						<Typography component="h1">Last name</Typography>
+						<Typography component="h1">{t('LastName')}</Typography>
 					</Box>
 					<TextInput
 						id="edit-last-name"
@@ -240,12 +241,12 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Stack flex={0.9}>
-						<Typography component="h1">Email</Typography>
+						<Typography component="h1">{t('email')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
 						>
-							This is your current email address — it cannot be changed.
+							{t('EmailDescriptionText')}
 						</Typography>
 					</Stack>
 					<TextInput
@@ -263,12 +264,12 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Stack flex={0.9}>
-						<Typography component="h1">Your photo</Typography>
+						<Typography component="h1">{t('YourPhoto')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
 						>
-							This photo will be displayed in your profile page.
+							{t('PhotoDescriptionText')}
 						</Typography>
 					</Stack>
 					<Stack
@@ -292,14 +293,14 @@ const ProfilePanel = () => {
 							color="error"
 							onClick={handleDeletePicture}
 						>
-							Delete
+							{t('delete')}
 						</Button>
 						<Button
 							variant="contained" // CAIO_REVIEW
 							color="accent"
 							onClick={openPictureModal}
 						>
-							Update
+							{t('update')}
 						</Button>
 					</Stack>
 				</Stack>
@@ -324,7 +325,7 @@ const ProfilePanel = () => {
 							disabled={Object.keys(errors).length !== 0 && !errors?.picture && true}
 							sx={{ px: theme.spacing(12) }}
 						>
-							Save
+							{t('save')}
 						</Button>
 					</Box>
 				</Stack>
@@ -343,13 +344,12 @@ const ProfilePanel = () => {
 					spellCheck="false"
 				>
 					<Box mb={theme.spacing(6)}>
-						<Typography component="h1">Delete account</Typography>
+						<Typography component="h1">{t('DeleteAccount')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
 						>
-							Note that deleting your account will remove all data from the server. This
-							is permanent and non-recoverable.
+							{t('DeleteDescriptionText')}
 						</Typography>
 					</Box>
 					<Button
@@ -357,19 +357,17 @@ const ProfilePanel = () => {
 						color="error"
 						onClick={() => setIsOpen("delete")}
 					>
-						Delete account
+						{t('DeleteAccount')}
 					</Button>
 				</Box>
 			)}
 			<Dialog
 				open={isModalOpen("delete")}
 				theme={theme}
-				title={"Really delete this account?"}
-				description={
-					"If you delete your account, you will no longer be able to sign in, and all of your data will be deleted. Deleting your account is permanent and non-recoverable action."
-				}
+				title={t('DeleteWarningTitle')}
+				description={t('DeleteAccountWarning')}
 				onCancel={() => setIsOpen("")}
-				confirmationButtonLabel={"Delete account"}
+				confirmationButtonLabel={t('DeleteAccount')}
 				onConfirm={handleDeleteAccount}
 				isLoading={isLoading}
 			/>
@@ -412,7 +410,7 @@ const ProfilePanel = () => {
 						color="info"
 						onClick={removePicture}
 					>
-						Remove
+						{t('remove')}
 					</Button>
 					<Button
 						variant="contained"
@@ -420,7 +418,7 @@ const ProfilePanel = () => {
 						onClick={handleUpdatePicture}
 						disabled={!!errors.picture || !file?.src}
 					>
-						Update
+						{t('update')}
 					</Button>
 				</Stack>
 			</GenericDialog>
