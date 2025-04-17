@@ -117,34 +117,34 @@ const baseTheme = (palette) => ({
 								color: `${theme.palette.secondary.contrastText} !important`,
 							},
 						},
-						
+
 						{
-							props: { variant: 'text', color: 'info' },
+							props: { variant: "text", color: "info" },
 							style: {
-							  textDecoration: 'underline',
-							  color: theme.palette.primary.contrastText,
-							  padding: 0,
-							  margin: 0,
-							  fontSize: typographyLevels.m,
-							  fontWeight: theme.typography.body2.fontWeight,
-							  backgroundColor: 'transparent',
-							  '&:hover': {
-								backgroundColor: 'transparent',
-								textDecoration: 'underline'
-							  },
-							  "&.Mui-disabled": {
-								backgroundColor: 'transparent',
-								color: theme.palette.text.primary,
-								opacity: 0.5,  
-								"&.MuiButton-text": {
-								  backgroundColor: 'transparent'
-								}
-							  },
-							  minWidth: 0,
-							  boxShadow: 'none',
-							  border: 'none'
+								textDecoration: "underline",
+								color: theme.palette.primary.contrastText,
+								padding: 0,
+								margin: 0,
+								fontSize: typographyLevels.m,
+								fontWeight: theme.typography.body2.fontWeight,
+								backgroundColor: "transparent",
+								"&:hover": {
+									backgroundColor: "transparent",
+									textDecoration: "underline",
+								},
+								"&.Mui-disabled": {
+									backgroundColor: "transparent",
+									color: theme.palette.text.primary,
+									opacity: 0.5,
+									"&.MuiButton-text": {
+										backgroundColor: "transparent",
+									},
+								},
+								minWidth: 0,
+								boxShadow: "none",
+								border: "none",
 							},
-						  },
+						},
 					],
 					height: 34,
 					fontWeight: 400,
@@ -348,7 +348,7 @@ const baseTheme = (palette) => ({
 						opacity: 0.8,
 						fontSize: "var(--env-var-font-size-medium)",
 						color: palette.error.main,
-						whiteSpace: 'nowrap',
+						whiteSpace: "nowrap",
 					},
 				}),
 			},
@@ -365,63 +365,63 @@ const baseTheme = (palette) => ({
 		},
 		MuiTab: {
 			styleOverrides: {
-			  root: ({ theme }) => ({
-				fontSize: theme.typography.fontSize - 1,
-				color: theme.palette.tertiary.contrastText,
-				height: '34px',
-				minHeight: '34px',
-				borderRadius: 0,
-				textTransform: "none",
-				minWidth: "fit-content",
-				padding: `${theme.spacing(6)}px ${theme.spacing(4)}px`,
-				fontWeight: 400,
-				"&:focus-visible": {
-				  color: theme.palette.primary.contrastText,
-				  borderColor: theme.palette.tertiary.contrastText,
-				  borderRightColor: theme.palette.primary.lowContrast,
-				},
-				"&.Mui-selected": {
-				  color: theme.palette.secondary.contrastText,
-				},
-				"&:hover": {
-				  borderColor: theme.palette.primary.lowContrast,
-				},
-			  }),
+				root: ({ theme }) => ({
+					fontSize: theme.typography.fontSize - 1,
+					color: theme.palette.tertiary.contrastText,
+					height: "34px",
+					minHeight: "34px",
+					borderRadius: 0,
+					textTransform: "none",
+					minWidth: "fit-content",
+					padding: `${theme.spacing(6)}px ${theme.spacing(4)}px`,
+					fontWeight: 400,
+					"&:focus-visible": {
+						color: theme.palette.primary.contrastText,
+						borderColor: theme.palette.tertiary.contrastText,
+						borderRightColor: theme.palette.primary.lowContrast,
+					},
+					"&.Mui-selected": {
+						color: theme.palette.secondary.contrastText,
+					},
+					"&:hover": {
+						borderColor: theme.palette.primary.lowContrast,
+					},
+				}),
 			},
 			variants: [
 				{
-				  props: { orientation: 'vertical' },
-				  style: ({ theme }) => ({
-					alignItems: 'flex-start',
-					padding: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(1)}px ${theme.spacing(6)}px`, 
-					minHeight: theme.spacing(12), 
-					color: theme.palette.primary.contrastText,
-					backgroundColor: theme.palette.primary.main,
-					border: 'none',
-					borderBottom: 'none',
-					borderRight: 'none',
-					borderRadius: theme.shape.borderRadius * 3, 
-					margin: `${theme.spacing(1)}px ${theme.spacing(2)}px`, 
-					'&.Mui-selected': {
-					  color: theme.palette.primary.contrastText,
-					  backgroundColor: theme.palette.tertiary.main,
-					  opacity: 1,
-					  border: 'none',
-					  borderBottom: 'none',
-					  borderRight: 'none',
-					  borderRadius: theme.shape.borderRadius * 3, 
-					  minHeight: theme.spacing(14) 
-					},
-					'&:hover': {
-					  backgroundColor: theme.palette.tertiary.main,
-					  border: 'none',
-					  borderRadius: theme.shape.borderRadius * 3, 
-					  minHeight: theme.spacing(14) 
-					}
-				  }),
+					props: { orientation: "vertical" },
+					style: ({ theme }) => ({
+						alignItems: "flex-start",
+						padding: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(1)}px ${theme.spacing(6)}px`,
+						minHeight: theme.spacing(12),
+						color: theme.palette.primary.contrastText,
+						backgroundColor: theme.palette.primary.main,
+						border: "none",
+						borderBottom: "none",
+						borderRight: "none",
+						borderRadius: theme.shape.borderRadius * 3,
+						margin: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+						"&.Mui-selected": {
+							color: theme.palette.primary.contrastText,
+							backgroundColor: theme.palette.tertiary.main,
+							opacity: 1,
+							border: "none",
+							borderBottom: "none",
+							borderRight: "none",
+							borderRadius: theme.shape.borderRadius * 3,
+							minHeight: theme.spacing(14),
+						},
+						"&:hover": {
+							backgroundColor: theme.palette.tertiary.main,
+							border: "none",
+							borderRadius: theme.shape.borderRadius * 3,
+							minHeight: theme.spacing(14),
+						},
+					}),
 				},
-			  ],
-		  },
+			],
+		},
 		MuiSvgIcon: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -431,25 +431,25 @@ const baseTheme = (palette) => ({
 		},
 		MuiTabs: {
 			styleOverrides: {
-			  root: ({ theme }) => ({
-				display: 'inline-flex',
-				borderRadius: 0,
-				"& .MuiTabs-indicator": {
-				  backgroundColor: theme.palette.tertiary.contrastText,
-				},
-			  }),
+				root: ({ theme }) => ({
+					display: "inline-flex",
+					borderRadius: 0,
+					"& .MuiTabs-indicator": {
+						backgroundColor: theme.palette.tertiary.contrastText,
+					},
+				}),
 			},
 			variants: [
-			  {
-				props: { orientation: 'vertical' },
-				style: {
-				  "& .MuiTabs-indicator": {
-					display: 'none', 
-				  }
+				{
+					props: { orientation: "vertical" },
+					style: {
+						"& .MuiTabs-indicator": {
+							display: "none",
+						},
+					},
 				},
-			  },
 			],
-		  },
+		},
 		MuiSwitch: {
 			styleOverrides: {
 				root: ({ theme }) => ({
