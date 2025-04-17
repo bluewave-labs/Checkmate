@@ -89,7 +89,7 @@ const ImageUpload = ({
             });
           }, 120);
         },
-        [maxSize, onChange]
+        [maxSize, accept]
     );
 
     useEffect(() => {
