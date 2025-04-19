@@ -7,6 +7,7 @@ import SkeletonLayout from "./Components/Skeleton";
 import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
 import Dialog from "../../../Components/Dialog";
+import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 
 // Utils
 import { useStatusPageFetch } from "./Hooks/useStatusPageFetch";
@@ -32,6 +33,12 @@ const PublicStatus = () => {
 	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =
 		useStatusPageFetch(false, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
+	
+	// Breadcrumbs
+	const crumbs = [
+		{ name: t("statusBreadCrumbsStatusPages"), path: "/status" },
+		{ name: t("statusBreadCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
+	];
 
 	// Setup
 	let sx = { paddingLeft: theme.spacing(20), paddingRight: theme.spacing(20) };
@@ -123,9 +130,9 @@ const PublicStatus = () => {
 	return (
 		<Stack
 			gap={theme.spacing(10)}
-			alignItems="center"
 			sx={{ ...sx, position: "relative" }}
 		>
+			{!isPublic && <Breadcrumbs list={crumbs} />}
 			<ControlsHeader
 				statusPage={statusPage}
 				isDeleting={isDeleting}

@@ -1,0 +1,46 @@
+name: Staging deploy
+
+on:
+  push:
+    branches: ["develop"]
+
+jobs:
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Client Docker image
+        run: |
+          docker build \
+            -t ghcr.io/bluewave-labs/checkmate-frontend:staging \
+            -f ./docker/staging/client.Dockerfile \
+            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            .
+
+      - name: Push Client Docker image
+        run: docker push ghcr.io/bluewave-labs/checkmate-frontend:staging
+
+  deploy-to-staging:
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into server and restart container using Docker Compose
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.STAGING_SERVER_HOST }}
+          username: ${{ secrets.STAGING_SERVER_USER }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          script: |
+            cd checkmate/server/docker/staging
+            docker compose down
+            docker compose pull
+            docker compose up -d
