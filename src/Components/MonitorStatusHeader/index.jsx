@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 	const theme = useTheme();
 	const { statusColor, determineState } = useUtils();
+
 	if (isLoading) {
 		return <SkeletonLayout />;
 	}
@@ -25,10 +26,13 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 				<Stack
 					direction="row"
 					alignItems={"center"}
-					gap={theme.spacing(2)}
+					gap={theme.spacing(4)}
 				>
 					<PulseDot color={statusColor[determineState(monitor)]} />
-					<Typography variant="h2">
+					<Typography
+						variant="h2"
+						style={{ fontFamily: "monospace" }} 
+					>
 						{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 					</Typography>
 					<Dot />
