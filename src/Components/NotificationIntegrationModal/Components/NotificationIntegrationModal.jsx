@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
@@ -45,20 +45,23 @@ const NotificationIntegrationModal = ({
 	const theme = useTheme();
 	const [tabValue, setTabValue] = useState(0);
 
-	const [loading, _, sendTestNotification] = useNotifications();
+	const [loading, , sendTestNotification] = useNotifications();
 
 	// Helper to get the field state key with error handling
-	const getFieldKey = (typeId, fieldId) => {
-		if (typeof typeId !== "string" || typeId === "") {
-			throw new Error(t("errorInvalidTypeId"));
-		}
+	const getFieldKey = useCallback(
+		(typeId, fieldId) => {
+			if (typeof typeId !== "string" || typeId === "") {
+				throw new Error(t("errorInvalidTypeId"));
+			}
 
-		if (typeof fieldId !== "string" || fieldId === "") {
-			throw new Error(t("errorInvalidFieldId"));
-		}
+			if (typeof fieldId !== "string" || fieldId === "") {
+				throw new Error(t("errorInvalidFieldId"));
+			}
 
-		return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
-	};
+			return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
+		},
+		[t]
+	);
 
 	// Define notification types
 	const DEFAULT_NOTIFICATION_TYPES = [
@@ -125,53 +128,6 @@ const NotificationIntegrationModal = ({
 	// Use provided notification types or default to our translated ones
 	const activeNotificationTypes = notificationTypes || DEFAULT_NOTIFICATION_TYPES;
 
-	const extractNotificationValues = () => {
-		const values = {};
-
-		if (!monitor?.notifications || !Array.isArray(monitor.notifications)) {
-			return values;
-		}
-
-		monitor.notifications.forEach((notification) => {
-			// Handle notification based on its structure
-			if (notification.type === "webhook" && notification.platform) {
-				const platform = notification.platform;
-				values[platform] = true; // Set platform as enabled
-
-				// Extract configuration based on platform
-				if (notification.config) {
-					switch (platform) {
-						case NOTIFICATION_TYPES.SLACK:
-						case NOTIFICATION_TYPES.DISCORD:
-							if (notification.config.webhookUrl) {
-								values[getFieldKey(platform, FIELD_IDS.WEBHOOK)] =
-									notification.config.webhookUrl;
-							}
-							break;
-						case NOTIFICATION_TYPES.TELEGRAM:
-							if (notification.config.botToken) {
-								values[getFieldKey(platform, FIELD_IDS.TOKEN)] =
-									notification.config.botToken;
-							}
-							if (notification.config.chatId) {
-								values[getFieldKey(platform, FIELD_IDS.CHAT_ID)] =
-									notification.config.chatId;
-							}
-							break;
-						case NOTIFICATION_TYPES.WEBHOOK:
-							if (notification.config.webhookUrl) {
-								values[getFieldKey(platform, FIELD_IDS.URL)] =
-									notification.config.webhookUrl;
-							}
-							break;
-					}
-				}
-			}
-		});
-
-		return values;
-	};
-
 	// Memoized function to initialize integrations state
 	const initialIntegrationsState = useMemo(() => {
 		const state = {};
@@ -188,20 +144,67 @@ const NotificationIntegrationModal = ({
 		});
 
 		return state;
-	}, [activeNotificationTypes]); // Only recompute when these dependencies change
+	}, [activeNotificationTypes, getFieldKey]); // Only recompute when these dependencies change
 
 	const [integrations, setIntegrations] = useState(initialIntegrationsState);
 
 	// Update integrations state when modal opens or monitor notifications change
 	useEffect(() => {
 		if (open) {
+			const extractNotificationValues = () => {
+				const values = {};
+
+				if (!monitor?.notifications || !Array.isArray(monitor.notifications)) {
+					return values;
+				}
+
+				monitor.notifications.forEach((notification) => {
+					// Handle notification based on its structure
+					if (notification.type === "webhook" && notification.platform) {
+						const platform = notification.platform;
+						values[platform] = true; // Set platform as enabled
+
+						// Extract configuration based on platform
+						if (notification.config) {
+							switch (platform) {
+								case NOTIFICATION_TYPES.SLACK:
+								case NOTIFICATION_TYPES.DISCORD:
+									if (notification.config.webhookUrl) {
+										values[getFieldKey(platform, FIELD_IDS.WEBHOOK)] =
+											notification.config.webhookUrl;
+									}
+									break;
+								case NOTIFICATION_TYPES.TELEGRAM:
+									if (notification.config.botToken) {
+										values[getFieldKey(platform, FIELD_IDS.TOKEN)] =
+											notification.config.botToken;
+									}
+									if (notification.config.chatId) {
+										values[getFieldKey(platform, FIELD_IDS.CHAT_ID)] =
+											notification.config.chatId;
+									}
+									break;
+								case NOTIFICATION_TYPES.WEBHOOK:
+									if (notification.config.webhookUrl) {
+										values[getFieldKey(platform, FIELD_IDS.URL)] =
+											notification.config.webhookUrl;
+									}
+									break;
+							}
+						}
+					}
+				});
+
+				return values;
+			};
+
 			const extractedValues = extractNotificationValues();
 			setIntegrations((prev) => ({
 				...prev,
 				...extractedValues,
 			}));
 		}
-	}, [open, monitor]);
+	}, [open, monitor, getFieldKey]);
 
 	const handleChangeTab = (event, newValue) => {
 		setTabValue(newValue);
