@@ -13,12 +13,11 @@ RUN apk add --no-cache \
     libusb-dev \
     eudev-dev
 
-
 COPY ./client/package*.json ./
 
 RUN npm install
 
-COPY ./client ./
+COPY ./client .
 
 RUN npm run build
 

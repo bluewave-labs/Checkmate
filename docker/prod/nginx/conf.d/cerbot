@@ -1,0 +1,15 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name checkmate-demo.bluewavelabs.ca www.checkmate-demo.bluewavelabs.ca;
+    server_tokens off;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://[domain-name]$request_uri;
+    }
+}

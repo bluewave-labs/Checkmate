@@ -1,0 +1,40 @@
+services:
+  client:
+    image: uptime_client:latest
+    restart: always
+    ports:
+      - "5173:5173"
+
+    depends_on:
+      - server
+  server:
+    image: uptime_server:latest
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - server.env
+    depends_on:
+      - redis
+      - mongodb
+  redis:
+    image: uptime_redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+  mongodb:
+    image: uptime_database_mongo:latest
+    restart: always
+    command: ["mongod", "--quiet"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo/data:/data/db
