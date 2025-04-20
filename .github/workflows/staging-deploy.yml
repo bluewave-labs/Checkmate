@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SSH into server and restart container using Docker Compose
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.STAGING_SERVER_HOST }}
           username: ${{ secrets.STAGING_SERVER_USER }}
