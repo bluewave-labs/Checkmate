@@ -1,0 +1,8 @@
+{
+	"all": true,
+	"include": ["controllers/*.js", "utils/*.js", "service/*.js", "db/mongo/modules/*.js"],
+	"exclude": ["**/*.test.js"],
+	"reporter": ["html", "text", "lcov"],
+	"sourceMap": false,
+	"instrument": true
+}

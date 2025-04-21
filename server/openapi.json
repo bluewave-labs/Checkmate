@@ -1,0 +1,2562 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Checkmate",
+		"summary": "Checkmate OpenAPI Specifications",
+		"description": "Checkmate is an open source monitoring tool used to track the operational status and performance of servers and websites. It regularly checks whether a server/website is accessible and performs optimally, providing real-time alerts and reports on the monitored services' availability, downtime, and response time.",
+		"contact": {
+			"name": "API Support",
+			"url": "mailto:support@bluewavelabs.ca",
+			"email": "support@bluewavelabs.ca"
+		},
+		"license": {
+			"name": "AGPLv3",
+			"url": "https://github.com/bluewave-labs/checkmate/tree/HEAD/LICENSE"
+		},
+		"version": "1.0"
+	},
+	"servers": [
+		{
+			"url": "http://localhost:{PORT}/{API_PATH}",
+			"description": "Local Development Server",
+			"variables": {
+				"PORT": {
+					"description": "API Port",
+					"enum": ["5000"],
+					"default": "5000"
+				},
+				"API_PATH": {
+					"description": "API Base Path",
+					"enum": ["api/v1"],
+					"default": "api/v1"
+				}
+			}
+		},
+		{
+			"url": "http://localhost/{API_PATH}",
+			"description": "Distribution Local Development Server",
+			"variables": {
+				"API_PATH": {
+					"description": "API Base Path",
+					"enum": ["api/v1"],
+					"default": "api/v1"
+				}
+			}
+		},
+		{
+			"url": "https://checkmate-demo.bluewavelabs.ca/{API_PATH}",
+			"description": "Checkmate Demo Server",
+			"variables": {
+				"PORT": {
+					"description": "API Port",
+					"enum": ["5000"],
+					"default": "5000"
+				},
+				"API_PATH": {
+					"description": "API Base Path",
+					"enum": ["api/v1"],
+					"default": "api/v1"
+				}
+			}
+		}
+	],
+	"tags": [
+		{
+			"name": "auth",
+			"description": "Authentication"
+		},
+		{
+			"name": "invite",
+			"description": "Invite"
+		},
+		{
+			"name": "monitors",
+			"description": "Monitors"
+		},
+		{
+			"name": "checks",
+			"description": "Checks"
+		},
+		{
+			"name": "maintenance-window",
+			"description": "Maintenance window"
+		},
+		{
+			"name": "queue",
+			"description": "Queue"
+		},
+		{
+			"name": "status-page",
+			"description": "Status Page"
+		}
+	],
+	"paths": {
+		"/auth/register": {
+			"post": {
+				"tags": ["auth"],
+				"description": "Register a new user",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": [
+									"firstName",
+									"lastName",
+									"email",
+									"password",
+									"role",
+									"teamId"
+								],
+								"properties": {
+									"firstName": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"password": {
+										"type": "string",
+										"format": "password"
+									},
+									"profileImage": {
+										"type": "file",
+										"format": "file"
+									},
+									"role": {
+										"type": "array",
+										"enum": [["user"], ["admin"], ["superadmin"], ["Demo"]],
+										"default": ["superadmin"]
+									},
+									"teamId": {
+										"type": "string",
+										"format": "uuid"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"tags": ["auth"],
+				"description": "Login with credentials",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["email", "password"],
+								"properties": {
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"password": {
+										"type": "string",
+										"format": "password"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/refresh": {
+			"post": {
+				"tags": ["auth"],
+				"description": "Generates a new auth token if the refresh token is valid.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {}
+							}
+						}
+					},
+					"required": false
+				},
+				"parameters": [
+					{
+						"name": "x-refresh-token",
+						"in": "header",
+						"description": "Refresh token required to generate a new auth token.",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "authorization",
+						"in": "header",
+						"description": "Old access token, used to extract payload).",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "New access token generated.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized or invalid refresh token.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/user/{userId}": {
+			"put": {
+				"tags": ["auth"],
+				"description": "Change user information",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["auth"],
+				"description": "Delete user",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/users/superadmin": {
+			"get": {
+				"tags": ["auth"],
+				"description": "Checks to see if an admin account exists",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/users": {
+			"get": {
+				"tags": ["auth"],
+				"description": "Get all users",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/recovery/request": {
+			"post": {
+				"tags": ["auth"],
+				"description": "Request a recovery token",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["email"],
+								"properties": {
+									"email": {
+										"type": "string",
+										"format": "email"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/recovery/validate": {
+			"post": {
+				"tags": ["auth"],
+				"description": "Validate recovery token",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["recoveryToken"],
+								"properties": {
+									"recoveryToken": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/recovery/reset": {
+			"post": {
+				"tags": ["auth"],
+				"description": "Password reset",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["recoveryToken", "password"],
+								"properties": {
+									"recoveryToken": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/invite": {
+			"post": {
+				"tags": ["invite"],
+				"description": "Request an invitation",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["email", "role"],
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"role": {
+										"type": "array"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/invite/verify": {
+			"post": {
+				"tags": ["invite"],
+				"description": "Request an invitation",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["token"],
+								"properties": {
+									"token": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get all monitors",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["monitors"],
+				"description": "Create a new monitor",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMonitorBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["monitors"],
+				"description": "Delete all monitors",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/uptime": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get all monitors with uptime stats for 1, 7, 30, and 90 days",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/resolution/url": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Check DNS resolution for a given URL",
+				"parameters": [
+					{
+						"name": "monitorURL",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "https://example.com"
+						},
+						"description": "The URL to check DNS resolution for"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "URL resolved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "DNS resolution failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get monitor by id",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["monitors"],
+				"description": "Update monitor by id",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateMonitorBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["monitors"],
+				"description": "Delete monitor by id",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/stats/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get monitor stats",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/certificate/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get monitor certificate",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/team/summary/{teamId}": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get monitors and summary by teamId",
+				"parameters": [
+					{
+						"name": "teamId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "type",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"enum": ["http", "ping", "pagespeed"]
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/team/{teamId}": {
+			"get": {
+				"tags": ["monitors"],
+				"description": "Get monitors by teamId",
+				"parameters": [
+					{
+						"name": "teamId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "status",
+						"description": "Status of monitor, true for up, false for down",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"name": "checkOrder",
+						"description": "Order of checks",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						}
+					},
+					{
+						"name": "limit",
+						"description": "Number of checks to return with monitor",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "type",
+						"description": "Type of monitor",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": ["http", "ping", "pagespeed"]
+						}
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "rowsPerPage",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "filter",
+						"description": "Value to filter by",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "field",
+						"description": "Field to filter on",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "order",
+						"description": "Sort order of results",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": ["http", "ping", "pagespeed"]
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/pause/{monitorId}": {
+			"post": {
+				"tags": ["monitors"],
+				"description": "Pause monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/demo": {
+			"post": {
+				"tags": ["monitors"],
+				"description": "Create a demo monitor",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMonitorBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/{monitorId}": {
+			"get": {
+				"tags": ["checks"],
+				"description": "Get all checks for a monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["checks"],
+				"description": "Create a new check",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCheckBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["checks"],
+				"description": "Delete all checks for a monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/team/{teamId}": {
+			"get": {
+				"tags": ["checks"],
+				"description": "Get all checks for a team",
+				"parameters": [
+					{
+						"name": "teamId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["checks"],
+				"description": "Delete all checks for a team",
+				"parameters": [
+					{
+						"name": "teamId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/team/ttl": {
+			"put": {
+				"tags": ["checks"],
+				"description": "Update check TTL",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateCheckTTLBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/maintenance-window/monitor/{monitorId}": {
+			"get": {
+				"tags": ["maintenance-window"],
+				"description": "Get maintenance window for monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["maintenance-window"],
+				"description": "Create maintenance window for monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMaintenanceWindowBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/maintenance-window/user/{userId}": {
+			"get": {
+				"tags": ["maintenance-window"],
+				"description": "Get maintenance window for user",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/jobs": {
+			"get": {
+				"tags": ["queue"],
+				"description": "Get all jobs in queue",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["queue"],
+				"description": "Create a new job.  Useful for testing scaling workers",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/metrics": {
+			"get": {
+				"tags": ["queue"],
+				"description": "Get queue metrics",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/obliterate": {
+			"post": {
+				"tags": ["queue"],
+				"description": "Obliterate job queue",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/status-page/{url}": {
+			"get": {
+				"tags": ["status-page"],
+				"description": "Get a status page by URL",
+				"parameters": [
+					{
+						"name": "url",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/SuccessResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/ErrorResponse" }
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["status-page"],
+				"description": "Create a status page",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateStatusPageBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Duplicate URL",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		},
+		"schemas": {
+			"ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"default": false
+					},
+					"msg": {
+						"type": "string"
+					}
+				}
+			},
+			"SuccessResponse": {
+				"type": "object",
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"default": true
+					},
+					"msg": {
+						"type": "string"
+					},
+					"data": {
+						"type": "object"
+					}
+				}
+			},
+			"UserUpdateRequest": {
+				"type": "object",
+				"required": ["firstName", "lastName", "email", "password", "role", "teamId"],
+				"properties": {
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string",
+						"format": "password"
+					},
+					"newPassword": {
+						"type": "string",
+						"format": "password"
+					},
+					"profileImage": {
+						"type": "file",
+						"format": "file"
+					},
+					"role": {
+						"type": "array",
+						"enum": [["user"], ["admin"], ["superadmin"], ["Demo"]],
+						"default": ["superadmin"]
+					},
+					"deleteProfileImage": {
+						"type": "boolean"
+					}
+				}
+			},
+			"CreateMonitorBody": {
+				"type": "object",
+				"required": ["userId", "teamId", "name", "description", "type", "url"],
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["http", "ping", "pagespeed"]
+					},
+					"url": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"interval": {
+						"type": "integer"
+					},
+					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"UpdateMonitorBody": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"interval": {
+						"type": "integer"
+					},
+					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"CreateCheckBody": {
+				"type": "object",
+				"required": ["monitorId", "status", "responseTime", "statusCode", "message"],
+				"properties": {
+					"monitorId": {
+						"type": "string"
+					},
+					"status": {
+						"type": "boolean"
+					},
+					"responseTime": {
+						"type": "integer"
+					},
+					"statusCode": {
+						"type": "integer"
+					},
+					"message": {
+						"type": "string"
+					}
+				}
+			},
+			"UpdateCheckTTLBody": {
+				"type": "object",
+				"required": ["ttl"],
+				"properties": {
+					"ttl": {
+						"type": "integer"
+					}
+				}
+			},
+			"CreateMaintenanceWindowBody": {
+				"type": "object",
+				"required": ["userId", "active", "oneTime", "start", "end"],
+				"properties": {
+					"userId": {
+						"type": "string"
+					},
+					"active": {
+						"type": "boolean"
+					},
+					"oneTime": {
+						"type": "boolean"
+					},
+					"start": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"end": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"expiry": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"CreateStatusPageBody": {
+				"type": "object",
+				"required": ["companyName", "url", "timezone", "color", "theme", "monitors"],
+				"properties": {
+					"companyName": { "type": "string" },
+					"url": { "type": "string" },
+					"timezone": { "type": "string" },
+					"color": { "type": "string" },
+					"theme": { "type": "string" },
+					"monitors": {
+						"type": "array",
+						"items": { "type": "string" }
+					}
+				}
+			}
+		}
+	}
+}

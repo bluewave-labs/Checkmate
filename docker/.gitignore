@@ -1,0 +1,11 @@
+*.sh
+!quickstart.sh
+!build_images.sh
+dev/mongo/data/*
+dev/redis/data/*
+dist/mongo/data/*
+dist/redis/data/*
+prod/mongo/data/*
+prod/redis/data/*
+*.env
+prod/certbot/*

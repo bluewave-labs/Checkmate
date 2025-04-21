@@ -1,0 +1,22 @@
+[
+	{
+		"name": "Google",
+		"url": "https://www.google.com"
+	},
+	{
+		"name": "Facebook",
+		"url": "https://www.facebook.com"
+	},
+	{
+		"name": "Yahoo",
+		"url": "https://www.yahoo.com"
+	},
+	{
+		"name": "Amazon",
+		"url": "https://www.amazon.com"
+	},
+	{
+		"name": "Apple",
+		"url": "https://www.apple.com"
+	}
+]
