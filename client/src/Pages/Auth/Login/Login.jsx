@@ -58,16 +58,24 @@ const Login = () => {
 			setBackendReachable(isReachable);
 			
 			if (isReachable) {
-				networkService
-					.doesSuperAdminExist()
-					.then((response) => {
-						if (response.data.data === false) {
-							navigate("/register");
-						}
-					})
-					.catch((error) => {
-						logger.error(error);
-					});
+				// Only check if super admin exists if not already attempting to log in
+				// This allows users to log in even if system thinks no super admin exists
+				if (window.location.pathname === "/" || window.location.pathname === "") {
+					networkService
+						.doesSuperAdminExist()
+						.then((response) => {
+							if (response.data.data === false) {
+								// Add a toast notification instead of forcing redirect
+								createToast({
+									body: t("noSuperAdminMessage"),
+									type: "info"
+								});
+							}
+						})
+						.catch((error) => {
+							logger.error(error);
+						});
+				}
 					
 				// Only show reconnection toast if this was a retry attempt
 				if (isRetry) {
@@ -93,7 +101,7 @@ const Login = () => {
 		} finally {
 			setIsCheckingConnection(false);
 		}
-	}, [navigate, t]);
+	}, [t]); // Removed navigate since we no longer use it within this function
 	
 	// Function to handle retry button click
 	const handleRetry = () => checkConnectivity(true);
