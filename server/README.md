@@ -2,7 +2,7 @@
 
 <p align="center"><strong>The backend service for Checkmate, an open source uptime and infrastructure monitoring application</strong></p>
 
-This repository contains the **backend** of Checkmate, which handles data processing, storage, and API services for the Checkmate monitoring tool. The backend is responsible for managing uptime checks, handling real-time alerts, and storing historical monitoring data. It integrates seamlessly with the [Checkmate frontend](https://github.com/bluewave-labs/checkmate) and can be deployed independently.
+This directory contains the **backend** of Checkmate, which handles data processing, storage, and API services for the Checkmate monitoring tool. The backend is responsible for managing uptime checks, handling real-time alerts, and storing historical monitoring data. 
 
 Checkmate's backend is designed to be lightweight and scalable, ensuring reliable performance even with a high number of active monitors.
 
@@ -12,5 +12,4 @@ For setup instructions, configuration details, and deployment guidelines, please
 
 ## Related repositories
 
-- [Checkmate Frontend](https://github.com/bluewave-labs/checkmate)
 - [Capture Agent](https://github.com/bluewave-labs/capture) (Optional, provides additional server insights)
