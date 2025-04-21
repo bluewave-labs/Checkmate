@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Alert, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { credentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
@@ -16,6 +16,7 @@ import PasswordStep from "./Components/PasswordStep";
 import ThemeSwitch from "../../../Components/ThemeSwitch";
 import ForgotPasswordLabel from "./Components/ForgotPasswordLabel";
 import LanguageSelector from "../../../Components/LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 const DEMO = import.meta.env.VITE_APP_DEMO;
 
@@ -27,6 +28,7 @@ const Login = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const authState = useSelector((state) => state.auth);
 	const { authToken } = authState;
@@ -42,22 +44,81 @@ const Login = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [step, setStep] = useState(0);
+	const [backendReachable, setBackendReachable] = useState(true);
+	const [isCheckingConnection, setIsCheckingConnection] = useState(false);
 
 	useEffect(() => {
 		if (authToken) {
 			navigate("/uptime");
 			return;
 		}
-		networkService
-			.doesSuperAdminExist()
-			.then((response) => {
-				if (response.data.data === false) {
-					navigate("/register");
+
+		// Check backend connectivity first
+		const handleRetry = async () => {
+			setIsCheckingConnection(true);
+			try {
+				const isReachable = await networkService.checkBackendReachability();
+				setBackendReachable(isReachable);
+				
+				// If backend is now reachable, proceed with admin check
+				if (isReachable) {
+					networkService
+						.doesSuperAdminExist()
+						.then((response) => {
+							if (response.data.data === false) {
+								navigate("/register");
+							}
+						})
+						.catch((error) => {
+							logger.error(error);
+						});
+					createToast({
+						body: t("backendReconnected"),
+					});
+				} else {
+					createToast({
+						body: t("backendStillUnreachable"),
+					});
 				}
-			})
-			.catch((error) => {
-				logger.error(error);
-			});
+			} catch (error) {
+				logger.error("Error checking backend connectivity:", error);
+				setBackendReachable(false);
+				createToast({
+					body: t("backendConnectionError"),
+				});
+			} finally {
+				setIsCheckingConnection(false);
+			}
+		};
+
+		const checkConnectivity = async () => {
+			setIsCheckingConnection(true);
+			try {
+				const isReachable = await networkService.checkBackendReachability();
+				setBackendReachable(isReachable);
+				
+				// Only proceed with admin check if backend is reachable
+				if (isReachable) {
+					networkService
+						.doesSuperAdminExist()
+						.then((response) => {
+							if (response.data.data === false) {
+								navigate("/register");
+							}
+						})
+						.catch((error) => {
+							logger.error(error);
+						});
+				}
+			} catch (error) {
+				logger.error("Error checking backend connectivity:", error);
+				setBackendReachable(false);
+			} finally {
+				setIsCheckingConnection(false);
+			}
+		};
+
+		checkConnectivity();
 	}, [authToken, navigate]);
 
 	const handleChange = (event) => {
@@ -81,6 +142,14 @@ const Login = () => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
+
+		// Check backend connectivity before proceeding
+		if (!backendReachable) {
+			createToast({
+				body: t("backendUnreachableError"),
+			});
+			return;
+		}
 
 		if (step === 0) {
 			const { error } = credentials.validate(
@@ -208,7 +277,24 @@ const Login = () => {
 					},
 				}}
 			>
-				{step === 0 ? (
+				{!backendReachable ? (
+					<Stack spacing={2} alignItems="center">
+						<Alert severity="error" sx={{ width: '100%' }}>
+							{t("backendUnreachable")}
+						</Alert>
+						<Typography variant="body1" align="center">
+							{t("backendUnreachableMessage")}
+						</Typography>
+						<Button 
+							variant="contained" 
+							color="primary" 
+							onClick={handleRetry}
+							disabled={isCheckingConnection}
+						>
+							{isCheckingConnection ? t("retryingConnection") : t("retryConnection")}
+						</Button>
+					</Stack>
+				) : step === 0 ? (
 					<EmailStep
 						form={form}
 						errors={errors}
@@ -226,10 +312,12 @@ const Login = () => {
 						/>
 					)
 				)}
-				<ForgotPasswordLabel
-					email={form.email}
-					errorEmail={errors.email}
-				/>
+				{backendReachable && (
+					<ForgotPasswordLabel
+						email={form.email}
+						errorEmail={errors.email}
+					/>
+				)}
 			</Stack>
 		</Stack>
 	);
