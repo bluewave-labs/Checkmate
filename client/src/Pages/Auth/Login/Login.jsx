@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography, Alert, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
@@ -44,82 +44,69 @@ const Login = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [step, setStep] = useState(0);
+
+	// State variables for backend connectivity status and loading state
 	const [backendReachable, setBackendReachable] = useState(true);
 	const [isCheckingConnection, setIsCheckingConnection] = useState(false);
+
+	// Function to check if the backend server is reachable and handle connectivity status
+	// Wrapped in useCallback to prevent recreation on each render
+	const checkConnectivity = useCallback(async (isRetry = false) => {
+		setIsCheckingConnection(true);
+		try {
+			const isReachable = await networkService.checkBackendReachability();
+			setBackendReachable(isReachable);
+			
+			if (isReachable) {
+				networkService
+					.doesSuperAdminExist()
+					.then((response) => {
+						if (response.data.data === false) {
+							navigate("/register");
+						}
+					})
+					.catch((error) => {
+						logger.error(error);
+					});
+					
+				// Only show reconnection toast if this was a retry attempt
+				if (isRetry) {
+					createToast({
+						body: t("backendReconnected"),
+					});
+				}
+			} else if (isRetry) {
+				// Only show still unreachable toast if this was a retry attempt
+				createToast({
+					body: t("backendStillUnreachable"),
+				});
+			}
+		} catch (error) {
+			logger.error("Error checking backend connectivity:", error);
+			setBackendReachable(false);
+			
+			if (isRetry) {
+				createToast({
+					body: t("backendConnectionError"),
+				});
+			}
+		} finally {
+			setIsCheckingConnection(false);
+		}
+	}, [navigate, t]);
+	
+	// Function to handle retry button click
+	const handleRetry = () => checkConnectivity(true);
 
 	useEffect(() => {
 		if (authToken) {
 			navigate("/uptime");
 			return;
 		}
-
-		// Check backend connectivity first
-		const handleRetry = async () => {
-			setIsCheckingConnection(true);
-			try {
-				const isReachable = await networkService.checkBackendReachability();
-				setBackendReachable(isReachable);
-				
-				// If backend is now reachable, proceed with admin check
-				if (isReachable) {
-					networkService
-						.doesSuperAdminExist()
-						.then((response) => {
-							if (response.data.data === false) {
-								navigate("/register");
-							}
-						})
-						.catch((error) => {
-							logger.error(error);
-						});
-					createToast({
-						body: t("backendReconnected"),
-					});
-				} else {
-					createToast({
-						body: t("backendStillUnreachable"),
-					});
-				}
-			} catch (error) {
-				logger.error("Error checking backend connectivity:", error);
-				setBackendReachable(false);
-				createToast({
-					body: t("backendConnectionError"),
-				});
-			} finally {
-				setIsCheckingConnection(false);
-			}
-		};
-
-		const checkConnectivity = async () => {
-			setIsCheckingConnection(true);
-			try {
-				const isReachable = await networkService.checkBackendReachability();
-				setBackendReachable(isReachable);
-				
-				// Only proceed with admin check if backend is reachable
-				if (isReachable) {
-					networkService
-						.doesSuperAdminExist()
-						.then((response) => {
-							if (response.data.data === false) {
-								navigate("/register");
-							}
-						})
-						.catch((error) => {
-							logger.error(error);
-						});
-				}
-			} catch (error) {
-				logger.error("Error checking backend connectivity:", error);
-				setBackendReachable(false);
-			} finally {
-				setIsCheckingConnection(false);
-			}
-		};
-
+		
+		// Initial connectivity check
 		checkConnectivity();
-	}, [authToken, navigate]);
+	}, [authToken, navigate, checkConnectivity]);
 
 	const handleChange = (event) => {
 		const { value, id } = event.target;
@@ -142,7 +129,7 @@ const Login = () => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-
+		
 		// Check backend connectivity before proceeding
 		if (!backendReachable) {
 			createToast({
@@ -279,7 +266,21 @@ const Login = () => {
 			>
 				{!backendReachable ? (
 					<Stack spacing={2} alignItems="center">
-						<Alert severity="error" sx={{ width: '100%' }}>
+						<Alert 
+							severity="error" 
+							sx={{ 
+								width: '100%',
+								'& .MuiAlert-message': { 
+									display: 'flex',
+									alignItems: 'center'
+								},
+								'& .MuiAlert-icon': {
+									display: 'flex',
+									alignItems: 'center',
+									marginRight: theme.spacing(2)
+								}
+							}}
+						>
 							{t("backendUnreachable")}
 						</Alert>
 						<Typography variant="body1" align="center">
@@ -287,9 +288,10 @@ const Login = () => {
 						</Typography>
 						<Button 
 							variant="contained" 
-							color="primary" 
+							color="accent" 
 							onClick={handleRetry}
 							disabled={isCheckingConnection}
+	
 						>
 							{isCheckingConnection ? t("retryingConnection") : t("retryConnection")}
 						</Button>
