@@ -110,7 +110,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 ## 🤝 Contributing
 
-We are [Alex](http://github.com/ajhollid) (team lead), [Vishnu](http://github.com/vishnusn77), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), and [Aryaman](https://github.com/Br0wnHammer) helping individuals and businesses monitor their infra and servers.
+We are [Alex](http://github.com/ajhollid) (team lead), [Vishnu](http://github.com/vishnusn77), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer) and [Mert](https://github/com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
 We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 4.6K+ stars and attracted 60 contributors from around the globe.
 
