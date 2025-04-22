@@ -350,7 +350,7 @@ const CreateMonitor = () => {
 				<ConfigBox>
 					<Box>
 						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
-						<Typography component="p">{t("distributedUptimeCreateSelectURL")}</Typography>
+						<Typography component="p">{t("uptimeCreateSelectURL")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<TextInput
