@@ -1,5 +1,7 @@
 {
   "dontHaveAccount": "Нет аккаунта",
+  "doNotHaveAccount": "У вас нет учетной записи?",
+  "registerHere": "Зарегистрироваться здесь",
   "email": "Почта",
   "forgotPassword": "Забыли пароль",
   "password": "пароль",

@@ -48,6 +48,7 @@ const Login = () => {
 	// State variables for backend connectivity status and loading state
 	const [backendReachable, setBackendReachable] = useState(true);
 	const [isCheckingConnection, setIsCheckingConnection] = useState(false);
+	const [initialCheckComplete, setInitialCheckComplete] = useState(false);
 
 	// Function to check if the backend server is reachable and handle connectivity status
 	// Wrapped in useCallback to prevent recreation on each render
@@ -100,6 +101,7 @@ const Login = () => {
 			}
 		} finally {
 			setIsCheckingConnection(false);
+			setInitialCheckComplete(true);
 		}
 	}, [t]); // Removed navigate since we no longer use it within this function
 	
@@ -272,8 +274,13 @@ const Login = () => {
 					},
 				}}
 			>
-				{!backendReachable ? (
-					<Stack spacing={2} alignItems="center">
+				{!initialCheckComplete ? (
+					<Stack spacing={theme.spacing(6)} alignItems="center">
+						{/* Show loading state while doing initial connectivity check */}
+						<Typography variant="h1">{t("retryingConnection")}</Typography>
+					</Stack>
+				) : !backendReachable ? (
+					<Stack spacing={theme.spacing(6)} alignItems="center">
 						<Alert 
 							severity="error" 
 							sx={{ 
@@ -291,7 +298,11 @@ const Login = () => {
 						>
 							{t("backendUnreachable")}
 						</Alert>
-						<Typography variant="body1" align="center">
+						<Typography 
+							variant="body1" 
+							align="center"
+							mt={theme.spacing(2)}
+						>
 							{t("backendUnreachableMessage")}
 						</Typography>
 						<Button 
@@ -299,7 +310,7 @@ const Login = () => {
 							color="accent" 
 							onClick={handleRetry}
 							disabled={isCheckingConnection}
-	
+							mt={theme.spacing(4)}
 						>
 							{isCheckingConnection ? t("retryingConnection") : t("retryConnection")}
 						</Button>
@@ -323,10 +334,32 @@ const Login = () => {
 					)
 				)}
 				{backendReachable && (
-					<ForgotPasswordLabel
-						email={form.email}
-						errorEmail={errors.email}
-					/>
+					<>
+						<ForgotPasswordLabel
+							email={form.email}
+							errorEmail={errors.email}
+						/>
+						
+						{/* Registration link */}
+						<Box textAlign="center" >
+							<Typography
+								className="forgot-p"
+								display="inline-block"
+								color={theme.palette.primary.main}
+							>
+								{t("doNotHaveAccount")}
+							</Typography>
+							<Typography
+								component="span"
+								color={theme.palette.accent.main}
+								ml={theme.spacing(2)}
+								sx={{ userSelect: "none" }}
+								onClick={() => navigate("/register")}
+							>
+								{t("registerHere")}
+							</Typography>
+						</Box>
+					</>
 				)}
 			</Stack>
 		</Stack>

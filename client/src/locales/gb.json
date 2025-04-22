@@ -1,5 +1,7 @@
 {
   "dontHaveAccount": "Don't have account",
+  "doNotHaveAccount": "Do not have an account?",
+  "registerHere": "Register here",
   "email": "E-mail",
   "forgotPassword": "Forgot Password",
   "password": "password",
@@ -102,7 +104,7 @@
   "backendUnreachable": "Server Connection Error",
   "backendUnreachableMessage": "We're unable to connect to the server. Please check your internet connection or contact your administrator if the problem persists.",
   "backendUnreachableError": "Cannot connect to the server. Please try again later.",
-  "retryConnection": "Retry Connection",
+  "retryConnection": "Retry connection",
   "retryingConnection": "Connecting...",
   "backendReconnected": "Successfully reconnected to the server.",
   "backendStillUnreachable": "Server is still unreachable. Please try again later.",

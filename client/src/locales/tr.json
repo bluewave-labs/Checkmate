@@ -1,5 +1,7 @@
 {
   "dontHaveAccount": "Hesabınız yok mu",
+  "doNotHaveAccount": "Hesabınız yok mu?",
+  "registerHere": "Buradan kayıt olun",
   "email": "E-posta",
   "forgotPassword": "Parolamı unuttum",
   "password": "Parola",
