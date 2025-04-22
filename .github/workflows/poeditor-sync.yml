@@ -88,9 +88,9 @@ jobs:
 
       - name: Copy translations to project
         run: |
-          mkdir -p src/locales
-          cp -r temp/* src/locales/
-          echo "Translation files copied to src/locales/"
+          mkdir -p client/src/locales
+          cp -r temp/* client/src/locales/
+          echo "Translation files copied to client/src/locales/"
 
       - name: Get current date
         id: date
@@ -113,6 +113,6 @@ jobs:
           delete-branch: true
           base: develop
           add-paths: |
-            src/locales/*.json
+            client/src/locales/*.json
           committer: GitHub Action <github-actions[bot]@users.noreply.github.com>
           author: GitHub Action <github-actions[bot]@users.noreply.github.com>

@@ -6,7 +6,7 @@ on:
     branches:
       - develop
     paths:
-      - "src/locales/**"
+      - "client/src/locales/**"
 
 jobs:
   upload-translations:
@@ -58,8 +58,8 @@ jobs:
           echo "Base SHA: $BASE_SHA"
           echo "Head SHA: $HEAD_SHA"
 
-          # Get list of changed files in src/locales directory
-          CHANGED_FILES=$(git diff --name-only $BASE_SHA..$HEAD_SHA -- 'src/locales/*.json' || git ls-files 'src/locales/*.json')
+          # Get list of changed files in client/src/locales directory
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA..$HEAD_SHA -- 'client/src/locales/*.json' || git ls-files 'client/src/locales/*.json')
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No changes detected in locale files"
@@ -81,7 +81,7 @@ jobs:
           # Process each changed file
           for FILE in $CHANGED_FILES; do
             if [[ -f "$FILE" ]]; then
-              # Extract language code from filename (e.g., src/locales/en.json -> en)
+              # Extract language code from filename (e.g., client/src/locales/en.json -> en)
               FILENAME=$(basename "$FILE")
               
               # Special case: map gb.json to en language code
