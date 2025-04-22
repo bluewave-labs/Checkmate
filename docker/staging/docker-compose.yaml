@@ -55,5 +55,6 @@ services:
     volumes:
       - ./mongo/data:/data/db
       - ./mongo/init/create_users.js:/docker-entrypoint-initdb.d/create_users.js
+      - ./mongo/init/init_replica_set.js:/docker-entrypoint-initdb.d/init_replica_set.js
     env_file:
       - mongo.env
