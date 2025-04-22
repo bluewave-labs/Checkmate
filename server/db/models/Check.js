@@ -77,7 +77,6 @@ CheckSchema.index({ updatedAt: 1 });
 CheckSchema.index({ monitorId: 1, updatedAt: 1 });
 CheckSchema.index({ monitorId: 1, updatedAt: -1 });
 CheckSchema.index({ teamId: 1, updatedAt: -1 });
-CheckSchema.index({ teamId: 1 });
 
 export default mongoose.model("Check", CheckSchema);
 export { BaseCheckSchema };
