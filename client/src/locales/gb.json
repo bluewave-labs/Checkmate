@@ -131,7 +131,6 @@
   "distributedStatusServerMonitors": "Server Monitors",
   "distributedStatusServerMonitorsDescription": "Monitor status of related servers",
   "distributedUptimeCreateSelectURL": "Here you can select the URL of the host, together with the type of monitor.",
-  "uptimeCreateSelectURL": "Here you can select the host address/container ID, together with the display name.",
   "distributedUptimeCreateChecks": "Checks to perform",
   "distributedUptimeCreateChecksDescription": "You can always add or remove checks after adding your site.",
   "distributedUptimeCreateIncidentNotification": "Incident notifications",
