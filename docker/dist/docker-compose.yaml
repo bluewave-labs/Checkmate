@@ -3,7 +3,7 @@ services:
     image: bluewaveuptime/uptime_client:latest
     restart: always
     environment:
-      UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
+      VITE_APP_API_BASE_URL: "http://server:5000/api/v1"
       UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
     ports:
       - "3010:80"
