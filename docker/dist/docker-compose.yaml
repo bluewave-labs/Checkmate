@@ -18,7 +18,6 @@ services:
     depends_on:
       - redis
       - mongodb
-    environment:
 
   redis:
     image: bluewaveuptime/uptime_redis:latest
