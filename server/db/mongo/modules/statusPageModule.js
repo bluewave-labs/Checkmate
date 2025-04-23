@@ -38,6 +38,8 @@ const updateStatusPage = async (statusPageData, image) => {
 				data: image.buffer,
 				contentType: image.mimetype,
 			};
+		}else{
+			statusPageData.logo = null;
 		}
 
 		if (statusPageData.deleteSubmonitors === "true") {
