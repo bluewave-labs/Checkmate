@@ -3,7 +3,7 @@ services:
     image: bluewaveuptime/uptime_client:latest
     restart: always
     environment:
-      VITE_APP_API_BASE_URL: ""
+      UPTIME_APP_API_BASE_URL: "${CHECKMATESERVER}/api/v1"
       UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
     ports:
       - "3010:80"
@@ -18,10 +18,26 @@ services:
       - redis
       - mongodb
     environment:
-      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
-      - REDIS_HOST=redis
-    # volumes:
-    # - /var/run/docker.sock:/var/run/docker.sock:ro
+      
+      JWT_SECRET:              "${JWT_SECRET}"
+      REFRESH_TOKEN_SECRET:    "${REFRESH_TOKEN_SECRET}"
+
+     
+      DB_CONNECTION_STRING:    "mongodb://mongodb:27017/uptime_db"
+      REDIS_HOST:              "redis"
+      REDIS_PORT:              "${REDIS_PORT}"
+
+      
+      SYSTEM_EMAIL_ADDRESS:    "${SYSTEM_EMAIL_ADDRESS}"
+      SYSTEM_EMAIL_PASSWORD:   "${SYSTEM_EMAIL_PASSWORD}"
+      SYSTEM_EMAIL_HOST:       "${SYSTEM_EMAIL_HOST}"
+      SYSTEM_EMAIL_PORT:       "${SYSTEM_EMAIL_PORT}"
+      PAGESPEED_API_KEY:       "${PAGESPEED_API_KEY}"
+
+      TOKEN_TTL:               "99d"
+      REFRESH_TOKEN_TTL:       "99d"
+      DB_TYPE:                 "MongoDB"
+
   redis:
     image: bluewaveuptime/uptime_redis:latest
     restart: always
