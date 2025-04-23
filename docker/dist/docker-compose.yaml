@@ -3,7 +3,8 @@ services:
     image: bluewaveuptime/uptime_client:latest
     restart: always
     environment:
-      UPTIME_APP_API_BASE_URL: "http://server:5000/api/v1"
+      UPTIME_APP_API_BASE_URL: ${UPTIME_APP_API_BASE_URL}
+      VITE_APP_API_BASE_URL: ${UPTIME_APP_API_BASE_URL}
       UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
     ports:
       - "3010:80"
@@ -19,21 +20,16 @@ services:
       - mongodb
     environment:
       
-      JWT_SECRET:              "${JWT_SECRET}"
-      REFRESH_TOKEN_SECRET:    "${REFRESH_TOKEN_SECRET}"
-
-     
       DB_CONNECTION_STRING:    "mongodb://mongodb:27017/uptime_db"
       REDIS_HOST:              "redis"
-      REDIS_PORT:              "${REDIS_PORT}"
-
-      
+      REDIS_PORT:              6379
+      JWT_SECRET:              "${JWT_SECRET}"
+      REFRESH_TOKEN_SECRET:    "${REFRESH_TOKEN_SECRET}"
       SYSTEM_EMAIL_ADDRESS:    "${SYSTEM_EMAIL_ADDRESS}"
       SYSTEM_EMAIL_PASSWORD:   "${SYSTEM_EMAIL_PASSWORD}"
       SYSTEM_EMAIL_HOST:       "${SYSTEM_EMAIL_HOST}"
       SYSTEM_EMAIL_PORT:       "${SYSTEM_EMAIL_PORT}"
       PAGESPEED_API_KEY:       "${PAGESPEED_API_KEY}"
-
       TOKEN_TTL:               "99d"
       REFRESH_TOKEN_TTL:       "99d"
       DB_TYPE:                 "MongoDB"
