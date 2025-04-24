@@ -6,6 +6,7 @@ services:
       UPTIME_APP_API_BASE_URL: ${UPTIME_APP_API_BASE_URL}
       VITE_APP_API_BASE_URL: ${UPTIME_APP_API_BASE_URL}
       UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
+      VITE_APP_LOG_LEVEL: "debug"
     ports:
       - "3010:80"
     depends_on:
@@ -20,6 +21,7 @@ services:
       - mongodb
     environment:
       PAGESPEED_API_KEY: ${PAGESPEED_API_KEY}
+      VITE_APP_LOG_LEVEL: "debug"
 
   redis:
     image: bluewaveuptime/uptime_redis:latest
