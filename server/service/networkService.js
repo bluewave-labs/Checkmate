@@ -154,6 +154,15 @@ class NetworkService {
 			};
 
 			if (error) {
+				this.logger.error({
+					message: "PageSpeed API request failed",
+					service: this.SERVICE_NAME,
+					method: "requestHttp",
+					details: {
+					  statusCode: error.response?.status,
+					  data: error.response?.data,
+					},
+				  });
 				const code = error.response?.status || this.NETWORK_ERROR;
 				httpResponse.code = code;
 				httpResponse.status = false;
@@ -244,10 +253,16 @@ class NetworkService {
 		try {
 			const url = job.data.url;
 			const updatedJob = { ...job };
-			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance&key=${this.settings.pagespeedApiKey}`;
-			// if (this.settings?.pagespeedApiKey) {
-			// 	pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
-			// }
+			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
+			if (this.settings?.pagespeedApiKey) {
+				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
+			}
+			this.logger.info({
+				service: this.SERVICE_NAME,
+				method: "requestPagespeed",
+				message: "Pagespeed response received",
+				details: { response }
+			  });			  
 			updatedJob.data.url = pagespeedUrl;
 			return await this.requestHttp(updatedJob);
 		} catch (error) {
