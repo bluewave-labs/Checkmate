@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Stack, Typography, Alert, Button } from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
+import Alert from "../../../Components/Alert";
 import { useTheme } from "@emotion/react";
 import { credentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
@@ -281,39 +282,52 @@ const Login = () => {
 					</Stack>
 				) : !backendReachable ? (
 					<Stack spacing={theme.spacing(6)} alignItems="center">
-						<Alert 
-							severity="error" 
-							sx={{ 
-								width: '100%',
-								'& .MuiAlert-message': { 
-									display: 'flex',
-									alignItems: 'center'
-								},
-								'& .MuiAlert-icon': {
-									display: 'flex',
+						<Box sx={{ 
+								width: theme.spacing(220), 
+								mx: 'auto', 
+								'& .alert.row-stack': { 
+									width: '100%',
 									alignItems: 'center',
-									marginRight: theme.spacing(2)
-								}
-							}}
-						>
-							{t("backendUnreachable")}
-						</Alert>
-						<Typography 
-							variant="body1" 
-							align="center"
-							mt={theme.spacing(2)}
-						>
-							{t("backendUnreachableMessage")}
-						</Typography>
-						<Button 
-							variant="contained" 
-							color="accent" 
-							onClick={handleRetry}
-							disabled={isCheckingConnection}
-							mt={theme.spacing(4)}
-						>
-							{isCheckingConnection ? t("retryingConnection") : t("retryConnection")}
-						</Button>
+									gap: theme.spacing(3)
+								} 
+							}}>
+							<Alert 
+								variant="error"
+								body={t("backendUnreachable")}
+								hasIcon={true}
+							/>
+						</Box>
+						<Box mt={theme.spacing(2)}>
+							<Typography 
+								variant="body1" 
+								align="center"
+								color={theme.palette.primary.contrastTextSecondary}
+							>
+								{t("backendUnreachableMessage")}
+							</Typography>
+						</Box>
+						<Box sx={{ mt: theme.spacing(4) }}>
+							<Button 
+								variant="contained" 
+								color="accent" 
+								onClick={handleRetry}
+								disabled={isCheckingConnection}
+								loading={isCheckingConnection}
+								className="dashboard-style-button"
+								sx={{ 
+									px: theme.spacing(6),
+									borderRadius: `${theme.shape.borderRadius}px !important`,
+									'&.MuiButtonBase-root': {
+										borderRadius: `${theme.shape.borderRadius}px !important`
+									},
+									'&.MuiButton-root': {
+										borderRadius: `${theme.shape.borderRadius}px !important`
+									}
+								}}
+							>
+								{isCheckingConnection ? t("retryingConnection") : t("retryConnection")}
+							</Button>
+						</Box>
 					</Stack>
 				) : step === 0 ? (
 					<EmailStep
@@ -353,7 +367,12 @@ const Login = () => {
 								component="span"
 								color={theme.palette.accent.main}
 								ml={theme.spacing(2)}
-								sx={{ userSelect: "none" }}
+								sx={{ 
+									cursor: 'pointer',
+									'&:hover': {
+										color: theme.palette.accent.darker
+									}
+								}}
 								onClick={() => navigate("/register")}
 							>
 								{t("registerHere")}
