@@ -234,7 +234,6 @@ class StatusService {
 			if (typeof payload === "undefined") {
 				return undefined;
 			}
-			console.log("[DEBUG] Payload:", networkResponse.payload);
 			const categories = payload?.lighthouseResult?.categories ?? {};
 			const audits = payload?.lighthouseResult?.audits ?? {};
 			const {
