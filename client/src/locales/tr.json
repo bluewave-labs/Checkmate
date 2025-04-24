@@ -378,5 +378,22 @@
   "inviteNoTokenFound": "",
   "pageSpeedWarning": "",
   "pageSpeedLearnMoreLink": "",
-  "pageSpeedAddApiKey": ""
+  "pageSpeedAddApiKey": "",
+  "update": "",
+  "invalidFileFormat": "",
+  "invalidFileSize": "",
+  "ClickUpload": "",
+  "DragandDrop": "",
+  "MaxSize": "",
+  "SupportedFormats": "",
+  "FirstName": "",
+  "LastName": "",
+  "EmailDescriptionText": "",
+  "YourPhoto": "",
+  "PhotoDescriptionText": "",
+  "save": "",
+  "DeleteAccount": "",
+  "DeleteDescriptionText": "",
+  "DeleteAccountWarning": "",
+  "DeleteWarningTitle": ""
 }

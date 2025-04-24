@@ -108,7 +108,6 @@
   "signUP": "Sign Up",
   "now": "Now",
   "delete": "Delete",
-  "update": "Update",
   "configure": "Configure",
   "networkError": "Network error",
   "responseTime": "Response time:",
@@ -377,6 +376,10 @@
   "errorInvalidTypeId": "Invalid notification type provided",
   "errorInvalidFieldId": "Invalid field ID provided",
   "inviteNoTokenFound": "No invite token found",
+  "pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function.",
+  "pageSpeedLearnMoreLink": "Click here to learn",
+  "pageSpeedAddApiKey": "how to add your API key.",
+  "update": "Update",
   "invalidFileFormat": "Unsupported file format!",
   "invalidFileSize": "File size is too large!",
   "ClickUpload": "Click to upload",
@@ -392,8 +395,5 @@
   "DeleteAccount": "Delete account",
   "DeleteDescriptionText": "Note that deleting your account will remove all data from the server. This is permanent and non-recoverable.",
   "DeleteAccountWarning": "If you delete your account, you will no longer be able to sign in, and all of your data will be deleted. Deleting your account is permanent and non-recoverable action.",
-  "DeleteWarningTitle": "Really delete this account?",
-  "pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key. Without it, the PageSpeed monitor won't function.",
-  "pageSpeedLearnMoreLink": "Click here to learn",
-  "pageSpeedAddApiKey": "how to add your API key."
+  "DeleteWarningTitle": "Really delete this account?"
 }
