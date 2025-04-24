@@ -248,13 +248,8 @@ class NetworkService {
 			if (this.settings?.pagespeedApiKey) {
 				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
 			}
-			this.logger.info({
-				message: "Fetched PageSpeed result",
-				service: this.SERVICE_NAME,
-				method: "requestPagespeed",
-				url: job.data.url,
-				fullPayload: response?.data,
-			});
+			console.log("[DEBUG] pagespeedUrl:", pagespeedUrl);
+			console.log("[DEBUG] full job.data.url being hit:", job.data.url);
 			updatedJob.data.url = pagespeedUrl;
 			return await this.requestHttp(updatedJob);
 		} catch (error) {
