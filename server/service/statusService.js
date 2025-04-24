@@ -231,14 +231,17 @@ class StatusService {
 		}
 
 		if (type === "pagespeed") {
-			if (!payload || payload.error || !payload.lighthouseResult) {
+			if (typeof payload === "undefined") {
+				return undefined;
+			}
+			if (!payload || !payload.lighthouseResult) {
 				this.logger.warn({
-					service: this.SERVICE_NAME,
-					method: "buildCheck",
-					message: "Invalid or failed PageSpeed response",
-					details: payload?.error || "Missing lighthouseResult",
+				  message: "Pagespeed payload missing lighthouseResult",
+				  service: this.SERVICE_NAME,
+				  method: "buildCheck",
+				  details: payload,
 				});
-				return undefined; 
+				return undefined;
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
 			const audits = payload?.lighthouseResult?.audits ?? {};
