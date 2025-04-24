@@ -18,6 +18,8 @@ services:
     depends_on:
       - redis
       - mongodb
+    environment:
+      PAGESPEED_API_KEY: ${PAGESPEED_API_KEY}
 
   redis:
     image: bluewaveuptime/uptime_redis:latest
