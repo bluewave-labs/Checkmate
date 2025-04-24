@@ -244,18 +244,12 @@ class NetworkService {
 		try {
 			const url = job.data.url;
 			const updatedJob = { ...job };
-			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
-			if (this.settings?.pagespeedApiKey) {
-				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
-			}
+			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance&key=${this.settings.pagespeedApiKey}`;
+			// if (this.settings?.pagespeedApiKey) {
+			// 	pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
+			// }
 			updatedJob.data.url = pagespeedUrl;
-			const result = await this.requestHttp(updatedJob);
-			this.logger.info({
-				message: "PageSpeed raw result",
-				service: this.SERVICE_NAME,
-				method: "requestPagespeed",
-				payloadPreview: JSON.stringify(result?.payload)?.slice(0, 300),
-			});
+			return await this.requestHttp(updatedJob);
 		} catch (error) {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestPagespeed";

@@ -231,15 +231,9 @@ class StatusService {
 		}
 
 		if (type === "pagespeed") {
-			if (!payload?.lighthouseResult) {
-				this.logger.error({
-					message: "Missing lighthouseResult in pagespeed payload",
-					service: "StatusService",
-					method: "buildCheck",
-					payloadPreview: JSON.stringify(payload)?.slice(0, 500),
-				});
+			if (typeof payload === "undefined") {
 				return undefined;
-			}		
+			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
 			const audits = payload?.lighthouseResult?.audits ?? {};
 			const {
