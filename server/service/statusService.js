@@ -231,7 +231,13 @@ class StatusService {
 		}
 
 		if (type === "pagespeed") {
-			if (typeof payload === "undefined") {
+			if (!payload?.lighthouseResult) {
+				this.logger.warn({
+					message: "Missing lighthouseResult in payload",
+					service: this.SERVICE_NAME,
+					method: "buildCheck",
+					details: networkResponse,
+				});
 				return undefined;
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};

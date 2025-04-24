@@ -257,12 +257,12 @@ class NetworkService {
 			if (this.settings?.pagespeedApiKey) {
 				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
 			}
-			this.logger.info({
+			this.logger.debug({
+				message: "PageSpeed response payload",
 				service: this.SERVICE_NAME,
 				method: "requestPagespeed",
-				message: "Pagespeed response received",
-				details: { response }
-			  });			  
+				details: { payload: response?.data }
+			});						  
 			updatedJob.data.url = pagespeedUrl;
 			return await this.requestHttp(updatedJob);
 		} catch (error) {
