@@ -154,15 +154,6 @@ class NetworkService {
 			};
 
 			if (error) {
-				this.logger.error({
-					message: "PageSpeed API request failed",
-					service: this.SERVICE_NAME,
-					method: "requestHttp",
-					details: {
-					  statusCode: error.response?.status,
-					  data: error.response?.data,
-					},
-				  });
 				const code = error.response?.status || this.NETWORK_ERROR;
 				httpResponse.code = code;
 				httpResponse.status = false;
@@ -257,12 +248,6 @@ class NetworkService {
 			if (this.settings?.pagespeedApiKey) {
 				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
 			}
-			this.logger.debug({
-				message: "PageSpeed response payload",
-				service: this.SERVICE_NAME,
-				method: "requestPagespeed",
-				details: { payload: response?.data }
-			});						  
 			updatedJob.data.url = pagespeedUrl;
 			return await this.requestHttp(updatedJob);
 		} catch (error) {
