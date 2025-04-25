@@ -1,11 +1,11 @@
 #!/bin/bash
 # Change directory to root Server directory for correct Docker Context
 cd "$(dirname "$0")"
-cd ../../../
+cd ../../
 
 # Define an array of services and their Dockerfiles
 declare -A services=(
-  ["bluewaveuptime/uptime_client"]=".docker/dist/client.Dockerfile"
+  ["bluewaveuptime/uptime_client"]="./docker/dist/client.Dockerfile"
   ["bluewaveuptime/uptime_database_mongo"]="./docker/dist/mongoDB.Dockerfile"
   ["bluewaveuptime/uptime_redis"]="./docker/dist/redis.Dockerfile"
   ["bluewaveuptime/uptime_server"]="./docker/dist/server.Dockerfile"

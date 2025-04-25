@@ -4,7 +4,6 @@ services:
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
-      UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
     ports:
       - "80:80"
       - "443:443"
@@ -20,7 +19,8 @@ services:
       - mongodb
     environment:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
-      - REDIS_HOST=redis
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_HOST=http://localhost
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
   redis:

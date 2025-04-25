@@ -424,6 +424,10 @@ class StringService {
 			.getTranslation("dbFindMonitorById")
 			.replace("${monitorId}", monitorId);
 	}
+
+	get dbUserExists() {
+		return this.translationService.getTranslation("dbUserExists");
+	}
 }
 
 export default StringService;
