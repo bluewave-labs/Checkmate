@@ -96,6 +96,7 @@ class MongoDB {
 		try {
 			const connectionString =
 				process.env.DB_CONNECTION_STRING || "mongodb://localhost:27017/uptime_db";
+			console.log("Connecting to MongoDB with connection string:", connectionString);
 			await mongoose.connect(connectionString);
 			// If there are no AppSettings, create one
 			await AppSettings.findOneAndUpdate(
