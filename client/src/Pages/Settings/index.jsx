@@ -123,31 +123,17 @@ const Settings = () => {
 				ttl: form.ttl,
 			});
 			const updatedUser = { ...user, checkTTL: form.ttl };
-			const action = await dispatch(update({ localData: updatedUser }));
-			const settingsAction = await dispatch(
-				updateAppSettings({ settings: { language: language } })
-			);
+			const [userAction, settingsAction] = await Promise.all([
+				dispatch(update({ localData: updatedUser })),
+				dispatch(updateAppSettings({ settings: { language: language } })),
+			]);
 
-			if (action.payload.success && settingsAction.payload.success) {
-				createToast({
-					body: t("settingsSuccessSaved"),
-				});
+			if (userAction.payload.success && settingsAction.payload.success) {
+				createToast({ body: t("settingsSuccessSaved") });
 			} else {
-				if (action.payload) {
-					console.log(action.payload);
-					// dispatch errors
-					createToast({
-						body: action.payload.msg,
-					});
-				} else {
-					// unknown errors
-					createToast({
-						body: "Unknown error.",
-					});
-				}
+				throw new Error("Failed to save settings");
 			}
 		} catch (error) {
-			console.log(error);
 			createToast({ body: t("settingsFailedToSave") });
 		} finally {
 			setChecksIsLoading(false);

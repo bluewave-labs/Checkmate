@@ -41,7 +41,7 @@ const isAllowed = (allowedRoles) => {
 				return;
 			} else {
 				const error = new Error(stringService.insufficientPermissions);
-				error.status = 401;
+				error.status = 403;
 				error.service = SERVICE_NAME;
 				next(error);
 				return;

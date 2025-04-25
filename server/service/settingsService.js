@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const envConfig = {
 	logLevel: process.env.LOG_LEVEL,
-	apiBaseUrl: undefined,
 	language: process.env.LANGUAGE,
 	clientHost: process.env.CLIENT_HOST,
 	jwtSecret: process.env.JWT_SECRET,
