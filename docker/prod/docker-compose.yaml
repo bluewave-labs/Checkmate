@@ -1,6 +1,6 @@
 services:
   client:
-    image: uptime_client:latest
+    image: ghcr.io/bluewave-labs/checkmate:frontend-demo
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://checkmate-demo.bluewavelabs.ca/api/v1"
@@ -22,7 +22,7 @@ services:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
   server:
-    image: uptime_server:latest
+    image: ghcr.io/bluewave-labs/checkmate:backend-demo
     restart: always
     ports:
       - "5000:5000"
@@ -32,7 +32,7 @@ services:
       - redis
       - mongodb
   redis:
-    image: uptime_redis:latest
+    image: ghcr.io/bluewave-labs/checkmate:redis-demo
     restart: always
     ports:
       - "6379:6379"
@@ -45,7 +45,7 @@ services:
       retries: 5
       start_period: 5s
   mongodb:
-    image: uptime_database_mongo:latest
+    image: ghcr.io/bluewave-labs/checkmate:mongo-demo
     restart: always
     command: ["mongod", "--quiet", "--auth"]
     ports:
