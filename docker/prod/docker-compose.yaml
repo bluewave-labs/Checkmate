@@ -47,7 +47,7 @@ services:
   mongodb:
     image: ghcr.io/bluewave-labs/checkmate:mongo-demo
     restart: always
-    command: ["mongod", "--quiet", "--auth"]
+    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
