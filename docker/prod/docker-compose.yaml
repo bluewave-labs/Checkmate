@@ -52,7 +52,7 @@ services:
       - "27017:27017"
     volumes:
       - ./mongo/data:/data/db
-      - ./mongo/init/create_users.js:/docker-entrypoint-initdb.d/create_users.js
-      - ./mongo/init/init_replica_set.js:/docker-entrypoint-initdb.d/init_replica_set.js
+      - ./mongo/init/01_init_replica_set.js:/docker-entrypoint-initdb.d/01_init_replica_set.js
+      - ./mongo/init/02_create_users.js:/docker-entrypoint-initdb.d/02_create_users.js
     env_file:
       - mongo.env
