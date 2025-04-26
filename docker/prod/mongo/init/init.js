@@ -2,7 +2,7 @@ function initiateReplicaSet() {
   try {
     rs.initiate({
       _id: "rs0",
-      members: [{ _id: 0, host: "mongodb:27017" }],
+      members: [{ _id: 0, host: "localhost:27017" }],
     });
   } catch (e) {
     print("Replica set already initiated or error occurred: " + e);
