@@ -191,6 +191,7 @@ const UptimeMonitors = () => {
 				isAdmin={isAdmin}
 				shouldRender={!isLoading}
 				path="/uptime/create"
+				bulkPath="/uptime/bulk-import"
 			/>
 			<Greeting type="uptime" />
 			<StatusBoxes

@@ -395,5 +395,14 @@
   "DeleteAccount": "Delete account",
   "DeleteDescriptionText": "Note that deleting your account will remove all data from the server. This is permanent and non-recoverable.",
   "DeleteAccountWarning": "If you delete your account, you will no longer be able to sign in, and all of your data will be deleted. Deleting your account is permanent and non-recoverable action.",
-  "DeleteWarningTitle": "Really delete this account?"
+  "DeleteWarningTitle": "Really delete this account?",
+  "bulkImport": {
+    "title": "Bulk Import",
+    "selectFileTips": "Select CSV file to upload",
+    "selectFileDescription": "You can download our <template>template</template> or <sample>sample</sample>",
+    "selectFile": "Select File",
+    "parsingFailed": "Parsing failed",
+    "uploadSuccess": "Monitors created successfully!",
+    "validationFailed": "Validation failed"
+  }
 }

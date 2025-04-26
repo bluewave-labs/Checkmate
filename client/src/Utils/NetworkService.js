@@ -1087,6 +1087,14 @@ class NetworkService {
 	}
 
 	// ************************************
+	// Create bulk monitors
+	// ************************************
+
+	async createBulkMonitors({ monitors }) {
+		return this.axiosInstance.post(`/monitors/bulk`, monitors);
+	}
+
+	// ************************************
 	// Fetch monitors with summary by TeamID
 	// ************************************
 	async getMonitorsWithSummaryByTeamId(config) {

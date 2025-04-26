@@ -173,6 +173,8 @@ const monitorValidation = joi.object({
 	matchMethod: joi.string(),
 });
 
+const bulkMonitorsValidation = joi.array().items(monitorValidation);
+
 const imageValidation = joi.object({
 	type: joi.string().valid("image/jpeg", "image/png").messages({
 		"any.only": "Invalid file format.",
@@ -367,4 +369,5 @@ export {
 	infrastructureMonitorValidation,
 	statusPageValidation,
 	logoImageValidation,
+	bulkMonitorsValidation
 };
