@@ -23,6 +23,7 @@ import Checkbox from "../../../Components/Inputs/Checkbox";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import PulseDot from "../../../Components/Animated/PulseDot";
 import SkeletonLayout from "./skeleton";
+import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
 import "./index.css";
 import Dialog from "../../../Components/Dialog";
 
@@ -54,6 +55,7 @@ const Configure = () => {
 	const [monitor, setMonitor] = useState({});
 	const [errors, setErrors] = useState({});
 	const { monitorId } = useParams();
+	const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 	const idMap = {
 		"monitor-url": "url",
 		"monitor-name": "name",
@@ -72,6 +74,10 @@ const Configure = () => {
 		regex: "^(success|ok)$",
 		equal: "success",
 		include: "ok",
+	};
+
+	const handleOpenNotificationModal = () => {
+		setIsNotificationModalOpen(true);
 	};
 
 	useEffect(() => {
@@ -386,7 +392,9 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+								<Typography component="h2">
+									{t("distributedUptimeCreateIncidentNotification")}
+								</Typography>
 								<Typography component="p">
 									{t("distributedUptimeCreateIncidentDescription")}
 								</Typography>
@@ -413,6 +421,15 @@ const Configure = () => {
 									value={user?.email}
 									onChange={(event) => handleChange(event)}
 								/>
+								<Box mt={theme.spacing(2)}>
+									<Button
+										variant="contained"
+										color="accent"
+										onClick={handleOpenNotificationModal}
+									>
+										{t("notifications.integrationButton")}
+									</Button>
+								</Box>
 								{/* <Checkbox
 									id="notify-email"
 									label="Also notify via email to multiple addresses (coming soon)"
@@ -443,7 +460,9 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+								<Typography component="h2">
+									{t("distributedUptimeCreateAdvancedSettings")}
+								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select
@@ -545,6 +564,13 @@ const Configure = () => {
 				confirmationButtonLabel="Delete"
 				onConfirm={handleRemove}
 				isLoading={isLoading}
+			/>
+
+			<NotificationIntegrationModal
+				open={isNotificationModalOpen}
+				onClose={() => setIsNotificationModalOpen(false)}
+				monitor={monitor}
+				setMonitor={setMonitor}
 			/>
 		</Stack>
 	);
