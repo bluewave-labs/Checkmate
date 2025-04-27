@@ -161,6 +161,7 @@ const NotificationIntegrationModal = ({
 				monitor.notifications.forEach((notification) => {
 					// Handle notification based on its structure
 					if (notification.type === "webhook" && notification.platform) {
+						if (typeof notification.config === "undefined") return;
 						const platform = notification.platform;
 						values[platform] = true; // Set platform as enabled
 
