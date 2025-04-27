@@ -58,6 +58,8 @@
   "authRegisterBySigningUp": "By creating an account, you agree to our <1>Terms of Service</1> and <3>Privacy Policy</3>",
   "authRegisterFirstName": "Name",
   "authRegisterLastName": "Surname",
+  "authRegisterEmail": "Email",
+  "authRegisterEmailRequired": "Email is required",
   "distributedStatusHeaderText": "Real-time, real-device coverage",
   "distributedStatusSubHeaderText": "Powered by millions devices worldwide, view a system performance by global region, country or city",
   "settingsGeneralSettings": "General settings",

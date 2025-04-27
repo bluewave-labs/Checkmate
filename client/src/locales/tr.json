@@ -58,6 +58,8 @@
   "authRegisterBySigningUp": "Bir hesap oluşturarak, <1>Hizmet Şartlarımızı</1> ve <3>Gizlilik Politikamızı</3> kabul etmiş olursunuz",
   "authRegisterFirstName": "Ad",
   "authRegisterLastName": "Soyad",
+  "authRegisterEmail": "E-posta",
+  "authRegisterEmailRequired": "E-posta gereklidir",
   "distributedStatusHeaderText": "Gerçek zamanlı, Gerçek cihazlar kapsamı",
   "distributedStatusSubHeaderText": "Dünya çapında milyonlarca cihaz tarafından desteklenen sistem performansını küresel bölgeye, ülkeye veya şehre göre görüntüleyin",
   "settingsGeneralSettings": "Genel ayarlar",

@@ -58,6 +58,8 @@
   "authRegisterBySigningUp": "Создавая учетную запись, вы соглашаетесь с нашими <1>Условиями использования</1> и <3>Политикой конфиденциальности</3>",
   "authRegisterFirstName": "Имя",
   "authRegisterLastName": "Фамилия",
+  "authRegisterEmail": "Эл. почта",
+  "authRegisterEmailRequired": "Эл. почта обязательна",
   "distributedStatusHeaderText": "Охват реального времени и реального устройства",
   "distributedStatusSubHeaderText": "Работает на миллионах устройств по всему миру, просматривайте производительность системы по глобальному региону, стране или городу",
   "settingsGeneralSettings": "Общие настройки",
