@@ -330,7 +330,7 @@ const NotificationIntegrationModal = ({
 							borderRight: 1,
 							borderColor: theme.palette.primary.lowContrast,
 							width: "30%",
-							maxWidth: theme.spacing(120),
+							maxWidth: "30%",
 							pr: theme.spacing(10),
 						}}
 					>
