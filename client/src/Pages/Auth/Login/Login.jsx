@@ -59,36 +59,21 @@ const Login = () => {
 			const isReachable = await networkService.checkBackendReachability();
 			setBackendReachable(isReachable);
 			
-			if (isReachable) {
-				// Only check if super admin exists if not already attempting to log in
-				// This allows users to log in even if system thinks no super admin exists
-				if (window.location.pathname === "/" || window.location.pathname === "") {
-					networkService
-						.doesSuperAdminExist()
-						.then((response) => {
-							if (response.data.data === false) {
-								// Add a toast notification instead of forcing redirect
-								createToast({
-									body: t("noSuperAdminMessage"),
-									type: "info"
-								});
-							}
-						})
-						.catch((error) => {
-							logger.error(error);
-						});
-				}
-					
-				// Only show reconnection toast if this was a retry attempt
+			// Early return if backend is not reachable
+			if (isReachable === false) {
+				// Show toast only on retry attempts
 				if (isRetry) {
 					createToast({
-						body: t("backendReconnected"),
+						body: t("backendStillUnreachable"),
 					});
 				}
-			} else if (isRetry) {
-				// Only show still unreachable toast if this was a retry attempt
+				return;
+			}
+			
+			// Show reconnection toast if this was a retry attempt and backend is now reachable
+			if (isRetry) {
 				createToast({
-					body: t("backendStillUnreachable"),
+					body: t("backendReconnected"),
 				});
 			}
 		} catch (error) {
