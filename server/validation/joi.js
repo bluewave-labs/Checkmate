@@ -190,6 +190,7 @@ const createMonitorBodyValidation = joi.object({
 	url: joi.string().required(),
 	port: joi.number(),
 	isActive: joi.boolean(),
+	insecureSkipVerify: joi.boolean(),
 	interval: joi.number(),
 	thresholds: joi.object().keys({
 		usage_cpu: joi.number(),

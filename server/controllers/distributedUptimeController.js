@@ -48,8 +48,13 @@ class DistributedUptimeController {
 			}
 
 			// Calculate if server is up or down
+			let isSelfSigned = false;
 			const isErrorStatus = status_code >= 400;
 			const hasError = error !== "";
+ 			if(error === 'DEPTH_ZERO_SELF_SIGNED_CERT' || error === 'SELF_SIGNED_CERT_IN_CHAIN'){
+ 				const monitor = await getMonitorById(id)
+ 				isSelfSigned = monitor.insecureSkipVerify
+ 				}
 
 			const status = isErrorStatus || hasError ? false : true;
 
