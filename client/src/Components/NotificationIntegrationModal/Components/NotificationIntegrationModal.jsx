@@ -11,6 +11,7 @@ import {
 	Box,
 	Tabs,
 	Tab,
+	Stack,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import TabPanel from "./TabPanel";
@@ -316,7 +317,8 @@ const NotificationIntegrationModal = ({
 			}}
 		>
 			<DialogContent>
-				<Box
+				<Stack
+					direction="row"
 					sx={{
 						display: "flex",
 						height: `calc(26vh - ${theme.spacing(20)})`,
@@ -388,7 +390,7 @@ const NotificationIntegrationModal = ({
 							</TabPanel>
 						))}
 					</Box>
-				</Box>
+				</Stack>
 			</DialogContent>
 			<DialogActions
 				sx={{
