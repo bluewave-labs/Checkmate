@@ -63,11 +63,7 @@ const registrationBodyValidation = joi.object({
 		}),
 	password: joi.string().min(8).required().pattern(passwordPattern),
 	profileImage: joi.any(),
-	role: joi
-		.array()
-		.items(joi.string().valid("superadmin", "admin", "user", "demo"))
-		.min(1)
-		.required(),
+	role: joi.array().items(joi.string().valid("superadmin", "admin", "user", "demo")),
 	teamId: joi.string().allow("").required(),
 	inviteToken: joi.string().allow("").required(),
 });
@@ -305,7 +301,18 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "distributed_http", "distributed_test"),
+	type: joi
+		.string()
+		.valid(
+			"http",
+			"ping",
+			"pagespeed",
+			"hardware",
+			"docker",
+			"port",
+			"distributed_http",
+			"distributed_test"
+		),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
@@ -578,16 +585,15 @@ const triggerNotificationBodyValidation = joi.object({
 
 const createAnnouncementValidation = joi.object({
 	title: joi.string().required().messages({
-	  'string.empty': 'Title cannot be empty',
-	  'any.required': 'Title is required',
+		"string.empty": "Title cannot be empty",
+		"any.required": "Title is required",
 	}),
 	message: joi.string().required().messages({
-	  'string.empty': 'Message cannot be empty',
-	  'any.required': 'Message is required',
+		"string.empty": "Message cannot be empty",
+		"any.required": "Message is required",
 	}),
 	userId: joi.string().required(),
-  });
-
+});
 
 export {
 	roleValidatior,
@@ -651,5 +657,5 @@ export {
 	imageValidation,
 	triggerNotificationBodyValidation,
 	webhookConfigValidation,
-	createAnnouncementValidation
+	createAnnouncementValidation,
 };
