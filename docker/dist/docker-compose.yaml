@@ -1,6 +1,6 @@
 services:
   client:
-    image: bluewaveuptime/uptime_client:latest
+    image: ghcr.io/bluewave-labs/checkmate:frontend-dist
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
@@ -10,7 +10,7 @@ services:
     depends_on:
       - server
   server:
-    image: bluewaveuptime/uptime_server:latest
+    image: ghcr.io/bluewave-labs/checkmate:backend-dist
     restart: always
     ports:
       - "5000:5000"
@@ -18,8 +18,8 @@ services:
       - redis
       - mongodb
     environment:
-      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
-      - REDIS_URL=redis://redis:6379
+      - DB_CONNECTION_STRING=mongodb://localhost:27017/uptime_db?replicaSet=rs0
+      - REDIS_URL="redis://redis:6379"
       - CLIENT_HOST=http://localhost
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -44,3 +44,10 @@ services:
     command: ["mongod", "--quiet"]
     ports:
       - "27017:27017"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
