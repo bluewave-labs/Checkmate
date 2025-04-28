@@ -15,6 +15,7 @@ const InviteTokenSchema = mongoose.Schema(
 		role: {
 			type: Array,
 			required: true,
+			default: ["user"],
 		},
 		token: {
 			type: String,
