@@ -87,7 +87,9 @@ jobs:
           username: ${{ secrets.STAGING_SERVER_USER }}
           key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
           script: |
-            cd checkmate/docker/staging
+            cd checkmate
+            git pull
+            cd docker/staging
             docker compose down
             docker compose pull
             docker compose up -d
