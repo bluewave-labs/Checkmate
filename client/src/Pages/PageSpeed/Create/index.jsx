@@ -51,6 +51,7 @@ const CreatePageSpeed = () => {
 		type: "pagespeed",
 		notifications: [],
 		interval: 3,
+		insecureSkipVerify: false,
 	});
 
 	const [https, setHttps] = useState(true);
@@ -105,6 +106,7 @@ const CreatePageSpeed = () => {
 			teamId: user.teamId,
 			userId: user._id,
 			notifications: monitor.notifications,
+			insecureSkipVerify: monitor.insecureSkipVerify
 		};
 
 		const action = await dispatch(createPageSpeed({ monitor: form }));
@@ -316,6 +318,23 @@ const CreatePageSpeed = () => {
 							value={user?.email}
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
+					</Stack>
+				</ConfigBox>
+				<ConfigBox>
+					<Box>
+						<Typography component="h2">{t('selfSignedCertificateTitle')}</Typography>
+						<Typography component="p">
+						{t('selfSignedCertificateDescription')}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(6)}>
+							<Switch
+								id="monitor-insecure-skip-verify"
+								color="accent"
+								name="insecureSkipVerify"
+								checked={monitor.insecureSkipVerify}
+								onChange={handleChange}
+								/>
 					</Stack>
 				</ConfigBox>
 				<ConfigBox>

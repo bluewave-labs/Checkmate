@@ -158,5 +158,7 @@
 	"platformRequired": "Platform is required",
 	"testNotificationFailed": "Failed to send test notification",
 	"monitorUpAlert": "Uptime Alert: One of your monitors is back online.\n📌 Monitor: {monitorName}\n📅 Time: {time}\n⚠️ Status: UP\n📟 Status Code: {code}\n\u200B\n",
-  	"monitorDownAlert": "Downtime Alert: One of your monitors went offline.\n📌 Monitor: {monitorName}\n📅 Time: {time}\n⚠️ Status: DOWN\n📟 Status Code: {code}\n\u200B\n"
+  	"monitorDownAlert": "Downtime Alert: One of your monitors went offline.\n📌 Monitor: {monitorName}\n📅 Time: {time}\n⚠️ Status: DOWN\n📟 Status Code: {code}\n\u200B\n",
+	"selfSignedCertificateTitle":"Ignore TLS/SSL error for HTTPS websites",
+	"selfSignedCertificateDescription": "Ignore TLS/SSL errors and continue checking the website's availability. \n This is especially useful for monitoring internal, staging, or development sites with self-signed or expired certificates."
 }

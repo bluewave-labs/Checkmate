@@ -410,7 +410,6 @@ const CreateMonitor = () => {
 							value={user?.email}
 							onChange={(event) => handleNotifications(event, "email")}
 						/>
-
 						<Box mt={theme.spacing(2)}>
 							<Button
 								variant="contained"
@@ -420,6 +419,84 @@ const CreateMonitor = () => {
 								{t("notifications.integrationButton")}
 							</Button>
 						</Box>
+					</Stack>
+				</ConfigBox>
+				<ConfigBox>
+					<Box>
+						<Typography component="h2">
+							{t("distributedUptimeCreateAdvancedSettings")}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(12)}>
+						<Select
+							id="monitor-interval"
+							label="Check frequency"
+							value={monitor.interval || 1}
+							onChange={(event) => handleChange(event, "interval")}
+							items={SELECT_VALUES}
+						/>
+						{monitor.type === "http" && (
+							<>
+								<Select
+									id="match-method"
+									label="Match Method"
+									value={monitor.matchMethod || "equal"}
+									onChange={(event) => handleChange(event, "matchMethod")}
+									items={matchMethodOptions}
+								/>
+								<Stack>
+									<TextInput
+										type="text"
+										id="expected-value"
+										label="Expected value"
+										isOptional={true}
+										placeholder={
+											expectedValuePlaceholders[monitor.matchMethod || "equal"]
+										}
+										value={monitor.expectedValue}
+										onChange={(event) => handleChange(event, "expectedValue")}
+										error={errors["expectedValue"] ? true : false}
+										helperText={errors["expectedValue"]}
+									/>
+									<Typography
+										component="span"
+										color={theme.palette.primary.contrastTextTertiary}
+										opacity={0.8}
+									>
+										{t("uptimeCreate")}
+									</Typography>
+								</Stack>
+								<Stack>
+									<TextInput
+										type="text"
+										id="json-path"
+										label="JSON Path"
+										isOptional={true}
+										placeholder="data.status"
+										value={monitor.jsonPath}
+										onChange={(event) => handleChange(event, "jsonPath")}
+										error={errors["jsonPath"] ? true : false}
+										helperText={errors["jsonPath"]}
+									/>
+									<Typography
+										component="span"
+										color={theme.palette.primary.contrastTextTertiary}
+										opacity={0.8}
+									>
+										{t("uptimeCreateJsonPath")}&nbsp;
+										<Typography
+											component="a"
+											href="https://jmespath.org/"
+											target="_blank"
+											color="info"
+										>
+											jmespath.org
+										</Typography>
+										&nbsp;{t("uptimeCreateJsonPathQuery")}
+									</Typography>
+								</Stack>
+							</>
+						)}
 					</Stack>
 				</ConfigBox>
 				<ConfigBox>
