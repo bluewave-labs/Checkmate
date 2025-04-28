@@ -18,13 +18,14 @@ services:
       - redis
       - mongodb
     environment:
-      - DB_CONNECTION_STRING=mongodb://localhost:27017/uptime_db?replicaSet=rs0
-      - REDIS_URL="redis://redis:6379"
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
       - CLIENT_HOST=http://localhost
+      - JWT_SECRET=my_secret
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
   redis:
-    image: bluewaveuptime/uptime_redis:latest
+    image: ghcr.io/bluewave-labs/checkmate:redis-dist
     restart: always
     ports:
       - "6379:6379"
@@ -37,11 +38,11 @@ services:
       retries: 5
       start_period: 5s
   mongodb:
-    image: bluewaveuptime/uptime_database_mongo:latest
+    image: ghcr.io/bluewave-labs/checkmate:mongo-dist
     restart: always
     volumes:
       - ./mongo/data:/data/db
-    command: ["mongod", "--quiet"]
+    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     healthcheck:

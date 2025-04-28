@@ -55,6 +55,8 @@ class SettingsService {
 					this.settings[key] = dbSettings[key];
 				}
 			}
+
+			await this.appSettings.updateOne({}, { $set: this.settings }, { upsert: true });
 			return this.settings;
 		} catch (error) {
 			error.service === undefined ? (error.service = SERVICE_NAME) : null;
