@@ -338,7 +338,7 @@ const NotificationIntegrationModal = ({
 							variant="subtitle1"
 							sx={{
 								my: theme.spacing(1),
-								fontWeight: "bold",
+								fontWeight: "h2",
 								fontSize: theme.typography.fontSize * 0.9,
 								color: theme.palette.primary.contrastTextSecondary,
 								pl: theme.spacing(4),
