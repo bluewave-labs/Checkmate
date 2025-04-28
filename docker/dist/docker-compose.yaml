@@ -21,7 +21,6 @@ services:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
       - REDIS_URL=redis://redis:6379
       - CLIENT_HOST=http://localhost
-      - JWT_SECRET=my_secret
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
   redis:
