@@ -2,7 +2,7 @@ name: Demo deploy
 
 on:
   push:
-    branches: ["demo"]
+    branches: ["master"]
   workflow_dispatch:
 jobs:
   docker-build-and-push-client:
