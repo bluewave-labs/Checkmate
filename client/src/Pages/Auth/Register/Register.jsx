@@ -148,8 +148,8 @@ const Register = ({ isSuperAdmin }) => {
 				try {
 					const res = await networkService.verifyInvitationToken(token);
 					const invite = res.data.data;
-					const { role, email, teamId } = invite;
-					setForm({ ...form, email, role, teamId });
+					const { email } = invite;
+					setForm({ ...form, email });
 				} catch (error) {
 					navigate("/register", { replace: true });
 				}
@@ -259,7 +259,8 @@ const Register = ({ isSuperAdmin }) => {
 	const handleChange = (event) => {
 		const { value, id } = event.target;
 		const name = idMap[id];
-		const lowerCasedValue = name === idMap["register-email-input"]?  value?.toLowerCase() || value : value
+		const lowerCasedValue =
+			name === idMap["register-email-input"] ? value?.toLowerCase() || value : value;
 		setForm((prev) => ({
 			...prev,
 			[name]: lowerCasedValue,

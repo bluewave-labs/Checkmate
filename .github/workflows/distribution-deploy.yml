@@ -1,9 +1,9 @@
-name: Staging deploy
+name: Distribution deploy
 
 on:
   push:
-    branches: ["develop"]
-
+    branches: ["master"]
+  workflow_dispatch:
 jobs:
   docker-build-and-push-client:
     runs-on: ubuntu-latest
@@ -21,13 +21,13 @@ jobs:
       - name: Build Client Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:frontend-staging \
-            -f ./docker/staging/client.Dockerfile \
+            -t ghcr.io/bluewave-labs/checkmate:frontend-dist \
+            -f ./docker/dist/client.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             .
 
       - name: Push Client Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:frontend-staging
+        run: docker push ghcr.io/bluewave-labs/checkmate:frontend-dist
 
   docker-build-and-push-server:
     needs: docker-build-and-push-client
@@ -46,50 +46,32 @@ jobs:
       - name: Build Server Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:backend-staging \
-            -f ./docker/staging/server.Dockerfile \
+            -t ghcr.io/bluewave-labs/checkmate:backend-dist \
+            -f ./docker/dist/server.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             .
 
       - name: Push Server Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:backend-staging
+        run: docker push ghcr.io/bluewave-labs/checkmate:backend-dist
 
       - name: Build Mongo Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:mongo-staging \
-            -f ./docker/staging/mongoDB.Dockerfile \
+            -t ghcr.io/bluewave-labs/checkmate:mongo-dist \
+            -f ./docker/dist/mongoDB.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             .
 
       - name: Push MongoDB Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:mongo-staging
+        run: docker push ghcr.io/bluewave-labs/checkmate:mongo-dist
 
       - name: Build Redis Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:redis-staging \
-            -f ./docker/staging/redis.Dockerfile \
+            -t ghcr.io/bluewave-labs/checkmate:redis-dist \
+            -f ./docker/dist/redis.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             .
 
       - name: Push Redis Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:redis-staging
-
-  deploy-to-staging:
-    needs: docker-build-and-push-server
-    runs-on: ubuntu-latest
-    steps:
-      - name: SSH into server and restart container using Docker Compose
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.STAGING_SERVER_HOST }}
-          username: ${{ secrets.STAGING_SERVER_USER }}
-          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
-          script: |
-            cd checkmate
-            git pull
-            cd docker/staging
-            docker compose down
-            docker compose pull
-            docker compose up -d
+        run: docker push ghcr.io/bluewave-labs/checkmate:redis-dist

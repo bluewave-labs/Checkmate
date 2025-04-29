@@ -57,9 +57,9 @@ class AuthController {
 	 */
 	registerUser = async (req, res, next) => {
 		try {
-			if(req.body?.email){
+			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
-			}			
+			}
 			await registrationBodyValidation.validateAsync(req.body);
 		} catch (error) {
 			const validationError = handleValidationError(error, SERVICE_NAME);
@@ -68,11 +68,13 @@ class AuthController {
 		}
 		// Create a new user
 		try {
-			const { inviteToken } = req.body;
+			const user = req.body;
 			// If superAdmin exists, a token should be attached to all further register requests
 			const superAdminExists = await this.db.checkSuperadmin(req, res);
 			if (superAdminExists) {
-				await this.db.getInviteTokenAndDelete(inviteToken);
+				const invitedUser = await this.db.getInviteTokenAndDelete(user.inviteToken);
+				user.role = invitedUser.role;
+				user.teamId = invitedUser.teamId;
 			} else {
 				// This is the first account, create JWT secret to use if one is not supplied by env
 				const jwtSecret = crypto.randomBytes(64).toString("hex");
@@ -133,8 +135,8 @@ class AuthController {
 	 */
 	loginUser = async (req, res, next) => {
 		try {
-			if(req.body?.email){
-			req.body.email = req.body.email?.toLowerCase();
+			if (req.body?.email) {
+				req.body.email = req.body.email?.toLowerCase();
 			}
 			await loginValidation.validateAsync(req.body);
 		} catch (error) {
