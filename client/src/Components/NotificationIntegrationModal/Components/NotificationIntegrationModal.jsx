@@ -167,32 +167,30 @@ const NotificationIntegrationModal = ({
 						values[platform] = true; // Set platform as enabled
 
 						// Extract configuration based on platform
-						if (notification.config) {
-							switch (platform) {
-								case NOTIFICATION_TYPES.SLACK:
-								case NOTIFICATION_TYPES.DISCORD:
-									if (notification.config.webhookUrl) {
-										values[getFieldKey(platform, FIELD_IDS.WEBHOOK)] =
-											notification.config.webhookUrl;
-									}
-									break;
-								case NOTIFICATION_TYPES.TELEGRAM:
-									if (notification.config.botToken) {
-										values[getFieldKey(platform, FIELD_IDS.TOKEN)] =
-											notification.config.botToken;
-									}
-									if (notification.config.chatId) {
-										values[getFieldKey(platform, FIELD_IDS.CHAT_ID)] =
-											notification.config.chatId;
-									}
-									break;
-								case NOTIFICATION_TYPES.WEBHOOK:
-									if (notification.config.webhookUrl) {
-										values[getFieldKey(platform, FIELD_IDS.URL)] =
-											notification.config.webhookUrl;
-									}
-									break;
-							}
+						switch (platform) {
+							case NOTIFICATION_TYPES.SLACK:
+							case NOTIFICATION_TYPES.DISCORD:
+								if (notification.config.webhookUrl) {
+									values[getFieldKey(platform, FIELD_IDS.WEBHOOK)] =
+										notification.config.webhookUrl;
+								}
+								break;
+							case NOTIFICATION_TYPES.TELEGRAM:
+								if (notification.config.botToken) {
+									values[getFieldKey(platform, FIELD_IDS.TOKEN)] =
+										notification.config.botToken;
+								}
+								if (notification.config.chatId) {
+									values[getFieldKey(platform, FIELD_IDS.CHAT_ID)] =
+										notification.config.chatId;
+								}
+								break;
+							case NOTIFICATION_TYPES.WEBHOOK:
+								if (notification.config.webhookUrl) {
+									values[getFieldKey(platform, FIELD_IDS.URL)] =
+										notification.config.webhookUrl;
+								}
+								break;
 						}
 					}
 				});
