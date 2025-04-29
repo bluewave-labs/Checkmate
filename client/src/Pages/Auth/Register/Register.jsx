@@ -67,44 +67,47 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				</Box>
 				<Box maxWidth={400}>
 					<Typography className="tos-p">
-						<Trans i18nKey="authRegisterBySigningUp">
-							By creating an account, you agree to our
-							<Typography
-								component="span"
-								onClick={() => {
-									window.open(
-										"https://bluewavelabs.ca/terms-of-service-open-source",
-										"_blank",
-										"noreferrer"
-									);
-								}}
-								sx={{
-									"&:hover": {
-									color: theme.palette.primary.contrastTextTertiary,
-									},
-								}}
-							>
-								Terms of Service
-							</Typography>
-							and
-							<Typography
-								component="span"
-								onClick={() => {
-									window.open(
-										"https://bluewavelabs.ca/privacy-policy-open-source",
-										"_blank",
-										"noreferrer"
-									);
-								}}
-								sx={{
-									"&:hover": {
-									color: theme.palette.primary.contrastTextTertiary,
-									},
-								}}
-							>
-								Privacy Policy
-							</Typography>
-						</Trans>
+						<Trans
+							i18nKey="authRegisterBySigningUp"
+							components={{
+								a1: (
+									<Typography
+										component="span"
+										sx={{
+											cursor: "pointer",
+											"&:hover": {
+												color: theme.palette.primary.contrastTextTertiary,
+											},
+										}}
+										onClick={() => {
+											window.open(
+												"https://bluewavelabs.ca/terms-of-service-open-source",
+												"_blank",
+												"noreferrer"
+											);
+										}}
+									/>
+								),
+								a2: (
+									<Typography
+										component="span"
+										sx={{
+											cursor: "pointer",
+											"&:hover": {
+												color: theme.palette.primary.contrastTextTertiary,
+											},
+										}}
+										onClick={() => {
+											window.open(
+												"https://bluewavelabs.ca/privacy-policy-open-source",
+												"_blank",
+												"noreferrer"
+											);
+										}}
+									/>
+								)
+							}}
+						/>
 					</Typography>
 				</Box>
 			</Stack>

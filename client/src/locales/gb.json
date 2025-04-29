@@ -55,7 +55,7 @@
   "authRegisterCreateAccount": "Create your account to get started",
   "authRegisterCreateSuperAdminAccount": "Create your super admin account to get started",
   "authRegisterSignUpWithEmail": "Create super admin account",
-  "authRegisterBySigningUp": "By creating an account, you agree to our <1>Terms of Service</1> and <3>Privacy Policy</3>",
+  "authRegisterBySigningUp": "By creating an account, you agree to our <a1>Terms of Service</a1> and <a2>Privacy Policy</a2>.",
   "authRegisterFirstName": "Name",
   "authRegisterLastName": "Surname",
   "authRegisterEmail": "Email",

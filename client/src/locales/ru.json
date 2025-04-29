@@ -55,7 +55,7 @@
   "authRegisterCreateAccount": "Создайте свою учетную запись, чтобы начать",
   "authRegisterCreateSuperAdminAccount": "Создайте учетную запись суперадминистратора, чтобы начать работу",
   "authRegisterSignUpWithEmail": "Создать учетную запись суперадминистратора",
-  "authRegisterBySigningUp": "Создавая учетную запись, вы соглашаетесь с нашими <1>Условиями использования</1> и <3>Политикой конфиденциальности</3>",
+  "authRegisterBySigningUp": "Создавая учетную запись, вы соглашаетесь с нашими <a1>Условиями использования</a1> и <a2>Политикой конфиденциальности</a2>.",
   "authRegisterFirstName": "Имя",
   "authRegisterLastName": "Фамилия",
   "authRegisterEmail": "Эл. почта",

@@ -55,7 +55,7 @@
   "authRegisterCreateAccount": "Hesap oluşturmak için devam et",
   "authRegisterCreateSuperAdminAccount": "Super admin hesabınızı oluşturmak için devam edin",
   "authRegisterSignUpWithEmail": "Süper yönetici hesabı oluştur",
-  "authRegisterBySigningUp": "Bir hesap oluşturarak, <1>Hizmet Şartlarımızı</1> ve <3>Gizlilik Politikamızı</3> kabul etmiş olursunuz",
+  "authRegisterBySigningUp": "Bir hesap oluşturarak, <a1>Hizmet Şartlarımızı</a1> ve <a2>Gizlilik Politikamızı</a2> kabul etmiş olursunuz.",
   "authRegisterFirstName": "Ad",
   "authRegisterLastName": "Soyad",
   "authRegisterEmail": "E-posta",
