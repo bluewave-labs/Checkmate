@@ -167,6 +167,7 @@ const NotificationIntegrationModal = ({
 						values[platform] = true; // Set platform as enabled
 
 						// Extract configuration based on platform
+						// No need for the if check since we already verified config exists
 						switch (platform) {
 							case NOTIFICATION_TYPES.SLACK:
 							case NOTIFICATION_TYPES.DISCORD:
@@ -332,12 +333,9 @@ const NotificationIntegrationModal = ({
 						}}
 					>
 						<Typography
-							variant="subtitle1"
+							variant="h2"
 							sx={{
-								my: theme.spacing(1),
-								fontWeight: "h2",
-								fontSize: theme.typography.fontSize * 0.9,
-								color: theme.palette.primary.contrastTextSecondary,
+								my: theme.spacing(5),
 								pl: theme.spacing(4),
 							}}
 						>
