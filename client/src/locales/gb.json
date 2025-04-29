@@ -403,6 +403,7 @@
     "selectFile": "Select File",
     "parsingFailed": "Parsing failed",
     "uploadSuccess": "Monitors created successfully!",
-    "validationFailed": "Validation failed"
+    "validationFailed": "Validation failed",
+    "noFileSelected": "No file selected"
   }
 }

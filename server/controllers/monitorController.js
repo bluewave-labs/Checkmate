@@ -24,6 +24,7 @@ import axios from "axios";
 import seedDb from "../db/mongo/utils/seedDb.js";
 import { seedDistributedTest } from "../db/mongo/utils/seedDb.js";
 const SERVICE_NAME = "monitorController";
+import pkg from "papaparse";
 
 class MonitorController {
 	constructor(db, settingsService, jobQueue, stringService) {
@@ -243,56 +244,98 @@ class MonitorController {
 	};
 
 	/**
-	 * Creates bulk monitors and adds them to the job queue.
+	 * Creates bulk monitors and adds them to the job queue after parsing CSV.
 	 * @async
 	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
+	 * @property {Object} req.file - The uploaded CSV file.
 	 * @param {Object} res - The Express response object.
 	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the creation of the monitor, and the created monitor data.
+	 * @returns {Object} The response object with a success status and message.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
 	createBulkMonitors = async (req, res, next) => {
 		try {
-			await createMonitorsBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
+			const { parse } = pkg;
 
-		try {
-			// create monitors
-			const monitors = await this.db.createBulkMonitors(req);
+			if (!req.file) {
+				return res.status(400).json({ msg: "No file uploaded" });
+			}
 
-			// create notifications for each monitor
-			await Promise.all(
-				monitors.map(async (monitor, index) => {
-					const notifications = req.body[index].notifications;
+			const { userId, teamId } = req.body;
 
-					if (notifications?.length) {
-						monitor.notifications = await Promise.all(
-							notifications.map(async (notification) => {
-								notification.monitorId = monitor._id;
-								return await this.db.createNotification(notification);
-							})
-						);
-						await monitor.save();
+			if (!userId || !teamId) {
+				return res.status(400).json({ msg: "Missing userId or teamId in form data" });
+			}
+
+			// Get file buffer from memory and convert to string
+			const fileData = req.file.buffer.toString("utf-8");
+
+			parse(fileData, {
+				header: true,
+				skipEmptyLines: true,
+				transform: (value, header) => {
+					if (value === "") return undefined;
+					if (["port", "interval"].includes(header)) {
+						const num = parseInt(value, 10);
+						return isNaN(num) ? undefined : num;
+					}
+			
+					return value;
+				},
+				complete: async ({ data, errors }) => {
+					if (errors.length > 0) {
+						return res.status(400).json({ msg: "Error parsing CSV", errors });
 					}
 
-					// Add monitor to job queue
-					this.jobQueue.addJob(monitor._id, monitor);
-				})
-			);
+					const enrichedData = data.map((monitor) => ({
+						userId,
+						teamId,
+						...monitor,
+						description: monitor.description || monitor.name || monitor.url,
+						name: monitor.name || monitor.url,
+						type: monitor.type || "http",
+					}));
 
-			return res.success({
-				msg: this.stringService.bulkMonitorsCreate,
-				data: monitors,
+					try {
+						await createMonitorsBodyValidation.validateAsync(enrichedData);
+					} catch (error) {
+						return next(handleValidationError(error, SERVICE_NAME));
+					}
+
+					try {
+						const monitors = await this.db.createBulkMonitors(enrichedData);
+
+						await Promise.all(
+							monitors.map(async (monitor, index) => {
+								const notifications = enrichedData[index].notifications;
+
+								if (notifications?.length) {
+									monitor.notifications = await Promise.all(
+										notifications.map(async (notification) => {
+											notification.monitorId = monitor._id;
+											return await this.db.createNotification(notification);
+										})
+									);
+									await monitor.save();
+								}
+
+								this.jobQueue.addJob(monitor._id, monitor);
+							})
+						);
+
+						return res.success({
+							msg: this.stringService.bulkMonitorsCreate,
+							data: monitors,
+						});
+					} catch (error) {
+						return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+					}
+				},
 			});
 		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+			return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
 		}
 	};
-
 	/**
 	 * Checks if the endpoint can be resolved
 	 * @async

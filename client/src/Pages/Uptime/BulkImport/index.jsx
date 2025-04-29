@@ -5,45 +5,41 @@ import { useState } from "react";
 import { Box, Stack, Typography, Button, Link } from "@mui/material";
 
 //Components
-import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import ConfigBox from "../../../Components/ConfigBox";
-import { Upload } from "./Upload";
+import { UploadFile } from "./Upload";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Trans, useTranslation } from "react-i18next";
+import { useBulkMonitors } from "../../../Hooks/useBulkMonitors";
 
 const BulkImport = () => {
 	const theme = useTheme();
-
-	const [monitors, setMonitors] = useState([]);
 	const { user } = useSelector((state) => state.auth);
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+	const [selectedFile, setSelectedFile] = useState(null);
 
 	const crumbs = [
 		{ name: t("uptime"), path: "/uptime" },
 		{ name: t("bulkImport.title"), path: `/uptime/bulk-import` },
 	];
 
-	const [isLoading, setIsLoading] = useState(false);
+	const { createBulkMonitors, isLoading: hookLoading, error } = useBulkMonitors();
+
 	const handleSubmit = async () => {
-		setIsLoading(true);
-		try {
-			const monitorsWithUser = monitors.map((monitor) => ({
-				...monitor,
-				description: monitor.name || monitor.url,
-				teamId: user.teamId,
-				userId: user._id,
-			}));
-			await networkService.createBulkMonitors({ monitors: monitorsWithUser });
+		if (!selectedFile) {
+			createToast({ body: t("bulkImport.noFileSelected") });
+			return;
+		}
+		const success = await createBulkMonitors(selectedFile, user);
+
+		if (success) {
 			createToast({ body: t("bulkImport.uploadSuccess") });
 			navigate("/uptime");
-		} catch (error) {
-			createToast({ body: error?.response?.data?.msg ?? error.message });
-		} finally {
-			setIsLoading(false);
+		} else {
+			createToast({ body: error });
 		}
 	};
 
@@ -63,9 +59,7 @@ const BulkImport = () => {
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
-							{t("bulkImport.selectFileTips")}
-						</Typography>
+						<Typography component="h2">{t("bulkImport.selectFileTips")}</Typography>
 						<Typography component="p">
 							<Trans
 								i18nKey="bulkImport.selectFileDescription"
@@ -90,7 +84,7 @@ const BulkImport = () => {
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Stack gap={theme.spacing(6)}>
-							<Upload onComplete={setMonitors} />
+							<UploadFile onFileSelect={(file) => setSelectedFile(file)} />
 						</Stack>
 					</Stack>
 				</ConfigBox>
@@ -102,8 +96,8 @@ const BulkImport = () => {
 						variant="contained"
 						color="accent"
 						onClick={handleSubmit}
-						disabled={!monitors?.length}
-						loading={isLoading}
+						disabled={hookLoading}
+						loading={hookLoading}
 					>
 						{t("submit")}
 					</Button>

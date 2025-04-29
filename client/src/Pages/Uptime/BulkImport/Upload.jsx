@@ -1,11 +1,10 @@
 import { useTheme } from "@emotion/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Button, Typography } from "@mui/material";
-import { parse } from "papaparse";
-import { bulkMonitorsValidation } from "../../../Validation/validation";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
-export function Upload({ onComplete }) {
+const UploadFile = ({ onFileSelect }) => {  // Changed prop to onFileSelect
 	const theme = useTheme();
 	const [file, setFile] = useState();
 	const [error, setError] = useState("");
@@ -18,41 +17,19 @@ export function Upload({ onComplete }) {
 
 	const handleFileChange = (e) => {
 		setError("");
-		setFile(e.target.files[0]);
+		const selectedFile = e.target.files[0];
+		
+		// Basic file validation
+		if (!selectedFile) return;
+		
+		if (!selectedFile.name.endsWith('.csv')) {
+			setError(t("bulkImport.invalidFileType"));
+			return;
+		}
+		
+		setFile(selectedFile);
+		onFileSelect(selectedFile);  // Pass the file directly to parent
 	};
-
-	useEffect(() => {
-		if (!file) return;
-		parse(file, {
-			header: true,
-			skipEmptyLines: true,
-			transform: (value, header) => {
-				if (!value) {
-					return undefined;
-				}
-				if (header === "port" || header === "interval") {
-					return parseInt(value);
-				}
-				return value;
-			},
-			complete: ({ data, errors }) => {
-				if (errors.length > 0) {
-					setError(t("bulkImport.parsingFailed"));
-					return;
-				}
-				const { error } = bulkMonitorsValidation.validate(data);
-				if (error) {
-					setError(
-						error.details?.[0]?.message ||
-							error.message ||
-							t("bulkImport.validationFailed")
-					);
-					return;
-				}
-				onComplete(data);
-			},
-		});
-	}, [file]);
 
 	return (
 		<div>
@@ -68,7 +45,7 @@ export function Upload({ onComplete }) {
 				mb={theme.spacing(1.5)}
 				sx={{ wordBreak: "break-all" }}
 			>
-				{file?.name}
+				{file?.name || t("bulkImport.noFileSelected")}
 			</Typography>
 			<Typography
 				component="div"
@@ -87,3 +64,10 @@ export function Upload({ onComplete }) {
 		</div>
 	);
 }
+
+
+UploadFile.prototype = {
+	onFileSelect: PropTypes.func.isRequired,
+};
+
+export default UploadFile;

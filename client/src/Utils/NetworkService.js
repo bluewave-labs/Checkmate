@@ -1090,8 +1090,13 @@ class NetworkService {
 	// Create bulk monitors
 	// ************************************
 
-	async createBulkMonitors({ monitors }) {
-		return this.axiosInstance.post(`/monitors/bulk`, monitors);
+	async createBulkMonitors(formData) {
+		const response = await this.axiosInstance.post(`/monitors/bulk`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
 	}
 
 	// ************************************
