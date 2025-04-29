@@ -8,7 +8,7 @@ import { Box, Stack, Typography, Button, Link } from "@mui/material";
 import { createToast } from "../../../Utils/toastUtils";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import ConfigBox from "../../../Components/ConfigBox";
-import { UploadFile } from "./Upload";
+import UploadFile from "./Upload";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Trans, useTranslation } from "react-i18next";
