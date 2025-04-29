@@ -318,7 +318,6 @@ const NotificationIntegrationModal = ({
 				<Stack
 					direction="row"
 					sx={{
-						display: "flex",
 						height: `calc(26vh - ${theme.spacing(20)})`,
 					}}
 				>
