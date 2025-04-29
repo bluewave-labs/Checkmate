@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 const InfraStatBoxes = ({ shouldRender, monitor }) => {
 	// Utils
 	const { formatBytes } = useHardwareUtils();
-	const { statusStyles, determineState } = useUtils();
+	const { determineState } = useUtils();
 	const { t } = useTranslation();
 
 	const { stats, uptimePercentage } = monitor ?? {};
@@ -41,7 +41,8 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 			flexWrap="wrap"
 		>
 			<StatBox
-				sx={statusStyles[determineState(monitor)]}
+				gradient={true}
+				status={determineState(monitor)}
 				heading={t("status")}
 				subHeading={determineState(monitor)}
 			/>
