@@ -26,7 +26,7 @@ const BulkImport = () => {
 		{ name: t("bulkImport.title"), path: `/uptime/bulk-import` },
 	];
 
-	const { createBulkMonitors, isLoading: hookLoading, error } = useBulkMonitors();
+	const [createBulkMonitors, hookLoading, error] = useBulkMonitors();
 
 	const handleSubmit = async () => {
 		if (!selectedFile) {

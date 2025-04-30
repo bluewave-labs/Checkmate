@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { networkService } from "../main"; // Your network service
+import { networkService } from "../main";
 
 export const useBulkMonitors = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,5 +25,5 @@ export const useBulkMonitors = () => {
     }
   };
 
-  return { createBulkMonitors, isLoading, error };
+  return [createBulkMonitors, isLoading, error];
 };
