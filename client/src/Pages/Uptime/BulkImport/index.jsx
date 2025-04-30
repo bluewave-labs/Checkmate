@@ -68,14 +68,14 @@ const BulkImport = () => {
 										<Link
 											color="info"
 											download
-											href="bulk_import_monitors_template.csv"
+											href="/bulk_import_monitors_template.csv"
 										/>
 									),
 									sample: (
 										<Link
 											color="info"
 											download
-											href="bulk_import_monitors_sample.csv"
+											href="/bulk_import_monitors_sample.csv"
 										/>
 									),
 								}}
