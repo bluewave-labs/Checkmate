@@ -127,7 +127,7 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 								sx={{ alignSelf: "center" }}
 								onClick={() => navigate("/uptime/bulk-import")}
 							>
-								Click here for bulk {title}
+								{t("bulkImport.fallbackPage")} {title}
 							</Button>
 						)}
 						

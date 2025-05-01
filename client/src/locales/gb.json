@@ -408,6 +408,7 @@
     "parsingFailed": "Parsing failed",
     "uploadSuccess": "Monitors created successfully!",
     "validationFailed": "Validation failed",
-    "noFileSelected": "No file selected"
+    "noFileSelected": "No file selected",
+    "fallbackPage": "Click here for bulk"
   }
 }
