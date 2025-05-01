@@ -64,7 +64,7 @@ function StepThree({ onSubmit, onBack }) {
 							type="password"
 							id="register-password-input"
 							name="password"
-							label={t("commonPassword")}
+							label={t("authLoginEnterPassword")}
 							isRequired={true}
 							placeholder={t("createAPassword")}
 							autoComplete="current-password"
