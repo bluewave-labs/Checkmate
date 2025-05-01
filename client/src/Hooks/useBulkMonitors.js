@@ -16,7 +16,7 @@ export const useBulkMonitors = () => {
       const response = await networkService.createBulkMonitors(formData);
       return [true, response.data, null]; // [success, data, error]
     } catch (err) {
-      const errorMessage = err?.response?.data?.errors?.[0]?.message || err.message;
+      const errorMessage = err?.response?.data?.msg || err.message;
       return [false, null, errorMessage];
     } finally {
       setIsLoading(false);

@@ -256,110 +256,107 @@ class MonitorController {
 	createBulkMonitors = async (req, res, next) => {
 		try {
 			const { parse } = pkg;
-	
+
+			// validate the file
 			if (!req.file) {
-				return res.status(400).json({
-					errors: [
-						{ message: "No file uploaded" }
-					]
-				});
+				throw new Error("No file uploaded");
 			}
-	
+
+			// Check if the file is a CSV
+			if (!req.file.mimetype.includes("csv")) {
+				throw new Error("File is not a CSV");
+			}
+
+			// Validate if the file is empty
+			if (req.file.size === 0) {
+				throw new Error("File is empty");
+			}
+
 			const { userId, teamId } = req.body;
-	
+
 			if (!userId || !teamId) {
-				return res.status(400).json({
-					errors: [
-						{ message: "Missing userId or teamId in form data" }
-					]
-				});
+				throw new Error("Missing userId or teamId in form data");
 			}
-	
+
 			// Get file buffer from memory and convert to string
 			const fileData = req.file.buffer.toString("utf-8");
-			console.log("File data:", fileData);
-	
+
 			// Parse the CSV data
 			parse(fileData, {
 				header: true,
 				skipEmptyLines: true,
 				transform: (value, header) => {
 					if (value === "") return undefined; // Empty fields become undefined
-	
+
 					// Handle 'port' and 'interval' fields, check if they're valid numbers
 					if (["port", "interval"].includes(header)) {
 						const num = parseInt(value, 10);
 						if (isNaN(num)) {
-							return res.status(400).json({
-								errors: [
-									{ message: `${header} should be a valid number, got: ${value}` }
-								]
-							}); // Return error immediately with this structure
+							throw new Error(`${header} should be a valid number, got: ${value}`);
 						}
 						return num;
 					}
-	
+
 					return value;
 				},
 				complete: async ({ data, errors }) => {
-					if (errors.length > 0) {
-						return res.status(400).json({
-							errors: [
-								{ message: "Error parsing CSV" }
-							]
-						});
-					}
-	
-					const enrichedData = data.map((monitor) => ({
-						userId,
-						teamId,
-						...monitor,
-						description: monitor.description || monitor.name || monitor.url,
-						name: monitor.name || monitor.url,
-						type: monitor.type || "http",
-					}));
-	
 					try {
-						// Run Joi validation
+						if (errors.length > 0) {
+							throw new Error("Error parsing CSV");
+						}
+
+						if (!data || data.length === 0) {
+							throw new Error("CSV file contains no data rows");
+						}
+
+						const enrichedData = data.map((monitor) => ({
+							userId,
+							teamId,
+							...monitor,
+							description: monitor.description || monitor.name || monitor.url,
+							name: monitor.name || monitor.url,
+							type: monitor.type || "http",
+						}));
+
 						await createMonitorsBodyValidation.validateAsync(enrichedData);
+
+						try {
+							const monitors = await this.db.createBulkMonitors(enrichedData);
+
+							await Promise.all(
+								monitors.map(async (monitor, index) => {
+									const notifications = enrichedData[index].notifications;
+
+									if (notifications?.length) {
+										monitor.notifications = await Promise.all(
+											notifications.map(async (notification) => {
+												notification.monitorId = monitor._id;
+												return await this.db.createNotification(notification);
+											})
+										);
+										await monitor.save();
+									}
+
+									this.jobQueue.addJob(monitor._id, monitor);
+								})
+							);
+
+							return res.success({
+								msg: this.stringService.bulkMonitorsCreate,
+								data: monitors,
+							});
+						} catch (error) {
+							next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+						}
 					} catch (error) {
-						return next(handleValidationError(error, SERVICE_NAME));
-					}
-	
-					try {
-						const monitors = await this.db.createBulkMonitors(enrichedData);
-	
-						await Promise.all(
-							monitors.map(async (monitor, index) => {
-								const notifications = enrichedData[index].notifications;
-	
-								if (notifications?.length) {
-									monitor.notifications = await Promise.all(
-										notifications.map(async (notification) => {
-											notification.monitorId = monitor._id;
-											return await this.db.createNotification(notification);
-										})
-									);
-									await monitor.save();
-								}
-	
-								this.jobQueue.addJob(monitor._id, monitor);
-							})
-						);
-	
-						return res.success({
-							msg: this.stringService.bulkMonitorsCreate,
-							data: monitors,
-						});
-					} catch (error) {
-						return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+						next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
 					}
 				},
 			});
 		} catch (error) {
 			return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
 		}
-	};		
+	};
 	/**
 	 * Checks if the endpoint can be resolved
 	 * @async
