@@ -102,7 +102,7 @@
   "settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
   "settingsFailedToDeleteMonitors": "Monitörler silinemedi",
   "backendUnreachable": "Sunucu Bağlantı Hatası",
-  "backendUnreachableMessage": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse yöneticinize başvurun.",
+  "backendUnreachableMessage": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse dağıtım yapılandırmanızı doğrulayın.",
   "backendUnreachableError": "Sunucuya bağlanılamıyor. Lütfen daha sonra tekrar deneyin.",
   "retryConnection": "Bağlantıyı Yeniden Dene",
   "retryingConnection": "Bağlanıyor...",
