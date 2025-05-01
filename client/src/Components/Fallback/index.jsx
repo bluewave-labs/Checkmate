@@ -118,6 +118,18 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 						>
 							Let's create your first {title}
 						</Button>
+
+						{/* Bulk create of uptime monitors */}
+						{title == "uptime monitor" && (
+						<Button
+								variant="contained"
+								color="accent"
+								sx={{ alignSelf: "center" }}
+								onClick={() => navigate("/uptime/bulk-import")}
+							>
+								Click here for bulk {title}
+							</Button>
+						)}
 						
 						{/* Warning box for PageSpeed monitor */}
 						{(title === "pagespeed monitor" && showPageSpeedWarning) && (
