@@ -372,6 +372,17 @@ const Configure = () => {
 									disabled={true}
 								/>
 								<TextInput
+									type="number"
+									id="monitor-port"
+									label={t("portToMonitor")}
+									placeholder="5173"
+									value={monitor.port || ""}
+									onChange={(event) => handleChange(event, "port")}
+									error={errors["port"] ? true : false}
+									helperText={errors["port"]}
+									hidden={monitor.type !== "port"}
+								/>
+								<TextInput
 									type="text"
 									id="monitor-name"
 									label={t("displayName")}
