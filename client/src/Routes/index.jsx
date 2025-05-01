@@ -56,6 +56,7 @@ import ProtectedRoute from "../Components/ProtectedRoute";
 import ProtectedDistributedUptimeRoute from "../Components/ProtectedDistributedUptimeRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
+import BulkImport from "../Pages/Uptime/BulkImport";
 
 const Routes = () => {
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
@@ -76,6 +77,11 @@ const Routes = () => {
 				<Route
 					path="/uptime"
 					element={<Uptime />}
+				/>
+
+				<Route
+					path="/uptime/bulk-import"
+					element={<BulkImport />}
 				/>
 
 				<Route

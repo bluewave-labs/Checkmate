@@ -1087,6 +1087,19 @@ class NetworkService {
 	}
 
 	// ************************************
+	// Create bulk monitors
+	// ************************************
+
+	async createBulkMonitors(formData) {
+		const response = await this.axiosInstance.post(`/monitors/bulk`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
+	}
+
+	// ************************************
 	// Fetch monitors with summary by TeamID
 	// ************************************
 	async getMonitorsWithSummaryByTeamId(config) {

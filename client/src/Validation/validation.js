@@ -359,5 +359,5 @@ export {
 	advancedSettingsValidation,
 	infrastructureMonitorValidation,
 	statusPageValidation,
-	logoImageValidation,
+	logoImageValidation
 };
