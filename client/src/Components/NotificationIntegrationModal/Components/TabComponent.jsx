@@ -72,8 +72,6 @@ const TabComponent = ({
 						<Typography
 							sx={{
 								mb: theme.spacing(2),
-								fontWeight: "bold",
-								color: theme.palette.primary.contrastTextSecondary,
 							}}
 						>
 							{field.label}
