@@ -256,37 +256,60 @@ class MonitorController {
 	createBulkMonitors = async (req, res, next) => {
 		try {
 			const { parse } = pkg;
-
+	
 			if (!req.file) {
-				return res.status(400).json({ msg: "No file uploaded" });
+				return res.status(400).json({
+					errors: [
+						{ message: "No file uploaded" }
+					]
+				});
 			}
-
+	
 			const { userId, teamId } = req.body;
-
+	
 			if (!userId || !teamId) {
-				return res.status(400).json({ msg: "Missing userId or teamId in form data" });
+				return res.status(400).json({
+					errors: [
+						{ message: "Missing userId or teamId in form data" }
+					]
+				});
 			}
-
+	
 			// Get file buffer from memory and convert to string
 			const fileData = req.file.buffer.toString("utf-8");
-
+			console.log("File data:", fileData);
+	
+			// Parse the CSV data
 			parse(fileData, {
 				header: true,
 				skipEmptyLines: true,
 				transform: (value, header) => {
-					if (value === "") return undefined;
+					if (value === "") return undefined; // Empty fields become undefined
+	
+					// Handle 'port' and 'interval' fields, check if they're valid numbers
 					if (["port", "interval"].includes(header)) {
 						const num = parseInt(value, 10);
-						return isNaN(num) ? undefined : num;
+						if (isNaN(num)) {
+							return res.status(400).json({
+								errors: [
+									{ message: `${header} should be a valid number, got: ${value}` }
+								]
+							}); // Return error immediately with this structure
+						}
+						return num;
 					}
-			
+	
 					return value;
 				},
 				complete: async ({ data, errors }) => {
 					if (errors.length > 0) {
-						return res.status(400).json({ msg: "Error parsing CSV", errors });
+						return res.status(400).json({
+							errors: [
+								{ message: "Error parsing CSV" }
+							]
+						});
 					}
-
+	
 					const enrichedData = data.map((monitor) => ({
 						userId,
 						teamId,
@@ -295,20 +318,21 @@ class MonitorController {
 						name: monitor.name || monitor.url,
 						type: monitor.type || "http",
 					}));
-
+	
 					try {
+						// Run Joi validation
 						await createMonitorsBodyValidation.validateAsync(enrichedData);
 					} catch (error) {
 						return next(handleValidationError(error, SERVICE_NAME));
 					}
-
+	
 					try {
 						const monitors = await this.db.createBulkMonitors(enrichedData);
-
+	
 						await Promise.all(
 							monitors.map(async (monitor, index) => {
 								const notifications = enrichedData[index].notifications;
-
+	
 								if (notifications?.length) {
 									monitor.notifications = await Promise.all(
 										notifications.map(async (notification) => {
@@ -318,11 +342,11 @@ class MonitorController {
 									);
 									await monitor.save();
 								}
-
+	
 								this.jobQueue.addJob(monitor._id, monitor);
 							})
 						);
-
+	
 						return res.success({
 							msg: this.stringService.bulkMonitorsCreate,
 							data: monitors,
@@ -335,7 +359,7 @@ class MonitorController {
 		} catch (error) {
 			return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
 		}
-	};
+	};		
 	/**
 	 * Checks if the endpoint can be resolved
 	 * @async

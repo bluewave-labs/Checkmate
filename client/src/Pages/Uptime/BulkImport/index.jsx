@@ -26,20 +26,22 @@ const BulkImport = () => {
 		{ name: t("bulkImport.title"), path: `/uptime/bulk-import` },
 	];
 
-	const [createBulkMonitors, hookLoading, error] = useBulkMonitors();
+	const [createBulkMonitors, hookLoading] = useBulkMonitors();
 
 	const handleSubmit = async () => {
 		if (!selectedFile) {
 			createToast({ body: t("bulkImport.noFileSelected") });
 			return;
 		}
-		const success = await createBulkMonitors(selectedFile, user);
+
+		const [success, data, error] = await createBulkMonitors(selectedFile, user);
 
 		if (success) {
+			// You can use `data` here if needed
 			createToast({ body: t("bulkImport.uploadSuccess") });
 			navigate("/uptime");
 		} else {
-			createToast({ body: error });
+			createToast({ body: error || t("bulkImport.uploadFailed") });
 		}
 	};
 

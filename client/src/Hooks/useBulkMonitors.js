@@ -3,11 +3,9 @@ import { networkService } from "../main";
 
 export const useBulkMonitors = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const createBulkMonitors = async (file, user) => {
     setIsLoading(true);
-    setError(null);
 
     const formData = new FormData();
     formData.append("csvFile", file);
@@ -16,14 +14,14 @@ export const useBulkMonitors = () => {
 
     try {
       const response = await networkService.createBulkMonitors(formData);
-      return response.data;
+      return [true, response.data, null]; // [success, data, error]
     } catch (err) {
-      setError(err?.response?.data?.msg ?? err.message);
-      return null;
+      const errorMessage = err?.response?.data?.errors?.[0]?.message || err.message;
+      return [false, null, errorMessage];
     } finally {
       setIsLoading(false);
     }
   };
 
-  return [createBulkMonitors, isLoading, error];
+  return [createBulkMonitors, isLoading];
 };
