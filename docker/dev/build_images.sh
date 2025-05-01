@@ -4,19 +4,23 @@
 cd "$(dirname "$0")"
 cd ../..
 
-# Define an array of services and their Dockerfiles
-declare -A services=(
-  ["uptime_client"]="./docker/dev/client.Dockerfile"
-  ["uptime_database_mongo"]="./docker/dev/mongoDB.Dockerfile"
-  ["uptime_redis"]="./docker/dev/redis.Dockerfile"
-  ["uptime_server"]="./docker/dev/server.Dockerfile"
+# Define service names and their corresponding Dockerfiles in parallel arrays
+services=("uptime_client" "uptime_database_mongo" "uptime_redis" "uptime_server")
+dockerfiles=(
+  "./docker/dev/client.Dockerfile"
+  "./docker/dev/mongoDB.Dockerfile"
+  "./docker/dev/redis.Dockerfile"
+  "./docker/dev/server.Dockerfile"
 )
 
 # Loop through each service and build the corresponding image
-for service in "${!services[@]}"; do
-  docker build -f "${services[$service]}" -t "$service" .
+for i in "${!services[@]}"; do
+  service="${services[$i]}"
+  dockerfile="${dockerfiles[$i]}"
   
-  ## Check if the build succeeded
+  docker build -f "$dockerfile" -t "$service" .
+  
+  # Check if the build succeeded
   if [ $? -ne 0 ]; then
     echo "Error building $service image. Exiting..."
     exit 1
