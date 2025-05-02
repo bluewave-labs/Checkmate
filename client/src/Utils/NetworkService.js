@@ -266,6 +266,7 @@ class NetworkService {
 			matchMethod: monitor.matchMethod,
 			expectedValue: monitor.expectedValue,
 			jsonPath: monitor.jsonPath,
+			...(monitor.type === "port" && { port: monitor.port }),
 		};
 		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {

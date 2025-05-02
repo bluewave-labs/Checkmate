@@ -152,7 +152,20 @@ const monitorValidation = joi.object({
 			"string.invalidUrl": "Please enter a valid URL with optional port",
 			"string.pattern.base": "Please enter a valid container ID.",
 		}),
-	port: joi.number(),
+	port: joi.number()
+	.integer()
+	.min(1)
+	.max(65535)
+	.when("type", {
+		is: "port",
+		then: joi.required().messages({
+			"number.base": "Port must be a number.",
+			"number.min": "Port must be at least 1.",
+			"number.max": "Port must be at most 65535.",
+			"any.required": "Port is required for port monitors.",
+		}),
+		otherwise: joi.optional(),
+	}),
 	name: joi.string().trim().max(50).allow("").messages({
 		"string.max": "This field should not exceed the 50 characters limit.",
 	}),

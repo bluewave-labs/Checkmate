@@ -210,6 +210,7 @@ const editMonitorBodyValidation = joi.object({
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
+	port: joi.number().min(1).max(65535),
 	thresholds: joi.object().keys({
 		usage_cpu: joi.number(),
 		usage_memory: joi.number(),
