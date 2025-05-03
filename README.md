@@ -69,11 +69,10 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 **Short term roadmap:**
 
-- Global (distributed) uptime checking on Solana network (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1593
 - Status pages (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1131
 - Translations (i18n) (**in progress**)
 - Better notification options (Webhooks, Discord, Telegram, Slack) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1545
-- JSON query monitoring https://github.com/bluewave-labs/Checkmate/issues/1573
+- JSON query monitoring  (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1573
 - Tagging/grouping monitors https://github.com/bluewave-labs/Checkmate/issues/1546
 - More configuration options
 - DNS monitoring
