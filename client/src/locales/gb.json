@@ -409,6 +409,6 @@
     "uploadSuccess": "Monitors created successfully!",
     "validationFailed": "Validation failed",
     "noFileSelected": "No file selected",
-    "fallbackPage": "Click here for bulk"
+    "fallbackPage": "Import a file to upload a list of servers in bulk"
   }
 }

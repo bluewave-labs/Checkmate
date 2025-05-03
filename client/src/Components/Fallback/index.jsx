@@ -118,16 +118,15 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 						>
 							Let's create your first {title}
 						</Button>
-
 						{/* Bulk create of uptime monitors */}
-						{title == "uptime monitor" && (
+						{title === "uptime monitor" && (
 						<Button
 								variant="contained"
 								color="accent"
 								sx={{ alignSelf: "center" }}
 								onClick={() => navigate("/uptime/bulk-import")}
 							>
-								{t("bulkImport.fallbackPage")} {title}
+								{t("bulkImport.fallbackPage")}
 							</Button>
 						)}
 						
