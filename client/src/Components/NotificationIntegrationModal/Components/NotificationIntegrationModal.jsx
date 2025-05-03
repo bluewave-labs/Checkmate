@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback} from "react";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
@@ -11,6 +11,7 @@ import {
   Box,
   Tabs,
   Tab,
+  Stack,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import TabPanel from "./TabPanel";
@@ -48,7 +49,7 @@ const NotificationIntegrationModal = ({
   const [loading, _, sendTestNotification] = useNotifications();
   
   // Helper to get the field state key with error handling
-  const getFieldKey = (typeId, fieldId) => {
+  const getFieldKey = useCallback((typeId, fieldId) => {
     if (typeof typeId !== 'string' || typeId === '') {
       throw new Error(t('errorInvalidTypeId'));
     }
@@ -58,7 +59,7 @@ const NotificationIntegrationModal = ({
     }
     
     return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
-  };
+  });
   
   // Define notification types
   const DEFAULT_NOTIFICATION_TYPES = [
@@ -128,22 +129,78 @@ const NotificationIntegrationModal = ({
   // Memoized function to initialize integrations state
   const initialIntegrationsState = useMemo(() => {
     const state = {};
+
+		activeNotificationTypes.forEach((type) => {
+			// Add enabled flag for each notification type
+			state[type.id] = false;
+
+			// Add state for each field in the notification type
+			type.fields.forEach((field) => {
+				const fieldKey = getFieldKey(type.id, field.id);
+				state[fieldKey] = "";
+			});
+		});
     
-    activeNotificationTypes.forEach(type => {
-      // Add enabled flag for each notification type
-      state[type.id] = monitor?.notifications?.some(n => n.type === type.id) || false;
-      
-      // Add state for each field in the notification type
-      type.fields.forEach(field => {
-        const fieldKey = getFieldKey(type.id, field.id);
-        state[fieldKey] = monitor?.notifications?.find(n => n.type === type.id)?.[field.id] || "";
-      });
-    });
-    
-    return state;
-  }, [monitor, activeNotificationTypes]); // Only recompute when these dependencies change
+		return state;
+  }, [activeNotificationTypes, getFieldKey]); // Only recompute when these dependencies change
   
   const [integrations, setIntegrations] = useState(initialIntegrationsState);
+
+  useEffect(() => {
+		if (open) {
+			const extractNotificationValues = () => {
+				const values = {};
+
+				if (!monitor?.notifications || !Array.isArray(monitor.notifications)) {
+					return values;
+				}
+
+				monitor.notifications.forEach((notification) => {
+					// Handle notification based on its structure
+					if (notification.type === "webhook" && notification.platform) {
+						if (typeof notification.config === "undefined") return;
+						const platform = notification.platform;
+						values[platform] = true; // Set platform as enabled
+
+						// Extract configuration based on platform
+						switch (platform) {
+							case NOTIFICATION_TYPES.SLACK:
+							case NOTIFICATION_TYPES.DISCORD:
+								if (notification.config.webhookUrl) {
+									values[getFieldKey(platform, FIELD_IDS.WEBHOOK)] =
+										notification.config.webhookUrl;
+								}
+								break;
+							case NOTIFICATION_TYPES.TELEGRAM:
+								if (notification.config.botToken) {
+									values[getFieldKey(platform, FIELD_IDS.TOKEN)] =
+										notification.config.botToken;
+								}
+								if (notification.config.chatId) {
+									values[getFieldKey(platform, FIELD_IDS.CHAT_ID)] =
+										notification.config.chatId;
+								}
+								break;
+							case NOTIFICATION_TYPES.WEBHOOK:
+								if (notification.config.webhookUrl) {
+									values[getFieldKey(platform, FIELD_IDS.URL)] =
+										notification.config.webhookUrl;
+								}
+								break;
+						}
+					}
+				});
+
+				return values;
+			};
+
+			const extractedValues = extractNotificationValues();
+			setIntegrations((prev) => ({
+				...prev,
+				...extractedValues,
+			}));
+		}
+	}, [open, monitor, getFieldKey]);
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
@@ -256,9 +313,10 @@ const handleSave = () => {
       }}
     >
       <DialogContent>
-        <Box sx={{ 
-          display: 'flex', 
-          height: `calc(26vh - ${theme.spacing(20)})` 
+        <Stack 
+          direction="row"
+          sx={{ 
+            height: `calc(30vh - ${theme.spacing(20)})` 
         }}>
           {/* Left sidebar with tabs */}
           <Box sx={{ 
@@ -268,13 +326,7 @@ const handleSave = () => {
             maxWidth: theme.spacing(120), 
             pr: theme.spacing(10)
           }}>
-            <Typography variant="subtitle1" sx={{ 
-              my: theme.spacing(1), 
-              fontWeight: 'bold', 
-              fontSize: theme.typography.fontSize * 0.9, 
-              color: theme.palette.primary.contrastTextSecondary,
-              pl: theme.spacing(4)
-            }}>
+            <Typography variant="h2">
               {t('notifications.addOrEditNotifications')}
             </Typography>
             
@@ -315,7 +367,7 @@ const handleSave = () => {
               </TabPanel>
             ))}
           </Box>
-        </Box>
+        </Stack>
       </DialogContent>
       <DialogActions sx={{ 
         p: theme.spacing(4),
