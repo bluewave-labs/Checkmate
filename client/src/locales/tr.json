@@ -408,6 +408,7 @@
     "parsingFailed": "",
     "uploadSuccess": "",
     "validationFailed": "",
-    "noFileSelected": ""
+    "noFileSelected": "",
+    "fallbackPage": ""
   }
 }
