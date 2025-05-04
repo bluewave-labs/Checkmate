@@ -55,7 +55,7 @@ const MonitorTimeFrameHeader = ({
 	return (
 		<Stack
 			direction="row"
-			justifyContent="space-between"
+			justifyContent="flex-end"
 			alignItems="flex-end"
 			gap={theme.spacing(4)}
 			mb={theme.spacing(8)}
