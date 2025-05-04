@@ -68,7 +68,7 @@ const UptimeStatusBoxes = ({
 					</>
 				}
 			/>
-			{monitor?.type === "http" && (
+			{MONITOR_TYPES.WEB.includes(monitor?.type) && (
 				<StatBox
 					heading="certificate expiry"
 					subHeading={
