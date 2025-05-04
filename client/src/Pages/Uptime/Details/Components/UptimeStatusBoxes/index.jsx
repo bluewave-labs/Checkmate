@@ -7,6 +7,13 @@ import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import useUtils from "../../../Monitors/Hooks/useUtils";
 
+const MONITOR_TYPES = {
+	WEB: ["http", "https"],
+	PING: ["ping"],
+	DOCKER: ["docker"],
+	PORT: ["port"],
+};
+
 const UptimeStatusBoxes = ({
 	isLoading = false,
 	monitor,
