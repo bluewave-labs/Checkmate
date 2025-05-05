@@ -1,4 +1,6 @@
 import { createLogger, format, transports } from "winston";
+import dotenv from "dotenv";
+dotenv.config();
 
 class Logger {
 	constructor() {
@@ -40,8 +42,11 @@ class Logger {
 			}
 		);
 
+		const logLevel = process.env.LOG_LEVEL || "info";
+		console.log(logLevel);
+
 		this.logger = createLogger({
-			level: "info",
+			level: logLevel,
 			format: format.combine(format.timestamp()),
 			transports: [
 				new transports.Console({
@@ -101,6 +106,22 @@ class Logger {
 	 */
 	error(config) {
 		this.logger.error(config.message, {
+			service: config.service,
+			method: config.method,
+			details: config.details,
+			stack: config.stack,
+		});
+	}
+	/**
+	 * Logs a debug message.
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.message - The message to log.
+	 * @param {string} config.service - The service name.
+	 * @param {string} config.method - The method name.
+	 * @param {Object} config.details - Additional details.
+	 */
+	debug(config) {
+		this.logger.debug(config.message, {
 			service: config.service,
 			method: config.method,
 			details: config.details,
