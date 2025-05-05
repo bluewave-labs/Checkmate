@@ -255,6 +255,7 @@ const settingsValidation = joi.object({
 	ttl: joi.number().required().messages({
 		"string.empty": "TTL is required",
 	}),
+	pagespeedApiKey: joi.string().allow("").optional(),
 });
 
 const dayjsValidator = (value, helpers) => {
