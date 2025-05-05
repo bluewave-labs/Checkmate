@@ -6,6 +6,7 @@ import Select from "../../Components/Inputs/Select";
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import Dialog from "../../Components/Dialog";
 import ConfigBox from "../../Components/ConfigBox";
+import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import {
 	WalletMultiButton,
 	WalletDisconnectButton,
@@ -57,6 +58,7 @@ const Settings = () => {
 		pagespeedApiKey: "",
 	});
 	const [version, setVersion] = useState("unknown");
+	const [apiKeyFieldType, setApiKeyFieldType] = useState("password");
 	const [errors, setErrors] = useState({});
 	const deleteStatsMonitorsInitState = { deleteMonitors: false, deleteStats: false };
 	const [isOpen, setIsOpen] = useState(deleteStatsMonitorsInitState);
@@ -290,11 +292,17 @@ const Settings = () => {
 								id="pagespeedApiKey"
 								label="PageSpeed API Key"
 								value={form.pagespeedApiKey}
+								type={apiKeyFieldType}
 								onChange={handleChange}
-								type="password"
 								optionalLabel="(Optional)"
-								helperText={errors.pagespeedApiKey}
 								error={!!errors.pagespeedApiKey}
+								helperText={errors.pagespeedApiKey}
+								endAdornment={
+									<PasswordEndAdornment
+										fieldType={apiKeyFieldType}
+										setFieldType={setApiKeyFieldType}
+									/>
+								}
 							/>
 						</Box>
 				</ConfigBox>
