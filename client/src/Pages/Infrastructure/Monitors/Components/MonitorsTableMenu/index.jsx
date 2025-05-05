@@ -75,6 +75,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 			<IconButton
 				aria-label="monitor actions"
 				onClick={openMenu}
+				disabled={!isAdmin}
 				sx={{
 					"&:focus": {
 						outline: "none",
