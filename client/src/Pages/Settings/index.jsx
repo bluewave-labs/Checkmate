@@ -128,7 +128,7 @@ const Settings = () => {
 			const updatedUser = { ...user, checkTTL: form.ttl };
 			const [userAction, settingsAction] = await Promise.all([
 				dispatch(update({ localData: updatedUser })),
-				dispatch(updateAppSettings({ settings: { language: language } })),
+				dispatch(updateAppSettings({ settings: { language: language, pagespeedApiKey: form.pagespeedApiKey } })),
 			]);
 
 			if (userAction.payload.success && settingsAction.payload.success) {
