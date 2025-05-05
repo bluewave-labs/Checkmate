@@ -88,10 +88,7 @@ const ControlsHeader = ({
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const publicUrl =
-		type === "uptime"
-			? `/status/uptime/public/${url}`
-			: `/status/distributed/public/${url}`;
+	const publicUrl = `/status/uptime/public/${url}`;
 
 	return (
 		<Stack
