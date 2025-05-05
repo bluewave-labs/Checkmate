@@ -673,7 +673,7 @@ class MonitorController {
 			}
 
 			return res.success({
-				msg: "Test email sent successfully.",
+				msg: this.stringService.sendTestEmail,
 				data: { messageId },
 			});
 		} catch (error) {
