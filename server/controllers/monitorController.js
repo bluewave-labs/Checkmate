@@ -668,6 +668,12 @@ class MonitorController {
 				subject
 			);
 
+			if (!messageId) {
+				return res.error({
+					msg: "Failed to send test email.",
+				});
+			}
+
 			return res.success({
 				msg: "Test email sent successfully.",
 				data: { messageId },
