@@ -16,6 +16,7 @@ import PasswordStep from "./Components/PasswordStep";
 import ThemeSwitch from "../../../Components/ThemeSwitch";
 import ForgotPasswordLabel from "./Components/ForgotPasswordLabel";
 import LanguageSelector from "../../../Components/LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 const DEMO = import.meta.env.VITE_APP_DEMO;
 
@@ -27,6 +28,7 @@ const Login = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const authState = useSelector((state) => state.auth);
 	const { authToken } = authState;
@@ -63,13 +65,17 @@ const Login = () => {
 	const handleChange = (event) => {
 		const { value, id } = event.target;
 		const name = idMap[id];
-		const lowerCasedValue = name === idMap["login-email-input"]? value?.toLowerCase()||value : value
+		const lowerCasedValue =
+			name === idMap["login-email-input"] ? value?.toLowerCase() || value : value;
 		setForm((prev) => ({
 			...prev,
 			[name]: lowerCasedValue,
 		}));
 
-		const { error } = credentials.validate({ [name]: lowerCasedValue }, { abortEarly: false });
+		const { error } = credentials.validate(
+			{ [name]: lowerCasedValue },
+			{ abortEarly: false }
+		);
 
 		setErrors((prev) => {
 			const prevErrors = { ...prev };
@@ -114,7 +120,7 @@ const Login = () => {
 				if (action.payload.success) {
 					navigate("/uptime");
 					createToast({
-						body: "Welcome back! You're successfully logged in.",
+						body: t("welcomeBack"),
 					});
 				} else {
 					if (action.payload) {

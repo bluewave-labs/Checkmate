@@ -32,7 +32,7 @@ class NetworkService {
 
 				config.headers = {
 					Authorization: `Bearer ${authToken}`,
-					"Accept-Language": currentLanguage,
+					"Accept-Language": currentLanguage === "gb" ? "en" : currentLanguage,
 					...config.headers,
 				};
 
@@ -924,7 +924,7 @@ class NetworkService {
 			onOpen?.();
 		};
 
-		this.eventSource.addEventListener("open", (e) => {});
+		this.eventSource.addEventListener("open", (e) => { });
 
 		this.eventSource.onmessage = (event) => {
 			const data = JSON.parse(event.data);
