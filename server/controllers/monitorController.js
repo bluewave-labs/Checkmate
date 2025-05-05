@@ -653,7 +653,7 @@ class MonitorController {
 			const { to } = req.body;
 
 			if (!to || typeof to !== "string") {
-				return res.error({ error: "A valid recipient email address is required." });
+				return res.error({ msg: "A valid recipient email address is required." });
 			}
 
 			const subject = "Test Email from Monitoring System";
