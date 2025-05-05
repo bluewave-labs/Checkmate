@@ -146,7 +146,7 @@ const UptimeMonitors = () => {
 		monitorUpdateTrigger,
 	});
 
-	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
+	const isLoading = monitorsWithSummaryIsLoading;
 	if (networkError) {
 		return (
 			<GenericFallback>
