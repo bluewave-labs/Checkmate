@@ -3,6 +3,7 @@ import { Box, Stack, Typography, Button } from "@mui/material";
 import Image from "../../../../../Components/Image";
 import SettingsIcon from "../../../../../assets/icons/settings-bold.svg?react";
 import ThemeSwitch from "../../../../../Components/ThemeSwitch";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 //Utils
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -86,6 +87,11 @@ const ControlsHeader = ({
 	type = "uptime",
 }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
+	const publicUrl =
+		type === "uptime"
+			? `/status/uptime/public/${url}`
+			: `/status/distributed/public/${url}`;
 
 	return (
 		<Stack
@@ -118,6 +124,26 @@ const ControlsHeader = ({
 				>
 					{statusPage?.companyName}
 				</Typography>
+				{statusPage?.isPublished && !isPublic && (
+					<Stack
+						direction="row"
+						alignItems="center"
+						justifyContent="center"
+						onClick={() => {
+							window.open(publicUrl, "_blank", "noopener,noreferrer");
+						}}
+						sx={{
+							display: "inline-flex",
+							":hover": {
+								cursor: "pointer",
+								borderBottom: 1,
+							},
+						}}
+					>
+						<Typography>{t("publicLink")}</Typography>
+						<ArrowOutwardIcon />
+					</Stack>
+				)}
 			</Stack>
 			<Controls
 				isDeleting={isDeleting}

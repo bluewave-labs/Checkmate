@@ -139,6 +139,7 @@ const PublicStatus = () => {
 				isDeleteOpen={isDeleteOpen}
 				setIsDeleteOpen={setIsDeleteOpen}
 				url={url}
+				isPublic={isPublic}
 			/>
 			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
