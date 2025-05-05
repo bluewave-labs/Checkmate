@@ -1,0 +1,50 @@
+services:
+  client:
+    image: ghcr.io/bluewave-labs/checkmate:frontend-dist
+    restart: always
+    environment:
+      UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
+    ports:
+      - "9999:80"
+    depends_on:
+      - server
+  server:
+    image: ghcr.io/bluewave-labs/checkmate:backend-dist
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+      - mongodb
+    environment:
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_HOST=http://localhost
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  redis:
+    image: ghcr.io/bluewave-labs/checkmate:redis-dist
+    restart: always
+    volumes:
+      - /data/checkmate-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+  mongodb:
+    image: ghcr.io/bluewave-labs/checkmate:mongo-dist
+    restart: always
+    volumes:
+      - /data/checkmate-mongodb:/data/db
+    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
