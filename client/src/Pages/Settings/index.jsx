@@ -416,7 +416,7 @@ const Settings = () => {
 						position: "sticky",
 						bottom: 0,
 						background: "rgba(255, 255, 255, 0.9)",
-						boxShadow: "0 -4px 12px rgba(0,0,0,0.1)",
+						boxShadow: "0 -4px 12px rgba(0,0,0,0.5)",
 						backdropFilter: "blur(4px)",
 						zIndex: 1000,
 						pt: theme.spacing(4),
