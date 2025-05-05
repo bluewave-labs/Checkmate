@@ -45,6 +45,9 @@ class NetworkService {
 		this.axiosInstance.interceptors.response.use(
 			(response) => response,
 			(error) => {
+				if (error.code === "ERR_NETWORK") {
+					// Do error handling here
+				}
 				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					dispatch(clearUptimeMonitorState());
@@ -266,6 +269,7 @@ class NetworkService {
 			matchMethod: monitor.matchMethod,
 			expectedValue: monitor.expectedValue,
 			jsonPath: monitor.jsonPath,
+			...(monitor.type === "port" && { port: monitor.port }),
 		};
 		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {
@@ -1084,6 +1088,19 @@ class NetworkService {
 		const encodedUrl = encodeURIComponent(url);
 
 		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
+	}
+
+	// ************************************
+	// Create bulk monitors
+	// ************************************
+
+	async createBulkMonitors(formData) {
+		const response = await this.axiosInstance.post(`/monitors/bulk`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
 	}
 
 	// ************************************

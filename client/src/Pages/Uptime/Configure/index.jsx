@@ -25,6 +25,7 @@ import PulseDot from "../../../Components/Animated/PulseDot";
 import SkeletonLayout from "./skeleton";
 import "./index.css";
 import Dialog from "../../../Components/Dialog";
+import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -195,6 +196,18 @@ const Configure = () => {
 	// Parse the URL
 	const parsedUrl = parseUrl(monitor?.url);
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
+
+	// Notification modal state
+	const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
+	const handleOpenNotificationModal = () => {
+		setIsNotificationModalOpen(true);
+	};
+
+	const handleClosenNotificationModal = () => {
+		setIsNotificationModalOpen(false);
+	};
+
 
 	const statusColor = {
 		true: theme.palette.success.main,
@@ -372,6 +385,17 @@ const Configure = () => {
 									disabled={true}
 								/>
 								<TextInput
+									type="number"
+									id="monitor-port"
+									label={t("portToMonitor")}
+									placeholder="5173"
+									value={monitor.port || ""}
+									onChange={(event) => handleChange(event, "port")}
+									error={errors["port"] ? true : false}
+									helperText={errors["port"]}
+									hidden={monitor.type !== "port"}
+								/>
+								<TextInput
 									type="text"
 									id="monitor-name"
 									label={t("displayName")}
@@ -413,6 +437,15 @@ const Configure = () => {
 									value={user?.email}
 									onChange={(event) => handleChange(event)}
 								/>
+								<Box mt={theme.spacing(2)}>
+									<Button
+										variant="contained"
+										color="accent"
+										onClick={handleOpenNotificationModal}
+									>
+										{t("notifications.integrationButton")}
+									</Button>
+								</Box>
 								{/* <Checkbox
 									id="notify-email"
 									label="Also notify via email to multiple addresses (coming soon)"
@@ -545,6 +578,13 @@ const Configure = () => {
 				confirmationButtonLabel="Delete"
 				onConfirm={handleRemove}
 				isLoading={isLoading}
+			/>
+
+			<NotificationIntegrationModal 
+				open={isNotificationModalOpen}
+				onClose={handleClosenNotificationModal}
+				monitor={monitor}
+				setMonitor={setMonitor}
 			/>
 		</Stack>
 	);

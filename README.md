@@ -69,11 +69,10 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 **Short term roadmap:**
 
-- Global (distributed) uptime checking on Solana network (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1593
 - Status pages (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1131
 - Translations (i18n) (**in progress**)
 - Better notification options (Webhooks, Discord, Telegram, Slack) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1545
-- JSON query monitoring https://github.com/bluewave-labs/Checkmate/issues/1573
+- JSON query monitoring  (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1573
 - Tagging/grouping monitors https://github.com/bluewave-labs/Checkmate/issues/1546
 - More configuration options
 - DNS monitoring
@@ -136,8 +135,6 @@ Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their doc
 
 Also check other developer and contributor-friendly projects of BlueWave:
 
-- [LangRoute](https://github.com/bluewave-labs/langroute), an LLM proxy and gateway
-- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
-- [Headcount](https://github.com/bluewave-labs/bluewave-hrm), a complete Human Resource Management platform.
-- [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.
 - [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
+- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
+- [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.

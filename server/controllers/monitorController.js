@@ -24,13 +24,15 @@ import axios from "axios";
 import seedDb from "../db/mongo/utils/seedDb.js";
 import { seedDistributedTest } from "../db/mongo/utils/seedDb.js";
 const SERVICE_NAME = "monitorController";
+import pkg from "papaparse";
 
 class MonitorController {
-	constructor(db, settingsService, jobQueue, stringService) {
+	constructor(db, settingsService, jobQueue, stringService, emailService) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
+		this.emailService = emailService;
 	}
 
 	/**
@@ -243,56 +245,119 @@ class MonitorController {
 	};
 
 	/**
-	 * Creates bulk monitors and adds them to the job queue.
+	 * Creates bulk monitors and adds them to the job queue after parsing CSV.
 	 * @async
 	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
+	 * @property {Object} req.file - The uploaded CSV file.
 	 * @param {Object} res - The Express response object.
 	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the creation of the monitor, and the created monitor data.
+	 * @returns {Object} The response object with a success status and message.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
 	createBulkMonitors = async (req, res, next) => {
 		try {
-			await createMonitorsBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
+			const { parse } = pkg;
 
-		try {
-			// create monitors
-			const monitors = await this.db.createBulkMonitors(req);
+			// validate the file
+			if (!req.file) {
+				throw new Error("No file uploaded");
+			}
 
-			// create notifications for each monitor
-			await Promise.all(
-				monitors.map(async (monitor, index) => {
-					const notifications = req.body[index].notifications;
+			// Check if the file is a CSV
+			if (!req.file.mimetype.includes("csv")) {
+				throw new Error("File is not a CSV");
+			}
 
-					if (notifications?.length) {
-						monitor.notifications = await Promise.all(
-							notifications.map(async (notification) => {
-								notification.monitorId = monitor._id;
-								return await this.db.createNotification(notification);
-							})
-						);
-						await monitor.save();
+			// Validate if the file is empty
+			if (req.file.size === 0) {
+				throw new Error("File is empty");
+			}
+
+			const { userId, teamId } = req.body;
+
+			if (!userId || !teamId) {
+				throw new Error("Missing userId or teamId in form data");
+			}
+
+			// Get file buffer from memory and convert to string
+			const fileData = req.file.buffer.toString("utf-8");
+
+			// Parse the CSV data
+			parse(fileData, {
+				header: true,
+				skipEmptyLines: true,
+				transform: (value, header) => {
+					if (value === "") return undefined; // Empty fields become undefined
+
+					// Handle 'port' and 'interval' fields, check if they're valid numbers
+					if (["port", "interval"].includes(header)) {
+						const num = parseInt(value, 10);
+						if (isNaN(num)) {
+							throw new Error(`${header} should be a valid number, got: ${value}`);
+						}
+						return num;
 					}
 
-					// Add monitor to job queue
-					this.jobQueue.addJob(monitor._id, monitor);
-				})
-			);
+					return value;
+				},
+				complete: async ({ data, errors }) => {
+					try {
+						if (errors.length > 0) {
+							throw new Error("Error parsing CSV");
+						}
 
-			return res.success({
-				msg: this.stringService.bulkMonitorsCreate,
-				data: monitors,
+						if (!data || data.length === 0) {
+							throw new Error("CSV file contains no data rows");
+						}
+
+						const enrichedData = data.map((monitor) => ({
+							userId,
+							teamId,
+							...monitor,
+							description: monitor.description || monitor.name || monitor.url,
+							name: monitor.name || monitor.url,
+							type: monitor.type || "http",
+						}));
+
+						await createMonitorsBodyValidation.validateAsync(enrichedData);
+
+						try {
+							const monitors = await this.db.createBulkMonitors(enrichedData);
+
+							await Promise.all(
+								monitors.map(async (monitor, index) => {
+									const notifications = enrichedData[index].notifications;
+
+									if (notifications?.length) {
+										monitor.notifications = await Promise.all(
+											notifications.map(async (notification) => {
+												notification.monitorId = monitor._id;
+												return await this.db.createNotification(notification);
+											})
+										);
+										await monitor.save();
+									}
+
+									this.jobQueue.addJob(monitor._id, monitor);
+								})
+							);
+
+							return res.success({
+								msg: this.stringService.bulkMonitorsCreate,
+								data: monitors,
+							});
+						} catch (error) {
+							next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+						}
+					} catch (error) {
+						next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+					}
+				},
 			});
 		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+			return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
 		}
 	};
-
 	/**
 	 * Checks if the endpoint can be resolved
 	 * @async
@@ -569,6 +634,50 @@ class MonitorController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "addDemoMonitors"));
+		}
+	};
+
+	/**
+	 * Sends a test email to verify email delivery functionality.
+	 * @async
+	 * @param {Object} req - The Express request object.
+	 * @property {Object} req.body - The body of the request.
+	 * @property {string} req.body.to - The email address to send the test email to.
+	 * @param {Object} res - The Express response object.
+	 * @param {function} next - The next middleware function.
+	 * @returns {Object} The response object with a success status and the email delivery message ID.
+	 * @throws {Error} If there is an error while sending the test email.
+	 */
+	sendTestEmail = async (req, res, next) => {
+		try {
+			const { to } = req.body;
+
+			if (!to || typeof to !== "string") {
+				return res.error({ msg: this.stringService.errorForValidEmailAddress });
+			}
+
+			const subject = this.stringService.testEmailSubject;
+			const context = { testName: "Monitoring System" };
+
+			const messageId = await this.emailService.buildAndSendEmail(
+				"testEmailTemplate",
+				context,
+				to,
+				subject
+			);
+
+			if (!messageId) {
+				return res.error({
+					msg: "Failed to send test email.",
+				});
+			}
+
+			return res.success({
+				msg: this.stringService.sendTestEmail,
+				data: { messageId },
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "sendTestEmail"));
 		}
 	};
 

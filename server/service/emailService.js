@@ -67,6 +67,7 @@ class EmailService {
 			serverIsUpTemplate: this.loadTemplate("serverIsUp"),
 			passwordResetTemplate: this.loadTemplate("passwordReset"),
 			hardwareIncidentTemplate: this.loadTemplate("hardwareIncident"),
+			testEmailTemplate: this.loadTemplate("testEmailTemplate")
 		};
 
 		/**

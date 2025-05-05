@@ -396,5 +396,20 @@
   "DeleteAccount": "",
   "DeleteDescriptionText": "",
   "DeleteAccountWarning": "",
-  "DeleteWarningTitle": ""
+  "DeleteWarningTitle": "",
+  "authRegisterFirstName": "",
+  "authRegisterLastName": "",
+  "authRegisterEmail": "",
+  "authRegisterEmailRequired": "",
+  "bulkImport": {
+    "title": "",
+    "selectFileTips": "",
+    "selectFileDescription": "",
+    "selectFile": "",
+    "parsingFailed": "",
+    "uploadSuccess": "",
+    "validationFailed": "",
+    "noFileSelected": "",
+    "fallbackPage": ""
+  }
 }

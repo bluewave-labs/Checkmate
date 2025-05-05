@@ -15,7 +15,7 @@ import Background from "../../../assets/Images/background-grid.svg?react";
 import Logo from "../../../assets/icons/checkmate-icon.svg?react";
 import Mail from "../../../assets/icons/mail.svg?react";
 import "../index.css";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 /**
  * Displays the initial landing page.
  *
@@ -67,42 +67,47 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				</Box>
 				<Box maxWidth={400}>
 					<Typography className="tos-p">
-						{t("authRegisterBySigningUp")}{" "}
-						<Typography
-							component="span"
-							onClick={() => {
-								window.open(
-									"https://bluewavelabs.ca/terms-of-service-open-source",
-									"_blank",
-									"noreferrer"
-								);
+						<Trans
+							i18nKey="authRegisterBySigningUp"
+							components={{
+								a1: (
+									<Typography
+										component="span"
+										sx={{
+											cursor: "pointer",
+											"&:hover": {
+												color: theme.palette.primary.contrastTextTertiary,
+											},
+										}}
+										onClick={() => {
+											window.open(
+												"https://bluewavelabs.ca/terms-of-service-open-source",
+												"_blank",
+												"noreferrer"
+											);
+										}}
+									/>
+								),
+								a2: (
+									<Typography
+										component="span"
+										sx={{
+											cursor: "pointer",
+											"&:hover": {
+												color: theme.palette.primary.contrastTextTertiary,
+											},
+										}}
+										onClick={() => {
+											window.open(
+												"https://bluewavelabs.ca/privacy-policy-open-source",
+												"_blank",
+												"noreferrer"
+											);
+										}}
+									/>
+								)
 							}}
-							sx={{
-								"&:hover": {
-									color: theme.palette.primary.contrastTextTertiary,
-								},
-							}}
-						>
-							{t("authRegisterTerms")}
-						</Typography>{" "}
-						{t("and")}{" "}
-						<Typography
-							component="span"
-							onClick={() => {
-								window.open(
-									"https://bluewavelabs.ca/privacy-policy-open-source",
-									"_blank",
-									"noreferrer"
-								);
-							}}
-							sx={{
-								"&:hover": {
-									color: theme.palette.primary.contrastTextTertiary,
-								},
-							}}
-						>
-							{t("authRegisterPrivacy")}
-						</Typography>
+						/>
 					</Typography>
 				</Box>
 			</Stack>
