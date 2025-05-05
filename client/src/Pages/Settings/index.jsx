@@ -54,6 +54,7 @@ const Settings = () => {
 	const [form, setForm] = useState({
 		enableDistributedUptime: distributedUptimeEnabled,
 		ttl: checkTTL ? (checkTTL / SECONDS_PER_DAY).toString() : 0,
+		pagespeedApiKey: "",
 	});
 	const [version, setVersion] = useState("unknown");
 	const [errors, setErrors] = useState({});
@@ -277,6 +278,26 @@ const Settings = () => {
 						</Box>
 					</ConfigBox>
 				)}
+				<ConfigBox>
+						<Box>
+							<Typography component="h1">Google Pagespeed API Key</Typography>
+							<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
+								Manage your pagespeed API key
+							</Typography>
+						</Box>
+						<Box>
+							<TextInput
+								id="pagespeedApiKey"
+								label="PageSpeed API Key"
+								value={form.pagespeedApiKey}
+								onChange={handleChange}
+								type="password"
+								optionalLabel="(Optional)"
+								helperText={errors.pagespeedApiKey}
+								error={!!errors.pagespeedApiKey}
+							/>
+						</Box>
+				</ConfigBox>
 				{isAdmin && (
 					<ConfigBox>
 						<Box>
