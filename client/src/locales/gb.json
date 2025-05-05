@@ -18,6 +18,7 @@
   "createAPassword": "Create a password",
   "authRegisterAlreadyHaveAccount": "Already have an account?",
   "commonAppName": "Checkmate",
+  "welcomeBack": "Welcome back! You're successfully logged in.",
   "authLoginEnterEmail": "Enter your email",
   "authRegisterTitle": "Create an account",
   "authRegisterStepOneTitle": "Create your account",
