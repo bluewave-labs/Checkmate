@@ -1,0 +1,17 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" font-family="Helvetica Neue">
+          Hello!
+        </mj-text>
+        <mj-text font-size="16px" font-family="Helvetica Neue">
+          This is a test email from the Monitoring System.
+        </mj-text>
+        <mj-text font-size="14px" font-family="Helvetica Neue">
+          If you're receiving this, your email configuration is working correctly.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
