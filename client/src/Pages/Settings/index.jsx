@@ -6,10 +6,10 @@ import Select from "../../Components/Inputs/Select";
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import Dialog from "../../Components/Dialog";
 import ConfigBox from "../../Components/ConfigBox";
-import {
-	WalletMultiButton,
-	WalletDisconnectButton,
-} from "@solana/wallet-adapter-react-ui";
+// import {
+// 	WalletMultiButton,
+// 	WalletDisconnectButton,
+// } from "@solana/wallet-adapter-react-ui";
 
 //Utils
 import { useTheme } from "@emotion/react";
@@ -254,7 +254,7 @@ const Settings = () => {
 						></Select>
 					</Stack>
 				</ConfigBox>
-				{isAdmin && (
+				{/* {isAdmin && (
 					<ConfigBox>
 						<Box>
 							<Typography component="h1">{t("settingsDistributedUptime")}</Typography>
@@ -276,8 +276,8 @@ const Settings = () => {
 								: t("settingsDisabled")}
 						</Box>
 					</ConfigBox>
-				)}
-				{isAdmin && (
+				)} */}
+				{/* {isAdmin && (
 					<ConfigBox>
 						<Box>
 							<Typography component="h1">{t("settingsWallet")}</Typography>
@@ -302,7 +302,7 @@ const Settings = () => {
 							</Stack>
 						</Box>
 					</ConfigBox>
-				)}
+				)} */}
 				{isAdmin && (
 					<ConfigBox>
 						<Box>
