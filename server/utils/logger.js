@@ -43,7 +43,6 @@ class Logger {
 		);
 
 		const logLevel = process.env.LOG_LEVEL || "info";
-		console.log(logLevel);
 
 		this.logger = createLogger({
 			level: logLevel,
