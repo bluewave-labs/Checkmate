@@ -231,7 +231,8 @@ const startApp = async () => {
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
 		ServiceRegistry.get(SettingsService.SERVICE_NAME),
 		ServiceRegistry.get(JobQueue.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
+		ServiceRegistry.get(StringService.SERVICE_NAME),
+		ServiceRegistry.get(EmailService.SERVICE_NAME),
 	);
 
 	const settingsController = new SettingsController(

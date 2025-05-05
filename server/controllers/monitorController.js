@@ -27,11 +27,12 @@ const SERVICE_NAME = "monitorController";
 import pkg from "papaparse";
 
 class MonitorController {
-	constructor(db, settingsService, jobQueue, stringService) {
+	constructor(db, settingsService, jobQueue, stringService, emailService) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
+		this.emailService = emailService;
 	}
 
 	/**
@@ -633,6 +634,50 @@ class MonitorController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "addDemoMonitors"));
+		}
+	};
+
+	/**
+	 * Sends a test email to verify email delivery functionality.
+	 * @async
+	 * @param {Object} req - The Express request object.
+	 * @property {Object} req.body - The body of the request.
+	 * @property {string} req.body.to - The email address to send the test email to.
+	 * @param {Object} res - The Express response object.
+	 * @param {function} next - The next middleware function.
+	 * @returns {Object} The response object with a success status and the email delivery message ID.
+	 * @throws {Error} If there is an error while sending the test email.
+	 */
+	sendTestEmail = async (req, res, next) => {
+		try {
+			const { to } = req.body;
+
+			if (!to || typeof to !== "string") {
+				return res.error({ msg: this.stringService.errorForValidEmailAddress });
+			}
+
+			const subject = this.stringService.testEmailSubject;
+			const context = { testName: "Monitoring System" };
+
+			const messageId = await this.emailService.buildAndSendEmail(
+				"testEmailTemplate",
+				context,
+				to,
+				subject
+			);
+
+			if (!messageId) {
+				return res.error({
+					msg: "Failed to send test email.",
+				});
+			}
+
+			return res.success({
+				msg: this.stringService.sendTestEmail,
+				data: { messageId },
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "sendTestEmail"));
 		}
 	};
 
