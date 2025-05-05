@@ -31,6 +31,7 @@ class RedisService {
 				return Math.min(times * 100, 2000);
 			},
 		});
+
 		await new Promise((resolve, reject) => {
 			let errorOccurred = false;
 
