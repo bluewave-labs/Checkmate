@@ -656,7 +656,7 @@ class MonitorController {
 				return res.error({ msg: this.stringService.errorForValidEmailAddress });
 			}
 
-			const subject = "Test Email from Monitoring System";
+			const subject = this.stringService.testEmailSubject;
 			const context = { testName: "Monitoring System" };
 
 			const messageId = await this.emailService.buildAndSendEmail(
