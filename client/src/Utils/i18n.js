@@ -32,7 +32,6 @@ i18n.use(initReactI18next).init({
 
 i18n.on("languageChanged", (lng) => {
 	store.dispatch(setLanguage(lng));
-	window.localStorage.setItem("app_language", lng);
 });
 
 export default i18n;

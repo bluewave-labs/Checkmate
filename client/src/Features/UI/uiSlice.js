@@ -23,7 +23,7 @@ const initialState = {
 	greeting: { index: 0, lastUpdate: null },
 	timezone: "America/Toronto",
 	distributedUptimeEnabled: false,
-	language: localStorage.getItem("app_language") || "gb",
+	language: "gb",
 	starPromptOpen: true,
 };
 
