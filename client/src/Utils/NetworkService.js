@@ -45,6 +45,15 @@ class NetworkService {
 		this.axiosInstance.interceptors.response.use(
 			(response) => response,
 			(error) => {
+				// Handle network errors (server unreachable)
+				if (error.code === "ERR_NETWORK") {
+					// Navigate to server unreachable page
+					navigate("/server-unreachable");
+					// Return an empty resolved promise to stop the error propagation
+					return Promise.reject(error);
+				}
+				
+				// Handle authentication errors
 				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					dispatch(clearUptimeMonitorState());
