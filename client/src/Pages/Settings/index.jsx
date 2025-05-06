@@ -94,12 +94,17 @@ const Settings = () => {
 			return;
 		}
 
+		let inputValue = value;
+		if (id === "ttl") {
+			inputValue = value.replace(/[^0-9]/g, "");
+		}
+
+		const updatedForm = { ...form, [id]: inputValue };
 		const { error } = settingsValidation.validate(
-			{ [id]: value },
-			{
-				abortEarly: false,
-			}
+			updatedForm,
+			{ abortEarly: false }
 		);
+
 		if (!error || error.details.length === 0) {
 			setErrors({});
 		} else {
@@ -110,12 +115,8 @@ const Settings = () => {
 			setErrors(newErrors);
 			logger.error("Validation errors:", error.details);
 		}
-		let inputValue = value;
-		id === "ttl" && (inputValue = value.replace(/[^0-9]/g, ""));
-		setForm((prev) => ({
-			...prev,
-			[id]: inputValue,
-		}));
+		
+		setForm(updatedForm);
 	};
 
 	// TODO Handle saving
