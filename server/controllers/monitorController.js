@@ -538,18 +538,16 @@ class MonitorController {
 			const monitorBeforeEdit = await this.db.getMonitorById(monitorId);
 
 			// Get notifications from the request body
-			const notifications = req.body.notifications;
-
+			const notifications = req.body.notifications ?? [];
 			const editedMonitor = await this.db.editMonitor(monitorId, req.body);
 
 			await this.db.deleteNotificationsByMonitorId(editedMonitor._id);
 
 			await Promise.all(
-				notifications &&
-					notifications.map(async (notification) => {
-						notification.monitorId = editedMonitor._id;
-						await this.db.createNotification(notification);
-					})
+				notifications.map(async (notification) => {
+					notification.monitorId = editedMonitor._id;
+					await this.db.createNotification(notification);
+				})
 			);
 
 			// Delete the old job(editedMonitor has the same ID as the old monitor)
