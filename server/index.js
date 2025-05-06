@@ -81,7 +81,9 @@ import ServiceRegistry from "./service/serviceRegistry.js";
 
 import MongoDB from "./db/mongo/MongoDB.js";
 
+// Redis Service and dependencies
 import IORedis from "ioredis";
+import RedisService from "./service/redisService.js";
 
 import TranslationService from "./service/translationService.js";
 import languageMiddleware from "./middleware/languageMiddleware.js";
@@ -113,21 +115,16 @@ const shutdown = async () => {
 			method: "shutdown",
 		});
 		// flush Redis
-		const settings =
-			ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings() || {};
+		const redisService = ServiceRegistry.get(RedisService.SERVICE_NAME);
+		await redisService.flushall();
 
-		const { redisUrl } = settings;
-		const redis = new IORedis(redisUrl, { maxRetriesPerRequest: null });
-
-		logger.info({ message: "Flushing Redis" });
-		await redis.flushall();
-		logger.info({ message: "Redis flushed" });
 		process.exit(1);
 	}, SHUTDOWN_TIMEOUT);
 	try {
 		server.close();
 		await ServiceRegistry.get(JobQueue.SERVICE_NAME).obliterate();
 		await ServiceRegistry.get(MongoDB.SERVICE_NAME).disconnect();
+		await ServiceRegistry.get(RedisService.SERVICE_NAME).flushall();
 		logger.info({ message: "Graceful shutdown complete" });
 		process.exit(0);
 	} catch (error) {
@@ -185,7 +182,13 @@ const startApp = async () => {
 		stringService
 	);
 
-	const jobQueue = new JobQueue(
+	const redisService = await RedisService.createInstance({
+		logger,
+		IORedis,
+		SettingsService: settingsService,
+	});
+
+	const jobQueue = new JobQueue({
 		db,
 		statusService,
 		networkService,
@@ -194,8 +197,9 @@ const startApp = async () => {
 		stringService,
 		logger,
 		Queue,
-		Worker
-	);
+		Worker,
+		redisService,
+	});
 
 	// Register services
 	ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
@@ -207,6 +211,7 @@ const startApp = async () => {
 	ServiceRegistry.register(StatusService.SERVICE_NAME, statusService);
 	ServiceRegistry.register(NotificationService.SERVICE_NAME, notificationService);
 	ServiceRegistry.register(TranslationService.SERVICE_NAME, translationService);
+	ServiceRegistry.register(RedisService.SERVICE_NAME, redisService);
 
 	await translationService.initialize();
 
@@ -344,7 +349,7 @@ const startApp = async () => {
 	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
 	app.use("/api/v1/distributed-uptime", distributedUptimeRoutes.getRouter());
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
-	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter()); 
+	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
 	app.use("/api/v1/health", (req, res) => {
 		res.json({

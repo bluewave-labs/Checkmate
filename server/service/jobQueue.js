@@ -1,5 +1,3 @@
-import IORedis from "ioredis";
-
 const QUEUE_NAMES = ["uptime", "pagespeed", "hardware", "distributed"];
 const SERVICE_NAME = "JobQueue";
 const JOBS_PER_WORKER = 5;
@@ -18,7 +16,7 @@ const getSchedulerId = (monitor) => `scheduler:${monitor.type}:${monitor._id}`;
 class NewJobQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor(
+	constructor({
 		db,
 		statusService,
 		networkService,
@@ -27,16 +25,14 @@ class NewJobQueue {
 		stringService,
 		logger,
 		Queue,
-		Worker
-	) {
-		const settings = settingsService.getSettings() || {};
-		const { redisUrl } = settings;
-		const connection = new IORedis(redisUrl, { maxRetriesPerRequest: null });
+		Worker,
+		redisService,
+	}) {
+		this.connection = redisService.getConnection();
 		this.queues = {};
 		this.workers = {};
 		this.lastJobProcessedTime = {};
 
-		this.connection = connection;
 		this.db = db;
 		this.networkService = networkService;
 		this.statusService = statusService;
@@ -47,7 +43,7 @@ class NewJobQueue {
 		this.stringService = stringService;
 
 		QUEUE_NAMES.forEach((name) => {
-			const q = new Queue(name, { connection });
+			const q = new Queue(name, { connection: this.connection });
 			this.lastJobProcessedTime[q.name] = Date.now();
 			q.on("error", (error) => {
 				this.logger.error({
