@@ -94,7 +94,7 @@ const InfrastructureMonitors = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<MonitorCreateHeader
 				isAdmin={isAdmin}
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				path="/infrastructure/create"
 			/>
 			<Stack direction={"row"}>
