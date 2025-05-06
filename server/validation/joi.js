@@ -183,7 +183,7 @@ const createMonitorBodyValidation = joi.object({
 	description: joi.string().required(),
 	type: joi.string().required(),
 	url: joi.string().required(),
-	ignoreTlsErrors: joi.boolean().required(),
+	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
 	interval: joi.number(),
