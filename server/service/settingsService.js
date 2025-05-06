@@ -48,9 +48,12 @@ class SettingsService {
 
 			// If there are any settings that weren't set by environment variables, use user settings from DB
 			for (const key in envConfig) {
-				if (typeof dbSettings?.[key] !== "undefined") {
+				if (
+					typeof envConfig?.[key] === "undefined" &&
+					typeof dbSettings?.[key] !== "undefined"
+				) {
 					this.settings[key] = dbSettings[key];
-				}				  
+				}
 			}
 
 			await this.appSettings.updateOne({}, { $set: this.settings }, { upsert: true });
