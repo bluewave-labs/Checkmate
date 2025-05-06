@@ -1,4 +1,6 @@
 import jmespath from "jmespath";
+import https from "https";
+
 const SERVICE_NAME = "NetworkService";
 const UPROCK_ENDPOINT = "https://api.uprock.com/checkmate/push";
 
@@ -133,6 +135,7 @@ class NetworkService {
 				name,
 				teamId,
 				type,
+				ignoreTlsErrors,
 				jsonPath,
 				matchMethod,
 				expectedValue,
@@ -140,6 +143,12 @@ class NetworkService {
 			const config = {};
 
 			secret !== undefined && (config.headers = { Authorization: `Bearer ${secret}` });
+
+			if (ignoreTlsErrors === true) {
+				config.httpsAgent = new https.Agent({
+					rejectUnauthorized: false,
+				});
+			}
 
 			const { response, responseTime, error } = await this.timeRequest(() =>
 				this.axios.get(url, config)
