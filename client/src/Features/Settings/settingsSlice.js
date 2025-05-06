@@ -6,6 +6,7 @@ const initialState = {
 	apiBaseUrl: "",
 	logLevel: "debug",
 	language: "",
+	pagespeedApiKey: "",
 };
 
 export const getAppSettings = createAsyncThunk(
@@ -57,6 +58,7 @@ const handleGetSettingsFulfilled = (state, action) => {
 	state.apiBaseUrl = action.payload.data.apiBaseUrl;
 	state.logLevel = action.payload.data.logLevel;
 	state.language = action.payload.data.language;
+	state.pagespeedApiKey = action.payload.data.pagespeedApiKey;
 };
 const handleGetSettingsRejected = (state, action) => {
 	state.isLoading = false;
