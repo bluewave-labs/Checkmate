@@ -62,7 +62,7 @@ const PageSpeed = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<CreateMonitorHeader
 				isAdmin={isAdmin}
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				path="/pagespeed/create"
 			/>
 			<MonitorCountHeader
