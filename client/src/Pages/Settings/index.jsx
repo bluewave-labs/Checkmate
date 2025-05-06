@@ -83,6 +83,15 @@ const Settings = () => {
 		fetchLatestVersion();
 	}, []);
 
+	const { pagespeedApiKey } = useSelector((state) => state.settings);
+
+	useEffect(() => {
+		setForm((prev) => ({
+			...prev,
+			pagespeedApiKey: pagespeedApiKey || "",
+		}));
+	}, [pagespeedApiKey]);
+
 	const handleChange = (event) => {
 		const { type, checked, value, id } = event.target;
 
