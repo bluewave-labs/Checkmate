@@ -33,6 +33,7 @@ export const updateAppSettings = createAsyncThunk(
 		try {
 			const parsedSettings = {
 				language: settings.language,
+				pagespeedApiKey: settings.pagespeedApiKey,
 			};
 			const res = await networkService.updateAppSettings({ settings: parsedSettings });
 			return res.data;
