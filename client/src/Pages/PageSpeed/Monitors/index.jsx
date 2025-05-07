@@ -53,7 +53,7 @@ const PageSpeed = () => {
 				]}
 				link="/pagespeed/create"
 				isAdmin={isAdmin}
-				showPageSpeedWarning={true}
+				showPageSpeedWarning={isAdmin && !pagespeedApiKey}
 			/>
 		);
 	}
