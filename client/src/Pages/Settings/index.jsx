@@ -7,6 +7,7 @@ import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import Dialog from "../../Components/Dialog";
 import ConfigBox from "../../Components/ConfigBox";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
+import { getAppSettings } from "../../Features/Settings/settingsSlice";
 import {
 	WalletMultiButton,
 	WalletDisconnectButton,
@@ -59,6 +60,7 @@ const Settings = () => {
 	});
 	const [version, setVersion] = useState("unknown");
 	const [apiKeyFieldType, setApiKeyFieldType] = useState("password");
+	const [isApiKeySet, setIsApiKeySet] = useState(false);
 	const [errors, setErrors] = useState({});
 	const deleteStatsMonitorsInitState = { deleteMonitors: false, deleteStats: false };
 	const [isOpen, setIsOpen] = useState(deleteStatsMonitorsInitState);
@@ -82,6 +84,10 @@ const Settings = () => {
 		};
 		fetchLatestVersion();
 	}, []);
+
+	useEffect(() => {
+		dispatch(getAppSettings());
+	}, []);	
 
 	const { pagespeedApiKey } = useSelector((state) => state.settings);
 
