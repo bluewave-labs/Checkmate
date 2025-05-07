@@ -4,6 +4,7 @@ services:
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
+      UPTIME_APP_CLIENT_HOST: "http://localhost"
     ports:
       - "80:80"
       - "443:443"

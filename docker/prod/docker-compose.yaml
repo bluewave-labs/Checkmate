@@ -4,7 +4,7 @@ services:
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://checkmate-demo.bluewavelabs.ca/api/v1"
-      UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
+      UPTIME_APP_CLIENT_HOST: "https://checkmate-demo.bluewavelabs.ca"
     ports:
       - "80:80"
       - "443:443"
