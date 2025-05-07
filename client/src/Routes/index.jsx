@@ -36,6 +36,9 @@ import DistributedUptimeDetails from "../Pages/DistributedUptime/Details";
 import CreateDistributedUptimeStatus from "../Pages/DistributedUptimeStatus/Create";
 import DistributedUptimeStatus from "../Pages/DistributedUptimeStatus/Status";
 
+// Server Status
+import ServerUnreachable from "../Pages/ServerUnreachable";
+
 // Incidents
 import Incidents from "../Pages/Incidents";
 
@@ -285,6 +288,10 @@ const Routes = () => {
 				element={<DistributedUptimeStatus />}
 			/> */}
 
+			<Route
+				path="/server-unreachable"
+				element={<ServerUnreachable />}
+			/>
 			<Route
 				path="*"
 				element={<NotFound />}

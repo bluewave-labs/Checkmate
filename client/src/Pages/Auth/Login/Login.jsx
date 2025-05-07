@@ -6,11 +6,9 @@ import { credentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils";
-import { useTranslation } from "react-i18next";
 import { networkService } from "../../../main";
 import Background from "../../../assets/Images/background-grid.svg?react";
 import Logo from "../../../assets/icons/checkmate-icon.svg?react";
-import { logger } from "../../../Utils/Logger";
 import "../index.css";
 import EmailStep from "./Components/EmailStep";
 import PasswordStep from "./Components/PasswordStep";
@@ -45,21 +43,12 @@ const Login = () => {
 	const [errors, setErrors] = useState({});
 	const [step, setStep] = useState(0);
 
+
+
 	useEffect(() => {
 		if (authToken) {
 			navigate("/uptime");
-			return;
 		}
-		networkService
-			.doesSuperAdminExist()
-			.then((response) => {
-				if (response.data.data === false) {
-					navigate("/register");
-				}
-			})
-			.catch((error) => {
-				logger.error(error);
-			});
 	}, [authToken, navigate]);
 
 	const handleChange = (event) => {
@@ -238,6 +227,31 @@ const Login = () => {
 					email={form.email}
 					errorEmail={errors.email}
 				/>
+				
+				{/* Registration link */}
+				<Box textAlign="center" >
+					<Typography
+						className="forgot-p"
+						display="inline-block"
+						color={theme.palette.primary.main}
+					>
+						{t("doNotHaveAccount")}
+					</Typography>
+					<Typography
+						component="span"
+						color={theme.palette.accent.main}
+						ml={theme.spacing(2)}
+						sx={{ 
+							cursor: 'pointer',
+							'&:hover': {
+								color: theme.palette.accent.darker
+							}
+						}}
+						onClick={() => navigate("/register")}
+					>
+						{t("registerHere")}
+					</Typography>
+				</Box>
 			</Stack>
 		</Stack>
 	);
