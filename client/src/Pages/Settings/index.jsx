@@ -314,47 +314,41 @@ const Settings = () => {
 					</ConfigBox>
 				)}
 				<ConfigBox>
-						<Box>
-							<Typography component="h1">{t("pageSpeedApiKeyFieldTitle")}</Typography>
-							<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
-								{t("pageSpeedApiKeyFieldDescription")}
-							</Typography>
-						</Box>
-						<Box>
-							<Stack direction="row" alignItems="center" gap={theme.spacing(4)}>
-								<Box flex={1}>
-									<TextInput
-										id="pagespeedApiKey"
-										label={t("pageSpeedApiKeyFieldLabel")}
-										value={form.pagespeedApiKey}
-										type={apiKeyFieldType}
-										onChange={handleChange}
-										disabled={isApiKeySet}
-										optionalLabel="(Optional)"
-										error={!!errors.pagespeedApiKey}
-										helperText={errors.pagespeedApiKey}
-										endAdornment={
-											!isApiKeySet && (
-												<PasswordEndAdornment
-													fieldType={apiKeyFieldType}
-													setFieldType={setApiKeyFieldType}
-												/>
-											)
-										}
+					<Box>
+						<Typography component="h1">{t("pageSpeedApiKeyFieldTitle")}</Typography>
+						<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
+							{t("pageSpeedApiKeyFieldDescription")}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(20)}>
+						<TextInput
+							id="pagespeedApiKey"
+							label={t("pageSpeedApiKeyFieldLabel")}
+							value={form.pagespeedApiKey}
+							type={apiKeyFieldType}
+							onChange={handleChange}
+							disabled={isApiKeySet}
+							optionalLabel="(Optional)"
+							error={!!errors.pagespeedApiKey}
+							helperText={errors.pagespeedApiKey}
+							endAdornment={
+								!isApiKeySet && (
+									<PasswordEndAdornment
+										fieldType={apiKeyFieldType}
+										setFieldType={setApiKeyFieldType}
 									/>
-									{isApiKeySet && (
-										<Typography>
-											{t("pageSpeedApiKeyFieldResetLabel")}
-										</Typography>
-									)}
-								</Box>
-								{isApiKeySet && (
-									<Button onClick={handleResetApiKey} variant="contained" color="error">
-										{t("reset")}
-									</Button>
-								)}
-							</Stack>
+								)
+							}
+						/>
+						{isApiKeySet && (
+						<Box>
+							<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
+							<Button onClick={handleResetApiKey} variant="contained" color="error" sx={{ mt: theme.spacing(4) }}>
+								{t("reset")}
+							</Button>
 						</Box>
+						)}
+					</Stack>
 				</ConfigBox>
 				{isAdmin && (
 					<ConfigBox>
