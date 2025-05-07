@@ -348,14 +348,15 @@ const Settings = () => {
 					</ConfigBox>
 				)}
 				{isAdmin && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h1">{t("settingsDemoMonitors")}</Typography>
-							<Typography sx={{ mt: theme.spacing(2) }}>
-								{t("settingsDemoMonitorsDescription")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(20)}>
+					<>
+						{/* Demo Monitors Section */}
+						<ConfigBox>
+							<Box>
+								<Typography component="h1">{t("settingsDemoMonitors")}</Typography>
+								<Typography sx={{ mt: theme.spacing(2) }}>
+									{t("settingsDemoMonitorsDescription")}
+								</Typography>
+							</Box>
 							<Box>
 								<Typography>{t("settingsAddDemoMonitors")}</Typography>
 								<Button
@@ -367,6 +368,16 @@ const Settings = () => {
 								>
 									{t("settingsAddDemoMonitorsButton")}
 								</Button>
+							</Box>
+						</ConfigBox>
+
+						{/* System Reset Section */}
+						<ConfigBox>
+							<Box>
+								<Typography component="h1">{t("settingsSystemReset")}</Typography>
+								<Typography sx={{ mt: theme.spacing(2) }}>
+									{t("settingsSystemResetDescription")}
+								</Typography>
 							</Box>
 							<Box>
 								<Typography>{t("settingsRemoveAllMonitors")}</Typography>
@@ -382,17 +393,17 @@ const Settings = () => {
 									{t("settingsRemoveAllMonitorsButton")}
 								</Button>
 							</Box>
-						</Stack>
-						<Dialog
-							open={isOpen.deleteMonitors}
-							theme={theme}
-							title={t("settingsRemoveAllMonitorsDialogTitle")}
-							onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
-							confirmationButtonLabel={t("settingsRemoveAllMonitorsDialogConfirm")}
-							onConfirm={handleDeleteAllMonitors}
-							isLoading={isLoading || authIsLoading || checksIsLoading}
-						/>
-					</ConfigBox>
+							<Dialog
+								open={isOpen.deleteMonitors}
+								theme={theme}
+								title={t("settingsRemoveAllMonitorsDialogTitle")}
+								onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
+								confirmationButtonLabel={t("settingsRemoveAllMonitorsDialogConfirm")}
+								onConfirm={handleDeleteAllMonitors}
+								isLoading={isLoading || authIsLoading || checksIsLoading}
+							/>
+						</ConfigBox>
+					</>
 				)}
 
 				<ConfigBox>
