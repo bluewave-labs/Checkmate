@@ -33,7 +33,6 @@ const ServerUnreachable = () => {
       navigate("/login");
     } catch (error) {
       // If still unreachable, stay on this page and show toast
-      console.error("Server still unreachable:", error);
       createToast({
         body: t("backendStillUnreachable", "Server is still unreachable"),
       });
@@ -46,15 +45,6 @@ const ServerUnreachable = () => {
     <Stack
       className="login-page auth"
       overflow="hidden"
-      sx={{
-        "& h1": {
-          color: theme.palette.primary.contrastText,
-          fontWeight: 600,
-          fontSize: 28,
-        },
-        "& p": { fontSize: 14, color: theme.palette.primary.contrastTextSecondary },
-        "& span": { fontSize: "inherit" },
-      }}
     >
       <Box
         className="background-pattern-svg"
