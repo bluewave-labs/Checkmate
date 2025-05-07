@@ -96,7 +96,7 @@ const Settings = () => {
 			setIsApiKeySet(true);
 			setForm((prev) => ({
 				...prev,
-				pagespeedApiKey: "*************************************",
+				pagespeedApiKey: t("maskedPageSpeedKeyPlaceholder"),
 			}));
 		} else {
 			setIsApiKeySet(false);
@@ -315,9 +315,9 @@ const Settings = () => {
 				)}
 				<ConfigBox>
 						<Box>
-							<Typography component="h1">Google Pagespeed API Key</Typography>
+							<Typography component="h1">{t("pageSpeedApiKeyFieldTitle")}</Typography>
 							<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
-								Manage your pagespeed API key
+								{t("pageSpeedApiKeyFieldDescription")}
 							</Typography>
 						</Box>
 						<Box>
@@ -325,7 +325,7 @@ const Settings = () => {
 								<Box flex={1}>
 									<TextInput
 										id="pagespeedApiKey"
-										label="PageSpeed API Key"
+										label={t("pageSpeedApiKeyFieldLabel")}
 										value={form.pagespeedApiKey}
 										type={apiKeyFieldType}
 										onChange={handleChange}
@@ -343,8 +343,8 @@ const Settings = () => {
 										}
 									/>
 									{isApiKeySet && (
-										<Typography >
-											API key is set. Click Reset to change it.
+										<Typography>
+											{t("pageSpeedApiKeyFieldResetLabel")}
 										</Typography>
 									)}
 								</Box>
