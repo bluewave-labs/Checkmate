@@ -321,22 +321,38 @@ const Settings = () => {
 							</Typography>
 						</Box>
 						<Box>
-							<TextInput
-								id="pagespeedApiKey"
-								label="PageSpeed API Key"
-								value={form.pagespeedApiKey}
-								type={apiKeyFieldType}
-								onChange={handleChange}
-								optionalLabel="(Optional)"
-								error={!!errors.pagespeedApiKey}
-								helperText={errors.pagespeedApiKey}
-								endAdornment={
-									<PasswordEndAdornment
-										fieldType={apiKeyFieldType}
-										setFieldType={setApiKeyFieldType}
+							<Stack direction="row" alignItems="center" gap={theme.spacing(4)}>
+								<Box flex={1}>
+									<TextInput
+										id="pagespeedApiKey"
+										label="PageSpeed API Key"
+										value={form.pagespeedApiKey}
+										type={apiKeyFieldType}
+										onChange={handleChange}
+										disabled={isApiKeySet}
+										optionalLabel="(Optional)"
+										error={!!errors.pagespeedApiKey}
+										helperText={
+											isApiKeySet
+												? "API key is set. Click Reset to change it."
+												: errors.pagespeedApiKey
+										}
+										endAdornment={
+											!isApiKeySet && (
+												<PasswordEndAdornment
+													fieldType={apiKeyFieldType}
+													setFieldType={setApiKeyFieldType}
+												/>
+											)
+										}
 									/>
-								}
-							/>
+								</Box>
+								{isApiKeySet && (
+									<Button onClick={handleResetApiKey} variant="outlined">
+										Reset
+									</Button>
+								)}
+							</Stack>
 						</Box>
 				</ConfigBox>
 				{isAdmin && (
