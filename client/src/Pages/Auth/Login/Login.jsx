@@ -6,6 +6,7 @@ import { credentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 import { networkService } from "../../../main";
 import Background from "../../../assets/Images/background-grid.svg?react";
 import Logo from "../../../assets/icons/checkmate-icon.svg?react";
@@ -24,9 +25,10 @@ const DEMO = import.meta.env.VITE_APP_DEMO;
  */
 
 const Login = () => {
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
 	const theme = useTheme();
+	const dispatch = useDispatch();
+	const { t } = useTranslation();
+	const navigate = useNavigate();
 
 	const authState = useSelector((state) => state.auth);
 	const { authToken } = authState;
@@ -88,8 +90,10 @@ const Login = () => {
 				{ abortEarly: false }
 			);
 			if (error) {
-				setErrors((prev) => ({ ...prev, email: error.details[0].message }));
-				createToast({ body: error.details[0].message });
+				const errorMessage = error.details[0].message;
+				const translatedMessage = errorMessage.startsWith('auth') ? t(errorMessage) : errorMessage;
+				setErrors((prev) => ({ ...prev, email: translatedMessage }));
+				createToast({ body: translatedMessage });
 			} else {
 				setStep(1);
 			}
@@ -106,8 +110,8 @@ const Login = () => {
 				createToast({
 					body:
 						error.details && error.details.length > 0
-							? error.details[0].message
-							: "Error validating data.",
+							? (error.details[0].message.startsWith('auth') ? t(error.details[0].message) : error.details[0].message)
+							: t("Error validating data."),
 				});
 			} else {
 				const action = await dispatch(login(form));
