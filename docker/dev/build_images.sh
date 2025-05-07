@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 cd ../..
 
 # Define service names and their corresponding Dockerfiles in parallel arrays
-services=("uptime_client" "uptime_database_mongo" "uptime_redis" "uptime_server")
+services=("uptime_client" "uptime_mongo" "uptime_redis" "uptime_server")
 dockerfiles=(
   "./docker/dev/client.Dockerfile"
   "./docker/dev/mongoDB.Dockerfile"
