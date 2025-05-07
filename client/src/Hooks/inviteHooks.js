@@ -2,7 +2,7 @@ import { useState } from "react";
 import { networkService } from "../main";
 import { useTranslation } from "react-i18next";
 
-const CLIENT_HOST = import.meta.env.VITE_CLIENT_HOST;
+const CLIENT_HOST = import.meta.env.VITE_APP_CLIENT_HOST;
 
 const useGetInviteToken = () => {
 	const { t } = useTranslation();
