@@ -36,6 +36,9 @@ import DistributedUptimeDetails from "../Pages/DistributedUptime/Details";
 import CreateDistributedUptimeStatus from "../Pages/DistributedUptimeStatus/Create";
 import DistributedUptimeStatus from "../Pages/DistributedUptimeStatus/Status";
 
+// Server Status
+import ServerUnreachable from "../Pages/ServerUnreachable";
+
 // Incidents
 import Incidents from "../Pages/Incidents";
 
@@ -96,16 +99,16 @@ const Routes = () => {
 					path="/uptime/configure/:monitorId/"
 					element={<UptimeConfigure />}
 				/>
-				<Route
+				{/* <Route
 					path="/distributed-uptime"
 					element={
 						<ProtectedDistributedUptimeRoute>
 							<DistributedUptimeMonitors />{" "}
 						</ProtectedDistributedUptimeRoute>
 					}
-				/>
+				/> */}
 
-				<Route
+				{/* <Route
 					path="/distributed-uptime/create"
 					element={
 						<ProtectedDistributedUptimeRoute>
@@ -120,15 +123,15 @@ const Routes = () => {
 							<CreateDistributedUptime />
 						</ProtectedDistributedUptimeRoute>
 					}
-				/>
-				<Route
+				/> */}
+				{/* <Route
 					path="/distributed-uptime/:monitorId"
 					element={
 						<ProtectedDistributedUptimeRoute>
 							<DistributedUptimeDetails />
 						</ProtectedDistributedUptimeRoute>
 					}
-				/>
+				/> */}
 
 				<Route
 					path="pagespeed"
@@ -154,9 +157,9 @@ const Routes = () => {
 					path="infrastructure/create"
 					element={<InfrastructureCreate />}
 				/>
-				<Route 
-					path="/infrastructure/configure/:monitorId" 
-					element={<InfrastructureCreate />} 
+				<Route
+					path="/infrastructure/configure/:monitorId"
+					element={<InfrastructureCreate />}
 				/>
 				<Route
 					path="infrastructure/:monitorId"
@@ -177,42 +180,42 @@ const Routes = () => {
 					element={<Status />}
 				/>
 
-				<Route
+				{/* <Route
 					path="/status/distributed/:url"
 					element={
 						<ProtectedDistributedUptimeRoute>
 							<DistributedUptimeStatus />
 						</ProtectedDistributedUptimeRoute>
 					}
-				/>
+				/> */}
 
 				<Route
 					path="status/uptime/create"
 					element={<CreateStatus />}
 				/>
 
-				<Route
+				{/* <Route
 					path="/status/distributed/create/:monitorId"
 					element={
 						<ProtectedDistributedUptimeRoute>
 							<CreateDistributedUptimeStatus />
 						</ProtectedDistributedUptimeRoute>
 					}
-				/>
+				/> */}
 
 				<Route
 					path="status/uptime/configure/:url"
 					element={<CreateStatus />}
 				/>
 
-				<Route
+				{/* <Route
 					path="/status/distributed/configure/:url"
 					element={
 						<ProtectedDistributedUptimeRoute>
 							<CreateDistributedUptimeStatus />
 						</ProtectedDistributedUptimeRoute>
 					}
-				/>
+				/> */}
 
 				<Route
 					path="integrations"
@@ -280,11 +283,15 @@ const Routes = () => {
 				path="/status/uptime/public/:url"
 				element={<Status />}
 			/>
-			<Route
+			{/* <Route
 				path="/status/distributed/public/:url"
 				element={<DistributedUptimeStatus />}
-			/>
+			/> */}
 
+			<Route
+				path="/server-unreachable"
+				element={<ServerUnreachable />}
+			/>
 			<Route
 				path="*"
 				element={<NotFound />}

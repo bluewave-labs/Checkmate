@@ -55,10 +55,9 @@ const MonitorTimeFrameHeader = ({
 	return (
 		<Stack
 			direction="row"
-			justifyContent="space-between"
-			alignItems="flex-end"
+			justifyContent="flex-end"
+			alignItems="center"
 			gap={theme.spacing(4)}
-			mb={theme.spacing(8)}
 		>
 			<Typography variant="body2">
 				Showing statistics for past{" "}

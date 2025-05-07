@@ -5,7 +5,7 @@ const initialState = {
 	isLoading: false,
 	apiBaseUrl: "",
 	logLevel: "debug",
-	language: "",
+	language: "gb",
 	pagespeedApiKey: "",
 };
 

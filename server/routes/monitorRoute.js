@@ -99,6 +99,12 @@ class MonitorRoutes {
 		);
 
 		this.router.post("/seed", isAllowed(["superadmin"]), this.monitorController.seedDb);
+
+		this.router.post(
+			"/test-email",
+			isAllowed(["admin", "superadmin"]),
+			this.monitorController.sendTestEmail
+		);
 	}
 
 	getRouter() {
