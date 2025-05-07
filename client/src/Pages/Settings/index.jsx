@@ -96,7 +96,7 @@ const Settings = () => {
 			setIsApiKeySet(true);
 			setForm((prev) => ({
 				...prev,
-				pagespeedApiKey: "********",
+				pagespeedApiKey: "*************************************",
 			}));
 		} else {
 			setIsApiKeySet(false);
@@ -332,11 +332,7 @@ const Settings = () => {
 										disabled={isApiKeySet}
 										optionalLabel="(Optional)"
 										error={!!errors.pagespeedApiKey}
-										helperText={
-											isApiKeySet
-												? "API key is set. Click Reset to change it."
-												: errors.pagespeedApiKey
-										}
+										helperText={errors.pagespeedApiKey}
 										endAdornment={
 											!isApiKeySet && (
 												<PasswordEndAdornment
@@ -346,9 +342,14 @@ const Settings = () => {
 											)
 										}
 									/>
+									{isApiKeySet && (
+										<Typography >
+											API key is set. Click Reset to change it.
+										</Typography>
+									)}
 								</Box>
 								{isApiKeySet && (
-									<Button onClick={handleResetApiKey} variant="outlined">
+									<Button onClick={handleResetApiKey} variant="contained" color="error">
 										Reset
 									</Button>
 								)}
