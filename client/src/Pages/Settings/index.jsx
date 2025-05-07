@@ -350,7 +350,7 @@ const Settings = () => {
 								</Box>
 								{isApiKeySet && (
 									<Button onClick={handleResetApiKey} variant="contained" color="error">
-										Reset
+										{t("reset")}
 									</Button>
 								)}
 							</Stack>

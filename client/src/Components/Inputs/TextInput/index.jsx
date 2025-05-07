@@ -116,6 +116,7 @@ const TextInput = forwardRef(
 					fontSize={"var(--env-var-font-size-medium)"}
 					color={theme.palette.primary.contrastTextSecondary}
 					fontWeight={500}
+					mb={theme.spacing(2)}
 				>
 					{label}
 					{isRequired && <Required />}
