@@ -60,7 +60,7 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 					<TextInput
 						type="email"
 						id="register-email-input"
-						label={t("commonEmail")}
+						label={t("authRegisterEmail")}
 						isRequired={true}
 						placeholder="jordan.ellis@domain.com"
 						autoComplete="email"
@@ -68,7 +68,11 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
-						helperText={errors.email}
+						helperText={errors.email && (
+						errors.email.includes("required") ? t("authRegisterEmailRequired") :
+						errors.email.includes("valid email") ? t("authRegisterEmailInvalid") :
+						errors.email
+					)}
 						ref={inputRef}
 					/>
 					<Stack

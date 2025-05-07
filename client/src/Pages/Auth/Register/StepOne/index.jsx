@@ -64,7 +64,7 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 					>
 						<TextInput
 							id="register-firstname-input"
-							label="Name"
+							label={t("authRegisterFirstName")}
 							isRequired={true}
 							placeholder="Jordan"
 							autoComplete="given-name"
@@ -76,7 +76,7 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 						/>
 						<TextInput
 							id="register-lastname-input"
-							label="Surname"
+							label={t("authRegisterLastName")}
 							isRequired={true}
 							placeholder="Ellis"
 							autoComplete="family-name"

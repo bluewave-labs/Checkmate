@@ -58,7 +58,7 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
-						helperText={errors.email}
+						helperText={errors.email ? t(errors.email) : ""}
 						ref={inputRef}
 					/>
 					<Stack

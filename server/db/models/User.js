@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import logger from "../../utils/logger.js";
 
 const UserSchema = mongoose.Schema(
@@ -55,20 +55,20 @@ const UserSchema = mongoose.Schema(
 	}
 );
 
-UserSchema.pre("save", async function (next) {
+UserSchema.pre("save", function (next) {
 	if (!this.isModified("password")) {
-		next();
+		return next();
 	}
-	const salt = await bcrypt.genSalt(10); //genSalt is asynchronous, need to wait
-	this.password = await bcrypt.hash(this.password, salt); // hash is also async, need to eitehr await or use hashSync
+	const salt = bcrypt.genSaltSync(10);
+	this.password = bcrypt.hashSync(this.password, salt);
 	next();
 });
 
-UserSchema.pre("findOneAndUpdate", async function (next) {
+UserSchema.pre("findOneAndUpdate", function (next) {
 	const update = this.getUpdate();
 	if ("password" in update) {
-		const salt = await bcrypt.genSalt(10); //genSalt is asynchronous, need to wait
-		update.password = await bcrypt.hash(update.password, salt); // hash is also async, need to eitehr await or use hashSync
+		const salt = bcrypt.genSaltSync(10);
+		update.password = bcrypt.hashSync(update.password, salt);
 	}
 
 	next();
@@ -89,4 +89,4 @@ User.init().then(() => {
 	});
 });
 
-export default mongoose.model("User", UserSchema);
+export default User;

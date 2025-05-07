@@ -32,7 +32,7 @@ class NetworkService {
 
 				config.headers = {
 					Authorization: `Bearer ${authToken}`,
-					"Accept-Language": currentLanguage,
+					"Accept-Language": currentLanguage === "gb" ? "en" : currentLanguage,
 					...config.headers,
 				};
 
@@ -54,6 +54,7 @@ class NetworkService {
 				}
 				
 				// Handle authentication errors
+
 				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					dispatch(clearUptimeMonitorState());
@@ -275,6 +276,7 @@ class NetworkService {
 			matchMethod: monitor.matchMethod,
 			expectedValue: monitor.expectedValue,
 			jsonPath: monitor.jsonPath,
+			...(monitor.type === "port" && { port: monitor.port }),
 		};
 		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {
@@ -931,7 +933,7 @@ class NetworkService {
 			onOpen?.();
 		};
 
-		this.eventSource.addEventListener("open", (e) => {});
+		this.eventSource.addEventListener("open", (e) => { });
 
 		this.eventSource.onmessage = (event) => {
 			const data = JSON.parse(event.data);
@@ -1095,6 +1097,19 @@ class NetworkService {
 		const encodedUrl = encodeURIComponent(url);
 
 		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
+	}
+
+	// ************************************
+	// Create bulk monitors
+	// ************************************
+
+	async createBulkMonitors(formData) {
+		const response = await this.axiosInstance.post(`/monitors/bulk`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
 	}
 
 	// ************************************

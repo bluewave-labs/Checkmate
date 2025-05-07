@@ -5,7 +5,7 @@ import ConfigBox from "../../../../../Components/ConfigBox";
 import Checkbox from "../../../../../Components/Inputs/Checkbox";
 import TextInput from "../../../../../Components/Inputs/TextInput";
 import Select from "../../../../../Components/Inputs/Select";
-import ImageField from "../../../../../Components/Inputs/Image";
+import ImageUpload from "../../../../../Components/Inputs/ImageUpload";
 import ColorPicker from "../../../../../Components/Inputs/ColorPicker";
 import Progress from "../Progress";
 
@@ -106,11 +106,10 @@ const TabSettings = ({
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(6)}>
-						<ImageField
-							id="logo"
+						<ImageUpload
 							src={form?.logo?.src}
-							isRound={false}
 							onChange={handleImageChange}
+							previewIsRound={false}
 						/>
 						<Progress
 							isLoading={progress.isLoading}

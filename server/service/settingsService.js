@@ -3,8 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const envConfig = {
 	logLevel: process.env.LOG_LEVEL,
-	apiBaseUrl: undefined,
-	language: process.env.LANGUAGE,
 	clientHost: process.env.CLIENT_HOST,
 	jwtSecret: process.env.JWT_SECRET,
 	dbType: process.env.DB_TYPE,
@@ -56,6 +54,8 @@ class SettingsService {
 					this.settings[key] = dbSettings[key];
 				}
 			}
+
+			await this.appSettings.updateOne({}, { $set: this.settings }, { upsert: true });
 			return this.settings;
 		} catch (error) {
 			error.service === undefined ? (error.service = SERVICE_NAME) : null;

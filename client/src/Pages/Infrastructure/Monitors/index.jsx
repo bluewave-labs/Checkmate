@@ -94,19 +94,21 @@ const InfrastructureMonitors = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<MonitorCreateHeader
 				isAdmin={isAdmin}
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				path="/infrastructure/create"
 			/>
-			<MonitorCountHeader
-				shouldRender={!isLoading}
-				monitorCount={summary?.totalMonitors ?? 0}
-			/>
-			<Filter
-				selectedStatus={selectedStatus}
-				setSelectedStatus={setSelectedStatus}
-				setToFilterStatus={setToFilterStatus}
-				handleReset={handleReset}
-			/>
+			<Stack direction={"row"}>
+				<MonitorCountHeader
+					shouldRender={!isLoading}
+					monitorCount={summary?.totalMonitors ?? 0}
+				/>
+				<Filter
+					selectedStatus={selectedStatus}
+					setSelectedStatus={setSelectedStatus}
+					setToFilterStatus={setToFilterStatus}
+					handleReset={handleReset}
+				/>
+			</Stack>
 			<MonitorsTable
 				shouldRender={!isLoading}
 				monitors={monitors}

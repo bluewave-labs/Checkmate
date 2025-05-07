@@ -25,10 +25,12 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 				<Stack
 					direction="row"
 					alignItems={"center"}
-					gap={theme.spacing(2)}
+					gap={theme.spacing(4)}
 				>
 					<PulseDot color={statusColor[determineState(monitor)]} />
-					<Typography variant="h2">
+					<Typography variant="h2"
+					style={{fontFamily : "monospace" , fontWeight : 'bolder'}}
+					>
 						{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 					</Typography>
 					<Dot />

@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
+import multer from "multer";
 import { fetchMonitorCertificate } from "../controllers/controllerUtils.js";
+
+const upload = multer({
+	storage: multer.memoryStorage() // Store file in memory as Buffer
+  });
 
 class MonitorRoutes {
 	constructor(monitorController) {
@@ -89,10 +94,17 @@ class MonitorRoutes {
 		this.router.post(
 			"/bulk",
 			isAllowed(["admin", "superadmin"]),
+			upload.single("csvFile"),
 			this.monitorController.createBulkMonitors
 		);
 
 		this.router.post("/seed", isAllowed(["superadmin"]), this.monitorController.seedDb);
+
+		this.router.post(
+			"/test-email",
+			isAllowed(["admin", "superadmin"]),
+			this.monitorController.sendTestEmail
+		);
 	}
 
 	getRouter() {
