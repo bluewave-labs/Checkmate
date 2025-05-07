@@ -18,10 +18,13 @@ COPY ./client/package*.json ./
 
 RUN npm install
 
-COPY ./client .
+COPY ./client ./
 
-RUN npm run build-dev
+RUN npm run build
 
-RUN npm install -g serve
+FROM nginx:1.27.1-alpine
 
-CMD ["serve","-s", "dist", "-l", "5173"]
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/env.sh /docker-entrypoint.d/env.sh
+RUN chmod +x /docker-entrypoint.d/env.sh
+CMD ["nginx", "-g", "daemon off;"]
