@@ -215,6 +215,14 @@ const Settings = () => {
 		}
 	};
 
+	const handleResetApiKey = () => {
+		setIsApiKeySet(false);
+		setForm((prev) => ({
+			...prev,
+			pagespeedApiKey: "",
+		}));
+	};	
+
 	const languages = Object.keys(i18n.options.resources || {});
 
 	return (
