@@ -344,7 +344,7 @@ const ProfilePanel = () => {
 					spellCheck="false"
 				>
 					<Box mb={theme.spacing(6)}>
-						<Typography component="h1">{t('DeleteAccount')}</Typography>
+						<Typography component="h1">{t('DeleteAccountTitle')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
@@ -357,7 +357,7 @@ const ProfilePanel = () => {
 						color="error"
 						onClick={() => setIsOpen("delete")}
 					>
-						{t('DeleteAccount')}
+						{t('DeleteAccountButton')}
 					</Button>
 				</Box>
 			)}
@@ -367,7 +367,7 @@ const ProfilePanel = () => {
 				title={t('DeleteWarningTitle')}
 				description={t('DeleteAccountWarning')}
 				onCancel={() => setIsOpen("")}
-				confirmationButtonLabel={t('DeleteAccount')}
+				confirmationButtonLabel={t('DeleteAccountButton')}
 				onConfirm={handleDeleteAccount}
 				isLoading={isLoading}
 			/>
