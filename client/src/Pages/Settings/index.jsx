@@ -92,11 +92,20 @@ const Settings = () => {
 	const { pagespeedApiKey } = useSelector((state) => state.settings);
 
 	useEffect(() => {
-		setForm((prev) => ({
-			...prev,
-			pagespeedApiKey: pagespeedApiKey || "",
-		}));
-	}, [pagespeedApiKey]);
+		if (pagespeedApiKey) {
+			setIsApiKeySet(true);
+			setForm((prev) => ({
+				...prev,
+				pagespeedApiKey: "********",
+			}));
+		} else {
+			setIsApiKeySet(false);
+			setForm((prev) => ({
+				...prev,
+				pagespeedApiKey: "",
+			}));
+		}
+	}, [pagespeedApiKey]);	
 
 	const handleChange = (event) => {
 		const { type, checked, value, id } = event.target;
