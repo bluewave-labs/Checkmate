@@ -19,6 +19,7 @@
   "authRegisterAlreadyHaveAccount": "Already have an account?",
   "authRegisterLoginLink": "Log In",
   "commonAppName": "Checkmate",
+  "welcomeBack": "Welcome back! You're successfully logged in.",
   "authLoginEnterEmail": "Enter your email",
   "authRegisterTitle": "Create an account",
   "authRegisterStepOneTitle": "Create your account",
@@ -418,5 +419,7 @@
     "validationFailed": "Validation failed",
     "noFileSelected": "No file selected",
     "fallbackPage": "Import a file to upload a list of servers in bulk"
-  }
+  },
+  "publicLink": "Public link"
 }
+

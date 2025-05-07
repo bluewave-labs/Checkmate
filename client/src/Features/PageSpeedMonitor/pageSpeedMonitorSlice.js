@@ -101,7 +101,7 @@ export const updatePageSpeed = createAsyncThunk(
 				name: monitor.name,
 				description: monitor.description,
 				interval: monitor.interval,
-				// notifications: monitor.notifications,
+				notifications: monitor.notifications,
 			};
 			const res = await networkService.updateMonitor({
 				monitorId: monitor._id,

@@ -19,6 +19,7 @@
   "authRegisterAlreadyHaveAccount": "Уже есть аккаунт?",
   "authRegisterLoginLink": "Войти",
   "commonAppName": "Checkmate",
+  "welcomeBack": "Добро пожаловать обратно! Вы успешно вошли в систему.",
   "authLoginEnterEmail": "Введите свой email",
   "authRegisterTitle": "Создать аккаунт",
   "authRegisterStepOneTitle": "Создайте свой аккаут",

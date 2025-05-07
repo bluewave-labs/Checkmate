@@ -16,7 +16,7 @@ Object.keys(translations).forEach((path) => {
 });
 
 const savedLanguage = store.getState()?.ui?.language;
-const initialLanguage = savedLanguage || primaryLanguage;
+const initialLanguage = savedLanguage;
 
 i18n.use(initReactI18next).init({
 	resources,
