@@ -10,8 +10,8 @@ const nameSchema = joi
 	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
 	.messages({
 		"string.empty": "Name is required",
-		"string.max": "Name must be less than 50 characters",
-		"string.pattern.base": "Name must contain only letters, spaces, apostrophes, or hyphens"
+		"string.max": "Name should be less than 50 characters",
+		"string.pattern.base": "Please use only letters, spaces, apostrophes, or hyphens"
 	});
 
 const passwordSchema = joi
@@ -66,8 +66,8 @@ const credentials = joi.object({
 			return lowercasedValue;
 		})
 		.messages({
-			"string.empty": "Email is required",
-			"string.email": "Must be a valid email address",
+			"string.empty": "authRegisterEmailRequired",
+			"string.email": "authRegisterEmailInvalid",
 		}),
 	password: passwordSchema,
 	newPassword: passwordSchema,
@@ -253,7 +253,9 @@ const statusPageValidation = joi.object({
 });
 const settingsValidation = joi.object({
 	ttl: joi.number().required().messages({
-		"string.empty": "TTL is required",
+		"string.empty": "Please enter a value",
+		"number.base": "Please enter a valid number",
+		"any.required": "Please enter a value"
 	}),
 });
 
