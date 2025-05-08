@@ -51,7 +51,9 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{physicalCores}
-						<Typography component="span">cores</Typography>
+						<Typography component="span">
+							{physicalCores === 1 ? "core" : "cores"}
+						</Typography>
 					</>
 				}
 			/>
@@ -61,7 +63,9 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{logicalCores}
-						<Typography component="span">cores</Typography>
+						<Typography component="span">
+							{logicalCores === 1 ? "core" : "cores"}
+						</Typography>
 					</>
 				}
 			/>
@@ -79,7 +83,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{cpuTemperature.toFixed(2)}
-						<Typography component="span">C</Typography>
+						<Typography component="span">°C</Typography>
 					</>
 				}
 			/>
