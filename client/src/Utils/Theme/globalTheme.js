@@ -1,5 +1,4 @@
 import { typographyLevels } from "./constants";
-
 const fontFamilyPrimary = '"Inter" , sans-serif';
 // const fontFamilySecondary = '"Avenir", sans-serif';
 
@@ -300,13 +299,15 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
 		MuiTextField: {
 			styleOverrides: {
 				root: ({ theme }) => ({
 					"& fieldset": {
-						borderColor: theme.palette.primary.lowContrast,
+						borderColor: theme.palette.primary.contrastBorder,
 						borderRadius: theme.shape.borderRadius,
 					},
+
 					"& .MuiInputBase-input": {
 						padding: ".75em",
 						minHeight: "var(--env-var-height-2)",
@@ -356,10 +357,19 @@ const baseTheme = (palette) => ({
 		MuiOutlinedInput: {
 			styleOverrides: {
 				root: {
-					color: palette.primary.contrastTextTertiary,
-					"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-						borderColor: palette.primary.contrastTextTertiary,
+					"&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+						borderColor: palette.primary.contrastBorderDisabled,
 					},
+					"&.Mui-disabled:hover .MuiOutlinedInput-notchedOutline": {
+						borderColor: palette.primary.contrastBorderDisabled,
+					},
+					"&:hover .MuiOutlinedInput-notchedOutline": {
+						borderColor: palette.primary.contrastText, // Adjust hover border color
+					},
+					"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+						borderColor: palette.accent.main, // Adjust focus border color
+					},
+					color: palette.primary.contrastTextTertiary,
 				},
 			},
 		},
@@ -486,7 +496,7 @@ const baseTheme = (palette) => ({
 				root: ({ theme }) => ({
 					ml: "auto",
 					"& .MuiButtonBase-root, & .MuiButtonBase-root:hover": {
-						borderColor: theme.palette.primary.lowContrast,
+						borderColor: theme.palette.primary.contrastBorder,
 						width: "auto",
 						whiteSpace: "nowrap",
 					},
