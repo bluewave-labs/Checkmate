@@ -63,7 +63,6 @@ const paletteColors = {
 	orange500: "#E88C30",
 	orange600: "#DC6803",
 	orange800: "#624711",
-
 };
 
 const semanticColors = {
@@ -155,7 +154,6 @@ const newSemanticColors = {
 			light: newColors.blueGray600,
 			dark: newColors.gray200,
 		},
-		// CAIO_REVIEW, need a brighter color for dark bg
 		contrastTextSecondaryDarkBg: {
 			light: newColors.gray200,
 			dark: newColors.gray200,
@@ -163,6 +161,14 @@ const newSemanticColors = {
 		contrastTextTertiary: {
 			light: newColors.blueGray500,
 			dark: newColors.gray500,
+		},
+		contrastBorder: {
+			light: newColors.gray500,
+			dark: newColors.blueGray600,
+		},
+		contrastBorderDisabled: {
+			light: newColors.gray100,
+			dark: newColors.blueGray800,
 		},
 		lowContrast: {
 			light: newColors.gray200,
@@ -264,7 +270,7 @@ const newSemanticColors = {
 			dark: newColors.red600,
 		},
 	},
-	
+
 	/* These are temporary, just for everything not to break */
 	gradient: {
 		color1: {
