@@ -190,7 +190,7 @@ const Settings = () => {
 	const languages = Object.keys(i18n.options.resources || {});
 
 	return (
-		<>
+	<>
 		<Box
 			className="settings"
 			style={{
@@ -415,36 +415,36 @@ const Settings = () => {
 			</Stack>
 		</Box>
 		<Box
-		sx={{
-			position: "sticky",
-			bottom: 0,
-			background: "rgba(255, 255, 255, 0.9)",
-			boxShadow: "0 -4px 12px rgba(0,0,0,0.1)",
-			backdropFilter: "blur(4px)",
-			zIndex: 1000,
-			mt : 3
-		}}
-			  >
-				  <Stack
-					  direction="row"
-					  justifyContent="flex-end"
-					  sx={{ pr: 15, pl: 5, pt: 5, pb: 5 }}
-				  >
-					  <Button
-						  loading={isLoading || authIsLoading || checksIsLoading}
-						  disabled={Object.keys(errors).length > 0}
-						  variant="contained"
-						  color="accent"
-						  sx={{ px: theme.spacing(12),
-								height: '100%'
-						   }}
-						  onClick={handleSave}
-					  >
-						  {t("settingsSave")}
-					  </Button>
-				  </Stack>
-		  </Box>
-		  </>
+			sx={{
+				position: "sticky",
+				bottom: 0,
+				background: "rgba(255, 255, 255, 0.9)",
+				boxShadow: "0 -4px 12px rgba(0,0,0,0.1)",
+				backdropFilter: "blur(4px)",
+				zIndex: 1000,
+				mt : 3
+			}}
+		>
+			<Stack
+				direction="row"
+				justifyContent="flex-end"
+				sx={{ pr: 15, pl: 5, pt: 5, pb: 5 }}
+			>
+				<Button
+					loading={isLoading || authIsLoading || checksIsLoading}
+					disabled={Object.keys(errors).length > 0}
+					variant="contained"
+					color="accent"
+					sx={{ px: theme.spacing(12),
+							height: '100%'
+					}}
+					onClick={handleSave}
+				>
+					{t("settingsSave")}
+				</Button>
+			</Stack>
+		</Box>
+	</>
 	);
 };
 
