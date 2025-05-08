@@ -139,19 +139,21 @@ const shutdown = async () => {
 // Need to wrap server setup in a function to handle async nature of JobQueue
 const startApp = async () => {
 	const app = express();
-	const allowedOrigin = process.env.CLIENT_HOST;
 	// Create and Register Primary services
 	const translationService = new TranslationService(logger);
 	const stringService = new StringService(translationService);
 	ServiceRegistry.register(StringService.SERVICE_NAME, stringService);
 
-	// Create DB
-	const db = new MongoDB();
-	await db.connect();
-
 	// Create services
 	const settingsService = new SettingsService(AppSettings);
-	await settingsService.loadSettings();
+	const appSettings = settingsService.loadSettings();
+
+	// Create DB
+	const db = new MongoDB({ appSettings });
+	await db.connect();
+
+	// Set allowed origin
+	const allowedOrigin = appSettings.clientHost;
 
 	const networkService = new NetworkService(
 		axios,
@@ -237,7 +239,7 @@ const startApp = async () => {
 		ServiceRegistry.get(SettingsService.SERVICE_NAME),
 		ServiceRegistry.get(JobQueue.SERVICE_NAME),
 		ServiceRegistry.get(StringService.SERVICE_NAME),
-		ServiceRegistry.get(EmailService.SERVICE_NAME),
+		ServiceRegistry.get(EmailService.SERVICE_NAME)
 	);
 
 	const settingsController = new SettingsController(

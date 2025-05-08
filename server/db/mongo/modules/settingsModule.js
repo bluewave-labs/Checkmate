@@ -14,10 +14,11 @@ const getAppSettings = async () => {
 
 const updateAppSettings = async (newSettings) => {
 	try {
+		console.log(newSettings);
 		const settings = await AppSettings.findOneAndUpdate(
 			{},
 			{ $set: newSettings },
-			{ new: true }
+			{ new: true, upsert: true }
 		);
 		return settings;
 	} catch (error) {

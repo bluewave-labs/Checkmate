@@ -32,6 +32,7 @@ class SettingsController {
 		}
 
 		try {
+			console.log(req.body);
 			await this.db.updateAppSettings(req.body);
 			const updatedSettings = { ...(await this.settingsService.reloadSettings()) };
 			delete updatedSettings.jwtSecret;
