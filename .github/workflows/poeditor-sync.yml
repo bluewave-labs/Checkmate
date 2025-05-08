@@ -13,9 +13,6 @@ on:
         required: false
         default: "key_value_json"
 
-  # For automatic execution at a specific time (every day at midnight)
-  schedule:
-    - cron: "0 0 * * *"
 
 permissions:
   contents: write
