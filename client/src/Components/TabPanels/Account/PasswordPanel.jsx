@@ -10,6 +10,7 @@ import { update } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils";
 import { getTouchedFieldErrors } from "../../../Validation/error";
+import { useTranslation } from "react-i18next";
 
 const defaultPasswordsState = {
 	password: "",
@@ -26,6 +27,7 @@ const defaultPasswordsState = {
 const PasswordPanel = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 
 	const SPACING_GAP = theme.spacing(12);
 
@@ -203,7 +205,7 @@ const PasswordPanel = () => {
 					<TextInput
 						type="password"
 						id="edit-confirm-password"
-						placeholder="Reenter your new password"
+						placeholder={t("confirmPassword")}
 						autoComplete="new-password"
 						value={localData.confirm}
 						onChange={handleChange}

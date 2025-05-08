@@ -6,6 +6,7 @@ const initialState = {
 	apiBaseUrl: "",
 	logLevel: "debug",
 	language: "gb",
+	pagespeedApiKey: "",
 };
 
 export const getAppSettings = createAsyncThunk(
@@ -33,6 +34,7 @@ export const updateAppSettings = createAsyncThunk(
 		try {
 			const parsedSettings = {
 				language: settings.language,
+				pagespeedApiKey: settings.pagespeedApiKey,
 			};
 			const res = await networkService.updateAppSettings({ settings: parsedSettings });
 			return res.data;
@@ -56,6 +58,7 @@ const handleGetSettingsFulfilled = (state, action) => {
 	state.apiBaseUrl = action.payload.data.apiBaseUrl;
 	state.logLevel = action.payload.data.logLevel;
 	state.language = action.payload.data.language;
+	state.pagespeedApiKey = action.payload.data.pagespeedApiKey;
 };
 const handleGetSettingsRejected = (state, action) => {
 	state.isLoading = false;

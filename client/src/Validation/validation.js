@@ -66,8 +66,8 @@ const credentials = joi.object({
 			return lowercasedValue;
 		})
 		.messages({
-			"string.empty": "Email is required",
-			"string.email": "Must be a valid email address",
+			"string.empty": "authRegisterEmailRequired",
+			"string.email": "authRegisterEmailInvalid",
 		}),
 	password: passwordSchema,
 	newPassword: passwordSchema,
@@ -254,9 +254,13 @@ const statusPageValidation = joi.object({
 });
 const settingsValidation = joi.object({
 	ttl: joi.number().required().messages({
-		"string.empty": "TTL is required",
+		"string.empty": "Please enter a value",
+		"number.base": "Please enter a valid number",
+		"any.required": "Please enter a value"
 	}),
-});
+	pagespeedApiKey: joi.string().allow("").optional(),
+})
+.unknown(true);
 
 const dayjsValidator = (value, helpers) => {
 	if (!dayjs(value).isValid()) {

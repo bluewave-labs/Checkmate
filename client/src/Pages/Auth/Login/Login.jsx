@@ -9,7 +9,6 @@ import { createToast } from "../../../Utils/toastUtils";
 import { networkService } from "../../../main";
 import Background from "../../../assets/Images/background-grid.svg?react";
 import Logo from "../../../assets/icons/checkmate-icon.svg?react";
-import { logger } from "../../../Utils/Logger";
 import "../index.css";
 import EmailStep from "./Components/EmailStep";
 import PasswordStep from "./Components/PasswordStep";
@@ -25,11 +24,10 @@ const DEMO = import.meta.env.VITE_APP_DEMO;
  */
 
 const Login = () => {
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
 	const theme = useTheme();
+	const dispatch = useDispatch();
 	const { t } = useTranslation();
-
+	const navigate = useNavigate();
 	const authState = useSelector((state) => state.auth);
 	const { authToken } = authState;
 
@@ -45,21 +43,12 @@ const Login = () => {
 	const [errors, setErrors] = useState({});
 	const [step, setStep] = useState(0);
 
+
+
 	useEffect(() => {
 		if (authToken) {
 			navigate("/uptime");
-			return;
 		}
-		networkService
-			.doesSuperAdminExist()
-			.then((response) => {
-				if (response.data.data === false) {
-					navigate("/register");
-				}
-			})
-			.catch((error) => {
-				logger.error(error);
-			});
 	}, [authToken, navigate]);
 
 	const handleChange = (event) => {
@@ -94,8 +83,10 @@ const Login = () => {
 				{ abortEarly: false }
 			);
 			if (error) {
-				setErrors((prev) => ({ ...prev, email: error.details[0].message }));
-				createToast({ body: error.details[0].message });
+				const errorMessage = error.details[0].message;
+				const translatedMessage = errorMessage.startsWith('auth') ? t(errorMessage) : errorMessage;
+				setErrors((prev) => ({ ...prev, email: translatedMessage }));
+				createToast({ body: translatedMessage });
 			} else {
 				setStep(1);
 			}
@@ -112,8 +103,8 @@ const Login = () => {
 				createToast({
 					body:
 						error.details && error.details.length > 0
-							? error.details[0].message
-							: "Error validating data.",
+							? (error.details[0].message.startsWith('auth') ? t(error.details[0].message) : error.details[0].message)
+							: t("Error validating data."),
 				});
 			} else {
 				const action = await dispatch(login(form));
@@ -236,6 +227,31 @@ const Login = () => {
 					email={form.email}
 					errorEmail={errors.email}
 				/>
+				
+				{/* Registration link */}
+				<Box textAlign="center" >
+					<Typography
+						className="forgot-p"
+						display="inline-block"
+						color={theme.palette.primary.main}
+					>
+						{t("doNotHaveAccount")}
+					</Typography>
+					<Typography
+						component="span"
+						color={theme.palette.accent.main}
+						ml={theme.spacing(2)}
+						sx={{ 
+							cursor: 'pointer',
+							'&:hover': {
+								color: theme.palette.accent.darker
+							}
+						}}
+						onClick={() => navigate("/register")}
+					>
+						{t("registerHere")}
+					</Typography>
+				</Box>
 			</Stack>
 		</Stack>
 	);
