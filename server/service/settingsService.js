@@ -54,6 +54,11 @@ class SettingsService {
 		}
 		return this.settings;
 	}
+
+	async getDBSettings() {
+		const settings = await this.appSettings.findOne({ singleton: true }).lean();
+		return settings;
+	}
 }
 
 export default SettingsService;
