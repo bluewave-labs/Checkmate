@@ -81,11 +81,13 @@ export const updateUptimeMonitor = createAsyncThunk(
 				notifications: monitor.notifications,
 				matchMethod: monitor.matchMethod,
 				expectedValue: monitor.expectedValue,
+				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				jsonPath: monitor.jsonPath,
+				...(monitor.type === "port" && { port: monitor.port }),
 			};
 			const res = await networkService.updateMonitor({
 				monitorId: monitor._id,
-				monitor,
+				updatedFields,
 			});
 			return res.data;
 		} catch (error) {

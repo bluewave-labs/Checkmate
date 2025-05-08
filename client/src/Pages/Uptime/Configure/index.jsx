@@ -2,7 +2,15 @@ import { useNavigate, useParams } from "react-router";
 import { useTheme } from "@emotion/react";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { Box, Stack, Tooltip, Typography, Button } from "@mui/material";
+import {
+	Box,
+	Stack,
+	Tooltip,
+	Typography,
+	Button,
+	FormControlLabel,
+	Switch,
+} from "@mui/material";
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
@@ -95,7 +103,7 @@ const Configure = () => {
 	}, [monitorId, navigate]);
 
 	const handleChange = (event, name) => {
-		let { value, id } = event.target;
+		let { checked, value, id } = event.target;
 		if (!name) name = idMap[id];
 
 		if (name.includes("notification-")) {
@@ -126,6 +134,9 @@ const Configure = () => {
 		} else {
 			if (name === "interval") {
 				value = value * MS_PER_MINUTE;
+			}
+			if (name === "ignoreTlsErrors") {
+				value = checked;
 			}
 			setMonitor((prev) => ({
 				...prev,
@@ -207,7 +218,6 @@ const Configure = () => {
 	const handleClosenNotificationModal = () => {
 		setIsNotificationModalOpen(false);
 	};
-
 
 	const statusColor = {
 		true: theme.palette.success.main,
@@ -476,7 +486,28 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+								<Typography component="h2">{t("ignoreTLSError")}</Typography>
+								<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
+							</Box>
+							<Stack>
+								<FormControlLabel
+									control={
+										<Switch
+											name="ignore-error"
+											checked={monitor.ignoreTlsErrors}
+											onChange={(event) => handleChange(event, "ignoreTlsErrors")}
+											sx={{ mr: theme.spacing(2) }}
+										/>
+									}
+									label={t("tlsErrorIgnored")}
+								/>
+							</Stack>
+						</ConfigBox>
+						<ConfigBox>
+							<Box>
+								<Typography component="h2">
+									{t("distributedUptimeCreateAdvancedSettings")}
+								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select
