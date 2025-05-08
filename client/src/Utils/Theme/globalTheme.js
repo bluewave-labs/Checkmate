@@ -453,8 +453,32 @@ const baseTheme = (palette) => ({
 		MuiSwitch: {
 			styleOverrides: {
 				root: ({ theme }) => ({
+					width: 42,
+					height: 26,
+					padding: 0,
+					"& .MuiSwitch-switchBase": {
+						padding: 0,
+						margin: 2,
+						transitionDuration: "300ms",
+						"&.Mui-checked": {
+							transform: "translateX(16px)",
+							color: "#fff",
+							"& + .MuiSwitch-track": {
+								backgroundColor: theme.palette.accent.main,
+								opacity: 1,
+								border: 0,
+							},
+						},
+					},
+					"& .MuiSwitch-thumb": {
+						boxSizing: "border-box",
+						width: 22,
+						height: 22,
+					},
 					"& .MuiSwitch-track": {
-						backgroundColor: theme.palette.primary.contrastText,
+						borderRadius: 13,
+						backgroundColor: theme.palette.secondary.light,
+						opacity: 1,
 					},
 				}),
 			},

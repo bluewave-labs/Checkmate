@@ -170,6 +170,7 @@ const monitorValidation = joi.object({
 		"string.max": "This field should not exceed the 50 characters limit.",
 	}),
 	type: joi.string().trim().messages({ "string.empty": "This field is required." }),
+	ignoreTlsErrors: joi.boolean(),
 	interval: joi.number().messages({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
