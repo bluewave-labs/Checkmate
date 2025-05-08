@@ -20,8 +20,8 @@ const StatusBoxes = ({ shouldRender, flexWrap = "nowrap", children }) => {
 			direction="row"
 			flexWrap={flexWrap}
 			gap={theme.spacing(8)}
-			justifyContent="space-between"
-            display="flex"
+			justifyContent="flex-start"
+			display="flex"
 		>
 			{children}
 		</Stack>
@@ -30,6 +30,7 @@ const StatusBoxes = ({ shouldRender, flexWrap = "nowrap", children }) => {
 
 StatusBoxes.propTypes = {
 	shouldRender: PropTypes.bool,
+	flexWrap: PropTypes.string,
 	children: PropTypes.node,
 };
 

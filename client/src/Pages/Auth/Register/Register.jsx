@@ -387,7 +387,7 @@ const Register = ({ isSuperAdmin }) => {
 					}}
 					sx={{ userSelect: "none", color: theme.palette.accent.main }}
 				>
-					{t("authLoginTitle")}
+					{t("authRegisterLoginLink")}
 				</Typography>
 			</Box>
 		</Stack>

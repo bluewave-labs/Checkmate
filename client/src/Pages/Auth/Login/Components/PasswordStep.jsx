@@ -75,8 +75,16 @@ const PasswordStep = ({ form, errors, onSubmit, onChange, onBack }) => {
 							variant="outlined"
 							color="info"
 							onClick={onBack}
+							className="dashboard-style-button"
 							sx={{
 								px: theme.spacing(5),
+								borderRadius: `${theme.shape.borderRadius}px !important`,
+								'&.MuiButtonBase-root': {
+									borderRadius: `${theme.shape.borderRadius}px !important`
+								},
+								'&.MuiButton-root': {
+									borderRadius: `${theme.shape.borderRadius}px !important`
+								},
 								"& svg.MuiSvgIcon-root": {
 									mr: theme.spacing(3),
 								},
@@ -95,13 +103,22 @@ const PasswordStep = ({ form, errors, onSubmit, onChange, onBack }) => {
 							type="submit"
 							loading={authState.isLoading}
 							disabled={errors.password && true}
+							className="dashboard-style-button"
 							sx={{
 								width: "30%",
+								px: theme.spacing(4),
+								borderRadius: `${theme.shape.borderRadius}px !important`,
+								'&.MuiButtonBase-root': {
+									borderRadius: `${theme.shape.borderRadius}px !important`
+								},
+								'&.MuiButton-root': {
+									borderRadius: `${theme.shape.borderRadius}px !important`
+								},
 								"&.Mui-focusVisible": {
 									outline: `2px solid ${theme.palette.primary.main}`,
 									outlineOffset: `2px`,
-									boxShadow: `none`,
 								},
+								boxShadow: `none`,
 							}}
 						>
 							{t("continue")}
