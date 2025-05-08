@@ -6,18 +6,6 @@ import PropTypes from "prop-types";
 const getSx = (theme, type, maxWidth) => {
 	const sx = {
 		maxWidth: maxWidth,
-		"&  .MuiOutlinedInput-root ": {
-			"&:hover .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.primary.contrastText, // Adjust hover border color
-			},
-			"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.accent.main, // Adjust focus border color
-			},
-			"&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.primary.contrastText, // CAIO_REVIEW
-				opacity: 0.5,
-			},
-		},
 
 		"& .MuiFormHelperText-root": {
 			position: "absolute",
