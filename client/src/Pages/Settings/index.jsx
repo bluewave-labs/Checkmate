@@ -1,5 +1,5 @@
 // Components
-import { Box, Stack, Typography, Button, Switch } from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
 import TextInput from "../../Components/Inputs/TextInput";
 import Link from "../../Components/Link";
 import Select from "../../Components/Inputs/Select";
@@ -25,12 +25,7 @@ import {
 } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { update } from "../../Features/Auth/authSlice";
 import PropTypes from "prop-types";
-import {
-	setTimezone,
-	setMode,
-	setDistributedUptimeEnabled,
-	setLanguage,
-} from "../../Features/UI/uiSlice";
+import { setTimezone, setMode, setLanguage } from "../../Features/UI/uiSlice";
 import timezones from "../../Utils/timezones.json";
 import { useState, useEffect } from "react";
 import { networkService } from "../../main";
@@ -52,15 +47,18 @@ const Settings = () => {
 	const { isLoading: authIsLoading } = useSelector((state) => state.auth);
 	const { timezone, distributedUptimeEnabled } = useSelector((state) => state.ui);
 	const { mode } = useSelector((state) => state.ui);
+	const { pagespeedApiKey } = useSelector((state) => state.settings);
 	const [checksIsLoading, setChecksIsLoading] = useState(false);
 	const [form, setForm] = useState({
 		enableDistributedUptime: distributedUptimeEnabled,
 		ttl: checkTTL ? (checkTTL / SECONDS_PER_DAY).toString() : 0,
-		pagespeedApiKey: "",
+		pagespeedApiKey: pagespeedApiKey,
 	});
+
 	const [version, setVersion] = useState("unknown");
 	const [apiKeyFieldType, setApiKeyFieldType] = useState("password");
-	const [isApiKeySet, setIsApiKeySet] = useState(false);
+	const [isApiKeySet, setIsApiKeySet] = useState(pagespeedApiKey ? true : false);
+	const [tempPSKey, setTempPSKey] = useState("");
 	const [errors, setErrors] = useState({});
 	const deleteStatsMonitorsInitState = { deleteMonitors: false, deleteStats: false };
 	const [isOpen, setIsOpen] = useState(deleteStatsMonitorsInitState);
@@ -87,25 +85,7 @@ const Settings = () => {
 
 	useEffect(() => {
 		dispatch(getAppSettings());
-	}, []);	
-
-	const { pagespeedApiKey } = useSelector((state) => state.settings);
-
-	useEffect(() => {
-		if (pagespeedApiKey) {
-			setIsApiKeySet(true);
-			setForm((prev) => ({
-				...prev,
-				pagespeedApiKey: t("maskedPageSpeedKeyPlaceholder"),
-			}));
-		} else {
-			setIsApiKeySet(false);
-			setForm((prev) => ({
-				...prev,
-				pagespeedApiKey: "",
-			}));
-		}
-	}, [pagespeedApiKey]);	
+	}, [dispatch]);
 
 	const handleChange = (event) => {
 		const { type, checked, value, id } = event.target;
@@ -118,16 +98,18 @@ const Settings = () => {
 			return;
 		}
 
+		if (id === "pagespeedApiKey") {
+			setTempPSKey(value);
+			return;
+		}
+
 		let inputValue = value;
 		if (id === "ttl") {
 			inputValue = value.replace(/[^0-9]/g, "");
 		}
 
 		const updatedForm = { ...form, [id]: inputValue };
-		const { error } = settingsValidation.validate(
-			updatedForm,
-			{ abortEarly: false }
-		);
+		const { error } = settingsValidation.validate(updatedForm, { abortEarly: false });
 
 		if (!error || error.details.length === 0) {
 			setErrors({});
@@ -139,7 +121,7 @@ const Settings = () => {
 			setErrors(newErrors);
 			logger.error("Validation errors:", error.details);
 		}
-		
+
 		setForm(updatedForm);
 	};
 
@@ -153,7 +135,14 @@ const Settings = () => {
 			const updatedUser = { ...user, checkTTL: form.ttl };
 			const [userAction, settingsAction] = await Promise.all([
 				dispatch(update({ localData: updatedUser })),
-				dispatch(updateAppSettings({ settings: { language: language, pagespeedApiKey: form.pagespeedApiKey } })),
+				dispatch(
+					updateAppSettings({
+						settings: {
+							language: language,
+							pagespeedApiKey: tempPSKey ? tempPSKey : form.pagespeedApiKey,
+						},
+					})
+				),
 			]);
 
 			if (userAction.payload.success && settingsAction.payload.success) {
@@ -221,7 +210,7 @@ const Settings = () => {
 			...prev,
 			pagespeedApiKey: "",
 		}));
-	};	
+	};
 
 	const languages = Object.keys(i18n.options.resources || {});
 
@@ -324,7 +313,7 @@ const Settings = () => {
 						<TextInput
 							id="pagespeedApiKey"
 							label={t("pageSpeedApiKeyFieldLabel")}
-							value={form.pagespeedApiKey}
+							value={form.pagespeedApiKey ? form.pagespeedApiKey : tempPSKey}
 							type={apiKeyFieldType}
 							onChange={handleChange}
 							disabled={isApiKeySet}
@@ -341,12 +330,17 @@ const Settings = () => {
 							}
 						/>
 						{isApiKeySet && (
-						<Box>
-							<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
-							<Button onClick={handleResetApiKey} variant="contained" color="error" sx={{ mt: theme.spacing(4) }}>
-								{t("reset")}
-							</Button>
-						</Box>
+							<Box>
+								<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
+								<Button
+									onClick={handleResetApiKey}
+									variant="contained"
+									color="error"
+									sx={{ mt: theme.spacing(4) }}
+								>
+									{t("reset")}
+								</Button>
+							</Box>
 						)}
 					</Stack>
 				</ConfigBox>
