@@ -417,8 +417,8 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("ignoreTSLError")}</Typography>
-						<Typography component="p">{t("ignoreTSLErrorDescription")}</Typography>
+						<Typography component="h2">{t("ignoreTLSError")}</Typography>
+						<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
 					</Box>
 					<Stack>
 						<FormControlLabel
@@ -430,7 +430,7 @@ const CreateMonitor = () => {
 									sx={{ mr: theme.spacing(2) }}
 								/>
 							}
-							label={"TSL/SSL errors ignored"}
+							label={t("tlsErrorIgnored")}
 						/>
 					</Stack>
 				</ConfigBox>
