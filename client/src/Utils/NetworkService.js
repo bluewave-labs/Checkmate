@@ -52,7 +52,7 @@ class NetworkService {
 					// Return an empty resolved promise to stop the error propagation
 					return Promise.reject(error);
 				}
-				
+
 				// Handle authentication errors
 
 				if (error.response && error.response.status === 401) {
@@ -267,17 +267,8 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
 	 */
 	async updateMonitor(config) {
-		const { monitorId, monitor, updatedFields } = config;
-		const payload = updatedFields ?? {
-			name: monitor.name,
-			description: monitor.description,
-			interval: monitor.interval,
-			notifications: monitor.notifications,
-			matchMethod: monitor.matchMethod,
-			expectedValue: monitor.expectedValue,
-			jsonPath: monitor.jsonPath,
-			...(monitor.type === "port" && { port: monitor.port }),
-		};
+		const { monitorId, updatedFields } = config;
+		const payload = updatedFields;
 		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {
 				"Content-Type": "application/json",
@@ -514,8 +505,6 @@ class NetworkService {
 	async doesSuperAdminExist() {
 		return this.axiosInstance.get("/auth/users/superadmin");
 	}
-
-	
 
 	/**
 	 * ************************************
@@ -933,7 +922,7 @@ class NetworkService {
 			onOpen?.();
 		};
 
-		this.eventSource.addEventListener("open", (e) => { });
+		this.eventSource.addEventListener("open", (e) => {});
 
 		this.eventSource.onmessage = (event) => {
 			const data = JSON.parse(event.data);
