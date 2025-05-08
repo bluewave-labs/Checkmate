@@ -257,7 +257,9 @@ const settingsValidation = joi.object({
 		"number.base": "Please enter a valid number",
 		"any.required": "Please enter a value"
 	}),
-});
+	pagespeedApiKey: joi.string().allow("").optional(),
+})
+.unknown(true);
 
 const dayjsValidator = (value, helpers) => {
 	if (!dayjs(value).isValid()) {
