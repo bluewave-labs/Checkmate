@@ -147,6 +147,7 @@ const baseTheme = (palette) => ({
 					],
 					height: 34,
 					fontWeight: 400,
+          fontSize: "var(--env-var-font-size-medium)",
 					borderRadius: 4,
 					boxShadow: "none",
 					textTransform: "none",
