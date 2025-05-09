@@ -2,13 +2,16 @@ import mongoose from "mongoose";
 
 const AppSettingsSchema = mongoose.Schema(
 	{
+		checkTTL: {
+			type: Number,
+			default: 30,
+		},
 		language: {
 			type: String,
 			default: "gb",
 		},
 		pagespeedApiKey: {
 			type: String,
-			default: "",
 		},
 		systemEmailHost: {
 			type: String,
