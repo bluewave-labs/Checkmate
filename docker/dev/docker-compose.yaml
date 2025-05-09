@@ -5,7 +5,7 @@ services:
     ports:
       - "80:80"
     environment:
-      UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
+      UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
       UPTIME_APP_CLIENT_HOST: "http://localhost"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d/
@@ -15,7 +15,7 @@ services:
     image: uptime_server:latest
     restart: always
     ports:
-      - "5000:5000"
+      - "52345:52345"
     env_file:
       - server.env
     depends_on:
