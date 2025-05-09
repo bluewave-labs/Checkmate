@@ -9,7 +9,7 @@ const shadow =
 const baseTheme = (palette) => ({
 	typography: {
 		fontFamily: fontFamilyPrimary,
-		fontSize: 14,
+		fontSize: typographyLevels.base,
 		h1: {
 			fontSize: typographyLevels.xl,
 			color: palette.primary.contrastText,
