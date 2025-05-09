@@ -459,7 +459,8 @@
   },
   "monitorState": {
     "paused": "paused",
-    "resumed": "resumed"
+    "resumed": "resumed",
+    "active": "active"
   },
   "menu": {
     "uptime": "Uptime",

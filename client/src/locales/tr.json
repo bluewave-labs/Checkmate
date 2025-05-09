@@ -447,7 +447,8 @@
   },
   "monitorState": {
     "paused": "duraklatıldı",
-    "resumed": "devam ettirildi"
+    "resumed": "devam ettirildi",
+    "active": "aktif"
   },
   "menu": {
     "uptime": "Çalışma Süresi",

@@ -424,7 +424,8 @@
   },
   "monitorState": {
     "paused": "приостановлен",
-    "resumed": "возобновлен"
+    "resumed": "возобновлен",
+    "active": "активный"
   },
   "menu": {
     "uptime": "Аптайм",
