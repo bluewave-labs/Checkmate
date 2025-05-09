@@ -439,6 +439,25 @@
   "pageSpeedApiKeyFieldLabel": "PageSpeed API key",
   "pageSpeedApiKeyFieldDescription": "Enter your Google PageSpeed API key to enable pagespeed monitoring. Click Reset to update the key.",
   "pageSpeedApiKeyFieldResetLabel": "API key is set. Click Reset to change it.",
-  "reset": "Reset"
+  "reset": "Reset",
+  "pleaseCheckFormErrors": "Please check the form for errors.",
+  "failedToSaveMonitor": "Failed to save monitor.",
+  "monitorStateChanged": "Monitor {{state}} successfully.",
+  "failedToPauseMonitor": "Failed to pause monitor.",
+  "monitorUpdatedSuccessfully": "Monitor updated successfully!",
+  "failedToUpdateMonitor": "Failed to update monitor.",
+  "failedToDeleteMonitor": "Failed to delete monitor.",
+  "incorrectPasswordError": "The password you provided does not match our records",
+  "unknownError": "Unknown error.",
+  "passwordPlaceholder": "••••••••••",
+  "monitorDeletedSuccessfully": "Monitor deleted successfully.",
+  "monitorCreatedSuccessfully": "Monitor created successfully!",
+  "failedToCreateMonitor": "Failed to create monitor.",
+  "maintenanceWindowDeletedSuccessfully": "Maintenance window deleted successfully.",
+  "failedToDeleteMaintenanceWindow": "Failed to delete maintenance window.",
+  "failedToPauseMaintenanceWindow": "Failed to pause maintenance window.",
+  "failedToFetchData": "Failed to fetch data",
+  "failedToCreateStatusPage": "Failed to create status page",
+  "failedToDeleteStatusPage": "Failed to delete status page"
 }
 

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { networkService } from "../../../../main";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 
 const useMonitorFetch = ({ page, field, filter, rowsPerPage, updateTrigger }) => {
 	// Redux state
 	const { user } = useSelector((state) => state.auth);
+	const { t } = useTranslation();
 
 	// Local state
 	const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +32,7 @@ const useMonitorFetch = ({ page, field, filter, rowsPerPage, updateTrigger }) =>
 			} catch (error) {
 				setNetworkError(true);
 				createToast({
-					body: error.message,
+					body: t("failedToFetchData"),
 				});
 			} finally {
 				setIsLoading(false);

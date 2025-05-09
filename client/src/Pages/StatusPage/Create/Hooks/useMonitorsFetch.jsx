@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { networkService } from "../../../../main";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 
 const useMonitorsFetch = () => {
 	const { user } = useSelector((state) => state.auth);
+	const { t } = useTranslation();
 
 	const [monitors, setMonitors] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +22,7 @@ const useMonitorsFetch = () => {
 				setMonitors(response.data.data.monitors);
 			} catch (error) {
 				setNetworkError(true);
-				createToast({ body: error.message });
+				createToast({ body: t("failedToFetchData") });
 			} finally {
 				setIsLoading(false);
 			}

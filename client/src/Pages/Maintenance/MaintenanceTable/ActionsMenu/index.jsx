@@ -30,9 +30,9 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 				maintenanceWindowId: maintenanceWindow._id,
 			});
 			updateCallback();
-			createToast({ body: "Maintenance window deleted successfully." });
+			createToast({ body: t("maintenanceWindowDeletedSuccessfully") });
 		} catch (error) {
-			createToast({ body: "Failed to delete maintenance window." });
+			createToast({ body: t("failedToDeleteMaintenanceWindow") });
 			logger.error("Failed to delete maintenance window", error);
 		} finally {
 			setIsLoading(false);
@@ -53,7 +53,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 			updateCallback();
 		} catch (error) {
 			logger.error(error);
-			createToast({ body: "Failed to pause maintenance window." });
+			createToast({ body: t("failedToPauseMaintenanceWindow") });
 		} finally {
 			setIsLoading(false);
 		}

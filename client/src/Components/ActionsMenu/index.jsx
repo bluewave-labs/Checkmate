@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 import { logger } from "../../Utils/Logger";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import {
@@ -26,6 +27,7 @@ const ActionsMenu = ({
 	const dispatch = useDispatch();
 	const theme = useTheme();
 	const { isLoading } = useSelector((state) => state.uptimeMonitors);
+	const { t } = useTranslation();
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
@@ -35,9 +37,9 @@ const ActionsMenu = ({
 		if (action.meta.requestStatus === "fulfilled") {
 			setIsOpen(false); // close modal
 			updateRowCallback();
-			createToast({ body: "Monitor deleted successfully." });
+			createToast({ body: t("monitorDeletedSuccessfully") });
 		} else {
-			createToast({ body: "Failed to delete monitor." });
+			createToast({ body: t("failedToDeleteMonitor") });
 		}
 	};
 
@@ -47,14 +49,14 @@ const ActionsMenu = ({
 			const action = await dispatch(pauseUptimeMonitor({ monitorId: monitor._id }));
 			if (pauseUptimeMonitor.fulfilled.match(action)) {
 				const state = action?.payload?.data.isActive === false ? "resumed" : "paused";
-				createToast({ body: `Monitor ${state} successfully.` });
+				createToast({ body: t("monitorStateChanged", { state }) });
 				pauseCallback();
 			} else {
 				throw new Error(action?.error?.message ?? "Failed to pause monitor.");
 			}
 		} catch (error) {
 			logger.error("Error pausing monitor:", monitor._id, error);
-			createToast({ body: "Failed to pause monitor." });
+			createToast({ body: t("failedToPauseMonitor") });
 		}
 	};
 

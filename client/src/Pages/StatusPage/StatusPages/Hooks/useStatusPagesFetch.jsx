@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { networkService } from "../../../../main";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 
 const useStatusPagesFetch = () => {
 	const { user } = useSelector((state) => state.auth);
+	const { t } = useTranslation();
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
@@ -20,7 +22,7 @@ const useStatusPagesFetch = () => {
 			} catch (error) {
 				setNetworkError(true);
 				createToast({
-					body: error.message,
+					body: t("failedToFetchData"),
 				});
 			} finally {
 				setIsLoading(false);

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../../Utils/toastUtils";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import Settings from "../../../../../assets/icons/settings-bold.svg?react";
@@ -31,6 +32,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const theme = useTheme();
 	const { isLoading } = useSelector((state) => state.uptimeMonitors);
+	const { t } = useTranslation();
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -61,9 +63,9 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 			await networkService.deleteMonitorById({
 				monitorId: monitor.id,
 			});
-			createToast({ body: "Monitor deleted successfully." });
+			createToast({ body: t("monitorDeletedSuccessfully") });
 		} catch (error) {
-			createToast({ body: "Failed to delete monitor." });
+			createToast({ body: t("failedToDeleteMonitor") });
 		} finally {
 			setIsDialogOpen(false);
 			updateCallback();

@@ -160,7 +160,7 @@ const CreateStatusPage = () => {
 
 		// If we get -1, there's an unknown error
 		if (errorTabs[0] === -1) {
-			createToast({ body: "Unknown error" });
+			createToast({ body: t("unknownError") });
 			return;
 		}
 

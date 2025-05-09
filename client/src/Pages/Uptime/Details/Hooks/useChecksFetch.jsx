@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
 export const useChecksFetch = ({
@@ -9,6 +10,7 @@ export const useChecksFetch = ({
 	page,
 	rowsPerPage,
 }) => {
+	const { t } = useTranslation();
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +38,7 @@ export const useChecksFetch = ({
 				setChecksCount(res.data.data.checksCount);
 			} catch (error) {
 				setNetworkError(true);
-				createToast({ body: error.message });
+				createToast({ body: t("failedToFetchData") });
 			} finally {
 				setIsLoading(false);
 			}

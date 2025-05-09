@@ -1,10 +1,12 @@
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { networkService } from "../../../../main";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 
 const useStatusPageDelete = (fetchStatusPage, url) => {
 	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
 	const deleteStatusPage = async () => {
 		try {
 			setIsLoading(true);
@@ -13,7 +15,7 @@ const useStatusPageDelete = (fetchStatusPage, url) => {
 			return true;
 		} catch (error) {
 			createToast({
-				body: error.message,
+				body: t("failedToDeleteStatusPage"),
 			});
 			return false;
 		} finally {

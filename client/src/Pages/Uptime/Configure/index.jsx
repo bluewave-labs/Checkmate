@@ -165,13 +165,13 @@ const Configure = () => {
 				const monitor = action.payload.data;
 				setMonitor(monitor);
 				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
-				createToast({ body: `Monitor ${state} successfully.` });
+				createToast({ body: t("monitorStateChanged", { state }) });
 			} else if (pauseUptimeMonitor.rejected.match(action)) {
 				throw new Error(action.error.message);
 			}
 		} catch (error) {
 			logger.error("Error pausing monitor: " + monitorId);
-			createToast({ body: "Failed to pause monitor" });
+			createToast({ body: t("failedToPauseMonitor") });
 		}
 	};
 
@@ -179,9 +179,9 @@ const Configure = () => {
 		event.preventDefault();
 		const action = await dispatch(updateUptimeMonitor({ monitor: monitor }));
 		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor updated successfully!" });
+			createToast({ body: t("monitorUpdatedSuccessfully") });
 		} else {
-			createToast({ body: "Failed to update monitor." });
+			createToast({ body: t("failedToUpdateMonitor") });
 		}
 	};
 
@@ -192,7 +192,7 @@ const Configure = () => {
 		if (action.meta.requestStatus === "fulfilled") {
 			navigate("/uptime");
 		} else {
-			createToast({ body: "Failed to delete monitor." });
+			createToast({ body: t("failedToDeleteMonitor") });
 		}
 	};
 

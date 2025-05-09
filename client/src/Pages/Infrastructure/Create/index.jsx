@@ -159,7 +159,7 @@ const CreateInfrastructureMonitor = () => {
 				newErrors[err.path[0]] = err.message;
 			});
 			setErrors(newErrors);
-			createToast({ body: "Please check the form for errors." });
+			createToast({ body: t("pleaseCheckFormErrors") });
 			return;
 		}
 
@@ -203,7 +203,7 @@ const CreateInfrastructureMonitor = () => {
 			});
 			navigate("/infrastructure");
 		} else {
-			createToast({ body: "Failed to save monitor." });
+			createToast({ body: t("failedToSaveMonitor") });
 		}
 	};
 

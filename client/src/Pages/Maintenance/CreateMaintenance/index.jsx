@@ -167,7 +167,7 @@ const CreateMaintenance = () => {
 					monitors: monitor ? [monitor] : [],
 				});
 			} catch (error) {
-				createToast({ body: "Failed to fetch data" });
+				createToast({ body: t("failedToFetchData") });
 				logger.error("Failed to fetch monitors", error);
 			} finally {
 				setIsLoading(false);

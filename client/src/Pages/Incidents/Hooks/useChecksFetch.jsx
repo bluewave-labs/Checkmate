@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 const useChecksFetch = ({ selectedMonitor, selectedMonitorType, filter, dateRange, page, rowsPerPage }) => {
 	//Redux
 	const { user } = useSelector((state) => state.auth);
+	const { t } = useTranslation();
 
 	//Local
 	const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +48,7 @@ const useChecksFetch = ({ selectedMonitor, selectedMonitorType, filter, dateRang
 				setChecksCount(res.data.data.checksCount);
 			} catch (error) {
 				setNetworkError(true);
-				createToast({ body: error.message });
+				createToast({ body: t("failedToFetchData") });
 			} finally {
 				setIsLoading(false);
 			}

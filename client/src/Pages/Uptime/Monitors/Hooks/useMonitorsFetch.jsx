@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { networkService } from "../../../../main";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
@@ -21,6 +22,7 @@ export const useMonitorFetch = ({
 	const [networkError, setNetworkError] = useState(false);
 
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { getMonitorWithPercentage } = useMonitorUtils();
 	useEffect(() => {
 		const fetchMonitors = async () => {
@@ -46,7 +48,7 @@ export const useMonitorFetch = ({
 			} catch (error) {
 				setNetworkError(true);
 				createToast({
-					body: error.message,
+					body: t("failedToFetchData"),
 				});
 			} finally {
 				setMonitorsAreLoading(false);

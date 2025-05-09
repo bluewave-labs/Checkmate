@@ -130,7 +130,7 @@ const CreateMonitor = () => {
 				newErrors[err.path[0]] = err.message;
 			});
 			setErrors(newErrors);
-			createToast({ body: "Please check the form for errors." });
+			createToast({ body: t("pleaseCheckFormErrors") });
 			return;
 		}
 
@@ -143,10 +143,10 @@ const CreateMonitor = () => {
 		};
 		const action = await dispatch(createUptimeMonitor({ monitor: form }));
 		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor created successfully!" });
+			createToast({ body: t("monitorCreatedSuccessfully") });
 			navigate("/uptime");
 		} else {
-			createToast({ body: "Failed to create monitor." });
+			createToast({ body: t("failedToCreateMonitor") });
 		}
 	};
 

@@ -109,7 +109,7 @@ const CreateDistributedUptime = () => {
 				newErrors[err.path[0]] = err.message;
 			});
 			setErrors(newErrors);
-			createToast({ body: "Please check the form for errors." });
+			createToast({ body: t("pleaseCheckFormErrors") });
 			return;
 		}
 
@@ -122,10 +122,10 @@ const CreateDistributedUptime = () => {
 
 		const success = await createDistributedUptimeMonitor({ form: monitorToSubmit });
 		if (success) {
-			createToast({ body: "Monitor created successfully!" });
+			createToast({ body: t("monitorCreatedSuccessfully") });
 			navigate("/distributed-uptime");
 		} else {
-			createToast({ body: "Failed to create monitor." });
+			createToast({ body: t("failedToCreateMonitor") });
 		}
 	};
 

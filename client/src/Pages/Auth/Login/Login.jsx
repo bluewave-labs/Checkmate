@@ -117,16 +117,16 @@ const Login = () => {
 					if (action.payload) {
 						if (action.payload.msg === "Incorrect password")
 							setErrors({
-								password: "The password you provided does not match our records",
+								password: t("incorrectPasswordError"),
 							});
 						// dispatch errors
 						createToast({
-							body: action.payload.msg,
+							body: action.payload.msg === "Incorrect password" ? t("incorrectPasswordError") : action.payload.msg,
 						});
 					} else {
 						// unknown errors
 						createToast({
-							body: "Unknown error.",
+							body: t("unknownError"),
 						});
 					}
 				}

@@ -427,5 +427,24 @@
     "validationFailed": "",
     "noFileSelected": "",
     "fallbackPage": ""
-  }
+  },
+  "pleaseCheckFormErrors": "Lütfen formdaki hataları kontrol edin.",
+  "failedToSaveMonitor": "Monitör kaydedilemedi.",
+  "monitorStateChanged": "Monitör başarıyla {{state}}.",
+  "failedToPauseMonitor": "Monitör duraklatılamadı.",
+  "monitorUpdatedSuccessfully": "Monitör başarıyla güncellendi!",
+  "failedToUpdateMonitor": "Monitör güncellenemedi.",
+  "failedToDeleteMonitor": "Monitör silinemedi.",
+  "incorrectPasswordError": "Girdiğiniz parola kayıtlarımızla eşleşmiyor",
+  "unknownError": "Bilinmeyen hata.",
+  "passwordPlaceholder": "••••••••••",
+  "monitorDeletedSuccessfully": "Monitör başarıyla silindi.",
+  "monitorCreatedSuccessfully": "Monitör başarıyla oluşturuldu!",
+  "failedToCreateMonitor": "Monitör oluşturulamadı.",
+  "maintenanceWindowDeletedSuccessfully": "Bakım penceresi başarıyla silindi.",
+  "failedToDeleteMaintenanceWindow": "Bakım penceresi silinemedi.",
+  "failedToPauseMaintenanceWindow": "Bakım penceresi duraklatılamadı.",
+  "failedToFetchData": "Veri alınamadı",
+  "failedToCreateStatusPage": "Durum sayfası oluşturulamadı",
+  "failedToDeleteStatusPage": "Durum sayfası silinemedi"
 }

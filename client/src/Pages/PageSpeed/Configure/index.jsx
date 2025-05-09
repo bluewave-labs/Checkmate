@@ -143,7 +143,7 @@ const PageSpeedConfigure = () => {
 			}
 		} catch (error) {
 			logger.error("Error pausing monitor: " + monitorId);
-			createToast({ body: "Failed to pause monitor" });
+			createToast({ body: t("failedToPauseMonitor") });
 		}
 	};
 
@@ -151,10 +151,10 @@ const PageSpeedConfigure = () => {
 		event.preventDefault();
 		const action = await dispatch(updatePageSpeed({ monitor: monitor }));
 		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor updated successfully!" });
+			createToast({ body: t("monitorUpdatedSuccessfully") });
 			dispatch(getPageSpeedByTeamId());
 		} else {
-			createToast({ body: "Failed to update monitor." });
+			createToast({ body: t("failedToUpdateMonitor") });
 		}
 	};
 
@@ -166,7 +166,7 @@ const PageSpeedConfigure = () => {
 		if (action.meta.requestStatus === "fulfilled") {
 			navigate("/pagespeed");
 		} else {
-			createToast({ body: "Failed to delete monitor." });
+			createToast({ body: t("failedToDeleteMonitor") });
 		}
 		setButtonLoading(false);
 	};

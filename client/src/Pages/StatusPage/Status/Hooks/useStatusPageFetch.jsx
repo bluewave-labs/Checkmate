@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { networkService } from "../../../../main";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
@@ -9,6 +10,7 @@ const useStatusPageFetch = (isCreate = false, url) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [statusPage, setStatusPage] = useState(undefined);
+	const { t } = useTranslation();
 	const [monitors, setMonitors] = useState(undefined);
 	const theme = useTheme();
 	const { getMonitorWithPercentage } = useMonitorUtils();
@@ -33,7 +35,7 @@ const useStatusPageFetch = (isCreate = false, url) => {
 				setStatusPage(undefined);
 				return;
 			}
-			createToast({ body: error.message });
+			createToast({ body: t("failedToFetchData") });
 			setNetworkError(true);
 		} finally {
 			setIsLoading(false);
