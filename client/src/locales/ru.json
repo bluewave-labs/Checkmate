@@ -393,5 +393,28 @@
   "maintenanceTableActionMenuDialogTitle": "",
   "pageSpeedWarning": "Предупреждение: Вы не добавили ключ API Google PageSpeed. Без него монитор PageSpeed не будет работать.",
   "pageSpeedLearnMoreLink": "Нажмите здесь, чтобы узнать",
-  "pageSpeedAddApiKey": "как добавить ваш ключ API."
+  "pageSpeedAddApiKey": "как добавить ваш ключ API.",
+  "createNew": "Создать новый",
+  "monitorState": {
+    "paused": "приостановлен",
+    "resumed": "возобновлен"
+  },
+  "menu": {
+    "uptime": "Аптайм",
+    "pagespeed": "Скорость страницы",
+    "infrastructure": "Инфраструктура",
+    "distributedUptime": "Распределенный аптайм",
+    "incidents": "Инциденты",
+    "statusPages": "Страницы статуса",
+    "maintenance": "Обслуживание",
+    "integrations": "Интеграции",
+    "settings": "Настройки",
+    "support": "Поддержка",
+    "discussions": "Обсуждения",
+    "docs": "Документация",
+    "changelog": "История изменений",
+    "profile": "Профиль",
+    "password": "Пароль",
+    "team": "Команда"
+  }
 }

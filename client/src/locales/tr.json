@@ -427,5 +427,28 @@
     "validationFailed": "",
     "noFileSelected": "",
     "fallbackPage": ""
+  },
+  "createNew": "Yeni oluştur",
+  "monitorState": {
+    "paused": "duraklatıldı",
+    "resumed": "devam ettirildi"
+  },
+  "menu": {
+    "uptime": "Çalışma Süresi",
+    "pagespeed": "Sayfa Hızı",
+    "infrastructure": "Altyapı",
+    "distributedUptime": "Dağıtılmış Çalışma Süresi",
+    "incidents": "Olaylar",
+    "statusPages": "Durum Sayfaları",
+    "maintenance": "Bakım",
+    "integrations": "Entegrasyonlar",
+    "settings": "Ayarlar",
+    "support": "Destek",
+    "discussions": "Tartışmalar",
+    "docs": "Belgeler",
+    "changelog": "Değişiklik Günlüğü",
+    "profile": "Profil",
+    "password": "Şifre",
+    "team": "Takım"
   }
 }

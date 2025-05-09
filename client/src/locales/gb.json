@@ -439,6 +439,29 @@
   "pageSpeedApiKeyFieldLabel": "PageSpeed API key",
   "pageSpeedApiKeyFieldDescription": "Enter your Google PageSpeed API key to enable pagespeed monitoring. Click Reset to update the key.",
   "pageSpeedApiKeyFieldResetLabel": "API key is set. Click Reset to change it.",
-  "reset": "Reset"
+  "reset": "Reset",
+  "createNew": "Create new",
+  "monitorState": {
+    "paused": "paused",
+    "resumed": "resumed"
+  },
+  "menu": {
+    "uptime": "Uptime",
+    "pagespeed": "Pagespeed",
+    "infrastructure": "Infrastructure",
+    "distributedUptime": "Distributed uptime",
+    "incidents": "Incidents",
+    "statusPages": "Status pages",
+    "maintenance": "Maintenance",
+    "integrations": "Integrations",
+    "settings": "Settings",
+    "support": "Support",
+    "discussions": "Discussions",
+    "docs": "Docs",
+    "changelog": "Changelog",
+    "profile": "Profile",
+    "password": "Password",
+    "team": "Team"
+  }
 }
 
