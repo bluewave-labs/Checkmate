@@ -439,6 +439,12 @@
     "down": "devre dışı",
     "paused": "duraklatıldı"
   },
+  "roles": {
+    "superAdmin": "Süper yönetici",
+    "admin": "Yönetici",
+    "teamMember": "Takım üyesi",
+    "demoUser": "Demo kullanıcı"
+  },
   "monitorState": {
     "paused": "duraklatıldı",
     "resumed": "devam ettirildi"

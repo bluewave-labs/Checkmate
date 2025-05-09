@@ -732,7 +732,11 @@ function Sidebar() {
 								{authState.user?.firstName} {authState.user?.lastName}
 							</Typography>
 							<Typography sx={{ textTransform: "capitalize" }}>
-								{authState.user?.role}
+								{authState.user?.role?.includes("superadmin") ? t("roles.superAdmin") :
+								authState.user?.role?.includes("admin") ? t("roles.admin") :
+								authState.user?.role?.includes("user") ? t("roles.teamMember") :
+								authState.user?.role?.includes("demo") ? t("roles.demoUser") :
+								authState.user?.role}
 							</Typography>
 						</Box>
 						<Stack

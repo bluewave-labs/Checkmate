@@ -451,6 +451,12 @@
     "down": "down",
     "paused": "paused"
   },
+  "roles": {
+    "superAdmin": "Super admin",
+    "admin": "Admin",
+    "teamMember": "Team member",
+    "demoUser": "Demo user"
+  },
   "monitorState": {
     "paused": "paused",
     "resumed": "resumed"

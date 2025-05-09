@@ -2,11 +2,11 @@ import { useTheme } from "@emotion/react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TextInput from "../../Inputs/TextInput";
 import { credentials } from "../../../Validation/validation";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
-import { useSelector } from "react-redux";
 import Select from "../../Inputs/Select";
 import { GenericDialog } from "../../Dialog/genericDialog";
 import DataTable from "../../Table/";
@@ -21,6 +21,7 @@ import { useGetInviteToken } from "../../../Hooks/inviteHooks";
 
 const TeamPanel = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const SPACING_GAP = theme.spacing(12);
 
 	const [toInvite, setToInvite] = useState({
@@ -78,10 +79,10 @@ const TeamPanel = () => {
 
 	useEffect(() => {
 		const ROLE_MAP = {
-			superadmin: "Super admin",
-			admin: "Admin",
-			user: "Team member",
-			demo: "Demo User",
+			superadmin: t("roles.superAdmin"),
+			admin: t("roles.admin"),
+			user: t("roles.teamMember"),
+			demo: t("roles.demoUser"),
 		};
 		let team = members;
 		if (filter !== "all")
@@ -98,7 +99,7 @@ const TeamPanel = () => {
 			role: member.role.map((role) => ROLE_MAP[role]).join(","),
 		}));
 		setData(team);
-	}, [filter, members]);
+	}, [members, filter, t]);
 
 	useEffect(() => {
 		setIsDisabled(Object.keys(errors).length !== 0 || toInvite.email === "");
@@ -221,7 +222,7 @@ const TeamPanel = () => {
 								filled={(filter === "admin").toString()}
 								onClick={() => setFilter("admin")}
 							>
-								Super admin
+								{t("roles.superAdmin")}
 							</Button>
 							<Button
 								variant="group"
