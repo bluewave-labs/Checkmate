@@ -445,6 +445,29 @@
     "teamMember": "Takım üyesi",
     "demoUser": "Demo kullanıcı"
   },
+  "teamPanel": {
+    "teamMembers": "Takım üyeleri",
+    "filter": {
+      "all": "Tümü",
+      "member": "Üye"
+    },
+    "inviteTeamMember": "Takım üyesi davet et",
+    "inviteNewTeamMember": "Yeni takım üyesi davet et",
+    "inviteDescription": "Yeni bir takım üyesi eklediğinizde, tüm monitörlere erişim hakkı alacaktır.",
+    "email": "E-posta",
+    "selectRole": "Rol seçin",
+    "inviteLink": "Davet bağlantısı",
+    "cancel": "İptal",
+    "noMembers": "Bu role sahip takım üyesi bulunmamaktadır",
+    "getToken": "Token al",
+    "emailToken": "Token e-posta ile gönder",
+    "table": {
+      "name": "Ad",
+      "email": "E-posta",
+      "role": "Rol",
+      "created": "Oluşturuldu"
+    }
+  },
   "monitorState": {
     "paused": "duraklatıldı",
     "resumed": "devam ettirildi",

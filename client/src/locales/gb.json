@@ -457,6 +457,29 @@
     "teamMember": "Team member",
     "demoUser": "Demo user"
   },
+  "teamPanel": {
+    "teamMembers": "Team members",
+    "filter": {
+      "all": "All",
+      "member": "Member"
+    },
+    "inviteTeamMember": "Invite a team member",
+    "inviteNewTeamMember": "Invite new team member",
+    "inviteDescription": "When you add a new team member, they will get access to all monitors.",
+    "email": "Email",
+    "selectRole": "Select role",
+    "inviteLink": "Invite link",
+    "cancel": "Cancel",
+    "noMembers": "There are no team members with this role",
+    "getToken": "Get token",
+    "emailToken": "E-mail token",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "created": "Created"
+    }
+  },
   "monitorState": {
     "paused": "paused",
     "resumed": "resumed",
