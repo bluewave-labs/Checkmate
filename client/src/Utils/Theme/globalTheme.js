@@ -9,7 +9,7 @@ const shadow =
 const baseTheme = (palette) => ({
 	typography: {
 		fontFamily: fontFamilyPrimary,
-		fontSize: 14,
+		fontSize: typographyLevels.base,
 		h1: {
 			fontSize: typographyLevels.xl,
 			color: palette.primary.contrastText,
@@ -147,7 +147,6 @@ const baseTheme = (palette) => ({
 					],
 					height: 34,
 					fontWeight: 400,
-					fontSize: "var(--env-var-font-size-medium)",
 					borderRadius: 4,
 					boxShadow: "none",
 					textTransform: "none",
