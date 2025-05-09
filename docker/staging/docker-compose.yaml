@@ -4,7 +4,7 @@ services:
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://checkmate-test.bluewavelabs.ca/api/v1"
-      UPTIME_STATUS_PAGE_SUBDOMAIN_PREFIX: "http://uptimegenie.com/"
+      UPTIME_APP_CLIENT_HOST: "https://checkmate-test.bluewavelabs.ca"
     ports:
       - "80:80"
       - "443:443"
@@ -27,7 +27,7 @@ services:
     image: ghcr.io/bluewave-labs/checkmate:backend-staging
     restart: always
     ports:
-      - "5000:5000"
+      - "52345:52345"
     env_file:
       - server.env
     depends_on:

@@ -32,7 +32,7 @@ class NetworkService {
 
 				config.headers = {
 					Authorization: `Bearer ${authToken}`,
-					"Accept-Language": currentLanguage,
+					"Accept-Language": currentLanguage === "gb" ? "en" : currentLanguage,
 					...config.headers,
 				};
 
@@ -45,6 +45,16 @@ class NetworkService {
 		this.axiosInstance.interceptors.response.use(
 			(response) => response,
 			(error) => {
+				// Handle network errors (server unreachable)
+				if (error.code === "ERR_NETWORK") {
+					// Navigate to server unreachable page
+					navigate("/server-unreachable");
+					// Return an empty resolved promise to stop the error propagation
+					return Promise.reject(error);
+				}
+
+				// Handle authentication errors
+
 				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					dispatch(clearUptimeMonitorState());
@@ -257,16 +267,8 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
 	 */
 	async updateMonitor(config) {
-		const { monitorId, monitor, updatedFields } = config;
-		const payload = updatedFields ?? {
-			name: monitor.name,
-			description: monitor.description,
-			interval: monitor.interval,
-			notifications: monitor.notifications,
-			matchMethod: monitor.matchMethod,
-			expectedValue: monitor.expectedValue,
-			jsonPath: monitor.jsonPath,
-		};
+		const { monitorId, updatedFields } = config;
+		const payload = updatedFields;
 		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
 			headers: {
 				"Content-Type": "application/json",
@@ -1084,6 +1086,19 @@ class NetworkService {
 		const encodedUrl = encodeURIComponent(url);
 
 		return this.axiosInstance.delete(`/status-page/${encodedUrl}`, {});
+	}
+
+	// ************************************
+	// Create bulk monitors
+	// ************************************
+
+	async createBulkMonitors(formData) {
+		const response = await this.axiosInstance.post(`/monitors/bulk`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
 	}
 
 	// ************************************

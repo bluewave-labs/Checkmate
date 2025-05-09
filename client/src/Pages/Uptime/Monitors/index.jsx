@@ -189,8 +189,9 @@ const UptimeMonitors = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<CreateMonitorHeader
 				isAdmin={isAdmin}
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				path="/uptime/create"
+				bulkPath="/uptime/bulk-import"
 			/>
 			<Greeting type="uptime" />
 			<StatusBoxes

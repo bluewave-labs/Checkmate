@@ -61,6 +61,7 @@ const StatusPages = () => {
 				label="Create status page"
 				isAdmin={isAdmin}
 				path="/status/uptime/create"
+				isLoading={isLoading}
 			/>
 			<StatusPagesTable data={statusPages} />
 		</Stack>

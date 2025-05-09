@@ -1,15 +1,17 @@
 // Components
-import { Box, Stack, Typography, Button, Switch } from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
 import TextInput from "../../Components/Inputs/TextInput";
 import Link from "../../Components/Link";
 import Select from "../../Components/Inputs/Select";
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import Dialog from "../../Components/Dialog";
 import ConfigBox from "../../Components/ConfigBox";
-import {
-	WalletMultiButton,
-	WalletDisconnectButton,
-} from "@solana/wallet-adapter-react-ui";
+import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
+import { getAppSettings } from "../../Features/Settings/settingsSlice";
+// import {
+// 	WalletMultiButton,
+// 	WalletDisconnectButton,
+// } from "@solana/wallet-adapter-react-ui";
 
 //Utils
 import { useTheme } from "@emotion/react";
@@ -23,12 +25,7 @@ import {
 } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { update } from "../../Features/Auth/authSlice";
 import PropTypes from "prop-types";
-import {
-	setTimezone,
-	setMode,
-	setDistributedUptimeEnabled,
-	setLanguage,
-} from "../../Features/UI/uiSlice";
+import { setTimezone, setMode, setLanguage } from "../../Features/UI/uiSlice";
 import timezones from "../../Utils/timezones.json";
 import { useState, useEffect } from "react";
 import { networkService } from "../../main";
@@ -50,12 +47,18 @@ const Settings = () => {
 	const { isLoading: authIsLoading } = useSelector((state) => state.auth);
 	const { timezone, distributedUptimeEnabled } = useSelector((state) => state.ui);
 	const { mode } = useSelector((state) => state.ui);
+	const { pagespeedApiKey } = useSelector((state) => state.settings);
 	const [checksIsLoading, setChecksIsLoading] = useState(false);
 	const [form, setForm] = useState({
 		enableDistributedUptime: distributedUptimeEnabled,
 		ttl: checkTTL ? (checkTTL / SECONDS_PER_DAY).toString() : 0,
+		pagespeedApiKey: pagespeedApiKey,
 	});
+
 	const [version, setVersion] = useState("unknown");
+	const [apiKeyFieldType, setApiKeyFieldType] = useState("password");
+	const [isApiKeySet, setIsApiKeySet] = useState(pagespeedApiKey ? true : false);
+	const [tempPSKey, setTempPSKey] = useState("");
 	const [errors, setErrors] = useState({});
 	const deleteStatsMonitorsInitState = { deleteMonitors: false, deleteStats: false };
 	const [isOpen, setIsOpen] = useState(deleteStatsMonitorsInitState);
@@ -80,6 +83,10 @@ const Settings = () => {
 		fetchLatestVersion();
 	}, []);
 
+	useEffect(() => {
+		dispatch(getAppSettings());
+	}, [dispatch]);
+
 	const handleChange = (event) => {
 		const { type, checked, value, id } = event.target;
 
@@ -91,12 +98,19 @@ const Settings = () => {
 			return;
 		}
 
-		const { error } = settingsValidation.validate(
-			{ [id]: value },
-			{
-				abortEarly: false,
-			}
-		);
+		if (id === "pagespeedApiKey") {
+			setTempPSKey(value);
+			return;
+		}
+
+		let inputValue = value;
+		if (id === "ttl") {
+			inputValue = value.replace(/[^0-9]/g, "");
+		}
+
+		const updatedForm = { ...form, [id]: inputValue };
+		const { error } = settingsValidation.validate(updatedForm, { abortEarly: false });
+
 		if (!error || error.details.length === 0) {
 			setErrors({});
 		} else {
@@ -107,12 +121,8 @@ const Settings = () => {
 			setErrors(newErrors);
 			logger.error("Validation errors:", error.details);
 		}
-		let inputValue = value;
-		id === "ttl" && (inputValue = value.replace(/[^0-9]/g, ""));
-		setForm((prev) => ({
-			...prev,
-			[id]: inputValue,
-		}));
+
+		setForm(updatedForm);
 	};
 
 	// TODO Handle saving
@@ -125,7 +135,14 @@ const Settings = () => {
 			const updatedUser = { ...user, checkTTL: form.ttl };
 			const [userAction, settingsAction] = await Promise.all([
 				dispatch(update({ localData: updatedUser })),
-				dispatch(updateAppSettings({ settings: { language: language } })),
+				dispatch(
+					updateAppSettings({
+						settings: {
+							language: language,
+							pagespeedApiKey: tempPSKey ? tempPSKey : form.pagespeedApiKey,
+						},
+					})
+				),
 			]);
 
 			if (userAction.payload.success && settingsAction.payload.success) {
@@ -185,6 +202,14 @@ const Settings = () => {
 		} finally {
 			setIsOpen(deleteStatsMonitorsInitState);
 		}
+	};
+
+	const handleResetApiKey = () => {
+		setIsApiKeySet(false);
+		setForm((prev) => ({
+			...prev,
+			pagespeedApiKey: "",
+		}));
 	};
 
 	const languages = Object.keys(i18n.options.resources || {});
@@ -254,7 +279,7 @@ const Settings = () => {
 						></Select>
 					</Stack>
 				</ConfigBox>
-				{isAdmin && (
+				{/* {isAdmin && (
 					<ConfigBox>
 						<Box>
 							<Typography component="h1">{t("settingsDistributedUptime")}</Typography>
@@ -276,8 +301,50 @@ const Settings = () => {
 								: t("settingsDisabled")}
 						</Box>
 					</ConfigBox>
-				)}
-				{isAdmin && (
+				)} */}
+				<ConfigBox>
+					<Box>
+						<Typography component="h1">{t("pageSpeedApiKeyFieldTitle")}</Typography>
+						<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(2) }}>
+							{t("pageSpeedApiKeyFieldDescription")}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(20)}>
+						<TextInput
+							id="pagespeedApiKey"
+							label={t("pageSpeedApiKeyFieldLabel")}
+							value={form.pagespeedApiKey ? form.pagespeedApiKey : tempPSKey}
+							type={apiKeyFieldType}
+							onChange={handleChange}
+							disabled={isApiKeySet}
+							optionalLabel="(Optional)"
+							error={!!errors.pagespeedApiKey}
+							helperText={errors.pagespeedApiKey}
+							endAdornment={
+								!isApiKeySet && (
+									<PasswordEndAdornment
+										fieldType={apiKeyFieldType}
+										setFieldType={setApiKeyFieldType}
+									/>
+								)
+							}
+						/>
+						{isApiKeySet && (
+							<Box>
+								<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
+								<Button
+									onClick={handleResetApiKey}
+									variant="contained"
+									color="error"
+									sx={{ mt: theme.spacing(4) }}
+								>
+									{t("reset")}
+								</Button>
+							</Box>
+						)}
+					</Stack>
+				</ConfigBox>
+				{/* {isAdmin && (
 					<ConfigBox>
 						<Box>
 							<Typography component="h1">{t("settingsWallet")}</Typography>
@@ -302,7 +369,7 @@ const Settings = () => {
 							</Stack>
 						</Box>
 					</ConfigBox>
-				)}
+				)} */}
 				{isAdmin && (
 					<ConfigBox>
 						<Box>
@@ -348,14 +415,15 @@ const Settings = () => {
 					</ConfigBox>
 				)}
 				{isAdmin && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h1">{t("settingsDemoMonitors")}</Typography>
-							<Typography sx={{ mt: theme.spacing(2) }}>
-								{t("settingsDemoMonitorsDescription")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(20)}>
+					<>
+						{/* Demo Monitors Section */}
+						<ConfigBox>
+							<Box>
+								<Typography component="h1">{t("settingsDemoMonitors")}</Typography>
+								<Typography sx={{ mt: theme.spacing(2) }}>
+									{t("settingsDemoMonitorsDescription")}
+								</Typography>
+							</Box>
 							<Box>
 								<Typography>{t("settingsAddDemoMonitors")}</Typography>
 								<Button
@@ -367,6 +435,16 @@ const Settings = () => {
 								>
 									{t("settingsAddDemoMonitorsButton")}
 								</Button>
+							</Box>
+						</ConfigBox>
+
+						{/* System Reset Section */}
+						<ConfigBox>
+							<Box>
+								<Typography component="h1">{t("settingsSystemReset")}</Typography>
+								<Typography sx={{ mt: theme.spacing(2) }}>
+									{t("settingsSystemResetDescription")}
+								</Typography>
 							</Box>
 							<Box>
 								<Typography>{t("settingsRemoveAllMonitors")}</Typography>
@@ -382,17 +460,17 @@ const Settings = () => {
 									{t("settingsRemoveAllMonitorsButton")}
 								</Button>
 							</Box>
-						</Stack>
-						<Dialog
-							open={isOpen.deleteMonitors}
-							theme={theme}
-							title={t("settingsRemoveAllMonitorsDialogTitle")}
-							onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
-							confirmationButtonLabel={t("settingsRemoveAllMonitorsDialogConfirm")}
-							onConfirm={handleDeleteAllMonitors}
-							isLoading={isLoading || authIsLoading || checksIsLoading}
-						/>
-					</ConfigBox>
+							<Dialog
+								open={isOpen.deleteMonitors}
+								theme={theme}
+								title={t("settingsRemoveAllMonitorsDialogTitle")}
+								onCancel={() => setIsOpen(deleteStatsMonitorsInitState)}
+								confirmationButtonLabel={t("settingsRemoveAllMonitorsDialogConfirm")}
+								onConfirm={handleDeleteAllMonitors}
+								isLoading={isLoading || authIsLoading || checksIsLoading}
+							/>
+						</ConfigBox>
+					</>
 				)}
 
 				<ConfigBox>

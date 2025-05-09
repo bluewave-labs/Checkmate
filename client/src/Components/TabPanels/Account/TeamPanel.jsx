@@ -25,7 +25,7 @@ const TeamPanel = () => {
 
 	const [toInvite, setToInvite] = useState({
 		email: "",
-		role: ["0"],
+		role: ["user"],
 	});
 	const [data, setData] = useState([]);
 	const [members, setMembers] = useState([]);
@@ -107,7 +107,7 @@ const TeamPanel = () => {
 
 	const handleChange = (event) => {
 		const { value } = event.target;
-		const newEmail = value?.toLowerCase() || value
+		const newEmail = value?.toLowerCase() || value;
 		setToInvite((prev) => ({
 			...prev,
 			email: newEmail,

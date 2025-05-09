@@ -52,7 +52,12 @@ const Filter = ({
 	}, [selectedStatus]);
 
 	return (
-		<Box>
+		<Box
+		sx={{
+			m: theme.spacing(2),
+			ml: theme.spacing(4),
+		}}
+		>
 			<FilterHeader
 				header={t("status")}
 				options={statusOptions}

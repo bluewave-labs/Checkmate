@@ -63,11 +63,7 @@ const registrationBodyValidation = joi.object({
 		}),
 	password: joi.string().min(8).required().pattern(passwordPattern),
 	profileImage: joi.any(),
-	role: joi
-		.array()
-		.items(joi.string().valid("superadmin", "admin", "user", "demo"))
-		.min(1)
-		.required(),
+	role: joi.array().items(joi.string().valid("superadmin", "admin", "user", "demo")),
 	teamId: joi.string().allow("").required(),
 	inviteToken: joi.string().allow("").required(),
 });
@@ -83,7 +79,6 @@ const editUserBodyValidation = joi.object({
 	newPassword: joi.string().min(8).pattern(passwordPattern),
 	password: joi.string().min(8).pattern(passwordPattern),
 	deleteProfileImage: joi.boolean(),
-	role: joi.array(),
 });
 
 const recoveryValidation = joi.object({
@@ -188,6 +183,7 @@ const createMonitorBodyValidation = joi.object({
 	description: joi.string().required(),
 	type: joi.string().required(),
 	url: joi.string().required(),
+	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
 	interval: joi.number(),
@@ -212,9 +208,11 @@ const editMonitorBodyValidation = joi.object({
 	interval: joi.number(),
 	notifications: joi.array().items(joi.object()),
 	secret: joi.string(),
+	ignoreTlsErrors: joi.boolean(),
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
+	port: joi.number().min(1).max(65535),
 	thresholds: joi.object().keys({
 		usage_cpu: joi.number(),
 		usage_memory: joi.number(),
@@ -305,7 +303,18 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "distributed_http", "distributed_test"),
+	type: joi
+		.string()
+		.valid(
+			"http",
+			"ping",
+			"pagespeed",
+			"hardware",
+			"docker",
+			"port",
+			"distributed_http",
+			"distributed_test"
+		),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
@@ -578,16 +587,15 @@ const triggerNotificationBodyValidation = joi.object({
 
 const createAnnouncementValidation = joi.object({
 	title: joi.string().required().messages({
-	  'string.empty': 'Title cannot be empty',
-	  'any.required': 'Title is required',
+		"string.empty": "Title cannot be empty",
+		"any.required": "Title is required",
 	}),
 	message: joi.string().required().messages({
-	  'string.empty': 'Message cannot be empty',
-	  'any.required': 'Message is required',
+		"string.empty": "Message cannot be empty",
+		"any.required": "Message is required",
 	}),
 	userId: joi.string().required(),
-  });
-
+});
 
 export {
 	roleValidatior,
@@ -651,5 +659,5 @@ export {
 	imageValidation,
 	triggerNotificationBodyValidation,
 	webhookConfigValidation,
-	createAnnouncementValidation
+	createAnnouncementValidation,
 };

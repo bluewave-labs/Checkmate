@@ -1,0 +1,6 @@
+type,name,url,interval,port,expectedValue,jsonPath,matchMethod
+http,HTTP Monitor,https://www.google.com,60000,,,,
+http,API Monitor,http://reqres.in/api/users/2,120000,,Janet,data.first_name,equal
+ping,Ping monitor,127.0.0.1,60000,,,,
+docker,Docker monitor,bbdd20b4e3757d63e070bc16e04d3f770c4a8f6e62e813de380f23b141e2ca01,60000,,,,
+port,Port monitor,127.0.0.1,60000,5000,,,

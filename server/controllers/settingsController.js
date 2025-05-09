@@ -11,16 +11,15 @@ class SettingsController {
 	}
 
 	getAppSettings = async (req, res, next) => {
-		try {
-			const settings = { ...(await this.settingsService.getSettings()) };
-			delete settings.jwtSecret;
-			return res.success({
-				msg: this.stringService.getAppSettings,
-				data: settings,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getAppSettings"));
+		const dbSettings = await this.settingsService.getDBSettings();
+		const sanitizedSettings = { ...dbSettings };
+		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
+			sanitizedSettings.pagespeedApiKey = "********";
 		}
+		return res.success({
+			msg: this.stringService.getAppSettings,
+			data: sanitizedSettings,
+		});
 	};
 
 	updateAppSettings = async (req, res, next) => {

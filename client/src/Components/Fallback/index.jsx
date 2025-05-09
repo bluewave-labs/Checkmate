@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Button, Stack, Typography, Link } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import Skeleton from "../../assets/Images/create-placeholder.svg?react";
 import SkeletonDark from "../../assets/Images/create-placeholder-dark.svg?react";
 import Background from "../../assets/Images/background-grid.svg?react";
@@ -35,9 +36,8 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 			<>
 				{t("pageSpeedWarning")} {" "}
 				<Link 
-					href="https://docs.checkmate.so/users-guide/quickstart#env-vars-server"
-					target="_blank"
-					rel="noopener noreferrer"
+					component={RouterLink}
+					to="/settings"
 					sx={{ 
 						textDecoration: "underline",
 						color: "inherit",
@@ -118,6 +118,17 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 						>
 							Let's create your first {title}
 						</Button>
+						{/* Bulk create of uptime monitors */}
+						{title === "uptime monitor" && (
+						<Button
+								variant="contained"
+								color="accent"
+								sx={{ alignSelf: "center" }}
+								onClick={() => navigate("/uptime/bulk-import")}
+							>
+								{t("bulkImport.fallbackPage")}
+							</Button>
+						)}
 						
 						{/* Warning box for PageSpeed monitor */}
 						{(title === "pagespeed monitor" && showPageSpeedWarning) && (
