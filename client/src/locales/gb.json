@@ -441,6 +441,16 @@
   "pageSpeedApiKeyFieldResetLabel": "API key is set. Click Reset to change it.",
   "reset": "Reset",
   "createNew": "Create new",
+  "greeting": {
+    "prepend": "Hey there",
+    "append": "The afternoon is your playground—let's make it epic!",
+    "overview": "Here's an overview of your {{type}} monitors."
+  },
+  "monitorStatus": {
+    "up": "up",
+    "down": "down",
+    "paused": "paused"
+  },
   "monitorState": {
     "paused": "paused",
     "resumed": "resumed"

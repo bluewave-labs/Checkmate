@@ -418,17 +418,27 @@
   "authRegisterEmailRequired": "Devam etmek için lütfen e-posta adresinizi girin",
   "authRegisterEmailInvalid": "Lütfen geçerli bir e-posta adresi girin",
   "bulkImport": {
-    "title": "",
-    "selectFileTips": "",
-    "selectFileDescription": "",
-    "selectFile": "",
-    "parsingFailed": "",
-    "uploadSuccess": "",
-    "validationFailed": "",
-    "noFileSelected": "",
-    "fallbackPage": ""
+    "title": "Toplu İçe Aktar",
+    "selectFileTips": "Yüklemek için CSV dosyası seçin",
+    "selectFileDescription": "<template>Şablonumuzu</template> veya <sample>örneğimizi</sample> indirebilirsiniz",
+    "selectFile": "Dosya Seç",
+    "parsingFailed": "Ayrıştırma başarısız oldu",
+    "uploadSuccess": "Monitörler başarıyla oluşturuldu!",
+    "validationFailed": "Doğrulama başarısız oldu",
+    "noFileSelected": "Dosya seçilmedi",
+    "fallbackPage": "Sunucuların listesini toplu olarak yüklemek için bir dosya içe aktarın"
   },
   "createNew": "Yeni oluştur",
+  "greeting": {
+    "prepend": "Merhaba",
+    "append": "Öğleden sonra senin oyun alanın—hadi onu muhteşem yapalım!",
+    "overview": "İşte {{type}} monitörlerinizin genel görünümü."
+  },
+  "monitorStatus": {
+    "up": "aktif",
+    "down": "devre dışı",
+    "paused": "duraklatıldı"
+  },
   "monitorState": {
     "paused": "duraklatıldı",
     "resumed": "devam ettirildi"

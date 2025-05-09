@@ -6,7 +6,7 @@ import { useTheme } from "@emotion/react";
 
 const CreateMonitorHeader = ({
 	isAdmin,
-	label = "Create new",
+	label,
 	isLoading = true,
 	path,
 	bulkPath,
@@ -14,6 +14,8 @@ const CreateMonitorHeader = ({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
+	
+	// Use the provided label or fall back to the translated default
 
 	if (!isAdmin) return null;
 
@@ -30,7 +32,7 @@ const CreateMonitorHeader = ({
 				color="accent"
 				onClick={() => navigate(path)}
 			>
-				{label}
+				{label || t("createNew")}
 			</Button>
 			{bulkPath && (
 				<Button
