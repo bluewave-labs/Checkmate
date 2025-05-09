@@ -25,7 +25,7 @@ services:
     image: ghcr.io/bluewave-labs/checkmate:backend-demo
     restart: always
     ports:
-      - "5000:5000"
+      - "52345:52345"
     env_file:
       - server.env
     depends_on:

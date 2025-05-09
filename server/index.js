@@ -100,8 +100,6 @@ const openApiSpec = JSON.parse(
 
 let server;
 
-const PORT = 5000;
-
 const shutdown = async () => {
 	if (isShuttingDown) {
 		return;
@@ -217,8 +215,9 @@ const startApp = async () => {
 
 	await translationService.initialize();
 
-	server = app.listen(PORT, () => {
-		logger.info({ message: `server started on port:${PORT}` });
+	const port = appSettings.port || 52345;
+	server = app.listen(port, () => {
+		logger.info({ message: `Server started on port:${port}` });
 	});
 
 	process.on("SIGUSR2", shutdown);

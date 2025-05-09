@@ -1,18 +1,21 @@
 const SERVICE_NAME = "SettingsService";
 const envConfig = {
+	nodeEnv: process.env.NODE_ENV,
 	logLevel: process.env.LOG_LEVEL,
-	clientHost: process.env.CLIENT_HOST,
-	jwtSecret: process.env.JWT_SECRET,
-	dbType: process.env.DB_TYPE,
-	dbConnectionString: process.env.DB_CONNECTION_STRING,
-	redisUrl: process.env.REDIS_URL,
-	jwtTTL: process.env.TOKEN_TTL,
-	pagespeedApiKey: process.env.PAGESPEED_API_KEY,
 	systemEmailHost: process.env.SYSTEM_EMAIL_HOST,
 	systemEmailPort: process.env.SYSTEM_EMAIL_PORT,
 	systemEmailUser: process.env.SYSTEM_EMAIL_USER,
 	systemEmailAddress: process.env.SYSTEM_EMAIL_ADDRESS,
 	systemEmailPassword: process.env.SYSTEM_EMAIL_PASSWORD,
+	jwtSecret: process.env.JWT_SECRET,
+	jwtTTL: process.env.TOKEN_TTL,
+	clientHost: process.env.CLIENT_HOST,
+	dbConnectionString: process.env.DB_CONNECTION_STRING,
+	redisUrl: process.env.REDIS_URL,
+	callbackUrl: process.env.CALLBACK_URL,
+	port: process.env.PORT,
+	pagespeedApiKey: process.env.PAGESPEED_API_KEY,
+	uprockApiKey: process.env.UPROCK_API_KEY,
 };
 /**
  * SettingsService
