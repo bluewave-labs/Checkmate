@@ -156,7 +156,7 @@ const Select = ({
 };
 
 Select.propTypes = {
-	id: PropTypes.string.isRequired,
+	id: PropTypes.string,
 	name: PropTypes.string,
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
