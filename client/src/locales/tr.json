@@ -446,5 +446,9 @@
   "failedToPauseMaintenanceWindow": "Bakım penceresi duraklatılamadı.",
   "failedToFetchData": "Veri alınamadı",
   "failedToCreateStatusPage": "Durum sayfası oluşturulamadı",
-  "failedToDeleteStatusPage": "Durum sayfası silinemedi"
+  "failedToDeleteStatusPage": "Durum sayfası silinemedi",
+  "monitorState": {
+    "paused": "duraklatıldı",
+    "resumed": "devam ettirildi"
+  }
 }

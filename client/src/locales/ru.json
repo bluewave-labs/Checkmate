@@ -412,5 +412,9 @@
   "failedToPauseMaintenanceWindow": "Не удалось приостановить окно обслуживания.",
   "failedToFetchData": "Не удалось загрузить данные",
   "failedToCreateStatusPage": "Не удалось создать страницу статуса",
-  "failedToDeleteStatusPage": "Не удалось удалить страницу статуса"
+  "failedToDeleteStatusPage": "Не удалось удалить страницу статуса",
+  "monitorState": {
+    "paused": "приостановлен",
+    "resumed": "возобновлен"
+  }
 }

@@ -458,6 +458,10 @@
   "failedToPauseMaintenanceWindow": "Failed to pause maintenance window.",
   "failedToFetchData": "Failed to fetch data",
   "failedToCreateStatusPage": "Failed to create status page",
-  "failedToDeleteStatusPage": "Failed to delete status page"
+  "failedToDeleteStatusPage": "Failed to delete status page",
+  "monitorState": {
+    "paused": "paused",
+    "resumed": "resumed"
+  }
 }
 
