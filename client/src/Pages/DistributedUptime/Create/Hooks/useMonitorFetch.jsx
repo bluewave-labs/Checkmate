@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { networkService } from "../../../../main";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 
 export const useMonitorFetch = ({ monitorId, isCreate }) => {
 	const [networkError, setNetworkError] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const [monitor, setMonitor] = useState(undefined);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
@@ -18,7 +20,7 @@ export const useMonitorFetch = ({ monitorId, isCreate }) => {
 				setMonitor(res?.data?.data ?? {});
 			} catch (error) {
 				setNetworkError(true);
-				createToast({ body: error.message });
+				createToast({ body: t("failedToFetchData") });
 			} finally {
 				setIsLoading(false);
 			}

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { networkService } from "../../../../main";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 
 const useDeleteMonitor = ({ monitorId }) => {
 	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
 	const deleteMonitor = async () => {
 		try {
 			setIsLoading(true);
@@ -11,7 +13,7 @@ const useDeleteMonitor = ({ monitorId }) => {
 			return true;
 		} catch (error) {
 			createToast({
-				body: error.message,
+				body: t("failedToDeleteMonitor"),
 			});
 			return false;
 		} finally {

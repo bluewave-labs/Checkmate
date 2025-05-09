@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { networkService } from "../../../../main";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 const useMonitorFetch = ({ monitorId }) => {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	const [monitor, setMonitor] = useState(undefined);
 	const [audits, setAudits] = useState(undefined);
@@ -24,7 +26,7 @@ const useMonitorFetch = ({ monitorId }) => {
 				setAudits(res?.data?.data?.checks?.[0]?.audits ?? undefined);
 			} catch (error) {
 				setNetworkError(true);
-				createToast({ body: error.message });
+				createToast({ body: t("failedToFetchData") });
 			} finally {
 				setIsLoading(false);
 			}

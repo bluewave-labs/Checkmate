@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { networkService } from "../main";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { createToast } from "../Utils/toastUtils";
 
 export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
@@ -9,6 +10,7 @@ export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
 	const [monitor, setMonitor] = useState(undefined);
 	const [monitorStats, setMonitorStats] = useState(undefined);
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
@@ -23,7 +25,7 @@ export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
 				setMonitorStats(monitorStats);
 			} catch (error) {
 				setNetworkError(true);
-				createToast({ body: error.message });
+				createToast({ body: t("failedToFetchData") });
 			} finally {
 				setIsLoading(false);
 			}
