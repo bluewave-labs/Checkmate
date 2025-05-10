@@ -489,21 +489,38 @@ const Settings = () => {
 						/>
 					</Box>
 				</ConfigBox>
-				<Stack
-					direction="row"
-					justifyContent="flex-end"
+				<Box
+					sx={{
+						position: "sticky",
+						bottom: 0,
+						boxShadow: theme.shape.boxShadow,
+						zIndex: 1000,
+						mt : 3,
+						backdropFilter: "blur(2px)",
+					}}
 				>
-					<Button
-						loading={isLoading || authIsLoading || checksIsLoading}
-						disabled={Object.keys(errors).length > 0}
-						variant="contained"
-						color="accent"
-						sx={{ px: theme.spacing(12), mt: theme.spacing(20) }}
-						onClick={handleSave}
+					<Stack
+						direction="row"
+						justifyContent="flex-end"
+						pb={theme.spacing(5)}
+						pr={theme.spacing(15)}
+						pl={theme.spacing(5)}
+						pt={theme.spacing(5)}
 					>
-						{t("settingsSave")}
-					</Button>
-				</Stack>
+						<Button
+							loading={isLoading || authIsLoading || checksIsLoading}
+							disabled={Object.keys(errors).length > 0}
+							variant="contained"
+							color="accent"
+							sx={{ px: theme.spacing(12),
+									height: '100%'
+							}}
+							onClick={handleSave}
+						>
+							{t("settingsSave")}
+						</Button>
+					</Stack>
+				</Box>
 			</Stack>
 		</Box>
 	);
