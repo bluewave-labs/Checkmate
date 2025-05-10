@@ -24,8 +24,6 @@ services:
   redis:
     image: uptime_redis:latest
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - ./redis/data:/data
     healthcheck:
@@ -38,8 +36,6 @@ services:
     image: uptime_mongo:latest
     restart: always
     command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
-    ports:
-      - "27017:27017"
     volumes:
       - ./mongo/data:/data/db
     healthcheck:
