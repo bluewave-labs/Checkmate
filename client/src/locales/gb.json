@@ -108,6 +108,14 @@
 	"settingsFailedToAddDemoMonitors": "Failed to add demo monitors",
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
+	"settingsEmail": "Email settings",
+	"settingsEmailDescription": "Configure email settings",
+	"settingsEmailHost": "Email host",
+	"settingsEmailPort": "Email port",
+	"settingsEmailAddress": "Email address",
+	"settingsEmailPassword": "Email password",
+	"settingsEmailUser": "Email user",
+	"settingsEmailFieldResetLabel": "Password is set. Click Reset to change it.",
 	"backendUnreachable": "Server Connection Error",
 	"backendUnreachableMessage": "We're unable to connect to the server. Please check your internet connection or verify your deployment configuration if the problem persists.",
 	"backendUnreachableError": "Cannot connect to the server. Please try again later.",
@@ -439,6 +447,7 @@
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",
 	"pageSpeedApiKeyFieldDescription": "Enter your Google PageSpeed API key to enable pagespeed monitoring. Click Reset to update the key.",
 	"pageSpeedApiKeyFieldResetLabel": "API key is set. Click Reset to change it.",
+
 	"reset": "Reset",
 	"createNew": "Create new",
 	"greeting": {
@@ -502,5 +511,4 @@
 		"profile": "Profile",
 		"password": "Password",
 		"team": "Team"
-	}
 }
