@@ -47,46 +47,47 @@ import "./index.css";
 import { useLocation, useNavigate } from "react-router";
 import { useTheme } from "@emotion/react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { clearAuthState } from "../../Features/Auth/authSlice";
 import { toggleSidebar } from "../../Features/UI/uiSlice";
 import { clearUptimeMonitorState } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
 
-const menu = [
-	{ name: "Uptime", path: "uptime", icon: <Monitors /> },
-	{ name: "Pagespeed", path: "pagespeed", icon: <PageSpeed /> },
-	{ name: "Infrastructure", path: "infrastructure", icon: <Integrations /> },
+const getMenu = (t) => [
+	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
+	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
+	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
 	{
-		name: "Distributed uptime",
+		name: t("menu.distributedUptime"),
 		path: "distributed-uptime",
 		icon: <DistributedUptimeIcon />,
 	},
-	{ name: "Incidents", path: "incidents", icon: <Incidents /> },
+	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
-	{ name: "Status pages", path: "status", icon: <StatusPages /> },
-	{ name: "Maintenance", path: "maintenance", icon: <Maintenance /> },
-	// { name: "Integrations", path: "integrations", icon: <Integrations /> },
+	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
+	{ name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
+	// { name: t("menu.integrations"), path: "integrations", icon: <Integrations /> },
 	{
-		name: "Settings",
+		name: t("menu.settings"),
 		icon: <Settings />,
 		path: "settings",
 	},
 ];
 
-const otherMenuItems = [
-	{ name: "Support", path: "support", icon: <Support /> },
+const getOtherMenuItems = (t) => [
+	{ name: t("menu.support"), path: "support", icon: <Support /> },
 	{
-		name: "Discussions",
+		name: t("menu.discussions"),
 		path: "discussions",
 		icon: <Discussions />,
 	},
-	{ name: "Docs", path: "docs", icon: <Docs /> },
-	{ name: "Changelog", path: "changelog", icon: <ChangeLog /> },
+	{ name: t("menu.docs"), path: "docs", icon: <Docs /> },
+	{ name: t("menu.changelog"), path: "changelog", icon: <ChangeLog /> },
 ];
 
-const accountMenuItems = [
-	{ name: "Profile", path: "account/profile", icon: <UserSvg /> },
-	{ name: "Password", path: "account/password", icon: <LockSvg /> },
-	{ name: "Team", path: "account/team", icon: <TeamSvg /> },
+const getAccountMenuItems = (t) => [
+	{ name: t("menu.profile"), path: "account/profile", icon: <UserSvg /> },
+	{ name: t("menu.password"), path: "account/password", icon: <LockSvg /> },
+	{ name: t("menu.team"), path: "account/team", icon: <TeamSvg /> },
 ];
 
 /* TODO this could be a key in nested Path would be the link */
@@ -118,7 +119,12 @@ function Sidebar() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 	const authState = useSelector((state) => state.auth);
+	
+	const menu = getMenu(t);
+	const otherMenuItems = getOtherMenuItems(t);
+	const accountMenuItems = getAccountMenuItems(t);
 	const collapsed = useSelector((state) => state.ui.sidebar.collapsed);
 	const [open, setOpen] = useState({ Dashboard: false, Account: false, Other: false });
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -726,7 +732,11 @@ function Sidebar() {
 								{authState.user?.firstName} {authState.user?.lastName}
 							</Typography>
 							<Typography sx={{ textTransform: "capitalize" }}>
-								{authState.user?.role}
+								{authState.user?.role?.includes("superadmin") ? t("roles.superAdmin") :
+								authState.user?.role?.includes("admin") ? t("roles.admin") :
+								authState.user?.role?.includes("user") ? t("roles.teamMember") :
+								authState.user?.role?.includes("demo") ? t("roles.demoUser") :
+								authState.user?.role}
 							</Typography>
 						</Box>
 						<Stack

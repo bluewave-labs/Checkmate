@@ -3,6 +3,7 @@ import { useTheme } from "@emotion/react";
 import { Box, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { setGreeting } from "../Features/UI/uiSlice";
 
 const early = [
@@ -133,6 +134,7 @@ const evening = [
 const Greeting = ({ type = "" }) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 	const { firstName } = useSelector((state) => state.auth.user);
 	const index = useSelector((state) => state.ui.greeting.index);
 	const lastUpdate = useSelector((state) => state.ui.greeting.lastUpdate);
@@ -147,7 +149,7 @@ const Greeting = ({ type = "" }) => {
 			let random = Math.floor(Math.random() * 5);
 			dispatch(setGreeting({ index: random, lastUpdate: hour }));
 		}
-	}, [dispatch, hour]);
+	}, [dispatch, hour, lastUpdate]);
 
 	let greetingArray =
 		hour < 6 ? early : hour < 12 ? morning : hour < 18 ? afternoon : evening;
@@ -165,7 +167,7 @@ const Greeting = ({ type = "" }) => {
 					fontSize="inherit"
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{prepend},{" "}
+					{t("greeting.prepend", { defaultValue: prepend })}, {" "}
 				</Typography>
 				<Typography
 					component="span"
@@ -181,7 +183,7 @@ const Greeting = ({ type = "" }) => {
 				lineHeight={1}
 				color={theme.palette.primary.contrastTextTertiary}
 			>
-				{append} — Here’s an overview of your {type} monitors.
+				{t("greeting.append", { defaultValue: append })} — {t("greeting.overview", { type: t(`menu.${type}`) })}
 			</Typography>
 		</Box>
 	);

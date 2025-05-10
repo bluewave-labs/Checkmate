@@ -9,7 +9,7 @@ const shadow =
 const baseTheme = (palette) => ({
 	typography: {
 		fontFamily: fontFamilyPrimary,
-		fontSize: 14,
+		fontSize: typographyLevels.base,
 		h1: {
 			fontSize: typographyLevels.xl,
 			color: palette.primary.contrastText,
@@ -376,7 +376,6 @@ const baseTheme = (palette) => ({
 		MuiTab: {
 			styleOverrides: {
 				root: ({ theme }) => ({
-					fontSize: theme.typography.fontSize - 1,
 					color: theme.palette.tertiary.contrastText,
 					height: "34px",
 					minHeight: "34px",
