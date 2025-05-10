@@ -274,8 +274,8 @@ const Settings = () => {
 								dispatch(setMode(e.target.value));
 							}}
 							items={[
-								{ _id: "light", name: "Light" },
-								{ _id: "dark", name: "Dark" },
+								{ _id: "light", name: t("settingsThemeModeLight") },
+								{ _id: "dark", name: t("settingsThemeModeDark") },
 							]}
 						></Select>
 						<Select

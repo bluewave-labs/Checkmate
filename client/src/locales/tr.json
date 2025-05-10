@@ -69,6 +69,8 @@
   "settingsAppearance": "Görünüm",
   "settingsAppearanceDescription": "Açık ve koyu mod arasında geçiş yapın veya kullanıcı arayüzü dilini değiştirin",
   "settingsThemeMode": "Tema",
+  "settingsThemeModeLight": "Açık",
+  "settingsThemeModeDark": "Koyu",
   "settingsLanguage": "Dil",
   "settingsDistributedUptime": "Dağıtılmış çalışma süresi",
   "settingsDistributedUptimeDescription": "Dağıtılmış çalışma süresi izlemeyi etkinleştirin/devre dışı bırakın.",

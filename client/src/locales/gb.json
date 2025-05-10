@@ -71,6 +71,8 @@
   "settingsAppearance": "Appearance",
   "settingsAppearanceDescription": "Switch between light and dark mode, or change user interface language",
   "settingsThemeMode": "Theme Mode",
+  "settingsThemeModeLight": "Light",
+  "settingsThemeModeDark": "Dark",
   "settingsLanguage": "Language",
   "settingsDistributedUptime": "Distributed uptime",
   "settingsDistributedUptimeDescription": "Enable/disable distributed uptime monitoring.",

@@ -74,6 +74,8 @@
   "settingsAppearance": "Внешний вид",
   "settingsAppearanceDescription": "Переключение между светлым и темным режимом или изменение языка пользовательского интерфейса",
   "settingsThemeMode": "Тема",
+  "settingsThemeModeLight": "Светлая",
+  "settingsThemeModeDark": "Темная",
   "settingsLanguage": "Язык",
   "settingsDistributedUptime": "Distributed uptime",
   "settingsDistributedUptimeDescription": "Включить/выключить distributed uptime monitoring.",
