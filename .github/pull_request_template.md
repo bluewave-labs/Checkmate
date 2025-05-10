@@ -18,7 +18,7 @@ Fixes #123
 const { t } = useTranslation();
 <div>{t('add')}</div>
 ```
-- [ ] The issue I am working on is assigned to me.
+- [ ] I removed all unnecessary files (including `package-lock.json`)
 - [ ] I didn't use any hardcoded values (otherwise it will not scale, and will make it difficult to maintain consistency across the application).
 - [ ] I made sure font sizes, color choices etc are all referenced from the theme. I have no hardcoded dimensions.
 - [ ] My PR is granular and targeted to one specific feature.
