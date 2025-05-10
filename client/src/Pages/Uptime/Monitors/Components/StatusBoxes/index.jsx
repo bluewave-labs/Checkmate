@@ -16,15 +16,15 @@ const StatusBoxes = ({ shouldRender, monitorsSummary }) => {
 			justifyContent="space-between"
 		>
 			<StatusBox
-				title={t("monitorStatus.up").toUpperCase()}
+				title={t("monitorStatus.up")}
 				value={monitorsSummary?.upMonitors ?? 0}
 			/>
 			<StatusBox
-				title={t("monitorStatus.down").toUpperCase()}
+				title={t("monitorStatus.down")}
 				value={monitorsSummary?.downMonitors ?? 0}
 			/>
 			<StatusBox
-				title={t("monitorStatus.paused").toUpperCase()}
+				title={t("monitorStatus.paused")}
 				value={monitorsSummary?.pausedMonitors ?? 0}
 			/>
 		</Stack>
