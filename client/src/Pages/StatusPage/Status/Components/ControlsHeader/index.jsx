@@ -11,7 +11,7 @@ import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
+const Controls = ({url, type }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const location = useLocation();
@@ -31,16 +31,6 @@ const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 			direction="row"
 			gap={theme.spacing(2)}
 		>
-			<Box>
-				<Button
-					variant="contained"
-					color="error"
-					onClick={() => setIsDeleteOpen(!isDeleteOpen)}
-					loading={isDeleting}
-				>
-					{t("delete")}
-				</Button>
-			</Box>
 			<Box>
 				<Button
 					variant="contained"
@@ -71,18 +61,12 @@ const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 
 Controls.propTypes = {
 	type: PropTypes.string,
-	isDeleting: PropTypes.bool,
 	url: PropTypes.string,
-	isDeleteOpen: PropTypes.bool.isRequired,
-	setIsDeleteOpen: PropTypes.func.isRequired,
 };
 
 const ControlsHeader = ({
 	statusPage,
 	isPublic,
-	isDeleting,
-	isDeleteOpen,
-	setIsDeleteOpen,
 	url,
 	type = "uptime",
 }) => {
@@ -143,9 +127,6 @@ const ControlsHeader = ({
 				)}
 			</Stack>
 			<Controls
-				isDeleting={isDeleting}
-				isDeleteOpen={isDeleteOpen}
-				setIsDeleteOpen={setIsDeleteOpen}
 				url={url}
 				type={type}
 			/>
@@ -158,9 +139,6 @@ ControlsHeader.propTypes = {
 	url: PropTypes.string,
 	statusPage: PropTypes.object,
 	isPublic: PropTypes.bool,
-	isDeleting: PropTypes.bool,
-	isDeleteOpen: PropTypes.bool.isRequired,
-	setIsDeleteOpen: PropTypes.func.isRequired,
 	type: PropTypes.string,
 };
 

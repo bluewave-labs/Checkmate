@@ -10,6 +10,10 @@ const useStatusPageDelete = (fetchStatusPage, url) => {
 			setIsLoading(true);
 			await networkService.deleteStatusPage({ url });
 			fetchStatusPage?.();
+			// optional
+			createToast({
+				body: "Status page deleted successfully.",
+			});
 			return true;
 		} catch (error) {
 			createToast({

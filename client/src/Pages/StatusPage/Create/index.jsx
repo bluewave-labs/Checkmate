@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
+import Dialog from "../../../Components/Dialog";
 //Constants
 const TAB_LIST = ["General settings", "Contents"];
 
@@ -54,9 +56,9 @@ const CreateStatusPage = () => {
 	const [createStatusPage, createStatusIsLoading, createStatusPageNetworkError] =
 		useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
-	const { t }  = useTranslation();
+	const { t } = useTranslation();
 
-	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
+	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError,fetchStatusPage] =
 		useStatusPageFetch(isCreate, url);
 
 	// Handlers
@@ -87,31 +89,36 @@ const CreateStatusPage = () => {
 		}));
 	};
 
+	// delete button
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
+
+
 	const handleImageChange = useCallback((fileObj) => {
 		if (!fileObj || !fileObj.file) return;
-	  
+
 		setForm((prev) => ({
-		  ...prev,
-		  logo: {
-			src: fileObj.src,
-			name: fileObj.name,
-			type: fileObj.file.type,
-			size: fileObj.file.size,
-		  },
+			...prev,
+			logo: {
+				src: fileObj.src,
+				name: fileObj.name,
+				type: fileObj.file.type,
+				size: fileObj.file.size,
+			},
 		}));
-	  
+
 		intervalRef.current = setInterval(() => {
-		  const buffer = 12;
-		  setProgress((prev) => {
-			if (prev.value + buffer >= 100) {
-			  clearInterval(intervalRef.current);
-			  return { value: 100, isLoading: false };
-			}
-			return { ...prev, value: prev.value + buffer };
-		  });
+			const buffer = 12;
+			setProgress((prev) => {
+				if (prev.value + buffer >= 100) {
+					clearInterval(intervalRef.current);
+					return { value: 100, isLoading: false };
+				}
+				return { ...prev, value: prev.value + buffer };
+			});
 		}, 120);
 	}, []);
-	  
+
 	const removeLogo = () => {
 		setForm((prev) => ({
 			...prev,
@@ -233,6 +240,9 @@ const CreateStatusPage = () => {
 				setTab={setTab}
 				TAB_LIST={TAB_LIST}
 				isCreate={isCreate}
+				isDeleting={isDeleting}
+				isDeleteOpen={isDeleteOpen}
+				setIsDeleteOpen={setIsDeleteOpen}
 			/>
 			<Stack
 				direction="row"
@@ -246,6 +256,21 @@ const CreateStatusPage = () => {
 					{t("settingsSave")}
 				</Button>
 			</Stack>
+			<Dialog
+				title={t("deleteStatusPage")}
+				onConfirm={() => {
+					deleteStatusPage();
+					setIsDeleteOpen(false);
+					navigate("/status");
+				}}
+				onCancel={() => {
+					setIsDeleteOpen(false);
+				}}
+				open={isDeleteOpen}
+				confirmationButtonLabel={t("deleteStatusPageConfirm")}
+				description={t("deleteStatusPageDescription")}
+				isLoading={isDeleting || isLoading}
+			/>
 		</Stack>
 	);
 };

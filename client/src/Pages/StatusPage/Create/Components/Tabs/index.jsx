@@ -1,12 +1,13 @@
 // Components
 import { TabContext } from "@mui/lab";
-import { Tab, useTheme } from "@mui/material";
+import { Tab, useTheme, Box, Button } from "@mui/material";
 import Settings from "./Settings";
 import Content from "./Content";
 
 // Utils
 import PropTypes from "prop-types";
 import CustomTabList from "../../../../../Components/Tab";
+import { useTranslation } from "react-i18next";
 
 const Tabs = ({
 	isCreate,
@@ -22,25 +23,36 @@ const Tabs = ({
 	tab,
 	setTab,
 	TAB_LIST,
+	isDeleting,
+	isDeleteOpen,
+	setIsDeleteOpen,
 }) => {
 
 	const theme = useTheme();
+	const { t } = useTranslation();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
-			<CustomTabList
-				onChange={(_, selected) => {
-					setTab(TAB_LIST.indexOf(selected));
-				}}
-				aria-label="status page tabs"
-			>
-				{TAB_LIST.map((tabLabel, idx) => (
-					<Tab
-						key={tabLabel}
-						label={tabLabel}
-						value={tabLabel}
-					/>
-				))}
-			</CustomTabList>
+			<Box display="flex" justifyContent="space-between" alignItems="center">
+				<CustomTabList
+					onChange={(_, selected) => {
+						setTab(TAB_LIST.indexOf(selected));
+					}}
+					aria-label="status page tabs"
+				>
+					{TAB_LIST.map((tabLabel) => (
+						<Tab key={tabLabel} label={tabLabel} value={tabLabel} />
+					))}
+				</CustomTabList>
+
+				{!isCreate && (<Button 
+					variant="contained"
+					color="error"
+					onClick={() => setIsDeleteOpen(!isDeleteOpen)}
+					loading={isDeleting}
+				>
+					{t("delete")}
+				</Button>)}
+			</Box>
 			{tab === 0 ? (
 				<Settings
 					tabValue={TAB_LIST[0]}
@@ -63,7 +75,7 @@ const Tabs = ({
 					setSelectedMonitors={setSelectedMonitors}
 				/>
 			)}
-			
+
 		</TabContext>
 	);
 };
@@ -81,6 +93,9 @@ Tabs.propTypes = {
 	tab: PropTypes.number,
 	setTab: PropTypes.func,
 	TAB_LIST: PropTypes.array,
+	isDeleting: PropTypes.bool,
+	isDeleteOpen: PropTypes.bool.isRequired,
+	setIsDeleteOpen: PropTypes.func.isRequired,
 };
 
 export default Tabs;
