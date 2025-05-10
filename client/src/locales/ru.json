@@ -401,5 +401,5 @@
   "reset": "Сбросить",
   "statusBreadCrumbsStatusPages": "Страницы статуса",
   "statusBreadCrumbsDetails": "Подробности",
-  "uptimeCreateSelectURL": "Выберите URL для мониторинга"
+  "uptimeCreateSelectURL": "Введите URL или IP-адрес для мониторинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное отображаемое имя, которое будет показано на панели управления."
 }
