@@ -376,7 +376,6 @@ const baseTheme = (palette) => ({
 		MuiTab: {
 			styleOverrides: {
 				root: ({ theme }) => ({
-					fontSize: theme.typography.fontSize - 1,
 					color: theme.palette.tertiary.contrastText,
 					height: "34px",
 					minHeight: "34px",

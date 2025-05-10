@@ -54,7 +54,7 @@ const CreateStatusPage = () => {
 	const [createStatusPage, createStatusIsLoading, createStatusPageNetworkError] =
 		useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
-	const { t }  = useTranslation();
+	const { t } = useTranslation();
 
 	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
 		useStatusPageFetch(isCreate, url);
@@ -89,29 +89,29 @@ const CreateStatusPage = () => {
 
 	const handleImageChange = useCallback((fileObj) => {
 		if (!fileObj || !fileObj.file) return;
-	  
+
 		setForm((prev) => ({
-		  ...prev,
-		  logo: {
-			src: fileObj.src,
-			name: fileObj.name,
-			type: fileObj.file.type,
-			size: fileObj.file.size,
-		  },
+			...prev,
+			logo: {
+				src: fileObj.src,
+				name: fileObj.name,
+				type: fileObj.file.type,
+				size: fileObj.file.size,
+			},
 		}));
-	  
+
 		intervalRef.current = setInterval(() => {
-		  const buffer = 12;
-		  setProgress((prev) => {
-			if (prev.value + buffer >= 100) {
-			  clearInterval(intervalRef.current);
-			  return { value: 100, isLoading: false };
-			}
-			return { ...prev, value: prev.value + buffer };
-		  });
+			const buffer = 12;
+			setProgress((prev) => {
+				if (prev.value + buffer >= 100) {
+					clearInterval(intervalRef.current);
+					return { value: 100, isLoading: false };
+				}
+				return { ...prev, value: prev.value + buffer };
+			});
 		}, 120);
 	}, []);
-	  
+
 	const removeLogo = () => {
 		setForm((prev) => ({
 			...prev,
