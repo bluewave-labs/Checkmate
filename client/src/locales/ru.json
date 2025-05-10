@@ -393,5 +393,11 @@
   "maintenanceTableActionMenuDialogTitle": "",
   "pageSpeedWarning": "Предупреждение: Вы не добавили ключ API Google PageSpeed. Без него монитор PageSpeed не будет работать.",
   "pageSpeedLearnMoreLink": "Нажмите здесь, чтобы узнать",
-  "pageSpeedAddApiKey": "как добавить ваш ключ API."
+  "pageSpeedAddApiKey": "как добавить ваш ключ API.",
+  "pageSpeedApiKeyFieldDescription": "Введите ваш API-ключ Google PageSpeed для включения мониторинга скорости страницы. Нажмите Сбросить, чтобы обновить ключ.",
+  "pageSpeedApiKeyFieldResetLabel": "API-ключ установлен. Нажмите Сбросить, чтобы изменить его.",
+  "reset": "Сбросить",
+  "statusBreadCrumbsStatusPages": "Страницы статуса",
+  "statusBreadCrumbsDetails": "Подробности",
+  "uptimeCreateSelectURL": "Выберите URL для мониторинга"
 }

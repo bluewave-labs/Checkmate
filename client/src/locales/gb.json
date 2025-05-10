@@ -439,6 +439,9 @@
   "pageSpeedApiKeyFieldLabel": "PageSpeed API key",
   "pageSpeedApiKeyFieldDescription": "Enter your Google PageSpeed API key to enable pagespeed monitoring. Click Reset to update the key.",
   "pageSpeedApiKeyFieldResetLabel": "API key is set. Click Reset to change it.",
-  "reset": "Reset"
+  "reset": "Reset",
+  "statusBreadCrumbsStatusPages": "Status Pages",
+  "statusBreadCrumbsDetails": "Details",
+  "uptimeCreateSelectURL": "Select URL to monitor"
 }
 

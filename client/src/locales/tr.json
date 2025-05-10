@@ -427,5 +427,8 @@
     "validationFailed": "",
     "noFileSelected": "",
     "fallbackPage": ""
-  }
+  },
+  "statusBreadCrumbsStatusPages": "Durum Sayfaları",
+  "statusBreadCrumbsDetails": "Detaylar",
+  "uptimeCreateSelectURL": "İzlenecek URL'yi seçin"
 }
