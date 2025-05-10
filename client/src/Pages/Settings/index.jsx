@@ -6,6 +6,7 @@ import SettingsUI from "./SettingsUI";
 import SettingsPagespeed from "./SettingsPagespeed";
 import SettingsDemoMonitors from "./SettingsDemoMonitors";
 import SettingsAbout from "./SettingsAbout";
+import SettingsEmail from "./SettingsEmail";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "../../Validation/validation";
@@ -15,7 +16,6 @@ import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { setTimezone, setMode, setLanguage } from "../../Features/UI/uiSlice";
-import { getAppSettings } from "../../Features/Settings/settingsSlice";
 import SettingsStats from "./SettingsStats";
 import {
 	deleteMonitorChecksByTeamId,
@@ -34,17 +34,14 @@ const Settings = () => {
 	const { user } = useSelector((state) => state.auth);
 
 	// Local state
-	const [settings, setSettings] = useState({});
+	const [settingsData, setSettingsData] = useState({});
 	const [errors, setErrors] = useState({});
-
 	// Network
 	const [isSettingsLoading, settingsError] = useFetchSettings({
-		settings,
-		setSettings,
+		setSettingsData,
 	});
 
 	const [isSaving, saveError, saveSettings] = useSaveSettings();
-
 	const [deleteMonitorStats, isDeletingMonitorStats] = UseDeleteMonitorStats();
 
 	// Setup
@@ -58,10 +55,15 @@ const Settings = () => {
 		const { name, value } = e.target;
 
 		// Build next state early
-		const newSettings = { ...settings, [name]: value };
+		const newSettingsData = {
+			...settingsData,
+			settings: { ...settingsData.settings, [name]: value },
+		};
 
 		// Validate
-		const { error } = settingsValidation.validate(newSettings, { abortEarly: false });
+		const { error } = settingsValidation.validate(newSettingsData.settings, {
+			abortEarly: false,
+		});
 		if (!error || error.details.length === 0) {
 			setErrors({});
 		} else {
@@ -118,11 +120,13 @@ const Settings = () => {
 			return;
 		}
 
-		setSettings(newSettings);
+		setSettingsData(newSettingsData);
 	};
 
 	const handleSave = () => {
-		const { error } = settingsValidation.validate(settings, { abortEarly: false });
+		const { error } = settingsValidation.validate(settingsData.settings, {
+			abortEarly: false,
+		});
 		if (!error || error.details.length === 0) {
 			setErrors({});
 		} else {
@@ -132,7 +136,7 @@ const Settings = () => {
 			});
 			setErrors(newErrors);
 		}
-		saveSettings(settings);
+		saveSettings(settingsData?.settings);
 	};
 
 	return (
@@ -152,21 +156,27 @@ const Settings = () => {
 			/>
 			<SettingsPagespeed
 				HEADING_SX={HEADING_SX}
-				settings={settings}
-				setSettings={setSettings}
+				settingsData={settingsData}
+				setSettingsData={setSettingsData}
+				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
 			/>
 			<SettingsStats
 				HEADING_SX={HEADING_SX}
-				settings={settings}
-				setSettings={setSettings}
+				settingsData={settingsData}
 				handleChange={handleChange}
 				errors={errors}
 			/>
 			<SettingsDemoMonitors
-				isLoading={false}
-				authIsLoading={false}
-				checksIsLoading={false}
+				HEADER_SX={HEADING_SX}
 				handleChange={handleChange}
+				isLoading={isSettingsLoading || isSaving || isDeletingMonitorStats}
+			/>
+			<SettingsEmail
+				HEADER_SX={HEADING_SX}
+				handleChange={handleChange}
+				settingsData={settingsData}
+				setSettingsData={setSettingsData}
+				isPasswordSet={settingsData?.emailPasswordSet ?? false}
 			/>
 			<SettingsAbout />
 			<Stack

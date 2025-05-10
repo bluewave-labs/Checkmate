@@ -262,6 +262,11 @@ const settingsValidation = joi.object({
 	}),
 	pagespeedApiKey: joi.string().allow("").optional(),
 	language: joi.string().required(),
+	systemEmailHost: joi.string().allow(""),
+	systemEmailPort: joi.number().allow(null, ""),
+	systemEmailAddress: joi.string().allow(""),
+	systemEmailPassword: joi.string().allow(""),
+	systemEmailUser: joi.string().allow(""),
 });
 
 const dayjsValidator = (value, helpers) => {

@@ -8,12 +8,8 @@ import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 import Dialog from "../../Components/Dialog";
 import { useState } from "react";
-const SettingsDemoMonitors = ({
-	isLoading,
-	authIsLoading,
-	checksIsLoading,
-	handleChange,
-}) => {
+
+const SettingsDemoMonitors = ({ HEADER_SX, handleChange, isLoading }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	// Local state
@@ -23,16 +19,14 @@ const SettingsDemoMonitors = ({
 			<ConfigBox>
 				<Box>
 					<Typography component="h1">{t("settingsDemoMonitors")}</Typography>
-					<Typography sx={{ mt: theme.spacing(2) }}>
-						{t("settingsDemoMonitorsDescription")}
-					</Typography>
+					<Typography sx={HEADER_SX}>{t("settingsDemoMonitorsDescription")}</Typography>
 				</Box>
 				<Box>
 					<Typography>{t("settingsAddDemoMonitors")}</Typography>
 					<Button
 						variant="contained"
 						color="accent"
-						loading={isLoading || authIsLoading || checksIsLoading}
+						loading={isLoading}
 						onClick={() => {
 							const syntheticEvent = {
 								target: {
@@ -59,7 +53,7 @@ const SettingsDemoMonitors = ({
 					<Button
 						variant="contained"
 						color="error"
-						loading={isLoading || authIsLoading || checksIsLoading}
+						loading={isLoading}
 						onClick={() => setIsOpen(true)}
 						sx={{ mt: theme.spacing(4) }}
 					>
@@ -81,7 +75,7 @@ const SettingsDemoMonitors = ({
 						handleChange(syntheticEvent);
 						setIsOpen(false);
 					}}
-					isLoading={isLoading || authIsLoading || checksIsLoading}
+					isLoading={isLoading}
 				/>
 			</ConfigBox>
 		</>
@@ -89,10 +83,8 @@ const SettingsDemoMonitors = ({
 };
 
 SettingsDemoMonitors.propTypes = {
-	isLoading: PropTypes.bool,
-	authIsLoading: PropTypes.bool,
-	checksIsLoading: PropTypes.bool,
 	handleChange: PropTypes.func,
+	HEADER_SX: PropTypes.object,
 };
 
 export default SettingsDemoMonitors;

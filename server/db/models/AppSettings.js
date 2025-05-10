@@ -25,6 +25,9 @@ const AppSettingsSchema = mongoose.Schema(
 		systemEmailPassword: {
 			type: String,
 		},
+		systemEmailUser: {
+			type: String,
+		},
 		singleton: {
 			type: Boolean,
 			required: true,

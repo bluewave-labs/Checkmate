@@ -11,25 +11,27 @@ import { PropTypes } from "prop-types";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-const SettingsPagespeed = ({ HEADING_SX, settings, setSettings }) => {
+const SettingsPagespeed = ({
+	HEADING_SX,
+	settingsData,
+	setSettingsData,
+	isApiKeySet,
+}) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
 	// Local state
 	const [apiKey, setApiKey] = useState("");
-	const [isApiKeySet, setIsApiKeySet] = useState(false);
 	const [hasBeenReset, setHasBeenReset] = useState(false);
 
 	// Handler
 	const handleChange = (e) => {
 		setApiKey(e.target.value);
-		setSettings({ ...settings, pagespeedApiKey: e.target.value });
+		setSettingsData({
+			...settingsData,
+			settings: { ...settingsData.settings, pagespeedApiKey: e.target.value },
+		});
 	};
-
-	useEffect(() => {
-		console.log(settings);
-		setIsApiKeySet(Boolean(settings.pagespeedApiKey) && apiKey === "");
-	}, [settings, apiKey]);
 
 	return (
 		<ConfigBox>
@@ -56,7 +58,10 @@ const SettingsPagespeed = ({ HEADING_SX, settings, setSettings }) => {
 						<Button
 							onClick={() => {
 								setApiKey("");
-								setSettings({ ...settings, pagespeedApiKey: "" });
+								setSettingsData({
+									...settingsData,
+									settings: { ...settingsData.settings, pagespeedApiKey: "" },
+								});
 								setHasBeenReset(true);
 							}}
 							variant="contained"
@@ -74,8 +79,9 @@ const SettingsPagespeed = ({ HEADING_SX, settings, setSettings }) => {
 
 SettingsPagespeed.propTypes = {
 	HEADING_SX: PropTypes.object,
-	settings: PropTypes.object,
-	setSettings: PropTypes.func,
+	settingsData: PropTypes.object,
+	setSettingsData: PropTypes.func,
+	isApiKeySet: PropTypes.bool,
 };
 
 export default SettingsPagespeed;

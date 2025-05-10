@@ -3,7 +3,7 @@ import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
 
-const useFetchSettings = ({ setSettings }) => {
+const useFetchSettings = ({ setSettingsData }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(undefined);
 	useEffect(() => {
@@ -11,7 +11,7 @@ const useFetchSettings = ({ setSettings }) => {
 			setIsLoading(true);
 			try {
 				const response = await networkService.getAppSettings();
-				setSettings(response?.data?.data);
+				setSettingsData(response?.data?.data);
 			} catch (error) {
 				createToast({ body: "Failed to fetch settings" });
 				setError(error);

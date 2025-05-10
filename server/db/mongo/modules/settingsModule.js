@@ -21,6 +21,11 @@ const updateAppSettings = async (newSettings) => {
 			delete update.$set.pagespeedApiKey;
 		}
 
+		if (newSettings.systemEmailPassword === "") {
+			update.$unset = { systemEmailPassword: "" };
+			delete update.$set.systemEmailPassword;
+		}
+
 		const settings = await AppSettings.findOneAndUpdate({}, update, {
 			new: true,
 			upsert: true,

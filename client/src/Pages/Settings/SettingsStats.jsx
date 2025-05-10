@@ -12,7 +12,7 @@ import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
-const SettingsStats = ({ HEADING_SX, handleChange, settings, errors }) => {
+const SettingsStats = ({ HEADING_SX, handleChange, settingsData, errors }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +34,7 @@ const SettingsStats = ({ HEADING_SX, handleChange, settings, errors }) => {
 					name="checkTTL"
 					label={t("settingsTTLLabel")}
 					optionalLabel={t("settingsTTLOptionalLabel")}
-					value={settings?.checkTTL ?? ""}
+					value={settingsData?.settings?.checkTTL ?? ""}
 					onChange={handleChange}
 					type="number"
 					error={errors.checkTTL ? true : false}
@@ -77,7 +77,7 @@ const SettingsStats = ({ HEADING_SX, handleChange, settings, errors }) => {
 SettingsStats.propTypes = {
 	HEADING_SX: PropTypes.object,
 	handleChange: PropTypes.func,
-	settings: PropTypes.object,
+	settingsData: PropTypes.object,
 	errors: PropTypes.object,
 };
 
