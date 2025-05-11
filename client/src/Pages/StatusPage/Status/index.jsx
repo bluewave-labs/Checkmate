@@ -14,7 +14,6 @@ import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 const PublicStatus = () => {
 	const { url } = useParams();
@@ -23,7 +22,6 @@ const PublicStatus = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const location = useLocation();
-	// const navigate = useNavigate();
 
 	const [statusPage, monitors, isLoading, networkError] =
 		useStatusPageFetch(false, url);
