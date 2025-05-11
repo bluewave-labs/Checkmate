@@ -122,6 +122,7 @@ const UptimeDetails = () => {
 				isAdmin={isAdmin}
 				isLoading={monitorIsLoading}
 				monitor={monitor}
+				showPauseButton={true}
 			/>
 			<UptimeStatusBoxes
 				isLoading={monitorIsLoading}

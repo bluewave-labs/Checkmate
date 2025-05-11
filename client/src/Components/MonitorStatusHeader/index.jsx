@@ -4,11 +4,11 @@ import Dot from "../Dot";
 import { useTheme } from "@emotion/react";
 import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
 import { formatDurationRounded } from "../../Utils/timeUtils";
-import ConfigButton from "./ConfigButton";
 import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
+import MonitorDetailHeaderButton from "../MonitorDetailHeaderButton";
 
-const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
+const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor, showPauseButton=false}) => {
 	const theme = useTheme();
 	const { statusColor, determineState } = useUtils();
 	if (isLoading) {
@@ -39,10 +39,12 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 					</Typography>
 				</Stack>
 			</Stack>
-			<ConfigButton
+			<MonitorDetailHeaderButton 
+				isAdmin={isAdmin}
+				monitor={monitor}
 				path={path}
-				shouldRender={isAdmin}
-				monitorId={monitor?._id}
+				isLoading={isLoading}
+				showPauseButton={showPauseButton}
 			/>
 		</Stack>
 	);
@@ -53,6 +55,7 @@ MonitorStatusHeader.propTypes = {
 	isLoading: PropTypes.bool,
 	isAdmin: PropTypes.bool,
 	monitor: PropTypes.object,
+	showPauseButton: PropTypes.bool,
 };
 
 export default MonitorStatusHeader;
