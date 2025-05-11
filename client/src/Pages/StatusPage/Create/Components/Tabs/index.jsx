@@ -1,6 +1,6 @@
 // Components
 import { TabContext } from "@mui/lab";
-import { Tab, useTheme, Box, Button } from "@mui/material";
+import { Tab, useTheme, Stack, Button } from "@mui/material";
 import Settings from "./Settings";
 import Content from "./Content";
 
@@ -32,7 +32,7 @@ const Tabs = ({
 	const { t } = useTranslation();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
-			<Box display="flex" justifyContent="space-between" alignItems="center">
+			<Stack direction="row" justifyContent="space-between" alignItems="center">
 				<CustomTabList
 					onChange={(_, selected) => {
 						setTab(TAB_LIST.indexOf(selected));
@@ -52,7 +52,7 @@ const Tabs = ({
 				>
 					{t("delete")}
 				</Button>)}
-			</Box>
+			</Stack>
 			{tab === 0 ? (
 				<Settings
 					tabValue={TAB_LIST[0]}

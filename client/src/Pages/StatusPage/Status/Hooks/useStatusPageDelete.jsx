@@ -2,8 +2,10 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 
 const useStatusPageDelete = (fetchStatusPage, url) => {
+	const { t } = useTranslation();
 	const [isLoading, setIsLoading] = useState(false);
 	const deleteStatusPage = async () => {
 		try {
@@ -12,7 +14,7 @@ const useStatusPageDelete = (fetchStatusPage, url) => {
 			fetchStatusPage?.();
 			// optional
 			createToast({
-				body: "Status page deleted successfully.",
+				body: t('statusPage.deletedSuccessfully'),
 			});
 			return true;
 		} catch (error) {

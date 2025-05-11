@@ -430,6 +430,9 @@
     "noFileSelected": "No file selected",
     "fallbackPage": "Import a file to upload a list of servers in bulk"
   },
+  "statusPage": {
+    "deletedSuccessfully" : "Status page deleted successfully."
+  },
   "publicLink": "Public link"
 }
 
