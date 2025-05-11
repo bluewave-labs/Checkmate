@@ -77,8 +77,8 @@ const LanguageSelector = () => {
 			}}
 		>
 			{languages.map((lang) => {
-				const flag = lang ? `fi fi-${lang}` : null;
-
+				const parsedLang = lang === "en" ? "gb" : lang;
+				const flag = parsedLang ? `fi fi-${parsedLang}` : null;
 				return (
 					<MenuItem
 						key={lang}
