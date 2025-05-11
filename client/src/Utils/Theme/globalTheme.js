@@ -253,6 +253,7 @@ const baseTheme = (palette) => ({
 		MuiTableCell: {
 			styleOverrides: {
 				root: ({ theme }) => ({
+					fontSize: typographyLevels.base,
 					borderBottomColor: theme.palette.primary.lowContrast,
 				}),
 			},
