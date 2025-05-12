@@ -1152,6 +1152,14 @@ class NetworkService {
 			}
 		);
 	}
+
+	// ************************************
+	// Send tes	t email
+	// ************************************
+	async sendTestEmail(config) {
+		const { to } = config;
+		return this.axiosInstance.post(`/monitors/test-email`, { to });
+	}
 }
 
 export default NetworkService;
