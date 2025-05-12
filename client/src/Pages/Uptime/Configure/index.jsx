@@ -493,7 +493,7 @@ const Configure = () => {
 							</Box>
 							<Stack>
 								<FormControlLabel
-									sx={{ marginLeft: theme.spacing(0) }}
+									sx={{ marginLeft: 0 }}
 									control={
 										<Switch
 											name="ignore-error"
