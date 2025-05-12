@@ -582,16 +582,18 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await Monitor.findOneAndUpdate({ _id: req.params.monitorId }, [
-				{
-					$set: {
-						isActive: { $not: "$isActive" },
-						status: "$$REMOVE",
+			const monitor = await Monitor.findOneAndUpdate(
+				{ _id: req.params.monitorId },
+				[
+					{
+						$set: {
+							isActive: { $not: "$isActive" },
+							status: "$$REMOVE",
+						},
 					},
-				},
-			],
-			{ new: true }
-		);
+				],
+				{ new: true }
+			);
 			monitor.isActive === true
 				? await this.jobQueue.deleteJob(monitor)
 				: await this.jobQueue.addJob(monitor._id, monitor);
