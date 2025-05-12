@@ -492,10 +492,6 @@
       "created": "Oluşturuldu"
     }
   },
-  "monitorState": {
-    "paused": "duraklatıldı",
-    "resumed": "devam ettirildi",
-    "active": "aktif"
   },
   "menu": {
     "uptime": "Çalışma Süresi",
@@ -514,6 +510,5 @@
     "profile": "Profil",
     "password": "Şifre",
     "team": "Takım"
->>>>>>> origin/develop
   }
 }
