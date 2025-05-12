@@ -164,7 +164,7 @@ const Configure = () => {
 			if (pauseUptimeMonitor.fulfilled.match(action)) {
 				const monitor = action.payload.data;
 				setMonitor(monitor);
-				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
+				const state = action?.payload?.data.isActive === false ? "resumed" : "paused";
 				createToast({ body: `Monitor ${state} successfully.` });
 			} else if (pauseUptimeMonitor.rejected.match(action)) {
 				throw new Error(action.error.message);
