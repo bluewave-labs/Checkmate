@@ -129,7 +129,7 @@ const SettingsEmail = ({
 							loading={isSending}
 							onClick={sendTestEmail}
 						>
-							Send Test E-mail
+							Send test e-mail
 						</Button>
 					</Box>
 				</Stack>
