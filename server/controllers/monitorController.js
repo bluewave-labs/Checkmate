@@ -589,7 +589,9 @@ class MonitorController {
 						status: "$$REMOVE",
 					},
 				},
-			]);
+			],
+			{ new: true }
+		);
 			monitor.isActive === true
 				? await this.jobQueue.deleteJob(monitor)
 				: await this.jobQueue.addJob(monitor._id, monitor);
