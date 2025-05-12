@@ -16,6 +16,7 @@
   "commonBack": "Back",
   "authForgotPasswordTitle": "Forgot password?",
   "authForgotPasswordResetPassword": "Reset password",
+  "authForgotPasswordInstructions": "No worries, we'll send you reset instructions.",
   "createPassword": "Create your password",
   "createAPassword": "Password",
   "authRegisterAlreadyHaveAccount": "Already have an account?",
