@@ -422,6 +422,7 @@ const CreateMonitor = () => {
 					</Box>
 					<Stack>
 						<FormControlLabel
+							sx={{ marginLeft: 0 }}
 							control={
 								<Switch
 									name="ignore-error"

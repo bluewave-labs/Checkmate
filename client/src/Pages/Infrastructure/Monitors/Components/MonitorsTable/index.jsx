@@ -68,8 +68,16 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 			),
 		},
 		{ id: "cpu", content: t("cpu"), render: (row) => <CustomGauge progress={row.cpu} /> },
-		{ id: "memory", content: t("memory"), render: (row) => <CustomGauge progress={row.mem} /> },
-		{ id: "disk", content: t("disk"), render: (row) => <CustomGauge progress={row.disk} /> },
+		{
+			id: "memory",
+			content: t("memory"),
+			render: (row) => <CustomGauge progress={row.mem} />,
+		},
+		{
+			id: "disk",
+			content: t("disk"),
+			render: (row) => <CustomGauge progress={row.disk} />,
+		},
 		{
 			id: "actions",
 			content: t("actions"),
@@ -129,6 +137,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 					},
 				},
 				onRowClick: (row) => openDetails(row.id),
+				emptyView: "No monitors found",
 			}}
 		/>
 	);
