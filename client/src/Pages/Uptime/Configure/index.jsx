@@ -420,7 +420,9 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+								<Typography component="h2">
+									{t("distributedUptimeCreateIncidentNotification")}
+								</Typography>
 								<Typography component="p">
 									{t("distributedUptimeCreateIncidentDescription")}
 								</Typography>
@@ -491,6 +493,7 @@ const Configure = () => {
 							</Box>
 							<Stack>
 								<FormControlLabel
+									sx={{ marginLeft: theme.spacing(0) }}
 									control={
 										<Switch
 											name="ignore-error"
@@ -611,7 +614,7 @@ const Configure = () => {
 				isLoading={isLoading}
 			/>
 
-			<NotificationIntegrationModal 
+			<NotificationIntegrationModal
 				open={isNotificationModalOpen}
 				onClose={handleClosenNotificationModal}
 				monitor={monitor}
