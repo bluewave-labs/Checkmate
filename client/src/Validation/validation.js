@@ -11,7 +11,8 @@ const nameSchema = joi
 	.messages({
 		"string.empty": "Name is required",
 		"string.max": "Name must be less than 50 characters",
-		"string.pattern.base": "Name must contain only letters, spaces, apostrophes, or hyphens"
+		"string.pattern.base":
+			"Name must contain only letters, spaces, apostrophes, or hyphens",
 	});
 
 const lastnameSchema = joi
@@ -163,20 +164,21 @@ const monitorValidation = joi.object({
 			"string.invalidUrl": "Please enter a valid URL with optional port",
 			"string.pattern.base": "Please enter a valid container ID.",
 		}),
-	port: joi.number()
-	.integer()
-	.min(1)
-	.max(65535)
-	.when("type", {
-		is: "port",
-		then: joi.required().messages({
-			"number.base": "Port must be a number.",
-			"number.min": "Port must be at least 1.",
-			"number.max": "Port must be at most 65535.",
-			"any.required": "Port is required for port monitors.",
+	port: joi
+		.number()
+		.integer()
+		.min(1)
+		.max(65535)
+		.when("type", {
+			is: "port",
+			then: joi.required().messages({
+				"number.base": "Port must be a number.",
+				"number.min": "Port must be at least 1.",
+				"number.max": "Port must be at most 65535.",
+				"any.required": "Port is required for port monitors.",
+			}),
+			otherwise: joi.optional(),
 		}),
-		otherwise: joi.optional(),
-	}),
 	name: joi.string().trim().max(50).allow("").messages({
 		"string.max": "This field should not exceed the 50 characters limit.",
 	}),
@@ -264,14 +266,19 @@ const statusPageValidation = joi.object({
 	showCharts: joi.boolean(),
 });
 const settingsValidation = joi.object({
-	ttl: joi.number().required().messages({
+	checkTTL: joi.number().required().messages({
 		"string.empty": "Please enter a value",
 		"number.base": "Please enter a valid number",
-		"any.required": "Please enter a value"
+		"any.required": "Please enter a value",
 	}),
 	pagespeedApiKey: joi.string().allow("").optional(),
-})
-.unknown(true);
+	language: joi.string().required(),
+	systemEmailHost: joi.string().allow(""),
+	systemEmailPort: joi.number().allow(null, ""),
+	systemEmailAddress: joi.string().allow(""),
+	systemEmailPassword: joi.string().allow(""),
+	systemEmailUser: joi.string().allow(""),
+});
 
 const dayjsValidator = (value, helpers) => {
 	if (!dayjs(value).isValid()) {
@@ -374,9 +381,12 @@ const infrastructureMonitorValidation = joi.object({
 	notifications: joi.array().items(
 		joi.object({
 			type: joi.string().valid("email").required(),
-			address: joi.string().email({ tlds: { allow: false } }).required(),
+			address: joi
+				.string()
+				.email({ tlds: { allow: false } })
+				.required(),
 		})
-	)
+	),
 });
 
 export {
@@ -388,5 +398,5 @@ export {
 	advancedSettingsValidation,
 	infrastructureMonitorValidation,
 	statusPageValidation,
-	logoImageValidation
+	logoImageValidation,
 };

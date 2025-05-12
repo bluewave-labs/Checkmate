@@ -424,21 +424,14 @@ const editMaintenanceByIdWindowBodyValidation = joi.object({
 // SettingsValidation
 //****************************************
 const updateAppSettingsBodyValidation = joi.object({
-	apiBaseUrl: joi.string().allow(""),
-	logLevel: joi.string().valid("debug", "none", "error", "warn").allow(""),
-	clientHost: joi.string().allow(""),
-	dbType: joi.string().allow(""),
-	dbConnectionString: joi.string().allow(""),
-	redisHost: joi.string().allow(""),
-	redisPort: joi.number().allow(null, ""),
-	redisUrl: joi.string().allow(""),
-	jwtTTL: joi.string().allow(""),
+	checkTTL: joi.number().allow(""),
 	pagespeedApiKey: joi.string().allow(""),
 	language: joi.string().allow(""),
 	systemEmailHost: joi.string().allow(""),
 	systemEmailPort: joi.number().allow(""),
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
+	systemEmailUser: joi.string().allow(""),
 });
 
 //****************************************

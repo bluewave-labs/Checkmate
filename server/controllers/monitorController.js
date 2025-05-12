@@ -649,9 +649,8 @@ class MonitorController {
 	sendTestEmail = async (req, res, next) => {
 		try {
 			const { to } = req.body;
-
 			if (!to || typeof to !== "string") {
-				return res.error({ msg: this.stringService.errorForValidEmailAddress });
+				throw new Error(this.stringService.errorForValidEmailAddress);
 			}
 
 			const subject = this.stringService.testEmailSubject;

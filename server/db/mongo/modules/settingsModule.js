@@ -14,12 +14,22 @@ const getAppSettings = async () => {
 
 const updateAppSettings = async (newSettings) => {
 	try {
-		console.log(newSettings);
-		const settings = await AppSettings.findOneAndUpdate(
-			{},
-			{ $set: newSettings },
-			{ new: true, upsert: true }
-		);
+		const update = { $set: { ...newSettings } };
+
+		if (newSettings.pagespeedApiKey === "") {
+			update.$unset = { pagespeedApiKey: "" };
+			delete update.$set.pagespeedApiKey;
+		}
+
+		if (newSettings.systemEmailPassword === "") {
+			update.$unset = { systemEmailPassword: "" };
+			delete update.$set.systemEmailPassword;
+		}
+
+		const settings = await AppSettings.findOneAndUpdate({}, update, {
+			new: true,
+			upsert: true,
+		});
 		return settings;
 	} catch (error) {
 		error.service = SERVICE_NAME;
