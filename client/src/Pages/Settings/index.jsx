@@ -24,6 +24,7 @@ import {
 } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { useFetchSettings, useSaveSettings } from "../../Hooks/useFetchSettings";
 import { UseDeleteMonitorStats } from "../../Hooks/useDeleteMonitorStats";
+import { useIsAdmin } from "../../Hooks/useIsAdmin";
 
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
@@ -36,6 +37,7 @@ const Settings = () => {
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
 	const [errors, setErrors] = useState({});
+
 	// Network
 	const [isSettingsLoading, settingsError] = useFetchSettings({
 		setSettingsData,
@@ -45,6 +47,7 @@ const Settings = () => {
 	const [deleteMonitorStats, isDeletingMonitorStats] = UseDeleteMonitorStats();
 
 	// Setup
+	const isAdmin = useIsAdmin();
 	const theme = useTheme();
 	const HEADING_SX = { mt: theme.spacing(2), mb: theme.spacing(2) };
 	const { t, i18n } = useTranslation();
@@ -155,23 +158,27 @@ const Settings = () => {
 				language={language}
 			/>
 			<SettingsPagespeed
+				isAdmin={isAdmin}
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
 				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
 			/>
 			<SettingsStats
+				isAdmin={isAdmin}
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				handleChange={handleChange}
 				errors={errors}
 			/>
 			<SettingsDemoMonitors
+				isAdmin={isAdmin}
 				HEADER_SX={HEADING_SX}
 				handleChange={handleChange}
 				isLoading={isSettingsLoading || isSaving || isDeletingMonitorStats}
 			/>
 			<SettingsEmail
+				isAdmin={isAdmin}
 				HEADER_SX={HEADING_SX}
 				handleChange={handleChange}
 				settingsData={settingsData}

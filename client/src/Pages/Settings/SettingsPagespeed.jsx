@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const SettingsPagespeed = ({
+	isAdmin,
 	HEADING_SX,
 	settingsData,
 	setSettingsData,
@@ -32,6 +33,10 @@ const SettingsPagespeed = ({
 			settings: { ...settingsData.settings, pagespeedApiKey: e.target.value },
 		});
 	};
+
+	if (!isAdmin) {
+		return null;
+	}
 
 	return (
 		<ConfigBox>
@@ -78,6 +83,7 @@ const SettingsPagespeed = ({
 };
 
 SettingsPagespeed.propTypes = {
+	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
 	settingsData: PropTypes.object,
 	setSettingsData: PropTypes.func,
