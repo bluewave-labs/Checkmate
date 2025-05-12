@@ -458,8 +458,8 @@
 		"overview": "Here's an overview of your {{type}} monitors."
 	},
 	"monitorStatus": {
-		"up": "Up",
-		"down": "Down",
+		"up": "up",
+		"down": "down",
 		"paused": "paused"
 	},
 	"roles": {
