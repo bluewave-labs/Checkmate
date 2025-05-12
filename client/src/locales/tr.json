@@ -70,6 +70,8 @@
   "settingsAppearance": "Görünüm",
   "settingsAppearanceDescription": "Açık ve koyu mod arasında geçiş yapın veya kullanıcı arayüzü dilini değiştirin",
   "settingsThemeMode": "Tema",
+  "settingsThemeModeLight": "Açık",
+  "settingsThemeModeDark": "Koyu",
   "settingsLanguage": "Dil",
   "settingsDistributedUptime": "Dağıtılmış çalışma süresi",
   "settingsDistributedUptimeDescription": "Dağıtılmış çalışma süresi izlemeyi etkinleştirin/devre dışı bırakın.",
@@ -390,12 +392,12 @@
   "infrastructureMonitorCreated": "",
   "infrastructureMonitorUpdated": "",
   "errorInvalidTypeId": "",
-  "errorInvalidFieldId": "",
-  "inviteNoTokenFound": "",
-  "pageSpeedWarning": "",
-  "pageSpeedLearnMoreLink": "",
-  "pageSpeedAddApiKey": "",
-  "update": "",
+  "pageSpeedWarning": "Uyarı: Google PageSpeed API anahtarı eklemediniz. Bu olmadan, PageSpeed monitörü çalışmayacaktır.",
+  "pageSpeedLearnMoreLink": "Daha fazla bilgi için tıklayın",
+  "pageSpeedAddApiKey": "API anahtarınızı nasıl ekleyeceğinizi öğrenin.",
+  "pageSpeedApiKeyFieldDescription": "Sayfa hızı izlemeyi etkinleştirmek için Google PageSpeed API anahtarınızı girin. Anahtarı güncellemek için Sıfırla'ya tıklayın.",
+  "pageSpeedApiKeyFieldResetLabel": "API anahtarı ayarlandı. Değiştirmek için Sıfırla'ya tıklayın.",
+  "reset": "Sıfırla",
   "invalidFileFormat": "",
   "invalidFileSize": "",
   "ClickUpload": "",
@@ -492,5 +494,8 @@
     "password": "Şifre",
     "team": "Takım"
   },
-  "navControls": "Kontroller"
+  "navControls": "Kontroller",
+  "statusBreadCrumbsStatusPages": "Durum Sayfaları",
+  "statusBreadCrumbsDetails": "Detaylar",
+  "uptimeCreateSelectURL": "İzlenecek URL veya IP adresini girin (örn. https://example.com/ veya 192.168.1.100) ve kontrol panelinde görünecek net bir görüntü adı ekleyin."
 }

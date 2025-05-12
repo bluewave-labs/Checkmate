@@ -72,6 +72,8 @@
 	"settingsAppearance": "Appearance",
 	"settingsAppearanceDescription": "Switch between light and dark mode, or change user interface language",
 	"settingsThemeMode": "Theme Mode",
+	"settingsThemeModeLight": "Light",
+	"settingsThemeModeDark": "Dark",
 	"settingsLanguage": "Language",
 	"settingsDistributedUptime": "Distributed uptime",
 	"settingsDistributedUptimeDescription": "Enable/disable distributed uptime monitoring.",
@@ -513,5 +515,8 @@
 		"password": "Password",
 		"team": "Team"
 	},
-	"navControls": "Controls"
+	"navControls": "Controls",
+	"statusBreadCrumbsStatusPages": "Status Pages",
+	"statusBreadCrumbsDetails": "Details",
+	"uptimeCreateSelectURL": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
 }

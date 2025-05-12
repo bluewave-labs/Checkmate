@@ -86,6 +86,8 @@
   "settingsAppearance": "Внешний вид",
   "settingsAppearanceDescription": "Переключение между светлым и темным режимом или изменение языка пользовательского интерфейса",
   "settingsThemeMode": "Тема",
+  "settingsThemeModeLight": "Светлая",
+  "settingsThemeModeDark": "Тёмная",
   "settingsLanguage": "Язык",
   "settingsDistributedUptime": "Distributed uptime",
   "settingsDistributedUptimeDescription": "Включить/выключить distributed uptime monitoring.",
@@ -469,5 +471,8 @@
     "password": "Пароль",
     "team": "Команда"
   },
-  "navControls": "Управление"
+  "navControls": "Управление",
+  "statusBreadCrumbsStatusPages": "Страницы статуса",
+  "statusBreadCrumbsDetails": "Подробности",
+  "uptimeCreateSelectURL": "Введите URL или IP для мониторинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное отображаемое имя, которое будет показано на панели управления."
 }
