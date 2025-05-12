@@ -130,7 +130,7 @@
 	"http": "HTTP",
 	"monitor": "monitor",
 	"aboutus": "About Us",
-
+	"state": "State",
 	"now": "Now",
 	"delete": "Delete",
 	"configure": "Configure",
@@ -387,6 +387,8 @@
 	"statusPageStatusNotPublic": "This status page is not public.",
 	"statusPageStatusNoPage": "There's no status page here.",
 	"statusPageStatusServiceStatus": "Service status",
+	"statusBreadCrumbsStatusPages": "Status Pages",
+	"statusBreadCrumbsDetails": "Details",
 	"deleteStatusPage": "Do you want to delete this status page?",
 	"deleteStatusPageConfirm": "Yes, delete status page",
 	"deleteStatusPageDescription": "Once deleted, your status page cannot be retrieved.",
@@ -456,8 +458,8 @@
 		"overview": "Here's an overview of your {{type}} monitors."
 	},
 	"monitorStatus": {
-		"up": "up",
-		"down": "down",
+		"up": "Up",
+		"down": "Down",
 		"paused": "paused"
 	},
 	"roles": {
@@ -490,9 +492,9 @@
 		}
 	},
 	"monitorState": {
-		"paused": "paused",
-		"resumed": "resumed",
-		"active": "active"
+		"paused": "Paused",
+		"resumed": "Resumed",
+		"active": "Active"
 	},
 	"menu": {
 		"uptime": "Uptime",
