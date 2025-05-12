@@ -3,7 +3,7 @@ import { initReactI18next } from "react-i18next";
 import { setLanguage } from "../Features/UI/uiSlice";
 import store from "../store";
 
-const primaryLanguage = "gb";
+const primaryLanguage = "en";
 
 const translations = import.meta.glob("../locales/*.json", { eager: true });
 
