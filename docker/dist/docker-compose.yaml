@@ -14,7 +14,7 @@ services:
     image: ghcr.io/bluewave-labs/checkmate:backend-dist
     restart: always
     ports:
-      - "5000:5000"
+      - "52345:52345"
     depends_on:
       - redis
       - mongodb
@@ -27,8 +27,6 @@ services:
   redis:
     image: ghcr.io/bluewave-labs/checkmate:redis-dist
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - ./redis/data:/data
     healthcheck:
@@ -43,8 +41,6 @@ services:
     volumes:
       - ./mongo/data:/data/db
     command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
-    ports:
-      - "27017:27017"
     healthcheck:
       test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
       interval: 5s

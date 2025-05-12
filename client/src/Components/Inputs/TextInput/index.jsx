@@ -141,9 +141,9 @@ TextInput.displayName = "TextInput";
 
 TextInput.propTypes = {
 	type: PropTypes.string,
-	id: PropTypes.string.isRequired,
+	id: PropTypes.string,
 	name: PropTypes.string,
-	value: PropTypes.string,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	placeholder: PropTypes.string,
 	isRequired: PropTypes.bool,
 	isOptional: PropTypes.bool,

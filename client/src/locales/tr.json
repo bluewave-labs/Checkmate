@@ -14,9 +14,8 @@
   "authLoginEnterPassword": "Parolanızı girin",
   "commonPassword": "Parola",
   "commonBack": "Geri",
-  "authForgotPasswordTitle": "Şifrenizi mi unuttunuz?",
-  "authForgotPasswordResetPassword": "Şifreyi sıfırla",
-  "authForgotPasswordInstructions": "Endişelenmeyin, size sıfırlama talimatlarını göndereceğiz.",
+  "authForgotPasswordTitle": "Parolanızı mı unuttunuz?",
+  "authForgotPasswordResetPassword": "Parola sıfırla",
   "createPassword": "Parolanızı oluşturun",
   "createAPassword": "Parola",
   "authRegisterAlreadyHaveAccount": "Zaten hesabınız var mı?",
@@ -70,8 +69,6 @@
   "settingsAppearance": "Görünüm",
   "settingsAppearanceDescription": "Açık ve koyu mod arasında geçiş yapın veya kullanıcı arayüzü dilini değiştirin",
   "settingsThemeMode": "Tema",
-  "settingsThemeModeLight": "Açık",
-  "settingsThemeModeDark": "Koyu",
   "settingsLanguage": "Dil",
   "settingsDistributedUptime": "Dağıtılmış çalışma süresi",
   "settingsDistributedUptimeDescription": "Dağıtılmış çalışma süresi izlemeyi etkinleştirin/devre dışı bırakın.",
@@ -421,18 +418,77 @@
   "authRegisterEmailRequired": "Devam etmek için lütfen e-posta adresinizi girin",
   "authRegisterEmailInvalid": "Lütfen geçerli bir e-posta adresi girin",
   "bulkImport": {
-    "title": "",
-    "selectFileTips": "",
-    "selectFileDescription": "",
-    "selectFile": "",
-    "parsingFailed": "",
-    "uploadSuccess": "",
-    "validationFailed": "",
-    "noFileSelected": "",
-    "fallbackPage": ""
+    "title": "Toplu İçe Aktar",
+    "selectFileTips": "Yüklemek için CSV dosyası seçin",
+    "selectFileDescription": "<template>Şablonumuzu</template> veya <sample>örneğimizi</sample> indirebilirsiniz",
+    "selectFile": "Dosya Seç",
+    "parsingFailed": "Ayrıştırma başarısız oldu",
+    "uploadSuccess": "Monitörler başarıyla oluşturuldu!",
+    "validationFailed": "Doğrulama başarısız oldu",
+    "noFileSelected": "Dosya seçilmedi",
+    "fallbackPage": "Sunucuların listesini toplu olarak yüklemek için bir dosya içe aktarın"
   },
-  "statusBreadCrumbsStatusPages": "Durum Sayfaları",
-  "statusBreadCrumbsDetails": "Detaylar",
-  "uptimeCreateSelectURL": "İzlenecek URL veya IP adresini girin (örneğin, https://example.com/ veya 192.168.1.100) ve kontrol panelinde görünecek net bir görüntü adı ekleyin.",
-  "navControls": "Kontroller"
+  "createNew": "Yeni oluştur",
+  "greeting": {
+    "prepend": "Merhaba",
+    "append": "Öğleden sonra senin oyun alanın—hadi onu muhteşem yapalım!",
+    "overview": "İşte {{type}} monitörlerinizin genel görünümü."
+  },
+  "monitorStatus": {
+    "up": "aktif",
+    "down": "devre dışı",
+    "paused": "duraklatıldı"
+  },
+  "roles": {
+    "superAdmin": "Süper yönetici",
+    "admin": "Yönetici",
+    "teamMember": "Takım üyesi",
+    "demoUser": "Demo kullanıcı"
+  },
+  "teamPanel": {
+    "teamMembers": "Takım üyeleri",
+    "filter": {
+      "all": "Tümü",
+      "member": "Üye"
+    },
+    "inviteTeamMember": "Takım üyesi davet et",
+    "inviteNewTeamMember": "Yeni takım üyesi davet et",
+    "inviteDescription": "Yeni bir takım üyesi eklediğinizde, tüm monitörlere erişim hakkı alacaktır.",
+    "email": "E-posta",
+    "selectRole": "Rol seçin",
+    "inviteLink": "Davet bağlantısı",
+    "cancel": "İptal",
+    "noMembers": "Bu role sahip takım üyesi bulunmamaktadır",
+    "getToken": "Token al",
+    "emailToken": "Token e-posta ile gönder",
+    "table": {
+      "name": "Ad",
+      "email": "E-posta",
+      "role": "Rol",
+      "created": "Oluşturuldu"
+    }
+  },
+  "monitorState": {
+    "paused": "duraklatıldı",
+    "resumed": "devam ettirildi",
+    "active": "aktif"
+  },
+  "menu": {
+    "uptime": "Çalışma Süresi",
+    "pagespeed": "Sayfa Hızı",
+    "infrastructure": "Altyapı",
+    "distributedUptime": "Dağıtılmış Çalışma Süresi",
+    "incidents": "Olaylar",
+    "statusPages": "Durum Sayfaları",
+    "maintenance": "Bakım",
+    "integrations": "Entegrasyonlar",
+    "settings": "Ayarlar",
+    "support": "Destek",
+    "discussions": "Tartışmalar",
+    "docs": "Belgeler",
+    "changelog": "Değişiklik Günlüğü",
+    "profile": "Profil",
+    "password": "Şifre",
+    "team": "Takım"
+  }
 }

@@ -16,7 +16,6 @@
   "commonBack": "Назад",
   "authForgotPasswordTitle": "Забыли пароль?",
   "authForgotPasswordResetPassword": "Сбросить пароль",
-  "authForgotPasswordInstructions": "Не волнуйтесь, мы отправим вам инструкции по сбросу пароля.",
   "createPassword": "Создайте свой пароль",
   "createAPassword": "Пароль",
   "authRegisterAlreadyHaveAccount": "Уже есть аккаунт?",
@@ -66,7 +65,18 @@
   "authRegisterLastName": "Фамилия",
   "authRegisterEmail": "Эл. почта",
   "authRegisterEmailRequired": "Чтобы продолжить, пожалуйста, введите ваш адрес электронной почты",
-  "authRegisterEmailInvalid": "Пожалуйста, введите корректный адрес электронной почты",
+  "authRegisterEmailInvalid": "Пожалуйста, введите действительный адрес электронной почты",
+  "bulkImport": {
+    "title": "Массовый импорт",
+    "selectFileTips": "Выберите CSV-файл для загрузки",
+    "selectFileDescription": "Вы можете скачать наш <template>шаблон</template> или <sample>пример</sample>",
+    "selectFile": "Выбрать файл",
+    "parsingFailed": "Ошибка анализа",
+    "uploadSuccess": "Мониторы успешно созданы!",
+    "validationFailed": "Ошибка проверки",
+    "noFileSelected": "Файл не выбран",
+    "fallbackPage": "Импортируйте файл для загрузки списка серверов"
+  },
   "distributedStatusHeaderText": "Охват реального времени и реального устройства",
   "distributedStatusSubHeaderText": "Работает на миллионах устройств по всему миру, просматривайте производительность системы по глобальному региону, стране или городу",
   "settingsGeneralSettings": "Общие настройки",
@@ -75,8 +85,6 @@
   "settingsAppearance": "Внешний вид",
   "settingsAppearanceDescription": "Переключение между светлым и темным режимом или изменение языка пользовательского интерфейса",
   "settingsThemeMode": "Тема",
-  "settingsThemeModeLight": "Светлая",
-  "settingsThemeModeDark": "Темная",
   "settingsLanguage": "Язык",
   "settingsDistributedUptime": "Distributed uptime",
   "settingsDistributedUptimeDescription": "Включить/выключить distributed uptime monitoring.",
@@ -397,11 +405,67 @@
   "pageSpeedWarning": "Предупреждение: Вы не добавили ключ API Google PageSpeed. Без него монитор PageSpeed не будет работать.",
   "pageSpeedLearnMoreLink": "Нажмите здесь, чтобы узнать",
   "pageSpeedAddApiKey": "как добавить ваш ключ API.",
-  "pageSpeedApiKeyFieldDescription": "Введите ваш API-ключ Google PageSpeed для включения мониторинга скорости страницы. Нажмите Сбросить, чтобы обновить ключ.",
-  "pageSpeedApiKeyFieldResetLabel": "API-ключ установлен. Нажмите Сбросить, чтобы изменить его.",
-  "reset": "Сбросить",
-  "statusBreadCrumbsStatusPages": "Страницы статуса",
-  "statusBreadCrumbsDetails": "Подробности",
-  "uptimeCreateSelectURL": "Введите URL или IP-адрес для мониторинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное отображаемое имя, которое будет показано на панели управления.",
-  "navControls": "Управление"
+  "createNew": "Создать новый",
+  "greeting": {
+    "prepend": "Привет",
+    "append": "День прекрасен для новых достижений!",
+    "overview": "Вот обзор ваших мониторов {{type}}."
+  },
+  "monitorStatus": {
+    "up": "работает",
+    "down": "не работает",
+    "paused": "приостановлен"
+  },
+  "roles": {
+    "superAdmin": "Суперадминистратор",
+    "admin": "Администратор",
+    "teamMember": "Член команды",
+    "demoUser": "Демо-пользователь"
+  },
+  "teamPanel": {
+    "teamMembers": "Члены команды",
+    "filter": {
+      "all": "Все",
+      "member": "Член"
+    },
+    "inviteTeamMember": "Пригласить члена команды",
+    "inviteNewTeamMember": "Пригласить нового члена команды",
+    "inviteDescription": "Когда вы добавляете нового члена команды, он получит доступ ко всем мониторам.",
+    "email": "Эл. почта",
+    "selectRole": "Выберите роль",
+    "inviteLink": "Ссылка для приглашения",
+    "cancel": "Отмена",
+    "noMembers": "Нет членов команды с этой ролью",
+    "getToken": "Получить токен",
+    "emailToken": "Отправить токен по эл. почте",
+    "table": {
+      "name": "Имя",
+      "email": "Эл. почта",
+      "role": "Роль",
+      "created": "Создан"
+    }
+  },
+  "monitorState": {
+    "paused": "приостановлен",
+    "resumed": "возобновлен",
+    "active": "активный"
+  },
+  "menu": {
+    "uptime": "Аптайм",
+    "pagespeed": "Скорость страницы",
+    "infrastructure": "Инфраструктура",
+    "distributedUptime": "Распределенный аптайм",
+    "incidents": "Инциденты",
+    "statusPages": "Страницы статуса",
+    "maintenance": "Обслуживание",
+    "integrations": "Интеграции",
+    "settings": "Настройки",
+    "support": "Поддержка",
+    "discussions": "Обсуждения",
+    "docs": "Документация",
+    "changelog": "История изменений",
+    "profile": "Профиль",
+    "password": "Пароль",
+    "team": "Команда"
+  }
 }
