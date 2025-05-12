@@ -10,19 +10,28 @@ import { PropTypes } from "prop-types";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
+import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
+
 const SettingsEmail = ({
+	isAdmin,
 	HEADER_SX,
 	handleChange,
 	settingsData,
 	setSettingsData,
 	isPasswordSet,
 }) => {
+	// Setup
 	const { t } = useTranslation();
 	const theme = useTheme();
 
+	// Local state
 	const [password, setPassword] = useState("");
 	const [hasBeenReset, setHasBeenReset] = useState(false);
 
+	// Network
+	const [isSending, error, sendTestEmail] = useSendTestEmail();
+
+	// Handlers
 	const handlePasswordChange = (e) => {
 		setPassword(e.target.value);
 		setSettingsData({
@@ -30,6 +39,10 @@ const SettingsEmail = ({
 			settings: { ...settingsData.settings, systemEmailPassword: e.target.value },
 		});
 	};
+
+	if (!isAdmin) {
+		return null;
+	}
 
 	return (
 		<ConfigBox>
@@ -109,6 +122,16 @@ const SettingsEmail = ({
 							</Button>
 						</Box>
 					)}
+					<Box>
+						<Button
+							variant="contained"
+							color="accent"
+							loading={isSending}
+							onClick={sendTestEmail}
+						>
+							Send Test E-mail
+						</Button>
+					</Box>
 				</Stack>
 			</Box>
 		</ConfigBox>
@@ -116,6 +139,7 @@ const SettingsEmail = ({
 };
 
 SettingsEmail.propTypes = {
+	isAdmin: PropTypes.bool,
 	settingsData: PropTypes.object,
 	setSettingsData: PropTypes.func,
 	handleChange: PropTypes.func,

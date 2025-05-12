@@ -9,11 +9,16 @@ import { useTranslation } from "react-i18next";
 import Dialog from "../../Components/Dialog";
 import { useState } from "react";
 
-const SettingsDemoMonitors = ({ HEADER_SX, handleChange, isLoading }) => {
+const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	// Local state
 	const [isOpen, setIsOpen] = useState(false);
+
+	if (!isAdmin) {
+		return null;
+	}
+
 	return (
 		<>
 			<ConfigBox>
@@ -83,6 +88,7 @@ const SettingsDemoMonitors = ({ HEADER_SX, handleChange, isLoading }) => {
 };
 
 SettingsDemoMonitors.propTypes = {
+	isAdmin: PropTypes.bool,
 	handleChange: PropTypes.func,
 	HEADER_SX: PropTypes.object,
 };
