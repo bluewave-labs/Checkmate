@@ -16,6 +16,7 @@
   "commonBack": "Назад",
   "authForgotPasswordTitle": "Забыли пароль?",
   "authForgotPasswordResetPassword": "Сбросить пароль",
+  "authForgotPasswordInstructions": "Не волнуйтесь, мы отправим вам инструкции по сбросу.",
   "createPassword": "Создайте свой пароль",
   "createAPassword": "Пароль",
   "authRegisterAlreadyHaveAccount": "Уже есть аккаунт?",
@@ -467,5 +468,6 @@
     "profile": "Профиль",
     "password": "Пароль",
     "team": "Команда"
-  }
+  },
+  "navControls": "Управление"
 }

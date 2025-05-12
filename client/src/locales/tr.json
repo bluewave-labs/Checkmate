@@ -16,6 +16,7 @@
   "commonBack": "Geri",
   "authForgotPasswordTitle": "Parolanızı mı unuttunuz?",
   "authForgotPasswordResetPassword": "Parola sıfırla",
+  "authForgotPasswordInstructions": "Endişelenmeyin, size sıfırlama talimatlarını göndereceğiz.",
   "createPassword": "Parolanızı oluşturun",
   "createAPassword": "Parola",
   "authRegisterAlreadyHaveAccount": "Zaten hesabınız var mı?",
@@ -490,5 +491,6 @@
     "profile": "Profil",
     "password": "Şifre",
     "team": "Takım"
-  }
+  },
+  "navControls": "Kontroller"
 }
