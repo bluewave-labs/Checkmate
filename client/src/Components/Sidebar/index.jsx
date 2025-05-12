@@ -47,6 +47,7 @@ import "./index.css";
 import { useLocation, useNavigate } from "react-router";
 import { useTheme } from "@emotion/react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { clearAuthState } from "../../Features/Auth/authSlice";
 import { toggleSidebar } from "../../Features/UI/uiSlice";
 import { clearUptimeMonitorState } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
@@ -118,6 +119,7 @@ function Sidebar() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 	const authState = useSelector((state) => state.auth);
 	const collapsed = useSelector((state) => state.ui.sidebar.collapsed);
 	const [open, setOpen] = useState({ Dashboard: false, Account: false, Other: false });
@@ -737,7 +739,7 @@ function Sidebar() {
 						>
 							<ThemeSwitch color={iconColor} />
 							<Tooltip
-								title="Controls"
+								title={t("navControls")}
 								disableInteractive
 							>
 								<IconButton

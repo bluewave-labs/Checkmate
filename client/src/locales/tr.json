@@ -433,5 +433,6 @@
   },
   "statusBreadCrumbsStatusPages": "Durum Sayfaları",
   "statusBreadCrumbsDetails": "Detaylar",
-  "uptimeCreateSelectURL": "İzlenecek URL veya IP adresini girin (örneğin, https://example.com/ veya 192.168.1.100) ve kontrol panelinde görünecek net bir görüntü adı ekleyin."
+  "uptimeCreateSelectURL": "İzlenecek URL veya IP adresini girin (örneğin, https://example.com/ veya 192.168.1.100) ve kontrol panelinde görünecek net bir görüntü adı ekleyin.",
+  "navControls": "Kontroller"
 }
