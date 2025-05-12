@@ -434,10 +434,26 @@
       "created": "Создан"
     }
   },
+  "monitorStateChanged": "Монитор {{state}} успешно.",
+  "failedToPauseMonitor": "Не удалось приостановить монитор.",
+  "monitorUpdatedSuccessfully": "Монитор успешно обновлен!",
+  "failedToUpdateMonitor": "Не удалось обновить монитор.",
+  "failedToDeleteMonitor": "Не удалось удалить монитор.",
+  "monitorCreatedSuccessfully": "Монитор успешно создан!",
+  "monitorDeletedSuccessfully": "Монитор успешно удален.",
+  "failedToCreateMonitor": "Не удалось создать монитор.",
+  "failedToCreateStatusPage": "Не удалось создать страницу статуса",
+  "failedToDeleteStatusPage": "Не удалось удалить страницу статуса",
   "monitorState": {
     "paused": "приостановлен",
     "resumed": "возобновлен",
     "active": "активный"
+  },
+  "createNew": "Создать новый",
+  "greeting": {
+    "prepend": "Привет",
+    "append": "День полон возможностей—давайте сделаем его потрясающим!",
+    "overview": "Вот обзор ваших {{type}} мониторов."
   },
   "menu": {
     "uptime": "Аптайм",
