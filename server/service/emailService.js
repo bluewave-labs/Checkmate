@@ -130,6 +130,7 @@ class EmailService {
 			try {
 				const info = await this.transporter.sendMail({
 					to: to,
+					from: systemEmailAddress,
 					subject: subject,
 					html: html,
 				});
