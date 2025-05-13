@@ -476,12 +476,13 @@
     "integrations": "Интеграции",
     "settings": "Настройки",
     "support": "Поддержка",
-    "discussions": "Обсуждения",
-    "docs": "Документация",
-    "changelog": "История изменений",
     "profile": "Профиль",
     "password": "Пароль",
-    "team": "Команда"
+    "team": "Команда",
+    "logOut": "Выйти",
+    "discussions": "Обсуждения",
+    "docs": "Документация",
+    "changelog": "История изменений"
   },
   "navControls": "Управление",
   "statusBreadCrumbsStatusPages": "Страницы статуса",

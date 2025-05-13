@@ -513,7 +513,8 @@
 		"changelog": "Changelog",
 		"profile": "Profile",
 		"password": "Password",
-		"team": "Team"
+		"team": "Team",
+		"logOut": "Log out"
 	},
 	"navControls": "Controls",
 	"statusBreadCrumbsStatusPages": "Status Pages",

@@ -861,7 +861,7 @@ function Sidebar() {
 						}}
 					>
 						<LogoutSvg />
-						Log out
+						{t("menu.logOut", "Log out")}
 					</MenuItem>
 				</Menu>
 			</Stack>

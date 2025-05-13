@@ -492,7 +492,8 @@
     "changelog": "Değişiklik Günlüğü",
     "profile": "Profil",
     "password": "Şifre",
-    "team": "Takım"
+    "team": "Takım",
+    "logOut": "Çıkış"
   },
   "navControls": "Kontroller",
   "statusBreadCrumbsStatusPages": "Durum Sayfaları",
