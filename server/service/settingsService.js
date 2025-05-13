@@ -7,6 +7,7 @@ const envConfig = {
 	systemEmailUser: process.env.SYSTEM_EMAIL_USER,
 	systemEmailAddress: process.env.SYSTEM_EMAIL_ADDRESS,
 	systemEmailPassword: process.env.SYSTEM_EMAIL_PASSWORD,
+	systemEmailConnectionHost: process.env.SYSTEM_EMAIL_CONNECTION_HOST,
 	jwtSecret: process.env.JWT_SECRET,
 	jwtTTL: process.env.TOKEN_TTL,
 	clientHost: process.env.CLIENT_HOST,

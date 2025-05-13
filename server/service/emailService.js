@@ -96,9 +96,10 @@ class EmailService {
 			systemEmailUser,
 			systemEmailAddress,
 			systemEmailPassword,
+			systemEmailConnectionHost
 		} = await this.settingsService.getDBSettings();
 
-		const emailConfig = {
+		const baseEmailConfig = {
 			host: systemEmailHost,
 			port: systemEmailPort,
 			secure: true,
@@ -107,6 +108,15 @@ class EmailService {
 				pass: systemEmailPassword,
 			},
 			connectionTimeout: 5000,
+		};
+
+		const emailConfig = systemEmailPort === "465" ? baseEmailConfig : {
+			...baseEmailConfig,
+			name: systemEmailConnectionHost,
+			secure: false,
+			pool: true,
+			tls: { rejectUnauthorized: false },
+			auth: null
 		};
 
 		this.transporter = this.nodemailer.createTransport(emailConfig);
