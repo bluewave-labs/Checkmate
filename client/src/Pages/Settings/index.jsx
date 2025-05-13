@@ -186,6 +186,36 @@ const Settings = () => {
 				isPasswordSet={settingsData?.emailPasswordSet ?? false}
 			/>
 			<SettingsAbout />
+			<Box
+				sx={{
+					position: "sticky",
+					bottom: 0,
+					boxShadow: theme.shape.boxShadow,
+					zIndex: 1000,
+					mt : 3,
+					backdropFilter: "blur(2px)"
+				}}
+			>
+				<Stack 
+					direction="row"
+					justifyContent="flex-end"
+					pb={theme.spacing(5)}
+					pr={theme.spacing(15)}
+					pl={theme.spacing(5)}
+					pt={theme.spacing(5)}
+                >
+					<Button
+						loading={isSaving || isDeletingMonitorStats || isSettingsLoading}
+						disabled={Object.keys(errors).length > 0}
+						variant="contained"
+						color="accent"
+						sx={{ px: theme.spacing(12) }}
+						onClick={handleSave}
+					>
+						{t("settingsSave")}
+					</Button>
+				</Stack>
+			</Box>
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
