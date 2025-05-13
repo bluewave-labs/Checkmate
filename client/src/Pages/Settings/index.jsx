@@ -216,21 +216,6 @@ const Settings = () => {
 					</Button>
 				</Stack>
 			</Box>
-			<Stack
-				direction="row"
-				justifyContent="flex-end"
-			>
-				<Button
-					loading={isSaving || isDeletingMonitorStats || isSettingsLoading}
-					disabled={Object.keys(errors).length > 0}
-					variant="contained"
-					color="accent"
-					sx={{ px: theme.spacing(12), mt: theme.spacing(20) }}
-					onClick={handleSave}
-				>
-					{t("settingsSave")}
-				</Button>
-			</Stack>
 		</Stack>
 	);
 };
