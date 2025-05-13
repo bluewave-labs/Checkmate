@@ -73,7 +73,7 @@ const InfrastructureMonitors = () => {
 		);
 	}
 
-	if (!isLoading && monitors?.length === 0) {
+	if (!isLoading && typeof summary?.totalMonitors === "undefined" ) {
 		return (
 			<Fallback
 				vowelStart={true}

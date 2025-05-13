@@ -27,22 +27,14 @@ import { useTranslation } from "react-i18next";
  * @returns {JSX.Element} The rendered Filter component.
  */
 
-const typeOptions = [
+const getTypeOptions = () => [
 	{ value: "http", label: "HTTP(S)" },
 	{ value: "ping", label: "Ping" },
 	{ value: "docker", label: "Docker" },
 	{ value: "port", label: "Port" },
 ];
 
-const statusOptions = [
-	{ value: "Up", label: "Up" },
-	{ value: "Down", label: "Down" },
-];
-
-const stateOptions = [
-	{ value: "Active", label: "Active" },
-	{ value: "Paused", label: "Paused" },
-];
+// These functions were moved inline to ensure translations are applied correctly
 
 const Filter = ({
 	selectedTypes,
@@ -57,6 +49,18 @@ const Filter = ({
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+
+	const typeOptions = getTypeOptions();
+	// Create status options with translations
+	const statusOptions = [
+		{ value: "Up", label: t("monitorStatus.up") },
+		{ value: "Down", label: t("monitorStatus.down") },
+	];
+	// Create state options with translations
+	const stateOptions = [
+		{ value: "Active", label: t("monitorState.active") },
+		{ value: "Paused", label: t("monitorState.paused") },
+	];
 
 	const handleTypeChange = (event) => {
 		const selectedValues = event.target.value;

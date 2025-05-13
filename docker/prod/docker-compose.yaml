@@ -36,8 +36,6 @@ services:
   redis:
     image: ghcr.io/bluewave-labs/checkmate:redis-demo
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - ./redis/data:/data
     healthcheck:
@@ -50,8 +48,6 @@ services:
     image: ghcr.io/bluewave-labs/checkmate:mongo-demo
     restart: always
     command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
-    ports:
-      - "27017:27017"
     volumes:
       - ./mongo/data:/data/db
       # - ./mongo/init/init.js:/docker-entrypoint-initdb.d/init.js // No longer needed

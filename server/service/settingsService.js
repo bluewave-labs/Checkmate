@@ -59,7 +59,20 @@ class SettingsService {
 	}
 
 	async getDBSettings() {
-		const settings = await this.appSettings.findOne({ singleton: true }).lean();
+		// Remove any old settings
+		await this.appSettings.deleteMany({ version: { $exists: false } });
+
+		let settings = await this.appSettings
+			.findOne({ singleton: true })
+			.select("-__v -_id -createdAt -updatedAt -singleton")
+			.lean();
+		if (settings === null) {
+			await this.appSettings.create({});
+			settings = await this.appSettings
+				.findOne({ singleton: true })
+				.select("-__v -_id -createdAt -updatedAt -singleton")
+				.lean();
+		}
 		return settings;
 	}
 }

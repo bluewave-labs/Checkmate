@@ -428,6 +428,10 @@ class StringService {
 	get dbUserExists() {
 		return this.translationService.getTranslation("dbUserExists");
 	}
+
+	get testEmailSubject() {
+		return this.translationService.getTranslation("testEmailSubject");
+	}
 }
 
 export default StringService;

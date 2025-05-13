@@ -29,7 +29,10 @@ class EmailService {
 		this.mjml2html = mjml2html;
 		this.nodemailer = nodemailer;
 		this.logger = logger;
+		this.init();
+	}
 
+	init = async () => {
 		/**
 		 * Loads an email template from the filesystem.
 		 *
@@ -67,34 +70,14 @@ class EmailService {
 			serverIsUpTemplate: this.loadTemplate("serverIsUp"),
 			passwordResetTemplate: this.loadTemplate("passwordReset"),
 			hardwareIncidentTemplate: this.loadTemplate("hardwareIncident"),
-			testEmailTemplate: this.loadTemplate("testEmailTemplate")
+			testEmailTemplate: this.loadTemplate("testEmailTemplate"),
 		};
 
 		/**
 		 * The email transporter used to send emails.
 		 * @type {Object}
 		 */
-
-		const {
-			systemEmailHost,
-			systemEmailPort,
-			systemEmailUser,
-			systemEmailAddress,
-			systemEmailPassword,
-		} = this.settingsService.getSettings();
-
-		const emailConfig = {
-			host: systemEmailHost,
-			port: systemEmailPort,
-			secure: true,
-			auth: {
-				user: systemEmailUser || systemEmailAddress,
-				pass: systemEmailPassword,
-			},
-		};
-
-		this.transporter = this.nodemailer.createTransport(emailConfig);
-	}
+	};
 
 	/**
 	 * Asynchronously builds and sends an email using a specified template and context.
@@ -106,6 +89,28 @@ class EmailService {
 	 * @returns {Promise<string>} A promise that resolves to the messageId of the sent email.
 	 */
 	buildAndSendEmail = async (template, context, to, subject) => {
+		// TODO - Consider an update transporter method so this only needs to be recreated when smtp settings change
+		const {
+			systemEmailHost,
+			systemEmailPort,
+			systemEmailUser,
+			systemEmailAddress,
+			systemEmailPassword,
+		} = await this.settingsService.getDBSettings();
+
+		const emailConfig = {
+			host: systemEmailHost,
+			port: systemEmailPort,
+			secure: true,
+			auth: {
+				user: systemEmailUser || systemEmailAddress,
+				pass: systemEmailPassword,
+			},
+			connectionTimeout: 5000,
+		};
+
+		this.transporter = this.nodemailer.createTransport(emailConfig);
+
 		const buildHtml = async (template, context) => {
 			try {
 				const mjml = this.templateLookup[template](context);
@@ -125,6 +130,7 @@ class EmailService {
 			try {
 				const info = await this.transporter.sendMail({
 					to: to,
+					from: systemEmailAddress,
 					subject: subject,
 					html: html,
 				});

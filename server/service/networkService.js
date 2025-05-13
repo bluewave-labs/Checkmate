@@ -36,7 +36,6 @@ class NetworkService {
 		this.net = net;
 		this.stringService = stringService;
 		this.settingsService = settingsService;
-		this.settings = settingsService.getSettings();
 	}
 
 	/**
@@ -254,8 +253,18 @@ class NetworkService {
 			const url = job.data.url;
 			const updatedJob = { ...job };
 			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
-			if (this.settings?.pagespeedApiKey) {
-				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
+
+			const dbSettings = await this.settingsService.getDBSettings();
+			if (dbSettings?.pagespeedApiKey) {
+				pagespeedUrl += `&key=${dbSettings.pagespeedApiKey}`;
+			} else {
+				this.logger.info({
+					message: "Pagespeed API key not found",
+					service: this.SERVICE_NAME,
+					method: "requestPagespeed",
+					details: { url },
+				});
+				return;
 			}
 			updatedJob.data.url = pagespeedUrl;
 			return await this.requestHttp(updatedJob);

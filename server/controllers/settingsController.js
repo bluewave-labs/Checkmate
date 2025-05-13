@@ -13,12 +13,25 @@ class SettingsController {
 	getAppSettings = async (req, res, next) => {
 		const dbSettings = await this.settingsService.getDBSettings();
 		const sanitizedSettings = { ...dbSettings };
+
+		const returnSettings = {
+			pagespeedKeySet: false,
+			emailPasswordSet: false,
+		};
+
 		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
-			sanitizedSettings.pagespeedApiKey = "********";
+			returnSettings.pagespeedKeySet = true;
+			delete sanitizedSettings.pagespeedApiKey;
 		}
+		if (typeof sanitizedSettings.systemEmailPassword !== "undefined") {
+			returnSettings.emailPasswordSet = true;
+			delete sanitizedSettings.systemEmailPassword;
+		}
+
+		returnSettings.settings = sanitizedSettings;
 		return res.success({
 			msg: this.stringService.getAppSettings,
-			data: sanitizedSettings,
+			data: returnSettings,
 		});
 	};
 
