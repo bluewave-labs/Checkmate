@@ -166,7 +166,7 @@ const ForgotPassword = () => {
 							</IconBox>
 						</Stack>
 						<Typography component="h1">{t("authForgotPasswordTitle")}</Typography>
-						<Typography>No worries, we&apos;ll send you reset instructions.</Typography>
+						<Typography>{t("authForgotPasswordInstructions")}</Typography>
 					</Box>
 					<Box
 						component="form"
@@ -179,9 +179,9 @@ const ForgotPassword = () => {
 						<TextInput
 							type="email"
 							id="forgot-password-email-input"
-							label="Email"
+							label={t("email")}
 							isRequired={true}
-							placeholder="Enter your email"
+							placeholder={t("enterEmail")}
 							value={form.email}
 							onChange={handleChange}
 							error={errors.email ? true : false}

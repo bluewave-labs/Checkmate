@@ -747,7 +747,7 @@ function Sidebar() {
 						>
 							<ThemeSwitch color={iconColor} />
 							<Tooltip
-								title="Controls"
+								title={t("navControls")}
 								disableInteractive
 							>
 								<IconButton
@@ -861,7 +861,7 @@ function Sidebar() {
 						}}
 					>
 						<LogoutSvg />
-						Log out
+						{t("menu.logOut", "Log out")}
 					</MenuItem>
 				</Menu>
 			</Stack>

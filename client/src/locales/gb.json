@@ -16,6 +16,7 @@
 	"commonBack": "Back",
 	"authForgotPasswordTitle": "Forgot password?",
 	"authForgotPasswordResetPassword": "Reset password",
+	"authForgotPasswordInstructions": "No worries, we'll send you reset instructions.",
 	"createPassword": "Create your password",
 	"createAPassword": "Password",
 	"authRegisterAlreadyHaveAccount": "Already have an account?",
@@ -71,6 +72,8 @@
 	"settingsAppearance": "Appearance",
 	"settingsAppearanceDescription": "Switch between light and dark mode, or change user interface language",
 	"settingsThemeMode": "Theme Mode",
+	"settingsThemeModeLight": "Light",
+	"settingsThemeModeDark": "Dark",
 	"settingsLanguage": "Language",
 	"settingsDistributedUptime": "Distributed uptime",
 	"settingsDistributedUptimeDescription": "Enable/disable distributed uptime monitoring.",
@@ -85,6 +88,7 @@
 	"settingsClearAllStatsDialogTitle": "Do you want to clear all stats?",
 	"settingsClearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
 	"settingsClearAllStatsDialogConfirm": "Yes, clear all stats",
+	"settingsClearAllStatsDialogCancel": "Cancel",
 	"settingsDemoMonitors": "Demo monitors",
 	"settingsDemoMonitorsDescription": "Add sample monitors for demonstration purposes.",
 	"settingsAddDemoMonitors": "Adding demo monitors",
@@ -299,6 +303,7 @@
 	"integrationsZapier": "Zapier",
 	"integrationsZapierInfo": "Send all incidents to Zapier, and then see them everywhere",
 	"commonSave": "Save",
+	"commonSaving": "Saving...",
 	"createYour": "Create your",
 	"createMonitor": "Create monitor",
 	"pause": "Pause",
@@ -500,7 +505,7 @@
 		"uptime": "Uptime",
 		"pagespeed": "Pagespeed",
 		"infrastructure": "Infrastructure",
-		"distributedUptime": "Distributed uptime",
+		"distributedUptime": "Distributed Uptime",
 		"incidents": "Incidents",
 		"statusPages": "Status pages",
 		"maintenance": "Maintenance",
@@ -512,6 +517,23 @@
 		"changelog": "Changelog",
 		"profile": "Profile",
 		"password": "Password",
-		"team": "Team"
-	}
+		"team": "Team",
+		"logOut": "Log out"
+	},
+	"navControls": "Controls",
+	"statusBreadCrumbsStatusPages": "Status Pages",
+	"statusBreadCrumbsDetails": "Details",
+	"incidentsPageTitle": "Incidents",
+	"passwordPanel": {
+		"passwordChangedSuccess": "Your password was changed successfully.",
+		"passwordInputIncorrect": "Your password input was incorrect.",
+		"currentPassword": "Current password",
+		"enterCurrentPassword": "Enter your current password",
+		"newPassword": "New password",
+		"enterNewPassword": "Enter your new password",
+		"confirmNewPassword": "Confirm new password",
+		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
+		"saving": "Saving..."
+	},
+	"uptimeCreateSelectURL": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
 }
