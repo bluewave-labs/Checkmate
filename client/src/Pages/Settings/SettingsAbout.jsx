@@ -15,7 +15,7 @@ const SettingsAbout = () => {
 				<Typography component="h1">{t("settingsAbout")}</Typography>
 			</Box>
 			<Box>
-				<Typography component="h2">Checkmate {2.0}</Typography>
+				<Typography component="h2">Checkmate {2.1}</Typography>
 				<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(6), opacity: 0.6 }}>
 					{t("settingsDevelopedBy")}
 				</Typography>

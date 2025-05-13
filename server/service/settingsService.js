@@ -59,6 +59,9 @@ class SettingsService {
 	}
 
 	async getDBSettings() {
+		// Remove any old settings
+		await this.appSettings.deleteMany({ version: { $exists: false } });
+
 		let settings = await this.appSettings
 			.findOne({ singleton: true })
 			.select("-__v -_id -createdAt -updatedAt -singleton")
