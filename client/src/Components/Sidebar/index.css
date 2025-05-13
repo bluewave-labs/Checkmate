@@ -55,9 +55,7 @@ aside {
 	flex: 1;
 	transition: max-width 650ms cubic-bezier(0.36, -0.01, 0, 0.77);
 }
-.home-layout aside.collapsed {
-	max-width: 64px;
-}
+
 
 aside.expanded .MuiTypography-root,
 aside.expanded p.MuiTypography-root,

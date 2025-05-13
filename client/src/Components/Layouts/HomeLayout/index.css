@@ -17,7 +17,6 @@
 	top: 0;
 	left: 0;
 	height: 100vh;
-	max-width: var(--env-var-side-bar-width);
 }
 
 .home-layout > div {

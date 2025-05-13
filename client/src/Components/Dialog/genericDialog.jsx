@@ -1,11 +1,14 @@
 import { useId } from "react";
 import PropTypes from "prop-types";
 import { Modal, Stack, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const GenericDialog = ({ title, description, open, onClose, theme, children }) => {
 	const titleId = useId();
 	const descriptionId = useId();
 	const ariaDescribedBy = description?.length > 0 ? descriptionId : "";
+
+	const sidebarWidth = useSelector((state) => state.ui.sidebar.width);
 	return (
 		<Modal
 			aria-labelledby={titleId}
@@ -20,7 +23,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 					position: "absolute",
 					top: "50%",
 					left: "50%",
-					transform: "translate(-50%, -50%)",
+					transform: `translate(${sidebarWidth / 2}px, 0) translate(-50%, -50%)`,
 					minWidth: 400,
 					bgcolor: theme.palette.primary.main,
 					border: 1,
