@@ -110,14 +110,19 @@ class EmailService {
 			connectionTimeout: 5000,
 		};
 
-		const emailConfig = systemEmailPort === "465" ? baseEmailConfig : {
+		const isSmtps = Number(systemEmailPort) === 465;
+
+		const emailConfig = !isSmtps ? {
 			...baseEmailConfig,
 			name: systemEmailConnectionHost,
 			secure: false,
 			pool: true,
 			tls: { rejectUnauthorized: false },
-			auth: null
-		};
+		} : baseEmailConfig;
+
+		if (!isSmtps) {
+			delete emailConfig.auth;
+		}
 
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 
