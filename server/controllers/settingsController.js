@@ -13,6 +13,7 @@ class SettingsController {
 	getAppSettings = async (req, res, next) => {
 		const dbSettings = await this.settingsService.getDBSettings();
 		const sanitizedSettings = { ...dbSettings };
+		delete sanitizedSettings.version;
 
 		const returnSettings = {
 			pagespeedKeySet: false,
@@ -27,7 +28,6 @@ class SettingsController {
 			returnSettings.emailPasswordSet = true;
 			delete sanitizedSettings.systemEmailPassword;
 		}
-
 		returnSettings.settings = sanitizedSettings;
 		return res.success({
 			msg: this.stringService.getAppSettings,
