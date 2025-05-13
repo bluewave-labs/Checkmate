@@ -302,6 +302,7 @@
 	"integrationsZapier": "Zapier",
 	"integrationsZapierInfo": "Send all incidents to Zapier, and then see them everywhere",
 	"commonSave": "Save",
+	"commonSaving": "Saving...",
 	"createYour": "Create your",
 	"createMonitor": "Create monitor",
 	"pause": "Pause",

@@ -232,7 +232,7 @@ const PasswordPanel = () => {
 						color="accent"
 						type="submit"
 						loading={isLoading}
-						loadingIndicator={t("passwordPanel.saving", "Saving...")}
+						loadingIndicator={t("commonSaving", "Saving...")}
 						disabled={
 							Object.keys(errors).length > 0 ||
 							Object.values(localData).filter((value) => value === "").length > 0

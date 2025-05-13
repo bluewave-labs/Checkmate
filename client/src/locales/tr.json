@@ -292,6 +292,7 @@
   "integrationsZapier": "Zapier",
   "integrationsZapierInfo": "",
   "commonSave": "Kaydet",
+  "commonSaving": "Kaydediliyor...",
   "createYour": "",
   "createMonitor": "Monitör oluştur",
   "pause": "Beklet",
