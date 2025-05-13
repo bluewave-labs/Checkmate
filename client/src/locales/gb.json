@@ -88,6 +88,7 @@
 	"settingsClearAllStatsDialogTitle": "Do you want to clear all stats?",
 	"settingsClearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
 	"settingsClearAllStatsDialogConfirm": "Yes, clear all stats",
+	"settingsClearAllStatsDialogCancel": "Cancel",
 	"settingsDemoMonitors": "Demo monitors",
 	"settingsDemoMonitorsDescription": "Add sample monitors for demonstration purposes.",
 	"settingsAddDemoMonitors": "Adding demo monitors",

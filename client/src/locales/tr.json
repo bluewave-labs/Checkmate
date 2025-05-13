@@ -86,6 +86,7 @@
   "settingsClearAllStatsDialogTitle": "Tüm istatistikleri temizlemek istiyor musunuz?",
   "settingsClearAllStatsDialogDescription": "Kaldırıldıktan sonra, izleme geçmişi ve istatistikleri geri alınamaz.",
   "settingsClearAllStatsDialogConfirm": "Evet, tüm istatistikleri temizle",
+  "settingsClearAllStatsDialogCancel": "İptal",
   "settingsDemoMonitors": "Demo monitörler",
   "settingsDemoMonitorsDescription": "Gösterim amaçlı örnek monitörler ekleyin.",
   "settingsAddDemoMonitors": "Demo monitörler ekleniyor",

@@ -102,6 +102,7 @@
   "settingsClearAllStatsDialogTitle": "Хотите очистить всю статистику?",
   "settingsClearAllStatsDialogDescription": "После удаления история мониторинга и статистика не могут быть восстановлены.",
   "settingsClearAllStatsDialogConfirm": "Да, очистить всю статистику",
+  "settingsClearAllStatsDialogCancel": "Отмена",
   "settingsDemoMonitors": "Демо мониторы",
   "settingsDemoMonitorsDescription": "Добавьте примеры мониторов для демонстрации.",
   "settingsAddDemoMonitors": "Добавление демонстрационных мониторов",
