@@ -1,0 +1,5 @@
+{
+	"ignore": ["locales/*", "*.log", "node_modules/*"],
+	"watch": ["*.js", "*.json"],
+	"ext": "js,json"
+}

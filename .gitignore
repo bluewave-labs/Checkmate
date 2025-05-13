@@ -1,5 +1,0 @@
-.vite
-.vscode
-*.sh
-!uptime.sh
-*.idea

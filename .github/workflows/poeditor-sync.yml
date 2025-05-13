@@ -1,0 +1,115 @@
+name: POEditor Translation Synchronization
+
+on:
+  # For manual triggering
+  workflow_dispatch:
+    inputs:
+      languages:
+        description: "Languages to synchronize (comma separated, e.g.: tr,en,es)"
+        required: false
+        default: "tr,en"
+      format:
+        description: "Export format (key_value_json or json)"
+        required: false
+        default: "key_value_json"
+
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-translations:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Create package.json for scripts
+        run: |
+          mkdir -p .github/scripts
+          cat > .github/scripts/package.json << EOF
+          {
+            "name": "poeditor-scripts",
+            "version": "1.0.0",
+            "private": true,
+            "type": "module",
+            "dependencies": {
+              "axios": "^1.6.0",
+              "fs-extra": "^11.1.1"
+            }
+          }
+          EOF
+
+      - name: Install dependencies
+        run: |
+          cd .github/scripts
+          npm install
+
+      - name: Download translations from POEditor
+        env:
+          POEDITOR_API: ${{ secrets.POEDITOR_API }}
+          POEDITOR_PROJECT_ID: ${{ secrets.POEDITOR_PROJECT_ID }}
+          LANGUAGES: ${{ github.event.inputs.languages || 'tr,en' }}
+          EXPORT_FORMAT: ${{ github.event.inputs.format || 'key_value_json' }}
+        run: |
+          mkdir -p temp
+          node .github/scripts/download-translations.js
+
+      - name: Verify translation files
+        run: |
+          echo "Verifying translation files..."
+          for file in temp/*.json; do
+            echo "Checking $file"
+            if [ ! -s "$file" ]; then
+              echo "Error: $file is empty or does not exist"
+              exit 1
+            fi
+            # Validate JSON format
+            cat "$file" | jq . > /dev/null || { echo "Error: $file is not valid JSON"; exit 1; }
+          done
+          echo "All translation files are valid"
+
+      - name: Copy translations to project
+        run: |
+          mkdir -p client/src/locales
+          cp -r temp/* client/src/locales/
+          echo "Translation files copied to client/src/locales/"
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: translations updated from POEditor"
+          title: "🌐 Updated Translations from POEditor"
+          body: |
+            This PR contains the latest translations from POEditor.
+
+            📅 Update Date: ${{ steps.date.outputs.date }}
+            🔄 Updated Languages: ${{ github.event.inputs.languages || 'tr,en' }}
+
+            ⚠️ Please review the translations and approve the PR if everything looks correct.
+          branch: translation-update-${{ github.run_number }}
+          delete-branch: true
+          base: develop
+          add-paths: |
+            client/src/locales/*.json
+          committer: GitHub Action <github-actions[bot]@users.noreply.github.com>
+          author: GitHub Action <github-actions[bot]@users.noreply.github.com>

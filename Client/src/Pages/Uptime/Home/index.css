@@ -1,6 +1,0 @@
-/* TODO take these from here and declare using emotion. Plus, the values should live in the theme */
-.monitors .MuiStack-root > button:not(.MuiIconButton-root) {
-	font-size: var(--env-var-font-size-medium);
-	height: var(--env-var-height-2);
-	min-width: fit-content;
-}
