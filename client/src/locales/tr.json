@@ -498,5 +498,16 @@
   "statusBreadCrumbsStatusPages": "Durum Sayfaları",
   "statusBreadCrumbsDetails": "Detaylar",
   "incidentsPageTitle": "Olaylar",
+  "passwordPanel": {
+    "passwordChangedSuccess": "Şifreniz başarıyla değiştirildi.",
+    "passwordInputIncorrect": "Şifre girişiniz yanlış.",
+    "currentPassword": "Mevcut şifre",
+    "enterCurrentPassword": "Mevcut şifrenizi girin",
+    "newPassword": "Yeni şifre",
+    "enterNewPassword": "Yeni şifrenizi girin",
+    "confirmNewPassword": "Yeni şifreyi onaylayın",
+    "passwordRequirements": "Yeni şifre en az 8 karakter içermeli ve en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.",
+    "saving": "Kaydediliyor..."
+  },
   "uptimeCreateSelectURL": "İzlenecek URL veya IP adresini girin (örn. https://example.com/ veya 192.168.1.100) ve kontrol panelinde görünecek net bir görüntü adı ekleyin."
 }

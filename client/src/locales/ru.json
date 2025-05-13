@@ -406,6 +406,17 @@
   "uptimeCreateJsonPathQuery": "",
   "maintenanceTableActionMenuDialogTitle": "",
   "incidentsPageTitle": "Инциденты",
+  "passwordPanel": {
+    "passwordChangedSuccess": "Ваш пароль был успешно изменен.",
+    "passwordInputIncorrect": "Ваш пароль введен неверно.",
+    "currentPassword": "Текущий пароль",
+    "enterCurrentPassword": "Введите ваш текущий пароль",
+    "newPassword": "Новый пароль",
+    "enterNewPassword": "Введите ваш новый пароль",
+    "confirmNewPassword": "Подтвердите новый пароль",
+    "passwordRequirements": "Новый пароль должен содержать не менее 8 символов и должен иметь как минимум одну заглавную букву, одну строчную букву, одну цифру и один специальный символ.",
+    "saving": "Сохранение..."
+  },
   "pageSpeedWarning": "Предупреждение: Вы не добавили ключ API Google PageSpeed. Без него монитор PageSpeed не будет работать.",
   "pageSpeedLearnMoreLink": "Нажмите здесь, чтобы узнать",
   "pageSpeedAddApiKey": "как добавить ваш ключ API.",
