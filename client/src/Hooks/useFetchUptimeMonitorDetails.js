@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { networkService } from "../main";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../Utils/toastUtils";
+import { useSelector } from "react-redux";
 
 export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
 	const [networkError, setNetworkError] = useState(false);
@@ -9,6 +10,11 @@ export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
 	const [monitor, setMonitor] = useState(undefined);
 	const [monitorStats, setMonitorStats] = useState(undefined);
 	const navigate = useNavigate();
+
+	// Get monitor's isActive status from Redux store
+	const [monitorIsActive, setMonitorIsActive] = useState(
+		useSelector((state) => state.uptimeMonitors[monitorId]?.isActive)
+	);
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
@@ -29,8 +35,8 @@ export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
 			}
 		};
 		fetchMonitors();
-	}, [dateRange, monitorId, navigate]);
-	return [monitor, monitorStats, isLoading, networkError];
+	}, [dateRange, monitorId, monitorIsActive, navigate]);
+	return [monitor, monitorStats, isLoading, networkError, setMonitorIsActive];
 };
 
 export default useFetchUptimeMonitorDetails;

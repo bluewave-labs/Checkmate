@@ -8,7 +8,7 @@ import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
 import MonitorDetailHeaderButton from "../MonitorDetailHeaderButton";
 
-const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor, showPauseButton=false}) => {
+const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor, showPauseButton=false, setMonitorIsActive=null}) => {
 	const theme = useTheme();
 	const { statusColor, determineState } = useUtils();
 	if (isLoading) {
@@ -45,6 +45,7 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor, showPa
 				path={path}
 				isLoading={isLoading}
 				showPauseButton={showPauseButton}
+				setMonitorIsActive={setMonitorIsActive}
 			/>
 		</Stack>
 	);
@@ -56,6 +57,7 @@ MonitorStatusHeader.propTypes = {
 	isAdmin: PropTypes.bool,
 	monitor: PropTypes.object,
 	showPauseButton: PropTypes.bool,
+	setMonitorIsActive: PropTypes.func,
 };
 
 export default MonitorStatusHeader;

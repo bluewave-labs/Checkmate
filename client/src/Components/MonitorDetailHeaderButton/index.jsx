@@ -9,6 +9,7 @@ const MonitorDetailHeaderButton = ({
 	isLoading = false,
 	path,
 	showPauseButton = false,
+	setMonitorIsActive,
 }) => {
 	if (!isAdmin) return null;
 
@@ -22,6 +23,7 @@ const MonitorDetailHeaderButton = ({
 				monitor={monitor}
 				path={path}
 				isLoading={isLoading}
+				setMonitorIsActive={setMonitorIsActive}
 			/>
 			)}
 			<ConfigButton
@@ -39,6 +41,7 @@ MonitorDetailHeaderButton.propTypes = {
 	path: PropTypes.string,
 	isLoading: PropTypes.bool,
 	showPauseButton: PropTypes.bool,
+	setMonitorIsActive: PropTypes.func,
 };
 
 export default MonitorDetailHeaderButton;

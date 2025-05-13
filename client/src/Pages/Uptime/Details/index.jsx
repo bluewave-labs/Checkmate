@@ -48,7 +48,7 @@ const UptimeDetails = () => {
 	const isAdmin = useIsAdmin();
 	const { t } = useTranslation();
 
-	const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError] =
+	const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError, setMonitorIsActive] =
 		useFetchUptimeMonitorDetails({
 			monitorId,
 			dateRange,
@@ -104,8 +104,9 @@ const UptimeDetails = () => {
 				<MonitorStatusHeader
 					path={"uptime"}
 					isAdmin={isAdmin}
-					shouldRender={!monitorIsLoading}
+					isLoading={monitorIsLoading}
 					monitor={monitor}
+					showPauseButton={true}
 				/>
 				<GenericFallback>
 					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
@@ -113,6 +114,8 @@ const UptimeDetails = () => {
 			</Stack>
 		);
 	}
+
+	console.log("UptimeDetails render");
 
 	return (
 		<Stack gap={theme.spacing(10)}>
@@ -123,6 +126,7 @@ const UptimeDetails = () => {
 				isLoading={monitorIsLoading}
 				monitor={monitor}
 				showPauseButton={true}
+				setMonitorIsActive={setMonitorIsActive}
 			/>
 			<UptimeStatusBoxes
 				isLoading={monitorIsLoading}
