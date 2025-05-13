@@ -518,5 +518,6 @@
 	"navControls": "Controls",
 	"statusBreadCrumbsStatusPages": "Status Pages",
 	"statusBreadCrumbsDetails": "Details",
+	"incidentsPageTitle": "Incidents",
 	"uptimeCreateSelectURL": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
 }

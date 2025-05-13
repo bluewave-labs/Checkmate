@@ -405,6 +405,7 @@
   "uptimeCreateJsonPath": "",
   "uptimeCreateJsonPathQuery": "",
   "maintenanceTableActionMenuDialogTitle": "",
+  "incidentsPageTitle": "Инциденты",
   "pageSpeedWarning": "Предупреждение: Вы не добавили ключ API Google PageSpeed. Без него монитор PageSpeed не будет работать.",
   "pageSpeedLearnMoreLink": "Нажмите здесь, чтобы узнать",
   "pageSpeedAddApiKey": "как добавить ваш ключ API.",

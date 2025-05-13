@@ -11,12 +11,15 @@ import { useState } from "react";
 import IncidentTable from "./Components/IncidentTable";
 import GenericFallback from "../../Components/GenericFallback";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
+import { useTranslation } from "react-i18next";
 //Constants
-const BREADCRUMBS = [{ name: `Incidents`, path: "/incidents" }];
 
 const Incidents = () => {
 	// Redux state
 	const { user } = useSelector((state) => state.auth);
+	const { t } = useTranslation();
+	
+	const BREADCRUMBS = [{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" }];
 
 	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState("0");
