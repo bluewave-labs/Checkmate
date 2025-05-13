@@ -11,11 +11,12 @@ declare -A services=(
   ["bluewaveuptime/uptime_server"]="./docker/dist/server.Dockerfile"
 )
 
-# Loop through each service and build the corresponding image
 for service in "${!services[@]}"; do
-  docker build -f "${services[$service]}" -t "$service" .
-  
-  # Check if the build succeeded
+  docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    -f "${services[$service]}" \
+    -t "$service" \
+
   if [ $? -ne 0 ]; then
     echo "Error building $service image. Exiting..."
     exit 1
