@@ -171,7 +171,7 @@ const monitorValidation = joi.object({
 		.max(65535)
 		.when("type", {
 			is: "port",
-			then: joi.required().messages({
+			then: joi.number().messages({
 				"number.base": "Port must be a number.",
 				"number.min": "Port must be at least 1.",
 				"number.max": "Port must be at most 65535.",
