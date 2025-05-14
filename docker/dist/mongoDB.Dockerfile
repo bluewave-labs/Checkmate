@@ -1,3 +1,3 @@
-FROM --platform=$BUILDPLATFORM mongo
+FROM mongo
 EXPOSE 27017
 CMD ["mongod"]
