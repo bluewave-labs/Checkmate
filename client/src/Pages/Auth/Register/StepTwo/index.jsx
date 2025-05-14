@@ -71,7 +71,7 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 						helperText={errors.email && (
 						errors.email.includes("required") ? t("authRegisterEmailRequired") :
 						errors.email.includes("valid email") ? t("authRegisterEmailInvalid") :
-						errors.email
+						t(errors.email)
 					)}
 						ref={inputRef}
 					/>

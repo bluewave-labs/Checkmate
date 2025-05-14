@@ -185,7 +185,7 @@ const ForgotPassword = () => {
 							value={form.email}
 							onChange={handleChange}
 							error={errors.email ? true : false}
-							helperText={errors.email}
+							helperText={t(errors.email)}
 						/>
 						<Button
 							variant="contained"

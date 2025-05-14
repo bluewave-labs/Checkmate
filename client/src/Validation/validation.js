@@ -15,6 +15,17 @@ const nameSchema = joi
 			"Name must contain only letters, spaces, apostrophes, or hyphens",
 	});
 
+const lastnameSchema = joi
+	.string()
+	.max(50)
+	.trim()
+	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
+	.messages({
+		"string.empty": "Surname is required",
+		"string.max": "Surname must be less than 50 characters",
+		"string.pattern.base": "Surname must contain only letters, spaces, apostrophes, or hyphens"
+	});
+
 const passwordSchema = joi
 	.string()
 	.trim()
@@ -54,7 +65,7 @@ const passwordSchema = joi
 
 const credentials = joi.object({
 	firstName: nameSchema,
-	lastName: nameSchema,
+	lastName: lastnameSchema,
 	email: joi
 		.string()
 		.trim()

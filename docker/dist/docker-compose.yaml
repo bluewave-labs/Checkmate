@@ -3,7 +3,7 @@ services:
     image: ghcr.io/bluewave-labs/checkmate:frontend-dist
     restart: always
     environment:
-      UPTIME_APP_API_BASE_URL: "http://localhost:5000/api/v1"
+      UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
       UPTIME_APP_CLIENT_HOST: "http://localhost"
     ports:
       - "80:80"
@@ -22,6 +22,7 @@ services:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
       - REDIS_URL=redis://redis:6379
       - CLIENT_HOST=http://localhost
+      - JWT_SECRET=my_secret
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
   redis:

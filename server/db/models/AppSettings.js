@@ -34,6 +34,10 @@ const AppSettingsSchema = mongoose.Schema(
 			unique: true,
 			default: true,
 		},
+		version: {
+			type: Number,
+			default: 1,
+		},
 	},
 	{
 		timestamps: true,
