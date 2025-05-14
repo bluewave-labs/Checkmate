@@ -1,2 +1,2 @@
-FROM redis
+FROM --platform=$BUILDPLATFORM redis
 EXPOSE 6379

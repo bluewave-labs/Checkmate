@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build
+FROM --platform=$BUILDPLATFORM node:20-alpine AS build
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
@@ -21,7 +21,7 @@ COPY ./client .
 
 RUN npm run build
 
-FROM nginx:1.27.1-alpine
+FROM --platform=$BUILDPLATFORM nginx:1.27.1-alpine
 
 COPY ./docker/dist/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
