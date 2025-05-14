@@ -257,7 +257,7 @@ class NotificationService {
 		const alerts = {
 			cpu: cpuThreshold !== -1 && cpuUsage > cpuThreshold ? true : false,
 			memory: memoryThreshold !== -1 && memoryUsage > memoryThreshold ? true : false,
-			disk: disk?.some(d => diskThreshold !== -1 && d.usage_percent > diskThreshold) ?? false,
+			disk: disk?.some(d => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold) ?? false,
 		};
 
 		const notifications = await this.db.getNotificationsByMonitorId(
