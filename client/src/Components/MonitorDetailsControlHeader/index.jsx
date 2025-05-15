@@ -21,7 +21,7 @@ const MonitorDetailsControlHeader = ({
 }) => {
 	const navigate = useNavigate();
 	const theme = useTheme();
-	const [pauseMonitor, updatedMonitor, isPausing, error] = usePauseMonitor({
+	const [pauseMonitor, isPausing, error] = usePauseMonitor({
 		monitorId: monitor?._id,
 		triggerUpdate,
 	});
@@ -44,6 +44,7 @@ const MonitorDetailsControlHeader = ({
 				<Button
 					variant="contained"
 					color="secondary"
+					loading={isPausing}
 					startIcon={
 						monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
 					}
