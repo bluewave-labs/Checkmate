@@ -76,7 +76,6 @@ const UptimeDetails = () => {
 
 	// Handlers
 	const triggerUpdate = () => {
-		console.log("trigger update");
 		setTrigger(!trigger);
 	};
 
