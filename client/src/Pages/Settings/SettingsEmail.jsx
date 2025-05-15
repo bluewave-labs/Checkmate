@@ -123,7 +123,7 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
-						<Typography>{t("systemEmailConnectionHost")}</Typography>
+						<Typography>{t("settingsEmailConnectionHost")}</Typography>
 						<TextInput
 							name="systemEmailConnectionHost"
 							placeholder="bluewavelabs.ca"
