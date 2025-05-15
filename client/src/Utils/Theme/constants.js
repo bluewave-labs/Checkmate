@@ -331,10 +331,4 @@ const newSemanticColors = {
 	},
 };
 
-// Referenced by modal to determine how much to shift
-const sidebar = {
-	expandedMaxWidth: 250,
-	collapsedMaxWidth: 64
-}
-
-export { typographyLevels, semanticColors as colors, newSemanticColors, sidebar };
+export { typographyLevels, semanticColors as colors, newSemanticColors };

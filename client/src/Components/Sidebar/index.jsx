@@ -51,7 +51,6 @@ import { useTranslation } from "react-i18next";
 import { clearAuthState } from "../../Features/Auth/authSlice";
 import { toggleSidebar } from "../../Features/UI/uiSlice";
 import { clearUptimeMonitorState } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
-import { sidebar } from "../../Utils/Theme/constants";
 
 const getMenu = (t) => [
 	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
@@ -273,12 +272,6 @@ function Sidebar() {
 						},
 					},
 				},
-				"&.collapsed": {
-					maxWidth: sidebar.collapsedMaxWidth
-				},
-				"&.expanded": {
-					maxWidth: sidebar.expandedMaxWidth
-				}
 			}}
 		>
 			<IconButton

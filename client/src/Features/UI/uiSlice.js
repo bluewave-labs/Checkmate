@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { sidebar } from "../../Utils/Theme/constants"
 
 const initialMode = window?.matchMedia?.("(prefers-color-scheme: dark)")?.matches
 	? "dark"
@@ -19,7 +18,6 @@ const initialState = {
 	},
 	sidebar: {
 		collapsed: false,
-		width: sidebar.expandedMaxWidth
 	},
 	mode: initialMode,
 	greeting: { index: 0, lastUpdate: null },
@@ -44,7 +42,6 @@ const uiSlice = createSlice({
 		},
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
-			state.sidebar.width = state.sidebar.collapsed ? sidebar.collapsedMaxWidth : sidebar.expandedMaxWidth;
 		},
 		setMode: (state, action) => {
 			state.mode = action.payload;
