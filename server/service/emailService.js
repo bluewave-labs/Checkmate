@@ -11,6 +11,7 @@ const SERVICE_NAME = "EmailService";
  */
 class EmailService {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	/**
 	 * Constructs an instance of the EmailService, initializing template loaders and the email transporter.
 	 * @param {Object} settingsService - The settings service to get email configuration.
@@ -96,7 +97,7 @@ class EmailService {
 			systemEmailUser,
 			systemEmailAddress,
 			systemEmailPassword,
-			systemEmailConnectionHost
+			systemEmailConnectionHost,
 		} = await this.settingsService.getDBSettings();
 
 		const baseEmailConfig = {
@@ -112,13 +113,15 @@ class EmailService {
 
 		const isSmtps = Number(systemEmailPort) === 465;
 
-		const emailConfig = !isSmtps ? {
-			...baseEmailConfig,
-			name: systemEmailConnectionHost || "127.0.0.1",
-			secure: false,
-			pool: true,
-			tls: { rejectUnauthorized: false },
-		} : baseEmailConfig;
+		const emailConfig = !isSmtps
+			? {
+					...baseEmailConfig,
+					name: systemEmailConnectionHost || "localhost",
+					secure: false,
+					pool: true,
+					tls: { rejectUnauthorized: false },
+				}
+			: baseEmailConfig;
 
 		if (!isSmtps) {
 			delete emailConfig.auth;
@@ -164,4 +167,5 @@ class EmailService {
 		return info?.messageId;
 	};
 }
+
 export default EmailService;

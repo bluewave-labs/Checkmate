@@ -30,6 +30,7 @@ const AppSettingsSchema = mongoose.Schema(
 		},
 		systemEmailConnectionHost: {
 			type: String,
+			default: "localhost",
 		},
 		singleton: {
 			type: Boolean,
