@@ -114,7 +114,7 @@ class EmailService {
 
 		const emailConfig = !isSmtps ? {
 			...baseEmailConfig,
-			name: systemEmailConnectionHost,
+			name: systemEmailConnectionHost || "127.0.0.1",
 			secure: false,
 			pool: true,
 			tls: { rejectUnauthorized: false },
