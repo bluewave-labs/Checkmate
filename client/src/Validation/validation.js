@@ -111,59 +111,64 @@ const monitorValidation = joi.object({
 				.trim()
 				.regex(/^[a-z0-9]{64}$/),
 			otherwise: joi
-				.string()
-				.trim()
-				.custom((value, helpers) => {
-					// Regex from https://gist.github.com/dperini/729294
-					var urlRegex = new RegExp(
-						"^" +
-							// protocol identifier (optional)
-							// short syntax // still required
-							"(?:(?:https?|ftp):\\/\\/)?" +
-							// user:pass BasicAuth (optional)
-							"(?:" +
-							// IP address dotted notation octets
-							// excludes loopback network 0.0.0.0
-							// excludes reserved space >= 224.0.0.0
-							// excludes network & broadcast addresses
-							// (first & last IP address of each class)
-							"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-							"(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-							"(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
-							"|" +
-							// host & domain names, may end with dot
-							// can be replaced by a shortest alternative
-							// (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
-							"(?:" +
-							"(?:" +
-							"[a-z0-9\\u00a1-\\uffff]" +
-							"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
-							")?" +
-							"[a-z0-9\\u00a1-\\uffff]\\." +
-							")+" +
-							// TLD identifier name, may end with dot
-							"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
-							")" +
-							// port number (optional)
-							"(?::\\d{2,5})?" +
-							// resource path (optional)
-							"(?:[/?#]\\S*)?" +
-							"$",
-						"i"
-					);
-					if (!urlRegex.test(value)) {
-						return helpers.error("string.invalidUrl");
-					}
+                .string()
+                .trim()
+                .custom((value, helpers) => {
+                    // Get the current validation context
+                    const { type } = helpers.state.ancestors[0];
+                    
+                    // Regex from https://gist.github.com/dperini/729294
+                    var urlRegex = new RegExp(
+                        "^" +
+                            // protocol identifier (optional)
+                            // short syntax // still required
+                            "(?:(?:https?|ftp):\\/\\/)?" +
+                            // user:pass BasicAuth (optional)
+                            "(?:" +
+                            // IP address dotted notation octets
+                            // excludes loopback network 0.0.0.0
+                            // excludes reserved space >= 224.0.0.0
+                            // excludes network & broadcast addresses
+                            // (first & last IP address of each class)
+                            "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+                            "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+                            "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+                            "|" +
+                            // host & domain names, may end with dot
+                            // can be replaced by a shortest alternative
+                            // (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
+                            "(?:" +
+                            "(?:" +
+                            "[a-z0-9\\u00a1-\\uffff]" +
+                            "[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+                            ")?" +
+                            "[a-z0-9\\u00a1-\\uffff]\\." +
+                            ")+" +
+                            // TLD identifier name, may end with dot
+                            "(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+                            ")" +
+                            // port number (optional)
+                            "(?::\\d{2,5})?" +
+                            // resource path (optional)
+                            "(?:[/?#]\\S*)?" +
+                            "$",
+                        "i"
+                    );
+                    if (!urlRegex.test(value)) {
+                        // Use different error key based on monitor type
+                        return helpers.error(type === "docker" ? "string.invalidDockerID" : "string.invalidUrl");
+                    }
 
-					return value;
-				}),
-		})
-		.messages({
-			"string.empty": "This field is required.",
-			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl": "Please enter a valid 64-character Docker container ID",
-			"string.pattern.base": "Please enter a valid container ID.",
-		}),
+                    return value;
+                }),
+        })
+        .messages({
+            "string.empty": "This field is required.",
+            "string.uri": "The URL you provided is not valid.",
+            "string.invalidUrl": "Please enter a valid URL.",
+            "string.invalidDockerID": "Please enter a valid 64-character Docker container ID.",
+            "string.pattern.base": "Please enter a valid container ID.",
+        }),
 	port: joi
 		.number()
 		.integer()
