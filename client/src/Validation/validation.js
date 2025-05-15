@@ -161,7 +161,7 @@ const monitorValidation = joi.object({
 		.messages({
 			"string.empty": "This field is required.",
 			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl": "Please enter a valid URL with optional port",
+			"string.invalidUrl": "Please enter a valid 64-character Docker container ID",
 			"string.pattern.base": "Please enter a valid container ID.",
 		}),
 	port: joi
