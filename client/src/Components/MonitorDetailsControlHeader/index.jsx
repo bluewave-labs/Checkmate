@@ -11,7 +11,20 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { usePauseMonitor } from "../../Hooks/useMonitorControls";
-import { useEffect } from "react";
+
+/**
+ * MonitorDetailsControlHeader component displays the control header for monitor details.
+ * It includes status display, pause/resume button, and a configure button for admins.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {string} props.path - The base path for navigation
+ * @param {boolean} [props.isLoading=false] - Flag indicating if the data is loading
+ * @param {boolean} [props.isAdmin=false] - Flag indicating if the user is an admin
+ * @param {Object} props.monitor - The monitor object containing details
+ * @param {Function} props.triggerUpdate - Function to trigger an update
+ * @returns {JSX.Element} The rendered component
+ */
 const MonitorDetailsControlHeader = ({
 	path,
 	isLoading = false,
