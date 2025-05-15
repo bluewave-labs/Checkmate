@@ -278,6 +278,7 @@ const settingsValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow(""),
 });
 
 const dayjsValidator = (value, helpers) => {
@@ -307,6 +308,7 @@ const advancedSettingsValidation = joi.object({
 	systemEmailPort: joi.number().allow(null, ""),
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow(""),
 	jwtTTLNum: joi.number().messages({
 		"number.base": "JWT TTL is required.",
 	}),

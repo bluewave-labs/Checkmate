@@ -432,6 +432,7 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow(""),
 });
 
 //****************************************
