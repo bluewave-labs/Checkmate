@@ -631,6 +631,13 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+		MuiStack: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					gap: `${theme.spacing(14)}`,
+				}),
+			},
+		},
 	},
 	shape: {
 		borderRadius: 2,

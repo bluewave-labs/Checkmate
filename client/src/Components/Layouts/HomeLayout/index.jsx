@@ -1,20 +1,25 @@
 import Sidebar from "../../Sidebar";
+import { useRef } from "react";
 import { Outlet } from "react-router";
 import { Stack } from "@mui/material";
+import { DialogAnchorProvider } from "../../../Utils/DialogAnchorProvider";
 
 import "./index.css";
 
 const HomeLayout = () => {
+	const dialogAnchorRef = useRef(null);
+
 	return (
 		<Stack
 			className="home-layout"
 			flexDirection="row"
-			gap={14}
 		>
 			<Sidebar />
-			<Stack className="home-content-wrapper">
-				<Outlet />
-			</Stack>
+			<DialogAnchorProvider anchor={dialogAnchorRef}>
+				<Stack className="home-content-wrapper" ref={dialogAnchorRef}>
+					<Outlet />
+				</Stack>
+			</DialogAnchorProvider>
 		</Stack>
 	);
 };

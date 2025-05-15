@@ -1,11 +1,20 @@
 import { useId } from "react";
 import PropTypes from "prop-types";
 import { Modal, Stack, Typography } from "@mui/material";
+import { DialogAnchorRef } from "../../Utils/DialogAnchorProvider";
 
 const GenericDialog = ({ title, description, open, onClose, theme, children }) => {
 	const titleId = useId();
 	const descriptionId = useId();
 	const ariaDescribedBy = description?.length > 0 ? descriptionId : "";
+	
+	const dialogAnchor = DialogAnchorRef?.current;
+	
+	const anchorOffset = dialogAnchor?.getBoundingClientRect().left || 0;
+	const scroll = document.documentElement.scrollLeft;
+	const sidebarGap = parseInt(theme.spacing(14));
+	const shift = (anchorOffset + scroll - sidebarGap)/2;
+
 	return (
 		<Modal
 			aria-labelledby={titleId}
@@ -20,7 +29,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 					position: "absolute",
 					top: "50%",
 					left: "50%",
-					transform: "translate(-50%, -50%)",
+					transform: `translate(calc(-50% + ${shift}px), -50%)`,
 					minWidth: 400,
 					bgcolor: theme.palette.primary.main,
 					border: 1,
