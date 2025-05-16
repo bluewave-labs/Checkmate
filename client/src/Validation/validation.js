@@ -109,7 +109,11 @@ const monitorValidation = joi.object({
 			then: joi
 				.string()
 				.trim()
-				.regex(/^[a-z0-9]{64}$/),
+				.regex(/^[a-z0-9]{64}$/)
+				.messages({
+					"string.empty": "This field is required.",
+					"string.pattern.base": "Please enter a valid 64-character Docker container ID.",
+				}),
 			otherwise: joi
 				.string()
 				.trim()
@@ -156,13 +160,12 @@ const monitorValidation = joi.object({
 					}
 
 					return value;
+				})
+				.messages({
+					"string.empty": "This field is required.",
+					"string.uri": "The URL you provided is not valid.",
+					"string.invalidUrl": "Please enter a valid URL with optional port",
 				}),
-		})
-		.messages({
-			"string.empty": "This field is required.",
-			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl": "Please enter a valid URL with optional port",
-			"string.pattern.base": "Please enter a valid container ID.",
 		}),
 	port: joi
 		.number()
@@ -265,6 +268,7 @@ const statusPageValidation = joi.object({
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
 });
+
 const settingsValidation = joi.object({
 	checkTTL: joi.number().required().messages({
 		"string.empty": "Please enter a value",
