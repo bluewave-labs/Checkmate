@@ -591,6 +591,16 @@ const createAnnouncementValidation = joi.object({
 	userId: joi.string().required(),
 });
 
+const sendTestEmailBodyValidation = joi.object({
+	to: joi.string().required(),
+	systemEmailHost: joi.string(),
+	systemEmailPort: joi.number(),
+	systemEmailAddress: joi.string(),
+	systemEmailPassword: joi.string(),
+	systemEmailUser: joi.string(),
+	systemEmailConnectionHost: joi.string(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -654,4 +664,5 @@ export {
 	triggerNotificationBodyValidation,
 	webhookConfigValidation,
 	createAnnouncementValidation,
+	sendTestEmailBodyValidation,
 };
