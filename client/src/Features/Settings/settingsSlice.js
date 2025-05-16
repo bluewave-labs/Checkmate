@@ -5,7 +5,8 @@ const initialState = {
 	isLoading: false,
 	apiBaseUrl: "",
 	logLevel: "debug",
-	language: "",
+	language: "gb",
+	pagespeedApiKey: "",
 };
 
 export const getAppSettings = createAsyncThunk(
@@ -30,26 +31,10 @@ export const getAppSettings = createAsyncThunk(
 export const updateAppSettings = createAsyncThunk(
 	"settings/updateSettings",
 	async ({ settings }, thunkApi) => {
- 		// The reason for commenting is that, previously, we had the flexibility to set the API base. 
-  		// However, now this could lead to an issue where it gets set to undefined.
-		// networkService.setBaseUrl(settings.apiBaseUrl);
 		try {
 			const parsedSettings = {
-				apiBaseUrl: settings.apiBaseUrl,
-				logLevel: settings.logLevel,
 				language: settings.language,
-				clientHost: settings.clientHost,
-				jwtSecret: settings.jwtSecret,
-				dbType: settings.dbType,
-				dbConnectionString: settings.dbConnectionString,
-				redisHost: settings.redisHost,
-				redisPort: settings.redisPort,
-				jwtTTL: settings.jwtTTL,
 				pagespeedApiKey: settings.pagespeedApiKey,
-				systemEmailHost: settings.systemEmailHost,
-				systemEmailPort: settings.systemEmailPort,
-				systemEmailAddress: settings.systemEmailAddress,
-				systemEmailPassword: settings.systemEmailPassword,
 			};
 			const res = await networkService.updateAppSettings({ settings: parsedSettings });
 			return res.data;
@@ -73,6 +58,7 @@ const handleGetSettingsFulfilled = (state, action) => {
 	state.apiBaseUrl = action.payload.data.apiBaseUrl;
 	state.logLevel = action.payload.data.logLevel;
 	state.language = action.payload.data.language;
+	state.pagespeedApiKey = action.payload.data.pagespeedApiKey;
 };
 const handleGetSettingsRejected = (state, action) => {
 	state.isLoading = false;

@@ -61,18 +61,20 @@ const UptimeStatusBoxes = ({
 					</>
 				}
 			/>
-			<StatBox
-				heading="certificate expiry"
-				subHeading={
-					<Typography
-						component="span"
-						fontSize={13}
-						color={theme.palette.primary.contrastText}
-					>
-						{certificateExpiry}
-					</Typography>
-				}
-			/>
+			{monitor?.type === "http" && (
+				<StatBox
+					heading="certificate expiry"
+					subHeading={
+						<Typography
+							component="span"
+							fontSize={13}
+							color={theme.palette.primary.contrastText}
+						>
+							{certificateExpiry}
+						</Typography>
+					}
+				/>
+			)}
 		</StatusBoxes>
 	);
 };

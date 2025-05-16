@@ -39,6 +39,10 @@ const MonitorSchema = mongoose.Schema(
 				"distributed_test",
 			],
 		},
+		ignoreTlsErrors: {
+			type: Boolean,
+			default: false,
+		},
 		jsonPath: {
 			type: String,
 		},

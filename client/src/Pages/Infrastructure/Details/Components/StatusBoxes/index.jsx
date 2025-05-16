@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 const InfraStatBoxes = ({ shouldRender, monitor }) => {
 	// Utils
 	const { formatBytes } = useHardwareUtils();
-	const { statusStyles, determineState } = useUtils();
+	const { determineState } = useUtils();
 	const { t } = useTranslation();
 
 	const { stats, uptimePercentage } = monitor ?? {};
@@ -41,7 +41,8 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 			flexWrap="wrap"
 		>
 			<StatBox
-				sx={statusStyles[determineState(monitor)]}
+				gradient={true}
+				status={determineState(monitor)}
 				heading={t("status")}
 				subHeading={determineState(monitor)}
 			/>
@@ -50,7 +51,9 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{physicalCores}
-						<Typography component="span">cores</Typography>
+						<Typography component="span">
+							{physicalCores === 1 ? "core" : "cores"}
+						</Typography>
 					</>
 				}
 			/>
@@ -60,7 +63,9 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{logicalCores}
-						<Typography component="span">cores</Typography>
+						<Typography component="span">
+							{logicalCores === 1 ? "core" : "cores"}
+						</Typography>
 					</>
 				}
 			/>
@@ -78,7 +83,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{cpuTemperature.toFixed(2)}
-						<Typography component="span">C</Typography>
+						<Typography component="span">°C</Typography>
 					</>
 				}
 			/>

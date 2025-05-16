@@ -1,4 +1,6 @@
 import jmespath from "jmespath";
+import https from "https";
+
 const SERVICE_NAME = "NetworkService";
 const UPROCK_ENDPOINT = "https://api.uprock.com/checkmate/push";
 
@@ -34,7 +36,6 @@ class NetworkService {
 		this.net = net;
 		this.stringService = stringService;
 		this.settingsService = settingsService;
-		this.settings = settingsService.getSettings();
 	}
 
 	/**
@@ -133,6 +134,7 @@ class NetworkService {
 				name,
 				teamId,
 				type,
+				ignoreTlsErrors,
 				jsonPath,
 				matchMethod,
 				expectedValue,
@@ -140,6 +142,12 @@ class NetworkService {
 			const config = {};
 
 			secret !== undefined && (config.headers = { Authorization: `Bearer ${secret}` });
+
+			if (ignoreTlsErrors === true) {
+				config.httpsAgent = new https.Agent({
+					rejectUnauthorized: false,
+				});
+			}
 
 			const { response, responseTime, error } = await this.timeRequest(() =>
 				this.axios.get(url, config)
@@ -245,8 +253,18 @@ class NetworkService {
 			const url = job.data.url;
 			const updatedJob = { ...job };
 			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
-			if (this.settings?.pagespeedApiKey) {
-				pagespeedUrl += `&key=${this.settings.pagespeedApiKey}`;
+
+			const dbSettings = await this.settingsService.getDBSettings();
+			if (dbSettings?.pagespeedApiKey) {
+				pagespeedUrl += `&key=${dbSettings.pagespeedApiKey}`;
+			} else {
+				this.logger.info({
+					message: "Pagespeed API key not found",
+					service: this.SERVICE_NAME,
+					method: "requestPagespeed",
+					details: { url },
+				});
+				return;
 			}
 			updatedJob.data.url = pagespeedUrl;
 			return await this.requestHttp(updatedJob);

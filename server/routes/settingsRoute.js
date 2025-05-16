@@ -12,7 +12,7 @@ class SettingsRoutes {
 		this.router.get("/", this.settingsController.getAppSettings);
 		this.router.put(
 			"/",
-			isAllowed(["superadmin"]),
+			isAllowed(["admin", "superadmin"]),
 			this.settingsController.updateAppSettings
 		);
 	}

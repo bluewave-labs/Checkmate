@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Button, Stack, Typography, Link } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import Skeleton from "../../assets/Images/create-placeholder.svg?react";
 import SkeletonDark from "../../assets/Images/create-placeholder-dark.svg?react";
 import Background from "../../assets/Images/background-grid.svg?react";
@@ -10,7 +11,8 @@ import { useSelector } from "react-redux";
 import Alert from "../Alert";
 import { useTranslation } from "react-i18next";
 import "./index.css";
-
+import { useFetchSettings } from "../../Hooks/useFetchSettings";
+import { useState } from "react";
 /**
  * Fallback component to display a fallback UI with a title, a list of checks, and a navigation button.
  *
@@ -23,33 +25,41 @@ import "./index.css";
  * @returns {JSX.Element} The rendered fallback UI.
  */
 
-const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, showPageSpeedWarning = false }) => {
+const Fallback = ({
+	title,
+	checks,
+	link = "/",
+	isAdmin,
+	vowelStart = false,
+	showPageSpeedWarning = false,
+}) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const mode = useSelector((state) => state.ui.mode);
 	const { t } = useTranslation();
+	const [settingsData, setSettingsData] = useState(undefined);
 
+	const [isLoading, error] = useFetchSettings({ setSettingsData });
 	// Custom warning message with clickable link
 	const renderWarningMessage = () => {
 		return (
 			<>
-				{t("pageSpeedWarning")} {" "}
-				<Link 
-					href="https://docs.checkmate.so/users-guide/quickstart#env-vars-server"
-					target="_blank"
-					rel="noopener noreferrer"
-					sx={{ 
+				{t("pageSpeedWarning")}{" "}
+				<Link
+					component={RouterLink}
+					to="/settings"
+					sx={{
 						textDecoration: "underline",
 						color: "inherit",
 						fontWeight: "inherit",
 						"&:hover": {
 							textDecoration: "underline",
-						}
+						},
 					}}
 				>
 					{t("pageSpeedLearnMoreLink")}
-				</Link>
-				{" "}{t("pageSpeedAddApiKey")}
+				</Link>{" "}
+				{t("pageSpeedAddApiKey")}
 			</>
 		);
 	};
@@ -118,27 +128,42 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 						>
 							Let's create your first {title}
 						</Button>
-						
+						{/* Bulk create of uptime monitors */}
+						{title === "uptime monitor" && (
+							<Button
+								variant="contained"
+								color="accent"
+								sx={{ alignSelf: "center" }}
+								onClick={() => navigate("/uptime/bulk-import")}
+							>
+								{t("bulkImport.fallbackPage")}
+							</Button>
+						)}
+
 						{/* Warning box for PageSpeed monitor */}
-						{(title === "pagespeed monitor" && showPageSpeedWarning) && (
+						{title === "pagespeed monitor" && showPageSpeedWarning && (
 							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
-								<Box sx={{
-									'& .alert.row-stack': {
-										backgroundColor: theme.palette.warningSecondary.main,
-										borderColor: theme.palette.warningSecondary.lowContrast,
-										'& .MuiTypography-root': {
-											color: theme.palette.warningSecondary.contrastText
+								<Box
+									sx={{
+										"& .alert.row-stack": {
+											backgroundColor: theme.palette.warningSecondary.main,
+											borderColor: theme.palette.warningSecondary.lowContrast,
+											"& .MuiTypography-root": {
+												color: theme.palette.warningSecondary.contrastText,
+											},
+											"& .MuiBox-root > svg": {
+												color: theme.palette.warningSecondary.contrastText,
+											},
 										},
-										'& .MuiBox-root > svg': {
-											color: theme.palette.warningSecondary.contrastText
-										}
-									}
-								}}>
-									<Alert
-										variant="warning"
-										hasIcon={true}
-										body={renderWarningMessage()}
-									/>
+									}}
+								>
+									{settingsData?.pagespeedKeySet === false && (
+										<Alert
+											variant="warning"
+											hasIcon={true}
+											body={renderWarningMessage()}
+										/>
+									)}
 								</Box>
 							</Box>
 						)}

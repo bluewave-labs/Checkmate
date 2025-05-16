@@ -111,7 +111,7 @@ const Alert = ({ variant, title, body, isToast, hasIcon = true, onClick }) => {
 Alert.propTypes = {
 	variant: PropTypes.oneOf(["info", "error", "warning"]).isRequired,
 	title: PropTypes.string,
-	body: PropTypes.string,
+	body: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	isToast: PropTypes.bool,
 	hasIcon: PropTypes.bool,
 	onClick: function (props, propName, componentName) {

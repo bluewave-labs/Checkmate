@@ -6,18 +6,6 @@ import PropTypes from "prop-types";
 const getSx = (theme, type, maxWidth) => {
 	const sx = {
 		maxWidth: maxWidth,
-		"&  .MuiOutlinedInput-root ": {
-			"&:hover .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.primary.contrastText, // Adjust hover border color
-			},
-			"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.accent.main, // Adjust focus border color
-			},
-			"&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
-				borderColor: theme.palette.primary.contrastText, // CAIO_REVIEW
-				opacity: 0.5,
-			},
-		},
 
 		"& .MuiFormHelperText-root": {
 			position: "absolute",
@@ -116,6 +104,7 @@ const TextInput = forwardRef(
 					fontSize={"var(--env-var-font-size-medium)"}
 					color={theme.palette.primary.contrastTextSecondary}
 					fontWeight={500}
+					mb={theme.spacing(2)}
 				>
 					{label}
 					{isRequired && <Required />}
@@ -152,9 +141,9 @@ TextInput.displayName = "TextInput";
 
 TextInput.propTypes = {
 	type: PropTypes.string,
-	id: PropTypes.string.isRequired,
+	id: PropTypes.string,
 	name: PropTypes.string,
-	value: PropTypes.string,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	placeholder: PropTypes.string,
 	isRequired: PropTypes.bool,
 	isOptional: PropTypes.bool,

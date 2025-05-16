@@ -1,21 +1,19 @@
 import { useTheme } from "@emotion/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Avatar from "../../Avatar";
 import TextInput from "../../Inputs/TextInput";
-import ImageField from "../../Inputs/Image";
-import { credentials, imageValidation } from "../../../Validation/validation";
+import ImageUpload from "../../Inputs/ImageUpload";
+import { credentials } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
-import ImageIcon from "@mui/icons-material/Image";
-import ProgressUpload from "../../ProgressBars";
-import { formatBytes } from "../../../Utils/fileUtils";
 import { clearUptimeMonitorState } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
 import { GenericDialog } from "../../Dialog/genericDialog";
 import Dialog from "../../Dialog";
+import { useTranslation } from "react-i18next";
 
 /**
  * ProfilePanel component displays a form for editing user profile information
@@ -28,7 +26,7 @@ import Dialog from "../../Dialog";
 const ProfilePanel = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-
+	const { t } = useTranslation();
 	const SPACING_GAP = theme.spacing(12);
 
 	//redux state
@@ -49,8 +47,6 @@ const ProfilePanel = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [file, setFile] = useState();
-	const intervalRef = useRef(null);
-	const [progress, setProgress] = useState({ value: 0, isLoading: false });
 
 	// Handles input field changes and performs validation
 	const handleChange = (event) => {
@@ -63,33 +59,6 @@ const ProfilePanel = () => {
 		}));
 
 		validateField({ [name]: value }, credentials, name);
-	};
-
-	// Handles image file
-	const handlePicture = (event) => {
-		const pic = event.target.files[0];
-		let error = validateField({ type: pic.type, size: pic.size }, imageValidation);
-		if (error) return;
-
-		setProgress((prev) => ({ ...prev, isLoading: true }));
-		setFile({
-			src: URL.createObjectURL(pic),
-			name: pic.name,
-			size: formatBytes(pic.size),
-			delete: false,
-		});
-
-		//TODO - potentitally remove, will revisit in the future
-		intervalRef.current = setInterval(() => {
-			const buffer = 12;
-			setProgress((prev) => {
-				if (prev.value + buffer >= 100) {
-					clearInterval(intervalRef.current);
-					return { value: 100, isLoading: false };
-				}
-				return { ...prev, value: prev.value + buffer };
-			});
-		}, 120);
 	};
 
 	// Validates input against provided schema and updates error state
@@ -116,52 +85,55 @@ const ProfilePanel = () => {
 	// Resets picture-related states and clears interval
 	const removePicture = () => {
 		errors["picture"] && clearError("picture");
-		setFile({ delete: true });
-		clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
-		setProgress({ value: 0, isLoading: false });
-	};
+		setFile(undefined); 
+		setLocalData((prev) => ({
+			...prev,
+			file: undefined,
+			deleteProfileImage: true, 
+		}));
+	};	 
 
 	// Opens the picture update modal
 	const openPictureModal = () => {
 		setIsOpen("picture");
-		setFile({ delete: localData.deleteProfileImage });
+		setFile(undefined);
 	};
 
 	// Closes the picture update modal and resets related states
 	const closePictureModal = () => {
-		errors["picture"] && clearError("picture");
-		setFile(); //reset file
-		clearInterval(intervalRef.current); // interrupt interval if image upload is canceled prior to completing the process
-		setProgress({ value: 0, isLoading: false });
-		setIsOpen("");
-	};
+		if (errors["picture"]) clearError("picture");
+		setFile(undefined); 
+		setIsOpen("");     
+	};	
 
 	// Updates profile image displayed on UI
 	const handleUpdatePicture = () => {
-		setProgress({ value: 0, isLoading: false });
 		setLocalData((prev) => ({
 			...prev,
-			file: file.src,
+			file: file?.src,
 			deleteProfileImage: false,
 		}));
 		setIsOpen("");
-		errors["unchanged"] && clearError("unchanged");
+		if (errors["unchanged"]) clearError("unchanged");
 	};
-
+	
 	// Handles form submission to update user profile
 	const handleSaveProfile = async (event) => {
 		event.preventDefault();
-		if (
-			localData.firstName === user.firstName &&
-			localData.lastName === user.lastName &&
-			localData.deleteProfileImage === undefined &&
-			localData.file === undefined
-		) {
-			createToast({
-				body: "Unable to update profile — no changes detected.",
-			});
-			setErrors({ unchanged: "unable to update profile" });
-			return;
+		const nameChanged =
+		localData.firstName !== user.firstName ||
+		localData.lastName !== user.lastName;
+
+		const avatarChanged =
+		localData.deleteProfileImage === true ||
+		(localData.file && localData.file !== `data:image/png;base64,${user.avatarImage}`);
+
+		if (!nameChanged && !avatarChanged) {
+		createToast({
+			body: "Unable to update profile — no changes detected.",
+		});
+		setErrors({ unchanged: "unable to update profile" });
+		return;
 		}
 
 		const action = await dispatch(update({ localData }));
@@ -182,6 +154,7 @@ const ProfilePanel = () => {
 			...prev,
 			deleteProfileImage: true,
 		}));
+		setFile(undefined);
 		errors["unchanged"] && clearError("unchanged");
 	};
 
@@ -232,7 +205,7 @@ const ProfilePanel = () => {
 				>
 					{/* This 0.9 is a bit magic numbering, refactor */}
 					<Box flex={0.9}>
-						<Typography component="h1">First name</Typography>
+						<Typography component="h1">{t('FirstName')}</Typography>
 					</Box>
 					<TextInput
 						id="edit-first-name"
@@ -250,7 +223,7 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Box flex={0.9}>
-						<Typography component="h1">Last name</Typography>
+						<Typography component="h1">{t('LastName')}</Typography>
 					</Box>
 					<TextInput
 						id="edit-last-name"
@@ -268,12 +241,12 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Stack flex={0.9}>
-						<Typography component="h1">Email</Typography>
+						<Typography component="h1">{t('email')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
 						>
-							This is your current email address — it cannot be changed.
+							{t('EmailDescriptionText')}
 						</Typography>
 					</Stack>
 					<TextInput
@@ -291,12 +264,12 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Stack flex={0.9}>
-						<Typography component="h1">Your photo</Typography>
+						<Typography component="h1">{t('YourPhoto')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
 						>
-							This photo will be displayed in your profile page.
+							{t('PhotoDescriptionText')}
 						</Typography>
 					</Stack>
 					<Stack
@@ -320,14 +293,14 @@ const ProfilePanel = () => {
 							color="error"
 							onClick={handleDeletePicture}
 						>
-							Delete
+							{t('delete')}
 						</Button>
 						<Button
 							variant="contained" // CAIO_REVIEW
 							color="accent"
 							onClick={openPictureModal}
 						>
-							Update
+							{t('update')}
 						</Button>
 					</Stack>
 				</Stack>
@@ -352,7 +325,7 @@ const ProfilePanel = () => {
 							disabled={Object.keys(errors).length !== 0 && !errors?.picture && true}
 							sx={{ px: theme.spacing(12) }}
 						>
-							Save
+							{t('save')}
 						</Button>
 					</Box>
 				</Stack>
@@ -371,13 +344,12 @@ const ProfilePanel = () => {
 					spellCheck="false"
 				>
 					<Box mb={theme.spacing(6)}>
-						<Typography component="h1">Delete account</Typography>
+						<Typography component="h1">{t('DeleteAccountTitle')}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}
 						>
-							Note that deleting your account will remove all data from the server. This
-							is permanent and non-recoverable.
+							{t('DeleteDescriptionText')}
 						</Typography>
 					</Box>
 					<Button
@@ -385,19 +357,17 @@ const ProfilePanel = () => {
 						color="error"
 						onClick={() => setIsOpen("delete")}
 					>
-						Delete account
+						{t('DeleteAccountButton')}
 					</Button>
 				</Box>
 			)}
 			<Dialog
 				open={isModalOpen("delete")}
 				theme={theme}
-				title={"Really delete this account?"}
-				description={
-					"If you delete your account, you will no longer be able to sign in, and all of your data will be deleted. Deleting your account is permanent and non-recoverable action."
-				}
+				title={t('DeleteWarningTitle')}
+				description={t('DeleteAccountWarning')}
 				onCancel={() => setIsOpen("")}
-				confirmationButtonLabel={"Delete account"}
+				confirmationButtonLabel={t('DeleteAccountButton')}
 				onConfirm={handleDeleteAccount}
 				isLoading={isLoading}
 			/>
@@ -408,34 +378,27 @@ const ProfilePanel = () => {
 				onClose={closePictureModal}
 				theme={theme}
 			>
-				<ImageField
-					id="update-profile-picture"
+				<ImageUpload
 					src={
-						file?.delete
-							? ""
-							: file?.src
-								? file.src
+						file?.src
+							? file.src
+							: localData?.deleteProfileImage
+								? ""
 								: localData?.file
 									? localData.file
 									: user?.avatarImage
 										? `data:image/png;base64,${user.avatarImage}`
 										: ""
-					}
-					loading={progress.isLoading && progress.value !== 100}
-					onChange={handlePicture}
+					}					
+					onChange={(newFile) => {
+						if (newFile) {
+							setFile(newFile);
+							clearError("unchanged");
+						}
+					}}								
+					previewIsRound
+					maxSize={3 * 1024 * 1024}
 				/>
-				{progress.isLoading || progress.value !== 0 || errors["picture"] ? (
-					<ProgressUpload
-						icon={<ImageIcon />}
-						label={file?.name}
-						size={file?.size}
-						progress={progress.value}
-						onClick={removePicture}
-						error={errors["picture"]}
-					/>
-				) : (
-					""
-				)}
 				<Stack
 					direction="row"
 					mt={theme.spacing(10)}
@@ -447,20 +410,15 @@ const ProfilePanel = () => {
 						color="info"
 						onClick={removePicture}
 					>
-						Remove
+						{t('remove')}
 					</Button>
 					<Button
 						variant="contained"
 						color="accent"
 						onClick={handleUpdatePicture}
-						disabled={
-							(Object.keys(errors).length !== 0 && errors?.picture) ||
-							progress.value !== 100
-								? true
-								: false
-						}
+						disabled={!!errors.picture || !file?.src}
 					>
-						Update
+						{t('update')}
 					</Button>
 				</Stack>
 			</GenericDialog>

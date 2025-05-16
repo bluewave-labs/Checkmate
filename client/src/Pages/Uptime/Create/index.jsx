@@ -13,6 +13,8 @@ import { getUptimeMonitorById } from "../../../Features/UptimeMonitors/uptimeMon
 import { createUptimeMonitor } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 //Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
@@ -92,6 +94,7 @@ const CreateMonitor = () => {
 		url: "",
 		name: "",
 		type: "http",
+		ignoreTlsErrors: false,
 		notifications: [],
 		interval: 1,
 	});
@@ -107,6 +110,7 @@ const CreateMonitor = () => {
 			port: monitor.type === "port" ? monitor.port : undefined,
 			name: monitor.name || monitor.url.substring(0, 50),
 			type: monitor.type,
+			ignoreTlsErrors: monitor.ignoreTlsErrors,
 			interval: monitor.interval * MS_PER_MINUTE,
 		};
 
@@ -130,19 +134,6 @@ const CreateMonitor = () => {
 			return;
 		}
 
-		if (monitor.type === "http") {
-			// const checkEndpointAction = await dispatch(
-			// 	checkEndpointResolution({ monitorURL: form.url })
-			// );
-			// if (checkEndpointAction.meta.requestStatus === "rejected") {
-			// 	createToast({
-			// 		body: "The endpoint you entered doesn't resolve. Check the URL again.",
-			// 	});
-			// 	setErrors({ url: "The entered URL is not reachable." });
-			// 	return;
-			// }
-		}
-
 		form = {
 			...form,
 			description: monitor.name || monitor.url,
@@ -160,11 +151,13 @@ const CreateMonitor = () => {
 	};
 
 	const handleChange = (event, formName) => {
-		const { value } = event.target;
+		const { type, checked, value } = event.target;
+
+		const newVal = type === "checkbox" ? checked : value;
 
 		const newMonitor = {
 			...monitor,
-			[formName]: value,
+			[formName]: newVal,
 		};
 		if (formName === "type") {
 			newMonitor.url = "";
@@ -172,7 +165,7 @@ const CreateMonitor = () => {
 		setMonitor(newMonitor);
 
 		const { error } = monitorValidation.validate(
-			{ type: monitor.type, [formName]: value },
+			{ type: monitor.type, [formName]: newVal },
 			{ abortEarly: false }
 		);
 		setErrors((prev) => ({
@@ -420,6 +413,26 @@ const CreateMonitor = () => {
 								{t("notifications.integrationButton")}
 							</Button>
 						</Box>
+					</Stack>
+				</ConfigBox>
+				<ConfigBox>
+					<Box>
+						<Typography component="h2">{t("ignoreTLSError")}</Typography>
+						<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
+					</Box>
+					<Stack>
+						<FormControlLabel
+							sx={{ marginLeft: 0 }}
+							control={
+								<Switch
+									name="ignore-error"
+									checked={monitor.ignoreTlsErrors}
+									onChange={(event) => handleChange(event, "ignoreTlsErrors")}
+									sx={{ mr: theme.spacing(2) }}
+								/>
+							}
+							label={t("tlsErrorIgnored")}
+						/>
 					</Stack>
 				</ConfigBox>
 				<ConfigBox>

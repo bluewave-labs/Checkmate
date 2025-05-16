@@ -31,11 +31,11 @@ import PropTypes from "prop-types";
 import useFetchMonitorsWithSummary from "../../../Hooks/useFetchMonitorsWithSummary";
 import useFetchMonitorsWithChecks from "../../../Hooks/useFetchMonitorsWithChecks";
 import { useTranslation } from "react-i18next";
-const BREADCRUMBS = [{ name: `Uptime`, path: "/uptime" }];
 const TYPES = ["http", "ping", "docker", "port"];
 const CreateMonitorButton = ({ shouldRender }) => {
 	// Utils
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	if (shouldRender === false) {
 		return;
 	}
@@ -49,7 +49,7 @@ const CreateMonitorButton = ({ shouldRender }) => {
 					navigate("/uptime/create");
 				}}
 			>
-				Create new
+				{t("createNew")}
 			</Button>
 		</Box>
 	);
@@ -78,9 +78,12 @@ const UptimeMonitors = () => {
 
 	// Utils
 	const theme = useTheme();
+	const navigate = useNavigate();
 	const isAdmin = useIsAdmin();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
+
+	const BREADCRUMBS = [{ name: t("menu.uptime"), path: "/uptime" }];
 
 	// Handlers
 	const handleChangePage = (event, newPage) => {
@@ -189,8 +192,9 @@ const UptimeMonitors = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<CreateMonitorHeader
 				isAdmin={isAdmin}
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				path="/uptime/create"
+				bulkPath="/uptime/bulk-import"
 			/>
 			<Greeting type="uptime" />
 			<StatusBoxes

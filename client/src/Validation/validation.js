@@ -7,18 +7,23 @@ const nameSchema = joi
 	.string()
 	.max(50)
 	.trim()
-	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s']+$/u, {
-		name: "name.containsLetterOrSymbol",
-	})
-	.pattern(/^[\p{L}\p{Sc}\s']+$/u, {
-		name: "name.validCharacters",
-	})
+	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
 	.messages({
 		"string.empty": "Name is required",
 		"string.max": "Name must be less than 50 characters",
-		"string.pattern.name": "Name must contain at least 1 letter or currency symbol",
-		"string.pattern.base.validCharacters":
-			"Can only contain letters, spaces, apostrophes, and currency symbols",
+		"string.pattern.base":
+			"Name must contain only letters, spaces, apostrophes, or hyphens",
+	});
+
+const lastnameSchema = joi
+	.string()
+	.max(50)
+	.trim()
+	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
+	.messages({
+		"string.empty": "Surname is required",
+		"string.max": "Surname must be less than 50 characters",
+		"string.pattern.base": "Surname must contain only letters, spaces, apostrophes, or hyphens"
 	});
 
 const passwordSchema = joi
@@ -60,7 +65,7 @@ const passwordSchema = joi
 
 const credentials = joi.object({
 	firstName: nameSchema,
-	lastName: nameSchema,
+	lastName: lastnameSchema,
 	email: joi
 		.string()
 		.trim()
@@ -73,8 +78,8 @@ const credentials = joi.object({
 			return lowercasedValue;
 		})
 		.messages({
-			"string.empty": "Email is required",
-			"string.email": "Must be a valid email address",
+			"string.empty": "authRegisterEmailRequired",
+			"string.email": "authRegisterEmailInvalid",
 		}),
 	password: passwordSchema,
 	newPassword: passwordSchema,
@@ -159,11 +164,26 @@ const monitorValidation = joi.object({
 			"string.invalidUrl": "Please enter a valid URL with optional port",
 			"string.pattern.base": "Please enter a valid container ID.",
 		}),
-	port: joi.number(),
+	port: joi
+		.number()
+		.integer()
+		.min(1)
+		.max(65535)
+		.when("type", {
+			is: "port",
+			then: joi.required().messages({
+				"number.base": "Port must be a number.",
+				"number.min": "Port must be at least 1.",
+				"number.max": "Port must be at most 65535.",
+				"any.required": "Port is required for port monitors.",
+			}),
+			otherwise: joi.optional(),
+		}),
 	name: joi.string().trim().max(50).allow("").messages({
 		"string.max": "This field should not exceed the 50 characters limit.",
 	}),
 	type: joi.string().trim().messages({ "string.empty": "This field is required." }),
+	ignoreTlsErrors: joi.boolean(),
 	interval: joi.number().messages({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
@@ -246,9 +266,18 @@ const statusPageValidation = joi.object({
 	showCharts: joi.boolean(),
 });
 const settingsValidation = joi.object({
-	ttl: joi.number().required().messages({
-		"string.empty": "TTL is required",
+	checkTTL: joi.number().required().messages({
+		"string.empty": "Please enter a value",
+		"number.base": "Please enter a valid number",
+		"any.required": "Please enter a value",
 	}),
+	pagespeedApiKey: joi.string().allow("").optional(),
+	language: joi.string().required(),
+	systemEmailHost: joi.string().allow(""),
+	systemEmailPort: joi.number().allow(null, ""),
+	systemEmailAddress: joi.string().allow(""),
+	systemEmailPassword: joi.string().allow(""),
+	systemEmailUser: joi.string().allow(""),
 });
 
 const dayjsValidator = (value, helpers) => {
@@ -352,9 +381,12 @@ const infrastructureMonitorValidation = joi.object({
 	notifications: joi.array().items(
 		joi.object({
 			type: joi.string().valid("email").required(),
-			address: joi.string().email({ tlds: { allow: false } }).required(),
+			address: joi
+				.string()
+				.email({ tlds: { allow: false } })
+				.required(),
 		})
-	)
+	),
 });
 
 export {

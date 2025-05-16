@@ -8,6 +8,7 @@
 ![](https://img.shields.io/github/issues/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues-pr/bluewave-labs/checkmate)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9901/badge)](https://www.bestpractices.dev/projects/9901)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bluewave-labs/checkmate)
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
@@ -25,15 +26,15 @@ We **love** what we are building here, and we continuously learn a few things ab
 
 ## 📦 Demo
 
-See [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is uptimedemo@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
+You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is uptimedemo@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
 ## 🔗 User's guide
 
-Usage instructions can be found [here](https://docs.checkmate.so/). It's still WIP and some of the information there might be outdated as we continuously add features weekly. Rest assured, we are doing our best! :)
+Usage instructions can be found [here](https://docs.checkmate.so/checkmate-2.1). It's still WIP and some of the information there might be outdated as we continuously add features weekly. Rest assured, we are doing our best! :)
 
 ## 🛠️ Installation
 
-See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/quickstart). Alternatively, you can also use [Coolify](https://coolify.io/) or [Elestio](https://elest.io/open-source/checkmate) for a one-click Docker deployment. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). Alternatively, you can also use [Coolify](https://coolify.io/) or [Elestio](https://elest.io/open-source/checkmate) for a one-click Docker deployment. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ## 🏁 Translations
 
@@ -69,11 +70,10 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 **Short term roadmap:**
 
-- Global (distributed) uptime checking on Solana network (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1593
 - Status pages (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1131
 - Translations (i18n) (**in progress**)
 - Better notification options (Webhooks, Discord, Telegram, Slack) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1545
-- JSON query monitoring https://github.com/bluewave-labs/Checkmate/issues/1573
+- JSON query monitoring  (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1573
 - Tagging/grouping monitors https://github.com/bluewave-labs/Checkmate/issues/1546
 - More configuration options
 - DNS monitoring
@@ -118,10 +118,11 @@ Here's how you can contribute:
 
 0. Star this repo :)
 1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
-2. Optionally, read [project structure](https://docs.checkmate.so/developers-guide/general-project-structure) and [high level overview](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
-3. Open an issue if you believe you've encountered a bug.
-4. Check for good-first-issue's if you are a newcomer.
-5. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
+2. Check [project structure](https://docs.checkmate.so/checkmate-2.1/developers-guide/general-project-structure) and [high level overview](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
+3. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
+4. Open an issue if you believe you've encountered a bug.
+5. Check for good-first-issue's if you are a newcomer.
+6. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
 
 <a href="https://github.com/bluewave-labs/checkmate/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />
@@ -135,8 +136,6 @@ Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their doc
 
 Also check other developer and contributor-friendly projects of BlueWave:
 
-- [LangRoute](https://github.com/bluewave-labs/langroute), an LLM proxy and gateway
-- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
-- [Headcount](https://github.com/bluewave-labs/bluewave-hrm), a complete Human Resource Management platform.
-- [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.
 - [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
+- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
+- [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.

@@ -2,11 +2,11 @@ import { useTheme } from "@emotion/react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TextInput from "../../Inputs/TextInput";
 import { credentials } from "../../../Validation/validation";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
-import { useSelector } from "react-redux";
 import Select from "../../Inputs/Select";
 import { GenericDialog } from "../../Dialog/genericDialog";
 import DataTable from "../../Table/";
@@ -21,11 +21,12 @@ import { useGetInviteToken } from "../../../Hooks/inviteHooks";
 
 const TeamPanel = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const SPACING_GAP = theme.spacing(12);
 
 	const [toInvite, setToInvite] = useState({
 		email: "",
-		role: ["0"],
+		role: ["user"],
 	});
 	const [data, setData] = useState([]);
 	const [members, setMembers] = useState([]);
@@ -39,7 +40,7 @@ const TeamPanel = () => {
 	const headers = [
 		{
 			id: "name",
-			content: "Name",
+			content: t("teamPanel.table.name"),
 			render: (row) => {
 				return (
 					<Stack>
@@ -47,16 +48,16 @@ const TeamPanel = () => {
 							{row.firstName + " " + row.lastName}
 						</Typography>
 						<Typography>
-							Created {new Date(row.createdAt).toLocaleDateString()}
+							{t("teamPanel.table.created")} {new Date(row.createdAt).toLocaleDateString()}
 						</Typography>
 					</Stack>
 				);
 			},
 		},
-		{ id: "email", content: "Email", render: (row) => row.email },
+		{ id: "email", content: t("teamPanel.table.email"), render: (row) => row.email },
 		{
 			id: "role",
-			content: "Role",
+			content: t("teamPanel.table.role"),
 			render: (row) => row.role,
 		},
 	];
@@ -78,10 +79,10 @@ const TeamPanel = () => {
 
 	useEffect(() => {
 		const ROLE_MAP = {
-			superadmin: "Super admin",
-			admin: "Admin",
-			user: "Team member",
-			demo: "Demo User",
+			superadmin: t("roles.superAdmin"),
+			admin: t("roles.admin"),
+			user: t("roles.teamMember"),
+			demo: t("roles.demoUser"),
 		};
 		let team = members;
 		if (filter !== "all")
@@ -98,7 +99,7 @@ const TeamPanel = () => {
 			role: member.role.map((role) => ROLE_MAP[role]).join(","),
 		}));
 		setData(team);
-	}, [filter, members]);
+	}, [members, filter, t]);
 
 	useEffect(() => {
 		setIsDisabled(Object.keys(errors).length !== 0 || toInvite.email === "");
@@ -107,7 +108,7 @@ const TeamPanel = () => {
 
 	const handleChange = (event) => {
 		const { value } = event.target;
-		const newEmail = value?.toLowerCase() || value
+		const newEmail = value?.toLowerCase() || value;
 		setToInvite((prev) => ({
 			...prev,
 			email: newEmail,
@@ -197,7 +198,7 @@ const TeamPanel = () => {
 				spellCheck="false"
 				gap={SPACING_GAP}
 			>
-				<Typography component="h1">Team members</Typography>
+				<Typography component="h1">{t("teamPanel.teamMembers")}</Typography>
 				<Stack
 					direction="row"
 					justifyContent="space-between"
@@ -214,21 +215,21 @@ const TeamPanel = () => {
 								filled={(filter === "all").toString()}
 								onClick={() => setFilter("all")}
 							>
-								All
+								{t("teamPanel.filter.all")}
 							</Button>
 							<Button
 								variant="group"
 								filled={(filter === "admin").toString()}
 								onClick={() => setFilter("admin")}
 							>
-								Super admin
+								{t("roles.superAdmin")}
 							</Button>
 							<Button
 								variant="group"
 								filled={(filter === "user").toString()}
 								onClick={() => setFilter("user")}
 							>
-								Member
+								{t("teamPanel.filter.member")}
 							</Button>
 						</ButtonGroup>
 					</Stack>
@@ -237,22 +238,20 @@ const TeamPanel = () => {
 						color="accent"
 						onClick={() => setIsOpen(true)}
 					>
-						Invite a team member
+						{t("teamPanel.inviteTeamMember")}
 					</Button>
 				</Stack>
 
 				<DataTable
 					headers={headers}
 					data={data}
-					config={{ emptyView: "There are no team members with this role" }}
+					config={{ emptyView: t("teamPanel.noMembers") }}
 				/>
 			</Stack>
 
 			<GenericDialog
-				title={"Invite new team member"}
-				description={
-					"When you add a new team member, they will get access to all monitors."
-				}
+				title={t("teamPanel.inviteNewTeamMember")}
+				description={t("teamPanel.inviteDescription")}
 				open={isOpen}
 				onClose={closeInviteModal}
 				theme={theme}
@@ -261,7 +260,7 @@ const TeamPanel = () => {
 					marginBottom={SPACING_GAP}
 					type="email"
 					id="input-team-member"
-					placeholder="Email"
+					placeholder={t("teamPanel.email")}
 					value={toInvite.email}
 					onChange={handleChange}
 					error={errors.email ? true : false}
@@ -269,7 +268,7 @@ const TeamPanel = () => {
 				/>
 				<Select
 					id="team-member-role"
-					placeholder="Select role"
+					placeholder={t("teamPanel.selectRole")}
 					isHidden={true}
 					value={toInvite.role[0]}
 					onChange={(event) =>
@@ -279,11 +278,11 @@ const TeamPanel = () => {
 						}))
 					}
 					items={[
-						{ _id: "admin", name: "Admin" },
-						{ _id: "user", name: "User" },
+						{ _id: "admin", name: t("roles.admin") },
+						{ _id: "user", name: t("roles.teamMember") },
 					]}
 				/>
-				{token && <Typography>Invite link</Typography>}
+				{token && <Typography>{t("teamPanel.inviteLink")}</Typography>}
 				{token && (
 					<TextInput
 						id="invite-token"
@@ -302,7 +301,7 @@ const TeamPanel = () => {
 						color="error"
 						onClick={closeInviteModal}
 					>
-						Cancel
+						{t("teamPanel.cancel")}
 					</Button>
 					<Button
 						variant="contained"
@@ -311,7 +310,7 @@ const TeamPanel = () => {
 						loading={isSendingInvite}
 						disabled={isDisabled}
 					>
-						Get token
+						{t("teamPanel.getToken")}
 					</Button>
 					<Button
 						variant="contained"
@@ -320,7 +319,7 @@ const TeamPanel = () => {
 						loading={isSendingInvite}
 						disabled={isDisabled}
 					>
-						E-mail token
+						{t("teamPanel.emailToken")}
 					</Button>
 				</Stack>
 			</GenericDialog>

@@ -751,7 +751,7 @@ const createMonitor = async (req, res) => {
  */
 const createBulkMonitors = async (req) => {
 	try {
-		const monitors = req.body.map(
+		const monitors = req.map(
 			(item) => new Monitor({ ...item, notifications: undefined })
 		);
 		await Monitor.bulkSave(monitors);

@@ -58,7 +58,7 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
-						helperText={errors.email}
+						helperText={errors.email ? t(errors.email) : ""}
 						ref={inputRef}
 					/>
 					<Stack
@@ -70,8 +70,17 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 							color="accent"
 							type="submit"
 							disabled={errors.email && true}
+							className="dashboard-style-button"
 							sx={{
 								width: "30%",
+								px: theme.spacing(6),
+								borderRadius: `${theme.shape.borderRadius}px !important`,
+								'&.MuiButtonBase-root': {
+									borderRadius: `${theme.shape.borderRadius}px !important`
+								},
+								'&.MuiButton-root': {
+									borderRadius: `${theme.shape.borderRadius}px !important`
+								},
 								"&.Mui-focusVisible": {
 									outline: `2px solid ${theme.palette.primary.main}`,
 									outlineOffset: `2px`,

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Button, Stack } from "@mui/material";
 import { GenericDialog } from "./genericDialog";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 const Dialog = ({
 	title,
@@ -13,6 +14,7 @@ const Dialog = ({
 	isLoading,
 }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<GenericDialog
@@ -33,7 +35,7 @@ const Dialog = ({
 					color="secondary"
 					onClick={onCancel}
 				>
-					Cancel
+					{t("cancel", "Cancel")}
 				</Button>
 				<Button
 					variant="contained"

@@ -3,7 +3,6 @@ import { Stack, Button, Typography } from "@mui/material";
 import Tabs from "./Components/Tabs";
 import GenericFallback from "../../../Components/GenericFallback";
 import SkeletonLayout from "./Components/Skeleton";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -55,23 +54,10 @@ const CreateStatusPage = () => {
 	const [createStatusPage, createStatusIsLoading, createStatusPageNetworkError] =
 		useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
-	const { t }  = useTranslation();
+	const { t } = useTranslation();
 
 	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
 		useStatusPageFetch(isCreate, url);
-	
-	// Breadcrumbs
-	const crumbs = [
-		{ name: t("statusBreadCrumbsStatusPages"), path: "/status" },
-	];
-	if (isCreate) {
-		crumbs.push({ name: t("statusBreadCrumbsCreate"), path: "/status/uptime/create" });
-	} else {
-		crumbs.push(
-			{ name: t("statusBreadCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
-			{ name: t("configure"), path: `/status/uptime/configure/${statusPage?.url}` }
-		);
-	}
 
 	// Handlers
 	const handleFormChange = (e) => {
@@ -101,18 +87,19 @@ const CreateStatusPage = () => {
 		}));
 	};
 
-	const handleImageChange = useCallback((event) => {
-		const img = event.target?.files?.[0];
-		const newLogo = {
-			src: URL.createObjectURL(img),
-			name: img.name,
-			type: img.type,
-			size: img.size,
-		};
+	const handleImageChange = useCallback((fileObj) => {
+		if (!fileObj || !fileObj.file) return;
+
 		setForm((prev) => ({
 			...prev,
-			logo: newLogo,
+			logo: {
+				src: fileObj.src,
+				name: fileObj.name,
+				type: fileObj.file.type,
+				size: fileObj.file.size,
+			},
 		}));
+
 		intervalRef.current = setInterval(() => {
 			const buffer = 12;
 			setProgress((prev) => {
@@ -232,7 +219,6 @@ const CreateStatusPage = () => {
 	// Load fields
 	return (
 		<Stack gap={theme.spacing(10)}>
-			<Breadcrumbs list={crumbs} />
 			<Tabs
 				form={form}
 				errors={errors}
