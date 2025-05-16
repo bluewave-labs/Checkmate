@@ -120,7 +120,7 @@ const monitorValidation = joi.object({
                 .custom((value, helpers) => {
                     // Regex from https://gist.github.com/dperini/729294
                     var urlRegex = new RegExp(
-                        "^" +
+                            "^" +
                             // protocol identifier (optional)
                             // short syntax // still required
                             "(?:(?:https?|ftp):\\/\\/)?" +
