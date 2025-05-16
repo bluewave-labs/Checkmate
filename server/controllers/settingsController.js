@@ -1,13 +1,14 @@
 import { updateAppSettingsBodyValidation } from "../validation/joi.js";
 import { handleValidationError, handleError } from "./controllerUtils.js";
-
+import { sendTestEmailBodyValidation } from "../validation/joi.js";
 const SERVICE_NAME = "SettingsController";
 
 class SettingsController {
-	constructor(db, settingsService, stringService) {
+	constructor({ db, settingsService, stringService, emailService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
+		this.emailService = emailService;
 	}
 
 	getAppSettings = async (req, res, next) => {
@@ -53,6 +54,59 @@ class SettingsController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "updateAppSettings"));
+		}
+	};
+
+	sendTestEmail = async (req, res, next) => {
+		try {
+			await sendTestEmailBodyValidation.validateAsync(req.body);
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+
+		try {
+			const {
+				to,
+				systemEmailHost,
+				systemEmailPort,
+				systemEmailAddress,
+				systemEmailPassword,
+				systemEmailUser,
+				systemEmailConnectionHost,
+			} = req.body;
+
+			const subject = this.stringService.testEmailSubject;
+			const context = { testName: "Monitoring System" };
+
+			const messageId = await this.emailService.buildAndSendEmail(
+				"testEmailTemplate",
+				context,
+				to,
+				subject,
+				{
+					systemEmailHost,
+					systemEmailPort,
+					systemEmailUser,
+					systemEmailAddress,
+					systemEmailPassword,
+					systemEmailConnectionHost,
+				}
+			);
+
+			if (!messageId) {
+				return res.error({
+					msg: "Failed to send test email.",
+				});
+			}
+
+			return res.success({
+				msg: this.stringService.sendTestEmail,
+				data: { messageId },
+			});
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
 		}
 	};
 }

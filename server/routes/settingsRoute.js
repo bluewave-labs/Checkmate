@@ -15,6 +15,11 @@ class SettingsRoutes {
 			isAllowed(["admin", "superadmin"]),
 			this.settingsController.updateAppSettings
 		);
+		this.router.post(
+			"/test-email",
+			isAllowed(["admin", "superadmin"]),
+			this.settingsController.sendTestEmail
+		);
 	}
 
 	getRouter() {

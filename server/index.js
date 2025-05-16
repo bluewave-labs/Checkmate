@@ -241,11 +241,12 @@ const startApp = async () => {
 		ServiceRegistry.get(EmailService.SERVICE_NAME)
 	);
 
-	const settingsController = new SettingsController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const settingsController = new SettingsController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+	});
 
 	const checkController = new CheckController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),

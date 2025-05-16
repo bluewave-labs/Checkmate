@@ -4,8 +4,8 @@ import multer from "multer";
 import { fetchMonitorCertificate } from "../controllers/controllerUtils.js";
 
 const upload = multer({
-	storage: multer.memoryStorage() // Store file in memory as Buffer
-  });
+	storage: multer.memoryStorage(), // Store file in memory as Buffer
+});
 
 class MonitorRoutes {
 	constructor(monitorController) {

@@ -89,8 +89,16 @@ class EmailService {
 	 * @param {string} subject - The subject of the email.
 	 * @returns {Promise<string>} A promise that resolves to the messageId of the sent email.
 	 */
-	buildAndSendEmail = async (template, context, to, subject) => {
+	buildAndSendEmail = async (template, context, to, subject, transportConfig) => {
 		// TODO - Consider an update transporter method so this only needs to be recreated when smtp settings change
+		let config;
+
+		if (typeof transportConfig !== "undefined") {
+			config = transportConfig;
+		} else {
+			config = this.settingsService.getDBSettings();
+		}
+
 		const {
 			systemEmailHost,
 			systemEmailPort,
@@ -98,7 +106,7 @@ class EmailService {
 			systemEmailAddress,
 			systemEmailPassword,
 			systemEmailConnectionHost,
-		} = await this.settingsService.getDBSettings();
+		} = config;
 
 		const baseEmailConfig = {
 			host: systemEmailHost,
