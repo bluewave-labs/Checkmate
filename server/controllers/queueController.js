@@ -23,7 +23,7 @@ class JobQueueController {
 
 	getJobs = async (req, res, next) => {
 		try {
-			const jobs = await this.jobQueue.getJobStats();
+			const jobs = await this.jobQueue.getJobs();
 			return res.success({
 				msg: this.stringService.queueGetMetrics,
 				data: jobs,
@@ -60,7 +60,7 @@ class JobQueueController {
 
 	flushQueue = async (req, res, next) => {
 		try {
-			const result = await this.jobQueue.flushQueue();
+			const result = await this.jobQueue.flushQueues();
 			return res.success({
 				msg: this.stringService.jobQueueFlush,
 				data: result,

@@ -51,7 +51,7 @@ const createHardwareCheck = async (hardwareCheckData) => {
 
 const createHardwareChecks = async (hardwareChecks) => {
 	try {
-		await HardwareCheck.insertMany(hardwareChecks);
+		await HardwareCheck.insertMany(hardwareChecks, { ordered: false });
 		return true;
 	} catch (error) {
 		error.service = SERVICE_NAME;

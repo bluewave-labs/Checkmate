@@ -128,9 +128,8 @@ const createDistributedChecks = async (checksData) => {
 			};
 		});
 
-		// Execute bulk operation
 		await DistributedUptimeCheck.bulkWrite(bulkOps, {
-			ordered: false, // Allow parallel processing
+			ordered: false,
 		});
 	} catch (error) {
 		error.service = SERVICE_NAME;
