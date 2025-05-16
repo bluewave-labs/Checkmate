@@ -43,7 +43,7 @@ const createCheck = async (checkData) => {
 
 const createChecks = async (checks) => {
 	try {
-		await Check.insertMany(checks);
+		await Check.insertMany(checks, { ordered: false });
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "createCheck";

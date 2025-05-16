@@ -26,7 +26,7 @@ const createPageSpeedCheck = async (pageSpeedCheckData) => {
 };
 const createPageSpeedChecks = async (pageSpeedChecks) => {
 	try {
-		await PageSpeedCheck.insertMany(pageSpeedChecks);
+		await PageSpeedCheck.insertMany(pageSpeedChecks, { ordered: false });
 		return true;
 	} catch (error) {
 		error.service = SERVICE_NAME;
