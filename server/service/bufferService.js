@@ -80,7 +80,16 @@ class BufferService {
 				});
 				continue;
 			}
-			await operation(buffer);
+			try {
+				await operation(buffer);
+			} catch (error) {
+				this.logger.error({
+					message: error.message,
+					service: this.SERVICE_NAME,
+					method: "flushBuffers",
+					stack: error.stack,
+				});
+			}
 			this.buffers[bufferName] = [];
 		}
 		this.logger.info({
