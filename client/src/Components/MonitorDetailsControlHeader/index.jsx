@@ -5,12 +5,14 @@ import Button from "@mui/material/Button";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import EmailIcon from '@mui/icons-material/Email';
 
 // Utils
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { usePauseMonitor } from "../../Hooks/useMonitorControls";
+import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
 
 /**
  * MonitorDetailsControlHeader component displays the control header for monitor details.
@@ -39,6 +41,8 @@ const MonitorDetailsControlHeader = ({
 		triggerUpdate,
 	});
 
+	const [isSending, emailError, sendTestEmail] = useSendTestEmail();
+
 	if (isLoading) {
 		return <Skeleton />;
 	}
@@ -54,6 +58,15 @@ const MonitorDetailsControlHeader = ({
 				direction="row"
 				gap={theme.spacing(2)}
 			>
+				<Button
+					variant="contained"
+					color="accent"
+					loading={isSending}
+					startIcon={<EmailIcon />}
+					onClick={sendTestEmail}
+				>
+					Test e-mail
+				</Button>
 				<Button
 					variant="contained"
 					color="secondary"
