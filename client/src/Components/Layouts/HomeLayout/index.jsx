@@ -16,7 +16,13 @@ const HomeLayout = () => {
 		>
 			<Sidebar />
 			<DialogAnchorProvider anchor={dialogAnchorRef}>
-				<Stack className="home-content-wrapper" ref={dialogAnchorRef}>
+				<Stack
+					className="home-content-wrapper"
+					ref={dialogAnchorRef}
+					sx={{
+						position: "relative"
+					}}
+				>
 					<Outlet />
 				</Stack>
 			</DialogAnchorProvider>
