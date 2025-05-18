@@ -109,7 +109,11 @@ const monitorValidation = joi.object({
 			then: joi
 				.string()
 				.trim()
-				.regex(/^[a-z0-9]{64}$/),
+				.regex(/^[a-z0-9]{64}$/)
+				.messages({
+					"string.empty": "This field is required.",
+					"string.pattern.base": "Please enter a valid 64-character Docker container ID.",
+				}),
 			otherwise: joi
 				.string()
 				.trim()
@@ -156,13 +160,12 @@ const monitorValidation = joi.object({
 					}
 
 					return value;
+				})
+				.messages({
+					"string.empty": "This field is required.",
+					"string.uri": "The URL you provided is not valid.",
+					"string.invalidUrl": "Please enter a valid URL with optional port",
 				}),
-		})
-		.messages({
-			"string.empty": "This field is required.",
-			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl": "Please enter a valid URL with optional port",
-			"string.pattern.base": "Please enter a valid container ID.",
 		}),
 	port: joi
 		.number()
@@ -171,7 +174,7 @@ const monitorValidation = joi.object({
 		.max(65535)
 		.when("type", {
 			is: "port",
-			then: joi.required().messages({
+			then: joi.number().messages({
 				"number.base": "Port must be a number.",
 				"number.min": "Port must be at least 1.",
 				"number.max": "Port must be at most 65535.",
@@ -265,6 +268,7 @@ const statusPageValidation = joi.object({
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
 });
+
 const settingsValidation = joi.object({
 	checkTTL: joi.number().required().messages({
 		"string.empty": "Please enter a value",
@@ -278,6 +282,7 @@ const settingsValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow(""),
 });
 
 const dayjsValidator = (value, helpers) => {
@@ -307,6 +312,7 @@ const advancedSettingsValidation = joi.object({
 	systemEmailPort: joi.number().allow(null, ""),
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow(""),
 	jwtTTLNum: joi.number().messages({
 		"number.base": "JWT TTL is required.",
 	}),

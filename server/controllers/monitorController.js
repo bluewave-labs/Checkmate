@@ -595,8 +595,8 @@ class MonitorController {
 				{ new: true }
 			);
 			monitor.isActive === true
-				? await this.jobQueue.deleteJob(monitor)
-				: await this.jobQueue.addJob(monitor._id, monitor);
+				? await this.jobQueue.addJob(monitor._id, monitor)
+				: await this.jobQueue.deleteJob(monitor);
 
 			return res.success({
 				msg: monitor.isActive

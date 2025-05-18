@@ -123,6 +123,15 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
+						<Typography>{t("settingsEmailConnectionHost")}</Typography>
+						<TextInput
+							name="systemEmailConnectionHost"
+							placeholder="bluewavelabs.ca"
+							value={settingsData?.settings?.systemEmailConnectionHost ?? ""}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box>
 						<Button
 							variant="contained"
 							color="accent"
