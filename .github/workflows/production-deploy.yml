@@ -21,13 +21,13 @@ jobs:
       - name: Build Client Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:frontend-demo \
+            -t ghcr.io/thetechnetwork/checkmate:frontend-demo \
             -f ./docker/prod/client.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push Client Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:frontend-demo
+        run: docker push ghcr.io/thetechnetwork/checkmate:frontend-demo
 
   docker-build-and-push-server:
     needs: docker-build-and-push-client
@@ -46,35 +46,35 @@ jobs:
       - name: Build Server Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:backend-demo \
+            -t ghcr.io/thetechnetwork/checkmate:backend-demo \
             -f ./docker/prod/server.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push Server Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:backend-demo
+        run: docker push ghcr.io/thetechnetwork/checkmate:backend-demo
 
       - name: Build Mongo Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:mongo-demo \
+            -t ghcr.io/thetechnetwork/checkmate:mongo-demo \
             -f ./docker/prod/mongoDB.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push MongoDB Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:mongo-demo
+        run: docker push ghcr.io/thetechnetwork/checkmate:mongo-demo
 
       - name: Build Redis Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:redis-demo \
+            -t ghcr.io/thetechnetwork/checkmate:redis-demo \
             -f ./docker/prod/redis.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push Redis Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:redis-demo
+        run: docker push ghcr.io/thetechnetwork/checkmate:redis-demo
 
   deploy-to-demo:
     needs: docker-build-and-push-server
