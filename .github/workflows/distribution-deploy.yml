@@ -24,13 +24,13 @@ jobs:
       - name: Build Client Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:frontend-dist \
+            -t ghcr.io/thetechnetwork/checkmate:frontend-dist \
             -f ./docker/dist/client.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push Client Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:frontend-dist
+        run: docker push ghcr.io/thetechnetwork/checkmate:frontend-dist
 
   docker-build-and-push-server:
     needs: docker-build-and-push-client
@@ -52,32 +52,32 @@ jobs:
       - name: Build Server Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:backend-dist \
+            -t ghcr.io/thetechnetwork/checkmate:backend-dist \
             -f ./docker/dist/server.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push Server Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:backend-dist
+        run: docker push ghcr.io/thetechnetwork/checkmate:backend-dist
 
       - name: Build Mongo Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:mongo-dist \
+            -t ghcr.io/thetechnetwork/checkmate:mongo-dist \
             -f ./docker/dist/mongoDB.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push MongoDB Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:mongo-dist
+        run: docker push ghcr.io/thetechnetwork/checkmate:mongo-dist
 
       - name: Build Redis Docker image
         run: |
           docker build \
-            -t ghcr.io/bluewave-labs/checkmate:redis-dist \
+            -t ghcr.io/thetechnetwork/checkmate:redis-dist \
             -f ./docker/dist/redis.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --label org.opencontainers.image.source=https://github.com/thetechnetwork/checkmate \
             .
 
       - name: Push Redis Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:redis-dist
+        run: docker push ghcr.io/thetechnetwork/checkmate:redis-dist
