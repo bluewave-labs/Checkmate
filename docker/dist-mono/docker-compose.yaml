@@ -1,0 +1,35 @@
+services:
+  server:
+    image: mono_server:latest
+    restart: always
+    ports:
+      - "52345:52345"
+    env_file:
+      - server.env
+    depends_on:
+      - redis
+      - mongodb
+  redis:
+    image: mono_redis:latest
+    restart: always
+    volumes:
+      - ./redis/data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+  mongodb:
+    image: mono_mongo:latest
+    restart: always
+    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./mongo/data:/data/db
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
