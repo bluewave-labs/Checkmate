@@ -437,12 +437,6 @@ class NetworkService {
 				throw new Error(response.data.message);
 			}
 		} catch (error) {
-			this.logger.error({
-				message: "Error in requestDistributedHttp",
-				service: this.SERVICE_NAME,
-				method: "requestDistributedHttp",
-				stack: error.stack,
-			});
 			error.service = this.SERVICE_NAME;
 			error.method = "requestDistributedHttp";
 			throw error;
