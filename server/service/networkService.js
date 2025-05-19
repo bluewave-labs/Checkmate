@@ -258,8 +258,8 @@ class NetworkService {
 			if (dbSettings?.pagespeedApiKey) {
 				pagespeedUrl += `&key=${dbSettings.pagespeedApiKey}`;
 			} else {
-				this.logger.info({
-					message: "Pagespeed API key not found",
+				this.logger.warn({
+					message: "Pagespeed API key not found, job not executed",
 					service: this.SERVICE_NAME,
 					method: "requestPagespeed",
 					details: { url },
