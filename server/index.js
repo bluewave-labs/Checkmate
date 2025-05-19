@@ -191,7 +191,12 @@ const startApp = async () => {
 		statusService,
 		notificationService,
 	});
-	const jobQueue = new JobQueue({ db, jobQueueHelper, logger, stringService });
+	const jobQueue = await JobQueue.create({
+		db,
+		jobQueueHelper,
+		logger,
+		stringService,
+	});
 
 	// Register services
 	ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
