@@ -258,8 +258,16 @@ class JobQueueHelper {
 					job.data.type === "distributed_http" ||
 					job.data.type === "distributed_test"
 				) {
-					return;
+					await job.updateProgress(100);
+					return true;
 				}
+
+				// If the network response is not found, we're done
+				if (!networkResponse) {
+					await job.updateProgress(100);
+					return false;
+				}
+
 				// Handle status change
 				await job.updateProgress(60);
 				const { monitor, statusChanged, prevStatus } =
