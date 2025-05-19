@@ -22,6 +22,9 @@ const useSendTestEmail = () => {
 				throw new Error("Failed to send test email");
 			}
 		} catch (error) {
+			createToast({
+				body: "Failed to send test email",
+			});
 			setError(error);
 		} finally {
 			setIsSending(false);

@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { usePauseMonitor } from "../../Hooks/useMonitorControls";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
+import { useTranslation } from "react-i18next";
 
 /**
  * MonitorDetailsControlHeader component displays the control header for monitor details.
@@ -36,6 +37,7 @@ const MonitorDetailsControlHeader = ({
 }) => {
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const [pauseMonitor, isPausing, error] = usePauseMonitor({
 		monitorId: monitor?._id,
 		triggerUpdate,
@@ -60,12 +62,12 @@ const MonitorDetailsControlHeader = ({
 			>
 				<Button
 					variant="contained"
-					color="accent"
+					color="secondary"
 					loading={isSending}
 					startIcon={<EmailIcon />}
 					onClick={sendTestEmail}
 				>
-					Test e-mail
+					{t("sendTestEmail")}
 				</Button>
 				<Button
 					variant="contained"
