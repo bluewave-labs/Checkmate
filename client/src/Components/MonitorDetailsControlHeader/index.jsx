@@ -73,7 +73,6 @@ const MonitorDetailsControlHeader = ({
 					variant="contained"
 					color="secondary"
 					onClick={(e) => {
-						e.stopPropagation();
 						navigate(`/incidents/${monitor?._id}`);
 					}}
 				>
