@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
-import EmailIcon from '@mui/icons-material/Email';
+import EmailIcon from "@mui/icons-material/Email";
 
 // Utils
 import PropTypes from "prop-types";
@@ -68,6 +68,15 @@ const MonitorDetailsControlHeader = ({
 					onClick={sendTestEmail}
 				>
 					{t("sendTestEmail")}
+				</Button>
+				<Button
+					variant="contained"
+					color="secondary"
+					onClick={(e) => {
+						navigate(`/incidents/${monitor?._id}`);
+					}}
+				>
+					{t("menu.incidents")}
 				</Button>
 				<Button
 					variant="contained"
