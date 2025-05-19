@@ -99,6 +99,8 @@ const openApiSpec = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "openapi.json"), "utf8")
 );
 
+const frontendPath = path.join(__dirname, "public");
+
 let server;
 
 const shutdown = async () => {
@@ -308,6 +310,7 @@ const startApp = async () => {
 	const notificationRoutes = new NotificationRoutes(notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(diagnosticController);
 	// Middleware
+	app.use(express.static(frontendPath));
 	app.use(responseHandler);
 	app.use(
 		cors({
@@ -352,6 +355,10 @@ const startApp = async () => {
 		res.json({
 			status: "OK",
 		});
+	});
+	// FE routes
+	app.get("*", (req, res) => {
+		res.sendFile(path.join(frontendPath, "index.html"));
 	});
 	app.use(handleErrors);
 };
