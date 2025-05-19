@@ -4,8 +4,9 @@ services:
     restart: always
     ports:
       - "52345:52345"
-    env_file:
-      - server.env
+    environment:
+      - UPTIME_APP_API_BASE_URL=http://localhost:52345/api/v1
+      - UPTIME_APP_CLIENT_HOST=http://localhost
     depends_on:
       - redis
       - mongodb
