@@ -143,10 +143,11 @@ class JobQueueHelper {
 		});
 
 		worker.on("failed", (job, error, prev) => {
-			this.logger.warn({
-				message: `Worker ${queueName} is failed with msg: ${error}`,
-				service: SERVICE_NAME,
-				method: "createWorker:failed",
+			this.logger.error({
+				message: `Worker ${queueName} is failed with msg: ${error.message}`,
+				service: error?.service ?? SERVICE_NAME,
+				method: error?.method ?? "createWorker:failed",
+				stack: error?.stack,
 			});
 		});
 
@@ -293,13 +294,7 @@ class JobQueueHelper {
 				await job.updateProgress(100);
 				return true;
 			} catch (error) {
-				this.logger.error({
-					message: error.message,
-					service: error.service ?? SERVICE_NAME,
-					method: error.method ?? "createJobHandler",
-					details: `Error processing job ${job.id}: ${error.message}`,
-					stack: error.stack,
-				});
+				await job.updateProgress(100);
 				throw error;
 			}
 		};
