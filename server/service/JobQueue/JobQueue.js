@@ -22,7 +22,12 @@ class JobQueue {
 		this.logger = logger;
 		this.queues = {};
 		this.workers = [];
-		this.init();
+	}
+
+	static async create({ db, jobQueueHelper, logger, stringService }) {
+		const instance = new JobQueue({ db, jobQueueHelper, logger, stringService });
+		await instance.init();
+		return instance;
 	}
 
 	async init() {
@@ -52,9 +57,13 @@ class JobQueue {
 					const queueHealthChecks = await this.checkQueueHealth();
 					const queueIsStuck = queueHealthChecks.some((healthCheck) => healthCheck.stuck);
 					if (queueIsStuck) {
-						console.log("Queue is stuck");
-						console.log(queueHealthChecks);
-						// await this.flushQueues();
+						this.logger.warn({
+							message: "Queue is stuck",
+							service: SERVICE_NAME,
+							method: "periodicHealthCheck",
+							details: queueHealthChecks,
+						});
+						await this.flushQueues();
 					}
 				} catch (error) {
 					this.logger.error({
