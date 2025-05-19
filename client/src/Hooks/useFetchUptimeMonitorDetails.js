@@ -3,13 +3,12 @@ import { networkService } from "../main";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../Utils/toastUtils";
 
-export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
+export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange, trigger }) => {
 	const [networkError, setNetworkError] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const [monitor, setMonitor] = useState(undefined);
 	const [monitorStats, setMonitorStats] = useState(undefined);
 	const navigate = useNavigate();
-
 	useEffect(() => {
 		const fetchMonitors = async () => {
 			try {
@@ -29,7 +28,7 @@ export const useFetchUptimeMonitorDetails = ({ monitorId, dateRange }) => {
 			}
 		};
 		fetchMonitors();
-	}, [dateRange, monitorId, navigate]);
+	}, [dateRange, monitorId, navigate, trigger]);
 	return [monitor, monitorStats, isLoading, networkError];
 };
 

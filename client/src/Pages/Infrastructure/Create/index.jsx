@@ -294,7 +294,7 @@ const CreateInfrastructureMonitor = () => {
 				</Typography>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
+						<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">
 							{t("infrastructureCreateGeneralSettingsDescription")}
 						</Typography>
@@ -368,7 +368,7 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+						<Typography component="h2" variant="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
@@ -385,7 +385,7 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("infrastructureCustomizeAlerts")}</Typography>
+						<Typography component="h2" variant="h2">{t("infrastructureCustomizeAlerts")}</Typography>
 						<Typography component="p">
 							{t("infrastructureAlertNotificationDescription")}
 						</Typography>
@@ -432,7 +432,7 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+						<Typography component="h2" variant="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select

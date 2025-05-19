@@ -1,71 +1,58 @@
+const SERVICE_NAME = "RedisService";
+
 class RedisService {
-	static SERVICE_NAME = "RedisService";
-
-	constructor({ logger, IORedis, SettingsService }) {
+	static SERVICE_NAME = SERVICE_NAME;
+	constructor({ Redis, logger }) {
+		this.Redis = Redis;
+		this.connections = new Set();
 		this.logger = logger;
-		this.IORedis = IORedis;
-		this.SettingsService = SettingsService;
-		this.connection = null;
 	}
 
-	static async createInstance({ logger, IORedis, SettingsService }) {
-		const instance = new RedisService({ logger, IORedis, SettingsService });
-		await instance.connect();
-		return instance;
-	}
-
-	async connect() {
-		const settings = this.SettingsService.getSettings();
-		const { redisUrl } = settings;
-		this.connection = new this.IORedis(redisUrl, {
-			maxRetriesPerRequest: null,
+	getNewConnection(options = {}) {
+		const connection = new this.Redis(process.env.REDIS_URL, {
 			retryStrategy: (times) => {
-				if (times >= 5) {
-					throw new Error("Failed to connect to Redis");
-				}
-				this.logger.debug({
-					message: "Retrying Redis connection",
-					service: RedisService.SERVICE_NAME,
-					details: { times },
-				});
-				return Math.min(times * 100, 2000);
+				return null;
 			},
+			...options,
 		});
+		this.connections.add(connection);
+		return connection;
+	}
 
-		await new Promise((resolve, reject) => {
-			let errorOccurred = false;
-
-			this.connection.on("ready", () => {
-				if (!errorOccurred) {
-					this.logger.info({
-						message: "Redis connection established",
-						service: RedisService.SERVICE_NAME,
-					});
-					resolve();
-				}
-			});
-
-			this.connection.on("error", (err) => {
-				errorOccurred = true;
+	async closeAllConnections() {
+		const closePromises = Array.from(this.connections).map((conn) =>
+			conn.quit().catch((err) => {
 				this.logger.error({
-					message: "Redis connection error",
-					service: RedisService.SERVICE_NAME,
-					error: err,
+					message: "Error closing Redis connection",
+					service: SERVICE_NAME,
+					method: "closeAllConnections",
+					details: { error: err },
 				});
-				setTimeout(() => reject(err), 5000);
-			});
+			})
+		);
+
+		await Promise.all(closePromises);
+		this.connections.clear();
+		this.logger.info({
+			message: "All Redis connections closed",
+			service: SERVICE_NAME,
+			method: "closeAllConnections",
 		});
-	}
-	async flushall() {
-		this.logger.debug({
-			message: "Flushing all Redis data",
-			service: RedisService.SERVICE_NAME,
-		});
-		await this.connection.flushall();
 	}
 
-	getConnection() {
-		return this.connection;
+	async flushRedis() {
+		this.logger.info({
+			message: "Flushing Redis",
+			service: SERVICE_NAME,
+			method: "flushRedis",
+		});
+		const flushPromises = Array.from(this.connections).map((conn) => conn.flushall());
+		await Promise.all(flushPromises);
+		this.logger.info({
+			message: "Redis flushed",
+			service: SERVICE_NAME,
+			method: "flushRedis",
+		});
 	}
 }
 

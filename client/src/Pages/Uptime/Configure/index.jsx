@@ -158,23 +158,6 @@ const Configure = () => {
 		}
 	};
 
-	const handlePause = async () => {
-		try {
-			const action = await dispatch(pauseUptimeMonitor({ monitorId }));
-			if (pauseUptimeMonitor.fulfilled.match(action)) {
-				const monitor = action.payload.data;
-				setMonitor(monitor);
-				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
-				createToast({ body: `Monitor ${state} successfully.` });
-			} else if (pauseUptimeMonitor.rejected.match(action)) {
-				throw new Error(action.error.message);
-			}
-		} catch (error) {
-			logger.error("Error pausing monitor: " + monitorId);
-			createToast({ body: "Failed to pause monitor" });
-		}
-	};
-
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		const action = await dispatch(updateUptimeMonitor({ monitor: monitor }));
@@ -330,38 +313,6 @@ const Configure = () => {
 								}}
 							>
 								<Button
-									variant="contained"
-									color="secondary"
-									loading={isLoading}
-									sx={{
-										pl: theme.spacing(4),
-										pr: theme.spacing(6),
-										mr: theme.spacing(6),
-										"& svg": {
-											mr: theme.spacing(2),
-											width: 22,
-											height: 22,
-											"& path": {
-												stroke: theme.palette.primary.contrastTextTertiary,
-												strokeWidth: 1.7,
-											},
-										},
-									}}
-									onClick={handlePause}
-								>
-									{monitor?.isActive ? (
-										<>
-											<PauseIcon />
-											{t("pause")}
-										</>
-									) : (
-										<>
-											<ResumeIcon />
-											{t("resume")}
-										</>
-									)}
-								</Button>
-								<Button
 									loading={isLoading}
 									variant="contained"
 									color="error"
@@ -374,7 +325,7 @@ const Configure = () => {
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
+								<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
 								<Typography component="p">
 									{t("distributedUptimeCreateSelectURL")}
 								</Typography>
@@ -420,7 +371,7 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">
+								<Typography component="h2" variant="h2">
 									{t("distributedUptimeCreateIncidentNotification")}
 								</Typography>
 								<Typography component="p">
@@ -488,7 +439,7 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("ignoreTLSError")}</Typography>
+								<Typography component="h2" variant="h2">{t("ignoreTLSError")}</Typography>
 								<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
 							</Box>
 							<Stack>
@@ -508,7 +459,7 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">
+								<Typography component="h2" variant="h2">
 									{t("distributedUptimeCreateAdvancedSettings")}
 								</Typography>
 							</Box>
