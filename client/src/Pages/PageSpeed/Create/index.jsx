@@ -216,7 +216,7 @@ const CreatePageSpeed = () => {
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
+						<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateSelectURL")}
 						</Typography>
@@ -251,7 +251,7 @@ const CreatePageSpeed = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateChecks")}</Typography>
+						<Typography component="h2" variant="h2">{t("distributedUptimeCreateChecks")}</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateChecksDescription")}
 						</Typography>
@@ -300,7 +300,7 @@ const CreatePageSpeed = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+						<Typography component="h2" variant="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
@@ -320,7 +320,7 @@ const CreatePageSpeed = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+						<Typography component="h2" variant="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select
