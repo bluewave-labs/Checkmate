@@ -1047,9 +1047,12 @@ class NetworkService {
 		form.url && fd.append("url", form.url);
 		form.timezone && fd.append("timezone", form.timezone);
 		form.color && fd.append("color", form.color);
-		form.showCharts && fd.append("showCharts", form.showCharts);
-		form.showUptimePercentage &&
-			fd.append("showUptimePercentage", form.showUptimePercentage);
+		if (form.showCharts !== undefined) {
+			fd.append("showCharts", String(form.showCharts));
+		}
+		if (form.showUptimePercentage !== undefined) {
+			fd.append("showUptimePercentage", String(form.showUptimePercentage));
+		}
 		form.monitors &&
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
