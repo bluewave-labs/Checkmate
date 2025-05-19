@@ -22,13 +22,22 @@ class RedisService {
 	async closeAllConnections() {
 		const closePromises = Array.from(this.connections).map((conn) =>
 			conn.quit().catch((err) => {
-				console.error("Error closing Redis connection:", err);
+				this.logger.error({
+					message: "Error closing Redis connection",
+					service: SERVICE_NAME,
+					method: "closeAllConnections",
+					details: { error: err },
+				});
 			})
 		);
 
 		await Promise.all(closePromises);
 		this.connections.clear();
-		console.log("All Redis connections closed");
+		this.logger.info({
+			message: "All Redis connections closed",
+			service: SERVICE_NAME,
+			method: "closeAllConnections",
+		});
 	}
 
 	async flushRedis() {
