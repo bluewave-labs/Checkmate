@@ -537,5 +537,7 @@
 		"saving": "Saving..."
 	},
 	"uptimeCreateSelectURL": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-	"sendTestEmail": "Send test email"
+	"sendTestEmail": "Send test email",
+	"emailSent": "Email sent successfully",
+	"failedToSendEmail": "Failed to send email"
 }
