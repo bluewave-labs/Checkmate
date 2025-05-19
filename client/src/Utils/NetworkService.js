@@ -1162,7 +1162,7 @@ class NetworkService {
 		
 		// If emailConfig is provided, use the new endpoint with direct parameters
 		if (emailConfig) {
-			return this.axiosInstance.post(`/api/v1/settings/test-email`, { 
+			return this.axiosInstance.post(`/settings/test-email`, { 
 				to,
 				systemEmailHost: emailConfig.systemEmailHost,
 				systemEmailPort: emailConfig.systemEmailPort,
@@ -1175,7 +1175,7 @@ class NetworkService {
 		}
 		
 		// Fallback to original behavior for backward compatibility
-		return this.axiosInstance.post(`/monitors/test-email`, { to });
+		return this.axiosInstance.post(`/settings/test-email`, { to });
 	}
 }
 

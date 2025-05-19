@@ -41,6 +41,33 @@ const SettingsEmail = ({
 		});
 	};
 
+	/**
+	 * Handle sending test email with current form values
+	 */
+	const handleSendTestEmail = () => {
+		// Collect current form values
+		const emailConfig = {
+			systemEmailHost: settingsData?.settings?.systemEmailHost,
+			systemEmailPort: settingsData?.settings?.systemEmailPort,
+			systemEmailUser: settingsData?.settings?.systemEmailUser,
+			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
+			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
+			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost
+		};
+		
+		// Basic validation
+		if (!emailConfig.systemEmailHost || !emailConfig.systemEmailPort) {
+			createToast({
+				body: t("settingsEmailRequiredFields", "Email host and port are required"),
+				variant: "error"
+			});
+			return;
+		}
+		
+		// Send test email with current form values
+		sendTestEmail(emailConfig);
+	};
+
 	if (!isAdmin) {
 		return null;
 	}
@@ -137,29 +164,7 @@ const SettingsEmail = ({
 							variant="contained"
 							color="accent"
 							loading={isSending}
-							onClick={() => {
-								// Collect current form values
-								const emailConfig = {
-									systemEmailHost: settingsData?.settings?.systemEmailHost,
-									systemEmailPort: settingsData?.settings?.systemEmailPort,
-									systemEmailUser: settingsData?.settings?.systemEmailUser,
-									systemEmailAddress: settingsData?.settings?.systemEmailAddress,
-									systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
-									systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost
-								};
-								
-								// Basic validation
-								if (!emailConfig.systemEmailHost || !emailConfig.systemEmailPort) {
-									createToast({
-										body: t("settingsEmailRequiredFields", "Email host and port are required"),
-										variant: "error"
-									});
-									return;
-								}
-								
-								// Send test email with current form values
-								sendTestEmail(emailConfig);
-							}}
+							onClick={handleSendTestEmail}
 						>
 							{t("settingsTestEmail", "Send test e-mail")}
 						</Button>
