@@ -1157,11 +1157,28 @@ class NetworkService {
 	}
 
 	// ************************************
-	// Send tes	t email
+	// Send test email
 	// ************************************
 	async sendTestEmail(config) {
-		const { to } = config;
-		return this.axiosInstance.post(`/monitors/test-email`, { to });
+		// Extract recipient and email configuration
+		const { to, emailConfig } = config;
+		
+		// If emailConfig is provided, use the new endpoint with direct parameters
+		if (emailConfig) {
+			return this.axiosInstance.post(`/settings/test-email`, { 
+				to,
+				systemEmailHost: emailConfig.systemEmailHost,
+				systemEmailPort: emailConfig.systemEmailPort,
+				systemEmailAddress: emailConfig.systemEmailAddress,
+				systemEmailPassword: emailConfig.systemEmailPassword,
+				// Only include these if they are present
+				...(emailConfig.systemEmailConnectionHost && { systemEmailConnectionHost: emailConfig.systemEmailConnectionHost }),
+				...(emailConfig.systemEmailUser && { systemEmailUser: emailConfig.systemEmailUser })
+			});
+		}
+		
+		// Fallback to original behavior for backward compatibility
+		return this.axiosInstance.post(`/settings/test-email`, { to });
 	}
 }
 
