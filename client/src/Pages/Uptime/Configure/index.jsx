@@ -34,6 +34,9 @@ import SkeletonLayout from "./skeleton";
 import "./index.css";
 import Dialog from "../../../Components/Dialog";
 import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
+import { usePauseMonitor } from "../../../Hooks/useMonitorControls";
+import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
+import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -83,13 +86,22 @@ const Configure = () => {
 		include: "ok",
 	};
 
+	const [trigger, setTrigger] = useState(false);
+	const triggerUpdate = () => {
+		setTrigger(!trigger);
+	};
+	const [pauseMonitor, isPausing, error] = usePauseMonitor({
+		monitorId: monitor?._id,
+		triggerUpdate,
+	});
+
 	useEffect(() => {
 		const fetchMonitor = async () => {
 			try {
 				const action = await dispatch(getUptimeMonitorById({ monitorId }));
-
 				if (getUptimeMonitorById.fulfilled.match(action)) {
 					const monitor = action.payload.data;
+					console.log("Monitor fetched: ", monitor);
 					setMonitor(monitor);
 				} else if (getUptimeMonitorById.rejected.match(action)) {
 					throw new Error(action.error.message);
@@ -100,7 +112,7 @@ const Configure = () => {
 			}
 		};
 		fetchMonitor();
-	}, [monitorId, navigate]);
+	}, [monitorId, navigate, trigger]);
 
 	const handleChange = (event, name) => {
 		let { checked, value, id } = event.target;
@@ -257,7 +269,7 @@ const Configure = () => {
 									gap={theme.spacing(2)}
 								>
 									<Tooltip
-										title={statusMsg[monitor?.status ?? undefined]}
+										title={statusMsg[monitor?.isActive ?? undefined]}
 										disableInteractive
 										slotProps={{
 											popper: {
@@ -273,7 +285,7 @@ const Configure = () => {
 										}}
 									>
 										<Box>
-											<PulseDot color={statusColor[monitor?.status ?? undefined]} />
+											<PulseDot color={statusColor[monitor?.isActive ?? undefined]} />
 										</Box>
 									</Tooltip>
 									<Typography
@@ -307,11 +319,27 @@ const Configure = () => {
 								</Stack>
 							</Box>
 							<Box
+								justifyContent="space-between"
 								sx={{
 									alignSelf: "flex-end",
 									ml: "auto",
+									display: "flex",
+									gap: theme.spacing(2),
 								}}
 							>
+								<Button
+									variant="contained"
+									color="secondary"
+									loading={isPausing}
+									startIcon={
+										monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+									}
+									onClick={() => {
+										pauseMonitor();
+									}}
+								>
+									{monitor?.isActive ? "Pause" : "Resume"}
+								</Button>
 								<Button
 									loading={isLoading}
 									variant="contained"
