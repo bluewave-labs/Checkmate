@@ -7,6 +7,10 @@ services:
     environment:
       - UPTIME_APP_API_BASE_URL=http://localhost:52345/api/v1
       - UPTIME_APP_CLIENT_HOST=http://localhost
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_HOST=http://localhost
+      - JWT_SECRET=my_secret
     depends_on:
       - redis
       - mongodb
