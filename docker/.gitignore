@@ -8,5 +8,6 @@ dist/redis/data/*
 prod/mongo/data/*
 prod/redis/data/*
 dist/docker-compose-test.yaml
+/dist-mono/mongo/data/*
+/dist-mono/redis/data/*
 *.env
-prod/certbot/*

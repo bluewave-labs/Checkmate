@@ -31,8 +31,12 @@ const useSendTestEmail = () => {
 				});
 			} else {
 				throw new Error(response?.data?.error || t("settingsTestEmailFailed", "Failed to send test email"));
+
 			}
 		} catch (error) {
+			createToast({
+				body: t("failedToSendEmail"),
+			});
 			setError(error);
 			createToast({
 				body: t("settingsTestEmailFailedWithReason", "Failed to send test email: {{reason}}", {

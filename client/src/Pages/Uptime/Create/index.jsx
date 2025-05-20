@@ -261,7 +261,7 @@ const CreateMonitor = () => {
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("distributedUptimeCreateChecks")}</Typography>
+						<Typography component="h2" variant="h2">{t("distributedUptimeCreateChecks")}</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateChecksDescription")}
 						</Typography>
@@ -342,7 +342,7 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
+						<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
 						<Typography component="p">{t("uptimeCreateSelectURL")}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
@@ -386,7 +386,7 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
+						<Typography component="h2" variant="h2">
 							{t("distributedUptimeCreateIncidentNotification")}
 						</Typography>
 						<Typography component="p">
@@ -417,7 +417,7 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("ignoreTLSError")}</Typography>
+						<Typography component="h2" variant="h2">{t("ignoreTLSError")}</Typography>
 						<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
 					</Box>
 					<Stack>
@@ -437,7 +437,7 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
+						<Typography component="h2" variant="h2">
 							{t("distributedUptimeCreateAdvancedSettings")}
 						</Typography>
 					</Box>

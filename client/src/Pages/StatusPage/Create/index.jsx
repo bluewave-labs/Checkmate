@@ -184,7 +184,6 @@ const CreateStatusPage = () => {
 				size: null,
 			};
 		}
-
 		setForm((prev) => {
 			return {
 				...prev,
@@ -194,6 +193,8 @@ const CreateStatusPage = () => {
 				monitors: statusPageMonitors.map((monitor) => monitor._id),
 				color: statusPage?.color,
 				logo: newLogo,
+				showCharts: statusPage?.showCharts ?? true,
+				showUptimePercentage: statusPage?.showUptimePercentage ?? true
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);

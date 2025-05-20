@@ -75,7 +75,7 @@ const SettingsEmail = ({
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("settingsEmail")}</Typography>
+				<Typography component="h1" variant="h2">{t("settingsEmail")}</Typography>
 				<Typography sx={HEADER_SX}>{t("settingsEmailDescription")}</Typography>
 			</Box>
 			<Box>
