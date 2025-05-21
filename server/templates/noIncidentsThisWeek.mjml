@@ -47,9 +47,10 @@
 				<mj-text>
 					<p>Hello {{name}}!</p>
 					<p>There were no incidents this week. Good job!</p>
+					<!-- TODO: Dynamically insert monitor examples if possible -->
 					<p><b>Current monitors:</b></p>
-					<p><b>Google:</b> 100% availability</p>
-					<p><b>Canada.ca:</b>100% availability</p>
+					<p><b>[Monitor Name 1]:</b> [Status/Availability]%</p>
+					<p><b>[Monitor Name 2]:</b> [Status/Availability]%</p>
 				</mj-text>
 			</mj-column>
 			<mj-column width="100%">

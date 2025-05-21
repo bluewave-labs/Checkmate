@@ -6,7 +6,7 @@
           Hello!
         </mj-text>
         <mj-text font-size="16px" font-family="Helvetica Neue">
-          This is a test email from the Monitoring System.
+          This is a test email from Checkmate Service.
         </mj-text>
         <mj-text font-size="14px" font-family="Helvetica Neue">
           If you're receiving this, your email configuration is working correctly.
