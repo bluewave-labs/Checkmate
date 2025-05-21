@@ -221,13 +221,6 @@ const Configure = () => {
 		pending: theme.palette.warning.main,
 	};
 
-	const statusMsg = {
-		paused: "Monitoring is paused.",
-		up: "Your site is up.",
-		down: "Your site is down.",
-		pending: "Pending...",
-	};
-
 	const { determineState } = useMonitorUtils();
 
 	const { t } = useTranslation();
@@ -273,7 +266,7 @@ const Configure = () => {
 									gap={theme.spacing(2)}
 								>
 									<Tooltip
-										title={statusMsg[determineState(monitor)]}
+										title={t(`statusMsg.${[determineState(monitor)]}`)}
 										disableInteractive
 										slotProps={{
 											popper: {
