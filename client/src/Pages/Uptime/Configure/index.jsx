@@ -37,6 +37,7 @@ import NotificationIntegrationModal from "../../../Components/NotificationIntegr
 import { usePauseMonitor } from "../../../Hooks/useMonitorControls";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -214,28 +215,22 @@ const Configure = () => {
 	};
 
 	const statusColor = {
-		true: theme.palette.success.main,
-		false: theme.palette.error.main,
-		undefined: theme.palette.warning.main,
+		up: theme.palette.success.main,
+		down: theme.palette.error.main,
+		paused: theme.palette.error.main,
+		pending: theme.palette.warning.main,
 	};
 
 	const statusMsg = {
-		pause: "Monitoring is paused.",
-		true: "Your site is up.",
-		false: "Your site is down.",
-		undefined: "Pending...",
+		paused: "Monitoring is paused.",
+		up: "Your site is up.",
+		down: "Your site is down.",
+		pending: "Pending...",
 	};
 
-	const getStatusColor = (monitor) => {
-		if (monitor?.isActive === false || monitor?.status == false) return "false";
-		return monitor?.isActive || String(monitor?.status);
-	};
+	const { determineState } = useMonitorUtils();
 
-	const getStatusMsg = (monitor) => {
-		if (monitor?.isActive === false) return "pause";
-		if (monitor?.status === false) return "false";
-		return monitor?.isActive || String(monitor?.status);
-	};
+	console.log(determineState(monitor));
 
 	const { t } = useTranslation();
 
@@ -280,7 +275,7 @@ const Configure = () => {
 									gap={theme.spacing(2)}
 								>
 									<Tooltip
-										title={statusMsg[getStatusMsg(monitor)]}
+										title={statusMsg[determineState(monitor)]}
 										disableInteractive
 										slotProps={{
 											popper: {
@@ -296,7 +291,7 @@ const Configure = () => {
 										}}
 									>
 										<Box>
-											<PulseDot color={statusColor[getStatusColor(monitor)]} />
+											<PulseDot color={statusColor[determineState(monitor)]} />
 										</Box>
 									</Tooltip>
 									<Typography
