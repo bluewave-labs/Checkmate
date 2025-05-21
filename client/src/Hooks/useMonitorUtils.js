@@ -1,6 +1,8 @@
 import { useCallback } from "react";
+import { useTheme } from "@mui/material";
 
 const useMonitorUtils = () => {
+
 	const getMonitorWithPercentage = useCallback((monitor, theme) => {
 		let uptimePercentage = "";
 		let percentageColor = "";
@@ -36,7 +38,16 @@ const useMonitorUtils = () => {
 		return monitor?.status == true ? "up" : "down";
 	}, []);
 
-	return { getMonitorWithPercentage, determineState };
+	const theme = useTheme();
+
+	const statusColor = {
+		up: theme.palette.success.lowContrast,
+		down: theme.palette.error.lowContrast,
+		paused: theme.palette.warning.lowContrast,
+		pending: theme.palette.warning.lowContrast,
+	};
+
+	return { getMonitorWithPercentage, determineState, statusColor };
 };
 
 export { useMonitorUtils };
