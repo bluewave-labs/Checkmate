@@ -230,8 +230,6 @@ const Configure = () => {
 
 	const { determineState } = useMonitorUtils();
 
-	console.log(determineState(monitor));
-
 	const { t } = useTranslation();
 
 	return (
