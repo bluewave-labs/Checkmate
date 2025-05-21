@@ -101,7 +101,6 @@ const Configure = () => {
 				const action = await dispatch(getUptimeMonitorById({ monitorId }));
 				if (getUptimeMonitorById.fulfilled.match(action)) {
 					const monitor = action.payload.data;
-					console.log("Monitor fetched: ", monitor);
 					setMonitor(monitor);
 				} else if (getUptimeMonitorById.rejected.match(action)) {
 					throw new Error(action.error.message);
@@ -221,9 +220,21 @@ const Configure = () => {
 	};
 
 	const statusMsg = {
+		pause: "Monitoring is paused.",
 		true: "Your site is up.",
 		false: "Your site is down.",
 		undefined: "Pending...",
+	};
+
+	const getStatusColor = (monitor) => {
+		if (monitor?.isActive === false || monitor?.status == false) return "false";
+		return monitor?.isActive || String(monitor?.status);
+	};
+
+	const getStatusMsg = (monitor) => {
+		if (monitor?.isActive === false) return "pause";
+		if (monitor?.status === false) return "false";
+		return monitor?.isActive || String(monitor?.status);
 	};
 
 	const { t } = useTranslation();
@@ -269,7 +280,7 @@ const Configure = () => {
 									gap={theme.spacing(2)}
 								>
 									<Tooltip
-										title={statusMsg[monitor?.isActive ?? undefined]}
+										title={statusMsg[getStatusMsg(monitor)]}
 										disableInteractive
 										slotProps={{
 											popper: {
@@ -285,7 +296,7 @@ const Configure = () => {
 										}}
 									>
 										<Box>
-											<PulseDot color={statusColor[monitor?.isActive ?? undefined]} />
+											<PulseDot color={statusColor[getStatusColor(monitor)]} />
 										</Box>
 									</Tooltip>
 									<Typography
