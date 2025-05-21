@@ -214,14 +214,7 @@ const Configure = () => {
 		setIsNotificationModalOpen(false);
 	};
 
-	const statusColor = {
-		up: theme.palette.success.main,
-		down: theme.palette.error.main,
-		paused: theme.palette.error.main,
-		pending: theme.palette.warning.main,
-	};
-
-	const { determineState } = useMonitorUtils();
+	const { determineState, statusColor } = useMonitorUtils();
 
 	const { t } = useTranslation();
 
