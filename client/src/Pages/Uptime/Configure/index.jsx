@@ -344,7 +344,7 @@ const Configure = () => {
 										pauseMonitor();
 									}}
 								>
-									{monitor?.isActive ? "Pause" : "Resume"}
+									{monitor?.isActive ? t("pause") : t("resume")}
 								</Button>
 								<Button
 									loading={isLoading}
