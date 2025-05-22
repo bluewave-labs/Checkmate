@@ -321,7 +321,11 @@ const startApp = async () => {
 		})
 	);
 	app.use(express.json());
-	app.use(helmet());
+	app.use(
+		helmet({
+			hsts: false,
+		})
+	);
 	app.use(
 		compression({
 			level: 6,

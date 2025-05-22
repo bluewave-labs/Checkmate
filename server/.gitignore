@@ -8,3 +8,4 @@ coverage
 .clinic
 node_modules
 .vscode/*
+public
