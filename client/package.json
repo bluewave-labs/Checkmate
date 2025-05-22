@@ -15,21 +15,21 @@
 		"@emotion/styled": "^11.13.0",
 		"@fontsource/roboto": "^5.0.13",
 		"@hello-pangea/dnd": "^18.0.0",
-		"@mui/x-charts": "^7.5.1",
-		"@mui/x-data-grid": "7.29.0",
-		"@mui/x-date-pickers": "7.29.0",
 		"@mui/icons-material": "6.4.11",
 		"@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
 		"@mui/material": "6.4.11",
+		"@mui/x-charts": "^7.5.1",
+		"@mui/x-data-grid": "7.29.0",
+		"@mui/x-date-pickers": "7.29.0",
 		"@reduxjs/toolkit": "2.7.0",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
 		"flag-icons": "7.3.2",
-		"jwt-decode": "^4.0.0",
 		"html2canvas": "^1.4.1",
 		"i18next": "^24.2.2",
 		"immutability-helper": "^3.1.1",
 		"joi": "17.13.3",
+		"jwt-decode": "^4.0.0",
 		"maplibre-gl": "5.3.1",
 		"mui-color-input": "^6.0.0",
 		"react": "18.3.1",
@@ -64,5 +64,8 @@
 		"eslint-plugin-react-refresh": "^0.4.6",
 		"prettier": "^3.3.3",
 		"vite": "^5.4.19"
+	},
+	"optionalDependencies": {
+		"@rollup/rollup-linux-arm64-musl": "4.41.0"
 	}
 }
