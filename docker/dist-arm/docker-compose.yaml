@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  server:
+    image: ghcr.io/bluewave-labs/checkmate:backend-dist-multi-arch
+    restart: always
+    ports:
+      - "52345:52345"
+    environment:
+      - UPTIME_APP_API_BASE_URL=http://localhost:52345/api/v1
+      - UPTIME_APP_CLIENT_HOST=http://localhost
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_HOST=http://localhost
+      - JWT_SECRET=my_secret
+    depends_on:
+      - redis
+      - mongodb
+  redis:
+    image: redis:7
+    container_name: checkmate-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+  mongodb:
+    image: mongo:4.4.18
+    container_name: checkmate-mongodb
+    restart: always
+    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./mongo/data:/data/db
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+volumes:
+  redis_data:
