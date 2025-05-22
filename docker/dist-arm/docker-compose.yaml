@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   server:
-    image: ghcr.io/bluewave-labs/checkmate:backend-dist-multi-arch
+    image: ghcr.io/bluewave-labs/checkmate:backend-dist-mono-multiarch
     restart: always
     ports:
       - "52345:52345"
@@ -22,21 +22,12 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - ./redis/data:/data
     restart: unless-stopped
   mongodb:
     image: mongo:4.4.18
-    container_name: checkmate-mongodb
     restart: always
     command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
     volumes:
       - ./mongo/data:/data/db
-    healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
-      interval: 5s
-      timeout: 30s
-      start_period: 0s
-      start_interval: 1s
-      retries: 30
-volumes:
-  redis_data:
+      - ./mongo/init:/docker-entrypoint-initdb.d
