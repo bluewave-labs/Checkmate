@@ -324,6 +324,12 @@ const startApp = async () => {
 	app.use(
 		helmet({
 			hsts: false,
+			contentSecurityPolicy: {
+				useDefaults: true,
+				directives: {
+					upgradeInsecureRequests: null,
+				},
+			},
 		})
 	);
 	app.use(
