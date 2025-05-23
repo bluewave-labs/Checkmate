@@ -22,7 +22,7 @@
 					align="left"
 					font-size="10px"
 				>
-					Message from BlueWave Infrastructure Monitoring
+					Message from Checkmate Service
 				</mj-text>
 			</mj-column>
 			<mj-column
@@ -61,7 +61,7 @@
 				></mj-divider>
 				<mj-button background-color="#1570EF"> View Infrastructure Details </mj-button>
 				<mj-text font-size="12px">
-					<p>This email was sent by BlueWave Infrastructure Monitoring.</p>
+					<p>This email was sent by Checkmate Service.</p>
 				</mj-text>
 			</mj-column>
 		</mj-section>

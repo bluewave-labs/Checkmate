@@ -28,7 +28,7 @@ We **love** what we are building here, and we continuously learn a few things ab
 
 You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is uptimedemo@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
-## 🔗 User's guide
+## 🔗 User Guide
 
 Usage instructions can be found [here](https://docs.checkmate.so/checkmate-2.1). It's still WIP and some of the information there might be outdated as we continuously add features weekly. Rest assured, we are doing our best! :)
 
@@ -73,7 +73,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 - Status pages (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1131
 - Translations (i18n) (**in progress**)
 - Better notification options (Webhooks, Discord, Telegram, Slack) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1545
-- JSON query monitoring  (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1573
+- JSON query monitoring (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1573
 - Tagging/grouping monitors https://github.com/bluewave-labs/Checkmate/issues/1546
 - More configuration options
 - DNS monitoring
@@ -108,7 +108,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 ## 🤝 Contributing
 
-We are [Alex](http://github.com/ajhollid) (team lead), [Vishnu](http://github.com/vishnusn77), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer) and [Mert](https://github/com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
+We are [Alex](http://github.com/ajhollid) (team lead), [Vishnu](http://github.com/vishnusn77), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer) and [Mert Karryev](https://github.com/karryyev) helping individuals and businesses monitor their infrastructure and servers.
 
 We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 5000+ stars and attracted 60 contributors from around the globe.
 
@@ -117,11 +117,11 @@ Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent
 Here's how you can contribute:
 
 0. Star this repo :)
-1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
-2. Check [project structure](https://docs.checkmate.so/checkmate-2.1/developers-guide/general-project-structure) and [high level overview](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
-3. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
+1. Check [Contributor Guidelines](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First-timers are encouraged to check issues with the `good first issue` tag.
+2. Check [project structure](https://docs.checkmate.so/checkmate-2.1/developers-guide/general-project-structure) and [high-level overview](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
+3. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep-dive into the architecture.
 4. Open an issue if you believe you've encountered a bug.
-5. Check for good-first-issue's if you are a newcomer.
+5. Check for issues labeled `good first issue` if you are a newcomer.
 6. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
 
 <a href="https://github.com/bluewave-labs/checkmate/graphs/contributors">
@@ -130,12 +130,12 @@ Here's how you can contribute:
 
 ## 💰 Our sponsors
 
-Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
+Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) for providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
 
 [![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/bluewave-uptime&Date)
 
 Also check other developer and contributor-friendly projects of BlueWave:
 
 - [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
-- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
+- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), a secure file sharing application, a.k.a. data room.
 - [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.

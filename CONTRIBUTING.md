@@ -21,7 +21,7 @@ PS: **We work closely with contributors on our [Discord channel](https://discord
   - [Improve the documentation?](#improve-the-documentation)
   - [Help with translations?](#help-with-translations)
   - [Submit a pull request?](#submit-a-pull-request)
-- [Code guidelines](#code-guidelines)
+- [Code Guidelines](#code-guidelines)
 - [Pull request checklist](#pull-request-checklist)
 - [Branching model](#branching-model)
 - [Thank you](#thank-you)
@@ -60,7 +60,7 @@ By default, the frontend expects the backend on `http://localhost:3001`. Update 
 
 1. Pick or open an issue (check `good-first-issue`s first)
 2. (optional but highly suggested) Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
-3. Ask to be assigned. If there is alrady someone assigned and it's been more than 7 days, you can raise the flag and ask to be assigned as well.
+    3. Ask to be assigned. If there is already someone assigned and it's been more than 7 days, you can raise the flag and ask to be assigned as well.
 4. Create a branch from `develop`.
 5. Write your code.
 6. Run and test locally.
@@ -92,7 +92,7 @@ Follow the [pull request checklist](#pull-request-checklist). Your PR should:
 
 ---
 
-## Code guidelines
+## Code Guidelines
 
 - Use ESLint and Prettier (`npm run lint`).
 - Follow naming conventions: `camelCase` for variables, `PascalCase` for components, `UPPER_CASE` for constants.
