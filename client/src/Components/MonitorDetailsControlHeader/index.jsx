@@ -65,7 +65,9 @@ const MonitorDetailsControlHeader = ({
 					color="secondary"
 					loading={isSending}
 					startIcon={<EmailIcon />}
-					onClick={sendTestEmail}
+					onClick={() => {
+						sendTestEmail();
+					}}
 				>
 					{t("sendTestEmail")}
 				</Button>
