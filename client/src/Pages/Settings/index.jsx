@@ -189,6 +189,20 @@ const Settings = () => {
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
+				sx={{
+					position: "sticky",
+					bottom: 0,
+					boxShadow: theme.shape.boxShadow,
+					zIndex: 1000,
+					mt : 3,
+					backgroundColor: theme.palette.primary.main,
+					display: "flex",
+					justifyContent: "flex-end",
+					pb: theme.spacing(5),
+					pr: theme.spacing(15),
+					pl: theme.spacing(5),
+					pt: theme.spacing(5),
+				}}
 			>
 				<Button
 					loading={isSaving || isDeletingMonitorStats || isSettingsLoading}
