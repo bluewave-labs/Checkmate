@@ -155,6 +155,7 @@ const Search = ({
 			renderOption={(props, option) => {
 				const { key, ...optionProps } = props;
 				const hasSecondaryLabel = secondaryLabel && option[secondaryLabel] !== undefined;
+				const port = option["port"];
 				return (
 					<ListItem
 						key={key}
@@ -169,7 +170,9 @@ const Search = ({
 						}
 					>
 						{option[filteredBy] +
-							(hasSecondaryLabel ? ` (${option[secondaryLabel]})` : "")}
+							(hasSecondaryLabel
+								? ` (${option[secondaryLabel]}${port ? `, ${port}` : ""})`
+								: "")}
 					</ListItem>
 				);
 			}}

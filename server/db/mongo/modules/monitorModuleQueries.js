@@ -490,6 +490,7 @@ const buildMonitorsByTeamIdPipeline = ({ matchStage, field, order }) => {
 				_id: 1,
 				name: 1,
 				type: 1,
+				port: 1,
 			},
 		},
 	];
