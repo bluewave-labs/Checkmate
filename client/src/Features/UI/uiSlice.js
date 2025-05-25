@@ -20,7 +20,7 @@ const initialState = {
 		collapsed: false,
 	},
 	mode: initialMode,
-	statusURL: "disabled",
+	showURL: false,
 	greeting: { index: 0, lastUpdate: null },
 	timezone: "America/Toronto",
 	distributedUptimeEnabled: false,
@@ -47,8 +47,8 @@ const uiSlice = createSlice({
 		setMode: (state, action) => {
 			state.mode = action.payload;
 		},
-		setStatusURL: (state, action) => {
-			state.statusURL = action.payload;
+		setShowURL: (state, action) => {
+			state.showURL = action.payload;
 		},
 		setGreeting(state, action) {
 			state.greeting.index = action.payload.index;
@@ -71,7 +71,7 @@ export const {
 	setRowsPerPage,
 	toggleSidebar,
 	setMode,
-	setStatusURL,
+	setShowURL,
 	setGreeting,
 	setTimezone,
 	setDistributedUptimeEnabled,

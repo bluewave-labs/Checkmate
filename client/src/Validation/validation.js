@@ -277,7 +277,7 @@ const settingsValidation = joi.object({
 	}),
 	pagespeedApiKey: joi.string().allow("").optional(),
 	language: joi.string().required(),
-	statusURL: joi.string().required(),
+	showURL: joi.bool().required(),
 	systemEmailHost: joi.string().allow(""),
 	systemEmailPort: joi.number().allow(null, ""),
 	systemEmailAddress: joi.string().allow(""),

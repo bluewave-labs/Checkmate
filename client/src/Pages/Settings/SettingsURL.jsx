@@ -9,7 +9,7 @@ import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const SettingsURL = ({ HEADING_SX, handleChange, statusURL }) => {
+const SettingsURL = ({ HEADING_SX, handleChange, showURL }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	return (
@@ -20,13 +20,13 @@ const SettingsURL = ({ HEADING_SX, handleChange, statusURL }) => {
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<Select
-					name="statusURL"
+					name="showURL"
 					label={t("settingsURLSelectTitle")}
-					value={statusURL}
+					value={showURL}
 					onChange={handleChange}
 					items={[
-						{ _id: "enabled", name: "Enabled" },
-						{ _id: "disabled", name: "Disabled" },
+						{ _id: true, name: t("settingsURLEnabled") },
+						{ _id: false, name: t("settingURLDisabled") },
 					]}
 				></Select>
 			</Stack>
@@ -37,7 +37,7 @@ const SettingsURL = ({ HEADING_SX, handleChange, statusURL }) => {
 SettingsURL.propTypes = {
 	HEADING_SX: PropTypes.object,
 	handleChange: PropTypes.func,
-	statusURL: PropTypes.string,
+	showURL: PropTypes.bool,
 };
 
 export default SettingsURL;

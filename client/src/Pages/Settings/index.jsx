@@ -16,7 +16,7 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage, setStatusURL } from "../../Features/UI/uiSlice";
+import { setTimezone, setMode, setLanguage, setShowURL } from "../../Features/UI/uiSlice";
 import SettingsStats from "./SettingsStats";
 import {
 	deleteMonitorChecksByTeamId,
@@ -32,7 +32,7 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language, timezone, statusURL } = useSelector((state) => state.ui);
+	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
 	const { user } = useSelector((state) => state.auth);
 
 	// Local state
@@ -68,7 +68,6 @@ const Settings = () => {
 		const { error } = settingsValidation.validate(newSettingsData.settings, {
 			abortEarly: false,
 		});
-		console.log(error)
 		if (!error || error.details.length === 0) {
 			setErrors({});
 		} else {
@@ -87,8 +86,8 @@ const Settings = () => {
 			dispatch(setMode(value));
 		}
 
-		if (name === "statusURL") {
-			dispatch(setStatusURL(value));
+		if (name === "showURL") {
+			dispatch(setShowURL(value));
 		}
 
 		if (name === "language") {
@@ -173,7 +172,7 @@ const Settings = () => {
 			<SettingsURL
 				HEADING_SX={HEADING_SX}
 				handleChange={handleChange}
-				statusURL={statusURL}
+				showURL={showURL}
 			/>
 			<SettingsStats
 				isAdmin={isAdmin}

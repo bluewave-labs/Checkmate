@@ -92,6 +92,8 @@
   "settingsURLTitle": "Отображать IP/URL на странице статуса",
   "settingsURLDescription": "Отображать IP-адрес или URL-адрес монитора на общедоступной странице статуса. Если отключено, будет отображаться только имя монитора для защиты конфиденциальной информации.",
   "settingsURLSelectTitle": "Показать IP/URL на странице статуса",
+  "settingsURLEnabled": "Включено",
+  "settingURLDisabled": "Отключено",
   "settingsDistributedUptime": "Distributed uptime",
   "settingsDistributedUptimeDescription": "Включить/выключить distributed uptime monitoring.",
   "settingsEnabled": "Включено",

@@ -15,8 +15,7 @@ const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] })
 	const theme = useTheme();
 	const { determineState } = useUtils();
 
-	const { statusURL } = useSelector((state) => state.ui);
-	const showURL = statusURL === "enabled";
+	const { showURL } = useSelector((state) => state.ui);
 
 	return (
 		<>
