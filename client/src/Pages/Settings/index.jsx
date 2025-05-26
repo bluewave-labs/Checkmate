@@ -58,6 +58,11 @@ const Settings = () => {
 	const handleChange = async (e) => {
 		const { name, value } = e.target;
 
+		// Special case for showURL until handled properly in the backend
+		if (name === "showURL") {
+			dispatch(setShowURL(value));
+			return;
+		}
 		// Build next state early
 		const newSettingsData = {
 			...settingsData,
@@ -84,10 +89,6 @@ const Settings = () => {
 
 		if (name === "mode") {
 			dispatch(setMode(value));
-		}
-
-		if (name === "showURL") {
-			dispatch(setShowURL(value));
 		}
 
 		if (name === "language") {
@@ -132,6 +133,7 @@ const Settings = () => {
 	};
 
 	const handleSave = () => {
+		console.log(settingsData.settings);
 		const { error } = settingsValidation.validate(settingsData.settings, {
 			abortEarly: false,
 		});
