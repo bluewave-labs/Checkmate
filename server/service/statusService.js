@@ -121,10 +121,10 @@ class StatusService {
 		try {
 			const { monitorId, status, code } = networkResponse;
 			const monitor = await this.db.getMonitorById(monitorId);
-	
+
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
-	
+
 			// No change in monitor status, return early
 			if (monitor.status === status)
 				return {
@@ -134,7 +134,7 @@ class StatusService {
 					code,
 					timestamp: new Date().getTime(),
 				};
-	
+
 			// Monitor status changed, save prev status and update monitor
 			this.logger.info({
 				service: this.SERVICE_NAME,
@@ -144,11 +144,11 @@ class StatusService {
 				prevStatus: monitor.status,
 				newStatus: status,
 			});
-	
+
 			const prevStatus = monitor.status;
 			monitor.status = status;
 			await monitor.save();
-	
+
 			return {
 				monitor,
 				statusChanged: true,
@@ -157,12 +157,8 @@ class StatusService {
 				timestamp: new Date().getTime(),
 			};
 		} catch (error) {
-			this.logger.error({
-				service: this.SERVICE_NAME,
-				message: error.message,
-				method: "updateStatus",
-				stack: error.stack,
-			});
+			error.service = this.SERVICE_NAME;
+			error.method = "updateStatus";
 			throw error;
 		}
 	};

@@ -427,11 +427,13 @@ const updateAppSettingsBodyValidation = joi.object({
 	checkTTL: joi.number().allow(""),
 	pagespeedApiKey: joi.string().allow(""),
 	language: joi.string().allow(""),
+	showURL: joi.bool().required(),
 	systemEmailHost: joi.string().allow(""),
 	systemEmailPort: joi.number().allow(""),
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow(""),
 });
 
 //****************************************
@@ -590,6 +592,16 @@ const createAnnouncementValidation = joi.object({
 	userId: joi.string().required(),
 });
 
+const sendTestEmailBodyValidation = joi.object({
+	to: joi.string().required(),
+	systemEmailHost: joi.string(),
+	systemEmailPort: joi.number(),
+	systemEmailAddress: joi.string(),
+	systemEmailPassword: joi.string(),
+	systemEmailUser: joi.string(),
+	systemEmailConnectionHost: joi.string(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -653,4 +665,5 @@ export {
 	triggerNotificationBodyValidation,
 	webhookConfigValidation,
 	createAnnouncementValidation,
+	sendTestEmailBodyValidation,
 };

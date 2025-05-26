@@ -8,9 +8,15 @@ import { StatusLabel } from "../../../../../Components/Label";
 import { useTheme } from "@mui/material/styles";
 import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
 import PropTypes from "prop-types";
+
+import { useSelector } from "react-redux";
+
 const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] }) => {
 	const theme = useTheme();
 	const { determineState } = useUtils();
+
+	const { showURL } = useSelector((state) => state.ui);
+
 	return (
 		<>
 			{monitors?.map((monitor) => {
@@ -27,6 +33,7 @@ const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] })
 							title={monitor.name}
 							percentageColor={monitor.percentageColor}
 							percentage={monitor.percentage}
+							showURL={showURL}
 						/>
 						<Stack
 							direction="row"

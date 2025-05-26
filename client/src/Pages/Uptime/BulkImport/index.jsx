@@ -61,7 +61,7 @@ const BulkImport = () => {
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("bulkImport.selectFileTips")}</Typography>
+						<Typography component="h2" variant="h2">{t("bulkImport.selectFileTips")}</Typography>
 						<Typography component="p">
 							<Trans
 								i18nKey="bulkImport.selectFileDescription"

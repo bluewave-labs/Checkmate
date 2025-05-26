@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
+import { createToast } from "../../Utils/toastUtils";
 
 const SettingsEmail = ({
 	isAdmin,
@@ -29,7 +30,7 @@ const SettingsEmail = ({
 	const [hasBeenReset, setHasBeenReset] = useState(false);
 
 	// Network
-	const [isSending, error, sendTestEmail] = useSendTestEmail();
+	const [isSending, , sendTestEmail] = useSendTestEmail(); // Using empty placeholder for unused error variable
 
 	// Handlers
 	const handlePasswordChange = (e) => {
@@ -40,6 +41,33 @@ const SettingsEmail = ({
 		});
 	};
 
+	/**
+	 * Handle sending test email with current form values
+	 */
+	const handleSendTestEmail = () => {
+		// Collect current form values
+		const emailConfig = {
+			systemEmailHost: settingsData?.settings?.systemEmailHost,
+			systemEmailPort: settingsData?.settings?.systemEmailPort,
+			systemEmailUser: settingsData?.settings?.systemEmailUser,
+			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
+			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
+			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost
+		};
+		
+		// Basic validation
+		if (!emailConfig.systemEmailHost || !emailConfig.systemEmailPort) {
+			createToast({
+				body: t("settingsEmailRequiredFields", "Email host and port are required"),
+				variant: "error"
+			});
+			return;
+		}
+		
+		// Send test email with current form values
+		sendTestEmail(emailConfig);
+	};
+
 	if (!isAdmin) {
 		return null;
 	}
@@ -47,7 +75,7 @@ const SettingsEmail = ({
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("settingsEmail")}</Typography>
+				<Typography component="h1" variant="h2">{t("settingsEmail")}</Typography>
 				<Typography sx={HEADER_SX}>{t("settingsEmailDescription")}</Typography>
 			</Box>
 			<Box>
@@ -123,13 +151,22 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
+						<Typography>{t("settingsEmailConnectionHost")}</Typography>
+						<TextInput
+							name="systemEmailConnectionHost"
+							placeholder="bluewavelabs.ca"
+							value={settingsData?.settings?.systemEmailConnectionHost ?? ""}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box>
 						<Button
 							variant="contained"
 							color="accent"
 							loading={isSending}
-							onClick={sendTestEmail}
+							onClick={handleSendTestEmail}
 						>
-							Send test e-mail
+							{t("settingsTestEmail", "Send test e-mail")}
 						</Button>
 					</Box>
 				</Stack>
