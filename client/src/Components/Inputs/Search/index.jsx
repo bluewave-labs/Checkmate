@@ -171,7 +171,7 @@ const Search = ({
 					>
 						{option[filteredBy] +
 							(hasSecondaryLabel
-								? ` (${option[secondaryLabel]}${port ? `, ${port}` : ""})`
+								? ` (${option[secondaryLabel]}${port ? `: ${port}` : ""})`
 								: "")}
 					</ListItem>
 				);
