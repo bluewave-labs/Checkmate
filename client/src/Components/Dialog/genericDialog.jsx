@@ -1,11 +1,31 @@
-import { useId } from "react";
+import { useId, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Modal, Stack, Typography } from "@mui/material";
+import { DialogAnchorRef } from "../../Utils/DialogAnchorProvider";
 
 const GenericDialog = ({ title, description, open, onClose, theme, children }) => {
 	const titleId = useId();
 	const descriptionId = useId();
 	const ariaDescribedBy = description?.length > 0 ? descriptionId : "";
+
+	const dialogAnchor = DialogAnchorRef?.current;
+	
+	useEffect(() => {
+		if (open) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = 'unset';
+		}
+
+		return () => {
+			document.body.style.overflow = 'unset';
+		};
+	}, [open]);
+
+	const verticalScroll = dialogAnchor?.getBoundingClientRect().top ?? 0;
+	const verticalPadding = parseInt(theme.spacing(12));
+	const verticalOffset = verticalScroll + verticalPadding;
+
 	return (
 		<Modal
 			aria-labelledby={titleId}
@@ -13,14 +33,22 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 			open={open}
 			onClose={onClose}
 			onClick={(e) => e.stopPropagation()}
+			container={dialogAnchor}
+			disableScrollLock={true}
+			sx={{
+				position: "absolute",
+				top: "unset",
+				left: "50%",
+				right: "unset",
+				bottom: "unset"
+			}}
 		>
 			<Stack
 				gap={theme.spacing(2)}
 				sx={{
 					position: "absolute",
-					top: "50%",
-					left: "50%",
-					transform: "translate(-50%, -50%)",
+					top: "50vh",
+					transform: `translate(-50%, calc(-50% - ${verticalOffset}px))`,
 					minWidth: 400,
 					bgcolor: theme.palette.primary.main,
 					border: 1,
@@ -52,7 +80,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 				)}
 				{children}
 			</Stack>
-		</Modal>
+		</Modal >
 	);
 };
 
