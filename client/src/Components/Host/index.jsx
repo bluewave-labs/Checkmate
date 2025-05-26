@@ -14,7 +14,7 @@ import Dot from "../Dot";
  * @param {number} params.percentage - The percentage to display.
  * @returns {React.ElementType} Returns a div element with the host details.
  */
-const Host = ({ url, title, percentageColor, percentage }) => {
+const Host = ({ url, title, percentageColor, percentage, showURL }) => {
 	const theme = useTheme();
 	return (
 		<Stack>
@@ -40,7 +40,7 @@ const Host = ({ url, title, percentageColor, percentage }) => {
 					</>
 				)}
 			</Stack>
-			<span style={{ opacity: 0.6 }}>{url}</span>
+			{showURL && <span style={{ opacity: 0.6 }}>{url}</span>}
 		</Stack>
 	);
 };
@@ -50,6 +50,7 @@ Host.propTypes = {
 	percentageColor: PropTypes.string,
 	percentage: PropTypes.string,
 	url: PropTypes.string,
+	showURL: PropTypes.bool,
 };
 
 export default Host;
