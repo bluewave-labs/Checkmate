@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import SettingsTimeZone from "./SettingsTimeZone";
 import SettingsUI from "./SettingsUI";
+import SettingsURL from "./SettingsURL";
 import SettingsPagespeed from "./SettingsPagespeed";
 import SettingsDemoMonitors from "./SettingsDemoMonitors";
 import SettingsAbout from "./SettingsAbout";
@@ -15,7 +16,7 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage } from "../../Features/UI/uiSlice";
+import { setTimezone, setMode, setLanguage, setShowURL } from "../../Features/UI/uiSlice";
 import SettingsStats from "./SettingsStats";
 import {
 	deleteMonitorChecksByTeamId,
@@ -31,7 +32,7 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language, timezone } = useSelector((state) => state.ui);
+	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
 	const { user } = useSelector((state) => state.auth);
 
 	// Local state
@@ -83,6 +84,10 @@ const Settings = () => {
 
 		if (name === "mode") {
 			dispatch(setMode(value));
+		}
+
+		if (name === "showURL") {
+			dispatch(setShowURL(value));
 		}
 
 		if (name === "language") {
@@ -163,6 +168,11 @@ const Settings = () => {
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
 				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
+			/>
+			<SettingsURL
+				HEADING_SX={HEADING_SX}
+				handleChange={handleChange}
+				showURL={showURL}
 			/>
 			<SettingsStats
 				isAdmin={isAdmin}

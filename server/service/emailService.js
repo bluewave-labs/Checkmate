@@ -92,11 +92,10 @@ class EmailService {
 	buildAndSendEmail = async (template, context, to, subject, transportConfig) => {
 		// TODO - Consider an update transporter method so this only needs to be recreated when smtp settings change
 		let config;
-
 		if (typeof transportConfig !== "undefined") {
 			config = transportConfig;
 		} else {
-			config = this.settingsService.getDBSettings();
+			config = await this.settingsService.getDBSettings();
 		}
 
 		const {

@@ -34,6 +34,10 @@ import SkeletonLayout from "./skeleton";
 import "./index.css";
 import Dialog from "../../../Components/Dialog";
 import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
+import { usePauseMonitor } from "../../../Hooks/useMonitorControls";
+import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
+import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -83,11 +87,19 @@ const Configure = () => {
 		include: "ok",
 	};
 
+	const [trigger, setTrigger] = useState(false);
+	const triggerUpdate = () => {
+		setTrigger(!trigger);
+	};
+	const [pauseMonitor, isPausing, error] = usePauseMonitor({
+		monitorId: monitor?._id,
+		triggerUpdate,
+	});
+
 	useEffect(() => {
 		const fetchMonitor = async () => {
 			try {
 				const action = await dispatch(getUptimeMonitorById({ monitorId }));
-
 				if (getUptimeMonitorById.fulfilled.match(action)) {
 					const monitor = action.payload.data;
 					setMonitor(monitor);
@@ -100,7 +112,7 @@ const Configure = () => {
 			}
 		};
 		fetchMonitor();
-	}, [monitorId, navigate]);
+	}, [monitorId, navigate, trigger]);
 
 	const handleChange = (event, name) => {
 		let { checked, value, id } = event.target;
@@ -202,17 +214,7 @@ const Configure = () => {
 		setIsNotificationModalOpen(false);
 	};
 
-	const statusColor = {
-		true: theme.palette.success.main,
-		false: theme.palette.error.main,
-		undefined: theme.palette.warning.main,
-	};
-
-	const statusMsg = {
-		true: "Your site is up.",
-		false: "Your site is down.",
-		undefined: "Pending...",
-	};
+	const { determineState, statusColor } = useMonitorUtils();
 
 	const { t } = useTranslation();
 
@@ -257,7 +259,7 @@ const Configure = () => {
 									gap={theme.spacing(2)}
 								>
 									<Tooltip
-										title={statusMsg[monitor?.status ?? undefined]}
+										title={t(`statusMsg.${[determineState(monitor)]}`)}
 										disableInteractive
 										slotProps={{
 											popper: {
@@ -273,7 +275,7 @@ const Configure = () => {
 										}}
 									>
 										<Box>
-											<PulseDot color={statusColor[monitor?.status ?? undefined]} />
+											<PulseDot color={statusColor[determineState(monitor)]} />
 										</Box>
 									</Tooltip>
 									<Typography
@@ -307,11 +309,27 @@ const Configure = () => {
 								</Stack>
 							</Box>
 							<Box
+								justifyContent="space-between"
 								sx={{
 									alignSelf: "flex-end",
 									ml: "auto",
+									display: "flex",
+									gap: theme.spacing(2),
 								}}
 							>
+								<Button
+									variant="contained"
+									color="secondary"
+									loading={isPausing}
+									startIcon={
+										monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+									}
+									onClick={() => {
+										pauseMonitor();
+									}}
+								>
+									{monitor?.isActive ? t("pause") : t("resume")}
+								</Button>
 								<Button
 									loading={isLoading}
 									variant="contained"
