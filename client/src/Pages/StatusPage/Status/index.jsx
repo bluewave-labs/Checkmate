@@ -34,7 +34,7 @@ const PublicStatus = () => {
 	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =
 		useStatusPageFetch(false, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
-	
+
 	// Breadcrumbs
 	const crumbs = [
 		{ name: t("statusBreadCrumbsStatusPages"), path: "/status" },

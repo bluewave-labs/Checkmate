@@ -17,7 +17,7 @@ const MESSAGES = [
 
 const ChatBot = ({ sx }) => {
 	const theme = useTheme();
-	const { t } = useTranslation(); 
+	const { t } = useTranslation();
 	return (
 		<ColContainer
 			backgroundColor={theme.palette.chatbot.background}

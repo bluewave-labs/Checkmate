@@ -20,18 +20,20 @@ const useSendTestEmail = () => {
 			setError(null);
 
 			// Send the test email with or without configuration
-			const response = await networkService.sendTestEmail({ 
+			const response = await networkService.sendTestEmail({
 				to: user.email,
-				emailConfig
+				emailConfig,
 			});
-			
+
 			if (typeof response?.data?.data?.messageId !== "undefined") {
 				createToast({
 					body: t("settingsTestEmailSuccess", "Test email sent successfully"),
 				});
 			} else {
-				throw new Error(response?.data?.error || t("settingsTestEmailFailed", "Failed to send test email"));
-
+				throw new Error(
+					response?.data?.error ||
+						t("settingsTestEmailFailed", "Failed to send test email")
+				);
 			}
 		} catch (error) {
 			createToast({
@@ -39,10 +41,14 @@ const useSendTestEmail = () => {
 			});
 			setError(error);
 			createToast({
-				body: t("settingsTestEmailFailedWithReason", "Failed to send test email: {{reason}}", {
-					reason: error.message || t("settingsTestEmailUnknownError", "Unknown error")
-				}),
-				variant: "error"
+				body: t(
+					"settingsTestEmailFailedWithReason",
+					"Failed to send test email: {{reason}}",
+					{
+						reason: error.message || t("settingsTestEmailUnknownError", "Unknown error"),
+					}
+				),
+				variant: "error",
 			});
 		} finally {
 			setIsSending(false);

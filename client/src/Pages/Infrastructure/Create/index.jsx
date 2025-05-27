@@ -6,7 +6,10 @@ import { useSelector, useDispatch } from "react-redux";
 
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
-import { createInfrastructureMonitor, updateInfrastructureMonitor } from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
+import {
+	createInfrastructureMonitor,
+	updateInfrastructureMonitor,
+} from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
 import { useHardwareMonitorsFetch } from "../Details/Hooks/useHardwareMonitorsFetch";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
@@ -55,7 +58,7 @@ const CreateInfrastructureMonitor = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { monitorId } = useParams();
-	const { t } = useTranslation();	
+	const { t } = useTranslation();
 
 	// Determine if we are creating or editing
 	const isCreate = typeof monitorId === "undefined";
@@ -90,20 +93,26 @@ const CreateInfrastructureMonitor = () => {
 		setInfrastructureMonitor({
 			url: monitor.url.replace(/^https?:\/\//, ""),
 			name: monitor.name || "",
-			notifications: monitor.notifications?.filter(n => typeof n === "object") || [],
+			notifications: monitor.notifications?.filter((n) => typeof n === "object") || [],
 			notify_email: (monitor.notifications?.length ?? 0) > 0,
 			interval: monitor.interval / MS_PER_MINUTE,
 			cpu: monitor.thresholds?.usage_cpu !== undefined,
 			usage_cpu: monitor.thresholds?.usage_cpu ? monitor.thresholds.usage_cpu * 100 : "",
-		
+
 			memory: monitor.thresholds?.usage_memory !== undefined,
-			usage_memory: monitor.thresholds?.usage_memory ? monitor.thresholds.usage_memory * 100 : "",
-		
+			usage_memory: monitor.thresholds?.usage_memory
+				? monitor.thresholds.usage_memory * 100
+				: "",
+
 			disk: monitor.thresholds?.usage_disk !== undefined,
-			usage_disk: monitor.thresholds?.usage_disk ? monitor.thresholds.usage_disk * 100 : "",
-		
+			usage_disk: monitor.thresholds?.usage_disk
+				? monitor.thresholds.usage_disk * 100
+				: "",
+
 			temperature: monitor.thresholds?.usage_temperature !== undefined,
-			usage_temperature: monitor.thresholds?.usage_temperature ? monitor.thresholds.usage_temperature * 100 : "",
+			usage_temperature: monitor.thresholds?.usage_temperature
+				? monitor.thresholds.usage_temperature * 100
+				: "",
 			secret: monitor.secret || "",
 		});
 		setHttps(monitor.url.startsWith("https"));
@@ -199,7 +208,9 @@ const CreateInfrastructureMonitor = () => {
 			: await dispatch(updateInfrastructureMonitor({ monitorId, monitor: form }));
 		if (action.meta.requestStatus === "fulfilled") {
 			createToast({
-				body: isCreate ? t("infrastructureMonitorCreated") : t("infrastructureMonitorUpdated"),
+				body: isCreate
+					? t("infrastructureMonitorCreated")
+					: t("infrastructureMonitorUpdated"),
 			});
 			navigate("/infrastructure");
 		} else {
@@ -236,22 +247,23 @@ const CreateInfrastructureMonitor = () => {
 	const handleNotifications = (event, type) => {
 		const { value, checked } = event.target;
 		let notifications = [...infrastructureMonitor.notifications];
-	
+
 		if (checked) {
 			if (!notifications.some((n) => n.type === type && n.address === value)) {
 				notifications.push({ type, address: value });
 			}
 		} else {
-			notifications = notifications.filter((n) => !(n.type === type && n.address === value));
+			notifications = notifications.filter(
+				(n) => !(n.type === type && n.address === value)
+			);
 		}
-	
+
 		setInfrastructureMonitor((prev) => ({
 			...prev,
 			notifications,
-			...(type === "email" ? { notify_email: checked } : {})
+			...(type === "email" ? { notify_email: checked } : {}),
 		}));
 	};
-	
 
 	return (
 		<Box className="create-infrastructure-monitor">
@@ -260,8 +272,10 @@ const CreateInfrastructureMonitor = () => {
 					{ name: "Infrastructure monitors", path: "/infrastructure" },
 					...(isCreate
 						? [{ name: "Create", path: "/infrastructure/create" }]
-						: [{ name: "Details", path: `/infrastructure/${monitorId}` }, { name: "Configure", path: `/infrastructure/configure/${monitorId}` }]
-					),
+						: [
+								{ name: "Details", path: `/infrastructure/${monitorId}` },
+								{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
+							]),
 				]}
 			/>
 			<Stack
@@ -281,7 +295,7 @@ const CreateInfrastructureMonitor = () => {
 						component="span"
 						fontSize="inherit"
 					>
-						{t(isCreate? "infrastructureCreateYour": "infrastructureEditYour")}{" "}
+						{t(isCreate ? "infrastructureCreateYour" : "infrastructureEditYour")}{" "}
 					</Typography>
 					<Typography
 						component="span"
@@ -294,7 +308,12 @@ const CreateInfrastructureMonitor = () => {
 				</Typography>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("settingsGeneralSettings")}
+						</Typography>
 						<Typography component="p">
 							{t("infrastructureCreateGeneralSettingsDescription")}
 						</Typography>
@@ -323,25 +342,25 @@ const CreateInfrastructureMonitor = () => {
 							disabled={!isCreate}
 						/>
 						{isCreate && (
-						<Box>
-							<Typography component="p">{t("infrastructureProtocol")}</Typography>
-							<ButtonGroup>
-								<Button
-									variant="group"
-									filled={https.toString()}
-									onClick={() => setHttps(true)}
-								>
-									{t("https")}
-								</Button>
-								<Button
-									variant="group"
-									filled={(!https).toString()}
-									onClick={() => setHttps(false)}
-								>
-									{t("http")}
-								</Button>
-							</ButtonGroup>
-						</Box>
+							<Box>
+								<Typography component="p">{t("infrastructureProtocol")}</Typography>
+								<ButtonGroup>
+									<Button
+										variant="group"
+										filled={https.toString()}
+										onClick={() => setHttps(true)}
+									>
+										{t("https")}
+									</Button>
+									<Button
+										variant="group"
+										filled={(!https).toString()}
+										onClick={() => setHttps(false)}
+									>
+										{t("http")}
+									</Button>
+								</ButtonGroup>
+							</Box>
 						)}
 						<TextInput
 							type="text"
@@ -368,7 +387,12 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2" variant="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("distributedUptimeCreateIncidentNotification")}
+						</Typography>
 						<Typography component="p">
 							{t("distributedUptimeCreateIncidentDescription")}
 						</Typography>
@@ -385,7 +409,12 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2" variant="h2">{t("infrastructureCustomizeAlerts")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("infrastructureCustomizeAlerts")}
+						</Typography>
 						<Typography component="p">
 							{t("infrastructureAlertNotificationDescription")}
 						</Typography>
@@ -432,7 +461,12 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2" variant="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("distributedUptimeCreateAdvancedSettings")}
+						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
 						<Select
@@ -455,7 +489,7 @@ const CreateInfrastructureMonitor = () => {
 						onClick={handleCreateInfrastructureMonitor}
 						loading={monitorState?.isLoading}
 					>
-						{t(isCreate? "infrastructureCreateMonitor": "infrastructureEditMonitor")}
+						{t(isCreate ? "infrastructureCreateMonitor" : "infrastructureEditMonitor")}
 					</Button>
 				</Stack>
 			</Stack>

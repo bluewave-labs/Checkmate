@@ -48,7 +48,8 @@ const TeamPanel = () => {
 							{row.firstName + " " + row.lastName}
 						</Typography>
 						<Typography>
-							{t("teamPanel.table.created")} {new Date(row.createdAt).toLocaleDateString()}
+							{t("teamPanel.table.created")}{" "}
+							{new Date(row.createdAt).toLocaleDateString()}
 						</Typography>
 					</Stack>
 				);

@@ -28,8 +28,9 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 					gap={theme.spacing(4)}
 				>
 					<PulseDot color={statusColor[determineState(monitor)]} />
-					<Typography variant="h2"
-					style={{fontFamily : "monospace" , fontWeight : 'bolder'}}
+					<Typography
+						variant="h2"
+						style={{ fontFamily: "monospace", fontWeight: "bolder" }}
 					>
 						{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 					</Typography>

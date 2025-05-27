@@ -10,9 +10,7 @@ const MonitorHeader = ({ monitor }) => {
 		<Stack direction="row">
 			<Stack gap={theme.spacing(2)}>
 				<Typography variant="h1">{monitor.name}</Typography>
-				<Typography variant="h2">
-					{t("distributedUptimeDetailsMonitorHeader")}
-				</Typography>
+				<Typography variant="h2">{t("distributedUptimeDetailsMonitorHeader")}</Typography>
 			</Stack>
 		</Stack>
 	);

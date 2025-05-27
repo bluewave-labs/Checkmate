@@ -68,11 +68,14 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
-						helperText={errors.email && (
-						errors.email.includes("required") ? t("authRegisterEmailRequired") :
-						errors.email.includes("valid email") ? t("authRegisterEmailInvalid") :
-						t(errors.email)
-					)}
+						helperText={
+							errors.email &&
+							(errors.email.includes("required")
+								? t("authRegisterEmailRequired")
+								: errors.email.includes("valid email")
+									? t("authRegisterEmailInvalid")
+									: t(errors.email))
+						}
 						ref={inputRef}
 					/>
 					<Stack

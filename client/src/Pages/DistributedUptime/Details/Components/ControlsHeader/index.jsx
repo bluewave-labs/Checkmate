@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, monitorId }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const { t } = useTranslation(); 
+	const { t } = useTranslation();
 
 	return (
 		<Stack

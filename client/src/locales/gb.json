@@ -549,7 +549,7 @@
 	"sendTestEmail": "Send test email",
 	"emailSent": "Email sent successfully",
 	"failedToSendEmail": "Failed to send email",
-	"statusMsg" : {
+	"statusMsg": {
 		"paused": "Monitoring is paused.",
 		"up": "Your site is up.",
 		"down": "Your site is down.",
