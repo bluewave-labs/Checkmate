@@ -198,10 +198,10 @@ const Settings = () => {
 					backgroundColor: theme.palette.primary.main,
 					display: "flex",
 					justifyContent: "flex-end",
-					pb: theme.spacing(5),
+					pb: theme.spacing(4),
 					pr: theme.spacing(15),
 					pl: theme.spacing(5),
-					pt: theme.spacing(5),
+					pt: theme.spacing(4),
 				}}
 			>
 				<Button
@@ -209,7 +209,7 @@ const Settings = () => {
 					disabled={Object.keys(errors).length > 0}
 					variant="contained"
 					color="accent"
-					sx={{ px: theme.spacing(12), mt: theme.spacing(20) }}
+					sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					onClick={handleSave}
 				>
 					{t("settingsSave")}
