@@ -56,7 +56,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 ## 🧩 Features
 
-- Completely open source, deployable on your servers
+- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
 - Website monitoring
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance etc) - requires [Capture](https://github.com/bluewave-labs/capture)
@@ -65,18 +65,17 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 - SSL monitoring
 - Port monitoring
 - Incidents at a glance
-- E-mail notifications
+- Status pages
+- E-mail, Webhooks, Discord, Telegram, Slack notifications
 - Scheduled maintenance
+- JSON query monitoring
+- Support for multiple languages
 
-**Short term roadmap:**
+**Short term roadmap:** ([Milestone 2.2](https://github.com/bluewave-labs/Checkmate/milestone/8))
 
-- Status pages (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1131
-- Translations (i18n) (**in progress**)
-- Better notification options (Webhooks, Discord, Telegram, Slack) (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1545
-- JSON query monitoring  (**in progress**) https://github.com/bluewave-labs/Checkmate/issues/1573
-- Tagging/grouping monitors https://github.com/bluewave-labs/Checkmate/issues/1546
-- More configuration options
-- DNS monitoring
+- Better notifications
+- Network monitoring
+- ..and a few more features
 
 ## 🏗️ Screenshots
 
