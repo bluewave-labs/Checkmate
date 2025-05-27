@@ -42,10 +42,14 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						return header;
 					}
 
-					return header + " | " + selected
-						.map((value) => options.find((option) => option.value === value)?.label)
-						.filter(Boolean)
-						.join(", ");
+					return (
+						header +
+						" | " +
+						selected
+							.map((value) => options.find((option) => option.value === value)?.label)
+							.filter(Boolean)
+							.join(", ")
+					);
 				}}
 				MenuProps={{
 					anchorOrigin: {

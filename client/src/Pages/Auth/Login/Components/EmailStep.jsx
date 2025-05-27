@@ -75,11 +75,11 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 								width: "30%",
 								px: theme.spacing(6),
 								borderRadius: `${theme.shape.borderRadius}px !important`,
-								'&.MuiButtonBase-root': {
-									borderRadius: `${theme.shape.borderRadius}px !important`
+								"&.MuiButtonBase-root": {
+									borderRadius: `${theme.shape.borderRadius}px !important`,
 								},
-								'&.MuiButton-root': {
-									borderRadius: `${theme.shape.borderRadius}px !important`
+								"&.MuiButton-root": {
+									borderRadius: `${theme.shape.borderRadius}px !important`,
 								},
 								"&.Mui-focusVisible": {
 									outline: `2px solid ${theme.palette.primary.main}`,

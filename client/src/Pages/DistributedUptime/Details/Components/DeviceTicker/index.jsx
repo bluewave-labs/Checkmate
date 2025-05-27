@@ -76,7 +76,9 @@ const DeviceTicker = ({ data, width = "100%", connectionStatus }) => {
 										<Typography>{city}</Typography>
 									</td>
 									<td style={{ textAlign: "right", paddingLeft: theme.spacing(4) }}>
-										<Typography>{Math.floor(dataPoint.responseTime)} {t("ms")}</Typography>
+										<Typography>
+											{Math.floor(dataPoint.responseTime)} {t("ms")}
+										</Typography>
 									</td>
 									<td style={{ textAlign: "right", paddingLeft: theme.spacing(4) }}>
 										<Typography color={theme.palette.warning.main}>

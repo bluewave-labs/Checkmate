@@ -167,7 +167,7 @@ const Greeting = ({ type = "" }) => {
 					fontSize="inherit"
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("greeting.prepend", { defaultValue: prepend })}, {" "}
+					{t("greeting.prepend", { defaultValue: prepend })},{" "}
 				</Typography>
 				<Typography
 					component="span"
@@ -183,7 +183,8 @@ const Greeting = ({ type = "" }) => {
 				lineHeight={1}
 				color={theme.palette.primary.contrastTextTertiary}
 			>
-				{t("greeting.append", { defaultValue: append })} — {t("greeting.overview", { type: t(`menu.${type}`) })}
+				{t("greeting.append", { defaultValue: append })} —{" "}
+				{t("greeting.overview", { type: t(`menu.${type}`) })}
 			</Typography>
 		</Box>
 	);

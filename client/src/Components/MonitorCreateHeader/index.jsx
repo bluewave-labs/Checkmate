@@ -4,17 +4,11 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 
-const CreateMonitorHeader = ({
-	isAdmin,
-	label,
-	isLoading = true,
-	path,
-	bulkPath,
-}) => {
+const CreateMonitorHeader = ({ isAdmin, label, isLoading = true, path, bulkPath }) => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
-	
+
 	// Use the provided label or fall back to the translated default
 
 	if (!isAdmin) return null;

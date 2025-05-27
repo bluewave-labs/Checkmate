@@ -15,7 +15,12 @@ const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1" variant="h2">{t("settingsGeneralSettings")}</Typography>
+				<Typography
+					component="h1"
+					variant="h2"
+				>
+					{t("settingsGeneralSettings")}
+				</Typography>
 				<Typography sx={HEADING_SX}>
 					<Typography component="span">{t("settingsDisplayTimezone")}</Typography>-{" "}
 					{t("settingsDisplayTimezoneDescription")}

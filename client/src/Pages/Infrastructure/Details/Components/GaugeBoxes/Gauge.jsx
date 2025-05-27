@@ -16,8 +16,8 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 		mb: theme.spacing(2),
 		mt: theme.spacing(2),
 		pr: theme.spacing(2),
-		textAlign: 'right'
-	}
+		textAlign: "right",
+	};
 
 	return (
 		<BaseContainer>
@@ -32,14 +32,19 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 						flexDirection: "column",
 						alignItems: "center",
 						width: "100%",
-						backgroundColor: theme.palette.gradient.color1
+						backgroundColor: theme.palette.gradient.color1,
 					}}
 				>
 					<CustomGauge
 						progress={value}
 						radius={100}
 					/>
-					<Typography component="h2" sx={{ fontWeight: 600 }}>{heading}</Typography>
+					<Typography
+						component="h2"
+						sx={{ fontWeight: 600 }}
+					>
+						{heading}
+					</Typography>
 				</Box>
 				<Box
 					sx={{

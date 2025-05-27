@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 const PerformanceReport = ({ shouldRender, audits }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	
+
 	if (!shouldRender) {
 		return <SkeletonLayout />;
 	}

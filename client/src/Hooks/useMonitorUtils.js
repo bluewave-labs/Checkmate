@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { useTheme } from "@mui/material";
 
 const useMonitorUtils = () => {
-
 	const getMonitorWithPercentage = useCallback((monitor, theme) => {
 		let uptimePercentage = "";
 		let percentageColor = "";

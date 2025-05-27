@@ -30,7 +30,7 @@ const useMonitorsFetch = ({ teamId }) => {
 						acc[monitor._id] = {
 							_id: monitor._id,
 							name: monitor.name,
-							type: monitor.type
+							type: monitor.type,
 						};
 						return acc;
 					}, {});

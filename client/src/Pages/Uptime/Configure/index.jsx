@@ -343,7 +343,12 @@ const Configure = () => {
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("settingsGeneralSettings")}
+								</Typography>
 								<Typography component="p">
 									{t("distributedUptimeCreateSelectURL")}
 								</Typography>
@@ -389,7 +394,10 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">
+								<Typography
+									component="h2"
+									variant="h2"
+								>
 									{t("distributedUptimeCreateIncidentNotification")}
 								</Typography>
 								<Typography component="p">
@@ -457,7 +465,12 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">{t("ignoreTLSError")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("ignoreTLSError")}
+								</Typography>
 								<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
 							</Box>
 							<Stack>
@@ -477,7 +490,10 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">
+								<Typography
+									component="h2"
+									variant="h2"
+								>
 									{t("distributedUptimeCreateAdvancedSettings")}
 								</Typography>
 							</Box>

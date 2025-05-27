@@ -100,9 +100,7 @@ const NewPasswordConfirmed = () => {
 							</IconBox>
 						</Stack>
 						<Typography component="h1">{t("passwordreset")}</Typography>
-						<Typography mb={theme.spacing(2)}>
-							{t("authNewPasswordConfirmed")}
-						</Typography>
+						<Typography mb={theme.spacing(2)}>{t("authNewPasswordConfirmed")}</Typography>
 					</Box>
 					<Button
 						variant="contained"
