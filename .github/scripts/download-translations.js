@@ -76,8 +76,7 @@ async function downloadTranslations() {
 
       // Determine the output filename based on language
       const normalizedLanguage = normalizeLanguageCode(language);
-      const filename =
-        normalizedLanguage === "en" ? "gb.json" : `${normalizedLanguage}.json`;
+      const filename = `${normalizedLanguage}.json`;
       const outputPath = path.join(process.cwd(), "temp", filename);
       await fs.writeJson(outputPath, formattedTranslations, { spaces: 2 });
 
