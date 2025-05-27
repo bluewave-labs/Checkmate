@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   server:
     image: ghcr.io/bluewave-labs/checkmate:backend-dist-mono-multiarch
