@@ -77,7 +77,18 @@ const LanguageSelector = () => {
 			}}
 		>
 			{languages.map((lang) => {
-				const flag = lang ? `fi fi-${lang}` : null;
+				let parsedLang = lang === "en" ? "gb" : lang;
+
+				// Fix for Czech
+				if (parsedLang === "cs") {
+					parsedLang = "cz";
+				}
+				if (parsedLang.includes("-")) {
+					parsedLang = parsedLang.split("-")[1].toLowerCase();
+					console.log("parsedLang", parsedLang);
+				}
+
+				const flag = parsedLang ? `fi fi-${parsedLang}` : null;
 
 				return (
 					<MenuItem
