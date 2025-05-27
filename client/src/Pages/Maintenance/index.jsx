@@ -25,6 +25,7 @@ const Maintenance = () => {
 	const [sort, setSort] = useState({});
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
+	const [isDataFetched, setIsDataFetched] = useState(false);
 
 	const handleActionMenuDelete = () => {
 		setUpdateTrigger((prev) => !prev);
@@ -42,6 +43,8 @@ const Maintenance = () => {
 				setMaintenanceWindowCount(maintenanceWindowCount);
 			} catch (error) {
 				setNetworkError(true);
+			} finally {
+				setIsDataFetched(true);
 			}
 		};
 		fetchMaintenanceWindows();
@@ -61,7 +64,8 @@ const Maintenance = () => {
 			</GenericFallback>
 		);
 	}
-	if (maintenanceWindows.length === 0) {
+	// Only show the fallback if we've fetched data and there are no maintenance windows
+	if (isDataFetched && maintenanceWindows.length === 0) {
 		return (
 			<Fallback
 				title="maintenance window"
