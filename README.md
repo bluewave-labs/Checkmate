@@ -109,7 +109,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Vishnu](http://github.com/vishnusn77), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer) and [Mert](https://github/com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
-We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 5000+ stars and attracted 60 contributors from around the globe.
+We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 5800+ stars and attracted 70+ contributors from around the globe.
 
 Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes and NEC**, so don’t hold back — jump in, contribute and learn with us!
 
