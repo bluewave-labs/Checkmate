@@ -98,9 +98,6 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 		const mem = (monitor?.checks[0]?.memory.usage_percent ?? 0) * 100;
 		const disk = (monitor?.checks[0]?.disk[0]?.usage_percent ?? 0) * 100;
 		const status = determineState(monitor);
-		const uptimePercentage = ((monitor?.uptimePercentage ?? 0) * 100)
-			.toFixed(2)
-			.toString();
 		const percentageColor =
 			monitor.uptimePercentage < 0.25
 				? theme.palette.error.main
@@ -117,7 +114,6 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 			mem,
 			disk,
 			status,
-			uptimePercentage,
 			percentageColor,
 		};
 	});

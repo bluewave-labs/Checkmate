@@ -1047,9 +1047,12 @@ class NetworkService {
 		form.url && fd.append("url", form.url);
 		form.timezone && fd.append("timezone", form.timezone);
 		form.color && fd.append("color", form.color);
-		form.showCharts && fd.append("showCharts", form.showCharts);
-		form.showUptimePercentage &&
-			fd.append("showUptimePercentage", form.showUptimePercentage);
+		if (form.showCharts !== undefined) {
+			fd.append("showCharts", String(form.showCharts));
+		}
+		if (form.showUptimePercentage !== undefined) {
+			fd.append("showUptimePercentage", String(form.showUptimePercentage));
+		}
 		form.monitors &&
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
@@ -1154,11 +1157,28 @@ class NetworkService {
 	}
 
 	// ************************************
-	// Send tes	t email
+	// Send test email
 	// ************************************
 	async sendTestEmail(config) {
-		const { to } = config;
-		return this.axiosInstance.post(`/monitors/test-email`, { to });
+		// Extract recipient and email configuration
+		const { to, emailConfig } = config;
+		
+		// If emailConfig is provided, use the new endpoint with direct parameters
+		if (emailConfig) {
+			return this.axiosInstance.post(`/settings/test-email`, { 
+				to,
+				systemEmailHost: emailConfig.systemEmailHost,
+				systemEmailPort: emailConfig.systemEmailPort,
+				systemEmailAddress: emailConfig.systemEmailAddress,
+				systemEmailPassword: emailConfig.systemEmailPassword,
+				// Only include these if they are present
+				...(emailConfig.systemEmailConnectionHost && { systemEmailConnectionHost: emailConfig.systemEmailConnectionHost }),
+				...(emailConfig.systemEmailUser && { systemEmailUser: emailConfig.systemEmailUser })
+			});
+		}
+		
+		// Fallback to original behavior for backward compatibility
+		return this.axiosInstance.post(`/settings/test-email`, { to });
 	}
 }
 

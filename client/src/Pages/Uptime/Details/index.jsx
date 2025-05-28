@@ -1,5 +1,6 @@
 // Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
+import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
 import MonitorStatusHeader from "../../../Components/MonitorStatusHeader";
 import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import ChartBoxes from "./Components/ChartBoxes";
@@ -36,9 +37,9 @@ const UptimeDetails = () => {
 
 	// Local state
 	const [dateRange, setDateRange] = useState("recent");
-
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
+	const [trigger, setTrigger] = useState(false);
 
 	// Utils
 	const dateFormat =
@@ -52,6 +53,7 @@ const UptimeDetails = () => {
 		useFetchUptimeMonitorDetails({
 			monitorId,
 			dateRange,
+			trigger,
 		});
 
 	const monitor = monitorData?.monitor;
@@ -73,6 +75,10 @@ const UptimeDetails = () => {
 	});
 
 	// Handlers
+	const triggerUpdate = () => {
+		setTrigger(!trigger);
+	};
+
 	const handlePageChange = (_, newPage) => {
 		setPage(newPage);
 	};
@@ -101,11 +107,12 @@ const UptimeDetails = () => {
 		return (
 			<Stack gap={theme.spacing(10)}>
 				<Breadcrumbs list={BREADCRUMBS} />
-				<MonitorStatusHeader
+				<MonitorDetailsControlHeader
 					path={"uptime"}
 					isAdmin={isAdmin}
-					shouldRender={!monitorIsLoading}
+					isLoading={monitorIsLoading}
 					monitor={monitor}
+					triggerUpdate={triggerUpdate}
 				/>
 				<GenericFallback>
 					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
@@ -117,11 +124,12 @@ const UptimeDetails = () => {
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
-			<MonitorStatusHeader
+			<MonitorDetailsControlHeader
 				path={"uptime"}
 				isAdmin={isAdmin}
 				isLoading={monitorIsLoading}
 				monitor={monitor}
+				triggerUpdate={triggerUpdate}
 			/>
 			<UptimeStatusBoxes
 				isLoading={monitorIsLoading}

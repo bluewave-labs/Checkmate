@@ -16,7 +16,7 @@ const SettingsUI = ({ HEADING_SX, handleChange, mode, language }) => {
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("settingsAppearance")}</Typography>
+				<Typography component="h1" variant="h2">{t("settingsAppearance")}</Typography>
 				<Typography sx={HEADING_SX}>{t("settingsAppearanceDescription")}</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>

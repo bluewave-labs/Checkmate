@@ -11,6 +11,7 @@ const SERVICE_NAME = "EmailService";
  */
 class EmailService {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	/**
 	 * Constructs an instance of the EmailService, initializing template loaders and the email transporter.
 	 * @param {Object} settingsService - The settings service to get email configuration.
@@ -88,17 +89,25 @@ class EmailService {
 	 * @param {string} subject - The subject of the email.
 	 * @returns {Promise<string>} A promise that resolves to the messageId of the sent email.
 	 */
-	buildAndSendEmail = async (template, context, to, subject) => {
+	buildAndSendEmail = async (template, context, to, subject, transportConfig) => {
 		// TODO - Consider an update transporter method so this only needs to be recreated when smtp settings change
+		let config;
+		if (typeof transportConfig !== "undefined") {
+			config = transportConfig;
+		} else {
+			config = await this.settingsService.getDBSettings();
+		}
+
 		const {
 			systemEmailHost,
 			systemEmailPort,
 			systemEmailUser,
 			systemEmailAddress,
 			systemEmailPassword,
-		} = await this.settingsService.getDBSettings();
+			systemEmailConnectionHost,
+		} = config;
 
-		const emailConfig = {
+		const baseEmailConfig = {
 			host: systemEmailHost,
 			port: systemEmailPort,
 			secure: true,
@@ -108,6 +117,22 @@ class EmailService {
 			},
 			connectionTimeout: 5000,
 		};
+
+		const isSmtps = Number(systemEmailPort) === 465;
+
+		const emailConfig = !isSmtps
+			? {
+					...baseEmailConfig,
+					name: systemEmailConnectionHost || "localhost",
+					secure: false,
+					pool: true,
+					tls: { rejectUnauthorized: false },
+				}
+			: baseEmailConfig;
+
+		if (!isSmtps) {
+			delete emailConfig.auth;
+		}
 
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 
@@ -149,4 +174,5 @@ class EmailService {
 		return info?.messageId;
 	};
 }
+
 export default EmailService;

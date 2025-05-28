@@ -26,6 +26,7 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 			<Box>
 				<Typography
 					component="h1"
+					variant="h2"
 					sx={HEADING_SX}
 				>
 					{t("settingsHistoryAndMonitoring")}

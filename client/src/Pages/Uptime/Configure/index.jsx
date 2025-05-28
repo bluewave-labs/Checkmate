@@ -34,6 +34,10 @@ import SkeletonLayout from "./skeleton";
 import "./index.css";
 import Dialog from "../../../Components/Dialog";
 import NotificationIntegrationModal from "../../../Components/NotificationIntegrationModal/Components/NotificationIntegrationModal";
+import { usePauseMonitor } from "../../../Hooks/useMonitorControls";
+import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
+import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -83,11 +87,19 @@ const Configure = () => {
 		include: "ok",
 	};
 
+	const [trigger, setTrigger] = useState(false);
+	const triggerUpdate = () => {
+		setTrigger(!trigger);
+	};
+	const [pauseMonitor, isPausing, error] = usePauseMonitor({
+		monitorId: monitor?._id,
+		triggerUpdate,
+	});
+
 	useEffect(() => {
 		const fetchMonitor = async () => {
 			try {
 				const action = await dispatch(getUptimeMonitorById({ monitorId }));
-
 				if (getUptimeMonitorById.fulfilled.match(action)) {
 					const monitor = action.payload.data;
 					setMonitor(monitor);
@@ -100,7 +112,7 @@ const Configure = () => {
 			}
 		};
 		fetchMonitor();
-	}, [monitorId, navigate]);
+	}, [monitorId, navigate, trigger]);
 
 	const handleChange = (event, name) => {
 		let { checked, value, id } = event.target;
@@ -158,23 +170,6 @@ const Configure = () => {
 		}
 	};
 
-	const handlePause = async () => {
-		try {
-			const action = await dispatch(pauseUptimeMonitor({ monitorId }));
-			if (pauseUptimeMonitor.fulfilled.match(action)) {
-				const monitor = action.payload.data;
-				setMonitor(monitor);
-				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
-				createToast({ body: `Monitor ${state} successfully.` });
-			} else if (pauseUptimeMonitor.rejected.match(action)) {
-				throw new Error(action.error.message);
-			}
-		} catch (error) {
-			logger.error("Error pausing monitor: " + monitorId);
-			createToast({ body: "Failed to pause monitor" });
-		}
-	};
-
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		const action = await dispatch(updateUptimeMonitor({ monitor: monitor }));
@@ -219,17 +214,7 @@ const Configure = () => {
 		setIsNotificationModalOpen(false);
 	};
 
-	const statusColor = {
-		true: theme.palette.success.main,
-		false: theme.palette.error.main,
-		undefined: theme.palette.warning.main,
-	};
-
-	const statusMsg = {
-		true: "Your site is up.",
-		false: "Your site is down.",
-		undefined: "Pending...",
-	};
+	const { determineState, statusColor } = useMonitorUtils();
 
 	const { t } = useTranslation();
 
@@ -274,7 +259,7 @@ const Configure = () => {
 									gap={theme.spacing(2)}
 								>
 									<Tooltip
-										title={statusMsg[monitor?.status ?? undefined]}
+										title={t(`statusMsg.${[determineState(monitor)]}`)}
 										disableInteractive
 										slotProps={{
 											popper: {
@@ -290,7 +275,7 @@ const Configure = () => {
 										}}
 									>
 										<Box>
-											<PulseDot color={statusColor[monitor?.status ?? undefined]} />
+											<PulseDot color={statusColor[determineState(monitor)]} />
 										</Box>
 									</Tooltip>
 									<Typography
@@ -324,42 +309,26 @@ const Configure = () => {
 								</Stack>
 							</Box>
 							<Box
+								justifyContent="space-between"
 								sx={{
 									alignSelf: "flex-end",
 									ml: "auto",
+									display: "flex",
+									gap: theme.spacing(2),
 								}}
 							>
 								<Button
 									variant="contained"
 									color="secondary"
-									loading={isLoading}
-									sx={{
-										pl: theme.spacing(4),
-										pr: theme.spacing(6),
-										mr: theme.spacing(6),
-										"& svg": {
-											mr: theme.spacing(2),
-											width: 22,
-											height: 22,
-											"& path": {
-												stroke: theme.palette.primary.contrastTextTertiary,
-												strokeWidth: 1.7,
-											},
-										},
+									loading={isPausing}
+									startIcon={
+										monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+									}
+									onClick={() => {
+										pauseMonitor();
 									}}
-									onClick={handlePause}
 								>
-									{monitor?.isActive ? (
-										<>
-											<PauseIcon />
-											{t("pause")}
-										</>
-									) : (
-										<>
-											<ResumeIcon />
-											{t("resume")}
-										</>
-									)}
+									{monitor?.isActive ? t("pause") : t("resume")}
 								</Button>
 								<Button
 									loading={isLoading}
@@ -374,7 +343,7 @@ const Configure = () => {
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
+								<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
 								<Typography component="p">
 									{t("distributedUptimeCreateSelectURL")}
 								</Typography>
@@ -420,7 +389,7 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">
+								<Typography component="h2" variant="h2">
 									{t("distributedUptimeCreateIncidentNotification")}
 								</Typography>
 								<Typography component="p">
@@ -488,7 +457,7 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("ignoreTLSError")}</Typography>
+								<Typography component="h2" variant="h2">{t("ignoreTLSError")}</Typography>
 								<Typography component="p">{t("ignoreTLSErrorDescription")}</Typography>
 							</Box>
 							<Stack>
@@ -508,7 +477,7 @@ const Configure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">
+								<Typography component="h2" variant="h2">
 									{t("distributedUptimeCreateAdvancedSettings")}
 								</Typography>
 							</Box>

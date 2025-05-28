@@ -1,0 +1,30 @@
+name: Distribution deploy - Monolithic
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+jobs:
+  docker-build-and-push-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Server Docker image
+        run: |
+          docker build \
+            -t ghcr.io/bluewave-labs/checkmate:backend-dist-mono \
+            -f ./docker/dist-mono/server.Dockerfile \
+            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            .
+
+      - name: Push Server Docker image
+        run: docker push ghcr.io/bluewave-labs/checkmate:backend-dist-mono
