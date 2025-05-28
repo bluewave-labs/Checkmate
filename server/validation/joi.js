@@ -427,6 +427,7 @@ const updateAppSettingsBodyValidation = joi.object({
 	checkTTL: joi.number().allow(""),
 	pagespeedApiKey: joi.string().allow(""),
 	language: joi.string().allow(""),
+	timezone: joi.string().allow(""),
 	// showURL: joi.bool().required(),
 	systemEmailHost: joi.string().allow(""),
 	systemEmailPort: joi.number().allow(""),
