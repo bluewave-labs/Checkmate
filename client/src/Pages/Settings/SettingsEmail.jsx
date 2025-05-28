@@ -52,18 +52,18 @@ const SettingsEmail = ({
 			systemEmailUser: settingsData?.settings?.systemEmailUser,
 			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
 			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
-			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost
+			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost,
 		};
-		
+
 		// Basic validation
 		if (!emailConfig.systemEmailHost || !emailConfig.systemEmailPort) {
 			createToast({
 				body: t("settingsEmailRequiredFields", "Email host and port are required"),
-				variant: "error"
+				variant: "error",
 			});
 			return;
 		}
-		
+
 		// Send test email with current form values
 		sendTestEmail(emailConfig);
 	};
@@ -75,7 +75,12 @@ const SettingsEmail = ({
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1" variant="h2">{t("settingsEmail")}</Typography>
+				<Typography
+					component="h1"
+					variant="h2"
+				>
+					{t("settingsEmail")}
+				</Typography>
 				<Typography sx={HEADER_SX}>{t("settingsEmailDescription")}</Typography>
 			</Box>
 			<Box>

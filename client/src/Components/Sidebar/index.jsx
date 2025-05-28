@@ -121,7 +121,7 @@ function Sidebar() {
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const authState = useSelector((state) => state.auth);
-	
+
 	const menu = getMenu(t);
 	const otherMenuItems = getOtherMenuItems(t);
 	const accountMenuItems = getAccountMenuItems(t);
@@ -147,7 +147,7 @@ function Sidebar() {
 		} else {
 			setSidebarReady(false);
 		}
-	}, [collapsed]);	
+	}, [collapsed]);
 
 	const renderAccountMenuItems = () => {
 		let filteredAccountMenuItems = [...accountMenuItems];
@@ -170,8 +170,8 @@ function Sidebar() {
 			<MenuItem
 				key={item.name}
 				onClick={() => {
-				     closePopup()
-					 navigate(item.path)
+					closePopup();
+					navigate(item.path);
 				}}
 				sx={{
 					gap: theme.spacing(2),
@@ -231,7 +231,7 @@ function Sidebar() {
 			*/
 			sx={{
 				position: "relative",
-				borderRight: `1px solid ${theme.palette.primary.lowContrast}`, 
+				borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
 				borderColor: theme.palette.primary.lowContrast,
 				borderRadius: 0,
 				backgroundColor: theme.palette.primary.main,
@@ -732,11 +732,15 @@ function Sidebar() {
 								{authState.user?.firstName} {authState.user?.lastName}
 							</Typography>
 							<Typography sx={{ textTransform: "capitalize" }}>
-								{authState.user?.role?.includes("superadmin") ? t("roles.superAdmin") :
-								authState.user?.role?.includes("admin") ? t("roles.admin") :
-								authState.user?.role?.includes("user") ? t("roles.teamMember") :
-								authState.user?.role?.includes("demo") ? t("roles.demoUser") :
-								authState.user?.role}
+								{authState.user?.role?.includes("superadmin")
+									? t("roles.superAdmin")
+									: authState.user?.role?.includes("admin")
+										? t("roles.admin")
+										: authState.user?.role?.includes("user")
+											? t("roles.teamMember")
+											: authState.user?.role?.includes("demo")
+												? t("roles.demoUser")
+												: authState.user?.role}
 							</Typography>
 						</Box>
 						<Stack

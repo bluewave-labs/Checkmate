@@ -194,7 +194,7 @@ const CreateStatusPage = () => {
 				color: statusPage?.color,
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? true,
-				showUptimePercentage: statusPage?.showUptimePercentage ?? true
+				showUptimePercentage: statusPage?.showUptimePercentage ?? true,
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);

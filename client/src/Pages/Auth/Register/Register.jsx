@@ -105,7 +105,7 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 											);
 										}}
 									/>
-								)
+								),
 							}}
 						/>
 					</Typography>

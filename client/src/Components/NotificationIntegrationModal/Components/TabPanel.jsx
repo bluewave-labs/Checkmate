@@ -5,7 +5,7 @@ import { useTheme } from "@emotion/react";
 
 /**
  * TabPanel component that displays content for the selected tab.
- * 
+ *
  * @component
  * @param {Object} props - The component props.
  * @param {React.ReactNode} props.children - The content to be displayed when this tab panel is selected.
@@ -15,32 +15,27 @@ import { useTheme } from "@emotion/react";
  * @returns {React.ReactElement|null} The rendered tab panel or null if not selected.
  */
 function TabPanel({ children, value, index, ...other }) {
-  const theme = useTheme(); 
-  
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`notification-tabpanel-${index}`}
-      aria-labelledby={`notification-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ pt: theme.spacing(3) }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
+	const theme = useTheme();
+
+	return (
+		<div
+			role="tabpanel"
+			hidden={value !== index}
+			id={`notification-tabpanel-${index}`}
+			aria-labelledby={`notification-tab-${index}`}
+			{...other}
+		>
+			{value === index && <Box sx={{ pt: theme.spacing(3) }}>{children}</Box>}
+		</div>
+	);
 }
 
 TabPanel.propTypes = {
+	children: PropTypes.node,
 
-  children: PropTypes.node,
-  
-  index: PropTypes.number.isRequired,
-  
-  value: PropTypes.number.isRequired
+	index: PropTypes.number.isRequired,
+
+	value: PropTypes.number.isRequired,
 };
 
 export default TabPanel;

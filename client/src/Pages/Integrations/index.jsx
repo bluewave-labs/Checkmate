@@ -134,9 +134,7 @@ const Integrations = () => {
 			}}
 		>
 			<Typography component="h1">{t("integrations")}</Typography>
-			<Typography mb={theme.spacing(12)}>
-				{t("integrationsPrism")}
-			</Typography>
+			<Typography mb={theme.spacing(12)}>{t("integrationsPrism")}</Typography>
 			<Grid
 				container
 				spacing={theme.spacing(12)}

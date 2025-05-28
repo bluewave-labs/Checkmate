@@ -1,12 +1,11 @@
 /**
  * Update errors if passed id matches the error.details[0].path, otherwise remove
  * the error for the id
- * @param {*} prev Previous errors * 
+ * @param {*} prev Previous errors *
  * @param {*} id ID of the field whose error is to be either updated or removed
- * @param {*} error the error object 
+ * @param {*} error the error object
  * @returns the Update Errors with the specific field with id being either removed or updated
  */
-
 
 const buildErrors = (prev, id, error) => {
 	const updatedErrors = { ...prev };
@@ -43,7 +42,7 @@ const getTouchedFieldErrors = (validation, touchedErrors) => {
 	return newErrors;
 };
 /**
- * 
+ *
  * @param {*} form The form object of the submitted form data
  * @param {*} validation The Joi validation rules
  * @param {*} setErrors The function used to set the local errors
@@ -69,7 +68,7 @@ const hasValidationErrors = (form, validation, setErrors) => {
 					"_id",
 					"__v",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
 				].includes(err.path[0])
 			) {
 				newErrors[err.path[0]] = err.message ?? "Validation error";

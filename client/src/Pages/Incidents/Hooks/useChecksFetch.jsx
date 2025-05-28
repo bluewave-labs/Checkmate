@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
 import { useSelector } from "react-redux";
-const useChecksFetch = ({ selectedMonitor, selectedMonitorType, filter, dateRange, page, rowsPerPage }) => {
+const useChecksFetch = ({
+	selectedMonitor,
+	selectedMonitorType,
+	filter,
+	dateRange,
+	page,
+	rowsPerPage,
+}) => {
 	//Redux
 	const { user } = useSelector((state) => state.auth);
 

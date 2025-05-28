@@ -310,7 +310,12 @@ const PageSpeedConfigure = () => {
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">{t("settingsGeneralSettings")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("settingsGeneralSettings")}
+								</Typography>
 								<Typography component="p">
 									{t("pageSpeedConfigureSettingsDescription")}
 								</Typography>
@@ -349,7 +354,12 @@ const PageSpeedConfigure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("distributedUptimeCreateIncidentNotification")}
+								</Typography>
 								<Typography component="p">
 									{t("distributedUptimeCreateIncidentDescription")}
 								</Typography>
@@ -394,9 +404,7 @@ const PageSpeedConfigure = () => {
 											value=""
 											onChange={() => logger.warn("disabled")}
 										/>
-										<Typography mt={theme.spacing(4)}>
-											{t("seperateEmails")}
-										</Typography>
+										<Typography mt={theme.spacing(4)}>{t("seperateEmails")}</Typography>
 									</Box>
 								) : (
 									""
@@ -405,7 +413,12 @@ const PageSpeedConfigure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2" variant="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("distributedUptimeCreateAdvancedSettings")}
+								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select

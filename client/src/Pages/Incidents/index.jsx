@@ -18,8 +18,10 @@ const Incidents = () => {
 	// Redux state
 	const { user } = useSelector((state) => state.auth);
 	const { t } = useTranslation();
-	
-	const BREADCRUMBS = [{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" }];
+
+	const BREADCRUMBS = [
+		{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" },
+	];
 
 	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState("0");

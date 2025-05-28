@@ -43,8 +43,6 @@ const Login = () => {
 	const [errors, setErrors] = useState({});
 	const [step, setStep] = useState(0);
 
-
-
 	useEffect(() => {
 		if (authToken) {
 			navigate("/uptime");
@@ -84,7 +82,9 @@ const Login = () => {
 			);
 			if (error) {
 				const errorMessage = error.details[0].message;
-				const translatedMessage = errorMessage.startsWith('auth') ? t(errorMessage) : errorMessage;
+				const translatedMessage = errorMessage.startsWith("auth")
+					? t(errorMessage)
+					: errorMessage;
 				setErrors((prev) => ({ ...prev, email: translatedMessage }));
 				createToast({ body: translatedMessage });
 			} else {
@@ -103,7 +103,9 @@ const Login = () => {
 				createToast({
 					body:
 						error.details && error.details.length > 0
-							? (error.details[0].message.startsWith('auth') ? t(error.details[0].message) : error.details[0].message)
+							? error.details[0].message.startsWith("auth")
+								? t(error.details[0].message)
+								: error.details[0].message
 							: t("Error validating data."),
 				});
 			} else {
@@ -227,9 +229,9 @@ const Login = () => {
 					email={form.email}
 					errorEmail={errors.email}
 				/>
-				
+
 				{/* Registration link */}
-				<Box textAlign="center" >
+				<Box textAlign="center">
 					<Typography
 						className="forgot-p"
 						display="inline-block"
@@ -241,11 +243,11 @@ const Login = () => {
 						component="span"
 						color={theme.palette.accent.main}
 						ml={theme.spacing(2)}
-						sx={{ 
-							cursor: 'pointer',
-							'&:hover': {
-								color: theme.palette.accent.darker
-							}
+						sx={{
+							cursor: "pointer",
+							"&:hover": {
+								color: theme.palette.accent.darker,
+							},
 						}}
 						onClick={() => navigate("/register")}
 					>

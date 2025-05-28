@@ -20,7 +20,11 @@ const CustomTabList = ({ value, onChange, children, ...props }) => {
 				"& .MuiTabs-root": { height: "fit-content", minHeight: "0" },
 			}}
 		>
-			<TabList value={value} onChange={onChange} {...props}>
+			<TabList
+				value={value}
+				onChange={onChange}
+				{...props}
+			>
 				{children}
 			</TabList>
 		</Box>

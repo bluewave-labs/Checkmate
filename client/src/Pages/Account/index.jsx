@@ -31,21 +31,19 @@ const Account = ({ open = "profile" }) => {
 	let tabList = [
 		{ name: t("menu.profile"), value: "profile" },
 		{ name: t("menu.password"), value: "password" },
-		{ name: t("menu.team"), value: "team" }
+		{ name: t("menu.team"), value: "team" },
 	];
 	const hideTeams = !requiredRoles.some((role) => user.role.includes(role));
 	if (hideTeams) {
 		tabList = [
 			{ name: t("menu.profile"), value: "profile" },
-			{ name: t("menu.password"), value: "password" }
+			{ name: t("menu.password"), value: "password" },
 		];
 	}
 
 	// Remove password for demo
 	if (user.role.includes("demo")) {
-		tabList = [
-			{ name: t("menu.profile"), value: "profile" }
-		];
+		tabList = [{ name: t("menu.profile"), value: "profile" }];
 	}
 
 	const handleKeyDown = (event) => {
@@ -70,7 +68,11 @@ const Account = ({ open = "profile" }) => {
 			py={theme.spacing(12)}
 		>
 			<TabContext value={tab}>
-				<CustomTabList value={tab} onChange={handleTabChange} aria-label="account tabs">
+				<CustomTabList
+					value={tab}
+					onChange={handleTabChange}
+					aria-label="account tabs"
+				>
 					{tabList.map((item, index) => (
 						<Tab
 							label={item.name}
