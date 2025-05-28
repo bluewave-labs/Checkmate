@@ -50,7 +50,7 @@ const MaintenanceTable = ({
 		);
 		setPage(0);
 	};
-	
+
 	const { t } = useTranslation();
 
 	const headers = [

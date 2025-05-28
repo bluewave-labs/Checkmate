@@ -158,7 +158,15 @@ const StatusLabel = ({ status, text, customStyles }) => {
 };
 
 StatusLabel.propTypes = {
-	status: PropTypes.oneOf(["up", "down", "paused", "pending", "cannot resolve", "published", "unpublished"]),
+	status: PropTypes.oneOf([
+		"up",
+		"down",
+		"paused",
+		"pending",
+		"cannot resolve",
+		"published",
+		"unpublished",
+	]),
 	text: PropTypes.string,
 	customStyles: PropTypes.object,
 };

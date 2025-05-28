@@ -23,7 +23,6 @@ const Tabs = ({
 	setTab,
 	TAB_LIST,
 }) => {
-
 	const theme = useTheme();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
@@ -63,7 +62,6 @@ const Tabs = ({
 					setSelectedMonitors={setSelectedMonitors}
 				/>
 			)}
-			
 		</TabContext>
 	);
 };

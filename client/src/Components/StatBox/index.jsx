@@ -80,7 +80,7 @@ const StatBox = ({
 			};
 
 	const responsiveWidths = {
-		default: `calc(25% - (3 * ${theme.spacing(8)} / 4))`, 
+		default: `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
 		md: `calc(50% - (1 * ${theme.spacing(8)} / 2))`,
 	};
 

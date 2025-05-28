@@ -41,7 +41,12 @@ const SettingsPagespeed = ({
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1" variant="h2">{t("pageSpeedApiKeyFieldTitle")}</Typography>
+				<Typography
+					component="h1"
+					variant="h2"
+				>
+					{t("pageSpeedApiKeyFieldTitle")}
+				</Typography>
 				<Typography sx={HEADING_SX}>{t("pageSpeedApiKeyFieldDescription")}</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>

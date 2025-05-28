@@ -94,7 +94,10 @@ const PasswordPanel = () => {
 			const action = await dispatch(update({ localData }));
 			if (action.payload.success) {
 				createToast({
-					body: t("passwordPanel.passwordChangedSuccess", "Your password was changed successfully."),
+					body: t(
+						"passwordPanel.passwordChangedSuccess",
+						"Your password was changed successfully."
+					),
 				});
 				setLocalData({
 					password: "",
@@ -104,7 +107,10 @@ const PasswordPanel = () => {
 			} else {
 				// TODO: Check for other errors?
 				createToast({
-					body: t("passwordPanel.passwordInputIncorrect", "Your password input was incorrect."),
+					body: t(
+						"passwordPanel.passwordInputIncorrect",
+						"Your password input was incorrect."
+					),
 				});
 				setErrors({ password: "*" + action.payload.msg + "." });
 			}
@@ -153,7 +159,10 @@ const PasswordPanel = () => {
 					<TextInput
 						type="password"
 						id="edit-current-password"
-						placeholder={t("passwordPanel.enterCurrentPassword", "Enter your current password")}
+						placeholder={t(
+							"passwordPanel.enterCurrentPassword",
+							"Enter your current password"
+						)}
 						autoComplete="current-password"
 						value={localData.password}
 						onChange={handleChange}
@@ -219,7 +228,10 @@ const PasswordPanel = () => {
 					<Box sx={{ maxWidth: "70ch" }}>
 						<Alert
 							variant="warning"
-							body={t("passwordPanel.passwordRequirements", "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.")}
+							body={t(
+								"passwordPanel.passwordRequirements",
+								"New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character."
+							)}
 						/>
 					</Box>
 				)}

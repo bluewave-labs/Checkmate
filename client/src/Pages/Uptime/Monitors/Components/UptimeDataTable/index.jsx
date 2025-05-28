@@ -150,7 +150,10 @@ const UptimeDataTable = ({
 			id: "responseTime",
 			content: t("responseTime"),
 			render: (row) => (
-				<Box display="flex" justifyContent="center">
+				<Box
+					display="flex"
+					justifyContent="center"
+				>
 					<BarChart checks={row.monitor.checks.slice().reverse()} />
 				</Box>
 			),

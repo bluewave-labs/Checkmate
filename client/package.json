@@ -8,7 +8,9 @@
 		"build": "vite build",
 		"build-dev": "vite build --mode development",
 		"lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"format": "prettier --write .",
+		"format-check": "prettier --check ."
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",

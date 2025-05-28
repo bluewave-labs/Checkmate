@@ -93,7 +93,7 @@ const ProgressUpload = ({ icon, label, size, progress = 0, onClick, error }) => 
 						<Typography
 							component="h2"
 							mb={theme.spacing(1.5)}
-							sx={{ wordBreak: 'break-all' }}
+							sx={{ wordBreak: "break-all" }}
 						>
 							{error ? error : label}
 						</Typography>
