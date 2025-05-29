@@ -85,8 +85,6 @@ const Settings = () => {
 
 		if (name === "timezone") {
 			dispatch(setTimezone({ timezone: value }));
-			// Make sure to update settingsData with the new timezone value
-			setSettingsData(newSettingsData);
 		}
 
 		if (name === "mode") {
