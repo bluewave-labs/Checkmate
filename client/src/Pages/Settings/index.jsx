@@ -93,7 +93,6 @@ const Settings = () => {
 
 		if (name === "language") {
 			dispatch(setLanguage(value));
-			i18n.changeLanguage(value);
 		}
 
 		if (name === "deleteStats") {
