@@ -17,14 +17,17 @@ const StatusBoxes = ({ shouldRender, monitorsSummary }) => {
 		>
 			<StatusBox
 				title={t("monitorStatus.up")}
+				status="up"
 				value={monitorsSummary?.upMonitors ?? 0}
 			/>
 			<StatusBox
 				title={t("monitorStatus.down")}
+				status="down"
 				value={monitorsSummary?.downMonitors ?? 0}
 			/>
 			<StatusBox
 				title={t("monitorStatus.paused")}
+				status="paused"
 				value={monitorsSummary?.pausedMonitors ?? 0}
 			/>
 		</Stack>
