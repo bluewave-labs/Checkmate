@@ -1,11 +1,12 @@
 const SERVICE_NAME = "NotificationService";
 const TELEGRAM_API_BASE_URL = "https://api.telegram.org/bot";
-const PLATFORM_TYPES = ["telegram", "slack", "discord"];
+const PLATFORM_TYPES = ["telegram", "slack", "discord", "webhook"];
 
 const MESSAGE_FORMATTERS = {
 	telegram: (messageText, chatId) => ({ chat_id: chatId, text: messageText }),
 	slack: (messageText) => ({ text: messageText }),
 	discord: (messageText) => ({ content: messageText }),
+	webhook: (messageText) => ({ text: messageText }),
 };
 
 class NotificationService {
@@ -42,49 +43,57 @@ class NotificationService {
 	formatNotificationMessage(monitor, status, platform, chatId, code, timestamp) {
 		// Format timestamp using the local system timezone
 		const formatTime = (timestamp) => {
-		  const date = new Date(timestamp);
-		  
-		  // Get timezone abbreviation and format the date
-		  const timeZoneAbbr = date.toLocaleTimeString('en-US', { timeZoneName: 'short' })
-			.split(' ').pop();
-		  
-		  // Format the date with readable format
-		  return date.toLocaleString('en-US', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit',
-			second: '2-digit',
-			hour12: false
-		  }).replace(/(\d+)\/(\d+)\/(\d+),\s/, '$3-$1-$2 ') + ' ' + timeZoneAbbr;
+			const date = new Date(timestamp);
+
+			// Get timezone abbreviation and format the date
+			const timeZoneAbbr = date
+				.toLocaleTimeString("en-US", { timeZoneName: "short" })
+				.split(" ")
+				.pop();
+
+			// Format the date with readable format
+			return (
+				date
+					.toLocaleString("en-US", {
+						year: "numeric",
+						month: "2-digit",
+						day: "2-digit",
+						hour: "2-digit",
+						minute: "2-digit",
+						second: "2-digit",
+						hour12: false,
+					})
+					.replace(/(\d+)\/(\d+)\/(\d+),\s/, "$3-$1-$2 ") +
+				" " +
+				timeZoneAbbr
+			);
 		};
-		
+
 		// Get formatted time
-		const formattedTime = timestamp 
-		  ? formatTime(timestamp) 
-		  : formatTime(new Date().getTime());
-		
+		const formattedTime = timestamp
+			? formatTime(timestamp)
+			: formatTime(new Date().getTime());
+
 		// Create different messages based on status with extra spacing
 		let messageText;
 		if (status === true) {
 			messageText = this.stringService.monitorUpAlert
-			.replace("{monitorName}", monitor.name)
-			.replace("{time}", formattedTime)
-			.replace("{code}", code || 'Unknown');
+				.replace("{monitorName}", monitor.name)
+				.replace("{time}", formattedTime)
+				.replace("{code}", code || "Unknown");
 		} else {
 			messageText = this.stringService.monitorDownAlert
-			.replace("{monitorName}", monitor.name)
-			.replace("{time}", formattedTime)
-			.replace("{code}", code || 'Unknown');
+				.replace("{monitorName}", monitor.name)
+				.replace("{time}", formattedTime)
+				.replace("{code}", code || "Unknown");
 		}
-		
+
 		if (!PLATFORM_TYPES.includes(platform)) {
-		  return undefined;
+			return undefined;
 		}
-		
+
 		return MESSAGE_FORMATTERS[platform](messageText, chatId);
-	  }
+	}
 
 	/**
 	 * Sends a webhook notification to a specified platform.
@@ -105,56 +114,56 @@ class NotificationService {
 		const { monitor, status, code } = networkResponse;
 		const { platform } = notification;
 		const { webhookUrl, botToken, chatId } = notification.config;
-		
+
 		// Early return if platform is not supported
 		if (!PLATFORM_TYPES.includes(platform)) {
-		  this.logger.warn({
-			message: this.stringService.getWebhookUnsupportedPlatform(platform),
-			service: this.SERVICE_NAME,
-			method: "sendWebhookNotification",
-			details: { platform }
-		  });
-		  return false;
+			this.logger.warn({
+				message: this.stringService.getWebhookUnsupportedPlatform(platform),
+				service: this.SERVICE_NAME,
+				method: "sendWebhookNotification",
+				details: { platform },
+			});
+			return false;
 		}
-		
+
 		// Early return for telegram if required fields are missing
 		if (platform === "telegram" && (!botToken || !chatId)) {
-		  this.logger.warn({
-			message: "Missing required fields for Telegram notification",
-			service: this.SERVICE_NAME,
-			method: "sendWebhookNotification",
-			details: { platform }
-		  });
-		  return false;
+			this.logger.warn({
+				message: "Missing required fields for Telegram notification",
+				service: this.SERVICE_NAME,
+				method: "sendWebhookNotification",
+				details: { platform },
+			});
+			return false;
 		}
-		
+
 		let url = webhookUrl;
 		if (platform === "telegram") {
-		  url = `${TELEGRAM_API_BASE_URL}${botToken}/sendMessage`;
+			url = `${TELEGRAM_API_BASE_URL}${botToken}/sendMessage`;
 		}
-		  
+
 		const message = this.formatNotificationMessage(
-		  monitor, 
-		  status, 
-		  platform, 
-		  chatId, 
-		  code,  // Pass the code field directly
-		  networkResponse.timestamp
+			monitor,
+			status,
+			platform,
+			chatId,
+			code, // Pass the code field directly
+			networkResponse.timestamp
 		);
-		
+
 		try {
-		  const response = await this.networkService.requestWebhook(platform, url, message);
-		  return response.status;
+			const response = await this.networkService.requestWebhook(platform, url, message);
+			return response.status;
 		} catch (error) {
-		  this.logger.error({
-			message: this.stringService.getWebhookSendError(platform),
-			service: this.SERVICE_NAME,
-			method: "sendWebhookNotification",
-			stack: error.stack,
-		  });
-		  return false;
+			this.logger.error({
+				message: this.stringService.getWebhookSendError(platform),
+				service: this.SERVICE_NAME,
+				method: "sendWebhookNotification",
+				stack: error.stack,
+			});
+			return false;
 		}
-	  }
+	}
 
 	/**
 	 * Sends an email notification for hardware infrastructure alerts
@@ -197,33 +206,33 @@ class NotificationService {
 
 	async handleStatusNotifications(networkResponse) {
 		try {
-		  // If status hasn't changed, we're done
-		  if (networkResponse.statusChanged === false) return false;
-		  // if prevStatus is undefined, monitor is resuming, we're done
-		  if (networkResponse.prevStatus === undefined) return false;
-	  
-		  const notifications = await this.db.getNotificationsByMonitorId(
-			networkResponse.monitorId
-		  );
-	  
-		  for (const notification of notifications) {
-			if (notification.type === "email") {
-			  await this.sendEmail(networkResponse, notification.address);
-			} else if (notification.type === "webhook") {
-			  await this.sendWebhookNotification(networkResponse, notification);
+			// If status hasn't changed, we're done
+			if (networkResponse.statusChanged === false) return false;
+			// if prevStatus is undefined, monitor is resuming, we're done
+			if (networkResponse.prevStatus === undefined) return false;
+
+			const notifications = await this.db.getNotificationsByMonitorId(
+				networkResponse.monitorId
+			);
+
+			for (const notification of notifications) {
+				if (notification.type === "email") {
+					await this.sendEmail(networkResponse, notification.address);
+				} else if (notification.type === "webhook") {
+					await this.sendWebhookNotification(networkResponse, notification);
+				}
+				// Handle other types of notifications here
 			}
-			// Handle other types of notifications here
-		  }
-		  return true;
+			return true;
 		} catch (error) {
-		  this.logger.error({
-			message: error.message,
-			service: this.SERVICE_NAME,
-			method: "handleNotifications",
-			stack: error.stack,
-		  });
+			this.logger.error({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "handleNotifications",
+				stack: error.stack,
+			});
 		}
-	  }
+	}
 	/**
 	 * Handles status change notifications for a monitor
 	 *
@@ -257,7 +266,13 @@ class NotificationService {
 		const alerts = {
 			cpu: cpuThreshold !== -1 && cpuUsage > cpuThreshold ? true : false,
 			memory: memoryThreshold !== -1 && memoryUsage > memoryThreshold ? true : false,
-			disk: disk?.some(d => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold) ?? false,
+			disk:
+				disk?.some(
+					(d) =>
+						diskThreshold !== -1 &&
+						typeof d?.usage_percent === "number" &&
+						d?.usage_percent > diskThreshold
+				) ?? false,
 		};
 
 		const notifications = await this.db.getNotificationsByMonitorId(
