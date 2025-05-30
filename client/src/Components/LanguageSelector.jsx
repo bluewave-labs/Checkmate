@@ -3,15 +3,17 @@ import { Box, MenuItem, Select, Stack } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import "flag-icons/css/flag-icons.min.css";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setLanguage } from "../Features/UI/uiSlice";
 
 const LanguageSelector = () => {
 	const { i18n } = useTranslation();
 	const theme = useTheme();
 	const { language } = useSelector((state) => state.ui);
-
+	const dispatch = useDispatch();
 	const handleChange = (event) => {
 		const newLang = event.target.value;
-		i18n.changeLanguage(newLang);
+		dispatch(setLanguage(newLang));
 	};
 
 	const languages = Object.keys(i18n.options.resources || {});
@@ -32,7 +34,6 @@ const LanguageSelector = () => {
 				}
 				if (parsedLang.includes("-")) {
 					parsedLang = parsedLang.split("-")[1].toLowerCase();
-					console.log("parsedLang", parsedLang);
 				}
 
 				const flag = parsedLang ? `fi fi-${parsedLang}` : null;
