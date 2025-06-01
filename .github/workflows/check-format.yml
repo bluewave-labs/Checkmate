@@ -44,6 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [format-client, format-server]
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Get PR URL
         id: pr
         run: echo "PR_URL=$(jq -r .pull_request.url "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
