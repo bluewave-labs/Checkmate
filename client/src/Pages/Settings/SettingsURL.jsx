@@ -22,7 +22,7 @@ const SettingsURL = ({ HEADING_SX, handleChange, showURL = false }) => {
 				<Select
 					name="showURL"
 					label={t("settingsURLSelectTitle")}
-					value={showURL}
+					value={showURL || ""}
 					onChange={handleChange}
 					items={[
 						{ _id: true, name: t("settingsURLEnabled") },

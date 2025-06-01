@@ -164,7 +164,9 @@ Select.propTypes = {
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
-			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
+				.isRequired,
+
 			name: PropTypes.string.isRequired,
 		})
 	).isRequired,
