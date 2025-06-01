@@ -39,3 +39,16 @@ jobs:
       - name: Check server formatting
         working-directory: server
         run: npm run format-check
+  close-pr-if-needed:
+    needs: [format-client, format-server]
+    runs-on: ubuntu-latest
+    if: |
+      needs.format-client.result == 'failure' || 
+      needs.format-server.result == 'failure'
+    steps:
+      - name: Close PR
+        uses: peter-evans/close-pull@v3
+        with:
+          comment: |
+            ❌ PR closed automatically because formatting failed in one or more modules.
+            Please run `npm run format` in both `client/` and `server/` before pushing again.
