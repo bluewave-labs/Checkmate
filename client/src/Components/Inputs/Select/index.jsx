@@ -161,7 +161,8 @@ Select.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	isHidden: PropTypes.bool,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
+		.isRequired,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
 			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
