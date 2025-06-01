@@ -9,7 +9,7 @@ import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const SettingsURL = ({ HEADING_SX, handleChange, showURL }) => {
+const SettingsURL = ({ HEADING_SX, handleChange, showURL = false }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	return (
