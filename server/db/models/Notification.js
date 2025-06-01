@@ -20,9 +20,9 @@ const NotificationSchema = mongoose.Schema(
 			type: String,
 			enum: ["email", "sms", "webhook"],
 		},
-		platform: {  
+		platform: {
 			type: String,
-		  },
+		},
 		config: {
 			type: configSchema,
 			default: () => ({}),
