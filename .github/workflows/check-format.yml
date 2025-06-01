@@ -47,9 +47,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Get PR URL
+      - name: Get PR number
         id: pr
-        run: echo "PR_URL=$(jq -r .pull_request.url "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+        run: echo "PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
 
       - name: Close PR using GitHub CLI
         if: |
@@ -58,5 +58,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr close "$PR_URL" --delete-branch --comment "❌ Formatting check failed — PR auto-closed.
+          gh pr close "$PR_NUMBER" --delete-branch --comment "❌ Formatting check failed — PR auto-closed.
           Please run \`npm run format\` and push again."
