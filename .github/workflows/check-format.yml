@@ -1,0 +1,41 @@
+name: Format Check (Client & Server)
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  format-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Check client formatting
+        working-directory: client
+        run: npm run format-check
+
+  format-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Check server formatting
+        working-directory: server
+        run: npm run format-check
