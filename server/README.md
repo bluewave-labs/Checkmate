@@ -2,7 +2,7 @@
 
 <p align="center"><strong>The backend service for Checkmate, an open source uptime and infrastructure monitoring application</strong></p>
 
-This directory contains the **backend** of Checkmate, which handles data processing, storage, and API services for the Checkmate monitoring tool. The backend is responsible for managing uptime checks, handling real-time alerts, and storing historical monitoring data. 
+This directory contains the **backend** of Checkmate, which handles data processing, storage, and API services for the Checkmate monitoring tool. The backend is responsible for managing uptime checks, handling real-time alerts, and storing historical monitoring data.
 
 Checkmate's backend is designed to be lightweight and scalable, ensuring reliable performance even with a high number of active monitors.
 
