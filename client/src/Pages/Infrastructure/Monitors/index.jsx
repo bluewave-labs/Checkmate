@@ -69,11 +69,11 @@ const InfrastructureMonitors = () => {
 	});
 
 	const filteredMonitors = useMemo(() => {
-      if (!search) return monitors;
-      return monitors.filter(monitor =>
-        monitor.name?.toLowerCase().includes(search.toLowerCase())
-      );
-    }, [monitors, search]);
+		if (!search) return monitors;
+		return monitors.filter((monitor) =>
+			monitor.name?.toLowerCase().includes(search.toLowerCase())
+		);
+	}, [monitors, search]);
 
 	if (networkError === true) {
 		return (
@@ -136,13 +136,13 @@ const InfrastructureMonitors = () => {
 					setIsSearching={setIsSearching}
 				/>
 			</Stack>
-			
+
 			<MonitorsTable
-			shouldRender={!isLoading}
-			isSearching={isSearching}
-			monitors={search ? filteredMonitors : monitors	}
-			isAdmin={isAdmin}
-			handleActionMenuDelete={handleActionMenuDelete}
+				shouldRender={!isLoading}
+				isSearching={isSearching}
+				monitors={search ? filteredMonitors : monitors}
+				isAdmin={isAdmin}
+				handleActionMenuDelete={handleActionMenuDelete}
 			/>
 
 			<Pagination
