@@ -14,16 +14,22 @@ import { useMonitorFetch } from "./Hooks/useMonitorFetch";
 import { useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
+import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Constants
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
 const InfrastructureMonitors = () => {
 	// Redux state
+	const [search, setSearch] = useState(undefined);
+	const [isSearching, setIsSearching] = useState(false);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [selectedTypes, setSelectedTypes] = useState(undefined);
+	const [selectedState, setSelectedState] = useState(undefined);
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
+	const [toFilterActive, setToFilterActive] = useState(undefined);
 
 	// Utils
 	const theme = useTheme();
@@ -44,17 +50,20 @@ const InfrastructureMonitors = () => {
 	};
 
 	const handleReset = () => {
+		setSelectedState(undefined);
+		setSelectedTypes(undefined);
 		setSelectedStatus(undefined);
 		setToFilterStatus(undefined);
+		setToFilterActive(undefined);
 	};
 
 	const field = toFilterStatus !== undefined ? "status" : undefined;
 
 	const { monitors, summary, isLoading, networkError } = useMonitorFetch({
-		page,
+		page: page,
 		field: field,
 		filter: toFilterStatus,
-		rowsPerPage,
+		rowsPerPage: rowsPerPage,
 		updateTrigger,
 	});
 
@@ -103,18 +112,35 @@ const InfrastructureMonitors = () => {
 					monitorCount={summary?.totalMonitors ?? 0}
 				/>
 				<Filter
+					selectedTypes={selectedTypes}
+					setSelectedTypes={setSelectedTypes}
 					selectedStatus={selectedStatus}
 					setSelectedStatus={setSelectedStatus}
+					selectedState={selectedState}
+					setSelectedState={setSelectedState}
 					setToFilterStatus={setToFilterStatus}
+					setToFilterActive={setToFilterActive}
 					handleReset={handleReset}
+				/>
+				<SearchComponent
+					monitors={monitors}
+					onSearchChange={setSearch}
+					setIsSearching={setIsSearching}
 				/>
 			</Stack>
 			<MonitorsTable
-				shouldRender={!isLoading}
-				monitors={monitors}
-				isAdmin={isAdmin}
-				handleActionMenuDelete={handleActionMenuDelete}
+			shouldRender={isSearching}
+			monitors={
+				search
+				? monitors?.filter((m) =>
+					m.name?.toLowerCase().includes(search.toLowerCase())
+					)
+				: monitors
+			}
+			isAdmin={isAdmin}
+			handleActionMenuDelete={handleActionMenuDelete}
 			/>
+
 			<Pagination
 				itemCount={summary?.totalMonitors}
 				paginationLabel={t("monitors")}
