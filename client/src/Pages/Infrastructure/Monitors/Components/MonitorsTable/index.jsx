@@ -16,7 +16,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner";
 
-const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete }) => {
+const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete, isSearching }) => {
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -121,9 +121,9 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 
 	return (
 		<Box position='relative'>
-			<LoadingSpinner shouldRender={shouldRender}/>
+			{isSearching && <LoadingSpinner />}
 		<DataTable
-			
+			shouldRender={shouldRender}
 			headers={headers}
 			data={data}
 			config={{

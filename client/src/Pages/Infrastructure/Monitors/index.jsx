@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
+import { useMemo } from "react";
 // Constants
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
@@ -66,6 +67,13 @@ const InfrastructureMonitors = () => {
 		rowsPerPage: rowsPerPage,
 		updateTrigger,
 	});
+
+	const filteredMonitors = useMemo(() => {
+      if (!search) return monitors;
+      return monitors.filter(monitor =>
+        monitor.name?.toLowerCase().includes(search.toLowerCase())
+      );
+    }, [monitors, search]);
 
 	if (networkError === true) {
 		return (
@@ -128,21 +136,17 @@ const InfrastructureMonitors = () => {
 					setIsSearching={setIsSearching}
 				/>
 			</Stack>
+			
 			<MonitorsTable
-			shouldRender={isSearching}
-			monitors={
-				search
-				? monitors?.filter((m) =>
-					m.name?.toLowerCase().includes(search.toLowerCase())
-					)
-				: monitors
-			}
+			shouldRender={!isLoading}
+			isSearching={isSearching}
+			monitors={search ? filteredMonitors : monitors	}
 			isAdmin={isAdmin}
 			handleActionMenuDelete={handleActionMenuDelete}
 			/>
 
 			<Pagination
-				itemCount={summary?.totalMonitors}
+				itemCount={search ? filteredMonitors.length : summary?.totalMonitors}
 				paginationLabel={t("monitors")}
 				page={page}
 				rowsPerPage={rowsPerPage}
