@@ -38,7 +38,7 @@ const updateStatusPage = async (statusPageData, image) => {
 				data: image.buffer,
 				contentType: image.mimetype,
 			};
-		}else{
+		} else {
 			statusPageData.logo = null;
 		}
 
