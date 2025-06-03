@@ -14,7 +14,7 @@
 
 <p align="center"><strong>An open source uptime and infrastructure monitoring application</strong></p>
 
-![dashboard](https://github.com/user-attachments/assets/252d6047-522b-4576-8f14-233510e464b8)
+<img width="1660" alt="image" src="https://github.com/user-attachments/assets/b748f36d-a271-4965-ad0a-18bf153bbee7" />
 
 This repository contains both the frontend and the backend of Checkmate, an open-source, self-hosted monitoring tool for tracking server hardware, uptime, response times, and incidents in real-time with beautiful visualizations. Checkmate regularly checks whether a server/website is accessible and performs optimally, providing real-time alerts and reports on the monitored services' availability, downtime, and response time.
 
@@ -80,14 +80,19 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 ## 🏗️ Screenshots
 
 <p>
-<img width="2714" alt="server" src="https://github.com/user-attachments/assets/f7cb272a-69a6-48c5-93b0-249ecf20ecc6" />
+<img width="1628" alt="image" src="https://github.com/user-attachments/assets/25f32197-1473-415d-9dd7-963bb07a71af" />
 </p>
 <p>
-<img width="2714" alt="uptime" src="https://github.com/user-attachments/assets/98ddc6c0-3384-47fd-96ce-7e53e6b688ac" />
+  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
 </p>
 <p>
-<img width="2714" alt="page speed" src="https://github.com/user-attachments/assets/b5589f79-da30-4239-9846-1f8bb2637ff9" />
+</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
 </p>
+<p>
+<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+</p>
+
+
 
 ## 🏗️ Tech stack
 
