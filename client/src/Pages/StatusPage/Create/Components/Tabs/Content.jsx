@@ -22,11 +22,25 @@ const Content = ({
 	const [search, setSearch] = useState("");
 
 	// Handlers
-	const handleMonitorsChange = (selectedMonitors) => {
+	const handleMonitorsChange = (selectedMonitor) => {
+		const isSelectAllClicked = selectedMonitor.some((v) => v.name === "__SELECT_ALL__");
+
+		let updatedSelection;
+
+		if (isSelectAllClicked) {
+			if (selectedMonitors.length === monitors.length) {
+				updatedSelection = [];
+			} else {
+				updatedSelection = [...monitors];
+			}
+		}
+		else {
+			updatedSelection = selectedMonitor;
+		}
+		setSelectedMonitors(updatedSelection)
 		handleFormChange({
-			target: { name: "monitors", value: selectedMonitors.map((monitor) => monitor._id) },
+			target: { name: "monitors", value: updatedSelection.map((monitor) => monitor._id) },
 		});
-		setSelectedMonitors(selectedMonitors);
 	};
 
 	// Utils

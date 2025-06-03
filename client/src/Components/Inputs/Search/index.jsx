@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
-import { Box, ListItem, Autocomplete, TextField, Stack, Typography } from "@mui/material";
+import { Box, Autocomplete, TextField, Stack, Typography, Checkbox } from "@mui/material";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { useTheme } from "@emotion/react";
 import SearchIcon from "../../../assets/icons/search.svg?react";
 
@@ -16,6 +18,9 @@ import SearchIcon from "../../../assets/icons/search.svg?react";
  * @param {Object} props.sx - Additional styles to apply to the component
  * @returns {JSX.Element} The rendered Search component
  */
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const SearchAdornment = () => {
 	const theme = useTheme();
@@ -40,6 +45,9 @@ const SearchAdornment = () => {
 };
 
 //TODO keep search state inside of component
+
+const SELECT_ALL = { name: "__SELECT_ALL__" };
+
 const Search = ({
 	label,
 	id,
@@ -60,6 +68,7 @@ const Search = ({
 	onBlur,
 }) => {
 	const theme = useTheme();
+	const newOptions = options.length > 0 ? [SELECT_ALL, ...options] : []
 	return (
 		<Autocomplete
 			onBlur={onBlur}
@@ -77,7 +86,8 @@ const Search = ({
 			freeSolo
 			disabled={disabled}
 			disableClearable
-			options={options}
+			disableCloseOnSelect
+			options={newOptions}
 			getOptionLabel={(option) => option[filteredBy]}
 			isOptionEqualToValue={(option, value) => option._id === value._id} // Compare by unique identifier
 			renderInput={(params) => (
@@ -152,28 +162,38 @@ const Search = ({
 			getOptionKey={(option) => {
 				return option._id;
 			}}
-			renderOption={(props, option) => {
-				const { key, ...optionProps } = props;
+			renderOption={(props, option, { selected }) => {
+				const name = option.name === "__SELECT_ALL__" ? "Select All" : option.name;
+				const isSelectAll = option.name === "__SELECT_ALL__";
+				
+				const isChecked =
+				isSelectAll
+					? value.length === options.length
+					: selected;
+							
+				const { key, ...optionProps } = props;				
 				const hasSecondaryLabel = secondaryLabel && option[secondaryLabel] !== undefined;
 				const port = option["port"];
 				return (
-					<ListItem
-						key={key}
-						{...optionProps}
-						sx={
-							option.noOptions
-								? {
+					<li key={key} {...optionProps}>
+						<Checkbox
+							icon={icon}
+							checkedIcon={checkedIcon}
+							checked={isChecked}
+							sx={
+								option.noOptions
+									? {
 										pointerEvents: "none",
 										backgroundColor: theme.palette.primary.main,
-									}
-								: {}
-						}
-					>
-						{option[filteredBy] +
+										}
+									: {}
+							}
+						/>
+						{name +
 							(hasSecondaryLabel
 								? ` (${option[secondaryLabel]}${port ? `: ${port}` : ""})`
 								: "")}
-					</ListItem>
+					</li>
 				);
 			}}
 			slotProps={{
@@ -190,7 +210,7 @@ const Search = ({
 						"& .MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected='true'], & .MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected='true'].Mui-focused, & .MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected='true']:hover":
 							{
 								backgroundColor: theme.palette.primary.lowContrast,
-								color: "red",
+								// color: "red",
 							},
 						"& li.MuiAutocomplete-option:hover:not([aria-selected='true'])": {
 							color: theme.palette.secondary.contrastText,
