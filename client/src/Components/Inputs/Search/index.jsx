@@ -210,7 +210,6 @@ const Search = ({
 						"& .MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected='true'], & .MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected='true'].Mui-focused, & .MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected='true']:hover":
 							{
 								backgroundColor: theme.palette.primary.lowContrast,
-								// color: "red",
 							},
 						"& li.MuiAutocomplete-option:hover:not([aria-selected='true'])": {
 							color: theme.palette.secondary.contrastText,
