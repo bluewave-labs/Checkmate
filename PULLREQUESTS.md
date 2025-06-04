@@ -27,6 +27,10 @@ Process.  If more revisions are required after the second review we’re looking
 
 If PRs are small and manageable it is far more likely that a dev will catch bugs during the review process.  If our eyes glaze over at line 400 of a 700 line PR since we’ve reached our cognitive limit we’re not going to likely miss bugs in the last 300 lines of code.
 
-### Bonus Topic:  Keep PRs focused
+### Format your PRs for better readability
+
+Ensure you execute `npm run format` before submitting your pull requests in both the client and server directories. This command automatically applies our formatting structure, making the code easier to follow and review.
+
+### Keep PRs focused
 
 It may be tempting to address a bug you suddenly remembered or make some tiny adjustments in some component that bothers you, but don’t!  Keep all commits in your pull request fully focused on the specific feature you are working on.  Open up another PR if you want to fix a big or work on another feature.
