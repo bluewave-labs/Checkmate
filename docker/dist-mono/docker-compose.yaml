@@ -1,6 +1,6 @@
 services:
   server:
-    image: ghcr.io/bluewave-labs/checkmate:backend-dist-mono
+    image: ghcr.io/bluewave-labs/checkmate-backend-mono:latest
     restart: always
     ports:
       - "52345:52345"
@@ -15,7 +15,7 @@ services:
       - redis
       - mongodb
   redis:
-    image: ghcr.io/bluewave-labs/checkmate:redis-dist
+    image: ghcr.io/bluewave-labs/checkmate-redis:latest
     restart: always
     volumes:
       - ./redis/data:/data
@@ -26,7 +26,7 @@ services:
       retries: 5
       start_period: 5s
   mongodb:
-    image: ghcr.io/bluewave-labs/checkmate:mongo-dist
+    image: ghcr.io/bluewave-labs/checkmate-mongo:latest
     restart: always
     command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
     volumes:
