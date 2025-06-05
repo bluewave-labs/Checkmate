@@ -202,6 +202,10 @@ const Settings = () => {
 					pr: theme.spacing(15),
 					pl: theme.spacing(5),
 					pt: theme.spacing(4),
+					border: 1,
+					borderStyle: "solid",
+					borderColor: theme.palette.primary.lowContrast,
+					borderRadius: theme.spacing(2)
 				}}
 			>
 				<Button
