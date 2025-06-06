@@ -2,7 +2,7 @@
 import DataTable from "../../../../../Components/Table";
 import Host from "../../../../../Components/Host";
 import { StatusLabel } from "../../../../../Components/Label";
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { InfrastructureMenu } from "../MonitorsTableMenu";
 // Assets
 import CPUChipIcon from "../../../../../assets/icons/cpu-chip.svg?react";
@@ -14,8 +14,15 @@ import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner";
 
-const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete }) => {
+const MonitorsTable = ({
+	shouldRender,
+	monitors,
+	isAdmin,
+	handleActionMenuDelete,
+	isSearching,
+}) => {
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -119,23 +126,26 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 	});
 
 	return (
-		<DataTable
-			shouldRender={shouldRender}
-			headers={headers}
-			data={data}
-			config={{
-				/* TODO this behavior seems to be repeated. Put it on the root table? */
-				rowSX: {
-					cursor: "pointer",
-					"&:hover td": {
-						backgroundColor: theme.palette.tertiary.main,
-						transition: "background-color .3s ease",
+		<Box position="relative">
+			{isSearching && <LoadingSpinner />}
+			<DataTable
+				shouldRender={shouldRender}
+				headers={headers}
+				data={data}
+				config={{
+					/* TODO this behavior seems to be repeated. Put it on the root table? */
+					rowSX: {
+						cursor: "pointer",
+						"&:hover td": {
+							backgroundColor: theme.palette.tertiary.main,
+							transition: "background-color .3s ease",
+						},
 					},
-				},
-				onRowClick: (row) => openDetails(row.id),
-				emptyView: "No monitors found",
-			}}
-		/>
+					onRowClick: (row) => openDetails(row.id),
+					emptyView: "No monitors found",
+				}}
+			/>
+		</Box>
 	);
 };
 

@@ -3,27 +3,29 @@ import { useSelector } from "react-redux";
 import { networkService } from "../../../../main";
 import { createToast } from "../../../../Utils/toastUtils";
 
-const useMonitorFetch = ({ page, field, filter, rowsPerPage, updateTrigger }) => {
-	// Redux state
+const useMonitorFetch = ({ page, field, filter, rowsPerPage, search, updateTrigger }) => {
 	const { user } = useSelector((state) => state.auth);
 
-	// Local state
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
-	const [monitors, setMonitors] = useState(undefined);
-	const [summary, setSummary] = useState(undefined);
+	const [monitors, setMonitors] = useState([]); // changed here
+	const [summary, setSummary] = useState({}); // and here
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
+			setIsLoading(true); // ensure loading shows for every update
+			setNetworkError(false);
+
 			try {
 				const response = await networkService.getMonitorsByTeamId({
 					teamId: user.teamId,
 					limit: 1,
-					field: field,
-					filter: filter,
+					field,
+					filter,
+					search,
 					types: ["hardware"],
-					page: page,
-					rowsPerPage: rowsPerPage,
+					page,
+					rowsPerPage,
 				});
 				setMonitors(response?.data?.data?.filteredMonitors ?? []);
 				setSummary(response?.data?.data?.summary ?? {});
@@ -37,8 +39,10 @@ const useMonitorFetch = ({ page, field, filter, rowsPerPage, updateTrigger }) =>
 			}
 		};
 
-		fetchMonitors();
-	}, [page, field, filter, rowsPerPage, user.teamId, updateTrigger]);
+		if (user?.teamId) {
+			fetchMonitors();
+		}
+	}, [page, field, filter, search, rowsPerPage, user?.teamId, updateTrigger]);
 
 	return { monitors, summary, isLoading, networkError };
 };
