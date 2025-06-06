@@ -51,7 +51,6 @@ class JobQueue {
 						}
 					})
 			);
-
 			this.healthCheckInterval = setInterval(async () => {
 				try {
 					const queueHealthChecks = await this.checkQueueHealth();
@@ -115,6 +114,14 @@ class JobQueue {
 			method: "initWorkers",
 		});
 	}
+
+	pauseJob = async (monitor) => {
+		this.deleteJob(monitor);
+	};
+
+	resumeJob = async (monitor) => {
+		this.addJob(monitor._id, monitor);
+	};
 
 	async addJob(jobName, monitor) {
 		this.logger.info({
