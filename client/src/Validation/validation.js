@@ -27,7 +27,7 @@ const lastnameSchema = joi
 			"Surname must contain only letters, spaces, apostrophes, or hyphens",
 	});
 
-const passwordSchema = joi
+const newPasswordSchema = joi
 	.string()
 	.trim()
 	.min(8)
@@ -64,7 +64,7 @@ const passwordSchema = joi
 		special: "Password must contain at least one special character",
 	});
 
-const credentials = joi.object({
+const newOrChangedCredentials = joi.object({
 	firstName: nameSchema,
 	lastName: lastnameSchema,
 	email: joi
@@ -76,8 +76,8 @@ const credentials = joi.object({
 			"string.empty": "authRegisterEmailRequired",
 			"string.email": "authRegisterEmailInvalid",
 		}),
-	password: passwordSchema,
-	newPassword: passwordSchema,
+	password: newPasswordSchema,
+	newPassword: newPasswordSchema,
 	confirm: joi
 		.string()
 		.trim()
@@ -95,6 +95,23 @@ const credentials = joi.object({
 	role: joi.array(),
 	teamId: joi.string().allow("").optional(),
 	inviteToken: joi.string().allow(""),
+});
+
+const loginCredentials = joi.object({
+	email: joi
+		.string()
+		.trim()
+		.email({ tlds: { allow: false } })
+		.lowercase()
+		.messages({
+			"string.empty": "authRegisterEmailRequired",
+			"string.email": "authRegisterEmailInvalid",
+		}),
+	password: joi
+		.string()
+		.messages({
+			"string.empty": "Please enter your password",
+		}),
 });
 
 const monitorValidation = joi.object({
@@ -391,7 +408,8 @@ const infrastructureMonitorValidation = joi.object({
 });
 
 export {
-	credentials,
+	newOrChangedCredentials,
+	loginCredentials,
 	imageValidation,
 	monitorValidation,
 	settingsValidation,

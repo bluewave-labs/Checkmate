@@ -26,14 +26,10 @@ const loginValidation = joi.object({
 		.string()
 		.email()
 		.required()
-		.custom((value, helpers) => {
-			const lowercasedValue = value.toLowerCase();
-			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
-			}
-			return lowercasedValue;
-		}),
-	password: joi.string().min(8).required().pattern(passwordPattern),
+		.lowercase(),
+	password: joi
+		.string()
+		.required(),
 });
 const nameValidation = joi
 	.string()

@@ -4,7 +4,7 @@ import { createToast } from "../../Utils/toastUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "../../Features/Auth/authSlice";
 import { useEffect, useState } from "react";
-import { credentials } from "../../Validation/validation";
+import { newOrChangedCredentials } from "../../Validation/validation";
 import { useNavigate } from "react-router-dom";
 import TextInput from "../../Components/Inputs/TextInput";
 import Logo from "../../assets/icons/checkmate-icon.svg?react";
@@ -35,7 +35,7 @@ const ForgotPassword = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const { error } = credentials.validate(form, { abortEarly: false });
+		const { error } = newOrChangedCredentials.validate(form, { abortEarly: false });
 
 		if (error) {
 			// validation errors
@@ -75,7 +75,7 @@ const ForgotPassword = () => {
 		const { value } = event.target;
 		setForm({ email: value });
 
-		const { error } = credentials.validate({ email: value }, { abortEarly: false });
+		const { error } = newOrChangedCredentials.validate({ email: value }, { abortEarly: false });
 
 		if (error) setErrors({ email: error.details[0].message });
 		else delete errors.email;

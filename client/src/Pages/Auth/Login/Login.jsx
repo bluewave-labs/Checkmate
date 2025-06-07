@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import { credentials } from "../../../Validation/validation";
+import { loginCredentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils";
@@ -59,7 +59,7 @@ const Login = () => {
 			[name]: lowerCasedValue,
 		}));
 
-		const { error } = credentials.validate(
+		const { error } = loginCredentials.validate(
 			{ [name]: lowerCasedValue },
 			{ abortEarly: false }
 		);
@@ -76,7 +76,7 @@ const Login = () => {
 		event.preventDefault();
 
 		if (step === 0) {
-			const { error } = credentials.validate(
+			const { error } = loginCredentials.validate(
 				{ email: form.email },
 				{ abortEarly: false }
 			);
@@ -91,7 +91,7 @@ const Login = () => {
 				setStep(1);
 			}
 		} else if (step === 1) {
-			const { error } = credentials.validate(form, { abortEarly: false });
+			const { error } = loginCredentials.validate(form, { abortEarly: false });
 
 			if (error) {
 				// validation errors

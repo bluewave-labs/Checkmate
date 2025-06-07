@@ -6,7 +6,7 @@ import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography, Button } from "@mui/material";
 import { setNewPassword } from "../../Features/Auth/authSlice";
 import { createToast } from "../../Utils/toastUtils";
-import { credentials } from "../../Validation/validation";
+import { newOrChangedCredentials } from "../../Validation/validation";
 import Check from "../../Components/Check/Check";
 import TextInput from "../../Components/Inputs/TextInput";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
@@ -34,7 +34,7 @@ const SetNewPassword = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const { error } = credentials.validate(form, {
+		const { error } = newOrChangedCredentials.validate(form, {
 			abortEarly: false,
 			context: { password: form.password },
 		});

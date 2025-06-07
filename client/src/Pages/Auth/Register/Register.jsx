@@ -8,7 +8,7 @@ import { StepOne } from "./StepOne";
 import { StepTwo } from "./StepTwo";
 import { StepThree } from "./StepThree";
 import { networkService } from "../../../main";
-import { credentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { register } from "../../../Features/Auth/authSlice";
 import Background from "../../../assets/Images/background-grid.svg?react";
@@ -171,7 +171,7 @@ const Register = ({ isSuperAdmin }) => {
 	 * @returns {Object | undefined} - Returns the validation error object if there are validation errors; otherwise, `undefined`.
 	 */
 	const validateForm = (data, options = {}) => {
-		const { error } = credentials.validate(data, {
+		const { error } = newOrChangedCredentials.validate(data, {
 			abortEarly: false,
 			...options,
 		});
@@ -271,7 +271,7 @@ const Register = ({ isSuperAdmin }) => {
 			[name]: lowerCasedValue,
 		}));
 
-		const { error } = credentials.validate(
+		const { error } = newOrChangedCredentials.validate(
 			{ [name]: lowerCasedValue },
 			{ abortEarly: false, context: { password: form.password } }
 		);
