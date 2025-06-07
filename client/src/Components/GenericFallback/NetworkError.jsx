@@ -1,8 +1,11 @@
 import { Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 const NetworkError = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
+
 	return (
 		<>
 			<Typography
@@ -10,9 +13,9 @@ const NetworkError = () => {
 				marginY={theme.spacing(4)}
 				color={theme.palette.primary.contrastTextTertiary}
 			>
-				Network error
+				{t("common.toasts.networkError")}
 			</Typography>
-			<Typography>Please check your connection</Typography>
+			<Typography>{t("common.toasts.checkConnection")}</Typography>
 		</>
 	);
 };

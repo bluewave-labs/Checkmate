@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Ошибка сети",
+			"checkConnection": "Пожалуйста, проверьте ваше соединение"
 		}
 	},
 	"errorPages": {
@@ -124,7 +128,6 @@
 	"now": "Сейчас",
 	"delete": "Удалить",
 	"configure": "Настроить",
-	"networkError": "Ошибка сети",
 	"responseTime": "Время ответа:",
 	"ms": "мс",
 	"bar": "Bar",
@@ -132,7 +135,6 @@
 	"country": "СТРАНА",
 	"city": "ГОРОД",
 	"response": "ОТВЕТ",
-	"checkConnection": "Пожалуйста, проверьте ваше соединение",
 	"passwordreset": "Сброс пароля",
 	"authRegisterStepOnePersonalDetails": "Введите свои личные данные",
 	"authCheckEmailOpenEmailButton": "Откройте приложение почты",

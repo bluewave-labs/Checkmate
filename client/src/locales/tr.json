@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Ağ hatası",
+			"checkConnection": "Lütfen bağlantınızı kontrol edin"
 		}
 	},
 	"errorPages": {
@@ -128,7 +132,6 @@
 	"now": "Şimdi",
 	"delete": "Sil",
 	"configure": "Yapılandır",
-	"networkError": "Ağ hatası",
 	"responseTime": "Yanıt süresi:",
 	"ms": "ms",
 	"bar": "Çubuk",
@@ -136,7 +139,6 @@
 	"country": "ÜLKE",
 	"city": "ŞEHİR",
 	"response": "YANIT",
-	"checkConnection": "Lütfen bağlantınızı kontrol edin",
 	"passwordreset": "Parola Sıfırlama",
 	"authRegisterStepOnePersonalDetails": "Kişisel bilgilerinizi girin",
 	"authCheckEmailOpenEmailButton": "Eposta uygulamasını aç",

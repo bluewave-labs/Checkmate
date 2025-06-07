@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Verkkovirhe",
+			"checkConnection": "Tarkista yhteytesi"
 		}
 	},
 	"errorPages": {
@@ -128,7 +132,6 @@
 	"now": "Nyt",
 	"delete": "Poista",
 	"configure": "Määritä",
-	"networkError": "Verkkovirhe",
 	"responseTime": "Vasteaika",
 	"ms": "ms",
 	"bar": "Palkki",
@@ -136,7 +139,6 @@
 	"country": "MAA",
 	"city": "KAUPUNKI",
 	"response": "Vastaus",
-	"checkConnection": "Tarkista yhteytesi",
 	"passwordreset": "Salasanan nollaus",
 	"authRegisterStepOnePersonalDetails": "Syötä henkilökohtaiset tietosi",
 	"authCheckEmailOpenEmailButton": "Avaa sähköpostisovellus",

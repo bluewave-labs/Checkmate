@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": "Přepnout mezi světlým a tmavým motivem"
+		},
+		"toasts": {
+			"networkError": "Chyba připojení k síti",
+			"checkConnection": "Zkontrolujte prosím své připojení k síti"
 		}
 	},
 	"errorPages": {
@@ -128,7 +132,6 @@
 	"now": "",
 	"delete": "",
 	"configure": "",
-	"networkError": "",
 	"responseTime": "",
 	"ms": "",
 	"bar": "",
@@ -136,7 +139,6 @@
 	"country": "",
 	"city": "",
 	"response": "",
-	"checkConnection": "",
 	"passwordreset": "",
 	"authRegisterStepOnePersonalDetails": "",
 	"authCheckEmailOpenEmailButton": "",

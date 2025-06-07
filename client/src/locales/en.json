@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": "Toggles light & dark"
+		},
+		"toasts": {
+			"networkError": "Network error",
+			"checkConnection": "Please check your connection"
 		}
 	},
 	"errorPages": {
@@ -124,7 +128,6 @@
 	"now": "Now",
 	"delete": "Delete",
 	"configure": "Configure",
-	"networkError": "Network error",
 	"responseTime": "Response time",
 	"ms": "ms",
 	"bar": "Bar",
@@ -132,7 +135,6 @@
 	"country": "COUNTRY",
 	"city": "CITY",
 	"response": "RESPONSE",
-	"checkConnection": "Please check your connection",
 	"passwordreset": "Password Reset",
 	"authRegisterStepOnePersonalDetails": "Enter your personal details",
 	"authCheckEmailOpenEmailButton": "Open email app",

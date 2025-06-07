@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "Vérifiez votre connexion"
 		}
 	},
 	"errorPages": {
@@ -128,7 +132,6 @@
 	"now": "",
 	"delete": "Supprimer",
 	"configure": "",
-	"networkError": "",
 	"responseTime": "",
 	"ms": "",
 	"bar": "",
@@ -136,7 +139,6 @@
 	"country": "PAYS",
 	"city": "VILLE",
 	"response": "",
-	"checkConnection": "Vérifiez votre connexion",
 	"passwordreset": "",
 	"authRegisterStepOnePersonalDetails": "Saisissez vos infos",
 	"authCheckEmailOpenEmailButton": "Ouvrir l'appli mail",

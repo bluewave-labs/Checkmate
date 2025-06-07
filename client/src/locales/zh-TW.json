@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": ""
 		}
 	},
 	"errorPages": {
@@ -128,7 +132,6 @@
 	"now": "",
 	"delete": "",
 	"configure": "",
-	"networkError": "",
 	"responseTime": "",
 	"ms": "",
 	"bar": "",
@@ -136,7 +139,6 @@
 	"country": "",
 	"city": "",
 	"response": "",
-	"checkConnection": "",
 	"passwordreset": "",
 	"authRegisterStepOnePersonalDetails": "",
 	"authCheckEmailOpenEmailButton": "",

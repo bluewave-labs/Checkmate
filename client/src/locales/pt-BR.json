@@ -4,6 +4,10 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Erro de rede",
+			"checkConnection": "Verifique sua conexão"
 		}
 	},
 	"errorPages": {
@@ -127,7 +131,6 @@
 	"now": "Agora",
 	"delete": "Deletar",
 	"configure": "Configurar",
-	"networkError": "Erro de rede",
 	"responseTime": "Tempo de resposta",
 	"ms": "ms",
 	"bar": "Bar",
@@ -135,7 +138,6 @@
 	"country": "PAÍS",
 	"city": "CIDADE",
 	"response": "RESPOSTA",
-	"checkConnection": "Verifique sua conexão",
 	"passwordreset": "Redefinição de senha",
 	"authRegisterStepOnePersonalDetails": "Insira seus dados pessoais",
 	"authCheckEmailOpenEmailButton": "Abra o aplicativo de e-mail",
