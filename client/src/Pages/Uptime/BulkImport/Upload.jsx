@@ -23,7 +23,7 @@ const UploadFile = ({ onFileSelect }) => {
 		// Basic file validation
 		if (!selectedFile) return;
 
-		if (!selectedFile.name.endsWith(".csv")) {
+		if (!selectedFile.name.toLowerCase().endsWith(".csv")) {
 			setError(t("bulkImport.invalidFileType"));
 			return;
 		}
