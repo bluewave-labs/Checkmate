@@ -6,6 +6,20 @@
 			"toggleTheme": ""
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": "Yhdistetään..."
+			}
+		}
+	},
 	"dontHaveAccount": "Ei tiliä",
 	"email": "Sähköposti",
 	"forgotPassword": "Unohtunut salasana",
@@ -428,14 +442,6 @@
 	"publicLink": "Julkinen linkki",
 	"doNotHaveAccount": "Onko sinulla tili?",
 	"registerHere": "Rekisteröidy tästä",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "Yhdistetään...",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API-avain",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API-avain",

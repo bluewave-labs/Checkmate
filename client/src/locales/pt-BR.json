@@ -6,6 +6,20 @@
 			"toggleTheme": ""
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Reconectado ao servidor com sucesso.",
+				"stillUnreachable": "O servidor ainda está inacessível. Tente novamente mais tarde."
+			},
+			"alertBox": "Erro de conexão com o servidor",
+			"description": "Não conseguimos conectar ao servidor. Verifique sua conexão com a internet ou sua configuração de implantação se o problema persistir.",
+			"retryButton": {
+				"default": "Reconectar",
+				"processing": "Conectando..."
+			}
+		}
+	},
 	"dontHaveAccount": "Não tenho conta",
 	"email": "E-mail",
 	"forgotPassword": "Esqueci a senha",
@@ -427,14 +441,6 @@
 	"publicLink": "Link publico",
 	"doNotHaveAccount": "Ainda não tem uma conta?",
 	"registerHere": "Registre-se aqui",
-	"backendUnreachable": "Erro de conexão com o servidor",
-	"backendUnreachableMessage": "Não conseguimos conectar ao servidor. Verifique sua conexão com a internet ou sua configuração de implantação se o problema persistir.",
-	"backendUnreachableError": "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
-	"retryConnection": "Reconectar",
-	"retryingConnection": "Conectando...",
-	"backendReconnected": "Reconectado ao servidor com sucesso.",
-	"backendStillUnreachable": "O servidor ainda está inacessível. Tente novamente mais tarde.",
-	"backendConnectionError": "Erro ao conectar ao servidor. Verifique sua conexão de internet.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API key",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",

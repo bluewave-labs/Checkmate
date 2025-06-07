@@ -6,6 +6,20 @@
 			"toggleTheme": "Toggles light & dark"
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Successfully reconnected to the server.",
+				"stillUnreachable": "Server is still unreachable. Please try again later."
+			},
+			"alertBox": "Server Connection Error",
+			"description": "We're unable to connect to the server. Please check your internet connection or verify your deployment configuration if the problem persists.",
+			"retryButton": {
+				"default": "Retry connection",
+				"processing": "Connecting..."
+			}
+		}
+	},
 	"dontHaveAccount": "Don't have account",
 	"email": "E-mail",
 	"forgotPassword": "Forgot Password",
@@ -420,14 +434,6 @@
 	"publicLink": "Public link",
 	"doNotHaveAccount": "Do not have an account?",
 	"registerHere": "Register here",
-	"backendUnreachable": "Server Connection Error",
-	"backendUnreachableMessage": "We're unable to connect to the server. Please check your internet connection or verify your deployment configuration if the problem persists.",
-	"backendUnreachableError": "Cannot connect to the server. Please try again later.",
-	"retryConnection": "Retry connection",
-	"retryingConnection": "Connecting...",
-	"backendReconnected": "Successfully reconnected to the server.",
-	"backendStillUnreachable": "Server is still unreachable. Please try again later.",
-	"backendConnectionError": "Error connecting to the server. Please check your network connection.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API key",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",

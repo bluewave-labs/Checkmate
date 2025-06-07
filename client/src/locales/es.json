@@ -6,6 +6,20 @@
 			"toggleTheme": ""
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
 	"dontHaveAccount": "No tengo una cuenta",
 	"email": "Correo electronico",
 	"forgotPassword": "He olvidado mi contraseña",
@@ -428,14 +442,6 @@
 	"publicLink": "",
 	"doNotHaveAccount": "",
 	"registerHere": "",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",

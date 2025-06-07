@@ -6,6 +6,20 @@
 			"toggleTheme": ""
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Sunucuya başarıyla yeniden bağlanıldı.",
+				"stillUnreachable": "Sunucuya hala ulaşılamıyor. Lütfen daha sonra tekrar deneyin."
+			},
+			"alertBox": "Sunucu bağlantı hatası",
+			"description": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse dağıtım yapılandırmanızı doğrulayın.",
+			"retryButton": {
+				"default": "Bağlantıyı yeniden deneyin",
+				"processing": "Bağlanıyor..."
+			}
+		}
+	},
 	"dontHaveAccount": "Hesabınız yok mu",
 	"email": "E-posta",
 	"forgotPassword": "Parolamı unuttum",
@@ -428,14 +442,6 @@
 	"publicLink": "Herkese açık bağlantı",
 	"doNotHaveAccount": "Bir hesabınız yok mu?",
 	"registerHere": "Buradan kayıt olun",
-	"backendUnreachable": "Sunucu bağlantı hatası",
-	"backendUnreachableMessage": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse dağıtım yapılandırmanızı doğrulayın.",
-	"backendUnreachableError": "Sunucuya bağlanılamıyor. Lütfen daha sonra tekrar deneyin.",
-	"retryConnection": "Bağlantıyı yeniden deneyin",
-	"retryingConnection": "Bağlanıyor...",
-	"backendReconnected": "Sunucuya başarıyla yeniden bağlanıldı.",
-	"backendStillUnreachable": "Sunucuya hala ulaşılamıyor. Lütfen daha sonra tekrar deneyin.",
-	"backendConnectionError": "Sunucuya bağlanırken hata oluştu. Lütfen ağ bağlantınızı kontrol edin.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API anahtarı",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API anahtarı",

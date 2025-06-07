@@ -28,13 +28,13 @@ const ServerUnreachable = () => {
 
 			// If successful, show toast and navigate to login page
 			createToast({
-				body: t("backendReconnected", "Connection to server restored"),
+				body: t("errorPages.serverUnreachable.toasts.reconnected"),
 			});
 			navigate("/login");
 		} catch (error) {
 			// If still unreachable, stay on this page and show toast
 			createToast({
-				body: t("backendStillUnreachable", "Server is still unreachable"),
+				body: t("errorPages.serverUnreachable.toasts.stillUnreachable"),
 			});
 		} finally {
 			setIsCheckingConnection(false);
@@ -121,7 +121,7 @@ const ServerUnreachable = () => {
 					>
 						<Alert
 							variant="error"
-							body={t("backendUnreachable", "Server Unreachable")}
+							body={t("errorPages.serverUnreachable.alertBox")}
 							hasIcon={true}
 						/>
 					</Box>
@@ -131,10 +131,7 @@ const ServerUnreachable = () => {
 							align="center"
 							color={theme.palette.primary.contrastTextSecondary}
 						>
-							{t(
-								"backendUnreachableMessage",
-								"The Checkmate server is not responding. Please check your deployment configuration or try again later."
-							)}
+							{t("errorPages.serverUnreachable.description")}
 						</Typography>
 					</Box>
 					<Box sx={{ mt: theme.spacing(4) }}>
@@ -156,8 +153,8 @@ const ServerUnreachable = () => {
 							}}
 						>
 							{isCheckingConnection
-								? t("retryingConnection", "Retrying Connection...")
-								: t("retryConnection", "Retry Connection")}
+								? t("errorPages.serverUnreachable.retryButton.processing")
+								: t("errorPages.serverUnreachable.retryButton.default")}
 						</Button>
 					</Box>
 				</Stack>

@@ -6,6 +6,20 @@
 			"toggleTheme": ""
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Reconnexion au serveur réussie.",
+				"stillUnreachable": "Le serveur est toujours inaccessible. Veuillez réessayer plus tard."
+			},
+			"alertBox": "Erreur de connexion au serveur",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
 	"dontHaveAccount": "Vous n'avez pas de compte",
 	"email": "E-mail",
 	"forgotPassword": "Mot de passe oublié",
@@ -428,14 +442,6 @@
 	"publicLink": "",
 	"doNotHaveAccount": "",
 	"registerHere": "",
-	"backendUnreachable": "Erreur de connexion au serveur",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "Impossible de se connecter au serveur. Veuillez réessayer plus tard.",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "Reconnexion au serveur réussie.",
-	"backendStillUnreachable": "Le serveur est toujours inaccessible. Veuillez réessayer plus tard.",
-	"backendConnectionError": "Erreur de connexion au serveur. Veuillez vérifier votre connexion réseau.",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",

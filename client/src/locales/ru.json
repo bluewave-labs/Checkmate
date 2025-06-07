@@ -6,6 +6,20 @@
 			"toggleTheme": ""
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Успешно подключен к серверу.",
+				"stillUnreachable": "Сервер по-прежнему недоступен. Пожалуйста, повторите попытку позже."
+			},
+			"alertBox": "Ошибка подключения к серверу",
+			"description": "Нам не удается подключиться к серверу. Пожалуйста, проверьте подключение к Интернету или конфигурацию вашего развертывания, если проблема не устранена.",
+			"retryButton": {
+				"default": "Повторите попытку подключения",
+				"processing": "Подключение..."
+			}
+		}
+	},
 	"dontHaveAccount": "Нет аккаунта",
 	"email": "Почта",
 	"forgotPassword": "Забыли пароль",
@@ -423,14 +437,6 @@
 	"publicLink": "Публичная ссылка",
 	"doNotHaveAccount": "У вас нет учетной записи?",
 	"registerHere": "Зарегистрируйтесь здесь",
-	"backendUnreachable": "Ошибка подключения к серверу",
-	"backendUnreachableMessage": "Нам не удается подключиться к серверу. Пожалуйста, проверьте подключение к Интернету или конфигурацию вашего развертывания, если проблема не устранена.",
-	"backendUnreachableError": "Не удается подключиться к серверу. Пожалуйста, повторите попытку позже.",
-	"retryConnection": "Повторите попытку подключения",
-	"retryingConnection": "Подключение...",
-	"backendReconnected": "Успешно подключен к серверу.",
-	"backendStillUnreachable": "Сервер по-прежнему недоступен. Пожалуйста, повторите попытку позже.",
-	"backendConnectionError": "Ошибка подключения к серверу. Пожалуйста, проверьте свое сетевое подключение.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Ключ API Google PageSpeed",
 	"pageSpeedApiKeyFieldLabel": "Ключ API PageSpeed",

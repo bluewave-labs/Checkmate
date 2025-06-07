@@ -6,6 +6,20 @@
 			"toggleTheme": "Přepnout mezi světlým a tmavým motivem"
 		}
 	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Podařilo se úspěšně obnovit spojení se serverem",
+				"stillUnreachable": "Server je stále nedosažitelný. Zkuste to prosím později."
+			},
+			"alertBox": "Chyba připojení k serveru",
+			"description": "Nepodařilo se připojit k serveru. Zkontrolujte si prosím internetové připojení a pokud problém přetrvává, ověřte konfiguraci aplikace Checkmate.",
+			"retryButton": {
+				"default": "Zkusit se znovu připojit",
+				"processing": "Probíhá připojování…"
+			}
+		}
+	},
 	"dontHaveAccount": "",
 	"email": "",
 	"forgotPassword": "",
@@ -428,14 +442,6 @@
 	"publicLink": "",
 	"doNotHaveAccount": "",
 	"registerHere": "",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",
