@@ -1,4 +1,8 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture"
+	},
 	"dontHaveAccount": "Нет аккаунта",
 	"email": "Почта",
 	"forgotPassword": "Забыли пароль",
@@ -17,7 +21,6 @@
 	"createPassword": "Создайте свой пароль",
 	"createAPassword": "Создайте пароль",
 	"authRegisterAlreadyHaveAccount": "Уже есть аккаунт?",
-	"commonAppName": "Checkmate",
 	"authLoginEnterEmail": "Введите свой email",
 	"authRegisterTitle": "Создать аккаунт",
 	"authRegisterStepOneTitle": "Создайте свой аккаут",

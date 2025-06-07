@@ -1,4 +1,8 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture"
+	},
 	"dontHaveAccount": "沒有帳號",
 	"email": "E-mail",
 	"forgotPassword": "忘記密碼",
@@ -17,7 +21,6 @@
 	"createPassword": "",
 	"createAPassword": "",
 	"authRegisterAlreadyHaveAccount": "已經有帳號嗎？",
-	"commonAppName": "Checkmate",
 	"authLoginEnterEmail": "輸入您的 E-mail",
 	"authRegisterTitle": "建立帳號",
 	"authRegisterStepOneTitle": "建立您的帳號",

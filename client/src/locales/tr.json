@@ -1,4 +1,8 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture"
+	},
 	"dontHaveAccount": "Hesabınız yok mu",
 	"email": "E-posta",
 	"forgotPassword": "Parolamı unuttum",
@@ -17,7 +21,6 @@
 	"createPassword": "Parolanızı oluşturun",
 	"createAPassword": "Bir parola oluşturun",
 	"authRegisterAlreadyHaveAccount": "Zaten hesabınız var mı?",
-	"commonAppName": "Checkmate",
 	"authLoginEnterEmail": "E-posta adresinizi girin",
 	"authRegisterTitle": "Hesap oluştur",
 	"authRegisterStepOneTitle": "Hesabınızı oluşturun",

@@ -1,4 +1,8 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture"
+	},
 	"dontHaveAccount": "Ei tiliä",
 	"email": "Sähköposti",
 	"forgotPassword": "Unohtunut salasana",
@@ -17,7 +21,6 @@
 	"createPassword": "Luo salasanasi",
 	"createAPassword": "Salasana",
 	"authRegisterAlreadyHaveAccount": "Onko sinulla jo tili?",
-	"commonAppName": "Checkmate",
 	"authLoginEnterEmail": "Syötä salasanasi",
 	"authRegisterTitle": "Luo tili",
 	"authRegisterStepOneTitle": "Luo tilisi",

@@ -54,7 +54,7 @@ const NewPasswordConfirmed = () => {
 				gap={theme.spacing(4)}
 			>
 				<Logo style={{ borderRadius: theme.shape.borderRadius }} />
-				<Typography sx={{ userSelect: "none" }}>Checkmate</Typography>
+				<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
 			</Stack>
 			<Stack
 				width="100%"

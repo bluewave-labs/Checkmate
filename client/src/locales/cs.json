@@ -1,4 +1,8 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture"
+	},
 	"dontHaveAccount": "",
 	"email": "",
 	"forgotPassword": "",
@@ -17,7 +21,6 @@
 	"createPassword": "",
 	"createAPassword": "",
 	"authRegisterAlreadyHaveAccount": "",
-	"commonAppName": "",
 	"authLoginEnterEmail": "",
 	"authRegisterTitle": "",
 	"authRegisterStepOneTitle": "",
