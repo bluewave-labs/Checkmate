@@ -254,6 +254,7 @@ class StatusService {
 			check.disk = disk ?? {};
 			check.host = host ?? {};
 			check.errors = errors ?? [];
+			check.capture = payload?.capture ?? {};
 		}
 		return check;
 	};

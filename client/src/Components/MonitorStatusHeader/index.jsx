@@ -36,7 +36,15 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 					</Typography>
 					<Dot />
 					<Typography>
-						Checking every {formatDurationRounded(monitor?.interval)}.
+						Checking every {formatDurationRounded(monitor?.interval)}{" "}
+						{monitor?.stats?.aggregateData?.latestCheck?.capture?.version && (
+							<>
+								{" "}
+								with Capture agent{" "}
+								{monitor.stats.aggregateData.latestCheck.capture.version}
+							</>
+						)}
+						.
 					</Typography>
 				</Stack>
 			</Stack>
