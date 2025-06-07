@@ -55,7 +55,6 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 						placeholder="jordan.ellis@domain.com"
 						autoComplete="email"
 						value={form.email}
-						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
 						helperText={errors.email ? t(errors.email) : ""}

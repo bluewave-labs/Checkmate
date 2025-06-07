@@ -71,13 +71,7 @@ const credentials = joi.object({
 		.string()
 		.trim()
 		.email({ tlds: { allow: false } })
-		.custom((value, helpers) => {
-			const lowercasedValue = value.toLowerCase();
-			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
-			}
-			return lowercasedValue;
-		})
+		.lowercase()
 		.messages({
 			"string.empty": "authRegisterEmailRequired",
 			"string.email": "authRegisterEmailInvalid",
