@@ -1,7 +1,10 @@
 {
 	"common": {
 		"appName": "Checkmate",
-		"monitoringAgentName": "Capture"
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": ""
+		}
 	},
 	"dontHaveAccount": "Vous n'avez pas de compte",
 	"email": "E-mail",
