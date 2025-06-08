@@ -203,7 +203,12 @@ const PageSpeedConfigure = () => {
 								<Typography
 									component="h1"
 									variant="h1"
-									className="monitor-name-text"
+									sx={{
+										maxWidth: "60vw",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										whiteSpace: "nowrap",
+									}}
 								>
 									{monitor.name}
 								</Typography>
@@ -236,7 +241,12 @@ const PageSpeedConfigure = () => {
 									<Typography
 										component="h2"
 										variant="h2"
-										className="monitor-url-text"
+										sx={{
+											maxWidth: "60vw",
+											overflow: "hidden",
+											textOverflow: "ellipsis",
+											whiteSpace: "nowrap",
+										}}
 									>
 										{monitor.url?.replace(/^https?:\/\//, "") || "..."}
 									</Typography>

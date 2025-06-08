@@ -23,7 +23,12 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 			<Stack>
 				<Typography
 					variant="h1"
-					className="monitor-name-text"
+					sx={{
+						maxWidth: "60vw",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+					}}
 				>
 					{monitor?.name}
 				</Typography>
@@ -36,7 +41,14 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 					<Typography
 						component="h2"
 						variant="h2"
-						className="monitor-url-text"
+						sx={{
+							fontFamily: "monospace",
+							fontWeight: "bolder",
+							maxWidth: "60vw",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							whiteSpace: "nowrap",
+						}}
 					>
 						{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 					</Typography>
