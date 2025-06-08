@@ -366,6 +366,7 @@ const PageSpeedConfigure = () => {
 							</Box>
 							<Stack gap={theme.spacing(6)}>
 								<Typography component="p">{t("whenNewIncident")}</Typography>
+								{/* Future Feature: Notify via SMS */}
 								{/* <Checkbox
 									id="notify-sms"
 									label={t("notifySMS")}
@@ -385,6 +386,7 @@ const PageSpeedConfigure = () => {
 									value={user?.email}
 									onChange={(event) => handleChange(event)}
 								/>
+								{/* Future Feature: Notify via Email */}
 								{/* <Checkbox
 									id="notify-email"
 									label={t("notifyEmails")}
