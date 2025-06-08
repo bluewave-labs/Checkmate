@@ -16,6 +16,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@pulsecron/pulse": "1.6.8",
 		"axios": "^1.7.2",
 		"bcryptjs": "3.0.2",
 		"bullmq": "5.41.2",

@@ -200,13 +200,31 @@ const Settings = () => {
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
+				sx={{
+					position: "sticky",
+					bottom: 0,
+					boxShadow: theme.shape.boxShadow,
+					zIndex: 1000,
+					mt: 3,
+					backgroundColor: theme.palette.primary.main,
+					display: "flex",
+					justifyContent: "flex-end",
+					pb: theme.spacing(4),
+					pr: theme.spacing(15),
+					pl: theme.spacing(5),
+					pt: theme.spacing(4),
+					border: 1,
+					borderStyle: "solid",
+					borderColor: theme.palette.primary.lowContrast,
+					borderRadius: theme.spacing(2),
+				}}
 			>
 				<Button
 					loading={isSaving || isDeletingMonitorStats || isSettingsLoading}
 					disabled={Object.keys(errors).length > 0}
 					variant="contained"
 					color="accent"
-					sx={{ px: theme.spacing(12), mt: theme.spacing(20) }}
+					sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					onClick={handleSave}
 				>
 					{t("settingsSave")}

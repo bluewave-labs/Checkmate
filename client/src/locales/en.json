@@ -532,12 +532,6 @@
 		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
 		"saving": "Saving..."
 	},
-	"uptimeGeneralInstructions": {
-		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-		"ping": "Enter the URL or IP to ping (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-		"docker": "Enter the Docker ID of your container. Docker IDs must be the full 64 char Docker ID. You can run docker inpsect <short_id> to get the full container ID.",
-		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
-	},
 	"settingsEmailConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
 	"sendTestEmail": "Send test email",
 	"emailSent": "Email sent successfully",
@@ -558,5 +552,11 @@
 	"settingsURLDescription": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 	"settingsURLSelectTitle": "Display IP/URL on status page",
 	"settingsURLEnabled": "Enabled",
-	"settingURLDisabled": "Disabled"
+	"settingURLDisabled": "Disabled",
+	"uptimeGeneralInstructions": {
+		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
+		"docker": "Enter the Docker ID of your container. Docker IDs must be the full 64 char Docker ID. You can run docker inspect <short_id> to get the full container ID.",
+		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
+	}
 }

@@ -237,7 +237,7 @@
 	"infrastructureCustomizeAlerts": "",
 	"infrastructureAlertNotificationDescription": "",
 	"infrastructureCreateMonitor": "",
-	"infrastructureProtocol": "",
+	"infrastructureProtocol": "Protokolla",
 	"infrastructureServerUrlLabel": "Palvelimen URL-osoite",
 	"infrastructureDisplayNameLabel": "",
 	"infrastructureAuthorizationSecretLabel": "",
@@ -353,11 +353,11 @@
 	"statusPageCreateTabsContent": "",
 	"statusPageCreateTabsContentDescription": "",
 	"statusPageCreateTabsContentFeaturesDescription": "",
-	"showCharts": "",
+	"showCharts": "Näytä kaaviot",
 	"showUptimePercentage": "",
 	"removeLogo": "Poista logo",
 	"statusPageStatus": "",
-	"statusPageStatusContactAdmin": "",
+	"statusPageStatusContactAdmin": "Ota yhteyttä järjestelmänvalvojaan",
 	"statusPageStatusNotPublic": "",
 	"statusPageStatusNoPage": "",
 	"statusPageStatusServiceStatus": "",
@@ -397,7 +397,7 @@
 	"authRegisterFirstName": "Nimi",
 	"authRegisterLastName": "Sukunimi",
 	"authRegisterEmail": "Sähköpostiosoite",
-	"authRegisterEmailRequired": "",
+	"authRegisterEmailRequired": "Syötä sähköpostiosoitteesi jatkaaksesi",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -426,7 +426,7 @@
 	"backendUnreachableMessage": "",
 	"backendUnreachableError": "",
 	"retryConnection": "",
-	"retryingConnection": "",
+	"retryingConnection": "Yhdistetään...",
 	"backendReconnected": "",
 	"backendStillUnreachable": "",
 	"backendConnectionError": "",
@@ -441,7 +441,7 @@
 	"ignoreTLSErrorDescription": "",
 	"createNew": "Luo uusi",
 	"greeting": {
-		"prepend": "",
+		"prepend": "Hei",
 		"append": "",
 		"overview": ""
 	},
@@ -453,11 +453,11 @@
 	"roles": {
 		"superAdmin": "Pääylläpitäjä",
 		"admin": "Ylläpitäjä",
-		"teamMember": "",
+		"teamMember": "Tiimin jäsen",
 		"demoUser": "Demokäyttäjä"
 	},
 	"teamPanel": {
-		"teamMembers": "",
+		"teamMembers": "Tiimin jäsenet",
 		"filter": {
 			"all": "Kaikki",
 			"member": "Jäsen"
@@ -532,7 +532,6 @@
 		"passwordRequirements": "Uuden salasanan on oltava vähintään 8 merkkiä pitkä ja sen on sisältävä vähintään yksi iso kirjain, yksi pieni kirjain, yksi numero sekä yksi erikoismerkki.",
 		"saving": "Tallennetaan..."
 	},
-	"uptimeCreateSelectURL": "",
 	"settingsEmailConnectionHost": "",
 	"sendTestEmail": "Lähetä testi sähköposti",
 	"emailSent": "Sähköpostin lähetys onnistui",
@@ -553,5 +552,11 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	}
 }

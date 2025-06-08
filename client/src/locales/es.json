@@ -532,7 +532,6 @@
 		"passwordRequirements": "",
 		"saving": ""
 	},
-	"uptimeCreateSelectURL": "",
 	"settingsEmailConnectionHost": "",
 	"sendTestEmail": "",
 	"emailSent": "",
@@ -553,5 +552,11 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	}
 }

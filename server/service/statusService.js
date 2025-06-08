@@ -228,6 +228,12 @@ class StatusService {
 
 		if (type === "pagespeed") {
 			if (typeof payload === "undefined") {
+				this.logger.warn({
+					message: "Failed to build check",
+					service: this.SERVICE_NAME,
+					method: "buildCheck",
+					details: "empty payload",
+				});
 				return undefined;
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
@@ -287,9 +293,11 @@ class StatusService {
 		} catch (error) {
 			this.logger.error({
 				message: error.message,
-				service: this.SERVICE_NAME,
-				method: "insertCheck",
-				details: `Error inserting check for monitor: ${networkResponse?.monitorId}`,
+				service: error.service || this.SERVICE_NAME,
+				method: error.method || "insertCheck",
+				details:
+					error.details ||
+					`Error inserting check for monitor: ${networkResponse?.monitorId}`,
 				stack: error.stack,
 			});
 		}

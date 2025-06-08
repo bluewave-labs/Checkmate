@@ -15,7 +15,7 @@ const useMonitorsFetch = () => {
 				const response = await networkService.getMonitorsByTeamId({
 					teamId: user.teamId,
 					limit: null, // donot return any checks for the monitors
-					types: ["http", "ping"], // status page is available for uptime and ping monitors
+					types: ["http", "ping", "port"], // status page is available for uptime, ping, and port monitors
 				});
 				setMonitors(response.data.data.monitors);
 			} catch (error) {

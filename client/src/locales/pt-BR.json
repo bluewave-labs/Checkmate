@@ -532,12 +532,6 @@
 		"passwordRequirements": "A nova senha deve conter pelo menos 8 caracteres e deve ter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
 		"saving": "Salvando..."
 	},
-	"uptimeGeneralInstructions": {
-		"http": "Insira a URL ou o IP a ser monitorado (ex.: https://example.com/ ou 192.168.1.100) e adicione um nome de exibição claro que será exibido no painel.",
-		"ping": "Insira a URL ou o IP para executar o ping (ex.: https://example.com/ ou 192.168.1.100) e adicione um nome de exibição claro que será exibido no painel.",
-		"docker": "Insira o ID do seu contêiner Docker. Os IDs do Docker devem conter todos os 64 caracteres. Você pode executar o comando docker inspect <short_id> para obter o ID completo do contêiner.",
-		"port": "Insira a URL ou o IP do servidor, o número da porta e um nome de exibição claro que será exibido no painel."
-	},
 	"settingsEmailConnectionHost": "Host de conexão de e-mail - Nome do host a ser usado na saudação HELO/EHLO",
 	"sendTestEmail": "Enviar e-mail de teste",
 	"emailSent": "E-mail enviado com sucesso",
@@ -558,5 +552,11 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	}
 }
