@@ -43,8 +43,24 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 					value={settingsData?.settings?.checkTTL ?? ""}
 					onChange={handleChange}
 					type="number"
-					error={errors.checkTTL ? true : false}
+					error={!!errors.checkTTL}
 					helperText={errors.checkTTL}
+					sx={{
+						backgroundColor: '#f9fafb', // Match dropdown color
+						borderRadius: '6px',
+						'& .MuiOutlinedInput-root': {
+							'& fieldset': {
+								borderColor: '#d1d5db',
+							},
+							'&:hover fieldset': {
+								borderColor: '#a1a1aa',
+							},
+							'&.Mui-focused fieldset': {
+								borderColor: '#6366f1',
+								boxShadow: '0 0 0 1px #6366f1',
+							},
+						},
+					}}
 				/>
 				<Box>
 					<Typography>{t("settingsClearAllStats")}</Typography>
