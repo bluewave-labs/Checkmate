@@ -84,6 +84,21 @@ html {
 	display: none;
 }
 
+/*adding the classes for handling the overflow of url and name for monitors in one place*/
+.monitor-url-text {
+	max-width: 70vh;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.monitor-name-text {
+	max-width: 70vh;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 @keyframes ripple {
 	from {
 		opacity: 1;

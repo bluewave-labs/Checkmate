@@ -27,7 +27,12 @@ const Status = ({ monitor }) => {
 
 	return (
 		<Stack>
-			<Typography variant="h1">{monitor?.name}</Typography>
+			<Typography
+				variant="h1"
+				className="monitor-name-text"
+			>
+				{monitor?.name}
+			</Typography>
 			<Stack
 				direction="row"
 				alignItems={"center"}
@@ -37,6 +42,7 @@ const Status = ({ monitor }) => {
 				<Typography
 					variant="h2"
 					style={{ fontFamily: "monospace", fontWeight: "bolder" }}
+					className="monitor-url-text"
 				>
 					{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 				</Typography>

@@ -249,6 +249,7 @@ const Configure = () => {
 								<Typography
 									component="h1"
 									variant="h1"
+									className="monitor-name-text"
 								>
 									{monitor.name}
 								</Typography>
@@ -281,6 +282,7 @@ const Configure = () => {
 									<Typography
 										component="h2"
 										variant="h2"
+										className="monitor-url-text"
 									>
 										{monitor.url?.replace(/^https?:\/\//, "") || "..."}
 									</Typography>
