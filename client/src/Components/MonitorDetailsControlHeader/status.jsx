@@ -27,34 +27,14 @@ const Status = ({ monitor }) => {
 
 	return (
 		<Stack>
-			<Typography
-				variant="h1"
-				sx={{
-					maxWidth: "45vw",
-					overflow: "hidden",
-					textOverflow: "ellipsis",
-					whiteSpace: "nowrap",
-				}}
-			>
-				{monitor?.name}
-			</Typography>
+			<Typography variant="monitorName">{monitor?.name}</Typography>
 			<Stack
 				direction="row"
 				alignItems={"center"}
 				gap={theme.spacing(4)}
 			>
 				<PulseDot color={statusColor[determineState(monitor)]} />
-				<Typography
-					variant="h2"
-					sx={{
-						fontFamily: "monospace",
-						fontWeight: "bolder",
-						maxWidth: "60vw",
-						overflow: "hidden",
-						textOverflow: "ellipsis",
-						whiteSpace: "nowrap",
-					}}
-				>
+				<Typography variant="monitorUrl">
 					{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 				</Typography>
 				<Dot />

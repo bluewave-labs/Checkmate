@@ -202,13 +202,7 @@ const PageSpeedConfigure = () => {
 							<Box>
 								<Typography
 									component="h1"
-									variant="h1"
-									sx={{
-										maxWidth: "60vw",
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-										whiteSpace: "nowrap",
-									}}
+									variant="monitorName"
 								>
 									{monitor.name}
 								</Typography>
@@ -240,13 +234,7 @@ const PageSpeedConfigure = () => {
 									</Tooltip>
 									<Typography
 										component="h2"
-										variant="h2"
-										sx={{
-											maxWidth: "60vw",
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-											whiteSpace: "nowrap",
-										}}
+										variant="monitorUrl"
 									>
 										{monitor.url?.replace(/^https?:\/\//, "") || "..."}
 									</Typography>

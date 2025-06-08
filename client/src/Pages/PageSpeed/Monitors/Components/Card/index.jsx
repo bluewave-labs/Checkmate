@@ -245,7 +245,7 @@ const Card = ({ monitor }) => {
 				</IconBox>
 				<Typography
 					component="h2"
-					variant="h2"
+					variant="monitorUrl"
 					fontWeight={500}
 					alignSelf="center"
 				>
