@@ -105,11 +105,9 @@ const loginCredentials = joi.object({
 			"string.empty": "auth.common.inputs.email.errors.empty",
 			"string.email": "auth.common.inputs.email.errors.invalid",
 		}),
-	password: joi
-		.string()
-		.messages({
-			"string.empty": "auth.common.inputs.password.errors.empty",
-		}),
+	password: joi.string().messages({
+		"string.empty": "auth.common.inputs.password.errors.empty",
+	}),
 });
 
 const monitorValidation = joi.object({

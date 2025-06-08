@@ -14,7 +14,7 @@ import SunAndMoonIcon from "./SunAndMoonIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "../../Features/UI/uiSlice";
 import "./index.css";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 const ThemeSwitch = ({ width = 48, height = 48, color }) => {
 	const mode = useSelector((state) => state.ui.mode);

@@ -20,7 +20,9 @@ const SettingsAbout = () => {
 				</Typography>
 			</Box>
 			<Box>
-				<Typography component="h2">{t("common.appName")} {2.1}</Typography>
+				<Typography component="h2">
+					{t("common.appName")} {2.1}
+				</Typography>
 				<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(6), opacity: 0.6 }}>
 					{t("settingsDevelopedBy")}
 				</Typography>

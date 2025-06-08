@@ -115,7 +115,10 @@ const TeamPanel = () => {
 			email: newEmail,
 		}));
 
-		const validation = newOrChangedCredentials.validate({ email: newEmail }, { abortEarly: false });
+		const validation = newOrChangedCredentials.validate(
+			{ email: newEmail },
+			{ abortEarly: false }
+		);
 
 		setErrors((prev) => {
 			const updatedErrors = { ...prev };

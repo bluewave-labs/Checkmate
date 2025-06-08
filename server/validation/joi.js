@@ -22,14 +22,8 @@ const passwordPattern =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/])[A-Za-z0-9!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/]+$/;
 
 const loginValidation = joi.object({
-	email: joi
-		.string()
-		.email()
-		.required()
-		.lowercase(),
-	password: joi
-		.string()
-		.required(),
+	email: joi.string().email().required().lowercase(),
+	password: joi.string().required(),
 });
 const nameValidation = joi
 	.string()

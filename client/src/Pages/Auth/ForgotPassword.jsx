@@ -75,7 +75,10 @@ const ForgotPassword = () => {
 		const { value } = event.target;
 		setForm({ email: value });
 
-		const { error } = newOrChangedCredentials.validate({ email: value }, { abortEarly: false });
+		const { error } = newOrChangedCredentials.validate(
+			{ email: value },
+			{ abortEarly: false }
+		);
 
 		if (error) setErrors({ email: error.details[0].message });
 		else delete errors.email;

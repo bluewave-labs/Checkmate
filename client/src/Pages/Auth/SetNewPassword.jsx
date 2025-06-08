@@ -171,9 +171,11 @@ const SetNewPassword = () => {
 								value={form.password}
 								onChange={handleChange}
 								error={errors.password ? true : false}
-								helperText={errors.password === "auth.common.inputs.password.errors.empty"
-								? t(errors.password)
-								: ""} // Other errors are related to required password conditions and are visualized below the input
+								helperText={
+									errors.password === "auth.common.inputs.password.errors.empty"
+										? t(errors.password)
+										: ""
+								} // Other errors are related to required password conditions and are visualized below the input
 								endAdornment={<PasswordEndAdornment />}
 							/>
 						</Box>
@@ -217,12 +219,16 @@ const SetNewPassword = () => {
 								variant={feedbacks.number}
 							/>
 							<Check
-								noHighlightText={t("auth.common.inputs.password.rules.uppercase.beginning")}
+								noHighlightText={t(
+									"auth.common.inputs.password.rules.uppercase.beginning"
+								)}
 								text={t("auth.common.inputs.password.rules.uppercase.highlighted")}
 								variant={feedbacks.uppercase}
 							/>
 							<Check
-								noHighlightText={t("auth.common.inputs.password.rules.lowercase.beginning")}
+								noHighlightText={t(
+									"auth.common.inputs.password.rules.lowercase.beginning"
+								)}
 								text={t("auth.common.inputs.password.rules.lowercase.highlighted")}
 								variant={feedbacks.lowercase}
 							/>

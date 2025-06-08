@@ -77,9 +77,11 @@ function StepThree({ isSuperAdmin, onSubmit, onBack }) {
 							value={form.password}
 							onChange={handleChange}
 							error={errors.password && errors.password[0] ? true : false}
-							helperText={errors.password === "auth.common.inputs.password.errors.empty"
-								? t(errors.password)
-								: ""} // Other errors are related to required password conditions and are visualized below the input
+							helperText={
+								errors.password === "auth.common.inputs.password.errors.empty"
+									? t(errors.password)
+									: ""
+							} // Other errors are related to required password conditions and are visualized below the input
 							ref={inputRef}
 						/>
 						<TextInput
