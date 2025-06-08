@@ -55,7 +55,7 @@ class PulseQueueHelper {
 						this.logger.error({
 							message: error.message,
 							service: SERVICE_NAME,
-							method: "createJobHandler",
+							method: "getMonitorJob",
 							details: `Error sending notifications for job ${job.id}: ${error.message}`,
 							stack: error.stack,
 						});
