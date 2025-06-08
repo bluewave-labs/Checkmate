@@ -10,7 +10,12 @@ class PulseQueue {
 		this.appSettings = appSettings;
 		this.pulseQueueHelper = pulseQueueHelper;
 		this.logger = logger;
-		this.init();
+	}
+
+	static async create({ appSettings, db, pulseQueueHelper, logger }) {
+		const instance = new PulseQueue({ appSettings, db, pulseQueueHelper, logger });
+		await instance.init();
+		return instance;
 	}
 
 	// ****************************************

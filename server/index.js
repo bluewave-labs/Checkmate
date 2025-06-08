@@ -210,7 +210,12 @@ const startApp = async () => {
 		statusService,
 		notificationService,
 	});
-	const pulseQueue = new PulseQueue({ appSettings, db, pulseQueueHelper, logger });
+	const pulseQueue = await PulseQueue.create({
+		appSettings,
+		db,
+		pulseQueueHelper,
+		logger,
+	});
 
 	// Register services
 	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
