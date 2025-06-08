@@ -26,12 +26,6 @@ class QueueRoutes {
 		);
 
 		this.router.post(
-			"/obliterate",
-			isAllowed(["admin", "superadmin"]),
-			this.queueController.obliterateQueue
-		);
-
-		this.router.post(
 			"/flush",
 			isAllowed(["admin", "superadmin"]),
 			this.queueController.flushQueue

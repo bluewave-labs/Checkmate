@@ -46,18 +46,6 @@ class JobQueueController {
 		}
 	};
 
-	obliterateQueue = async (req, res, next) => {
-		try {
-			await this.jobQueue.obliterate();
-			return res.success({
-				msg: this.stringService.queueObliterate,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "obliterateQueue"));
-			return;
-		}
-	};
-
 	flushQueue = async (req, res, next) => {
 		try {
 			const result = await this.jobQueue.flushQueues();

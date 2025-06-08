@@ -51,7 +51,6 @@ class JobQueue {
 						}
 					})
 			);
-
 			this.healthCheckInterval = setInterval(async () => {
 				try {
 					const queueHealthChecks = await this.checkQueueHealth();
@@ -116,6 +115,14 @@ class JobQueue {
 		});
 	}
 
+	pauseJob = async (monitor) => {
+		this.deleteJob(monitor);
+	};
+
+	resumeJob = async (monitor) => {
+		this.addJob(monitor._id, monitor);
+	};
+
 	async addJob(jobName, monitor) {
 		this.logger.info({
 			message: `Adding job ${monitor?.url ?? "No URL"}`,
@@ -179,6 +186,11 @@ class JobQueue {
 			error.method === undefined ? (error.method = "deleteJob") : null;
 			throw error;
 		}
+	}
+
+	async updateJob(monitor) {
+		await this.deleteJob(monitor);
+		await this.addJob(monitor._id, monitor);
 	}
 
 	async getJobs() {

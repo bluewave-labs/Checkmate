@@ -125,7 +125,7 @@ class NetworkService {
 	 * @property {number} code - The response code (200 if successful, error code otherwise).
 	 * @property {string} message - The message indicating the result of the HTTP request.
 	 */
-	async requestHttp(job) {
+	async requestHttp(monitor) {
 		try {
 			const {
 				url,
@@ -138,7 +138,7 @@ class NetworkService {
 				jsonPath,
 				matchMethod,
 				expectedValue,
-			} = job.data;
+			} = monitor;
 			const config = {};
 
 			secret !== undefined && (config.headers = { Authorization: `Bearer ${secret}` });
@@ -248,10 +248,10 @@ class NetworkService {
 	 * @property {number} code - The response code (200 if successful, error code otherwise).
 	 * @property {string} message - The message indicating the result of the PageSpeed request.
 	 */
-	async requestPagespeed(job) {
+	async requestPagespeed(monitor) {
 		try {
-			const url = job.data.url;
-			const updatedJob = { ...job };
+			const url = monitor.url;
+			const updatedMonitor = { ...monitor };
 			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
 
 			const dbSettings = await this.settingsService.getDBSettings();
@@ -266,8 +266,8 @@ class NetworkService {
 				});
 				return;
 			}
-			updatedJob.data.url = pagespeedUrl;
-			return await this.requestHttp(updatedJob);
+			updatedMonitor.url = pagespeedUrl;
+			return await this.requestHttp(updatedMonitor);
 		} catch (error) {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestPagespeed";
@@ -292,9 +292,9 @@ class NetworkService {
 	 * @property {number} code - The response code (200 if successful, error code otherwise).
 	 * @property {string} message - The message indicating the result of the hardware status request.
 	 */
-	async requestHardware(job) {
+	async requestHardware(monitor) {
 		try {
-			return await this.requestHttp(job);
+			return await this.requestHttp(monitor);
 		} catch (error) {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestHardware";
@@ -318,7 +318,7 @@ class NetworkService {
 	 * @property {number} code - The response code (200 if successful, error code otherwise).
 	 * @property {string} message - The message indicating the result of the Docker inspection.
 	 */
-	async requestDocker(job) {
+	async requestDocker(monitor) {
 		try {
 			const docker = new this.Docker({
 				socketPath: "/var/run/docker.sock",
@@ -326,19 +326,19 @@ class NetworkService {
 			});
 
 			const containers = await docker.listContainers({ all: true });
-			const containerExists = containers.some((c) => c.Id.startsWith(job.data.url));
+			const containerExists = containers.some((c) => c.Id.startsWith(monitor.url));
 			if (!containerExists) {
 				throw new Error(this.stringService.dockerNotFound);
 			}
-			const container = docker.getContainer(job.data.url);
+			const container = docker.getContainer(monitor.url);
 
 			const { response, responseTime, error } = await this.timeRequest(() =>
 				container.inspect()
 			);
 
 			const dockerResponse = {
-				monitorId: job.data._id,
-				type: job.data.type,
+				monitorId: monitor._id,
+				type: monitor.type,
 				responseTime,
 			};
 
@@ -360,9 +360,9 @@ class NetworkService {
 		}
 	}
 
-	async requestPort(job) {
+	async requestPort(monitor) {
 		try {
-			const { url, port } = job.data;
+			const { url, port } = monitor;
 			const { response, responseTime, error } = await this.timeRequest(async () => {
 				return new Promise((resolve, reject) => {
 					const socket = this.net.createConnection(
@@ -391,8 +391,8 @@ class NetworkService {
 			});
 
 			const portResponse = {
-				monitorId: job.data._id,
-				type: job.data.type,
+				monitorId: monitor._id,
+				type: monitor.type,
 				responseTime,
 			};
 
@@ -414,9 +414,8 @@ class NetworkService {
 		}
 	}
 
-	async requestDistributedHttp(job) {
+	async requestDistributedHttp(monitor) {
 		try {
-			const monitor = job.data;
 			const CALLBACK_URL = process.env.CALLBACK_URL;
 
 			const response = await this.axios.post(
@@ -503,23 +502,23 @@ class NetworkService {
 	 * @returns {Promise<Object>} The response object from the appropriate request method.
 	 * @throws {Error} Throws an error if the job type is unsupported.
 	 */
-	async getStatus(job) {
-		const type = job?.data?.type ?? "unknown";
+	async getStatus(monitor) {
+		const type = monitor.type ?? "unknown";
 		switch (type) {
 			case this.TYPE_PING:
-				return await this.requestPing(job);
+				return await this.requestPing(monitor);
 			case this.TYPE_HTTP:
-				return await this.requestHttp(job);
+				return await this.requestHttp(monitor);
 			case this.TYPE_PAGESPEED:
-				return await this.requestPagespeed(job);
+				return await this.requestPagespeed(monitor);
 			case this.TYPE_HARDWARE:
-				return await this.requestHardware(job);
+				return await this.requestHardware(monitor);
 			case this.TYPE_DOCKER:
-				return await this.requestDocker(job);
+				return await this.requestDocker(monitor);
 			case this.TYPE_PORT:
-				return await this.requestPort(job);
+				return await this.requestPort(monitor);
 			case this.TYPE_DISTRIBUTED_HTTP:
-				return await this.requestDistributedHttp(job);
+				return await this.requestDistributedHttp(monitor);
 			case this.TYPE_DISTRIBUTED_TEST:
 				return;
 			default:
