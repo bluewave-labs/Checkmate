@@ -188,6 +188,11 @@ class JobQueue {
 		}
 	}
 
+	async updateJob(monitor) {
+		await this.deleteJob(monitor);
+		await this.addJob(monitor._id, monitor);
+	}
+
 	async getJobs() {
 		try {
 			let stats = {};

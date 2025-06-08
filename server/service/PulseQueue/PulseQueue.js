@@ -62,10 +62,9 @@ class PulseQueue {
 			service: SERVICE_NAME,
 			method: "deleteJob",
 		});
-		const result = await this.pulse.cancel({
+		await this.pulse.cancel({
 			"data.monitor._id": monitor._id,
 		});
-		console.log(result);
 	};
 
 	pauseJob = async (monitor) => {
@@ -98,6 +97,22 @@ class PulseQueue {
 			service: SERVICE_NAME,
 			method: "resumeJob",
 		});
+	};
+
+	updateJob = async (monitor) => {
+		const jobs = await this.pulse.jobs({
+			"data.monitor._id": monitor._id,
+		});
+
+		const job = jobs[0];
+		if (!job) {
+			throw new Error("Job not found");
+		}
+
+		const intervalInSeconds = monitor.interval / 1000;
+		job.repeatEvery(`${intervalInSeconds} seconds`);
+		job.attrs.data.monitor = monitor;
+		await job.save();
 	};
 
 	shutdown = async () => {
