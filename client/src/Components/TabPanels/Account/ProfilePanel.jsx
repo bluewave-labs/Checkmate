@@ -240,7 +240,7 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Stack flex={0.9}>
-						<Typography component="h1">{t("email")}</Typography>
+						<Typography component="h1">{t("auth.common.inputs.email.label")}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}

@@ -7,6 +7,7 @@ import TextInput from "../../../../Components/Inputs/TextInput";
 import { useTranslation } from "react-i18next";
 
 StepTwo.propTypes = {
+	isSuperAdmin: PropTypes.bool,
 	form: PropTypes.object,
 	errors: PropTypes.object,
 	onSubmit: PropTypes.func,
@@ -18,6 +19,7 @@ StepTwo.propTypes = {
  * Renders the second step of the sign up process.
  *
  * @param {Object} props
+ * @param {boolean} props.isSuperAdmin - Whether the user is creating and admin account
  * @param {Object} props.form - Form state object.
  * @param {Object} props.errors - Object containing form validation errors.
  * @param {Function} props.onSubmit - Callback function to handle form submission.
@@ -25,7 +27,7 @@ StepTwo.propTypes = {
  * @param {Function} props.onBack - Callback function to handle "Back" button click.
  * @returns {JSX.Element}
  */
-function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
+function StepTwo({ isSuperAdmin, form, errors, onSubmit, onChange, onBack }) {
 	const theme = useTheme();
 	const inputRef = useRef(null);
 	const { t } = useTranslation();
@@ -43,8 +45,12 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("signUp")}</Typography>
-					<Typography>{t("enterEmail")}</Typography>
+					<Typography component="h1">
+						{isSuperAdmin
+							? t("auth.registration.heading.superAdmin")
+							: t("auth.registration.heading.user")}
+					</Typography>
+					<Typography>{t("auth.registration.subheadings.stepTwo")}</Typography>
 				</Box>
 
 				<Box
@@ -60,22 +66,15 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 					<TextInput
 						type="email"
 						id="register-email-input"
-						label={t("authRegisterEmail")}
+						label={t("auth.common.inputs.email.label")}
 						isRequired={true}
-						placeholder="jordan.ellis@domain.com"
+						placeholder={t("auth.common.inputs.email.placeholder")}
 						autoComplete="email"
 						value={form.email}
 						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
-						helperText={
-							errors.email &&
-							(errors.email.includes("required")
-								? t("authRegisterEmailRequired")
-								: errors.email.includes("valid email")
-									? t("authRegisterEmailInvalid")
-									: t(errors.email))
-						}
+						helperText={t(errors.email)} // Localization keys are in validation.js
 						ref={inputRef}
 					/>
 					<Stack
@@ -98,7 +97,7 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 							}}
 						>
 							<ArrowBackRoundedIcon />
-							{t("commonBack")}
+							{t("auth.common.navigation.back")}
 						</Button>
 						<Button
 							variant="contained"
@@ -114,7 +113,7 @@ function StepTwo({ form, errors, onSubmit, onChange, onBack }) {
 								},
 							}}
 						>
-							{t("continue")}
+							{t("auth.common.navigation.continue")}
 						</Button>
 					</Stack>
 				</Box>

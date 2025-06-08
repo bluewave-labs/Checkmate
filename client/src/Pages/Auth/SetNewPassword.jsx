@@ -16,7 +16,7 @@ import Logo from "../../assets/icons/checkmate-icon.svg?react";
 import Background from "../../assets/Images/background-grid.svg?react";
 import "./index.css";
 import { useValidatePassword } from "./hooks/useValidatePassword";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 const SetNewPassword = () => {
 	const navigate = useNavigate();
@@ -43,20 +43,20 @@ const SetNewPassword = () => {
 			createToast({
 				body:
 					error.details && error.details.length > 0
-						? error.details[0].message
-						: "Error validating data.",
+						? error.details[0].message // FIXME: Potential untranslated string
+						: t("auth.common.errors.validation"),
 			});
 		} else {
 			const action = await dispatch(setNewPassword({ token, form }));
 			if (action.payload.success) {
 				navigate("/new-password-confirmed");
 				createToast({
-					body: "Your password was reset successfully.",
+					body: t("auth.forgotPassword.toasts.success"),
 				});
 			} else {
 				const errorMessage = action.payload
-					? action.payload.msg
-					: "Unable to reset password. Please try again later or contact support.";
+					? action.payload.msg // FIXME: Potential untranslated string
+					: t("auth.forgotPassword.toasts.error");
 				createToast({
 					body: errorMessage,
 				});
@@ -140,11 +140,11 @@ const SetNewPassword = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<LockIcon alt="lock icon" />
+								<LockIcon alt={t("auth.forgotPassword.imageAlts.lock")} />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">{t("authSetNewPasswordTitle")}</Typography>
-						<Typography>{t("authSetNewPasswordDescription")}</Typography>
+						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>
+						<Typography>{t("auth.forgotPassword.subheadings.stepThree")}</Typography>
 					</Box>
 					<Box
 						width="100%"
@@ -165,13 +165,15 @@ const SetNewPassword = () => {
 								id={passwordId}
 								type="password"
 								name="password"
-								label={t("commonPassword")}
+								label={t("auth.common.inputs.password.label")}
 								isRequired={true}
 								placeholder="••••••••"
 								value={form.password}
 								onChange={handleChange}
 								error={errors.password ? true : false}
-								helperText={errors.password}
+								helperText={errors.password === "auth.common.inputs.password.errors.empty"
+								? t(errors.password)
+								: ""} // Other errors are related to required password conditions and are visualized below the input
 								endAdornment={<PasswordEndAdornment />}
 							/>
 						</Box>
@@ -185,13 +187,13 @@ const SetNewPassword = () => {
 								id={confirmPasswordId}
 								type="password"
 								name="confirm"
-								label={t("authSetNewPasswordConfirmPassword")}
+								label={t("auth.common.inputs.passwordConfirm.label")}
 								isRequired={true}
-								placeholder="••••••••"
+								placeholder={t("auth.common.inputs.passwordConfirm.placeholder")}
 								value={form.confirm}
 								onChange={handleChange}
 								error={errors.confirm ? true : false}
-								helperText={errors.confirm}
+								helperText={t(errors.confirm)} // Localization keys are in validation.js
 								endAdornment={<PasswordEndAdornment />}
 							/>
 						</Box>
@@ -200,33 +202,33 @@ const SetNewPassword = () => {
 							mb={theme.spacing(12)}
 						>
 							<Check
-								noHighlightText={t("authPasswordMustBeAtLeast")}
-								text={t("authPasswordCharactersLong")}
+								noHighlightText={t("auth.common.inputs.password.rules.length.beginning")}
+								text={t("auth.common.inputs.password.rules.length.highlighted")}
 								variant={feedbacks.length}
 							/>
 							<Check
-								noHighlightText={t("authPasswordMustContainAtLeast")}
-								text={t("authPasswordSpecialCharacter")}
+								noHighlightText={t("auth.common.inputs.password.rules.special.beginning")}
+								text={t("auth.common.inputs.password.rules.special.highlighted")}
 								variant={feedbacks.special}
 							/>
 							<Check
-								noHighlightText={t("authPasswordMustContainAtLeast")}
-								text={t("authPasswordOneNumber")}
+								noHighlightText={t("auth.common.inputs.password.rules.number.beginning")}
+								text={t("auth.common.inputs.password.rules.number.highlighted")}
 								variant={feedbacks.number}
 							/>
 							<Check
-								noHighlightText={t("authPasswordMustContainAtLeast")}
-								text={t("authPasswordUpperCharacter")}
+								noHighlightText={t("auth.common.inputs.password.rules.uppercase.beginning")}
+								text={t("auth.common.inputs.password.rules.uppercase.highlighted")}
 								variant={feedbacks.uppercase}
 							/>
 							<Check
-								noHighlightText={t("authPasswordMustContainAtLeast")}
-								text={t("authPasswordLowerCharacter")}
+								noHighlightText={t("auth.common.inputs.password.rules.lowercase.beginning")}
+								text={t("auth.common.inputs.password.rules.lowercase.highlighted")}
 								variant={feedbacks.lowercase}
 							/>
 							<Check
-								noHighlightText={t("authPasswordConfirmAndPassword")}
-								text={t("authPasswordMustMatch")}
+								noHighlightText={t("auth.common.inputs.password.rules.match.beginning")}
+								text={t("auth.common.inputs.password.rules.match.highlighted")}
 								variant={feedbacks.confirm}
 							/>
 						</Stack>
@@ -243,7 +245,7 @@ const SetNewPassword = () => {
 						}
 						sx={{ width: "100%", maxWidth: 400 }}
 					>
-						{t("authSetNewPasswordResetPassword")}
+						{t("auth.forgotPassword.buttons.resetPassword")}
 					</Button>
 				</Stack>
 			</Stack>
@@ -251,15 +253,21 @@ const SetNewPassword = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">{t("goBackTo")} —</Typography>
-				<Typography
-					component="span"
-					color={theme.palette.primary.main}
-					ml={theme.spacing(2)}
-					onClick={() => navigate("/login")}
-					sx={{ userSelect: "none" }}
-				>
-					{t("authLoginTitle")}
+				<Typography display="inline-block">
+					<Trans
+						i18nKey="auth.forgotPassword.links.login"
+						components={{
+							a: (
+								<Typography
+									component="span"
+									color={theme.palette.primary.main}
+									ml={theme.spacing(2)}
+									onClick={() => navigate("/login")}
+									sx={{ userSelect: "none" }}
+								/>
+							),
+						}}
+					/>
 				</Typography>
 			</Box>
 		</Stack>

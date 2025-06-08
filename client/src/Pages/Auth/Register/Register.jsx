@@ -35,11 +35,15 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("signUp")}</Typography>
+					<Typography component="h1">
+						{isSuperAdmin
+							? t("auth.registration.heading.superAdmin")
+							: t("auth.registration.heading.user")}
+					</Typography>
 					<Typography>
 						{isSuperAdmin
-							? t("authRegisterCreateSuperAdminAccount")
-							: t("authRegisterCreateAccount")}
+							? t("auth.registration.description.superAdmin")
+							: t("auth.registration.description.user")}
 					</Typography>
 				</Box>
 				<Box width="100%">
@@ -62,13 +66,15 @@ const LandingPage = ({ isSuperAdmin, onSignup }) => {
 						}}
 					>
 						<Mail />
-						{t("authRegisterSignUpWithEmail")}
+						{isSuperAdmin
+							? t("auth.registration.gettingStartedButton.superAdmin")
+							: t("auth.registration.gettingStartedButton.user")}
 					</Button>
 				</Box>
 				<Box maxWidth={400}>
 					<Typography className="tos-p">
 						<Trans
-							i18nKey="authRegisterBySigningUp"
+							i18nKey="auth.registration.termsAndPolicies"
 							components={{
 								a1: (
 									<Typography
@@ -189,7 +195,8 @@ const Register = ({ isSuperAdmin }) => {
 			newErrors[err.path[0]] = err.message;
 		});
 		setErrors(newErrors);
-		createToast({ body: error.details[0].message || "Error validating data." });
+		// Localization keys are in validation.js
+		createToast({ body: t(error.details[0].message || "auth.common.errors.validation") });
 	};
 
 	const handleStepOne = async (e) => {
@@ -246,7 +253,7 @@ const Register = ({ isSuperAdmin }) => {
 			const authToken = action.payload.data;
 			navigate("/uptime");
 			createToast({
-				body: "Welcome! Your account was created successfully.",
+				body: t("auth.registration.toasts.success"),
 			});
 		} else {
 			if (action.payload) {
@@ -255,7 +262,7 @@ const Register = ({ isSuperAdmin }) => {
 				});
 			} else {
 				createToast({
-					body: "Unknown error.",
+					body: t("common.toasts.unknownError"),
 				});
 			}
 		}
@@ -346,6 +353,7 @@ const Register = ({ isSuperAdmin }) => {
 					/>
 				) : step === 1 ? (
 					<StepOne
+						isSuperAdmin={isSuperAdmin}
 						form={form}
 						errors={errors}
 						onSubmit={handleStepOne}
@@ -354,6 +362,7 @@ const Register = ({ isSuperAdmin }) => {
 					/>
 				) : step === 2 ? (
 					<StepTwo
+						isSuperAdmin={isSuperAdmin}
 						form={form}
 						errors={errors}
 						onSubmit={handleStepTwo}
@@ -362,6 +371,7 @@ const Register = ({ isSuperAdmin }) => {
 					/>
 				) : step === 3 ? (
 					<StepThree
+						isSuperAdmin={isSuperAdmin}
 						/* form={form}
 						errors={errors} */
 						onSubmit={handleStepThree}
@@ -377,17 +387,21 @@ const Register = ({ isSuperAdmin }) => {
 				p={theme.spacing(12)}
 			>
 				<Typography display="inline-block">
-					{t("authRegisterAlreadyHaveAccount")}
-				</Typography>
-				<Typography
-					component="span"
-					ml={theme.spacing(2)}
-					onClick={() => {
-						navigate("/login");
-					}}
-					sx={{ userSelect: "none", color: theme.palette.accent.main }}
-				>
-					{t("authRegisterLoginLink")}
+					<Trans
+						i18nKey="auth.registration.links.login"
+						components={{
+							a: (
+								<Typography
+									component="span"
+									ml={theme.spacing(2)}
+									onClick={() => {
+										navigate("/login");
+									}}
+									sx={{ userSelect: "none", color: theme.palette.accent.main }}
+								/>
+							),
+						}}
+					/>
 				</Typography>
 			</Box>
 		</Stack>

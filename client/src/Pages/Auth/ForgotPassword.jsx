@@ -11,7 +11,7 @@ import Logo from "../../assets/icons/checkmate-icon.svg?react";
 import Key from "../../assets/icons/key.svg?react";
 import Background from "../../assets/Images/background-grid.svg?react";
 import IconBox from "../../Components/IconBox";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import "./index.css";
 
 const ForgotPassword = () => {
@@ -41,8 +41,8 @@ const ForgotPassword = () => {
 			// validation errors
 			const err =
 				error.details && error.details.length > 0
-					? error.details[0].message
-					: "Error validating data.";
+					? error.details[0].message // FIXME: Possibly untranslated string
+					: t("auth.common.errors.validation");
 			setErrors({ email: err });
 			createToast({
 				body: err,
@@ -53,18 +53,18 @@ const ForgotPassword = () => {
 				sessionStorage.setItem("email", form.email);
 				navigate("/check-email");
 				createToast({
-					body: `Instructions sent to ${form.email}.`,
+					body: t("auth.forgotPassword.toasts.sent").replace("<email/>", form.email),
 				});
 			} else {
 				if (action.payload) {
 					// dispatch errors
 					createToast({
-						body: action.payload.msg,
+						body: action.payload.msg, // FIXME: Potentially untranslated string
 					});
 				} else {
 					// unknown errors
 					createToast({
-						body: "Unknown error.",
+						body: t("common.toasts.unknownError"),
 					});
 				}
 			}
@@ -162,11 +162,11 @@ const ForgotPassword = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<Key alt="password key icon" />
+								<Key alt={t("auth.forgotPassword.imageAlts.passwordKey")} />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">{t("authForgotPasswordTitle")}</Typography>
-						<Typography>{t("authForgotPasswordInstructions")}</Typography>
+						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>
+						<Typography>{t("auth.forgotPassword.subheadings.stepOne")}</Typography>
 					</Box>
 					<Box
 						component="form"
@@ -179,13 +179,13 @@ const ForgotPassword = () => {
 						<TextInput
 							type="email"
 							id="forgot-password-email-input"
-							label={t("email")}
+							label={t("auth.common.inputs.email.label")}
 							isRequired={true}
-							placeholder={t("enterEmail")}
+							placeholder={t("auth.common.inputs.email.placeholder")}
 							value={form.email}
 							onChange={handleChange}
 							error={errors.email ? true : false}
-							helperText={t(errors.email)}
+							helperText={t(errors.email)} // Localization keys are in validation.js
 						/>
 						<Button
 							variant="contained"
@@ -198,7 +198,7 @@ const ForgotPassword = () => {
 								mt: theme.spacing(15),
 							}}
 						>
-							{t("continue")}
+							{t("auth.common.navigation.continue")}
 						</Button>
 					</Box>
 				</Stack>
@@ -207,15 +207,21 @@ const ForgotPassword = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">{t("goBackTo")}</Typography>
-				<Typography
-					component="span"
-					color={theme.palette.accent.main}
-					ml={theme.spacing(2)}
-					onClick={handleNavigate}
-					sx={{ userSelect: "none" }}
-				>
-					{t("authLoginTitle")}
+				<Typography display="inline-block">
+					<Trans
+						i18nKey="auth.forgotPassword.links.login"
+						components={{
+							a: (
+								<Typography
+									component="span"
+									color={theme.palette.accent.main}
+									ml={theme.spacing(2)}
+									onClick={handleNavigate}
+									sx={{ userSelect: "none" }}
+								/>
+							),
+						}}
+					/>
 				</Typography>
 			</Box>
 		</Stack>

@@ -7,7 +7,164 @@
 		},
 		"toasts": {
 			"networkError": "Chyba připojení k síti",
-			"checkConnection": "Zkontrolujte prosím své připojení k síti"
+			"checkConnection": "Zkontrolujte prosím své připojení k síti",
+			"unknownError": "Nastala neznámá chyba"
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Pokračovat",
+				"back": "Zpět"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-mail",
+					"placeholder": "jan.novak@domena.cz",
+					"errors": {
+						"empty": "Zadejte prosím e-mailovou adresu",
+						"invalid": "Překontrolujte si prosím správnost zadané e-mailové adresy"
+					}
+				},
+				"password": {
+					"label": "Heslo",
+					"rules": {
+						"length": {
+							"beginning": "Heslo musí být dlouhé alespoň",
+							"highlighted": "8 znaků"
+						},
+						"special": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 speciální znak"
+						},
+						"number": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 číslo"
+						},
+						"uppercase": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 velké písmeno"
+						},
+						"lowercase": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 malé písmeno"
+						},
+						"match": {
+							"beginning": "Obě hesla se",
+							"highlighted": "musí shodovat"
+						}
+					},
+					"errors": {
+						"empty": "Zadejte prosím heslo",
+						"length": "Heslo musí být dlouhé alespoň 8 znaků",
+						"uppercase": "Heslo musí obsahovat alespoň 1 velké písmeno",
+						"lowercase": "Heslo musí obsahovat alespoň 1 malé písmeno",
+						"number": "Heslo musí obsahovat alespoň 1 číslo",
+						"special": "Heslo musí obsahovat alespoň 1 speciální znak",
+						"incorrect": "Zadané heslo neodpovídá tomu, co bylo nastaveno"
+					}
+				},
+				"passwordConfirm": {
+					"label": "Potvrzení hesla",
+					"placeholder": "Pro ověření správnosti zadejte heslo ještě jednou",
+					"errors": {
+						"empty": "Zadejte prosím své heslo ještě jednou, aby mohla být potvrzena jeho správnost (odhalí překlepy)",
+						"different": "Zadaná hesla se liší, takže je nejspíše jedno z nich špatně zapsané"
+					}
+				},
+				"firstName": {
+					"label": "Jméno",
+					"placeholder": "Jan",
+					"errors": {
+						"empty": "Zadejte prosím své křestní jméno",
+						"length": "Jméno se musí vejít do 50 znaků",
+						"pattern": "Součástí jména mohou být pouze písmena, mezery apostrofy nebo spojovníky"
+					}
+				},
+				"lastName": {
+					"label": "Příjmení",
+					"placeholder": "Novák",
+					"errors": {
+						"empty": "Zadejte prosím své příjmení",
+						"length": "Příjmení se musí vejít do 50 znaků",
+						"pattern": "Součástí příjmení mohou být pouze písmena, mezery apostrofy nebo spojovníky"
+					}
+				}
+			},
+			"errors": {
+				"validation": "Nastala chyba při ověřování dat."
+			}
+		},
+		"login": {
+			"heading": "Přihlášení",
+			"subheadings": {
+				"stepOne": "Zadejte svůj e-mail",
+				"stepTwo": "Zadejte své heslo"
+			},
+			"links": {
+				"forgotPassword": "Zapomněli jste heslo? <a>Obnovte si ho</a>",
+				"register": "Ještě nemáte účet? <a>Zaregistrujte se</a>"
+			},
+			"toasts": {
+				"success": "Vítejte zpět",
+				"incorrectPassword": "Nesprávné heslo"
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "Vytvoření superadministrátora",
+				"user": "Registrace"
+			},
+			"subheadings": {
+				"stepOne": "Zadejte své osobní údaje",
+				"stepTwo": "Zadejte svůj e-mail",
+				"stepThree": "Nastavte si heslo"
+			},
+			"description": {
+				"superAdmin": "Pro začátek vytvořte účet superadministrátora",
+				"user": "Zaregistrujte se jako uživatel a požádejte svého superadministrátora, aby vám přidělil oprávnění k hlídačům"
+			},
+			"gettingStartedButton": {
+				"superAdmin": "Vytvořit účet superadministrátora",
+				"user": "Zaregistrovat se jako běžný uživatel"
+			},
+			"termsAndPolicies": "Vytvořením účtu souhlasíte s našimi <a1>Podmínkami použití</a1> (anglicky) a <a2>Podmínkami zpracování osobních údajů</a2> (anglicky).",
+			"links": {
+				"login": "Máte již vytvořený účet? <a>Přihlašte se</a>"
+			},
+			"toasts": {
+				"success": "Vítejte! Váš účet byl úspěšně vytvořen."
+			}
+		},
+		"forgotPassword": {
+			"heading": "Zapomenuté heslo",
+			"subheadings": {
+				"stepOne": "Nebojte se, zašleme vám pokyny pro obnovení hesla.",
+				"stepTwo": "Odkaz pro obnovení hesla byl odeslán na <email/>",
+				"stepThree": "Nové heslo se musí lišit od těch, které jste již použili.",
+				"stepFour": "Heslo bylo úspěšně obnoveno. Klepněte na tlačítko a dojde k čarovnému přihlášení."
+			},
+			"buttons": {
+				"openEmail": "Otevřít e-mailovou aplikaci",
+				"resetPassword": "Obnovit heslo"
+			},
+			"imageAlts": {
+				"passwordKey": "Ikonka přístupového klíče",
+				"email": "Ikonka e-mailu",
+				"lock": "Ikonka zámku",
+				"passwordConfirm": "Ikonka potvrzeného hesla"
+			},
+			"links": {
+				"login": "Vrátit se k <a>Přihlášení</a>",
+				"resend": "Nedorazil vám e-mail? <a>Klepněte pro opětovné zaslání</a>"
+			},
+			"toasts": {
+				"sent": "Instrukce vám dorazí na <email/>.",
+				"emailNotFound": "Nepodařilo se nalézt e-mailovou adresu.",
+				"redirect": "Přesměrování proběhne za <seconds/>...",
+				"success": "Heslo bylo úspěšně obnoveno.",
+				"error": "Obnova hesla se nepodařila. Zkuste to prosím znovu nebo kontaktujte podporu."
+			}
 		}
 	},
 	"errorPages": {
@@ -25,24 +182,12 @@
 		}
 	},
 	"dontHaveAccount": "",
-	"email": "",
 	"forgotPassword": "",
-	"password": "",
-	"signUp": "",
 	"submit": "",
 	"title": "",
-	"continue": "",
 	"enterEmail": "",
-	"authLoginTitle": "",
-	"authLoginEnterPassword": "",
 	"commonPassword": "",
-	"commonBack": "",
-	"authForgotPasswordTitle": "",
-	"authForgotPasswordResetPassword": "",
 	"createPassword": "",
-	"createAPassword": "",
-	"authRegisterAlreadyHaveAccount": "",
-	"authLoginEnterEmail": "",
 	"authRegisterTitle": "",
 	"authRegisterStepOneTitle": "",
 	"authRegisterStepOneDescription": "",
@@ -50,36 +195,15 @@
 	"authRegisterStepTwoDescription": "",
 	"authRegisterStepThreeTitle": "",
 	"authRegisterStepThreeDescription": "",
-	"authForgotPasswordDescription": "",
 	"authForgotPasswordSendInstructions": "",
 	"authForgotPasswordBackTo": "",
 	"authCheckEmailTitle": "",
-	"authCheckEmailDescription": "",
 	"authCheckEmailResendEmail": "",
 	"authCheckEmailBackTo": "",
-	"goBackTo": "",
-	"authCheckEmailDidntReceiveEmail": "",
-	"authCheckEmailClickToResend": "",
 	"authSetNewPasswordTitle": "",
-	"authSetNewPasswordDescription": "",
 	"authSetNewPasswordNewPassword": "",
-	"authSetNewPasswordConfirmPassword": "",
-	"confirmPassword": "",
-	"authSetNewPasswordResetPassword": "",
 	"authSetNewPasswordBackTo": "",
-	"authPasswordMustBeAtLeast": "",
-	"authPasswordCharactersLong": "",
-	"authPasswordMustContainAtLeast": "",
-	"authPasswordSpecialCharacter": "",
-	"authPasswordOneNumber": "",
-	"authPasswordUpperCharacter": "",
-	"authPasswordLowerCharacter": "",
-	"authPasswordConfirmAndPassword": "",
-	"authPasswordMustMatch": "",
 	"authRegisterCreateAccount": "",
-	"authRegisterCreateSuperAdminAccount": "",
-	"authRegisterSignUpWithEmail": "",
-	"authRegisterBySigningUp": "",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
 	"settingsGeneralSettings": "",
@@ -140,9 +264,6 @@
 	"city": "",
 	"response": "",
 	"passwordreset": "",
-	"authRegisterStepOnePersonalDetails": "",
-	"authCheckEmailOpenEmailButton": "",
-	"authNewPasswordConfirmed": "",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
 	"webhookSendSuccess": "",
@@ -416,10 +537,7 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "",
-	"authRegisterFirstName": "",
-	"authRegisterLastName": "",
 	"authRegisterEmail": "",
-	"authRegisterEmailRequired": "",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -431,8 +549,6 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "",
-	"authRegisterLoginLink": "",
 	"validationNameRequired": "",
 	"validationNameTooLong": "",
 	"validationNameInvalidCharacters": "",
@@ -440,10 +556,7 @@
 	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "",
 	"DeleteAccountButton": "",
-	"authRegisterEmailInvalid": "",
 	"publicLink": "",
-	"doNotHaveAccount": "",
-	"registerHere": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",
@@ -528,7 +641,6 @@
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"authForgotPasswordInstructions": "",
 	"settingsThemeModeLight": "",
 	"settingsThemeModeDark": "",
 	"settingsClearAllStatsDialogCancel": "",

@@ -15,7 +15,7 @@ import PasswordStep from "./Components/PasswordStep";
 import ThemeSwitch from "../../../Components/ThemeSwitch";
 import ForgotPasswordLabel from "./Components/ForgotPasswordLabel";
 import LanguageSelector from "../../../Components/LanguageSelector";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 const DEMO = import.meta.env.VITE_APP_DEMO;
 
@@ -83,8 +83,8 @@ const Login = () => {
 			if (error) {
 				const errorMessage = error.details[0].message;
 				const translatedMessage = errorMessage.startsWith("auth")
-					? t(errorMessage)
-					: errorMessage;
+					? t(errorMessage) // Localization keys are in validation.js
+					: errorMessage; // FIXME: Potential untranslated string
 				setErrors((prev) => ({ ...prev, email: translatedMessage }));
 				createToast({ body: translatedMessage });
 			} else {
@@ -104,31 +104,31 @@ const Login = () => {
 					body:
 						error.details && error.details.length > 0
 							? error.details[0].message.startsWith("auth")
-								? t(error.details[0].message)
-								: error.details[0].message
-							: t("Error validating data."),
+								? t(error.details[0].message) // Localization keys are in validation.js
+								: error.details[0].message // FIXME: Potential untranslated string
+							: t("auth.common.errors.validation"),
 				});
 			} else {
 				const action = await dispatch(login(form));
 				if (action.payload.success) {
 					navigate("/uptime");
 					createToast({
-						body: t("welcomeBack"),
+						body: t("auth.login.toasts.success"),
 					});
 				} else {
 					if (action.payload) {
 						if (action.payload.msg === "Incorrect password")
 							setErrors({
-								password: "The password you provided does not match our records",
+								password: t("auth.common.fields.password.errors.incorrect"),
 							});
 						// dispatch errors
 						createToast({
-							body: action.payload.msg,
+							body: t("auth.login.toasts.incorrectPassword"),
 						});
 					} else {
 						// unknown errors
 						createToast({
-							body: "Unknown error.",
+							body: t("common.toasts.unknownError"),
 						});
 					}
 				}
@@ -237,21 +237,25 @@ const Login = () => {
 						display="inline-block"
 						color={theme.palette.primary.main}
 					>
-						{t("doNotHaveAccount")}
-					</Typography>
-					<Typography
-						component="span"
-						color={theme.palette.accent.main}
-						ml={theme.spacing(2)}
-						sx={{
-							cursor: "pointer",
-							"&:hover": {
-								color: theme.palette.accent.darker,
-							},
-						}}
-						onClick={() => navigate("/register")}
-					>
-						{t("registerHere")}
+						<Trans
+							i18nKey="auth.login.links.register"
+							components={{
+								a: (
+									<Typography
+										component="span"
+										color={theme.palette.accent.main}
+										ml={theme.spacing(2)}
+										sx={{
+											cursor: "pointer",
+											"&:hover": {
+												color: theme.palette.accent.darker,
+											},
+										}}
+										onClick={() => navigate("/register")}
+									/>
+								),
+							}}
+						/>
 					</Typography>
 				</Box>
 			</Stack>

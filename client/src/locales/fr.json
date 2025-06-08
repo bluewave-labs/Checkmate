@@ -7,7 +7,164 @@
 		},
 		"toasts": {
 			"networkError": "",
-			"checkConnection": "Vérifiez votre connexion"
+			"checkConnection": "Vérifiez votre connexion",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Continuer",
+				"back": "Retour"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-mail",
+					"placeholder": "",
+					"errors": {
+						"empty": "Pour continuer, veuillez saisir votre adresse e-mail",
+						"invalid": "Veuillez saisir une adresse e-mail valide"
+					}
+				},
+				"password": {
+					"label": "Mot de passe",
+					"rules": {
+						"length": {
+							"beginning": "Doit faire au moins",
+							"highlighted": "8 caractères"
+						},
+						"special": {
+							"beginning": "Doit contenir au moins",
+							"highlighted": "un caractère spécial"
+						},
+						"number": {
+							"beginning": "Doit contenir au moins",
+							"highlighted": "un nombre"
+						},
+						"uppercase": {
+							"beginning": "Doit contenir au moins",
+							"highlighted": "une lettre majuscule"
+						},
+						"lowercase": {
+							"beginning": "Doit contenir au moins",
+							"highlighted": "une lettre minuscule"
+						},
+						"match": {
+							"beginning": "Confirmer le mot de passe",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "Confirmer le mot de passe",
+					"placeholder": "Confirmez votre mot de passe",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "Prénom",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "Nom",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "Se connecter",
+			"subheadings": {
+				"stepOne": "Entrez votre e-mail",
+				"stepTwo": "Entrez votre mot de passe"
+			},
+			"links": {
+				"forgotPassword": "Mot de passe oublié ? <a>Réinitialiser le mot de passe</a>",
+				"register": ""
+			},
+			"toasts": {
+				"success": "Bienvenue ! Vous êtes connecté avec succès.",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "S'inscrire"
+			},
+			"subheadings": {
+				"stepOne": "Saisissez vos infos",
+				"stepTwo": "Entrez votre e-mail",
+				"stepThree": "Créez votre mot de passe"
+			},
+			"description": {
+				"superAdmin": "Créez votre compte Super admin pour commencer",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "S'inscrire avec E-mail",
+				"user": ""
+			},
+			"termsAndPolicies": "En vous inscrivant, vous acceptez nos",
+			"links": {
+				"login": "Vous avez un compte ? <a>Se connecter</a>"
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "Mot de passe oublié ?",
+			"subheadings": {
+				"stepOne": "Nous vous enverrons des instructions de réinitialisation.",
+				"stepTwo": "Nous avons envoyé un lien de réinitialisation à <email/>",
+				"stepThree": "Votre nouveau mot de passe doit être différent des anciens mots de passes utilisés.",
+				"stepFour": "Votre mot de passe a été réinitialisé avec succès. Cliquez ci-dessous pour vous connecter."
+			},
+			"buttons": {
+				"openEmail": "Ouvrir l'appli mail",
+				"resetPassword": "Réinitialiser le mot de passe"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "Retourner à <a>Se connecter</a>",
+				"resend": "Vous n'avez pas reçu l'e-mail ? <a>Cliquez pour renvoyer</a>"
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
 		}
 	},
 	"errorPages": {
@@ -25,24 +182,11 @@
 		}
 	},
 	"dontHaveAccount": "Vous n'avez pas de compte",
-	"email": "E-mail",
 	"forgotPassword": "Mot de passe oublié",
-	"password": "mot de passe",
-	"signUp": "S'inscrire",
 	"submit": "Envoyer",
 	"title": "Titre",
-	"continue": "Continuer",
 	"enterEmail": "Entrez votre adresse e-mail",
-	"authLoginTitle": "Se connecter",
-	"authLoginEnterPassword": "Entrez votre mot de passe",
 	"commonPassword": "Mot de passe",
-	"commonBack": "Retour",
-	"authForgotPasswordTitle": "Mot de passe oublié ?",
-	"authForgotPasswordResetPassword": "Réinitialiser le mot de passe",
-	"createPassword": "Créez votre mot de passe",
-	"createAPassword": "Créer un mot de passe",
-	"authRegisterAlreadyHaveAccount": "Vous avez un compte ?",
-	"authLoginEnterEmail": "Entrez votre e-mail",
 	"authRegisterTitle": "Créer un compte",
 	"authRegisterStepOneTitle": "Créez votre compte",
 	"authRegisterStepOneDescription": "Entrez vos informations pour commencer",
@@ -50,36 +194,15 @@
 	"authRegisterStepTwoDescription": "Parlez-nous un peu de vous",
 	"authRegisterStepThreeTitle": "Presque fini !",
 	"authRegisterStepThreeDescription": "Vérifiez vos infos",
-	"authForgotPasswordDescription": "Pas d'inquiétude, nous allons vous envoyer des instructions de réinitialisation.",
 	"authForgotPasswordSendInstructions": "Envoyer les instructions",
 	"authForgotPasswordBackTo": "Retourner à",
 	"authCheckEmailTitle": "Vérifiez votre e-mail",
-	"authCheckEmailDescription": "Nous avons envoyé un lien de réinitialisation à",
 	"authCheckEmailResendEmail": "Renvoyer le mail",
 	"authCheckEmailBackTo": "Retourner à",
-	"goBackTo": "Retourner à",
-	"authCheckEmailDidntReceiveEmail": "Vous n'avez pas reçu l'e-mail ?",
-	"authCheckEmailClickToResend": "Cliquez pour renvoyer",
 	"authSetNewPasswordTitle": "Définir un nouveau mot de passe",
-	"authSetNewPasswordDescription": "Votre nouveau mot de passe doit être différent des anciens mots de passes utilisés.",
 	"authSetNewPasswordNewPassword": "Nouveau mot de passe",
-	"authSetNewPasswordConfirmPassword": "Confirmer le mot de passe",
-	"confirmPassword": "Confirmez votre mot de passe",
-	"authSetNewPasswordResetPassword": "Réinitialiser le mot de passe",
 	"authSetNewPasswordBackTo": "Retourner à",
-	"authPasswordMustBeAtLeast": "Doit faire au moins",
-	"authPasswordCharactersLong": "8 caractères",
-	"authPasswordMustContainAtLeast": "Doit contenir au moins",
-	"authPasswordSpecialCharacter": "un caractère spécial",
-	"authPasswordOneNumber": "un nombre",
-	"authPasswordUpperCharacter": "une lettre majuscule",
-	"authPasswordLowerCharacter": "une lettre minuscule",
-	"authPasswordConfirmAndPassword": "Confirmer le mot de passe",
-	"authPasswordMustMatch": "doit correspondre",
 	"authRegisterCreateAccount": "Créez votre compte pour commencer",
-	"authRegisterCreateSuperAdminAccount": "Créez votre compte Super admin pour commencer",
-	"authRegisterSignUpWithEmail": "S'inscrire avec E-mail",
-	"authRegisterBySigningUp": "En vous inscrivant, vous acceptez nos",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
 	"settingsGeneralSettings": "Paramètres généraux",
@@ -140,9 +263,6 @@
 	"city": "VILLE",
 	"response": "",
 	"passwordreset": "",
-	"authRegisterStepOnePersonalDetails": "Saisissez vos infos",
-	"authCheckEmailOpenEmailButton": "Ouvrir l'appli mail",
-	"authNewPasswordConfirmed": "Votre mot de passe a été réinitialisé avec succès. Cliquez ci-dessous pour vous connecter.",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
 	"webhookSendSuccess": "",
@@ -416,10 +536,7 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "Vous supprimez vraiment ce compte ?",
-	"authRegisterFirstName": "Prénom",
-	"authRegisterLastName": "Nom",
 	"authRegisterEmail": "Email",
-	"authRegisterEmailRequired": "Pour continuer, veuillez saisir votre adresse e-mail",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -431,8 +548,6 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "Bienvenue ! Vous êtes connecté avec succès.",
-	"authRegisterLoginLink": "Se connecter",
 	"validationNameRequired": "Veuillez saisir votre nom",
 	"validationNameTooLong": "",
 	"validationNameInvalidCharacters": "Veuillez utiliser uniquement des lettres, des espaces, des apostrophes ou des traits d'union",
@@ -440,10 +555,7 @@
 	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "Supprimer le compte",
 	"DeleteAccountButton": "Supprimer le compte",
-	"authRegisterEmailInvalid": "Veuillez saisir une adresse e-mail valide",
 	"publicLink": "",
-	"doNotHaveAccount": "",
-	"registerHere": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",
@@ -528,7 +640,6 @@
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"authForgotPasswordInstructions": "Nous vous enverrons des instructions de réinitialisation.",
 	"settingsThemeModeLight": "Clair",
 	"settingsThemeModeDark": "Sombre",
 	"settingsClearAllStatsDialogCancel": "Annuler",

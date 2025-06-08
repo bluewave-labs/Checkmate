@@ -7,7 +7,164 @@
 		},
 		"toasts": {
 			"networkError": "",
-			"checkConnection": ""
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Weiter",
+				"back": "Zurück"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-Mail",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "Passwort",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "Anmelden",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "Geben Sie Ihr Passwort ein"
+			},
+			"links": {
+				"forgotPassword": "Passwort vergessen? <a>Passwort zurücksetzen</a>",
+				"register": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "Registrieren"
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "Erstelle dein Passwort"
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "Passwort zurücksetzen",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
 		}
 	},
 	"errorPages": {
@@ -25,24 +182,11 @@
 		}
 	},
 	"dontHaveAccount": "Noch kein Konto",
-	"email": "E-Mail",
 	"forgotPassword": "Passwort vergessen",
-	"password": "passwort",
-	"signUp": "Registrieren",
 	"submit": "Absenden",
 	"title": "Titel",
-	"continue": "Weiter",
 	"enterEmail": "Geben Sie Ihre E-Mail-Adresse ein",
-	"authLoginTitle": "Anmelden",
-	"authLoginEnterPassword": "Geben Sie Ihr Passwort ein",
 	"commonPassword": "Passwort",
-	"commonBack": "Zurück",
-	"authForgotPasswordTitle": "Passwort vergessen?",
-	"authForgotPasswordResetPassword": "Passwort zurücksetzen",
-	"createPassword": "Erstelle dein Passwort",
-	"createAPassword": "Passwort",
-	"authRegisterAlreadyHaveAccount": "Hast du schon eine Account?",
-	"authLoginEnterEmail": "",
 	"authRegisterTitle": "",
 	"authRegisterStepOneTitle": "",
 	"authRegisterStepOneDescription": "",
@@ -50,36 +194,15 @@
 	"authRegisterStepTwoDescription": "",
 	"authRegisterStepThreeTitle": "",
 	"authRegisterStepThreeDescription": "",
-	"authForgotPasswordDescription": "",
 	"authForgotPasswordSendInstructions": "",
 	"authForgotPasswordBackTo": "",
 	"authCheckEmailTitle": "",
-	"authCheckEmailDescription": "",
 	"authCheckEmailResendEmail": "",
 	"authCheckEmailBackTo": "",
-	"goBackTo": "",
-	"authCheckEmailDidntReceiveEmail": "",
-	"authCheckEmailClickToResend": "",
 	"authSetNewPasswordTitle": "",
-	"authSetNewPasswordDescription": "",
 	"authSetNewPasswordNewPassword": "",
-	"authSetNewPasswordConfirmPassword": "",
-	"confirmPassword": "",
-	"authSetNewPasswordResetPassword": "",
 	"authSetNewPasswordBackTo": "",
-	"authPasswordMustBeAtLeast": "",
-	"authPasswordCharactersLong": "",
-	"authPasswordMustContainAtLeast": "",
-	"authPasswordSpecialCharacter": "",
-	"authPasswordOneNumber": "",
-	"authPasswordUpperCharacter": "",
-	"authPasswordLowerCharacter": "",
-	"authPasswordConfirmAndPassword": "",
-	"authPasswordMustMatch": "",
 	"authRegisterCreateAccount": "",
-	"authRegisterCreateSuperAdminAccount": "",
-	"authRegisterSignUpWithEmail": "",
-	"authRegisterBySigningUp": "",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
 	"settingsGeneralSettings": "",
@@ -140,9 +263,6 @@
 	"city": "",
 	"response": "",
 	"passwordreset": "",
-	"authRegisterStepOnePersonalDetails": "",
-	"authCheckEmailOpenEmailButton": "",
-	"authNewPasswordConfirmed": "",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
 	"webhookSendSuccess": "",
@@ -416,10 +536,7 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "",
-	"authRegisterFirstName": "",
-	"authRegisterLastName": "",
 	"authRegisterEmail": "",
-	"authRegisterEmailRequired": "",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -431,8 +548,6 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "",
-	"authRegisterLoginLink": "",
 	"validationNameRequired": "",
 	"validationNameTooLong": "",
 	"validationNameInvalidCharacters": "",
@@ -440,10 +555,7 @@
 	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "",
 	"DeleteAccountButton": "",
-	"authRegisterEmailInvalid": "",
 	"publicLink": "",
-	"doNotHaveAccount": "",
-	"registerHere": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",
@@ -528,7 +640,6 @@
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"authForgotPasswordInstructions": "",
 	"settingsThemeModeLight": "",
 	"settingsThemeModeDark": "",
 	"settingsClearAllStatsDialogCancel": "",
