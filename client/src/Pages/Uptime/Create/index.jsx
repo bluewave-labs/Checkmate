@@ -353,7 +353,9 @@ const CreateMonitor = () => {
 						>
 							{t("settingsGeneralSettings")}
 						</Typography>
-						<Typography component="p">{t(`uptimeGeneralInstructions.${monitor.type}`)}</Typography>
+						<Typography component="p">
+							{t(`uptimeGeneralInstructions.${monitor.type}`)}
+						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<TextInput

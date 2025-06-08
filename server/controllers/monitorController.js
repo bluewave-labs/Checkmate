@@ -550,10 +550,8 @@ class MonitorController {
 				})
 			);
 
-			// Delete the old job(editedMonitor has the same ID as the old monitor)
-			await this.jobQueue.deleteJob(monitorBeforeEdit);
-			// Add the new job back to the queue
-			await this.jobQueue.addJob(editedMonitor._id, editedMonitor);
+			await this.jobQueue.updateJob(editedMonitor);
+
 			return res.success({
 				msg: this.stringService.monitorEdit,
 				data: editedMonitor,
@@ -595,8 +593,8 @@ class MonitorController {
 				{ new: true }
 			);
 			monitor.isActive === true
-				? await this.jobQueue.addJob(monitor._id, monitor)
-				: await this.jobQueue.deleteJob(monitor);
+				? await this.jobQueue.resumeJob(monitor._id, monitor)
+				: await this.jobQueue.pauseJob(monitor);
 
 			return res.success({
 				msg: monitor.isActive

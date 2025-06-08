@@ -532,12 +532,6 @@
 		"passwordRequirements": "Новый пароль должен содержать не менее 8 символов и содержать как минимум одну заглавную букву, одну строчную букву, одну цифру и один специальный символ.",
 		"saving": "Сохранение..."
 	},
-	"uptimeGeneralInstructions": {
-		"http": "Введите URL или IP-адрес для мониторинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное имя, которое будет отображаться на панели.",
-		"ping": "Введите URL или IP-адрес для пинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное имя, которое будет отображаться на панели.",
-		"docker": "Введите идентификатор контейнера Docker. Идентификатор должен содержать все 64 символа. Вы можете выполнить команду docker inspect <short_id>, чтобы получить полный идентификатор контейнера.",
-		"port": "Введите URL или IP-адрес сервера, номер порта и понятное имя, которое будет отображаться на панели."
-	},
 	"settingsEmailConnectionHost": "",
 	"sendTestEmail": "",
 	"emailSent": "",
@@ -558,5 +552,11 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	}
 }

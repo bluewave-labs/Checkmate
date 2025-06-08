@@ -50,6 +50,9 @@ import JobQueue from "./service/JobQueue/JobQueue.js";
 import JobQueueHelper from "./service/JobQueue/JobQueueHelper.js";
 import { Queue, Worker } from "bullmq";
 
+import PulseQueue from "./service/PulseQueue/PulseQueue.js";
+import PulseQueueHelper from "./service/PulseQueue/PulseQueueHelper.js";
+
 //Network service and dependencies
 import NetworkService from "./service/networkService.js";
 import axios from "axios";
@@ -183,25 +186,40 @@ const startApp = async () => {
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
 
-	const jobQueueHelper = new JobQueueHelper({
-		redisService,
-		Queue,
-		Worker,
-		logger,
+	// const jobQueueHelper = new JobQueueHelper({
+	// 	redisService,
+	// 	Queue,
+	// 	Worker,
+	// 	logger,
+	// 	db,
+	// 	networkService,
+	// 	statusService,
+	// 	notificationService,
+	// });
+	// const jobQueue = await JobQueue.create({
+	// 	db,
+	// 	jobQueueHelper,
+	// 	logger,
+	// 	stringService,
+	// });
+
+	const pulseQueueHelper = new PulseQueueHelper({
 		db,
+		logger,
 		networkService,
 		statusService,
 		notificationService,
 	});
-	const jobQueue = await JobQueue.create({
+	const pulseQueue = await PulseQueue.create({
+		appSettings,
 		db,
-		jobQueueHelper,
+		pulseQueueHelper,
 		logger,
-		stringService,
 	});
 
 	// Register services
-	ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
+	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
+	ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
 	ServiceRegistry.register(MongoDB.SERVICE_NAME, db);
 	ServiceRegistry.register(SettingsService.SERVICE_NAME, settingsService);
 	ServiceRegistry.register(EmailService.SERVICE_NAME, emailService);
