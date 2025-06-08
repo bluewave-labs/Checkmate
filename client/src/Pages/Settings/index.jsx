@@ -205,7 +205,7 @@ const Settings = () => {
 					bottom: 0,
 					boxShadow: theme.shape.boxShadow,
 					zIndex: 1000,
-					mt : 3,
+					mt: 3,
 					backgroundColor: theme.palette.primary.main,
 					display: "flex",
 					justifyContent: "flex-end",
@@ -216,7 +216,7 @@ const Settings = () => {
 					border: 1,
 					borderStyle: "solid",
 					borderColor: theme.palette.primary.lowContrast,
-					borderRadius: theme.spacing(2)
+					borderRadius: theme.spacing(2),
 				}}
 			>
 				<Button
