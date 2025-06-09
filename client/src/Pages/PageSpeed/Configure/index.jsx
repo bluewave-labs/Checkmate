@@ -366,14 +366,15 @@ const PageSpeedConfigure = () => {
 							</Box>
 							<Stack gap={theme.spacing(6)}>
 								<Typography component="p">{t("whenNewIncident")}</Typography>
-								<Checkbox
+								{/* Future Feature: Notify via SMS */}
+								{/* <Checkbox
 									id="notify-sms"
 									label={t("notifySMS")}
 									isChecked={false}
 									value=""
 									onChange={() => logger.warn("disabled")}
 									isDisabled={true}
-								/>
+								/> */}
 								<Checkbox
 									id="notify-email-default"
 									label={`Notify via email (to ${user.email})`}
@@ -385,14 +386,15 @@ const PageSpeedConfigure = () => {
 									value={user?.email}
 									onChange={(event) => handleChange(event)}
 								/>
-								<Checkbox
+								{/* Future Feature: Notify via Email */}
+								{/* <Checkbox
 									id="notify-email"
 									label={t("notifyEmails")}
 									isChecked={false}
 									value=""
 									onChange={() => logger.warn("disabled")}
 									isDisabled={true}
-								/>
+								/> */}
 								{monitor?.notifications?.some(
 									(notification) => notification.type === "emails"
 								) ? (
