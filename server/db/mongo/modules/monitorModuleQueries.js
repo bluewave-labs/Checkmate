@@ -148,6 +148,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 							type: 1,
 							url: 1,
 							isActive: 1,
+							notifications: 1,
 						},
 					},
 				],
