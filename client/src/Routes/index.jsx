@@ -38,7 +38,8 @@ import CreateStatus from "../Pages/StatusPage/Create";
 import StatusPages from "../Pages/StatusPage/StatusPages";
 import Status from "../Pages/StatusPage/Status";
 
-import Integrations from "../Pages/Integrations";
+import Notifications from "../Pages/Notifications";
+import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
 import Account from "../Pages/Account";
@@ -149,8 +150,12 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="integrations"
-					element={<Integrations />}
+					path="notifications"
+					element={<Notifications />}
+				/>
+				<Route
+					path="notifications/create"
+					element={<CreateNotifications />}
 				/>
 				<Route
 					path="maintenance"
