@@ -500,14 +500,6 @@ const getMonitorById = async (monitorId) => {
 			error.status = 404;
 			throw error;
 		}
-		// Get notifications
-		const notifications = await Notification.find({
-			monitorId: monitorId,
-		});
-
-		// Update monitor with notifications and save
-		monitor.notifications = notifications;
-		await monitor.save();
 
 		return monitor;
 	} catch (error) {
@@ -664,10 +656,8 @@ const getMonitorsWithChecksByTeamId = async (req) => {
 const createMonitor = async (req, res) => {
 	try {
 		const monitor = new Monitor({ ...req.body });
-		// Remove notifications fom monitor as they aren't needed here
-		monitor.notifications = undefined;
-		await monitor.save();
-		return monitor;
+		const saved = await monitor.save();
+		return saved;
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "createMonitor";
@@ -764,8 +754,6 @@ const deleteMonitorsByUserId = async (userId) => {
  * @throws {Error}
  */
 const editMonitor = async (candidateId, candidateMonitor) => {
-	candidateMonitor.notifications = undefined;
-
 	try {
 		const editedMonitor = await Monitor.findByIdAndUpdate(candidateId, candidateMonitor, {
 			new: true,
