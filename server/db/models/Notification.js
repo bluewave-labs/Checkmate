@@ -39,6 +39,10 @@ const NotificationSchema = mongoose.Schema(
 			type: configSchema,
 			default: () => ({}),
 		},
+		notificationName: {
+			type: String,
+			required: true,
+		},
 		address: {
 			type: String,
 		},

@@ -291,11 +291,12 @@ const startApp = async () => {
 		ServiceRegistry.get(StringService.SERVICE_NAME)
 	);
 
-	const notificationController = new NotificationController(
-		ServiceRegistry.get(NotificationService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME),
-		ServiceRegistry.get(StatusService.SERVICE_NAME)
-	);
+	const notificationController = new NotificationController({
+		notificationService: ServiceRegistry.get(NotificationService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		statusService: ServiceRegistry.get(StatusService.SERVICE_NAME),
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+	});
 
 	const diagnosticController = new DiagnosticController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME)

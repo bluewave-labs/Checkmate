@@ -18,10 +18,11 @@ const PLATFORMS = {
 };
 
 class NotificationController {
-	constructor(notificationService, stringService, statusService) {
+	constructor({ notificationService, stringService, statusService, db }) {
 		this.notificationService = notificationService;
 		this.stringService = stringService;
 		this.statusService = statusService;
+		this.db = db;
 		this.triggerNotification = this.triggerNotification.bind(this);
 		this.testWebhook = this.testWebhook.bind(this);
 	}

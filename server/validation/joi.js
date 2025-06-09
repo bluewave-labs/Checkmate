@@ -567,11 +567,11 @@ const triggerNotificationBodyValidation = joi.object({
 });
 
 const createNotificationBodyValidation = joi.object({
-	userId: joi.number().required().messages({
+	userId: joi.string().required().messages({
 		"number.empty": "User ID is required",
 		"any.required": "User ID is required",
 	}),
-	teamId: joi.number().required().messages({
+	teamId: joi.string().required().messages({
 		"string.empty": "Team ID is required",
 		"any.required": "Team ID is required",
 	}),
