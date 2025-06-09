@@ -2,7 +2,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 // Utility and Network
 import { monitorValidation } from "../../../Validation/validation";
 import {
@@ -11,6 +10,7 @@ import {
 } from "../../../Features/PageSpeedMonitor/pageSpeedMonitorSlice";
 import { parseDomainName } from "../../../Utils/monitorUtils";
 import { useTranslation } from "react-i18next";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 
 // MUI
 import { useTheme } from "@emotion/react";
@@ -23,8 +23,8 @@ import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import ConfigBox from "../../../Components/ConfigBox";
 import { createToast } from "../../../Utils/toastUtils";
 import Radio from "../../../Components/Inputs/Radio";
-import Checkbox from "../../../Components/Inputs/Checkbox";
 import Select from "../../../Components/Inputs/Select";
+import NotificationsConfig from "../../../Components/NotificationConfig";
 
 const MS_PER_MINUTE = 60000;
 
@@ -57,6 +57,7 @@ const CreatePageSpeed = () => {
 	const [errors, setErrors] = useState({});
 	const { user } = useSelector((state) => state.auth);
 	const { isLoading } = useSelector((state) => state.pageSpeedMonitors);
+	const [notifications, notificationsAreLoading, error] = useGetNotificationsByTeamId();
 
 	// Setup
 	const dispatch = useDispatch();
@@ -64,7 +65,7 @@ const CreatePageSpeed = () => {
 	const theme = useTheme();
 
 	// Handlers
-	const handleCreateMonitor = async (event) => {
+	const onSubmit = async (event) => {
 		event.preventDefault();
 		let form = {
 			url: `http${https ? "s" : ""}://` + monitor.url,
@@ -134,32 +135,6 @@ const CreatePageSpeed = () => {
 		}));
 	};
 
-	const handleNotifications = (event, type) => {
-		const { value } = event.target;
-		let notifications = [...monitor.notifications];
-		const notificationExists = notifications.some((notification) => {
-			if (notification.type === type && notification.address === value) {
-				return true;
-			}
-			return false;
-		});
-		if (notificationExists) {
-			notifications = notifications.filter((notification) => {
-				if (notification.type === type && notification.address === value) {
-					return false;
-				}
-				return true;
-			});
-		} else {
-			notifications.push({ type, address: value });
-		}
-
-		setMonitor((prev) => ({
-			...prev,
-			notifications,
-		}));
-	};
-
 	const handleBlur = (event) => {
 		const { name } = event.target;
 		if (name === "url") {
@@ -189,7 +164,7 @@ const CreatePageSpeed = () => {
 			<Stack
 				component="form"
 				className="create-monitor-form"
-				onSubmit={handleCreateMonitor}
+				onSubmit={onSubmit}
 				noValidate
 				spellCheck="false"
 				gap={theme.spacing(12)}
@@ -312,24 +287,14 @@ const CreatePageSpeed = () => {
 							component="h2"
 							variant="h2"
 						>
-							{t("distributedUptimeCreateIncidentNotification")}
+							{t("notificationConfig.title")}
 						</Typography>
-						<Typography component="p">
-							{t("distributedUptimeCreateIncidentDescription")}
-						</Typography>
+						<Typography component="p">{t("notificationConfig.description")}</Typography>
 					</Box>
-					<Stack gap={theme.spacing(6)}>
-						<Typography component="p">{t("whenNewIncident")}</Typography>
-						<Checkbox
-							id="notify-email-default"
-							label={`Notify via email (to ${user.email})`}
-							isChecked={monitor.notifications.some(
-								(notification) => notification.type === "email"
-							)}
-							value={user?.email}
-							onChange={(event) => handleNotifications(event, "email")}
-						/>
-					</Stack>
+					<NotificationsConfig
+						notifications={notifications}
+						setMonitor={setMonitor}
+					/>
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
@@ -356,9 +321,9 @@ const CreatePageSpeed = () => {
 					justifyContent="flex-end"
 				>
 					<Button
+						type="submit"
 						variant="contained"
 						color="accent"
-						onClick={handleCreateMonitor}
 						disabled={!Object.values(errors).every((value) => value === undefined)}
 						loading={isLoading}
 					>

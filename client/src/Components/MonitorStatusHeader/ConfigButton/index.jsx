@@ -34,8 +34,8 @@ const ConfigButton = ({ shouldRender = true, monitorId, path }) => {
 
 ConfigButton.propTypes = {
 	shouldRender: PropTypes.bool,
-	monitorId: PropTypes.string.isRequired,
-	path: PropTypes.string.isRequired,
+	monitorId: PropTypes.string,
+	path: PropTypes.string,
 };
 
 export default ConfigButton;

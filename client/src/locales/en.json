@@ -166,6 +166,10 @@
 			"integrationKeyPlaceholder": "1234567890"
 		}
 	},
+	"notificationConfig": {
+		"title": "Notifications",
+		"description": "Select the notifications channels you want to use"
+	},
 	"notifications": {
 		"fallback": {
 			"title": "Notification",
