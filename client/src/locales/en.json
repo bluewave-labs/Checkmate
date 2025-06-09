@@ -164,6 +164,12 @@
 			"description": "Configure your PagerDuty integration here",
 			"integrationKeyLabel": "Integration key",
 			"integrationKeyPlaceholder": "1234567890"
+		},
+		"genericWebhookSettings": {
+			"title": "Webhook",
+			"description": "Configure your webhook here",
+			"webhookLabel": "Webhook URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
 		}
 	},
 	"notificationConfig": {
@@ -172,7 +178,7 @@
 	},
 	"notifications": {
 		"fallback": {
-			"title": "Notification",
+			"title": "notification channel",
 			"checks": "Alert teams about downtime or performance issues"
 		},
 		"createButton": "Create notification channel",

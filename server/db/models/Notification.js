@@ -7,7 +7,7 @@ const configSchema = mongoose.Schema(
 		chatId: { type: String },
 		platform: {
 			type: String,
-			enum: ["slack", "pager_duty"],
+			enum: ["slack", "pager_duty", "webhook"],
 		},
 		routingKey: { type: String },
 	},

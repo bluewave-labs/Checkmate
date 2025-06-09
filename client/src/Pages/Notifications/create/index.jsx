@@ -27,6 +27,7 @@ const NOTIFICATION_TYPES = [
 	{ _id: 1, name: "E-mail", value: "email" },
 	{ _id: 2, name: "Slack", value: "webhook" },
 	{ _id: 3, name: "PagerDuty", value: "pager_duty" },
+	{ _id: 4, name: "Webhook", value: "webhook" },
 ];
 
 const CreateNotifications = () => {
@@ -130,6 +131,12 @@ const CreateNotifications = () => {
 				newNotification.config = value;
 			}
 			newNotification.config.platform = "pager_duty";
+		} else if (newNotification.type === 4) {
+			newNotification.config = newNotification.config || {};
+			if (name === "config") {
+				newNotification.config = value;
+			}
+			newNotification.config.platform = "webhook";
 		}
 
 		// Field-level validation
@@ -247,7 +254,7 @@ const CreateNotifications = () => {
 						<Stack gap={theme.spacing(12)}>
 							<TextInput
 								label={t("createNotifications.slackSettings.webhookLabel")}
-								value={notification.config.webhookUrl}
+								value={notification.config.webhookUrl || ""}
 								error={Boolean(errors.config)}
 								helperText={errors["config"]}
 								onChange={(e) => {
@@ -283,13 +290,46 @@ const CreateNotifications = () => {
 								placeholder={t(
 									"createNotifications.pagerdutySettings.integrationKeyPlaceholder"
 								)}
-								value={notification.config.routingKey}
+								value={notification.config.routingKey || ""}
 								error={Boolean(errors.config)}
 								helperText={errors["config"]}
 								onChange={(e) => {
 									const updatedConfig = {
 										...notification.config,
 										routingKey: e.target.value,
+									};
+
+									onChange({
+										target: {
+											name: "config",
+											value: updatedConfig,
+										},
+									});
+								}}
+							/>
+						</Stack>
+					</ConfigBox>
+				)}
+				{notification.type === 4 && (
+					<ConfigBox>
+						<Box>
+							<Typography component="h2">
+								{t("createNotifications.genericWebhookSettings.title")}
+							</Typography>
+							<Typography component="p">
+								{t("createNotifications.genericWebhookSettings.description")}
+							</Typography>
+						</Box>
+						<Stack gap={theme.spacing(12)}>
+							<TextInput
+								label={t("createNotifications.genericWebhookSettings.webhookLabel")}
+								value={notification.config.webhookUrl || ""}
+								error={Boolean(errors.config)}
+								helperText={errors["config"]}
+								onChange={(e) => {
+									const updatedConfig = {
+										...notification.config,
+										webhookUrl: e.target.value,
 									};
 
 									onChange({

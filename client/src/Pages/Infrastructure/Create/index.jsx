@@ -13,6 +13,8 @@ import {
 import { useHardwareMonitorsFetch } from "../Details/Hooks/useHardwareMonitorsFetch";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import NotificationsConfig from "../../../Components/NotificationConfig";
 
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
@@ -24,7 +26,6 @@ import ConfigBox from "../../../Components/ConfigBox";
 import TextInput from "../../../Components/Inputs/TextInput";
 import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import { createToast } from "../../../Utils/toastUtils";
-import Checkbox from "../../../Components/Inputs/Checkbox";
 import Select from "../../../Components/Inputs/Select";
 import { CustomThreshold } from "./Components/CustomThreshold";
 
@@ -65,6 +66,8 @@ const CreateInfrastructureMonitor = () => {
 
 	// Fetch monitor details if editing
 	const { monitor, isLoading, networkError } = useHardwareMonitorsFetch({ monitorId });
+	const [notifications, notificationsAreLoading, notificationsError] =
+		useGetNotificationsByTeamId();
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -93,8 +96,7 @@ const CreateInfrastructureMonitor = () => {
 		setInfrastructureMonitor({
 			url: monitor.url.replace(/^https?:\/\//, ""),
 			name: monitor.name || "",
-			notifications: monitor.notifications?.filter((n) => typeof n === "object") || [],
-			notify_email: (monitor.notifications?.length ?? 0) > 0,
+			notifications: monitor.notifications,
 			interval: monitor.interval / MS_PER_MINUTE,
 			cpu: monitor.thresholds?.usage_cpu !== undefined,
 			usage_cpu: monitor.thresholds?.usage_cpu ? monitor.thresholds.usage_cpu * 100 : "",
@@ -119,16 +121,8 @@ const CreateInfrastructureMonitor = () => {
 	}, [isCreate, monitor]);
 
 	// Handlers
-	const handleCreateInfrastructureMonitor = async (event) => {
+	const onSubmit = async (event) => {
 		event.preventDefault();
-
-		const formattedNotifications = infrastructureMonitor.notifications.map((n) =>
-			typeof n === "string" ? { type: "email", address: n } : n
-		);
-
-		if (infrastructureMonitor.notify_email) {
-			formattedNotifications.push({ type: "email", address: user.email });
-		}
 
 		// Build the form
 		let form = {
@@ -155,7 +149,6 @@ const CreateInfrastructureMonitor = () => {
 				? { usage_temperature: infrastructureMonitor.usage_temperature }
 				: {}),
 			secret: infrastructureMonitor.secret,
-			notifications: formattedNotifications,
 		};
 
 		const { error } = infrastructureMonitorValidation.validate(form, {
@@ -167,6 +160,7 @@ const CreateInfrastructureMonitor = () => {
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
+			console.log(newErrors);
 			setErrors(newErrors);
 			createToast({ body: "Please check the form for errors." });
 			return;
@@ -218,7 +212,7 @@ const CreateInfrastructureMonitor = () => {
 		}
 	};
 
-	const handleChange = (event) => {
+	const onChange = (event) => {
 		const { value, name } = event.target;
 		setInfrastructureMonitor({
 			...infrastructureMonitor,
@@ -244,27 +238,6 @@ const CreateInfrastructureMonitor = () => {
 		});
 	};
 
-	const handleNotifications = (event, type) => {
-		const { value, checked } = event.target;
-		let notifications = [...infrastructureMonitor.notifications];
-
-		if (checked) {
-			if (!notifications.some((n) => n.type === type && n.address === value)) {
-				notifications.push({ type, address: value });
-			}
-		} else {
-			notifications = notifications.filter(
-				(n) => !(n.type === type && n.address === value)
-			);
-		}
-
-		setInfrastructureMonitor((prev) => ({
-			...prev,
-			notifications,
-			...(type === "email" ? { notify_email: checked } : {}),
-		}));
-	};
-
 	return (
 		<Box className="create-infrastructure-monitor">
 			<Breadcrumbs
@@ -280,8 +253,7 @@ const CreateInfrastructureMonitor = () => {
 			/>
 			<Stack
 				component="form"
-				className="create-infrastructure-monitor-form"
-				onSubmit={handleCreateInfrastructureMonitor}
+				onSubmit={onSubmit}
 				noValidate
 				spellCheck="false"
 				gap={theme.spacing(12)}
@@ -336,7 +308,7 @@ const CreateInfrastructureMonitor = () => {
 							label={t("infrastructureServerUrlLabel")}
 							https={https}
 							value={infrastructureMonitor.url}
-							onChange={handleChange}
+							onChange={onChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
 							disabled={!isCreate}
@@ -370,7 +342,7 @@ const CreateInfrastructureMonitor = () => {
 							placeholder="Google"
 							isOptional={true}
 							value={infrastructureMonitor.name}
-							onChange={handleChange}
+							onChange={onChange}
 							error={errors["name"]}
 						/>
 						<TextInput
@@ -379,7 +351,7 @@ const CreateInfrastructureMonitor = () => {
 							name="secret"
 							label={t("infrastructureAuthorizationSecretLabel")}
 							value={infrastructureMonitor.secret}
-							onChange={handleChange}
+							onChange={onChange}
 							error={errors["secret"] ? true : false}
 							helperText={errors["secret"]}
 						/>
@@ -387,25 +359,14 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography
-							component="h2"
-							variant="h2"
-						>
-							{t("distributedUptimeCreateIncidentNotification")}
-						</Typography>
-						<Typography component="p">
-							{t("distributedUptimeCreateIncidentDescription")}
-						</Typography>
+						<Typography component="h2">{t("notificationConfig.title")}</Typography>
+						<Typography component="p">{t("notificationConfig.description")}</Typography>
 					</Box>
-					<Stack gap={theme.spacing(6)}>
-						<Checkbox
-							id="notify-email-default"
-							label={`Notify via email (to ${user.email})`}
-							isChecked={infrastructureMonitor.notify_email}
-							value={user?.email}
-							onChange={(event) => handleNotifications(event, "email")}
-						/>
-					</Stack>
+					<NotificationsConfig
+						notifications={notifications}
+						setMonitor={setInfrastructureMonitor}
+						setNotifications={infrastructureMonitor.notifications}
+					/>
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
@@ -438,7 +399,7 @@ const CreateInfrastructureMonitor = () => {
 									fieldId={METRIC_PREFIX + metric}
 									fieldName={METRIC_PREFIX + metric}
 									fieldValue={String(infrastructureMonitor[METRIC_PREFIX + metric])}
-									onFieldChange={handleChange}
+									onFieldChange={onChange}
 									alertUnit={metric == "temperature" ? "°C" : "%"}
 								/>
 							);
@@ -474,7 +435,7 @@ const CreateInfrastructureMonitor = () => {
 							name="interval"
 							label="Check frequency"
 							value={infrastructureMonitor.interval || 15}
-							onChange={handleChange}
+							onChange={onChange}
 							items={SELECT_VALUES}
 						/>
 					</Stack>
@@ -484,9 +445,9 @@ const CreateInfrastructureMonitor = () => {
 					justifyContent="flex-end"
 				>
 					<Button
+						type="submit"
 						variant="contained"
 						color="accent"
-						onClick={handleCreateInfrastructureMonitor}
 						loading={monitorState?.isLoading}
 					>
 						{t(isCreate ? "infrastructureCreateMonitor" : "infrastructureEditMonitor")}

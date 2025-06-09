@@ -1,5 +1,5 @@
 const SERVICE_NAME = "BufferService";
-const BUFFER_TIMEOUT = 1000 * 60 * 1; // 1 minute
+const BUFFER_TIMEOUT = process.env.NODE_ENV === "development" ? 5000 : 1000 * 60 * 1; // 1 minute
 const TYPE_MAP = {
 	http: "checks",
 	ping: "checks",
@@ -89,7 +89,7 @@ class BufferService {
 			}
 			this.buffers[bufferName] = [];
 		}
-		this.logger.info({
+		this.logger.debug({
 			message: `Flushed ${items} items`,
 			service: this.SERVICE_NAME,
 			method: "flushBuffers",
