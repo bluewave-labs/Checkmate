@@ -5,7 +5,7 @@ import StringService from "../service/stringService.js";
 const handleErrors = (error, req, res, next) => {
 	const status = error.status || 500;
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
-	const message = error.message || stringService.friendlyError;
+	const message = error.message || stringService.authIncorrectPassword;
 	const service = error.service || stringService.unknownService;
 	logger.error({
 		message: message,
