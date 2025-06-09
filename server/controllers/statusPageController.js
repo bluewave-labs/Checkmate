@@ -71,29 +71,6 @@ class StatusPageController {
 		}
 	};
 
-	getDistributedStatusPageByUrl = async (req, res, next) => {
-		try {
-			await getStatusPageParamValidation.validateAsync(req.params);
-			await getStatusPageQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
-			const statusPage = await this.db.getDistributedStatusPageByUrl({
-				url: req.params.url,
-				daysToShow: req.params.timeFrame,
-			});
-			return res.success({
-				msg: this.stringService.statusPageByUrl,
-				data: statusPage,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getDistributedStatusPageByUrl"));
-		}
-	};
-
 	getStatusPageByUrl = async (req, res, next) => {
 		try {
 			await getStatusPageParamValidation.validateAsync(req.params);

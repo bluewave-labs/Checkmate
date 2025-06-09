@@ -29,10 +29,6 @@ class PulseQueueHelper {
 				}
 
 				const networkResponse = await this.networkService.getStatus(monitor);
-				if (monitor.type === "distributed_http" || monitor.type === "distributed_test") {
-					await job.updateProgress(100);
-					return true;
-				}
 
 				if (!networkResponse) {
 					throw new Error("No network response");

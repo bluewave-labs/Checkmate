@@ -2,7 +2,6 @@ import Check from "../../models/Check.js";
 import Monitor from "../../models/Monitor.js";
 import HardwareCheck from "../../models/HardwareCheck.js";
 import PageSpeedCheck from "../../models/PageSpeedCheck.js";
-import DistributedUptimeCheck from "../../models/DistributedUptimeCheck.js";
 import User from "../../models/User.js";
 import logger from "../../../utils/logger.js";
 import { ObjectId } from "mongodb";
@@ -111,8 +110,6 @@ const getChecksByMonitor = async (req) => {
 			port: Check,
 			pagespeed: PageSpeedCheck,
 			hardware: HardwareCheck,
-			distributed_http: DistributedUptimeCheck,
-			distributed_test: DistributedUptimeCheck,
 		};
 
 		const Model = checkModels[type];
@@ -202,12 +199,7 @@ const getChecksByTeam = async (req) => {
 					pipeline: [{ $match: matchStage }],
 				},
 			},
-			{
-				$unionWith: {
-					coll: "distributeduptimechecks",
-					pipeline: [{ $match: matchStage }],
-				},
-			},
+
 			{ $sort: { createdAt: sortOrder } },
 			{
 				$facet: {

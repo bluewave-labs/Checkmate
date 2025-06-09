@@ -22,7 +22,6 @@ import logger from "../utils/logger.js";
 import { handleError, handleValidationError } from "./controllerUtils.js";
 import axios from "axios";
 import seedDb from "../db/mongo/utils/seedDb.js";
-import { seedDistributedTest } from "../db/mongo/utils/seedDb.js";
 const SERVICE_NAME = "monitorController";
 import pkg from "papaparse";
 
@@ -431,10 +430,6 @@ class MonitorController {
 						name: "deleteHardwareChecks",
 						fn: () => this.db.deleteHardwareChecksByMonitorId(monitor._id),
 					},
-					{
-						name: "deleteDistributedUptimeChecks",
-						fn: () => this.db.deleteDistributedChecksByMonitorId(monitor._id),
-					},
 
 					// TODO  We don't actually want to delete the status page if there are other monitors in it
 					// We actually just want to remove the monitor being deleted from the status page.
@@ -743,11 +738,8 @@ class MonitorController {
 			const token = getTokenFromHeaders(req.headers);
 			const { jwtSecret } = this.settingsService.getSettings();
 			const { _id, teamId } = jwt.verify(token, jwtSecret);
-			if (type === "distributed_test") {
-				await seedDistributedTest(_id, teamId);
-			} else {
-				await seedDb(_id, teamId);
-			}
+
+			await seedDb(_id, teamId);
 			res.success({ msg: "Database seeded" });
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "seedDb"));

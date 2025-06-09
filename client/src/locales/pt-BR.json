@@ -87,7 +87,6 @@
 	"settingsRemoveAllMonitorsDialogTitle": "Você deseja remover todos os monitores?",
 	"settingsRemoveAllMonitorsDialogConfirm": "Sim, remova todos os monitores",
 	"settingsWallet": "Carteira",
-	"settingsWalletDescription": "Conecte sua carteira aqui. Isso é necessário para que o Distributed Uptime Monitor se conecte a vários nós globalmente.",
 	"settingsAbout": "Sobre",
 	"settingsDevelopedBy": "Desenvolvido pela Bluewave Labs.",
 	"settingsSave": "Salvar",

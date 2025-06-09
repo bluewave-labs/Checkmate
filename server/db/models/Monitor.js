@@ -28,16 +28,7 @@ const MonitorSchema = mongoose.Schema(
 		type: {
 			type: String,
 			required: true,
-			enum: [
-				"http",
-				"ping",
-				"pagespeed",
-				"hardware",
-				"docker",
-				"port",
-				"distributed_http",
-				"distributed_test",
-			],
+			enum: ["http", "ping", "pagespeed", "hardware", "docker", "port"],
 		},
 		ignoreTlsErrors: {
 			type: Boolean,

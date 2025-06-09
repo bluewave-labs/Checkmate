@@ -23,8 +23,6 @@ class NetworkService {
 		this.TYPE_HARDWARE = "hardware";
 		this.TYPE_DOCKER = "docker";
 		this.TYPE_PORT = "port";
-		this.TYPE_DISTRIBUTED_HTTP = "distributed_http";
-		this.TYPE_DISTRIBUTED_TEST = "distributed_test";
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
@@ -414,34 +412,6 @@ class NetworkService {
 		}
 	}
 
-	async requestDistributedHttp(monitor) {
-		try {
-			const CALLBACK_URL = process.env.CALLBACK_URL;
-
-			const response = await this.axios.post(
-				UPROCK_ENDPOINT,
-				{
-					id: monitor._id,
-					url: monitor.url,
-					callback: `${CALLBACK_URL}/api/v1/distributed-uptime/callback`,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-						"x-checkmate-key": process.env.UPROCK_API_KEY,
-					},
-				}
-			);
-			if (response.data.success === false) {
-				throw new Error(response.data.message);
-			}
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestDistributedHttp";
-			throw error;
-		}
-	}
-
 	/**
 	 * Handles unsupported job types by throwing an error with details.
 	 *
@@ -517,10 +487,6 @@ class NetworkService {
 				return await this.requestDocker(monitor);
 			case this.TYPE_PORT:
 				return await this.requestPort(monitor);
-			case this.TYPE_DISTRIBUTED_HTTP:
-				return await this.requestDistributedHttp(monitor);
-			case this.TYPE_DISTRIBUTED_TEST:
-				return;
 			default:
 				return this.handleUnsupportedType(type);
 		}

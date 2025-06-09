@@ -209,23 +209,6 @@ class StatusService {
 			tls_took,
 		};
 
-		if (type === "distributed_http") {
-			if (typeof payload === "undefined") {
-				return undefined;
-			}
-			check.continent = payload.continent;
-			check.countryCode = payload.country_code;
-			check.city = payload.city;
-			check.location = payload.location;
-			check.uptBurnt = payload.upt_burnt;
-			check.first_byte_took = payload.first_byte_took;
-			check.body_read_took = payload.body_read_took;
-			check.dns_took = payload.dns_took;
-			check.conn_took = payload.conn_took;
-			check.connect_took = payload.connect_took;
-			check.tls_took = payload.tls_took;
-		}
-
 		if (type === "pagespeed") {
 			if (typeof payload === "undefined") {
 				this.logger.warn({
