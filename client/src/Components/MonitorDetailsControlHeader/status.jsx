@@ -27,17 +27,14 @@ const Status = ({ monitor }) => {
 
 	return (
 		<Stack>
-			<Typography variant="h1">{monitor?.name}</Typography>
+			<Typography variant="monitorName">{monitor?.name}</Typography>
 			<Stack
 				direction="row"
 				alignItems={"center"}
 				gap={theme.spacing(4)}
 			>
 				<PulseDot color={statusColor[determineState(monitor)]} />
-				<Typography
-					variant="h2"
-					style={{ fontFamily: "monospace", fontWeight: "bolder" }}
-				>
+				<Typography variant="monitorUrl">
 					{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 				</Typography>
 				<Dot />

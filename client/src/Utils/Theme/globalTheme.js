@@ -632,6 +632,35 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+		MuiTypography: {
+			variants: [
+				{
+					props: { variant: "monitorName" },
+					style: {
+						fontSize: typographyLevels.xl,
+						color: palette.primary.contrastText,
+						fontWeight: 500,
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+						maxWidth: "calc((100vw - var(--env-var-width-2)) / 2)",
+					},
+				},
+				{
+					props: { variant: "monitorUrl" },
+					style: {
+						fontSize: typographyLevels.l,
+						color: palette.primary.contrastTextSecondary,
+						fontWeight: "bolder",
+						fontFamily: "monospace",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+						maxWidth: "calc((100vw - var(--env-var-width-2)) / 2)",
+					},
+				},
+			],
+		},
 	},
 	shape: {
 		borderRadius: 2,

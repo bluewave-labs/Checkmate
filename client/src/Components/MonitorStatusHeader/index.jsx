@@ -21,7 +21,7 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 			justifyContent="space-between"
 		>
 			<Stack>
-				<Typography variant="h1">{monitor?.name}</Typography>
+				<Typography variant="monitorName">{monitor?.name}</Typography>
 				<Stack
 					direction="row"
 					alignItems={"center"}
@@ -29,8 +29,8 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 				>
 					<PulseDot color={statusColor[determineState(monitor)]} />
 					<Typography
-						variant="h2"
-						style={{ fontFamily: "monospace", fontWeight: "bolder" }}
+						component="h2"
+						variant="monitorUrl"
 					>
 						{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 					</Typography>
