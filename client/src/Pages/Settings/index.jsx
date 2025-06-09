@@ -132,7 +132,6 @@ const Settings = () => {
 	};
 
 	const handleSave = () => {
-		console.log(settingsData.settings);
 		const { error } = settingsValidation.validate(settingsData.settings, {
 			abortEarly: false,
 		});
