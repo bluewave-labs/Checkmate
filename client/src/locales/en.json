@@ -134,7 +134,45 @@
 	"distributedUptimeDetailsNoMonitorHistory": "There is no check history for this monitor yet.",
 	"distributedUptimeDetailsStatusHeaderUptime": "Uptime:",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Last updated",
+	"createNotifications": {
+		"title": "Create notification channel",
+		"nameSettings": {
+			"title": "Name",
+			"description": "A descriptive name for your integration.",
+			"nameLabel": "Name",
+			"namePlaceholder": "e.g. Slack notifications"
+		},
+		"typeSettings": {
+			"title": "Type",
+			"description": "Select the type of notification channel you want to create.",
+			"typeLabel": "Type"
+		},
+		"emailSettings": {
+			"title": "Email",
+			"description": "Destination email addresses.",
+			"emailLabel": "Email address",
+			"emailPlaceholder": "e.g. john@example.com"
+		},
+		"slackSettings": {
+			"title": "Slack",
+			"description": "Configure your Slack webhook here",
+			"webhookLabel": "Slack webhook URL",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
+		},
+		"pagerdutySettings": {
+			"title": "PagerDuty",
+			"description": "Configure your PagerDuty integration here",
+			"integrationKeyLabel": "Integration key",
+			"integrationKeyPlaceholder": "1234567890"
+		}
+	},
 	"notifications": {
+		"fallback": {
+			"title": "Notification",
+			"checks": "Alert teams about downtime or performance issues"
+		},
+		"createButton": "Create notification channel",
+		"createTitle": "Notification channel",
 		"enableNotifications": "Enable {{platform}} notifications",
 		"testNotification": "Test notification",
 		"addOrEditNotifications": "Add or edit notifications",
@@ -173,7 +211,19 @@
 		"testSuccess": "Test notification sent successfully!",
 		"testFailed": "Failed to send test notification",
 		"unsupportedType": "Unsupported notification type",
-		"networkError": "Network error occurred"
+		"networkError": "Network error occurred",
+		"create": {
+			"success": "Notification created successfully",
+			"failed": "Failed to create notification"
+		},
+		"fetch": {
+			"success": "Notifications fetched successfully",
+			"failed": "Failed to fetch notifications"
+		},
+		"delete": {
+			"success": "Notification deleted successfully",
+			"failed": "Failed to delete notification"
+		}
 	},
 	"testLocale": "testLocale",
 	"add": "Add",
@@ -479,6 +529,7 @@
 	"menu": {
 		"uptime": "Uptime",
 		"pagespeed": "Pagespeed",
+		"notifications": "Notifications",
 		"infrastructure": "Infrastructure",
 		"incidents": "Incidents",
 		"statusPages": "Status pages",
