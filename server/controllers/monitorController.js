@@ -219,19 +219,8 @@ class MonitorController {
 		}
 
 		try {
-			const notifications = req.body.notifications;
 			const monitor = await this.db.createMonitor(req, res);
 
-			if (notifications && notifications.length > 0) {
-				monitor.notifications = await Promise.all(
-					notifications.map(async (notification) => {
-						notification.monitorId = monitor._id;
-						return await this.db.createNotification(notification);
-					})
-				);
-			}
-
-			await monitor.save();
 			// Add monitor to job queue
 			this.jobQueue.addJob(monitor._id, monitor);
 			return res.success({
@@ -325,18 +314,6 @@ class MonitorController {
 
 							await Promise.all(
 								monitors.map(async (monitor, index) => {
-									const notifications = enrichedData[index].notifications;
-
-									if (notifications?.length) {
-										monitor.notifications = await Promise.all(
-											notifications.map(async (notification) => {
-												notification.monitorId = monitor._id;
-												return await this.db.createNotification(notification);
-											})
-										);
-										await monitor.save();
-									}
-
 									this.jobQueue.addJob(monitor._id, monitor);
 								})
 							);
@@ -422,10 +399,7 @@ class MonitorController {
 						name: "deletePageSpeedChecks",
 						fn: () => this.db.deletePageSpeedChecksByMonitorId(monitor._id),
 					},
-					{
-						name: "deleteNotifications",
-						fn: () => this.db.deleteNotificationsByMonitorId(monitor._id),
-					},
+
 					{
 						name: "deleteHardwareChecks",
 						fn: () => this.db.deleteHardwareChecksByMonitorId(monitor._id),
@@ -530,20 +504,8 @@ class MonitorController {
 
 		try {
 			const { monitorId } = req.params;
-			const monitorBeforeEdit = await this.db.getMonitorById(monitorId);
 
-			// Get notifications from the request body
-			const notifications = req.body.notifications ?? [];
 			const editedMonitor = await this.db.editMonitor(monitorId, req.body);
-
-			await this.db.deleteNotificationsByMonitorId(editedMonitor._id);
-
-			await Promise.all(
-				notifications.map(async (notification) => {
-					notification.monitorId = editedMonitor._id;
-					await this.db.createNotification(notification);
-				})
-			);
 
 			await this.jobQueue.updateJob(editedMonitor);
 
