@@ -566,6 +566,47 @@ const triggerNotificationBodyValidation = joi.object({
 	}),
 });
 
+const createNotificationBodyValidation = joi.object({
+	userId: joi.number().required().messages({
+		"number.empty": "User ID is required",
+		"any.required": "User ID is required",
+	}),
+	teamId: joi.number().required().messages({
+		"string.empty": "Team ID is required",
+		"any.required": "Team ID is required",
+	}),
+	notificationName: joi.string().required().messages({
+		"string.empty": "Notification name is required",
+		"any.required": "Notification name is required",
+	}),
+	address: joi.when("type", {
+		is: "email",
+		then: joi.string().email().required().messages({
+			"string.empty": "E-mail address cannot be empty",
+			"any.required": "E-mail address is required",
+			"string.email": "Please enter a valid e-mail address",
+		}),
+	}),
+	type: joi.string().valid("email", "webhook", "pager_duty").required().messages({
+		"string.empty": "Notification type is required",
+		"any.required": "Notification type is required",
+		"any.only": "Notification type must be email, webhook, or pager_duty",
+	}),
+	config: joi.when("type", {
+		is: "webhook",
+		then: joi.object({
+			webhookUrl: joi.string().uri().required().messages({
+				"string.uri": "Webhook URL must be a valid URI",
+				"any.required": "Webhook URL is required",
+			}),
+			platform: joi.string().required().messages({
+				"string.empty": "Platform is required",
+				"any.required": "Platform is required",
+			}),
+		}),
+	}),
+});
+
 //****************************************
 // Announcetment Page Validation
 //****************************************
@@ -653,6 +694,7 @@ export {
 	getStatusPageQueryValidation,
 	imageValidation,
 	triggerNotificationBodyValidation,
+	createNotificationBodyValidation,
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,
