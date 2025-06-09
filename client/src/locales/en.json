@@ -558,5 +558,9 @@
 		"ping": "Enter the URL or IP to ping (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"docker": "Enter the Docker ID of your container. Docker IDs must be the full 64 char Docker ID. You can run docker inpsect <short_id> to get the full container ID.",
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
+	},
+	"monitorStatus": {
+		"checkingEvery": "Checking every {{interval}}",
+		"withCaptureAgent": "with Capture agent {{version}}"
 	}
 }

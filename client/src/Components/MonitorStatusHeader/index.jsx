@@ -7,13 +7,21 @@ import { formatDurationRounded } from "../../Utils/timeUtils";
 import ConfigButton from "./ConfigButton";
 import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const { statusColor, determineState } = useUtils();
 	if (isLoading) {
 		return <SkeletonLayout />;
 	}
+
+	const intervalText = t("monitorStatus.checkingEvery", {
+		interval: formatDurationRounded(monitor?.interval),
+	});
+
+	const captureVersion = monitor?.stats?.aggregateData?.latestCheck?.capture?.version;
 
 	return (
 		<Stack
@@ -36,12 +44,13 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 					</Typography>
 					<Dot />
 					<Typography>
-						Checking every {formatDurationRounded(monitor?.interval)}{" "}
-						{monitor?.stats?.aggregateData?.latestCheck?.capture?.version && (
+						{intervalText}
+						{captureVersion && (
 							<>
 								{" "}
-								with Capture agent{" "}
-								{monitor.stats.aggregateData.latestCheck.capture.version}
+								{t("monitorStatus.withCaptureAgent", {
+									version: captureVersion,
+								})}
 							</>
 						)}
 						.
