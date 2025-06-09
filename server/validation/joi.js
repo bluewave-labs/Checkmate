@@ -303,18 +303,7 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi
-		.string()
-		.valid(
-			"http",
-			"ping",
-			"pagespeed",
-			"hardware",
-			"docker",
-			"port",
-			"distributed_http",
-			"distributed_test"
-		),
+	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port"),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
@@ -446,14 +435,14 @@ const getStatusPageParamValidation = joi.object({
 });
 
 const getStatusPageQueryValidation = joi.object({
-	type: joi.string().valid("uptime", "distributed").required(),
+	type: joi.string().valid("uptime").required(),
 	timeFrame: joi.number().optional(),
 });
 
 const createStatusPageBodyValidation = joi.object({
 	userId: joi.string().required(),
 	teamId: joi.string().required(),
-	type: joi.string().valid("uptime", "distributed").required(),
+	type: joi.string().valid("uptime").required(),
 	companyName: joi.string().required(),
 	url: joi
 		.string()

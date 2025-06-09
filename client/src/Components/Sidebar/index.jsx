@@ -23,7 +23,6 @@ import UserSvg from "../../assets/icons/user.svg?react";
 import TeamSvg from "../../assets/icons/user-two.svg?react";
 import LogoutSvg from "../../assets/icons/logout.svg?react";
 import Support from "../../assets/icons/support.svg?react";
-import Account from "../../assets/icons/user-edit.svg?react";
 import Maintenance from "../../assets/icons/maintenance.svg?react";
 import Monitors from "../../assets/icons/monitors.svg?react";
 import Incidents from "../../assets/icons/incidents.svg?react";
@@ -37,10 +36,8 @@ import ArrowLeft from "../../assets/icons/left-arrow.svg?react";
 import DotsVertical from "../../assets/icons/dots-vertical.svg?react";
 import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
-import Folder from "../../assets/icons/folder.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
 import Discussions from "../../assets/icons/discussions.svg?react";
-import DistributedUptimeIcon from "../../assets/icons/distributed-uptime.svg?react";
 import "./index.css";
 
 // Utils
@@ -56,11 +53,7 @@ const getMenu = (t) => [
 	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
 	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
 	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
-	{
-		name: t("menu.distributedUptime"),
-		path: "distributed-uptime",
-		icon: <DistributedUptimeIcon />,
-	},
+
 	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
 	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
@@ -95,14 +88,13 @@ const URL_MAP = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
 	docs: "https://bluewavelabs.gitbook.io/checkmate",
-	changelog: "https://github.com/bluewave-labs/bluewave-uptime/releases",
+	changelog: "https://github.com/bluewave-labs/checkmate/releases",
 };
 
 const PATH_MAP = {
 	monitors: "Dashboard",
 	pagespeed: "Dashboard",
 	infrastructure: "Dashboard",
-	["distributed-uptime"]: "Dashboard",
 	account: "Account",
 	settings: "Settings",
 };
@@ -375,12 +367,6 @@ function Sidebar() {
 					}}
 				>
 					{menu.map((item) => {
-						if (
-							item.path === "distributed-uptime" &&
-							distributedUptimeEnabled === false
-						) {
-							return null;
-						}
 						return item.path ? (
 							/* If item has a path */
 							<Tooltip

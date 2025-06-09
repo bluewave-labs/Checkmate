@@ -1,4 +1,4 @@
-const QUEUE_NAMES = ["uptime", "pagespeed", "hardware", "distributed"];
+const QUEUE_NAMES = ["uptime", "pagespeed", "hardware"];
 const SERVICE_NAME = "JobQueue";
 const HEALTH_CHECK_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const QUEUE_LOOKUP = {
@@ -8,7 +8,6 @@ const QUEUE_LOOKUP = {
 	port: "uptime",
 	docker: "uptime",
 	pagespeed: "pagespeed",
-	distributed_http: "distributed",
 };
 const getSchedulerId = (monitor) => `scheduler:${monitor.type}:${monitor._id}`;
 

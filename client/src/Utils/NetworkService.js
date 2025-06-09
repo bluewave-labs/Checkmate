@@ -847,148 +847,13 @@ class NetworkService {
 	 */
 	async fetchGithubLatestRelease() {
 		return this.axiosInstance.get(
-			"https://api.github.com/repos/bluewave-labs/bluewave-uptime/releases/latest",
+			"https://api.github.com/repos/bluewave-labs/checkmate/releases/latest",
 			{
 				headers: {
 					Authorization: null, // No authorization header for this request
 				},
 			}
 		);
-	}
-
-	getDistributedUptimeMonitors(config) {
-		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
-
-		const params = new URLSearchParams();
-
-		if (limit) params.append("limit", limit);
-		if (types) {
-			types.forEach((type) => {
-				params.append("type", type);
-			});
-		}
-		if (page) params.append("page", page);
-		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
-		if (filter) params.append("filter", filter);
-		if (field) params.append("field", field);
-		if (order) params.append("order", order);
-
-		if (this.eventSource) {
-			this.eventSource.close();
-		}
-
-		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/${teamId}/initial?${params.toString()}`;
-		return this.axiosInstance.get(url);
-	}
-
-	subscribeToDistributedUptimeMonitors(config) {
-		const {
-			teamId,
-			onUpdate,
-			onError,
-			onOpen,
-			limit,
-			types,
-			page,
-			rowsPerPage,
-			filter,
-			field,
-			order,
-		} = config;
-
-		const params = new URLSearchParams();
-
-		if (limit) params.append("limit", limit);
-		if (types) {
-			types.forEach((type) => {
-				params.append("type", type);
-			});
-		}
-		if (page) params.append("page", page);
-		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
-		if (filter) params.append("filter", filter);
-		if (field) params.append("field", field);
-		if (order) params.append("order", order);
-
-		if (this.eventSource) {
-			this.eventSource.close();
-		}
-
-		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/${teamId}?${params.toString()}`;
-		this.eventSource = new EventSource(url);
-
-		this.eventSource.onopen = () => {
-			onOpen?.();
-		};
-
-		this.eventSource.addEventListener("open", (e) => {});
-
-		this.eventSource.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			onUpdate(data);
-		};
-
-		this.eventSource.onerror = (error) => {
-			console.error("Monitor stream error:", error);
-			onError?.();
-			this.eventSource.close();
-		};
-
-		// Returns a cleanup function
-		return () => {
-			if (this.eventSource) {
-				this.eventSource.close();
-				this.eventSource = null;
-			}
-			return () => {
-				console.log("Nothing to cleanup");
-			};
-		};
-	}
-
-	getDistributedUptimeDetails(config) {
-		const params = new URLSearchParams();
-		const { monitorId, dateRange, normalize, isPublic } = config;
-		if (dateRange) params.append("dateRange", dateRange);
-		if (normalize) params.append("normalize", normalize);
-		let url;
-		if (isPublic) {
-			url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/public/${monitorId}/initial?${params.toString()}`;
-		} else {
-			url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}/initial?${params.toString()}`;
-		}
-		return this.axiosInstance.get(url);
-	}
-
-	subscribeToDistributedUptimeDetails(config) {
-		const params = new URLSearchParams();
-		const { monitorId, onUpdate, onOpen, onError, dateRange, normalize } = config;
-		if (dateRange) params.append("dateRange", dateRange);
-		if (normalize) params.append("normalize", normalize);
-
-		const url = `${this.axiosInstance.defaults.baseURL}/distributed-uptime/monitors/details/${monitorId}?${params.toString()}`;
-		this.eventSource = new EventSource(url);
-
-		this.eventSource.onopen = (e) => {
-			onOpen?.();
-		};
-
-		this.eventSource.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			onUpdate(data);
-		};
-
-		this.eventSource.onerror = (error) => {
-			console.error("Monitor stream error:", error);
-			onError?.();
-			this.eventSource.close();
-		};
-		return () => {
-			if (this.eventSource) {
-				this.eventSource.close();
-				this.eventSource = null;
-			}
-		};
 	}
 
 	async getStatusPage() {
@@ -1009,20 +874,6 @@ class NetworkService {
 				"Content-Type": "application/json",
 			},
 		});
-	}
-	async getDistributedStatusPageByUrl(config) {
-		const { url, type, timeFrame } = config;
-		const params = new URLSearchParams();
-		params.append("type", type);
-		params.append("timeFrame", timeFrame);
-		return this.axiosInstance.get(
-			`/status-page/distributed/${url}?${params.toString()}`,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
 	}
 
 	async getStatusPagesByTeamId(config) {

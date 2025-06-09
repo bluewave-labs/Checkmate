@@ -3,7 +3,6 @@ import MonitorStats from "../../models/MonitorStats.js";
 import Check from "../../models/Check.js";
 import PageSpeedCheck from "../../models/PageSpeedCheck.js";
 import HardwareCheck from "../../models/HardwareCheck.js";
-import DistributedUptimeCheck from "../../models/DistributedUptimeCheck.js";
 import Notification from "../../models/Notification.js";
 import { NormalizeData, NormalizeDataUptimeDetails } from "../../../utils/dataUtils.js";
 import ServiceRegistry from "../../../service/serviceRegistry.js";
@@ -381,72 +380,6 @@ const getUptimeDetailsById = async (req) => {
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "getUptimeDetailsById";
-		throw error;
-	}
-};
-
-const getDistributedUptimeDetailsById = async (req) => {
-	try {
-		const { monitorId } = req?.params ?? {};
-		if (typeof monitorId === "undefined") {
-			throw new Error();
-		}
-		const monitor = await Monitor.findById(monitorId);
-		if (monitor === null || monitor === undefined) {
-			throw new Error(this.stringService.dbFindMonitorById(monitorId));
-		}
-
-		const { dateRange, normalize } = req.query;
-		const dates = getDateRange(dateRange);
-		const formatLookup = {
-			recent: "%Y-%m-%dT%H:%M:00Z",
-			day: {
-				$concat: [
-					{ $dateToString: { format: "%Y-%m-%dT%H:", date: "$updatedAt" } },
-					{
-						$cond: [{ $lt: [{ $minute: "$updatedAt" }, 30] }, "00:00Z", "30:00Z"],
-					},
-				],
-			},
-			week: "%Y-%m-%dT%H:00:00Z",
-			month: "%Y-%m-%dT00:00:00Z",
-		};
-
-		const dateString = formatLookup[dateRange];
-
-		const monitorStatsResult = await MonitorStats.aggregate(
-			buildMonitorStatsPipeline(monitor)
-		);
-		const monitorStats = monitorStatsResult[0];
-		const dePINDetailsByDateRange = await DistributedUptimeCheck.aggregate(
-			buildDePINDetailsByDateRange(monitor, dates, dateString)
-		);
-		const latestChecks = await DistributedUptimeCheck.aggregate(
-			buildDePINLatestChecks(monitor)
-		);
-
-		const checkData = dePINDetailsByDateRange[0];
-		const normalizedGroupChecks = NormalizeDataUptimeDetails(
-			checkData.groupedChecks,
-			10,
-			100
-		);
-		const data = {
-			...monitor.toObject(),
-			latestChecks,
-			totalChecks: monitorStats?.totalChecks,
-			avgResponseTime: monitorStats?.avgResponseTime,
-			uptimePercentage: monitorStats?.uptimePercentage,
-			timeSinceLastCheck: monitorStats?.timeSinceLastCheck,
-			uptBurnt: monitorStats?.uptBurnt,
-			groupedChecks: normalizedGroupChecks,
-			groupedMapChecks: checkData.groupedMapChecks,
-		};
-
-		return data;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "getDistributedUptimeDetailsById";
 		throw error;
 	}
 };
@@ -876,7 +809,6 @@ export {
 	getMonitorsAndSummaryByTeamId,
 	getMonitorsWithChecksByTeamId,
 	getUptimeDetailsById,
-	getDistributedUptimeDetailsById,
 	createMonitor,
 	createBulkMonitors,
 	deleteMonitor,

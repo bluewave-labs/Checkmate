@@ -613,8 +613,6 @@ const buildMonitorsWithChecksByTeamIdPipeline = ({
 			checksCollection = "pagespeedchecks";
 		} else if (type === "hardware") {
 			checksCollection = "hardwarechecks";
-		} else if (type === "distributed_http" || type === "distributed_test") {
-			checksCollection = "distributeduptimechecks";
 		}
 		monitorsPipeline.push({
 			$lookup: {
@@ -702,8 +700,6 @@ const buildFilteredMonitorsByTeamIdPipeline = ({
 			checksCollection = "pagespeedchecks";
 		} else if (type === "hardware") {
 			checksCollection = "hardwarechecks";
-		} else if (type === "distributed_http" || type === "distributed_test") {
-			checksCollection = "distributeduptimechecks";
 		}
 		pipeline.push({
 			$lookup: {
@@ -861,26 +857,6 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 								},
 							]
 						: []),
-					...(limit
-						? [
-								{
-									$lookup: {
-										from: "distributeduptimechecks",
-										let: { monitorId: "$_id" },
-										pipeline: [
-											{
-												$match: {
-													$expr: { $eq: ["$monitorId", "$$monitorId"] },
-												},
-											},
-											{ $sort: { createdAt: -1 } },
-											...(limit ? [{ $limit: limit }] : []),
-										],
-										as: "distributeduptimechecks",
-									},
-								},
-							]
-						: []),
 
 					{
 						$addFields: {
@@ -898,14 +874,6 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 										{
 											case: { $eq: ["$type", "hardware"] },
 											then: "$hardwarechecks",
-										},
-										{
-											case: { $eq: ["$type", "distributed_http"] },
-											then: "$distributeduptimechecks",
-										},
-										{
-											case: { $eq: ["$type", "distributed_test"] },
-											then: "$distributeduptimechecks",
 										},
 									],
 									default: [],

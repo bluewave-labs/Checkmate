@@ -7,7 +7,6 @@ const TYPE_MAP = {
 	docker: "checks",
 	pagespeed: "pagespeedChecks",
 	hardware: "hardwareChecks",
-	distributed_http: "distributedChecks",
 };
 
 class BufferService {
@@ -19,13 +18,11 @@ class BufferService {
 			checks: [],
 			pagespeedChecks: [],
 			hardwareChecks: [],
-			distributedChecks: [],
 		};
 		this.OPERATION_MAP = {
 			checks: this.db.createChecks,
 			pagespeedChecks: this.db.createPageSpeedChecks,
 			hardwareChecks: this.db.createHardwareChecks,
-			distributedChecks: this.db.createDistributedChecks,
 		};
 
 		this.scheduleNextFlush();

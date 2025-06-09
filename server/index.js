@@ -36,9 +36,6 @@ import StatusPageController from "./controllers/statusPageController.js";
 import QueueRoutes from "./routes/queueRoute.js";
 import QueueController from "./controllers/queueController.js";
 
-import DistributedUptimeRoutes from "./routes/distributedUptimeRoute.js";
-import DistributedUptimeController from "./controllers/distributedUptimeController.js";
-
 import NotificationRoutes from "./routes/notificationRoute.js";
 import NotificationController from "./controllers/notificationController.js";
 
@@ -300,13 +297,6 @@ const startApp = async () => {
 		ServiceRegistry.get(StatusService.SERVICE_NAME)
 	);
 
-	const distributedUptimeController = new DistributedUptimeController({
-		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		http,
-		statusService: ServiceRegistry.get(StatusService.SERVICE_NAME),
-		logger,
-	});
-
 	const diagnosticController = new DiagnosticController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME)
 	);
@@ -322,9 +312,7 @@ const startApp = async () => {
 	);
 	const queueRoutes = new QueueRoutes(queueController);
 	const statusPageRoutes = new StatusPageRoutes(statusPageController);
-	const distributedUptimeRoutes = new DistributedUptimeRoutes(
-		distributedUptimeController
-	);
+
 	const notificationRoutes = new NotificationRoutes(notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(diagnosticController);
 	// Middleware
@@ -375,7 +363,6 @@ const startApp = async () => {
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
 	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
 	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
-	app.use("/api/v1/distributed-uptime", distributedUptimeRoutes.getRouter());
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());

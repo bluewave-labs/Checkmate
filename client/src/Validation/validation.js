@@ -239,7 +239,7 @@ const logoImageValidation = joi
 	.optional(); // Make entire object optional
 
 const statusPageValidation = joi.object({
-	type: joi.string().valid("uptime", "distributed").required(),
+	type: joi.string().valid("uptime").required(),
 	isPublished: joi.bool(),
 	companyName: joi
 		.string()
