@@ -47,9 +47,6 @@ const AppAppBar = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	// Debugging: Log the current theme mode
-	console.log("Current theme mode:", mode);
-
 	const logoSrc =
 		mode === "light" ? "/images/prism-black.png" : "/images/prism-white.png";
 
