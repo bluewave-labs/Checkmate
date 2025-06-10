@@ -404,7 +404,8 @@ class AuthController {
 			// 1. Find all the monitors associated with the team ID if superadmin
 
 			const result = await this.db.getMonitorsByTeamId({
-				params: { teamId: user.teamId },
+				query: {},
+				params: { teamId: user.teamId.toString() },
 			});
 
 			if (user.role.includes("superadmin")) {
