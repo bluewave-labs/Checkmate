@@ -8,7 +8,7 @@ import Background from "../../assets/Images/background-grid.svg?react";
 import ConfirmIcon from "../../assets/icons/check-outlined.svg?react";
 import Logo from "../../assets/icons/checkmate-icon.svg?react";
 import IconBox from "../../Components/IconBox";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import "./index.css";
 
 const NewPasswordConfirmed = () => {
@@ -54,7 +54,7 @@ const NewPasswordConfirmed = () => {
 				gap={theme.spacing(4)}
 			>
 				<Logo style={{ borderRadius: theme.shape.borderRadius }} />
-				<Typography sx={{ userSelect: "none" }}>Checkmate</Typography>
+				<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
 			</Stack>
 			<Stack
 				width="100%"
@@ -96,11 +96,13 @@ const NewPasswordConfirmed = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<ConfirmIcon alt="password confirm icon" />
+								<ConfirmIcon alt={t("auth.forgotPassword.imageAlts.passwordConfirm")} />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">{t("passwordreset")}</Typography>
-						<Typography mb={theme.spacing(2)}>{t("authNewPasswordConfirmed")}</Typography>
+						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>
+						<Typography mb={theme.spacing(2)}>
+							{t("auth.forgotPassword.subheadings.stepFour")}
+						</Typography>
 					</Box>
 					<Button
 						variant="contained"
@@ -110,7 +112,7 @@ const NewPasswordConfirmed = () => {
 							maxWidth: 400,
 						}}
 					>
-						{t("continue")}
+						{t("auth.common.navigation.continue")}
 					</Button>
 				</Stack>
 			</Stack>
@@ -118,15 +120,21 @@ const NewPasswordConfirmed = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">{t("goBackTo")}</Typography>
-				<Typography
-					component="span"
-					color={theme.palette.accent.main}
-					ml={theme.spacing(2)}
-					onClick={handleNavigate}
-					sx={{ userSelect: "none" }}
-				>
-					{t("authLoginTitle")}
+				<Typography display="inline-block">
+					<Trans
+						i18nKey="auth.forgotPassword.links.login"
+						components={{
+							a: (
+								<Typography
+									component="span"
+									color={theme.palette.accent.main}
+									ml={theme.spacing(2)}
+									onClick={handleNavigate}
+									sx={{ userSelect: "none" }}
+								/>
+							),
+						}}
+					/>
 				</Typography>
 			</Box>
 		</Stack>

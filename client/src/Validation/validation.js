@@ -9,10 +9,9 @@ const nameSchema = joi
 	.trim()
 	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
 	.messages({
-		"string.empty": "Name is required",
-		"string.max": "Name must be less than 50 characters",
-		"string.pattern.base":
-			"Name must contain only letters, spaces, apostrophes, or hyphens",
+		"string.empty": "auth.common.inputs.firstName.errors.empty",
+		"string.max": "auth.common.inputs.firstName.errors.length",
+		"string.pattern.base": "auth.common.inputs.firstName.errors.pattern",
 	});
 
 const lastnameSchema = joi
@@ -21,13 +20,12 @@ const lastnameSchema = joi
 	.trim()
 	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
 	.messages({
-		"string.empty": "Surname is required",
-		"string.max": "Surname must be less than 50 characters",
-		"string.pattern.base":
-			"Surname must contain only letters, spaces, apostrophes, or hyphens",
+		"string.empty": "auth.common.inputs.lastName.errors.empty",
+		"string.max": "auth.common.inputs.lastName.errors.length",
+		"string.pattern.base": "auth.common.inputs.lastName.errors.pattern",
 	});
 
-const passwordSchema = joi
+const newPasswordSchema = joi
 	.string()
 	.trim()
 	.min(8)
@@ -56,34 +54,28 @@ const passwordSchema = joi
 		return value;
 	})
 	.messages({
-		"string.empty": "Password is required",
-		"string.min": "Password must be at least 8 characters long",
-		uppercase: "Password must contain at least one uppercase letter",
-		lowercase: "Password must contain at least one lowercase letter",
-		number: "Password must contain at least one number",
-		special: "Password must contain at least one special character",
+		"string.empty": "auth.common.inputs.password.errors.empty",
+		"string.min": "auth.common.inputs.password.errors.length",
+		uppercase: "auth.common.inputs.password.errors.uppercase",
+		lowercase: "auth.common.inputs.password.errors.lowercase",
+		number: "auth.common.inputs.password.errors.number",
+		special: "auth.common.inputs.password.errors.special",
 	});
 
-const credentials = joi.object({
+const newOrChangedCredentials = joi.object({
 	firstName: nameSchema,
 	lastName: lastnameSchema,
 	email: joi
 		.string()
 		.trim()
 		.email({ tlds: { allow: false } })
-		.custom((value, helpers) => {
-			const lowercasedValue = value.toLowerCase();
-			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
-			}
-			return lowercasedValue;
-		})
+		.lowercase()
 		.messages({
-			"string.empty": "authRegisterEmailRequired",
-			"string.email": "authRegisterEmailInvalid",
+			"string.empty": "auth.common.inputs.email.errors.empty",
+			"string.email": "auth.common.inputs.email.errors.invalid",
 		}),
-	password: passwordSchema,
-	newPassword: passwordSchema,
+	password: newPasswordSchema,
+	newPassword: newPasswordSchema,
 	confirm: joi
 		.string()
 		.trim()
@@ -95,12 +87,27 @@ const credentials = joi.object({
 			return value;
 		})
 		.messages({
-			"string.empty": "This field can't be empty",
-			different: "Passwords do not match",
+			"string.empty": "auth.common.inputs.passwordConfirm.errors.empty",
+			different: "auth.common.inputs.passwordConfirm.errors.different",
 		}),
 	role: joi.array(),
 	teamId: joi.string().allow("").optional(),
 	inviteToken: joi.string().allow(""),
+});
+
+const loginCredentials = joi.object({
+	email: joi
+		.string()
+		.trim()
+		.email({ tlds: { allow: false } })
+		.lowercase()
+		.messages({
+			"string.empty": "auth.common.inputs.email.errors.empty",
+			"string.email": "auth.common.inputs.email.errors.invalid",
+		}),
+	password: joi.string().messages({
+		"string.empty": "auth.common.inputs.password.errors.empty",
+	}),
 });
 
 const monitorValidation = joi.object({
@@ -397,7 +404,8 @@ const infrastructureMonitorValidation = joi.object({
 });
 
 export {
-	credentials,
+	newOrChangedCredentials,
+	loginCredentials,
 	imageValidation,
 	monitorValidation,
 	settingsValidation,

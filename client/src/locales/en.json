@@ -1,61 +1,188 @@
 {
-	"dontHaveAccount": "Don't have account",
-	"email": "E-mail",
-	"forgotPassword": "Forgot Password",
-	"password": "Password",
-	"signUp": "Sign Up",
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": "Toggles light & dark"
+		},
+		"toasts": {
+			"networkError": "Network error",
+			"checkConnection": "Please check your connection",
+			"unknownError": "Unknown error"
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Continue",
+				"back": "Back"
+			},
+			"inputs": {
+				"email": {
+					"label": "Email",
+					"placeholder": "jordan.ellis@domain.com",
+					"errors": {
+						"empty": "To continue, please enter your email address",
+						"invalid": "Please recheck validity of entered email address"
+					}
+				},
+				"password": {
+					"label": "Password",
+					"rules": {
+						"length": {
+							"beginning": "Must be at least",
+							"highlighted": "8 characters long"
+						},
+						"special": {
+							"beginning": "Must contain at least",
+							"highlighted": "one special character"
+						},
+						"number": {
+							"beginning": "Must contain at least",
+							"highlighted": "one number"
+						},
+						"uppercase": {
+							"beginning": "Must contain at least",
+							"highlighted": "one upper character"
+						},
+						"lowercase": {
+							"beginning": "Must contain at least",
+							"highlighted": "one lower character"
+						},
+						"match": {
+							"beginning": "Confirm password and password",
+							"highlighted": "must match"
+						}
+					},
+					"errors": {
+						"empty": "Please enter your password",
+						"length": "Password must be at least 8 characters long",
+						"uppercase": "Password must contain at least 1 uppercase letter",
+						"lowercase": "Password must contain at least 1 lowercase letter",
+						"number": "Password must contain at least 1 number",
+						"special": "Password must contain at least 1 special character",
+						"incorrect": "The password you provided does not match our records"
+					}
+				},
+				"passwordConfirm": {
+					"label": "Confirm password",
+					"placeholder": "Re-enter password to confirm",
+					"errors": {
+						"empty": "Please enter your password again for confirmation (helps with typos)",
+						"different": "Entered passwords don't match, so one of them is probably mistyped"
+					}
+				},
+				"firstName": {
+					"label": "Name",
+					"placeholder": "Jordan",
+					"errors": {
+						"empty": "Please enter your name",
+						"length": "Name must be less than 50 characters",
+						"pattern": "Name must contain only letters, spaces, apostrophes, or hyphens"
+					}
+				},
+				"lastName": {
+					"label": "Surname",
+					"placeholder": "Ellis",
+					"errors": {
+						"empty": "Please enter your surname",
+						"length": "Surname must be less than 50 characters",
+						"pattern": "Surname must contain only letters, spaces, apostrophes, or hyphens"
+					}
+				}
+			},
+			"errors": {
+				"validation": "Error validating data."
+			}
+		},
+		"login": {
+			"heading": "Log In",
+			"subheadings": {
+				"stepOne": "Enter your email",
+				"stepTwo": "Enter your password"
+			},
+			"links": {
+				"forgotPassword": "Forgot password? <a>Reset password</a>",
+				"register": "Do not have an account? <a>Register here</a>"
+			},
+			"toasts": {
+				"success": "Welcome back! You're successfully logged in.",
+				"incorrectPassword": "Incorrect password"
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "Create super admin",
+				"user": "Sign Up"
+			},
+			"subheadings": {
+				"stepOne": "Enter your personal details",
+				"stepTwo": "Enter your email",
+				"stepThree": "Create your password"
+			},
+			"description": {
+				"superAdmin": "Create your super admin account to get started",
+				"user": "Sign up as a user and ask super admin for access to your monitors"
+			},
+			"gettingStartedButton": {
+				"superAdmin": "Create super admin account",
+				"user": "Sign up regular user"
+			},
+			"termsAndPolicies": "By creating an account, you agree to our <a1>Terms of Service</a1> and <a2>Privacy Policy</a2>.",
+			"links": {
+				"login": "Already have an account? <a>Log In</a>"
+			},
+			"toasts": {
+				"success": "Welcome! Your account was created successfully."
+			}
+		},
+		"forgotPassword": {
+			"heading": "Forgot password?",
+			"subheadings": {
+				"stepOne": "No worries, we'll send you reset instructions.",
+				"stepTwo": "We sent a password reset link to <email/>",
+				"stepThree": "Your new password must be different from previously used passwords.",
+				"stepFour": "Your password has been successfully reset. Click below to log in magically."
+			},
+			"buttons": {
+				"openEmail": "Open email app",
+				"resetPassword": "Reset password"
+			},
+			"imageAlts": {
+				"passwordKey": "Password key icon",
+				"email": "Email icon",
+				"lock": "Lock icon",
+				"passwordConfirm": "Password confirm icon"
+			},
+			"links": {
+				"login": "Go back to <a>Log In</a>",
+				"resend": "Didn't receive the email? <a>Click to resend</a>"
+			},
+			"toasts": {
+				"sent": "Instructions sent to <email/>.",
+				"emailNotFound": "Email not found.",
+				"redirect": "Redirecting in <seconds/>...",
+				"success": "Your password was reset successfully.",
+				"error": "Unable to reset password. Please try again later or contact support."
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Successfully reconnected to the server.",
+				"stillUnreachable": "Server is still unreachable. Please try again later."
+			},
+			"alertBox": "Server Connection Error",
+			"description": "We're unable to connect to the server. Please check your internet connection or verify your deployment configuration if the problem persists.",
+			"retryButton": {
+				"default": "Retry connection",
+				"processing": "Connecting..."
+			}
+		}
+	},
 	"submit": "Submit",
 	"title": "Title",
-	"continue": "Continue",
-	"enterEmail": "Enter your email",
-	"authLoginTitle": "Log In",
-	"authLoginEnterPassword": "Enter your password",
-	"commonPassword": "Password",
-	"commonBack": "Back",
-	"authForgotPasswordTitle": "Forgot password?",
-	"authForgotPasswordResetPassword": "Reset password",
-	"createPassword": "Create your password",
-	"createAPassword": "Password",
-	"authRegisterAlreadyHaveAccount": "Already have an account?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Enter your email",
-	"authRegisterTitle": "Create an account",
-	"authRegisterStepOneTitle": "Create your account",
-	"authRegisterStepOneDescription": "Enter your details to get started",
-	"authRegisterStepTwoTitle": "Set up your profile",
-	"authRegisterStepTwoDescription": "Tell us more about yourself",
-	"authRegisterStepThreeTitle": "Almost done!",
-	"authRegisterStepThreeDescription": "Review your information",
-	"authForgotPasswordDescription": "No worries, we'll send you reset instructions.",
-	"authForgotPasswordSendInstructions": "Send instructions",
-	"authForgotPasswordBackTo": "Back to",
-	"authCheckEmailTitle": "Check your email",
-	"authCheckEmailDescription": "We sent a password reset link to",
-	"authCheckEmailResendEmail": "Resend email",
-	"authCheckEmailBackTo": "Back to",
-	"goBackTo": "Go back to",
-	"authCheckEmailDidntReceiveEmail": "Didn't receive the email?",
-	"authCheckEmailClickToResend": "Click to resend",
-	"authSetNewPasswordTitle": "Set new password",
-	"authSetNewPasswordDescription": "Your new password must be different from previously used passwords.",
-	"authSetNewPasswordNewPassword": "New password",
-	"authSetNewPasswordConfirmPassword": "Confirm password",
-	"confirmPassword": "Re-enter password to confirm",
-	"authSetNewPasswordResetPassword": "Reset password",
-	"authSetNewPasswordBackTo": "Back to",
-	"authPasswordMustBeAtLeast": "Must be at least",
-	"authPasswordCharactersLong": "8 characters long",
-	"authPasswordMustContainAtLeast": "Must contain at least",
-	"authPasswordSpecialCharacter": "one special character",
-	"authPasswordOneNumber": "one number",
-	"authPasswordUpperCharacter": "one upper character",
-	"authPasswordLowerCharacter": "one lower character",
-	"authPasswordConfirmAndPassword": "Confirm password and password",
-	"authPasswordMustMatch": "Passwords must match",
-	"authRegisterCreateAccount": "Create your account to get started",
-	"authRegisterCreateSuperAdminAccount": "Create your super admin account to get started",
-	"authRegisterSignUpWithEmail": "Create super admin account",
-	"authRegisterBySigningUp": "By creating an account, you agree to our <a1>Terms of Service</a1> and <a2>Privacy Policy</a2>.",
 	"distributedStatusHeaderText": "Real-time, real-device coverage",
 	"distributedStatusSubHeaderText": "Powered by millions devices worldwide, view a system performance by global region, country or city",
 	"settingsGeneralSettings": "General settings",
@@ -104,7 +231,6 @@
 	"now": "Now",
 	"delete": "Delete",
 	"configure": "Configure",
-	"networkError": "Network error",
 	"responseTime": "Response time",
 	"ms": "ms",
 	"bar": "Bar",
@@ -112,11 +238,6 @@
 	"country": "COUNTRY",
 	"city": "CITY",
 	"response": "RESPONSE",
-	"checkConnection": "Please check your connection",
-	"passwordreset": "Password Reset",
-	"authRegisterStepOnePersonalDetails": "Enter your personal details",
-	"authCheckEmailOpenEmailButton": "Open email app",
-	"authNewPasswordConfirmed": "Your password has been successfully reset. Click below to log in magically.",
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
 	"monitorStatusDown": "Monitor {name} ({url}) is DOWN and not responding",
 	"webhookSendSuccess": "Webhook notification sent successfully",
@@ -386,10 +507,6 @@
 	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
 	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
 	"DeleteWarningTitle": "Really remove this account?",
-	"authRegisterFirstName": "Name",
-	"authRegisterLastName": "Surname",
-	"authRegisterEmail": "Email",
-	"authRegisterEmailRequired": "To continue, please enter your email address",
 	"bulkImport": {
 		"title": "Bulk Import",
 		"selectFileTips": "Select CSV file to upload",
@@ -401,27 +518,11 @@
 		"noFileSelected": "No file selected",
 		"fallbackPage": "Import a file to upload a list of servers in bulk"
 	},
-	"welcomeBack": "Welcome back! You're successfully logged in.",
-	"authRegisterLoginLink": "Log In",
-	"validationNameRequired": "Please enter your name",
-	"validationNameTooLong": "Name should be less than 50 characters",
-	"validationNameInvalidCharacters": "Please use only letters, spaces, apostrophes, or hyphens",
 	"settingsSystemReset": "System reset",
 	"settingsSystemResetDescription": "Remove all monitors from your system.",
 	"DeleteAccountTitle": "Remove account",
 	"DeleteAccountButton": "Remove account",
-	"authRegisterEmailInvalid": "Please enter a valid email address",
 	"publicLink": "Public link",
-	"doNotHaveAccount": "Do not have an account?",
-	"registerHere": "Register here",
-	"backendUnreachable": "Server Connection Error",
-	"backendUnreachableMessage": "We're unable to connect to the server. Please check your internet connection or verify your deployment configuration if the problem persists.",
-	"backendUnreachableError": "Cannot connect to the server. Please try again later.",
-	"retryConnection": "Retry connection",
-	"retryingConnection": "Connecting...",
-	"backendReconnected": "Successfully reconnected to the server.",
-	"backendStillUnreachable": "Server is still unreachable. Please try again later.",
-	"backendConnectionError": "Error connecting to the server. Please check your network connection.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API key",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",
@@ -505,7 +606,6 @@
 	"state": "State",
 	"statusBreadCrumbsStatusPages": "Status Pages",
 	"statusBreadCrumbsDetails": "Details",
-	"authForgotPasswordInstructions": "No worries, we'll send you reset instructions.",
 	"settingsThemeModeLight": "Light",
 	"settingsThemeModeDark": "Dark",
 	"settingsClearAllStatsDialogCancel": "Cancel",

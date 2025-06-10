@@ -1,61 +1,188 @@
 {
-	"dontHaveAccount": "Нет аккаунта",
-	"email": "Почта",
-	"forgotPassword": "Забыли пароль",
-	"password": "пароль",
-	"signUp": "Зарегистрироваться",
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Ошибка сети",
+			"checkConnection": "Пожалуйста, проверьте ваше соединение",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Продолжить",
+				"back": "Назад"
+			},
+			"inputs": {
+				"email": {
+					"label": "Почта",
+					"placeholder": "",
+					"errors": {
+						"empty": "Чтобы продолжить, пожалуйста, введите свой адрес электронной почты",
+						"invalid": "Пожалуйста, введите действительный адрес электронной почты"
+					}
+				},
+				"password": {
+					"label": "пароль",
+					"rules": {
+						"length": {
+							"beginning": "Должно быть как минимум",
+							"highlighted": "длиной 8 символов"
+						},
+						"special": {
+							"beginning": "Должен содержать как минимум",
+							"highlighted": "один специальный символ"
+						},
+						"number": {
+							"beginning": "Должен содержать как минимум",
+							"highlighted": "одно число"
+						},
+						"uppercase": {
+							"beginning": "Должен содержать как минимум",
+							"highlighted": "один верхний символ"
+						},
+						"lowercase": {
+							"beginning": "Должен содержать как минимум",
+							"highlighted": "один нижний символ"
+						},
+						"match": {
+							"beginning": "Подтвердите пароль и пароль",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "Подтвердите пароль",
+					"placeholder": "Подтвердите ваш пароль",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "Имя",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "Фамилия",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "Войти",
+			"subheadings": {
+				"stepOne": "Введите свой email",
+				"stepTwo": "Введите свой пароль"
+			},
+			"links": {
+				"forgotPassword": "Забыли пароль? <a>Сбросить пароль</a>",
+				"register": "У вас нет учетной записи? <a>Зарегистрируйтесь здесь</a>"
+			},
+			"toasts": {
+				"success": "Добро пожаловать обратно! Вы успешно вошли в систему.",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "Зарегистрироваться"
+			},
+			"subheadings": {
+				"stepOne": "Введите свои личные данные",
+				"stepTwo": "Введите свой email",
+				"stepThree": "Создайте свой пароль"
+			},
+			"description": {
+				"superAdmin": "Создайте учетную запись суперадминистратора, чтобы начать работу",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "Зарегистрироваться по электронной почте",
+				"user": ""
+			},
+			"termsAndPolicies": "Регистрируясь, вы соглашаетесь с нашими",
+			"links": {
+				"login": "Уже есть аккаунт? <a>Войти</a>"
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "Забыли пароль?",
+			"subheadings": {
+				"stepOne": "Не беспокойтесь, мы вышлем вам инструкции по сбросу настроек.",
+				"stepTwo": "Мы отправили ссылку для сброса пароля <email/>",
+				"stepThree": "Ваш новый пароль должен отличаться от ранее использованных паролей.",
+				"stepFour": "Ваш пароль успешно сброшен. Нажмите ниже, чтобы войти в систему магическим образом."
+			},
+			"buttons": {
+				"openEmail": "Откройте приложение почты",
+				"resetPassword": "Сбросить пароль"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "Назад к <a>Войти</a>",
+				"resend": "Не получили письмо? <a>Нажмите, чтобы отправить повторно</a>"
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Успешно подключен к серверу.",
+				"stillUnreachable": "Сервер по-прежнему недоступен. Пожалуйста, повторите попытку позже."
+			},
+			"alertBox": "Ошибка подключения к серверу",
+			"description": "Нам не удается подключиться к серверу. Пожалуйста, проверьте подключение к Интернету или конфигурацию вашего развертывания, если проблема не устранена.",
+			"retryButton": {
+				"default": "Повторите попытку подключения",
+				"processing": "Подключение..."
+			}
+		}
+	},
 	"submit": "Подтвердить",
 	"title": "Название",
-	"continue": "Продолжить",
-	"enterEmail": "Введите свой email",
-	"authLoginTitle": "Войти",
-	"authLoginEnterPassword": "Введите свой пароль",
-	"commonPassword": "Пароль",
-	"commonBack": "Назад",
-	"authForgotPasswordTitle": "Забыли пароль?",
-	"authForgotPasswordResetPassword": "Сбросить пароль",
-	"createPassword": "Создайте свой пароль",
-	"createAPassword": "Создайте пароль",
-	"authRegisterAlreadyHaveAccount": "Уже есть аккаунт?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Введите свой email",
-	"authRegisterTitle": "Создать аккаунт",
-	"authRegisterStepOneTitle": "Создайте свой аккаут",
-	"authRegisterStepOneDescription": "Введите свои данные, чтобы начать",
-	"authRegisterStepTwoTitle": "Настройте свой профиль",
-	"authRegisterStepTwoDescription": "Расскажите нам о себе",
-	"authRegisterStepThreeTitle": "Почти готово!",
-	"authRegisterStepThreeDescription": "Проверьте свою информацию",
-	"authForgotPasswordDescription": "Не волнуйтесь, мы вышлем вам инструкции по сбросу настроек.",
-	"authForgotPasswordSendInstructions": "Отправить инструкции",
-	"authForgotPasswordBackTo": "Назад к",
-	"authCheckEmailTitle": "Проверьте свою почту",
-	"authCheckEmailDescription": "Мы отправили ссылку для сброса пароля",
-	"authCheckEmailResendEmail": "Отправить письмо повторно",
-	"authCheckEmailBackTo": "Назад к",
-	"goBackTo": "Назад к",
-	"authCheckEmailDidntReceiveEmail": "Не получили письмо?",
-	"authCheckEmailClickToResend": "Нажмите, чтобы отправить повторно",
-	"authSetNewPasswordTitle": "Установите новый пароль",
-	"authSetNewPasswordDescription": "Ваш новый пароль должен отличаться от ранее использованных паролей.",
-	"authSetNewPasswordNewPassword": "Новый пароль",
-	"authSetNewPasswordConfirmPassword": "Подтвердите пароль",
-	"confirmPassword": "Подтвердите ваш пароль",
-	"authSetNewPasswordResetPassword": "Сбросить пароль",
-	"authSetNewPasswordBackTo": "Назад к",
-	"authPasswordMustBeAtLeast": "Должно быть как минимум",
-	"authPasswordCharactersLong": "длиной 8 символов",
-	"authPasswordMustContainAtLeast": "Должен содержать как минимум",
-	"authPasswordSpecialCharacter": "один специальный символ",
-	"authPasswordOneNumber": "одно число",
-	"authPasswordUpperCharacter": "один верхний символ",
-	"authPasswordLowerCharacter": "один нижний символ",
-	"authPasswordConfirmAndPassword": "Подтвердите пароль и пароль",
-	"authPasswordMustMatch": "должен совпадать",
-	"authRegisterCreateAccount": "Создайте свою учетную запись, чтобы начать",
-	"authRegisterCreateSuperAdminAccount": "Создайте учетную запись суперадминистратора, чтобы начать работу",
-	"authRegisterSignUpWithEmail": "Зарегистрироваться по электронной почте",
-	"authRegisterBySigningUp": "Регистрируясь, вы соглашаетесь с нашими",
 	"distributedStatusHeaderText": "Охват реального времени и реального устройства",
 	"distributedStatusSubHeaderText": "Работает на миллионах устройств по всему миру, просматривайте производительность системы по глобальному региону, стране или городу",
 	"settingsGeneralSettings": "Общие настройки",
@@ -104,7 +231,6 @@
 	"now": "Сейчас",
 	"delete": "Удалить",
 	"configure": "Настроить",
-	"networkError": "Ошибка сети",
 	"responseTime": "Время ответа:",
 	"ms": "мс",
 	"bar": "Bar",
@@ -112,11 +238,6 @@
 	"country": "СТРАНА",
 	"city": "ГОРОД",
 	"response": "ОТВЕТ",
-	"checkConnection": "Пожалуйста, проверьте ваше соединение",
-	"passwordreset": "Сброс пароля",
-	"authRegisterStepOnePersonalDetails": "Введите свои личные данные",
-	"authCheckEmailOpenEmailButton": "Откройте приложение почты",
-	"authNewPasswordConfirmed": "Ваш пароль успешно сброшен. Нажмите ниже, чтобы войти в систему магическим образом.",
 	"monitorStatusUp": "Монитор {name} ({url}) теперь включен и отвечает",
 	"monitorStatusDown": "Монитор {name} ({url}) ОТКЛЮЧЕН и не отвечает",
 	"webhookSendSuccess": "Уведомление Webhook успешно отправлено",
@@ -389,10 +510,6 @@
 	"DeleteDescriptionText": "Это приведет к удалению учетной записи и всех связанных с ней данных с сервера. Это необратимо.",
 	"DeleteAccountWarning": "Удаление вашей учетной записи означает, что вы не сможете снова войти в систему, и все ваши данные будут удалены. Это необратимо.",
 	"DeleteWarningTitle": "Действительно удаляете эту учетную запись?",
-	"authRegisterFirstName": "Имя",
-	"authRegisterLastName": "Фамилия",
-	"authRegisterEmail": "Email",
-	"authRegisterEmailRequired": "Чтобы продолжить, пожалуйста, введите свой адрес электронной почты",
 	"bulkImport": {
 		"title": "Массовый импорт",
 		"selectFileTips": "Выберите CSV-файл для загрузки",
@@ -404,27 +521,11 @@
 		"noFileSelected": "Файл не выбран",
 		"fallbackPage": "Импортируйте файл для массовой загрузки списка серверов"
 	},
-	"welcomeBack": "Добро пожаловать обратно! Вы успешно вошли в систему.",
-	"authRegisterLoginLink": "Войти",
-	"validationNameRequired": "Пожалуйста, введите свое имя",
-	"validationNameTooLong": "Длина имени не должна превышать 50 символов",
-	"validationNameInvalidCharacters": "Пожалуйста, используйте только буквы, пробелы, апострофы или дефисы",
 	"settingsSystemReset": "Сброс системы",
 	"settingsSystemResetDescription": "Удалите все мониторы из вашей системы.",
 	"DeleteAccountTitle": "Удалить аккаунт",
 	"DeleteAccountButton": "Удалить аккаунт",
-	"authRegisterEmailInvalid": "Пожалуйста, введите действительный адрес электронной почты",
 	"publicLink": "Публичная ссылка",
-	"doNotHaveAccount": "У вас нет учетной записи?",
-	"registerHere": "Зарегистрируйтесь здесь",
-	"backendUnreachable": "Ошибка подключения к серверу",
-	"backendUnreachableMessage": "Нам не удается подключиться к серверу. Пожалуйста, проверьте подключение к Интернету или конфигурацию вашего развертывания, если проблема не устранена.",
-	"backendUnreachableError": "Не удается подключиться к серверу. Пожалуйста, повторите попытку позже.",
-	"retryConnection": "Повторите попытку подключения",
-	"retryingConnection": "Подключение...",
-	"backendReconnected": "Успешно подключен к серверу.",
-	"backendStillUnreachable": "Сервер по-прежнему недоступен. Пожалуйста, повторите попытку позже.",
-	"backendConnectionError": "Ошибка подключения к серверу. Пожалуйста, проверьте свое сетевое подключение.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Ключ API Google PageSpeed",
 	"pageSpeedApiKeyFieldLabel": "Ключ API PageSpeed",
@@ -509,7 +610,6 @@
 	"state": "Состояние",
 	"statusBreadCrumbsStatusPages": "Страницы статуса",
 	"statusBreadCrumbsDetails": "Подробности",
-	"authForgotPasswordInstructions": "Не беспокойтесь, мы вышлем вам инструкции по сбросу настроек.",
 	"settingsThemeModeLight": "Светлая",
 	"settingsThemeModeDark": "Тёмная",
 	"settingsClearAllStatsDialogCancel": "Отменить",

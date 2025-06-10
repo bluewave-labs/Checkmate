@@ -1,61 +1,188 @@
 {
-	"dontHaveAccount": "Ei tiliä",
-	"email": "Sähköposti",
-	"forgotPassword": "Unohtunut salasana",
-	"password": "Salasana",
-	"signUp": "Rekisteröidy",
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Verkkovirhe",
+			"checkConnection": "Tarkista yhteytesi",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Jatka",
+				"back": "Takaisin"
+			},
+			"inputs": {
+				"email": {
+					"label": "Sähköposti",
+					"placeholder": "",
+					"errors": {
+						"empty": "Syötä sähköpostiosoitteesi jatkaaksesi",
+						"invalid": "Kirjoita kelvollinen sähköpostiosoite"
+					}
+				},
+				"password": {
+					"label": "Salasana",
+					"rules": {
+						"length": {
+							"beginning": "Vähintään",
+							"highlighted": "8 merkkiä pitkä"
+						},
+						"special": {
+							"beginning": "Tulee sisältää vähintään",
+							"highlighted": "yksi erikoismerkki"
+						},
+						"number": {
+							"beginning": "Tulee sisältää vähintään",
+							"highlighted": "yksi numero"
+						},
+						"uppercase": {
+							"beginning": "Tulee sisältää vähintään",
+							"highlighted": "yksi pieni kirjain"
+						},
+						"lowercase": {
+							"beginning": "Tulee sisältää vähintään",
+							"highlighted": "yksi iso kirjain"
+						},
+						"match": {
+							"beginning": "Vahvista salasana ja salasana",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "Vahvista salasana",
+					"placeholder": "Syötä salasana uudelleen",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "Nimi",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "Sukunimi",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "Kirjaudu",
+			"subheadings": {
+				"stepOne": "Syötä salasanasi",
+				"stepTwo": "Syötä salasanasi"
+			},
+			"links": {
+				"forgotPassword": "Unohditko salasanasi? <a>Nollaa salasana</a>",
+				"register": "Onko sinulla tili? <a>Rekisteröidy tästä</a>"
+			},
+			"toasts": {
+				"success": "Tervetuloa takaisin! Olet kirjautunut sisään.",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "Rekisteröidy"
+			},
+			"subheadings": {
+				"stepOne": "Syötä henkilökohtaiset tietosi",
+				"stepTwo": "Syötä salasanasi",
+				"stepThree": "Luo salasanasi"
+			},
+			"description": {
+				"superAdmin": "Luo pääkäyttäjän tili aloittaaksesi",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "Luo pääkäyttäjän tili",
+				"user": ""
+			},
+			"termsAndPolicies": "Luomalla tilin hyväksyt <a1>Käyttöehdot</a1> ja <a2>Tietosuojakäytännön</a2>.",
+			"links": {
+				"login": "Onko sinulla jo tili? <a>Kirjaudu</a>"
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "Unohditko salasanasi?",
+			"subheadings": {
+				"stepOne": "Ei hätää, lähetämme sinulle ohjeet salasanan palauttamiseen.",
+				"stepTwo": "Lähetimme salasanan nollauslinkin osoitteeseen <email/>",
+				"stepThree": "Uuden salasanan pitää olla eri kuin aiemmin käyttämäsi.",
+				"stepFour": "Salasanasi on onnistuneesti nollattu. Klikkaa alta kirjautuaksesi taianomaisesti."
+			},
+			"buttons": {
+				"openEmail": "Avaa sähköpostisovellus",
+				"resetPassword": "Nollaa salasana"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "Palaa edelliseen <a>Kirjaudu</a>",
+				"resend": "Etkö saanut sähköpostia? <a>Klikkaa lähettääksesi uudelleen</a>"
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": "Yhdistetään..."
+			}
+		}
+	},
 	"submit": "Lähetä",
 	"title": "Otsikko",
-	"continue": "Jatka",
-	"enterEmail": "Syötä sähköpostiosoitteesi",
-	"authLoginTitle": "Kirjaudu",
-	"authLoginEnterPassword": "Syötä salasanasi",
-	"commonPassword": "Salasana",
-	"commonBack": "Takaisin",
-	"authForgotPasswordTitle": "Unohditko salasanasi?",
-	"authForgotPasswordResetPassword": "Nollaa salasana",
-	"createPassword": "Luo salasanasi",
-	"createAPassword": "Salasana",
-	"authRegisterAlreadyHaveAccount": "Onko sinulla jo tili?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Syötä salasanasi",
-	"authRegisterTitle": "Luo tili",
-	"authRegisterStepOneTitle": "Luo tilisi",
-	"authRegisterStepOneDescription": "Kirjoita tietosi aloittaaksesi",
-	"authRegisterStepTwoTitle": "Määritä profiilisi",
-	"authRegisterStepTwoDescription": "Kerro meille lisää itsestäsi",
-	"authRegisterStepThreeTitle": "Melkein valmis!",
-	"authRegisterStepThreeDescription": "Tarkista tietosi",
-	"authForgotPasswordDescription": "Ei hätää, lähetämme sinulle salasanan nollausohjeet.",
-	"authForgotPasswordSendInstructions": "Lähetä ohjeet",
-	"authForgotPasswordBackTo": "Palaa",
-	"authCheckEmailTitle": "Tarkista sähköpostisi",
-	"authCheckEmailDescription": "Lähetimme salasanan nollauslinkin osoitteeseen",
-	"authCheckEmailResendEmail": "Lähetä sähköposti uudelleen",
-	"authCheckEmailBackTo": "Palaa",
-	"goBackTo": "Palaa edelliseen",
-	"authCheckEmailDidntReceiveEmail": "Etkö saanut sähköpostia?",
-	"authCheckEmailClickToResend": "Klikkaa lähettääksesi uudelleen",
-	"authSetNewPasswordTitle": "Aseta uusi salasana",
-	"authSetNewPasswordDescription": "Uuden salasanan pitää olla eri kuin aiemmin käyttämäsi.",
-	"authSetNewPasswordNewPassword": "Uusi salasana",
-	"authSetNewPasswordConfirmPassword": "Vahvista salasana",
-	"confirmPassword": "Syötä salasana uudelleen",
-	"authSetNewPasswordResetPassword": "Nollaa salasana",
-	"authSetNewPasswordBackTo": "Takaisin",
-	"authPasswordMustBeAtLeast": "Vähintään",
-	"authPasswordCharactersLong": "8 merkkiä pitkä",
-	"authPasswordMustContainAtLeast": "Tulee sisältää vähintään",
-	"authPasswordSpecialCharacter": "yksi erikoismerkki",
-	"authPasswordOneNumber": "yksi numero",
-	"authPasswordUpperCharacter": "yksi pieni kirjain",
-	"authPasswordLowerCharacter": "yksi iso kirjain",
-	"authPasswordConfirmAndPassword": "Vahvista salasana ja salasana",
-	"authPasswordMustMatch": "Salasanojen on oltava samat",
-	"authRegisterCreateAccount": "Luo tili aloittaaksesi",
-	"authRegisterCreateSuperAdminAccount": "Luo pääkäyttäjän tili aloittaaksesi",
-	"authRegisterSignUpWithEmail": "Luo pääkäyttäjän tili",
-	"authRegisterBySigningUp": "Luomalla tilin hyväksyt <a1>Käyttöehdot</a1> ja <a2>Tietosuojakäytännön</a2>.",
 	"distributedStatusHeaderText": "Reaaliaikainen kattavuus oikeilla laitteilla",
 	"distributedStatusSubHeaderText": "Miljoonien laitteiden voimin ympäri maailman näet järjestelmän suorituskyvyn maailman alueittain, maittain tai kaupungeittain",
 	"settingsGeneralSettings": "Yleiset asetukset",
@@ -108,7 +235,6 @@
 	"now": "Nyt",
 	"delete": "Poista",
 	"configure": "Määritä",
-	"networkError": "Verkkovirhe",
 	"responseTime": "Vasteaika",
 	"ms": "ms",
 	"bar": "Palkki",
@@ -116,11 +242,6 @@
 	"country": "MAA",
 	"city": "KAUPUNKI",
 	"response": "Vastaus",
-	"checkConnection": "Tarkista yhteytesi",
-	"passwordreset": "Salasanan nollaus",
-	"authRegisterStepOnePersonalDetails": "Syötä henkilökohtaiset tietosi",
-	"authCheckEmailOpenEmailButton": "Avaa sähköpostisovellus",
-	"authNewPasswordConfirmed": "Salasanasi on onnistuneesti nollattu. Klikkaa alta kirjautuaksesi taianomaisesti.",
 	"monitorStatusUp": "Valvontakohde {name} ({url}) on nyt toiminnassa ja vastaa",
 	"monitorStatusDown": "Valvontakohde {name} ({url}) ei ole toiminnassa, eikä vastaa",
 	"webhookSendSuccess": "Webhook-ilmoitus lähetettiin onnistuneesti",
@@ -394,10 +515,6 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "Haluatko todella poistaa tämän tilin?",
-	"authRegisterFirstName": "Nimi",
-	"authRegisterLastName": "Sukunimi",
-	"authRegisterEmail": "Sähköpostiosoite",
-	"authRegisterEmailRequired": "Syötä sähköpostiosoitteesi jatkaaksesi",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -409,27 +526,11 @@
 		"noFileSelected": "Ei valittua tiedostoa",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "Tervetuloa takaisin! Olet kirjautunut sisään.",
-	"authRegisterLoginLink": "Kirjaudu",
-	"validationNameRequired": "Kirjoita nimesi",
-	"validationNameTooLong": "Nimen tulee olla alle 50 merkkiä",
-	"validationNameInvalidCharacters": "Käytäthän vain kirjaimia, välilyöntejä, heittomerkkejä tai yhdysmerkkejä",
 	"settingsSystemReset": "Järjestelmän palautus",
 	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "Poista tili",
 	"DeleteAccountButton": "Poista tili",
-	"authRegisterEmailInvalid": "Kirjoita kelvollinen sähköpostiosoite",
 	"publicLink": "Julkinen linkki",
-	"doNotHaveAccount": "Onko sinulla tili?",
-	"registerHere": "Rekisteröidy tästä",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "Yhdistetään...",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API-avain",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API-avain",
@@ -514,7 +615,6 @@
 	"state": "Tila",
 	"statusBreadCrumbsStatusPages": "Tilasivut",
 	"statusBreadCrumbsDetails": "Tiedot",
-	"authForgotPasswordInstructions": "Ei hätää, lähetämme sinulle ohjeet salasanan palauttamiseen.",
 	"settingsThemeModeLight": "Vaalea",
 	"settingsThemeModeDark": "Tumma",
 	"settingsClearAllStatsDialogCancel": "Peruuta",

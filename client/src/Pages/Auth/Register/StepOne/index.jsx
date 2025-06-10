@@ -7,6 +7,7 @@ import TextInput from "../../../../Components/Inputs/TextInput";
 import { useTranslation } from "react-i18next";
 
 StepOne.propTypes = {
+	isSuperAdmin: PropTypes.bool,
 	form: PropTypes.object,
 	errors: PropTypes.object,
 	onSubmit: PropTypes.func,
@@ -18,6 +19,7 @@ StepOne.propTypes = {
  * Renders the first step of the sign up process.
  *
  * @param {Object} props
+ * @param {boolean} props.isSuperAdmin - Whether the user is creating and admin account
  * @param {Object} props.form - Form state object.
  * @param {Object} props.errors - Object containing form validation errors.
  * @param {Function} props.onSubmit - Callback function to handle form submission.
@@ -26,7 +28,7 @@ StepOne.propTypes = {
  * @returns {JSX.Element}
  */
 
-function StepOne({ form, errors, onSubmit, onChange, onBack }) {
+function StepOne({ isSuperAdmin, form, errors, onSubmit, onChange, onBack }) {
 	const theme = useTheme();
 	const inputRef = useRef(null);
 	const { t } = useTranslation();
@@ -45,8 +47,12 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("signUp")}</Typography>
-					<Typography>{t("authRegisterStepOnePersonalDetails")}</Typography>
+					<Typography component="h1">
+						{isSuperAdmin
+							? t("auth.registration.heading.superAdmin")
+							: t("auth.registration.heading.user")}
+					</Typography>
+					<Typography>{t("auth.registration.subheadings.stepOne")}</Typography>
 				</Box>
 
 				<Box
@@ -64,26 +70,26 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 					>
 						<TextInput
 							id="register-firstname-input"
-							label={t("authRegisterFirstName")}
+							label={t("auth.common.inputs.firstName.label")}
 							isRequired={true}
-							placeholder="Jordan"
+							placeholder={t("auth.common.inputs.firstName.placeholder")}
 							autoComplete="given-name"
 							value={form.firstName}
 							onChange={onChange}
 							error={errors.firstName ? true : false}
-							helperText={errors.firstName}
+							helperText={t(errors.firstName)} // Localization keys are in validation.js
 							ref={inputRef}
 						/>
 						<TextInput
 							id="register-lastname-input"
-							label={t("authRegisterLastName")}
+							label={t("auth.common.inputs.lastName.label")}
 							isRequired={true}
-							placeholder="Ellis"
+							placeholder={t("auth.common.inputs.lastName.placeholder")}
 							autoComplete="family-name"
 							value={form.lastName}
 							onChange={onChange}
 							error={errors.lastName ? true : false}
-							helperText={errors.lastName}
+							helperText={t(errors.lastName)} // Localization keys are in validation.js
 						/>
 					</Box>
 					<Stack
@@ -108,7 +114,7 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 							}}
 						>
 							<ArrowBackRoundedIcon />
-							{t("commonBack")}
+							{t("auth.common.navigation.back")}
 						</Button>
 						<Button
 							variant="contained"
@@ -124,7 +130,7 @@ function StepOne({ form, errors, onSubmit, onChange, onBack }) {
 								},
 							}}
 						>
-							{t("continue")}
+							{t("auth.common.navigation.continue")}
 						</Button>
 					</Stack>
 				</Box>

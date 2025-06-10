@@ -338,7 +338,7 @@ function Sidebar() {
 						mt={theme.spacing(2)}
 						sx={{ opacity: 0.8, fontWeight: 500 }}
 					>
-						Checkmate
+						{t("common.appName")}
 					</Typography>
 				</Stack>
 			</Stack>

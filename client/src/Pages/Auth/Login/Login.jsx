@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import { credentials } from "../../../Validation/validation";
+import { loginCredentials } from "../../../Validation/validation";
 import { login } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils";
@@ -15,7 +15,7 @@ import PasswordStep from "./Components/PasswordStep";
 import ThemeSwitch from "../../../Components/ThemeSwitch";
 import ForgotPasswordLabel from "./Components/ForgotPasswordLabel";
 import LanguageSelector from "../../../Components/LanguageSelector";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 const DEMO = import.meta.env.VITE_APP_DEMO;
 
@@ -59,7 +59,7 @@ const Login = () => {
 			[name]: lowerCasedValue,
 		}));
 
-		const { error } = credentials.validate(
+		const { error } = loginCredentials.validate(
 			{ [name]: lowerCasedValue },
 			{ abortEarly: false }
 		);
@@ -76,22 +76,22 @@ const Login = () => {
 		event.preventDefault();
 
 		if (step === 0) {
-			const { error } = credentials.validate(
+			const { error } = loginCredentials.validate(
 				{ email: form.email },
 				{ abortEarly: false }
 			);
 			if (error) {
 				const errorMessage = error.details[0].message;
 				const translatedMessage = errorMessage.startsWith("auth")
-					? t(errorMessage)
-					: errorMessage;
+					? t(errorMessage) // Localization keys are in validation.js
+					: errorMessage; // FIXME: Potential untranslated string
 				setErrors((prev) => ({ ...prev, email: translatedMessage }));
 				createToast({ body: translatedMessage });
 			} else {
 				setStep(1);
 			}
 		} else if (step === 1) {
-			const { error } = credentials.validate(form, { abortEarly: false });
+			const { error } = loginCredentials.validate(form, { abortEarly: false });
 
 			if (error) {
 				// validation errors
@@ -104,31 +104,31 @@ const Login = () => {
 					body:
 						error.details && error.details.length > 0
 							? error.details[0].message.startsWith("auth")
-								? t(error.details[0].message)
-								: error.details[0].message
-							: t("Error validating data."),
+								? t(error.details[0].message) // Localization keys are in validation.js
+								: error.details[0].message // FIXME: Potential untranslated string
+							: t("auth.common.errors.validation"),
 				});
 			} else {
 				const action = await dispatch(login(form));
 				if (action.payload.success) {
 					navigate("/uptime");
 					createToast({
-						body: t("welcomeBack"),
+						body: t("auth.login.toasts.success"),
 					});
 				} else {
 					if (action.payload) {
 						if (action.payload.msg === "Incorrect password")
 							setErrors({
-								password: "The password you provided does not match our records",
+								password: t("auth.common.fields.password.errors.incorrect"),
 							});
 						// dispatch errors
 						createToast({
-							body: action.payload.msg,
+							body: t("auth.login.toasts.incorrectPassword"),
 						});
 					} else {
 						// unknown errors
 						createToast({
-							body: "Unknown error.",
+							body: t("common.toasts.unknownError"),
 						});
 					}
 				}
@@ -174,7 +174,7 @@ const Login = () => {
 					gap={theme.spacing(4)}
 				>
 					<Logo style={{ borderRadius: theme.shape.borderRadius }} />
-					<Typography sx={{ userSelect: "none" }}>Checkmate</Typography>
+					<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
 				</Stack>
 				<Stack
 					direction="row"
@@ -237,21 +237,25 @@ const Login = () => {
 						display="inline-block"
 						color={theme.palette.primary.main}
 					>
-						{t("doNotHaveAccount")}
-					</Typography>
-					<Typography
-						component="span"
-						color={theme.palette.accent.main}
-						ml={theme.spacing(2)}
-						sx={{
-							cursor: "pointer",
-							"&:hover": {
-								color: theme.palette.accent.darker,
-							},
-						}}
-						onClick={() => navigate("/register")}
-					>
-						{t("registerHere")}
+						<Trans
+							i18nKey="auth.login.links.register"
+							components={{
+								a: (
+									<Typography
+										component="span"
+										color={theme.palette.accent.main}
+										ml={theme.spacing(2)}
+										sx={{
+											cursor: "pointer",
+											"&:hover": {
+												color: theme.palette.accent.darker,
+											},
+										}}
+										onClick={() => navigate("/register")}
+									/>
+								),
+							}}
+						/>
 					</Typography>
 				</Box>
 			</Stack>

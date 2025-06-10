@@ -1,61 +1,188 @@
 {
-	"dontHaveAccount": "Hesabınız yok mu",
-	"email": "E-posta",
-	"forgotPassword": "Parolamı unuttum",
-	"password": "Parola",
-	"signUp": "Kayıt Ol",
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Ağ hatası",
+			"checkConnection": "Lütfen bağlantınızı kontrol edin",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Devam Et",
+				"back": "Geri"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-posta",
+					"placeholder": "",
+					"errors": {
+						"empty": "Devam etmek için lütfen e-posta adresinizi girin",
+						"invalid": "Lütfen geçerli bir eposta hesabı girin"
+					}
+				},
+				"password": {
+					"label": "Parola",
+					"rules": {
+						"length": {
+							"beginning": "En az",
+							"highlighted": "8 karakter uzunluğunda olmalı"
+						},
+						"special": {
+							"beginning": "En az içermeli",
+							"highlighted": "bir özel karakter"
+						},
+						"number": {
+							"beginning": "En az içermeli",
+							"highlighted": "bir rakam"
+						},
+						"uppercase": {
+							"beginning": "En az içermeli",
+							"highlighted": "bir büyük harf"
+						},
+						"lowercase": {
+							"beginning": "En az içermeli",
+							"highlighted": "bir küçük harf"
+						},
+						"match": {
+							"beginning": "Onay şifresi ve şifre",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "Parolayı onayla",
+					"placeholder": "Parolanızı onaylayın",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "İsim",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "Soyisim",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "Giriş Yap",
+			"subheadings": {
+				"stepOne": "E-posta adresinizi girin",
+				"stepTwo": "Parolanızı girin"
+			},
+			"links": {
+				"forgotPassword": "Parolanızı mı unuttunuz? <a>Parola sıfırla</a>",
+				"register": "Bir hesabınız yok mu? <a>Buradan kayıt olun</a>"
+			},
+			"toasts": {
+				"success": "Tekrar hoş geldiniz! Başarıyla giriş yaptınız.",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "Kayıt Ol"
+			},
+			"subheadings": {
+				"stepOne": "Kişisel bilgilerinizi girin",
+				"stepTwo": "E-posta adresinizi girin",
+				"stepThree": "Parolanızı oluşturun"
+			},
+			"description": {
+				"superAdmin": "Super admin hesabınızı oluşturmak için devam edin",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "E-posta ile kayıt ol",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": "Zaten hesabınız var mı? <a>Giriş yap</a>"
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "Parolanızı mı unuttunuz?",
+			"subheadings": {
+				"stepOne": "Endişelenmeyin, size sıfırlama talimatlarını göndereceğiz.",
+				"stepTwo": "<email/> adresine şifre sıfırlama bağlantısı gönderdik",
+				"stepThree": "Yeni şifreniz daha önce kullanılan şifrelerden farklı olmalıdır.",
+				"stepFour": "Parolanız başarıyla sıfırlandı. Otomatik olarak giriş yapmak için aşağıya tıklayın."
+			},
+			"buttons": {
+				"openEmail": "Eposta uygulamasını aç",
+				"resetPassword": "Parola sıfırla"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "Geri dön <a>Giriş Yap</a>",
+				"resend": "E-posta almadınız mı? <a>Yeniden göndermek için tıklayın</a>"
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Sunucuya başarıyla yeniden bağlanıldı.",
+				"stillUnreachable": "Sunucuya hala ulaşılamıyor. Lütfen daha sonra tekrar deneyin."
+			},
+			"alertBox": "Sunucu bağlantı hatası",
+			"description": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse dağıtım yapılandırmanızı doğrulayın.",
+			"retryButton": {
+				"default": "Bağlantıyı yeniden deneyin",
+				"processing": "Bağlanıyor..."
+			}
+		}
+	},
 	"submit": "Gönder",
 	"title": "Başlık",
-	"continue": "Devam Et",
-	"enterEmail": "E-posta adresinizi girin",
-	"authLoginTitle": "Giriş Yap",
-	"authLoginEnterPassword": "Parolanızı girin",
-	"commonPassword": "Parola",
-	"commonBack": "Geri",
-	"authForgotPasswordTitle": "Parolanızı mı unuttunuz?",
-	"authForgotPasswordResetPassword": "Parola sıfırla",
-	"createPassword": "Parolanızı oluşturun",
-	"createAPassword": "Bir parola oluşturun",
-	"authRegisterAlreadyHaveAccount": "Zaten hesabınız var mı?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "E-posta adresinizi girin",
-	"authRegisterTitle": "Hesap oluştur",
-	"authRegisterStepOneTitle": "Hesabınızı oluşturun",
-	"authRegisterStepOneDescription": "Başlamak için bilgilerinizi girin",
-	"authRegisterStepTwoTitle": "Profilinizi ayarlayın",
-	"authRegisterStepTwoDescription": "Kendiniz hakkında daha fazla bilgi verin",
-	"authRegisterStepThreeTitle": "Neredeyse bitti!",
-	"authRegisterStepThreeDescription": "Bilgilerinizi gözden geçirin",
-	"authForgotPasswordDescription": "Endişelenmeyin, size sıfırlama talimatlarını göndereceğiz.",
-	"authForgotPasswordSendInstructions": "Talimatları gönder",
-	"authForgotPasswordBackTo": "Geri dön",
-	"authCheckEmailTitle": "E-postanızı kontrol edin",
-	"authCheckEmailDescription": "{{email}} adresine şifre sıfırlama bağlantısı gönderdik",
-	"authCheckEmailResendEmail": "E-postayı yeniden gönder",
-	"authCheckEmailBackTo": "Geri dön",
-	"goBackTo": "Geri dön",
-	"authCheckEmailDidntReceiveEmail": "E-posta almadınız mı?",
-	"authCheckEmailClickToResend": "Yeniden göndermek için tıklayın",
-	"authSetNewPasswordTitle": "Yeni şifre belirle",
-	"authSetNewPasswordDescription": "Yeni şifreniz daha önce kullanılan şifrelerden farklı olmalıdır.",
-	"authSetNewPasswordNewPassword": "Yeni şifre",
-	"authSetNewPasswordConfirmPassword": "Parolayı onayla",
-	"confirmPassword": "Parolanızı onaylayın",
-	"authSetNewPasswordResetPassword": "Parola sıfırla",
-	"authSetNewPasswordBackTo": "Geri dön",
-	"authPasswordMustBeAtLeast": "En az",
-	"authPasswordCharactersLong": "8 karakter uzunluğunda olmalı",
-	"authPasswordMustContainAtLeast": "En az içermeli",
-	"authPasswordSpecialCharacter": "bir özel karakter",
-	"authPasswordOneNumber": "bir rakam",
-	"authPasswordUpperCharacter": "bir büyük harf",
-	"authPasswordLowerCharacter": "bir küçük harf",
-	"authPasswordConfirmAndPassword": "Onay şifresi ve şifre",
-	"authPasswordMustMatch": "eşleşmelidir",
-	"authRegisterCreateAccount": "Hesap oluşturmak için devam et",
-	"authRegisterCreateSuperAdminAccount": "Super admin hesabınızı oluşturmak için devam edin",
-	"authRegisterSignUpWithEmail": "E-posta ile kayıt ol",
-	"authRegisterBySigningUp": "Kayıt olarak, aşağıdaki şartları kabul ediyorsunuz:",
 	"distributedStatusHeaderText": "Gerçek zamanlı, Gerçek cihazlar kapsamı",
 	"distributedStatusSubHeaderText": "Dünya çapında milyonlarca cihaz tarafından desteklenen sistem performansını küresel bölgeye, ülkeye veya şehre göre görüntüleyin",
 	"settingsGeneralSettings": "Genel ayarlar",
@@ -108,7 +235,6 @@
 	"now": "Şimdi",
 	"delete": "Sil",
 	"configure": "Yapılandır",
-	"networkError": "Ağ hatası",
 	"responseTime": "Yanıt süresi:",
 	"ms": "ms",
 	"bar": "Çubuk",
@@ -116,11 +242,6 @@
 	"country": "ÜLKE",
 	"city": "ŞEHİR",
 	"response": "YANIT",
-	"checkConnection": "Lütfen bağlantınızı kontrol edin",
-	"passwordreset": "Parola Sıfırlama",
-	"authRegisterStepOnePersonalDetails": "Kişisel bilgilerinizi girin",
-	"authCheckEmailOpenEmailButton": "Eposta uygulamasını aç",
-	"authNewPasswordConfirmed": "Parolanız başarıyla sıfırlandı. Otomatik olarak giriş yapmak için aşağıya tıklayın.",
 	"monitorStatusUp": "Monitör {name} ({url}) ayakta ve yanıt veriyor",
 	"monitorStatusDown": "Monitör {name} ({url}) yanıt vermiyor",
 	"webhookSendSuccess": "Web kanca bildirimi başarıyla gönderildi",
@@ -394,10 +515,6 @@
 	"DeleteDescriptionText": "Bu, hesabı ve ilişkili tüm verileri sunucudan kaldıracaktır. Bu geri alınamaz.",
 	"DeleteAccountWarning": "Hesabınızı kaldırmanız, tekrar oturum açamayacağınız ve tüm verilerinizin silineceği anlamına gelir. Bu geri alınamaz.",
 	"DeleteWarningTitle": "Gerçekten bu hesabı silmek istiyor musunuz?",
-	"authRegisterFirstName": "İsim",
-	"authRegisterLastName": "Soyisim",
-	"authRegisterEmail": "E-posta",
-	"authRegisterEmailRequired": "Devam etmek için lütfen e-posta adresinizi girin",
 	"bulkImport": {
 		"title": "Toplu içeri alma",
 		"selectFileTips": "Yüklenecek CSV dosyasını seçin",
@@ -409,27 +526,11 @@
 		"noFileSelected": "Hiçbir dosya seçilmedi",
 		"fallbackPage": "Toplu olarak sunucu listesini yüklemek için bir dosyayı içe aktarın"
 	},
-	"welcomeBack": "Tekrar hoş geldiniz! Başarıyla giriş yaptınız.",
-	"authRegisterLoginLink": "Giriş yap",
-	"validationNameRequired": "Lütfen adınızı girin",
-	"validationNameTooLong": "İsim 50 karakterden az olmalıdır",
-	"validationNameInvalidCharacters": "Lütfen sadece harfler, boşluk, tırnak ve çizgi kullanın",
 	"settingsSystemReset": "Sistem sıfırla",
 	"settingsSystemResetDescription": "Sistemdeki tüm monitörleri silin",
 	"DeleteAccountTitle": "Hesabı sil",
 	"DeleteAccountButton": "Hesabı sil",
-	"authRegisterEmailInvalid": "Lütfen geçerli bir eposta hesabı girin",
 	"publicLink": "Herkese açık bağlantı",
-	"doNotHaveAccount": "Bir hesabınız yok mu?",
-	"registerHere": "Buradan kayıt olun",
-	"backendUnreachable": "Sunucu bağlantı hatası",
-	"backendUnreachableMessage": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse dağıtım yapılandırmanızı doğrulayın.",
-	"backendUnreachableError": "Sunucuya bağlanılamıyor. Lütfen daha sonra tekrar deneyin.",
-	"retryConnection": "Bağlantıyı yeniden deneyin",
-	"retryingConnection": "Bağlanıyor...",
-	"backendReconnected": "Sunucuya başarıyla yeniden bağlanıldı.",
-	"backendStillUnreachable": "Sunucuya hala ulaşılamıyor. Lütfen daha sonra tekrar deneyin.",
-	"backendConnectionError": "Sunucuya bağlanırken hata oluştu. Lütfen ağ bağlantınızı kontrol edin.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API anahtarı",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API anahtarı",
@@ -514,7 +615,6 @@
 	"state": "Durum",
 	"statusBreadCrumbsStatusPages": "Durum sayfası",
 	"statusBreadCrumbsDetails": "Detaylar",
-	"authForgotPasswordInstructions": "Endişelenmeyin, size sıfırlama talimatlarını göndereceğiz.",
 	"settingsThemeModeLight": "Aydınlat",
 	"settingsThemeModeDark": "Karart",
 	"settingsClearAllStatsDialogCancel": "İptal",

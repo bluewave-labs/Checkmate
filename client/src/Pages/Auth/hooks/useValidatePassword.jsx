@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { credentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation";
 
 const getFeedbackStatus = (form, errors, field, criteria) => {
 	const fieldErrors = errors[field];
@@ -36,7 +36,7 @@ function useValidatePassword() {
 			validateValue.password = form.password;
 		}
 
-		const { error } = credentials.validate(validateValue, validateOptions);
+		const { error } = newOrChangedCredentials.validate(validateValue, validateOptions);
 		const errors = error?.details.map((error) => ({
 			path: error.path[0],
 			type: error.type,

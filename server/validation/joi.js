@@ -22,18 +22,8 @@ const passwordPattern =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/])[A-Za-z0-9!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/]+$/;
 
 const loginValidation = joi.object({
-	email: joi
-		.string()
-		.email()
-		.required()
-		.custom((value, helpers) => {
-			const lowercasedValue = value.toLowerCase();
-			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
-			}
-			return lowercasedValue;
-		}),
-	password: joi.string().min(8).required().pattern(passwordPattern),
+	email: joi.string().email().required().lowercase(),
+	password: joi.string().required(),
 });
 const nameValidation = joi
 	.string()

@@ -1,61 +1,188 @@
 {
-	"dontHaveAccount": "沒有帳號",
-	"email": "E-mail",
-	"forgotPassword": "忘記密碼",
-	"password": "密碼",
-	"signUp": "註冊",
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "繼續",
+				"back": "回去"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-mail",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "密碼",
+					"rules": {
+						"length": {
+							"beginning": "必須至少",
+							"highlighted": "8 個字符長"
+						},
+						"special": {
+							"beginning": "必須至少包含",
+							"highlighted": "一個特殊字符"
+						},
+						"number": {
+							"beginning": "必須至少包含",
+							"highlighted": "一個數字"
+						},
+						"uppercase": {
+							"beginning": "必須至少包含",
+							"highlighted": "一個大寫字母"
+						},
+						"lowercase": {
+							"beginning": "必須至少包含",
+							"highlighted": "一個小寫字母"
+						},
+						"match": {
+							"beginning": "確認密碼",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "確認密碼",
+					"placeholder": "確認您的密碼",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "登入",
+			"subheadings": {
+				"stepOne": "輸入您的 E-mail",
+				"stepTwo": "輸入您的密碼"
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "註冊"
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "輸入您的 E-mail",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "建立您的超級管理員帳號開始使用",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "用 E-mail 註冊",
+				"user": ""
+			},
+			"termsAndPolicies": "註冊即表示您同意我們的",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "忘記密碼？",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "我們已將密碼重設連結發送至 <email/>",
+				"stepThree": "您的新密碼必須與之前使用過的密碼不同。",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": "重設密碼"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "回去 <a>登入</a>",
+				"resend": "沒有受到 E-mail？ <a>點擊</a>"
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
 	"submit": "",
 	"title": "",
-	"continue": "繼續",
-	"enterEmail": "輸入您的 E-mail",
-	"authLoginTitle": "登入",
-	"authLoginEnterPassword": "輸入您的密碼",
-	"commonPassword": "密碼",
-	"commonBack": "回去",
-	"authForgotPasswordTitle": "忘記密碼？",
-	"authForgotPasswordResetPassword": "",
-	"createPassword": "",
-	"createAPassword": "",
-	"authRegisterAlreadyHaveAccount": "已經有帳號嗎？",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "輸入您的 E-mail",
-	"authRegisterTitle": "建立帳號",
-	"authRegisterStepOneTitle": "建立您的帳號",
-	"authRegisterStepOneDescription": "清輸入您的個人檔案",
-	"authRegisterStepTwoTitle": "設定您的個人檔案",
-	"authRegisterStepTwoDescription": "請分享更多關於您的資訊",
-	"authRegisterStepThreeTitle": "快完成了！",
-	"authRegisterStepThreeDescription": "請確認您的資訊",
-	"authForgotPasswordDescription": "別擔心，我們會發送重設說明給您。",
-	"authForgotPasswordSendInstructions": "將說明發送至",
-	"authForgotPasswordBackTo": "回去",
-	"authCheckEmailTitle": "請查看您的電子郵件",
-	"authCheckEmailDescription": "我們已將密碼重設連結發送至",
-	"authCheckEmailResendEmail": "重新發送 E-mail",
-	"authCheckEmailBackTo": "回去",
-	"goBackTo": "回去",
-	"authCheckEmailDidntReceiveEmail": "沒有受到 E-mail？",
-	"authCheckEmailClickToResend": "點擊",
-	"authSetNewPasswordTitle": "設定新密碼",
-	"authSetNewPasswordDescription": "您的新密碼必須與之前使用過的密碼不同。",
-	"authSetNewPasswordNewPassword": "新密碼",
-	"authSetNewPasswordConfirmPassword": "確認密碼",
-	"confirmPassword": "確認您的密碼",
-	"authSetNewPasswordResetPassword": "重設密碼",
-	"authSetNewPasswordBackTo": "回去",
-	"authPasswordMustBeAtLeast": "必須至少",
-	"authPasswordCharactersLong": "8 個字符長",
-	"authPasswordMustContainAtLeast": "必須至少包含",
-	"authPasswordSpecialCharacter": "一個特殊字符",
-	"authPasswordOneNumber": "一個數字",
-	"authPasswordUpperCharacter": "一個大寫字母",
-	"authPasswordLowerCharacter": "一個小寫字母",
-	"authPasswordConfirmAndPassword": "確認密碼",
-	"authPasswordMustMatch": "必須相符",
-	"authRegisterCreateAccount": "建立您的帳號開始使用",
-	"authRegisterCreateSuperAdminAccount": "建立您的超級管理員帳號開始使用",
-	"authRegisterSignUpWithEmail": "用 E-mail 註冊",
-	"authRegisterBySigningUp": "註冊即表示您同意我們的",
 	"distributedStatusHeaderText": "實時、真實設備覆蓋",
 	"distributedStatusSubHeaderText": "由全球數百萬個設備提供支持，您可以按全球區域、國家或城市查看系統效能",
 	"settingsGeneralSettings": "一般設定",
@@ -108,7 +235,6 @@
 	"now": "",
 	"delete": "",
 	"configure": "",
-	"networkError": "",
 	"responseTime": "",
 	"ms": "",
 	"bar": "",
@@ -116,11 +242,6 @@
 	"country": "",
 	"city": "",
 	"response": "",
-	"checkConnection": "",
-	"passwordreset": "",
-	"authRegisterStepOnePersonalDetails": "",
-	"authCheckEmailOpenEmailButton": "",
-	"authNewPasswordConfirmed": "",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
 	"webhookSendSuccess": "",
@@ -394,10 +515,6 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "",
-	"authRegisterFirstName": "",
-	"authRegisterLastName": "",
-	"authRegisterEmail": "",
-	"authRegisterEmailRequired": "",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -409,27 +526,11 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "",
-	"authRegisterLoginLink": "",
-	"validationNameRequired": "",
-	"validationNameTooLong": "",
-	"validationNameInvalidCharacters": "",
 	"settingsSystemReset": "",
 	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "",
 	"DeleteAccountButton": "",
-	"authRegisterEmailInvalid": "",
 	"publicLink": "",
-	"doNotHaveAccount": "",
-	"registerHere": "",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",
@@ -514,7 +615,6 @@
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"authForgotPasswordInstructions": "",
 	"settingsThemeModeLight": "",
 	"settingsThemeModeDark": "",
 	"settingsClearAllStatsDialogCancel": "",

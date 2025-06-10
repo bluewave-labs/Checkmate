@@ -35,8 +35,8 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 				position="relative"
 			>
 				<Box>
-					<Typography component="h1">{t("authLoginTitle")}</Typography>
-					<Typography>{t("authLoginEnterEmail")}</Typography>
+					<Typography component="h1">{t("auth.login.heading")}</Typography>
+					<Typography>{t("auth.login.subheadings.stepOne")}</Typography>
 				</Box>
 				<Box
 					textAlign="left"
@@ -50,15 +50,14 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 					<TextInput
 						type="email"
 						id="login-email-input"
-						label={t("email")}
+						label={t("auth.common.inputs.email.label")}
 						isRequired={true}
-						placeholder="jordan.ellis@domain.com"
+						placeholder={t("auth.common.inputs.email.placeholder")}
 						autoComplete="email"
 						value={form.email}
-						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
 						onChange={onChange}
 						error={errors.email ? true : false}
-						helperText={errors.email ? t(errors.email) : ""}
+						helperText={errors.email ? t(errors.email) : ""} // Localization keys are in validation.js
 						ref={inputRef}
 					/>
 					<Stack
@@ -88,7 +87,7 @@ const EmailStep = ({ form, errors, onSubmit, onChange }) => {
 								},
 							}}
 						>
-							{t("continue")}
+							{t("auth.common.navigation.continue")}
 						</Button>
 					</Stack>
 				</Box>

@@ -8,6 +8,7 @@ import Check from "../../../../Components/Check/Check";
 import { useValidatePassword } from "../../hooks/useValidatePassword";
 import { useTranslation } from "react-i18next";
 StepThree.propTypes = {
+	isSuperAdmin: PropTypes.bool,
 	onSubmit: PropTypes.func,
 	onBack: PropTypes.func,
 };
@@ -16,11 +17,12 @@ StepThree.propTypes = {
  * Renders the third step of the sign up process.
  *
  * @param {Object} props
+ * @param {boolean} props.isSuperAdmin - Whether the user is creating and admin account
  * @param {Function} props.onSubmit - Callback function to handle form submission.
  * @param {Function} props.onBack - Callback function to handle "Back" button click.
  * @returns {JSX.Element}
  */
-function StepThree({ onSubmit, onBack }) {
+function StepThree({ isSuperAdmin, onSubmit, onBack }) {
 	const theme = useTheme();
 	const inputRef = useRef(null);
 	const { t } = useTranslation();
@@ -39,8 +41,12 @@ function StepThree({ onSubmit, onBack }) {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("signUp")}</Typography>
-					<Typography>{t("createPassword")}</Typography>
+					<Typography component="h1">
+						{isSuperAdmin
+							? t("auth.registration.heading.superAdmin")
+							: t("auth.registration.heading.user")}
+					</Typography>
+					<Typography>{t("auth.registration.subheadings.stepThree")}</Typography>
 				</Box>
 				<Box
 					component="form"
@@ -64,26 +70,32 @@ function StepThree({ onSubmit, onBack }) {
 							type="password"
 							id="register-password-input"
 							name="password"
-							label={t("authLoginEnterPassword")}
+							label={t("auth.common.inputs.password.label")}
 							isRequired={true}
-							placeholder={t("createAPassword")}
+							placeholder="••••••••••"
 							autoComplete="current-password"
 							value={form.password}
 							onChange={handleChange}
 							error={errors.password && errors.password[0] ? true : false}
+							helperText={
+								errors.password === "auth.common.inputs.password.errors.empty"
+									? t(errors.password)
+									: ""
+							} // Other errors are related to required password conditions and are visualized below the input
 							ref={inputRef}
 						/>
 						<TextInput
 							type="password"
 							id="register-confirm-input"
 							name="confirm"
-							label={t("authSetNewPasswordConfirmPassword")}
+							label={t("auth.common.inputs.passwordConfirm.label")}
 							isRequired={true}
-							placeholder={t("confirmPassword")}
+							placeholder={t("auth.common.inputs.passwordConfirm.placeholder")}
 							autoComplete="current-password"
 							value={form.confirm}
 							onChange={handleChange}
 							error={errors.confirm && errors.confirm[0] ? true : false}
+							helperText={t(errors.confirm)} // Localization keys are in validation.js
 						/>
 					</Box>
 					<Stack
@@ -91,33 +103,33 @@ function StepThree({ onSubmit, onBack }) {
 						mb={{ xs: theme.spacing(6), sm: theme.spacing(8) }}
 					>
 						<Check
-							noHighlightText={t("authPasswordMustBeAtLeast")}
-							text={t("authPasswordCharactersLong")}
+							noHighlightText={t("auth.common.inputs.password.rules.length.beginning")}
+							text={t("auth.common.inputs.password.rules.length.highlighted")}
 							variant={feedbacks.length}
 						/>
 						<Check
-							noHighlightText={t("authPasswordMustContainAtLeast")}
-							text={t("authPasswordSpecialCharacter")}
+							noHighlightText={t("auth.common.inputs.password.rules.special.beginning")}
+							text={t("auth.common.inputs.password.rules.special.highlighted")}
 							variant={feedbacks.special}
 						/>
 						<Check
-							noHighlightText={t("authPasswordMustContainAtLeast")}
-							text={t("authPasswordOneNumber")}
+							noHighlightText={t("auth.common.inputs.password.rules.number.beginning")}
+							text={t("auth.common.inputs.password.rules.number.highlighted")}
 							variant={feedbacks.number}
 						/>
 						<Check
-							noHighlightText={t("authPasswordMustContainAtLeast")}
-							text={t("authPasswordUpperCharacter")}
+							noHighlightText={t("auth.common.inputs.password.rules.uppercase.beginning")}
+							text={t("auth.common.inputs.password.rules.uppercase.highlighted")}
 							variant={feedbacks.uppercase}
 						/>
 						<Check
-							noHighlightText={t("authPasswordMustContainAtLeast")}
-							text={t("authPasswordLowerCharacter")}
+							noHighlightText={t("auth.common.inputs.password.rules.lowercase.beginning")}
+							text={t("auth.common.inputs.password.rules.lowercase.highlighted")}
 							variant={feedbacks.lowercase}
 						/>
 						<Check
-							noHighlightText={t("authPasswordConfirmAndPassword")}
-							text={t("authPasswordMustMatch")}
+							noHighlightText={t("auth.common.inputs.password.rules.match.beginning")}
+							text={t("auth.common.inputs.password.rules.match.highlighted")}
 							variant={feedbacks.confirm}
 						/>
 					</Stack>
@@ -141,7 +153,7 @@ function StepThree({ onSubmit, onBack }) {
 							}}
 						>
 							<ArrowBackRoundedIcon />
-							{t("commonBack")}
+							{t("auth.common.navigation.back")}
 						</Button>
 						<Button
 							type="submit"
@@ -161,7 +173,7 @@ function StepThree({ onSubmit, onBack }) {
 								},
 							}}
 						>
-							{t("continue")}
+							{t("auth.common.navigation.continue")}
 						</Button>
 					</Stack>
 				</Box>

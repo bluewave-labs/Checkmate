@@ -322,7 +322,7 @@ const CreateInfrastructureMonitor = () => {
 							<Link
 								level="primary"
 								url="https://github.com/bluewave-labs/checkmate-agent"
-								label="Checkmate Monitoring Agent"
+								label={t("common.monitoringAgentName")}
 							/>
 						</Typography>
 					</Stack>

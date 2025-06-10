@@ -1,7 +1,7 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 const ForgotPasswordLabel = ({ email, errorEmail }) => {
 	const theme = useTheme();
@@ -22,16 +22,20 @@ const ForgotPasswordLabel = ({ email, errorEmail }) => {
 				display="inline-block"
 				color={theme.palette.primary.main}
 			>
-				{t("authForgotPasswordTitle")}
-			</Typography>
-			<Typography
-				component="span"
-				color={theme.palette.accent.main}
-				ml={theme.spacing(2)}
-				sx={{ userSelect: "none" }}
-				onClick={handleNavigate}
-			>
-				{t("authForgotPasswordResetPassword")}
+				<Trans
+					i18nKey="auth.login.links.forgotPassword"
+					components={{
+						a: (
+							<Typography
+								component="span"
+								color={theme.palette.accent.main}
+								ml={theme.spacing(2)}
+								sx={{ userSelect: "none" }}
+								onClick={handleNavigate}
+							/>
+						),
+					}}
+				/>
 			</Typography>
 		</Box>
 	);

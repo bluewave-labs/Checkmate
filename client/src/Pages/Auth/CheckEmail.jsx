@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { createToast } from "../../Utils/toastUtils";
 import { forgotPassword } from "../../Features/Auth/authSlice";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import Background from "../../assets/Images/background-grid.svg?react";
 import EmailIcon from "../../assets/icons/email.svg?react";
 import Logo from "../../assets/icons/checkmate-icon.svg?react";
@@ -31,16 +31,16 @@ const CheckEmail = () => {
 
 	const toastFail = [
 		{
-			body: "Email not found.",
+			body: t("auth.forgotPassword.toasts.emailNotFound"),
 		},
 		{
-			body: "Redirecting in 3...",
+			body: t("auth.forgotPassword.toasts.redirect").replace("<seconds/>", "3"),
 		},
 		{
-			body: "Redirecting in 2...",
+			body: t("auth.forgotPassword.toasts.redirect").replace("<seconds/>", "2"),
 		},
 		{
-			body: "Redirecting in 1...",
+			body: t("auth.forgotPassword.toasts.redirect").replace("<seconds/>", "1"),
 		},
 	];
 
@@ -62,19 +62,19 @@ const CheckEmail = () => {
 			const action = await dispatch(forgotPassword(form));
 			if (action.payload.success) {
 				createToast({
-					body: `Instructions sent to ${form.email}.`,
+					body: t("auth.forgotPassword.toasts.sent").replace("<email/>", form.email),
 				});
 				setDisabled(false);
 			} else {
 				if (action.payload) {
 					// dispatch errors
 					createToast({
-						body: action.payload.msg,
+						body: action.payload.msg, // FIXME: Potential untranslated string
 					});
 				} else {
 					// unknown errors
 					createToast({
-						body: "Unknown error.",
+						body: t("common.toasts.unknownError"),
 					});
 				}
 			}
@@ -118,7 +118,7 @@ const CheckEmail = () => {
 				gap={theme.spacing(4)}
 			>
 				<Logo style={{ borderRadius: theme.shape.borderRadius }} />
-				<Typography sx={{ userSelect: "none" }}>Checkmate</Typography>
+				<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
 			</Stack>
 			<Stack
 				width="100%"
@@ -160,18 +160,24 @@ const CheckEmail = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<EmailIcon alt="email icon" />
+								<EmailIcon alt={t("auth.forgotPassword.imageAlts.email")} />
 							</IconBox>
 						</Stack>
-						<Typography component="h1">{t("authCheckEmailTitle")}</Typography>
+						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>
 						<Typography>
-							{t("authCheckEmailDescription")}{" "}
-							<Typography
-								className="email-sent-to"
-								component="span"
-							>
-								{email || "username@email.com"}
-							</Typography>
+							<Trans
+								i18nKey="auth.forgotPassword.subheadings.stepTwo"
+								components={{
+									email: (
+										<Typography
+											className="email-sent-to"
+											component="span"
+										>
+											{email || "username@email.com"}
+										</Typography>
+									),
+								}}
+							/>
 						</Typography>
 					</Box>
 					<Button
@@ -183,23 +189,27 @@ const CheckEmail = () => {
 							maxWidth: 400,
 						}}
 					>
-						{t("authCheckEmailOpenEmailButton")}
+						{t("auth.forgotPassword.buttons.openEmail")}
 					</Button>
 					<Typography sx={{ alignSelf: "center", mt: theme.spacing(6) }}>
-						{t("authCheckEmailDidntReceiveEmail")}{" "}
-						<Typography
-							component="span"
-							onClick={resendToken}
-							sx={{
-								color: theme.palette.accent.main,
-								userSelect: "none",
-								pointerEvents: disabled ? "none" : "auto",
-								cursor: disabled ? "default" : "pointer",
-								opacity: disabled ? 0.5 : 1,
+						<Trans
+							i18nKey="auth.forgotPassword.links.resend"
+							components={{
+								a: (
+									<Typography
+										component="span"
+										onClick={resendToken}
+										sx={{
+											color: theme.palette.accent.main,
+											userSelect: "none",
+											pointerEvents: disabled ? "none" : "auto",
+											cursor: disabled ? "default" : "pointer",
+											opacity: disabled ? 0.5 : 1,
+										}}
+									/>
+								),
 							}}
-						>
-							{t("authCheckEmailClickToResend")}
-						</Typography>
+						/>
 					</Typography>
 				</Stack>
 			</Stack>
@@ -207,15 +217,21 @@ const CheckEmail = () => {
 				textAlign="center"
 				p={theme.spacing(12)}
 			>
-				<Typography display="inline-block">{t("goBackTo")}</Typography>
-				<Typography
-					component="span"
-					ml={theme.spacing(2)}
-					color={theme.palette.accent.main}
-					onClick={handleNavigate}
-					sx={{ userSelect: "none" }}
-				>
-					{t("authLoginTitle")}
+				<Typography display="inline-block">
+					<Trans
+						i18nKey="auth.forgotPassword.links.login"
+						components={{
+							a: (
+								<Typography
+									component="span"
+									color={theme.palette.accent.main}
+									ml={theme.spacing(2)}
+									onClick={handleNavigate}
+									sx={{ userSelect: "none" }}
+								/>
+							),
+						}}
+					/>
 				</Typography>
 			</Box>
 		</Stack>

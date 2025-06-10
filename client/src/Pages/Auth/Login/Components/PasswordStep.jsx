@@ -38,8 +38,8 @@ const PasswordStep = ({ form, errors, onSubmit, onChange, onBack }) => {
 				textAlign="center"
 			>
 				<Box>
-					<Typography component="h1">{t("authLoginTitle")}</Typography>
-					<Typography>{t("authLoginEnterPassword")}</Typography>
+					<Typography component="h1">{t("auth.login.heading")}</Typography>
+					<Typography>{t("auth.login.subheadings.stepTwo")}</Typography>
 				</Box>
 				<Box
 					component="form"
@@ -56,14 +56,14 @@ const PasswordStep = ({ form, errors, onSubmit, onChange, onBack }) => {
 					<TextInput
 						type="password"
 						id="login-password-input"
-						label={t("password")}
+						label={t("auth.common.inputs.password.label")}
 						isRequired={true}
 						placeholder="••••••••••"
 						autoComplete="current-password"
 						value={form.password}
 						onChange={onChange}
 						error={errors.password ? true : false}
-						helperText={errors.password}
+						helperText={errors.password ? t(errors.password) : ""} // Localization keys are in validation.js
 						ref={inputRef}
 						endAdornment={<PasswordEndAdornment />}
 					/>
@@ -95,7 +95,7 @@ const PasswordStep = ({ form, errors, onSubmit, onChange, onBack }) => {
 							}}
 						>
 							<ArrowBackRoundedIcon />
-							{t("commonBack")}{" "}
+							{t("auth.common.navigation.back")}{" "}
 						</Button>
 						<Button
 							variant="contained"
@@ -121,7 +121,7 @@ const PasswordStep = ({ form, errors, onSubmit, onChange, onBack }) => {
 								boxShadow: `none`,
 							}}
 						>
-							{t("continue")}
+							{t("auth.common.navigation.continue")}
 						</Button>
 					</Stack>
 				</Box>

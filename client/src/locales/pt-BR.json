@@ -1,61 +1,188 @@
 {
-	"dontHaveAccount": "Não tenho conta",
-	"email": "E-mail",
-	"forgotPassword": "Esqueci a senha",
-	"password": "Senha",
-	"signUp": "Inscreva-se",
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "Erro de rede",
+			"checkConnection": "Verifique sua conexão",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Continuar",
+				"back": "Voltar"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-mail",
+					"placeholder": "",
+					"errors": {
+						"empty": "Para continuar, insira seu endereço de e-mail",
+						"invalid": "Por favor, insira um endereço de e-mail válido"
+					}
+				},
+				"password": {
+					"label": "Senha",
+					"rules": {
+						"length": {
+							"beginning": "Deve ser pelo menos",
+							"highlighted": "8 caracteres de comprimento"
+						},
+						"special": {
+							"beginning": "Deve conter pelo menos",
+							"highlighted": "um caractere especial"
+						},
+						"number": {
+							"beginning": "Deve conter pelo menos",
+							"highlighted": "um número"
+						},
+						"uppercase": {
+							"beginning": "Deve conter pelo menos",
+							"highlighted": "um caractere maiúsculo"
+						},
+						"lowercase": {
+							"beginning": "Deve conter pelo menos",
+							"highlighted": "um caractere minúsculo"
+						},
+						"match": {
+							"beginning": "Confirme a senha",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "Confirme sua senha",
+					"placeholder": "Digite a senha novamente para confirmar",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "Nome",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "Sobrenome",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "Login",
+			"subheadings": {
+				"stepOne": "Insira seu e-mail",
+				"stepTwo": "Digite sua senha"
+			},
+			"links": {
+				"forgotPassword": "Esqueceu a senha? <a>Redefinir a senha</a>",
+				"register": "Ainda não tem uma conta? <a>Registre-se aqui</a>"
+			},
+			"toasts": {
+				"success": "Bem-vindo de volta! Você fez login com sucesso.",
+				"incorrectPassword": ""
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": "Inscreva-se"
+			},
+			"subheadings": {
+				"stepOne": "Insira seus dados pessoais",
+				"stepTwo": "Insira seu e-mail",
+				"stepThree": "Criar sua senha"
+			},
+			"description": {
+				"superAdmin": "Crie sua conta de super admin para começar",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "Criar conta de super admin",
+				"user": ""
+			},
+			"termsAndPolicies": "Ao criar uma conta, você concorda com nossos <a1>Termos de Serviço</a1> e <a2>Política de Privacidade</a2>.",
+			"links": {
+				"login": "Já possui uma conta? <a>Login</a>"
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "Esqueceu a senha?",
+			"subheadings": {
+				"stepOne": "Não se preocupe, enviaremos instruções de redefinição.",
+				"stepTwo": "Enviamos um link para redefinir a senha para <email/>",
+				"stepThree": "Sua nova senha deve ser diferente das senhas usadas anteriormente.",
+				"stepFour": "Sua senha foi redefinida com sucesso. Clique abaixo para fazer login magicamente."
+			},
+			"buttons": {
+				"openEmail": "Abra o aplicativo de e-mail",
+				"resetPassword": "Redefinir senha"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "Volte para <a>Login</a>",
+				"resend": "Não recebeu o e-mail? <a>Clique para reenviar</a>"
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Reconectado ao servidor com sucesso.",
+				"stillUnreachable": "O servidor ainda está inacessível. Tente novamente mais tarde."
+			},
+			"alertBox": "Erro de conexão com o servidor",
+			"description": "Não conseguimos conectar ao servidor. Verifique sua conexão com a internet ou sua configuração de implantação se o problema persistir.",
+			"retryButton": {
+				"default": "Reconectar",
+				"processing": "Conectando..."
+			}
+		}
+	},
 	"submit": "Enviar",
 	"title": "Título",
-	"continue": "Continuar",
-	"enterEmail": "Insira seu e-mail",
-	"authLoginTitle": "Login",
-	"authLoginEnterPassword": "Digite sua senha",
-	"commonPassword": "Senha",
-	"commonBack": "Voltar",
-	"authForgotPasswordTitle": "Esqueceu a senha?",
-	"authForgotPasswordResetPassword": "Redefinir a senha",
-	"createPassword": "Criar sua senha",
-	"createAPassword": "Senha",
-	"authRegisterAlreadyHaveAccount": "Já possui uma conta?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Insira seu e-mail",
-	"authRegisterTitle": "Criar uma conta",
-	"authRegisterStepOneTitle": "Crie sua conta",
-	"authRegisterStepOneDescription": "Insira seus dados para começar",
-	"authRegisterStepTwoTitle": "Configure seu perfil",
-	"authRegisterStepTwoDescription": "Conte-nos mais sobre você",
-	"authRegisterStepThreeTitle": "Quase pronto!",
-	"authRegisterStepThreeDescription": "Revise suas informações",
-	"authForgotPasswordDescription": "Não se preocupe, enviaremos instruções de redefinição.",
-	"authForgotPasswordSendInstructions": "Enviar instruções",
-	"authForgotPasswordBackTo": "Voltar para",
-	"authCheckEmailTitle": "Verifique seu e-mail",
-	"authCheckEmailDescription": "Enviamos um link para redefinir a senha para",
-	"authCheckEmailResendEmail": "Reenviar e-mail",
-	"authCheckEmailBackTo": "Voltar para",
-	"goBackTo": "Volte para",
-	"authCheckEmailDidntReceiveEmail": "Não recebeu o e-mail?",
-	"authCheckEmailClickToResend": "Clique para reenviar",
-	"authSetNewPasswordTitle": "Definir nova senha",
-	"authSetNewPasswordDescription": "Sua nova senha deve ser diferente das senhas usadas anteriormente.",
-	"authSetNewPasswordNewPassword": "Nova senha",
-	"authSetNewPasswordConfirmPassword": "Confirme sua senha",
-	"confirmPassword": "Digite a senha novamente para confirmar",
-	"authSetNewPasswordResetPassword": "Redefinir senha",
-	"authSetNewPasswordBackTo": "Voltar para",
-	"authPasswordMustBeAtLeast": "Deve ser pelo menos",
-	"authPasswordCharactersLong": "8 caracteres de comprimento",
-	"authPasswordMustContainAtLeast": "Deve conter pelo menos",
-	"authPasswordSpecialCharacter": "um caractere especial",
-	"authPasswordOneNumber": "um número",
-	"authPasswordUpperCharacter": "um caractere maiúsculo",
-	"authPasswordLowerCharacter": "um caractere minúsculo",
-	"authPasswordConfirmAndPassword": "Confirme a senha",
-	"authPasswordMustMatch": "As senhas devem corresponder",
-	"authRegisterCreateAccount": "Crie sua conta para começar",
-	"authRegisterCreateSuperAdminAccount": "Crie sua conta de super admin para começar",
-	"authRegisterSignUpWithEmail": "Criar conta de super admin",
-	"authRegisterBySigningUp": "Ao criar uma conta, você concorda com nossos <a1>Termos de Serviço</a1> e <a2>Política de Privacidade</a2>.",
 	"distributedStatusHeaderText": "Cobertura em tempo real e em dispositivos reais",
 	"distributedStatusSubHeaderText": "Impulsionado por milhões de dispositivos em todo o mundo, visualize o desempenho do sistema por região global, país ou cidade",
 	"settingsGeneralSettings": "Configurações gerais",
@@ -107,7 +234,6 @@
 	"now": "Agora",
 	"delete": "Deletar",
 	"configure": "Configurar",
-	"networkError": "Erro de rede",
 	"responseTime": "Tempo de resposta",
 	"ms": "ms",
 	"bar": "Bar",
@@ -115,11 +241,6 @@
 	"country": "PAÍS",
 	"city": "CIDADE",
 	"response": "RESPOSTA",
-	"checkConnection": "Verifique sua conexão",
-	"passwordreset": "Redefinição de senha",
-	"authRegisterStepOnePersonalDetails": "Insira seus dados pessoais",
-	"authCheckEmailOpenEmailButton": "Abra o aplicativo de e-mail",
-	"authNewPasswordConfirmed": "Sua senha foi redefinida com sucesso. Clique abaixo para fazer login magicamente.",
 	"monitorStatusUp": "O monitor {name} ({url}) agora está ATIVO e respondendo",
 	"monitorStatusDown": "O monitor {name} ({url}) está INATIVO e não está respondendo",
 	"webhookSendSuccess": "Notificação de webhook enviada com sucesso",
@@ -393,10 +514,6 @@
 	"DeleteDescriptionText": "Isso removerá a conta e todos os dados associados do servidor. Essa ação não é reversível.",
 	"DeleteAccountWarning": "Remover sua conta significa que você não poderá fazer login novamente e todos os seus dados serão removidos. Isso não é reversível.",
 	"DeleteWarningTitle": "Deseja realmente remover esta conta?",
-	"authRegisterFirstName": "Nome",
-	"authRegisterLastName": "Sobrenome",
-	"authRegisterEmail": "E-mail",
-	"authRegisterEmailRequired": "Para continuar, insira seu endereço de e-mail",
 	"bulkImport": {
 		"title": "Bulk Import",
 		"selectFileTips": "Selecione o arquivo CSV para enviar",
@@ -408,27 +525,11 @@
 		"noFileSelected": "Nenhum arquivo selecionado",
 		"fallbackPage": "Importe um arquivo para enviar uma lista de servidores em massa"
 	},
-	"welcomeBack": "Bem-vindo de volta! Você fez login com sucesso.",
-	"authRegisterLoginLink": "Login",
-	"validationNameRequired": "Por favor digite seu nome",
-	"validationNameTooLong": "O nome deve ter menos de 50 caracteres",
-	"validationNameInvalidCharacters": "Por favor, use apenas letras, espaços, apóstrofos ou hifens",
 	"settingsSystemReset": "Resetar sistema",
 	"settingsSystemResetDescription": "Remova todos os monitores do seu sistema.",
 	"DeleteAccountTitle": "Remover conta",
 	"DeleteAccountButton": "Remover conta",
-	"authRegisterEmailInvalid": "Por favor, insira um endereço de e-mail válido",
 	"publicLink": "Link publico",
-	"doNotHaveAccount": "Ainda não tem uma conta?",
-	"registerHere": "Registre-se aqui",
-	"backendUnreachable": "Erro de conexão com o servidor",
-	"backendUnreachableMessage": "Não conseguimos conectar ao servidor. Verifique sua conexão com a internet ou sua configuração de implantação se o problema persistir.",
-	"backendUnreachableError": "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
-	"retryConnection": "Reconectar",
-	"retryingConnection": "Conectando...",
-	"backendReconnected": "Reconectado ao servidor com sucesso.",
-	"backendStillUnreachable": "O servidor ainda está inacessível. Tente novamente mais tarde.",
-	"backendConnectionError": "Erro ao conectar ao servidor. Verifique sua conexão de internet.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API key",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",
@@ -513,7 +614,6 @@
 	"state": "Estado",
 	"statusBreadCrumbsStatusPages": "Pagina de status",
 	"statusBreadCrumbsDetails": "Detalhes",
-	"authForgotPasswordInstructions": "Não se preocupe, enviaremos instruções de redefinição.",
 	"settingsThemeModeLight": "Claro",
 	"settingsThemeModeDark": "Escuro",
 	"settingsClearAllStatsDialogCancel": "Cancelar",
