@@ -43,7 +43,7 @@ const ChartBox = ({
 		>
 			<Stack
 				flex={1}
-				alignItems="center"
+
 				sx={{
 					padding: theme.spacing(8),
 					justifyContent,
