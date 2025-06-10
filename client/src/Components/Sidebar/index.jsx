@@ -38,6 +38,8 @@ import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
 import Discussions from "../../assets/icons/discussions.svg?react";
+import NotificationAddOutlinedIcon from "@mui/icons-material/NotificationAddOutlined";
+
 import "./index.css";
 
 // Utils
@@ -52,13 +54,18 @@ import { clearUptimeMonitorState } from "../../Features/UptimeMonitors/uptimeMon
 const getMenu = (t) => [
 	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
 	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
-	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
 
+	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
+	{
+		name: t("menu.notifications"),
+		path: "notifications",
+		icon: <NotificationAddOutlinedIcon />,
+	},
 	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
 	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
 	{ name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
-	// { name: t("menu.integrations"), path: "integrations", icon: <Integrations /> },
+
 	{
 		name: t("menu.settings"),
 		icon: <Settings />,

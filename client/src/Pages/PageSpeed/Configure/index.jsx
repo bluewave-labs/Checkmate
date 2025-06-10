@@ -1,6 +1,19 @@
+// Components
+import { Box, Stack, Tooltip, Typography, Button } from "@mui/material";
+import ConfigBox from "../../../Components/ConfigBox";
+import Select from "../../../Components/Inputs/Select";
+import TextInput from "../../../Components/Inputs/TextInput";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import Breadcrumbs from "../../../Components/Breadcrumbs";
+import PulseDot from "../../../Components/Animated/PulseDot";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
+import SkeletonLayout from "./skeleton";
+import NotificationsConfig from "../../../Components/NotificationConfig";
+import Dialog from "../../../Components/Dialog";
+
+// Utils
 import { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
-import { Box, Stack, Tooltip, Typography, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -12,41 +25,31 @@ import {
 } from "../../../Features/PageSpeedMonitor/pageSpeedMonitorSlice";
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
-import { logger } from "../../../Utils/Logger";
 import { useTranslation } from "react-i18next";
-import ConfigBox from "../../../Components/ConfigBox";
-import TextInput from "../../../Components/Inputs/TextInput";
-import Select from "../../../Components/Inputs/Select";
-import Checkbox from "../../../Components/Inputs/Checkbox";
-import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import PulseDot from "../../../Components/Animated/PulseDot";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
-import SkeletonLayout from "./skeleton";
 import useUtils from "../../Uptime/Monitors/Hooks/useUtils";
-import "./index.css";
-import Dialog from "../../../Components/Dialog";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 
 const PageSpeedConfigure = () => {
+	// Redux state
+	const { isLoading } = useSelector((state) => state.pageSpeedMonitors);
+
+	// Local state
+	const [monitor, setMonitor] = useState({});
+	const [errors, setErrors] = useState({});
+	const [buttonLoading, setButtonLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
+
+	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const MS_PER_MINUTE = 60000;
-	const { user } = useSelector((state) => state.auth);
-	const { isLoading } = useSelector((state) => state.pageSpeedMonitors);
 	const { monitorId } = useParams();
-	const [monitor, setMonitor] = useState({});
-	const [errors, setErrors] = useState({});
 	const { statusColor, pagespeedStatusMsg, determineState } = useUtils();
-	const [buttonLoading, setButtonLoading] = useState(false);
-	const idMap = {
-		"monitor-url": "url",
-		"monitor-name": "name",
-		"monitor-checks-http": "type",
-		"monitor-checks-ping": "type",
-		"notify-email-default": "notification-email",
-	};
+
+	const [notifications, notificationsAreLoading, notificationsError] =
+		useGetNotificationsByTeamId();
 
 	const frequencies = [
 		{ _id: 3, name: "3 minutes" },
@@ -77,57 +80,29 @@ const PageSpeedConfigure = () => {
 		fetchMonitor();
 	}, [dispatch, monitorId, navigate]);
 
-	const handleChange = (event, name) => {
-		let { value, id } = event.target;
-		if (!name) name = idMap[id];
+	const onChange = (event) => {
+		let { value, name } = event.target;
 
-		if (name.includes("notification-")) {
-			name = name.replace("notification-", "");
-			let hasNotif = monitor.notifications.some(
-				(notification) => notification.type === name
-			);
-			setMonitor((prev) => {
-				const notifs = [...prev.notifications];
-				if (hasNotif) {
-					return {
-						...prev,
-						notifications: notifs.filter((notif) => notif.type !== name),
-					};
-				} else {
-					return {
-						...prev,
-						notifications: [
-							...notifs,
-							name === "email"
-								? { type: name, address: value }
-								: // TODO - phone number
-									{ type: name, phone: value },
-						],
-					};
-				}
-			});
-		} else {
-			if (name === "interval") {
-				value = value * MS_PER_MINUTE;
-			}
-			setMonitor((prev) => ({
-				...prev,
-				[name]: value,
-			}));
-
-			const validation = monitorValidation.validate(
-				{ [name]: value },
-				{ abortEarly: false }
-			);
-
-			setErrors((prev) => {
-				const updatedErrors = { ...prev };
-
-				if (validation.error) updatedErrors[name] = validation.error.details[0].message;
-				else delete updatedErrors[name];
-				return updatedErrors;
-			});
+		if (name === "interval") {
+			value = value * MS_PER_MINUTE;
 		}
+		setMonitor((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+
+		const validation = monitorValidation.validate(
+			{ [name]: value },
+			{ abortEarly: false }
+		);
+
+		setErrors((prev) => {
+			const updatedErrors = { ...prev };
+
+			if (validation.error) updatedErrors[name] = validation.error.details[0].message;
+			else delete updatedErrors[name];
+			return updatedErrors;
+		});
 	};
 
 	const handlePause = async () => {
@@ -142,12 +117,11 @@ const PageSpeedConfigure = () => {
 				throw new Error(action.error.message);
 			}
 		} catch (error) {
-			logger.error("Error pausing monitor: " + monitorId);
 			createToast({ body: "Failed to pause monitor" });
 		}
 	};
 
-	const handleSave = async (event) => {
+	const onSubmit = async (event) => {
 		event.preventDefault();
 		const action = await dispatch(updatePageSpeed({ monitor: monitor }));
 		if (action.meta.requestStatus === "fulfilled") {
@@ -158,7 +132,6 @@ const PageSpeedConfigure = () => {
 		}
 	};
 
-	const [isOpen, setIsOpen] = useState(false);
 	const handleRemove = async (event) => {
 		event.preventDefault();
 		setButtonLoading(true);
@@ -191,7 +164,7 @@ const PageSpeedConfigure = () => {
 						component="form"
 						noValidate
 						spellCheck="false"
-						onSubmit={handleSave}
+						onSubmit={onSubmit}
 						flex={1}
 						gap={theme.spacing(10)}
 					>
@@ -329,24 +302,24 @@ const PageSpeedConfigure = () => {
 								}}
 							>
 								<TextInput
+									name="url"
 									type="url"
-									id="monitor-url"
 									label={t("url")}
 									placeholder="random.website.com"
 									value={monitor?.url || ""}
-									onChange={handleChange}
+									onChange={onChange}
 									error={errors.url ? true : false}
 									helperText={errors.url}
 									disabled={true}
 								/>
 								<TextInput
+									name="name"
 									type="text"
-									id="monitor-name"
 									label={t("monitorDisplayName")}
 									placeholder="Example monitor"
 									isOptional={true}
 									value={monitor?.name || ""}
-									onChange={handleChange}
+									onChange={onChange}
 									error={errors.name ? true : false}
 									helperText={errors.name}
 								/>
@@ -354,64 +327,16 @@ const PageSpeedConfigure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography
-									component="h2"
-									variant="h2"
-								>
-									{t("distributedUptimeCreateIncidentNotification")}
-								</Typography>
+								<Typography component="h2">{t("notificationConfig.title")}</Typography>
 								<Typography component="p">
-									{t("distributedUptimeCreateIncidentDescription")}
+									{t("notificationConfig.description")}
 								</Typography>
 							</Box>
-							<Stack gap={theme.spacing(6)}>
-								<Typography component="p">{t("whenNewIncident")}</Typography>
-								{/* Future Feature: Notify via SMS */}
-								{/* <Checkbox
-									id="notify-sms"
-									label={t("notifySMS")}
-									isChecked={false}
-									value=""
-									onChange={() => logger.warn("disabled")}
-									isDisabled={true}
-								/> */}
-								<Checkbox
-									id="notify-email-default"
-									label={`Notify via email (to ${user.email})`}
-									isChecked={
-										monitor?.notifications?.some(
-											(notification) => notification.type === "email"
-										) || false
-									}
-									value={user?.email}
-									onChange={(event) => handleChange(event)}
-								/>
-								{/* Future Feature: Notify via Email */}
-								{/* <Checkbox
-									id="notify-email"
-									label={t("notifyEmails")}
-									isChecked={false}
-									value=""
-									onChange={() => logger.warn("disabled")}
-									isDisabled={true}
-								/> */}
-								{monitor?.notifications?.some(
-									(notification) => notification.type === "emails"
-								) ? (
-									<Box mx={theme.spacing(16)}>
-										<TextInput
-											id="notify-email-list"
-											type="text"
-											placeholder="name@gmail.com"
-											value=""
-											onChange={() => logger.warn("disabled")}
-										/>
-										<Typography mt={theme.spacing(4)}>{t("seperateEmails")}</Typography>
-									</Box>
-								) : (
-									""
-								)}
-							</Stack>
+							<NotificationsConfig
+								notifications={notifications}
+								setMonitor={setMonitor}
+								setNotifications={monitor.notifications}
+							/>
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
@@ -424,11 +349,11 @@ const PageSpeedConfigure = () => {
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select
-									id="monitor-frequency"
+									name="interval"
 									label={t("checkFrequency")}
 									items={frequencies}
 									value={monitor?.interval / MS_PER_MINUTE || 3}
-									onChange={(event) => handleChange(event, "interval")}
+									onChange={onChange}
 								/>
 							</Stack>
 						</ConfigBox>
@@ -442,7 +367,6 @@ const PageSpeedConfigure = () => {
 								type="submit"
 								variant="contained"
 								color="accent"
-								onClick={handleSave}
 								sx={{ px: theme.spacing(12) }}
 							>
 								{t("settingsSave")}

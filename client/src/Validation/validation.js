@@ -111,6 +111,9 @@ const loginCredentials = joi.object({
 });
 
 const monitorValidation = joi.object({
+	_id: joi.string(),
+	userId: joi.string(),
+	teamId: joi.string(),
 	url: joi.when("type", {
 		is: "docker",
 		then: joi
@@ -198,9 +201,9 @@ const monitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
-	expectedValue: joi.string().allow(""),
-	jsonPath: joi.string().allow(""),
-	matchMethod: joi.string(),
+	expectedValue: joi.string().allow(null, ""),
+	jsonPath: joi.string().allow(null, ""),
+	matchMethod: joi.string().allow(null, ""),
 });
 
 const imageValidation = joi.object({
@@ -392,15 +395,61 @@ const infrastructureMonitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
-	notifications: joi.array().items(
-		joi.object({
-			type: joi.string().valid("email").required(),
-			address: joi
-				.string()
-				.email({ tlds: { allow: false } })
-				.required(),
+	notifications: joi.array().items(joi.string()),
+});
+
+const notificationEmailValidation = joi.object({
+	notificationName: joi.string().required().messages({
+		"string.empty": "Notification name is required",
+		"any.required": "Notification name is required",
+	}),
+	address: joi
+		.string()
+		.email({ tlds: { allow: false } })
+		.required()
+		.messages({
+			"string.empty": "E-mail address cannot be empty",
+
+			"string.email": "Please enter a valid e-mail address",
+			"string.base": "E-mail address must be a string",
+			"any.required": "E-mail address is required",
+		}),
+});
+const notificationWebhookValidation = joi.object({
+	notificationName: joi.string().required().messages({
+		"string.empty": "Notification name is required",
+		"any.required": "Notification name is required",
+	}),
+	config: joi
+		.object({
+			webhookUrl: joi.string().uri().required().messages({
+				"string.empty": "Webhook URL is required",
+				"string.uri": "Webhook URL must be a valid URI",
+				"any.required": "Webhook URL is required",
+			}),
+			platform: joi.string().required().messages({
+				"string.base": "Platform must be a string",
+				"any.required": "Platform is required",
+			}),
 		})
-	),
+		.unknown(true),
+});
+
+const notificationPagerDutyValidation = joi.object({
+	notificationName: joi.string().required().messages({
+		"string.empty": "Notification name is required",
+		"any.required": "Notification name is required",
+	}),
+	config: joi.object({
+		platform: joi.string().required().messages({
+			"string.base": "Platform must be a string",
+			"any.required": "Platform is required",
+		}),
+		routingKey: joi.string().required().messages({
+			"string.empty": "Routing key is required",
+			"any.required": "Routing key is required",
+		}),
+	}),
 });
 
 export {
@@ -414,4 +463,7 @@ export {
 	infrastructureMonitorValidation,
 	statusPageValidation,
 	logoImageValidation,
+	notificationEmailValidation,
+	notificationWebhookValidation,
+	notificationPagerDutyValidation,
 };

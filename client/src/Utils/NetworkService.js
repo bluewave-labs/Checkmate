@@ -1034,6 +1034,21 @@ class NetworkService {
 		// Fallback to original behavior for backward compatibility
 		return this.axiosInstance.post(`/settings/test-email`, { to });
 	}
+
+	async createNotification(config) {
+		const { notification } = config;
+		return this.axiosInstance.post(`/notifications`, notification);
+	}
+
+	async getNotificationsByTeamId(config) {
+		const { teamId } = config;
+		return this.axiosInstance.get(`/notifications/team/${teamId}`);
+	}
+
+	async deleteNotificationById(config) {
+		const { id } = config;
+		return this.axiosInstance.delete(`/notifications/${id}`);
+	}
 }
 
 export default NetworkService;

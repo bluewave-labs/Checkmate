@@ -42,7 +42,7 @@ const MonitorSchema = mongoose.Schema(
 		},
 		matchMethod: {
 			type: String,
-			enum: ["equal", "include", "regex"],
+			enum: ["equal", "include", "regex", ""],
 		},
 		url: {
 			type: String,
