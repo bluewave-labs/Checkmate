@@ -463,6 +463,29 @@ class NetworkService {
 		}
 	}
 
+	async requestPagerDuty({ message, routingKey, monitorUrl }) {
+		try {
+			const response = await this.axios.post(`https://events.pagerduty.com/v2/enqueue`, {
+				routing_key: routingKey,
+				event_action: "trigger",
+				payload: {
+					summary: message,
+					severity: "critical",
+					source: monitorUrl,
+					timestamp: new Date().toISOString(),
+				},
+			});
+
+			if (response?.data?.status !== "success") return false;
+			return true;
+		} catch (error) {
+			error.details = error.response?.data;
+			error.service = this.SERVICE_NAME;
+			error.method = "requestPagerDuty";
+			throw error;
+		}
+	}
+
 	/**
 	 * Gets the status of a job based on its type and returns the appropriate response.
 	 *

@@ -95,6 +95,17 @@ class NotificationService {
 		return MESSAGE_FORMATTERS[platform](messageText, chatId);
 	}
 
+	sendTestWebhookNotification = async (notification) => {
+		const config = notification.config;
+		const response = await this.networkService.requestWebhook(
+			config.platform,
+			config.webhookUrl,
+			"This is a test notification"
+		);
+
+		return response.status;
+	};
+
 	/**
 	 * Sends a webhook notification to a specified platform.
 	 *
@@ -185,6 +196,28 @@ class NotificationService {
 		return true;
 	}
 
+	sendTestEmail = async (notification) => {
+		const to = notification?.address;
+		if (!to || typeof to !== "string") {
+			throw new Error(this.stringService.errorForValidEmailAddress);
+		}
+
+		const subject = this.stringService.testEmailSubject;
+		const context = { testName: "Monitoring System" };
+
+		const messageId = await this.emailService.buildAndSendEmail(
+			"testEmailTemplate",
+			context,
+			to,
+			subject
+		);
+
+		if (messageId) {
+			return true;
+		}
+		return false;
+	};
+
 	/**
 	 * Sends an email notification about monitor status change
 	 *
@@ -194,6 +227,7 @@ class NotificationService {
 	 * @param {string} address - Email address to send the notification to
 	 * @returns {Promise<boolean>} - Indicates email was sent successfully
 	 */
+
 	async sendEmail(networkResponse, address) {
 		const { monitor, status, prevStatus } = networkResponse;
 		const template = prevStatus === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
@@ -203,6 +237,16 @@ class NotificationService {
 		return true;
 	}
 
+	async sendTestPagerDutyNotification(notification) {
+		const { routingKey } = notification.config;
+		const response = await this.networkService.requestPagerDuty({
+			message: "This is a test notification",
+			monitorUrl: "Test notification",
+			routingKey,
+		});
+
+		return response;
+	}
 	async sendPagerDutyNotification(networkResponse, notification) {
 		const { monitor, status, code } = networkResponse;
 		const { routingKey, platform } = notification.config;
@@ -222,7 +266,7 @@ class NotificationService {
 				routingKey,
 				monitorUrl: monitor.url,
 			});
-			return response.status;
+			return response;
 		} catch (error) {
 			this.logger.error({
 				message: "Failed to send PagerDuty notification",

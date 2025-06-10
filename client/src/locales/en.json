@@ -363,6 +363,10 @@
 		"edit": {
 			"success": "Notification updated successfully",
 			"failed": "Failed to update notification"
+		},
+		"test": {
+			"success": "Test notification sent successfully",
+			"failed": "Failed to send test notification"
 		}
 	},
 	"testLocale": "testLocale",

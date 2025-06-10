@@ -152,10 +152,36 @@ const useEditNotification = () => {
 	return [editNotification, isLoading, error];
 };
 
+const useTestNotification = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
+	const { t } = useTranslation();
+
+	const testNotification = async (notification) => {
+		try {
+			setIsLoading(true);
+			await networkService.testNotification({ notification });
+			createToast({
+				body: t("notifications.test.success"),
+			});
+		} catch (error) {
+			setError(error);
+			createToast({
+				body: t("notifications.test.failed"),
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [testNotification, isLoading, error];
+};
+
 export {
 	useCreateNotification,
 	useGetNotificationsByTeamId,
 	useDeleteNotification,
 	useGetNotificationById,
 	useEditNotification,
+	useTestNotification,
 };
