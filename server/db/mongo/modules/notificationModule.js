@@ -84,6 +84,30 @@ const deleteNotificationById = async (id) => {
 	}
 };
 
+const getNotificationById = async (id) => {
+	try {
+		const notification = await Notification.findById(id);
+		return notification;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getNotificationById";
+		throw error;
+	}
+};
+
+const editNotification = async (id, notificationData) => {
+	try {
+		const notification = await Notification.findByIdAndUpdate(id, notificationData, {
+			new: true,
+		});
+		return notification;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "editNotification";
+		throw error;
+	}
+};
+
 export {
 	createNotification,
 	getNotificationsByTeamId,
@@ -91,4 +115,6 @@ export {
 	getNotificationsByMonitorId,
 	deleteNotificationsByMonitorId,
 	deleteNotificationById,
+	getNotificationById,
+	editNotification,
 };

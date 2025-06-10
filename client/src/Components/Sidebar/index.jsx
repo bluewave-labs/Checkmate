@@ -38,7 +38,7 @@ import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
 import Discussions from "../../assets/icons/discussions.svg?react";
-import NotificationAddOutlinedIcon from "@mui/icons-material/NotificationAddOutlined";
+import Notifications from "../../assets/icons/notifications.svg?react";
 
 import "./index.css";
 
@@ -59,7 +59,7 @@ const getMenu = (t) => [
 	{
 		name: t("menu.notifications"),
 		path: "notifications",
-		icon: <NotificationAddOutlinedIcon />,
+		icon: <Notifications />,
 	},
 	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
@@ -129,9 +129,7 @@ function Sidebar() {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [popup, setPopup] = useState();
 	const { user } = useSelector((state) => state.auth);
-	const distributedUptimeEnabled = useSelector(
-		(state) => state.ui.distributedUptimeEnabled
-	);
+
 	const sidebarRef = useRef(null);
 	const [sidebarReady, setSidebarReady] = useState(false);
 	const TRANSITION_DURATION = 200;

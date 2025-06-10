@@ -42,8 +42,8 @@ const ForgotPasswordLabel = ({ email, errorEmail }) => {
 };
 
 ForgotPasswordLabel.propTypes = {
-	email: PropTypes.string.isRequired,
-	errorEmail: PropTypes.string.isRequired,
+	email: PropTypes.string,
+	errorEmail: PropTypes.string,
 };
 
 export default ForgotPasswordLabel;

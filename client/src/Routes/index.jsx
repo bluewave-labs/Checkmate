@@ -157,6 +157,12 @@ const Routes = () => {
 					path="notifications/create"
 					element={<CreateNotifications />}
 				/>
+
+				<Route
+					path="notifications/:notificationId"
+					element={<CreateNotifications />}
+				/>
+
 				<Route
 					path="maintenance"
 					element={<Maintenance />}

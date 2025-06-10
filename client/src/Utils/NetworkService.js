@@ -1049,6 +1049,16 @@ class NetworkService {
 		const { id } = config;
 		return this.axiosInstance.delete(`/notifications/${id}`);
 	}
+
+	async getNotificationById(config) {
+		const { id } = config;
+		return this.axiosInstance.get(`/notifications/${id}`);
+	}
+
+	async editNotification(config) {
+		const { id, notification } = config;
+		return this.axiosInstance.put(`/notifications/${id}`, notification);
+	}
 }
 
 export default NetworkService;
