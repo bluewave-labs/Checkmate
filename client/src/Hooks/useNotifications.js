@@ -131,7 +131,7 @@ const useEditNotification = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const { t } = useTranslation();
-
+	const navigate = useNavigate();
 	const editNotification = async (id, notification) => {
 		try {
 			setIsLoading(true);
@@ -139,6 +139,7 @@ const useEditNotification = () => {
 			createToast({
 				body: t("notifications.edit.success"),
 			});
+			navigate(`/notifications`);
 		} catch (error) {
 			setError(error);
 			createToast({
