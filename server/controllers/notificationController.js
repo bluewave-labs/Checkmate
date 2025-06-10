@@ -85,30 +85,33 @@ class NotificationController {
 	}
 
 	testNotification = async (req, res, next) => {
-		console.log("TESTING");
 		try {
 			const notification = req.body;
+			let success;
 
 			if (notification?.type === "email") {
-				const result = await this.notificationService.sendTestEmail(notification);
-				return res.success({
-					msg: this.stringService.emailSendSuccess,
-				});
+				success = await this.notificationService.sendTestEmail(notification);
 			}
 
 			if (notification?.type === "webhook") {
-				const success =
+				success =
 					await this.notificationService.sendTestWebhookNotification(notification);
-				if (!success) {
-					return res.error({
-						msg: this.stringService.webhookSendFailed,
-						status: 400,
-					});
-				}
-				return res.success({
-					msg: this.stringService.webhookSendSuccess,
+			}
+
+			if (notification?.type === "pager_duty") {
+				success =
+					await this.notificationService.sendTestPagerDutyNotification(notification);
+			}
+			if (!success) {
+				return res.error({
+					msg: "Sending notification failed",
+					status: 400,
 				});
 			}
+
+			return res.success({
+				msg: "Notification sent successfully",
+			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "testWebhook"));
 		}

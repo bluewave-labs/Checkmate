@@ -211,7 +211,11 @@ class NotificationService {
 			to,
 			subject
 		);
-		console.log(messageId);
+
+		if (messageId) {
+			return true;
+		}
+		return false;
 	};
 
 	/**
@@ -223,6 +227,7 @@ class NotificationService {
 	 * @param {string} address - Email address to send the notification to
 	 * @returns {Promise<boolean>} - Indicates email was sent successfully
 	 */
+
 	async sendEmail(networkResponse, address) {
 		const { monitor, status, prevStatus } = networkResponse;
 		const template = prevStatus === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
@@ -232,6 +237,16 @@ class NotificationService {
 		return true;
 	}
 
+	async sendTestPagerDutyNotification(notification) {
+		const { routingKey } = notification.config;
+		const response = await this.networkService.requestPagerDuty({
+			message: "This is a test notification",
+			monitorUrl: "Test notification",
+			routingKey,
+		});
+
+		return response;
+	}
 	async sendPagerDutyNotification(networkResponse, notification) {
 		const { monitor, status, code } = networkResponse;
 		const { routingKey, platform } = notification.config;
@@ -251,7 +266,7 @@ class NotificationService {
 				routingKey,
 				monitorUrl: monitor.url,
 			});
-			return response.status;
+			return response;
 		} catch (error) {
 			this.logger.error({
 				message: "Failed to send PagerDuty notification",
