@@ -217,6 +217,39 @@ class NotificationController {
 			next(handleError(error, SERVICE_NAME, "deleteNotification"));
 		}
 	};
+
+	getNotificationById = async (req, res, next) => {
+		try {
+			const notification = await this.db.getNotificationById(req.params.id);
+			return res.success({
+				msg: "Notification fetched successfully",
+				data: notification,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "getNotificationById"));
+		}
+	};
+
+	editNotification = async (req, res, next) => {
+		try {
+			await createNotificationBodyValidation.validateAsync(req.body, {
+				abortEarly: false,
+			});
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+
+		try {
+			const notification = await this.db.editNotification(req.params.id, req.body);
+			return res.success({
+				msg: "Notification updated successfully",
+				data: notification,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "editNotification"));
+		}
+	};
 }
 
 export default NotificationController;

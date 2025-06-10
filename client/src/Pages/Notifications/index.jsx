@@ -5,6 +5,8 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import Button from "@mui/material/Button";
 import DataTable from "../../Components/Table";
 import Fallback from "../../Components/Fallback";
+import ActionMenu from "./components/ActionMenu";
+
 // Utils
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import { useState } from "react";
@@ -15,7 +17,7 @@ import {
 	useDeleteNotification,
 } from "../../Hooks/useNotifications";
 import { useTranslation } from "react-i18next";
-// Setup
+import { useParams } from "react-router-dom";
 
 const Notifications = () => {
 	const navigate = useNavigate();
@@ -70,13 +72,10 @@ const Notifications = () => {
 			content: "Actions",
 			render: (row) => {
 				return (
-					<Button
-						variant="contained"
-						color="error"
-						onClick={() => onDelete(row._id)}
-					>
-						Delete
-					</Button>
+					<ActionMenu
+						notification={row}
+						onDelete={onDelete}
+					/>
 				);
 			},
 		},

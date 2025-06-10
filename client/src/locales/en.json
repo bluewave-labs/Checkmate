@@ -293,6 +293,7 @@
 			"webhookPlaceholder": "https://your-server.com/webhook"
 		}
 	},
+
 	"notificationConfig": {
 		"title": "Notifications",
 		"description": "Select the notifications channels you want to use"
@@ -354,6 +355,10 @@
 		"delete": {
 			"success": "Notification deleted successfully",
 			"failed": "Failed to delete notification"
+		},
+		"edit": {
+			"success": "Notification updated successfully",
+			"failed": "Failed to update notification"
 		}
 	},
 	"testLocale": "testLocale",

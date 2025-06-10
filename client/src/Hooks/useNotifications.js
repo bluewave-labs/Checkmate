@@ -4,6 +4,7 @@ import { networkService } from "../main";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { NOTIFICATION_TYPES } from "../Pages/Notifications/utils";
 
 const useCreateNotification = () => {
 	const navigate = useNavigate();
@@ -88,4 +89,73 @@ const useDeleteNotification = () => {
 
 	return [deleteNotification, isLoading, error];
 };
-export { useCreateNotification, useGetNotificationsByTeamId, useDeleteNotification };
+
+const useGetNotificationById = (id, setNotification) => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
+
+	const getNotificationById = useCallback(async () => {
+		try {
+			setIsLoading(true);
+			const response = await networkService.getNotificationById({ id });
+
+			const notification = response?.data?.data ?? null;
+
+			const notificationData = {
+				userId: notification?.userId,
+				teamId: notification?.teamId,
+				address: notification?.address,
+				notificationName: notification?.notificationName,
+				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?._id,
+				config: notification?.config,
+			};
+
+			setNotification(notificationData);
+		} catch (error) {
+			setError(error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [id, setNotification]);
+
+	useEffect(() => {
+		if (id) {
+			getNotificationById();
+		}
+	}, [getNotificationById, id]);
+
+	return [isLoading, error];
+};
+
+const useEditNotification = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
+	const { t } = useTranslation();
+
+	const editNotification = async (id, notification) => {
+		try {
+			setIsLoading(true);
+			await networkService.editNotification({ id, notification });
+			createToast({
+				body: t("notifications.edit.success"),
+			});
+		} catch (error) {
+			setError(error);
+			createToast({
+				body: t("notifications.edit.failed"),
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [editNotification, isLoading, error];
+};
+
+export {
+	useCreateNotification,
+	useGetNotificationsByTeamId,
+	useDeleteNotification,
+	useGetNotificationById,
+	useEditNotification,
+};

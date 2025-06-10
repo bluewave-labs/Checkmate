@@ -12,7 +12,11 @@ import TextInput from "../../../Components/Inputs/TextInput";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
-import { useCreateNotification } from "../../../Hooks/useNotifications";
+import {
+	useCreateNotification,
+	useGetNotificationById,
+	useEditNotification,
+} from "../../../Hooks/useNotifications";
 import {
 	notificationEmailValidation,
 	notificationWebhookValidation,
@@ -20,19 +24,17 @@ import {
 } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import { NOTIFICATION_TYPES } from "../utils";
 
 // Setup
 
-const NOTIFICATION_TYPES = [
-	{ _id: 1, name: "E-mail", value: "email" },
-	{ _id: 2, name: "Slack", value: "webhook" },
-	{ _id: 3, name: "PagerDuty", value: "pager_duty" },
-	{ _id: 4, name: "Webhook", value: "webhook" },
-];
-
 const CreateNotifications = () => {
+	const { notificationId } = useParams();
 	const theme = useTheme();
-	const [createNotification, isLoading, error] = useCreateNotification();
+	const [createNotification, isCreating, createNotificationError] =
+		useCreateNotification();
+	const [editNotification, isEditing, editNotificationError] = useEditNotification();
 	const BREADCRUMBS = [
 		{ name: "notifications", path: "/notifications" },
 		{ name: "create", path: "/notifications/create" },
@@ -56,6 +58,11 @@ const CreateNotifications = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
+
+	const [notificationIsLoading, getNotificationError] = useGetNotificationById(
+		notificationId,
+		setNotification
+	);
 
 	// handlers
 	const onSubmit = (e) => {
@@ -106,7 +113,11 @@ const CreateNotifications = () => {
 			return;
 		}
 
-		createNotification(form);
+		if (notificationId) {
+			editNotification(notificationId, form);
+		} else {
+			createNotification(form);
+		}
 	};
 
 	const onChange = (e) => {
@@ -348,7 +359,7 @@ const CreateNotifications = () => {
 					justifyContent="flex-end"
 				>
 					<Button
-						loading={isLoading}
+						loading={isCreating || isEditing || notificationIsLoading}
 						type="submit"
 						variant="contained"
 						color="accent"

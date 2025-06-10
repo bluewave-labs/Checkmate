@@ -3,9 +3,7 @@ import { networkService } from "../../../../main";
 
 const useHardwareMonitorsFetch = ({ monitorId, dateRange }) => {
 	// Abort early if creating monitor
-	if (!monitorId) {
-		return { monitor: undefined, isLoading: false, networkError: undefined };
-	}
+
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [monitor, setMonitor] = useState(undefined);
@@ -13,6 +11,9 @@ const useHardwareMonitorsFetch = ({ monitorId, dateRange }) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
+				if (!monitorId) {
+					return { monitor: undefined, isLoading: false, networkError: undefined };
+				}
 				const response = await networkService.getHardwareDetailsByMonitorId({
 					monitorId: monitorId,
 					dateRange: dateRange,
