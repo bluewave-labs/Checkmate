@@ -14,7 +14,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 	const { determineState } = useUtils();
 	const { t } = useTranslation();
 
-	const { stats, uptimePercentage } = monitor ?? {};
+	const { stats } = monitor ?? {};
 	const latestCheck = stats?.aggregateData?.latestCheck;
 
 	// Get data from latest check
@@ -95,7 +95,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				heading={t("disk")}
 				subHeading={formatBytes(diskTotalBytes)}
 			/>
-			<StatBox
+			{/* <StatBox
 				heading={t("uptime")}
 				subHeading={
 					<>
@@ -103,7 +103,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 						<Typography component="span">%</Typography>
 					</>
 				}
-			/>
+			/> */}
 			<StatBox
 				key={8}
 				heading={t("os")}
