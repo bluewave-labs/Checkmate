@@ -414,9 +414,6 @@ class AuthController {
 					(await Promise.all(
 						result.monitors.map(async (monitor) => {
 							await this.jobQueue.deleteJob(monitor);
-							await this.db.deleteChecks(monitor._id);
-							await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
-							await this.db.deleteNotificationsByMonitorId(monitor._id);
 						})
 					));
 
