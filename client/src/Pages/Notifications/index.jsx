@@ -119,6 +119,16 @@ const Notifications = () => {
 			</Stack>
 			<Typography variant="h1">{t("notifications.createTitle")}</Typography>
 			<DataTable
+				config={{
+					onRowClick: (row) => navigate(`/notifications/${row._id}`),
+					rowSX: {
+						cursor: "pointer",
+						"&:hover td": {
+							backgroundColor: theme.palette.tertiary.main,
+							transition: "background-color .3s ease",
+						},
+					},
+				}}
 				headers={headers}
 				data={notifications}
 			/>
