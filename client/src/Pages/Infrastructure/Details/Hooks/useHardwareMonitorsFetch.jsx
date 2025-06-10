@@ -17,7 +17,6 @@ const useHardwareMonitorsFetch = ({ monitorId, dateRange }) => {
 					monitorId: monitorId,
 					dateRange: dateRange,
 				});
-				response.data.data;
 				setMonitor(response.data.data);
 			} catch (error) {
 				setNetworkError(true);
