@@ -1,6 +1,6 @@
 services:
   client:
-    image: ghcr.io/bluewave-labs/checkmate-frontend:latest
+    image: ghcr.io/bluewave-labs/checkmate-client:latest
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
