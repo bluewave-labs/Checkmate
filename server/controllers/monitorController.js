@@ -389,51 +389,8 @@ class MonitorController {
 
 		try {
 			const monitor = await this.db.deleteMonitor(req, res, next);
-			// Delete associated checks,alerts,and notifications
-
-			try {
-				const operations = [
-					{ name: "deleteJob", fn: () => this.jobQueue.deleteJob(monitor) },
-					{ name: "deleteChecks", fn: () => this.db.deleteChecks(monitor._id) },
-					{
-						name: "deletePageSpeedChecks",
-						fn: () => this.db.deletePageSpeedChecksByMonitorId(monitor._id),
-					},
-
-					{
-						name: "deleteHardwareChecks",
-						fn: () => this.db.deleteHardwareChecksByMonitorId(monitor._id),
-					},
-
-					// TODO  We don't actually want to delete the status page if there are other monitors in it
-					// We actually just want to remove the monitor being deleted from the status page.
-					// Only delete he status page if there are no other monitors in it.
-					{
-						name: "deleteStatusPages",
-						fn: () => this.db.deleteStatusPagesByMonitorId(monitor._id),
-					},
-				];
-				const results = await Promise.allSettled(operations.map((op) => op.fn()));
-
-				results.forEach((result, index) => {
-					if (result.status === "rejected") {
-						const operationName = operations[index].name;
-						logger.error({
-							message: `Failed to ${operationName} for monitor ${monitor._id}`,
-							service: SERVICE_NAME,
-							method: "deleteMonitor",
-							stack: result.reason.stack,
-						});
-					}
-				});
-			} catch (error) {
-				logger.error({
-					message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
-					service: SERVICE_NAME,
-					method: "deleteMonitor",
-					stack: error.stack,
-				});
-			}
+			await this.jobQueue.deleteJob(monitor);
+			await this.db.deleteStatusPagesByMonitorId(monitor._id);
 			return res.success({ msg: this.stringService.monitorDelete });
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "deleteMonitor"));

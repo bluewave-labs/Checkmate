@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import HardwareCheck from "./HardwareCheck.js";
+import PageSpeedCheck from "./PageSpeedCheck.js";
+import Check from "./Check.js";
+import MonitorStats from "./MonitorStats.js";
 
 const MonitorSchema = mongoose.Schema(
 	{
@@ -87,6 +91,42 @@ const MonitorSchema = mongoose.Schema(
 		timestamps: true,
 	}
 );
+
+MonitorSchema.pre("findOneAndDelete", async function (next) {
+	// Delete checks and stats
+	try {
+		const doc = await this.model.findOne(this.getFilter());
+
+		if (doc.type === "pagespeed") {
+			await PageSpeedCheck.deleteMany({ monitorId: doc._id });
+		} else if (doc.type === "hardware") {
+			await HardwareCheck.deleteMany({ monitorId: doc._id });
+		} else {
+			await Check.deleteMany({ monitorId: doc._id });
+		}
+
+		await MonitorStats.deleteMany({ monitorId: doc._id.toString() });
+		next();
+	} catch (error) {
+		next(error);
+	}
+});
+
+MonitorSchema.pre("deleteMany", async function (next) {
+	const filter = this.getFilter();
+	const monitors = await this.model.find(filter).select(["_id", "type"]).lean();
+	for (const monitor of monitors) {
+		if (monitor.type === "pagespeed") {
+			await PageSpeedCheck.deleteMany({ monitorId: monitor._id });
+		} else if (monitor.type === "hardware") {
+			await HardwareCheck.deleteMany({ monitorId: monitor._id });
+		} else {
+			await Check.deleteMany({ monitorId: monitor._id });
+		}
+		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
+	}
+	next();
+});
 
 MonitorSchema.index({ teamId: 1, type: 1 });
 
