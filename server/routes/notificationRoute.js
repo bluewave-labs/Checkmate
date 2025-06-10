@@ -14,6 +14,15 @@ class NotificationRoutes {
 		this.router.post("/trigger", this.notificationController.triggerNotification);
 
 		this.router.post("/test-webhook", this.notificationController.testWebhook);
+
+		this.router.post("/", this.notificationController.createNotification);
+
+		this.router.get(
+			"/team/:teamId",
+			this.notificationController.getNotificationsByTeamId
+		);
+
+		this.router.delete("/:id", this.notificationController.deleteNotification);
 	}
 
 	getRouter() {

@@ -112,8 +112,7 @@ class NotificationService {
 
 	async sendWebhookNotification(networkResponse, notification) {
 		const { monitor, status, code } = networkResponse;
-		const { platform } = notification;
-		const { webhookUrl, botToken, chatId } = notification.config;
+		const { webhookUrl, platform, botToken, chatId } = notification.config;
 
 		// Early return if platform is not supported
 		if (!PLATFORM_TYPES.includes(platform)) {
@@ -204,6 +203,38 @@ class NotificationService {
 		return true;
 	}
 
+	async sendPagerDutyNotification(networkResponse, notification) {
+		const { monitor, status, code } = networkResponse;
+		const { routingKey, platform } = notification.config;
+
+		const message = this.formatNotificationMessage(
+			monitor,
+			status,
+			platform,
+			null,
+			code, // Pass the code field directly
+			networkResponse.timestamp
+		);
+
+		try {
+			const response = await this.networkService.requestPagerDuty({
+				message,
+				routingKey,
+				monitorUrl: monitor.url,
+			});
+			return response.status;
+		} catch (error) {
+			this.logger.error({
+				message: "Failed to send PagerDuty notification",
+				details: error.details,
+				service: error.service || this.SERVICE_NAME,
+				method: error.method || "sendPagerDutyNotification",
+				stack: error.stack,
+			});
+			return false;
+		}
+	}
+
 	async handleStatusNotifications(networkResponse) {
 		try {
 			// If status hasn't changed, we're done
@@ -211,17 +242,17 @@ class NotificationService {
 			// if prevStatus is undefined, monitor is resuming, we're done
 			if (networkResponse.prevStatus === undefined) return false;
 
-			const notifications = await this.db.getNotificationsByMonitorId(
-				networkResponse.monitorId
-			);
+			const notificationIDs = networkResponse.monitor?.notifications ?? [];
+			const notifications = await this.db.getNotificationsByIds(notificationIDs);
 
 			for (const notification of notifications) {
 				if (notification.type === "email") {
 					await this.sendEmail(networkResponse, notification.address);
 				} else if (notification.type === "webhook") {
 					await this.sendWebhookNotification(networkResponse, notification);
+				} else if (notification.type === "pager_duty") {
+					await this.sendPagerDutyNotification(networkResponse, notification);
 				}
-				// Handle other types of notifications here
 			}
 			return true;
 		} catch (error) {

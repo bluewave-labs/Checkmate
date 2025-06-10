@@ -5,20 +5,32 @@ const configSchema = mongoose.Schema(
 		webhookUrl: { type: String },
 		botToken: { type: String },
 		chatId: { type: String },
+		platform: {
+			type: String,
+			enum: ["slack", "pager_duty"],
+		},
+		routingKey: { type: String },
 	},
 	{ _id: false }
 );
 
 const NotificationSchema = mongoose.Schema(
 	{
-		monitorId: {
+		userId: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Monitor",
+			ref: "User",
 			immutable: true,
+			required: true,
+		},
+		teamId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Team",
+			immutable: true,
+			required: true,
 		},
 		type: {
 			type: String,
-			enum: ["email", "sms", "webhook"],
+			enum: ["email", "sms", "webhook", "pager_duty"],
 		},
 		platform: {
 			type: String,
@@ -26,6 +38,10 @@ const NotificationSchema = mongoose.Schema(
 		config: {
 			type: configSchema,
 			default: () => ({}),
+		},
+		notificationName: {
+			type: String,
+			required: true,
 		},
 		address: {
 			type: String,

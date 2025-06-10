@@ -1,4 +1,7 @@
-import { triggerNotificationBodyValidation } from "../validation/joi.js";
+import {
+	triggerNotificationBodyValidation,
+	createNotificationBodyValidation,
+} from "../validation/joi.js";
 import { handleError, handleValidationError } from "./controllerUtils.js";
 
 const SERVICE_NAME = "NotificationController";
@@ -15,10 +18,11 @@ const PLATFORMS = {
 };
 
 class NotificationController {
-	constructor(notificationService, stringService, statusService) {
+	constructor({ notificationService, stringService, statusService, db }) {
 		this.notificationService = notificationService;
 		this.stringService = stringService;
 		this.statusService = statusService;
+		this.db = db;
 		this.triggerNotification = this.triggerNotification.bind(this);
 		this.testWebhook = this.testWebhook.bind(this);
 	}
@@ -169,6 +173,50 @@ class NotificationController {
 			next(handleError(error, SERVICE_NAME, "testWebhook"));
 		}
 	}
+
+	createNotification = async (req, res, next) => {
+		try {
+			await createNotificationBodyValidation.validateAsync(req.body, {
+				abortEarly: false,
+			});
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+
+		try {
+			const notification = await this.db.createNotification(req.body);
+			return res.success({
+				msg: "Notification created successfully",
+				data: notification,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "createNotification"));
+		}
+	};
+
+	getNotificationsByTeamId = async (req, res, next) => {
+		try {
+			const notifications = await this.db.getNotificationsByTeamId(req.params.teamId);
+			return res.success({
+				msg: "Notifications fetched successfully",
+				data: notifications,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "getNotificationsByTeamId"));
+		}
+	};
+
+	deleteNotification = async (req, res, next) => {
+		try {
+			await this.db.deleteNotificationById(req.params.id);
+			return res.success({
+				msg: "Notification deleted successfully",
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "deleteNotification"));
+		}
+	};
 }
 
 export default NotificationController;
