@@ -301,7 +301,11 @@
 	"notifications": {
 		"fallback": {
 			"title": "notification channel",
-			"checks": "Alert teams about downtime or performance issues"
+			"checks": [
+				"Alert teams about downtime or performance issues",
+				"Let engineers know when incidents happen",
+				"Keep administrators informed of system changes"
+			]
 		},
 		"createButton": "Create notification channel",
 		"createTitle": "Notification channel",
