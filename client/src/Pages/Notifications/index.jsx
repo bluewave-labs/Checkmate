@@ -56,7 +56,16 @@ const Notifications = () => {
 			id: "target",
 			content: "Target",
 			render: (row) => {
-				return row.address || row.config?.webhookUrl || row.config?.routingKey;
+				const type = row.type;
+				if (type === "email") {
+					return row.address;
+				}
+				if (type === "webhook") {
+					return row.config?.webhookUrl;
+				}
+				if (type === "pager_duty") {
+					return row.config?.routingKey;
+				}
 			},
 		},
 		{

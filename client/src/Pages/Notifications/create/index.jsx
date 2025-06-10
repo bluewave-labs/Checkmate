@@ -16,6 +16,7 @@ import {
 	useCreateNotification,
 	useGetNotificationById,
 	useEditNotification,
+	useTestNotification,
 } from "../../../Hooks/useNotifications";
 import {
 	notificationEmailValidation,
@@ -35,6 +36,8 @@ const CreateNotifications = () => {
 	const [createNotification, isCreating, createNotificationError] =
 		useCreateNotification();
 	const [editNotification, isEditing, editNotificationError] = useEditNotification();
+	const [testNotification, isTesting, testNotificationError] = useTestNotification();
+
 	const BREADCRUMBS = [
 		{ name: "notifications", path: "/notifications" },
 		{ name: "create", path: "/notifications/create" },
@@ -176,6 +179,56 @@ const CreateNotifications = () => {
 		}));
 
 		setNotification(newNotification);
+	};
+
+	const onTestNotification = () => {
+		const form = {
+			...notification,
+			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
+		};
+
+		if (notification.type === 2) {
+			form.type = "webhook";
+		}
+
+		let error = null;
+
+		if (form.type === "email") {
+			error = notificationEmailValidation.validate(
+				{ notificationName: form.notificationName, address: form.address },
+				{ abortEarly: false }
+			).error;
+		} else if (form.type === "webhook") {
+			form.config = {
+				platform: form.config.platform,
+				webhookUrl: form.config.webhookUrl,
+			};
+			error = notificationWebhookValidation.validate(
+				{ notificationName: form.notificationName, config: form.config },
+				{ abortEarly: false }
+			).error;
+		} else if (form.type === "pager_duty") {
+			form.config = {
+				platform: form.config.platform,
+				routingKey: form.config.routingKey,
+			};
+			error = notificationPagerDutyValidation.validate(
+				{ notificationName: form.notificationName, config: form.config },
+				{ abortEarly: false }
+			).error;
+		}
+
+		if (error) {
+			const newErrors = {};
+			error.details.forEach((err) => {
+				newErrors[err.path[0]] = err.message;
+			});
+			createToast({ body: "Please check the form for errors." });
+			setErrors(newErrors);
+			return;
+		}
+
+		testNotification(form);
 	};
 
 	return (
@@ -357,7 +410,16 @@ const CreateNotifications = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
+					spacing={theme.spacing(2)}
 				>
+					<Button
+						loading={isCreating || isEditing || notificationIsLoading}
+						variant="contained"
+						color="secondary"
+						onClick={onTestNotification}
+					>
+						Test notification
+					</Button>
 					<Button
 						loading={isCreating || isEditing || notificationIsLoading}
 						type="submit"

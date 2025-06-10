@@ -95,6 +95,17 @@ class NotificationService {
 		return MESSAGE_FORMATTERS[platform](messageText, chatId);
 	}
 
+	sendTestWebhookNotification = async (notification) => {
+		const config = notification.config;
+		const response = await this.networkService.requestWebhook(
+			config.platform,
+			config.webhookUrl,
+			"This is a test notification"
+		);
+
+		return response.status;
+	};
+
 	/**
 	 * Sends a webhook notification to a specified platform.
 	 *
