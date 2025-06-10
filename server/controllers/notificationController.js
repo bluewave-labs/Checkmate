@@ -90,7 +90,7 @@ class NotificationController {
 			const notification = req.body;
 
 			if (notification?.type === "email") {
-				console.log("HANDLE EMAIL");
+				const result = await this.notificationService.sendTestEmail(notification);
 				return res.success({
 					msg: this.stringService.emailSendSuccess,
 				});

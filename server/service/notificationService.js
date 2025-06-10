@@ -196,6 +196,24 @@ class NotificationService {
 		return true;
 	}
 
+	sendTestEmail = async (notification) => {
+		const to = notification?.address;
+		if (!to || typeof to !== "string") {
+			throw new Error(this.stringService.errorForValidEmailAddress);
+		}
+
+		const subject = this.stringService.testEmailSubject;
+		const context = { testName: "Monitoring System" };
+
+		const messageId = await this.emailService.buildAndSendEmail(
+			"testEmailTemplate",
+			context,
+			to,
+			subject
+		);
+		console.log(messageId);
+	};
+
 	/**
 	 * Sends an email notification about monitor status change
 	 *
