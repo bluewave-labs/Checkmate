@@ -302,63 +302,63 @@ const baseTheme = (palette) => ({
 		},
 
 		MuiTextField: {
-  			styleOverrides: {
-    			root: ({ theme }) => ({
-      				"& fieldset": {
-        				borderColor: theme.palette.primary.lowContrast,
-        				borderRadius: theme.shape.borderRadius,
-      				},
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& fieldset": {
+						borderColor: theme.palette.primary.lowContrast,
+						borderRadius: theme.shape.borderRadius,
+					},
 
-					 "& .MuiInputBase-input": {
-        				padding: ".75em",
-        				minHeight: "var(--env-var-height-2)",
-        				fontSize: "var(--env-var-font-size-medium)",
-        				fontWeight: 400,
-        				color: palette.primary.contrastTextSecondary,
-        				"&.Mui-disabled": {
-          					opacity: 0.3,
-          					WebkitTextFillColor: "unset",
-        				},
-        				"& .Mui-focused": {
-          					/* color: "#ff0000", */
-          					/* borderColor: theme.palette.primary.contrastText, */
-        				},
-      				},
+					"& .MuiInputBase-input": {
+						padding: ".75em",
+						minHeight: "var(--env-var-height-2)",
+						fontSize: "var(--env-var-font-size-medium)",
+						fontWeight: 400,
+						color: palette.primary.contrastTextSecondary,
+						"&.Mui-disabled": {
+							opacity: 0.3,
+							WebkitTextFillColor: "unset",
+						},
+						"& .Mui-focused": {
+							/* color: "#ff0000", */
+							/* borderColor: theme.palette.primary.contrastText, */
+						},
+					},
 
-      				"& .MuiInputBase-input:-webkit-autofill": {
-        				transition: "background-color 5000s ease-in-out 0s",
-        				WebkitBoxShadow: `0 0 0px 1000px ${theme.palette.primary.main} inset`,
-        				WebkitTextFillColor: theme.palette.primary.contrastText,
-      				},
+					"& .MuiInputBase-input:-webkit-autofill": {
+						transition: "background-color 5000s ease-in-out 0s",
+						WebkitBoxShadow: `0 0 0px 1000px ${theme.palette.primary.main} inset`,
+						WebkitTextFillColor: theme.palette.primary.contrastText,
+					},
 
-      				"& .MuiInputBase-input.MuiOutlinedInput-input": {
-        				padding: "0 var(--env-var-spacing-1-minus) !important",
-      				},
+					"& .MuiInputBase-input.MuiOutlinedInput-input": {
+						padding: "0 var(--env-var-spacing-1-minus) !important",
+					},
 
-      				"& .MuiOutlinedInput-root": {
-        				color: theme.palette.primary.contrastTextSecondary,
-        				borderRadius: 4,
-      				},
+					"& .MuiOutlinedInput-root": {
+						color: theme.palette.primary.contrastTextSecondary,
+						borderRadius: 4,
+					},
 
-      				"& .MuiOutlinedInput-notchedOutline": {
-        				borderRadius: 4,
-      				},
+					"& .MuiOutlinedInput-notchedOutline": {
+						borderRadius: 4,
+					},
 
-      				"& .MuiFormHelperText-root": {
-        				color: palette.error.main,
-        				opacity: 0.8,
-        				fontSize: "var(--env-var-font-size-medium)",
-        				marginLeft: 0,
-      				},
+					"& .MuiFormHelperText-root": {
+						color: palette.error.main,
+						opacity: 0.8,
+						fontSize: "var(--env-var-font-size-medium)",
+						marginLeft: 0,
+					},
 
-      				"& .MuiFormHelperText-root.Mui-error": {
-      					opacity: 0.8,
-      					fontSize: "var(--env-var-font-size-medium)",
-      					color: palette.error.main,
-      					whiteSpace: "nowrap",
-      				},
-      			}),
-      		},
+					"& .MuiFormHelperText-root.Mui-error": {
+						opacity: 0.8,
+						fontSize: "var(--env-var-font-size-medium)",
+						color: palette.error.main,
+						whiteSpace: "nowrap",
+					},
+				}),
+			},
 		},
 
 		MuiOutlinedInput: {
