@@ -101,6 +101,8 @@ class EmailService {
 		const {
 			systemEmailHost,
 			systemEmailPort,
+			systemEmailSecure,
+			systemEmailPool,
 			systemEmailUser,
 			systemEmailAddress,
 			systemEmailPassword,
@@ -111,31 +113,22 @@ class EmailService {
 			systemEmailRejectUnauthorized,
 		} = config;
 
-		const baseEmailConfig = {
+		const emailConfig = {
 			host: systemEmailHost,
 			port: Number(systemEmailPort),
-			secure: true,
+			secure: systemEmailSecure,
 			auth: {
 				user: systemEmailUser || systemEmailAddress,
 				pass: systemEmailPassword,
 			},
 			connectionTimeout: 5000,
+			pool: systemEmailPool,
+			tls: { rejectUnauthorized: systemEmailRejectUnauthorized },
+			ignoreTLS: systemEmailIgnoreTLS,
+			requireTLS: systemEmailRequireTLS,
+			servername: systemEmailTLSServername,
+			name: systemEmailConnectionHost || "localhost",
 		};
-
-		const isSmtps = Number(systemEmailPort) === 465;
-
-		const emailConfig = !isSmtps
-			? {
-					...baseEmailConfig,
-					name: systemEmailConnectionHost || "localhost",
-					secure: false,
-					pool: true,
-					tls: { rejectUnauthorized: systemEmailRejectUnauthorized },
-					ignoreTLS: systemEmailIgnoreTLS,
-					requireTLS: systemEmailRequireTLS,
-					servername: systemEmailTLSServername,
-				}
-			: baseEmailConfig;
 
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 

@@ -50,6 +50,8 @@ const SettingsEmail = ({
 		const emailConfig = {
 			systemEmailHost: settingsData?.settings?.systemEmailHost,
 			systemEmailPort: settingsData?.settings?.systemEmailPort,
+			systemEmailSecure: settingsData?.settings?.systemEmailSecure,
+			systemEmailPool: settingsData?.settings?.systemEmailPool,
 			systemEmailUser: settingsData?.settings?.systemEmailUser,
 			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
 			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
@@ -107,6 +109,27 @@ const SettingsEmail = ({
 							placeholder="425"
 							type="number"
 							value={settingsData?.settings?.systemEmailPort ?? ""}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							gap: theme.spacing(4),
+						}}
+					>
+						<Typography>{t("settingsEmailSecure")}</Typography>
+						<Switch
+							name="systemEmailSecure"
+							checked={settingsData?.settings?.systemEmailSecure ?? false}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailPool")}</Typography>
+						<Switch
+							name="systemEmailPool"
+							checked={settingsData?.settings?.systemEmailPool ?? false}
 							onChange={handleChange}
 						/>
 					</Box>

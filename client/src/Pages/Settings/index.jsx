@@ -67,7 +67,9 @@ const Settings = () => {
 		if (
 			name === "systemEmailIgnoreTLS" ||
 			name === "systemEmailRequireTLS" ||
-			name === "systemEmailRejectUnauthorized"
+			name === "systemEmailRejectUnauthorized" ||
+			name === "systemEmailSecure" ||
+			name === "systemEmailPool"
 		) {
 			newValue = checked;
 		}

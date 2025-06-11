@@ -683,6 +683,8 @@
 	"settingsEmailIgnoreTLS": "Ignore TLS",
 	"settingsEmailRequireTLS": "Require TLS",
 	"settingsEmailRejectUnauthorized": "Reject Unauthorized",
+	"settingsEmailSecure": "Secure",
+	"settingsEmailPool": "Pool",
 	"state": "State",
 	"statusBreadCrumbsStatusPages": "Status Pages",
 	"statusBreadCrumbsDetails": "Details",
