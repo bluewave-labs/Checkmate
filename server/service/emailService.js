@@ -105,6 +105,10 @@ class EmailService {
 			systemEmailAddress,
 			systemEmailPassword,
 			systemEmailConnectionHost,
+			systemEmailTLSServername,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
 		} = config;
 
 		const baseEmailConfig = {
@@ -126,7 +130,10 @@ class EmailService {
 					name: systemEmailConnectionHost || "localhost",
 					secure: false,
 					pool: true,
-					tls: { rejectUnauthorized: false },
+					tls: { rejectUnauthorized: systemEmailRejectUnauthorized },
+					ignoreTLS: systemEmailIgnoreTLS,
+					requireTLS: systemEmailRequireTLS,
+					servername: systemEmailTLSServername,
 				}
 			: baseEmailConfig;
 

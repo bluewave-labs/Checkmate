@@ -294,6 +294,10 @@ const settingsValidation = joi.object({
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
 	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailTLSServername: joi.string().allow(""),
+	systemEmailIgnoreTLS: joi.boolean().optional(),
+	systemEmailRequireTLS: joi.boolean().optional(),
+	systemEmailRejectUnauthorized: joi.boolean().optional(),
 });
 
 const dayjsValidator = (value, helpers) => {
