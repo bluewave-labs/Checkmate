@@ -57,7 +57,8 @@ const SettingsEmail = ({
 			systemEmailTLSServername: settingsData?.settings?.systemEmailTLSServername,
 			systemEmailIgnoreTLS: settingsData?.settings?.systemEmailIgnoreTLS,
 			systemEmailRequireTLS: settingsData?.settings?.systemEmailRequireTLS,
-			systemEmailRejectUnauthorized: settingsData?.settings?.systemEmailRejectUnauthorized,
+			systemEmailRejectUnauthorized:
+				settingsData?.settings?.systemEmailRejectUnauthorized,
 		};
 
 		// Basic validation
@@ -161,9 +162,7 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
-						<Typography>
-							{t("settingsEmailTLSServername")}
-						</Typography>
+						<Typography>{t("settingsEmailTLSServername")}</Typography>
 						<TextInput
 							name="systemEmailTLSServername"
 							placeholder="bluewavelabs.ca"
