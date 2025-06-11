@@ -35,7 +35,10 @@ const Login = () => {
 
 	// Handlers
 	const onChange = (e) => {
-		const { name, value } = e.target;
+		let { name, value } = e.target;
+		if (name === "email") {
+			value = value.toLowerCase();
+		}
 		const updatedForm = { ...form, [name]: value };
 		const { error } = loginCredentials.validate({ [name]: value });
 		setForm(updatedForm);
@@ -87,7 +90,7 @@ const Login = () => {
 	return (
 		<Stack
 			gap={theme.spacing(10)}
-			height="100vh"
+			minHeight="100vh"
 		>
 			<AuthHeader />
 			<Stack
