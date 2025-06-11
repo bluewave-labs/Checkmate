@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
 import { createToast } from "../../Utils/toastUtils";
+import { Switch } from "@mui/material";
 
 const SettingsEmail = ({
 	isAdmin,
@@ -53,6 +54,10 @@ const SettingsEmail = ({
 			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
 			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
 			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost,
+			systemEmailTLSServername: settingsData?.settings?.systemEmailTLSServername,
+			systemEmailIgnoreTLS: settingsData?.settings?.systemEmailIgnoreTLS,
+			systemEmailRequireTLS: settingsData?.settings?.systemEmailRequireTLS,
+			systemEmailRejectUnauthorized: settingsData?.settings?.systemEmailRejectUnauthorized,
 		};
 
 		// Basic validation
@@ -155,6 +160,44 @@ const SettingsEmail = ({
 							</Button>
 						</Box>
 					)}
+					<Box>
+						<Typography>
+							{t("settingsEmailTLSServername")}
+						</Typography>
+						<TextInput
+							name="systemEmailTLSServername"
+							placeholder="bluewavelabs.ca"
+							value={settingsData?.settings?.systemEmailTLSServername ?? ""}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							gap: theme.spacing(4),
+						}}
+					>
+						<Typography>{t("settingsEmailIgnoreTLS")}</Typography>
+						<Switch
+							name="systemEmailIgnoreTLS"
+							checked={settingsData?.settings?.systemEmailIgnoreTLS ?? false}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailRequireTLS")}</Typography>
+						<Switch
+							name="systemEmailRequireTLS"
+							checked={settingsData?.settings?.systemEmailRequireTLS ?? false}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailRejectUnauthorized")}</Typography>
+						<Switch
+							name="systemEmailRejectUnauthorized"
+							checked={settingsData?.settings?.systemEmailRejectUnauthorized ?? false}
+							onChange={handleChange}
+						/>
+					</Box>
 					<Box>
 						<Typography>{t("settingsEmailConnectionHost")}</Typography>
 						<TextInput
