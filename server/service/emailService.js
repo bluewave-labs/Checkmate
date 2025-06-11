@@ -109,7 +109,7 @@ class EmailService {
 
 		const baseEmailConfig = {
 			host: systemEmailHost,
-			port: systemEmailPort,
+			port: Number(systemEmailPort),
 			secure: true,
 			auth: {
 				user: systemEmailUser || systemEmailAddress,
@@ -129,10 +129,6 @@ class EmailService {
 					tls: { rejectUnauthorized: false },
 				}
 			: baseEmailConfig;
-
-		if (!isSmtps) {
-			delete emailConfig.auth;
-		}
 
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 
