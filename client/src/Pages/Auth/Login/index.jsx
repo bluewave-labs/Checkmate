@@ -6,6 +6,7 @@ import TextInput from "../../../Components/Inputs/TextInput";
 import { PasswordEndAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import { loginCredentials } from "../../../Validation/validation";
 import TextLink from "../components/TextLink";
+import Typography from "@mui/material/Typography";
 
 // Utils
 import { login } from "../../../Features/Auth/authSlice";
@@ -96,13 +97,14 @@ const Login = () => {
 				alignItems="center"
 				gap={theme.spacing(10)}
 			>
+				<Typography variant="h1">{t("auth.login.heading")}</Typography>
+
 				<Stack
 					component="form"
 					width="100%"
 					maxWidth={600}
 					alignSelf="center"
 					justifyContent="center"
-					border={1}
 					borderRadius={theme.spacing(5)}
 					borderColor={theme.palette.primary.lowContrast}
 					backgroundColor={theme.palette.primary.main}
