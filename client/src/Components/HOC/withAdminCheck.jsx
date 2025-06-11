@@ -17,7 +17,7 @@ const withAdminCheck = (WrappedComponent) => {
 					if (response?.data?.data === true) {
 						navigate("/login");
 					} else {
-						setSuperAdminExists(true);
+						setSuperAdminExists(false);
 					}
 				})
 				.catch((error) => {
