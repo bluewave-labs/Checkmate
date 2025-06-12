@@ -525,6 +525,7 @@
 	"notifyEmails": "Also notify via email to multiple addresses (coming soon)",
 	"seperateEmails": "You can separate multiple emails with a comma",
 	"checkFrequency": "Check frequency",
+	"advancedMatching": "Advanced matching",
 	"matchMethod": "Match Method",
 	"expectedValue": "Expected value",
 	"deleteDialogTitle": "Do you really want to delete this monitor?",

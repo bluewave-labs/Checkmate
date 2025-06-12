@@ -12,44 +12,42 @@ import NotificationsConfig from "../../../Components/NotificationConfig";
 import Dialog from "../../../Components/Dialog";
 
 // Utils
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTheme } from "@emotion/react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import {
-	deletePageSpeed,
-	getPagespeedMonitorById,
-	getPageSpeedByTeamId,
-	updatePageSpeed,
-	pausePageSpeed,
-} from "../../../Features/PageSpeedMonitor/pageSpeedMonitorSlice";
+import { useParams } from "react-router";
 import { monitorValidation } from "../../../Validation/validation";
-import { createToast } from "../../../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
-import useUtils from "../../Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
-
+import {
+	useFetchMonitorById,
+	useDeleteMonitor,
+	useUpdateMonitor,
+	usePauseMonitor,
+} from "../../../Hooks/monitorHooks";
 const PageSpeedConfigure = () => {
 	// Redux state
-	const { isLoading } = useSelector((state) => state.pageSpeedMonitors);
 
 	// Local state
 	const [monitor, setMonitor] = useState({});
 	const [errors, setErrors] = useState({});
-	const [buttonLoading, setButtonLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
+	const [updateTrigger, setUpdateTrigger] = useState(false);
 
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const dispatch = useDispatch();
 	const MS_PER_MINUTE = 60000;
 	const { monitorId } = useParams();
-	const { statusColor, pagespeedStatusMsg, determineState } = useUtils();
+	const { statusColor, pagespeedStatusMsg, determineState } = useMonitorUtils();
 
 	const [notifications, notificationsAreLoading, notificationsError] =
 		useGetNotificationsByTeamId();
+
+	const [isLoading] = useFetchMonitorById({ monitorId, setMonitor, updateTrigger });
+	const [deleteMonitor, isDeleting] = useDeleteMonitor();
+	const [updateMonitor, isUpdating] = useUpdateMonitor();
+	const [pauseMonitor, isPausing] = usePauseMonitor();
 
 	const frequencies = [
 		{ _id: 3, name: "3 minutes" },
@@ -61,24 +59,10 @@ const PageSpeedConfigure = () => {
 		{ _id: 10080, name: "1 week" },
 	];
 
-	useEffect(() => {
-		const fetchMonitor = async () => {
-			try {
-				const action = await dispatch(getPagespeedMonitorById({ monitorId }));
-
-				if (getPagespeedMonitorById.fulfilled.match(action)) {
-					const monitor = action.payload.data;
-					setMonitor(monitor);
-				} else if (getPagespeedMonitorById.rejected.match(action)) {
-					throw new Error(action.error.message);
-				}
-			} catch (error) {
-				logger.error("Error fetching monitor of id: " + monitorId);
-				navigate("/not-found", { replace: true });
-			}
-		};
-		fetchMonitor();
-	}, [dispatch, monitorId, navigate]);
+	// Handlers
+	const triggerUpdate = () => {
+		setUpdateTrigger(!updateTrigger);
+	};
 
 	const onChange = (event) => {
 		let { value, name } = event.target;
@@ -106,42 +90,17 @@ const PageSpeedConfigure = () => {
 	};
 
 	const handlePause = async () => {
-		try {
-			const action = await dispatch(pausePageSpeed({ monitorId }));
-			if (pausePageSpeed.fulfilled.match(action)) {
-				const monitor = action.payload.data;
-				setMonitor(monitor);
-				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
-				createToast({ body: `Monitor ${state} successfully.` });
-			} else if (pausePageSpeed.rejected.match(action)) {
-				throw new Error(action.error.message);
-			}
-		} catch (error) {
-			createToast({ body: "Failed to pause monitor" });
-		}
+		await pauseMonitor({ monitorId, triggerUpdate });
 	};
 
 	const onSubmit = async (event) => {
 		event.preventDefault();
-		const action = await dispatch(updatePageSpeed({ monitor: monitor }));
-		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor updated successfully!" });
-			dispatch(getPageSpeedByTeamId());
-		} else {
-			createToast({ body: "Failed to update monitor." });
-		}
+		await updateMonitor({ monitor, redirect: "/pagespeed" });
 	};
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		setButtonLoading(true);
-		const action = await dispatch(deletePageSpeed({ monitor }));
-		if (action.meta.requestStatus === "fulfilled") {
-			navigate("/pagespeed");
-		} else {
-			createToast({ body: "Failed to delete monitor." });
-		}
-		setButtonLoading(false);
+		await deleteMonitor({ monitor, redirect: "/pagespeed" });
 	};
 
 	return (
@@ -363,7 +322,7 @@ const PageSpeedConfigure = () => {
 							mt="auto"
 						>
 							<Button
-								loading={isLoading}
+								loading={isLoading || isDeleting || isUpdating || isPausing}
 								type="submit"
 								variant="contained"
 								color="accent"
@@ -383,7 +342,7 @@ const PageSpeedConfigure = () => {
 				onCancel={() => setIsOpen(false)}
 				confirmationButtonLabel={t("delete")}
 				onConfirm={handleRemove}
-				isLoading={buttonLoading}
+				isLoading={isLoading || isDeleting || isUpdating || isPausing}
 			/>
 		</Stack>
 	);

@@ -11,7 +11,7 @@ import GenericFallback from "../../../Components/GenericFallback";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import { useHardwareMonitorsFetch } from "./Hooks/useHardwareMonitorsFetch";
+import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -33,7 +33,7 @@ const InfrastructureDetails = () => {
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 
-	const { isLoading, networkError, monitor } = useHardwareMonitorsFetch({
+	const [monitor, isLoading, networkError] = useFetchHardwareMonitorById({
 		monitorId,
 		dateRange,
 	});

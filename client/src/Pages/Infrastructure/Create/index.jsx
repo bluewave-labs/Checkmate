@@ -1,20 +1,17 @@
 // React, Redux, Router
 import { useTheme } from "@emotion/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
-import {
-	createInfrastructureMonitor,
-	updateInfrastructureMonitor,
-} from "../../../Features/InfrastructureMonitors/infrastructureMonitorsSlice";
-import { useHardwareMonitorsFetch } from "../Details/Hooks/useHardwareMonitorsFetch";
+import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 import NotificationsConfig from "../../../Components/NotificationConfig";
+import { useUpdateMonitor, useCreateMonitor } from "../../../Hooks/monitorHooks";
 
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
@@ -55,9 +52,6 @@ const getAlertError = (errors) => {
 const CreateInfrastructureMonitor = () => {
 	const theme = useTheme();
 	const { user } = useSelector((state) => state.auth);
-	const monitorState = useSelector((state) => state.infrastructureMonitor);
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
 	const { monitorId } = useParams();
 	const { t } = useTranslation();
 
@@ -65,9 +59,11 @@ const CreateInfrastructureMonitor = () => {
 	const isCreate = typeof monitorId === "undefined";
 
 	// Fetch monitor details if editing
-	const { monitor, isLoading, networkError } = useHardwareMonitorsFetch({ monitorId });
+	const [monitor, isLoading, networkError] = useFetchHardwareMonitorById({ monitorId });
 	const [notifications, notificationsAreLoading, notificationsError] =
 		useGetNotificationsByTeamId();
+	const [updateMonitor, isUpdating] = useUpdateMonitor();
+	const [createMonitor, isCreating] = useCreateMonitor();
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -187,6 +183,7 @@ const CreateInfrastructureMonitor = () => {
 		};
 
 		form = {
+			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
 			description: form.name,
 			teamId: user.teamId,
@@ -197,19 +194,9 @@ const CreateInfrastructureMonitor = () => {
 		};
 
 		// Handle create or update
-		const action = isCreate
-			? await dispatch(createInfrastructureMonitor({ monitor: form }))
-			: await dispatch(updateInfrastructureMonitor({ monitorId, monitor: form }));
-		if (action.meta.requestStatus === "fulfilled") {
-			createToast({
-				body: isCreate
-					? t("infrastructureMonitorCreated")
-					: t("infrastructureMonitorUpdated"),
-			});
-			navigate("/infrastructure");
-		} else {
-			createToast({ body: "Failed to save monitor." });
-		}
+		isCreate
+			? await createMonitor({ monitor: form, redirect: "/infrastructure" })
+			: await updateMonitor({ monitor: form, redirect: "/infrastructure" });
 	};
 
 	const onChange = (event) => {
@@ -448,7 +435,7 @@ const CreateInfrastructureMonitor = () => {
 						type="submit"
 						variant="contained"
 						color="accent"
-						loading={monitorState?.isLoading}
+						loading={isLoading || isUpdating || isCreating || notificationsAreLoading}
 					>
 						{t(isCreate ? "infrastructureCreateMonitor" : "infrastructureEditMonitor")}
 					</Button>

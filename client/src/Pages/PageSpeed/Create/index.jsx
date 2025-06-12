@@ -1,30 +1,27 @@
-// React, Redux, Router
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-// Utility and Network
-import { monitorValidation } from "../../../Validation/validation";
-import {
-	createPageSpeed,
-	checkEndpointResolution,
-} from "../../../Features/PageSpeedMonitor/pageSpeedMonitorSlice";
-import { parseDomainName } from "../../../Utils/monitorUtils";
-import { useTranslation } from "react-i18next";
-import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
-
-// MUI
-import { useTheme } from "@emotion/react";
-import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
-
 //Components
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import TextInput from "../../../Components/Inputs/TextInput";
 import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import ConfigBox from "../../../Components/ConfigBox";
-import { createToast } from "../../../Utils/toastUtils";
 import Radio from "../../../Components/Inputs/Radio";
 import Select from "../../../Components/Inputs/Select";
 import NotificationsConfig from "../../../Components/NotificationConfig";
+
+// Utils
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { monitorValidation } from "../../../Validation/validation";
+import { parseDomainName } from "../../../Utils/monitorUtils";
+import { useTranslation } from "react-i18next";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import { useTheme } from "@emotion/react";
+import { createToast } from "../../../Utils/toastUtils";
+import { useCreateMonitor } from "../../../Hooks/monitorHooks";
 
 const MS_PER_MINUTE = 60000;
 
@@ -56,13 +53,11 @@ const CreatePageSpeed = () => {
 	const [https, setHttps] = useState(true);
 	const [errors, setErrors] = useState({});
 	const { user } = useSelector((state) => state.auth);
-	const { isLoading } = useSelector((state) => state.pageSpeedMonitors);
 	const [notifications, notificationsAreLoading, error] = useGetNotificationsByTeamId();
 
 	// Setup
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
 	const theme = useTheme();
+	const [createMonitor, isCreating] = useCreateMonitor();
 
 	// Handlers
 	const onSubmit = async (event) => {
@@ -88,18 +83,6 @@ const CreatePageSpeed = () => {
 			return;
 		}
 
-		const checkEndpointAction = await dispatch(
-			checkEndpointResolution({ monitorURL: form.url })
-		);
-
-		if (checkEndpointAction.meta.requestStatus === "rejected") {
-			createToast({
-				body: "The endpoint you entered doesn't resolve. Check the URL again.",
-			});
-			setErrors({ url: "The entered URL is not reachable." });
-			return;
-		}
-
 		form = {
 			...form,
 			description: form.name,
@@ -108,13 +91,7 @@ const CreatePageSpeed = () => {
 			notifications: monitor.notifications,
 		};
 
-		const action = await dispatch(createPageSpeed({ monitor: form }));
-		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor created successfully!" });
-			navigate("/pagespeed");
-		} else {
-			createToast({ body: "Failed to create monitor." });
-		}
+		await createMonitor({ monitor: form, redirect: "/pagespeed" });
 	};
 
 	const handleChange = (event) => {
@@ -325,7 +302,7 @@ const CreatePageSpeed = () => {
 						variant="contained"
 						color="accent"
 						disabled={!Object.values(errors).every((value) => value === undefined)}
-						loading={isLoading}
+						loading={isCreating}
 					>
 						{t("createMonitor")}
 					</Button>

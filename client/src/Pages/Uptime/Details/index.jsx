@@ -1,15 +1,14 @@
 // Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
-import MonitorStatusHeader from "../../../Components/MonitorStatusHeader";
 import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import ChartBoxes from "./Components/ChartBoxes";
 import ResponseTimeChart from "./Components/Charts/ResponseTimeChart";
 import ResponseTable from "./Components/ResponseTable";
 import UptimeStatusBoxes from "./Components/UptimeStatusBoxes";
 import GenericFallback from "../../../Components/GenericFallback";
-// MUI Components
-import { Stack, Typography } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 // Utils
 import { useState } from "react";
@@ -17,9 +16,9 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import useFetchUptimeMonitorDetails from "../../../Hooks/useFetchUptimeMonitorDetails";
+import { useFetchUptimeMonitorById } from "../../../Hooks/monitorHooks";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
-import useChecksFetch from "./Hooks/useChecksFetch";
+import { useFetchChecks } from "../../../Hooks/checkHooks";
 import { useTranslation } from "react-i18next";
 
 // Constants
@@ -50,7 +49,7 @@ const UptimeDetails = () => {
 	const { t } = useTranslation();
 
 	const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError] =
-		useFetchUptimeMonitorDetails({
+		useFetchUptimeMonitorById({
 			monitorId,
 			dateRange,
 			trigger,
@@ -66,7 +65,7 @@ const UptimeDetails = () => {
 	});
 
 	const monitorType = monitor?.type;
-	const [checks, checksCount, checksAreLoading, checksNetworkError] = useChecksFetch({
+	const [checks, checksCount, checksAreLoading, checksNetworkError] = useFetchChecks({
 		monitorId,
 		monitorType,
 		dateRange,

@@ -28,9 +28,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 import PropTypes from "prop-types";
-import useFetchMonitorsWithSummary from "../../../Hooks/useFetchMonitorsWithSummary";
-import useFetchMonitorsWithChecks from "../../../Hooks/useFetchMonitorsWithChecks";
+import {
+	useFetchMonitorsWithSummary,
+	useFetchMonitorsWithChecks,
+} from "../../../Hooks/monitorHooks";
 import { useTranslation } from "react-i18next";
+
 const TYPES = ["http", "ping", "docker", "port"];
 const CreateMonitorButton = ({ shouldRender }) => {
 	// Utils
@@ -78,7 +81,6 @@ const UptimeMonitors = () => {
 
 	// Utils
 	const theme = useTheme();
-	const navigate = useNavigate();
 	const isAdmin = useIsAdmin();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();

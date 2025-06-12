@@ -10,7 +10,7 @@ import CustomGauge from "../../../../../Components/Charts/CustomGauge";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { determineState } = useUtils();
+	const { determineState } = useMonitorUtils();
 	const navigate = useNavigate();
 
 	// Handlers
