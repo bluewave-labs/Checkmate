@@ -111,6 +111,9 @@ const useFetchMonitorsByTeamId = ({
 	filter,
 	field,
 	order,
+	checkOrder,
+	normalize,
+	status,
 	updateTrigger,
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +126,7 @@ const useFetchMonitorsByTeamId = ({
 			try {
 				setIsLoading(true);
 				const res = await networkService.getMonitorsByTeamId({
-					teamId: teamId,
+					teamId,
 					limit,
 					types,
 					page,
@@ -131,6 +134,9 @@ const useFetchMonitorsByTeamId = ({
 					filter,
 					field,
 					order,
+					checkOrder,
+					status,
+					normalize,
 				});
 				if (res?.data?.data?.filteredMonitors) {
 					setMonitors(res.data.data.filteredMonitors);
@@ -146,7 +152,20 @@ const useFetchMonitorsByTeamId = ({
 			}
 		};
 		fetchMonitors();
-	}, [teamId, types, limit, page, rowsPerPage, filter, field, order, updateTrigger]);
+	}, [
+		teamId,
+		types,
+		limit,
+		page,
+		rowsPerPage,
+		filter,
+		field,
+		order,
+		updateTrigger,
+		checkOrder,
+		normalize,
+		status,
+	]);
 	return [monitors, summary, isLoading, networkError];
 };
 
