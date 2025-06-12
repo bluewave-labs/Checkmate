@@ -4,7 +4,7 @@ import NotFound from "../Pages/NotFound";
 
 // Auth
 import AuthLogin from "../Pages/Auth/Login";
-import AuthRegister from "../Pages/Auth/Register/Register";
+import AuthRegister from "../Pages/Auth/Register/";
 import AuthForgotPassword from "../Pages/Auth/ForgotPassword";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail";
 import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
