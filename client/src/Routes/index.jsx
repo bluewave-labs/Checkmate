@@ -3,7 +3,7 @@ import HomeLayout from "../Components/Layouts/HomeLayout";
 import NotFound from "../Pages/NotFound";
 
 // Auth
-import AuthLogin from "../Pages/Auth/Login/Login";
+import AuthLogin from "../Pages/Auth/Login";
 import AuthRegister from "../Pages/Auth/Register/Register";
 import AuthForgotPassword from "../Pages/Auth/ForgotPassword";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail";
@@ -48,7 +48,6 @@ import Settings from "../Pages/Settings";
 import Maintenance from "../Pages/Maintenance";
 
 import ProtectedRoute from "../Components/ProtectedRoute";
-import ProtectedDistributedUptimeRoute from "../Components/ProtectedDistributedUptimeRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport";

@@ -102,12 +102,19 @@
 				"stepTwo": "Enter your password"
 			},
 			"links": {
-				"forgotPassword": "Forgot password? <a>Reset password</a>",
-				"register": "Do not have an account? <a>Register here</a>"
+				"forgotPassword": "Forgot password?",
+				"forgotPasswordLink": "Reset password",
+				"register": "Do not have an account?",
+				"registerLink": "Register here"
 			},
 			"toasts": {
 				"success": "Welcome back! You're successfully logged in.",
 				"incorrectPassword": "Incorrect password"
+			},
+			"errors": {
+				"password": {
+					"incorrect": "The password you provided does not match our records"
+				}
 			}
 		},
 		"registration": {
