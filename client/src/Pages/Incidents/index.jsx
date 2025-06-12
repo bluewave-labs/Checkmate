@@ -1,19 +1,19 @@
 // Components
 import { Stack } from "@mui/material";
 import Breadcrumbs from "../../Components/Breadcrumbs";
+import GenericFallback from "../../Components/GenericFallback";
+import IncidentTable from "./Components/IncidentTable";
+import OptionsHeader from "./Components/OptionsHeader";
 
 //Utils
 import { useTheme } from "@emotion/react";
-import { useMonitorsFetch } from "./Hooks/useMonitorsFetch";
+import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
 import { useSelector } from "react-redux";
-import OptionsHeader from "./Components/OptionsHeader";
-import { useState } from "react";
-import IncidentTable from "./Components/IncidentTable";
-import GenericFallback from "../../Components/GenericFallback";
+import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
-//Constants
 
+//Constants
 const Incidents = () => {
 	// Redux state
 	const { user } = useSelector((state) => state.auth);
@@ -27,12 +27,25 @@ const Incidents = () => {
 	const [selectedMonitor, setSelectedMonitor] = useState("0");
 	const [filter, setFilter] = useState(undefined);
 	const [dateRange, setDateRange] = useState(undefined);
+	const [monitorLookup, setMonitorLookup] = useState(undefined);
+
 	//Utils
 	const theme = useTheme();
-
-	const { monitors, isLoading, networkError } = useMonitorsFetch({
+	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({
 		teamId: user.teamId,
 	});
+
+	useEffect(() => {
+		const monitorLookup = monitors?.reduce((acc, monitor) => {
+			acc[monitor._id] = {
+				_id: monitor._id,
+				name: monitor.name,
+				type: monitor.type,
+			};
+			return acc;
+		}, {});
+		setMonitorLookup(monitorLookup);
+	}, [monitors]);
 
 	if (networkError) {
 		return (
@@ -47,7 +60,7 @@ const Incidents = () => {
 			<Breadcrumbs list={BREADCRUMBS} />
 			<OptionsHeader
 				shouldRender={!isLoading}
-				monitors={monitors}
+				monitors={monitorLookup}
 				selectedMonitor={selectedMonitor}
 				setSelectedMonitor={setSelectedMonitor}
 				filter={filter}
@@ -57,7 +70,7 @@ const Incidents = () => {
 			/>
 			<IncidentTable
 				shouldRender={!isLoading}
-				monitors={monitors}
+				monitors={monitorLookup ? monitorLookup : {}}
 				selectedMonitor={selectedMonitor}
 				filter={filter}
 				dateRange={dateRange}

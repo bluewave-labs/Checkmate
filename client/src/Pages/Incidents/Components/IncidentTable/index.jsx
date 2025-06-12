@@ -10,10 +10,10 @@ import NetworkError from "../../../../Components/GenericFallback/NetworkError";
 //Utils
 import { formatDateWithTz } from "../../../../Utils/timeUtils";
 import { useSelector } from "react-redux";
-import { useState } from "react";
-import useChecksFetch from "../../Hooks/useChecksFetch";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useFetchChecks } from "../../../../Hooks/checkHooks";
 
 const IncidentTable = ({
 	shouldRender,
@@ -24,19 +24,28 @@ const IncidentTable = ({
 }) => {
 	//Redux state
 	const uiTimezone = useSelector((state) => state.ui.timezone);
+	const { user } = useSelector((state) => state.auth);
 
 	//Local state
+	const [teamId, setTeamId] = useState(undefined);
+	const [monitorId, setMonitorId] = useState(undefined);
+
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
-	const { isLoading, networkError, checks, checksCount } = useChecksFetch({
-		selectedMonitor,
-		selectedMonitorType,
-		filter,
+
+	const [checks, checksCount, isLoading, networkError] = useFetchChecks({
+		status: false,
+		monitorId,
+		teamId,
+		type: selectedMonitorType,
+		sortOrder: "desc",
+		limit: null,
 		dateRange,
-		page,
-		rowsPerPage,
+		filter: filter,
+		page: page,
+		rowsPerPage: rowsPerPage,
 	});
 
 	const { t } = useTranslation();
@@ -49,6 +58,16 @@ const IncidentTable = ({
 	const handleChangeRowsPerPage = (event) => {
 		setRowsPerPage(event.target.value);
 	};
+
+	useEffect(() => {
+		if (selectedMonitor === "0") {
+			setTeamId(user.teamId);
+			setMonitorId(undefined);
+		} else {
+			setMonitorId(selectedMonitor);
+			setTeamId(undefined);
+		}
+	}, [selectedMonitor, user.teamId]);
 
 	const headers = [
 		{

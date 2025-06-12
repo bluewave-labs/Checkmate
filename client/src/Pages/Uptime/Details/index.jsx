@@ -65,10 +65,14 @@ const UptimeDetails = () => {
 	});
 
 	const monitorType = monitor?.type;
+
 	const [checks, checksCount, checksAreLoading, checksNetworkError] = useFetchChecks({
 		monitorId,
-		monitorType,
+		type: monitorType,
+		sortOrder: "desc",
+		limit: null,
 		dateRange,
+		filter: null,
 		page,
 		rowsPerPage,
 	});
