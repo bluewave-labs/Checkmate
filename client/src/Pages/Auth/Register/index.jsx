@@ -11,7 +11,7 @@ import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { networkService } from "../../../main";
 import { newOrChangedCredentials } from "../../../Validation/validation";
@@ -35,6 +35,9 @@ const getFeedbackStatus = (form, errors, field, criteria) => {
 };
 
 const Register = ({ superAdminExists }) => {
+	// Redux
+	const { isLoading } = useSelector((state) => state.auth);
+
 	// Local state
 	const [form, setForm] = useState({
 		firstName: "",
@@ -203,6 +206,8 @@ const Register = ({ superAdminExists }) => {
 				alignItems="center"
 				gap={theme.spacing(10)}
 			>
+				<Typography variant="h1">{t("auth.registration.heading.user")}</Typography>
+
 				<Stack
 					component="form"
 					width="100%"
@@ -327,6 +332,7 @@ const Register = ({ superAdminExists }) => {
 						/>
 					</Stack>
 					<Button
+						disabled={isLoading}
 						variant="contained"
 						color="accent"
 						type="submit"
