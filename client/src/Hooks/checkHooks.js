@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { networkService } from "../../../../main";
-import { createToast } from "../../../../Utils/toastUtils";
-export const useChecksFetch = ({
-	monitorId,
-	monitorType,
-	dateRange,
-	page,
-	rowsPerPage,
-}) => {
+import { networkService } from "../main";
+import { createToast } from "../Utils/toastUtils";
+
+const useFetchChecks = ({ monitorId, monitorType, dateRange, page, rowsPerPage }) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
@@ -47,4 +42,4 @@ export const useChecksFetch = ({
 	return [checks, checksCount, isLoading, networkError];
 };
 
-export default useChecksFetch;
+export { useFetchChecks };
