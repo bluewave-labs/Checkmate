@@ -38,6 +38,8 @@ const Settings = () => {
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
 	const [errors, setErrors] = useState({});
+	// reset button for APIkeys
+	const [lastSavedSettings, setLastSavedSettings] = useState(null);
 
 	// Network
 	const [isSettingsLoading, settingsError] = useFetchSettings({
@@ -145,6 +147,8 @@ const Settings = () => {
 			setErrors(newErrors);
 		}
 		saveSettings(settingsData?.settings);
+		// last saving for pageSpeedAPi key reset
+		setLastSavedSettings({ ...settingsData.settings });
 	};
 
 	return (
@@ -168,6 +172,7 @@ const Settings = () => {
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
 				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
+				lastSavedSettings={lastSavedSettings}
 			/>
 			<SettingsURL
 				HEADING_SX={HEADING_SX}
