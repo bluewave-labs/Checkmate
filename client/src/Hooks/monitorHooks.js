@@ -4,8 +4,9 @@ import { createToast } from "../Utils/toastUtils";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "./useMonitorUtils";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const useFetchMonitorsWithSummary = ({ teamId, types, monitorUpdateTrigger }) => {
+const useFetchMonitorsWithSummary = ({ types, monitorUpdateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [monitors, setMonitors] = useState(undefined);
 	const [monitorsSummary, setMonitorsSummary] = useState(undefined);
@@ -16,7 +17,6 @@ const useFetchMonitorsWithSummary = ({ teamId, types, monitorUpdateTrigger }) =>
 			try {
 				setIsLoading(true);
 				const res = await networkService.getMonitorsWithSummaryByTeamId({
-					teamId,
 					types,
 				});
 				const { monitors, summary } = res?.data?.data ?? {};
@@ -33,12 +33,11 @@ const useFetchMonitorsWithSummary = ({ teamId, types, monitorUpdateTrigger }) =>
 			}
 		};
 		fetchMonitors();
-	}, [teamId, types, monitorUpdateTrigger]);
+	}, [types, monitorUpdateTrigger]);
 	return [monitors, monitorsSummary, isLoading, networkError];
 };
 
 const useFetchMonitorsWithChecks = ({
-	teamId,
 	types,
 	limit,
 	page,
@@ -60,7 +59,6 @@ const useFetchMonitorsWithChecks = ({
 			try {
 				setIsLoading(true);
 				const res = await networkService.getMonitorsWithChecksByTeamId({
-					teamId,
 					limit,
 					types,
 					page,
@@ -94,7 +92,6 @@ const useFetchMonitorsWithChecks = ({
 		order,
 		page,
 		rowsPerPage,
-		teamId,
 		theme,
 		types,
 		monitorUpdateTrigger,
@@ -103,7 +100,6 @@ const useFetchMonitorsWithChecks = ({
 };
 
 const useFetchMonitorsByTeamId = ({
-	teamId,
 	types,
 	limit,
 	page,
@@ -126,7 +122,6 @@ const useFetchMonitorsByTeamId = ({
 			try {
 				setIsLoading(true);
 				const res = await networkService.getMonitorsByTeamId({
-					teamId,
 					limit,
 					types,
 					page,
@@ -153,7 +148,6 @@ const useFetchMonitorsByTeamId = ({
 		};
 		fetchMonitors();
 	}, [
-		teamId,
 		types,
 		limit,
 		page,
@@ -383,6 +377,58 @@ const usePauseMonitor = () => {
 	return [pauseMonitor, isLoading, error];
 };
 
+const useAddDemoMonitors = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
+	const addDemoMonitors = async () => {
+		try {
+			setIsLoading(true);
+			await networkService.addDemoMonitors();
+			createToast({ body: t("settingsDemoMonitorsAdded") });
+		} catch (error) {
+			createToast({ body: t("settingsFailedToAddDemoMonitors") });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	return [addDemoMonitors, isLoading];
+};
+
+const useDeleteAllMonitors = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
+	const deleteAllMonitors = async () => {
+		try {
+			setIsLoading(true);
+			await networkService.deleteAllMonitors();
+			createToast({ body: t("settingsMonitorsDeleted") });
+		} catch (error) {
+			createToast({ body: t("settingsFailedToDeleteMonitors") });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	return [deleteAllMonitors, isLoading];
+};
+
+const UseDeleteMonitorStats = () => {
+	const { t } = useTranslation();
+	const [isLoading, setIsLoading] = useState(false);
+	const deleteMonitorStats = async ({ teamId }) => {
+		setIsLoading(true);
+		try {
+			const res = await networkService.deleteChecksByTeamId({ teamId });
+			createToast({ body: t("settingsStatsCleared") });
+		} catch (error) {
+			createToast({ body: t("settingsFailedToClearStats") });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [deleteMonitorStats, isLoading];
+};
+
 export {
 	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
@@ -395,4 +441,7 @@ export {
 	useDeleteMonitor,
 	useUpdateMonitor,
 	usePauseMonitor,
+	useAddDemoMonitors,
+	useDeleteAllMonitors,
+	UseDeleteMonitorStats,
 };

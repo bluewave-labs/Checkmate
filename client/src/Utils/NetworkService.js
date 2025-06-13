@@ -3,7 +3,6 @@ import i18next from "i18next";
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 const FALLBACK_BASE_URL = "http://localhost:5000/api/v1";
 import { clearAuthState } from "../Features/Auth/authSlice";
-import { clearUptimeMonitorState } from "../Features/UptimeMonitors/uptimeMonitorsSlice";
 class NetworkService {
 	constructor(store, dispatch, navigate) {
 		this.store = store;
@@ -56,7 +55,6 @@ class NetworkService {
 
 				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
-					dispatch(clearUptimeMonitorState());
 					navigate("/login");
 				} else if (error.request && !error.response) {
 					return Promise.reject(error);
@@ -138,36 +136,6 @@ class NetworkService {
 	}
 
 	/**
-	 *
-	 * ************************************
-	 * Gets monitors and summary of stats by TeamID
-	 * ************************************
-	 *
-	 * @async
-	 * @param {Object} config - The configuration object.
-	 * @param {string} config.teamId - Team ID
-	 * @param {Array<string>} config.types - Array of monitor types
-	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
-	 */
-	async getMonitorsSummaryByTeamId(config) {
-		const params = new URLSearchParams();
-
-		if (config.types) {
-			config.types.forEach((type) => {
-				params.append("type", type);
-			});
-		}
-		return this.axiosInstance.get(
-			`/monitors/team/summary/${config.teamId}?${params.toString()}`,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
-	}
-
-	/**
 	 * ************************************
 	 * Get all uptime monitors for a Team
 	 * ************************************
@@ -186,7 +154,7 @@ class NetworkService {
 	 */
 
 	async getMonitorsByTeamId(config) {
-		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+		const { limit, types, page, rowsPerPage, filter, field, order } = config;
 		const params = new URLSearchParams();
 
 		if (limit) params.append("limit", limit);
@@ -201,7 +169,7 @@ class NetworkService {
 		if (field) params.append("field", field);
 		if (order) params.append("order", order);
 
-		return this.axiosInstance.get(`/monitors/team/${teamId}?${params.toString()}`, {
+		return this.axiosInstance.get(`/monitors/team?${params.toString()}`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -951,7 +919,7 @@ class NetworkService {
 	// Fetch monitors with summary by TeamID
 	// ************************************
 	async getMonitorsWithSummaryByTeamId(config) {
-		const { teamId, types } = config;
+		const { types } = config;
 		const params = new URLSearchParams();
 
 		if (types) {
@@ -960,21 +928,18 @@ class NetworkService {
 			});
 		}
 
-		return this.axiosInstance.get(
-			`/monitors/summary/team/${teamId}?${params.toString()}`,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
+		return this.axiosInstance.get(`/monitors/summary/team?${params.toString()}`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	}
 
 	// ************************************
 	// Fetch monitors with checks by TeamID
 	// ************************************
 	async getMonitorsWithChecksByTeamId(config) {
-		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+		const { limit, types, page, rowsPerPage, filter, field, order } = config;
 		const params = new URLSearchParams();
 
 		if (limit) params.append("limit", limit);
@@ -989,14 +954,11 @@ class NetworkService {
 		if (field) params.append("field", field);
 		if (order) params.append("order", order);
 
-		return this.axiosInstance.get(
-			`/monitors/team/${teamId}/with-checks?${params.toString()}`,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
+		return this.axiosInstance.get(`/monitors/team/with-checks?${params.toString()}`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	}
 
 	// ************************************
