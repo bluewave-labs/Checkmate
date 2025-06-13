@@ -684,7 +684,7 @@
 	"settingsEmailRequireTLS": "Require TLS - Force STARTTLS",
 	"settingsEmailRejectUnauthorized": "Reject Unauthorized",
 	"settingsEmailSecure": "Secure - Use SSL",
-	"settingsEmailPool": "Pool",
+	"settingsEmailPool": "Pool - Enable connection pooling",
 	"state": "State",
 	"statusBreadCrumbsStatusPages": "Status Pages",
 	"statusBreadCrumbsDetails": "Details",

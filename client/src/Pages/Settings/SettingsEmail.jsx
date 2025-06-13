@@ -136,8 +136,7 @@ const SettingsEmail = ({
 					<Box
 						sx={{
 							display: "flex",
-							flexDirection: "row",
-							alignItems: "center",
+							flexDirection: "column",
 							gap: theme.spacing(4),
 						}}
 					>
@@ -250,14 +249,16 @@ const SettingsEmail = ({
 						/>
 					</Box>
 					<Box>
-						<Button
-							variant="contained"
-							color="accent"
-							loading={isSending}
-							onClick={handleSendTestEmail}
-						>
-							{t("settingsTestEmail", "Send test e-mail")}
-						</Button>
+						{systemEmailHost && systemEmailPort && systemEmailAddress && (
+							<Button
+								variant="contained"
+								color="accent"
+								loading={isSending}
+								onClick={handleSendTestEmail}
+							>
+								{t("settingsTestEmail", "Send test e-mail")}
+							</Button>
+						)}
 					</Box>
 				</Stack>
 			</Box>
