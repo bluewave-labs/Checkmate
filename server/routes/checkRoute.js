@@ -11,7 +11,15 @@ class CheckRoutes {
 	}
 
 	initRoutes() {
+		this.router.get("/team", this.checkController.getChecksByTeam);
+		this.router.delete(
+			"/team",
+			isAllowed(["admin", "superadmin"]),
+			this.checkController.deleteChecksByTeamId
+		);
+
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
+
 		this.router.post(
 			"/:monitorId",
 			verifyOwnership(Monitor, "monitorId"),
@@ -21,14 +29,6 @@ class CheckRoutes {
 			"/:monitorId",
 			verifyOwnership(Monitor, "monitorId"),
 			this.checkController.deleteChecks
-		);
-
-		this.router.get("/team/:teamId", this.checkController.getChecksByTeam);
-
-		this.router.delete(
-			"/team/:teamId",
-			isAllowed(["admin", "superadmin"]),
-			this.checkController.deleteChecksByTeamId
 		);
 
 		this.router.put(

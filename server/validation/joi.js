@@ -301,9 +301,7 @@ const getChecksQueryValidation = joi.object({
 	status: joi.boolean(),
 });
 
-const getTeamChecksParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const getTeamChecksParamValidation = joi.object({});
 
 const getTeamChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
@@ -319,9 +317,7 @@ const deleteChecksParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
 
-const deleteChecksByTeamIdParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const deleteChecksByTeamIdParamValidation = joi.object({});
 
 const updateChecksTTLBodyValidation = joi.object({
 	ttl: joi.number().required(),
