@@ -272,7 +272,7 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios DELETE request.
 	 */
 	async deleteChecksByTeamId(config) {
-		return this.axiosInstance.delete(`/checks/team/${config.teamId}`, {
+		return this.axiosInstance.delete(`/checks/team`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -595,7 +595,7 @@ class NetworkService {
 		if (config.page) params.append("page", config.page);
 		if (config.rowsPerPage) params.append("rowsPerPage", config.rowsPerPage);
 		if (config.status !== undefined) params.append("status", config.status);
-		return this.axiosInstance.get(`/checks/team/${config.teamId}?${params.toString()}`);
+		return this.axiosInstance.get(`/checks/team?${params.toString()}`);
 	};
 
 	/**
