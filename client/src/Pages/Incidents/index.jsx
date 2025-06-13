@@ -8,7 +8,6 @@ import OptionsHeader from "./Components/OptionsHeader";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
-import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
@@ -16,7 +15,6 @@ import { useTranslation } from "react-i18next";
 //Constants
 const Incidents = () => {
 	// Redux state
-	const { user } = useSelector((state) => state.auth);
 	const { t } = useTranslation();
 
 	const BREADCRUMBS = [
@@ -31,9 +29,7 @@ const Incidents = () => {
 
 	//Utils
 	const theme = useTheme();
-	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({
-		teamId: user.teamId,
-	});
+	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId();
 
 	useEffect(() => {
 		const monitorLookup = monitors?.reduce((acc, monitor) => {
