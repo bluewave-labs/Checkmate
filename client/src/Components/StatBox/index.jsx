@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import Image from "../Image";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
-import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
 
 /**
  * StatBox Component
@@ -41,7 +41,7 @@ const StatBox = ({
 	sx,
 }) => {
 	const theme = useTheme();
-	const { statusToTheme } = useUtils();
+	const { statusToTheme } = useMonitorUtils();
 	const themeColor = statusToTheme[status];
 
 	const statusBoxStyles = gradient

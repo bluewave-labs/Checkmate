@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { getHumanReadableDuration } from "../../../../../Utils/timeUtils";
 import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
-import useUtils from "../../../Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 
 const UptimeStatusBoxes = ({
 	isLoading = false,
@@ -14,7 +14,7 @@ const UptimeStatusBoxes = ({
 	certificateExpiry,
 }) => {
 	const theme = useTheme();
-	const { determineState } = useUtils();
+	const { determineState } = useMonitorUtils();
 
 	// Determine time since last failure
 	const timeOfLastFailure = monitorStats?.timeOfLastFailure;

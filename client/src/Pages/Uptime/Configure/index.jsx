@@ -1,37 +1,37 @@
-import { useNavigate, useParams } from "react-router";
-import { useTheme } from "@emotion/react";
-import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
-import {
-	Box,
-	Stack,
-	Tooltip,
-	Typography,
-	Button,
-	FormControlLabel,
-	Switch,
-} from "@mui/material";
-import { monitorValidation } from "../../../Validation/validation";
-import { createToast } from "../../../Utils/toastUtils";
-import { useTranslation } from "react-i18next";
+// Components
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 import ConfigBox from "../../../Components/ConfigBox";
-import {
-	updateUptimeMonitor,
-	deleteUptimeMonitor,
-} from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
+import Breadcrumbs from "../../../Components/Breadcrumbs";
 import TextInput from "../../../Components/Inputs/TextInput";
 import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import Select from "../../../Components/Inputs/Select";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import PulseDot from "../../../Components/Animated/PulseDot";
-import "./index.css";
 import Dialog from "../../../Components/Dialog";
-import { usePauseMonitor } from "../../../Hooks/useMonitorControls";
+import PulseDot from "../../../Components/Animated/PulseDot";
+import Checkbox from "../../../Components/Inputs/Checkbox";
+
+// Utils
+import { useParams } from "react-router";
+import { useTheme } from "@emotion/react";
+import { useState } from "react";
+import { monitorValidation } from "../../../Validation/validation";
+import { createToast } from "../../../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
-import { useFetchUptimeMonitorById } from "../../../Hooks/useFetchUptimeMonitorById";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import {
+	useDeleteMonitor,
+	useUpdateMonitor,
+	usePauseMonitor,
+	useFetchMonitorById,
+} from "../../../Hooks/monitorHooks";
 import NotificationsConfig from "../../../Components/NotificationConfig";
 
 /**
@@ -76,18 +76,19 @@ const Configure = () => {
 	};
 
 	// Network
-	const [monitor, isLoading, error] = useFetchUptimeMonitorById(monitorId, updateTrigger);
 	const [notifications, notificationsAreLoading, notificationsError] =
 		useGetNotificationsByTeamId();
-	const [pauseMonitor, isPausing, pauseError] = usePauseMonitor({
-		monitorId: monitor?._id,
-		triggerUpdate,
+	const [pauseMonitor, isPausing, pauseError] = usePauseMonitor({});
+	const [deleteMonitor, isDeleting] = useDeleteMonitor();
+	const [updateMonitor, isUpdating] = useUpdateMonitor();
+	const [isLoading] = useFetchMonitorById({
+		monitorId,
+		setMonitor: setForm,
+		updateTrigger,
 	});
 
 	const MS_PER_MINUTE = 60000;
-	const navigate = useNavigate();
 	const theme = useTheme();
-	const dispatch = useDispatch();
 
 	const matchMethodOptions = [
 		{ _id: "equal", name: "Equal" },
@@ -111,7 +112,7 @@ const Configure = () => {
 
 	// Handlers
 	const handlePause = async () => {
-		const res = await pauseMonitor();
+		const res = await pauseMonitor({ monitorId: form?._id, triggerUpdate });
 		if (typeof res !== "undefined") {
 			triggerUpdate();
 		}
@@ -119,12 +120,7 @@ const Configure = () => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		const action = await dispatch(deleteUptimeMonitor({ monitor }));
-		if (action.meta.requestStatus === "fulfilled") {
-			navigate("/uptime");
-		} else {
-			createToast({ body: "Failed to delete monitor." });
-		}
+		await deleteMonitor({ monitor: form, redirect: "/uptime" });
 	};
 
 	const onChange = (event) => {
@@ -132,6 +128,17 @@ const Configure = () => {
 
 		if (name === "ignoreTlsErrors") {
 			value = checked;
+		}
+
+		if (name === "useAdvancedMatching") {
+			setForm((prevForm) => {
+				return {
+					...prevForm,
+					matchMethod: "equal",
+				};
+			});
+			setUseAdvancedMatching(!useAdvancedMatching);
+			return;
 		}
 
 		if (name === "interval") {
@@ -146,7 +153,6 @@ const Configure = () => {
 
 		setErrors((prev) => {
 			const updatedErrors = { ...prev };
-
 			if (validation.error) updatedErrors[name] = validation.error.details[0].message;
 			else delete updatedErrors[name];
 			return updatedErrors;
@@ -183,7 +189,7 @@ const Configure = () => {
 
 		if (validation.error) {
 			const newErrors = {};
-			error.details.forEach((err) => {
+			validation.error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
 			setErrors(newErrors);
@@ -192,27 +198,12 @@ const Configure = () => {
 		}
 
 		toSubmit.notifications = form.notifications;
-		const action = await dispatch(updateUptimeMonitor({ monitor: toSubmit }));
-		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor updated successfully!" });
-		} else {
-			createToast({ body: "Failed to update monitor." });
-		}
+		console.log(JSON.stringify(toSubmit, null, 2));
+		// await updateMonitor({ monitor: toSubmit, redirect: "/uptime" });
 	};
 
-	// Effects
-	useEffect(() => {
-		if (monitor?.matchMethod) {
-			setUseAdvancedMatching(true);
-		}
-
-		setForm({
-			...monitor,
-		});
-	}, [monitor, notifications]);
-
 	// Parse the URL
-	const parsedUrl = parseUrl(monitor?.url);
+	const parsedUrl = parseUrl(form?.url);
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	const { determineState, statusColor } = useMonitorUtils();
@@ -434,7 +425,13 @@ const Configure = () => {
 							onChange={onChange}
 							items={frequencies}
 						/>
-						{form.type === "http" && (
+						<Checkbox
+							name="useAdvancedMatching"
+							label={t("advancedMatching")}
+							isChecked={useAdvancedMatching}
+							onChange={onChange}
+						/>
+						{form.type === "http" && useAdvancedMatching && (
 							<>
 								<Select
 									name="matchMethod"
@@ -502,6 +499,7 @@ const Configure = () => {
 					mt="auto"
 				>
 					<Button
+						disabled={isDeleting || isUpdating}
 						type="submit"
 						variant="contained"
 						color="accent"

@@ -587,7 +587,7 @@ class NetworkService {
 	 *
 	 */
 
-	async getChecksByMonitor(config) {
+	getChecksByMonitor = async (config) => {
 		const params = new URLSearchParams();
 		if (config.type) params.append("type", config.type);
 		if (config.sortOrder) params.append("sortOrder", config.sortOrder);
@@ -599,7 +599,7 @@ class NetworkService {
 		if (config.status !== undefined) params.append("status", config.status);
 
 		return this.axiosInstance.get(`/checks/${config.monitorId}?${params.toString()}`);
-	}
+	};
 
 	/**
 	 * ************************************
@@ -618,7 +618,7 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
 	 *
 	 */
-	async getChecksByTeam(config) {
+	getChecksByTeam = async (config) => {
 		const params = new URLSearchParams();
 		if (config.sortOrder) params.append("sortOrder", config.sortOrder);
 		if (config.limit) params.append("limit", config.limit);
@@ -628,7 +628,7 @@ class NetworkService {
 		if (config.rowsPerPage) params.append("rowsPerPage", config.rowsPerPage);
 		if (config.status !== undefined) params.append("status", config.status);
 		return this.axiosInstance.get(`/checks/team/${config.teamId}?${params.toString()}`);
-	}
+	};
 
 	/**
 	 * ************************************
