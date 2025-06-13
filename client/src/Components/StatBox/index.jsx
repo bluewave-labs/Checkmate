@@ -136,8 +136,8 @@ const StatBox = ({
 };
 
 StatBox.propTypes = {
-	heading: PropTypes.string.isRequired,
-	subHeading: PropTypes.node.isRequired,
+	heading: PropTypes.string,
+	subHeading: PropTypes.node,
 	gradient: PropTypes.bool,
 	status: PropTypes.string,
 	sx: PropTypes.object,

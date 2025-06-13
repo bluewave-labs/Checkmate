@@ -1,7 +1,6 @@
 /* TODO I basically copied and pasted this component from the actionsMenu. Check how we can make it reusable */
 
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../../../../Utils/toastUtils";
@@ -30,7 +29,6 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const theme = useTheme();
-	const { isLoading } = useSelector((state) => state.uptimeMonitors);
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -117,7 +115,6 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 				onCancel={cancelRemove}
 				confirmationButtonLabel="Delete"
 				onConfirm={handleRemove}
-				isLoading={isLoading}
 				modelTitle="modal-delete-monitor"
 				modelDescription="delete-monitor-confirmation"
 			/>

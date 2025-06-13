@@ -43,6 +43,8 @@ const ActionsMenu = ({
 			pauseCallback();
 		} catch (error) {
 			createToast({ body: "Failed to pause monitor." });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 

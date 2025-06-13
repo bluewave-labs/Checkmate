@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete }) => {
+const MonitorsTable = ({ isLoading, monitors, isAdmin, handleActionMenuDelete }) => {
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -86,6 +86,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 					monitor={row}
 					isAdmin={isAdmin}
 					updateCallback={handleActionMenuDelete}
+					isLoading={isLoading}
 				/>
 			),
 		},
@@ -120,7 +121,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 
 	return (
 		<DataTable
-			shouldRender={shouldRender}
+			shouldRender={!isLoading}
 			headers={headers}
 			data={data}
 			config={{
@@ -140,7 +141,7 @@ const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete
 };
 
 MonitorsTable.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	monitors: PropTypes.array,
 	isAdmin: PropTypes.bool,
 	handleActionMenuDelete: PropTypes.func,
