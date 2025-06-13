@@ -1020,10 +1020,6 @@ class NetworkService {
 				systemEmailRequireTLS: emailConfig.systemEmailRequireTLS,
 				systemEmailRejectUnauthorized: emailConfig.systemEmailRejectUnauthorized,
 				systemEmailTLSServername: emailConfig.systemEmailTLSServername,
-				// Only include these if they are present
-				...(emailConfig.systemEmailConnectionHost && {
-					systemEmailConnectionHost: emailConfig.systemEmailConnectionHost,
-				}),
 				...(emailConfig.systemEmailUser && {
 					systemEmailUser: emailConfig.systemEmailUser,
 				}),

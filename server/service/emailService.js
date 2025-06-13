@@ -121,13 +121,15 @@ class EmailService {
 				user: systemEmailUser || systemEmailAddress,
 				pass: systemEmailPassword,
 			},
+			name: systemEmailConnectionHost || "localhost",
 			connectionTimeout: 5000,
 			pool: systemEmailPool,
-			tls: { rejectUnauthorized: systemEmailRejectUnauthorized },
-			ignoreTLS: systemEmailIgnoreTLS,
-			requireTLS: systemEmailRequireTLS,
-			servername: systemEmailTLSServername,
-			name: systemEmailConnectionHost || "localhost",
+			tls: {
+				rejectUnauthorized: systemEmailRejectUnauthorized,
+				ignoreTLS: systemEmailIgnoreTLS,
+				requireTLS: systemEmailRequireTLS,
+				servername: systemEmailTLSServername,
+			},
 		};
 
 		this.transporter = this.nodemailer.createTransport(emailConfig);

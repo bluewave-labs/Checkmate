@@ -295,11 +295,11 @@ const settingsValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
-	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow("").optional(),
 	systemEmailTLSServername: joi.string().allow(""),
-	systemEmailIgnoreTLS: joi.boolean().optional(),
-	systemEmailRequireTLS: joi.boolean().optional(),
-	systemEmailRejectUnauthorized: joi.boolean().optional(),
+	systemEmailIgnoreTLS: joi.boolean(),
+	systemEmailRequireTLS: joi.boolean(),
+	systemEmailRejectUnauthorized: joi.boolean(),
 });
 
 const dayjsValidator = (value, helpers) => {
