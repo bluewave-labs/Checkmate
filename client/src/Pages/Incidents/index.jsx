@@ -29,7 +29,7 @@ const Incidents = () => {
 
 	//Utils
 	const theme = useTheme();
-	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId();
+	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
 
 	useEffect(() => {
 		const monitorLookup = monitors?.reduce((acc, monitor) => {

@@ -13,9 +13,7 @@ const useStatusPagesFetch = () => {
 	useEffect(() => {
 		const fetchStatusPages = async () => {
 			try {
-				const res = await networkService.getStatusPagesByTeamId({
-					teamId: user.teamId,
-				});
+				const res = await networkService.getStatusPagesByTeamId();
 				setStatusPages(res?.data?.data);
 			} catch (error) {
 				setNetworkError(true);

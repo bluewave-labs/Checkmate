@@ -99,7 +99,7 @@ class StatusPageController {
 
 	getStatusPagesByTeamId = async (req, res, next) => {
 		try {
-			const teamId = req.params.teamId;
+			const teamId = req.user.teamId;
 			const statusPages = await this.db.getStatusPagesByTeamId(teamId);
 
 			return res.success({

@@ -838,8 +838,7 @@ class NetworkService {
 	}
 
 	async getStatusPagesByTeamId(config) {
-		const { teamId } = config;
-		return this.axiosInstance.get(`/status-page/team/${teamId}`, {
+		return this.axiosInstance.get(`/status-page/team`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
