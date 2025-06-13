@@ -33,12 +33,13 @@ const useSaveSettings = () => {
 	const saveSettings = async (settings) => {
 		setIsLoading(true);
 		try {
-			await networkService.updateAppSettings({ settings });
+			const settingsResponse = await networkService.updateAppSettings({ settings });
 			if (settings.checkTTL) {
 				await networkService.updateChecksTTL({
 					ttl: settings.checkTTL,
 				});
 			}
+			console.log({ settingsResponse });
 			createToast({ body: t("settingsSuccessSaved") });
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });

@@ -1,17 +1,22 @@
+// Components
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Settings from "../../assets/icons/settings-bold.svg?react";
+import Dialog from "../../Components/Dialog";
+
+// Utils
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../Utils/toastUtils";
-import { logger } from "../../Utils/Logger";
-import { IconButton, Menu, MenuItem } from "@mui/material";
 import {
 	deleteUptimeMonitor,
 	pauseUptimeMonitor,
 } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
-import Settings from "../../assets/icons/settings-bold.svg?react";
 import PropTypes from "prop-types";
-import Dialog from "../../Components/Dialog";
+import { usePauseMonitor, useDeleteMonitor } from "../../Hooks/monitorHooks";
 
 const ActionsMenu = ({
 	monitor,
@@ -23,37 +28,24 @@ const ActionsMenu = ({
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [actions, setActions] = useState({});
 	const [isOpen, setIsOpen] = useState(false);
-	const dispatch = useDispatch();
 	const theme = useTheme();
-	const { isLoading } = useSelector((state) => state.uptimeMonitors);
+	const [pauseMonitor, isPausing, error] = usePauseMonitor();
+	const [deleteMonitor, isDeleting] = useDeleteMonitor();
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		let monitor = { _id: actions.id };
-		const action = await dispatch(deleteUptimeMonitor({ monitor }));
-		if (action.meta.requestStatus === "fulfilled") {
-			setIsOpen(false); // close modal
-			updateRowCallback();
-			createToast({ body: "Monitor deleted successfully." });
-		} else {
-			createToast({ body: "Failed to delete monitor." });
-		}
+		await deleteMonitor({ monitor });
+		updateRowCallback();
 	};
 
 	const handlePause = async () => {
 		try {
 			setIsLoading(true);
-			const action = await dispatch(pauseUptimeMonitor({ monitorId: monitor._id }));
-			if (pauseUptimeMonitor.fulfilled.match(action)) {
-				const state = action?.payload?.data.isActive === false ? "resumed" : "paused";
-				createToast({ body: `Monitor ${state} successfully.` });
-				pauseCallback();
-			} else {
-				throw new Error(action?.error?.message ?? "Failed to pause monitor.");
-			}
+			await pauseMonitor({ monitorId: monitor._id });
+			pauseCallback();
 		} catch (error) {
-			logger.error("Error pausing monitor:", monitor._id, error);
 			createToast({ body: "Failed to pause monitor." });
 		}
 	};
@@ -210,7 +202,7 @@ const ActionsMenu = ({
 					e.stopPropagation();
 					handleRemove(e);
 				}}
-				isLoading={isLoading}
+				isLoading={isDeleting}
 				modelTitle="modal-delete-monitor"
 				modelDescription="delete-monitor-confirmation"
 			/>
