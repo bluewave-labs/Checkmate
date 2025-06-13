@@ -6,10 +6,7 @@ import {
 	buildMonitorSummaryByTeamIdPipeline,
 	buildMonitorsByTeamIdPipeline,
 	buildFilteredMonitorsByTeamIdPipeline,
-	buildDePINDetailsByDateRange,
-	buildDePINLatestChecks,
 } from "./monitorModuleQueries.js";
-import { getDateRange } from "./monitorModule.js";
 
 const getMonitorsByTeamIdExecutionStats = async (req) => {
 	try {

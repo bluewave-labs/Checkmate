@@ -78,7 +78,14 @@ class MonitorController {
 
 	getUptimeDetailsById = async (req, res, next) => {
 		try {
-			const data = await this.db.getUptimeDetailsById(req);
+			const { monitorId } = req.params;
+			const { dateRange, normalize } = req.query;
+
+			const data = await this.db.getUptimeDetailsById({
+				monitorId,
+				dateRange,
+				normalize,
+			});
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
 				data,
@@ -107,7 +114,17 @@ class MonitorController {
 		}
 
 		try {
-			const monitorStats = await this.db.getMonitorStatsById(req);
+			let { limit, sortOrder, dateRange, numToDisplay, normalize } = req.query;
+			const { monitorId } = req.params;
+
+			const monitorStats = await this.db.getMonitorStatsById({
+				monitorId,
+				limit,
+				sortOrder,
+				dateRange,
+				numToDisplay,
+				normalize,
+			});
 			return res.success({
 				msg: this.stringService.monitorStatsById,
 				data: monitorStats,
@@ -135,7 +152,9 @@ class MonitorController {
 			return;
 		}
 		try {
-			const monitor = await this.db.getHardwareDetailsById(req);
+			const { monitorId } = req.params;
+			const { dateRange } = req.query;
+			const monitor = await this.db.getHardwareDetailsById({ monitorId, dateRange });
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
 				data: monitor,
@@ -219,7 +238,7 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await this.db.createMonitor(req, res);
+			const monitor = await this.db.createMonitor(req.body);
 
 			// Add monitor to job queue
 			this.jobQueue.addJob(monitor._id, monitor);
@@ -261,10 +280,10 @@ class MonitorController {
 				throw new Error("File is empty");
 			}
 
-			const { userId, teamId } = req.body;
+			const { _id, teamId } = req.user;
 
-			if (!userId || !teamId) {
-				throw new Error("Missing userId or teamId in form data");
+			if (!_id || !teamId) {
+				throw new Error("Missing userId or teamId");
 			}
 
 			// Get file buffer from memory and convert to string
@@ -299,7 +318,7 @@ class MonitorController {
 						}
 
 						const enrichedData = data.map((monitor) => ({
-							userId,
+							userId: _id,
 							teamId,
 							...monitor,
 							description: monitor.description || monitor.name || monitor.url,
@@ -388,7 +407,8 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await this.db.deleteMonitor(req, res, next);
+			const monitorId = req.params.monitorId;
+			const monitor = await this.db.deleteMonitor({ monitorId });
 			await this.jobQueue.deleteJob(monitor);
 			await this.db.deleteStatusPagesByMonitorId(monitor._id);
 			return res.success({ msg: this.stringService.monitorDelete });
@@ -410,9 +430,7 @@ class MonitorController {
 	 */
 	deleteAllMonitors = async (req, res, next) => {
 		try {
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { teamId } = jwt.verify(token, jwtSecret);
+			const { teamId } = req.user;
 			const { monitors, deletedCount } = await this.db.deleteAllMonitors(teamId);
 			await Promise.all(
 				monitors.map(async (monitor) => {
@@ -494,18 +512,8 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await Monitor.findOneAndUpdate(
-				{ _id: req.params.monitorId },
-				[
-					{
-						$set: {
-							isActive: { $not: "$isActive" },
-							status: "$$REMOVE",
-						},
-					},
-				],
-				{ new: true }
-			);
+			const monitorId = req.params.monitorId;
+			const monitor = await this.db.pauseMonitor({ monitorId });
 			monitor.isActive === true
 				? await this.jobQueue.resumeJob(monitor._id, monitor)
 				: await this.jobQueue.pauseJob(monitor);
@@ -534,9 +542,7 @@ class MonitorController {
 	 */
 	addDemoMonitors = async (req, res, next) => {
 		try {
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { _id, teamId } = jwt.verify(token, jwtSecret);
+			const { _id, teamId } = req.user;
 			const demoMonitors = await this.db.addDemoMonitors(_id, teamId);
 			await Promise.all(
 				demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor))
@@ -603,7 +609,19 @@ class MonitorController {
 		}
 
 		try {
-			const monitors = await this.db.getMonitorsByTeamId(req);
+			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+			const teamId = req.user.teamId;
+
+			const monitors = await this.db.getMonitorsByTeamId({
+				limit,
+				type,
+				page,
+				rowsPerPage,
+				filter,
+				field,
+				order,
+				teamId,
+			});
 			return res.success({
 				msg: this.stringService.monitorGetByTeamId,
 				data: monitors,
@@ -622,7 +640,15 @@ class MonitorController {
 		}
 
 		try {
-			const result = await this.db.getMonitorsAndSummaryByTeamId(req);
+			const { explain } = req;
+			const { type } = req.query;
+			const { teamId } = req.user;
+
+			const result = await this.db.getMonitorsAndSummaryByTeamId({
+				type,
+				explain,
+				teamId,
+			});
 			return res.success({
 				msg: "OK", // TODO
 				data: result,
@@ -641,7 +667,21 @@ class MonitorController {
 		}
 
 		try {
-			const result = await this.db.getMonitorsWithChecksByTeamId(req);
+			const { explain } = req;
+			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+			const { teamId } = req.user;
+
+			const result = await this.db.getMonitorsWithChecksByTeamId({
+				limit,
+				type,
+				page,
+				rowsPerPage,
+				filter,
+				field,
+				order,
+				teamId,
+				explain,
+			});
 			return res.success({
 				msg: "OK", // TODO
 				data: result,
@@ -653,11 +693,7 @@ class MonitorController {
 
 	seedDb = async (req, res, next) => {
 		try {
-			const { type } = req.body;
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { _id, teamId } = jwt.verify(token, jwtSecret);
-
+			const { _id, teamId } = req.user;
 			await seedDb(_id, teamId);
 			res.success({ msg: "Database seeded" });
 		} catch (error) {
