@@ -1,7 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
-import infrastructureMonitorsReducer from "./Features/InfrastructureMonitors/infrastructureMonitorsSlice";
-import pageSpeedMonitorReducer from "./Features/PageSpeedMonitor/pageSpeedMonitorSlice";
 import authReducer from "./Features/Auth/authSlice";
 import uiReducer from "./Features/UI/uiSlice";
 import settingsReducer from "./Features/Settings/settingsSlice";
@@ -22,14 +20,12 @@ const authTransform = createTransform(
 const persistConfig = {
 	key: "root",
 	storage,
-	whitelist: ["auth", "pageSpeed", "ui", "settings"],
+	whitelist: ["auth", "ui", "settings"],
 	transforms: [authTransform],
 };
 
 const rootReducer = combineReducers({
-	infrastructureMonitors: infrastructureMonitorsReducer,
 	auth: authReducer,
-	pageSpeedMonitors: pageSpeedMonitorReducer,
 	ui: uiReducer,
 	settings: settingsReducer,
 });
