@@ -86,8 +86,6 @@ const CreatePageSpeed = () => {
 		form = {
 			...form,
 			description: form.name,
-			teamId: user.teamId,
-			userId: user._id,
 			notifications: monitor.notifications,
 		};
 

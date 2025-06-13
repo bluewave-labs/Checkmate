@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { createToast } from "../Utils/toastUtils";
 import { networkService } from "../main";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { NOTIFICATION_TYPES } from "../Pages/Notifications/utils";
 

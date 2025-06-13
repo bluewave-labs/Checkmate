@@ -24,7 +24,13 @@ class StatusPageController {
 		}
 
 		try {
-			const statusPage = await this.db.createStatusPage(req.body, req.file);
+			const { _id, teamId } = req.user;
+			const statusPage = await this.db.createStatusPage({
+				statusPageData: req.body,
+				image: req.file,
+				userId: _id,
+				teamId,
+			});
 			return res.success({
 				msg: this.stringService.statusPageCreate,
 				data: statusPage,
@@ -93,7 +99,7 @@ class StatusPageController {
 
 	getStatusPagesByTeamId = async (req, res, next) => {
 		try {
-			const teamId = req.params.teamId;
+			const teamId = req.user.teamId;
 			const statusPages = await this.db.getStatusPagesByTeamId(teamId);
 
 			return res.success({

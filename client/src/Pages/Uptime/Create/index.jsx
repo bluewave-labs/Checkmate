@@ -18,7 +18,6 @@ import Checkbox from "../../../Components/Inputs/Checkbox";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
@@ -26,9 +25,6 @@ import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 import { useCreateMonitor } from "../../../Hooks/monitorHooks";
 
 const CreateMonitor = () => {
-	// Redux state
-	const { user } = useSelector((state) => state.auth);
-
 	// Local state
 	const [errors, setErrors] = useState({});
 	const [https, setHttps] = useState(true);
@@ -143,8 +139,6 @@ const CreateMonitor = () => {
 		form = {
 			...form,
 			description: monitor.name || monitor.url,
-			teamId: user.teamId,
-			userId: user._id,
 			notifications: monitor.notifications,
 		};
 

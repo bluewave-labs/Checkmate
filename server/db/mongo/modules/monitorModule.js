@@ -665,9 +665,9 @@ const getMonitorsWithChecksByTeamId = async ({
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const createMonitor = async (body) => {
+const createMonitor = async ({ body, teamId, userId }) => {
 	try {
-		const monitor = new Monitor({ ...body });
+		const monitor = new Monitor({ ...body, teamId, userId });
 		const saved = await monitor.save();
 		return saved;
 	} catch (error) {

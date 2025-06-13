@@ -12,11 +12,7 @@ class StatusPageRoutes {
 
 	initRoutes() {
 		this.router.get("/", this.statusPageController.getStatusPage);
-		this.router.get(
-			"/team/:teamId",
-			verifyJWT,
-			this.statusPageController.getStatusPagesByTeamId
-		);
+		this.router.get("/team", verifyJWT, this.statusPageController.getStatusPagesByTeamId);
 		this.router.get("/:url", this.statusPageController.getStatusPageByUrl);
 
 		this.router.post(

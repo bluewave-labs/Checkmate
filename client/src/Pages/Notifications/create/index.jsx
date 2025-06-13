@@ -48,8 +48,6 @@ const CreateNotifications = () => {
 
 	// local state
 	const [notification, setNotification] = useState({
-		userId: user._id,
-		teamId: user.teamId,
 		notificationName: "",
 		address: "",
 		type: NOTIFICATION_TYPES[0]._id,
