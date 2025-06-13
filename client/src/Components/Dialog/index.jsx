@@ -57,7 +57,7 @@ Dialog.propTypes = {
 	onCancel: PropTypes.func.isRequired,
 	confirmationButtonLabel: PropTypes.string.isRequired,
 	onConfirm: PropTypes.func.isRequired,
-	isLoading: PropTypes.bool.isRequired,
+	isLoading: PropTypes.bool,
 };
 
 export default Dialog;

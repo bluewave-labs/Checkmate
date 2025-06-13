@@ -7,14 +7,10 @@ import Dialog from "../../Components/Dialog";
 
 // Utils
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../Utils/toastUtils";
-import {
-	deleteUptimeMonitor,
-	pauseUptimeMonitor,
-} from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
+
 import PropTypes from "prop-types";
 import { usePauseMonitor, useDeleteMonitor } from "../../Hooks/monitorHooks";
 
@@ -47,6 +43,8 @@ const ActionsMenu = ({
 			pauseCallback();
 		} catch (error) {
 			createToast({ body: "Failed to pause monitor." });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 

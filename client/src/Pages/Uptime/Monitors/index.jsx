@@ -64,7 +64,6 @@ CreateMonitorButton.propTypes = {
 
 const UptimeMonitors = () => {
 	// Redux state
-	const { user } = useSelector((state) => state.auth);
 	const rowsPerPage = useSelector((state) => state.ui.monitors.rowsPerPage);
 
 	// Local state
@@ -106,11 +105,8 @@ const UptimeMonitors = () => {
 		setMonitorUpdateTrigger((prev) => !prev);
 	}, []);
 
-	const teamId = user.teamId;
-
 	const [monitors, monitorsSummary, monitorsWithSummaryIsLoading, networkError] =
 		useFetchMonitorsWithSummary({
-			teamId,
 			types: TYPES,
 			monitorUpdateTrigger,
 		});
@@ -140,7 +136,6 @@ const UptimeMonitors = () => {
 		monitorsWithChecksIsLoading,
 		monitorsWithChecksNetworkError,
 	] = useFetchMonitorsWithChecks({
-		teamId,
 		types: effectiveTypes,
 		limit: 25,
 		page: page,
