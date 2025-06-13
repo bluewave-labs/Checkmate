@@ -133,26 +133,6 @@ const SettingsEmail = ({
 							onChange={handleChange}
 						/>
 					</Box>
-					<Box
-						sx={{
-							display: "flex",
-							flexDirection: "column",
-							gap: theme.spacing(4),
-						}}
-					>
-						<Typography>{t("settingsEmailSecure")}</Typography>
-						<Switch
-							name="systemEmailSecure"
-							checked={systemEmailSecure}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailPool")}</Typography>
-						<Switch
-							name="systemEmailPool"
-							checked={systemEmailPool}
-							onChange={handleChange}
-						/>
-					</Box>
 					<Box>
 						<Typography>{t("settingsEmailUser")}</Typography>
 						<TextInput
@@ -213,6 +193,15 @@ const SettingsEmail = ({
 							onChange={handleChange}
 						/>
 					</Box>
+					<Box>
+						<Typography>{t("settingsEmailConnectionHost")}</Typography>
+						<TextInput
+							name="systemEmailConnectionHost"
+							placeholder="bluewavelabs.ca"
+							value={systemEmailConnectionHost}
+							onChange={handleChange}
+						/>
+					</Box>
 					<Box
 						sx={{
 							display: "flex",
@@ -220,6 +209,18 @@ const SettingsEmail = ({
 							gap: theme.spacing(4),
 						}}
 					>
+						<Typography>{t("settingsEmailSecure")}</Typography>
+						<Switch
+							name="systemEmailSecure"
+							checked={systemEmailSecure}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailPool")}</Typography>
+						<Switch
+							name="systemEmailPool"
+							checked={systemEmailPool}
+							onChange={handleChange}
+						/>
 						<Typography>{t("settingsEmailIgnoreTLS")}</Typography>
 						<Switch
 							name="systemEmailIgnoreTLS"
@@ -236,15 +237,6 @@ const SettingsEmail = ({
 						<Switch
 							name="systemEmailRejectUnauthorized"
 							checked={systemEmailRejectUnauthorized}
-							onChange={handleChange}
-						/>
-					</Box>
-					<Box>
-						<Typography>{t("settingsEmailConnectionHost")}</Typography>
-						<TextInput
-							name="systemEmailConnectionHost"
-							placeholder="bluewavelabs.ca"
-							value={systemEmailConnectionHost}
 							onChange={handleChange}
 						/>
 					</Box>
