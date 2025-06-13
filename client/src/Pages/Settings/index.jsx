@@ -18,7 +18,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setTimezone, setMode, setLanguage, setShowURL } from "../../Features/UI/uiSlice";
 import SettingsStats from "./SettingsStats";
 
-import { useFetchSettings, useSaveSettings } from "../../Hooks/useFetchSettings";
+import { useFetchSettings, useSaveSettings } from "../../Hooks/settingsHooks";
 import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import {
 	useAddDemoMonitors,

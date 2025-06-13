@@ -710,9 +710,11 @@ const deleteMonitor = async ({ monitorId }) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
 		const monitor = await Monitor.findByIdAndDelete(monitorId);
+
 		if (!monitor) {
 			throw new Error(stringService.getDbFindMonitorById(monitorId));
 		}
+
 		return monitor;
 	} catch (error) {
 		error.service = SERVICE_NAME;

@@ -142,8 +142,7 @@ const CreateMonitor = () => {
 			notifications: monitor.notifications,
 		};
 
-		console.log(JSON.stringify(form, null, 2));
-		// await createMonitor({ monitor: form, redirect: "/uptime" });
+		await createMonitor({ monitor: form, redirect: "/uptime" });
 	};
 
 	const onChange = (event) => {
