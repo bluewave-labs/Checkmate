@@ -9,7 +9,6 @@ import GenericFallback from "../../../Components/GenericFallback";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useSelector } from "react-redux";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
@@ -20,11 +19,8 @@ const PageSpeed = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
-	const { user } = useSelector((state) => state.auth);
-	const { pagespeedApiKey } = useSelector((state) => state.settings);
 
 	const [monitors, monitorsSummary, isLoading, networkError] = useFetchMonitorsByTeamId({
-		teamId: user.teamId,
 		limit: 10,
 		types: TYPES,
 		page: null,
@@ -60,7 +56,7 @@ const PageSpeed = () => {
 				]}
 				link="/pagespeed/create"
 				isAdmin={isAdmin}
-				showPageSpeedWarning={isAdmin && !pagespeedApiKey}
+				// showPageSpeedWarning={isAdmin && !pagespeedApiKey}
 			/>
 		);
 	}
