@@ -37,15 +37,12 @@ const useGetNotificationsByTeamId = (updateTrigger) => {
 	const [notifications, setNotifications] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
-	const { user } = useSelector((state) => state.auth);
 	const { t } = useTranslation();
 
 	const getNotifications = useCallback(async () => {
 		try {
 			setIsLoading(true);
-			const response = await networkService.getNotificationsByTeamId({
-				teamId: user.teamId,
-			});
+			const response = await networkService.getNotificationsByTeamId();
 			setNotifications(response?.data?.data ?? []);
 		} catch (error) {
 			setError(error);
@@ -55,7 +52,7 @@ const useGetNotificationsByTeamId = (updateTrigger) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [user.teamId]);
+	}, [t]);
 
 	useEffect(() => {
 		getNotifications();

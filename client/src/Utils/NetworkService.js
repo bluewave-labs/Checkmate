@@ -996,8 +996,7 @@ class NetworkService {
 	}
 
 	async getNotificationsByTeamId(config) {
-		const { teamId } = config;
-		return this.axiosInstance.get(`/notifications/team/${teamId}`);
+		return this.axiosInstance.get(`/notifications/team`);
 	}
 
 	async deleteNotificationById(config) {

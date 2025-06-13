@@ -17,7 +17,6 @@ import {
 	useDeleteNotification,
 } from "../../Hooks/useNotifications";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 
 const Notifications = () => {
 	const navigate = useNavigate();
