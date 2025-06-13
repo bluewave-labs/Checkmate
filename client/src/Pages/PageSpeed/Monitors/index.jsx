@@ -21,7 +21,6 @@ const PageSpeed = () => {
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 	const { user } = useSelector((state) => state.auth);
-	const { pagespeedApiKey } = useSelector((state) => state.settings);
 
 	const [monitors, monitorsSummary, isLoading, networkError] = useFetchMonitorsByTeamId({
 		teamId: user.teamId,
@@ -60,7 +59,7 @@ const PageSpeed = () => {
 				]}
 				link="/pagespeed/create"
 				isAdmin={isAdmin}
-				showPageSpeedWarning={isAdmin && !pagespeedApiKey}
+				// showPageSpeedWarning={isAdmin && !pagespeedApiKey}
 			/>
 		);
 	}
