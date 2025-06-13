@@ -24,7 +24,6 @@ const IncidentTable = ({
 }) => {
 	//Redux state
 	const uiTimezone = useSelector((state) => state.ui.timezone);
-	const { user } = useSelector((state) => state.auth);
 
 	//Local state
 	const [teamId, setTeamId] = useState(undefined);
@@ -61,13 +60,13 @@ const IncidentTable = ({
 
 	useEffect(() => {
 		if (selectedMonitor === "0") {
-			setTeamId(user.teamId);
+			setTeamId("placeholder"); // TODO this isn't needed any longer, fix hook
 			setMonitorId(undefined);
 		} else {
 			setMonitorId(selectedMonitor);
 			setTeamId(undefined);
 		}
-	}, [selectedMonitor, user.teamId]);
+	}, [selectedMonitor]);
 
 	const headers = [
 		{
