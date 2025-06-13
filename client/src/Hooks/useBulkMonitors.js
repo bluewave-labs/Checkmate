@@ -9,8 +9,6 @@ export const useBulkMonitors = () => {
 
 		const formData = new FormData();
 		formData.append("csvFile", file);
-		formData.append("userId", user._id);
-		formData.append("teamId", user.teamId);
 
 		try {
 			const response = await networkService.createBulkMonitors(formData);
