@@ -28,7 +28,6 @@ import { useCreateMonitor } from "../../../Hooks/monitorHooks";
 const CreateMonitor = () => {
 	// Redux state
 	const { user } = useSelector((state) => state.auth);
-	const { isLoading } = useSelector((state) => state.uptimeMonitors);
 
 	// Local state
 	const [errors, setErrors] = useState({});
@@ -467,7 +466,7 @@ const CreateMonitor = () => {
 						variant="contained"
 						color="accent"
 						disabled={!Object.values(errors).every((value) => value === undefined)}
-						loading={isLoading || isCreating}
+						loading={isCreating}
 					>
 						{t("createMonitor")}
 					</Button>
