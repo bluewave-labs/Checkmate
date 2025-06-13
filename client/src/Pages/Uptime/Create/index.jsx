@@ -13,10 +13,10 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "../../../Components/Inputs/Checkbox";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -38,6 +38,8 @@ const CreateMonitor = () => {
 		name: "",
 		type: "http",
 		matchMethod: "equal",
+		expectedValue: "",
+		jsonPath: "",
 		notifications: [],
 		interval: 1,
 		ignoreTlsErrors: false,
@@ -46,7 +48,6 @@ const CreateMonitor = () => {
 	// Setup
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const [notifications, notificationsAreLoading, error] = useGetNotificationsByTeamId();
 	const [createMonitor, isCreating] = useCreateMonitor();
 
@@ -147,7 +148,8 @@ const CreateMonitor = () => {
 			notifications: monitor.notifications,
 		};
 
-		await createMonitor({ monitor: form, redirect: "/uptime" });
+		console.log(JSON.stringify(form, null, 2));
+		// await createMonitor({ monitor: form, redirect: "/uptime" });
 	};
 
 	const onChange = (event) => {
@@ -156,6 +158,12 @@ const CreateMonitor = () => {
 		if (name === "ignoreTlsErrors") {
 			newValue = checked;
 		}
+
+		if (name === "useAdvancedMatching") {
+			setUseAdvancedMatching(checked);
+			return;
+		}
+
 		const updatedMonitor = {
 			...monitor,
 			[name]: newValue,
@@ -393,7 +401,13 @@ const CreateMonitor = () => {
 							onChange={onChange}
 							items={SELECT_VALUES}
 						/>
-						{monitor.type === "http" && (
+						<Checkbox
+							name="useAdvancedMatching"
+							label={t("advancedMatching")}
+							isChecked={useAdvancedMatching}
+							onChange={onChange}
+						/>
+						{monitor.type === "http" && useAdvancedMatching && (
 							<>
 								<Select
 									name="matchMethod"
