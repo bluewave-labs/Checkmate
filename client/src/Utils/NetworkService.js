@@ -847,11 +847,9 @@ class NetworkService {
 	}
 
 	async createStatusPage(config) {
-		const { user, form, isCreate } = config;
+		const { form, isCreate } = config;
 
 		const fd = new FormData();
-		fd.append("teamId", user.teamId);
-		fd.append("userId", user._id);
 		fd.append("type", form.type);
 		form.isPublished !== undefined && fd.append("isPublished", form.isPublished);
 		form.companyName && fd.append("companyName", form.companyName);
