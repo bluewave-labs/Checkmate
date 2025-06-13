@@ -414,10 +414,10 @@ const useDeleteAllMonitors = () => {
 const UseDeleteMonitorStats = () => {
 	const { t } = useTranslation();
 	const [isLoading, setIsLoading] = useState(false);
-	const deleteMonitorStats = async ({ teamId }) => {
+	const deleteMonitorStats = async () => {
 		setIsLoading(true);
 		try {
-			const res = await networkService.deleteChecksByTeamId({ teamId });
+			await networkService.deleteChecksByTeamId();
 			createToast({ body: t("settingsStatsCleared") });
 		} catch (error) {
 			createToast({ body: t("settingsFailedToClearStats") });

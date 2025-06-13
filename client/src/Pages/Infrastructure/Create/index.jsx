@@ -186,8 +186,6 @@ const CreateInfrastructureMonitor = () => {
 			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
 			description: form.name,
-			teamId: user.teamId,
-			userId: user._id,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
 			thresholds,

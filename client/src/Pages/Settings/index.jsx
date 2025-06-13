@@ -96,7 +96,7 @@ const Settings = () => {
 		}
 
 		if (name === "deleteStats") {
-			await deleteMonitorStats({ teamId: user.teamId });
+			await deleteMonitorStats();
 			return;
 		}
 

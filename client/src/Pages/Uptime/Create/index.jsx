@@ -142,8 +142,6 @@ const CreateMonitor = () => {
 		form = {
 			...form,
 			description: monitor.name || monitor.url,
-			teamId: user.teamId,
-			userId: user._id,
 			notifications: monitor.notifications,
 		};
 

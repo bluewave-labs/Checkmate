@@ -238,7 +238,12 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await this.db.createMonitor(req.body);
+			const { _id, teamId } = req.user;
+			const monitor = await this.db.createMonitor({
+				body: req.body,
+				teamId,
+				userId: _id,
+			});
 
 			// Add monitor to job queue
 			this.jobQueue.addJob(monitor._id, monitor);
