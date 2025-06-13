@@ -126,9 +126,7 @@ const getMonitorByIdQueryValidation = joi.object({
 	normalize: joi.boolean(),
 });
 
-const getMonitorsByTeamIdParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const getMonitorsByTeamIdParamValidation = joi.object({});
 
 const getMonitorsByTeamIdQueryValidation = joi.object({
 	limit: joi.number(),
