@@ -186,7 +186,12 @@ const createMonitorBodyValidation = joi.object({
 	matchMethod: joi.string(),
 });
 
-const createMonitorsBodyValidation = joi.array().items(createMonitorBodyValidation);
+const createMonitorsBodyValidation = joi.array().items(
+	createMonitorBodyValidation.keys({
+		userId: joi.string().required(),
+		teamId: joi.string().required(),
+	})
+);
 
 const editMonitorBodyValidation = joi.object({
 	name: joi.string(),

@@ -411,7 +411,7 @@ const useDeleteAllMonitors = () => {
 	return [deleteAllMonitors, isLoading];
 };
 
-const UseDeleteMonitorStats = () => {
+const useDeleteMonitorStats = () => {
 	const { t } = useTranslation();
 	const [isLoading, setIsLoading] = useState(false);
 	const deleteMonitorStats = async () => {
@@ -429,6 +429,29 @@ const UseDeleteMonitorStats = () => {
 	return [deleteMonitorStats, isLoading];
 };
 
+const useCreateBulkMonitors = () => {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const createBulkMonitors = async (file, user) => {
+		setIsLoading(true);
+
+		const formData = new FormData();
+		formData.append("csvFile", file);
+
+		try {
+			const response = await networkService.createBulkMonitors(formData);
+			return [true, response.data, null]; // [success, data, error]
+		} catch (err) {
+			const errorMessage = err?.response?.data?.msg || err.message;
+			return [false, null, errorMessage];
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [createBulkMonitors, isLoading];
+};
+
 export {
 	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
@@ -443,5 +466,6 @@ export {
 	usePauseMonitor,
 	useAddDemoMonitors,
 	useDeleteAllMonitors,
-	UseDeleteMonitorStats,
+	useDeleteMonitorStats,
+	useCreateBulkMonitors,
 };
