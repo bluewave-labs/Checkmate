@@ -74,6 +74,12 @@ class SettingsController {
 				systemEmailPassword,
 				systemEmailUser,
 				systemEmailConnectionHost,
+				systemEmailSecure,
+				systemEmailPool,
+				systemEmailIgnoreTLS,
+				systemEmailRequireTLS,
+				systemEmailRejectUnauthorized,
+				systemEmailTLSServername,
 			} = req.body;
 
 			const subject = this.stringService.testEmailSubject;
@@ -91,6 +97,12 @@ class SettingsController {
 					systemEmailAddress,
 					systemEmailPassword,
 					systemEmailConnectionHost,
+					systemEmailSecure,
+					systemEmailPool,
+					systemEmailIgnoreTLS,
+					systemEmailRequireTLS,
+					systemEmailRejectUnauthorized,
+					systemEmailTLSServername,
 				}
 			);
 

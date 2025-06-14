@@ -973,10 +973,12 @@ class NetworkService {
 				systemEmailPort: emailConfig.systemEmailPort,
 				systemEmailAddress: emailConfig.systemEmailAddress,
 				systemEmailPassword: emailConfig.systemEmailPassword,
-				// Only include these if they are present
-				...(emailConfig.systemEmailConnectionHost && {
-					systemEmailConnectionHost: emailConfig.systemEmailConnectionHost,
-				}),
+				systemEmailSecure: emailConfig.systemEmailSecure,
+				systemEmailPool: emailConfig.systemEmailPool,
+				systemEmailIgnoreTLS: emailConfig.systemEmailIgnoreTLS,
+				systemEmailRequireTLS: emailConfig.systemEmailRequireTLS,
+				systemEmailRejectUnauthorized: emailConfig.systemEmailRejectUnauthorized,
+				systemEmailTLSServername: emailConfig.systemEmailTLSServername,
 				...(emailConfig.systemEmailUser && {
 					systemEmailUser: emailConfig.systemEmailUser,
 				}),

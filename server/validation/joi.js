@@ -410,7 +410,13 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
-	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow("").optional(),
+	systemEmailTLSServername: joi.string().allow("").optional(),
+	systemEmailSecure: joi.boolean(),
+	systemEmailPool: joi.boolean(),
+	systemEmailIgnoreTLS: joi.boolean(),
+	systemEmailRequireTLS: joi.boolean(),
+	systemEmailRejectUnauthorized: joi.boolean(),
 });
 
 //****************************************
@@ -612,10 +618,16 @@ const sendTestEmailBodyValidation = joi.object({
 	to: joi.string().required(),
 	systemEmailHost: joi.string(),
 	systemEmailPort: joi.number(),
+	systemEmailSecure: joi.boolean(),
+	systemEmailPool: joi.boolean(),
 	systemEmailAddress: joi.string(),
 	systemEmailPassword: joi.string(),
 	systemEmailUser: joi.string(),
-	systemEmailConnectionHost: joi.string(),
+	systemEmailConnectionHost: joi.string().allow("").optional(),
+	systemEmailIgnoreTLS: joi.boolean(),
+	systemEmailRequireTLS: joi.boolean(),
+	systemEmailRejectUnauthorized: joi.boolean(),
+	systemEmailTLSServername: joi.string().allow("").optional(),
 });
 
 export {
