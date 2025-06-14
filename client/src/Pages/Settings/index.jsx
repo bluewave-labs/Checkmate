@@ -23,7 +23,7 @@ import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import {
 	useAddDemoMonitors,
 	useDeleteAllMonitors,
-	UseDeleteMonitorStats,
+	useDeleteMonitorStats,
 } from "../../Hooks/monitorHooks";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
@@ -45,7 +45,7 @@ const Settings = () => {
 
 	const [isSaving, saveError, saveSettings] = useSaveSettings();
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
-	const [deleteMonitorStats, isDeletingMonitorStats] = UseDeleteMonitorStats();
+	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
 	// Setup
 	const isAdmin = useIsAdmin();
