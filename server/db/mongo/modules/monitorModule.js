@@ -523,9 +523,6 @@ const getMonitorsByTeamId = async (req) => {
 	if (type !== undefined) {
 		matchStage.type = Array.isArray(type) ? { $in: type } : type;
 	}
-	if (field === undefined) {
-		matchStage.name = { $regex: filter, $options: "i" };
-	}
 
 	const summaryResult = await Monitor.aggregate(
 		buildMonitorSummaryByTeamIdPipeline({ matchStage })

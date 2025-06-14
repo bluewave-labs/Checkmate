@@ -182,7 +182,6 @@ class NetworkService {
 	 * @param {string} [config.filter] - The filter to apply to the monitors.
 	 * @param {string} [config.field] - The field to sort by.
 	 * @param {string} [config.order] - The order in which to sort the field.
-	 * @param {string} [config.search] - The search term to filter monitors by name.
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
 	 */
 

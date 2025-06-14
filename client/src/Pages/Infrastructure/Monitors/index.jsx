@@ -56,7 +56,7 @@ const InfrastructureMonitors = () => {
 	const { monitors, summary, isLoading, networkError } = useMonitorFetch({
 		page,
 		field: field,
-		filter: toFilterStatus || search,
+		filter: toFilterStatus ?? search,
 		rowsPerPage,
 		updateTrigger,
 	});
