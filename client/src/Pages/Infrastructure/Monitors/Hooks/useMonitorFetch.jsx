@@ -24,7 +24,7 @@ const useMonitorFetch = ({ page, field, filter, rowsPerPage, updateTrigger, sear
 					types: ["hardware"],
 					page: page,
 					rowsPerPage: rowsPerPage,
-					search: search
+					search: search,
 				});
 				setMonitors(response?.data?.data?.filteredMonitors ?? []);
 				setSummary(response?.data?.data?.summary ?? {});

@@ -17,7 +17,13 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const MonitorsTable = ({ shouldRender, monitors, isAdmin, handleActionMenuDelete, isSearching }) => {
+const MonitorsTable = ({
+	shouldRender,
+	monitors,
+	isAdmin,
+	handleActionMenuDelete,
+	isSearching,
+}) => {
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();

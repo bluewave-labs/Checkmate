@@ -59,7 +59,7 @@ const InfrastructureMonitors = () => {
 		filter: toFilterStatus,
 		rowsPerPage,
 		updateTrigger,
-		search
+		search,
 	});
 
 	if (networkError === true) {
