@@ -5,7 +5,7 @@ import Host from "../../../../../Components/Host";
 import { StatusLabel } from "../../../../../Components/Label";
 import { Stack } from "@mui/material";
 import { InfrastructureMenu } from "../MonitorsTableMenu";
-import LoadingSpinner from "../LoadingSpinner";
+import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner";
 // Assets
 import CPUChipIcon from "../../../../../assets/icons/cpu-chip.svg?react";
 import CustomGauge from "../../../../../Components/Charts/CustomGauge";

@@ -8,7 +8,7 @@ import Pagination from "../../..//Components/Table/TablePagination";
 import GenericFallback from "../../../Components/GenericFallback";
 import Fallback from "../../../Components/Fallback";
 import Filter from "./Components/Filters";
-import SearchComponent from "./Components/SearchComponent";
+import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useMonitorFetch } from "./Hooks/useMonitorFetch";
@@ -56,10 +56,9 @@ const InfrastructureMonitors = () => {
 	const { monitors, summary, isLoading, networkError } = useMonitorFetch({
 		page,
 		field: field,
-		filter: toFilterStatus,
+		filter: toFilterStatus || search,
 		rowsPerPage,
 		updateTrigger,
-		search,
 	});
 
 	if (networkError === true) {

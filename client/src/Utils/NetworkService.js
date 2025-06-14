@@ -187,8 +187,7 @@ class NetworkService {
 	 */
 
 	async getMonitorsByTeamId(config) {
-		const { teamId, limit, types, page, rowsPerPage, filter, field, order, search } =
-			config;
+		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
 		const params = new URLSearchParams();
 
 		if (limit) params.append("limit", limit);
@@ -202,7 +201,6 @@ class NetworkService {
 		if (filter) params.append("filter", filter);
 		if (field) params.append("field", field);
 		if (order) params.append("order", order);
-		if (search) params.append("search", search);
 
 		return this.axiosInstance.get(`/monitors/team/${teamId}?${params.toString()}`, {
 			headers: {
