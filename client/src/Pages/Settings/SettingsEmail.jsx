@@ -81,12 +81,13 @@ const SettingsEmail = ({
 		if (
 			!emailConfig.systemEmailHost ||
 			!emailConfig.systemEmailPort ||
-			!emailConfig.systemEmailAddress
+			!emailConfig.systemEmailAddress ||
+			!emailConfig.systemEmailPassword
 		) {
 			createToast({
 				body: t(
 					"settingsEmailRequiredFields",
-					"Email address, host and port are required"
+					"Email address, host, port and password are required"
 				),
 				variant: "error",
 			});
@@ -241,16 +242,19 @@ const SettingsEmail = ({
 						/>
 					</Box>
 					<Box>
-						{systemEmailHost && systemEmailPort && systemEmailAddress && (
-							<Button
-								variant="contained"
-								color="accent"
-								loading={isSending}
-								onClick={handleSendTestEmail}
-							>
-								{t("settingsTestEmail", "Send test e-mail")}
-							</Button>
-						)}
+						{systemEmailHost &&
+							systemEmailPort &&
+							systemEmailAddress &&
+							systemEmailPassword && (
+								<Button
+									variant="contained"
+									color="accent"
+									loading={isSending}
+									onClick={handleSendTestEmail}
+								>
+									{t("settingsTestEmail", "Send test e-mail")}
+								</Button>
+							)}
 					</Box>
 				</Stack>
 			</Box>

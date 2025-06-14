@@ -714,7 +714,7 @@
 	"settingsTestEmailFailed": "Failed to send test email",
 	"settingsTestEmailFailedWithReason": "Failed to send test email: {{reason}}",
 	"settingsTestEmailUnknownError": "Unknown error",
-	"settingsEmailRequiredFields": "Email address, host and port are required",
+	"settingsEmailRequiredFields": "Email address, host, port and password are required",
 	"statusMsg": {
 		"paused": "Monitoring is paused.",
 		"up": "Your site is up.",
