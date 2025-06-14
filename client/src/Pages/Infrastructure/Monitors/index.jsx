@@ -14,16 +14,19 @@ import { useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
+import { useDispatch, useSelector } from "react-redux";
+import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 // Constants
 const TYPES = ["hardware"];
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
 const InfrastructureMonitors = () => {
 	// Redux state
+	const rowsPerPage = useSelector((state) => state.ui.infrastructure.rowsPerPage);
+	const dispatch = useDispatch();
 
 	// Local state
 	const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
@@ -43,7 +46,13 @@ const InfrastructureMonitors = () => {
 	};
 
 	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(event.target.value);
+		dispatch(
+			setRowsPerPage({
+				value: parseInt(event.target.value, 10),
+				table: "infrastructure",
+			})
+		);
+		setPage(0);
 	};
 
 	const handleReset = () => {
