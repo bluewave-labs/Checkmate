@@ -102,27 +102,7 @@ const Search = ({
 								...(endAdornment && { endAdornment: endAdornment }),
 							},
 						}}
-						sx={{
-							"& fieldset": {
-								borderColor: theme.palette.primary.lowContrast,
-								borderRadius: theme.shape.borderRadius,
-							},
-							"& .MuiOutlinedInput-root:hover:not(:has(input:focus)):not(:has(textarea:focus)) fieldset":
-								{
-									borderColor: theme.palette.primary.lowContrast,
-								},
-							"& .MuiOutlinedInput-root": {
-								paddingY: 0,
-							},
-							"& .MuiAutocomplete-tag": {
-								// CAIO_REVIEW
-								color: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.primary.lowContrast,
-							},
-							"& .MuiChip-deleteIcon": {
-								color: theme.palette.primary.contrastText, // CAIO_REVIEW
-							},
-						}}
+						sx={{}}
 					/>
 					{error && (
 						<Typography
