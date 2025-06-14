@@ -126,9 +126,7 @@ const getMonitorByIdQueryValidation = joi.object({
 	normalize: joi.boolean(),
 });
 
-const getMonitorsByTeamIdParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const getMonitorsByTeamIdParamValidation = joi.object({});
 
 const getMonitorsByTeamIdQueryValidation = joi.object({
 	limit: joi.number(),
@@ -167,8 +165,6 @@ const getCertificateParamValidation = joi.object({
 
 const createMonitorBodyValidation = joi.object({
 	_id: joi.string(),
-	userId: joi.string().required(),
-	teamId: joi.string().required(),
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
@@ -190,7 +186,12 @@ const createMonitorBodyValidation = joi.object({
 	matchMethod: joi.string(),
 });
 
-const createMonitorsBodyValidation = joi.array().items(createMonitorBodyValidation);
+const createMonitorsBodyValidation = joi.array().items(
+	createMonitorBodyValidation.keys({
+		userId: joi.string().required(),
+		teamId: joi.string().required(),
+	})
+);
 
 const editMonitorBodyValidation = joi.object({
 	name: joi.string(),
@@ -303,9 +304,7 @@ const getChecksQueryValidation = joi.object({
 	status: joi.boolean(),
 });
 
-const getTeamChecksParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const getTeamChecksParamValidation = joi.object({});
 
 const getTeamChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
@@ -321,9 +320,7 @@ const deleteChecksParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
 
-const deleteChecksByTeamIdParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const deleteChecksByTeamIdParamValidation = joi.object({});
 
 const updateChecksTTLBodyValidation = joi.object({
 	ttl: joi.number().required(),
@@ -430,8 +427,6 @@ const getStatusPageQueryValidation = joi.object({
 });
 
 const createStatusPageBodyValidation = joi.object({
-	userId: joi.string().required(),
-	teamId: joi.string().required(),
 	type: joi.string().valid("uptime").required(),
 	companyName: joi.string().required(),
 	url: joi

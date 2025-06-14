@@ -12,7 +12,7 @@ import UploadFile from "./Upload";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Trans, useTranslation } from "react-i18next";
-import { useBulkMonitors } from "../../../Hooks/useBulkMonitors";
+import { useCreateBulkMonitors } from "../../../Hooks/monitorHooks";
 
 const BulkImport = () => {
 	const theme = useTheme();
@@ -26,7 +26,7 @@ const BulkImport = () => {
 		{ name: t("bulkImport.title"), path: `/uptime/bulk-import` },
 	];
 
-	const [createBulkMonitors, hookLoading] = useBulkMonitors();
+	const [createBulkMonitors, hookLoading] = useCreateBulkMonitors();
 
 	const handleSubmit = async () => {
 		if (!selectedFile) {

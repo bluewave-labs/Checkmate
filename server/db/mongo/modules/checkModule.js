@@ -57,10 +57,17 @@ const createChecks = async (checks) => {
  * @returns {Promise<Array<Check>>}
  * @throws {Error}
  */
-const getChecksByMonitor = async (req) => {
+const getChecksByMonitor = async ({
+	monitorId,
+	type,
+	sortOrder,
+	dateRange,
+	filter,
+	page,
+	rowsPerPage,
+	status,
+}) => {
 	try {
-		const { monitorId } = req.params;
-		let { type, sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
 		status = typeof status !== "undefined" ? false : undefined;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
@@ -142,12 +149,17 @@ const getChecksByMonitor = async (req) => {
 	}
 };
 
-const getChecksByTeam = async (req) => {
+const getChecksByTeam = async ({
+	sortOrder,
+	dateRange,
+	filter,
+	page,
+	rowsPerPage,
+	teamId,
+}) => {
 	try {
-		let { sortOrder, dateRange, filter, page, rowsPerPage } = req.query;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
-		const { teamId } = req.params;
 		const matchStage = {
 			teamId: ObjectId.createFromHexString(teamId),
 			status: false,

@@ -11,22 +11,20 @@ import SettingsEmail from "./SettingsEmail";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "../../Validation/validation";
-import { createToast } from "../../Utils/toastUtils";
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { setTimezone, setMode, setLanguage, setShowURL } from "../../Features/UI/uiSlice";
 import SettingsStats from "./SettingsStats";
-import {
-	deleteMonitorChecksByTeamId,
-	addDemoMonitors,
-	deleteAllMonitors,
-} from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
-import { useFetchSettings, useSaveSettings } from "../../Hooks/useFetchSettings";
-import { UseDeleteMonitorStats } from "../../Hooks/useDeleteMonitorStats";
-import { useIsAdmin } from "../../Hooks/useIsAdmin";
 
+import { useFetchSettings, useSaveSettings } from "../../Hooks/settingsHooks";
+import { useIsAdmin } from "../../Hooks/useIsAdmin";
+import {
+	useAddDemoMonitors,
+	useDeleteAllMonitors,
+	useDeleteMonitorStats,
+} from "../../Hooks/monitorHooks";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
@@ -43,15 +41,17 @@ const Settings = () => {
 	const [isSettingsLoading, settingsError] = useFetchSettings({
 		setSettingsData,
 	});
+	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
 
 	const [isSaving, saveError, saveSettings] = useSaveSettings();
-	const [deleteMonitorStats, isDeletingMonitorStats] = UseDeleteMonitorStats();
+	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
+	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
 	// Setup
 	const isAdmin = useIsAdmin();
 	const theme = useTheme();
 	const HEADING_SX = { mt: theme.spacing(2), mb: theme.spacing(2) };
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const dispatch = useDispatch();
 
 	// Handlers
@@ -96,35 +96,17 @@ const Settings = () => {
 		}
 
 		if (name === "deleteStats") {
-			await deleteMonitorStats({ teamId: user.teamId });
+			await deleteMonitorStats();
 			return;
 		}
 
 		if (name === "demo") {
-			try {
-				const action = await dispatch(addDemoMonitors());
-				if (addDemoMonitors.fulfilled.match(action)) {
-					createToast({ body: t("settingsDemoMonitorsAdded") });
-				} else {
-					createToast({ body: t("settingsFailedToAddDemoMonitors") });
-				}
-			} catch (error) {
-				createToast({ body: t("settingsFailedToAddDemoMonitors") });
-			}
+			await addDemoMonitors();
 			return;
 		}
 
 		if (name === "deleteMonitors") {
-			try {
-				const action = await dispatch(deleteAllMonitors());
-				if (deleteAllMonitors.fulfilled.match(action)) {
-					createToast({ body: t("settingsMonitorsDeleted") });
-				} else {
-					createToast({ body: t("settingsFailedToDeleteMonitors") });
-				}
-			} catch (error) {
-				createToast({ body: t("settingsFailedToDeleteMonitors") });
-			}
+			await deleteAllMonitors();
 			return;
 		}
 
@@ -185,7 +167,9 @@ const Settings = () => {
 				isAdmin={isAdmin}
 				HEADER_SX={HEADING_SX}
 				handleChange={handleChange}
-				isLoading={isSettingsLoading || isSaving || isDeletingMonitorStats}
+				isLoading={
+					isSettingsLoading || isSaving || isDeletingMonitorStats || isAddingDemoMonitors
+				}
 			/>
 			<SettingsEmail
 				isAdmin={isAdmin}
@@ -219,7 +203,9 @@ const Settings = () => {
 				}}
 			>
 				<Button
-					loading={isSaving || isDeletingMonitorStats || isSettingsLoading}
+					loading={
+						isSaving || isDeletingMonitorStats || isSettingsLoading || isDeletingMonitors
+					}
 					disabled={Object.keys(errors).length > 0}
 					variant="contained"
 					color="accent"

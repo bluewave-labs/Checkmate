@@ -1,35 +1,30 @@
-// React, Redux, Router
-import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
-
-// Utility and Network
-import { monitorValidation } from "../../../Validation/validation";
-import { createUptimeMonitor } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
-// MUI
-import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
-
 //Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import TextInput from "../../../Components/Inputs/TextInput";
 import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
-import { createToast } from "../../../Utils/toastUtils";
 import Radio from "../../../Components/Inputs/Radio";
 import Select from "../../../Components/Inputs/Select";
 import ConfigBox from "../../../Components/ConfigBox";
-import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 import NotificationsConfig from "../../../Components/NotificationConfig";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "../../../Components/Inputs/Checkbox";
+
+// Utils
+import { useTheme } from "@emotion/react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { monitorValidation } from "../../../Validation/validation";
+import { createToast } from "../../../Utils/toastUtils";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import { useCreateMonitor } from "../../../Hooks/monitorHooks";
 
 const CreateMonitor = () => {
-	// Redux state
-	const { user } = useSelector((state) => state.auth);
-	const { isLoading } = useSelector((state) => state.uptimeMonitors);
-	const dispatch = useDispatch();
-
 	// Local state
 	const [errors, setErrors] = useState({});
 	const [https, setHttps] = useState(true);
@@ -39,6 +34,8 @@ const CreateMonitor = () => {
 		name: "",
 		type: "http",
 		matchMethod: "equal",
+		expectedValue: "",
+		jsonPath: "",
 		notifications: [],
 		interval: 1,
 		ignoreTlsErrors: false,
@@ -47,8 +44,8 @@ const CreateMonitor = () => {
 	// Setup
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const [notifications, notificationsAreLoading, error] = useGetNotificationsByTeamId();
+	const [createMonitor, isCreating] = useCreateMonitor();
 
 	const MS_PER_MINUTE = 60000;
 	const SELECT_VALUES = [
@@ -142,18 +139,10 @@ const CreateMonitor = () => {
 		form = {
 			...form,
 			description: monitor.name || monitor.url,
-			teamId: user.teamId,
-			userId: user._id,
 			notifications: monitor.notifications,
 		};
 
-		const action = await dispatch(createUptimeMonitor({ monitor: form }));
-		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor created successfully!" });
-			navigate("/uptime");
-		} else {
-			createToast({ body: "Failed to create monitor." });
-		}
+		await createMonitor({ monitor: form, redirect: "/uptime" });
 	};
 
 	const onChange = (event) => {
@@ -162,6 +151,12 @@ const CreateMonitor = () => {
 		if (name === "ignoreTlsErrors") {
 			newValue = checked;
 		}
+
+		if (name === "useAdvancedMatching") {
+			setUseAdvancedMatching(checked);
+			return;
+		}
+
 		const updatedMonitor = {
 			...monitor,
 			[name]: newValue,
@@ -399,7 +394,13 @@ const CreateMonitor = () => {
 							onChange={onChange}
 							items={SELECT_VALUES}
 						/>
-						{monitor.type === "http" && (
+						<Checkbox
+							name="useAdvancedMatching"
+							label={t("advancedMatching")}
+							isChecked={useAdvancedMatching}
+							onChange={onChange}
+						/>
+						{monitor.type === "http" && useAdvancedMatching && (
 							<>
 								<Select
 									name="matchMethod"
@@ -472,7 +473,7 @@ const CreateMonitor = () => {
 						variant="contained"
 						color="accent"
 						disabled={!Object.values(errors).every((value) => value === undefined)}
-						loading={isLoading}
+						loading={isCreating}
 					>
 						{t("createMonitor")}
 					</Button>

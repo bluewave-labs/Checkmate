@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import TextInput from "../../../Components/Inputs/TextInput";
 import { PasswordEndAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import { loginCredentials } from "../../../Validation/validation";
-import TextLink from "../components/TextLink";
+import TextLink from "../../../Components/TextLink";
 import Typography from "@mui/material/Typography";
 
 // Utils

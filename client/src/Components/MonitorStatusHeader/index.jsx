@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import PulseDot from "../Animated/PulseDot";
 import Dot from "../Dot";
 import { useTheme } from "@emotion/react";
-import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
 import { formatDurationRounded } from "../../Utils/timeUtils";
 import ConfigButton from "./ConfigButton";
 import SkeletonLayout from "./skeleton";
@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { statusColor, determineState } = useUtils();
+	const { statusColor, determineState } = useMonitorUtils();
 	if (isLoading) {
 		return <SkeletonLayout />;
 	}

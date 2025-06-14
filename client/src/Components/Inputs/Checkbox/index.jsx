@@ -105,7 +105,7 @@ const Checkbox = ({
 };
 
 Checkbox.propTypes = {
-	id: PropTypes.string.isRequired,
+	id: PropTypes.string,
 	name: PropTypes.string,
 	label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
 	size: PropTypes.oneOf(["small", "medium", "large"]),

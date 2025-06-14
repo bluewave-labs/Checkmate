@@ -140,7 +140,7 @@ class NotificationController {
 
 	getNotificationsByTeamId = async (req, res, next) => {
 		try {
-			const notifications = await this.db.getNotificationsByTeamId(req.params.teamId);
+			const notifications = await this.db.getNotificationsByTeamId(req.user.teamId);
 			return res.success({
 				msg: "Notifications fetched successfully",
 				data: notifications,

@@ -5,26 +5,29 @@ import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
 import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 import MonitorGrid from "./Components/MonitorGrid";
 import Fallback from "../../../Components/Fallback";
+import GenericFallback from "../../../Components/GenericFallback";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useSelector } from "react-redux";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import useMonitorsFetch from "./Hooks/useMonitorsFetch";
-import GenericFallback from "../../../Components/GenericFallback";
 import { useTranslation } from "react-i18next";
+import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
 // Constants
 const BREADCRUMBS = [{ name: `pagespeed`, path: "/pagespeed" }];
-
+const TYPES = ["pagespeed"];
 const PageSpeed = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
-	const { user } = useSelector((state) => state.auth);
-	const { pagespeedApiKey } = useSelector((state) => state.settings);
 
-	const { isLoading, monitors, summary, networkError } = useMonitorsFetch({
-		teamId: user.teamId,
+	const [monitors, monitorsSummary, isLoading, networkError] = useFetchMonitorsByTeamId({
+		limit: 10,
+		types: TYPES,
+		page: null,
+		rowsPerPage: null,
+		filter: null,
+		field: null,
+		order: null,
 	});
 
 	if (networkError === true) {
@@ -53,7 +56,7 @@ const PageSpeed = () => {
 				]}
 				link="/pagespeed/create"
 				isAdmin={isAdmin}
-				showPageSpeedWarning={isAdmin && !pagespeedApiKey}
+				// showPageSpeedWarning={isAdmin && !pagespeedApiKey}
 			/>
 		);
 	}
@@ -68,7 +71,7 @@ const PageSpeed = () => {
 			/>
 			<MonitorCountHeader
 				shouldRender={!isLoading}
-				monitorCount={summary?.totalMonitors}
+				monitorCount={monitorsSummary?.totalMonitors}
 				sx={{ mb: theme.spacing(8) }}
 			/>
 			<MonitorGrid

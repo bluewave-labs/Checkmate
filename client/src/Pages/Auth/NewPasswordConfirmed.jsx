@@ -3,7 +3,6 @@ import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { clearAuthState } from "../../Features/Auth/authSlice";
-import { clearUptimeMonitorState } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import Background from "../../assets/Images/background-grid.svg?react";
 import ConfirmIcon from "../../assets/icons/check-outlined.svg?react";
 import Logo from "../../assets/icons/checkmate-icon.svg?react";
@@ -19,7 +18,6 @@ const NewPasswordConfirmed = () => {
 
 	const handleNavigate = () => {
 		dispatch(clearAuthState());
-		dispatch(clearUptimeMonitorState());
 		navigate("/login");
 	};
 

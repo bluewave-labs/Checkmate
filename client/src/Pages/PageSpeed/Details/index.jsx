@@ -11,8 +11,7 @@ import GenericFallback from "../../../Components/GenericFallback";
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useMonitorFetch } from "./Hooks/useMonitorFetch";
+import { useFetchStatsByMonitorId } from "../../../Hooks/monitorHooks";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 // Constants
@@ -28,8 +27,13 @@ const PageSpeedDetails = () => {
 	const isAdmin = useIsAdmin();
 	const { monitorId } = useParams();
 
-	const { monitor, audits, isLoading, networkError } = useMonitorFetch({
+	const [monitor, audits, isLoading, networkError] = useFetchStatsByMonitorId({
 		monitorId,
+		sortOrder: "desc",
+		limit: 50,
+		dateRange: "day",
+		numToDisplay: null,
+		normalize: null,
 	});
 
 	const [metrics, setMetrics] = useState({

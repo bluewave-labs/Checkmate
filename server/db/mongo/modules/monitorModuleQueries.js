@@ -902,102 +902,6 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 	];
 };
 
-const buildDePINDetailsByDateRange = (monitor, dates, dateString) => {
-	return [
-		{
-			$match: {
-				monitorId: monitor._id,
-				updatedAt: { $gte: dates.start, $lte: dates.end },
-			},
-		},
-		{
-			$project: {
-				_id: 0,
-				city: 1,
-				updatedAt: 1,
-				"location.lat": 1,
-				"location.lng": 1,
-				responseTime: 1,
-			},
-		},
-		{
-			$facet: {
-				groupedMapChecks: [
-					{
-						$group: {
-							_id: {
-								city: "$city",
-								lat: "$location.lat",
-								lng: "$location.lng",
-							},
-
-							avgResponseTime: {
-								$avg: "$responseTime",
-							},
-						},
-					},
-				],
-				groupedChecks: [
-					{
-						$group: {
-							_id: {
-								date: {
-									$dateToString: {
-										format: dateString,
-										date: "$updatedAt",
-									},
-								},
-							},
-							avgResponseTime: {
-								$avg: "$responseTime",
-							},
-						},
-					},
-					{
-						$sort: {
-							"_id.date": 1,
-						},
-					},
-				],
-			},
-		},
-		{
-			$project: {
-				groupedMapChecks: "$groupedMapChecks",
-				groupedChecks: "$groupedChecks",
-			},
-		},
-	];
-};
-
-const buildDePINLatestChecks = (monitor) => {
-	return [
-		{
-			$match: {
-				monitorId: monitor._id,
-			},
-		},
-		{
-			$sort: { updatedAt: -1 },
-		},
-		{
-			$limit: 5,
-		},
-		{
-			$project: {
-				responseTime: 1,
-				city: 1,
-				countryCode: 1,
-				uptBurnt: {
-					$toString: {
-						$ifNull: ["$uptBurnt", 0],
-					},
-				},
-			},
-		},
-	];
-};
-
 export {
 	buildUptimeDetailsPipeline,
 	buildHardwareDetailsPipeline,
@@ -1008,6 +912,4 @@ export {
 	buildMonitorsAndSummaryByTeamIdPipeline,
 	buildMonitorsWithChecksByTeamIdPipeline,
 	buildFilteredMonitorsByTeamIdPipeline,
-	buildDePINDetailsByDateRange,
-	buildDePINLatestChecks,
 };

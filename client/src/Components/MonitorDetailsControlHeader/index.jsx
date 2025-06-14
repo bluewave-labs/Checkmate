@@ -11,10 +11,9 @@ import EmailIcon from "@mui/icons-material/Email";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { usePauseMonitor } from "../../Hooks/useMonitorControls";
+import { usePauseMonitor } from "../../Hooks/monitorHooks";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
 import { useTranslation } from "react-i18next";
-
 /**
  * MonitorDetailsControlHeader component displays the control header for monitor details.
  * It includes status display, pause/resume button, and a configure button for admins.
@@ -38,10 +37,7 @@ const MonitorDetailsControlHeader = ({
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const [pauseMonitor, isPausing, error] = usePauseMonitor({
-		monitorId: monitor?._id,
-		triggerUpdate,
-	});
+	const [pauseMonitor, isPausing, error] = usePauseMonitor();
 
 	const [isSending, emailError, sendTestEmail] = useSendTestEmail();
 
@@ -88,7 +84,10 @@ const MonitorDetailsControlHeader = ({
 						monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
 					}
 					onClick={() => {
-						pauseMonitor();
+						pauseMonitor({
+							monitorId: monitor?._id,
+							triggerUpdate,
+						});
 					}}
 				>
 					{monitor?.isActive ? "Pause" : "Resume"}

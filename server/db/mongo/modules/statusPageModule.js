@@ -1,16 +1,19 @@
 import StatusPage from "../../models/StatusPage.js";
-import Monitor from "../../models/Monitor.js";
 import { NormalizeData } from "../../../utils/dataUtils.js";
 import ServiceRegistry from "../../../service/serviceRegistry.js";
 import StringService from "../../../service/stringService.js";
 
 const SERVICE_NAME = "statusPageModule";
 
-const createStatusPage = async (statusPageData, image) => {
+const createStatusPage = async ({ statusPageData, image, userId, teamId }) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 
 	try {
-		const statusPage = new StatusPage({ ...statusPageData });
+		const statusPage = new StatusPage({
+			...statusPageData,
+			userId,
+			teamId,
+		});
 		if (image) {
 			statusPage.logo = {
 				data: image.buffer,
@@ -103,7 +106,10 @@ const getStatusPage = async (url) => {
 				},
 			},
 			{
-				$unwind: "$monitors",
+				$unwind: {
+					path: "$monitors",
+					preserveNullAndEmptyArrays: true,
+				},
 			},
 			{
 				$lookup: {
@@ -150,9 +156,17 @@ const getStatusPage = async (url) => {
 						url: 1,
 					},
 					monitors: {
-						$sortArray: {
-							input: "$monitors",
-							sortBy: { orderIndex: 1 },
+						$filter: {
+							input: {
+								$sortArray: {
+									input: "$monitors",
+									sortBy: { orderIndex: 1 },
+								},
+							},
+							as: "monitor",
+							cond: {
+								$ne: ["$$monitor.orderIndex", -1],
+							},
 						},
 					},
 				},

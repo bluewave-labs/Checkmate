@@ -35,17 +35,17 @@ class MonitorRoutes {
 				fetchMonitorCertificate
 			);
 		});
+		this.router.get("/team", this.monitorController.getMonitorsByTeamId);
+
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);
 
-		this.router.get("/team/:teamId", this.monitorController.getMonitorsByTeamId);
-
 		this.router.get(
-			"/summary/team/:teamId",
+			"/summary/team",
 			this.monitorController.getMonitorsAndSummaryByTeamId
 		);
 
 		this.router.get(
-			"/team/:teamId/with-checks",
+			"/team/with-checks",
 			this.monitorController.getMonitorsWithChecksByTeamId
 		);
 

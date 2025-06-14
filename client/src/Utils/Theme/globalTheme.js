@@ -380,6 +380,33 @@ const baseTheme = (palette) => ({
 				},
 			},
 		},
+
+		MuiAutocomplete: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiOutlinedInput-root": {
+						paddingTop: 0,
+						paddingBottom: 0,
+					},
+					"& fieldset": {
+						borderColor: theme.palette.primary.lowContrast,
+						borderRadius: theme.shape.borderRadius,
+					},
+					"& .MuiOutlinedInput-root:hover:not(:has(input:focus)):not(:has(textarea:focus)) fieldset":
+						{
+							borderColor: theme.palette.primary.lowContrast,
+						},
+
+					"& .MuiAutocomplete-tag": {
+						color: theme.palette.primary.contrastText,
+						backgroundColor: theme.palette.primary.lowContrast,
+					},
+					"& .MuiChip-deleteIcon": {
+						color: theme.palette.primary.contrastText, // CAIO_REVIEW
+					},
+				}),
+			},
+		},
 		MuiTab: {
 			styleOverrides: {
 				root: ({ theme }) => ({

@@ -11,15 +11,18 @@ import Filter from "./Components/Filters";
 import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useMonitorFetch } from "./Hooks/useMonitorFetch";
 import { useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
+import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
 // Constants
+const TYPES = ["hardware"];
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
 const InfrastructureMonitors = () => {
 	// Redux state
+
+	// Local state
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -53,7 +56,9 @@ const InfrastructureMonitors = () => {
 
 	const field = toFilterStatus !== undefined ? "status" : undefined;
 
-	const { monitors, summary, isLoading, networkError } = useMonitorFetch({
+	const [monitors, summary, isLoading, networkError] = useFetchMonitorsByTeamId({
+		limit: 1,
+		types: TYPES,
 		page,
 		field: field,
 		filter: toFilterStatus ?? search,
@@ -119,7 +124,7 @@ const InfrastructureMonitors = () => {
 			</Stack>
 
 			<MonitorsTable
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				monitors={monitors}
 				isAdmin={isAdmin}
 				handleActionMenuDelete={handleActionMenuDelete}
