@@ -8,6 +8,7 @@ import Pagination from "../../..//Components/Table/TablePagination";
 import GenericFallback from "../../../Components/GenericFallback";
 import Fallback from "../../../Components/Fallback";
 import Filter from "./Components/Filters";
+import SearchComponent from "./Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useMonitorFetch } from "./Hooks/useMonitorFetch";
@@ -24,6 +25,8 @@ const InfrastructureMonitors = () => {
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
+	const [search, setSearch] = useState(undefined);
+	const [isSearching, setIsSearching] = useState(false);
 
 	// Utils
 	const theme = useTheme();
@@ -56,6 +59,7 @@ const InfrastructureMonitors = () => {
 		filter: toFilterStatus,
 		rowsPerPage,
 		updateTrigger,
+		search
 	});
 
 	if (networkError === true) {
@@ -108,12 +112,19 @@ const InfrastructureMonitors = () => {
 					setToFilterStatus={setToFilterStatus}
 					handleReset={handleReset}
 				/>
+				<SearchComponent
+					monitors={monitors}
+					onSearchChange={setSearch}
+					setIsSearching={setIsSearching}
+				/>
 			</Stack>
+
 			<MonitorsTable
 				shouldRender={!isLoading}
 				monitors={monitors}
 				isAdmin={isAdmin}
 				handleActionMenuDelete={handleActionMenuDelete}
+				isSearching={isSearching}
 			/>
 			<Pagination
 				itemCount={summary?.totalMonitors}

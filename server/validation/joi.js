@@ -147,6 +147,7 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	filter: joi.string(),
 	field: joi.string(),
 	order: joi.string().valid("asc", "desc"),
+	search: joi.string()
 });
 
 const getMonitorStatsByIdParamValidation = joi.object({

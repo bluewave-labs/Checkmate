@@ -510,7 +510,7 @@ const getMonitorById = async (monitorId) => {
 };
 
 const getMonitorsByTeamId = async (req) => {
-	let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+	let { limit, type, page, rowsPerPage, filter, field, order, search } = req.query;
 	limit = parseInt(limit);
 	page = parseInt(page);
 	rowsPerPage = parseInt(rowsPerPage);
@@ -522,6 +522,9 @@ const getMonitorsByTeamId = async (req) => {
 	const matchStage = { teamId: ObjectId.createFromHexString(req.params.teamId) };
 	if (type !== undefined) {
 		matchStage.type = Array.isArray(type) ? { $in: type } : type;
+	}
+	if (search) {
+		matchStage.name = { $regex: search, $options: "i" };
 	}
 
 	const summaryResult = await Monitor.aggregate(

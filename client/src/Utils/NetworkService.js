@@ -182,11 +182,12 @@ class NetworkService {
 	 * @param {string} [config.filter] - The filter to apply to the monitors.
 	 * @param {string} [config.field] - The field to sort by.
 	 * @param {string} [config.order] - The order in which to sort the field.
+	 * @param {string} [config.search] - The search term to filter monitors by name.
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
 	 */
 
 	async getMonitorsByTeamId(config) {
-		const { teamId, limit, types, page, rowsPerPage, filter, field, order } = config;
+		const { teamId, limit, types, page, rowsPerPage, filter, field, order, search } = config;
 		const params = new URLSearchParams();
 
 		if (limit) params.append("limit", limit);
@@ -200,6 +201,7 @@ class NetworkService {
 		if (filter) params.append("filter", filter);
 		if (field) params.append("field", field);
 		if (order) params.append("order", order);
+		if (search) params.append("search", search);
 
 		return this.axiosInstance.get(`/monitors/team/${teamId}?${params.toString()}`, {
 			headers: {
