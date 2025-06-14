@@ -8,6 +8,7 @@ import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
 import Dialog from "../../../Components/Dialog";
 import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
+import TextLink from "../../../Components/TextLink";
 
 // Utils
 import { useStatusPageFetch } from "./Hooks/useStatusPageFetch";
@@ -30,6 +31,7 @@ const PublicStatus = () => {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const navigate = useNavigate();
+	const isAdmin = useIsAdmin();
 
 	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =
 		useStatusPageFetch(false, url);
@@ -58,6 +60,26 @@ const PublicStatus = () => {
 	// Loading
 	if (isLoading) {
 		return <SkeletonLayout />;
+	}
+
+	if (monitors.length === 0) {
+		return (
+			<GenericFallback>
+				<Typography
+					variant="h1"
+					marginY={theme.spacing(4)}
+					color={theme.palette.primary.contrastTextTertiary}
+				>
+					{"Theres nothing here yet"}
+				</Typography>
+				{isAdmin && (
+					<TextLink
+						linkText={"Add a monitor to get started"}
+						href={`/status/uptime/configure/${url}`}
+					/>
+				)}
+			</GenericFallback>
+		);
 	}
 
 	// Error fetching data

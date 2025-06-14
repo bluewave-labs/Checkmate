@@ -106,7 +106,10 @@ const getStatusPage = async (url) => {
 				},
 			},
 			{
-				$unwind: "$monitors",
+				$unwind: {
+					path: "$monitors",
+					preserveNullAndEmptyArrays: true,
+				},
 			},
 			{
 				$lookup: {
@@ -153,9 +156,17 @@ const getStatusPage = async (url) => {
 						url: 1,
 					},
 					monitors: {
-						$sortArray: {
-							input: "$monitors",
-							sortBy: { orderIndex: 1 },
+						$filter: {
+							input: {
+								$sortArray: {
+									input: "$monitors",
+									sortBy: { orderIndex: 1 },
+								},
+							},
+							as: "monitor",
+							cond: {
+								$ne: ["$$monitor.orderIndex", -1],
+							},
 						},
 					},
 				},

@@ -3,6 +3,7 @@ import HardwareCheck from "./HardwareCheck.js";
 import PageSpeedCheck from "./PageSpeedCheck.js";
 import Check from "./Check.js";
 import MonitorStats from "./MonitorStats.js";
+import StatusPage from "./StatusPage.js";
 
 const MonitorSchema = mongoose.Schema(
 	{
@@ -104,6 +105,9 @@ MonitorSchema.pre("findOneAndDelete", async function (next) {
 		} else {
 			await Check.deleteMany({ monitorId: doc._id });
 		}
+
+		// Deal with status pages
+		await StatusPage.updateMany({ monitors: doc._id }, { $pull: { monitors: doc._id } });
 
 		await MonitorStats.deleteMany({ monitorId: doc._id.toString() });
 		next();
