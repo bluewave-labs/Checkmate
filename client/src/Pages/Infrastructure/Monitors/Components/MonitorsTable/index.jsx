@@ -18,7 +18,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 const MonitorsTable = ({
-	shouldRender,
+	isLoading,
 	monitors,
 	isAdmin,
 	handleActionMenuDelete,
@@ -131,7 +131,7 @@ const MonitorsTable = ({
 		<Box position="relative">
 			<LoadingSpinner shouldRender={isSearching} />
 			<DataTable
-				shouldRender={shouldRender}
+				shouldRender={!isLoading}
 				headers={headers}
 				data={data}
 				config={{
