@@ -334,6 +334,7 @@ const useUpdateMonitor = () => {
 				...(monitor.type === "hardware" && {
 					thresholds: monitor.thresholds,
 					secret: monitor.secret,
+					...(monitor.link ? { link: monitor.link } : {}),
 				}),
 			};
 			await networkService.updateMonitor({
