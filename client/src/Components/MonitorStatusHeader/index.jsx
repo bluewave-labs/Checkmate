@@ -40,7 +40,17 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 						component="h2"
 						variant="monitorUrl"
 					>
-						{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
+						{monitor?.link?.url ? (
+							<a
+								href={monitor.link.url}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
+							</a>
+						) : (
+							monitor?.url?.replace(/^https?:\/\//, "") || "..."
+						)}
 					</Typography>
 					<Dot />
 					<Typography>

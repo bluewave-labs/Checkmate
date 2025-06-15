@@ -434,6 +434,7 @@
 	"infrastructureServerUrlLabel": "Server URL",
 	"infrastructureDisplayNameLabel": "Display name",
 	"infrastructureAuthorizationSecretLabel": "Authorization secret",
+	"infrastructureLinkUrlLabel": "Link URL",
 	"gb": "GB",
 	"mb": "MB",
 	"mem": "Mem",
