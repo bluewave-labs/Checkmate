@@ -1,4 +1,4 @@
-name: Distribution deploy
+name: Deploy images
 
 on:
   push:
