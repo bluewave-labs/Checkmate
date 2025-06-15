@@ -8,6 +8,7 @@ import Pagination from "../../..//Components/Table/TablePagination";
 import GenericFallback from "../../../Components/GenericFallback";
 import Fallback from "../../../Components/Fallback";
 import Filter from "./Components/Filters";
+import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useState } from "react";
@@ -30,6 +31,8 @@ const InfrastructureMonitors = () => {
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
+	const [search, setSearch] = useState(undefined);
+	const [isSearching, setIsSearching] = useState(false);
 
 	// Utils
 	const theme = useTheme();
@@ -67,7 +70,7 @@ const InfrastructureMonitors = () => {
 		types: TYPES,
 		page,
 		field: field,
-		filter: toFilterStatus,
+		filter: toFilterStatus ?? search,
 		rowsPerPage,
 		updateTrigger,
 	});
@@ -122,12 +125,19 @@ const InfrastructureMonitors = () => {
 					setToFilterStatus={setToFilterStatus}
 					handleReset={handleReset}
 				/>
+				<SearchComponent
+					monitors={monitors}
+					onSearchChange={setSearch}
+					setIsSearching={setIsSearching}
+				/>
 			</Stack>
+
 			<MonitorsTable
 				isLoading={isLoading}
 				monitors={monitors}
 				isAdmin={isAdmin}
 				handleActionMenuDelete={handleActionMenuDelete}
+				isSearching={isSearching}
 			/>
 			<Pagination
 				itemCount={summary?.totalMonitors}
