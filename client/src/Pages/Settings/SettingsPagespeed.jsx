@@ -17,6 +17,7 @@ const SettingsPagespeed = ({
 	settingsData,
 	setSettingsData,
 	isApiKeySet,
+	lastSavedSettings,
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -33,6 +34,20 @@ const SettingsPagespeed = ({
 			settings: { ...settingsData.settings, pagespeedApiKey: e.target.value },
 		});
 	};
+	// reset buttion
+	useEffect(() => {
+		const savedKey = lastSavedSettings?.pagespeedApiKey || "";
+		if (savedKey) {
+			setApiKey(""); // Clear input after save
+			setHasBeenReset(false); // Show Reset button
+		}
+	}, [lastSavedSettings]);
+
+	// useeffert for show/hide of textbox
+	useEffect(() => {
+		const savedKey = settingsData?.settings?.pagespeedApiKey || "";
+		setApiKey(savedKey);
+	}, [settingsData]);
 
 	if (!isAdmin) {
 		return null;
