@@ -56,17 +56,27 @@ const Settings = () => {
 
 	// Handlers
 	const handleChange = async (e) => {
-		const { name, value } = e.target;
+		const { name, value, checked } = e.target;
 
 		// Special case for showURL until handled properly in the backend
 		if (name === "showURL") {
 			dispatch(setShowURL(value));
 			return;
 		}
+		let newValue;
+		if (
+			name === "systemEmailIgnoreTLS" ||
+			name === "systemEmailRequireTLS" ||
+			name === "systemEmailRejectUnauthorized" ||
+			name === "systemEmailSecure" ||
+			name === "systemEmailPool"
+		) {
+			newValue = checked;
+		}
 		// Build next state early
 		const newSettingsData = {
 			...settingsData,
-			settings: { ...settingsData.settings, [name]: value },
+			settings: { ...settingsData.settings, [name]: newValue ?? value },
 		};
 
 		// Validate

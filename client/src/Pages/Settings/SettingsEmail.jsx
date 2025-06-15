@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
 import { createToast } from "../../Utils/toastUtils";
+import { Switch } from "@mui/material";
 
 const SettingsEmail = ({
 	isAdmin,
@@ -25,6 +26,21 @@ const SettingsEmail = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 
+	// Destructure settings with default values
+	const {
+		systemEmailHost = "",
+		systemEmailPort = "",
+		systemEmailSecure = false,
+		systemEmailPool = false,
+		systemEmailUser = "",
+		systemEmailAddress = "",
+		systemEmailPassword = "",
+		systemEmailTLSServername = "",
+		systemEmailConnectionHost = "localhost",
+		systemEmailIgnoreTLS = false,
+		systemEmailRequireTLS = false,
+		systemEmailRejectUnauthorized = true,
+	} = settingsData?.settings || {};
 	// Local state
 	const [password, setPassword] = useState("");
 	const [hasBeenReset, setHasBeenReset] = useState(false);
@@ -47,18 +63,32 @@ const SettingsEmail = ({
 	const handleSendTestEmail = () => {
 		// Collect current form values
 		const emailConfig = {
-			systemEmailHost: settingsData?.settings?.systemEmailHost,
-			systemEmailPort: settingsData?.settings?.systemEmailPort,
-			systemEmailUser: settingsData?.settings?.systemEmailUser,
-			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
-			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
-			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost,
+			systemEmailHost,
+			systemEmailPort,
+			systemEmailSecure,
+			systemEmailPool,
+			systemEmailUser,
+			systemEmailAddress,
+			systemEmailPassword: password || systemEmailPassword,
+			systemEmailTLSServername,
+			systemEmailConnectionHost,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
 		};
 
 		// Basic validation
-		if (!emailConfig.systemEmailHost || !emailConfig.systemEmailPort) {
+		if (
+			!emailConfig.systemEmailHost ||
+			!emailConfig.systemEmailPort ||
+			!emailConfig.systemEmailAddress ||
+			!emailConfig.systemEmailPassword
+		) {
 			createToast({
-				body: t("settingsEmailRequiredFields", "Email host and port are required"),
+				body: t(
+					"settingsEmailRequiredFields",
+					"Email address, host, port and password are required"
+				),
 				variant: "error",
 			});
 			return;
@@ -90,7 +120,7 @@ const SettingsEmail = ({
 						<TextInput
 							name="systemEmailHost"
 							placeholder="smtp.gmail.com"
-							value={settingsData?.settings?.systemEmailHost ?? ""}
+							value={systemEmailHost}
 							onChange={handleChange}
 						/>
 					</Box>
@@ -100,7 +130,7 @@ const SettingsEmail = ({
 							name="systemEmailPort"
 							placeholder="425"
 							type="number"
-							value={settingsData?.settings?.systemEmailPort ?? ""}
+							value={systemEmailPort}
 							onChange={handleChange}
 						/>
 					</Box>
@@ -109,7 +139,7 @@ const SettingsEmail = ({
 						<TextInput
 							name="systemEmailUser"
 							placeholder="Leave empty if not required"
-							value={settingsData?.settings?.systemEmailUser ?? ""}
+							value={systemEmailUser}
 							onChange={handleChange}
 						/>
 					</Box>
@@ -118,7 +148,7 @@ const SettingsEmail = ({
 						<TextInput
 							name="systemEmailAddress"
 							placeholder="uptime@bluewavelabs.ca"
-							value={settingsData?.settings?.systemEmailAddress ?? ""}
+							value={systemEmailAddress}
 							onChange={handleChange}
 						/>
 					</Box>
@@ -156,23 +186,75 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
-						<Typography>{t("settingsEmailConnectionHost")}</Typography>
+						<Typography>{t("settingsEmailTLSServername")}</Typography>
 						<TextInput
-							name="systemEmailConnectionHost"
+							name="systemEmailTLSServername"
 							placeholder="bluewavelabs.ca"
-							value={settingsData?.settings?.systemEmailConnectionHost ?? ""}
+							value={systemEmailTLSServername}
 							onChange={handleChange}
 						/>
 					</Box>
 					<Box>
-						<Button
-							variant="contained"
-							color="accent"
-							loading={isSending}
-							onClick={handleSendTestEmail}
-						>
-							{t("settingsTestEmail", "Send test e-mail")}
-						</Button>
+						<Typography>{t("settingsEmailConnectionHost")}</Typography>
+						<TextInput
+							name="systemEmailConnectionHost"
+							placeholder="bluewavelabs.ca"
+							value={systemEmailConnectionHost}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							gap: theme.spacing(4),
+						}}
+					>
+						<Typography>{t("settingsEmailSecure")}</Typography>
+						<Switch
+							name="systemEmailSecure"
+							checked={systemEmailSecure}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailPool")}</Typography>
+						<Switch
+							name="systemEmailPool"
+							checked={systemEmailPool}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailIgnoreTLS")}</Typography>
+						<Switch
+							name="systemEmailIgnoreTLS"
+							checked={systemEmailIgnoreTLS}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailRequireTLS")}</Typography>
+						<Switch
+							name="systemEmailRequireTLS"
+							checked={systemEmailRequireTLS}
+							onChange={handleChange}
+						/>
+						<Typography>{t("settingsEmailRejectUnauthorized")}</Typography>
+						<Switch
+							name="systemEmailRejectUnauthorized"
+							checked={systemEmailRejectUnauthorized}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box>
+						{systemEmailHost &&
+							systemEmailPort &&
+							systemEmailAddress &&
+							systemEmailPassword && (
+								<Button
+									variant="contained"
+									color="accent"
+									loading={isSending}
+									onClick={handleSendTestEmail}
+								>
+									{t("settingsTestEmail", "Send test e-mail")}
+								</Button>
+							)}
 					</Box>
 				</Stack>
 			</Box>
