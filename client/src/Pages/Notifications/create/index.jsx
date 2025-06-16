@@ -130,7 +130,7 @@ const CreateNotifications = () => {
 			(type) => type._id === newNotification.type
 		).value;
 
-		if (newNotification.type === "email") {
+		if (type === "email") {
 			newNotification.config = null;
 		} else if (type === "slack" || type === "webhook" || type === "discord") {
 			newNotification.address = "";
