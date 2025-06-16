@@ -418,6 +418,29 @@ class NotificationService {
 			});
 		}
 	}
+
+	async testAllNotifications(notificationIDs) {
+		const notifications = await this.db.getNotificationsByIds(notificationIDs);
+
+		// Map each notification to a test promise
+		const testPromises = notifications.map(async (notification) => {
+			try {
+				if (notification.type === "email") {
+					await this.sendTestEmail(notification);
+				} else if (notification.type === "webhook") {
+					await this.sendTestWebhookNotification(notification);
+				} else if (notification.type === "pager_duty") {
+					await this.sendTestPagerDutyNotification(notification);
+				}
+				return true;
+			} catch (err) {
+				return false;
+			}
+		});
+
+		const results = await Promise.all(testPromises);
+		return results.every((r) => r === true);
+	}
 }
 
 export default NotificationService;
