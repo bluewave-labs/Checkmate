@@ -56,46 +56,49 @@ const MonitorDetailsControlHeader = ({
 		>
 			<Status monitor={monitor} />
 
-			<Stack
-				direction="row"
-				gap={theme.spacing(2)}
-			>
-				<Button
-					variant="contained"
-					color="secondary"
-					loading={isSending}
-					startIcon={<EmailIcon />}
-					onClick={() => {
-						testAllNotifications({ monitorId: monitor?._id });
-					}}
-				>
-					{t("sendTestNotifications")}
-				</Button>
-				<Button
-					variant="contained"
-					color="secondary"
-					onClick={(e) => {
-						navigate(`/incidents/${monitor?._id}`);
-					}}
-				>
-					{t("menu.incidents")}
-				</Button>
-				<Button
-					variant="contained"
-					color="secondary"
-					loading={isPausing}
-					startIcon={
-						monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
-					}
-					onClick={() => {
-						pauseMonitor({
-							monitorId: monitor?._id,
-							triggerUpdate,
-						});
-					}}
-				>
-					{monitor?.isActive ? "Pause" : "Resume"}
-				</Button>
+      <Stack
+        direction="row"
+        gap={theme.spacing(2)}
+      >
+        <Button
+          variant="contained"
+          color="secondary"
+          loading={isSending}
+          startIcon={<EmailIcon />}
+          onClick={() => {
+            testAllNotifications({ monitorId: monitor?._id });
+          }}
+          sx={{
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {t("sendTestNotifications")}
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={(e) => {
+            navigate(`/incidents/${monitor?._id}`);
+          }}
+        >
+          {t("menu.incidents")}
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          loading={isPausing}
+          startIcon={
+            monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+          }
+          onClick={() => {
+            pauseMonitor({
+              monitorId: monitor?._id,
+              triggerUpdate,
+            });
+          }}
+        >
+          {monitor?.isActive ? "Pause" : "Resume"}
+        </Button>
 
 				{isAdmin && (
 					<Button
