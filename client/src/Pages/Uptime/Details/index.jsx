@@ -18,7 +18,7 @@ import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useFetchUptimeMonitorById } from "../../../Hooks/monitorHooks";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
-import { useFetchChecks } from "../../../Hooks/checkHooks";
+import { useFetchChecksByMonitor } from "../../../Hooks/checkHooksMonitor";
 import { useTranslation } from "react-i18next";
 
 // Constants
@@ -66,7 +66,7 @@ const UptimeDetails = () => {
 
 	const monitorType = monitor?.type;
 
-	const [checks, checksCount, checksAreLoading, checksNetworkError] = useFetchChecks({
+	const [checks, checksCount, checksAreLoading, checksNetworkError] = useFetchChecksByMonitor({
 		monitorId,
 		type: monitorType,
 		sortOrder: "desc",
