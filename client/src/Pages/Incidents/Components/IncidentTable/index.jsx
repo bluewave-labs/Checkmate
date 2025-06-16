@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchChecksTeam } from "../../../../Hooks/checkHooksTeam";
+import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooksMonitor";
 
 const IncidentTable = ({
 	shouldRender,
@@ -26,7 +26,6 @@ const IncidentTable = ({
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
 	//Local state
-	const [teamId, setTeamId] = useState(undefined);
 	const [monitorId, setMonitorId] = useState(undefined);
 
 	const [page, setPage] = useState(0);
@@ -34,10 +33,9 @@ const IncidentTable = ({
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
 
-	const [checks, checksCount, isLoading, networkError] = useFetchChecksTeam({
+	const [checks, checksCount, isLoading, networkError] = useFetchChecksByMonitor({
 		status: false,
 		monitorId,
-		teamId,
 		type: selectedMonitorType,
 		sortOrder: "desc",
 		limit: null,
@@ -60,11 +58,9 @@ const IncidentTable = ({
 
 	useEffect(() => {
 		if (selectedMonitor === "0") {
-			setTeamId("placeholder"); // TODO this isn't needed any longer, fix hook
 			setMonitorId(undefined);
 		} else {
 			setMonitorId(selectedMonitor);
-			setTeamId(undefined);
 		}
 	}, [selectedMonitor]);
 
