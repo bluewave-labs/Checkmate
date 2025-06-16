@@ -70,7 +70,7 @@ const PageSpeed = () => {
 				path="/pagespeed/create"
 			/>
 			<MonitorCountHeader
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				monitorCount={monitorsSummary?.totalMonitors}
 				sx={{ mb: theme.spacing(8) }}
 			/>

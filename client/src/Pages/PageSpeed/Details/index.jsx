@@ -2,7 +2,6 @@
 import { Stack, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
-import MonitorStatusHeader from "../../../Components/MonitorStatusHeader";
 import PageSpeedStatusBoxes from "./Components/PageSpeedStatusBoxes";
 import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
 import PageSpeedAreaChart from "./Components/PageSpeedAreaChart";

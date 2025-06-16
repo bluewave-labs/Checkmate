@@ -201,9 +201,9 @@ const UptimeMonitors = () => {
 
 			<Stack direction={"row"}>
 				<MonitorCountHeader
-					shouldRender={monitors?.length > 0 && !monitorsWithSummaryIsLoading}
+					isLoading={monitorsWithSummaryIsLoading}
 					monitorCount={monitorsSummary?.totalMonitors}
-				></MonitorCountHeader>
+				/>
 				<Filter
 					selectedTypes={selectedTypes}
 					setSelectedTypes={setSelectedTypes}
