@@ -9,7 +9,7 @@ const CreateMonitorHeader = ({ isAdmin, label, isLoading = true, path, bulkPath 
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const [exportMonitors, isExporting] = useExportMonitors()
+	const [exportMonitors, isExporting] = useExportMonitors();
 
 	// Use the provided label or fall back to the translated default
 

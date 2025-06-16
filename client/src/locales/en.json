@@ -741,8 +741,8 @@
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
 	},
 	"export": {
-        "title": "Export Monitors",
-        "success": "Monitors exported successfully!",
-        "failed": "Failed to export monitors"
-    }
+		"title": "Export Monitors",
+		"success": "Monitors exported successfully!",
+		"failed": "Failed to export monitors"
+	}
 }
