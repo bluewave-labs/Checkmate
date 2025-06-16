@@ -17,7 +17,7 @@ const Maintenance = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { rowsPerPage } = useSelector((state) => state.ui.maintenance);
+	const rowsPerPage = useSelector((state) => state?.ui?.maintenance?.rowsPerPage ?? 5);
 	const isAdmin = useIsAdmin();
 	const [maintenanceWindows, setMaintenanceWindows] = useState([]);
 	const [maintenanceWindowCount, setMaintenanceWindowCount] = useState(0);
