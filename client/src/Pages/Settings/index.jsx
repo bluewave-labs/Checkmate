@@ -36,17 +36,19 @@ const Settings = () => {
 	const { user } = useSelector((state) => state.auth);
 
 	// Local state
-	const [settingsData, setSettingsData] = useState({});
+	const [settingsData, setSettingsData] = useState({ settings: {} });
 	const [errors, setErrors] = useState({});
-	// reset button for APIkeys
 	const [lastSavedSettings, setLastSavedSettings] = useState(null);
 
 	// Network
-	const [isSettingsLoading, settingsError] = useFetchSettings({
+	const [isSettingsLoading, settingsError, fetchSettings] = useFetchSettings({
 		setSettingsData,
 	});
 
-	const [isSaving, saveError, saveSettings] = useSaveSettings();
+	const [isSaving, saveError, saveSettings] = useSaveSettings(() => {
+		// Refresh settings after save
+		fetchSettings();
+	});
 	const [deleteMonitorStats, isDeletingMonitorStats] = UseDeleteMonitorStats();
 
 	// Setup
@@ -140,9 +142,12 @@ const Settings = () => {
 
 		if (!error || error.details.length === 0) {
 			setErrors({});
-
-			await saveSettings(settingsData.settings);
-			setLastSavedSettings({ ...settingsData.settings });
+			const savedSettings = await saveSettings(settingsData.settings);
+			if (savedSettings) {
+				setLastSavedSettings(savedSettings);
+				// Refresh settings after save
+				fetchSettings();
+			}
 		} else {
 			const newErrors = {};
 			error.details.forEach((err) => {
@@ -172,7 +177,7 @@ const Settings = () => {
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
+				isApiKeySet={!!settingsData?.settings?.pagespeedApiKey}
 				lastSavedSettings={lastSavedSettings}
 			/>
 			<SettingsURL

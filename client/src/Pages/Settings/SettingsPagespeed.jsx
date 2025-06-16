@@ -26,28 +26,27 @@ const SettingsPagespeed = ({
 	const [apiKey, setApiKey] = useState("");
 	const [hasBeenReset, setHasBeenReset] = useState(false);
 
-	// Handler
-	const handleChange = (e) => {
-		setApiKey(e.target.value);
-		setSettingsData({
-			...settingsData,
-			settings: { ...settingsData.settings, pagespeedApiKey: e.target.value },
-		});
-	};
-	// reset buttion
-	useEffect(() => {
-		const savedKey = lastSavedSettings?.pagespeedApiKey || "";
-		if (savedKey) {
-			setApiKey(""); // Clear input after save
-			setHasBeenReset(false); // Show Reset button
-		}
-	}, [lastSavedSettings]);
-
-	// useeffert for show/hide of textbox
+	// Initialize API key from settings data when component mounts or settingsData changes
 	useEffect(() => {
 		const savedKey = settingsData?.settings?.pagespeedApiKey || "";
-		setApiKey(savedKey);
+		if (savedKey) {
+			setApiKey(savedKey);
+			setHasBeenReset(false);
+		}
 	}, [settingsData]);
+
+	// Handler
+	const handleChange = (e) => {
+		const newValue = e.target.value;
+		setApiKey(newValue);
+		setSettingsData({
+			...settingsData,
+			settings: {
+				...settingsData.settings,
+				pagespeedApiKey: newValue,
+			},
+		});
+	};
 
 	if (!isAdmin) {
 		return null;
@@ -65,19 +64,19 @@ const SettingsPagespeed = ({
 				<Typography sx={HEADING_SX}>{t("pageSpeedApiKeyFieldDescription")}</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
-				{(isApiKeySet === false || hasBeenReset === true) && (
-					<TextInput
-						name="pagespeedApiKey"
-						label={t("pageSpeedApiKeyFieldLabel")}
-						value={apiKey}
-						type={"password"}
-						onChange={handleChange}
-						optionalLabel="(Optional)"
-						endAdornment={<PasswordEndAdornment />}
-					/>
-				)}
+				{/* Always show the textbox */}
+				<TextInput
+					name="pagespeedApiKey"
+					label={t("pageSpeedApiKeyFieldLabel")}
+					value={apiKey}
+					type={"password"}
+					onChange={handleChange}
+					optionalLabel="(Optional)"
+					endAdornment={<PasswordEndAdornment />}
+				/>
 
-				{isApiKeySet === true && hasBeenReset === false && (
+				{/* Only show reset button if there's an API key */}
+				{apiKey && (
 					<Box>
 						<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
 						<Button
@@ -85,7 +84,10 @@ const SettingsPagespeed = ({
 								setApiKey("");
 								setSettingsData({
 									...settingsData,
-									settings: { ...settingsData.settings, pagespeedApiKey: "" },
+									settings: {
+										...settingsData.settings,
+										pagespeedApiKey: "",
+									},
 								});
 								setHasBeenReset(true);
 							}}

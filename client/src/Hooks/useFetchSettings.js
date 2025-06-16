@@ -7,24 +7,33 @@ import { useTranslation } from "react-i18next";
 const useFetchSettings = ({ setSettingsData }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(undefined);
+	const { t } = useTranslation();
 
-	useEffect(() => {
-		const fetchSettings = async () => {
-			setIsLoading(true);
-			try {
-				const response = await networkService.getAppSettings();
-				setSettingsData(response?.data?.data);
-			} catch (error) {
-				createToast({ body: "Failed to fetch settings" });
-				setError(error);
-			} finally {
-				setIsLoading(false);
+	const fetchSettings = async () => {
+		setIsLoading(true);
+		try {
+			const response = await networkService.getAppSettings();
+			if (response?.data?.data) {
+				// Set the complete settings object
+				setSettingsData({
+					...response.data.data,
+					settings: response.data.data.settings || {},
+				});
 			}
-		};
+		} catch (error) {
+			createToast({ body: t("settingsFailedToFetch") });
+			setError(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Fetch settings on mount
+	useEffect(() => {
 		fetchSettings();
 	}, [setSettingsData]);
 
-	return [isLoading, error];
+	return [isLoading, error, fetchSettings];
 };
 
 // Hook to save settings
@@ -44,8 +53,7 @@ const useSaveSettings = (onSaveSuccess) => {
 			if (onSaveSuccess) {
 				onSaveSuccess();
 			}
-
-			return response?.data?.data; // return updated settings here
+			return response?.data?.data;
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });
 			setError(error);
