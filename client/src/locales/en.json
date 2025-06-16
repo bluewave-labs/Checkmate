@@ -714,7 +714,7 @@
 		"saving": "Saving..."
 	},
 	"settingsEmailConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
-	"sendTestEmail": "Send test email",
+	"sendTestNotifications": "Send test notifications",
 	"emailSent": "Email sent successfully",
 	"failedToSendEmail": "Failed to send email",
 	"settingsTestEmail": "Send test e-mail",

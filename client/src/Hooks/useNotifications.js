@@ -174,6 +174,30 @@ const useTestNotification = () => {
 	return [testNotification, isLoading, error];
 };
 
+const useTestAllNotifications = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(undefined);
+	const { t } = useTranslation();
+	const testAllNotifications = async ({ monitorId }) => {
+		try {
+			setIsLoading(true);
+			await networkService.testAllNotifications({ monitorId });
+			createToast({
+				body: t("notifications.test.success"),
+			});
+		} catch (error) {
+			createToast({
+				body: error.response?.data?.msg || error.message,
+			});
+			setError(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [testAllNotifications, isLoading, error];
+};
+
 export {
 	useCreateNotification,
 	useGetNotificationsByTeamId,
@@ -181,4 +205,5 @@ export {
 	useGetNotificationById,
 	useEditNotification,
 	useTestNotification,
+	useTestAllNotifications,
 };

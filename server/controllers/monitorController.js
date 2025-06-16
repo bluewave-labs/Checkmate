@@ -1,4 +1,3 @@
-import Monitor from "../db/models/Monitor.js";
 import {
 	getMonitorByIdParamValidation,
 	getMonitorByIdQueryValidation,
@@ -16,8 +15,6 @@ import {
 	getHardwareDetailsByIdQueryValidation,
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
-import jwt from "jsonwebtoken";
-import { getTokenFromHeaders } from "../utils/utils.js";
 import logger from "../utils/logger.js";
 import { handleError, handleValidationError } from "./controllerUtils.js";
 import axios from "axios";

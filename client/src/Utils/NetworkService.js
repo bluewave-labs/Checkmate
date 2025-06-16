@@ -678,6 +678,16 @@ class NetworkService {
 		});
 	}
 
+	async testAllNotifications(config) {
+		const { monitorId } = config;
+		return this.axiosInstance.post("/notifications/test/all", {
+			monitorId,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
 	/**
 	 * ************************************
 	 * Creates a maintenance window
