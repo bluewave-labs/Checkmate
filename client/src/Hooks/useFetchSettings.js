@@ -14,7 +14,6 @@ const useFetchSettings = ({ setSettingsData }) => {
 			try {
 				const response = await networkService.getAppSettings();
 				setSettingsData(response?.data?.data);
-				//console.log(response?.data?.data);
 			} catch (error) {
 				createToast({ body: "Failed to fetch settings" });
 				setError(error);
@@ -45,7 +44,7 @@ const useSaveSettings = (onSaveSuccess) => {
 			if (onSaveSuccess) {
 				onSaveSuccess();
 			}
-			console.log(response?.data?.data);
+
 			return response?.data?.data; // return updated settings here
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });
