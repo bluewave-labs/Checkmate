@@ -298,6 +298,12 @@
 			"description": "Configure your webhook here",
 			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"discordSettings": {
+			"title": "Discord",
+			"description": "Configure your Discord webhook here",
+			"webhookLabel": "Discord Webhook URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
 		}
 	},
 
