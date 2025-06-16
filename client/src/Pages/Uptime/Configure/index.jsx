@@ -198,8 +198,7 @@ const Configure = () => {
 		}
 
 		toSubmit.notifications = form.notifications;
-		console.log(JSON.stringify(toSubmit, null, 2));
-		// await updateMonitor({ monitor: toSubmit, redirect: "/uptime" });
+		await updateMonitor({ monitor: toSubmit, redirect: "/uptime" });
 	};
 
 	// Parse the URL
