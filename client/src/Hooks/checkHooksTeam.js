@@ -48,16 +48,7 @@ const useFetchChecksTeam = ({
 		};
 
 		fetchChecks();
-	}, [
-		teamId,
-		status,
-		sortOrder,
-		limit,
-		dateRange,
-		filter,
-		page,
-		rowsPerPage,
-	]);
+	}, [teamId, status, sortOrder, limit, dateRange, filter, page, rowsPerPage]);
 
 	return [checks, checksCount, isLoading, networkError];
 };

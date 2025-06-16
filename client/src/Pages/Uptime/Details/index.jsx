@@ -66,16 +66,17 @@ const UptimeDetails = () => {
 
 	const monitorType = monitor?.type;
 
-	const [checks, checksCount, checksAreLoading, checksNetworkError] = useFetchChecksByMonitor({
-		monitorId,
-		type: monitorType,
-		sortOrder: "desc",
-		limit: null,
-		dateRange,
-		filter: null,
-		page,
-		rowsPerPage,
-	});
+	const [checks, checksCount, checksAreLoading, checksNetworkError] =
+		useFetchChecksByMonitor({
+			monitorId,
+			type: monitorType,
+			sortOrder: "desc",
+			limit: null,
+			dateRange,
+			filter: null,
+			page,
+			rowsPerPage,
+		});
 
 	// Handlers
 	const triggerUpdate = () => {
