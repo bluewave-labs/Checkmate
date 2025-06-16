@@ -170,6 +170,7 @@ const useFetchStatsByMonitorId = ({
 	dateRange,
 	numToDisplay,
 	normalize,
+	updateTrigger,
 }) => {
 	const [monitor, setMonitor] = useState(undefined);
 	const [audits, setAudits] = useState(undefined);
@@ -197,7 +198,7 @@ const useFetchStatsByMonitorId = ({
 			}
 		};
 		fetchMonitor();
-	}, [monitorId, dateRange, numToDisplay, normalize, sortOrder, limit]);
+	}, [monitorId, dateRange, numToDisplay, normalize, sortOrder, limit, updateTrigger]);
 	return [monitor, audits, isLoading, networkError];
 };
 
