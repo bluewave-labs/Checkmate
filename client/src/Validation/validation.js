@@ -374,6 +374,9 @@ const infrastructureMonitorValidation = joi.object({
 	name: joi.string().trim().max(50).allow("").messages({
 		"string.max": "This field should not exceed the 50 characters limit.",
 	}),
+	linkUrl: joi.string().uri().allow("").messages({
+		"string.uri": "The link URL is not valid.",
+	}),
 	secret: joi.string().trim().messages({ "string.empty": "This field is required." }),
 	usage_cpu: joi.number().messages({
 		"number.base": THRESHOLD_COMMON_BASE_MSG,

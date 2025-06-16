@@ -71,6 +71,7 @@ const CreateInfrastructureMonitor = () => {
 	const [infrastructureMonitor, setInfrastructureMonitor] = useState({
 		url: "",
 		name: "",
+		linkUrl: "",
 		notifications: [],
 		notify_email: false,
 		interval: 0.25,
@@ -92,6 +93,7 @@ const CreateInfrastructureMonitor = () => {
 		setInfrastructureMonitor({
 			url: monitor.url.replace(/^https?:\/\//, ""),
 			name: monitor.name || "",
+			linkUrl: monitor.link?.url || "",
 			notifications: monitor.notifications,
 			interval: monitor.interval / MS_PER_MINUTE,
 			cpu: monitor.thresholds?.usage_cpu !== undefined,
@@ -127,6 +129,7 @@ const CreateInfrastructureMonitor = () => {
 				infrastructureMonitor.name === ""
 					? infrastructureMonitor.url
 					: infrastructureMonitor.name,
+			linkUrl: infrastructureMonitor.linkUrl,
 			interval: infrastructureMonitor.interval * MS_PER_MINUTE,
 			cpu: infrastructureMonitor.cpu,
 			...(infrastructureMonitor.cpu
@@ -172,6 +175,7 @@ const CreateInfrastructureMonitor = () => {
 			usage_disk,
 			temperature,
 			usage_temperature,
+			linkUrl,
 			...rest
 		} = form;
 
@@ -185,6 +189,7 @@ const CreateInfrastructureMonitor = () => {
 		form = {
 			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
+			...(linkUrl ? { link: { url: linkUrl } } : {}),
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
@@ -329,6 +334,17 @@ const CreateInfrastructureMonitor = () => {
 							value={infrastructureMonitor.name}
 							onChange={onChange}
 							error={errors["name"]}
+						/>
+						<TextInput
+							type="text"
+							id="linkUrl"
+							name="linkUrl"
+							label={t("infrastructureLinkUrlLabel")}
+							placeholder="https://example.com"
+							isOptional={true}
+							value={infrastructureMonitor.linkUrl}
+							onChange={onChange}
+							error={errors["linkUrl"]}
 						/>
 						<TextInput
 							type="text"

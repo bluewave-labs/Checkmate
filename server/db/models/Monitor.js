@@ -87,6 +87,12 @@ const MonitorSchema = mongoose.Schema(
 		secret: {
 			type: String,
 		},
+		link: {
+			type: {
+				url: { type: String },
+			},
+			_id: false,
+		},
 	},
 	{
 		timestamps: true,
