@@ -1,6 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import PulseDot from "../Animated/PulseDot";
 import Dot from "../Dot";
+import Link from "../Link";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
 import { formatDurationRounded } from "../../Utils/timeUtils";
@@ -40,17 +41,11 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 						component="h2"
 						variant="monitorUrl"
 					>
-						{monitor?.link?.url ? (
-							<a
-								href={monitor.link.url}
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
-							</a>
-						) : (
-							monitor?.url?.replace(/^https?:\/\//, "") || "..."
-						)}
+						<Link
+							level="secondary"
+							url={monitor?.link?.url || monitor?.url}
+							label={monitor?.url?.replace(/^https?:\/\//, "") || "..."}
+						/>
 					</Typography>
 					<Dot />
 					<Typography>
