@@ -17,6 +17,11 @@ class MonitorRoutes {
 	initRoutes() {
 		this.router.get("/", this.monitorController.getAllMonitors);
 		this.router.get("/uptime", this.monitorController.getAllMonitorsWithUptimeStats);
+		this.router.get(
+			"/export",
+			isAllowed(["admin", "superadmin"]),
+			this.monitorController.exportMonitorsToCSV
+		);
 		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
 		this.router.get(
 			"/hardware/details/:monitorId",

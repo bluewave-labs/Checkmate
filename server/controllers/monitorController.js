@@ -702,6 +702,33 @@ class MonitorController {
 			next(handleError(error, SERVICE_NAME, "seedDb"));
 		}
 	};
+
+	exportMonitorsToCSV = async (req, res, next) => {
+		try {
+			const { teamId } = req.user;
+
+			const monitors = await this.db.getMonitorsByTeamId({ teamId });
+			const csvData = monitors?.filteredMonitors?.map((monitor) => ({
+				name: monitor.name,
+				description: monitor.description,
+				type: monitor.type,
+				url: monitor.url,
+				interval: monitor.interval,
+				port: monitor.port,
+				ignoreTlsErrors: monitor.ignoreTlsErrors,
+				isActive: monitor.isActive,
+			}));
+
+			const csv = pkg.unparse(csvData);
+
+			res.setHeader("Content-Type", "text/csv");
+			res.setHeader("Content-Disposition", "attachment; filename=monitors.csv");
+
+			res.send(csv);
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "exportMonitorsToCSV"));
+		}
+	};
 }
 
 export default MonitorController;

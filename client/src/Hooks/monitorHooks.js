@@ -453,6 +453,39 @@ const useCreateBulkMonitors = () => {
 	return [createBulkMonitors, isLoading];
 };
 
+const useExportMonitors = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const { t } = useTranslation();
+
+    const exportMonitors = async () => {
+        setIsLoading(true);
+        try {
+            const blob = await networkService.exportMonitors();
+            
+            // Create a download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'monitors.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            createToast({ body: t('export.success') });
+            return [true, null];
+        } catch (err) {
+            const errorMessage = err?.response?.data?.msg || err.message;
+            createToast({ body: errorMessage || t('export.failed') });
+            return [false, errorMessage];
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return [exportMonitors, isLoading];
+};
+
 export {
 	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
@@ -469,4 +502,5 @@ export {
 	useDeleteAllMonitors,
 	useDeleteMonitorStats,
 	useCreateBulkMonitors,
+	useExportMonitors,
 };
