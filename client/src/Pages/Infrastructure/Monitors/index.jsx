@@ -23,7 +23,7 @@ const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
 const InfrastructureMonitors = () => {
 	// Redux state
-	const rowsPerPage = useSelector((state) => state.ui.infrastructure.rowsPerPage);
+	const rowsPerPage = useSelector((state) => state.ui?.infrastructure?.rowsPerPage ?? 5);
 	const dispatch = useDispatch();
 
 	// Local state

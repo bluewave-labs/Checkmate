@@ -64,7 +64,7 @@ CreateMonitorButton.propTypes = {
 
 const UptimeMonitors = () => {
 	// Redux state
-	const rowsPerPage = useSelector((state) => state.ui.monitors.rowsPerPage);
+	const rowsPerPage = useSelector((state) => state.ui?.monitors?.rowsPerPage ?? 10);
 
 	// Local state
 	const [search, setSearch] = useState(undefined);
