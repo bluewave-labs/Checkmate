@@ -24,6 +24,22 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 
 We **love** what we are building here, and we continuously learn a few things about Reactjs, Nodejs, MongoDB, and Docker while building Checkmate.
 
+## 📚 Table of contents
+
+- [📦 Demo](#-demo)  
+- [🔗 User's guide](#-users-guide)  
+- [🛠️ Installation](#️-installation)  
+- [🏁 Translations](#-translations)  
+- [🚀 Performance](#-performance)  
+- [💚 Questions & Ideas](#-questions--ideas)  
+- [🧩 Features](#-features)  
+- [🏗️ Screenshots](#-screenshots)  
+- [🏗️ Tech stack](#-tech-stack)  
+- [🔗 A few links](#a-few-links)  
+- [🤝 Contributing](#-contributing)  
+- [💰 Our sponsors](#-our-sponsors)
+
+
 ## 📦 Demo
 
 You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is uptimedemo@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
