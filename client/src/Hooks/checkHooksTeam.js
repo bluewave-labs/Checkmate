@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
 
-const useFetchChecks = ({
+const useFetchChecksTeam = ({
 	teamId,
-	monitorId,
-	type,
 	status,
 	sortOrder,
 	limit,
@@ -21,40 +19,24 @@ const useFetchChecks = ({
 
 	useEffect(() => {
 		const fetchChecks = async () => {
-			if (!type && !teamId) {
+			if (!teamId) {
 				return;
 			}
 
-			const method = monitorId
-				? networkService.getChecksByMonitor
-				: networkService.getChecksByTeam;
-
-			const config = monitorId
-				? {
-						monitorId,
-						type,
-						status,
-						sortOrder,
-						limit,
-						dateRange,
-						filter,
-						page,
-						rowsPerPage,
-					}
-				: {
-						status,
-						teamId,
-						sortOrder,
-						limit,
-						dateRange,
-						filter,
-						page,
-						rowsPerPage,
-					};
+			const config = {
+				status,
+				teamId,
+				sortOrder,
+				limit,
+				dateRange,
+				filter,
+				page,
+				rowsPerPage,
+			};
 
 			try {
 				setIsLoading(true);
-				const res = await method(config);
+				const res = await networkService.getChecksByTeam(config);
 				setChecks(res.data.data.checks);
 				setChecksCount(res.data.data.checksCount);
 			} catch (error) {
@@ -67,9 +49,7 @@ const useFetchChecks = ({
 
 		fetchChecks();
 	}, [
-		monitorId,
 		teamId,
-		type,
 		status,
 		sortOrder,
 		limit,
@@ -82,4 +62,4 @@ const useFetchChecks = ({
 	return [checks, checksCount, isLoading, networkError];
 };
 
-export { useFetchChecks };
+export { useFetchChecksTeam };

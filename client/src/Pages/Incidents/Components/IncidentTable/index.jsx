@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchChecks } from "../../../../Hooks/checkHooks";
+import { useFetchChecksTeam } from "../../../../Hooks/checkHooksTeam";
 
 const IncidentTable = ({
 	shouldRender,
@@ -34,7 +34,7 @@ const IncidentTable = ({
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
 
-	const [checks, checksCount, isLoading, networkError] = useFetchChecks({
+	const [checks, checksCount, isLoading, networkError] = useFetchChecksTeam({
 		status: false,
 		monitorId,
 		teamId,
