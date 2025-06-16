@@ -44,7 +44,7 @@ const MonitorStatusHeader = ({ path, isLoading = false, isAdmin, monitor }) => {
 							<a
 								href={monitor.link.url}
 								target="_blank"
-								rel="noreferrer"
+								rel="noopener noreferrer"
 							>
 								{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
 							</a>

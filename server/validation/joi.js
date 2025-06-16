@@ -1,5 +1,7 @@
 import joi from "joi";
 
+var urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+
 //****************************************
 // Custom Validators
 //****************************************
@@ -182,7 +184,7 @@ const createMonitorBodyValidation = joi.object({
 	notifications: joi.array().items(joi.string()),
 	secret: joi.string(),
 	link: joi.object({
-		url: joi.string(),
+		url: joi.string().pattern(urlRegex),
 	}),
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
@@ -203,7 +205,7 @@ const editMonitorBodyValidation = joi.object({
 	notifications: joi.array().items(joi.string()),
 	secret: joi.string(),
 	link: joi.object({
-		url: joi.string(),
+		url: joi.string().pattern(urlRegex),
 	}),
 	ignoreTlsErrors: joi.boolean(),
 	jsonPath: joi.string().allow(""),

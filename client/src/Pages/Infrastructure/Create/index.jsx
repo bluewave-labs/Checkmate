@@ -340,11 +340,12 @@ const CreateInfrastructureMonitor = () => {
 							id="linkUrl"
 							name="linkUrl"
 							label={t("infrastructureLinkUrlLabel")}
-							placeholder="https://example.com"
+							placeholder="https://example.com or http://192.1.1.1:500/login"
 							isOptional={true}
 							value={infrastructureMonitor.linkUrl}
 							onChange={onChange}
 							error={errors["linkUrl"]}
+							helperText={errors["linkUrl"]}
 						/>
 						<TextInput
 							type="text"
