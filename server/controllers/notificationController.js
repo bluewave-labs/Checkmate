@@ -193,6 +193,22 @@ class NotificationController {
 			next(handleError(error, SERVICE_NAME, "editNotification"));
 		}
 	};
+
+	testAllNotifications = async (req, res, next) => {
+		try {
+			const { monitorId } = req.body;
+			const monitor = await this.db.getMonitorById(monitorId);
+			const notifications = monitor.notifications;
+			if (notifications.length === 0) throw new Error("No notifications");
+			const result = await this.notificationService.testAllNotifications(notifications);
+			if (!result) throw new Error("Failed to send all notifications");
+			return res.success({
+				msg: "All notifications sent successfully",
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "testAllNotifications"));
+		}
+	};
 }
 
 export default NotificationController;
