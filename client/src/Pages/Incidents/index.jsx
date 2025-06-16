@@ -11,6 +11,7 @@ import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 
 //Constants
 const Incidents = () => {
@@ -30,6 +31,13 @@ const Incidents = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
+	const { monitorId } = useParams();
+
+	useEffect(() => {
+		if (monitorId) {
+			setSelectedMonitor(monitorId);
+		}
+	}, [monitorId]);
 
 	useEffect(() => {
 		const monitorLookup = monitors?.reduce((acc, monitor) => {
