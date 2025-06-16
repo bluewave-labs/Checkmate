@@ -96,7 +96,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 ## 🏗️ Screenshots
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/25f32197-1473-415d-9dd7-963bb07a71af" />
+<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
 </p>
 <p>
   <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
