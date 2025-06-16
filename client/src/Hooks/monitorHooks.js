@@ -221,7 +221,7 @@ const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	return [isLoading];
 };
 
-const useFetchHardwareMonitorById = ({ monitorId, dateRange }) => {
+const useFetchHardwareMonitorById = ({ monitorId, dateRange, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [monitor, setMonitor] = useState(undefined);
@@ -244,7 +244,7 @@ const useFetchHardwareMonitorById = ({ monitorId, dateRange }) => {
 			}
 		};
 		fetchMonitor();
-	}, [monitorId, dateRange]);
+	}, [monitorId, dateRange, updateTrigger]);
 	return [monitor, isLoading, networkError];
 };
 
