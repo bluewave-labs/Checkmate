@@ -133,12 +133,16 @@ const Settings = () => {
 		setSettingsData(newSettingsData);
 	};
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		const { error } = settingsValidation.validate(settingsData.settings, {
 			abortEarly: false,
 		});
+
 		if (!error || error.details.length === 0) {
 			setErrors({});
+
+			await saveSettings(settingsData.settings);
+			setLastSavedSettings({ ...settingsData.settings });
 		} else {
 			const newErrors = {};
 			error.details.forEach((err) => {
@@ -146,9 +150,6 @@ const Settings = () => {
 			});
 			setErrors(newErrors);
 		}
-		saveSettings(settingsData?.settings);
-		// last saving for pageSpeedAPi key reset
-		setLastSavedSettings({ ...settingsData.settings });
 	};
 
 	return (
