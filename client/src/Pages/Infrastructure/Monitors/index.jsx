@@ -116,7 +116,7 @@ const InfrastructureMonitors = () => {
 			/>
 			<Stack direction={"row"}>
 				<MonitorCountHeader
-					shouldRender={!isLoading}
+					isLoading={isLoading}
 					monitorCount={summary?.totalMonitors ?? 0}
 				/>
 				<Filter
