@@ -44,34 +44,6 @@ const getNotificationsByIds = async (notificationIds) => {
 	}
 };
 
-/**
- * Retrieves notifications by monitor ID.
- * @param {mongoose.Types.ObjectId} monitorId - The ID of the monitor.
- * @returns {Promise<Array<Object>>} An array of notifications.
- * @throws Will throw an error if the notifications cannot be retrieved.
- */
-const getNotificationsByMonitorId = async (monitorId) => {
-	try {
-		const notifications = await Notification.find({ monitorId });
-		return notifications;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "getNotificationsByMonitorId";
-		throw error;
-	}
-};
-
-const deleteNotificationsByMonitorId = async (monitorId) => {
-	try {
-		const result = await Notification.deleteMany({ monitorId });
-		return result.deletedCount;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "deleteNotificationsByMonitorId";
-		throw error;
-	}
-};
-
 const deleteNotificationById = async (id) => {
 	try {
 		const result = await Notification.findByIdAndDelete(id);
@@ -112,8 +84,6 @@ export {
 	createNotification,
 	getNotificationsByTeamId,
 	getNotificationsByIds,
-	getNotificationsByMonitorId,
-	deleteNotificationsByMonitorId,
 	deleteNotificationById,
 	getNotificationById,
 	editNotification,
