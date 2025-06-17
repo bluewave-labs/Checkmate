@@ -34,12 +34,7 @@ const Status = ({ monitor }) => {
 				gap={theme.spacing(4)}
 			>
 				<PulseDot color={statusColor[determineState(monitor)]} />
-				<Typography
-					variant="monitorUrl"
-					noWrap
-				>
-					{formatMonitorUrl(monitor?.url)}
-				</Typography>
+				<Typography variant="monitorUrl">{formatMonitorUrl(monitor?.url)}</Typography>
 				<Dot />
 				<Typography>
 					Checking every {formatDurationRounded(monitor?.interval)}.
