@@ -31,19 +31,32 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 const Settings = () => {
 	// Redux state
 	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
-	const { user } = useSelector((state) => state.auth);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
 	const [errors, setErrors] = useState({});
+	const [isApiKeySet, setIsApiKeySet] = useState(settingsData?.pagespeedKeySet ?? false);
+	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	const [isEmailPasswordSet, setIsEmailPasswordSet] = useState(
+		settingsData?.emailPasswordSet ?? false
+	);
+	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
 
 	// Network
 	const [isSettingsLoading, settingsError] = useFetchSettings({
 		setSettingsData,
+		setIsApiKeySet,
+		setIsEmailPasswordSet,
 	});
 	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
 
-	const [isSaving, saveError, saveSettings] = useSaveSettings();
+	const [isSaving, saveError, saveSettings] = useSaveSettings({
+		setSettingsData,
+		setIsApiKeySet,
+		setApiKeyHasBeenReset,
+		setIsEmailPasswordSet,
+		setEmailPasswordHasBeenReset,
+	});
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
 	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
@@ -53,7 +66,6 @@ const Settings = () => {
 	const HEADING_SX = { mt: theme.spacing(2), mb: theme.spacing(2) };
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
-
 	// Handlers
 	const handleChange = async (e) => {
 		const { name, value, checked } = e.target;
@@ -159,7 +171,9 @@ const Settings = () => {
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
+				isApiKeySet={isApiKeySet}
+				apiKeyHasBeenReset={apiKeyHasBeenReset}
+				setApiKeyHasBeenReset={setApiKeyHasBeenReset}
 			/>
 			<SettingsURL
 				HEADING_SX={HEADING_SX}
@@ -187,7 +201,9 @@ const Settings = () => {
 				handleChange={handleChange}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isPasswordSet={settingsData?.emailPasswordSet ?? false}
+				isEmailPasswordSet={isEmailPasswordSet}
+				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
+				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
 			<SettingsAbout />
 			<Stack

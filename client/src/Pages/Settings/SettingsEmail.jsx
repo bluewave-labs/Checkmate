@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
@@ -20,7 +20,9 @@ const SettingsEmail = ({
 	handleChange,
 	settingsData,
 	setSettingsData,
-	isPasswordSet,
+	isEmailPasswordSet,
+	emailPasswordHasBeenReset,
+	setEmailPasswordHasBeenReset,
 }) => {
 	// Setup
 	const { t } = useTranslation();
@@ -43,7 +45,6 @@ const SettingsEmail = ({
 	} = settingsData?.settings || {};
 	// Local state
 	const [password, setPassword] = useState("");
-	const [hasBeenReset, setHasBeenReset] = useState(false);
 
 	// Network
 	const [isSending, , sendTestEmail] = useSendTestEmail(); // Using empty placeholder for unused error variable
@@ -152,7 +153,7 @@ const SettingsEmail = ({
 							onChange={handleChange}
 						/>
 					</Box>
-					{(isPasswordSet === false || hasBeenReset === true) && (
+					{(isEmailPasswordSet === false || emailPasswordHasBeenReset === true) && (
 						<Box>
 							<Typography>{t("settingsEmailPassword")}</Typography>
 							<TextInput
@@ -165,7 +166,8 @@ const SettingsEmail = ({
 							/>
 						</Box>
 					)}
-					{isPasswordSet === true && hasBeenReset === false && (
+
+					{isEmailPasswordSet === true && emailPasswordHasBeenReset === false && (
 						<Box>
 							<Typography>{t("settingsEmailFieldResetLabel")}</Typography>
 							<Button
@@ -175,7 +177,7 @@ const SettingsEmail = ({
 										...settingsData,
 										settings: { ...settingsData.settings, systemEmailPassword: "" },
 									});
-									setHasBeenReset(true);
+									setEmailPasswordHasBeenReset(true);
 								}}
 								variant="contained"
 								color="error"
