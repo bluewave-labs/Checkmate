@@ -22,7 +22,7 @@ Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/c
 
 Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
 
-We **love** what we are building here, and we continuously learn a few things about Reactjs, Nodejs, MongoDB, and Docker while building Checkmate.
+If you would like to sponsor a feature, [see this link](https://checkmate.so/sponsored-features).
 
 ## 📚 Table of contents
 
@@ -148,11 +148,13 @@ Here's how you can contribute:
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />
 </a>
 
+[![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/bluewave-uptime&Date)
+
 ## 💰 Our sponsors
 
 Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
 
-[![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/bluewave-uptime&Date)
+If you would like to sponsor a feature, [see this page](https://checkmate.so/sponsored-features).
 
 Also check other developer and contributor-friendly projects of BlueWave:
 
