@@ -23,30 +23,34 @@ import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
 const Status = ({ monitor }) => {
 	const theme = useTheme();
 	const { statusColor, determineState } = useMonitorUtils();
+	const URL_TRUNCATION_LENGTH = 55;
 
-  return (
-    <Stack>
-      <Typography variant="monitorName">{monitor?.name}</Typography>
-      <Stack
-        direction="row"
-        alignItems={"center"}
-        gap={theme.spacing(4)}
-      >
-        <PulseDot color={statusColor[determineState(monitor)]} />
-        <Typography variant="monitorUrl" noWrap>
-          {monitor?.url ? (
-            monitor.url?.length > 55
-              ? `${monitor.url.replace(/^https?:\/\//, "")?.slice(0, 55)}…`
-              : monitor.url.replace(/^https?:\/\//, "")
-          ) : "…"}
-        </Typography>
-        <Dot />
-        <Typography>
-          Checking every {formatDurationRounded(monitor?.interval)}.
-        </Typography>
-      </Stack>
-    </Stack>
-  );
+	return (
+		<Stack>
+			<Typography variant="monitorName">{monitor?.name}</Typography>
+			<Stack
+				direction="row"
+				alignItems={"center"}
+				gap={theme.spacing(4)}
+			>
+				<PulseDot color={statusColor[determineState(monitor)]} />
+				<Typography
+					variant="monitorUrl"
+					noWrap
+				>
+					{monitor?.url
+						? monitor.url?.length > URL_TRUNCATION_LENGTH
+							? `${monitor.url.replace(/^https?:\/\//, "")?.slice(0, URL_TRUNCATION_LENGTH)}…`
+							: monitor.url.replace(/^https?:\/\//, "")
+						: "…"}
+				</Typography>
+				<Dot />
+				<Typography>
+					Checking every {formatDurationRounded(monitor?.interval)}.
+				</Typography>
+			</Stack>
+		</Stack>
+	);
 };
 
 Status.propTypes = {
