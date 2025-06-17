@@ -1,188 +1,6 @@
 {
-	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
-		"buttons": {
-			"toggleTheme": ""
-		},
-		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
-		}
-	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "繼續",
-				"back": "回去"
-			},
-			"inputs": {
-				"email": {
-					"label": "E-mail",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"invalid": ""
-					}
-				},
-				"password": {
-					"label": "密碼",
-					"rules": {
-						"length": {
-							"beginning": "必須至少",
-							"highlighted": "8 個字符長"
-						},
-						"special": {
-							"beginning": "必須至少包含",
-							"highlighted": "一個特殊字符"
-						},
-						"number": {
-							"beginning": "必須至少包含",
-							"highlighted": "一個數字"
-						},
-						"uppercase": {
-							"beginning": "必須至少包含",
-							"highlighted": "一個大寫字母"
-						},
-						"lowercase": {
-							"beginning": "必須至少包含",
-							"highlighted": "一個小寫字母"
-						},
-						"match": {
-							"beginning": "確認密碼",
-							"highlighted": ""
-						}
-					},
-					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
-					}
-				},
-				"passwordConfirm": {
-					"label": "確認密碼",
-					"placeholder": "確認您的密碼",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				},
-				"lastName": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				}
-			},
-			"errors": {
-				"validation": ""
-			}
-		},
-		"login": {
-			"heading": "登入",
-			"subheadings": {
-				"stepOne": "輸入您的 E-mail",
-				"stepTwo": "輸入您的密碼"
-			},
-			"links": {
-				"forgotPassword": "",
-				"register": ""
-			},
-			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
-			}
-		},
-		"registration": {
-			"heading": {
-				"superAdmin": "",
-				"user": "註冊"
-			},
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "輸入您的 E-mail",
-				"stepThree": ""
-			},
-			"description": {
-				"superAdmin": "建立您的超級管理員帳號開始使用",
-				"user": ""
-			},
-			"gettingStartedButton": {
-				"superAdmin": "用 E-mail 註冊",
-				"user": ""
-			},
-			"termsAndPolicies": "註冊即表示您同意我們的",
-			"links": {
-				"login": ""
-			},
-			"toasts": {
-				"success": ""
-			}
-		},
-		"forgotPassword": {
-			"heading": "忘記密碼？",
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "我們已將密碼重設連結發送至 <email/>",
-				"stepThree": "您的新密碼必須與之前使用過的密碼不同。",
-				"stepFour": ""
-			},
-			"buttons": {
-				"openEmail": "",
-				"resetPassword": "重設密碼"
-			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
-			},
-			"links": {
-				"login": "回去 <a>登入</a>",
-				"resend": "沒有受到 E-mail？ <a>點擊</a>"
-			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
-			}
-		}
-	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
-			},
-			"alertBox": "",
-			"description": "",
-			"retryButton": {
-				"default": "",
-				"processing": ""
-			}
-		}
-	},
-	"submit": "",
-	"title": "",
+	"submit": "提交",
+	"title": "名稱",
 	"distributedStatusHeaderText": "實時、真實設備覆蓋",
 	"distributedStatusSubHeaderText": "由全球數百萬個設備提供支持，您可以按全球區域、國家或城市查看系統效能",
 	"settingsGeneralSettings": "一般設定",
@@ -190,11 +8,9 @@
 	"settingsDisplayTimezoneDescription": "您公開顯示的儀表板的時區。",
 	"settingsAppearance": "外觀",
 	"settingsAppearanceDescription": "",
-	"settingsThemeMode": "",
-	"settingsLanguage": "",
-	"settingsDistributedUptime": "",
-	"settingsDistributedUptimeDescription": "",
-	"settingsEnabled": "",
+	"settingsThemeMode": "主題",
+	"settingsLanguage": "語言",
+	"settingsEnabled": "啟動",
 	"settingsDisabled": "",
 	"settingsHistoryAndMonitoring": "",
 	"settingsHistoryAndMonitoringDescription": "",
@@ -213,8 +29,6 @@
 	"settingsRemoveAllMonitorsButton": "",
 	"settingsRemoveAllMonitorsDialogTitle": "",
 	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsWallet": "",
-	"settingsWalletDescription": "",
 	"settingsAbout": "",
 	"settingsDevelopedBy": "",
 	"settingsSave": "",
@@ -257,10 +71,6 @@
 	"distributedUptimeCreateIncidentDescription": "",
 	"distributedUptimeCreateAdvancedSettings": "",
 	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsFooterHeading": "",
-	"distributedUptimeDetailsFooterBuilt": "",
-	"distributedUptimeDetailsFooterSolana": "",
-	"distributedUptimeDetailsMonitorHeader": "",
 	"distributedUptimeDetailsStatusHeaderUptime": "",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
 	"notifications": {
@@ -302,7 +112,33 @@
 		"testSuccess": "",
 		"testFailed": "",
 		"unsupportedType": "",
-		"networkError": ""
+		"networkError": "",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "",
 	"add": "",
@@ -546,11 +382,6 @@
 		"append": "",
 		"overview": ""
 	},
-	"monitorStatus": {
-		"up": "",
-		"down": "",
-		"paused": ""
-	},
 	"roles": {
 		"superAdmin": "",
 		"admin": "",
@@ -589,7 +420,6 @@
 		"uptime": "",
 		"pagespeed": "",
 		"infrastructure": "",
-		"distributedUptime": "",
 		"incidents": "",
 		"statusPages": "",
 		"maintenance": "",
@@ -602,7 +432,8 @@
 		"profile": "",
 		"password": "",
 		"team": "",
-		"logOut": ""
+		"logOut": "",
+		"notifications": ""
 	},
 	"settingsEmail": "",
 	"settingsEmailDescription": "",
@@ -633,7 +464,6 @@
 		"saving": ""
 	},
 	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
 	"settingsTestEmail": "",
@@ -658,5 +488,257 @@
 		"ping": "",
 		"docker": "",
 		"port": ""
-	}
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"genericWebhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": ""
 }
