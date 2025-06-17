@@ -102,6 +102,7 @@ class NotificationController {
 				success =
 					await this.notificationService.sendTestPagerDutyNotification(notification);
 			}
+
 			if (!success) {
 				return res.error({
 					msg: "Sending notification failed",
@@ -128,7 +129,11 @@ class NotificationController {
 		}
 
 		try {
-			const notification = await this.db.createNotification(req.body);
+			const body = req.body;
+			const { _id, teamId } = req.user;
+			body.userId = _id;
+			body.teamId = teamId;
+			const notification = await this.db.createNotification(body);
 			return res.success({
 				msg: "Notification created successfully",
 				data: notification,
