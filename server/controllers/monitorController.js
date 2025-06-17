@@ -685,7 +685,7 @@ class MonitorController {
 				explain,
 			});
 			return res.success({
-				msg: "OK", // TODO
+				msg: "OK",
 				data: result,
 			});
 		} catch (error) {
@@ -708,6 +708,12 @@ class MonitorController {
 			const { teamId } = req.user;
 
 			const monitors = await this.db.getMonitorsByTeamId({ teamId });
+			if (!monitors || monitors.length === 0) {
+				return res.success({
+					msg: this.stringService.noMonitorsFound,
+					data: null,
+				});
+			}
 			const csvData = monitors?.filteredMonitors?.map((monitor) => ({
 				name: monitor.name,
 				description: monitor.description,
@@ -721,10 +727,14 @@ class MonitorController {
 
 			const csv = pkg.unparse(csvData);
 
-			res.setHeader("Content-Type", "text/csv");
-			res.setHeader("Content-Disposition", "attachment; filename=monitors.csv");
-
-			res.send(csv);
+			return res.success({
+				msg: this.stringService.monitorsExported,
+				data: csv,
+				headers: {
+					"Content-Type": "text/csv",
+					"Content-Disposition": "attachment; filename=monitors.csv",
+				},
+			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "exportMonitorsToCSV"));
 		}

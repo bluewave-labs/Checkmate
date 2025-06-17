@@ -16,7 +16,12 @@ const responseHandler = (req, res, next) => {
 	 * @param {*} [options.data=null] - Response data payload
 	 * @returns {Object} Express response object
 	 */
-	res.success = ({ status = 200, msg = "OK", data = null }) => {
+	res.success = ({ status = 200, msg = "OK", data = null, headers = {} }) => {
+		// Set custom headers if provided
+		Object.entries(headers).forEach(([key, value]) => {
+			res.set(key, value);
+		});
+
 		return res.status(status).json({
 			success: true,
 			msg: msg,

@@ -1027,7 +1027,7 @@ class NetworkService {
 		const response = await this.axiosInstance.get("/monitors/export", {
 			responseType: "blob",
 		});
-		return response.data;
+		return response;
 	}
 }
 

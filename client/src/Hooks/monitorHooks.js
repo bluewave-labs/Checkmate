@@ -460,10 +460,10 @@ const useExportMonitors = () => {
 	const exportMonitors = async () => {
 		setIsLoading(true);
 		try {
-			const blob = await networkService.exportMonitors();
+			const response = await networkService.exportMonitors();
 
 			// Create a download link
-			const url = window.URL.createObjectURL(blob);
+			const url = window.URL.createObjectURL(response);
 			const link = document.createElement("a");
 			link.href = url;
 			link.setAttribute("download", "monitors.csv");

@@ -744,5 +744,10 @@
 		"title": "Export Monitors",
 		"success": "Monitors exported successfully!",
 		"failed": "Failed to export monitors"
+	},
+	"monitorActions": {
+		"title": "Export/Import",
+		"import": "Import Monitors",
+		"export": "Export Monitors"
 	}
 }
