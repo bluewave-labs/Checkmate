@@ -1,7 +1,16 @@
 import PropTypes from "prop-types";
-import { Box, ListItem, Autocomplete, TextField, Stack, Typography } from "@mui/material";
+import {
+	Box,
+	ListItem,
+	Autocomplete,
+	TextField,
+	Stack,
+	Typography,
+	Checkbox,
+} from "@mui/material";
 import { useTheme } from "@emotion/react";
 import SearchIcon from "../../../assets/icons/search.svg?react";
+import React, { useEffect } from "react";
 
 /**
  * Search component using Material UI's Autocomplete.
@@ -60,18 +69,67 @@ const Search = ({
 	onBlur,
 }) => {
 	const theme = useTheme();
+	const [selectAll, setSelectAll] = React.useState(false);
+	useEffect(() => {
+		setSelectAll(
+			multiple &&
+				isAdorned &&
+				Array.isArray(value) &&
+				Array.isArray(options) &&
+				options.length > 0 &&
+				value.length === options.length
+		);
+	}, [multiple, isAdorned, options, value]);
+	const [open, setOpen] = React.useState(false);
+	const enhancedOptions = React.useMemo(() => {
+		return multiple && isAdorned
+			? [{ [filteredBy]: "Select All", isSelectAll: true, _id: "select_all" }, ...options]
+			: options;
+	}, [multiple, isAdorned, options, filteredBy]);
+	const isOptionSelected = (option) => {
+		if (!multiple && !isAdorned) return false;
+		if (Array.isArray(value)) {
+			return value.some((item) => item._id === option._id);
+		}
+		return false;
+	};
+	const handleSelectAll = (isSelectAll) => {
+		const newValue = isSelectAll ? [...options] : [];
+		handleChange(newValue);
+		setSelectAll(isSelectAll);
+		setOpen(!isSelectAll);
+	};
 	return (
 		<Autocomplete
 			onBlur={onBlur}
 			multiple={multiple}
 			id={id}
 			value={value}
+			open={open}
+			onOpen={() => setOpen(true)}
+			onClose={(event, reason) => {
+				if (reason === "blur" || reason === "escape") {
+					setOpen(false);
+				}
+			}}
 			inputValue={inputValue}
 			onInputChange={(_, newValue) => {
 				handleInputChange(newValue);
 			}}
 			onChange={(_, newValue) => {
-				handleChange(newValue);
+				if (multiple && isAdorned) {
+					const hasSelectAllSelected =
+						Array.isArray(newValue) && newValue.some((item) => item.isSelectAll);
+					if (hasSelectAllSelected) {
+						handleSelectAll(!selectAll);
+					} else {
+						handleChange(newValue);
+						setSelectAll(Array.isArray(newValue) && newValue.length === options.length);
+					}
+				} else {
+					handleChange(newValue);
+					setOpen(false);
+				}
 			}}
 			fullWidth
 			freeSolo
@@ -120,6 +178,9 @@ const Search = ({
 				</Stack>
 			)}
 			filterOptions={(options, { inputValue }) => {
+				if (inputValue.trim() === "" && multiple && isAdorned) {
+					return enhancedOptions;
+				}
 				const filtered = options.filter((option) =>
 					option[filteredBy].toLowerCase().includes(inputValue.toLowerCase())
 				);
@@ -136,6 +197,7 @@ const Search = ({
 				const { key, ...optionProps } = props;
 				const hasSecondaryLabel = secondaryLabel && option[secondaryLabel] !== undefined;
 				const port = option["port"];
+				const selected = isOptionSelected(option);
 				return (
 					<ListItem
 						key={key}
@@ -146,9 +208,29 @@ const Search = ({
 										pointerEvents: "none",
 										backgroundColor: theme.palette.primary.main,
 									}
-								: {}
+								: option.isSelectAll
+									? {
+											fontWeight: "bold",
+											backgroundColor: theme.palette.primary.light,
+											"&:hover": {
+												backgroundColor: theme.palette.primary.light,
+											},
+										}
+									: {}
 						}
 					>
+						{multiple && isAdorned && (
+							<Checkbox
+								checked={option.isSelectAll ? selectAll : selected}
+								sx={{
+									color: theme.palette.primary.contrastTextSecondary,
+									"&.Mui-checked": {
+										color: theme.palette.secondary.main,
+									},
+									padding: 0,
+								}}
+							/>
+						)}
 						{option[filteredBy] +
 							(hasSecondaryLabel
 								? ` (${option[secondaryLabel]}${port ? `: ${port}` : ""})`
