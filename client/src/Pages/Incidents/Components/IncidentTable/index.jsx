@@ -13,8 +13,8 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchChecksTeam } from "../../../../Hooks/checkHooksTeam";
-import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooksMonitor";
+import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
+import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
 
 const IncidentTable = ({
 	shouldRender,
@@ -57,10 +57,10 @@ const IncidentTable = ({
 			rowsPerPage: rowsPerPage,
 		});
 
-	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
-	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
-	const isLoading = selectedMonitor === "0" ? isLoadingTeam : isLoadingMonitor;
-	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
+	const checks = checksTeam || checksMonitor;
+	const checksCount = checksCountTeam || checksCountMonitor;
+	const isLoading = isLoadingTeam || isLoadingMonitor;
+	const networkError = networkErrorTeam || networkErrorMonitor;
 
 	const { t } = useTranslation();
 

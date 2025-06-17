@@ -18,7 +18,7 @@ import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useFetchUptimeMonitorById } from "../../../Hooks/monitorHooks";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
-import { useFetchChecksByMonitor } from "../../../Hooks/checkHooksMonitor";
+import { useFetchChecksByMonitor } from "../../../Hooks/checkHooks";
 import { useTranslation } from "react-i18next";
 
 // Constants
