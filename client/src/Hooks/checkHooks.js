@@ -3,7 +3,6 @@ import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
 
 const useFetchChecksTeam = ({
-	teamId,
 	status,
 	sortOrder,
 	limit,
@@ -11,6 +10,7 @@ const useFetchChecksTeam = ({
 	filter,
 	page,
 	rowsPerPage,
+	enabled = true,
 }) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
@@ -19,13 +19,12 @@ const useFetchChecksTeam = ({
 
 	useEffect(() => {
 		const fetchChecks = async () => {
-			if (!teamId) {
+			if (!enabled) {
 				return;
 			}
 
 			const config = {
 				status,
-				teamId,
 				sortOrder,
 				limit,
 				dateRange,
@@ -48,7 +47,7 @@ const useFetchChecksTeam = ({
 		};
 
 		fetchChecks();
-	}, [teamId, status, sortOrder, limit, dateRange, filter, page, rowsPerPage]);
+	}, [status, sortOrder, limit, dateRange, filter, page, rowsPerPage, enabled]);
 
 	return [checks, checksCount, isLoading, networkError];
 };
@@ -63,6 +62,7 @@ const useFetchChecksByMonitor = ({
 	filter,
 	page,
 	rowsPerPage,
+	enabled = true,
 }) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
@@ -71,7 +71,7 @@ const useFetchChecksByMonitor = ({
 
 	useEffect(() => {
 		const fetchChecks = async () => {
-			if (!type) {
+			if (!enabled) {
 				return;
 			}
 
@@ -101,7 +101,18 @@ const useFetchChecksByMonitor = ({
 		};
 
 		fetchChecks();
-	}, [monitorId, type, status, sortOrder, limit, dateRange, filter, page, rowsPerPage]);
+	}, [
+		monitorId,
+		type,
+		status,
+		sortOrder,
+		limit,
+		dateRange,
+		filter,
+		page,
+		rowsPerPage,
+		enabled,
+	]);
 
 	return [checks, checksCount, isLoading, networkError];
 };
