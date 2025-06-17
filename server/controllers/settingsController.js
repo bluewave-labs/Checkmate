@@ -36,7 +36,6 @@ class SettingsController {
 		const dbSettings = await this.settingsService.getDBSettings();
 
 		const returnSettings = this.buildAppSettings(dbSettings);
-		console.log(returnSettings);
 		return res.success({
 			msg: this.stringService.getAppSettings,
 			data: returnSettings,
