@@ -80,7 +80,7 @@ const UptimeStatusBoxes = ({
 };
 
 UptimeStatusBoxes.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	monitor: PropTypes.object,
 	monitorStats: PropTypes.object,
 	certificateExpiry: PropTypes.string,
