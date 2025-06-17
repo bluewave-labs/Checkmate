@@ -104,10 +104,10 @@ export const getHumanReadableDuration = (ms) => {
 
 	if (result.length === 0) {
 		// fallback for durations < 1s
-		return { time: 0, units: "seconds" };
+		return "0s";
 	}
 
-	return { time: result.join(" "), units: null };
+	return result.join(" ");
 };
 
 export const formatDate = (date, customOptions) => {

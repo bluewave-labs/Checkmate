@@ -24,30 +24,22 @@ const UptimeStatusBoxes = ({
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp;
 	const timeSinceLastCheck = Date.now() - timeOfLastCheck;
 
-	const { time: streakTime, units: streakUnits } =
-		getHumanReadableDuration(timeSinceLastFailure);
+	const streakTime = getHumanReadableDuration(timeSinceLastFailure);
 
-	const { time: lastCheckTime, units: lastCheckUnits } =
-		getHumanReadableDuration(timeSinceLastCheck);
+	const lastCheckTime = getHumanReadableDuration(timeSinceLastCheck);
 	return (
 		<StatusBoxes shouldRender={!isLoading}>
 			<StatBox
 				gradient={true}
 				status={determineState(monitor)}
 				heading={"active for"}
-				subHeading={
-					<>
-						{streakTime}
-						<Typography component="span">{streakUnits}</Typography>
-					</>
-				}
+				subHeading={streakTime}
 			/>
 			<StatBox
 				heading="last check"
 				subHeading={
 					<>
 						{lastCheckTime}
-						<Typography component="span">{lastCheckUnits}</Typography>
 						<Typography component="span">{"ago"}</Typography>
 					</>
 				}
