@@ -11,6 +11,10 @@ import {
 import { useTheme } from "@emotion/react";
 import SearchIcon from "../../../assets/icons/search.svg?react";
 import React, { useEffect } from "react";
+<<<<<<< Updated upstream
+=======
+import { useTranslation } from "react-i18next";
+>>>>>>> Stashed changes
 
 /**
  * Search component using Material UI's Autocomplete.
@@ -70,6 +74,7 @@ const Search = ({
 }) => {
 	const theme = useTheme();
 	const [selectAll, setSelectAll] = React.useState(false);
+<<<<<<< Updated upstream
 	useEffect(() => {
 		setSelectAll(
 			multiple &&
@@ -84,6 +89,21 @@ const Search = ({
 	const enhancedOptions = React.useMemo(() => {
 		return multiple && isAdorned
 			? [{ [filteredBy]: "Select All", isSelectAll: true, _id: "select_all" }, ...options]
+=======
+	const { t } = useTranslation();
+	useEffect(() => {
+		const allSelected =
+			Array.isArray(value) && Array.isArray(options) && value.length === options.length;
+		if (selectAll !== allSelected) setSelectAll(allSelected);
+	}, [value, options]);
+	const [open, setOpen] = React.useState(false);
+	const enhancedOptions = React.useMemo(() => {
+		return multiple && isAdorned
+			? [
+					{ [filteredBy]: t("selectAll"), isSelectAll: true, _id: "select_all" },
+					...options,
+				]
+>>>>>>> Stashed changes
 			: options;
 	}, [multiple, isAdorned, options, filteredBy]);
 	const isOptionSelected = (option) => {
@@ -97,7 +117,10 @@ const Search = ({
 		const newValue = isSelectAll ? [...options] : [];
 		handleChange(newValue);
 		setSelectAll(isSelectAll);
+<<<<<<< Updated upstream
 		setOpen(!isSelectAll);
+=======
+>>>>>>> Stashed changes
 	};
 	return (
 		<Autocomplete
@@ -135,7 +158,7 @@ const Search = ({
 			freeSolo
 			disabled={disabled}
 			disableClearable
-			options={options}
+			options={enhancedOptions}
 			getOptionLabel={(option) => option[filteredBy]}
 			isOptionEqualToValue={(option, value) => option._id === value._id} // Compare by unique identifier
 			renderInput={(params) => (
@@ -219,7 +242,11 @@ const Search = ({
 									: {}
 						}
 					>
+<<<<<<< Updated upstream
 						{multiple && isAdorned && (
+=======
+						{multiple && isAdorned && !option.noOptions && (
+>>>>>>> Stashed changes
 							<Checkbox
 								checked={option.isSelectAll ? selectAll : selected}
 								sx={{
