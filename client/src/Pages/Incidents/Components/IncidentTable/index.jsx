@@ -60,7 +60,7 @@ const IncidentTable = ({
 
 	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
 	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
-	const isLoading = selectedMonitor === "0" ? isLoadingTeam : isLoadingMonitor;
+	const isLoading = isLoadingTeam || isLoadingMonitor;
 	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
 
 	const { t } = useTranslation();
