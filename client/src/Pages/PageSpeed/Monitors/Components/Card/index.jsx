@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import PageSpeedIcon from "../../../../../assets/icons/page-speed.svg?react";
 import { StatusLabel } from "../../../../../Components/Label";
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { useSelector } from "react-redux";

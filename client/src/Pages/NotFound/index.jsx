@@ -1,8 +1,7 @@
-import React from "react";
 import PropTypes from "prop-types";
 import NotFoundSvg from "../../../src/assets/Images/sushi_404.svg";
 import { Button, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
