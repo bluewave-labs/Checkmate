@@ -91,30 +91,19 @@ const Settings = () => {
 			settings: { ...settingsData.settings, [name]: newValue ?? value },
 		};
 
-		// Validate
-		const { error } = settingsValidation.validate(newSettingsData.settings, {
-			abortEarly: false,
-		});
-		if (!error || error.details.length === 0) {
-			setErrors({});
-		} else {
-			const newErrors = {};
-			error.details.forEach((err) => {
-				newErrors[err.path[0]] = err.message;
-			});
-			setErrors(newErrors);
-		}
-
 		if (name === "timezone") {
 			dispatch(setTimezone({ timezone: value }));
+			return;
 		}
 
 		if (name === "mode") {
 			dispatch(setMode(value));
+			return;
 		}
 
 		if (name === "language") {
 			dispatch(setLanguage(value));
+			return;
 		}
 
 		if (name === "deleteStats") {
@@ -130,6 +119,20 @@ const Settings = () => {
 		if (name === "deleteMonitors") {
 			await deleteAllMonitors();
 			return;
+		}
+
+		// Validate
+		const { error } = settingsValidation.validate(newSettingsData.settings, {
+			abortEarly: false,
+		});
+		if (!error || error.details.length === 0) {
+			setErrors({});
+		} else {
+			const newErrors = {};
+			error.details.forEach((err) => {
+				newErrors[err.path[0]] = err.message;
+			});
+			setErrors(newErrors);
 		}
 
 		setSettingsData(newSettingsData);
