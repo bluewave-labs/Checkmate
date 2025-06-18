@@ -13,8 +13,6 @@ import { useTranslation } from "react-i18next";
 import { createToast } from "../../Utils/toastUtils";
 import { useExportMonitors } from "../../Hooks/monitorHooks";
 
-const options = ["Import Monitors", "Export Monitors"];
-
 const MonitorActions = ({ isLoading }) => {
 	const [open, setOpen] = React.useState(false);
 	const anchorRef = React.useRef(null);
@@ -22,6 +20,8 @@ const MonitorActions = ({ isLoading }) => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const [exportMonitors, isExporting] = useExportMonitors();
+
+	const options = [t('monitorActions.import'), t('monitorActions.export')];
 
 	const handleClick = async () => {
 		if (selectedIndex === 0) {
