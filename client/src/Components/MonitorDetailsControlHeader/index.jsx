@@ -68,6 +68,9 @@ const MonitorDetailsControlHeader = ({
 					onClick={() => {
 						testAllNotifications({ monitorId: monitor?._id });
 					}}
+					sx={{
+						whiteSpace: "nowrap",
+					}}
 				>
 					{t("sendTestNotifications")}
 				</Button>
