@@ -60,30 +60,30 @@ class NetworkService {
 	}
 
 	/**
-	 * Sends a ping request to the specified URL and returns the response.
-	 *
-	 * @param {Object} job - The job object containing the data for the ping request.
-	 * @param {Object} job.data - The data object within the job.
-	 * @param {string} job.data.url - The URL to ping.
-	 * @param {string} job.data._id - The monitor ID for the ping request.
-	 * @returns {Promise<Object>} An object containing the ping response details.
-	 * @property {string} monitorId - The monitor ID for the ping request.
-	 * @property {string} type - The type of request, which is "ping".
-	 * @property {number} responseTime - The time taken for the ping request to complete, in milliseconds.
-	 * @property {Object} payload - The response payload from the ping request.
-	 * @property {boolean} status - The status of the ping request (true if successful, false otherwise).
-	 * @property {number} code - The response code (200 if successful, error code otherwise).
-	 * @property {string} message - The message indicating the result of the ping request.
+	 * Performs a ping check to a specified host to verify its availability.
+	 * @async
+	 * @param {Object} monitor - The monitor configuration object
+	 * @param {string} monitor.url - The host URL to ping
+	 * @param {string} monitor._id - The unique identifier of the monitor
+	 * @returns {Promise<Object>} A promise that resolves to a ping response object
+	 * @returns {string} pingResponse.monitorId - The ID of the monitor
+	 * @returns {string} pingResponse.type - The type of monitor (always "ping")
+	 * @returns {number} pingResponse.responseTime - The time taken for the ping
+	 * @returns {Object} pingResponse.payload - The raw ping response data
+	 * @returns {boolean} pingResponse.status - Whether the host is alive (true) or not (false)
+	 * @returns {number} pingResponse.code - Status code (200 for success, PING_ERROR for failure)
+	 * @returns {string} pingResponse.message - Success or failure message
+	 * @throws {Error} If there's an error during the ping operation
 	 */
-	async requestPing(job) {
+	async requestPing(monitor) {
 		try {
-			const url = job.data.url;
+			const url = monitor.url;
 			const { response, responseTime, error } = await this.timeRequest(() =>
 				this.ping.promise.probe(url)
 			);
 
 			const pingResponse = {
-				monitorId: job.data._id,
+				monitorId: monitor._id,
 				type: "ping",
 				responseTime,
 				payload: response,
@@ -107,21 +107,29 @@ class NetworkService {
 	}
 
 	/**
-	 * Sends an HTTP GET request to the specified URL and returns the response.
-	 *
-	 * @param {Object} job - The job object containing the data for the HTTP request.
-	 * @param {Object} job.data - The data object within the job.
-	 * @param {string} job.data.url - The URL to send the HTTP GET request to.
-	 * @param {string} job.data._id - The monitor ID for the HTTP request.
-	 * @param {string} [job.data.secret] - Secret for authorization if provided.
-	 * @returns {Promise<Object>} An object containing the HTTP response details.
-	 * @property {string} monitorId - The monitor ID for the HTTP request.
-	 * @property {string} type - The type of request, which is "http".
-	 * @property {number} responseTime - The time taken for the HTTP request to complete, in milliseconds.
-	 * @property {Object} payload - The response payload from the HTTP request.
-	 * @property {boolean} status - The status of the HTTP request (true if successful, false otherwise).
-	 * @property {number} code - The response code (200 if successful, error code otherwise).
-	 * @property {string} message - The message indicating the result of the HTTP request.
+	 * Performs an HTTP GET request to a specified URL with optional validation of response data.
+	 * @async
+	 * @param {Object} monitor - The monitor configuration object
+	 * @param {string} monitor.url - The URL to make the HTTP request to
+	 * @param {string} [monitor.secret] - Optional Bearer token for authentication
+	 * @param {string} monitor._id - The unique identifier of the monitor
+	 * @param {string} monitor.name - The name of the monitor
+	 * @param {string} monitor.teamId - The team ID associated with the monitor
+	 * @param {string} monitor.type - The type of monitor
+	 * @param {boolean} [monitor.ignoreTlsErrors] - Whether to ignore TLS certificate errors
+	 * @param {string} [monitor.jsonPath] - Optional JMESPath expression to extract data from JSON response
+	 * @param {string} [monitor.matchMethod] - Method to match response data ('include', 'regex', or exact match)
+	 * @param {string} [monitor.expectedValue] - Expected value to match against response data
+	 * @returns {Promise<Object>} A promise that resolves to an HTTP response object
+	 * @returns {string} httpResponse.monitorId - The ID of the monitor
+	 * @returns {string} httpResponse.teamId - The team ID
+	 * @returns {string} httpResponse.type - The type of monitor
+	 * @returns {number} httpResponse.responseTime - The time taken for the request
+	 * @returns {Object} httpResponse.payload - The response data
+	 * @returns {boolean} httpResponse.status - Whether the request was successful and matched expected value (if specified)
+	 * @returns {number} httpResponse.code - HTTP status code or NETWORK_ERROR
+	 * @returns {string} httpResponse.message - Success or failure message
+	 * @throws {Error} If there's an error during the HTTP request or data validation
 	 */
 	async requestHttp(monitor) {
 		try {
@@ -231,20 +239,19 @@ class NetworkService {
 	}
 
 	/**
-	 * Sends a request to the Google PageSpeed Insights API for the specified URL and returns the response.
-	 *
-	 * @param {Object} job - The job object containing the data for the PageSpeed request.
-	 * @param {Object} job.data - The data object within the job.
-	 * @param {string} job.data.url - The URL to analyze with PageSpeed Insights.
-	 * @param {string} job.data._id - The monitor ID for the PageSpeed request.
-	 * @returns {Promise<Object>} An object containing the PageSpeed response details.
-	 * @property {string} monitorId - The monitor ID for the PageSpeed request.
-	 * @property {string} type - The type of request, which is "pagespeed".
-	 * @property {number} responseTime - The time taken for the PageSpeed request to complete, in milliseconds.
-	 * @property {Object} payload - The response payload from the PageSpeed request.
-	 * @property {boolean} status - The status of the PageSpeed request (true if successful, false otherwise).
-	 * @property {number} code - The response code (200 if successful, error code otherwise).
-	 * @property {string} message - The message indicating the result of the PageSpeed request.
+	 * Checks the performance of a webpage using Google's PageSpeed Insights API.
+	 * @async
+	 * @param {Object} monitor - The monitor configuration object
+	 * @param {string} monitor.url - The URL of the webpage to analyze
+	 * @returns {Promise<Object|undefined>} A promise that resolves to a pagespeed response object or undefined if API key is missing
+	 * @returns {string} response.monitorId - The ID of the monitor
+	 * @returns {string} response.type - The type of monitor
+	 * @returns {number} response.responseTime - The time taken for the analysis
+	 * @returns {boolean} response.status - Whether the analysis was successful
+	 * @returns {number} response.code - HTTP status code from the PageSpeed API
+	 * @returns {string} response.message - Success or failure message
+	 * @returns {Object} response.payload - The PageSpeed analysis results
+	 * @throws {Error} If there's an error during the PageSpeed analysis
 	 */
 	async requestPagespeed(monitor) {
 		try {
@@ -273,23 +280,6 @@ class NetworkService {
 		}
 	}
 
-	/**
-	 * Sends an HTTP request to check hardware status and returns the response.
-	 *
-	 * @param {Object} job - The job object containing the data for the hardware request.
-	 * @param {Object} job.data - The data object within the job.
-	 * @param {string} job.data.url - The URL to send the hardware status request to.
-	 * @param {string} job.data._id - The monitor ID for the hardware request.
-	 * @param {string} job.data.type - The type of request, which is "hardware".
-	 * @returns {Promise<Object>} An object containing the hardware status response details.
-	 * @property {string} monitorId - The monitor ID for the hardware request.
-	 * @property {string} type - The type of request ("hardware").
-	 * @property {number} responseTime - The time taken for the request to complete, in milliseconds.
-	 * @property {Object} payload - The response payload from the hardware status request.
-	 * @property {boolean} status - The status of the request (true if successful, false otherwise).
-	 * @property {number} code - The response code (200 if successful, error code otherwise).
-	 * @property {string} message - The message indicating the result of the hardware status request.
-	 */
 	async requestHardware(monitor) {
 		try {
 			return await this.requestHttp(monitor);
@@ -301,20 +291,20 @@ class NetworkService {
 	}
 
 	/**
-	 * Sends a request to inspect a Docker container and returns its status.
-	 *
-	 * @param {Object} job - The job object containing the data for the Docker request.
-	 * @param {Object} job.data - The data object within the job.
-	 * @param {string} job.data.url - The container ID or name to inspect.
-	 * @param {string} job.data._id - The monitor ID for the Docker request.
-	 * @param {string} job.data.type - The type of request, which is "docker".
-	 * @returns {Promise<Object>} An object containing the Docker container status details.
-	 * @property {string} monitorId - The monitor ID for the Docker request.
-	 * @property {string} type - The type of request ("docker").
-	 * @property {number} responseTime - The time taken for the Docker inspection to complete, in milliseconds.
-	 * @property {boolean} status - The status of the container (true if running, false otherwise).
-	 * @property {number} code - The response code (200 if successful, error code otherwise).
-	 * @property {string} message - The message indicating the result of the Docker inspection.
+	 * Checks the status of a Docker container by its ID.
+	 * @async
+	 * @param {Object} monitor - The monitor configuration object
+	 * @param {string} monitor.url - The Docker container ID to check
+	 * @param {string} monitor._id - The unique identifier of the monitor
+	 * @param {string} monitor.type - The type of monitor
+	 * @returns {Promise<Object>} A promise that resolves to a docker response object
+	 * @returns {string} dockerResponse.monitorId - The ID of the monitor
+	 * @returns {string} dockerResponse.type - The type of monitor
+	 * @returns {number} dockerResponse.responseTime - The time taken for the container inspection
+	 * @returns {boolean} dockerResponse.status - Whether the container is running (true) or not (false)
+	 * @returns {number} dockerResponse.code - HTTP-like status code (200 for success, NETWORK_ERROR for failure)
+	 * @returns {string} dockerResponse.message - Success or failure message
+	 * @throws {Error} If the container is not found or if there's an error inspecting the container
 	 */
 	async requestDocker(monitor) {
 		try {
@@ -358,6 +348,23 @@ class NetworkService {
 		}
 	}
 
+	/**
+	 * Attempts to establish a TCP connection to a specified host and port.
+	 * @async
+	 * @param {Object} monitor - The monitor configuration object
+	 * @param {string} monitor.url - The host URL to connect to
+	 * @param {number} monitor.port - The port number to connect to
+	 * @param {string} monitor._id - The unique identifier of the monitor
+	 * @param {string} monitor.type - The type of monitor
+	 * @returns {Promise<Object>} A promise that resolves to a port response object
+	 * @returns {string} portResponse.monitorId - The ID of the monitor
+	 * @returns {string} portResponse.type - The type of monitor
+	 * @returns {number} portResponse.responseTime - The time taken for the connection attempt
+	 * @returns {boolean} portResponse.status - Whether the connection was successful
+	 * @returns {number} portResponse.code - HTTP-like status code (200 for success, NETWORK_ERROR for failure)
+	 * @returns {string} portResponse.message - Success or failure message
+	 * @throws {Error} If the connection times out or encounters an error
+	 */
 	async requestPort(monitor) {
 		try {
 			const { url, port } = monitor;
