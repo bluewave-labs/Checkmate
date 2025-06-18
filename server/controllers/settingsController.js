@@ -90,26 +90,21 @@ class SettingsController {
 			const subject = this.stringService.testEmailSubject;
 			const context = { testName: "Monitoring System" };
 
-			const messageId = await this.emailService.buildAndSendEmail(
-				"testEmailTemplate",
-				context,
-				to,
-				subject,
-				{
-					systemEmailHost,
-					systemEmailPort,
-					systemEmailUser,
-					systemEmailAddress,
-					systemEmailPassword,
-					systemEmailConnectionHost,
-					systemEmailSecure,
-					systemEmailPool,
-					systemEmailIgnoreTLS,
-					systemEmailRequireTLS,
-					systemEmailRejectUnauthorized,
-					systemEmailTLSServername,
-				}
-			);
+			const html = await this.emailService.buildEmail("testEmailTemplate", context);
+			const messageId = await this.emailService.sendEmail(to, subject, html, {
+				systemEmailHost,
+				systemEmailPort,
+				systemEmailUser,
+				systemEmailAddress,
+				systemEmailPassword,
+				systemEmailConnectionHost,
+				systemEmailSecure,
+				systemEmailPool,
+				systemEmailIgnoreTLS,
+				systemEmailRequireTLS,
+				systemEmailRejectUnauthorized,
+				systemEmailTLSServername,
+			});
 
 			if (!messageId) {
 				return res.error({
