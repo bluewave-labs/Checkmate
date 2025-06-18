@@ -7,7 +7,7 @@ const nameSchema = joi
 	.string()
 	.max(50)
 	.trim()
-	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
+	.pattern(/^[\p{L}\p{M}''()\-\. ]+$/u)
 	.messages({
 		"string.empty": "auth.common.inputs.firstName.errors.empty",
 		"string.max": "auth.common.inputs.firstName.errors.length",
@@ -18,7 +18,7 @@ const lastnameSchema = joi
 	.string()
 	.max(50)
 	.trim()
-	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
+	.pattern(/^[\p{L}\p{M}''()\-\. ]+$/u)
 	.messages({
 		"string.empty": "auth.common.inputs.lastName.errors.empty",
 		"string.max": "auth.common.inputs.lastName.errors.length",
