@@ -3,7 +3,7 @@ import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
 
-const useFetchSettings = ({ setSettingsData }) => {
+const useFetchSettings = ({ setSettingsData, setIsApiKeySet, setIsEmailPasswordSet }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(undefined);
 	useEffect(() => {
@@ -12,6 +12,8 @@ const useFetchSettings = ({ setSettingsData }) => {
 			try {
 				const response = await networkService.getAppSettings();
 				setSettingsData(response?.data?.data);
+				setIsApiKeySet(response?.data?.data?.pagespeedKeySet);
+				setIsEmailPasswordSet(response?.data?.data?.emailPasswordSet);
 			} catch (error) {
 				createToast({ body: "Failed to fetch settings" });
 				setError(error);
@@ -20,12 +22,18 @@ const useFetchSettings = ({ setSettingsData }) => {
 			}
 		};
 		fetchSettings();
-	}, []);
+	}, [setSettingsData]);
 
 	return [isLoading, error];
 };
 
-const useSaveSettings = () => {
+const useSaveSettings = ({
+	setSettingsData,
+	setIsApiKeySet,
+	setApiKeyHasBeenReset,
+	setIsEmailPasswordSet,
+	setEmailPasswordHasBeenReset,
+}) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(undefined);
 	const { t } = useTranslation();
@@ -39,7 +47,15 @@ const useSaveSettings = () => {
 					ttl: settings.checkTTL,
 				});
 			}
-			console.log({ settingsResponse });
+			setIsApiKeySet(settingsResponse.data.data.pagespeedKeySet);
+			setIsEmailPasswordSet(settingsResponse.data.data.emailPasswordSet);
+			if (settingsResponse.data.data.pagespeedKeySet === true) {
+				setApiKeyHasBeenReset(false);
+			}
+			if (settingsResponse.data.data.emailPasswordSet === true) {
+				setEmailPasswordHasBeenReset(false);
+			}
+			setSettingsData(settingsResponse.data.data);
 			createToast({ body: t("settingsSuccessSaved") });
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });
