@@ -34,7 +34,7 @@ const nameValidation = joi
 		"string.empty": "Name is required",
 		"string.max": "Name must be less than 50 characters",
 		"string.pattern.base":
-			"Names must contain at least 1 letter and may only include the following characters: a-z, A-Z, and any of the following symbols: -'.()",
+			"Names must contain at least 1 letter and may only include letters, currency symbols, spaces, apostrophes, hyphens (-), periods (.), and parentheses ().",
 	});
 
 const registrationBodyValidation = joi.object({
