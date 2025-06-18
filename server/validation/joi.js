@@ -29,12 +29,12 @@ const nameValidation = joi
 	.string()
 	.trim()
 	.max(50)
-	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s']+$/u)
+	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s'\-().]+$/u)
 	.messages({
 		"string.empty": "Name is required",
 		"string.max": "Name must be less than 50 characters",
 		"string.pattern.base":
-			"Name must contain at least 1 letter or currency symbol and only allow letters, spaces, apostrophes, and currency symbols",
+			"Names must contain at least 1 letter and may only include letters, currency symbols, spaces, apostrophes, hyphens (-), periods (.), and parentheses ().",
 	});
 
 const registrationBodyValidation = joi.object({
