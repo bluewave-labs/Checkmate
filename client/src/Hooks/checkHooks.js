@@ -71,7 +71,7 @@ const useFetchChecksByMonitor = ({
 
 	useEffect(() => {
 		const fetchChecks = async () => {
-			if (!enabled) {
+			if (!enabled || !type) {
 				return;
 			}
 
