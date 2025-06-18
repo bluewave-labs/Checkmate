@@ -39,7 +39,11 @@ const Fallback = ({
 	const { t } = useTranslation();
 	const [settingsData, setSettingsData] = useState(undefined);
 
-	const [isLoading, error] = useFetchSettings({ setSettingsData });
+	const [isLoading, error] = useFetchSettings({
+		setSettingsData,
+		setIsApiKeySet: () => {},
+		setIsEmailPasswordSet: () => {},
+	});
 	// Custom warning message with clickable link
 	const renderWarningMessage = () => {
 		return (

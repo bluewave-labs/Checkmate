@@ -11,8 +11,7 @@ class SettingsController {
 		this.emailService = emailService;
 	}
 
-	getAppSettings = async (req, res, next) => {
-		const dbSettings = await this.settingsService.getDBSettings();
+	buildAppSettings = (dbSettings) => {
 		const sanitizedSettings = { ...dbSettings };
 		delete sanitizedSettings.version;
 
@@ -30,6 +29,13 @@ class SettingsController {
 			delete sanitizedSettings.systemEmailPassword;
 		}
 		returnSettings.settings = sanitizedSettings;
+		return returnSettings;
+	};
+
+	getAppSettings = async (req, res, next) => {
+		const dbSettings = await this.settingsService.getDBSettings();
+
+		const returnSettings = this.buildAppSettings(dbSettings);
 		return res.success({
 			msg: this.stringService.getAppSettings,
 			data: returnSettings,
@@ -45,12 +51,11 @@ class SettingsController {
 		}
 
 		try {
-			await this.db.updateAppSettings(req.body);
-			const updatedSettings = { ...(await this.settingsService.reloadSettings()) };
-			delete updatedSettings.jwtSecret;
+			const updatedSettings = await this.db.updateAppSettings(req.body);
+			const returnSettings = this.buildAppSettings(updatedSettings);
 			return res.success({
 				msg: this.stringService.updateAppSettings,
-				data: updatedSettings,
+				data: returnSettings,
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "updateAppSettings"));

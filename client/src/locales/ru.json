@@ -1,186 +1,4 @@
 {
-	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
-		"buttons": {
-			"toggleTheme": ""
-		},
-		"toasts": {
-			"networkError": "Ошибка сети",
-			"checkConnection": "Пожалуйста, проверьте ваше соединение",
-			"unknownError": ""
-		}
-	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "Продолжить",
-				"back": "Назад"
-			},
-			"inputs": {
-				"email": {
-					"label": "Почта",
-					"placeholder": "",
-					"errors": {
-						"empty": "Чтобы продолжить, пожалуйста, введите свой адрес электронной почты",
-						"invalid": "Пожалуйста, введите действительный адрес электронной почты"
-					}
-				},
-				"password": {
-					"label": "пароль",
-					"rules": {
-						"length": {
-							"beginning": "Должно быть как минимум",
-							"highlighted": "длиной 8 символов"
-						},
-						"special": {
-							"beginning": "Должен содержать как минимум",
-							"highlighted": "один специальный символ"
-						},
-						"number": {
-							"beginning": "Должен содержать как минимум",
-							"highlighted": "одно число"
-						},
-						"uppercase": {
-							"beginning": "Должен содержать как минимум",
-							"highlighted": "один верхний символ"
-						},
-						"lowercase": {
-							"beginning": "Должен содержать как минимум",
-							"highlighted": "один нижний символ"
-						},
-						"match": {
-							"beginning": "Подтвердите пароль и пароль",
-							"highlighted": ""
-						}
-					},
-					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
-					}
-				},
-				"passwordConfirm": {
-					"label": "Подтвердите пароль",
-					"placeholder": "Подтвердите ваш пароль",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "Имя",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				},
-				"lastName": {
-					"label": "Фамилия",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				}
-			},
-			"errors": {
-				"validation": ""
-			}
-		},
-		"login": {
-			"heading": "Войти",
-			"subheadings": {
-				"stepOne": "Введите свой email",
-				"stepTwo": "Введите свой пароль"
-			},
-			"links": {
-				"forgotPassword": "Забыли пароль? <a>Сбросить пароль</a>",
-				"register": "У вас нет учетной записи? <a>Зарегистрируйтесь здесь</a>"
-			},
-			"toasts": {
-				"success": "Добро пожаловать обратно! Вы успешно вошли в систему.",
-				"incorrectPassword": ""
-			}
-		},
-		"registration": {
-			"heading": {
-				"superAdmin": "",
-				"user": "Зарегистрироваться"
-			},
-			"subheadings": {
-				"stepOne": "Введите свои личные данные",
-				"stepTwo": "Введите свой email",
-				"stepThree": "Создайте свой пароль"
-			},
-			"description": {
-				"superAdmin": "Создайте учетную запись суперадминистратора, чтобы начать работу",
-				"user": ""
-			},
-			"gettingStartedButton": {
-				"superAdmin": "Зарегистрироваться по электронной почте",
-				"user": ""
-			},
-			"termsAndPolicies": "Регистрируясь, вы соглашаетесь с нашими",
-			"links": {
-				"login": "Уже есть аккаунт? <a>Войти</a>"
-			},
-			"toasts": {
-				"success": ""
-			}
-		},
-		"forgotPassword": {
-			"heading": "Забыли пароль?",
-			"subheadings": {
-				"stepOne": "Не беспокойтесь, мы вышлем вам инструкции по сбросу настроек.",
-				"stepTwo": "Мы отправили ссылку для сброса пароля <email/>",
-				"stepThree": "Ваш новый пароль должен отличаться от ранее использованных паролей.",
-				"stepFour": "Ваш пароль успешно сброшен. Нажмите ниже, чтобы войти в систему магическим образом."
-			},
-			"buttons": {
-				"openEmail": "Откройте приложение почты",
-				"resetPassword": "Сбросить пароль"
-			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
-			},
-			"links": {
-				"login": "Назад к <a>Войти</a>",
-				"resend": "Не получили письмо? <a>Нажмите, чтобы отправить повторно</a>"
-			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
-			}
-		}
-	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "Успешно подключен к серверу.",
-				"stillUnreachable": "Сервер по-прежнему недоступен. Пожалуйста, повторите попытку позже."
-			},
-			"alertBox": "Ошибка подключения к серверу",
-			"description": "Нам не удается подключиться к серверу. Пожалуйста, проверьте подключение к Интернету или конфигурацию вашего развертывания, если проблема не устранена.",
-			"retryButton": {
-				"default": "Повторите попытку подключения",
-				"processing": "Подключение..."
-			}
-		}
-	},
 	"submit": "Подтвердить",
 	"title": "Название",
 	"distributedStatusHeaderText": "Охват реального времени и реального устройства",
@@ -253,9 +71,6 @@
 	"distributedUptimeCreateIncidentDescription": "В случае возникновения инцидента сообщите об этом пользователям.",
 	"distributedUptimeCreateAdvancedSettings": "Расширенные настройки",
 	"distributedUptimeDetailsNoMonitorHistory": "Для этого монитора пока нет истории проверок.",
-	"distributedUptimeDetailsFooterHeading": "Made with ❤️ by UpRock & Bluewave Labs",
-	"distributedUptimeDetailsFooterBuilt": "Built on",
-	"distributedUptimeDetailsFooterSolana": "Solana",
 	"distributedUptimeDetailsStatusHeaderUptime": "Аптайм:",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Последнее обновление",
 	"notifications": {
@@ -297,7 +112,33 @@
 		"testSuccess": "Уведомление о тестировании отправлено успешно!",
 		"testFailed": "Не удалось отправить тестовое уведомление",
 		"unsupportedType": "Неподдерживаемый тип уведомления",
-		"networkError": "Произошла сетевая ошибка"
+		"networkError": "Произошла сетевая ошибка",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "testLocale",
 	"add": "Добавить",
@@ -541,11 +382,6 @@
 		"append": "Вторая половина дня — это ваша игровая площадка - давайте сделаем ее эпичной!",
 		"overview": "Вот обзор ваших мониторов {{type}}."
 	},
-	"monitorStatus": {
-		"up": "доступен",
-		"down": "недоступен",
-		"paused": "остановлен"
-	},
 	"roles": {
 		"superAdmin": "Главный админ",
 		"admin": "Админ",
@@ -584,7 +420,6 @@
 		"uptime": "Аптайм",
 		"pagespeed": "Pagespeed",
 		"infrastructure": "Инфраструктура",
-		"distributedUptime": "Распределенный Аптайм",
 		"incidents": "Инциденты",
 		"statusPages": "Страницы статуса",
 		"maintenance": "Обслуживание",
@@ -597,7 +432,8 @@
 		"profile": "Профиль",
 		"password": "Пароль",
 		"team": "Команда",
-		"logOut": "Выйти"
+		"logOut": "Выйти",
+		"notifications": ""
 	},
 	"settingsEmail": "Настройки Email",
 	"settingsEmailDescription": "Настройка параметров email",
@@ -628,7 +464,6 @@
 		"saving": "Сохранение..."
 	},
 	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
 	"settingsTestEmail": "",
@@ -653,5 +488,257 @@
 		"ping": "",
 		"docker": "",
 		"port": ""
-	}
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"genericWebhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": ""
 }

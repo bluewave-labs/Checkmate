@@ -29,12 +29,12 @@ const nameValidation = joi
 	.string()
 	.trim()
 	.max(50)
-	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s']+$/u)
+	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s'\-().]+$/u)
 	.messages({
 		"string.empty": "Name is required",
 		"string.max": "Name must be less than 50 characters",
 		"string.pattern.base":
-			"Name must contain at least 1 letter or currency symbol and only allow letters, spaces, apostrophes, and currency symbols",
+			"Names must contain at least 1 letter and may only include letters, currency symbols, spaces, apostrophes, hyphens (-), periods (.), and parentheses ().",
 	});
 
 const registrationBodyValidation = joi.object({
@@ -558,14 +558,6 @@ const triggerNotificationBodyValidation = joi.object({
 });
 
 const createNotificationBodyValidation = joi.object({
-	userId: joi.string().required().messages({
-		"number.empty": "User ID is required",
-		"any.required": "User ID is required",
-	}),
-	teamId: joi.string().required().messages({
-		"string.empty": "Team ID is required",
-		"any.required": "Team ID is required",
-	}),
 	notificationName: joi.string().required().messages({
 		"string.empty": "Notification name is required",
 		"any.required": "Notification name is required",

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { networkService } from "../Utils/NetworkService";
 import Alert from "../Components/Alert";
 import { createToast } from "../Utils/toastUtils";

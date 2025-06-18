@@ -10,7 +10,6 @@ import TextInput from "../../../Components/Inputs/TextInput";
 
 // Utils
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import {
 	useCreateNotification,
@@ -44,7 +43,6 @@ const CreateNotifications = () => {
 	];
 
 	// Redux state
-	const { user } = useSelector((state) => state.auth);
 
 	// local state
 	const [notification, setNotification] = useState({
@@ -73,7 +71,7 @@ const CreateNotifications = () => {
 			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
 		};
 
-		if (notification.type === 2) {
+		if (form.type === "slack" || form.type === "discord") {
 			form.type = "webhook";
 		}
 
@@ -128,27 +126,33 @@ const CreateNotifications = () => {
 
 		// Handle config/platform initialization if type is webhook
 
-		if (newNotification.type === 1) {
+		const type = NOTIFICATION_TYPES.find(
+			(type) => type._id === newNotification.type
+		).value;
+
+		if (type === "email") {
 			newNotification.config = null;
-		} else if (newNotification.type === 2) {
+		} else if (type === "slack" || type === "webhook" || type === "discord") {
 			newNotification.address = "";
 			newNotification.config = newNotification.config || {};
 			if (name === "config") {
 				newNotification.config = value;
 			}
-			newNotification.config.platform = "slack";
-		} else if (newNotification.type === 3) {
+			if (type === "webhook") {
+				newNotification.config.platform = "webhook";
+			}
+			if (type === "slack") {
+				newNotification.config.platform = "slack";
+			}
+			if (type === "discord") {
+				newNotification.config.platform = "discord";
+			}
+		} else if (type === "pager_duty") {
 			newNotification.config = newNotification.config || {};
 			if (name === "config") {
 				newNotification.config = value;
 			}
 			newNotification.config.platform = "pager_duty";
-		} else if (newNotification.type === 4) {
-			newNotification.config = newNotification.config || {};
-			if (name === "config") {
-				newNotification.config = value;
-			}
-			newNotification.config.platform = "webhook";
 		}
 
 		// Field-level validation
@@ -159,12 +163,15 @@ const CreateNotifications = () => {
 			fieldError = error?.message;
 		}
 
-		if (newNotification.type === 1 && name === "address") {
+		if (type === "email" && name === "address") {
 			const { error } = notificationEmailValidation.extract(name).validate(value);
 			fieldError = error?.message;
 		}
 
-		if (newNotification.type === 2 && name === "config") {
+		if (
+			(type === "slack" || type === "webhook" || type === "discord") &&
+			name === "config"
+		) {
 			// Validate only webhookUrl inside config
 			const { error } = notificationWebhookValidation.extract("config").validate(value);
 			fieldError = error?.message;
@@ -185,7 +192,7 @@ const CreateNotifications = () => {
 			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
 		};
 
-		if (notification.type === 2) {
+		if (form.type === "slack" || form.type === "discord") {
 			form.type = "webhook";
 		}
 
@@ -385,6 +392,39 @@ const CreateNotifications = () => {
 						<Stack gap={theme.spacing(12)}>
 							<TextInput
 								label={t("createNotifications.genericWebhookSettings.webhookLabel")}
+								value={notification.config.webhookUrl || ""}
+								error={Boolean(errors.config)}
+								helperText={errors["config"]}
+								onChange={(e) => {
+									const updatedConfig = {
+										...notification.config,
+										webhookUrl: e.target.value,
+									};
+
+									onChange({
+										target: {
+											name: "config",
+											value: updatedConfig,
+										},
+									});
+								}}
+							/>
+						</Stack>
+					</ConfigBox>
+				)}
+				{notification.type === 5 && (
+					<ConfigBox>
+						<Box>
+							<Typography component="h2">
+								{t("createNotifications.discordSettings.title")}
+							</Typography>
+							<Typography component="p">
+								{t("createNotifications.discordSettings.description")}
+							</Typography>
+						</Box>
+						<Stack gap={theme.spacing(12)}>
+							<TextInput
+								label={t("createNotifications.discordSettings.webhookLabel")}
 								value={notification.config.webhookUrl || ""}
 								error={Boolean(errors.config)}
 								helperText={errors["config"]}
