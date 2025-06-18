@@ -24,7 +24,6 @@ import { formatMonitorUrl } from "../../Utils/utils";
 const Status = ({ monitor }) => {
 	const theme = useTheme();
 	const { statusColor, determineState } = useMonitorUtils();
-	const URL_TRUNCATION_LENGTH = 55;
 
 	return (
 		<Stack>
@@ -35,9 +34,7 @@ const Status = ({ monitor }) => {
 				gap={theme.spacing(4)}
 			>
 				<PulseDot color={statusColor[determineState(monitor)]} />
-				<Typography variant="monitorUrl">
-					{formatMonitorUrl(monitor?.url, URL_TRUNCATION_LENGTH)}
-				</Typography>
+				<Typography variant="monitorUrl">{formatMonitorUrl(monitor?.url)}</Typography>
 				<Dot />
 				<Typography>
 					Checking every {formatDurationRounded(monitor?.interval)}.
