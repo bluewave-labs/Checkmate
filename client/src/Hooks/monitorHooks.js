@@ -463,7 +463,7 @@ const useExportMonitors = () => {
 			const response = await networkService.exportMonitors();
 
 			// Create a download link
-			const url = window.URL.createObjectURL(response);
+			const url = window.URL.createObjectURL(response.data);
 			const link = document.createElement("a");
 			link.href = url;
 			link.setAttribute("download", "monitors.csv");
