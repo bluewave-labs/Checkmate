@@ -17,15 +17,17 @@ import {
 	useEditNotification,
 	useTestNotification,
 } from "../../../Hooks/useNotifications";
-import {
-	notificationEmailValidation,
-	notificationWebhookValidation,
-	notificationPagerDutyValidation,
-} from "../../../Validation/validation";
+import { notificationValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { NOTIFICATION_TYPES } from "../utils";
+import {
+	NOTIFICATION_TYPES,
+	TITLE_MAP,
+	DESCRIPTION_MAP,
+	LABEL_MAP,
+	PLACEHOLDER_MAP,
+} from "../utils";
 
 // Setup
 
@@ -49,11 +51,6 @@ const CreateNotifications = () => {
 		notificationName: "",
 		address: "",
 		type: NOTIFICATION_TYPES[0]._id,
-		config: {
-			webhookUrl: "",
-			platform: "",
-			routingKey: "",
-		},
 	});
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
@@ -71,42 +68,17 @@ const CreateNotifications = () => {
 			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
 		};
 
-		if (form.type === "slack" || form.type === "discord") {
-			form.type = "webhook";
-		}
-
 		let error = null;
 
-		if (form.type === "email") {
-			error = notificationEmailValidation.validate(
-				{ notificationName: form.notificationName, address: form.address },
-				{ abortEarly: false }
-			).error;
-		} else if (form.type === "webhook") {
-			form.config = {
-				platform: form.config.platform,
-				webhookUrl: form.config.webhookUrl,
-			};
-			error = notificationWebhookValidation.validate(
-				{ notificationName: form.notificationName, config: form.config },
-				{ abortEarly: false }
-			).error;
-		} else if (form.type === "pager_duty") {
-			form.config = {
-				platform: form.config.platform,
-				routingKey: form.config.routingKey,
-			};
-			error = notificationPagerDutyValidation.validate(
-				{ notificationName: form.notificationName, config: form.config },
-				{ abortEarly: false }
-			).error;
-		}
+		error = notificationValidation.validate(form, { abortEarly: false }).error;
 
 		if (error) {
 			const newErrors = {};
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
+			console.log(JSON.stringify(newErrors));
+			console.log(JSON.stringify(form, null, 2));
 			createToast({ body: "Please check the form for errors." });
 			setErrors(newErrors);
 			return;
@@ -124,63 +96,10 @@ const CreateNotifications = () => {
 
 		const newNotification = { ...notification, [name]: value };
 
-		// Handle config/platform initialization if type is webhook
-
-		const type = NOTIFICATION_TYPES.find(
-			(type) => type._id === newNotification.type
-		).value;
-
-		if (type === "email") {
-			newNotification.config = null;
-		} else if (type === "slack" || type === "webhook" || type === "discord") {
-			newNotification.address = "";
-			newNotification.config = newNotification.config || {};
-			if (name === "config") {
-				newNotification.config = value;
-			}
-			if (type === "webhook") {
-				newNotification.config.platform = "webhook";
-			}
-			if (type === "slack") {
-				newNotification.config.platform = "slack";
-			}
-			if (type === "discord") {
-				newNotification.config.platform = "discord";
-			}
-		} else if (type === "pager_duty") {
-			newNotification.config = newNotification.config || {};
-			if (name === "config") {
-				newNotification.config = value;
-			}
-			newNotification.config.platform = "pager_duty";
-		}
-
-		// Field-level validation
-		let fieldError;
-
-		if (name === "notificationName") {
-			const { error } = notificationEmailValidation.extract(name).validate(value);
-			fieldError = error?.message;
-		}
-
-		if (type === "email" && name === "address") {
-			const { error } = notificationEmailValidation.extract(name).validate(value);
-			fieldError = error?.message;
-		}
-
-		if (
-			(type === "slack" || type === "webhook" || type === "discord") &&
-			name === "config"
-		) {
-			// Validate only webhookUrl inside config
-			const { error } = notificationWebhookValidation.extract("config").validate(value);
-			fieldError = error?.message;
-		}
-
-		// Set field-level error
+		const { error } = notificationValidation.extract(name).validate(value);
 		setErrors((prev) => ({
 			...prev,
-			[name]: fieldError,
+			[name]: error?.message,
 		}));
 
 		setNotification(newNotification);
@@ -192,36 +111,9 @@ const CreateNotifications = () => {
 			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
 		};
 
-		if (form.type === "slack" || form.type === "discord") {
-			form.type = "webhook";
-		}
-
 		let error = null;
 
-		if (form.type === "email") {
-			error = notificationEmailValidation.validate(
-				{ notificationName: form.notificationName, address: form.address },
-				{ abortEarly: false }
-			).error;
-		} else if (form.type === "webhook") {
-			form.config = {
-				platform: form.config.platform,
-				webhookUrl: form.config.webhookUrl,
-			};
-			error = notificationWebhookValidation.validate(
-				{ notificationName: form.notificationName, config: form.config },
-				{ abortEarly: false }
-			).error;
-		} else if (form.type === "pager_duty") {
-			form.config = {
-				platform: form.config.platform,
-				routingKey: form.config.routingKey,
-			};
-			error = notificationPagerDutyValidation.validate(
-				{ notificationName: form.notificationName, config: form.config },
-				{ abortEarly: false }
-			).error;
-		}
+		error = notificationValidation.validate(form, { abortEarly: false }).error;
 
 		if (error) {
 			const newErrors = {};
@@ -236,6 +128,7 @@ const CreateNotifications = () => {
 		testNotification(form);
 	};
 
+	const type = NOTIFICATION_TYPES.find((type) => type._id === notification.type).value;
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
@@ -287,164 +180,24 @@ const CreateNotifications = () => {
 						/>
 					</Stack>
 				</ConfigBox>
-				{notification.type === 1 && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h2">
-								{t("createNotifications.emailSettings.title")}
-							</Typography>
-							<Typography component="p">
-								{t("createNotifications.emailSettings.description")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(12)}>
-							<TextInput
-								label={t("createNotifications.emailSettings.emailLabel")}
-								name="address"
-								placeholder={t("createNotifications.emailSettings.emailPlaceholder")}
-								value={notification.address}
-								onChange={onChange}
-								error={Boolean(errors.address)}
-								helperText={errors["address"]}
-							/>
-						</Stack>
-					</ConfigBox>
-				)}
-				{notification.type === 2 && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h2">
-								{t("createNotifications.slackSettings.title")}
-							</Typography>
-							<Typography component="p">
-								{t("createNotifications.slackSettings.description")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(12)}>
-							<TextInput
-								label={t("createNotifications.slackSettings.webhookLabel")}
-								value={notification.config.webhookUrl || ""}
-								error={Boolean(errors.config)}
-								helperText={errors["config"]}
-								onChange={(e) => {
-									const updatedConfig = {
-										...notification.config,
-										webhookUrl: e.target.value,
-									};
+				<ConfigBox>
+					<Box>
+						<Typography component="h2">{t(TITLE_MAP[type])}</Typography>
+						<Typography component="p">{t(DESCRIPTION_MAP[type])}</Typography>
+					</Box>
+					<Stack gap={theme.spacing(12)}>
+						<TextInput
+							label={t(LABEL_MAP[type])}
+							name="address"
+							placeholder={t(PLACEHOLDER_MAP[type])}
+							value={notification.address}
+							onChange={onChange}
+							error={Boolean(errors.address)}
+							helperText={errors["address"]}
+						/>
+					</Stack>
+				</ConfigBox>
 
-									onChange({
-										target: {
-											name: "config",
-											value: updatedConfig,
-										},
-									});
-								}}
-							/>
-						</Stack>
-					</ConfigBox>
-				)}
-				{notification.type === 3 && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h2">
-								{t("createNotifications.pagerdutySettings.title")}
-							</Typography>
-							<Typography component="p">
-								{t("createNotifications.pagerdutySettings.description")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(12)}>
-							<TextInput
-								label={t("createNotifications.pagerdutySettings.integrationKeyLabel")}
-								placeholder={t(
-									"createNotifications.pagerdutySettings.integrationKeyPlaceholder"
-								)}
-								value={notification.config.routingKey || ""}
-								error={Boolean(errors.config)}
-								helperText={errors["config"]}
-								onChange={(e) => {
-									const updatedConfig = {
-										...notification.config,
-										routingKey: e.target.value,
-									};
-
-									onChange({
-										target: {
-											name: "config",
-											value: updatedConfig,
-										},
-									});
-								}}
-							/>
-						</Stack>
-					</ConfigBox>
-				)}
-				{notification.type === 4 && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h2">
-								{t("createNotifications.genericWebhookSettings.title")}
-							</Typography>
-							<Typography component="p">
-								{t("createNotifications.genericWebhookSettings.description")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(12)}>
-							<TextInput
-								label={t("createNotifications.genericWebhookSettings.webhookLabel")}
-								value={notification.config.webhookUrl || ""}
-								error={Boolean(errors.config)}
-								helperText={errors["config"]}
-								onChange={(e) => {
-									const updatedConfig = {
-										...notification.config,
-										webhookUrl: e.target.value,
-									};
-
-									onChange({
-										target: {
-											name: "config",
-											value: updatedConfig,
-										},
-									});
-								}}
-							/>
-						</Stack>
-					</ConfigBox>
-				)}
-				{notification.type === 5 && (
-					<ConfigBox>
-						<Box>
-							<Typography component="h2">
-								{t("createNotifications.discordSettings.title")}
-							</Typography>
-							<Typography component="p">
-								{t("createNotifications.discordSettings.description")}
-							</Typography>
-						</Box>
-						<Stack gap={theme.spacing(12)}>
-							<TextInput
-								label={t("createNotifications.discordSettings.webhookLabel")}
-								value={notification.config.webhookUrl || ""}
-								error={Boolean(errors.config)}
-								helperText={errors["config"]}
-								onChange={(e) => {
-									const updatedConfig = {
-										...notification.config,
-										webhookUrl: e.target.value,
-									};
-
-									onChange({
-										target: {
-											name: "config",
-											value: updatedConfig,
-										},
-									});
-								}}
-							/>
-						</Stack>
-					</ConfigBox>
-				)}
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
