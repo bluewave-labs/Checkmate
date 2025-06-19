@@ -16,12 +16,8 @@ const createNetworkCheck = async (networkCheckData) => {
 		await networkCheck.save();
 		return networkCheck;
 	} catch (error) {
-		logger.error({
-			message: error.message,
-			service: SERVICE_NAME,
-			method: "createNetworkCheck",
-			stack: error.stack,
-		});
+		error.service = SERVICE_NAME;
+		error.method = "createNetworkCheck";
 		throw error;
 	}
 };
@@ -33,12 +29,8 @@ const getNetworkChecksByMonitorId = async (monitorId, limit = 100) => {
 			.limit(limit);
 		return networkChecks;
 	} catch (error) {
-		logger.error({
-			message: error.message,
-			service: SERVICE_NAME,
-			method: "getNetworkChecksByMonitorId",
-			stack: error.stack,
-		});
+		error.service = SERVICE_NAME;
+		error.method = "getNetworkChecksByMonitorId";
 		throw error;
 	}
 };
