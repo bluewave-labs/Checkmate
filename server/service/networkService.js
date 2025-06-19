@@ -432,9 +432,9 @@ class NetworkService {
 		throw err;
 	}
 
-	async requestWebhook(platform, url, message) {
+	async requestWebhook(type, url, body) {
 		try {
-			const response = await this.axios.post(url, message, {
+			const response = await this.axios.post(url, body, {
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -444,7 +444,7 @@ class NetworkService {
 				type: "webhook",
 				status: true,
 				code: response.status,
-				message: `Successfully sent ${platform} notification`,
+				message: `Successfully sent ${type} notification`,
 				payload: response.data,
 			};
 		} catch (error) {
@@ -452,19 +452,13 @@ class NetworkService {
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "requestWebhook",
-				url,
-				platform,
-				error: error.message,
-				statusCode: error.response?.status,
-				responseData: error.response?.data,
-				requestPayload: message,
 			});
 
 			return {
 				type: "webhook",
 				status: false,
 				code: error.response?.status || this.NETWORK_ERROR,
-				message: `Failed to send ${platform} notification`,
+				message: `Failed to send ${type} notification`,
 				payload: error.response?.data,
 			};
 		}
