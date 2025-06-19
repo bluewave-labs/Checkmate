@@ -21,7 +21,7 @@ const MonitorActions = ({ isLoading }) => {
 	const { t } = useTranslation();
 	const [exportMonitors, isExporting] = useExportMonitors();
 
-	const options = [t('monitorActions.import'), t('monitorActions.export')];
+	const options = [t("monitorActions.import"), t("monitorActions.export")];
 
 	const handleClick = async () => {
 		if (selectedIndex === 0) {
