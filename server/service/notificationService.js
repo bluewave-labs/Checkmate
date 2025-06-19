@@ -218,7 +218,16 @@ class NotificationService {
 		const template = "hardwareIncidentTemplate";
 		const context = { monitor: monitor.name, url: monitor.url, alerts };
 		const subject = `Monitor ${monitor.name} infrastructure alerts`;
-		this.emailService.buildAndSendEmail(template, context, address, subject);
+		const html = await this.emailService.buildEmail(template, context);
+		this.emailService.sendEmail(address, subject, html).catch((error) => {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "sendHardwareEmail",
+				stack: error.stack,
+			});
+		});
+
 		return true;
 	}
 
@@ -231,17 +240,22 @@ class NotificationService {
 		const subject = this.stringService.testEmailSubject;
 		const context = { testName: "Monitoring System" };
 
-		const messageId = await this.emailService.buildAndSendEmail(
-			"testEmailTemplate",
-			context,
-			to,
-			subject
-		);
+		try {
+			const html = await this.emailService.buildEmail("testEmailTemplate", context);
+			const messageId = await this.emailService.sendEmail(to, subject, html);
 
-		if (messageId) {
-			return true;
+			if (messageId) {
+				return true;
+			}
+		} catch (error) {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "sendTestEmail",
+				stack: error.stack,
+			});
+			return false;
 		}
-		return false;
 	};
 
 	/**
@@ -259,7 +273,17 @@ class NotificationService {
 		const template = prevStatus === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
 		const context = { monitor: monitor.name, url: monitor.url };
 		const subject = `Monitor ${monitor.name} is ${status === true ? "up" : "down"}`;
-		this.emailService.buildAndSendEmail(template, context, address, subject);
+
+		const html = await this.emailService.buildEmail(template, context);
+		this.emailService.sendEmail(address, subject, html).catch((error) => {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "sendEmail",
+				stack: error.stack,
+			});
+		});
+
 		return true;
 	}
 

@@ -7,7 +7,6 @@ import {
 	recoveryTokenValidation,
 	newPasswordValidation,
 } from "../validation/joi.js";
-import logger from "../utils/logger.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
 import crypto from "crypto";
@@ -15,12 +14,13 @@ import { handleValidationError, handleError } from "./controllerUtils.js";
 const SERVICE_NAME = "authController";
 
 class AuthController {
-	constructor(db, settingsService, emailService, jobQueue, stringService) {
+	constructor({ db, settingsService, emailService, jobQueue, stringService, logger }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
+		this.logger = logger;
 	}
 
 	/**
@@ -96,21 +96,28 @@ class AuthController {
 
 			const token = this.issueToken(userForToken, appSettings);
 
-			this.emailService
-				.buildAndSendEmail(
-					"welcomeEmailTemplate",
-					{ name: newUser.firstName },
-					newUser.email,
-					"Welcome to Uptime Monitor"
-				)
-				.catch((error) => {
-					logger.error({
-						message: error.message,
-						service: SERVICE_NAME,
-						method: "registerUser",
-						stack: error.stack,
-					});
+			try {
+				const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
+					name: newUser.firstName,
 				});
+				this.emailService
+					.sendEmail(newUser.email, "Welcome to Uptime Monitor", html)
+					.catch((error) => {
+						this.logger.warn({
+							message: error.message,
+							service: SERVICE_NAME,
+							method: "registerUser",
+							stack: error.stack,
+						});
+					});
+			} catch (error) {
+				logger.warn({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "registerUser",
+					stack: error.stack,
+				});
+			}
 
 			res.success({
 				msg: this.stringService.authCreateUser,
@@ -300,15 +307,16 @@ class AuthController {
 			const name = user.firstName;
 			const { clientHost } = this.settingsService.getSettings();
 			const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
-			const msgId = await this.emailService.buildAndSendEmail(
-				"passwordResetTemplate",
-				{
-					name,
-					email,
-					url,
-				},
+
+			const html = await this.emailService.buildEmail("passwordResetTemplate", {
+				name,
 				email,
-				"Checkmate Password Reset"
+				url,
+			});
+			const msgId = await this.emailService.sendEmail(
+				email,
+				"Checkmate Password Reset",
+				html
 			);
 
 			return res.success({
