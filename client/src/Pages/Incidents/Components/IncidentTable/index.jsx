@@ -10,10 +10,11 @@ import NetworkError from "../../../../Components/GenericFallback/NetworkError";
 //Utils
 import { formatDateWithTz } from "../../../../Utils/timeUtils";
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchChecks } from "../../../../Hooks/checkHooks";
+import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
+import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
 
 const IncidentTable = ({
 	shouldRender,
@@ -26,26 +27,41 @@ const IncidentTable = ({
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
 	//Local state
-	const [teamId, setTeamId] = useState(undefined);
-	const [monitorId, setMonitorId] = useState(undefined);
-
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
 
-	const [checks, checksCount, isLoading, networkError] = useFetchChecks({
-		status: false,
-		monitorId,
-		teamId,
-		type: selectedMonitorType,
-		sortOrder: "desc",
-		limit: null,
-		dateRange,
-		filter: filter,
-		page: page,
-		rowsPerPage: rowsPerPage,
-	});
+	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
+		useFetchChecksByMonitor({
+			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
+			type: selectedMonitorType,
+			status: false,
+			sortOrder: "desc",
+			limit: null,
+			dateRange,
+			filter: filter,
+			page: page,
+			rowsPerPage: rowsPerPage,
+			enabled: selectedMonitor !== "0",
+		});
+
+	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] =
+		useFetchChecksTeam({
+			status: false,
+			sortOrder: "desc",
+			limit: null,
+			dateRange,
+			filter: filter,
+			page: page,
+			rowsPerPage: rowsPerPage,
+			enabled: selectedMonitor === "0",
+		});
+
+	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
+	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
+	const isLoading = isLoadingTeam || isLoadingMonitor;
+	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
 
 	const { t } = useTranslation();
 
@@ -57,16 +73,6 @@ const IncidentTable = ({
 	const handleChangeRowsPerPage = (event) => {
 		setRowsPerPage(event.target.value);
 	};
-
-	useEffect(() => {
-		if (selectedMonitor === "0") {
-			setTeamId("placeholder"); // TODO this isn't needed any longer, fix hook
-			setMonitorId(undefined);
-		} else {
-			setMonitorId(selectedMonitor);
-			setTeamId(undefined);
-		}
-	}, [selectedMonitor]);
 
 	const headers = [
 		{

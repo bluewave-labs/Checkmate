@@ -744,5 +744,6 @@
 	"settingsEmailRejectUnauthorized": "Reject Unauthorized",
 	"settingsEmailSecure": "Secure - Use SSL",
 	"settingsEmailPool": "Pool - Enable connection pooling",
-	"sendTestNotifications": "Send test notifications"
+	"sendTestNotifications": "Send test notifications",
+	"selectAll": "Select all"
 }

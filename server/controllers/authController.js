@@ -7,7 +7,6 @@ import {
 	recoveryTokenValidation,
 	newPasswordValidation,
 } from "../validation/joi.js";
-import logger from "../utils/logger.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
 import crypto from "crypto";
@@ -15,12 +14,13 @@ import { handleValidationError, handleError } from "./controllerUtils.js";
 const SERVICE_NAME = "authController";
 
 class AuthController {
-	constructor(db, settingsService, emailService, jobQueue, stringService) {
+	constructor({ db, settingsService, emailService, jobQueue, stringService, logger }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
+		this.logger = logger;
 	}
 
 	/**
