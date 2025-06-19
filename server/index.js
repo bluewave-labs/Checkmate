@@ -239,13 +239,14 @@ const startApp = async () => {
 	process.on("SIGTERM", shutdown);
 
 	//Create controllers
-	const authController = new AuthController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(EmailService.SERVICE_NAME),
-		ServiceRegistry.get(JobQueue.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const authController = new AuthController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+		jobQueue: ServiceRegistry.get(JobQueue.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		logger: logger,
+	});
 
 	const monitorController = new MonitorController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),

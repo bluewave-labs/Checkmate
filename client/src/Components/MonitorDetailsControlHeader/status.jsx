@@ -8,6 +8,7 @@ import { formatDurationRounded } from "../../Utils/timeUtils";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
+import { formatMonitorUrl } from "../../Utils/utils";
 /**
  * Status component displays the status information of a monitor.
  * It includes the monitor's name, URL, and check interval.
@@ -33,9 +34,7 @@ const Status = ({ monitor }) => {
 				gap={theme.spacing(4)}
 			>
 				<PulseDot color={statusColor[determineState(monitor)]} />
-				<Typography variant="monitorUrl">
-					{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
-				</Typography>
+				<Typography variant="monitorUrl">{formatMonitorUrl(monitor?.url)}</Typography>
 				<Dot />
 				<Typography>
 					Checking every {formatDurationRounded(monitor?.interval)}.
