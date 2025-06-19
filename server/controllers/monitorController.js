@@ -727,8 +727,7 @@ class MonitorController {
 
 			const csv = pkg.unparse(csvData);
 
-			return res.success({
-				msg: this.stringService.monitorsExported,
+			return res.file({
 				data: csv,
 				headers: {
 					"Content-Type": "text/csv",
