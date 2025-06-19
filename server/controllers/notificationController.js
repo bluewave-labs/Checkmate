@@ -23,85 +23,13 @@ class NotificationController {
 		this.stringService = stringService;
 		this.statusService = statusService;
 		this.db = db;
-		this.triggerNotification = this.triggerNotification.bind(this);
-	}
-
-	async triggerNotification(req, res, next) {
-		try {
-			await triggerNotificationBodyValidation.validateAsync(req.body, {
-				abortEarly: false,
-				stripUnknown: true,
-			});
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
-			const { monitorId, type, platform, config, status = false } = req.body;
-
-			// Create a simplified networkResponse similar to what would come from monitoring
-			const networkResponse = {
-				monitorId,
-				status,
-			};
-
-			// Use the statusService to get monitor details and handle status change logic
-			// This returns { monitor, statusChanged, prevStatus } exactly like your job queue uses
-			const statusResult = await this.statusService.updateStatus(networkResponse);
-
-			if (type === NOTIFICATION_TYPES.WEBHOOK) {
-				const notification = {
-					type,
-					platform,
-					config,
-				};
-
-				await this.notificationService.sendWebhookNotification(
-					statusResult, // Contains monitor, statusChanged, and prevStatus
-					notification
-				);
-			}
-
-			return res.success({
-				msg: this.stringService.webhookSendSuccess,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "triggerNotification"));
-		}
-	}
-
-	createTestNetworkResponse() {
-		return {
-			monitor: {
-				_id: "test-monitor-id",
-				name: "Test Monitor",
-				url: "https://example.com",
-			},
-			status: true,
-			statusChanged: true,
-			prevStatus: false,
-		};
 	}
 
 	testNotification = async (req, res, next) => {
 		try {
 			const notification = req.body;
-			let success;
 
-			if (notification?.type === "email") {
-				success = await this.notificationService.sendTestEmail(notification);
-			}
-
-			if (notification?.type === "webhook") {
-				success =
-					await this.notificationService.sendTestWebhookNotification(notification);
-			}
-
-			if (notification?.type === "pager_duty") {
-				success =
-					await this.notificationService.sendTestPagerDutyNotification(notification);
-			}
+			const success = await this.notificationService.sendTestNotification(notification);
 
 			if (!success) {
 				return res.error({
