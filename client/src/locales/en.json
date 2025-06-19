@@ -187,6 +187,7 @@
 	"incidentsOptionsHeaderFilterAll": "All",
 	"incidentsOptionsHeaderFilterDown": "Down",
 	"incidentsOptionsHeaderFilterCannotResolve": "Cannot resolve",
+	"incidentsOptionsHeaderFilterResolved": "Resolved",
 	"incidentsOptionsHeaderShow": "Show:",
 	"incidentsOptionsHeaderLastHour": "Last hour",
 	"incidentsOptionsHeaderLastDay": "Last day",

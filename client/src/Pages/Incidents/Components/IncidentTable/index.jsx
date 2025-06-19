@@ -32,15 +32,17 @@ const IncidentTable = ({
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
 
+	const status = filter === "resolved" ? true : false;
+
 	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
 		useFetchChecksByMonitor({
 			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
 			type: selectedMonitorType,
-			status: false,
+			status: status,
 			sortOrder: "desc",
 			limit: null,
 			dateRange,
-			filter: filter,
+			filter: filter === "resolved" ? "resolve" : filter,
 			page: page,
 			rowsPerPage: rowsPerPage,
 			enabled: selectedMonitor !== "0",
@@ -48,11 +50,11 @@ const IncidentTable = ({
 
 	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] =
 		useFetchChecksTeam({
-			status: false,
+			status: status,
 			sortOrder: "desc",
 			limit: null,
 			dateRange,
-			filter: filter,
+			filter: filter === "resolved" ? "resolve" : filter,
 			page: page,
 			rowsPerPage: rowsPerPage,
 			enabled: selectedMonitor === "0",
