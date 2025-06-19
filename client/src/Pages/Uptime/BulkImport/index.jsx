@@ -10,7 +10,7 @@ import Breadcrumbs from "../../../Components/Breadcrumbs";
 import ConfigBox from "../../../Components/ConfigBox";
 import UploadFile from "./Upload";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Trans, useTranslation } from "react-i18next";
 import { useCreateBulkMonitors } from "../../../Hooks/monitorHooks";
 

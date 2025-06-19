@@ -580,12 +580,8 @@ class MonitorController {
 			const subject = this.stringService.testEmailSubject;
 			const context = { testName: "Monitoring System" };
 
-			const messageId = await this.emailService.buildAndSendEmail(
-				"testEmailTemplate",
-				context,
-				to,
-				subject
-			);
+			const html = await this.emailService.buildEmail("testEmailTemplate", context);
+			const messageId = await this.emailService.sendEmail(to, subject, html);
 
 			if (!messageId) {
 				return res.error({

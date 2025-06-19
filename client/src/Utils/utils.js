@@ -5,3 +5,11 @@ export const safelyParseFloat = (value) => {
 	}
 	return parsedValue;
 };
+
+export const formatMonitorUrl = (url, maxLength = 55) => {
+	if (!url) return "";
+	const strippedUrl = url.replace(/^https?:\/\//, "");
+	return strippedUrl.length > maxLength
+		? `${strippedUrl.slice(0, maxLength)}…`
+		: strippedUrl;
+};

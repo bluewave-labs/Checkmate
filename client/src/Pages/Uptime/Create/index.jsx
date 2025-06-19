@@ -147,6 +147,7 @@ const CreateMonitor = () => {
 
 	const onChange = (event) => {
 		const { name, value, checked } = event.target;
+
 		let newValue = value;
 		if (name === "ignoreTlsErrors") {
 			newValue = checked;

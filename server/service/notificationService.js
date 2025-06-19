@@ -95,6 +95,19 @@ class NotificationService {
 		return MESSAGE_FORMATTERS[platform](messageText, chatId);
 	}
 
+	formatHardwareNotificationMessage = (
+		monitor,
+		status,
+		platform,
+		chatId,
+		code,
+		timestamp,
+		alerts
+	) => {
+		const messageText = alerts.map((alert) => alert).join("\n");
+		return MESSAGE_FORMATTERS[platform](messageText, chatId);
+	};
+
 	sendTestWebhookNotification = async (notification) => {
 		const config = notification.config;
 		const response = await this.networkService.requestWebhook(
@@ -121,7 +134,7 @@ class NotificationService {
 	 * @returns {Promise<boolean>} A promise that resolves to true if the notification was sent successfully, otherwise false.
 	 */
 
-	async sendWebhookNotification(networkResponse, notification) {
+	async sendWebhookNotification(networkResponse, notification, alerts = []) {
 		const { monitor, status, code } = networkResponse;
 		const { webhookUrl, platform, botToken, chatId } = notification.config;
 
@@ -152,14 +165,27 @@ class NotificationService {
 			url = `${TELEGRAM_API_BASE_URL}${botToken}/sendMessage`;
 		}
 
-		const message = this.formatNotificationMessage(
-			monitor,
-			status,
-			platform,
-			chatId,
-			code, // Pass the code field directly
-			networkResponse.timestamp
-		);
+		let message;
+		if (monitor.type === "hardware") {
+			message = this.formatHardwareNotificationMessage(
+				monitor,
+				status,
+				platform,
+				chatId,
+				code,
+				networkResponse.timestamp,
+				alerts
+			);
+		} else {
+			message = this.formatNotificationMessage(
+				monitor,
+				status,
+				platform,
+				chatId,
+				code, // Pass the code field directly
+				networkResponse.timestamp
+			);
+		}
 
 		try {
 			const response = await this.networkService.requestWebhook(platform, url, message);
@@ -192,7 +218,16 @@ class NotificationService {
 		const template = "hardwareIncidentTemplate";
 		const context = { monitor: monitor.name, url: monitor.url, alerts };
 		const subject = `Monitor ${monitor.name} infrastructure alerts`;
-		this.emailService.buildAndSendEmail(template, context, address, subject);
+		const html = await this.emailService.buildEmail(template, context);
+		this.emailService.sendEmail(address, subject, html).catch((error) => {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "sendHardwareEmail",
+				stack: error.stack,
+			});
+		});
+
 		return true;
 	}
 
@@ -205,17 +240,22 @@ class NotificationService {
 		const subject = this.stringService.testEmailSubject;
 		const context = { testName: "Monitoring System" };
 
-		const messageId = await this.emailService.buildAndSendEmail(
-			"testEmailTemplate",
-			context,
-			to,
-			subject
-		);
+		try {
+			const html = await this.emailService.buildEmail("testEmailTemplate", context);
+			const messageId = await this.emailService.sendEmail(to, subject, html);
 
-		if (messageId) {
-			return true;
+			if (messageId) {
+				return true;
+			}
+		} catch (error) {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "sendTestEmail",
+				stack: error.stack,
+			});
+			return false;
 		}
-		return false;
 	};
 
 	/**
@@ -233,7 +273,17 @@ class NotificationService {
 		const template = prevStatus === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
 		const context = { monitor: monitor.name, url: monitor.url };
 		const subject = `Monitor ${monitor.name} is ${status === true ? "up" : "down"}`;
-		this.emailService.buildAndSendEmail(template, context, address, subject);
+
+		const html = await this.emailService.buildEmail(template, context);
+		this.emailService.sendEmail(address, subject, html).catch((error) => {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "sendEmail",
+				stack: error.stack,
+			});
+		});
+
 		return true;
 	}
 
@@ -247,19 +297,31 @@ class NotificationService {
 
 		return response;
 	}
-	async sendPagerDutyNotification(networkResponse, notification) {
+	async sendPagerDutyNotification(networkResponse, notification, alerts = []) {
 		const { monitor, status, code } = networkResponse;
 		const { routingKey, platform } = notification.config;
 
-		const message = this.formatNotificationMessage(
-			monitor,
-			status,
-			platform,
-			null,
-			code, // Pass the code field directly
-			networkResponse.timestamp
-		);
-
+		let message;
+		if (monitor.type === "hardware") {
+			message = this.formatHardwareNotificationMessage(
+				monitor,
+				status,
+				platform,
+				null,
+				code,
+				networkResponse.timestamp,
+				alerts
+			);
+		} else {
+			message = this.formatNotificationMessage(
+				monitor,
+				status,
+				platform,
+				null,
+				code, // Pass the code field directly
+				networkResponse.timestamp
+			);
+		}
 		try {
 			const response = await this.networkService.requestPagerDuty({
 				message,
@@ -350,9 +412,9 @@ class NotificationService {
 				) ?? false,
 		};
 
-		const notifications = await this.db.getNotificationsByMonitorId(
-			networkResponse.monitorId
-		);
+		const notificationIDs = networkResponse.monitor?.notifications ?? [];
+		const notifications = await this.db.getNotificationsByIds(notificationIDs);
+
 		for (const notification of notifications) {
 			const alertsToSend = [];
 			const alertTypes = ["cpu", "memory", "disk"];
@@ -388,7 +450,11 @@ class NotificationService {
 			if (alertsToSend.length === 0) continue; // No alerts to send, we're done
 
 			if (notification.type === "email") {
-				this.sendHardwareEmail(networkResponse, notification.address, alertsToSend);
+				await this.sendHardwareEmail(networkResponse, notification.address, alertsToSend);
+			} else if (notification.type === "webhook") {
+				await this.sendWebhookNotification(networkResponse, notification, alertsToSend);
+			} else if (notification.type === "pager_duty") {
+				await this.sendPagerDutyNotification(networkResponse, notification, alertsToSend);
 			}
 		}
 		return true;

@@ -1,186 +1,4 @@
 {
-	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
-		"buttons": {
-			"toggleTheme": ""
-		},
-		"toasts": {
-			"networkError": "Ağ hatası",
-			"checkConnection": "Lütfen bağlantınızı kontrol edin",
-			"unknownError": ""
-		}
-	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "Devam Et",
-				"back": "Geri"
-			},
-			"inputs": {
-				"email": {
-					"label": "E-posta",
-					"placeholder": "",
-					"errors": {
-						"empty": "Devam etmek için lütfen e-posta adresinizi girin",
-						"invalid": "Lütfen geçerli bir eposta hesabı girin"
-					}
-				},
-				"password": {
-					"label": "Parola",
-					"rules": {
-						"length": {
-							"beginning": "En az",
-							"highlighted": "8 karakter uzunluğunda olmalı"
-						},
-						"special": {
-							"beginning": "En az içermeli",
-							"highlighted": "bir özel karakter"
-						},
-						"number": {
-							"beginning": "En az içermeli",
-							"highlighted": "bir rakam"
-						},
-						"uppercase": {
-							"beginning": "En az içermeli",
-							"highlighted": "bir büyük harf"
-						},
-						"lowercase": {
-							"beginning": "En az içermeli",
-							"highlighted": "bir küçük harf"
-						},
-						"match": {
-							"beginning": "Onay şifresi ve şifre",
-							"highlighted": ""
-						}
-					},
-					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
-					}
-				},
-				"passwordConfirm": {
-					"label": "Parolayı onayla",
-					"placeholder": "Parolanızı onaylayın",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "İsim",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				},
-				"lastName": {
-					"label": "Soyisim",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				}
-			},
-			"errors": {
-				"validation": ""
-			}
-		},
-		"login": {
-			"heading": "Giriş Yap",
-			"subheadings": {
-				"stepOne": "E-posta adresinizi girin",
-				"stepTwo": "Parolanızı girin"
-			},
-			"links": {
-				"forgotPassword": "Parolanızı mı unuttunuz? <a>Parola sıfırla</a>",
-				"register": "Bir hesabınız yok mu? <a>Buradan kayıt olun</a>"
-			},
-			"toasts": {
-				"success": "Tekrar hoş geldiniz! Başarıyla giriş yaptınız.",
-				"incorrectPassword": ""
-			}
-		},
-		"registration": {
-			"heading": {
-				"superAdmin": "",
-				"user": "Kayıt Ol"
-			},
-			"subheadings": {
-				"stepOne": "Kişisel bilgilerinizi girin",
-				"stepTwo": "E-posta adresinizi girin",
-				"stepThree": "Parolanızı oluşturun"
-			},
-			"description": {
-				"superAdmin": "Super admin hesabınızı oluşturmak için devam edin",
-				"user": ""
-			},
-			"gettingStartedButton": {
-				"superAdmin": "E-posta ile kayıt ol",
-				"user": ""
-			},
-			"termsAndPolicies": "",
-			"links": {
-				"login": "Zaten hesabınız var mı? <a>Giriş yap</a>"
-			},
-			"toasts": {
-				"success": ""
-			}
-		},
-		"forgotPassword": {
-			"heading": "Parolanızı mı unuttunuz?",
-			"subheadings": {
-				"stepOne": "Endişelenmeyin, size sıfırlama talimatlarını göndereceğiz.",
-				"stepTwo": "<email/> adresine şifre sıfırlama bağlantısı gönderdik",
-				"stepThree": "Yeni şifreniz daha önce kullanılan şifrelerden farklı olmalıdır.",
-				"stepFour": "Parolanız başarıyla sıfırlandı. Otomatik olarak giriş yapmak için aşağıya tıklayın."
-			},
-			"buttons": {
-				"openEmail": "Eposta uygulamasını aç",
-				"resetPassword": "Parola sıfırla"
-			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
-			},
-			"links": {
-				"login": "Geri dön <a>Giriş Yap</a>",
-				"resend": "E-posta almadınız mı? <a>Yeniden göndermek için tıklayın</a>"
-			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
-			}
-		}
-	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "Sunucuya başarıyla yeniden bağlanıldı.",
-				"stillUnreachable": "Sunucuya hala ulaşılamıyor. Lütfen daha sonra tekrar deneyin."
-			},
-			"alertBox": "Sunucu bağlantı hatası",
-			"description": "Sunucuya bağlanamıyoruz. Lütfen internet bağlantınızı kontrol edin veya sorun devam ederse dağıtım yapılandırmanızı doğrulayın.",
-			"retryButton": {
-				"default": "Bağlantıyı yeniden deneyin",
-				"processing": "Bağlanıyor..."
-			}
-		}
-	},
 	"submit": "Gönder",
 	"title": "Başlık",
 	"distributedStatusHeaderText": "Gerçek zamanlı, Gerçek cihazlar kapsamı",
@@ -192,8 +10,6 @@
 	"settingsAppearanceDescription": "Açık ve koyu mod arasında geçiş yapın veya kullanıcı arayüzü dilini değiştirin",
 	"settingsThemeMode": "Tema",
 	"settingsLanguage": "Dil",
-	"settingsDistributedUptime": "Dağıtılmış çalışma süresi",
-	"settingsDistributedUptimeDescription": "Dağıtılmış çalışma süresi izlemeyi etkinleştirin/devre dışı bırakın.",
 	"settingsEnabled": "Etkin",
 	"settingsDisabled": "Devre dışı",
 	"settingsHistoryAndMonitoring": "Geçmiş ve izleme",
@@ -213,8 +29,6 @@
 	"settingsRemoveAllMonitorsButton": "Tüm monitörleri kaldır",
 	"settingsRemoveAllMonitorsDialogTitle": "Tüm monitörleri kaldırmak istiyor musunuz?",
 	"settingsRemoveAllMonitorsDialogConfirm": "Evet, tüm monitörleri temizle",
-	"settingsWallet": "Cüzdan",
-	"settingsWalletDescription": "Cüzdanınızı buradan bağlayın. Bu, Dağıtılmış Çalışma Süresi monitörünün küresel olarak birden çok düğüme bağlanması için gereklidir.",
 	"settingsAbout": "Hakkında",
 	"settingsDevelopedBy": "Bluewave Labs tarafından geliştirilmiştir.",
 	"settingsSave": "Kaydet",
@@ -257,10 +71,6 @@
 	"distributedUptimeCreateIncidentDescription": "Bir olay olduğunda kullanıcıları bilgilendir.",
 	"distributedUptimeCreateAdvancedSettings": "Gelişmiş ayarlar",
 	"distributedUptimeDetailsNoMonitorHistory": "Bu monitör için henüz bir denetim günlüğü oluşturulmadı.",
-	"distributedUptimeDetailsFooterHeading": "UpRock & Bluewave Labs tarafından geliştirildi",
-	"distributedUptimeDetailsFooterBuilt": "Altyapı",
-	"distributedUptimeDetailsFooterSolana": "Solana",
-	"distributedUptimeDetailsMonitorHeader": "Depin Destekli Dağıtık Kesintisizlik İzleme",
 	"distributedUptimeDetailsStatusHeaderUptime": "Erişilebilirlik",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Son güncelleme",
 	"notifications": {
@@ -302,7 +112,33 @@
 		"testSuccess": "Test bildirimi başarıyla gönderildi",
 		"testFailed": "Test bildirimi gönderilemedi",
 		"unsupportedType": "Desteklenmeyen bildirim türü",
-		"networkError": "Ağ hatası oluştu"
+		"networkError": "Ağ hatası oluştu",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "TEST13 UPLOAD",
 	"add": "Ekle",
@@ -546,11 +382,6 @@
 		"append": "",
 		"overview": ""
 	},
-	"monitorStatus": {
-		"up": "",
-		"down": "",
-		"paused": ""
-	},
 	"roles": {
 		"superAdmin": "",
 		"admin": "",
@@ -589,7 +420,6 @@
 		"uptime": "",
 		"pagespeed": "",
 		"infrastructure": "",
-		"distributedUptime": "",
 		"incidents": "",
 		"statusPages": "",
 		"maintenance": "",
@@ -602,7 +432,8 @@
 		"profile": "",
 		"password": "",
 		"team": "",
-		"logOut": "Çıkış yap"
+		"logOut": "Çıkış yap",
+		"notifications": ""
 	},
 	"settingsEmail": "",
 	"settingsEmailDescription": "",
@@ -633,7 +464,6 @@
 		"saving": "Kaydediliyor..."
 	},
 	"settingsEmailConnectionHost": "E-posta bağlantı ana bilgisayarı - HELO/EHLO selamlamasında kullanılacak ana bilgisayar adı",
-	"sendTestEmail": "Test maili gönder",
 	"emailSent": "E-posta başarı ile gönderildi.",
 	"failedToSendEmail": "E-posta gönderimi başarısız.",
 	"settingsTestEmail": "Test  E-postası gönder.",
@@ -658,5 +488,257 @@
 		"ping": "",
 		"docker": "",
 		"port": ""
-	}
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"genericWebhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": ""
 }

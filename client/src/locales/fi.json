@@ -1,186 +1,4 @@
 {
-	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
-		"buttons": {
-			"toggleTheme": ""
-		},
-		"toasts": {
-			"networkError": "Verkkovirhe",
-			"checkConnection": "Tarkista yhteytesi",
-			"unknownError": ""
-		}
-	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "Jatka",
-				"back": "Takaisin"
-			},
-			"inputs": {
-				"email": {
-					"label": "Sähköposti",
-					"placeholder": "",
-					"errors": {
-						"empty": "Syötä sähköpostiosoitteesi jatkaaksesi",
-						"invalid": "Kirjoita kelvollinen sähköpostiosoite"
-					}
-				},
-				"password": {
-					"label": "Salasana",
-					"rules": {
-						"length": {
-							"beginning": "Vähintään",
-							"highlighted": "8 merkkiä pitkä"
-						},
-						"special": {
-							"beginning": "Tulee sisältää vähintään",
-							"highlighted": "yksi erikoismerkki"
-						},
-						"number": {
-							"beginning": "Tulee sisältää vähintään",
-							"highlighted": "yksi numero"
-						},
-						"uppercase": {
-							"beginning": "Tulee sisältää vähintään",
-							"highlighted": "yksi pieni kirjain"
-						},
-						"lowercase": {
-							"beginning": "Tulee sisältää vähintään",
-							"highlighted": "yksi iso kirjain"
-						},
-						"match": {
-							"beginning": "Vahvista salasana ja salasana",
-							"highlighted": ""
-						}
-					},
-					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
-					}
-				},
-				"passwordConfirm": {
-					"label": "Vahvista salasana",
-					"placeholder": "Syötä salasana uudelleen",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "Nimi",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				},
-				"lastName": {
-					"label": "Sukunimi",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				}
-			},
-			"errors": {
-				"validation": ""
-			}
-		},
-		"login": {
-			"heading": "Kirjaudu",
-			"subheadings": {
-				"stepOne": "Syötä salasanasi",
-				"stepTwo": "Syötä salasanasi"
-			},
-			"links": {
-				"forgotPassword": "Unohditko salasanasi? <a>Nollaa salasana</a>",
-				"register": "Onko sinulla tili? <a>Rekisteröidy tästä</a>"
-			},
-			"toasts": {
-				"success": "Tervetuloa takaisin! Olet kirjautunut sisään.",
-				"incorrectPassword": ""
-			}
-		},
-		"registration": {
-			"heading": {
-				"superAdmin": "",
-				"user": "Rekisteröidy"
-			},
-			"subheadings": {
-				"stepOne": "Syötä henkilökohtaiset tietosi",
-				"stepTwo": "Syötä salasanasi",
-				"stepThree": "Luo salasanasi"
-			},
-			"description": {
-				"superAdmin": "Luo pääkäyttäjän tili aloittaaksesi",
-				"user": ""
-			},
-			"gettingStartedButton": {
-				"superAdmin": "Luo pääkäyttäjän tili",
-				"user": ""
-			},
-			"termsAndPolicies": "Luomalla tilin hyväksyt <a1>Käyttöehdot</a1> ja <a2>Tietosuojakäytännön</a2>.",
-			"links": {
-				"login": "Onko sinulla jo tili? <a>Kirjaudu</a>"
-			},
-			"toasts": {
-				"success": ""
-			}
-		},
-		"forgotPassword": {
-			"heading": "Unohditko salasanasi?",
-			"subheadings": {
-				"stepOne": "Ei hätää, lähetämme sinulle ohjeet salasanan palauttamiseen.",
-				"stepTwo": "Lähetimme salasanan nollauslinkin osoitteeseen <email/>",
-				"stepThree": "Uuden salasanan pitää olla eri kuin aiemmin käyttämäsi.",
-				"stepFour": "Salasanasi on onnistuneesti nollattu. Klikkaa alta kirjautuaksesi taianomaisesti."
-			},
-			"buttons": {
-				"openEmail": "Avaa sähköpostisovellus",
-				"resetPassword": "Nollaa salasana"
-			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
-			},
-			"links": {
-				"login": "Palaa edelliseen <a>Kirjaudu</a>",
-				"resend": "Etkö saanut sähköpostia? <a>Klikkaa lähettääksesi uudelleen</a>"
-			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
-			}
-		}
-	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
-			},
-			"alertBox": "",
-			"description": "",
-			"retryButton": {
-				"default": "",
-				"processing": "Yhdistetään..."
-			}
-		}
-	},
 	"submit": "Lähetä",
 	"title": "Otsikko",
 	"distributedStatusHeaderText": "Reaaliaikainen kattavuus oikeilla laitteilla",
@@ -192,8 +10,6 @@
 	"settingsAppearanceDescription": "Vaihda teema vaaleaksi tai tummaksi tai vaihda käyttöliittymän kieli",
 	"settingsThemeMode": "Teematila",
 	"settingsLanguage": "Kieli",
-	"settingsDistributedUptime": "Hajautettu käyttöaika",
-	"settingsDistributedUptimeDescription": "Ota käyttöön tai poista käytöstä hajautettu käyttöaikavalvonta.",
 	"settingsEnabled": "Käytössä",
 	"settingsDisabled": "Poistettu käytöstä",
 	"settingsHistoryAndMonitoring": "Valvonnan historia",
@@ -213,8 +29,6 @@
 	"settingsRemoveAllMonitorsButton": "",
 	"settingsRemoveAllMonitorsDialogTitle": "",
 	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsWallet": "Lompakko",
-	"settingsWalletDescription": "",
 	"settingsAbout": "Tietoja",
 	"settingsDevelopedBy": "Kehittänyt Bluewave Labs.",
 	"settingsSave": "Tallenna",
@@ -257,10 +71,6 @@
 	"distributedUptimeCreateIncidentDescription": "Jos ilmenee häiriö, ilmoita käyttäjille.",
 	"distributedUptimeCreateAdvancedSettings": "Lisäasetukset",
 	"distributedUptimeDetailsNoMonitorHistory": "Tälle valvontakohteelle ei ole vielä tarkistushistoriaa.",
-	"distributedUptimeDetailsFooterHeading": "Tehty ❤️:lla UpRockin ja Bluewave Labsin toimesta",
-	"distributedUptimeDetailsFooterBuilt": "",
-	"distributedUptimeDetailsFooterSolana": "Solana",
-	"distributedUptimeDetailsMonitorHeader": "",
 	"distributedUptimeDetailsStatusHeaderUptime": "",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Viimeksi päivitetty",
 	"notifications": {
@@ -302,7 +112,33 @@
 		"testSuccess": "Testi ilmoituksen lähetys onnistui!",
 		"testFailed": "Testi ilmoituksen lähetys epäonnistui",
 		"unsupportedType": "",
-		"networkError": ""
+		"networkError": "",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "",
 	"add": "Lisää",
@@ -546,11 +382,6 @@
 		"append": "",
 		"overview": ""
 	},
-	"monitorStatus": {
-		"up": "Ylös",
-		"down": "Alas",
-		"paused": "Tauko"
-	},
 	"roles": {
 		"superAdmin": "Pääylläpitäjä",
 		"admin": "Ylläpitäjä",
@@ -589,7 +420,6 @@
 		"uptime": "",
 		"pagespeed": "",
 		"infrastructure": "Infrastruktuuri",
-		"distributedUptime": "",
 		"incidents": "",
 		"statusPages": "Tilasivut",
 		"maintenance": "Huolto",
@@ -602,7 +432,8 @@
 		"profile": "Profiili",
 		"password": "Salasana",
 		"team": "Tiimi",
-		"logOut": "Kirjaudu ulos"
+		"logOut": "Kirjaudu ulos",
+		"notifications": ""
 	},
 	"settingsEmail": "Sähköpostiasetukset",
 	"settingsEmailDescription": "Määritä sähköpostiasetukset",
@@ -633,7 +464,6 @@
 		"saving": "Tallennetaan..."
 	},
 	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "Lähetä testi sähköposti",
 	"emailSent": "Sähköpostin lähetys onnistui",
 	"failedToSendEmail": "Sähköpostin lähetys epäonnistui",
 	"settingsTestEmail": "Lähetä testi sähköposti",
@@ -658,5 +488,257 @@
 		"ping": "",
 		"docker": "",
 		"port": ""
-	}
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"genericWebhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": ""
 }

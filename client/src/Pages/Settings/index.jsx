@@ -31,19 +31,32 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 const Settings = () => {
 	// Redux state
 	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
-	const { user } = useSelector((state) => state.auth);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
 	const [errors, setErrors] = useState({});
+	const [isApiKeySet, setIsApiKeySet] = useState(settingsData?.pagespeedKeySet ?? false);
+	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	const [isEmailPasswordSet, setIsEmailPasswordSet] = useState(
+		settingsData?.emailPasswordSet ?? false
+	);
+	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
 
 	// Network
 	const [isSettingsLoading, settingsError] = useFetchSettings({
 		setSettingsData,
+		setIsApiKeySet,
+		setIsEmailPasswordSet,
 	});
 	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
 
-	const [isSaving, saveError, saveSettings] = useSaveSettings();
+	const [isSaving, saveError, saveSettings] = useSaveSettings({
+		setSettingsData,
+		setIsApiKeySet,
+		setApiKeyHasBeenReset,
+		setIsEmailPasswordSet,
+		setEmailPasswordHasBeenReset,
+	});
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
 	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
@@ -53,7 +66,6 @@ const Settings = () => {
 	const HEADING_SX = { mt: theme.spacing(2), mb: theme.spacing(2) };
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
-
 	// Handlers
 	const handleChange = async (e) => {
 		const { name, value, checked } = e.target;
@@ -79,30 +91,19 @@ const Settings = () => {
 			settings: { ...settingsData.settings, [name]: newValue ?? value },
 		};
 
-		// Validate
-		const { error } = settingsValidation.validate(newSettingsData.settings, {
-			abortEarly: false,
-		});
-		if (!error || error.details.length === 0) {
-			setErrors({});
-		} else {
-			const newErrors = {};
-			error.details.forEach((err) => {
-				newErrors[err.path[0]] = err.message;
-			});
-			setErrors(newErrors);
-		}
-
 		if (name === "timezone") {
 			dispatch(setTimezone({ timezone: value }));
+			return;
 		}
 
 		if (name === "mode") {
 			dispatch(setMode(value));
+			return;
 		}
 
 		if (name === "language") {
 			dispatch(setLanguage(value));
+			return;
 		}
 
 		if (name === "deleteStats") {
@@ -118,6 +119,20 @@ const Settings = () => {
 		if (name === "deleteMonitors") {
 			await deleteAllMonitors();
 			return;
+		}
+
+		// Validate
+		const { error } = settingsValidation.validate(newSettingsData.settings, {
+			abortEarly: false,
+		});
+		if (!error || error.details.length === 0) {
+			setErrors({});
+		} else {
+			const newErrors = {};
+			error.details.forEach((err) => {
+				newErrors[err.path[0]] = err.message;
+			});
+			setErrors(newErrors);
 		}
 
 		setSettingsData(newSettingsData);
@@ -159,7 +174,9 @@ const Settings = () => {
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
+				isApiKeySet={isApiKeySet}
+				apiKeyHasBeenReset={apiKeyHasBeenReset}
+				setApiKeyHasBeenReset={setApiKeyHasBeenReset}
 			/>
 			<SettingsURL
 				HEADING_SX={HEADING_SX}
@@ -187,7 +204,9 @@ const Settings = () => {
 				handleChange={handleChange}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isPasswordSet={settingsData?.emailPasswordSet ?? false}
+				isEmailPasswordSet={isEmailPasswordSet}
+				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
+				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
 			<SettingsAbout />
 			<Stack
