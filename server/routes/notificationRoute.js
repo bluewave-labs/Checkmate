@@ -11,8 +11,6 @@ class NotificationRoutes {
 	initializeRoutes() {
 		this.router.use(verifyJWT);
 
-		this.router.post("/trigger", this.notificationController.triggerNotification);
-
 		this.router.post("/test", this.notificationController.testNotification);
 		this.router.post("/test/all", this.notificationController.testAllNotifications);
 
