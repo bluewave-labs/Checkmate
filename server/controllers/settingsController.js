@@ -117,7 +117,7 @@ class SettingsController {
 				data: { messageId },
 			});
 		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
+			next(handleError(error, SERVICE_NAME));
 			return;
 		}
 	};
