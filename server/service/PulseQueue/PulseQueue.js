@@ -57,6 +57,9 @@ class PulseQueue {
 		job.unique({ "data.monitor._id": monitor._id });
 		job.attrs.jobId = monitorId.toString();
 		job.repeatEvery(`${intervalInSeconds} seconds`);
+		if (monitor.isActive === false) {
+			job.disable();
+		}
 		await job.save();
 	};
 
