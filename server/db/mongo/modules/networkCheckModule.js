@@ -22,6 +22,14 @@ const createNetworkCheck = async (networkCheckData) => {
 	}
 };
 
+/**
+ * Retrieves a list of network checks for a specific monitor, sorted by most recent.
+ * @async
+ * @param {string} monitorId - The ID of the monitor to retrieve checks for.
+ * @param {number} [limit=100] - The maximum number of checks to return. Defaults to 100.
+ * @returns {Promise<Array<object>>} A promise that resolves to an array of network check documents.
+ * @throws {Error} Throws an error if the database operation fails.
+ */
 const getNetworkChecksByMonitorId = async (monitorId, limit = 100) => {
 	try {
 		const networkChecks = await NetworkCheck.find({ monitorId })
