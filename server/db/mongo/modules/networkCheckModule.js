@@ -1,8 +1,15 @@
 import NetworkCheck from "../../models/NetworkCheck.js";
-import logger from "../../../utils/logger.js";
 
 const SERVICE_NAME = "networkCheckModule";
 
+/**
+ * Creates and saves a new network check document to the database.
+ * @async
+ * @param {object} networkCheckData - The data for the new network check. This should conform to the NetworkCheckSchema.
+ * @param {string} networkCheckData.monitorId - The ID of the monitor associated with this check.
+ * @returns {Promise<object>} A promise that resolves to the newly created network check document.
+ * @throws {Error} Throws an error if the database operation fails.
+ */
 const createNetworkCheck = async (networkCheckData) => {
 	try {
 		const networkCheck = await new NetworkCheck(networkCheckData);
