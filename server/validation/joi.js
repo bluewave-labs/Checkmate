@@ -133,11 +133,11 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"),
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "network"),
 			joi
 				.array()
 				.items(
-					joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port")
+					joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "network")
 				)
 		),
 	page: joi.number(),
@@ -225,6 +225,14 @@ const getHardwareDetailsByIdParamValidation = joi.object({
 });
 
 const getHardwareDetailsByIdQueryValidation = joi.object({
+	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
+});
+
+const getNetworkDetailsByIdParamValidation = joi.object({
+	monitorId: joi.string().required(),
+});
+
+const getNetworkDetailsByIdQueryValidation = joi.object({
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
 });
 

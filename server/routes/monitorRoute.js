@@ -105,6 +105,11 @@ class MonitorRoutes {
 			isAllowed(["admin", "superadmin"]),
 			this.monitorController.sendTestEmail
 		);
+
+		this.router.get(
+			"/network/details/:monitorId",
+			this.monitorController.getNetworkDetailsById
+		);
 	}
 
 	getRouter() {

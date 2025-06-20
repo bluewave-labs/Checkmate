@@ -13,6 +13,8 @@ import {
 	getCertificateParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
+	getNetworkDetailsByIdParamValidation,
+	getNetworkDetailsByIdQueryValidation
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
 import logger from "../utils/logger.js";
@@ -158,6 +160,34 @@ class MonitorController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getHardwareDetailsById"));
+		}
+	};
+
+	/**
+	 * Retrieves the details and recent checks for a specific network monitor.
+	 * @async
+	 * @param {object} req - The Express request object.
+	 * @param {object} res - The Express response object.
+	 * @param {function} next - The next middleware function.
+	 */
+	getNetworkDetailsById = async (req, res, next) => {
+		try {
+			await getNetworkDetailsByIdParamValidation.validateAsync(req.params);
+			await getNetworkDetailsByIdQueryValidation.validateAsync(req.query);
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+		try {
+			const { monitorId } = req.params;
+			const { dateRange } = req.query;
+			const data = await this.db.getNetworkDetailsById({ monitorId, dateRange });
+			return res.success({
+				msg: this.stringService.monitorGetByIdSuccess,
+				data: data,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "getNetworkDetailsById"));
 		}
 	};
 
