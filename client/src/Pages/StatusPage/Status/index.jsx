@@ -26,8 +26,7 @@ const PublicStatus = () => {
 	const location = useLocation();
 	const isAdmin = useIsAdmin();
 
-	const [statusPage, monitors, isLoading, networkError] =
-		useStatusPageFetch(false, url);
+	const [statusPage, monitors, isLoading, networkError] = useStatusPageFetch(false, url);
 
 	// Breadcrumbs
 	const crumbs = [

@@ -58,12 +58,7 @@ Controls.propTypes = {
 	url: PropTypes.string,
 };
 
-const ControlsHeader = ({
-	statusPage,
-	isPublic,
-	url,
-	type = "uptime",
-}) => {
+const ControlsHeader = ({ statusPage, isPublic, url, type = "uptime" }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const publicUrl = `/status/uptime/public/${url}`;
