@@ -262,6 +262,29 @@ const updateCheckStatus = async (checkId, status) => {
 };
 
 /**
+ * Update the status of all checks for a monitor or team
+ * @async
+ * @param {string} id
+ * @param {boolean} status
+ * @param {string} target
+ * @returns {Promise<number>}
+ * @throws {Error}
+ */
+const updateAllChecksStatus = async (id, status, target) => {
+	try {
+		const updatedChecks = await Check.updateMany(
+			target === "monitor" ? { monitorId: id } : { teamId: id },
+			{ $set: { status: true } }
+		);
+		return updatedChecks.modifiedCount;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "updateAllChecksStatus";
+		throw error;
+	}
+};
+
+/**
  * Delete all checks for a monitor
  * @async
  * @param {string} monitorId
@@ -343,6 +366,7 @@ export {
 	getChecksByMonitor,
 	getChecksByTeam,
 	updateCheckStatus,
+	updateAllChecksStatus,
 	deleteChecks,
 	deleteChecksByTeamId,
 	updateChecksTTL,

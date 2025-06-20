@@ -293,6 +293,16 @@ const updateCheckStatusBodyValidation = joi.object({
 	status: joi.boolean(),
 });
 
+const updateCheckStatusParamValidation = joi.object({
+	monitorId: joi.string(),
+	teamId: joi.string(),
+	target: joi.string().allow("monitor", "team"),
+});
+
+const updateAllChecksStatusBodyValidation = joi.object({
+	status: joi.boolean(),
+});
+
 const getChecksParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
@@ -667,6 +677,8 @@ export {
 	getTeamChecksParamValidation,
 	getTeamChecksQueryValidation,
 	updateCheckStatusBodyValidation,
+	updateAllChecksStatusBodyValidation,
+	updateCheckStatusParamValidation,
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,
