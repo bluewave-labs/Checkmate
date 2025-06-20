@@ -1,5 +1,4 @@
 import { Pulse } from "@pulsecron/pulse";
-import { ObjectId } from "mongodb";
 
 const SERVICE_NAME = "PulseQueue";
 class PulseQueue {
