@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Link from "../../Components/Link";
 
-const SettingsDev = (isAdmin, HEADER_SX) => {
+const SettingsDev = ({ isAdmin, HEADER_SX }) => {
 	const { t } = useTranslation();
 
 	if (!isAdmin) return null;
