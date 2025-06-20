@@ -98,12 +98,9 @@ const useGetNotificationById = (id, setNotification) => {
 			const notification = response?.data?.data ?? null;
 
 			const notificationData = {
-				userId: notification?.userId,
-				teamId: notification?.teamId,
 				address: notification?.address,
 				notificationName: notification?.notificationName,
 				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?._id,
-				config: notification?.config,
 			};
 
 			setNotification(notificationData);

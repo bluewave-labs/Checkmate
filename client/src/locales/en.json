@@ -707,13 +707,13 @@
 			"webhookLabel": "Slack webhook URL",
 			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
-		"pagerdutySettings": {
+		"pagerDutySettings": {
 			"title": "PagerDuty",
 			"description": "Configure your PagerDuty integration here",
 			"integrationKeyLabel": "Integration key",
 			"integrationKeyPlaceholder": "1234567890"
 		},
-		"genericWebhookSettings": {
+		"webhookSettings": {
 			"title": "Webhook",
 			"description": "Configure your webhook here",
 			"webhookLabel": "Webhook URL",
