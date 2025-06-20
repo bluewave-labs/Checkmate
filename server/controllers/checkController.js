@@ -8,6 +8,7 @@ import {
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,
+	updateCheckStatusBodyValidation,
 } from "../validation/joi.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
@@ -85,7 +86,7 @@ class CheckController {
 			return;
 		}
 		try {
-			let { sortOrder, dateRange, filter, page, rowsPerPage } = req.query;
+			let { sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
 			const { teamId } = req.user;
 
 			const checkData = await this.db.getChecksByTeam({
@@ -95,6 +96,7 @@ class CheckController {
 				page,
 				rowsPerPage,
 				teamId,
+				status,
 			});
 			return res.success({
 				msg: this.stringService.checkGet,
@@ -102,6 +104,29 @@ class CheckController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getTeamChecks"));
+		}
+	};
+
+	updateCheckStatus = async (req, res, next) => {
+		try {
+			await updateCheckStatusBodyValidation.validateAsync(req.body);
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+
+		try {
+			const { checkId } = req.params;
+			const { status } = req.body;
+
+			const updatedCheck = await this.db.updateCheckStatus(checkId, status);
+
+			return res.success({
+				msg: this.stringService.checkUpdateStatus,
+				data: updatedCheck,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "updateCheckStatus"));
 		}
 	};
 

@@ -289,6 +289,10 @@ const createCheckBodyValidation = joi.object({
 	message: joi.string().required(),
 });
 
+const updateCheckStatusBodyValidation = joi.object({
+	status: joi.boolean(),
+});
+
 const getChecksParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
@@ -662,6 +666,7 @@ export {
 	getChecksQueryValidation,
 	getTeamChecksParamValidation,
 	getTeamChecksQueryValidation,
+	updateCheckStatusBodyValidation,
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,
