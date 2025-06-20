@@ -5,14 +5,7 @@ const SERVICE_NAME = "networkCheckModule";
 
 const createNetworkCheck = async (networkCheckData) => {
 	try {
-		const { monitorId, status } = networkCheckData;
-		const n = (await NetworkCheck.countDocuments({ monitorId })) + 1;
-
-		const networkCheck = await new NetworkCheck({
-			...networkCheckData,
-			n,
-		});
-
+		const networkCheck = await new NetworkCheck(networkCheckData);
 		await networkCheck.save();
 		return networkCheck;
 	} catch (error) {
