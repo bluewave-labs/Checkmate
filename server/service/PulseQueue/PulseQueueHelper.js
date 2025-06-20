@@ -13,6 +13,10 @@ class PulseQueueHelper {
 		return async (job) => {
 			try {
 				const monitor = job.attrs.data.monitor;
+
+				if (monitor.isActive === false) {
+					return;
+				}
 				const monitorId = job.attrs.data.monitor._id;
 				if (!monitorId) {
 					throw new Error("No monitor id");
