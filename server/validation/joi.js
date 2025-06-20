@@ -295,7 +295,6 @@ const updateCheckStatusBodyValidation = joi.object({
 
 const updateCheckStatusParamValidation = joi.object({
 	monitorId: joi.string(),
-	teamId: joi.string(),
 	target: joi.string().allow("monitor", "team"),
 });
 

@@ -159,7 +159,7 @@ const getChecksByTeam = async ({
 	status,
 }) => {
 	try {
-		status = status === "true" ? true : false;
+		status = status === "true";
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 		const matchStage = {
@@ -274,7 +274,7 @@ const updateAllChecksStatus = async (id, status, target) => {
 	try {
 		const updatedChecks = await Check.updateMany(
 			target === "monitor" ? { monitorId: id } : { teamId: id },
-			{ $set: { status: true } }
+			{ $set: { status } }
 		);
 		return updatedChecks.modifiedCount;
 	} catch (error) {

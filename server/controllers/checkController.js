@@ -142,11 +142,11 @@ class CheckController {
 		}
 
 		try {
-			const { monitorId, teamId, target } = req.params;
+			const { monitorId, target } = req.params;
 			const { status } = req.body;
 
 			const updatedChecks = await this.db.updateAllChecksStatus(
-				target === "monitor" ? monitorId : teamId,
+				monitorId,
 				status,
 				target
 			);
