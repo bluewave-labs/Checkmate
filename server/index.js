@@ -73,6 +73,7 @@ import StatusService from "./service/statusService.js";
 
 // Notification Service and dependencies
 import NotificationService from "./service/notificationService.js";
+import NotificationUtils from "./service/notificationUtils.js";
 
 // Buffer Service and dependencies
 import BufferService from "./service/bufferService.js";
@@ -173,13 +174,19 @@ const startApp = async () => {
 	);
 	const bufferService = new BufferService({ db, logger });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
-	const notificationService = new NotificationService(
+	const notificationUtils = new NotificationUtils({
+		stringService,
+		emailService,
+	});
+
+	const notificationService = new NotificationService({
 		emailService,
 		db,
 		logger,
 		networkService,
-		stringService
-	);
+		stringService,
+		notificationUtils,
+	});
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
 
