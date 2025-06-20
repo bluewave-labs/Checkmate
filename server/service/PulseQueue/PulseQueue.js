@@ -139,6 +139,8 @@ class PulseQueue {
 		const jobs = await this.pulse.jobs();
 		const metrics = jobs.reduce(
 			(acc, job) => {
+				acc.totalRuns += job.attrs.runCount || 0;
+				acc.totalFailures += job.attrs.failCount || 0;
 				acc.jobs++;
 				if (job.attrs.failCount > 0 && job.attrs.failedAt >= job.attrs.lastFinishedAt) {
 					acc.failingJobs++;
@@ -150,13 +152,22 @@ class PulseQueue {
 					acc.jobsWithFailures.push({
 						monitorId: job.attrs.data.monitor._id,
 						monitorUrl: job.attrs.data.monitor.url,
+						monitorType: job.attrs.data.monitor.type,
+						failedAt: job.attrs.failedAt,
 						failCount: job.attrs.failCount,
 						failReason: job.attrs.failReason,
 					});
 				}
 				return acc;
 			},
-			{ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [] }
+			{
+				jobs: 0,
+				activeJobs: 0,
+				failingJobs: 0,
+				jobsWithFailures: [],
+				totalRuns: 0,
+				totalFailures: 0,
+			}
 		);
 		return metrics;
 	};
@@ -167,10 +178,18 @@ class PulseQueue {
 			return {
 				monitorId: job.attrs.data.monitor._id,
 				monitorUrl: job.attrs.data.monitor.url,
+				monitorType: job.attrs.data.monitor.type,
+				active: !job.attrs.disabled,
 				lockedAt: job.attrs.lockedAt,
 				runCount: job.attrs.runCount || 0,
 				failCount: job.attrs.failCount || 0,
 				failReason: job.attrs.failReason,
+				lastRunAt: job.attrs.lastRunAt,
+				lastFinishedAt: job.attrs.lastFinishedAt,
+				lastRunTook: job.attrs.lockedAt
+					? null
+					: job.attrs.lastFinishedAt - job.attrs.lastRunAt,
+				lastFailedAt: job.attrs.failedAt,
 			};
 		});
 	};
