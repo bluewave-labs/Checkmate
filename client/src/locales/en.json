@@ -30,6 +30,9 @@
 	"settingsRemoveAllMonitorsDialogTitle": "Do you want to remove all monitors?",
 	"settingsRemoveAllMonitorsDialogConfirm": "Yes, remove all monitors",
 	"settingsAbout": "About",
+	"settingsDev": "Developer",
+	"settingsDevDescription": "Developer settings",
+	"settingsDevViewJobQueueDetails": "View job queue details",
 	"settingsDevelopedBy": "Developed by Bluewave Labs.",
 	"settingsSave": "Save",
 	"settingsSuccessSaved": "Settings saved successfully",
@@ -745,5 +748,36 @@
 	"settingsEmailSecure": "Secure - Use SSL",
 	"settingsEmailPool": "Pool - Enable connection pooling",
 	"sendTestNotifications": "Send test notifications",
-	"selectAll": "Select all"
+	"selectAll": "Select all",
+	"queuePage": {
+		"title": "Queue",
+		"refreshButton": "Refresh",
+		"flushButton": "Flush queue",
+		"jobTable": {
+			"title": "Jobs currently in queue",
+			"idHeader": "Monitor ID",
+			"urlHeader": "URL",
+			"typeHeader": "Type",
+			"activeHeader": "Active",
+			"lockedAtHeader": "Locked at",
+			"runCountHeader": "Run count",
+			"failCountHeader": "Fail count",
+			"lastRunHeader": "Last run at",
+			"lastFinishedAtHeader": "Last finished at",
+			"lastRunTookHeader": "Last run took"
+		},
+		"metricsTable": {
+			"title": "Queue metrics",
+			"metricHeader": "Metric",
+			"valueHeader": "Value"
+		},
+		"failedJobTable": {
+			"title": "Failed jobs",
+			"monitorIdHeader": "Monitor ID",
+			"monitorUrlHeader": "Monitor URL",
+			"failCountHeader": "Fail count",
+			"failedAtHeader": "Last failed at",
+			"failReasonHeader": "Fail reason"
+		}
+	}
 }
