@@ -9,6 +9,7 @@ import Settings from "../../../../../assets/icons/settings-bold.svg?react";
 import PropTypes from "prop-types";
 import Dialog from "../../../../../Components/Dialog";
 import { networkService } from "../../../../../Utils/NetworkService.js";
+import { usePauseMonitor } from "../../../../../Hooks/monitorHooks";
 
 /**
  * InfrastructureMenu Component
@@ -29,6 +30,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const theme = useTheme();
+	const [pauseMonitor] = usePauseMonitor();
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -52,6 +54,20 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 
 	function openDetails(id) {
 		navigate(`/infrastructure/${id}`);
+	}
+
+	const openConfigure = (id) => {
+		navigate(`/infrastructure/configure/${id}`);
+	}
+
+	const handlePause = async () => {
+		try {
+			await pauseMonitor({ monitorId: monitor.id });
+			createToast({ body: `Monitor ${monitor.isActive ? "paused" : "resumed"} successfully.` });
+			updateCallback();
+		} catch (error) {
+			createToast({ body: `Failed to ${monitor.isActive ? "pause" : "resume"} monitor.` });
+		}
 	}
 
 	const handleRemove = async () => {
@@ -105,7 +121,14 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 					},
 				}}
 			>
-				{isAdmin && <MenuItem onClick={openRemove}>Remove</MenuItem>}
+				<MenuItem onClick={() => openDetails(monitor.id)}>Details</MenuItem>
+				{isAdmin && <MenuItem onClick={() => openConfigure(monitor.id)}>Configure</MenuItem>}
+				{isAdmin && (
+					<MenuItem onClick={handlePause}>
+						{monitor.isActive ? "Pause" : "Resume"}
+					</MenuItem>
+				)}
+				{isAdmin && <MenuItem onClick={openRemove} sx={{ color: theme.palette.error.main }}>Remove</MenuItem>}
 			</Menu>
 			<Dialog
 				open={isDialogOpen}
