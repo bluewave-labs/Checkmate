@@ -600,6 +600,24 @@ class NetworkService {
 
 	/**
 	 * ************************************
+	 * Update the status of a check
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.checkId - The ID of the check to update.
+	 * @param {boolean} config.status - The status to update the check to.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 *
+	 */
+	async updateCheckStatus(config) {
+		return this.axiosInstance.put(`/checks/${config.checkId}`, {
+			status: config.status,
+		});
+	}
+
+	/**
+	 * ************************************
 	 * Get all checks for a given user
 	 * ************************************
 	 *

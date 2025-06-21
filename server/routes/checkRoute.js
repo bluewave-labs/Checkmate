@@ -20,6 +20,10 @@ class CheckRoutes {
 
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
 
+		this.router.put("/:checkId", this.checkController.updateCheckStatus);
+
+		this.router.put("/:monitorId/:target", this.checkController.updateAllChecksStatus);
+
 		this.router.post(
 			"/:monitorId",
 			verifyOwnership(Monitor, "monitorId"),

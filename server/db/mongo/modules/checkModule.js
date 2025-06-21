@@ -68,7 +68,7 @@ const getChecksByMonitor = async ({
 	status,
 }) => {
 	try {
-		status = typeof status !== "undefined" ? false : undefined;
+		status = status === "true" ? true : status === "false" ? false : undefined;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 		// Match
@@ -156,13 +156,15 @@ const getChecksByTeam = async ({
 	page,
 	rowsPerPage,
 	teamId,
+	status,
 }) => {
 	try {
+		status = status === "true";
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 		const matchStage = {
 			teamId: ObjectId.createFromHexString(teamId),
-			status: false,
+			status: status,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -232,6 +234,52 @@ const getChecksByTeam = async ({
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "getChecksByTeam";
+		throw error;
+	}
+};
+
+/**
+ * Update the status of a check
+ * @async
+ * @param {string} checkId
+ * @param {boolean} status
+ * @returns {Promise<Check>}
+ * @throws {Error}
+ */
+const updateCheckStatus = async (checkId, status) => {
+	try {
+		const updatedCheck = await Check.findOneAndUpdate(
+			{ _id: checkId },
+			{ status },
+			{ new: true }
+		);
+		return updatedCheck;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "updateCheckStatus";
+		throw error;
+	}
+};
+
+/**
+ * Update the status of all checks for a monitor or team
+ * @async
+ * @param {string} id
+ * @param {boolean} status
+ * @param {string} target
+ * @returns {Promise<number>}
+ * @throws {Error}
+ */
+const updateAllChecksStatus = async (id, status, target) => {
+	try {
+		const updatedChecks = await Check.updateMany(
+			target === "monitor" ? { monitorId: id } : { teamId: id },
+			{ $set: { status } }
+		);
+		return updatedChecks.modifiedCount;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "updateAllChecksStatus";
 		throw error;
 	}
 };
@@ -317,6 +365,8 @@ export {
 	createChecks,
 	getChecksByMonitor,
 	getChecksByTeam,
+	updateCheckStatus,
+	updateAllChecksStatus,
 	deleteChecks,
 	deleteChecksByTeamId,
 	updateChecksTTL,

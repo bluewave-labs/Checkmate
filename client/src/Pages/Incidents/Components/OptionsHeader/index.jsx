@@ -87,6 +87,13 @@ const OptionsHeader = ({
 					>
 						{t("incidentsOptionsHeaderFilterCannotResolve")}
 					</Button>
+					<Button
+						variant="group"
+						filled={(filter === "resolved").toString()}
+						onClick={() => setFilter("resolved")}
+					>
+						{t("incidentsOptionsHeaderFilterResolved")}
+					</Button>
 				</ButtonGroup>
 			</Stack>
 			<Stack {...stackStyles}>
