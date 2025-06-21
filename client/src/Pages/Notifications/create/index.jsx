@@ -204,7 +204,7 @@ const CreateNotifications = () => {
 					spacing={theme.spacing(2)}
 				>
 					<Button
-						loading={isCreating || isEditing || notificationIsLoading}
+						loading={isTesting}
 						variant="contained"
 						color="secondary"
 						onClick={onTestNotification}
