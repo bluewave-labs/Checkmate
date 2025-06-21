@@ -71,6 +71,25 @@ const JobTable = ({ jobs = [] }) => {
 			content: t("queuePage.jobTable.lastRunHeader"),
 			render: (row) => row.lastRunAt || "-",
 		},
+		{
+			id: "lockedAt",
+			content: t("queuePage.jobTable.lockedAtHeader"),
+			render: (row) => row.lockedAt || "-",
+		},
+
+		{
+			id: "lastFinish",
+			content: t("queuePage.jobTable.lastFinishedAtHeader"),
+			render: (row) => row.lastFinishedAt || "-",
+		},
+		{
+			id: "lastRunTook",
+			content: t("queuePage.jobTable.lastRunTookHeader"),
+			render: (row) => {
+				const value = row.lastRunTook ? row.lastRunTook + " ms" : "-";
+				return value;
+			},
+		},
 	];
 
 	const headers = headersData.map((header) => createHeader(header));
