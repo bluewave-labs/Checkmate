@@ -507,6 +507,13 @@
 	},
 	"auth": {
 		"common": {
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": "The password you provided does not match our records"
+					}
+				}
+			},
 			"navigation": {
 				"continue": "Continue",
 				"back": "Back"
