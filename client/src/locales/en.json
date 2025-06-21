@@ -752,5 +752,15 @@
 	"settingsEmailSecure": "Secure - Use SSL",
 	"settingsEmailPool": "Pool - Enable connection pooling",
 	"sendTestNotifications": "Send test notifications",
-	"selectAll": "Select all"
+	"selectAll": "Select all",
+	"export": {
+		"title": "Export Monitors",
+		"success": "Monitors exported successfully!",
+		"failed": "Failed to export monitors"
+	},
+	"monitorActions": {
+		"title": "Export/Import",
+		"import": "Import Monitors",
+		"export": "Export Monitors"
+	}
 }

@@ -1022,6 +1022,13 @@ class NetworkService {
 		const { id, notification } = config;
 		return this.axiosInstance.put(`/notifications/${id}`, notification);
 	}
+
+	async exportMonitors() {
+		const response = await this.axiosInstance.get("/monitors/export", {
+			responseType: "blob",
+		});
+		return response;
+	}
 }
 
 export default NetworkService;
