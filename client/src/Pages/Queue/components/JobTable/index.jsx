@@ -7,6 +7,7 @@ import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { TypeToPathMap } from "../../../../Utils/monitorUtils";
 import { useTranslation } from "react-i18next";
+import { createHeaderFactory } from "../../../../Components/Table/TableUtils";
 
 const JobTable = ({ jobs = [] }) => {
 	const theme = useTheme();
@@ -33,109 +34,46 @@ const JobTable = ({ jobs = [] }) => {
 		return {};
 	};
 
-	const headers = [
+	const createHeader = createHeaderFactory(buildSx);
+	const headersData = [
 		{
 			id: "id",
 			content: t("queuePage.jobTable.idHeader"),
-			render: (row) => {
-				return row.monitorId;
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.monitorId,
 		},
 		{
 			id: "url",
 			content: t("queuePage.jobTable.urlHeader"),
-			render: (row) => {
-				return row.monitorUrl;
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.monitorUrl,
 		},
 		{
 			id: "type",
 			content: t("queuePage.jobTable.typeHeader"),
-			render: (row) => {
-				return row.monitorType;
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.monitorType,
 		},
 		{
 			id: "active",
 			content: t("queuePage.jobTable.activeHeader"),
-			render: (row) => {
-				return row.active.toString();
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.active.toString(),
 		},
 		{
 			id: "runCount",
 			content: t("queuePage.jobTable.runCountHeader"),
-			render: (row) => {
-				return row.runCount;
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.runCount,
 		},
 		{
 			id: "failCount",
 			content: t("queuePage.jobTable.failCountHeader"),
-			render: (row) => {
-				return row.failCount;
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.failCount,
 		},
 		{
 			id: "lastRun",
 			content: t("queuePage.jobTable.lastRunHeader"),
-			render: (row) => {
-				return row.lastRunAt || "-";
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
-		},
-		{
-			id: "lockedAt",
-			content: t("queuePage.jobTable.lockedAtHeader"),
-			render: (row) => {
-				return row.lockedAt || "-";
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
-		},
-		{
-			id: "lastFinish",
-			content: t("queuePage.jobTable.lastFinishedAtHeader"),
-			render: (row) => {
-				return row.lastFinishedAt || "-";
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
-		},
-		{
-			id: "lastRunTook",
-			content: t("queuePage.jobTable.lastRunTookHeader"),
-			render: (row) => {
-				const value = row.lastRunTook ? row.lastRunTook + " ms" : "-";
-				return value;
-			},
-			getCellSx: (row) => {
-				return buildSx(row);
-			},
+			render: (row) => row.lastRunAt || "-",
 		},
 	];
+
+	const headers = headersData.map((header) => createHeader(header));
 
 	return (
 		<Stack gap={theme.spacing(2)}>
