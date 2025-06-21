@@ -3,6 +3,8 @@ import { Stack, Button, Typography } from "@mui/material";
 import Tabs from "./Components/Tabs";
 import GenericFallback from "../../../Components/GenericFallback";
 import SkeletonLayout from "./Components/Skeleton";
+import Dialog from "../../../Components/Dialog";
+import Breadcrumbs from "../../../Components/Breadcrumbs";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -15,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
 //Constants
 const TAB_LIST = ["General settings", "Contents"];
 
@@ -28,6 +31,7 @@ const CreateStatusPage = () => {
 	//Local state
 	const [tab, setTab] = useState(0);
 	const [progress, setProgress] = useState({ value: 0, isLoading: false });
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	const [form, setForm] = useState({
 		isPublished: false,
 		companyName: "",
@@ -51,13 +55,13 @@ const CreateStatusPage = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, isLoading, networkError] = useMonitorsFetch();
-	const [createStatusPage, createStatusIsLoading, createStatusPageNetworkError] =
-		useCreateStatusPage(isCreate);
+	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
+	const [statusPage, statusPageMonitors, statusPageIsLoading, , fetchStatusPage] =
 		useStatusPageFetch(isCreate, url);
+	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
 	// Handlers
 	const handleFormChange = (e) => {
@@ -120,6 +124,12 @@ const CreateStatusPage = () => {
 		// interrupt interval if image upload is canceled prior to completing the process
 		clearInterval(intervalRef.current);
 		setProgress({ value: 0, isLoading: false });
+	};
+
+	const handleDelete = () => {
+		deleteStatusPage();
+		setIsDeleteOpen(false);
+		navigate("/status");
 	};
 
 	const handleSubmit = async () => {
@@ -220,6 +230,37 @@ const CreateStatusPage = () => {
 	// Load fields
 	return (
 		<Stack gap={theme.spacing(10)}>
+			<Breadcrumbs
+				list={[
+					{ name: "status", path: "/status" },
+					{ name: "details", path: `/status/${url}` },
+					{ name: "configure", path: `/status/create/${url}` },
+				]}
+			/>
+			{!isCreate && (
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+				>
+					<Button
+						loading={isDeleting}
+						variant="contained"
+						color="error"
+						onClick={() => setIsDeleteOpen(true)}
+					>
+						{t("remove")}
+					</Button>
+					<Dialog
+						title={t("deleteStatusPage")}
+						onConfirm={handleDelete}
+						onCancel={() => setIsDeleteOpen(false)}
+						open={isDeleteOpen}
+						confirmationButtonLabel={t("deleteStatusPageConfirm")}
+						description={t("deleteStatusPageDescription")}
+						isLoading={isDeleting || statusPageIsLoading}
+					/>
+				</Stack>
+			)}
 			<Tabs
 				form={form}
 				errors={errors}
