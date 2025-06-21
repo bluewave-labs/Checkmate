@@ -58,17 +58,21 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 
 	const openConfigure = (id) => {
 		navigate(`/infrastructure/configure/${id}`);
-	}
+	};
 
 	const handlePause = async () => {
 		try {
 			await pauseMonitor({ monitorId: monitor.id });
-			createToast({ body: `Monitor ${monitor.isActive ? "paused" : "resumed"} successfully.` });
+			createToast({
+				body: `Monitor ${monitor.isActive ? "paused" : "resumed"} successfully.`,
+			});
 			updateCallback();
 		} catch (error) {
-			createToast({ body: `Failed to ${monitor.isActive ? "pause" : "resume"} monitor.` });
+			createToast({
+				body: `Failed to ${monitor.isActive ? "pause" : "resume"} monitor.`,
+			});
 		}
-	}
+	};
 
 	const handleRemove = async () => {
 		try {
@@ -122,13 +126,22 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 				}}
 			>
 				<MenuItem onClick={() => openDetails(monitor.id)}>Details</MenuItem>
-				{isAdmin && <MenuItem onClick={() => openConfigure(monitor.id)}>Configure</MenuItem>}
+				{isAdmin && (
+					<MenuItem onClick={() => openConfigure(monitor.id)}>Configure</MenuItem>
+				)}
 				{isAdmin && (
 					<MenuItem onClick={handlePause}>
 						{monitor.isActive ? "Pause" : "Resume"}
 					</MenuItem>
 				)}
-				{isAdmin && <MenuItem onClick={openRemove} sx={{ color: theme.palette.error.main }}>Remove</MenuItem>}
+				{isAdmin && (
+					<MenuItem
+						onClick={openRemove}
+						sx={{ color: theme.palette.error.main }}
+					>
+						Remove
+					</MenuItem>
+				)}
 			</Menu>
 			<Dialog
 				open={isDialogOpen}
