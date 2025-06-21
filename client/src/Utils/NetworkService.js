@@ -1023,6 +1023,18 @@ class NetworkService {
 		return this.axiosInstance.put(`/notifications/${id}`, notification);
 	}
 
+	async getQueueData() {
+		return this.axiosInstance.get(`/queue/all-metrics`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async flushQueue() {
+		return this.axiosInstance.post(`/queue/flush`);
+    
+    
 	async exportMonitors() {
 		const response = await this.axiosInstance.get("/monitors/export", {
 			responseType: "blob",

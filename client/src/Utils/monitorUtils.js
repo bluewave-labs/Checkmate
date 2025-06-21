@@ -36,3 +36,12 @@ export const parseDomainName = (url) => {
 
 	return url;
 };
+
+export const TypeToPathMap = {
+	http: "uptime",
+	port: "uptime",
+	docker: "uptime",
+	ping: "uptime",
+	hardware: "infrastructure",
+	pagespeed: "pagespeed",
+};

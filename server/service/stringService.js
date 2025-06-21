@@ -276,6 +276,10 @@ class StringService {
 		return this.translationService.getTranslation("queueGetMetrics");
 	}
 
+	get queueGetJobs() {
+		return this.translationService.getTranslation("queueGetJobs");
+	}
+
 	get queueAddJob() {
 		return this.translationService.getTranslation("queueAddJob");
 	}
