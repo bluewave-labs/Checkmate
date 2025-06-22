@@ -73,7 +73,7 @@ const StatusPageSchema = mongoose.Schema(
 		showAdminLoginLink: {
 			type: Boolean,
 			default: false,
-		}
+		},
 	},
 	{ timestamps: true }
 );

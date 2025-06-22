@@ -1037,7 +1037,7 @@ class NetworkService {
 	async flushQueue() {
 		return this.axiosInstance.post(`/queue/flush`);
 	}
-    
+
 	async exportMonitors() {
 		const response = await this.axiosInstance.get("/monitors/export", {
 			responseType: "blob",
