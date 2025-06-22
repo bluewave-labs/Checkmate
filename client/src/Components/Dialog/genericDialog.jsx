@@ -11,14 +11,22 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 	const dialogAnchor = DialogAnchorRef?.current;
 	
 	useEffect(() => {
+		const scrollable = document.body.scrollHeight > window.innerHeight;
+
 		if (open) {
 			document.body.style.overflow = 'hidden';
+
+			if (scrollable){
+				document.documentElement.style.scrollbarGutter = 'stable';
+			}
 		} else {
 			document.body.style.overflow = 'unset';
+			document.documentElement.style.scrollbarGutter = 'unset';
 		}
 
 		return () => {
 			document.body.style.overflow = 'unset';
+			document.documentElement.style.scrollbarGutter = 'unset';
 		};
 	}, [open]);
 
