@@ -786,6 +786,7 @@
 			"failedAtHeader": "Last failed at",
 			"failReasonHeader": "Fail reason"
 		}
+	},
 	"export": {
 		"title": "Export Monitors",
 		"success": "Monitors exported successfully!",
