@@ -1,14 +1,14 @@
-import { useId, useEffect } from "react";
+import { useId, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { Modal, Stack, Typography } from "@mui/material";
-import { DialogAnchorRef } from "../../Utils/DialogAnchorProvider";
+import { DialogAnchorContext } from "../../Utils/DialogAnchorContext";
 
 const GenericDialog = ({ title, description, open, onClose, theme, children }) => {
 	const titleId = useId();
 	const descriptionId = useId();
 	const ariaDescribedBy = description?.length > 0 ? descriptionId : "";
 
-	const dialogAnchor = DialogAnchorRef?.current;
+	const dialogAnchor = useContext(DialogAnchorContext)?.current;
 	
 	useEffect(() => {
 		const scrollable = document.body.scrollHeight > window.innerHeight;
