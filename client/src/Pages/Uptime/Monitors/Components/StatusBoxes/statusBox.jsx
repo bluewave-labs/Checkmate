@@ -5,9 +5,8 @@ import Arrow from "../../../../../assets/icons/top-right-arrow.svg?react";
 import Background from "../../../../../assets/Images/background-grid.svg?react";
 import ClockSnooze from "../../../../../assets/icons/clock-snooze.svg?react";
 
-const StatusBox = ({ title, value }) => {
+const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
-
 	let sharedStyles = {
 		position: "absolute",
 		right: 8,
@@ -17,21 +16,21 @@ const StatusBox = ({ title, value }) => {
 
 	let color;
 	let icon;
-	if (title === "up") {
+	if (status === "up") {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: 8 }}>
 				<Arrow />
 			</Box>
 		);
-	} else if (title === "down") {
+	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, transform: "rotate(180deg)", top: 5 }}>
 				<Arrow />
 			</Box>
 		);
-	} else if (title === "paused") {
+	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: 12, right: 12 }}>
@@ -100,8 +99,9 @@ const StatusBox = ({ title, value }) => {
 };
 
 StatusBox.propTypes = {
-	title: PropTypes.oneOf(["up", "down", "paused"]).isRequired,
+	title: PropTypes.string,
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	status: PropTypes.string,
 };
 
 export default StatusBox;

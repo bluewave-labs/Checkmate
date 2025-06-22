@@ -53,10 +53,10 @@ const Filter = ({
 
 	return (
 		<Box
-		sx={{
-			m: theme.spacing(2),
-			ml: theme.spacing(4),
-		}}
+			sx={{
+				m: theme.spacing(2),
+				ml: theme.spacing(4),
+			}}
 		>
 			<FilterHeader
 				header={t("status")}
@@ -80,10 +80,10 @@ const Filter = ({
 };
 
 Filter.propTypes = {
-    selectedStatus: PropTypes.arrayOf(PropTypes.string),
-    setSelectedStatus: PropTypes.func.isRequired,
-    setToFilterStatus: PropTypes.func.isRequired,
-    handleReset: PropTypes.func.isRequired,
+	selectedStatus: PropTypes.arrayOf(PropTypes.string),
+	setSelectedStatus: PropTypes.func.isRequired,
+	setToFilterStatus: PropTypes.func.isRequired,
+	handleReset: PropTypes.func.isRequired,
 };
 
 export default Filter;

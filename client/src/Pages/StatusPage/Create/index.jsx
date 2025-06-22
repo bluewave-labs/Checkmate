@@ -184,7 +184,6 @@ const CreateStatusPage = () => {
 				size: null,
 			};
 		}
-
 		setForm((prev) => {
 			return {
 				...prev,
@@ -194,6 +193,8 @@ const CreateStatusPage = () => {
 				monitors: statusPageMonitors.map((monitor) => monitor._id),
 				color: statusPage?.color,
 				logo: newLogo,
+				showCharts: statusPage?.showCharts ?? true,
+				showUptimePercentage: statusPage?.showUptimePercentage ?? true,
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);
@@ -207,9 +208,9 @@ const CreateStatusPage = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("networkError")}
+					{t("common.toasts.networkError")}
 				</Typography>
-				<Typography>{t("checkConnection")}</Typography>
+				<Typography>{t("common.toasts.checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}

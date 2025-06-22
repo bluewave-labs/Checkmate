@@ -34,7 +34,7 @@ const MaintenanceTable = ({
 	maintenanceWindowCount,
 	updateCallback,
 }) => {
-	const { rowsPerPage } = useSelector((state) => state.ui.maintenance);
+	const rowsPerPage = useSelector((state) => state?.ui?.maintenance?.rowsPerPage ?? 5);
 	const dispatch = useDispatch();
 
 	const handleChangePage = (event, newPage) => {
@@ -50,7 +50,7 @@ const MaintenanceTable = ({
 		);
 		setPage(0);
 	};
-	
+
 	const { t } = useTranslation();
 
 	const headers = [

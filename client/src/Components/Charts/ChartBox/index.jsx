@@ -18,7 +18,13 @@ const ChartBox = ({
 }) => {
 	const theme = useTheme();
 	if (isEmpty) {
-		return <EmptyView icon={icon} header={header} message={noDataMessage} />; 
+		return (
+			<EmptyView
+				icon={icon}
+				header={header}
+				message={noDataMessage}
+			/>
+		);
 	}
 	return (
 		<Stack
@@ -37,7 +43,6 @@ const ChartBox = ({
 		>
 			<Stack
 				flex={1}
-				alignItems="center"
 				sx={{
 					padding: theme.spacing(8),
 					justifyContent,
@@ -95,5 +100,5 @@ ChartBox.propTypes = {
 	header: PropTypes.string,
 	height: PropTypes.string,
 	noDataMessage: PropTypes.string,
-	isEmpty: PropTypes.bool
+	isEmpty: PropTypes.bool,
 };

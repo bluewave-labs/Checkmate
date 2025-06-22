@@ -7,12 +7,11 @@ on:
       languages:
         description: "Languages to synchronize (comma separated, e.g.: tr,en,es)"
         required: false
-        default: "tr,en"
+        default: "ar,zh-tw,cs,en,fi,fr,de,pt-br,ru,es,tr"
       format:
         description: "Export format (key_value_json or json)"
         required: false
         default: "key_value_json"
-
 
 permissions:
   contents: write
@@ -92,6 +91,12 @@ jobs:
       - name: Get current date
         id: date
         run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: Format client code
+        run: |
+          cd client
+          npm ci
+          npm run format
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7

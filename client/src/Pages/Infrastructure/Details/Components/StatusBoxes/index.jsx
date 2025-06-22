@@ -4,17 +4,17 @@ import StatusBoxes from "../../../../../Components/StatusBoxes";
 import StatBox from "../../../../../Components/StatBox";
 
 //Utils
-import useUtils from "../../../../../Pages/Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
 import { useTranslation } from "react-i18next";
 
 const InfraStatBoxes = ({ shouldRender, monitor }) => {
 	// Utils
 	const { formatBytes } = useHardwareUtils();
-	const { determineState } = useUtils();
+	const { determineState } = useMonitorUtils();
 	const { t } = useTranslation();
 
-	const { stats, uptimePercentage } = monitor ?? {};
+	const { stats } = monitor ?? {};
 	const latestCheck = stats?.aggregateData?.latestCheck;
 
 	// Get data from latest check
@@ -95,7 +95,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 				heading={t("disk")}
 				subHeading={formatBytes(diskTotalBytes)}
 			/>
-			<StatBox
+			{/* <StatBox
 				heading={t("uptime")}
 				subHeading={
 					<>
@@ -103,7 +103,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 						<Typography component="span">%</Typography>
 					</>
 				}
-			/>
+			/> */}
 			<StatBox
 				key={8}
 				heading={t("os")}

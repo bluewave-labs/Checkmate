@@ -4,7 +4,7 @@ import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography, Button } from "@mui/material";
 import { PasswordEndAdornment } from "../../Inputs/TextInput/Adornments";
 import TextInput from "../../Inputs/TextInput";
-import { credentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation";
 import Alert from "../../Alert";
 import { update } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -61,7 +61,7 @@ const PasswordPanel = () => {
 			[name]: true,
 		};
 
-		const validation = credentials.validate(
+		const validation = newOrChangedCredentials.validate(
 			{ ...updatedData },
 			{ abortEarly: false, context: { password: updatedData.newPassword } }
 		);
@@ -79,7 +79,7 @@ const PasswordPanel = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const { error } = credentials.validate(localData, {
+		const { error } = newOrChangedCredentials.validate(localData, {
 			abortEarly: false,
 			context: { password: localData.newPassword },
 		});
@@ -94,7 +94,10 @@ const PasswordPanel = () => {
 			const action = await dispatch(update({ localData }));
 			if (action.payload.success) {
 				createToast({
-					body: "Your password was changed successfully.",
+					body: t(
+						"passwordPanel.passwordChangedSuccess",
+						"Your password was changed successfully."
+					),
 				});
 				setLocalData({
 					password: "",
@@ -104,7 +107,10 @@ const PasswordPanel = () => {
 			} else {
 				// TODO: Check for other errors?
 				createToast({
-					body: "Your password input was incorrect.",
+					body: t(
+						"passwordPanel.passwordInputIncorrect",
+						"Your password input was incorrect."
+					),
 				});
 				setErrors({ password: "*" + action.payload.msg + "." });
 			}
@@ -148,12 +154,15 @@ const PasswordPanel = () => {
 						component="h1"
 						width="20ch"
 					>
-						Current password
+						{t("passwordPanel.currentPassword", "Current password")}
 					</Typography>
 					<TextInput
 						type="password"
 						id="edit-current-password"
-						placeholder="Enter your current password"
+						placeholder={t(
+							"passwordPanel.enterCurrentPassword",
+							"Enter your current password"
+						)}
 						autoComplete="current-password"
 						value={localData.password}
 						onChange={handleChange}
@@ -173,13 +182,13 @@ const PasswordPanel = () => {
 						component="h1"
 						width="20ch"
 					>
-						New password
+						{t("passwordPanel.newPassword", "New password")}
 					</Typography>
 
 					<TextInput
 						type="password"
 						id="edit-new-password"
-						placeholder="Enter your new password"
+						placeholder={t("passwordPanel.enterNewPassword", "Enter your new password")}
 						autoComplete="new-password"
 						value={localData.newPassword}
 						onChange={handleChange}
@@ -199,13 +208,13 @@ const PasswordPanel = () => {
 						component="h1"
 						width="20ch"
 					>
-						Confirm new password
+						{t("passwordPanel.confirmNewPassword", "Confirm new password")}
 					</Typography>
 
 					<TextInput
 						type="password"
 						id="edit-confirm-password"
-						placeholder={t("confirmPassword")}
+						placeholder={t("confirmPassword", "Confirm password")}
 						autoComplete="new-password"
 						value={localData.confirm}
 						onChange={handleChange}
@@ -219,7 +228,10 @@ const PasswordPanel = () => {
 					<Box sx={{ maxWidth: "70ch" }}>
 						<Alert
 							variant="warning"
-							body="New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character."
+							body={t(
+								"passwordPanel.passwordRequirements",
+								"New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character."
+							)}
 						/>
 					</Box>
 				)}
@@ -232,7 +244,7 @@ const PasswordPanel = () => {
 						color="accent"
 						type="submit"
 						loading={isLoading}
-						loadingIndicator="Saving..."
+						loadingIndicator={t("commonSaving", "Saving...")}
 						disabled={
 							Object.keys(errors).length > 0 ||
 							Object.values(localData).filter((value) => value === "").length > 0
@@ -242,7 +254,7 @@ const PasswordPanel = () => {
 							mt: theme.spacing(20),
 						}}
 					>
-						Save
+						{t("commonSave", "Save")}
 					</Button>
 				</Stack>
 			</Stack>

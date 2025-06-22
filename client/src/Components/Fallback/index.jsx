@@ -11,7 +11,8 @@ import { useSelector } from "react-redux";
 import Alert from "../Alert";
 import { useTranslation } from "react-i18next";
 import "./index.css";
-
+import { useFetchSettings } from "../../Hooks/settingsHooks";
+import { useState } from "react";
 /**
  * Fallback component to display a fallback UI with a title, a list of checks, and a navigation button.
  *
@@ -24,32 +25,45 @@ import "./index.css";
  * @returns {JSX.Element} The rendered fallback UI.
  */
 
-const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, showPageSpeedWarning = false }) => {
+const Fallback = ({
+	title,
+	checks,
+	link = "/",
+	isAdmin,
+	vowelStart = false,
+	showPageSpeedWarning = false,
+}) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const mode = useSelector((state) => state.ui.mode);
 	const { t } = useTranslation();
+	const [settingsData, setSettingsData] = useState(undefined);
 
+	const [isLoading, error] = useFetchSettings({
+		setSettingsData,
+		setIsApiKeySet: () => {},
+		setIsEmailPasswordSet: () => {},
+	});
 	// Custom warning message with clickable link
 	const renderWarningMessage = () => {
 		return (
 			<>
-				{t("pageSpeedWarning")} {" "}
-				<Link 
+				{t("pageSpeedWarning")}{" "}
+				<Link
 					component={RouterLink}
 					to="/settings"
-					sx={{ 
+					sx={{
 						textDecoration: "underline",
 						color: "inherit",
 						fontWeight: "inherit",
 						"&:hover": {
 							textDecoration: "underline",
-						}
+						},
 					}}
 				>
 					{t("pageSpeedLearnMoreLink")}
-				</Link>
-				{" "}{t("pageSpeedAddApiKey")}
+				</Link>{" "}
+				{t("pageSpeedAddApiKey")}
 			</>
 		);
 	};
@@ -120,7 +134,7 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 						</Button>
 						{/* Bulk create of uptime monitors */}
 						{title === "uptime monitor" && (
-						<Button
+							<Button
 								variant="contained"
 								color="accent"
 								sx={{ alignSelf: "center" }}
@@ -129,27 +143,31 @@ const Fallback = ({ title, checks, link = "/", isAdmin, vowelStart = false, show
 								{t("bulkImport.fallbackPage")}
 							</Button>
 						)}
-						
+
 						{/* Warning box for PageSpeed monitor */}
-						{(title === "pagespeed monitor" && showPageSpeedWarning) && (
+						{title === "pagespeed monitor" && showPageSpeedWarning && (
 							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
-								<Box sx={{
-									'& .alert.row-stack': {
-										backgroundColor: theme.palette.warningSecondary.main,
-										borderColor: theme.palette.warningSecondary.lowContrast,
-										'& .MuiTypography-root': {
-											color: theme.palette.warningSecondary.contrastText
+								<Box
+									sx={{
+										"& .alert.row-stack": {
+											backgroundColor: theme.palette.warningSecondary.main,
+											borderColor: theme.palette.warningSecondary.lowContrast,
+											"& .MuiTypography-root": {
+												color: theme.palette.warningSecondary.contrastText,
+											},
+											"& .MuiBox-root > svg": {
+												color: theme.palette.warningSecondary.contrastText,
+											},
 										},
-										'& .MuiBox-root > svg': {
-											color: theme.palette.warningSecondary.contrastText
-										}
-									}
-								}}>
-									<Alert
-										variant="warning"
-										hasIcon={true}
-										body={renderWarningMessage()}
-									/>
+									}}
+								>
+									{settingsData?.pagespeedKeySet === false && (
+										<Alert
+											variant="warning"
+											hasIcon={true}
+											body={renderWarningMessage()}
+										/>
+									)}
 								</Box>
 							</Box>
 						)}

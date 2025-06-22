@@ -1,5 +1,5 @@
 const SERVICE_NAME = "BufferService";
-const BUFFER_TIMEOUT = 1000 * 60 * 1; // 1 minute
+const BUFFER_TIMEOUT = process.env.NODE_ENV === "development" ? 5000 : 1000 * 60 * 1; // 1 minute
 const TYPE_MAP = {
 	http: "checks",
 	ping: "checks",
@@ -7,7 +7,6 @@ const TYPE_MAP = {
 	docker: "checks",
 	pagespeed: "pagespeedChecks",
 	hardware: "hardwareChecks",
-	distributed_http: "distributedChecks",
 };
 
 class BufferService {
@@ -19,13 +18,11 @@ class BufferService {
 			checks: [],
 			pagespeedChecks: [],
 			hardwareChecks: [],
-			distributedChecks: [],
 		};
 		this.OPERATION_MAP = {
 			checks: this.db.createChecks,
 			pagespeedChecks: this.db.createPageSpeedChecks,
 			hardwareChecks: this.db.createHardwareChecks,
-			distributedChecks: this.db.createDistributedChecks,
 		};
 
 		this.scheduleNextFlush();
@@ -80,10 +77,19 @@ class BufferService {
 				});
 				continue;
 			}
-			await operation(buffer);
+			try {
+				await operation(buffer);
+			} catch (error) {
+				this.logger.error({
+					message: error.message,
+					service: this.SERVICE_NAME,
+					method: "flushBuffers",
+					stack: error.stack,
+				});
+			}
 			this.buffers[bufferName] = [];
 		}
-		this.logger.info({
+		this.logger.debug({
 			message: `Flushed ${items} items`,
 			service: this.SERVICE_NAME,
 			method: "flushBuffers",

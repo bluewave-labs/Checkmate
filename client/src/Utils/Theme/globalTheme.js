@@ -253,6 +253,7 @@ const baseTheme = (palette) => ({
 		MuiTableCell: {
 			styleOverrides: {
 				root: ({ theme }) => ({
+					fontSize: typographyLevels.base,
 					borderBottomColor: theme.palette.primary.lowContrast,
 				}),
 			},
@@ -304,7 +305,7 @@ const baseTheme = (palette) => ({
 			styleOverrides: {
 				root: ({ theme }) => ({
 					"& fieldset": {
-						borderColor: theme.palette.primary.contrastBorder,
+						borderColor: theme.palette.primary.lowContrast,
 						borderRadius: theme.shape.borderRadius,
 					},
 
@@ -323,18 +324,22 @@ const baseTheme = (palette) => ({
 							/* borderColor: theme.palette.primary.contrastText, */
 						},
 					},
+
 					"& .MuiInputBase-input:-webkit-autofill": {
 						transition: "background-color 5000s ease-in-out 0s",
 						WebkitBoxShadow: `0 0 0px 1000px ${theme.palette.primary.main} inset`,
 						WebkitTextFillColor: theme.palette.primary.contrastText,
 					},
+
 					"& .MuiInputBase-input.MuiOutlinedInput-input": {
 						padding: "0 var(--env-var-spacing-1-minus) !important",
 					},
+
 					"& .MuiOutlinedInput-root": {
 						color: theme.palette.primary.contrastTextSecondary,
 						borderRadius: 4,
 					},
+
 					"& .MuiOutlinedInput-notchedOutline": {
 						borderRadius: 4,
 					},
@@ -345,6 +350,7 @@ const baseTheme = (palette) => ({
 						fontSize: "var(--env-var-font-size-medium)",
 						marginLeft: 0,
 					},
+
 					"& .MuiFormHelperText-root.Mui-error": {
 						opacity: 0.8,
 						fontSize: "var(--env-var-font-size-medium)",
@@ -354,6 +360,7 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
 		MuiOutlinedInput: {
 			styleOverrides: {
 				root: {
@@ -364,13 +371,40 @@ const baseTheme = (palette) => ({
 						borderColor: palette.primary.contrastBorderDisabled,
 					},
 					"&:hover .MuiOutlinedInput-notchedOutline": {
-						borderColor: palette.primary.contrastText, // Adjust hover border color
+						borderColor: palette.primary.lowContrast, // Adjust hover border color
 					},
 					"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 						borderColor: palette.accent.main, // Adjust focus border color
 					},
-					color: palette.primary.contrastTextTertiary,
+					color: palette.primary.contrastText,
 				},
+			},
+		},
+
+		MuiAutocomplete: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiOutlinedInput-root": {
+						paddingTop: 0,
+						paddingBottom: 0,
+					},
+					"& fieldset": {
+						borderColor: theme.palette.primary.lowContrast,
+						borderRadius: theme.shape.borderRadius,
+					},
+					"& .MuiOutlinedInput-root:hover:not(:has(input:focus)):not(:has(textarea:focus)) fieldset":
+						{
+							borderColor: theme.palette.primary.lowContrast,
+						},
+
+					"& .MuiAutocomplete-tag": {
+						color: theme.palette.primary.contrastText,
+						backgroundColor: theme.palette.primary.lowContrast,
+					},
+					"& .MuiChip-deleteIcon": {
+						color: theme.palette.primary.contrastText, // CAIO_REVIEW
+					},
+				}),
 			},
 		},
 		MuiTab: {
@@ -631,12 +665,34 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
-		MuiStack: {
-			styleOverrides: {
-				root: ({ theme }) => ({
-					gap: `${theme.spacing(14)}`,
-				}),
-			},
+		MuiTypography: {
+			variants: [
+				{
+					props: { variant: "monitorName" },
+					style: {
+						fontSize: typographyLevels.xl,
+						color: palette.primary.contrastText,
+						fontWeight: 500,
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+						maxWidth: "calc((100vw - var(--env-var-width-2)) / 2)",
+					},
+				},
+				{
+					props: { variant: "monitorUrl" },
+					style: {
+						fontSize: typographyLevels.l,
+						color: palette.primary.contrastTextSecondary,
+						fontWeight: "bolder",
+						fontFamily: "monospace",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+						maxWidth: "calc((100vw - var(--env-var-width-2)) / 2)",
+					},
+				},
+			],
 		},
 	},
 	shape: {

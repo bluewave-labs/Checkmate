@@ -19,16 +19,16 @@ class QueueRoutes {
 			this.queueController.getJobs
 		);
 
+		this.router.get(
+			"/all-metrics",
+			isAllowed(["admin", "superadmin"]),
+			this.queueController.getAllMetrics
+		);
+
 		this.router.post(
 			"/jobs",
 			isAllowed(["admin", "superadmin"]),
 			this.queueController.addJob
-		);
-
-		this.router.post(
-			"/obliterate",
-			isAllowed(["admin", "superadmin"]),
-			this.queueController.obliterateQueue
 		);
 
 		this.router.post(

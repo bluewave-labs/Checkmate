@@ -121,10 +121,10 @@ class StatusService {
 		try {
 			const { monitorId, status, code } = networkResponse;
 			const monitor = await this.db.getMonitorById(monitorId);
-	
+
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
-	
+
 			// No change in monitor status, return early
 			if (monitor.status === status)
 				return {
@@ -134,7 +134,7 @@ class StatusService {
 					code,
 					timestamp: new Date().getTime(),
 				};
-	
+
 			// Monitor status changed, save prev status and update monitor
 			this.logger.info({
 				service: this.SERVICE_NAME,
@@ -144,11 +144,11 @@ class StatusService {
 				prevStatus: monitor.status,
 				newStatus: status,
 			});
-	
+
 			const prevStatus = monitor.status;
 			monitor.status = status;
 			await monitor.save();
-	
+
 			return {
 				monitor,
 				statusChanged: true,
@@ -157,12 +157,8 @@ class StatusService {
 				timestamp: new Date().getTime(),
 			};
 		} catch (error) {
-			this.logger.error({
-				service: this.SERVICE_NAME,
-				message: error.message,
-				method: "updateStatus",
-				stack: error.stack,
-			});
+			error.service = this.SERVICE_NAME;
+			error.method = "updateStatus";
 			throw error;
 		}
 	};
@@ -213,25 +209,14 @@ class StatusService {
 			tls_took,
 		};
 
-		if (type === "distributed_http") {
-			if (typeof payload === "undefined") {
-				return undefined;
-			}
-			check.continent = payload.continent;
-			check.countryCode = payload.country_code;
-			check.city = payload.city;
-			check.location = payload.location;
-			check.uptBurnt = payload.upt_burnt;
-			check.first_byte_took = payload.first_byte_took;
-			check.body_read_took = payload.body_read_took;
-			check.dns_took = payload.dns_took;
-			check.conn_took = payload.conn_took;
-			check.connect_took = payload.connect_took;
-			check.tls_took = payload.tls_took;
-		}
-
 		if (type === "pagespeed") {
 			if (typeof payload === "undefined") {
+				this.logger.warn({
+					message: "Failed to build check",
+					service: this.SERVICE_NAME,
+					method: "buildCheck",
+					details: "empty payload",
+				});
 				return undefined;
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
@@ -258,6 +243,7 @@ class StatusService {
 			check.disk = disk ?? {};
 			check.host = host ?? {};
 			check.errors = errors ?? [];
+			check.capture = payload?.capture ?? {};
 		}
 		return check;
 	};
@@ -291,9 +277,11 @@ class StatusService {
 		} catch (error) {
 			this.logger.error({
 				message: error.message,
-				service: this.SERVICE_NAME,
-				method: "insertCheck",
-				details: `Error inserting check for monitor: ${networkResponse?.monitorId}`,
+				service: error.service || this.SERVICE_NAME,
+				method: error.method || "insertCheck",
+				details:
+					error.details ||
+					`Error inserting check for monitor: ${networkResponse?.monitorId}`,
 				stack: error.stack,
 			});
 		}

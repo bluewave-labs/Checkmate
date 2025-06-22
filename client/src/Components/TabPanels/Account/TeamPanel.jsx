@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import TextInput from "../../Inputs/TextInput";
-import { credentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
 import Select from "../../Inputs/Select";
@@ -48,7 +48,8 @@ const TeamPanel = () => {
 							{row.firstName + " " + row.lastName}
 						</Typography>
 						<Typography>
-							{t("teamPanel.table.created")} {new Date(row.createdAt).toLocaleDateString()}
+							{t("teamPanel.table.created")}{" "}
+							{new Date(row.createdAt).toLocaleDateString()}
 						</Typography>
 					</Stack>
 				);
@@ -114,7 +115,10 @@ const TeamPanel = () => {
 			email: newEmail,
 		}));
 
-		const validation = credentials.validate({ email: newEmail }, { abortEarly: false });
+		const validation = newOrChangedCredentials.validate(
+			{ email: newEmail },
+			{ abortEarly: false }
+		);
 
 		setErrors((prev) => {
 			const updatedErrors = { ...prev };
@@ -141,7 +145,7 @@ const TeamPanel = () => {
 		if (!toInvite.role.includes("user") || !toInvite.role.includes("admin"))
 			setToInvite((prev) => ({ ...prev, role: ["user"] }));
 
-		const { error } = credentials.validate(
+		const { error } = newOrChangedCredentials.validate(
 			{ email: toInvite.email },
 			{
 				abortEarly: false,

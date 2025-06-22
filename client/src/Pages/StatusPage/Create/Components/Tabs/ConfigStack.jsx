@@ -9,7 +9,12 @@ const ConfigStack = ({ title, description, children }) => {
 	return (
 		<ConfigBox>
 			<Stack gap={theme.spacing(6)}>
-				<Typography component="h2">{title}</Typography>
+				<Typography
+					component="h2"
+					variant="h2"
+				>
+					{title}
+				</Typography>
 				<Typography component="p">{description}</Typography>
 			</Stack>
 			{children}

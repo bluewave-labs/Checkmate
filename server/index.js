@@ -36,9 +36,6 @@ import StatusPageController from "./controllers/statusPageController.js";
 import QueueRoutes from "./routes/queueRoute.js";
 import QueueController from "./controllers/queueController.js";
 
-import DistributedUptimeRoutes from "./routes/distributedUptimeRoute.js";
-import DistributedUptimeController from "./controllers/distributedUptimeController.js";
-
 import NotificationRoutes from "./routes/notificationRoute.js";
 import NotificationController from "./controllers/notificationController.js";
 
@@ -46,8 +43,12 @@ import DiagnosticRoutes from "./routes/diagnosticRoute.js";
 import DiagnosticController from "./controllers/diagnosticController.js";
 
 //JobQueue service and dependencies
-import JobQueue from "./service/jobQueue.js";
+import JobQueue from "./service/JobQueue/JobQueue.js";
+import JobQueueHelper from "./service/JobQueue/JobQueueHelper.js";
 import { Queue, Worker } from "bullmq";
+
+import PulseQueue from "./service/PulseQueue/PulseQueue.js";
+import PulseQueueHelper from "./service/PulseQueue/PulseQueueHelper.js";
 
 //Network service and dependencies
 import NetworkService from "./service/networkService.js";
@@ -72,6 +73,7 @@ import StatusService from "./service/statusService.js";
 
 // Notification Service and dependencies
 import NotificationService from "./service/notificationService.js";
+import NotificationUtils from "./service/notificationUtils.js";
 
 // Buffer Service and dependencies
 import BufferService from "./service/bufferService.js";
@@ -98,6 +100,8 @@ const openApiSpec = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "openapi.json"), "utf8")
 );
 
+const frontendPath = path.join(__dirname, "public");
+
 let server;
 
 const shutdown = async () => {
@@ -112,17 +116,13 @@ const shutdown = async () => {
 			service: SERVICE_NAME,
 			method: "shutdown",
 		});
-		// flush Redis
-		const redisService = ServiceRegistry.get(RedisService.SERVICE_NAME);
-		await redisService.flushall();
-
+		await ServiceRegistry.get(RedisService.SERVICE_NAME).flushRedis();
 		process.exit(1);
 	}, SHUTDOWN_TIMEOUT);
 	try {
 		server.close();
-		await ServiceRegistry.get(JobQueue.SERVICE_NAME).obliterate();
+		await ServiceRegistry.get(JobQueue.SERVICE_NAME).shutdown();
 		await ServiceRegistry.get(MongoDB.SERVICE_NAME).disconnect();
-		await ServiceRegistry.get(RedisService.SERVICE_NAME).flushall();
 		logger.info({ message: "Graceful shutdown complete" });
 		process.exit(0);
 	} catch (error) {
@@ -174,35 +174,56 @@ const startApp = async () => {
 	);
 	const bufferService = new BufferService({ db, logger });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
-	const notificationService = new NotificationService(
+	const notificationUtils = new NotificationUtils({
+		stringService,
+		emailService,
+	});
+
+	const notificationService = new NotificationService({
 		emailService,
 		db,
 		logger,
 		networkService,
-		stringService
-	);
-
-	const redisService = await RedisService.createInstance({
-		logger,
-		IORedis,
-		SettingsService: settingsService,
+		stringService,
+		notificationUtils,
 	});
 
-	const jobQueue = new JobQueue({
+	const redisService = new RedisService({ Redis: IORedis, logger });
+
+	// const jobQueueHelper = new JobQueueHelper({
+	// 	redisService,
+	// 	Queue,
+	// 	Worker,
+	// 	logger,
+	// 	db,
+	// 	networkService,
+	// 	statusService,
+	// 	notificationService,
+	// });
+	// const jobQueue = await JobQueue.create({
+	// 	db,
+	// 	jobQueueHelper,
+	// 	logger,
+	// 	stringService,
+	// });
+
+	const pulseQueueHelper = new PulseQueueHelper({
 		db,
-		statusService,
-		networkService,
-		notificationService,
-		settingsService,
-		stringService,
 		logger,
-		Queue,
-		Worker,
-		redisService,
+		networkService,
+		statusService,
+		notificationService,
+	});
+	const pulseQueue = await PulseQueue.create({
+		appSettings,
+		db,
+		pulseQueueHelper,
+		logger,
 	});
 
 	// Register services
-	ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
+	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
+	ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
 	ServiceRegistry.register(MongoDB.SERVICE_NAME, db);
 	ServiceRegistry.register(SettingsService.SERVICE_NAME, settingsService);
 	ServiceRegistry.register(EmailService.SERVICE_NAME, emailService);
@@ -225,13 +246,14 @@ const startApp = async () => {
 	process.on("SIGTERM", shutdown);
 
 	//Create controllers
-	const authController = new AuthController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(EmailService.SERVICE_NAME),
-		ServiceRegistry.get(JobQueue.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const authController = new AuthController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+		jobQueue: ServiceRegistry.get(JobQueue.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		logger: logger,
+	});
 
 	const monitorController = new MonitorController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
@@ -241,11 +263,12 @@ const startApp = async () => {
 		ServiceRegistry.get(EmailService.SERVICE_NAME)
 	);
 
-	const settingsController = new SettingsController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const settingsController = new SettingsController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+	});
 
 	const checkController = new CheckController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
@@ -276,17 +299,11 @@ const startApp = async () => {
 		ServiceRegistry.get(StringService.SERVICE_NAME)
 	);
 
-	const notificationController = new NotificationController(
-		ServiceRegistry.get(NotificationService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME),
-		ServiceRegistry.get(StatusService.SERVICE_NAME)
-	);
-
-	const distributedUptimeController = new DistributedUptimeController({
-		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		http,
+	const notificationController = new NotificationController({
+		notificationService: ServiceRegistry.get(NotificationService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		statusService: ServiceRegistry.get(StatusService.SERVICE_NAME),
-		logger,
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
 	});
 
 	const diagnosticController = new DiagnosticController(
@@ -304,14 +321,11 @@ const startApp = async () => {
 	);
 	const queueRoutes = new QueueRoutes(queueController);
 	const statusPageRoutes = new StatusPageRoutes(statusPageController);
-	const distributedUptimeRoutes = new DistributedUptimeRoutes(
-		distributedUptimeController
-	);
+
 	const notificationRoutes = new NotificationRoutes(notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(diagnosticController);
-	// Init job queue
-	await jobQueue.initJobQueue();
 	// Middleware
+	app.use(express.static(frontendPath));
 	app.use(responseHandler);
 	app.use(
 		cors({
@@ -322,7 +336,17 @@ const startApp = async () => {
 		})
 	);
 	app.use(express.json());
-	app.use(helmet());
+	app.use(
+		helmet({
+			hsts: false,
+			contentSecurityPolicy: {
+				useDefaults: true,
+				directives: {
+					upgradeInsecureRequests: null,
+				},
+			},
+		})
+	);
 	app.use(
 		compression({
 			level: 6,
@@ -348,7 +372,6 @@ const startApp = async () => {
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
 	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
 	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
-	app.use("/api/v1/distributed-uptime", distributedUptimeRoutes.getRouter());
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
@@ -356,6 +379,10 @@ const startApp = async () => {
 		res.json({
 			status: "OK",
 		});
+	});
+	// FE routes
+	app.get("*", (req, res) => {
+		res.sendFile(path.join(frontendPath, "index.html"));
 	});
 	app.use(handleErrors);
 };

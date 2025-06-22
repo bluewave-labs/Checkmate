@@ -3,62 +3,124 @@ import Typography from "@mui/material/Typography";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import SettingsTimeZone from "./SettingsTimeZone";
 import SettingsUI from "./SettingsUI";
+import SettingsURL from "./SettingsURL";
 import SettingsPagespeed from "./SettingsPagespeed";
 import SettingsDemoMonitors from "./SettingsDemoMonitors";
 import SettingsAbout from "./SettingsAbout";
 import SettingsEmail from "./SettingsEmail";
+import SettingsDev from "./SettingsDev";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "../../Validation/validation";
-import { createToast } from "../../Utils/toastUtils";
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage } from "../../Features/UI/uiSlice";
+import { setTimezone, setMode, setLanguage, setShowURL } from "../../Features/UI/uiSlice";
 import SettingsStats from "./SettingsStats";
-import {
-	deleteMonitorChecksByTeamId,
-	addDemoMonitors,
-	deleteAllMonitors,
-} from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
-import { useFetchSettings, useSaveSettings } from "../../Hooks/useFetchSettings";
-import { UseDeleteMonitorStats } from "../../Hooks/useDeleteMonitorStats";
 
+import { useFetchSettings, useSaveSettings } from "../../Hooks/settingsHooks";
+import { useIsAdmin } from "../../Hooks/useIsAdmin";
+import {
+	useAddDemoMonitors,
+	useDeleteAllMonitors,
+	useDeleteMonitorStats,
+} from "../../Hooks/monitorHooks";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language, timezone } = useSelector((state) => state.ui);
-	const { user } = useSelector((state) => state.auth);
+	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
 	const [errors, setErrors] = useState({});
+	const [isApiKeySet, setIsApiKeySet] = useState(settingsData?.pagespeedKeySet ?? false);
+	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	const [isEmailPasswordSet, setIsEmailPasswordSet] = useState(
+		settingsData?.emailPasswordSet ?? false
+	);
+	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
+
 	// Network
 	const [isSettingsLoading, settingsError] = useFetchSettings({
 		setSettingsData,
+		setIsApiKeySet,
+		setIsEmailPasswordSet,
 	});
+	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
 
-	const [isSaving, saveError, saveSettings] = useSaveSettings();
-	const [deleteMonitorStats, isDeletingMonitorStats] = UseDeleteMonitorStats();
+	const [isSaving, saveError, saveSettings] = useSaveSettings({
+		setSettingsData,
+		setIsApiKeySet,
+		setApiKeyHasBeenReset,
+		setIsEmailPasswordSet,
+		setEmailPasswordHasBeenReset,
+	});
+	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
+	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
 	// Setup
+	const isAdmin = useIsAdmin();
 	const theme = useTheme();
 	const HEADING_SX = { mt: theme.spacing(2), mb: theme.spacing(2) };
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const dispatch = useDispatch();
-
 	// Handlers
 	const handleChange = async (e) => {
-		const { name, value } = e.target;
+		const { name, value, checked } = e.target;
 
+		// Special case for showURL until handled properly in the backend
+		if (name === "showURL") {
+			dispatch(setShowURL(value));
+			return;
+		}
+		let newValue;
+		if (
+			name === "systemEmailIgnoreTLS" ||
+			name === "systemEmailRequireTLS" ||
+			name === "systemEmailRejectUnauthorized" ||
+			name === "systemEmailSecure" ||
+			name === "systemEmailPool"
+		) {
+			newValue = checked;
+		}
 		// Build next state early
 		const newSettingsData = {
 			...settingsData,
-			settings: { ...settingsData.settings, [name]: value },
+			settings: { ...settingsData.settings, [name]: newValue ?? value },
 		};
+
+		if (name === "timezone") {
+			dispatch(setTimezone({ timezone: value }));
+			return;
+		}
+
+		if (name === "mode") {
+			dispatch(setMode(value));
+			return;
+		}
+
+		if (name === "language") {
+			dispatch(setLanguage(value));
+			return;
+		}
+
+		if (name === "deleteStats") {
+			await deleteMonitorStats();
+			return;
+		}
+
+		if (name === "demo") {
+			await addDemoMonitors();
+			return;
+		}
+
+		if (name === "deleteMonitors") {
+			await deleteAllMonitors();
+			return;
+		}
 
 		// Validate
 		const { error } = settingsValidation.validate(newSettingsData.settings, {
@@ -72,52 +134,6 @@ const Settings = () => {
 				newErrors[err.path[0]] = err.message;
 			});
 			setErrors(newErrors);
-		}
-
-		if (name === "timezone") {
-			dispatch(setTimezone({ timezone: value }));
-		}
-
-		if (name === "mode") {
-			dispatch(setMode(value));
-		}
-
-		if (name === "language") {
-			dispatch(setLanguage(value));
-			i18n.changeLanguage(value);
-		}
-
-		if (name === "deleteStats") {
-			await deleteMonitorStats({ teamId: user.teamId });
-			return;
-		}
-
-		if (name === "demo") {
-			try {
-				const action = await dispatch(addDemoMonitors());
-				if (addDemoMonitors.fulfilled.match(action)) {
-					createToast({ body: t("settingsDemoMonitorsAdded") });
-				} else {
-					createToast({ body: t("settingsFailedToAddDemoMonitors") });
-				}
-			} catch (error) {
-				createToast({ body: t("settingsFailedToAddDemoMonitors") });
-			}
-			return;
-		}
-
-		if (name === "deleteMonitors") {
-			try {
-				const action = await dispatch(deleteAllMonitors());
-				if (deleteAllMonitors.fulfilled.match(action)) {
-					createToast({ body: t("settingsMonitorsDeleted") });
-				} else {
-					createToast({ body: t("settingsFailedToDeleteMonitors") });
-				}
-			} catch (error) {
-				createToast({ body: t("settingsFailedToDeleteMonitors") });
-			}
-			return;
 		}
 
 		setSettingsData(newSettingsData);
@@ -155,40 +171,79 @@ const Settings = () => {
 				language={language}
 			/>
 			<SettingsPagespeed
+				isAdmin={isAdmin}
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isApiKeySet={settingsData?.pagespeedKeySet ?? false}
+				isApiKeySet={isApiKeySet}
+				apiKeyHasBeenReset={apiKeyHasBeenReset}
+				setApiKeyHasBeenReset={setApiKeyHasBeenReset}
+			/>
+			<SettingsURL
+				HEADING_SX={HEADING_SX}
+				handleChange={handleChange}
+				showURL={showURL}
 			/>
 			<SettingsStats
+				isAdmin={isAdmin}
 				HEADING_SX={HEADING_SX}
 				settingsData={settingsData}
 				handleChange={handleChange}
 				errors={errors}
 			/>
 			<SettingsDemoMonitors
+				isAdmin={isAdmin}
 				HEADER_SX={HEADING_SX}
 				handleChange={handleChange}
-				isLoading={isSettingsLoading || isSaving || isDeletingMonitorStats}
+				isLoading={
+					isSettingsLoading || isSaving || isDeletingMonitorStats || isAddingDemoMonitors
+				}
 			/>
 			<SettingsEmail
+				isAdmin={isAdmin}
 				HEADER_SX={HEADING_SX}
 				handleChange={handleChange}
 				settingsData={settingsData}
 				setSettingsData={setSettingsData}
-				isPasswordSet={settingsData?.emailPasswordSet ?? false}
+				isEmailPasswordSet={isEmailPasswordSet}
+				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
+				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
+			/>
+			<SettingsDev
+				isAdmin={isAdmin}
+				HEADER_SX={HEADING_SX}
 			/>
 			<SettingsAbout />
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
+				sx={{
+					position: "sticky",
+					bottom: 0,
+					boxShadow: theme.shape.boxShadow,
+					zIndex: 1000,
+					mt: 3,
+					backgroundColor: theme.palette.primary.main,
+					display: "flex",
+					justifyContent: "flex-end",
+					pb: theme.spacing(4),
+					pr: theme.spacing(15),
+					pl: theme.spacing(5),
+					pt: theme.spacing(4),
+					border: 1,
+					borderStyle: "solid",
+					borderColor: theme.palette.primary.lowContrast,
+					borderRadius: theme.spacing(2),
+				}}
 			>
 				<Button
-					loading={isSaving || isDeletingMonitorStats || isSettingsLoading}
+					loading={
+						isSaving || isDeletingMonitorStats || isSettingsLoading || isDeletingMonitors
+					}
 					disabled={Object.keys(errors).length > 0}
 					variant="contained"
 					color="accent"
-					sx={{ px: theme.spacing(12), mt: theme.spacing(20) }}
+					sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					onClick={handleSave}
 				>
 					{t("settingsSave")}

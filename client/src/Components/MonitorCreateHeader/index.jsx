@@ -3,18 +3,13 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
+import MonitorActions from "../MonitorActions";
 
-const CreateMonitorHeader = ({
-	isAdmin,
-	label,
-	isLoading = true,
-	path,
-	bulkPath,
-}) => {
+const CreateMonitorHeader = ({ isAdmin, label, isLoading = true, path, bulkPath }) => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
-	
+
 	// Use the provided label or fall back to the translated default
 
 	if (!isAdmin) return null;
@@ -34,18 +29,7 @@ const CreateMonitorHeader = ({
 			>
 				{label || t("createNew")}
 			</Button>
-			{bulkPath && (
-				<Button
-					loading={isLoading}
-					variant="contained"
-					color="accent"
-					onClick={() => {
-						navigate(`${bulkPath}`);
-					}}
-				>
-					{t("bulkImport.title")}
-				</Button>
-			)}
+			{bulkPath && <MonitorActions isLoading={isLoading} />}
 		</Stack>
 	);
 };

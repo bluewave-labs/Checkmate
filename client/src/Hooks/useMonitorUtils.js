@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useTheme } from "@mui/material";
 
 const useMonitorUtils = () => {
 	const getMonitorWithPercentage = useCallback((monitor, theme) => {
@@ -36,7 +37,36 @@ const useMonitorUtils = () => {
 		return monitor?.status == true ? "up" : "down";
 	}, []);
 
-	return { getMonitorWithPercentage, determineState };
+	const theme = useTheme();
+
+	const statusColor = {
+		up: theme.palette.success.lowContrast,
+		down: theme.palette.error.lowContrast,
+		paused: theme.palette.warning.lowContrast,
+		pending: theme.palette.warning.lowContrast,
+	};
+
+	const statusToTheme = {
+		up: "success",
+		down: "error",
+		paused: "warning",
+		pending: "secondary",
+		"cannot resolve": "tertiary",
+	};
+
+	const pagespeedStatusMsg = {
+		up: "Live (collecting data)",
+		down: "Inactive",
+		paused: "Paused",
+	};
+
+	return {
+		getMonitorWithPercentage,
+		determineState,
+		statusColor,
+		statusToTheme,
+		pagespeedStatusMsg,
+	};
 };
 
 export { useMonitorUtils };

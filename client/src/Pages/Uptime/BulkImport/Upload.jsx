@@ -4,7 +4,8 @@ import { Button, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-const UploadFile = ({ onFileSelect }) => {  // Changed prop to onFileSelect
+const UploadFile = ({ onFileSelect }) => {
+	// Changed prop to onFileSelect
 	const theme = useTheme();
 	const [file, setFile] = useState();
 	const [error, setError] = useState("");
@@ -18,17 +19,17 @@ const UploadFile = ({ onFileSelect }) => {  // Changed prop to onFileSelect
 	const handleFileChange = (e) => {
 		setError("");
 		const selectedFile = e.target.files[0];
-		
+
 		// Basic file validation
 		if (!selectedFile) return;
-		
-		if (!selectedFile.name.endsWith('.csv')) {
+
+		if (!selectedFile.name.toLowerCase().endsWith(".csv")) {
 			setError(t("bulkImport.invalidFileType"));
 			return;
 		}
-		
+
 		setFile(selectedFile);
-		onFileSelect(selectedFile);  // Pass the file directly to parent
+		onFileSelect(selectedFile); // Pass the file directly to parent
 	};
 
 	return (
@@ -63,8 +64,7 @@ const UploadFile = ({ onFileSelect }) => {  // Changed prop to onFileSelect
 			</Button>
 		</div>
 	);
-}
-
+};
 
 UploadFile.prototype = {
 	onFileSelect: PropTypes.func.isRequired,

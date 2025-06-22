@@ -34,10 +34,13 @@ const TabSettings = ({
 			<Stack gap={theme.spacing(10)}>
 				<ConfigBox>
 					<Stack>
-						<Typography component="h2">{t("access")}</Typography>
-						<Typography component="p">
-							{t("statusPageCreateSettings")}
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("access")}
 						</Typography>
+						<Typography component="p">{t("statusPageCreateSettings")}</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(18)}>
 						<Checkbox
@@ -51,7 +54,12 @@ const TabSettings = ({
 				</ConfigBox>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">{t("basicInformation")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("basicInformation")}
+						</Typography>
 						<Typography component="p">
 							{t("statusPageCreateBasicInfoDescription")}
 						</Typography>
@@ -82,7 +90,12 @@ const TabSettings = ({
 				</ConfigBox>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">{t("timezone")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("timezone")}
+						</Typography>
 						<Typography component="p">
 							{t("statusPageCreateSelectTimeZoneDescription")}
 						</Typography>
@@ -100,7 +113,12 @@ const TabSettings = ({
 				</ConfigBox>
 				<ConfigBox>
 					<Stack gap={theme.spacing(6)}>
-						<Typography component="h2">{t("settingsAppearance")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("settingsAppearance")}
+						</Typography>
 						<Typography component="p">
 							{t("statusPageCreateAppearanceDescription")}
 						</Typography>

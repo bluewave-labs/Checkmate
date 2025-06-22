@@ -10,9 +10,9 @@ import Breadcrumbs from "../../../Components/Breadcrumbs";
 import ConfigBox from "../../../Components/ConfigBox";
 import UploadFile from "./Upload";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Trans, useTranslation } from "react-i18next";
-import { useBulkMonitors } from "../../../Hooks/useBulkMonitors";
+import { useCreateBulkMonitors } from "../../../Hooks/monitorHooks";
 
 const BulkImport = () => {
 	const theme = useTheme();
@@ -26,7 +26,7 @@ const BulkImport = () => {
 		{ name: t("bulkImport.title"), path: `/uptime/bulk-import` },
 	];
 
-	const [createBulkMonitors, hookLoading] = useBulkMonitors();
+	const [createBulkMonitors, hookLoading] = useCreateBulkMonitors();
 
 	const handleSubmit = async () => {
 		if (!selectedFile) {
@@ -61,7 +61,12 @@ const BulkImport = () => {
 				</Typography>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("bulkImport.selectFileTips")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("bulkImport.selectFileTips")}
+						</Typography>
 						<Typography component="p">
 							<Trans
 								i18nKey="bulkImport.selectFileDescription"

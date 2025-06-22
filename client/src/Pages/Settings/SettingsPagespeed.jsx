@@ -12,17 +12,19 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const SettingsPagespeed = ({
+	isAdmin,
 	HEADING_SX,
 	settingsData,
 	setSettingsData,
 	isApiKeySet,
+	apiKeyHasBeenReset,
+	setApiKeyHasBeenReset,
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
 	// Local state
 	const [apiKey, setApiKey] = useState("");
-	const [hasBeenReset, setHasBeenReset] = useState(false);
 
 	// Handler
 	const handleChange = (e) => {
@@ -33,14 +35,23 @@ const SettingsPagespeed = ({
 		});
 	};
 
+	if (!isAdmin) {
+		return null;
+	}
+
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("pageSpeedApiKeyFieldTitle")}</Typography>
+				<Typography
+					component="h1"
+					variant="h2"
+				>
+					{t("pageSpeedApiKeyFieldTitle")}
+				</Typography>
 				<Typography sx={HEADING_SX}>{t("pageSpeedApiKeyFieldDescription")}</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
-				{(isApiKeySet === false || hasBeenReset === true) && (
+				{(isApiKeySet === false || apiKeyHasBeenReset === true) && (
 					<TextInput
 						name="pagespeedApiKey"
 						label={t("pageSpeedApiKeyFieldLabel")}
@@ -52,7 +63,7 @@ const SettingsPagespeed = ({
 					/>
 				)}
 
-				{isApiKeySet === true && hasBeenReset === false && (
+				{isApiKeySet === true && apiKeyHasBeenReset === false && (
 					<Box>
 						<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
 						<Button
@@ -62,7 +73,7 @@ const SettingsPagespeed = ({
 									...settingsData,
 									settings: { ...settingsData.settings, pagespeedApiKey: "" },
 								});
-								setHasBeenReset(true);
+								setApiKeyHasBeenReset(true);
 							}}
 							variant="contained"
 							color="error"
@@ -78,10 +89,14 @@ const SettingsPagespeed = ({
 };
 
 SettingsPagespeed.propTypes = {
+	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
 	settingsData: PropTypes.object,
 	setSettingsData: PropTypes.func,
 	isApiKeySet: PropTypes.bool,
+	setIsApiKeySet: PropTypes.func,
+	apiKeyHasBeenReset: PropTypes.bool,
+	setApiKeyHasBeenReset: PropTypes.func,
 };
 
 export default SettingsPagespeed;

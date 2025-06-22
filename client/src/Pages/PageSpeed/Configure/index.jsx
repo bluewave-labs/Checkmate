@@ -1,52 +1,53 @@
-import { useEffect, useState } from "react";
-import { useTheme } from "@emotion/react";
+// Components
 import { Box, Stack, Tooltip, Typography, Button } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import {
-	deletePageSpeed,
-	getPagespeedMonitorById,
-	getPageSpeedByTeamId,
-	updatePageSpeed,
-	pausePageSpeed,
-} from "../../../Features/PageSpeedMonitor/pageSpeedMonitorSlice";
-import { monitorValidation } from "../../../Validation/validation";
-import { createToast } from "../../../Utils/toastUtils";
-import { logger } from "../../../Utils/Logger";
-import { useTranslation } from "react-i18next";
 import ConfigBox from "../../../Components/ConfigBox";
-import TextInput from "../../../Components/Inputs/TextInput";
 import Select from "../../../Components/Inputs/Select";
-import Checkbox from "../../../Components/Inputs/Checkbox";
+import TextInput from "../../../Components/Inputs/TextInput";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import PulseDot from "../../../Components/Animated/PulseDot";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import SkeletonLayout from "./skeleton";
-import useUtils from "../../Uptime/Monitors/Hooks/useUtils";
-import "./index.css";
+import NotificationsConfig from "../../../Components/NotificationConfig";
 import Dialog from "../../../Components/Dialog";
 
+// Utils
+import { useState } from "react";
+import { useTheme } from "@emotion/react";
+import { useParams } from "react-router";
+import { monitorValidation } from "../../../Validation/validation";
+import { useTranslation } from "react-i18next";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import {
+	useFetchMonitorById,
+	useDeleteMonitor,
+	useUpdateMonitor,
+	usePauseMonitor,
+} from "../../../Hooks/monitorHooks";
 const PageSpeedConfigure = () => {
-	const theme = useTheme();
-	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const dispatch = useDispatch();
-	const MS_PER_MINUTE = 60000;
-	const { user } = useSelector((state) => state.auth);
-	const { isLoading } = useSelector((state) => state.pageSpeedMonitors);
-	const { monitorId } = useParams();
+	// Redux state
+
+	// Local state
 	const [monitor, setMonitor] = useState({});
 	const [errors, setErrors] = useState({});
-	const { statusColor, pagespeedStatusMsg, determineState } = useUtils();
-	const [buttonLoading, setButtonLoading] = useState(false);
-	const idMap = {
-		"monitor-url": "url",
-		"monitor-name": "name",
-		"monitor-checks-http": "type",
-		"monitor-checks-ping": "type",
-		"notify-email-default": "notification-email",
-	};
+	const [isOpen, setIsOpen] = useState(false);
+	const [updateTrigger, setUpdateTrigger] = useState(false);
+
+	// Utils
+	const theme = useTheme();
+	const { t } = useTranslation();
+	const MS_PER_MINUTE = 60000;
+	const { monitorId } = useParams();
+	const { statusColor, pagespeedStatusMsg, determineState } = useMonitorUtils();
+
+	const [notifications, notificationsAreLoading, notificationsError] =
+		useGetNotificationsByTeamId();
+
+	const [isLoading] = useFetchMonitorById({ monitorId, setMonitor, updateTrigger });
+	const [deleteMonitor, isDeleting] = useDeleteMonitor();
+	const [updateMonitor, isUpdating] = useUpdateMonitor();
+	const [pauseMonitor, isPausing] = usePauseMonitor();
 
 	const frequencies = [
 		{ _id: 3, name: "3 minutes" },
@@ -58,117 +59,48 @@ const PageSpeedConfigure = () => {
 		{ _id: 10080, name: "1 week" },
 	];
 
-	useEffect(() => {
-		const fetchMonitor = async () => {
-			try {
-				const action = await dispatch(getPagespeedMonitorById({ monitorId }));
+	// Handlers
+	const triggerUpdate = () => {
+		setUpdateTrigger(!updateTrigger);
+	};
 
-				if (getPagespeedMonitorById.fulfilled.match(action)) {
-					const monitor = action.payload.data;
-					setMonitor(monitor);
-				} else if (getPagespeedMonitorById.rejected.match(action)) {
-					throw new Error(action.error.message);
-				}
-			} catch (error) {
-				logger.error("Error fetching monitor of id: " + monitorId);
-				navigate("/not-found", { replace: true });
-			}
-		};
-		fetchMonitor();
-	}, [dispatch, monitorId, navigate]);
+	const onChange = (event) => {
+		let { value, name } = event.target;
 
-	const handleChange = (event, name) => {
-		let { value, id } = event.target;
-		if (!name) name = idMap[id];
-
-		if (name.includes("notification-")) {
-			name = name.replace("notification-", "");
-			let hasNotif = monitor.notifications.some(
-				(notification) => notification.type === name
-			);
-			setMonitor((prev) => {
-				const notifs = [...prev.notifications];
-				if (hasNotif) {
-					return {
-						...prev,
-						notifications: notifs.filter((notif) => notif.type !== name),
-					};
-				} else {
-					return {
-						...prev,
-						notifications: [
-							...notifs,
-							name === "email"
-								? { type: name, address: value }
-								: // TODO - phone number
-									{ type: name, phone: value },
-						],
-					};
-				}
-			});
-		} else {
-			if (name === "interval") {
-				value = value * MS_PER_MINUTE;
-			}
-			setMonitor((prev) => ({
-				...prev,
-				[name]: value,
-			}));
-
-			const validation = monitorValidation.validate(
-				{ [name]: value },
-				{ abortEarly: false }
-			);
-
-			setErrors((prev) => {
-				const updatedErrors = { ...prev };
-
-				if (validation.error) updatedErrors[name] = validation.error.details[0].message;
-				else delete updatedErrors[name];
-				return updatedErrors;
-			});
+		if (name === "interval") {
+			value = value * MS_PER_MINUTE;
 		}
+		setMonitor((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+
+		const validation = monitorValidation.validate(
+			{ [name]: value },
+			{ abortEarly: false }
+		);
+
+		setErrors((prev) => {
+			const updatedErrors = { ...prev };
+
+			if (validation.error) updatedErrors[name] = validation.error.details[0].message;
+			else delete updatedErrors[name];
+			return updatedErrors;
+		});
 	};
 
 	const handlePause = async () => {
-		try {
-			const action = await dispatch(pausePageSpeed({ monitorId }));
-			if (pausePageSpeed.fulfilled.match(action)) {
-				const monitor = action.payload.data;
-				setMonitor(monitor);
-				const state = action?.payload?.data.isActive === false ? "paused" : "resumed";
-				createToast({ body: `Monitor ${state} successfully.` });
-			} else if (pausePageSpeed.rejected.match(action)) {
-				throw new Error(action.error.message);
-			}
-		} catch (error) {
-			logger.error("Error pausing monitor: " + monitorId);
-			createToast({ body: "Failed to pause monitor" });
-		}
+		await pauseMonitor({ monitorId, triggerUpdate });
 	};
 
-	const handleSave = async (event) => {
+	const onSubmit = async (event) => {
 		event.preventDefault();
-		const action = await dispatch(updatePageSpeed({ monitor: monitor }));
-		if (action.meta.requestStatus === "fulfilled") {
-			createToast({ body: "Monitor updated successfully!" });
-			dispatch(getPageSpeedByTeamId());
-		} else {
-			createToast({ body: "Failed to update monitor." });
-		}
+		await updateMonitor({ monitor, redirect: "/pagespeed" });
 	};
 
-	const [isOpen, setIsOpen] = useState(false);
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		setButtonLoading(true);
-		const action = await dispatch(deletePageSpeed({ monitor }));
-		if (action.meta.requestStatus === "fulfilled") {
-			navigate("/pagespeed");
-		} else {
-			createToast({ body: "Failed to delete monitor." });
-		}
-		setButtonLoading(false);
+		await deleteMonitor({ monitor, redirect: "/pagespeed" });
 	};
 
 	return (
@@ -191,7 +123,7 @@ const PageSpeedConfigure = () => {
 						component="form"
 						noValidate
 						spellCheck="false"
-						onSubmit={handleSave}
+						onSubmit={onSubmit}
 						flex={1}
 						gap={theme.spacing(10)}
 					>
@@ -202,7 +134,7 @@ const PageSpeedConfigure = () => {
 							<Box>
 								<Typography
 									component="h1"
-									variant="h1"
+									variant="monitorName"
 								>
 									{monitor.name}
 								</Typography>
@@ -234,7 +166,7 @@ const PageSpeedConfigure = () => {
 									</Tooltip>
 									<Typography
 										component="h2"
-										variant="h2"
+										variant="monitorUrl"
 									>
 										{monitor.url?.replace(/^https?:\/\//, "") || "..."}
 									</Typography>
@@ -310,7 +242,12 @@ const PageSpeedConfigure = () => {
 						</Stack>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("settingsGeneralSettings")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("settingsGeneralSettings")}
+								</Typography>
 								<Typography component="p">
 									{t("pageSpeedConfigureSettingsDescription")}
 								</Typography>
@@ -324,24 +261,24 @@ const PageSpeedConfigure = () => {
 								}}
 							>
 								<TextInput
+									name="url"
 									type="url"
-									id="monitor-url"
 									label={t("url")}
 									placeholder="random.website.com"
 									value={monitor?.url || ""}
-									onChange={handleChange}
+									onChange={onChange}
 									error={errors.url ? true : false}
 									helperText={errors.url}
 									disabled={true}
 								/>
 								<TextInput
+									name="name"
 									type="text"
-									id="monitor-name"
 									label={t("monitorDisplayName")}
 									placeholder="Example monitor"
 									isOptional={true}
 									value={monitor?.name || ""}
-									onChange={handleChange}
+									onChange={onChange}
 									error={errors.name ? true : false}
 									helperText={errors.name}
 								/>
@@ -349,71 +286,33 @@ const PageSpeedConfigure = () => {
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("distributedUptimeCreateIncidentNotification")}</Typography>
+								<Typography component="h2">{t("notificationConfig.title")}</Typography>
 								<Typography component="p">
-									{t("distributedUptimeCreateIncidentDescription")}
+									{t("notificationConfig.description")}
 								</Typography>
 							</Box>
-							<Stack gap={theme.spacing(6)}>
-								<Typography component="p">{t("whenNewIncident")}</Typography>
-								<Checkbox
-									id="notify-sms"
-									label={t("notifySMS")}
-									isChecked={false}
-									value=""
-									onChange={() => logger.warn("disabled")}
-									isDisabled={true}
-								/>
-								<Checkbox
-									id="notify-email-default"
-									label={`Notify via email (to ${user.email})`}
-									isChecked={
-										monitor?.notifications?.some(
-											(notification) => notification.type === "email"
-										) || false
-									}
-									value={user?.email}
-									onChange={(event) => handleChange(event)}
-								/>
-								<Checkbox
-									id="notify-email"
-									label={t("notifyEmails")}
-									isChecked={false}
-									value=""
-									onChange={() => logger.warn("disabled")}
-									isDisabled={true}
-								/>
-								{monitor?.notifications?.some(
-									(notification) => notification.type === "emails"
-								) ? (
-									<Box mx={theme.spacing(16)}>
-										<TextInput
-											id="notify-email-list"
-											type="text"
-											placeholder="name@gmail.com"
-											value=""
-											onChange={() => logger.warn("disabled")}
-										/>
-										<Typography mt={theme.spacing(4)}>
-											{t("seperateEmails")}
-										</Typography>
-									</Box>
-								) : (
-									""
-								)}
-							</Stack>
+							<NotificationsConfig
+								notifications={notifications}
+								setMonitor={setMonitor}
+								setNotifications={monitor.notifications}
+							/>
 						</ConfigBox>
 						<ConfigBox>
 							<Box>
-								<Typography component="h2">{t("distributedUptimeCreateAdvancedSettings")}</Typography>
+								<Typography
+									component="h2"
+									variant="h2"
+								>
+									{t("distributedUptimeCreateAdvancedSettings")}
+								</Typography>
 							</Box>
 							<Stack gap={theme.spacing(20)}>
 								<Select
-									id="monitor-frequency"
+									name="interval"
 									label={t("checkFrequency")}
 									items={frequencies}
 									value={monitor?.interval / MS_PER_MINUTE || 3}
-									onChange={(event) => handleChange(event, "interval")}
+									onChange={onChange}
 								/>
 							</Stack>
 						</ConfigBox>
@@ -423,11 +322,10 @@ const PageSpeedConfigure = () => {
 							mt="auto"
 						>
 							<Button
-								loading={isLoading}
+								loading={isLoading || isDeleting || isUpdating || isPausing}
 								type="submit"
 								variant="contained"
 								color="accent"
-								onClick={handleSave}
 								sx={{ px: theme.spacing(12) }}
 							>
 								{t("settingsSave")}
@@ -444,7 +342,7 @@ const PageSpeedConfigure = () => {
 				onCancel={() => setIsOpen(false)}
 				confirmationButtonLabel={t("delete")}
 				onConfirm={handleRemove}
-				isLoading={buttonLoading}
+				isLoading={isLoading || isDeleting || isUpdating || isPausing}
 			/>
 		</Stack>
 	);

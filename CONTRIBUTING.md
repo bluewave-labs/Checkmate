@@ -123,9 +123,15 @@ If one or more of these are missing, we may ask you to update your pull request 
 
 ## Branching model
 
+
 - Code contributions should go to the `develop` branch.
 - `master` is used for stable releases.
 - Use descriptive branch names, like `fix/login-error` or `feat/add-alerts`.
+- Make sure that you are using the latest version.
+- Make sure you run the code locally. The Checkmate [documentation](https://docs.checkmate.so) covers it.
+- Find out if the functionality is already covered, maybe by an individual configuration.
+- Perform a [search](/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
+- Find out whether your idea fits with the scope and aims of the project. It's up to you to make a strong case to convince the project's developers of the merits of this feature. Keep in mind that we want features that will be useful to the majority of our users and not just a small subset. If you're just targeting a minority of users, consider writing an add-on/plugin library.
 
 ---
 
@@ -133,8 +139,11 @@ If one or more of these are missing, we may ask you to update your pull request 
 
 Thanks for making Checkmate better. We mean it. Whether it’s your first pull request or your 50th, we’re excited to build with you.
 
+
 PS: feel free to introduce yourself on [Discord](https://discord.gg/YOUR-DISCORD-LINK) and say hi. 
 
 -- Checkmate team
+
+Also make sure you read the [document about how to make a good pull request](/PULLREQUESTS.md).
 
 

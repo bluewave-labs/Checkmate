@@ -16,14 +16,18 @@ const initialState = {
 	maintenance: {
 		rowsPerPage: 5,
 	},
+	infrastructure: {
+		rowsPerPage: 5,
+	},
 	sidebar: {
 		collapsed: false,
 	},
 	mode: initialMode,
+	showURL: false,
 	greeting: { index: 0, lastUpdate: null },
 	timezone: "America/Toronto",
 	distributedUptimeEnabled: false,
-	language: "gb",
+	language: "en",
 	starPromptOpen: true,
 };
 
@@ -46,6 +50,9 @@ const uiSlice = createSlice({
 		setMode: (state, action) => {
 			state.mode = action.payload;
 		},
+		setShowURL: (state, action) => {
+			state.showURL = action.payload;
+		},
 		setGreeting(state, action) {
 			state.greeting.index = action.payload.index;
 			state.greeting.lastUpdate = action.payload.lastUpdate;
@@ -53,7 +60,7 @@ const uiSlice = createSlice({
 		setTimezone(state, action) {
 			state.timezone = action.payload.timezone;
 		},
-		setLanguage(state, action) {
+		setLanguage: (state, action) => {
 			state.language = action.payload;
 		},
 		setStarPromptOpen: (state, action) => {
@@ -67,6 +74,7 @@ export const {
 	setRowsPerPage,
 	toggleSidebar,
 	setMode,
+	setShowURL,
 	setGreeting,
 	setTimezone,
 	setDistributedUptimeEnabled,

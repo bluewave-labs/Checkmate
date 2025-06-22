@@ -52,8 +52,8 @@ html {
 	--env-var-default-1: 24px;
 	--env-var-default-2: 40px;
 
-	--env-var-shadow-1: 0px 4px 24px -4px rgba(16, 24, 40, 0.08),
-		0px 3px 3px -3px rgba(16, 24, 40, 0.03);
+	--env-var-shadow-1:
+		0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03);
 }
 
 .MuiInputBase-root.Mui-disabled input {

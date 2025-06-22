@@ -17,7 +17,7 @@ const Maintenance = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { rowsPerPage } = useSelector((state) => state.ui.maintenance);
+	const rowsPerPage = useSelector((state) => state?.ui?.maintenance?.rowsPerPage ?? 5);
 	const isAdmin = useIsAdmin();
 	const [maintenanceWindows, setMaintenanceWindows] = useState([]);
 	const [maintenanceWindowCount, setMaintenanceWindowCount] = useState(0);
@@ -25,6 +25,7 @@ const Maintenance = () => {
 	const [sort, setSort] = useState({});
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
+	const [isDataFetched, setIsDataFetched] = useState(false);
 
 	const handleActionMenuDelete = () => {
 		setUpdateTrigger((prev) => !prev);
@@ -42,6 +43,8 @@ const Maintenance = () => {
 				setMaintenanceWindowCount(maintenanceWindowCount);
 			} catch (error) {
 				setNetworkError(true);
+			} finally {
+				setIsDataFetched(true);
 			}
 		};
 		fetchMaintenanceWindows();
@@ -55,13 +58,14 @@ const Maintenance = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("networkError")}
+					{t("common.toasts.networkError")}
 				</Typography>
-				<Typography>{t("checkConnection")}</Typography>
+				<Typography>{t("common.toasts.checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
-	if (maintenanceWindows.length === 0) {
+	// Only show the fallback if we've fetched data and there are no maintenance windows
+	if (isDataFetched && maintenanceWindows.length === 0) {
 		return (
 			<Fallback
 				title="maintenance window"

@@ -11,9 +11,10 @@ import NetworkError from "../../../../Components/GenericFallback/NetworkError";
 import { formatDateWithTz } from "../../../../Utils/timeUtils";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import useChecksFetch from "../../Hooks/useChecksFetch";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
+import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
 
 const IncidentTable = ({
 	shouldRender,
@@ -30,14 +31,37 @@ const IncidentTable = ({
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
-	const { isLoading, networkError, checks, checksCount } = useChecksFetch({
-		selectedMonitor,
-		selectedMonitorType,
-		filter,
-		dateRange,
-		page,
-		rowsPerPage,
-	});
+
+	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
+		useFetchChecksByMonitor({
+			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
+			type: selectedMonitorType,
+			status: false,
+			sortOrder: "desc",
+			limit: null,
+			dateRange,
+			filter: filter,
+			page: page,
+			rowsPerPage: rowsPerPage,
+			enabled: selectedMonitor !== "0",
+		});
+
+	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] =
+		useFetchChecksTeam({
+			status: false,
+			sortOrder: "desc",
+			limit: null,
+			dateRange,
+			filter: filter,
+			page: page,
+			rowsPerPage: rowsPerPage,
+			enabled: selectedMonitor === "0",
+		});
+
+	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
+	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
+	const isLoading = isLoadingTeam || isLoadingMonitor;
+	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
 
 	const { t } = useTranslation();
 

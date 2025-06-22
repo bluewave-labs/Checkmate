@@ -24,7 +24,13 @@ class StatusPageController {
 		}
 
 		try {
-			const statusPage = await this.db.createStatusPage(req.body, req.file);
+			const { _id, teamId } = req.user;
+			const statusPage = await this.db.createStatusPage({
+				statusPageData: req.body,
+				image: req.file,
+				userId: _id,
+				teamId,
+			});
 			return res.success({
 				msg: this.stringService.statusPageCreate,
 				data: statusPage,
@@ -71,29 +77,6 @@ class StatusPageController {
 		}
 	};
 
-	getDistributedStatusPageByUrl = async (req, res, next) => {
-		try {
-			await getStatusPageParamValidation.validateAsync(req.params);
-			await getStatusPageQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
-			const statusPage = await this.db.getDistributedStatusPageByUrl({
-				url: req.params.url,
-				daysToShow: req.params.timeFrame,
-			});
-			return res.success({
-				msg: this.stringService.statusPageByUrl,
-				data: statusPage,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getDistributedStatusPageByUrl"));
-		}
-	};
-
 	getStatusPageByUrl = async (req, res, next) => {
 		try {
 			await getStatusPageParamValidation.validateAsync(req.params);
@@ -116,7 +99,7 @@ class StatusPageController {
 
 	getStatusPagesByTeamId = async (req, res, next) => {
 		try {
-			const teamId = req.params.teamId;
+			const teamId = req.user.teamId;
 			const statusPages = await this.db.getStatusPagesByTeamId(teamId);
 
 			return res.success({

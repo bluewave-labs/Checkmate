@@ -23,13 +23,27 @@ class JobQueueController {
 
 	getJobs = async (req, res, next) => {
 		try {
-			const jobs = await this.jobQueue.getJobStats();
+			const jobs = await this.jobQueue.getJobs();
 			return res.success({
-				msg: this.stringService.queueGetMetrics,
+				msg: this.stringService.queueGetJobs,
 				data: jobs,
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getJobs"));
+			return;
+		}
+	};
+
+	getAllMetrics = async (req, res, next) => {
+		try {
+			const jobs = await this.jobQueue.getJobs();
+			const metrics = await this.jobQueue.getMetrics();
+			return res.success({
+				msg: this.stringService.queueGetAllMetrics,
+				data: { jobs, metrics },
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "getAllMetrics"));
 			return;
 		}
 	};
@@ -46,21 +60,9 @@ class JobQueueController {
 		}
 	};
 
-	obliterateQueue = async (req, res, next) => {
-		try {
-			await this.jobQueue.obliterate();
-			return res.success({
-				msg: this.stringService.queueObliterate,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "obliterateQueue"));
-			return;
-		}
-	};
-
 	flushQueue = async (req, res, next) => {
 		try {
-			const result = await this.jobQueue.flushQueue();
+			const result = await this.jobQueue.flushQueues();
 			return res.success({
 				msg: this.stringService.jobQueueFlush,
 				data: result,

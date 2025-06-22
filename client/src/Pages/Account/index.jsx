@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
 import CustomTabList from "../../Components/Tab";
@@ -8,6 +8,7 @@ import TabContext from "@mui/lab/TabContext";
 import ProfilePanel from "../../Components/TabPanels/Account/ProfilePanel";
 import PasswordPanel from "../../Components/TabPanels/Account/PasswordPanel";
 import TeamPanel from "../../Components/TabPanels/Account/TeamPanel";
+import { useTranslation } from "react-i18next";
 import "./index.css";
 
 /**
@@ -24,24 +25,32 @@ const Account = ({ open = "profile" }) => {
 		navigate(`/account/${newTab}`);
 	};
 	const { user } = useSelector((state) => state.auth);
+	const { t } = useTranslation();
 
 	const requiredRoles = ["superadmin", "admin"];
-	let tabList = ["Profile", "Password", "Team"];
+	let tabList = [
+		{ name: t("menu.profile"), value: "profile" },
+		{ name: t("menu.password"), value: "password" },
+		{ name: t("menu.team"), value: "team" },
+	];
 	const hideTeams = !requiredRoles.some((role) => user.role.includes(role));
 	if (hideTeams) {
-		tabList = ["Profile", "Password"];
+		tabList = [
+			{ name: t("menu.profile"), value: "profile" },
+			{ name: t("menu.password"), value: "password" },
+		];
 	}
 
 	// Remove password for demo
 	if (user.role.includes("demo")) {
-		tabList = ["Profile"];
+		tabList = [{ name: t("menu.profile"), value: "profile" }];
 	}
 
 	const handleKeyDown = (event) => {
-		const currentIndex = tabList.findIndex((label) => label.toLowerCase() === tab);
+		const currentIndex = tabList.findIndex((item) => item.value === tab);
 		if (event.key === "Tab") {
 			const nextIndex = (currentIndex + 1) % tabList.length;
-			setFocusedTab(tabList[nextIndex].toLowerCase());
+			setFocusedTab(tabList[nextIndex].value);
 		} else if (event.key === "Enter") {
 			event.preventDefault();
 			navigate(`/account/${focusedTab}`);
@@ -59,14 +68,18 @@ const Account = ({ open = "profile" }) => {
 			py={theme.spacing(12)}
 		>
 			<TabContext value={tab}>
-				<CustomTabList value={tab} onChange={handleTabChange} aria-label="account tabs">
-					{tabList.map((label, index) => (
+				<CustomTabList
+					value={tab}
+					onChange={handleTabChange}
+					aria-label="account tabs"
+				>
+					{tabList.map((item, index) => (
 						<Tab
-							label={label}
+							label={item.name}
 							key={index}
-							value={label.toLowerCase()}
+							value={item.value}
 							onKeyDown={handleKeyDown}
-							onFocus={() => handleFocus(label.toLowerCase())}
+							onFocus={() => handleFocus(item.value)}
 							tabIndex={index}
 						/>
 					))}

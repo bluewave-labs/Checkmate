@@ -12,15 +12,21 @@ import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
-const SettingsStats = ({ HEADING_SX, handleChange, settingsData, errors }) => {
+const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
+
+	if (!isAdmin) {
+		return null;
+	}
+
 	return (
 		<ConfigBox>
 			<Box>
 				<Typography
 					component="h1"
+					variant="h2"
 					sx={HEADING_SX}
 				>
 					{t("settingsHistoryAndMonitoring")}
@@ -75,6 +81,7 @@ const SettingsStats = ({ HEADING_SX, handleChange, settingsData, errors }) => {
 };
 
 SettingsStats.propTypes = {
+	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
 	handleChange: PropTypes.func,
 	settingsData: PropTypes.object,

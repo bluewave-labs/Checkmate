@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Box, Breadcrumbs as MUIBreadcrumbs } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import ArrowRight from "../../assets/icons/right-arrow.svg?react";
 
 import "./index.css";

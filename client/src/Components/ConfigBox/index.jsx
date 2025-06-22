@@ -29,7 +29,7 @@ const ConfigBox = styled(Stack)(({ theme }) => ({
 	},
 	"& h1, & h2": {
 		color: theme.palette.primary.contrastTextSecondary,
-	}	
+	},
 }));
 
 export default ConfigBox;

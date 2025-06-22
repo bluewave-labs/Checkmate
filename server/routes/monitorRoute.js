@@ -4,8 +4,8 @@ import multer from "multer";
 import { fetchMonitorCertificate } from "../controllers/controllerUtils.js";
 
 const upload = multer({
-	storage: multer.memoryStorage() // Store file in memory as Buffer
-  });
+	storage: multer.memoryStorage(), // Store file in memory as Buffer
+});
 
 class MonitorRoutes {
 	constructor(monitorController) {
@@ -17,6 +17,11 @@ class MonitorRoutes {
 	initRoutes() {
 		this.router.get("/", this.monitorController.getAllMonitors);
 		this.router.get("/uptime", this.monitorController.getAllMonitorsWithUptimeStats);
+		this.router.get(
+			"/export",
+			isAllowed(["admin", "superadmin"]),
+			this.monitorController.exportMonitorsToCSV
+		);
 		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
 		this.router.get(
 			"/hardware/details/:monitorId",
@@ -35,17 +40,17 @@ class MonitorRoutes {
 				fetchMonitorCertificate
 			);
 		});
+		this.router.get("/team", this.monitorController.getMonitorsByTeamId);
+
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);
 
-		this.router.get("/team/:teamId", this.monitorController.getMonitorsByTeamId);
-
 		this.router.get(
-			"/summary/team/:teamId",
+			"/summary/team",
 			this.monitorController.getMonitorsAndSummaryByTeamId
 		);
 
 		this.router.get(
-			"/team/:teamId/with-checks",
+			"/team/with-checks",
 			this.monitorController.getMonitorsWithChecksByTeamId
 		);
 

@@ -5,13 +5,8 @@ import { getHumanReadableDuration } from "../../../../../Utils/timeUtils";
 import { useTranslation } from "react-i18next";
 
 const PageSpeedStatusBoxes = ({ shouldRender, monitor }) => {
-	const { time: uptimeDuration, units: uptimeUnits } = getHumanReadableDuration(
-		monitor?.uptimeDuration
-	);
-
-	const { time: lastCheckTime, units: lastCheckUnits } = getHumanReadableDuration(
-		monitor?.lastChecked
-	);
+	const uptimeDuration = getHumanReadableDuration(monitor?.uptimeDuration);
+	const time = getHumanReadableDuration(monitor?.lastChecked);
 
 	const { t } = useTranslation();
 
@@ -22,7 +17,6 @@ const PageSpeedStatusBoxes = ({ shouldRender, monitor }) => {
 				subHeading={
 					<>
 						{uptimeDuration}
-						<Typography component="span">{uptimeUnits}</Typography>
 						<Typography component="span">{t("ago")}</Typography>
 					</>
 				}
@@ -31,8 +25,7 @@ const PageSpeedStatusBoxes = ({ shouldRender, monitor }) => {
 				heading="last check"
 				subHeading={
 					<>
-						{lastCheckTime}
-						<Typography component="span">{lastCheckUnits}</Typography>
+						{time}
 						<Typography component="span">{t("ago")}</Typography>
 					</>
 				}

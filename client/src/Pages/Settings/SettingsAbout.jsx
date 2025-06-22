@@ -12,10 +12,17 @@ const SettingsAbout = () => {
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("settingsAbout")}</Typography>
+				<Typography
+					component="h1"
+					variant="h2"
+				>
+					{t("settingsAbout")}
+				</Typography>
 			</Box>
 			<Box>
-				<Typography component="h2">Checkmate {2.0}</Typography>
+				<Typography component="h2">
+					{t("common.appName")} {2.1}
+				</Typography>
 				<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(6), opacity: 0.6 }}>
 					{t("settingsDevelopedBy")}
 				</Typography>
