@@ -319,6 +319,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Show more details on the status page",
 	"showCharts": "Show charts",
 	"showUptimePercentage": "Show uptime percentage",
+	"showAdminLoginLink": "Show \"Administrator? Login Here\" link on the status page",
 	"removeLogo": "Remove Logo",
 	"statusPageStatus": "A public status page is not set up.",
 	"statusPageStatusContactAdmin": "Please contact to your administrator",

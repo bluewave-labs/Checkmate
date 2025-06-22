@@ -90,6 +90,13 @@ const Content = ({
 							isChecked={form.showUptimePercentage}
 							onChange={handleFormChange}
 						/>
+						<Checkbox
+							id="showAdminLoginLink"
+							name="showAdminLoginLink"
+							label={t("showAdminLoginLink")}
+							isChecked={form.showAdminLoginLink}
+							onChange={handleFormChange}
+						/>
 					</Stack>
 				</ConfigStack>
 			</Stack>

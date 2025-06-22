@@ -871,6 +871,9 @@ class NetworkService {
 		if (form.showUptimePercentage !== undefined) {
 			fd.append("showUptimePercentage", String(form.showUptimePercentage));
 		}
+		if (form.showAdminLoginLink !== undefined) {
+			fd.append("showAdminLoginLink", String(form.showAdminLoginLink));
+		}
 		form.monitors &&
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
