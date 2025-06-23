@@ -242,8 +242,8 @@ const SettingsEmail = ({
 						))}
 
 						<TextLink
-							text="This builds an SMTP transport for NodeMailer"
-							linkText="See specifications here"
+							text={t("settingsEmailTransportLinkDescription")}
+							linkText={t("settingsEmailTransportLinkText")}
 							href="https://nodemailer.com/smtp"
 							target="_blank"
 						/>
