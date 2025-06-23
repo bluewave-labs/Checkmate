@@ -1,9 +1,9 @@
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Queue from "./Queue";
+import LogsComponent from "./Logs";
 
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
@@ -29,11 +29,11 @@ const Logs = () => {
 				value={value}
 				onChange={handleChange}
 			>
-				<Tab label={t("logsPage.tabs.queue")} />
 				<Tab label={t("logsPage.tabs.logs")} />
+				<Tab label={t("logsPage.tabs.queue")} />
 			</Tabs>
-			{value === 0 && <Queue />}
-			{value === 1 && <div>Not yet</div>}
+			{value === 0 && <LogsComponent />}
+			{value === 1 && <Queue />}
 		</Stack>
 	);
 };
