@@ -212,37 +212,35 @@ const SettingsEmail = ({
 							gap: theme.spacing(4),
 						}}
 					>
-						<Typography>{t("settingsEmailSecure")}</Typography>
-						<Switch
-							name="systemEmailSecure"
-							checked={systemEmailSecure}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailPool")}</Typography>
-						<Switch
-							name="systemEmailPool"
-							checked={systemEmailPool}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailIgnoreTLS")}</Typography>
-						<Switch
-							name="systemEmailIgnoreTLS"
-							checked={systemEmailIgnoreTLS}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailRequireTLS")}</Typography>
-						<Switch
-							name="systemEmailRequireTLS"
-							checked={systemEmailRequireTLS}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailRejectUnauthorized")}</Typography>
-						<Switch
-							name="systemEmailRejectUnauthorized"
-							checked={systemEmailRejectUnauthorized}
-							onChange={handleChange}
-						/>
+						{[
+							["settingsEmailSecure", "systemEmailSecure", systemEmailSecure],
+							["settingsEmailPool", "systemEmailPool", systemEmailPool],
+							["settingsEmailIgnoreTLS", "systemEmailIgnoreTLS", systemEmailIgnoreTLS],
+							["settingsEmailRequireTLS", "systemEmailRequireTLS", systemEmailRequireTLS],
+							[
+								"settingsEmailRejectUnauthorized",
+								"systemEmailRejectUnauthorized",
+								systemEmailRejectUnauthorized,
+							],
+						].map(([labelKey, name, value]) => (
+							<Box
+								key={name}
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "space-between",
+								}}
+							>
+								<Typography>{t(labelKey)}</Typography>
+								<Switch
+									name={name}
+									checked={value}
+									onChange={handleChange}
+								/>
+							</Box>
+						))}
 					</Box>
+
 					<Box>
 						{systemEmailHost &&
 							systemEmailPort &&
