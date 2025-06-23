@@ -508,13 +508,6 @@
 	},
 	"auth": {
 		"common": {
-			"fields": {
-				"password": {
-					"errors": {
-						"incorrect": "The password you provided does not match our records"
-					}
-				}
-			},
 			"navigation": {
 				"continue": "Continue",
 				"back": "Back"
@@ -595,6 +588,13 @@
 			},
 			"errors": {
 				"validation": "Error validating data."
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": "The password you provided does not match our records"
+					}
+				}
 			}
 		},
 		"login": {
@@ -715,22 +715,22 @@
 			"webhookLabel": "Slack webhook URL",
 			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
-		"pagerDutySettings": {
+		"pagerdutySettings": {
 			"title": "PagerDuty",
 			"description": "Configure your PagerDuty integration here",
 			"integrationKeyLabel": "Integration key",
 			"integrationKeyPlaceholder": "1234567890"
 		},
-		"webhookSettings": {
-			"title": "Webhook",
-			"description": "Configure your webhook here",
-			"webhookLabel": "Webhook URL",
-			"webhookPlaceholder": "https://your-server.com/webhook"
-		},
 		"discordSettings": {
 			"title": "Discord",
 			"description": "Configure your Discord webhook here",
 			"webhookLabel": "Discord Webhook URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"webhookSettings": {
+			"title": "Webhook",
+			"description": "Configure your webhook here",
+			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
 		}
 	},
@@ -747,11 +747,11 @@
 	},
 	"advancedMatching": "Advanced matching",
 	"settingsEmailTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
-	"settingsEmailIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
-	"settingsEmailRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
-	"settingsEmailRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
-	"settingsEmailSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
-	"settingsEmailPool": "Enable connection pooling: Reuse existing connections to improve performance",
+	"settingsEmailIgnoreTLS": "Ignore TLS - Disable STARTTLS",
+	"settingsEmailRequireTLS": "Require TLS - Force STARTTLS",
+	"settingsEmailRejectUnauthorized": "Reject Unauthorized",
+	"settingsEmailSecure": "Secure - Use SSL",
+	"settingsEmailPool": "Pool - Enable connection pooling",
 	"sendTestNotifications": "Send test notifications",
 	"selectAll": "Select all",
 	"logsPage": {
@@ -790,16 +790,16 @@
 			"failCountHeader": "Fail count",
 			"failedAtHeader": "Last failed at",
 			"failReasonHeader": "Fail reason"
-		},
-		"export": {
-			"title": "Export Monitors",
-			"success": "Monitors exported successfully!",
-			"failed": "Failed to export monitors"
-		},
-		"monitorActions": {
-			"title": "Export/Import",
-			"import": "Import Monitors",
-			"export": "Export Monitors"
 		}
+	},
+	"export": {
+		"title": "Export Monitors",
+		"success": "Monitors exported successfully!",
+		"failed": "Failed to export monitors"
+	},
+	"monitorActions": {
+		"title": "Export/Import",
+		"import": "Import Monitors",
+		"export": "Export Monitors"
 	}
 }
