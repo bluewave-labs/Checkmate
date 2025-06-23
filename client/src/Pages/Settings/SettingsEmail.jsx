@@ -4,6 +4,8 @@ import ConfigBox from "../../Components/ConfigBox";
 import TextInput from "../../Components/Inputs/TextInput";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import { Switch } from "@mui/material";
+import TextLink from "../../Components/TextLink";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
@@ -12,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
 import { createToast } from "../../Utils/toastUtils";
-import { Switch } from "@mui/material";
 
 const SettingsEmail = ({
 	isAdmin,
@@ -239,6 +240,47 @@ const SettingsEmail = ({
 								/>
 							</Box>
 						))}
+
+						<TextLink
+							text="This builds an SMTP transport for NodeMailer"
+							linkText="See specifications here"
+							href="https://nodemailer.com/smtp"
+							target="_blank"
+						/>
+						<Box
+							component={"pre"}
+							sx={{
+								fontFamily: "monospace",
+								p: 2,
+								borderRadius: 1,
+								overflow: "auto",
+							}}
+						>
+							<code>
+								{JSON.stringify(
+									{
+										host: systemEmailHost,
+										port: systemEmailPort,
+										secure: systemEmailSecure,
+										auth: {
+											user: systemEmailUser || systemEmailAddress,
+											pass: "<your_password>",
+										},
+										name: systemEmailConnectionHost || "localhost",
+										pool: systemEmailPool,
+										user: systemEmailUser,
+										tls: {
+											rejectUnauthorized: systemEmailRejectUnauthorized,
+											ignoreTLS: systemEmailIgnoreTLS,
+											requireTLS: systemEmailRequireTLS,
+											servername: systemEmailTLSServername,
+										},
+									},
+									null,
+									2
+								)}
+							</code>
+						</Box>
 					</Box>
 
 					<Box>
