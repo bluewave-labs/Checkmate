@@ -74,15 +74,7 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	info(config) {
-		const logEntry = {
-			level: "info",
-			message: config.message,
-			service: config.service,
-			method: config.method,
-			details: config.details,
-			timestamp: new Date().toISOString(),
-		};
-
+		const logEntry = this.buildLogEntry("info", config);
 		this.cacheLog(logEntry);
 		this.logger.info(config.message, logEntry);
 	}
@@ -96,15 +88,7 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	warn(config) {
-		const logEntry = {
-			level: "warn",
-			message: config.message,
-			service: config.service,
-			method: config.method,
-			details: config.details,
-			timestamp: new Date().toISOString(),
-		};
-
+		const logEntry = this.buildLogEntry("warn", config);
 		this.cacheLog(logEntry);
 		this.logger.warn(config.message, logEntry);
 	}
@@ -118,15 +102,7 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	error(config) {
-		const logEntry = {
-			level: "error",
-			message: config.message,
-			service: config.service,
-			method: config.method,
-			details: config.details,
-			timestamp: new Date().toISOString(),
-		};
-
+		const logEntry = this.buildLogEntry("error", config);
 		this.cacheLog(logEntry);
 		this.logger.error(config.message, logEntry);
 	}
@@ -139,15 +115,7 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	debug(config) {
-		const logEntry = {
-			level: "debug",
-			message: config.message,
-			service: config.service,
-			method: config.method,
-			details: config.details,
-			timestamp: new Date().toISOString(),
-		};
-
+		const logEntry = this.buildLogEntry("debug", config);
 		this.cacheLog(logEntry);
 		this.logger.debug(config.message, logEntry);
 	}
@@ -161,6 +129,17 @@ class Logger {
 
 	getLogs() {
 		return this.logCache;
+	}
+
+	buildLogEntry(level, config) {
+		return {
+			level,
+			message: config.message,
+			service: config.service,
+			method: config.method,
+			details: config.details,
+			timestamp: new Date().toISOString(),
+		};
 	}
 }
 
