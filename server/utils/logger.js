@@ -138,6 +138,7 @@ class Logger {
 			service: config.service,
 			method: config.method,
 			details: config.details,
+			stack: config.stack,
 			timestamp: new Date().toISOString(),
 		};
 	}
