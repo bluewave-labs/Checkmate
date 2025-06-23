@@ -5,7 +5,7 @@ dotenv.config();
 class Logger {
 	constructor() {
 		this.logCache = [];
-		this.maxCacheSize = 500;
+		this.maxCacheSize = 1000;
 		const consoleFormat = format.printf(
 			({ level, message, service, method, details, timestamp, stack }) => {
 				if (message instanceof Object) {
