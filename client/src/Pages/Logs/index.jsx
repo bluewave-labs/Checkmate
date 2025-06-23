@@ -4,6 +4,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Queue from "./Queue";
+import LogsComponent from "./Logs";
 
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,7 @@ const Logs = () => {
 	const theme = useTheme();
 
 	// Local state
-	const [value, setValue] = useState(0);
+	const [value, setValue] = useState(1);
 
 	// Handlers
 	const handleChange = (event, newValue) => {
@@ -33,7 +34,7 @@ const Logs = () => {
 				<Tab label={t("logsPage.tabs.logs")} />
 			</Tabs>
 			{value === 0 && <Queue />}
-			{value === 1 && <div>Not yet</div>}
+			{value === 1 && <LogsComponent />}
 		</Stack>
 	);
 };

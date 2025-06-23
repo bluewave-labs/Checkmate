@@ -23,8 +23,6 @@ const Metrics = ({ metrics = {} }) => {
 			return { key, title: camelToTitle(key), value: metrics[key] };
 		});
 
-	console.log(JSON.stringify(data, null, 2));
-
 	return (
 		<Stack gap={theme.spacing(2)}>
 			<Typography variant="h2">{t("queuePage.metricsTable.title")}</Typography>

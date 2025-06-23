@@ -758,7 +758,20 @@
 		"title": "Logs",
 		"tabs": {
 			"queue": "Job queue",
-			"logs": "Logs"
+			"logs": "Server logs"
+		},
+		"toast": {
+			"fetchLogsSuccess": "Logs fetched successfully"
+		},
+		"logLevelSelect": {
+			"title": "Log level",
+			"values": {
+				"all": "All",
+				"info": "Info",
+				"warn": "Warn",
+				"error": "Error",
+				"debug": "Debug"
+			}
 		}
 	},
 	"queuePage": {
