@@ -153,6 +153,7 @@ const getStatusPage = async (url) => {
 						showCharts: 1,
 						showUptimePercentage: 1,
 						timezone: 1,
+						showAdminLoginLink: 1,
 						url: 1,
 					},
 					monitors: {
