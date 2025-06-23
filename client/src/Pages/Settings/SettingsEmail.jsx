@@ -268,7 +268,6 @@ const SettingsEmail = ({
 										},
 										name: systemEmailConnectionHost || "localhost",
 										pool: systemEmailPool,
-										user: systemEmailUser,
 										tls: {
 											rejectUnauthorized: systemEmailRejectUnauthorized,
 											ignoreTLS: systemEmailIgnoreTLS,
