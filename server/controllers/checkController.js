@@ -119,9 +119,9 @@ class CheckController {
 
 		try {
 			const { checkId } = req.params;
-			const { status } = req.body;
+			const { ack } = req.body;
 
-			const updatedCheck = await this.db.updateCheckStatus(checkId, status);
+			const updatedCheck = await this.db.updateCheckStatus(checkId, ack);
 
 			return res.success({
 				msg: this.stringService.checkUpdateStatus,
@@ -143,13 +143,9 @@ class CheckController {
 
 		try {
 			const { monitorId, target } = req.params;
-			const { status } = req.body;
+			const { ack } = req.body;
 
-			const updatedChecks = await this.db.updateAllChecksStatus(
-				monitorId,
-				status,
-				target
-			);
+			const updatedChecks = await this.db.updateAllChecksStatus(monitorId, ack, target);
 
 			return res.success({
 				msg: this.stringService.checkUpdateStatus,

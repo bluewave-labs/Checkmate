@@ -612,7 +612,7 @@ class NetworkService {
 	 */
 	async updateCheckStatus(config) {
 		return this.axiosInstance.put(`/checks/${config.checkId}`, {
-			status: config.status,
+			ack: config.ack,
 		});
 	}
 

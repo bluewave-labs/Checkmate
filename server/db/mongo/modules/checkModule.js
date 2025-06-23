@@ -239,20 +239,25 @@ const getChecksByTeam = async ({
 };
 
 /**
- * Update the status of a check
+ * Update the acknowledgment status of a check
  * @async
- * @param {string} checkId
- * @param {boolean} status
+ * @param {string} checkId - The ID of the check to update
+ * @param {boolean} ack - The acknowledgment status to set
  * @returns {Promise<Check>}
  * @throws {Error}
  */
-const updateCheckStatus = async (checkId, status) => {
+const updateCheckStatus = async (checkId, ack) => {
 	try {
 		const updatedCheck = await Check.findOneAndUpdate(
 			{ _id: checkId },
-			{ status },
+			{ $set: { ack, ackAt: new Date() } },
 			{ new: true }
 		);
+
+		if (!updatedCheck) {
+			throw new Error("Check not found");
+		}
+
 		return updatedCheck;
 	} catch (error) {
 		error.service = SERVICE_NAME;
@@ -262,19 +267,19 @@ const updateCheckStatus = async (checkId, status) => {
 };
 
 /**
- * Update the status of all checks for a monitor or team
+ * Update the acknowledgment status of all checks for a monitor or team
  * @async
- * @param {string} id
- * @param {boolean} status
- * @param {string} target
+ * @param {string} id - The monitor ID or team ID
+ * @param {boolean} ack - The acknowledgment status to set
+ * @param {string} target - The target type ('monitor' or 'team')
  * @returns {Promise<number>}
  * @throws {Error}
  */
-const updateAllChecksStatus = async (id, status, target) => {
+const updateAllChecksStatus = async (id, ack, target) => {
 	try {
 		const updatedChecks = await Check.updateMany(
 			target === "monitor" ? { monitorId: id } : { teamId: id },
-			{ $set: { status } }
+			{ $set: { ack, ackAt: new Date() } }
 		);
 		return updatedChecks.modifiedCount;
 	} catch (error) {

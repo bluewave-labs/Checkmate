@@ -290,7 +290,7 @@ const createCheckBodyValidation = joi.object({
 });
 
 const updateCheckStatusBodyValidation = joi.object({
-	status: joi.boolean(),
+	ack: joi.boolean(),
 });
 
 const updateCheckStatusParamValidation = joi.object({
@@ -299,7 +299,7 @@ const updateCheckStatusParamValidation = joi.object({
 });
 
 const updateAllChecksStatusBodyValidation = joi.object({
-	status: joi.boolean(),
+	ack: joi.boolean(),
 });
 
 const getChecksParamValidation = joi.object({
