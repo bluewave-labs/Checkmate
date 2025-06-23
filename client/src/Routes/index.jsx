@@ -3,8 +3,8 @@ import HomeLayout from "../Components/Layouts/HomeLayout";
 import NotFound from "../Pages/NotFound";
 
 // Auth
-import AuthLogin from "../Pages/Auth/Login/Login";
-import AuthRegister from "../Pages/Auth/Register/Register";
+import AuthLogin from "../Pages/Auth/Login";
+import AuthRegister from "../Pages/Auth/Register/";
 import AuthForgotPassword from "../Pages/Auth/ForgotPassword";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail";
 import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
@@ -27,15 +27,6 @@ import Infrastructure from "../Pages/Infrastructure/Monitors";
 import InfrastructureCreate from "../Pages/Infrastructure/Create";
 import InfrastructureDetails from "../Pages/Infrastructure/Details";
 
-// Distributed Uptime
-import DistributedUptimeMonitors from "../Pages/DistributedUptime/Monitors";
-import CreateDistributedUptime from "../Pages/DistributedUptime/Create";
-import DistributedUptimeDetails from "../Pages/DistributedUptime/Details";
-
-// Distributed Uptime Status
-import CreateDistributedUptimeStatus from "../Pages/DistributedUptimeStatus/Create";
-import DistributedUptimeStatus from "../Pages/DistributedUptimeStatus/Status";
-
 // Server Status
 import ServerUnreachable from "../Pages/ServerUnreachable";
 
@@ -47,7 +38,8 @@ import CreateStatus from "../Pages/StatusPage/Create";
 import StatusPages from "../Pages/StatusPage/StatusPages";
 import Status from "../Pages/StatusPage/Status";
 
-import Integrations from "../Pages/Integrations";
+import Notifications from "../Pages/Notifications";
+import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
 import Account from "../Pages/Account";
@@ -56,10 +48,10 @@ import Settings from "../Pages/Settings";
 import Maintenance from "../Pages/Maintenance";
 
 import ProtectedRoute from "../Components/ProtectedRoute";
-import ProtectedDistributedUptimeRoute from "../Components/ProtectedDistributedUptimeRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport";
+import Queue from "../Pages/Queue";
 
 const Routes = () => {
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
@@ -99,39 +91,6 @@ const Routes = () => {
 					path="/uptime/configure/:monitorId/"
 					element={<UptimeConfigure />}
 				/>
-				{/* <Route
-					path="/distributed-uptime"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<DistributedUptimeMonitors />{" "}
-						</ProtectedDistributedUptimeRoute>
-					}
-				/> */}
-
-				{/* <Route
-					path="/distributed-uptime/create"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<CreateDistributedUptime />
-						</ProtectedDistributedUptimeRoute>
-					}
-				/>
-				<Route
-					path="/distributed-uptime/configure/:monitorId"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<CreateDistributedUptime />
-						</ProtectedDistributedUptimeRoute>
-					}
-				/> */}
-				{/* <Route
-					path="/distributed-uptime/:monitorId"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<DistributedUptimeDetails />
-						</ProtectedDistributedUptimeRoute>
-					}
-				/> */}
 
 				<Route
 					path="pagespeed"
@@ -180,47 +139,30 @@ const Routes = () => {
 					element={<Status />}
 				/>
 
-				{/* <Route
-					path="/status/distributed/:url"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<DistributedUptimeStatus />
-						</ProtectedDistributedUptimeRoute>
-					}
-				/> */}
-
 				<Route
 					path="status/uptime/create"
 					element={<CreateStatus />}
 				/>
-
-				{/* <Route
-					path="/status/distributed/create/:monitorId"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<CreateDistributedUptimeStatus />
-						</ProtectedDistributedUptimeRoute>
-					}
-				/> */}
 
 				<Route
 					path="status/uptime/configure/:url"
 					element={<CreateStatus />}
 				/>
 
-				{/* <Route
-					path="/status/distributed/configure/:url"
-					element={
-						<ProtectedDistributedUptimeRoute>
-							<CreateDistributedUptimeStatus />
-						</ProtectedDistributedUptimeRoute>
-					}
-				/> */}
+				<Route
+					path="notifications"
+					element={<Notifications />}
+				/>
+				<Route
+					path="notifications/create"
+					element={<CreateNotifications />}
+				/>
 
 				<Route
-					path="integrations"
-					element={<Integrations />}
+					path="notifications/:notificationId"
+					element={<CreateNotifications />}
 				/>
+
 				<Route
 					path="maintenance"
 					element={<Maintenance />}
@@ -244,6 +186,10 @@ const Routes = () => {
 				<Route
 					path="account/team"
 					element={<Account open={"team"} />}
+				/>
+				<Route
+					path="queue"
+					element={<Queue />}
 				/>
 			</Route>
 
@@ -283,10 +229,6 @@ const Routes = () => {
 				path="/status/uptime/public/:url"
 				element={<Status />}
 			/>
-			{/* <Route
-				path="/status/distributed/public/:url"
-				element={<DistributedUptimeStatus />}
-			/> */}
 
 			<Route
 				path="/server-unreachable"

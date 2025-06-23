@@ -16,6 +16,9 @@ const initialState = {
 	maintenance: {
 		rowsPerPage: 5,
 	},
+	infrastructure: {
+		rowsPerPage: 5,
+	},
 	sidebar: {
 		collapsed: false,
 	},

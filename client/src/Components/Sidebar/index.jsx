@@ -23,7 +23,6 @@ import UserSvg from "../../assets/icons/user.svg?react";
 import TeamSvg from "../../assets/icons/user-two.svg?react";
 import LogoutSvg from "../../assets/icons/logout.svg?react";
 import Support from "../../assets/icons/support.svg?react";
-import Account from "../../assets/icons/user-edit.svg?react";
 import Maintenance from "../../assets/icons/maintenance.svg?react";
 import Monitors from "../../assets/icons/monitors.svg?react";
 import Incidents from "../../assets/icons/incidents.svg?react";
@@ -37,10 +36,10 @@ import ArrowLeft from "../../assets/icons/left-arrow.svg?react";
 import DotsVertical from "../../assets/icons/dots-vertical.svg?react";
 import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
-import Folder from "../../assets/icons/folder.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
 import Discussions from "../../assets/icons/discussions.svg?react";
-import DistributedUptimeIcon from "../../assets/icons/distributed-uptime.svg?react";
+import Notifications from "../../assets/icons/notifications.svg?react";
+
 import "./index.css";
 
 // Utils
@@ -50,22 +49,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { clearAuthState } from "../../Features/Auth/authSlice";
 import { toggleSidebar } from "../../Features/UI/uiSlice";
-import { clearUptimeMonitorState } from "../../Features/UptimeMonitors/uptimeMonitorsSlice";
 
 const getMenu = (t) => [
 	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
 	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
+
 	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
 	{
-		name: t("menu.distributedUptime"),
-		path: "distributed-uptime",
-		icon: <DistributedUptimeIcon />,
+		name: t("menu.notifications"),
+		path: "notifications",
+		icon: <Notifications />,
 	},
 	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
 	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
 	{ name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
-	// { name: t("menu.integrations"), path: "integrations", icon: <Integrations /> },
+
 	{
 		name: t("menu.settings"),
 		icon: <Settings />,
@@ -95,14 +94,13 @@ const URL_MAP = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
 	docs: "https://bluewavelabs.gitbook.io/checkmate",
-	changelog: "https://github.com/bluewave-labs/bluewave-uptime/releases",
+	changelog: "https://github.com/bluewave-labs/checkmate/releases",
 };
 
 const PATH_MAP = {
 	monitors: "Dashboard",
 	pagespeed: "Dashboard",
 	infrastructure: "Dashboard",
-	["distributed-uptime"]: "Dashboard",
 	account: "Account",
 	settings: "Settings",
 };
@@ -130,9 +128,7 @@ function Sidebar() {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [popup, setPopup] = useState();
 	const { user } = useSelector((state) => state.auth);
-	const distributedUptimeEnabled = useSelector(
-		(state) => state.ui.distributedUptimeEnabled
-	);
+
 	const sidebarRef = useRef(null);
 	const [sidebarReady, setSidebarReady] = useState(false);
 	const TRANSITION_DURATION = 200;
@@ -200,7 +196,6 @@ function Sidebar() {
 	const logout = async () => {
 		// Clear auth state
 		dispatch(clearAuthState());
-		dispatch(clearUptimeMonitorState());
 		navigate("/login");
 	};
 
@@ -234,7 +229,6 @@ function Sidebar() {
 				borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
 				borderColor: theme.palette.primary.lowContrast,
 				borderRadius: 0,
-				backgroundColor: theme.palette.primary.main,
 				"& :is(p, span, .MuiListSubheader-root)": {
 					/* 
 					Text color for unselected menu items and menu headings
@@ -346,7 +340,7 @@ function Sidebar() {
 						mt={theme.spacing(2)}
 						sx={{ opacity: 0.8, fontWeight: 500 }}
 					>
-						Checkmate
+						{t("common.appName")}
 					</Typography>
 				</Stack>
 			</Stack>
@@ -375,12 +369,6 @@ function Sidebar() {
 					}}
 				>
 					{menu.map((item) => {
-						if (
-							item.path === "distributed-uptime" &&
-							distributedUptimeEnabled === false
-						) {
-							return null;
-						}
 						return item.path ? (
 							/* If item has a path */
 							<Tooltip

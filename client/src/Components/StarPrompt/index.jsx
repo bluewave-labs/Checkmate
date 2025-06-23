@@ -33,7 +33,6 @@ const StarPrompt = ({ repoUrl = "https://github.com/bluewave-labs/checkmate" }) 
 				borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
 				borderRadius: 0,
 				gap: theme.spacing(1.5),
-				backgroundColor: theme.palette.primary.main,
 			}}
 		>
 			<Stack

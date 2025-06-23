@@ -1,4 +1,4 @@
-const QUEUE_NAMES = ["uptime", "pagespeed", "hardware", "distributed"];
+const QUEUE_NAMES = ["uptime", "pagespeed", "hardware"];
 const SERVICE_NAME = "JobQueue";
 const HEALTH_CHECK_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const QUEUE_LOOKUP = {
@@ -8,7 +8,6 @@ const QUEUE_LOOKUP = {
 	port: "uptime",
 	docker: "uptime",
 	pagespeed: "pagespeed",
-	distributed_http: "distributed",
 };
 const getSchedulerId = (monitor) => `scheduler:${monitor.type}:${monitor._id}`;
 
@@ -51,7 +50,6 @@ class JobQueue {
 						}
 					})
 			);
-
 			this.healthCheckInterval = setInterval(async () => {
 				try {
 					const queueHealthChecks = await this.checkQueueHealth();
@@ -116,6 +114,14 @@ class JobQueue {
 		});
 	}
 
+	pauseJob = async (monitor) => {
+		this.deleteJob(monitor);
+	};
+
+	resumeJob = async (monitor) => {
+		this.addJob(monitor._id, monitor);
+	};
+
 	async addJob(jobName, monitor) {
 		this.logger.info({
 			message: `Adding job ${monitor?.url ?? "No URL"}`,
@@ -179,6 +185,11 @@ class JobQueue {
 			error.method === undefined ? (error.method = "deleteJob") : null;
 			throw error;
 		}
+	}
+
+	async updateJob(monitor) {
+		await this.deleteJob(monitor);
+		await this.addJob(monitor._id, monitor);
 	}
 
 	async getJobs() {

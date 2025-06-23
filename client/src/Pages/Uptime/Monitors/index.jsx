@@ -28,9 +28,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 import PropTypes from "prop-types";
-import useFetchMonitorsWithSummary from "../../../Hooks/useFetchMonitorsWithSummary";
-import useFetchMonitorsWithChecks from "../../../Hooks/useFetchMonitorsWithChecks";
+import {
+	useFetchMonitorsWithSummary,
+	useFetchMonitorsWithChecks,
+} from "../../../Hooks/monitorHooks";
 import { useTranslation } from "react-i18next";
+
 const TYPES = ["http", "ping", "docker", "port"];
 const CreateMonitorButton = ({ shouldRender }) => {
 	// Utils
@@ -61,8 +64,7 @@ CreateMonitorButton.propTypes = {
 
 const UptimeMonitors = () => {
 	// Redux state
-	const { user } = useSelector((state) => state.auth);
-	const rowsPerPage = useSelector((state) => state.ui.monitors.rowsPerPage);
+	const rowsPerPage = useSelector((state) => state.ui?.monitors?.rowsPerPage ?? 10);
 
 	// Local state
 	const [search, setSearch] = useState(undefined);
@@ -78,7 +80,6 @@ const UptimeMonitors = () => {
 
 	// Utils
 	const theme = useTheme();
-	const navigate = useNavigate();
 	const isAdmin = useIsAdmin();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
@@ -104,11 +105,8 @@ const UptimeMonitors = () => {
 		setMonitorUpdateTrigger((prev) => !prev);
 	}, []);
 
-	const teamId = user.teamId;
-
 	const [monitors, monitorsSummary, monitorsWithSummaryIsLoading, networkError] =
 		useFetchMonitorsWithSummary({
-			teamId,
 			types: TYPES,
 			monitorUpdateTrigger,
 		});
@@ -138,7 +136,6 @@ const UptimeMonitors = () => {
 		monitorsWithChecksIsLoading,
 		monitorsWithChecksNetworkError,
 	] = useFetchMonitorsWithChecks({
-		teamId,
 		types: effectiveTypes,
 		limit: 25,
 		page: page,
@@ -158,9 +155,9 @@ const UptimeMonitors = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("networkError")}
+					{t("common.toasts.networkError")}
 				</Typography>
-				<Typography>{t("checkConnection")}</Typography>
+				<Typography>{t("common.toasts.checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -204,9 +201,9 @@ const UptimeMonitors = () => {
 
 			<Stack direction={"row"}>
 				<MonitorCountHeader
-					shouldRender={monitors?.length > 0 && !monitorsWithSummaryIsLoading}
+					isLoading={monitorsWithSummaryIsLoading}
 					monitorCount={monitorsSummary?.totalMonitors}
-				></MonitorCountHeader>
+				/>
 				<Filter
 					selectedTypes={selectedTypes}
 					setSelectedTypes={setSelectedTypes}

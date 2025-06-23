@@ -23,10 +23,7 @@ const StatusPagesTable = ({ data }) => {
 			onClick: (e, row) => {
 				if (row.isPublished) {
 					e.stopPropagation();
-					const url =
-						row.type === "distributed"
-							? `/status/distributed/public/${row.url}`
-							: `/status/uptime/public/${row.url}`;
+					const url = `/status/uptime/public/${row.url}`;
 					window.open(url, "_blank", "noopener,noreferrer");
 				}
 			},
@@ -79,11 +76,7 @@ const StatusPagesTable = ({ data }) => {
 	];
 
 	const handleRowClick = (statusPage) => {
-		if (statusPage.type === "distributed") {
-			navigate(`/status/distributed/${statusPage.url}`);
-		} else if (statusPage.type === "uptime") {
-			navigate(`/status/uptime/${statusPage.url}`);
-		}
+		navigate(`/status/uptime/${statusPage.url}`);
 	};
 
 	return (

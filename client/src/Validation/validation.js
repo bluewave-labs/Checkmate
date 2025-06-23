@@ -7,27 +7,25 @@ const nameSchema = joi
 	.string()
 	.max(50)
 	.trim()
-	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
+	.pattern(/^[\p{L}\p{M}''()\-\. ]+$/u)
 	.messages({
-		"string.empty": "Name is required",
-		"string.max": "Name must be less than 50 characters",
-		"string.pattern.base":
-			"Name must contain only letters, spaces, apostrophes, or hyphens",
+		"string.empty": "auth.common.inputs.firstName.errors.empty",
+		"string.max": "auth.common.inputs.firstName.errors.length",
+		"string.pattern.base": "auth.common.inputs.firstName.errors.pattern",
 	});
 
 const lastnameSchema = joi
 	.string()
 	.max(50)
 	.trim()
-	.pattern(/^[\p{L}\p{M}''\- ]+$/u)
+	.pattern(/^[\p{L}\p{M}''()\-\. ]+$/u)
 	.messages({
-		"string.empty": "Surname is required",
-		"string.max": "Surname must be less than 50 characters",
-		"string.pattern.base":
-			"Surname must contain only letters, spaces, apostrophes, or hyphens",
+		"string.empty": "auth.common.inputs.lastName.errors.empty",
+		"string.max": "auth.common.inputs.lastName.errors.length",
+		"string.pattern.base": "auth.common.inputs.lastName.errors.pattern",
 	});
 
-const passwordSchema = joi
+const newPasswordSchema = joi
 	.string()
 	.trim()
 	.min(8)
@@ -56,34 +54,28 @@ const passwordSchema = joi
 		return value;
 	})
 	.messages({
-		"string.empty": "Password is required",
-		"string.min": "Password must be at least 8 characters long",
-		uppercase: "Password must contain at least one uppercase letter",
-		lowercase: "Password must contain at least one lowercase letter",
-		number: "Password must contain at least one number",
-		special: "Password must contain at least one special character",
+		"string.empty": "auth.common.inputs.password.errors.empty",
+		"string.min": "auth.common.inputs.password.errors.length",
+		uppercase: "auth.common.inputs.password.errors.uppercase",
+		lowercase: "auth.common.inputs.password.errors.lowercase",
+		number: "auth.common.inputs.password.errors.number",
+		special: "auth.common.inputs.password.errors.special",
 	});
 
-const credentials = joi.object({
+const newOrChangedCredentials = joi.object({
 	firstName: nameSchema,
 	lastName: lastnameSchema,
 	email: joi
 		.string()
 		.trim()
 		.email({ tlds: { allow: false } })
-		.custom((value, helpers) => {
-			const lowercasedValue = value.toLowerCase();
-			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
-			}
-			return lowercasedValue;
-		})
+		.lowercase()
 		.messages({
-			"string.empty": "authRegisterEmailRequired",
-			"string.email": "authRegisterEmailInvalid",
+			"string.empty": "auth.common.inputs.email.errors.empty",
+			"string.email": "auth.common.inputs.email.errors.invalid",
 		}),
-	password: passwordSchema,
-	newPassword: passwordSchema,
+	password: newPasswordSchema,
+	newPassword: newPasswordSchema,
 	confirm: joi
 		.string()
 		.trim()
@@ -95,15 +87,33 @@ const credentials = joi.object({
 			return value;
 		})
 		.messages({
-			"string.empty": "This field can't be empty",
-			different: "Passwords do not match",
+			"string.empty": "auth.common.inputs.passwordConfirm.errors.empty",
+			different: "auth.common.inputs.passwordConfirm.errors.different",
 		}),
 	role: joi.array(),
 	teamId: joi.string().allow("").optional(),
 	inviteToken: joi.string().allow(""),
 });
 
+const loginCredentials = joi.object({
+	email: joi
+		.string()
+		.trim()
+		.email({ tlds: { allow: false } })
+		.lowercase()
+		.messages({
+			"string.empty": "auth.common.inputs.email.errors.empty",
+			"string.email": "auth.common.inputs.email.errors.invalid",
+		}),
+	password: joi.string().messages({
+		"string.empty": "auth.common.inputs.password.errors.empty",
+	}),
+});
+
 const monitorValidation = joi.object({
+	_id: joi.string(),
+	userId: joi.string(),
+	teamId: joi.string(),
 	url: joi.when("type", {
 		is: "docker",
 		then: joi
@@ -191,9 +201,9 @@ const monitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
-	expectedValue: joi.string().allow(""),
-	jsonPath: joi.string().allow(""),
-	matchMethod: joi.string(),
+	expectedValue: joi.string().allow(null, ""),
+	jsonPath: joi.string().allow(null, ""),
+	matchMethod: joi.string().allow(null, ""),
 });
 
 const imageValidation = joi.object({
@@ -239,7 +249,7 @@ const logoImageValidation = joi
 	.optional(); // Make entire object optional
 
 const statusPageValidation = joi.object({
-	type: joi.string().valid("uptime", "distributed").required(),
+	type: joi.string().valid("uptime").required(),
 	isPublished: joi.bool(),
 	companyName: joi
 		.string()
@@ -280,10 +290,16 @@ const settingsValidation = joi.object({
 	timezone: joi.string().allow("").optional(),
 	systemEmailHost: joi.string().allow(""),
 	systemEmailPort: joi.number().allow(null, ""),
+	systemEmailSecure: joi.boolean().optional(),
+	systemEmailPool: joi.boolean().optional(),
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
-	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow("").optional(),
+	systemEmailTLSServername: joi.string().allow(""),
+	systemEmailIgnoreTLS: joi.boolean(),
+	systemEmailRequireTLS: joi.boolean(),
+	systemEmailRejectUnauthorized: joi.boolean(),
 });
 
 const dayjsValidator = (value, helpers) => {
@@ -385,19 +401,28 @@ const infrastructureMonitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
-	notifications: joi.array().items(
-		joi.object({
-			type: joi.string().valid("email").required(),
-			address: joi
-				.string()
-				.email({ tlds: { allow: false } })
-				.required(),
-		})
-	),
+	notifications: joi.array().items(joi.string()),
+});
+
+const notificationValidation = joi.object({
+	notificationName: joi.string().required().messages({
+		"string.empty": "Notification name is required",
+		"any.required": "Notification name is required",
+	}),
+	address: joi.string().required().messages({
+		"string.empty": "This field cannot be empty",
+		"string.base": "This field must be a string",
+		"any.required": "This field is required",
+	}),
+	type: joi.string().required().messages({
+		"string.empty": "This field is required",
+		"any.required": "This field is required",
+	}),
 });
 
 export {
-	credentials,
+	newOrChangedCredentials,
+	loginCredentials,
 	imageValidation,
 	monitorValidation,
 	settingsValidation,
@@ -406,4 +431,5 @@ export {
 	infrastructureMonitorValidation,
 	statusPageValidation,
 	logoImageValidation,
+	notificationValidation,
 };

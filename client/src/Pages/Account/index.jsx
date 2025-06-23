@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
 import CustomTabList from "../../Components/Tab";

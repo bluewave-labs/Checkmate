@@ -20,7 +20,8 @@ const { t } = useTranslation();
 ```
 - [ ] I have **not** included any files that are not related to my pull request, including package-lock and package-json if dependencies have not changed
 - [ ] I didn't use any hardcoded values (otherwise it will not scale, and will make it difficult to maintain consistency across the application).
-- [ ] I made sure font sizes, color choices etc are all referenced from the theme. I have no hardcoded dimensions.
+- [ ] I made sure font sizes, color choices etc are all referenced from the theme. I don't have any hardcoded dimensions.
 - [ ] My PR is granular and targeted to one specific feature.
+- [ ] I ran `npm run format` in server and client directories, which automatically formats your code.
 - [ ] I took a screenshot or a video and attached to this PR if there is a UI change.
 

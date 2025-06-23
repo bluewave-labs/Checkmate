@@ -10,6 +10,7 @@ import { logger } from "./Utils/Logger"; // Import the logger
 import { networkService } from "./main";
 import { Routes } from "./Routes";
 import WalletProvider from "./Components/WalletProvider";
+import AppLayout from "./Components/Layouts/AppLayout";
 
 function App() {
 	const mode = useSelector((state) => state.ui.mode);
@@ -27,17 +28,10 @@ function App() {
 		<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
 			<WalletProvider>
 				<CssBaseline />
-				<GlobalStyles
-					styles={({ palette }) => {
-						return {
-							body: {
-								backgroundImage: `radial-gradient(circle, ${palette.gradient.color1}, ${palette.gradient.color2}, ${palette.gradient.color3}, ${palette.gradient.color4}, ${palette.gradient.color5})`,
-								color: palette.primary.contrastText,
-							},
-						};
-					}}
-				/>
-				<Routes />
+
+				<AppLayout>
+					<Routes />
+				</AppLayout>
 				<ToastContainer />
 			</WalletProvider>
 		</ThemeProvider>

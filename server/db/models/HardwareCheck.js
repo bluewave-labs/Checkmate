@@ -35,6 +35,11 @@ const errorSchema = mongoose.Schema({
 	err: { type: String, default: "" },
 });
 
+const captureSchema = mongoose.Schema({
+	version: { type: String, default: "" },
+	mode: { type: String, default: "" },
+});
+
 const HardwareCheckSchema = mongoose.Schema(
 	{
 		...BaseCheckSchema.obj,
@@ -58,6 +63,11 @@ const HardwareCheckSchema = mongoose.Schema(
 		errors: {
 			type: [errorSchema],
 			default: () => [],
+		},
+
+		capture: {
+			type: captureSchema,
+			default: () => ({}),
 		},
 	},
 	{ timestamps: true }

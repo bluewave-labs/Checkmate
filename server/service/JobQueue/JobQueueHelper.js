@@ -254,14 +254,8 @@ class JobQueueHelper {
 
 				// Get the current status
 				await job.updateProgress(30);
-				const networkResponse = await this.networkService.getStatus(job);
-				if (
-					job.data.type === "distributed_http" ||
-					job.data.type === "distributed_test"
-				) {
-					await job.updateProgress(100);
-					return true;
-				}
+				const monitor = job.data;
+				const networkResponse = await this.networkService.getStatus(monitor);
 
 				// If the network response is not found, we're done
 				if (!networkResponse) {
@@ -271,14 +265,17 @@ class JobQueueHelper {
 
 				// Handle status change
 				await job.updateProgress(60);
-				const { monitor, statusChanged, prevStatus } =
-					await this.statusService.updateStatus(networkResponse);
+				const {
+					monitor: updatedMonitor,
+					statusChanged,
+					prevStatus,
+				} = await this.statusService.updateStatus(networkResponse);
 				// Handle notifications
 				await job.updateProgress(80);
 				this.notificationService
 					.handleNotifications({
 						...networkResponse,
-						monitor,
+						monitor: updatedMonitor,
 						prevStatus,
 						statusChanged,
 					})
