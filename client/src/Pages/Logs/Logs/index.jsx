@@ -49,7 +49,10 @@ const Logs = () => {
 		{ _id: "debug", name: t("logsPage.logLevelSelect.values.debug") },
 	];
 	return (
-		<Stack>
+		<Stack gap={theme.spacing(4)}>
+			<Box>
+				<Typography variant="body">{t("logsPage.description")}</Typography>
+			</Box>
 			<Stack
 				direction="row"
 				alignItems="center"
@@ -64,6 +67,7 @@ const Logs = () => {
 					}}
 				/>
 			</Stack>
+
 			<Box
 				component="pre"
 				sx={{

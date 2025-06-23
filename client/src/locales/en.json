@@ -756,6 +756,7 @@
 	"selectAll": "Select all",
 	"logsPage": {
 		"title": "Logs",
+		"description": "This page shows the latest 1000 lines of logs from the Checkmate server",
 		"tabs": {
 			"queue": "Job queue",
 			"logs": "Server logs"
@@ -803,16 +804,16 @@
 			"failCountHeader": "Fail count",
 			"failedAtHeader": "Last failed at",
 			"failReasonHeader": "Fail reason"
-		},
-		"export": {
-			"title": "Export Monitors",
-			"success": "Monitors exported successfully!",
-			"failed": "Failed to export monitors"
-		},
-		"monitorActions": {
-			"title": "Export/Import",
-			"import": "Import Monitors",
-			"export": "Export Monitors"
 		}
+	},
+	"export": {
+		"title": "Export Monitors",
+		"success": "Monitors exported successfully!",
+		"failed": "Failed to export monitors"
+	},
+	"monitorActions": {
+		"title": "Export/Import",
+		"import": "Import Monitors",
+		"export": "Export Monitors"
 	}
 }
