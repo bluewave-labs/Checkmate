@@ -29,21 +29,9 @@ services:
     env_file:
       - server.env
     depends_on:
-      - redis
       - mongodb
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-  redis:
-    image: ghcr.io/bluewave-labs/checkmate:redis-demo
-    restart: always
-    volumes:
-      - ./redis/data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 5s
   mongodb:
     image: ghcr.io/bluewave-labs/checkmate:mongo-demo
     restart: always
