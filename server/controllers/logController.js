@@ -15,7 +15,7 @@ class LogController {
 				data: logs,
 			});
 		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMetrics"));
+			next(handleError(error, SERVICE_NAME, "getLogs"));
 			return;
 		}
 	};
