@@ -448,6 +448,8 @@
 	"settingsEmailPassword": "Email password - Password for authentication",
 	"settingsEmailUser": "Email user - Username for authentication, overrides email address if specified",
 	"settingsEmailFieldResetLabel": "Password is set. Click Reset to change it.",
+	"settingsEmailTransportLinkDescription": "This builds an SMTP transport for NodeMailer",
+	"settingsEmailTransportLinkText": "See specifications here",
 	"state": "State",
 	"statusBreadCrumbsStatusPages": "Status Pages",
 	"statusBreadCrumbsDetails": "Details",
