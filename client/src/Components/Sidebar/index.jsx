@@ -8,7 +8,6 @@ import {
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
-	ListSubheader,
 	Menu,
 	MenuItem,
 	Stack,
@@ -39,6 +38,7 @@ import Docs from "../../assets/icons/docs.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
 import Discussions from "../../assets/icons/discussions.svg?react";
 import Notifications from "../../assets/icons/notifications.svg?react";
+import Logs from "../../assets/icons/logs.svg?react";
 
 import "./index.css";
 
@@ -64,6 +64,7 @@ const getMenu = (t) => [
 
 	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
 	{ name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
+	{ name: t("menu.logs"), path: "logs", icon: <Logs /> },
 
 	{
 		name: t("menu.settings"),

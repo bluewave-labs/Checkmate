@@ -36,6 +36,9 @@ import StatusPageController from "./controllers/statusPageController.js";
 import QueueRoutes from "./routes/queueRoute.js";
 import QueueController from "./controllers/queueController.js";
 
+import LogRoutes from "./routes/logRoutes.js";
+import LogController from "./controllers/logController.js";
+
 import NotificationRoutes from "./routes/notificationRoute.js";
 import NotificationController from "./controllers/notificationController.js";
 
@@ -294,6 +297,8 @@ const startApp = async () => {
 		ServiceRegistry.get(StringService.SERVICE_NAME)
 	);
 
+	const logController = new LogController(logger);
+
 	const statusPageController = new StatusPageController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
 		ServiceRegistry.get(StringService.SERVICE_NAME)
@@ -320,6 +325,7 @@ const startApp = async () => {
 		maintenanceWindowController
 	);
 	const queueRoutes = new QueueRoutes(queueController);
+	const logRoutes = new LogRoutes(logController);
 	const statusPageRoutes = new StatusPageRoutes(statusPageController);
 
 	const notificationRoutes = new NotificationRoutes(notificationController);
@@ -372,6 +378,7 @@ const startApp = async () => {
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
 	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
 	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
+	app.use("/api/v1/logs", verifyJWT, logRoutes.getRouter());
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());

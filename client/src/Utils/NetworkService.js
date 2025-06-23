@@ -1044,6 +1044,14 @@ class NetworkService {
 		});
 		return response;
 	}
+
+	async getLogs() {
+		return this.axiosInstance.get(`/logs`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }
 
 export default NetworkService;

@@ -407,6 +407,7 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
 		MuiTab: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -475,6 +476,8 @@ const baseTheme = (palette) => ({
 		MuiTabs: {
 			styleOverrides: {
 				root: ({ theme }) => ({
+					height: "34px",
+					minHeight: "34px",
 					display: "inline-flex",
 					borderRadius: 0,
 					"& .MuiTabs-indicator": {

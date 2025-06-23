@@ -429,6 +429,7 @@
 		"statusPages": "Status pages",
 		"maintenance": "Maintenance",
 		"integrations": "Integrations",
+		"logs": "Logs",
 		"settings": "Settings",
 		"support": "Support",
 		"discussions": "Discussions",
@@ -755,5 +756,67 @@
 	"settingsEmailSecure": "Secure - Use SSL",
 	"settingsEmailPool": "Pool - Enable connection pooling",
 	"sendTestNotifications": "Send test notifications",
-	"selectAll": "Select all"
+	"selectAll": "Select all",
+	"logsPage": {
+		"title": "Logs",
+		"description": "This page shows the latest 1000 lines of logs from the Checkmate server",
+		"tabs": {
+			"queue": "Job queue",
+			"logs": "Server logs"
+		},
+		"toast": {
+			"fetchLogsSuccess": "Logs fetched successfully"
+		},
+		"logLevelSelect": {
+			"title": "Log level",
+			"values": {
+				"all": "All",
+				"info": "Info",
+				"warn": "Warn",
+				"error": "Error",
+				"debug": "Debug"
+			}
+		}
+	},
+	"queuePage": {
+		"title": "Queue",
+		"refreshButton": "Refresh",
+		"flushButton": "Flush queue",
+		"jobTable": {
+			"title": "Jobs currently in queue",
+			"idHeader": "Monitor ID",
+			"urlHeader": "URL",
+			"typeHeader": "Type",
+			"activeHeader": "Active",
+			"lockedAtHeader": "Locked at",
+			"runCountHeader": "Run count",
+			"failCountHeader": "Fail count",
+			"lastRunHeader": "Last run at",
+			"lastFinishedAtHeader": "Last finished at",
+			"lastRunTookHeader": "Last run took"
+		},
+		"metricsTable": {
+			"title": "Queue metrics",
+			"metricHeader": "Metric",
+			"valueHeader": "Value"
+		},
+		"failedJobTable": {
+			"title": "Failed jobs",
+			"monitorIdHeader": "Monitor ID",
+			"monitorUrlHeader": "Monitor URL",
+			"failCountHeader": "Fail count",
+			"failedAtHeader": "Last failed at",
+			"failReasonHeader": "Fail reason"
+		}
+	},
+	"export": {
+		"title": "Export Monitors",
+		"success": "Monitors exported successfully!",
+		"failed": "Failed to export monitors"
+	},
+	"monitorActions": {
+		"title": "Export/Import",
+		"import": "Import Monitors",
+		"export": "Export Monitors"
+	}
 }
