@@ -8,7 +8,6 @@ import SettingsPagespeed from "./SettingsPagespeed";
 import SettingsDemoMonitors from "./SettingsDemoMonitors";
 import SettingsAbout from "./SettingsAbout";
 import SettingsEmail from "./SettingsEmail";
-import SettingsDev from "./SettingsDev";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "../../Validation/validation";
@@ -209,10 +208,7 @@ const Settings = () => {
 				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
 				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
-			<SettingsDev
-				isAdmin={isAdmin}
-				HEADER_SX={HEADING_SX}
-			/>
+
 			<SettingsAbout />
 			<Stack
 				direction="row"

@@ -30,9 +30,6 @@
 	"settingsRemoveAllMonitorsDialogTitle": "Do you want to remove all monitors?",
 	"settingsRemoveAllMonitorsDialogConfirm": "Yes, remove all monitors",
 	"settingsAbout": "About",
-	"settingsDev": "Developer",
-	"settingsDevDescription": "Developer settings",
-	"settingsDevViewJobQueueDetails": "View job queue details",
 	"settingsDevelopedBy": "Developed by Bluewave Labs.",
 	"settingsSave": "Save",
 	"settingsSuccessSaved": "Settings saved successfully",
@@ -431,6 +428,7 @@
 		"statusPages": "Status pages",
 		"maintenance": "Maintenance",
 		"integrations": "Integrations",
+		"logs": "Logs",
 		"settings": "Settings",
 		"support": "Support",
 		"discussions": "Discussions",
@@ -756,6 +754,13 @@
 	"settingsEmailPool": "Enable connection pooling: Reuse existing connections to improve performance",
 	"sendTestNotifications": "Send test notifications",
 	"selectAll": "Select all",
+	"logsPage": {
+		"title": "Logs",
+		"tabs": {
+			"queue": "Job queue",
+			"logs": "Logs"
+		}
+	},
 	"queuePage": {
 		"title": "Queue",
 		"refreshButton": "Refresh",
