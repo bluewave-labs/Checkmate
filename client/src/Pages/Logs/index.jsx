@@ -15,7 +15,7 @@ const Logs = () => {
 	const theme = useTheme();
 
 	// Local state
-	const [value, setValue] = useState(1);
+	const [value, setValue] = useState(0);
 
 	// Handlers
 	const handleChange = (event, newValue) => {
@@ -33,8 +33,8 @@ const Logs = () => {
 				<Tab label={t("logsPage.tabs.queue")} />
 				<Tab label={t("logsPage.tabs.logs")} />
 			</Tabs>
-			{value === 0 && <Queue />}
-			{value === 1 && <LogsComponent />}
+			{value === 0 && <LogsComponent />}
+			{value === 1 && <Queue />}
 		</Stack>
 	);
 };
