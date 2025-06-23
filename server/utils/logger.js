@@ -4,6 +4,8 @@ dotenv.config();
 
 class Logger {
 	constructor() {
+		this.logCache = [];
+		this.maxCacheSize = 500;
 		const consoleFormat = format.printf(
 			({ level, message, service, method, details, timestamp, stack }) => {
 				if (message instanceof Object) {
@@ -72,11 +74,17 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	info(config) {
-		this.logger.info(config.message, {
+		const logEntry = {
+			level: "info",
+			message: config.message,
 			service: config.service,
 			method: config.method,
 			details: config.details,
-		});
+			timestamp: new Date().toISOString(),
+		};
+
+		this.cacheLog(logEntry);
+		this.logger.info(config.message, logEntry);
 	}
 
 	/**
@@ -88,11 +96,17 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	warn(config) {
-		this.logger.warn(config.message, {
+		const logEntry = {
+			level: "warn",
+			message: config.message,
 			service: config.service,
 			method: config.method,
 			details: config.details,
-		});
+			timestamp: new Date().toISOString(),
+		};
+
+		this.cacheLog(logEntry);
+		this.logger.warn(config.message, logEntry);
 	}
 
 	/**
@@ -104,12 +118,17 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	error(config) {
-		this.logger.error(config.message, {
+		const logEntry = {
+			level: "error",
+			message: config.message,
 			service: config.service,
 			method: config.method,
 			details: config.details,
-			stack: config.stack,
-		});
+			timestamp: new Date().toISOString(),
+		};
+
+		this.cacheLog(logEntry);
+		this.logger.error(config.message, logEntry);
 	}
 	/**
 	 * Logs a debug message.
@@ -120,12 +139,28 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	debug(config) {
-		this.logger.debug(config.message, {
+		const logEntry = {
+			level: "debug",
+			message: config.message,
 			service: config.service,
 			method: config.method,
 			details: config.details,
-			stack: config.stack,
-		});
+			timestamp: new Date().toISOString(),
+		};
+
+		this.cacheLog(logEntry);
+		this.logger.debug(config.message, logEntry);
+	}
+
+	cacheLog(entry) {
+		this.logCache.push(entry);
+		if (this.logCache.length > this.maxCacheSize) {
+			this.logCache.shift();
+		}
+	}
+
+	getLogs() {
+		return this.logCache;
 	}
 }
 
