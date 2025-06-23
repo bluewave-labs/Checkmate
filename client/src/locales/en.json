@@ -750,11 +750,11 @@
 	},
 	"advancedMatching": "Advanced matching",
 	"settingsEmailTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
-	"settingsEmailIgnoreTLS": "Ignore TLS - Disable STARTTLS",
-	"settingsEmailRequireTLS": "Require TLS - Force STARTTLS",
-	"settingsEmailRejectUnauthorized": "Reject Unauthorized",
-	"settingsEmailSecure": "Secure - Use SSL",
-	"settingsEmailPool": "Pool - Enable connection pooling",
+	"settingsEmailIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
+	"settingsEmailRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
+	"settingsEmailRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
+	"settingsEmailSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
+	"settingsEmailPool": "Enable connection pooling: Reuse existing connections to improve performance",
 	"sendTestNotifications": "Send test notifications",
 	"selectAll": "Select all",
 	"queuePage": {
@@ -786,16 +786,16 @@
 			"failCountHeader": "Fail count",
 			"failedAtHeader": "Last failed at",
 			"failReasonHeader": "Fail reason"
+		},
+		"export": {
+			"title": "Export Monitors",
+			"success": "Monitors exported successfully!",
+			"failed": "Failed to export monitors"
+		},
+		"monitorActions": {
+			"title": "Export/Import",
+			"import": "Import Monitors",
+			"export": "Export Monitors"
 		}
 	},
-	"export": {
-		"title": "Export Monitors",
-		"success": "Monitors exported successfully!",
-		"failed": "Failed to export monitors"
-	},
-	"monitorActions": {
-		"title": "Export/Import",
-		"import": "Import Monitors",
-		"export": "Export Monitors"
-	}
 }
