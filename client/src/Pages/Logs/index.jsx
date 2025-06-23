@@ -30,8 +30,8 @@ const Logs = () => {
 				value={value}
 				onChange={handleChange}
 			>
-				<Tab label={t("logsPage.tabs.queue")} />
 				<Tab label={t("logsPage.tabs.logs")} />
+				<Tab label={t("logsPage.tabs.queue")} />
 			</Tabs>
 			{value === 0 && <LogsComponent />}
 			{value === 1 && <Queue />}
