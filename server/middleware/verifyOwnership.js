@@ -1,15 +1,20 @@
 import logger from "../utils/logger.js";
 import ServiceRegistry from "../service/serviceRegistry.js";
 import StringService from "../service/stringService.js";
+import { ObjectId } from "mongodb";
+
 const SERVICE_NAME = "verifyOwnership";
 
 const verifyOwnership = (Model, paramName) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	return async (req, res, next) => {
 		const userId = req.user._id;
-		const documentId = req.params[paramName];
+		let documentId = req.params[paramName];
 
 		try {
+			if (typeof documentId === "string") {
+				documentId = ObjectId.createFromHexString(documentId);
+			}
 			const doc = await Model.findById(documentId);
 			//If the document is not found, return a 404 error
 			if (!doc) {
