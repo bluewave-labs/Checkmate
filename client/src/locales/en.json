@@ -701,7 +701,7 @@
 		},
 		"pageSpeedSettings": {
 			"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
-			"labelAPiKeySet": "API key is set. Click Reset to change it.",
+			"labelApiKeySet": "API key is set. Click Reset to change it.",
 			"labelApiKey": "PageSpeed API key",
 			"title": "Google PageSpeed API key"
 		},

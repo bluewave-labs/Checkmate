@@ -67,7 +67,7 @@ const SettingsPagespeed = ({
 
 				{isApiKeySet === true && apiKeyHasBeenReset === false && (
 					<Box>
-						<Typography>{t("settingsPage.pageSpeedSettings.labelAPiKeySet")}</Typography>
+						<Typography>{t("settingsPage.pageSpeedSettings.labelApiKeySet")}</Typography>
 						<Button
 							onClick={() => {
 								setApiKey("");
