@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import logger from "../../utils/logger.js";
+import Monitor from "./Monitor.js";
+import Team from "./Team.js";
+import Notification from "./Notification.js";
 
 const UserSchema = mongoose.Schema(
 	{
@@ -72,6 +75,24 @@ UserSchema.pre("findOneAndUpdate", function (next) {
 	}
 
 	next();
+});
+
+UserSchema.pre("findOneAndDelete", async function (next) {
+	try {
+		const userToDelete = await this.model.findOne(this.getFilter());
+		if (userToDelete.role.includes("superadmin")) {
+			await Team.deleteOne({ _id: userToDelete.teamId });
+			await Monitor.deleteMany({ userId: userToDelete._id });
+			await this.model.deleteMany({
+				teamId: userToDelete.teamId,
+				_id: { $ne: userToDelete._id },
+			});
+			await Notification.deleteMany({ teamId: userToDelete.teamId });
+		}
+		next();
+	} catch (error) {
+		next(error);
+	}
 });
 
 UserSchema.methods.comparePassword = async function (submittedPassword) {

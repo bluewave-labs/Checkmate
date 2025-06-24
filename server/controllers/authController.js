@@ -423,13 +423,6 @@ class AuthController {
 							await this.jobQueue.deleteJob(monitor);
 						})
 					));
-
-				// 3. Delete team
-				await this.db.deleteTeam(user.teamId);
-				// 4. Delete all other team members
-				await this.db.deleteAllOtherUsers();
-				// 5. Delete each monitor
-				await this.db.deleteMonitorsByUserId(user._id);
 			}
 			// 6. Delete the user by id
 			await this.db.deleteUser(user._id);
