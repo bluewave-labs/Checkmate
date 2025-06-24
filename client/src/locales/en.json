@@ -765,6 +765,14 @@
 	"statusPageStatusNoPage": "There's no status page here.",
 	"statusPageStatusNotPublic": "This status page is not public.",
 	"statusPageStatusServiceStatus": "Service status",
+	"statusPage": {
+		"deleteSuccess": "Status page deleted successfully",
+		"deleteFailed": "Failed to delete status page",
+		"createSuccess": "Status page created successfully",
+		"updateSuccess": "Status page updated successfully",
+		"generalSettings": "General settings",
+		"contents": "Contents"
+	},
 	"submit": "Submit",
 	"teamPanel": {
 		"cancel": "Cancel",
