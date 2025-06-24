@@ -111,7 +111,7 @@ class AuthController {
 						});
 					});
 			} catch (error) {
-				logger.warn({
+				this.logger.warn({
 					message: error.message,
 					service: SERVICE_NAME,
 					method: "registerUser",
