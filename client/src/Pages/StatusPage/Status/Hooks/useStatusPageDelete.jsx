@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { networkService } from "../../../../Utils/NetworkService";
 import { createToast } from "../../../../Utils/toastUtils";
@@ -24,7 +23,9 @@ const useStatusPageDelete = (fetchStatusPage, url) => {
 		try {
 			setIsLoading(true);
 			await networkService.deleteStatusPage({ url });
-			createToast({ body: t("statusPage.deleteSuccess", "Status page deleted successfully") });
+			createToast({
+				body: t("statusPage.deleteSuccess", "Status page deleted successfully"),
+			});
 			return true;
 		} catch (error) {
 			createToast({

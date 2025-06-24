@@ -126,17 +126,17 @@ const CreateStatusPage = () => {
 	};
 
 	/**
- * Handle status page deletion with optimistic UI update
- * Immediately navigates away without waiting for the deletion to complete
- * to prevent unnecessary network requests for the deleted page
- */
-const handleDelete = async () => {
-	setIsDeleteOpen(false);
-	// Start deletion process but don't wait for it
-	deleteStatusPage();
-	// Immediately navigate away to prevent additional fetches for the deleted page
-	navigate("/status");
-};
+	 * Handle status page deletion with optimistic UI update
+	 * Immediately navigates away without waiting for the deletion to complete
+	 * to prevent unnecessary network requests for the deleted page
+	 */
+	const handleDelete = async () => {
+		setIsDeleteOpen(false);
+		// Start deletion process but don't wait for it
+		deleteStatusPage();
+		// Immediately navigate away to prevent additional fetches for the deleted page
+		navigate("/status");
+	};
 
 	const handleSubmit = async () => {
 		let toSubmit = {
@@ -151,9 +151,7 @@ const handleDelete = async () => {
 			const success = await createStatusPage({ form });
 			if (success) {
 				createToast({
-					body: isCreate
-						? t("statusPage.createSuccess")
-						: t("statusPage.updateSuccess"),
+					body: isCreate ? t("statusPage.createSuccess") : t("statusPage.updateSuccess"),
 				});
 				navigate(`/status/uptime/${form.url}`);
 			}
@@ -280,7 +278,10 @@ const handleDelete = async () => {
 				removeLogo={removeLogo}
 				tab={tab}
 				setTab={setTab}
-				TAB_LIST={[t("statusPage.generalSettings", "General settings"), t("statusPage.contents", "Contents")]}
+				TAB_LIST={[
+					t("statusPage.generalSettings", "General settings"),
+					t("statusPage.contents", "Contents"),
+				]}
 				isCreate={isCreate}
 			/>
 			<Stack
