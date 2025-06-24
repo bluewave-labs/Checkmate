@@ -29,7 +29,7 @@ const CreateMonitorHeader = ({ isAdmin, label, isLoading = true, path, bulkPath 
 			>
 				{label || t("createNew")}
 			</Button>
-			{bulkPath && <MonitorActions isLoading={isLoading} />}
+			{/* {bulkPath && <MonitorActions isLoading={isLoading} />} */}
 		</Stack>
 	);
 };
