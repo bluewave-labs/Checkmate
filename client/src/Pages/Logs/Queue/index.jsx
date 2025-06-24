@@ -1,15 +1,14 @@
 // Components
 import Stack from "@mui/material/Stack";
-import Breadcrumbs from "../../Components/Breadcrumbs";
 import JobTable from "./components/JobTable";
-import MetricsTable from "./components/MetricsTable";
+import Metrics from "./components/Metrics";
 import FailedJobTable from "./components/FailedJobTable";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 
 // Utils
 import { useState } from "react";
-import { useFetchQueueData, useFlushQueue } from "../../Hooks/queueHooks";
+import { useFetchQueueData, useFlushQueue } from "../../../Hooks/queueHooks";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 
@@ -23,15 +22,13 @@ const QueueDetails = () => {
 	const [jobs, metrics, isLoading, error] = useFetchQueueData(trigger);
 	const [flushQueue, isFlushing, flushError] = useFlushQueue();
 
-	const BREADCRUMBS = [{ name: t("queuePage.title"), path: "/queue" }];
 	if (isLoading) return <div>Loading...</div>;
 	if (error || flushError) return <div>Error: {error.message}</div>;
 
 	return (
 		<Stack gap={theme.spacing(20)}>
-			<Breadcrumbs list={BREADCRUMBS} />
+			<Metrics metrics={metrics} />
 			<JobTable jobs={jobs} />
-			<MetricsTable metrics={metrics} />
 			<FailedJobTable metrics={metrics} />
 
 			<ButtonGroup

@@ -312,6 +312,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Mostrar mais detalhes na página de status",
 	"showCharts": "Mostrar gráficos",
 	"showUptimePercentage": "Mostrar porcentagem de Uptime",
+	"showAdminLoginLink": "Mostrar o link \"Administrador? Efetue login aqui\" na página de status",
 	"removeLogo": "Remover logo",
 	"statusPageStatus": "Uma página de status pública não está configurada.",
 	"statusPageStatusContactAdmin": "Entre em contato com seu administrador",
@@ -583,6 +584,13 @@
 			},
 			"errors": {
 				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
 			}
 		},
 		"login": {
@@ -709,13 +717,13 @@
 			"integrationKeyLabel": "",
 			"integrationKeyPlaceholder": ""
 		},
-		"genericWebhookSettings": {
+		"discordSettings": {
 			"title": "",
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
 		},
-		"discordSettings": {
+		"webhookSettings": {
 			"title": "",
 			"description": "",
 			"webhookLabel": "",
@@ -740,5 +748,6 @@
 	"settingsEmailRejectUnauthorized": "",
 	"settingsEmailSecure": "",
 	"settingsEmailPool": "",
-	"sendTestNotifications": ""
+	"sendTestNotifications": "",
+	"selectAll": ""
 }

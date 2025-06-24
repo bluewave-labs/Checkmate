@@ -8,6 +8,7 @@ const verifyOwnership = (Model, paramName) => {
 	return async (req, res, next) => {
 		const userId = req.user._id;
 		const documentId = req.params[paramName];
+
 		try {
 			const doc = await Model.findById(documentId);
 			//If the document is not found, return a 404 error
@@ -35,7 +36,7 @@ const verifyOwnership = (Model, paramName) => {
 
 			// If the userID does not match the document's userID, return a 403 error
 			if (userId.toString() !== doc.userId.toString()) {
-				const error = new Error(stringService.verifyOwnerUnauthorized);
+				const error = new Error("Unauthorized");
 				error.status = 403;
 				throw error;
 			}
