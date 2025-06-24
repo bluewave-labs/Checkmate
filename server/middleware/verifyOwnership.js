@@ -6,7 +6,6 @@ const SERVICE_NAME = "verifyOwnership";
 const verifyOwnership = (Model, paramName) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	return async (req, res, next) => {
-		console.log(req.params);
 		const userId = req.user._id;
 		const documentId = req.params[paramName];
 
