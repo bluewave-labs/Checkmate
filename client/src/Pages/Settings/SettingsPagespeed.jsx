@@ -8,7 +8,7 @@ import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornmen
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const SettingsPagespeed = ({
@@ -46,15 +46,17 @@ const SettingsPagespeed = ({
 					component="h1"
 					variant="h2"
 				>
-					{t("pageSpeedApiKeyFieldTitle")}
+					{t("settingsPage.pageSpeedSettings.title")}
 				</Typography>
-				<Typography sx={HEADING_SX}>{t("pageSpeedApiKeyFieldDescription")}</Typography>
+				<Typography sx={HEADING_SX}>
+					{t("settingsPage.pageSpeedSettings.description")}
+				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				{(isApiKeySet === false || apiKeyHasBeenReset === true) && (
 					<TextInput
 						name="pagespeedApiKey"
-						label={t("pageSpeedApiKeyFieldLabel")}
+						label={t("settingsPage.pageSpeedSettings.labelApiKey")}
 						value={apiKey}
 						type={"password"}
 						onChange={handleChange}
@@ -65,7 +67,7 @@ const SettingsPagespeed = ({
 
 				{isApiKeySet === true && apiKeyHasBeenReset === false && (
 					<Box>
-						<Typography>{t("pageSpeedApiKeyFieldResetLabel")}</Typography>
+						<Typography>{t("settingsPage.pageSpeedSettings.labelAPiKeySet")}</Typography>
 						<Button
 							onClick={() => {
 								setApiKey("");
