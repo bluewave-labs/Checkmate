@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import Dialog from "../../../../../Components/Dialog";
 import { networkService } from "../../../../../Utils/NetworkService.js";
 import { usePauseMonitor } from "../../../../../Hooks/monitorHooks";
+import { useTranslation } from "react-i18next";
 
 /**
  * InfrastructureMenu Component
@@ -31,6 +32,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const theme = useTheme();
 	const [pauseMonitor] = usePauseMonitor();
+	const { t } = useTranslation();
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -64,12 +66,16 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 		try {
 			await pauseMonitor({ monitorId: monitor.id });
 			createToast({
-				body: `Monitor ${monitor.isActive ? "paused" : "resumed"} successfully.`,
+				body: t("monitorActions.pauseResumeSuccess", "Monitor {{action}} successfully", {
+					action: monitor.isActive ? t("monitorActions.paused", "paused") : t("monitorActions.resumed", "resumed")
+				}),
 			});
 			updateCallback();
 		} catch (error) {
 			createToast({
-				body: `Failed to ${monitor.isActive ? "pause" : "resume"} monitor.`,
+				body: t("monitorActions.pauseResumeFailed", "Failed to {{action}} monitor", {
+					action: monitor.isActive ? t("pause", "pause") : t("resume", "resume")
+				}),
 			});
 		}
 	};
@@ -79,9 +85,9 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 			await networkService.deleteMonitorById({
 				monitorId: monitor.id,
 			});
-			createToast({ body: "Monitor deleted successfully." });
+			createToast({ body: t("monitorActions.deleteSuccess", "Monitor deleted successfully") });
 		} catch (error) {
-			createToast({ body: "Failed to delete monitor." });
+			createToast({ body: t("monitorActions.deleteFailed", "Failed to delete monitor") });
 		} finally {
 			setIsDialogOpen(false);
 			updateCallback();
@@ -125,13 +131,13 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 					},
 				}}
 			>
-				<MenuItem onClick={() => openDetails(monitor.id)}>Details</MenuItem>
+				<MenuItem onClick={() => openDetails(monitor.id)}>{t("monitorActions.details", "Details")}</MenuItem>
 				{isAdmin && (
-					<MenuItem onClick={() => openConfigure(monitor.id)}>Configure</MenuItem>
+					<MenuItem onClick={() => openConfigure(monitor.id)}>{t("configure", "Configure")}</MenuItem>
 				)}
 				{isAdmin && (
 					<MenuItem onClick={handlePause}>
-						{monitor.isActive ? "Pause" : "Resume"}
+						{monitor.isActive ? t("pause", "Pause") : t("resume", "Resume")}
 					</MenuItem>
 				)}
 				{isAdmin && (
@@ -139,17 +145,17 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 						onClick={openRemove}
 						sx={{ color: theme.palette.error.main }}
 					>
-						Remove
+						{t("remove", "Remove")}
 					</MenuItem>
 				)}
 			</Menu>
 			<Dialog
 				open={isDialogOpen}
 				theme={theme}
-				title="Do you really want to delete this monitor?"
-				description="Once deleted, this monitor cannot be retrieved."
+				title={t("deleteDialogTitle", "Do you really want to delete this monitor?")}
+				description={t("deleteDialogDescription", "Once deleted, this monitor cannot be retrieved.")}
 				onCancel={cancelRemove}
-				confirmationButtonLabel="Delete"
+				confirmationButtonLabel={t("delete", "Delete")}
 				onConfirm={handleRemove}
 				modelTitle="modal-delete-monitor"
 				modelDescription="delete-monitor-confirmation"

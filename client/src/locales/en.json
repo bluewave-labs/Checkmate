@@ -280,6 +280,15 @@
 	"edit": "Edit",
 	"createA": "Create a",
 	"remove": "Remove",
+	"monitorActions": {
+		"details": "Details",
+		"paused": "paused",
+		"resumed": "resumed",
+		"pauseResumeSuccess": "Monitor {{action}} successfully",
+		"pauseResumeFailed": "Failed to {{action}} monitor",
+		"deleteSuccess": "Monitor deleted successfully",
+		"deleteFailed": "Failed to delete monitor"
+	},
 	"maintenanceWindowDescription": "Your pings won't be sent during this time frame",
 	"startTime": "Start time",
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
