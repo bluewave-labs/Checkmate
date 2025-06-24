@@ -1,10 +1,10 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import DataTable from "../../../../Components/Table";
+import DataTable from "../../../../../Components/Table";
 
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
-import { TypeToPathMap } from "../../../../Utils/monitorUtils";
+import { TypeToPathMap } from "../../../../../Utils/monitorUtils";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 

@@ -16,7 +16,6 @@ services:
     ports:
       - "52345:52345"
     depends_on:
-      - redis
       - mongodb
     environment:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
@@ -25,17 +24,6 @@ services:
       - JWT_SECRET=my_secret
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
-  redis:
-    image: ghcr.io/bluewave-labs/checkmate-redis:latest
-    restart: always
-    volumes:
-      - ./redis/data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 5s
   mongodb:
     image: ghcr.io/bluewave-labs/checkmate-mongo:latest
     restart: always

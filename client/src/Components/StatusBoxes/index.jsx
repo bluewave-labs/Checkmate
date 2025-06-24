@@ -4,7 +4,7 @@ import SkeletonLayout from "./skeleton";
 // Utils
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
-const StatusBoxes = ({ shouldRender, flexWrap = "nowrap", children }) => {
+const StatusBoxes = ({ shouldRender = true, flexWrap = "nowrap", children }) => {
 	const theme = useTheme();
 	if (!shouldRender) {
 		return (

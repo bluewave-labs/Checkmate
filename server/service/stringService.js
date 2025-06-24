@@ -436,6 +436,14 @@ class StringService {
 	get testEmailSubject() {
 		return this.translationService.getTranslation("testEmailSubject");
 	}
+
+	get verifyOwnerNotFound() {
+		return this.translationService.getTranslation("verifyOwnerNotFound");
+	}
+
+	get verifyOwnerUnauthorized() {
+		return this.translationService.getTranslation("verifyOwnerUnauthorized");
+	}
 }
 
 export default StringService;

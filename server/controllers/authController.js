@@ -82,7 +82,7 @@ class AuthController {
 			}
 
 			const newUser = await this.db.insertUser({ ...req.body }, req.file);
-			logger.info({
+			this.logger.info({
 				message: this.stringService.authCreateUser,
 				service: SERVICE_NAME,
 				details: newUser._id,
@@ -111,7 +111,7 @@ class AuthController {
 						});
 					});
 			} catch (error) {
-				logger.warn({
+				this.logger.warn({
 					message: error.message,
 					service: SERVICE_NAME,
 					method: "registerUser",
@@ -412,8 +412,7 @@ class AuthController {
 			// 1. Find all the monitors associated with the team ID if superadmin
 
 			const result = await this.db.getMonitorsByTeamId({
-				query: {},
-				params: { teamId: user.teamId.toString() },
+				teamId: user.teamId.toString(),
 			});
 
 			if (user.role.includes("superadmin")) {
