@@ -82,7 +82,7 @@ class AuthController {
 			}
 
 			const newUser = await this.db.insertUser({ ...req.body }, req.file);
-			logger.info({
+			this.logger.info({
 				message: this.stringService.authCreateUser,
 				service: SERVICE_NAME,
 				details: newUser._id,
