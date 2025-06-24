@@ -5,8 +5,15 @@ import { execSync } from "child_process";
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), "");
-	const version =
-		env.VITE_APP_VERSION || execSync("git describe --tags --abbrev=0").toString().trim();
+	let version;
+	try {
+		version =
+			env.VITE_APP_VERSION ||
+			execSync("git describe --tags --abbrev=0").toString().trim();
+	} catch (error) {
+		version = "unknown";
+	}
+
 	return {
 		base: "/",
 		plugins: [svgr(), react()],
