@@ -660,7 +660,6 @@
 	"selectAll": "Select all",
 	"sendTestNotifications": "Send test notifications",
 	"seperateEmails": "You can separate multiple emails with a comma",
-
 	"settingsDisabled": "Disabled",
 	"settingsEmailUser": "Email user - Username for authentication, overrides email address if specified",
 	"settingsFailedToAddDemoMonitors": "Failed to add demo monitors",
@@ -669,7 +668,63 @@
 	"settingsFailedToSave": "Failed to save settings",
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "Developed by Bluewave Labs",
+			"labelVersion": "Version",
+			"title": "About"
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "Add demo monitors",
+			"description": "Add sample monitors for demonstration purposes.",
+			"title": "Demo monitors"
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "Send test e-mail",
+			"description": "Configure the email settings for your system. This is used to send notifications and alerts.",
+			"descriptionTransport": "This builds an SMTP transport for NodeMailer",
+			"labelAddress": "Email address - Used for authentication",
+			"labelConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
+			"labelHost": "Email host - Hostname or IP address to connect to",
+			"labelIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
+			"labelPassword": "Email password - Password for authentication",
+			"labelPasswordSet": "Password is set. Click Reset to change it.",
+			"labelPool": "Enable connection pooling: Reuse existing connections to improve performance",
+			"labelPort": "Email port - Port to connect to",
+			"labelRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
+			"labelRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
+			"labelSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
+			"labelTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
+			"labelUser": "Email user - Username for authentication, overrides email address if specified",
+			"linkTransport": "See specifications here",
+			"placeholderUser": "Leave empty if not required",
+			"title": "Email"
+		},
+		"pageSpeedSettings": {
+			"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
+			"labelAPiKeySet": "API key is set. Click Reset to change it.",
+			"labelApiKey": "PageSpeed API key",
+			"title": "Google PageSpeed API key"
+		},
 		"saveButtonLabel": "Save",
+		"statsSettings": {
+			"clearAllStatsButton": "Clear all stats",
+			"clearAllStatsDescription": "Clear all stats. This is irreversible.",
+			"clearAllStatsDialogConfirm": "Yes, clear all stats",
+			"clearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
+			"clearAllStatsDialogTitle": "Do you want to clear all stats?",
+			"description": "Define how long you want to retain historical data. You can also clear all existing data.",
+			"labelTTL": "The days you want to keep monitoring history.",
+			"labelTTLOptional": "0 for infinite",
+			"title": "Monitor history"
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "Remove all monitors",
+			"description": "Remove all monitors from your system.",
+			"dialogConfirm": "Yes, remove all monitors",
+			"dialogDescription": "Once removed, the monitors cannot be retrieved.",
+			"dialogTitle": "Do you want to remove all monitors?",
+			"title": "System reset"
+		},
 		"timezoneSettings": {
 			"description": "Select the timezone used to display dates and times throughout the application.",
 			"label": "Display timezone",
@@ -682,68 +737,12 @@
 			"labelTheme": "Theme mode",
 			"title": "Appearance"
 		},
-		"pageSpeedSettings": {
-			"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
-			"labelApiKey": "PageSpeed API key",
-			"labelAPiKeySet": "API key is set. Click Reset to change it.",
-			"title": "Google PageSpeed API key"
-		},
 		"urlSettings": {
 			"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 			"label": "Display IP/URL on status page",
-			"title": "Monitor IP/URL on Status Page",
+			"selectDisabled": "Disabled",
 			"selectEnabled": "Enabled",
-			"selectDisabled": "Disabled"
-		},
-		"statsSettings": {
-			"description": "Define how long you want to retain historical data. You can also clear all existing data.",
-			"labelTTL": "The days you want to keep monitoring history.",
-			"title": "Monitor history",
-			"labelTTLOptional": "0 for infinite",
-			"clearAllStatsDescription": "Clear all stats. This is irreversible.",
-			"clearAllStatsButton": "Clear all stats",
-			"clearAllStatsDialogTitle": "Do you want to clear all stats?",
-			"clearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
-			"clearAllStatsDialogConfirm": "Yes, clear all stats"
-		},
-		"demoMonitorsSettings": {
-			"title": "Demo monitors",
-			"description": "Add sample monitors for demonstration purposes.",
-			"buttonAddMonitors": "Add demo monitors"
-		},
-		"systemResetSettings": {
-			"title": "System reset",
-			"description": "Remove all monitors from your system.",
-			"buttonRemoveAllMonitors": "Remove all monitors",
-			"dialogTitle": "Do you want to remove all monitors?",
-			"dialogDescription": "Once removed, the monitors cannot be retrieved.",
-			"dialogConfirm": "Yes, remove all monitors"
-		},
-		"emailSettings": {
-			"title": "Email",
-			"description": "Configure the email settings for your system. This is used to send notifications and alerts.",
-			"labelHost": "Email host - Hostname or IP address to connect to",
-			"labelPort": "Email port - Port to connect to",
-			"labelUser": "Email user - Username for authentication, overrides email address if specified",
-			"placeholderUser": "Leave empty if not required",
-			"labelAddress": "Email address - Used for authentication",
-			"labelPassword": "Email password - Password for authentication",
-			"labelPasswordSet": "Password is set. Click Reset to change it.",
-			"labelTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
-			"labelConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
-			"labelSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
-			"labelPool": "Enable connection pooling: Reuse existing connections to improve performance",
-			"labelIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
-			"labelRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
-			"labelRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
-			"descriptionTransport": "This builds an SMTP transport for NodeMailer",
-			"linkTransport": "See specifications here",
-			"buttonSendTestEmail": "Send test e-mail"
-		},
-		"aboutSettings": {
-			"title": "About",
-			"labelVersion": "Version",
-			"labelDevelopedBy": "Developed by Bluewave Labs"
+			"title": "Monitor IP/URL on Status Page"
 		}
 	},
 	"settingsStatsCleared": "Stats cleared successfully",
