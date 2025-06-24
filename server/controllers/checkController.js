@@ -58,13 +58,15 @@ class CheckController {
 
 		try {
 			const { monitorId } = req.params;
-			let { type, sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
+			let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } =
+				req.query;
 			const result = await this.db.getChecksByMonitor({
 				monitorId,
 				type,
 				sortOrder,
 				dateRange,
 				filter,
+				ack,
 				page,
 				rowsPerPage,
 				status,
@@ -88,13 +90,14 @@ class CheckController {
 			return;
 		}
 		try {
-			let { sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
+			let { sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = req.query;
 			const { teamId } = req.user;
 
 			const checkData = await this.db.getChecksByTeam({
 				sortOrder,
 				dateRange,
 				filter,
+				ack,
 				page,
 				rowsPerPage,
 				teamId,
@@ -109,7 +112,7 @@ class CheckController {
 		}
 	};
 
-	updateCheckStatus = async (req, res, next) => {
+	ackCheck = async (req, res, next) => {
 		try {
 			await updateCheckStatusBodyValidation.validateAsync(req.body);
 		} catch (error) {
@@ -120,19 +123,20 @@ class CheckController {
 		try {
 			const { checkId } = req.params;
 			const { ack } = req.body;
+			const { teamId } = req.user;
 
-			const updatedCheck = await this.db.updateCheckStatus(checkId, ack);
+			const updatedCheck = await this.db.ackCheck(checkId, teamId, ack);
 
 			return res.success({
 				msg: this.stringService.checkUpdateStatus,
 				data: updatedCheck,
 			});
 		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "updateCheckStatus"));
+			next(handleError(error, SERVICE_NAME, "ackCheck"));
 		}
 	};
 
-	updateAllChecksStatus = async (req, res, next) => {
+	ackAllChecks = async (req, res, next) => {
 		try {
 			await updateCheckStatusParamValidation.validateAsync(req.params);
 			await updateAllChecksStatusBodyValidation.validateAsync(req.body);
@@ -142,17 +146,18 @@ class CheckController {
 		}
 
 		try {
-			const { monitorId, target } = req.params;
+			const { monitorId, path } = req.params;
 			const { ack } = req.body;
+			const { teamId } = req.user;
 
-			const updatedChecks = await this.db.updateAllChecksStatus(monitorId, ack, target);
+			const updatedChecks = await this.db.ackAllChecks(monitorId, teamId, ack, path);
 
 			return res.success({
 				msg: this.stringService.checkUpdateStatus,
 				data: updatedChecks,
 			});
 		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "updateAllChecksStatus"));
+			next(handleError(error, SERVICE_NAME, "ackAllChecks"));
 		}
 	};
 

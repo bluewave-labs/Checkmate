@@ -294,8 +294,8 @@ const updateCheckStatusBodyValidation = joi.object({
 });
 
 const updateCheckStatusParamValidation = joi.object({
-	monitorId: joi.string(),
-	target: joi.string().allow("monitor", "team"),
+	monitorId: joi.string().optional(),
+	path: joi.string().valid("monitor", "team").required(),
 });
 
 const updateAllChecksStatusBodyValidation = joi.object({
@@ -312,6 +312,7 @@ const getChecksQueryValidation = joi.object({
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
 	filter: joi.string().valid("all", "down", "resolve"),
+	ack: joi.boolean(),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
 	status: joi.boolean(),
@@ -324,6 +325,7 @@ const getTeamChecksQueryValidation = joi.object({
 	limit: joi.number(),
 	dateRange: joi.string().valid("hour", "day", "week", "month", "all"),
 	filter: joi.string().valid("all", "down", "resolve"),
+	ack: joi.boolean(),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
 	status: joi.boolean(),

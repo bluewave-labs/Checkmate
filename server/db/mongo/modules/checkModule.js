@@ -63,6 +63,7 @@ const getChecksByMonitor = async ({
 	sortOrder,
 	dateRange,
 	filter,
+	ack,
 	page,
 	rowsPerPage,
 	status,
@@ -75,6 +76,7 @@ const getChecksByMonitor = async ({
 		const matchStage = {
 			monitorId: ObjectId.createFromHexString(monitorId),
 			...(typeof status !== "undefined" && { status }),
+			...(typeof ack !== "undefined" && { ack: ack === "true" ? true : false }),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -153,6 +155,7 @@ const getChecksByTeam = async ({
 	sortOrder,
 	dateRange,
 	filter,
+	ack,
 	page,
 	rowsPerPage,
 	teamId,
@@ -165,6 +168,7 @@ const getChecksByTeam = async ({
 		const matchStage = {
 			teamId: ObjectId.createFromHexString(teamId),
 			status: status,
+			...(typeof ack !== "undefined" && { ack: ack === "true" ? true : false }),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -242,14 +246,15 @@ const getChecksByTeam = async ({
  * Update the acknowledgment status of a check
  * @async
  * @param {string} checkId - The ID of the check to update
+ * @param {string} teamId - The ID of the team
  * @param {boolean} ack - The acknowledgment status to set
  * @returns {Promise<Check>}
  * @throws {Error}
  */
-const updateCheckStatus = async (checkId, ack) => {
+const ackCheck = async (checkId, teamId, ack) => {
 	try {
 		const updatedCheck = await Check.findOneAndUpdate(
-			{ _id: checkId },
+			{ _id: checkId, teamId: teamId },
 			{ $set: { ack, ackAt: new Date() } },
 			{ new: true }
 		);
@@ -261,7 +266,7 @@ const updateCheckStatus = async (checkId, ack) => {
 		return updatedCheck;
 	} catch (error) {
 		error.service = SERVICE_NAME;
-		error.method = "updateCheckStatus";
+		error.method = "ackCheck";
 		throw error;
 	}
 };
@@ -271,20 +276,20 @@ const updateCheckStatus = async (checkId, ack) => {
  * @async
  * @param {string} id - The monitor ID or team ID
  * @param {boolean} ack - The acknowledgment status to set
- * @param {string} target - The target type ('monitor' or 'team')
+ * @param {string} path - The path type ('monitor' or 'team')
  * @returns {Promise<number>}
  * @throws {Error}
  */
-const updateAllChecksStatus = async (id, ack, target) => {
+const ackAllChecks = async (monitorId, teamId, ack, path) => {
 	try {
 		const updatedChecks = await Check.updateMany(
-			target === "monitor" ? { monitorId: id } : { teamId: id },
+			path === "monitor" ? { monitorId } : { teamId },
 			{ $set: { ack, ackAt: new Date() } }
 		);
 		return updatedChecks.modifiedCount;
 	} catch (error) {
 		error.service = SERVICE_NAME;
-		error.method = "updateAllChecksStatus";
+		error.method = "ackAllChecks";
 		throw error;
 	}
 };
@@ -370,8 +375,8 @@ export {
 	createChecks,
 	getChecksByMonitor,
 	getChecksByTeam,
-	updateCheckStatus,
-	updateAllChecksStatus,
+	ackCheck,
+	ackAllChecks,
 	deleteChecks,
 	deleteChecksByTeamId,
 	updateChecksTTL,

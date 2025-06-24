@@ -20,9 +20,9 @@ class CheckRoutes {
 
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
 
-		this.router.put("/:checkId", this.checkController.updateCheckStatus);
+		this.router.put("/:checkId", this.checkController.ackCheck);
 
-		this.router.put("/:monitorId/:target", this.checkController.updateAllChecksStatus);
+		this.router.put("/:path/:monitorId?", this.checkController.ackAllChecks);
 
 		this.router.post(
 			"/:monitorId",
