@@ -275,6 +275,10 @@
 	"date&Time": "Date & Time",
 	"type": "Type",
 	"statusPageName": "Status page name",
+	"statusPage": {
+		"deleteSuccess": "Status page deleted successfully",
+		"deleteFailed": "Failed to delete status page"
+	},
 	"publicURL": "Public URL",
 	"repeat": "Repeat",
 	"edit": "Edit",

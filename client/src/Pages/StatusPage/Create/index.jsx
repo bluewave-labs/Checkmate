@@ -126,11 +126,18 @@ const CreateStatusPage = () => {
 		setProgress({ value: 0, isLoading: false });
 	};
 
-	const handleDelete = () => {
-		deleteStatusPage();
-		setIsDeleteOpen(false);
-		navigate("/status");
-	};
+	/**
+ * Handle status page deletion with optimistic UI update
+ * Immediately navigates away without waiting for the deletion to complete
+ * to prevent unnecessary network requests for the deleted page
+ */
+const handleDelete = async () => {
+	setIsDeleteOpen(false);
+	// Start deletion process but don't wait for it
+	deleteStatusPage();
+	// Immediately navigate away to prevent additional fetches for the deleted page
+	navigate("/status");
+};
 
 	const handleSubmit = async () => {
 		let toSubmit = {
