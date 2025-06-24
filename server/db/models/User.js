@@ -80,6 +80,7 @@ UserSchema.pre("findOneAndUpdate", function (next) {
 UserSchema.pre("findOneAndDelete", async function (next) {
 	try {
 		const userToDelete = await this.model.findOne(this.getFilter());
+		if (!userToDelete) return next();
 		if (userToDelete.role.includes("superadmin")) {
 			await Team.deleteOne({ _id: userToDelete.teamId });
 			await Monitor.deleteMany({ userId: userToDelete._id });
