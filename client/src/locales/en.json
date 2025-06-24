@@ -277,7 +277,11 @@
 	"statusPageName": "Status page name",
 	"statusPage": {
 		"deleteSuccess": "Status page deleted successfully",
-		"deleteFailed": "Failed to delete status page"
+		"deleteFailed": "Failed to delete status page",
+		"createSuccess": "Status page created successfully",
+		"updateSuccess": "Status page updated successfully",
+		"generalSettings": "General settings",
+		"contents": "Contents"
 	},
 	"publicURL": "Public URL",
 	"repeat": "Repeat",

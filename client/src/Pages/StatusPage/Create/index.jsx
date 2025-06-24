@@ -19,8 +19,6 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
 //Constants
-const TAB_LIST = ["General settings", "Contents"];
-
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
 	["monitors", "showUptimePercentage", "showCharts"],
@@ -153,8 +151,8 @@ const handleDelete = async () => {
 			if (success) {
 				createToast({
 					body: isCreate
-						? "Status page created successfully"
-						: "Status page updated successfully",
+						? t("statusPage.createSuccess")
+						: t("statusPage.updateSuccess"),
 				});
 				navigate(`/status/uptime/${form.url}`);
 			}
@@ -177,7 +175,7 @@ const handleDelete = async () => {
 
 		// If we get -1, there's an unknown error
 		if (errorTabs[0] === -1) {
-			createToast({ body: "Unknown error" });
+			createToast({ body: t("common.toasts.unknownError") });
 			return;
 		}
 
@@ -239,9 +237,9 @@ const handleDelete = async () => {
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs
 				list={[
-					{ name: "status", path: "/status" },
-					{ name: "details", path: `/status/${url}` },
-					{ name: "configure", path: `/status/create/${url}` },
+					{ name: t("statusBreadCrumbsStatusPages", "Status"), path: "/status" },
+					{ name: t("statusBreadCrumbsDetails", "Details"), path: `/status/${url}` },
+					{ name: t("configure", "Configure"), path: `/status/create/${url}` },
 				]}
 			/>
 			{!isCreate && (
@@ -280,7 +278,7 @@ const handleDelete = async () => {
 				removeLogo={removeLogo}
 				tab={tab}
 				setTab={setTab}
-				TAB_LIST={TAB_LIST}
+				TAB_LIST={[t("statusPage.generalSettings", "General settings"), t("statusPage.contents", "Contents")]}
 				isCreate={isCreate}
 			/>
 			<Stack
