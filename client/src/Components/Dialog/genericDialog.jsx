@@ -9,24 +9,24 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 	const ariaDescribedBy = description?.length > 0 ? descriptionId : "";
 
 	const dialogAnchor = useContext(DialogAnchorContext)?.current;
-	
+
 	useEffect(() => {
 		const scrollable = document.body.scrollHeight > window.innerHeight;
 
 		if (open) {
-			document.body.style.overflow = 'hidden';
+			document.body.style.overflow = "hidden";
 
-			if (scrollable){
-				document.documentElement.style.scrollbarGutter = 'stable';
+			if (scrollable) {
+				document.documentElement.style.scrollbarGutter = "stable";
 			}
 		} else {
-			document.body.style.overflow = 'unset';
-			document.documentElement.style.scrollbarGutter = 'unset';
+			document.body.style.overflow = "unset";
+			document.documentElement.style.scrollbarGutter = "unset";
 		}
 
 		return () => {
-			document.body.style.overflow = 'unset';
-			document.documentElement.style.scrollbarGutter = 'unset';
+			document.body.style.overflow = "unset";
+			document.documentElement.style.scrollbarGutter = "unset";
 		};
 	}, [open]);
 
@@ -48,7 +48,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 				top: "unset",
 				left: "50%",
 				right: "unset",
-				bottom: "unset"
+				bottom: "unset",
 			}}
 		>
 			<Stack
@@ -88,7 +88,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 				)}
 				{children}
 			</Stack>
-		</Modal >
+		</Modal>
 	);
 };
 

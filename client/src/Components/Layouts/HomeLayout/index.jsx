@@ -20,7 +20,7 @@ const HomeLayout = () => {
 					className="home-content-wrapper"
 					ref={dialogAnchorRef}
 					sx={{
-						position: "relative"
+						position: "relative",
 					}}
 				>
 					<Outlet />
