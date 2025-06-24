@@ -2,7 +2,9 @@ import { Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
 import multer from "multer";
 import { fetchMonitorCertificate } from "../controllers/controllerUtils.js";
-
+import Monitor from "../db/models/Monitor.js";
+import { verifyOwnership } from "../middleware/verifyOwnership.js";
+import { verifyTeamAccess } from "../middleware/verifyTeamAccess.js";
 const upload = multer({
 	storage: multer.memoryStorage(), // Store file in memory as Buffer
 });
@@ -62,6 +64,7 @@ class MonitorRoutes {
 
 		this.router.delete(
 			"/:monitorId",
+			verifyOwnership(Monitor, "monitorId"),
 			isAllowed(["admin", "superadmin"]),
 			this.monitorController.deleteMonitor
 		);
@@ -74,6 +77,7 @@ class MonitorRoutes {
 
 		this.router.put(
 			"/:monitorId",
+			verifyTeamAccess(Monitor, "monitorId"),
 			isAllowed(["admin", "superadmin"]),
 			this.monitorController.editMonitor
 		);
