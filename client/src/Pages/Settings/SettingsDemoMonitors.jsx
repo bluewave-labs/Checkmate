@@ -32,7 +32,6 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 					<Typography sx={HEADER_SX}>{t("settingsDemoMonitorsDescription")}</Typography>
 				</Box>
 				<Box>
-					<Typography>{t("settingsAddDemoMonitors")}</Typography>
 					<Button
 						variant="contained"
 						color="accent"
@@ -64,7 +63,6 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 					</Typography>
 				</Box>
 				<Box>
-					<Typography>{t("settingsRemoveAllMonitors")}</Typography>
 					<Button
 						variant="contained"
 						color="error"

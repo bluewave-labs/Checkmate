@@ -4,6 +4,8 @@ import ConfigBox from "../../Components/ConfigBox";
 import TextInput from "../../Components/Inputs/TextInput";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import { Switch } from "@mui/material";
+import TextLink from "../../Components/TextLink";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
@@ -12,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
 import { useSendTestEmail } from "../../Hooks/useSendTestEmail";
 import { createToast } from "../../Utils/toastUtils";
-import { Switch } from "@mui/material";
 
 const SettingsEmail = ({
 	isAdmin,
@@ -212,37 +213,75 @@ const SettingsEmail = ({
 							gap: theme.spacing(4),
 						}}
 					>
-						<Typography>{t("settingsEmailSecure")}</Typography>
-						<Switch
-							name="systemEmailSecure"
-							checked={systemEmailSecure}
-							onChange={handleChange}
+						{[
+							["settingsEmailSecure", "systemEmailSecure", systemEmailSecure],
+							["settingsEmailPool", "systemEmailPool", systemEmailPool],
+							["settingsEmailIgnoreTLS", "systemEmailIgnoreTLS", systemEmailIgnoreTLS],
+							["settingsEmailRequireTLS", "systemEmailRequireTLS", systemEmailRequireTLS],
+							[
+								"settingsEmailRejectUnauthorized",
+								"systemEmailRejectUnauthorized",
+								systemEmailRejectUnauthorized,
+							],
+						].map(([labelKey, name, value]) => (
+							<Box
+								key={name}
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "space-between",
+								}}
+							>
+								<Typography>{t(labelKey)}</Typography>
+								<Switch
+									name={name}
+									checked={value}
+									onChange={handleChange}
+								/>
+							</Box>
+						))}
+
+						<TextLink
+							text={t("settingsEmailTransportLinkDescription")}
+							linkText={t("settingsEmailTransportLinkText")}
+							href="https://nodemailer.com/smtp"
+							target="_blank"
 						/>
-						<Typography>{t("settingsEmailPool")}</Typography>
-						<Switch
-							name="systemEmailPool"
-							checked={systemEmailPool}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailIgnoreTLS")}</Typography>
-						<Switch
-							name="systemEmailIgnoreTLS"
-							checked={systemEmailIgnoreTLS}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailRequireTLS")}</Typography>
-						<Switch
-							name="systemEmailRequireTLS"
-							checked={systemEmailRequireTLS}
-							onChange={handleChange}
-						/>
-						<Typography>{t("settingsEmailRejectUnauthorized")}</Typography>
-						<Switch
-							name="systemEmailRejectUnauthorized"
-							checked={systemEmailRejectUnauthorized}
-							onChange={handleChange}
-						/>
+						<Box
+							component={"pre"}
+							sx={{
+								fontFamily: "monospace",
+								p: 2,
+								borderRadius: 1,
+								overflow: "auto",
+							}}
+						>
+							<code>
+								{JSON.stringify(
+									{
+										host: systemEmailHost,
+										port: systemEmailPort,
+										secure: systemEmailSecure,
+										auth: {
+											user: systemEmailUser || systemEmailAddress,
+											pass: "<your_password>",
+										},
+										name: systemEmailConnectionHost || "localhost",
+										pool: systemEmailPool,
+										tls: {
+											rejectUnauthorized: systemEmailRejectUnauthorized,
+											ignoreTLS: systemEmailIgnoreTLS,
+											requireTLS: systemEmailRequireTLS,
+											servername: systemEmailTLSServername,
+										},
+									},
+									null,
+									2
+								)}
+							</code>
+						</Box>
 					</Box>
+
 					<Box>
 						{systemEmailHost &&
 							systemEmailPort &&

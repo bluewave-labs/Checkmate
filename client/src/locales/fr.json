@@ -23,9 +23,7 @@
 	"settingsClearAllStatsDialogConfirm": "Oui, effacer les stats",
 	"settingsDemoMonitors": "",
 	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitors": "",
 	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitors": "",
 	"settingsRemoveAllMonitorsButton": "",
 	"settingsRemoveAllMonitorsDialogTitle": "",
 	"settingsRemoveAllMonitorsDialogConfirm": "",
@@ -583,6 +581,13 @@
 			},
 			"errors": {
 				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
 			}
 		},
 		"login": {
@@ -709,13 +714,13 @@
 			"integrationKeyLabel": "",
 			"integrationKeyPlaceholder": ""
 		},
-		"genericWebhookSettings": {
+		"discordSettings": {
 			"title": "",
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
 		},
-		"discordSettings": {
+		"webhookSettings": {
 			"title": "",
 			"description": "",
 			"webhookLabel": "",
@@ -740,5 +745,6 @@
 	"settingsEmailRejectUnauthorized": "",
 	"settingsEmailSecure": "",
 	"settingsEmailPool": "",
-	"sendTestNotifications": ""
+	"sendTestNotifications": "",
+	"selectAll": ""
 }

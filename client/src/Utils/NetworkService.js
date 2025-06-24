@@ -871,6 +871,9 @@ class NetworkService {
 		if (form.showUptimePercentage !== undefined) {
 			fd.append("showUptimePercentage", String(form.showUptimePercentage));
 		}
+		if (form.showAdminLoginLink !== undefined) {
+			fd.append("showAdminLoginLink", String(form.showAdminLoginLink));
+		}
 		form.monitors &&
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
@@ -1021,6 +1024,33 @@ class NetworkService {
 	async editNotification(config) {
 		const { id, notification } = config;
 		return this.axiosInstance.put(`/notifications/${id}`, notification);
+	}
+
+	async getQueueData() {
+		return this.axiosInstance.get(`/queue/all-metrics`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async flushQueue() {
+		return this.axiosInstance.post(`/queue/flush`);
+	}
+
+	async exportMonitors() {
+		const response = await this.axiosInstance.get("/monitors/export", {
+			responseType: "blob",
+		});
+		return response;
+	}
+
+	async getLogs() {
+		return this.axiosInstance.get(`/logs`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	}
 }
 

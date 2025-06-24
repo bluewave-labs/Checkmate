@@ -39,7 +39,7 @@ const PublicStatus = () => {
 	let link = undefined;
 	const isPublic = location.pathname.startsWith("/status/uptime/public");
 	// Public status page
-	if (isPublic) {
+	if (isPublic && statusPage && statusPage.showAdminLoginLink === true) {
 		sx = {
 			paddingTop: theme.spacing(20),
 			paddingLeft: "20vw",

@@ -276,6 +276,10 @@ class StringService {
 		return this.translationService.getTranslation("queueGetMetrics");
 	}
 
+	get queueGetJobs() {
+		return this.translationService.getTranslation("queueGetJobs");
+	}
+
 	get queueAddJob() {
 		return this.translationService.getTranslation("queueAddJob");
 	}
@@ -431,6 +435,14 @@ class StringService {
 
 	get testEmailSubject() {
 		return this.translationService.getTranslation("testEmailSubject");
+	}
+
+	get verifyOwnerNotFound() {
+		return this.translationService.getTranslation("verifyOwnerNotFound");
+	}
+
+	get verifyOwnerUnauthorized() {
+		return this.translationService.getTranslation("verifyOwnerUnauthorized");
 	}
 }
 

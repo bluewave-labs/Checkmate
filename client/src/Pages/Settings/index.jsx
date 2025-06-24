@@ -208,6 +208,7 @@ const Settings = () => {
 				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
 				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
+
 			<SettingsAbout />
 			<Stack
 				direction="row"

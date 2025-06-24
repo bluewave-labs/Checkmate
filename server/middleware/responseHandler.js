@@ -16,7 +16,12 @@ const responseHandler = (req, res, next) => {
 	 * @param {*} [options.data=null] - Response data payload
 	 * @returns {Object} Express response object
 	 */
-	res.success = ({ status = 200, msg = "OK", data = null }) => {
+	res.success = ({ status = 200, msg = "OK", data = null, headers = {} }) => {
+		// Set custom headers if provided
+		Object.entries(headers).forEach(([key, value]) => {
+			res.set(key, value);
+		});
+
 		return res.status(status).json({
 			success: true,
 			msg: msg,
@@ -40,6 +45,21 @@ const responseHandler = (req, res, next) => {
 			data,
 		});
 	};
+
+	/**
+	 * Sends a raw file response (for CSV, PDF, etc.)
+	 * @param {Object} options
+	 * @param {Buffer|string} options.data - The file content
+	 * @param {Object} options.headers - Headers to set (e.g. Content-Type, Content-Disposition)
+	 * @param {number} [options.status=200] - HTTP status code
+	 */
+	res.file = ({ data, headers = {}, status = 200 }) => {
+		Object.entries(headers).forEach(([key, value]) => {
+			res.setHeader(key, value);
+		});
+		return res.status(status).send(data);
+	};
+
 	next();
 };
 
