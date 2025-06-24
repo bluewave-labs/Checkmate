@@ -5,6 +5,19 @@ const verifyTeamAccess = (Model, paramName) => {
 		try {
 			const documentId = req.params[paramName];
 			const doc = await Model.findById(documentId);
+
+			if (!doc) {
+				const error = new Error("Document not found");
+				error.status = 404;
+				throw error;
+			}
+
+			if (!req?.user?.teamId || !doc.teamId) {
+				const error = new Error("Missing team information");
+				error.status = 400;
+				throw error;
+			}
+
 			if (req.user.teamId.toString() === doc.teamId.toString()) {
 				next();
 				return;
