@@ -22,7 +22,11 @@ class CheckRoutes {
 
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
 
-		this.router.put("/:checkId", verifyTeamAccess(Check, "checkId"), this.checkController.ackCheck);
+		this.router.put(
+			"/check/:checkId",
+			verifyTeamAccess(Check, "checkId"),
+			this.checkController.ackCheck
+		);
 
 		this.router.put("/:path/:monitorId?", this.checkController.ackAllChecks);
 

@@ -90,7 +90,7 @@ class CheckController {
 			return;
 		}
 		try {
-			let { sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = req.query;
+			let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = req.query;
 			const { teamId } = req.user;
 
 			const checkData = await this.db.getChecksByTeam({
@@ -101,7 +101,6 @@ class CheckController {
 				page,
 				rowsPerPage,
 				teamId,
-				status,
 			});
 			return res.success({
 				msg: this.stringService.checkGet,

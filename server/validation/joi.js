@@ -328,7 +328,6 @@ const getTeamChecksQueryValidation = joi.object({
 	ack: joi.boolean(),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
-	status: joi.boolean(),
 });
 
 const deleteChecksParamValidation = joi.object({

@@ -72,11 +72,17 @@ const getChecksByMonitor = async ({
 		status = status === "true" ? true : status === "false" ? false : undefined;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
+
+		const ackStage =
+			ack === "true"
+				? { ack: true }
+				: { $or: [{ ack: false }, { ack: { $exists: false } }] };
+
 		// Match
 		const matchStage = {
 			monitorId: ObjectId.createFromHexString(monitorId),
 			...(typeof status !== "undefined" && { status }),
-			...(typeof ack !== "undefined" && { ack: ack === "true" }),
+			...(typeof ack !== "undefined" && ackStage),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -159,16 +165,20 @@ const getChecksByTeam = async ({
 	page,
 	rowsPerPage,
 	teamId,
-	status,
 }) => {
 	try {
-		status = status === "true";
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
+
+		const ackStage =
+			ack === "true"
+				? { ack: true }
+				: { $or: [{ ack: false }, { ack: { $exists: false } }] };
+
 		const matchStage = {
-			teamId: ObjectId.createFromHexString(teamId),
-			status: status,
-			...(typeof ack !== "undefined" && { ack: ack === "true" }),
+			teamId: new ObjectId(teamId),
+			status: false,
+			...(typeof ack !== "undefined" && ackStage),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],

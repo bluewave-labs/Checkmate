@@ -598,7 +598,6 @@ class NetworkService {
 		if (config.ack !== undefined) params.append("ack", config.ack);
 		if (config.page) params.append("page", config.page);
 		if (config.rowsPerPage) params.append("rowsPerPage", config.rowsPerPage);
-		if (config.status !== undefined) params.append("status", config.status);
 		return this.axiosInstance.get(`/checks/team?${params.toString()}`);
 	};
 
@@ -610,12 +609,12 @@ class NetworkService {
 	 * @async
 	 * @param {Object} config - The configuration object.
 	 * @param {string} config.checkId - The ID of the check to update.
-	 * @param {boolean} config.status - The status to update the check to.
+	 * @param {boolean} config.ack - The acknowledgment to update the check to.
 	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
 	 *
 	 */
 	async updateCheckStatus(config) {
-		return this.axiosInstance.put(`/checks/${config.checkId}`, {
+		return this.axiosInstance.put(`/checks/check/${config.checkId}`, {
 			ack: config.ack,
 		});
 	}
