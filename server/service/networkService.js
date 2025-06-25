@@ -432,11 +432,12 @@ class NetworkService {
 		throw err;
 	}
 
-	async requestWebhook(type, url, body) {
+	async requestWebhook(type, url, body, headers = {}) {
 		try {
 			const response = await this.axios.post(url, body, {
 				headers: {
 					"Content-Type": "application/json",
+					...headers,
 				},
 			});
 

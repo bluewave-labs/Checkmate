@@ -584,6 +584,12 @@ const createNotificationBodyValidation = joi.object({
 			"any.required": "E-mail address is required",
 			"string.email": "Please enter a valid e-mail address",
 		}),
+
+		otherwise: joi.string().uri().required().messages({
+			"string.uri": "A valid URL is required for this notification type",
+			"any.required": "A valid URL is required",
+			"string.empty": "Address cannot be empty",
+		}),
 	}),
 	type: joi
 		.string()
@@ -594,6 +600,31 @@ const createNotificationBodyValidation = joi.object({
 			"any.required": "Notification type is required",
 			"any.only": "Notification type must be email, webhook, or pager_duty",
 		}),
+	webhookAuthType: joi.string().valid("none", "basic", "bearer").optional(),
+	username: joi.string().when("webhookAuthType", {
+		is: "basic",
+		then: joi.string().required().messages({
+			"string.empty": "Username is required for basic authentication",
+			"any.required": "Username is required for basic authentication",
+		}),
+		otherwise: joi.optional().allow(""),
+	}),
+	password: joi.string().when("webhookAuthType", {
+		is: "basic",
+		then: joi.string().required().messages({
+			"string.empty": "Password is required for basic authentication",
+			"any.required": "Password is required for basic authentication",
+		}),
+		otherwise: joi.optional().allow(""),
+	}),
+	bearerToken: joi.string().when("webhookAuthType", {
+		is: "bearer",
+		then: joi.string().required().messages({
+			"string.empty": "Bearer token is required for bearer authentication",
+			"any.required": "Bearer token is required for bearer authentication",
+		}),
+		otherwise: joi.optional().allow(""),
+	}),
 });
 
 //****************************************

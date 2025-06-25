@@ -32,6 +32,10 @@ const FIELD_IDS = {
 	TOKEN: "token",
 	CHAT_ID: "chatId",
 	URL: "url",
+	WEBHOOK_AUTH_TYPE: "webhookAuthType",
+	USERNAME: "username",
+	PASSWORD: "password",
+	BEARER_TOKEN: "bearerToken",
 };
 
 const NotificationIntegrationModal = ({
@@ -122,6 +126,40 @@ const NotificationIntegrationModal = ({
 					placeholder: t("notifications.webhook.urlPlaceholder"),
 					type: "text",
 				},
+				{
+					id: FIELD_IDS.WEBHOOK_AUTH_TYPE,
+					label: "Authentication Type",
+					type: "select",
+					options: [
+						{ value: "none", label: "None" },
+						{ value: "basic", label: "Basic Auth" },
+						{ value: "bearer", label: "Bearer Token" },
+					],
+				},
+				{
+					id: FIELD_IDS.USERNAME,
+					label: "Username",
+					placeholder: "Enter your username",
+					type: "text",
+					condition: (integrations) =>
+						integrations[getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)] === "basic",
+				},
+				{
+					id: FIELD_IDS.PASSWORD,
+					label: "Password",
+					placeholder: "Enter your password",
+					type: "password",
+					condition: (integrations) =>
+						integrations[getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)] === "basic",
+				},
+				{
+					id: FIELD_IDS.BEARER_TOKEN,
+					label: "Bearer Token",
+					placeholder: "Enter your Bearer Token",
+					type: "password",
+					condition: (integrations) =>
+						integrations[getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)] === "bearer",
+				},
 			],
 		},
 	];
@@ -140,7 +178,12 @@ const NotificationIntegrationModal = ({
 			// Add state for each field in the notification type
 			type.fields.forEach((field) => {
 				const fieldKey = getFieldKey(type.id, field.id);
-				state[fieldKey] = "";
+				// Default to "none" auth type
+				if (field.id === FIELD_IDS.WEBHOOK_AUTH_TYPE) {
+					state[fieldKey] = "none";
+				} else {
+					state[fieldKey] = "";
+				}
 			});
 		});
 

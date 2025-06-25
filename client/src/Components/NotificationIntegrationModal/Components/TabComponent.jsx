@@ -24,6 +24,14 @@ const TabComponent = ({
 	// Check if all fields have values to enable test button
 	const areAllFieldsFilled = () => {
 		return type.fields.every((field) => {
+			// Skip fields that are conditionally hidden
+			if (field.condition && !field.condition(integrations)) {
+				return true;
+			}
+			// Quality of life check
+			if (field.type === "select") {
+				return true;
+			}
 			const fieldKey = getFieldKey(type.id, field.id);
 			return integrations[fieldKey];
 		});
@@ -63,6 +71,11 @@ const TabComponent = ({
 			</Box>
 
 			{type.fields.map((field) => {
+				// Skip rendering this field if the condition is not met
+				if (field.condition && !field.condition(integrations)) {
+					return null;
+				}
+
 				const fieldKey = getFieldKey(type.id, field.id);
 
 				return (
@@ -80,14 +93,24 @@ const TabComponent = ({
 							{field.label}
 						</Typography>
 
-						<TextInput
-							id={`${type.id}-${field.id}`}
-							type={field.type}
-							placeholder={field.placeholder}
-							value={integrations[fieldKey]}
-							onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-							disabled={!integrations[type.id] || isLoading}
-						/>
+						{field.type === "select" ? (
+							<Select
+								id={`${type.id}-${field.id}`}
+								items={field.options.map(opt => ({ _id: opt.value, name: opt.label }))}
+								value={integrations[fieldKey]}
+								onChange={(e) => handleInputChange(fieldKey, e.target.value)}
+                				disabled={!integrations[type.id] || isLoading}
+							/>
+						) : (
+							<TextInput
+								id={`${type.id}-${field.id}`}
+								type={field.type}
+								placeholder={field.placeholder}
+								value={integrations[fieldKey]}
+								onChange={(e) => handleInputChange(fieldKey, e.target.value)}
+								disabled={!integrations[type.id] || isLoading}
+							/>
+						)}
 					</Box>
 				);
 			})}
