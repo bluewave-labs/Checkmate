@@ -3,38 +3,11 @@
 	"title": "Otsikko",
 	"distributedStatusHeaderText": "Reaaliaikainen kattavuus oikeilla laitteilla",
 	"distributedStatusSubHeaderText": "Miljoonien laitteiden voimin ympäri maailman näet järjestelmän suorituskyvyn maailman alueittain, maittain tai kaupungeittain",
-	"settingsGeneralSettings": "Yleiset asetukset",
-	"settingsDisplayTimezone": "Näytä aikavyöhyke",
-	"settingsDisplayTimezoneDescription": "Valitse sovelluksessa käytettävä aikavyöhyke päivämäärien ja aikojen näyttämiseen.",
-	"settingsAppearance": "Ulkonäkö",
-	"settingsAppearanceDescription": "Vaihda teema vaaleaksi tai tummaksi tai vaihda käyttöliittymän kieli",
-	"settingsThemeMode": "Teematila",
-	"settingsLanguage": "Kieli",
-	"settingsEnabled": "Käytössä",
 	"settingsDisabled": "Poistettu käytöstä",
-	"settingsHistoryAndMonitoring": "Valvonnan historia",
-	"settingsHistoryAndMonitoringDescription": "Määritä, kuinka pitkään haluat säilyttää historiallisia tietoja. Voit myös tyhjentää kaikki olemassa olevat tiedot.",
-	"settingsTTLLabel": "Kuinka monta päivää haluat säilyttää valvontahistorian.",
-	"settingsTTLOptionalLabel": "0 on ääretön",
-	"settingsClearAllStats": "Tyhjennä kaikki tilastot. Tämä on peruuttamaton.",
-	"settingsClearAllStatsButton": "Tyhjennä kaikki tilastot",
-	"settingsClearAllStatsDialogTitle": "Haluatko tyhjentää kaikki tilastot?",
-	"settingsClearAllStatsDialogDescription": "Kun valvontahistoria ja tilastot on poistettu, niitä ei voi palauttaa.",
-	"settingsClearAllStatsDialogConfirm": "",
-	"settingsDemoMonitors": "",
-	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitorsButton": "",
-	"settingsRemoveAllMonitorsDialogTitle": "",
-	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsAbout": "Tietoja",
-	"settingsDevelopedBy": "Kehittänyt Bluewave Labs.",
-	"settingsSave": "Tallenna",
 	"settingsSuccessSaved": "",
 	"settingsFailedToSave": "",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
-	"settingsDemoMonitorsAdded": "",
 	"settingsFailedToAddDemoMonitors": "",
 	"settingsMonitorsDeleted": "",
 	"settingsFailedToDeleteMonitors": "",
@@ -360,16 +333,10 @@
 		"noFileSelected": "Ei valittua tiedostoa",
 		"fallbackPage": ""
 	},
-	"settingsSystemReset": "Järjestelmän palautus",
-	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "Poista tili",
 	"DeleteAccountButton": "Poista tili",
 	"publicLink": "Julkinen linkki",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API-avain",
-	"pageSpeedApiKeyFieldLabel": "PageSpeed API-avain",
-	"pageSpeedApiKeyFieldDescription": "",
-	"pageSpeedApiKeyFieldResetLabel": "",
 	"reset": "Palauta",
 	"ignoreTLSError": "",
 	"tlsErrorIgnored": "",
@@ -431,22 +398,13 @@
 		"password": "Salasana",
 		"team": "Tiimi",
 		"logOut": "Kirjaudu ulos",
-		"notifications": ""
+		"notifications": "",
+		"logs": ""
 	},
-	"settingsEmail": "Sähköpostiasetukset",
-	"settingsEmailDescription": "Määritä sähköpostiasetukset",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "Sähköpostin portti - Portti johon yhdistetään",
-	"settingsEmailAddress": "Sähköpostiosoite - Käytetään tunnistautumiseen",
-	"settingsEmailPassword": "Sähköpostin salasana - Salasana tunnistautumiseen",
 	"settingsEmailUser": "",
-	"settingsEmailFieldResetLabel": "Salasana on asetettu. Paina Palauta vaihtaaksesi sen.",
 	"state": "Tila",
 	"statusBreadCrumbsStatusPages": "Tilasivut",
 	"statusBreadCrumbsDetails": "Tiedot",
-	"settingsThemeModeLight": "Vaalea",
-	"settingsThemeModeDark": "Tumma",
-	"settingsClearAllStatsDialogCancel": "Peruuta",
 	"commonSaving": "Tallennetaan...",
 	"navControls": "Ohjaimet",
 	"incidentsPageTitle": "Häiriöt",
@@ -461,26 +419,18 @@
 		"passwordRequirements": "Uuden salasanan on oltava vähintään 8 merkkiä pitkä ja sen on sisältävä vähintään yksi iso kirjain, yksi pieni kirjain, yksi numero sekä yksi erikoismerkki.",
 		"saving": "Tallennetaan..."
 	},
-	"settingsEmailConnectionHost": "",
 	"emailSent": "Sähköpostin lähetys onnistui",
 	"failedToSendEmail": "Sähköpostin lähetys epäonnistui",
-	"settingsTestEmail": "Lähetä testi sähköposti",
 	"settingsTestEmailSuccess": "Testisähköpostin lähetys onnistui",
 	"settingsTestEmailFailed": "Testisähköpostin lähetys epäonnistui",
 	"settingsTestEmailFailedWithReason": "Testisähköpostin lähetys epäonnistui: {{reason}}",
 	"settingsTestEmailUnknownError": "Tuntematon virhe",
-	"settingsEmailRequiredFields": "",
 	"statusMsg": {
 		"paused": "Valvonta on keskeytetty.",
 		"up": "Sivusi on ylhäällä.",
 		"down": "Sivusi on alhaalla.",
 		"pending": "Odottaa..."
 	},
-	"settingsURLTitle": "",
-	"settingsURLDescription": "",
-	"settingsURLSelectTitle": "",
-	"settingsURLEnabled": "",
-	"settingURLDisabled": "",
 	"uptimeGeneralInstructions": {
 		"http": "",
 		"ping": "",
@@ -739,12 +689,147 @@
 		"paused": ""
 	},
 	"advancedMatching": "",
-	"settingsEmailTLSServername": "",
-	"settingsEmailIgnoreTLS": "",
-	"settingsEmailRequireTLS": "",
-	"settingsEmailRejectUnauthorized": "",
-	"settingsEmailSecure": "",
-	"settingsEmailPool": "",
 	"sendTestNotifications": "",
-	"selectAll": ""
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }
