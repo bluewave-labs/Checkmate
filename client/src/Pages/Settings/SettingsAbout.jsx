@@ -21,7 +21,7 @@ const SettingsAbout = () => {
 			</Box>
 			<Box>
 				<Typography component="h2">
-					{t("common.appName")} {2.1}
+					{t("common.appName")} {__APP_VERSION__}
 				</Typography>
 				<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(6), opacity: 0.6 }}>
 					{t("settingsPage.aboutSettings.labelDevelopedBy")}
