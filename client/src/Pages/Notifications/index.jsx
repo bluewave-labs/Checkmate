@@ -45,26 +45,10 @@ const Notifications = () => {
 			},
 		},
 		{
-			id: "type",
-			content: "Type",
-			render: (row) => {
-				return row.type;
-			},
-		},
-		{
 			id: "target",
 			content: "Target",
 			render: (row) => {
-				const type = row.type;
-				if (type === "email") {
-					return row.address;
-				}
-				if (type === "webhook") {
-					return row.config?.webhookUrl;
-				}
-				if (type === "pager_duty") {
-					return row.config?.routingKey;
-				}
+				return row.address;
 			},
 		},
 		{

@@ -82,7 +82,7 @@ class AuthController {
 			}
 
 			const newUser = await this.db.insertUser({ ...req.body }, req.file);
-			logger.info({
+			this.logger.info({
 				message: this.stringService.authCreateUser,
 				service: SERVICE_NAME,
 				details: newUser._id,
@@ -111,7 +111,7 @@ class AuthController {
 						});
 					});
 			} catch (error) {
-				logger.warn({
+				this.logger.warn({
 					message: error.message,
 					service: SERVICE_NAME,
 					method: "registerUser",
@@ -412,8 +412,7 @@ class AuthController {
 			// 1. Find all the monitors associated with the team ID if superadmin
 
 			const result = await this.db.getMonitorsByTeamId({
-				query: {},
-				params: { teamId: user.teamId.toString() },
+				teamId: user.teamId.toString(),
 			});
 
 			if (user.role.includes("superadmin")) {
@@ -424,13 +423,6 @@ class AuthController {
 							await this.jobQueue.deleteJob(monitor);
 						})
 					));
-
-				// 3. Delete team
-				await this.db.deleteTeam(user.teamId);
-				// 4. Delete all other team members
-				await this.db.deleteAllOtherUsers();
-				// 5. Delete each monitor
-				await this.db.deleteMonitorsByUserId(user._id);
 			}
 			// 6. Delete the user by id
 			await this.db.deleteUser(user._id);

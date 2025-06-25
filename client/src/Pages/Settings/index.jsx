@@ -157,7 +157,7 @@ const Settings = () => {
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
-			<Typography variant="h1">Settings</Typography>
+			<Typography variant="h1">{t("settingsPage.title")}</Typography>
 			<SettingsTimeZone
 				HEADING_SX={HEADING_SX}
 				handleChange={handleChange}
@@ -208,6 +208,7 @@ const Settings = () => {
 				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
 				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
+
 			<SettingsAbout />
 			<Stack
 				direction="row"
@@ -241,7 +242,7 @@ const Settings = () => {
 					sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					onClick={handleSave}
 				>
-					{t("settingsSave")}
+					{t("settingsPage.saveButtonLabel")}
 				</Button>
 			</Stack>
 		</Stack>

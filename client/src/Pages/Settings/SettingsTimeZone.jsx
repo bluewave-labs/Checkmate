@@ -19,16 +19,17 @@ const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsGeneralSettings")}
+					{t("settingsPage.timezoneSettings.title")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
-					<Typography component="span">{t("settingsDisplayTimezone")}</Typography>-{" "}
-					{t("settingsDisplayTimezoneDescription")}
+					<Typography component="span">
+						{t("settingsPage.timezoneSettings.description")}
+					</Typography>
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<Select
-					label={t("settingsDisplayTimezone")}
+					label={t("settingsPage.timezoneSettings.label")}
 					name="timezone"
 					value={timezone}
 					onChange={handleChange}

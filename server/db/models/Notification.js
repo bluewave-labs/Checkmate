@@ -1,19 +1,5 @@
 import mongoose from "mongoose";
 
-const configSchema = mongoose.Schema(
-	{
-		webhookUrl: { type: String },
-		botToken: { type: String },
-		chatId: { type: String },
-		platform: {
-			type: String,
-			enum: ["slack", "pager_duty", "webhook", "discord"],
-		},
-		routingKey: { type: String },
-	},
-	{ _id: false }
-);
-
 const NotificationSchema = mongoose.Schema(
 	{
 		userId: {
@@ -30,14 +16,7 @@ const NotificationSchema = mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: ["email", "sms", "webhook", "pager_duty"],
-		},
-		platform: {
-			type: String,
-		},
-		config: {
-			type: configSchema,
-			default: () => ({}),
+			enum: ["email", "slack", "discord", "webhook", "pager_duty"],
 		},
 		notificationName: {
 			type: String,
@@ -48,34 +27,6 @@ const NotificationSchema = mongoose.Schema(
 		},
 		phone: {
 			type: String,
-		},
-		alertThreshold: {
-			type: Number,
-			default: 5,
-		},
-		cpuAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
-		memoryAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
-		diskAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
-		tempAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
 		},
 	},
 	{

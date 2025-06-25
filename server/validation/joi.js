@@ -478,6 +478,7 @@ const createStatusPageBodyValidation = joi.object({
 	isPublished: joi.boolean(),
 	showCharts: joi.boolean().optional(),
 	showUptimePercentage: joi.boolean(),
+	showAdminLoginLink: joi.boolean().optional(),
 });
 
 const imageValidation = joi
@@ -585,24 +586,15 @@ const createNotificationBodyValidation = joi.object({
 			"string.email": "Please enter a valid e-mail address",
 		}),
 	}),
-	type: joi.string().valid("email", "webhook", "pager_duty").required().messages({
-		"string.empty": "Notification type is required",
-		"any.required": "Notification type is required",
-		"any.only": "Notification type must be email, webhook, or pager_duty",
-	}),
-	config: joi.when("type", {
-		is: "webhook",
-		then: joi.object({
-			webhookUrl: joi.string().uri().required().messages({
-				"string.uri": "Webhook URL must be a valid URI",
-				"any.required": "Webhook URL is required",
-			}),
-			platform: joi.string().required().messages({
-				"string.empty": "Platform is required",
-				"any.required": "Platform is required",
-			}),
+	type: joi
+		.string()
+		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.required()
+		.messages({
+			"string.empty": "Notification type is required",
+			"any.required": "Notification type is required",
+			"any.only": "Notification type must be email, webhook, or pager_duty",
 		}),
-	}),
 });
 
 //****************************************

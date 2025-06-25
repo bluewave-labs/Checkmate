@@ -16,15 +16,15 @@ const SettingsAbout = () => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsAbout")}
+					{t("settingsPage.aboutSettings.title")}
 				</Typography>
 			</Box>
 			<Box>
 				<Typography component="h2">
-					{t("common.appName")} {2.1}
+					{t("common.appName")} {__APP_VERSION__}
 				</Typography>
 				<Typography sx={{ mt: theme.spacing(2), mb: theme.spacing(6), opacity: 0.6 }}>
-					{t("settingsDevelopedBy")}
+					{t("settingsPage.aboutSettings.labelDevelopedBy")}
 				</Typography>
 				<Link
 					level="secondary"

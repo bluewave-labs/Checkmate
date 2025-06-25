@@ -69,6 +69,15 @@ const MonitorSchema = mongoose.Schema(
 			type: Number,
 			default: undefined,
 		},
+		notifications: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Notification",
+			},
+		],
+		secret: {
+			type: String,
+		},
 		thresholds: {
 			type: {
 				usage_cpu: { type: Number },
@@ -78,14 +87,33 @@ const MonitorSchema = mongoose.Schema(
 			},
 			_id: false,
 		},
-		notifications: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Notification",
+		alertThreshold: {
+			type: Number,
+			default: 5,
+		},
+		cpuAlertThreshold: {
+			type: Number,
+			default: function () {
+				return this.alertThreshold;
 			},
-		],
-		secret: {
-			type: String,
+		},
+		memoryAlertThreshold: {
+			type: Number,
+			default: function () {
+				return this.alertThreshold;
+			},
+		},
+		diskAlertThreshold: {
+			type: Number,
+			default: function () {
+				return this.alertThreshold;
+			},
+		},
+		tempAlertThreshold: {
+			type: Number,
+			default: function () {
+				return this.alertThreshold;
+			},
 		},
 	},
 	{
@@ -128,6 +156,33 @@ MonitorSchema.pre("deleteMany", async function (next) {
 			await Check.deleteMany({ monitorId: monitor._id });
 		}
 		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
+	}
+	next();
+});
+
+MonitorSchema.pre("save", function (next) {
+	if (!this.cpuAlertThreshold || this.isModified("alertThreshold")) {
+		this.cpuAlertThreshold = this.alertThreshold;
+	}
+	if (!this.memoryAlertThreshold || this.isModified("alertThreshold")) {
+		this.memoryAlertThreshold = this.alertThreshold;
+	}
+	if (!this.diskAlertThreshold || this.isModified("alertThreshold")) {
+		this.diskAlertThreshold = this.alertThreshold;
+	}
+	if (!this.tempAlertThreshold || this.isModified("alertThreshold")) {
+		this.tempAlertThreshold = this.alertThreshold;
+	}
+	next();
+});
+
+MonitorSchema.pre("findOneAndUpdate", function (next) {
+	const update = this.getUpdate();
+	if (update.alertThreshold) {
+		update.cpuAlertThreshold = update.alertThreshold;
+		update.memoryAlertThreshold = update.alertThreshold;
+		update.diskAlertThreshold = update.alertThreshold;
+		update.tempAlertThreshold = update.alertThreshold;
 	}
 	next();
 });
