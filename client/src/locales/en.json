@@ -634,94 +634,10 @@
 			"retryButton": {
 				"default": "Retry connection",
 				"processing": "Connecting..."
-			},
-			"toasts": {
-				"reconnected": "Successfully reconnected to the server.",
-				"stillUnreachable": "Server is still unreachable. Please try again later."
 			}
 		}
 	},
-	"expectedValue": "Expected value",
-	"export": {
-		"failed": "Failed to export monitors",
-		"success": "Monitors exported successfully!",
-		"title": "Export Monitors"
-	},
-	"failedToSendEmail": "Failed to send email",
-	"features": "Features",
-	"frequency": "Frequency",
-	"friendlyNameInput": "Friendly name",
-	"friendlyNamePlaceholder": "Maintenance at __ : __ for ___ minutes",
-	"gb": "GB",
-	"greeting": {
-		"append": "The afternoon is your playground—let's make it epic!",
-		"overview": "Here's an overview of your {{type}} monitors.",
-		"prepend": "Hey there"
-	},
-	"high": "high",
-	"host": "Host",
-	"http": "HTTP",
-	"https": "HTTPS",
-	"ignoreTLSError": "Ignore TLS/SSL error",
-	"ignoreTLSErrorDescription": "Ignore TLS/SSL errors and continue checking the website's availability",
-	"incidentsOptionsHeader": "Incidents for:",
-	"incidentsOptionsHeaderFilterAll": "All",
-	"incidentsOptionsHeaderFilterBy": "Filter by:",
-	"incidentsOptionsHeaderFilterCannotResolve": "Cannot resolve",
-	"incidentsOptionsHeaderFilterDown": "Down",
 	"incidentsOptionsHeaderFilterResolved": "Resolved",
-	"incidentsOptionsHeaderLastDay": "Last day",
-	"incidentsOptionsHeaderLastHour": "Last hour",
-	"incidentsOptionsHeaderLastWeek": "Last week",
-	"incidentsOptionsHeaderShow": "Show:",
-	"incidentsOptionsPlaceholderAllServers": "All servers",
-	"incidentsPageTitle": "Incidents",
-	"incidentsTableDateTime": "Date & Time",
-	"incidentsTableMessage": "Message",
-	"incidentsTableMonitorName": "Monitor Name",
-	"incidentsTableNoIncidents": "No incidents recorded",
-	"incidentsTablePaginationLabel": "incidents",
-	"incidentsTableStatus": "Status",
-	"incidentsTableStatusCode": "Status Code",
-	"infrastructureAlertNotificationDescription": "Send a notification to user(s) when thresholds exceed a specified percentage.",
-	"infrastructureAuthorizationSecretLabel": "Authorization secret",
-	"infrastructureCreateGeneralSettingsDescription": "Here you can select the URL of the host, together with the friendly name and authorization secret to connect to the server agent.",
-	"infrastructureCreateMonitor": "Create Infrastructure Monitor",
-	"infrastructureCreateYour": "Create your",
-	"infrastructureCustomizeAlerts": "Customize alerts",
-	"infrastructureDisplayNameLabel": "Display name",
-	"infrastructureEditMonitor": "Save Infrastructure Monitor",
-	"infrastructureEditYour": "Edit your",
-	"infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
-	"infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
-	"infrastructureProtocol": "Protocol",
-	"infrastructureServerRequirement": "The server you are monitoring must be running the",
-	"infrastructureServerUrlLabel": "Server URL",
-	"integrations": "Integrations",
-	"integrationsDiscord": "Discord",
-	"integrationsDiscordInfo": "Connect with Discord and view incidents directly in a channel",
-	"integrationsPrism": "Connect Prism to your favorite service.",
-	"integrationsSlack": "Slack",
-	"integrationsSlackInfo": "Connect with Slack and see incidents in a channel",
-	"integrationsZapier": "Zapier",
-	"integrationsZapierInfo": "Send all incidents to Zapier, and then see them everywhere",
-	"invalidFileFormat": "Unsupported file format!",
-	"invalidFileSize": "File size is too large!",
-	"inviteNoTokenFound": "No invite token found",
-	"loginHere": "Login here",
-	"logsPage": {
-		"description": "This page shows the latest 1000 lines of logs from the Checkmate server",
-		"logLevelSelect": {
-			"title": "Log level",
-			"values": {
-				"all": "All",
-				"debug": "Debug",
-				"error": "Error",
-				"info": "Info",
-				"warn": "Warn"
-			}
-		}
-	},
 	"createNotifications": {
 		"title": "Create notification channel",
 		"nameSettings": {
