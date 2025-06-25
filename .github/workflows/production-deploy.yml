@@ -18,12 +18,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version
+        id: vars
+        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       - name: Build Client Docker image
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate:frontend-demo \
             -f ./docker/prod/client.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
             .
 
       - name: Push Client Docker image
