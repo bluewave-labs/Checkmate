@@ -1,7 +1,7 @@
 // Components
 import { Stack, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
-import MonitorStatusHeader from "../../../Components/MonitorStatusHeader";
+import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
 import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import StatusBoxes from "./Components/StatusBoxes";
 import GaugeBoxes from "./Components/GaugeBoxes";
@@ -11,7 +11,7 @@ import GenericFallback from "../../../Components/GenericFallback";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import { useHardwareMonitorsFetch } from "./Hooks/useHardwareMonitorsFetch";
+import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -26,6 +26,7 @@ const InfrastructureDetails = () => {
 
 	// Local state
 	const [dateRange, setDateRange] = useState("recent");
+	const [trigger, setTrigger] = useState(false);
 
 	// Utils
 	const theme = useTheme();
@@ -33,10 +34,15 @@ const InfrastructureDetails = () => {
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 
-	const { isLoading, networkError, monitor } = useHardwareMonitorsFetch({
+	const [monitor, isLoading, networkError] = useFetchHardwareMonitorById({
 		monitorId,
 		dateRange,
+		updateTrigger: trigger,
 	});
+
+	const triggerUpdate = () => {
+		setTrigger(!trigger);
+	};
 
 	if (networkError === true) {
 		return (
@@ -46,9 +52,9 @@ const InfrastructureDetails = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("networkError")}
+					{t("common.toasts.networkError")}
 				</Typography>
-				<Typography>{t("checkConnection")}</Typography>
+				<Typography>{t("common.toasts.checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -57,11 +63,12 @@ const InfrastructureDetails = () => {
 		return (
 			<Stack gap={theme.spacing(10)}>
 				<Breadcrumbs list={BREADCRUMBS} />
-				<MonitorStatusHeader
+				<MonitorDetailsControlHeader
 					path={"infrastructure"}
-					isAdmin={false}
-					shouldRender={!isLoading}
+					isLoading={isLoading}
+					isAdmin={isAdmin}
 					monitor={monitor}
+					triggerUpdate={triggerUpdate}
 				/>
 				<GenericFallback>
 					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
@@ -73,11 +80,12 @@ const InfrastructureDetails = () => {
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
-			<MonitorStatusHeader
+			<MonitorDetailsControlHeader
 				path={"infrastructure"}
+				isLoading={isLoading}
 				isAdmin={isAdmin}
-				shouldRender={!isLoading}
 				monitor={monitor}
+				triggerUpdate={triggerUpdate}
 			/>
 			<StatusBoxes
 				shouldRender={!isLoading}

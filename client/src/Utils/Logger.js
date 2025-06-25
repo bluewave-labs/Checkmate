@@ -6,8 +6,7 @@ class Logger {
 	constructor() {
 		let logLevel = LOG_LEVEL;
 		this.unsubscribe = store.subscribe(() => {
-			const state = store.getState();
-			logLevel = state.settings.logLevel || "debug";
+			logLevel = "debug";
 			this.updateLogLevel(logLevel);
 		});
 	}

@@ -6,14 +6,14 @@ import { StatusLabel } from "../../../../../Components/Label";
 
 //Utils
 import { useTheme } from "@mui/material/styles";
-import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 import PropTypes from "prop-types";
 
 import { useSelector } from "react-redux";
 
 const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] }) => {
 	const theme = useTheme();
-	const { determineState } = useUtils();
+	const { determineState } = useMonitorUtils();
 
 	const { showURL } = useSelector((state) => state.ui);
 

@@ -7,8 +7,6 @@ import {
 	getMaintenanceWindowsByTeamIdQueryValidation,
 	deleteMaintenanceWindowByIdParamValidation,
 } from "../validation/joi.js";
-import jwt from "jsonwebtoken";
-import { getTokenFromHeaders } from "../utils/utils.js";
 import { handleValidationError, handleError } from "./controllerUtils.js";
 
 const SERVICE_NAME = "maintenanceWindowController";
@@ -28,9 +26,7 @@ class MaintenanceWindowController {
 			return;
 		}
 		try {
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { teamId } = jwt.verify(token, jwtSecret);
+			const { teamId } = req.user;
 			const monitorIds = req.body.monitors;
 			const dbTransactions = monitorIds.map((monitorId) => {
 				return this.db.createMaintenanceWindow({
@@ -81,9 +77,7 @@ class MaintenanceWindowController {
 		}
 
 		try {
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { teamId } = jwt.verify(token, jwtSecret);
+			const { teamId } = req.user;
 			const maintenanceWindows = await this.db.getMaintenanceWindowsByTeamId(
 				teamId,
 				req.query

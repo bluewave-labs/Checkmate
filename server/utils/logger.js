@@ -4,6 +4,8 @@ dotenv.config();
 
 class Logger {
 	constructor() {
+		this.logCache = [];
+		this.maxCacheSize = 1000;
 		const consoleFormat = format.printf(
 			({ level, message, service, method, details, timestamp, stack }) => {
 				if (message instanceof Object) {
@@ -72,11 +74,9 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	info(config) {
-		this.logger.info(config.message, {
-			service: config.service,
-			method: config.method,
-			details: config.details,
-		});
+		const logEntry = this.buildLogEntry("info", config);
+		this.cacheLog(logEntry);
+		this.logger.info(logEntry);
 	}
 
 	/**
@@ -88,11 +88,9 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	warn(config) {
-		this.logger.warn(config.message, {
-			service: config.service,
-			method: config.method,
-			details: config.details,
-		});
+		const logEntry = this.buildLogEntry("warn", config);
+		this.cacheLog(logEntry);
+		this.logger.warn(logEntry);
 	}
 
 	/**
@@ -104,12 +102,9 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	error(config) {
-		this.logger.error(config.message, {
-			service: config.service,
-			method: config.method,
-			details: config.details,
-			stack: config.stack,
-		});
+		const logEntry = this.buildLogEntry("error", config);
+		this.cacheLog(logEntry);
+		this.logger.error(logEntry);
 	}
 	/**
 	 * Logs a debug message.
@@ -120,12 +115,32 @@ class Logger {
 	 * @param {Object} config.details - Additional details.
 	 */
 	debug(config) {
-		this.logger.debug(config.message, {
+		const logEntry = this.buildLogEntry("debug", config);
+		this.cacheLog(logEntry);
+		this.logger.debug(logEntry);
+	}
+
+	cacheLog(entry) {
+		this.logCache.push(entry);
+		if (this.logCache.length > this.maxCacheSize) {
+			this.logCache.shift();
+		}
+	}
+
+	getLogs() {
+		return this.logCache;
+	}
+
+	buildLogEntry(level, config) {
+		return {
+			level,
+			message: config.message,
 			service: config.service,
 			method: config.method,
 			details: config.details,
 			stack: config.stack,
-		});
+			timestamp: new Date().toISOString(),
+		};
 	}
 }
 

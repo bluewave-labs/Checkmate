@@ -8,22 +8,31 @@ import Pagination from "../../..//Components/Table/TablePagination";
 import GenericFallback from "../../../Components/GenericFallback";
 import Fallback from "../../../Components/Fallback";
 import Filter from "./Components/Filters";
+import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useMonitorFetch } from "./Hooks/useMonitorFetch";
 import { useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
+import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
+import { useDispatch, useSelector } from "react-redux";
+import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 // Constants
+const TYPES = ["hardware"];
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
 
 const InfrastructureMonitors = () => {
 	// Redux state
+	const rowsPerPage = useSelector((state) => state.ui?.infrastructure?.rowsPerPage ?? 5);
+	const dispatch = useDispatch();
+
+	// Local state
 	const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
+	const [search, setSearch] = useState(undefined);
+	const [isSearching, setIsSearching] = useState(false);
 
 	// Utils
 	const theme = useTheme();
@@ -40,7 +49,13 @@ const InfrastructureMonitors = () => {
 	};
 
 	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(event.target.value);
+		dispatch(
+			setRowsPerPage({
+				value: parseInt(event.target.value, 10),
+				table: "infrastructure",
+			})
+		);
+		setPage(0);
 	};
 
 	const handleReset = () => {
@@ -50,10 +65,12 @@ const InfrastructureMonitors = () => {
 
 	const field = toFilterStatus !== undefined ? "status" : undefined;
 
-	const { monitors, summary, isLoading, networkError } = useMonitorFetch({
+	const [monitors, summary, isLoading, networkError] = useFetchMonitorsByTeamId({
+		limit: 1,
+		types: TYPES,
 		page,
 		field: field,
-		filter: toFilterStatus,
+		filter: toFilterStatus ?? search,
 		rowsPerPage,
 		updateTrigger,
 	});
@@ -66,9 +83,9 @@ const InfrastructureMonitors = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("networkError")}
+					{t("common.toasts.networkError")}
 				</Typography>
-				<Typography>{t("checkConnection")}</Typography>
+				<Typography>{t("common.toasts.checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -99,7 +116,7 @@ const InfrastructureMonitors = () => {
 			/>
 			<Stack direction={"row"}>
 				<MonitorCountHeader
-					shouldRender={!isLoading}
+					isLoading={isLoading}
 					monitorCount={summary?.totalMonitors ?? 0}
 				/>
 				<Filter
@@ -108,12 +125,19 @@ const InfrastructureMonitors = () => {
 					setToFilterStatus={setToFilterStatus}
 					handleReset={handleReset}
 				/>
+				<SearchComponent
+					monitors={monitors}
+					onSearchChange={setSearch}
+					setIsSearching={setIsSearching}
+				/>
 			</Stack>
+
 			<MonitorsTable
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				monitors={monitors}
 				isAdmin={isAdmin}
 				handleActionMenuDelete={handleActionMenuDelete}
+				isSearching={isSearching}
 			/>
 			<Pagination
 				itemCount={summary?.totalMonitors}

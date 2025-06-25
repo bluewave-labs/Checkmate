@@ -18,7 +18,7 @@ const StatusPageSchema = mongoose.Schema(
 			type: String,
 			required: true,
 			default: "uptime",
-			enum: ["uptime", "distributed"],
+			enum: ["uptime"],
 		},
 		companyName: {
 			type: String,
@@ -69,6 +69,10 @@ const StatusPageSchema = mongoose.Schema(
 		showUptimePercentage: {
 			type: Boolean,
 			default: true,
+		},
+		showAdminLoginLink: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{ timestamps: true }

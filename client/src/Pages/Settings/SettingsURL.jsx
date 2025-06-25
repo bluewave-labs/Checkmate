@@ -9,24 +9,26 @@ import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const SettingsURL = ({ HEADING_SX, handleChange, showURL }) => {
+const SettingsURL = ({ HEADING_SX, handleChange, showURL = false }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("settingsURLTitle")}</Typography>
-				<Typography sx={HEADING_SX}>{t("settingsURLDescription")}</Typography>
+				<Typography component="h1">{t("settingsPage.urlSettings.title")}</Typography>
+				<Typography sx={HEADING_SX}>
+					{t("settingsPage.urlSettings.description")}
+				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<Select
 					name="showURL"
-					label={t("settingsURLSelectTitle")}
+					label={t("settingsPage.urlSettings.label")}
 					value={showURL || ""}
 					onChange={handleChange}
 					items={[
-						{ _id: true, name: t("settingsURLEnabled") },
-						{ _id: false, name: t("settingURLDisabled") },
+						{ _id: true, name: t("settingsPage.urlSettings.selectEnabled") },
+						{ _id: false, name: t("settingsPage.urlSettings.selectDisabled") },
 					]}
 				></Select>
 			</Stack>

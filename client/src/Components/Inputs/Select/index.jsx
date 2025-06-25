@@ -12,9 +12,9 @@ import "./index.css";
  * @param {string} props.placeholder - The label of the select element.
  * @param {string} props.placeholder - The placeholder text when no option is selected.
  * @param {boolean} props.isHidden - Whether the placeholder should be hidden.
- * @param {string} props.value - The currently selected value.
+ * @param {(string | number | boolean)} props.value - The currently selected value.
  * @param {object[]} props.items - The array of items to populate in the select dropdown.
- *    @param {(string | number)} props.items._id - The unique identifier of each item.
+ *    @param {(string | number | boolean)} props.items._id - The unique identifier of each item.
  *    @param {string} props.items.name - The display name of each item.
  * @param {function} props.onChange - The function to handle onChange event.
  * @param {object} props.sx - The custom styles object for MUI Select component.
@@ -161,11 +161,13 @@ Select.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	isHidden: PropTypes.bool,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
+		.isRequired,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
 			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
 				.isRequired,
+
 			name: PropTypes.string.isRequired,
 		})
 	).isRequired,

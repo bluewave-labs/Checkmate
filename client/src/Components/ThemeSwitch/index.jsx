@@ -14,10 +14,12 @@ import SunAndMoonIcon from "./SunAndMoonIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "../../Features/UI/uiSlice";
 import "./index.css";
+import { useTranslation } from "react-i18next";
 
 const ThemeSwitch = ({ width = 48, height = 48, color }) => {
 	const mode = useSelector((state) => state.ui.mode);
 	const dispatch = useDispatch();
+	const { t } = useTranslation();
 
 	const toggleTheme = () => {
 		dispatch(setMode(mode === "light" ? "dark" : "light"));
@@ -26,7 +28,7 @@ const ThemeSwitch = ({ width = 48, height = 48, color }) => {
 	return (
 		<IconButton
 			id="theme-toggle"
-			title="Toggles light & dark"
+			title={t("common.buttons.toggleTheme")}
 			className={`theme-${mode}`}
 			aria-label="auto"
 			aria-live="polite"

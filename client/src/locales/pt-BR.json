@@ -1,61 +1,6 @@
 {
-	"dontHaveAccount": "Não tenho conta",
-	"email": "E-mail",
-	"forgotPassword": "Esqueci a senha",
-	"password": "Senha",
-	"signUp": "Inscreva-se",
 	"submit": "Enviar",
 	"title": "Título",
-	"continue": "Continuar",
-	"enterEmail": "Insira seu e-mail",
-	"authLoginTitle": "Login",
-	"authLoginEnterPassword": "Digite sua senha",
-	"commonPassword": "Senha",
-	"commonBack": "Voltar",
-	"authForgotPasswordTitle": "Esqueceu a senha?",
-	"authForgotPasswordResetPassword": "Redefinir a senha",
-	"createPassword": "Criar sua senha",
-	"createAPassword": "Senha",
-	"authRegisterAlreadyHaveAccount": "Já possui uma conta?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Insira seu e-mail",
-	"authRegisterTitle": "Criar uma conta",
-	"authRegisterStepOneTitle": "Crie sua conta",
-	"authRegisterStepOneDescription": "Insira seus dados para começar",
-	"authRegisterStepTwoTitle": "Configure seu perfil",
-	"authRegisterStepTwoDescription": "Conte-nos mais sobre você",
-	"authRegisterStepThreeTitle": "Quase pronto!",
-	"authRegisterStepThreeDescription": "Revise suas informações",
-	"authForgotPasswordDescription": "Não se preocupe, enviaremos instruções de redefinição.",
-	"authForgotPasswordSendInstructions": "Enviar instruções",
-	"authForgotPasswordBackTo": "Voltar para",
-	"authCheckEmailTitle": "Verifique seu e-mail",
-	"authCheckEmailDescription": "Enviamos um link para redefinir a senha para",
-	"authCheckEmailResendEmail": "Reenviar e-mail",
-	"authCheckEmailBackTo": "Voltar para",
-	"goBackTo": "Volte para",
-	"authCheckEmailDidntReceiveEmail": "Não recebeu o e-mail?",
-	"authCheckEmailClickToResend": "Clique para reenviar",
-	"authSetNewPasswordTitle": "Definir nova senha",
-	"authSetNewPasswordDescription": "Sua nova senha deve ser diferente das senhas usadas anteriormente.",
-	"authSetNewPasswordNewPassword": "Nova senha",
-	"authSetNewPasswordConfirmPassword": "Confirme sua senha",
-	"confirmPassword": "Digite a senha novamente para confirmar",
-	"authSetNewPasswordResetPassword": "Redefinir senha",
-	"authSetNewPasswordBackTo": "Voltar para",
-	"authPasswordMustBeAtLeast": "Deve ser pelo menos",
-	"authPasswordCharactersLong": "8 caracteres de comprimento",
-	"authPasswordMustContainAtLeast": "Deve conter pelo menos",
-	"authPasswordSpecialCharacter": "um caractere especial",
-	"authPasswordOneNumber": "um número",
-	"authPasswordUpperCharacter": "um caractere maiúsculo",
-	"authPasswordLowerCharacter": "um caractere minúsculo",
-	"authPasswordConfirmAndPassword": "Confirme a senha",
-	"authPasswordMustMatch": "As senhas devem corresponder",
-	"authRegisterCreateAccount": "Crie sua conta para começar",
-	"authRegisterCreateSuperAdminAccount": "Crie sua conta de super admin para começar",
-	"authRegisterSignUpWithEmail": "Criar conta de super admin",
-	"authRegisterBySigningUp": "Ao criar uma conta, você concorda com nossos <a1>Termos de Serviço</a1> e <a2>Política de Privacidade</a2>.",
 	"distributedStatusHeaderText": "Cobertura em tempo real e em dispositivos reais",
 	"distributedStatusSubHeaderText": "Impulsionado por milhões de dispositivos em todo o mundo, visualize o desempenho do sistema por região global, país ou cidade",
 	"settingsGeneralSettings": "Configurações gerais",
@@ -65,8 +10,6 @@
 	"settingsAppearanceDescription": "Alterne entre o modo claro e escuro ou altere o idioma da interface do usuário",
 	"settingsThemeMode": "Tema",
 	"settingsLanguage": "Linguagem",
-	"settingsDistributedUptime": "Disponibilidade distribuída",
-	"settingsDistributedUptimeDescription": "Habilitar/desabilitar o monitoramento de tempo de disponibilidade distribuído.",
 	"settingsEnabled": "Habilitado",
 	"settingsDisabled": "Desabilitado",
 	"settingsHistoryAndMonitoring": "Histórico de monitoramento",
@@ -80,14 +23,10 @@
 	"settingsClearAllStatsDialogConfirm": "Sim, limpar todas as estatísticas",
 	"settingsDemoMonitors": "Monitores de demonstração",
 	"settingsDemoMonitorsDescription": "Adicione monitores de genéricos para fins de demonstração.",
-	"settingsAddDemoMonitors": "Adicionando monitores de demonstração",
 	"settingsAddDemoMonitorsButton": "Adicionar monitores de demonstração",
-	"settingsRemoveAllMonitors": "Removendo todos os monitores",
 	"settingsRemoveAllMonitorsButton": "Remover todos os monitores",
 	"settingsRemoveAllMonitorsDialogTitle": "Você deseja remover todos os monitores?",
 	"settingsRemoveAllMonitorsDialogConfirm": "Sim, remova todos os monitores",
-	"settingsWallet": "Carteira",
-	"settingsWalletDescription": "Conecte sua carteira aqui. Isso é necessário para que o Distributed Uptime Monitor se conecte a vários nós globalmente.",
 	"settingsAbout": "Sobre",
 	"settingsDevelopedBy": "Desenvolvido pela Bluewave Labs.",
 	"settingsSave": "Salvar",
@@ -108,7 +47,6 @@
 	"now": "Agora",
 	"delete": "Deletar",
 	"configure": "Configurar",
-	"networkError": "Erro de rede",
 	"responseTime": "Tempo de resposta",
 	"ms": "ms",
 	"bar": "Bar",
@@ -116,11 +54,6 @@
 	"country": "PAÍS",
 	"city": "CIDADE",
 	"response": "RESPOSTA",
-	"checkConnection": "Verifique sua conexão",
-	"passwordreset": "Redefinição de senha",
-	"authRegisterStepOnePersonalDetails": "Insira seus dados pessoais",
-	"authCheckEmailOpenEmailButton": "Abra o aplicativo de e-mail",
-	"authNewPasswordConfirmed": "Sua senha foi redefinida com sucesso. Clique abaixo para fazer login magicamente.",
 	"monitorStatusUp": "O monitor {name} ({url}) agora está ATIVO e respondendo",
 	"monitorStatusDown": "O monitor {name} ({url}) está INATIVO e não está respondendo",
 	"webhookSendSuccess": "Notificação de webhook enviada com sucesso",
@@ -136,10 +69,6 @@
 	"distributedUptimeCreateIncidentDescription": "Quando ocorrer um incidente, notifique os usuários.",
 	"distributedUptimeCreateAdvancedSettings": "Configurações avançadas",
 	"distributedUptimeDetailsNoMonitorHistory": "Ainda não há histórico de verificações para este monitor.",
-	"distributedUptimeDetailsFooterHeading": "Feito com ❤️ por UpRock e Bluewave Labs",
-	"distributedUptimeDetailsFooterBuilt": "Construído com",
-	"distributedUptimeDetailsFooterSolana": "Solana",
-	"distributedUptimeDetailsMonitorHeader": "Monitoramento de Uptime distribuído com tecnologia DePIN",
 	"distributedUptimeDetailsStatusHeaderUptime": "Uptime:",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Última atualização",
 	"notifications": {
@@ -181,7 +110,33 @@
 		"testSuccess": "Notificação de teste enviada com sucesso!",
 		"testFailed": "Falha ao enviar notificação de teste",
 		"unsupportedType": "Tipo de notificação não suportado",
-		"networkError": "Ocorreu um erro de rede"
+		"networkError": "Ocorreu um erro de rede",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "testLocale",
 	"add": "Adicionar",
@@ -355,6 +310,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Mostrar mais detalhes na página de status",
 	"showCharts": "Mostrar gráficos",
 	"showUptimePercentage": "Mostrar porcentagem de Uptime",
+	"showAdminLoginLink": "Mostrar o link \"Administrador? Efetue login aqui\" na página de status",
 	"removeLogo": "Remover logo",
 	"statusPageStatus": "Uma página de status pública não está configurada.",
 	"statusPageStatusContactAdmin": "Entre em contato com seu administrador",
@@ -394,10 +350,6 @@
 	"DeleteDescriptionText": "Isso removerá a conta e todos os dados associados do servidor. Essa ação não é reversível.",
 	"DeleteAccountWarning": "Remover sua conta significa que você não poderá fazer login novamente e todos os seus dados serão removidos. Isso não é reversível.",
 	"DeleteWarningTitle": "Deseja realmente remover esta conta?",
-	"authRegisterFirstName": "Nome",
-	"authRegisterLastName": "Sobrenome",
-	"authRegisterEmail": "E-mail",
-	"authRegisterEmailRequired": "Para continuar, insira seu endereço de e-mail",
 	"bulkImport": {
 		"title": "Bulk Import",
 		"selectFileTips": "Selecione o arquivo CSV para enviar",
@@ -409,27 +361,11 @@
 		"noFileSelected": "Nenhum arquivo selecionado",
 		"fallbackPage": "Importe um arquivo para enviar uma lista de servidores em massa"
 	},
-	"welcomeBack": "Bem-vindo de volta! Você fez login com sucesso.",
-	"authRegisterLoginLink": "Login",
-	"validationNameRequired": "Por favor digite seu nome",
-	"validationNameTooLong": "O nome deve ter menos de 50 caracteres",
-	"validationNameInvalidCharacters": "Por favor, use apenas letras, espaços, apóstrofos ou hifens",
 	"settingsSystemReset": "Resetar sistema",
 	"settingsSystemResetDescription": "Remova todos os monitores do seu sistema.",
 	"DeleteAccountTitle": "Remover conta",
 	"DeleteAccountButton": "Remover conta",
-	"authRegisterEmailInvalid": "Por favor, insira um endereço de e-mail válido",
 	"publicLink": "Link publico",
-	"doNotHaveAccount": "Ainda não tem uma conta?",
-	"registerHere": "Registre-se aqui",
-	"backendUnreachable": "Erro de conexão com o servidor",
-	"backendUnreachableMessage": "Não conseguimos conectar ao servidor. Verifique sua conexão com a internet ou sua configuração de implantação se o problema persistir.",
-	"backendUnreachableError": "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
-	"retryConnection": "Reconectar",
-	"retryingConnection": "Conectando...",
-	"backendReconnected": "Reconectado ao servidor com sucesso.",
-	"backendStillUnreachable": "O servidor ainda está inacessível. Tente novamente mais tarde.",
-	"backendConnectionError": "Erro ao conectar ao servidor. Verifique sua conexão de internet.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API key",
 	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",
@@ -444,11 +380,6 @@
 		"prepend": "Ei",
 		"append": "A tarde é seu playground — vamos torná-la épica!",
 		"overview": "Aqui está uma visão geral dos seus monitores {{type}}."
-	},
-	"monitorStatus": {
-		"up": "Online",
-		"down": "Offline",
-		"paused": "pausado"
 	},
 	"roles": {
 		"superAdmin": "Super Admin",
@@ -488,7 +419,6 @@
 		"uptime": "Uptime",
 		"pagespeed": "Pagespeed",
 		"infrastructure": "Infraestrutura",
-		"distributedUptime": "Uptime distribuído",
 		"incidents": "Incidentes",
 		"statusPages": "Pagina de status",
 		"maintenance": "Manutenção",
@@ -501,7 +431,8 @@
 		"profile": "Perfil",
 		"password": "Senha",
 		"team": "Equipe",
-		"logOut": "Sair"
+		"logOut": "Sair",
+		"notifications": ""
 	},
 	"settingsEmail": "E-mail",
 	"settingsEmailDescription": "Configurações de e-mail do seu sistema. Elas são usadas para enviar notificações e alertas.",
@@ -514,7 +445,6 @@
 	"state": "Estado",
 	"statusBreadCrumbsStatusPages": "Pagina de status",
 	"statusBreadCrumbsDetails": "Detalhes",
-	"authForgotPasswordInstructions": "Não se preocupe, enviaremos instruções de redefinição.",
 	"settingsThemeModeLight": "Claro",
 	"settingsThemeModeDark": "Escuro",
 	"settingsClearAllStatsDialogCancel": "Cancelar",
@@ -532,9 +462,7 @@
 		"passwordRequirements": "A nova senha deve conter pelo menos 8 caracteres e deve ter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
 		"saving": "Salvando..."
 	},
-	"uptimeCreateSelectURL": "Insira a URL ou IP a ser monitorado (por exemplo, https://example.com/ ou 192.168.1.100) e adicione um nome de exibição que irá aparecer no painel.",
 	"settingsEmailConnectionHost": "Host de conexão de e-mail - Nome do host a ser usado na saudação HELO/EHLO",
-	"sendTestEmail": "Enviar e-mail de teste",
 	"emailSent": "E-mail enviado com sucesso",
 	"failedToSendEmail": "Falha ao enviar e-mail",
 	"settingsTestEmail": "Enviar e-mail de teste",
@@ -553,5 +481,271 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"webhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": "",
+	"selectAll": ""
 }

@@ -1,65 +1,32 @@
 import mongoose from "mongoose";
 
-const configSchema = mongoose.Schema(
-	{
-		webhookUrl: { type: String },
-		botToken: { type: String },
-		chatId: { type: String },
-	},
-	{ _id: false }
-);
-
 const NotificationSchema = mongoose.Schema(
 	{
-		monitorId: {
+		userId: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Monitor",
+			ref: "User",
 			immutable: true,
+			required: true,
+		},
+		teamId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Team",
+			immutable: true,
+			required: true,
 		},
 		type: {
 			type: String,
-			enum: ["email", "sms", "webhook"],
+			enum: ["email", "slack", "discord", "webhook", "pager_duty"],
 		},
-		platform: {  
+		notificationName: {
 			type: String,
-		  },
-		config: {
-			type: configSchema,
-			default: () => ({}),
+			required: true,
 		},
 		address: {
 			type: String,
 		},
 		phone: {
 			type: String,
-		},
-		alertThreshold: {
-			type: Number,
-			default: 5,
-		},
-		cpuAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
-		memoryAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
-		diskAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
-		tempAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
 		},
 	},
 	{

@@ -11,6 +11,8 @@ import { formatDurationRounded } from "../../../Utils/timeUtils";
 import { StatusLabel } from "../../../Components/Label";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 /**
  * Component for pagination actions (first, previous, next, last).
@@ -34,9 +36,10 @@ const MaintenanceTable = ({
 	maintenanceWindowCount,
 	updateCallback,
 }) => {
-	const { rowsPerPage } = useSelector((state) => state.ui.maintenance);
+	const rowsPerPage = useSelector((state) => state?.ui?.maintenance?.rowsPerPage ?? 5);
 	const dispatch = useDispatch();
-
+	const theme = useTheme();
+	const navigate = useNavigate();
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
 	};
@@ -180,6 +183,18 @@ const MaintenanceTable = ({
 	return (
 		<>
 			<DataTable
+				config={{
+					rowSX: {
+						cursor: "pointer",
+						"&:hover td": {
+							backgroundColor: theme.palette.tertiary.main,
+							transition: "background-color .3s ease",
+						},
+					},
+					onRowClick: (row) => {
+						navigate(`/maintenance/create/${row._id}`);
+					},
+				}}
 				headers={headers}
 				data={maintenanceWindows}
 			/>

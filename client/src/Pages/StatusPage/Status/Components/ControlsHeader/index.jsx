@@ -22,10 +22,6 @@ const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 		return null;
 	}
 
-	if (currentPath.startsWith("/status/distributed/public")) {
-		return null;
-	}
-
 	return (
 		<Stack
 			direction="row"
@@ -48,8 +44,6 @@ const Controls = ({ isDeleteOpen, setIsDeleteOpen, isDeleting, url, type }) => {
 					onClick={() => {
 						if (type === "uptime") {
 							navigate(`/status/uptime/configure/${url}`);
-						} else {
-							navigate(`/status/distributed/configure/${url}`);
 						}
 					}}
 					sx={{

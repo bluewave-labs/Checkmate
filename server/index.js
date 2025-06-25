@@ -36,8 +36,8 @@ import StatusPageController from "./controllers/statusPageController.js";
 import QueueRoutes from "./routes/queueRoute.js";
 import QueueController from "./controllers/queueController.js";
 
-import DistributedUptimeRoutes from "./routes/distributedUptimeRoute.js";
-import DistributedUptimeController from "./controllers/distributedUptimeController.js";
+import LogRoutes from "./routes/logRoutes.js";
+import LogController from "./controllers/logController.js";
 
 import NotificationRoutes from "./routes/notificationRoute.js";
 import NotificationController from "./controllers/notificationController.js";
@@ -49,6 +49,9 @@ import DiagnosticController from "./controllers/diagnosticController.js";
 import JobQueue from "./service/JobQueue/JobQueue.js";
 import JobQueueHelper from "./service/JobQueue/JobQueueHelper.js";
 import { Queue, Worker } from "bullmq";
+
+import PulseQueue from "./service/PulseQueue/PulseQueue.js";
+import PulseQueueHelper from "./service/PulseQueue/PulseQueueHelper.js";
 
 //Network service and dependencies
 import NetworkService from "./service/networkService.js";
@@ -73,6 +76,7 @@ import StatusService from "./service/statusService.js";
 
 // Notification Service and dependencies
 import NotificationService from "./service/notificationService.js";
+import NotificationUtils from "./service/notificationUtils.js";
 
 // Buffer Service and dependencies
 import BufferService from "./service/bufferService.js";
@@ -173,35 +177,56 @@ const startApp = async () => {
 	);
 	const bufferService = new BufferService({ db, logger });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
-	const notificationService = new NotificationService(
+	const notificationUtils = new NotificationUtils({
+		stringService,
+		emailService,
+	});
+
+	const notificationService = new NotificationService({
 		emailService,
 		db,
 		logger,
 		networkService,
-		stringService
-	);
+		stringService,
+		notificationUtils,
+	});
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
 
-	const jobQueueHelper = new JobQueueHelper({
-		redisService,
-		Queue,
-		Worker,
-		logger,
+	// const jobQueueHelper = new JobQueueHelper({
+	// 	redisService,
+	// 	Queue,
+	// 	Worker,
+	// 	logger,
+	// 	db,
+	// 	networkService,
+	// 	statusService,
+	// 	notificationService,
+	// });
+	// const jobQueue = await JobQueue.create({
+	// 	db,
+	// 	jobQueueHelper,
+	// 	logger,
+	// 	stringService,
+	// });
+
+	const pulseQueueHelper = new PulseQueueHelper({
 		db,
+		logger,
 		networkService,
 		statusService,
 		notificationService,
 	});
-	const jobQueue = await JobQueue.create({
+	const pulseQueue = await PulseQueue.create({
+		appSettings,
 		db,
-		jobQueueHelper,
+		pulseQueueHelper,
 		logger,
-		stringService,
 	});
 
 	// Register services
-	ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
+	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
+	ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
 	ServiceRegistry.register(MongoDB.SERVICE_NAME, db);
 	ServiceRegistry.register(SettingsService.SERVICE_NAME, settingsService);
 	ServiceRegistry.register(EmailService.SERVICE_NAME, emailService);
@@ -224,13 +249,14 @@ const startApp = async () => {
 	process.on("SIGTERM", shutdown);
 
 	//Create controllers
-	const authController = new AuthController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(EmailService.SERVICE_NAME),
-		ServiceRegistry.get(JobQueue.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const authController = new AuthController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+		jobQueue: ServiceRegistry.get(JobQueue.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		logger: logger,
+	});
 
 	const monitorController = new MonitorController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
@@ -271,22 +297,18 @@ const startApp = async () => {
 		ServiceRegistry.get(StringService.SERVICE_NAME)
 	);
 
+	const logController = new LogController(logger);
+
 	const statusPageController = new StatusPageController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
 		ServiceRegistry.get(StringService.SERVICE_NAME)
 	);
 
-	const notificationController = new NotificationController(
-		ServiceRegistry.get(NotificationService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME),
-		ServiceRegistry.get(StatusService.SERVICE_NAME)
-	);
-
-	const distributedUptimeController = new DistributedUptimeController({
-		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		http,
+	const notificationController = new NotificationController({
+		notificationService: ServiceRegistry.get(NotificationService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		statusService: ServiceRegistry.get(StatusService.SERVICE_NAME),
-		logger,
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
 	});
 
 	const diagnosticController = new DiagnosticController(
@@ -303,10 +325,9 @@ const startApp = async () => {
 		maintenanceWindowController
 	);
 	const queueRoutes = new QueueRoutes(queueController);
+	const logRoutes = new LogRoutes(logController);
 	const statusPageRoutes = new StatusPageRoutes(statusPageController);
-	const distributedUptimeRoutes = new DistributedUptimeRoutes(
-		distributedUptimeController
-	);
+
 	const notificationRoutes = new NotificationRoutes(notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(diagnosticController);
 	// Middleware
@@ -357,7 +378,7 @@ const startApp = async () => {
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
 	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
 	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
-	app.use("/api/v1/distributed-uptime", distributedUptimeRoutes.getRouter());
+	app.use("/api/v1/logs", verifyJWT, logRoutes.getRouter());
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());

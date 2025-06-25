@@ -16,26 +16,27 @@ import "./index.css";
  *   size="small"
  * />
  *
- * @param {Object} props - The component props.
- * @param {string} props.id - The id of the radio button.
- * @param {string} props.title - The title of the radio button.
- * @param {string} [props.desc] - The description of the radio button.
- * @param {string} [props.size="small"] - The size of the radio button.
+ * @param {Object} props - The component
+ * @param {string} id - The id of the radio button.
+ * @param {string} title - The title of the radio button.
+ * @param {string} [desc] - The description of the radio button.
+ * @param {string} [size="small"] - The size of the radio button.
  * @returns {JSX.Element} - The rendered Radio component.
  */
 
-const Radio = (props) => {
+const Radio = ({ name, checked, value, id, size, title, desc, onChange }) => {
 	const theme = useTheme();
 
 	return (
 		<FormControlLabel
 			className="custom-radio-button"
-			checked={props.checked}
-			value={props.value}
+			name={name}
+			checked={checked}
+			value={value}
 			control={
 				<MUIRadio
-					id={props.id}
-					size={props.size}
+					id={id}
+					size={size}
 					checkedIcon={<RadioChecked />}
 					sx={{
 						color: "transparent",
@@ -49,16 +50,16 @@ const Radio = (props) => {
 					}}
 				/>
 			}
-			onChange={props.onChange}
+			onChange={onChange}
 			label={
 				<>
-					<Typography component="p">{props.title}</Typography>
+					<Typography component="p">{title}</Typography>
 					<Typography
 						component="h6"
 						mt={theme.spacing(1)}
 						color={theme.palette.primary.contrastTextSecondary}
 					>
-						{props.desc}
+						{desc}
 					</Typography>
 				</>
 			}
@@ -81,9 +82,14 @@ const Radio = (props) => {
 };
 
 Radio.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.string,
 	desc: PropTypes.string,
 	size: PropTypes.string,
+	name: PropTypes.string,
+	checked: PropTypes.bool,
+	value: PropTypes.string,
+	id: PropTypes.string,
+	onChange: PropTypes.func,
 };
 
 export default Radio;

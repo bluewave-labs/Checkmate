@@ -4,6 +4,8 @@ import ConfigBox from "../../Components/ConfigBox";
 import TextInput from "../../Components/Inputs/TextInput";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import { Switch } from "@mui/material";
+import TextLink from "../../Components/TextLink";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
@@ -19,15 +21,31 @@ const SettingsEmail = ({
 	handleChange,
 	settingsData,
 	setSettingsData,
-	isPasswordSet,
+	isEmailPasswordSet,
+	emailPasswordHasBeenReset,
+	setEmailPasswordHasBeenReset,
 }) => {
 	// Setup
 	const { t } = useTranslation();
 	const theme = useTheme();
 
+	// Destructure settings with default values
+	const {
+		systemEmailHost = "",
+		systemEmailPort = "",
+		systemEmailSecure = false,
+		systemEmailPool = false,
+		systemEmailUser = "",
+		systemEmailAddress = "",
+		systemEmailPassword = "",
+		systemEmailTLSServername = "",
+		systemEmailConnectionHost = "localhost",
+		systemEmailIgnoreTLS = false,
+		systemEmailRequireTLS = false,
+		systemEmailRejectUnauthorized = true,
+	} = settingsData?.settings || {};
 	// Local state
 	const [password, setPassword] = useState("");
-	const [hasBeenReset, setHasBeenReset] = useState(false);
 
 	// Network
 	const [isSending, , sendTestEmail] = useSendTestEmail(); // Using empty placeholder for unused error variable
@@ -47,18 +65,32 @@ const SettingsEmail = ({
 	const handleSendTestEmail = () => {
 		// Collect current form values
 		const emailConfig = {
-			systemEmailHost: settingsData?.settings?.systemEmailHost,
-			systemEmailPort: settingsData?.settings?.systemEmailPort,
-			systemEmailUser: settingsData?.settings?.systemEmailUser,
-			systemEmailAddress: settingsData?.settings?.systemEmailAddress,
-			systemEmailPassword: password || settingsData?.settings?.systemEmailPassword,
-			systemEmailConnectionHost: settingsData?.settings?.systemEmailConnectionHost,
+			systemEmailHost,
+			systemEmailPort,
+			systemEmailSecure,
+			systemEmailPool,
+			systemEmailUser,
+			systemEmailAddress,
+			systemEmailPassword: password || systemEmailPassword,
+			systemEmailTLSServername,
+			systemEmailConnectionHost,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
 		};
 
 		// Basic validation
-		if (!emailConfig.systemEmailHost || !emailConfig.systemEmailPort) {
+		if (
+			!emailConfig.systemEmailHost ||
+			!emailConfig.systemEmailPort ||
+			!emailConfig.systemEmailAddress ||
+			!emailConfig.systemEmailPassword
+		) {
 			createToast({
-				body: t("settingsEmailRequiredFields", "Email host and port are required"),
+				body: t(
+					"settingsEmailRequiredFields",
+					"Email address, host, port and password are required"
+				),
 				variant: "error",
 			});
 			return;
@@ -79,52 +111,54 @@ const SettingsEmail = ({
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsEmail")}
+					{t("settingsPage.emailSettings.title")}
 				</Typography>
-				<Typography sx={HEADER_SX}>{t("settingsEmailDescription")}</Typography>
+				<Typography sx={HEADER_SX}>
+					{t("settingsPage.emailSettings.description")}
+				</Typography>
 			</Box>
 			<Box>
 				<Stack gap={theme.spacing(10)}>
 					<Box>
-						<Typography>{t("settingsEmailHost")}</Typography>
+						<Typography>{t("settingsPage.emailSettings.labelHost")}</Typography>
 						<TextInput
 							name="systemEmailHost"
 							placeholder="smtp.gmail.com"
-							value={settingsData?.settings?.systemEmailHost ?? ""}
+							value={systemEmailHost}
 							onChange={handleChange}
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsEmailPort")}</Typography>
+						<Typography>{t("settingsPage.emailSettings.labelPort")}</Typography>
 						<TextInput
 							name="systemEmailPort"
 							placeholder="425"
 							type="number"
-							value={settingsData?.settings?.systemEmailPort ?? ""}
+							value={systemEmailPort}
 							onChange={handleChange}
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsEmailUser")}</Typography>
+						<Typography>{t("settingsPage.emailSettings.labelUser")}</Typography>
 						<TextInput
 							name="systemEmailUser"
-							placeholder="Leave empty if not required"
-							value={settingsData?.settings?.systemEmailUser ?? ""}
+							placeholder={t("settingsPage.emailSettings.placeholderUser")}
+							value={systemEmailUser}
 							onChange={handleChange}
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsEmailAddress")}</Typography>
+						<Typography>{t("settingsPage.emailSettings.labelAddress")}</Typography>
 						<TextInput
 							name="systemEmailAddress"
 							placeholder="uptime@bluewavelabs.ca"
-							value={settingsData?.settings?.systemEmailAddress ?? ""}
+							value={systemEmailAddress}
 							onChange={handleChange}
 						/>
 					</Box>
-					{(isPasswordSet === false || hasBeenReset === true) && (
+					{(isEmailPasswordSet === false || emailPasswordHasBeenReset === true) && (
 						<Box>
-							<Typography>{t("settingsEmailPassword")}</Typography>
+							<Typography>{t("settingsPage.emailSettings.labelPassword")}</Typography>
 							<TextInput
 								name="systemEmailPassword"
 								type="password"
@@ -135,9 +169,10 @@ const SettingsEmail = ({
 							/>
 						</Box>
 					)}
-					{isPasswordSet === true && hasBeenReset === false && (
+
+					{isEmailPasswordSet === true && emailPasswordHasBeenReset === false && (
 						<Box>
-							<Typography>{t("settingsEmailFieldResetLabel")}</Typography>
+							<Typography>{t("settingsPage.emailSettings.labelPasswordSet")}</Typography>
 							<Button
 								onClick={() => {
 									setPassword("");
@@ -145,7 +180,7 @@ const SettingsEmail = ({
 										...settingsData,
 										settings: { ...settingsData.settings, systemEmailPassword: "" },
 									});
-									setHasBeenReset(true);
+									setEmailPasswordHasBeenReset(true);
 								}}
 								variant="contained"
 								color="error"
@@ -156,23 +191,129 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
-						<Typography>{t("settingsEmailConnectionHost")}</Typography>
+						<Typography>{t("settingsPage.emailSettings.labelTLSServername")}</Typography>
 						<TextInput
-							name="systemEmailConnectionHost"
+							name="systemEmailTLSServername"
 							placeholder="bluewavelabs.ca"
-							value={settingsData?.settings?.systemEmailConnectionHost ?? ""}
+							value={systemEmailTLSServername}
 							onChange={handleChange}
 						/>
 					</Box>
 					<Box>
-						<Button
-							variant="contained"
-							color="accent"
-							loading={isSending}
-							onClick={handleSendTestEmail}
+						<Typography>{t("settingsPage.emailSettings.labelConnectionHost")}</Typography>
+						<TextInput
+							name="systemEmailConnectionHost"
+							placeholder="bluewavelabs.ca"
+							value={systemEmailConnectionHost}
+							onChange={handleChange}
+						/>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							gap: theme.spacing(4),
+						}}
+					>
+						{[
+							[
+								"settingsPage.emailSettings.labelSecure",
+								"systemEmailSecure",
+								systemEmailSecure,
+							],
+							[
+								"settingsPage.emailSettings.labelPool",
+								"systemEmailPool",
+								systemEmailPool,
+							],
+							[
+								"settingsPage.emailSettings.labelIgnoreTLS",
+								"systemEmailIgnoreTLS",
+								systemEmailIgnoreTLS,
+							],
+							[
+								"settingsPage.emailSettings.labelRequireTLS",
+								"systemEmailRequireTLS",
+								systemEmailRequireTLS,
+							],
+							[
+								"settingsPage.emailSettings.labelRejectUnauthorized",
+								"systemEmailRejectUnauthorized",
+								systemEmailRejectUnauthorized,
+							],
+						].map(([labelKey, name, value]) => (
+							<Box
+								key={name}
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "space-between",
+								}}
+							>
+								<Typography>{t(labelKey)}</Typography>
+								<Switch
+									name={name}
+									checked={value}
+									onChange={handleChange}
+								/>
+							</Box>
+						))}
+
+						<TextLink
+							text={t("settingsPage.emailSettings.descriptionTransport")}
+							linkText={t("settingsPage.emailSettings.linkTransport")}
+							href="https://nodemailer.com/smtp"
+							target="_blank"
+						/>
+						<Box
+							component={"pre"}
+							sx={{
+								fontFamily: "monospace",
+								p: 2,
+								borderRadius: 1,
+								overflow: "auto",
+							}}
 						>
-							{t("settingsTestEmail", "Send test e-mail")}
-						</Button>
+							<code>
+								{JSON.stringify(
+									{
+										host: systemEmailHost,
+										port: systemEmailPort,
+										secure: systemEmailSecure,
+										auth: {
+											user: systemEmailUser || systemEmailAddress,
+											pass: "<your_password>",
+										},
+										name: systemEmailConnectionHost || "localhost",
+										pool: systemEmailPool,
+										tls: {
+											rejectUnauthorized: systemEmailRejectUnauthorized,
+											ignoreTLS: systemEmailIgnoreTLS,
+											requireTLS: systemEmailRequireTLS,
+											servername: systemEmailTLSServername,
+										},
+									},
+									null,
+									2
+								)}
+							</code>
+						</Box>
+					</Box>
+
+					<Box>
+						{systemEmailHost &&
+							systemEmailPort &&
+							systemEmailAddress &&
+							systemEmailPassword && (
+								<Button
+									variant="contained"
+									color="accent"
+									loading={isSending}
+									onClick={handleSendTestEmail}
+								>
+									{t("settingsPage.emailSettings.buttonSendTestEmail")}
+								</Button>
+							)}
 					</Box>
 				</Stack>
 			</Box>

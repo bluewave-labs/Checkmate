@@ -46,7 +46,27 @@ const useMonitorUtils = () => {
 		pending: theme.palette.warning.lowContrast,
 	};
 
-	return { getMonitorWithPercentage, determineState, statusColor };
+	const statusToTheme = {
+		up: "success",
+		down: "error",
+		paused: "warning",
+		pending: "secondary",
+		"cannot resolve": "tertiary",
+	};
+
+	const pagespeedStatusMsg = {
+		up: "Live (collecting data)",
+		down: "Inactive",
+		paused: "Paused",
+	};
+
+	return {
+		getMonitorWithPercentage,
+		determineState,
+		statusColor,
+		statusToTheme,
+		pagespeedStatusMsg,
+	};
 };
 
 export { useMonitorUtils };

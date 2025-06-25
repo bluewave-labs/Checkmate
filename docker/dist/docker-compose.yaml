@@ -1,6 +1,6 @@
 services:
   client:
-    image: ghcr.io/bluewave-labs/checkmate:frontend-dist
+    image: ghcr.io/bluewave-labs/checkmate-client:latest
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
@@ -11,12 +11,11 @@ services:
     depends_on:
       - server
   server:
-    image: ghcr.io/bluewave-labs/checkmate:backend-dist
+    image: ghcr.io/bluewave-labs/checkmate-backend:latest
     restart: always
     ports:
       - "52345:52345"
     depends_on:
-      - redis
       - mongodb
     environment:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
@@ -25,19 +24,8 @@ services:
       - JWT_SECRET=my_secret
     # volumes:
     # - /var/run/docker.sock:/var/run/docker.sock:ro
-  redis:
-    image: ghcr.io/bluewave-labs/checkmate:redis-dist
-    restart: always
-    volumes:
-      - ./redis/data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 5s
   mongodb:
-    image: ghcr.io/bluewave-labs/checkmate:mongo-dist
+    image: ghcr.io/bluewave-labs/checkmate-mongo:latest
     restart: always
     volumes:
       - ./mongo/data:/data/db

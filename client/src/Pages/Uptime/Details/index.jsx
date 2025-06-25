@@ -1,15 +1,14 @@
 // Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
-import MonitorStatusHeader from "../../../Components/MonitorStatusHeader";
 import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 import ChartBoxes from "./Components/ChartBoxes";
 import ResponseTimeChart from "./Components/Charts/ResponseTimeChart";
 import ResponseTable from "./Components/ResponseTable";
 import UptimeStatusBoxes from "./Components/UptimeStatusBoxes";
 import GenericFallback from "../../../Components/GenericFallback";
-// MUI Components
-import { Stack, Typography } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 // Utils
 import { useState } from "react";
@@ -17,9 +16,9 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import useFetchUptimeMonitorDetails from "../../../Hooks/useFetchUptimeMonitorDetails";
+import { useFetchUptimeMonitorById } from "../../../Hooks/monitorHooks";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
-import useChecksFetch from "./Hooks/useChecksFetch";
+import { useFetchChecksByMonitor } from "../../../Hooks/checkHooks";
 import { useTranslation } from "react-i18next";
 
 // Constants
@@ -50,7 +49,7 @@ const UptimeDetails = () => {
 	const { t } = useTranslation();
 
 	const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError] =
-		useFetchUptimeMonitorDetails({
+		useFetchUptimeMonitorById({
 			monitorId,
 			dateRange,
 			trigger,
@@ -66,13 +65,18 @@ const UptimeDetails = () => {
 	});
 
 	const monitorType = monitor?.type;
-	const [checks, checksCount, checksAreLoading, checksNetworkError] = useChecksFetch({
-		monitorId,
-		monitorType,
-		dateRange,
-		page,
-		rowsPerPage,
-	});
+
+	const [checks, checksCount, checksAreLoading, checksNetworkError] =
+		useFetchChecksByMonitor({
+			monitorId,
+			type: monitorType,
+			sortOrder: "desc",
+			limit: null,
+			dateRange,
+			filter: null,
+			page,
+			rowsPerPage,
+		});
 
 	// Handlers
 	const triggerUpdate = () => {
@@ -95,9 +99,9 @@ const UptimeDetails = () => {
 					marginY={theme.spacing(4)}
 					color={theme.palette.primary.contrastTextTertiary}
 				>
-					{t("networkError")}
+					{t("common.toasts.networkError")}
 				</Typography>
-				<Typography>{t("checkConnection")}</Typography>
+				<Typography>{t("common.toasts.checkConnection")}</Typography>
 			</GenericFallback>
 		);
 	}
@@ -107,6 +111,7 @@ const UptimeDetails = () => {
 		return (
 			<Stack gap={theme.spacing(10)}>
 				<Breadcrumbs list={BREADCRUMBS} />
+
 				<MonitorDetailsControlHeader
 					path={"uptime"}
 					isAdmin={isAdmin}
@@ -114,6 +119,19 @@ const UptimeDetails = () => {
 					monitor={monitor}
 					triggerUpdate={triggerUpdate}
 				/>
+				<UptimeStatusBoxes
+					isLoading={monitorIsLoading}
+					monitor={monitor}
+					monitorStats={monitorStats}
+					certificateExpiry={certificateExpiry}
+				/>
+				<MonitorTimeFrameHeader
+					isLoading={monitorIsLoading}
+					hasDateRange={true}
+					dateRange={dateRange}
+					setDateRange={setDateRange}
+				/>
+
 				<GenericFallback>
 					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>

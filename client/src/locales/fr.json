@@ -1,61 +1,6 @@
 {
-	"dontHaveAccount": "Vous n'avez pas de compte",
-	"email": "E-mail",
-	"forgotPassword": "Mot de passe oublié",
-	"password": "mot de passe",
-	"signUp": "S'inscrire",
 	"submit": "Envoyer",
 	"title": "Titre",
-	"continue": "Continuer",
-	"enterEmail": "Entrez votre adresse e-mail",
-	"authLoginTitle": "Se connecter",
-	"authLoginEnterPassword": "Entrez votre mot de passe",
-	"commonPassword": "Mot de passe",
-	"commonBack": "Retour",
-	"authForgotPasswordTitle": "Mot de passe oublié ?",
-	"authForgotPasswordResetPassword": "Réinitialiser le mot de passe",
-	"createPassword": "Créez votre mot de passe",
-	"createAPassword": "Créer un mot de passe",
-	"authRegisterAlreadyHaveAccount": "Vous avez un compte ?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Entrez votre e-mail",
-	"authRegisterTitle": "Créer un compte",
-	"authRegisterStepOneTitle": "Créez votre compte",
-	"authRegisterStepOneDescription": "Entrez vos informations pour commencer",
-	"authRegisterStepTwoTitle": "",
-	"authRegisterStepTwoDescription": "",
-	"authRegisterStepThreeTitle": "Presque fini !",
-	"authRegisterStepThreeDescription": "",
-	"authForgotPasswordDescription": "Pas d'inquiétude, nous allons vous envoyer des instructions de réinitialisation.",
-	"authForgotPasswordSendInstructions": "Envoyer les instructions",
-	"authForgotPasswordBackTo": "Retourner à",
-	"authCheckEmailTitle": "Vérifiez votre e-mail",
-	"authCheckEmailDescription": "Nous avons envoyé un lien de réinitialisation à",
-	"authCheckEmailResendEmail": "Renvoyer le mail",
-	"authCheckEmailBackTo": "Retourner à",
-	"goBackTo": "Retourner à",
-	"authCheckEmailDidntReceiveEmail": "Vous n'avez pas reçu l'e-mail ?",
-	"authCheckEmailClickToResend": "Cliquez pour renvoyer",
-	"authSetNewPasswordTitle": "Définir un nouveau mot de passe",
-	"authSetNewPasswordDescription": "Votre nouveau mot de passe doit être différent des anciens mots de passes utilisés.",
-	"authSetNewPasswordNewPassword": "Nouveau mot de passe",
-	"authSetNewPasswordConfirmPassword": "Confirmer le mot de passe",
-	"confirmPassword": "Confirmez votre mot de passe",
-	"authSetNewPasswordResetPassword": "Réinitialiser le mot de passe",
-	"authSetNewPasswordBackTo": "Retourner à",
-	"authPasswordMustBeAtLeast": "Doit faire au moins",
-	"authPasswordCharactersLong": "8 caractères",
-	"authPasswordMustContainAtLeast": "Doit contenir au moins",
-	"authPasswordSpecialCharacter": "un caractère spécial",
-	"authPasswordOneNumber": "un nombre",
-	"authPasswordUpperCharacter": "une lettre majuscule",
-	"authPasswordLowerCharacter": "une lettre minuscule",
-	"authPasswordConfirmAndPassword": "",
-	"authPasswordMustMatch": "doit correspondre",
-	"authRegisterCreateAccount": "Créez votre compte pour commencer",
-	"authRegisterCreateSuperAdminAccount": "Créez votre compte Super admin pour commencer",
-	"authRegisterSignUpWithEmail": "S'inscrire avec E-mail",
-	"authRegisterBySigningUp": "En vous inscrivant, vous acceptez nos",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
 	"settingsGeneralSettings": "Paramètres généraux",
@@ -65,29 +10,23 @@
 	"settingsAppearanceDescription": "",
 	"settingsThemeMode": "",
 	"settingsLanguage": "Langue",
-	"settingsDistributedUptime": "",
-	"settingsDistributedUptimeDescription": "",
 	"settingsEnabled": "Activé",
 	"settingsDisabled": "Désactivé",
 	"settingsHistoryAndMonitoring": "",
 	"settingsHistoryAndMonitoringDescription": "",
 	"settingsTTLLabel": "",
-	"settingsTTLOptionalLabel": "",
-	"settingsClearAllStats": "",
-	"settingsClearAllStatsButton": "",
-	"settingsClearAllStatsDialogTitle": "",
+	"settingsTTLOptionalLabel": "0 pour infini",
+	"settingsClearAllStats": "Effacer les stats. C'est irréversible.",
+	"settingsClearAllStatsButton": "Effacer les stats",
+	"settingsClearAllStatsDialogTitle": "Voulez-vous effacer toutes les stats ?",
 	"settingsClearAllStatsDialogDescription": "",
-	"settingsClearAllStatsDialogConfirm": "",
+	"settingsClearAllStatsDialogConfirm": "Oui, effacer les stats",
 	"settingsDemoMonitors": "",
 	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitors": "",
 	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitors": "",
 	"settingsRemoveAllMonitorsButton": "",
 	"settingsRemoveAllMonitorsDialogTitle": "",
 	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsWallet": "",
-	"settingsWalletDescription": "",
 	"settingsAbout": "",
 	"settingsDevelopedBy": "",
 	"settingsSave": "",
@@ -104,59 +43,49 @@
 	"https": "",
 	"http": "",
 	"monitor": "",
-	"aboutus": "",
+	"aboutus": "A propos de nous",
 	"now": "",
-	"delete": "",
+	"delete": "Supprimer",
 	"configure": "",
-	"networkError": "",
 	"responseTime": "",
 	"ms": "",
 	"bar": "",
-	"area": "",
-	"country": "",
-	"city": "",
+	"area": "Zone",
+	"country": "PAYS",
+	"city": "VILLE",
 	"response": "",
-	"checkConnection": "",
-	"passwordreset": "",
-	"authRegisterStepOnePersonalDetails": "",
-	"authCheckEmailOpenEmailButton": "",
-	"authNewPasswordConfirmed": "",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
 	"webhookSendSuccess": "",
 	"webhookSendError": "",
 	"webhookUnsupportedPlatform": "",
-	"distributedRightCategoryTitle": "",
+	"distributedRightCategoryTitle": "Moniteur",
 	"distributedStatusServerMonitors": "",
 	"distributedStatusServerMonitorsDescription": "",
 	"distributedUptimeCreateSelectURL": "",
 	"distributedUptimeCreateChecks": "",
 	"distributedUptimeCreateChecksDescription": "",
-	"distributedUptimeCreateIncidentNotification": "",
+	"distributedUptimeCreateIncidentNotification": "Notifications d'incidents",
 	"distributedUptimeCreateIncidentDescription": "",
-	"distributedUptimeCreateAdvancedSettings": "",
+	"distributedUptimeCreateAdvancedSettings": "Paramètres avancés",
 	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsFooterHeading": "",
-	"distributedUptimeDetailsFooterBuilt": "",
-	"distributedUptimeDetailsFooterSolana": "",
-	"distributedUptimeDetailsMonitorHeader": "",
 	"distributedUptimeDetailsStatusHeaderUptime": "",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
 	"notifications": {
 		"enableNotifications": "",
-		"testNotification": "",
-		"addOrEditNotifications": "",
+		"testNotification": "Notification de test",
+		"addOrEditNotifications": "Ajouter ou éditer des notifications",
 		"slack": {
 			"label": "",
 			"description": "",
-			"webhookLabel": "",
+			"webhookLabel": "URL du webhook",
 			"webhookPlaceholder": "",
 			"webhookRequired": ""
 		},
 		"discord": {
 			"label": "",
 			"description": "",
-			"webhookLabel": "",
+			"webhookLabel": "URL du webhook Discord",
 			"webhookPlaceholder": "",
 			"webhookRequired": ""
 		},
@@ -165,71 +94,97 @@
 			"description": "",
 			"tokenLabel": "",
 			"tokenPlaceholder": "",
-			"chatIdLabel": "",
-			"chatIdPlaceholder": "",
+			"chatIdLabel": "Votre Chat ID",
+			"chatIdPlaceholder": "-1001234567890",
 			"fieldsRequired": ""
 		},
 		"webhook": {
 			"label": "",
 			"description": "",
-			"urlLabel": "",
-			"urlPlaceholder": "",
-			"urlRequired": ""
+			"urlLabel": "URL du webhook",
+			"urlPlaceholder": "https://votre-serveur.fr/webhook",
+			"urlRequired": "L'URL du webhook est nécessaire"
 		},
-		"testNotificationDevelop": "",
-		"integrationButton": "",
-		"testSuccess": "",
-		"testFailed": "",
+		"testNotificationDevelop": "Notification de test 2",
+		"integrationButton": "Intégration de notification",
+		"testSuccess": "La notification de test a été envoyée avec succès !",
+		"testFailed": "Échec de l'envoi de la notification de test",
 		"unsupportedType": "",
-		"networkError": ""
+		"networkError": "",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "",
-	"add": "",
+	"add": "Ajouter",
 	"monitors": "",
-	"distributedUptimeStatusCreateStatusPage": "",
-	"distributedUptimeStatusCreateStatusPageAccess": "",
+	"distributedUptimeStatusCreateStatusPage": "page de statut",
+	"distributedUptimeStatusCreateStatusPageAccess": "Accès",
 	"distributedUptimeStatusCreateStatusPageReady": "",
 	"distributedUptimeStatusBasicInfoHeader": "",
 	"distributedUptimeStatusBasicInfoDescription": "",
-	"distributedUptimeStatusLogoHeader": "",
+	"distributedUptimeStatusLogoHeader": "Logo",
 	"distributedUptimeStatusLogoDescription": "",
-	"distributedUptimeStatusLogoUploadButton": "",
+	"distributedUptimeStatusLogoUploadButton": "Téléverser un logo",
 	"distributedUptimeStatusStandardMonitorsHeader": "",
 	"distributedUptimeStatusStandardMonitorsDescription": "",
 	"distributedUptimeStatusCreateYour": "",
 	"distributedUptimeStatusEditYour": "",
 	"distributedUptimeStatusPublishedLabel": "",
-	"distributedUptimeStatusCompanyNameLabel": "",
-	"distributedUptimeStatusPageAddressLabel": "",
-	"distributedUptimeStatus30Days": "",
-	"distributedUptimeStatus60Days": "",
-	"distributedUptimeStatus90Days": "",
+	"distributedUptimeStatusCompanyNameLabel": "Nom de l'entreprise",
+	"distributedUptimeStatusPageAddressLabel": "Adresse de votre page de statut",
+	"distributedUptimeStatus30Days": "30 jours",
+	"distributedUptimeStatus60Days": "60 jours",
+	"distributedUptimeStatus90Days": "90 jours",
 	"distributedUptimeStatusPageNotSetUp": "",
-	"distributedUptimeStatusContactAdmin": "",
-	"distributedUptimeStatusPageNotPublic": "",
-	"distributedUptimeStatusPageDeleteDialog": "",
-	"distributedUptimeStatusPageDeleteConfirm": "",
-	"distributedUptimeStatusPageDeleteDescription": "",
+	"distributedUptimeStatusContactAdmin": "Veuillez contacter votre administrateur",
+	"distributedUptimeStatusPageNotPublic": "Cette page de statut n'est pas publique.",
+	"distributedUptimeStatusPageDeleteDialog": "Voulez-vous supprimer cette page de statut ?",
+	"distributedUptimeStatusPageDeleteConfirm": "Oui, supprimer la page de statut",
+	"distributedUptimeStatusPageDeleteDescription": "Supprimer votre page de statut est irréversible.",
 	"distributedUptimeStatusDevices": "",
 	"distributedUptimeStatusUpt": "",
 	"distributedUptimeStatusUptBurned": "",
 	"distributedUptimeStatusUptLogo": "",
 	"incidentsTableNoIncidents": "",
-	"incidentsTablePaginationLabel": "",
+	"incidentsTablePaginationLabel": "incidents",
 	"incidentsTableMonitorName": "",
 	"incidentsTableStatus": "",
-	"incidentsTableDateTime": "",
+	"incidentsTableDateTime": "Date et heure",
 	"incidentsTableStatusCode": "",
-	"incidentsTableMessage": "",
+	"incidentsTableMessage": "Message",
 	"incidentsOptionsHeader": "",
 	"incidentsOptionsHeaderFilterBy": "",
 	"incidentsOptionsHeaderFilterAll": "",
 	"incidentsOptionsHeaderFilterDown": "",
 	"incidentsOptionsHeaderFilterCannotResolve": "",
 	"incidentsOptionsHeaderShow": "",
-	"incidentsOptionsHeaderLastHour": "",
-	"incidentsOptionsHeaderLastDay": "",
-	"incidentsOptionsHeaderLastWeek": "",
+	"incidentsOptionsHeaderLastHour": "Dernière heure",
+	"incidentsOptionsHeaderLastDay": "Dernier jour",
+	"incidentsOptionsHeaderLastWeek": "Dernière semaine",
 	"incidentsOptionsPlaceholderAllServers": "",
 	"infrastructureCreateYour": "",
 	"infrastructureCreateGeneralSettingsDescription": "",
@@ -237,18 +192,18 @@
 	"infrastructureCustomizeAlerts": "",
 	"infrastructureAlertNotificationDescription": "",
 	"infrastructureCreateMonitor": "",
-	"infrastructureProtocol": "",
-	"infrastructureServerUrlLabel": "",
+	"infrastructureProtocol": "Protocole",
+	"infrastructureServerUrlLabel": "URL du serveur",
 	"infrastructureDisplayNameLabel": "",
 	"infrastructureAuthorizationSecretLabel": "",
 	"gb": "",
 	"mb": "",
 	"mem": "",
 	"memoryUsage": "",
-	"cpu": "",
+	"cpu": "CPU",
 	"cpuUsage": "",
 	"cpuTemperature": "",
-	"diskUsage": "",
+	"diskUsage": "Utilisation du disque",
 	"used": "",
 	"total": "",
 	"cores": "",
@@ -256,36 +211,36 @@
 	"status": "",
 	"cpuPhysical": "",
 	"cpuLogical": "",
-	"cpuFrequency": "",
-	"avgCpuTemperature": "",
+	"cpuFrequency": "Fréquence CPU",
+	"avgCpuTemperature": "Température moyenne du CPU",
 	"memory": "",
-	"disk": "",
+	"disk": "Disque",
 	"uptime": "",
 	"os": "",
 	"host": "",
-	"actions": "",
-	"integrations": "",
-	"integrationsPrism": "",
-	"integrationsSlack": "",
-	"integrationsSlackInfo": "",
-	"integrationsDiscord": "",
-	"integrationsDiscordInfo": "",
-	"integrationsZapier": "",
-	"integrationsZapierInfo": "",
-	"commonSave": "",
-	"createYour": "",
+	"actions": "Actions",
+	"integrations": "Intégrations",
+	"integrationsPrism": "Connecter Prism à votre service préféré.",
+	"integrationsSlack": "Slack",
+	"integrationsSlackInfo": "Connecter à Slack et voir les incidents dans un canal",
+	"integrationsDiscord": "Discord",
+	"integrationsDiscordInfo": "Connecter à Discord et voir les incidents dans un canal",
+	"integrationsZapier": "Zapier",
+	"integrationsZapierInfo": "Envoyer tous les incidents à Zapier",
+	"commonSave": "Sauvegarder",
+	"createYour": "Créez votre",
 	"createMonitor": "",
 	"pause": "",
 	"resume": "",
 	"editing": "",
-	"url": "",
-	"access": "",
-	"timezone": "",
+	"url": "URL",
+	"access": "Accès",
+	"timezone": "Fuseau horaire",
 	"features": "",
-	"administrator": "",
+	"administrator": "Administrateur ?",
 	"loginHere": "",
-	"displayName": "",
-	"urlMonitor": "",
+	"displayName": "Nom d'affichage",
+	"urlMonitor": "URL à suivre",
 	"portToMonitor": "",
 	"websiteMonitoring": "",
 	"websiteMonitoringDescription": "",
@@ -296,7 +251,7 @@
 	"portMonitoring": "",
 	"portMonitoringDescription": "",
 	"createMaintenanceWindow": "",
-	"createMaintenance": "",
+	"createMaintenance": "Créer une maintenance",
 	"editMaintenance": "",
 	"maintenanceWindowName": "",
 	"friendlyNameInput": "",
@@ -304,20 +259,20 @@
 	"maintenanceRepeat": "",
 	"maintenance": "",
 	"duration": "",
-	"addMonitors": "",
+	"addMonitors": "Ajouter des moniteurs",
 	"window": "",
-	"cancel": "",
+	"cancel": "Annuler",
 	"message": "",
 	"low": "",
 	"high": "",
 	"statusCode": "",
-	"date&Time": "",
+	"date&Time": "Date et heure",
 	"type": "",
 	"statusPageName": "",
 	"publicURL": "",
 	"repeat": "",
 	"edit": "",
-	"createA": "",
+	"createA": "Créer un",
 	"remove": "",
 	"maintenanceWindowDescription": "",
 	"startTime": "",
@@ -327,22 +282,22 @@
 	"notFoundButton": "",
 	"pageSpeedConfigureSettingsDescription": "",
 	"monitorDisplayName": "",
-	"whenNewIncident": "",
+	"whenNewIncident": "Lors d'un nouvel incident,",
 	"notifySMS": "",
 	"notifyEmails": "",
 	"seperateEmails": "",
-	"checkFrequency": "",
+	"checkFrequency": "Vérifier la fréquence",
 	"matchMethod": "",
 	"expectedValue": "",
 	"deleteDialogTitle": "",
 	"deleteDialogDescription": "",
 	"pageSpeedMonitor": "",
 	"shown": "",
-	"ago": "",
+	"ago": "depuis",
 	"companyName": "",
 	"pageSpeedDetailsPerformanceReport": "",
 	"pageSpeedDetailsPerformanceReportCalculator": "",
-	"checkingEvery": "",
+	"checkingEvery": "Vérification tous les",
 	"statusPageCreateSettings": "",
 	"basicInformation": "",
 	"statusPageCreateBasicInfoDescription": "",
@@ -362,7 +317,7 @@
 	"statusPageStatusNoPage": "",
 	"statusPageStatusServiceStatus": "",
 	"deleteStatusPage": "",
-	"deleteStatusPageConfirm": "",
+	"deleteStatusPageConfirm": "Oui, supprimer la page de statut",
 	"deleteStatusPageDescription": "",
 	"uptimeCreate": "",
 	"uptimeCreateJsonPath": "",
@@ -379,25 +334,21 @@
 	"pageSpeedLearnMoreLink": "",
 	"pageSpeedAddApiKey": "",
 	"update": "",
-	"invalidFileFormat": "",
-	"invalidFileSize": "",
-	"ClickUpload": "",
+	"invalidFileFormat": "Format de fichier non supporté !",
+	"invalidFileSize": "Le fichier est trop volumineux !",
+	"ClickUpload": "Cliquez pour téléverser",
 	"DragandDrop": "",
 	"MaxSize": "",
 	"SupportedFormats": "",
 	"FirstName": "",
 	"LastName": "",
 	"EmailDescriptionText": "",
-	"YourPhoto": "",
+	"YourPhoto": "Photo de profil",
 	"PhotoDescriptionText": "",
 	"save": "",
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
-	"DeleteWarningTitle": "",
-	"authRegisterFirstName": "",
-	"authRegisterLastName": "",
-	"authRegisterEmail": "",
-	"authRegisterEmailRequired": "",
+	"DeleteWarningTitle": "Vous supprimez vraiment ce compte ?",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -405,31 +356,15 @@
 		"selectFile": "",
 		"parsingFailed": "",
 		"uploadSuccess": "",
-		"validationFailed": "",
+		"validationFailed": "Echec de la validation",
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "",
-	"authRegisterLoginLink": "",
-	"validationNameRequired": "",
-	"validationNameTooLong": "",
-	"validationNameInvalidCharacters": "",
 	"settingsSystemReset": "",
 	"settingsSystemResetDescription": "",
-	"DeleteAccountTitle": "",
-	"DeleteAccountButton": "",
-	"authRegisterEmailInvalid": "",
+	"DeleteAccountTitle": "Supprimer le compte",
+	"DeleteAccountButton": "Supprimer le compte",
 	"publicLink": "",
-	"doNotHaveAccount": "",
-	"registerHere": "",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"pageSpeedApiKeyFieldTitle": "",
 	"pageSpeedApiKeyFieldLabel": "",
@@ -439,71 +374,66 @@
 	"ignoreTLSError": "",
 	"tlsErrorIgnored": "",
 	"ignoreTLSErrorDescription": "",
-	"createNew": "",
+	"createNew": "Créer un nouveau",
 	"greeting": {
 		"prepend": "",
-		"append": "",
+		"append": "L'après-midi est votre libre, rendons-le épique !",
 		"overview": ""
-	},
-	"monitorStatus": {
-		"up": "",
-		"down": "",
-		"paused": ""
 	},
 	"roles": {
 		"superAdmin": "",
-		"admin": "",
+		"admin": "Admin",
 		"teamMember": "",
 		"demoUser": ""
 	},
 	"teamPanel": {
-		"teamMembers": "",
+		"teamMembers": "Membres de l'équipe",
 		"filter": {
-			"all": "",
+			"all": "Tous",
 			"member": ""
 		},
 		"inviteTeamMember": "",
 		"inviteNewTeamMember": "",
 		"inviteDescription": "",
-		"email": "",
+		"email": "Email",
 		"selectRole": "",
-		"inviteLink": "",
-		"cancel": "",
+		"inviteLink": "Lien d'invitation",
+		"cancel": "Annuler",
 		"noMembers": "",
 		"getToken": "",
 		"emailToken": "",
 		"table": {
 			"name": "",
-			"email": "",
+			"email": "Email",
 			"role": "",
-			"created": ""
+			"created": "Créée"
 		}
 	},
 	"monitorState": {
 		"paused": "",
 		"resumed": "",
-		"active": ""
+		"active": "Actif"
 	},
 	"menu": {
 		"uptime": "",
 		"pagespeed": "",
 		"infrastructure": "",
-		"distributedUptime": "",
 		"incidents": "",
 		"statusPages": "",
 		"maintenance": "",
-		"integrations": "",
+		"integrations": "Intégrations",
 		"settings": "",
 		"support": "",
-		"discussions": "",
+		"discussions": "Discussions",
 		"docs": "",
-		"changelog": "",
+		"changelog": "Changelog",
 		"profile": "",
 		"password": "",
 		"team": "",
-		"logOut": ""
+		"logOut": "Déconnexion",
+		"notifications": ""
 	},
-	"settingsEmail": "",
+	"settingsEmail": "Email",
 	"settingsEmailDescription": "",
 	"settingsEmailHost": "",
 	"settingsEmailPort": "",
@@ -514,34 +444,31 @@
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"authForgotPasswordInstructions": "",
-	"settingsThemeModeLight": "",
-	"settingsThemeModeDark": "",
-	"settingsClearAllStatsDialogCancel": "",
-	"commonSaving": "",
+	"settingsThemeModeLight": "Clair",
+	"settingsThemeModeDark": "Sombre",
+	"settingsClearAllStatsDialogCancel": "Annuler",
+	"commonSaving": "Sauvegarde...",
 	"navControls": "",
-	"incidentsPageTitle": "",
+	"incidentsPageTitle": "Incidents",
 	"passwordPanel": {
-		"passwordChangedSuccess": "",
-		"passwordInputIncorrect": "",
-		"currentPassword": "",
-		"enterCurrentPassword": "",
-		"newPassword": "",
-		"enterNewPassword": "",
-		"confirmNewPassword": "",
-		"passwordRequirements": "",
-		"saving": ""
+		"passwordChangedSuccess": "Votre mot de passe a été modifié avec succès.",
+		"passwordInputIncorrect": "La saisie de votre mot de passe est incorrecte.",
+		"currentPassword": "Mot de passe actuel",
+		"enterCurrentPassword": "Entrez votre mot de passe actuel",
+		"newPassword": "Nouveau mot de passe",
+		"enterNewPassword": "Entrez votre nouveau mot de passe",
+		"confirmNewPassword": "Confirmer le nouveau mot de passe",
+		"passwordRequirements": "Le nouveau mot de passe doit contenir au moins 8 caractères et au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+		"saving": "Sauvegarde..."
 	},
-	"uptimeCreateSelectURL": "",
 	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
 	"settingsTestEmail": "",
 	"settingsTestEmailSuccess": "",
 	"settingsTestEmailFailed": "",
 	"settingsTestEmailFailedWithReason": "",
-	"settingsTestEmailUnknownError": "",
+	"settingsTestEmailUnknownError": "Erreur inconnue",
 	"settingsEmailRequiredFields": "",
 	"statusMsg": {
 		"paused": "",
@@ -553,5 +480,271 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"webhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": "",
+	"selectAll": ""
 }

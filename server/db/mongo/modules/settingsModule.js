@@ -26,10 +26,12 @@ const updateAppSettings = async (newSettings) => {
 			delete update.$set.systemEmailPassword;
 		}
 
-		const settings = await AppSettings.findOneAndUpdate({}, update, {
-			new: true,
+		await AppSettings.findOneAndUpdate({}, update, {
 			upsert: true,
 		});
+		const settings = await AppSettings.findOne()
+			.select("-__v -_id -createdAt -updatedAt -singleton")
+			.lean();
 		return settings;
 	} catch (error) {
 		error.service = SERVICE_NAME;

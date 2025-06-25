@@ -7,8 +7,8 @@ import Dot from "../../Components/Dot";
 import { formatDurationRounded } from "../../Utils/timeUtils";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
-
+import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
+import { formatMonitorUrl } from "../../Utils/utils";
 /**
  * Status component displays the status information of a monitor.
  * It includes the monitor's name, URL, and check interval.
@@ -23,23 +23,18 @@ import useUtils from "../../Pages/Uptime/Monitors/Hooks/useUtils";
  */
 const Status = ({ monitor }) => {
 	const theme = useTheme();
-	const { statusColor, determineState } = useUtils();
+	const { statusColor, determineState } = useMonitorUtils();
 
 	return (
 		<Stack>
-			<Typography variant="h1">{monitor?.name}</Typography>
+			<Typography variant="monitorName">{monitor?.name}</Typography>
 			<Stack
 				direction="row"
 				alignItems={"center"}
 				gap={theme.spacing(4)}
 			>
 				<PulseDot color={statusColor[determineState(monitor)]} />
-				<Typography
-					variant="h2"
-					style={{ fontFamily: "monospace", fontWeight: "bolder" }}
-				>
-					{monitor?.url?.replace(/^https?:\/\//, "") || "..."}
-				</Typography>
+				<Typography variant="monitorUrl">{formatMonitorUrl(monitor?.url)}</Typography>
 				<Dot />
 				<Typography>
 					Checking every {formatDurationRounded(monitor?.interval)}.

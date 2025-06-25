@@ -1,61 +1,6 @@
 {
-	"dontHaveAccount": "Нет аккаунта",
-	"email": "Почта",
-	"forgotPassword": "Забыли пароль",
-	"password": "пароль",
-	"signUp": "Зарегистрироваться",
 	"submit": "Подтвердить",
 	"title": "Название",
-	"continue": "Продолжить",
-	"enterEmail": "Введите свой email",
-	"authLoginTitle": "Войти",
-	"authLoginEnterPassword": "Введите свой пароль",
-	"commonPassword": "Пароль",
-	"commonBack": "Назад",
-	"authForgotPasswordTitle": "Забыли пароль?",
-	"authForgotPasswordResetPassword": "Сбросить пароль",
-	"createPassword": "Создайте свой пароль",
-	"createAPassword": "Создайте пароль",
-	"authRegisterAlreadyHaveAccount": "Уже есть аккаунт?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Введите свой email",
-	"authRegisterTitle": "Создать аккаунт",
-	"authRegisterStepOneTitle": "Создайте свой аккаут",
-	"authRegisterStepOneDescription": "Введите свои данные, чтобы начать",
-	"authRegisterStepTwoTitle": "Настройте свой профиль",
-	"authRegisterStepTwoDescription": "Расскажите нам о себе",
-	"authRegisterStepThreeTitle": "Почти готово!",
-	"authRegisterStepThreeDescription": "Проверьте свою информацию",
-	"authForgotPasswordDescription": "Не волнуйтесь, мы вышлем вам инструкции по сбросу настроек.",
-	"authForgotPasswordSendInstructions": "Отправить инструкции",
-	"authForgotPasswordBackTo": "Назад к",
-	"authCheckEmailTitle": "Проверьте свою почту",
-	"authCheckEmailDescription": "Мы отправили ссылку для сброса пароля",
-	"authCheckEmailResendEmail": "Отправить письмо повторно",
-	"authCheckEmailBackTo": "Назад к",
-	"goBackTo": "Назад к",
-	"authCheckEmailDidntReceiveEmail": "Не получили письмо?",
-	"authCheckEmailClickToResend": "Нажмите, чтобы отправить повторно",
-	"authSetNewPasswordTitle": "Установите новый пароль",
-	"authSetNewPasswordDescription": "Ваш новый пароль должен отличаться от ранее использованных паролей.",
-	"authSetNewPasswordNewPassword": "Новый пароль",
-	"authSetNewPasswordConfirmPassword": "Подтвердите пароль",
-	"confirmPassword": "Подтвердите ваш пароль",
-	"authSetNewPasswordResetPassword": "Сбросить пароль",
-	"authSetNewPasswordBackTo": "Назад к",
-	"authPasswordMustBeAtLeast": "Должно быть как минимум",
-	"authPasswordCharactersLong": "длиной 8 символов",
-	"authPasswordMustContainAtLeast": "Должен содержать как минимум",
-	"authPasswordSpecialCharacter": "один специальный символ",
-	"authPasswordOneNumber": "одно число",
-	"authPasswordUpperCharacter": "один верхний символ",
-	"authPasswordLowerCharacter": "один нижний символ",
-	"authPasswordConfirmAndPassword": "Подтвердите пароль и пароль",
-	"authPasswordMustMatch": "должен совпадать",
-	"authRegisterCreateAccount": "Создайте свою учетную запись, чтобы начать",
-	"authRegisterCreateSuperAdminAccount": "Создайте учетную запись суперадминистратора, чтобы начать работу",
-	"authRegisterSignUpWithEmail": "Зарегистрироваться по электронной почте",
-	"authRegisterBySigningUp": "Регистрируясь, вы соглашаетесь с нашими",
 	"distributedStatusHeaderText": "Охват реального времени и реального устройства",
 	"distributedStatusSubHeaderText": "Работает на миллионах устройств по всему миру, просматривайте производительность системы по глобальному региону, стране или городу",
 	"settingsGeneralSettings": "Общие настройки",
@@ -65,8 +10,6 @@
 	"settingsAppearanceDescription": "Переключение между светлым и темным режимом или изменение языка пользовательского интерфейса",
 	"settingsThemeMode": "Тема",
 	"settingsLanguage": "Язык",
-	"settingsDistributedUptime": "Distributed uptime",
-	"settingsDistributedUptimeDescription": "Включить/выключить distributed uptime monitoring.",
 	"settingsEnabled": "Включено",
 	"settingsDisabled": "Выключено",
 	"settingsHistoryAndMonitoring": "История и мониторинг",
@@ -80,14 +23,10 @@
 	"settingsClearAllStatsDialogConfirm": "Да, очистить всю статистику",
 	"settingsDemoMonitors": "Демо мониторы",
 	"settingsDemoMonitorsDescription": "Здесь вы можете добавлять и удалять демонстрационные мониторы.",
-	"settingsAddDemoMonitors": "Добавьте демонстрационные мониторы",
 	"settingsAddDemoMonitorsButton": "Добавьте демонстрационные мониторы",
-	"settingsRemoveAllMonitors": "Удалить все демонстрационные мониторы",
 	"settingsRemoveAllMonitorsButton": "Удалить все демонстрационные мониторы",
 	"settingsRemoveAllMonitorsDialogTitle": "Хотите удалить все мониторы?",
 	"settingsRemoveAllMonitorsDialogConfirm": "Да, очистить все мониторы",
-	"settingsWallet": "Кошелёк",
-	"settingsWalletDescription": "Подключите свой кошелек здесь. Это необходимо для того, чтобы монитор Distributed Uptime мог подключиться к нескольким узлам по всему миру.",
 	"settingsAbout": "О",
 	"settingsDevelopedBy": "Developed by Bluewave Labs.",
 	"settingsSave": "Сохранить",
@@ -108,7 +47,6 @@
 	"now": "Сейчас",
 	"delete": "Удалить",
 	"configure": "Настроить",
-	"networkError": "Ошибка сети",
 	"responseTime": "Время ответа:",
 	"ms": "мс",
 	"bar": "Bar",
@@ -116,11 +54,6 @@
 	"country": "СТРАНА",
 	"city": "ГОРОД",
 	"response": "ОТВЕТ",
-	"checkConnection": "Пожалуйста, проверьте ваше соединение",
-	"passwordreset": "Сброс пароля",
-	"authRegisterStepOnePersonalDetails": "Введите свои личные данные",
-	"authCheckEmailOpenEmailButton": "Откройте приложение почты",
-	"authNewPasswordConfirmed": "Ваш пароль успешно сброшен. Нажмите ниже, чтобы войти в систему магическим образом.",
 	"monitorStatusUp": "Монитор {name} ({url}) теперь включен и отвечает",
 	"monitorStatusDown": "Монитор {name} ({url}) ОТКЛЮЧЕН и не отвечает",
 	"webhookSendSuccess": "Уведомление Webhook успешно отправлено",
@@ -136,10 +69,6 @@
 	"distributedUptimeCreateIncidentDescription": "В случае возникновения инцидента сообщите об этом пользователям.",
 	"distributedUptimeCreateAdvancedSettings": "Расширенные настройки",
 	"distributedUptimeDetailsNoMonitorHistory": "Для этого монитора пока нет истории проверок.",
-	"distributedUptimeDetailsFooterHeading": "Made with ❤️ by UpRock & Bluewave Labs",
-	"distributedUptimeDetailsFooterBuilt": "Built on",
-	"distributedUptimeDetailsFooterSolana": "Solana",
-	"distributedUptimeDetailsMonitorHeader": "Distributed Uptime Monitoring powered by DePIN",
 	"distributedUptimeDetailsStatusHeaderUptime": "Аптайм:",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Последнее обновление",
 	"notifications": {
@@ -181,7 +110,33 @@
 		"testSuccess": "Уведомление о тестировании отправлено успешно!",
 		"testFailed": "Не удалось отправить тестовое уведомление",
 		"unsupportedType": "Неподдерживаемый тип уведомления",
-		"networkError": "Произошла сетевая ошибка"
+		"networkError": "Произошла сетевая ошибка",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "testLocale",
 	"add": "Добавить",
@@ -394,10 +349,6 @@
 	"DeleteDescriptionText": "Это приведет к удалению учетной записи и всех связанных с ней данных с сервера. Это необратимо.",
 	"DeleteAccountWarning": "Удаление вашей учетной записи означает, что вы не сможете снова войти в систему, и все ваши данные будут удалены. Это необратимо.",
 	"DeleteWarningTitle": "Действительно удаляете эту учетную запись?",
-	"authRegisterFirstName": "Имя",
-	"authRegisterLastName": "Фамилия",
-	"authRegisterEmail": "Email",
-	"authRegisterEmailRequired": "Чтобы продолжить, пожалуйста, введите свой адрес электронной почты",
 	"bulkImport": {
 		"title": "Массовый импорт",
 		"selectFileTips": "Выберите CSV-файл для загрузки",
@@ -409,27 +360,11 @@
 		"noFileSelected": "Файл не выбран",
 		"fallbackPage": "Импортируйте файл для массовой загрузки списка серверов"
 	},
-	"welcomeBack": "Добро пожаловать обратно! Вы успешно вошли в систему.",
-	"authRegisterLoginLink": "Войти",
-	"validationNameRequired": "Пожалуйста, введите свое имя",
-	"validationNameTooLong": "Длина имени не должна превышать 50 символов",
-	"validationNameInvalidCharacters": "Пожалуйста, используйте только буквы, пробелы, апострофы или дефисы",
 	"settingsSystemReset": "Сброс системы",
 	"settingsSystemResetDescription": "Удалите все мониторы из вашей системы.",
 	"DeleteAccountTitle": "Удалить аккаунт",
 	"DeleteAccountButton": "Удалить аккаунт",
-	"authRegisterEmailInvalid": "Пожалуйста, введите действительный адрес электронной почты",
 	"publicLink": "Публичная ссылка",
-	"doNotHaveAccount": "У вас нет учетной записи?",
-	"registerHere": "Зарегистрируйтесь здесь",
-	"backendUnreachable": "Ошибка подключения к серверу",
-	"backendUnreachableMessage": "Нам не удается подключиться к серверу. Пожалуйста, проверьте подключение к Интернету или конфигурацию вашего развертывания, если проблема не устранена.",
-	"backendUnreachableError": "Не удается подключиться к серверу. Пожалуйста, повторите попытку позже.",
-	"retryConnection": "Повторите попытку подключения",
-	"retryingConnection": "Подключение...",
-	"backendReconnected": "Успешно подключен к серверу.",
-	"backendStillUnreachable": "Сервер по-прежнему недоступен. Пожалуйста, повторите попытку позже.",
-	"backendConnectionError": "Ошибка подключения к серверу. Пожалуйста, проверьте свое сетевое подключение.",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"pageSpeedApiKeyFieldTitle": "Ключ API Google PageSpeed",
 	"pageSpeedApiKeyFieldLabel": "Ключ API PageSpeed",
@@ -444,11 +379,6 @@
 		"prepend": "Эй там",
 		"append": "Вторая половина дня — это ваша игровая площадка - давайте сделаем ее эпичной!",
 		"overview": "Вот обзор ваших мониторов {{type}}."
-	},
-	"monitorStatus": {
-		"up": "доступен",
-		"down": "недоступен",
-		"paused": "остановлен"
 	},
 	"roles": {
 		"superAdmin": "Главный админ",
@@ -488,7 +418,6 @@
 		"uptime": "Аптайм",
 		"pagespeed": "Pagespeed",
 		"infrastructure": "Инфраструктура",
-		"distributedUptime": "Распределенный Аптайм",
 		"incidents": "Инциденты",
 		"statusPages": "Страницы статуса",
 		"maintenance": "Обслуживание",
@@ -501,7 +430,8 @@
 		"profile": "Профиль",
 		"password": "Пароль",
 		"team": "Команда",
-		"logOut": "Выйти"
+		"logOut": "Выйти",
+		"notifications": ""
 	},
 	"settingsEmail": "Настройки Email",
 	"settingsEmailDescription": "Настройка параметров email",
@@ -514,7 +444,6 @@
 	"state": "Состояние",
 	"statusBreadCrumbsStatusPages": "Страницы статуса",
 	"statusBreadCrumbsDetails": "Подробности",
-	"authForgotPasswordInstructions": "Не беспокойтесь, мы вышлем вам инструкции по сбросу настроек.",
 	"settingsThemeModeLight": "Светлая",
 	"settingsThemeModeDark": "Тёмная",
 	"settingsClearAllStatsDialogCancel": "Отменить",
@@ -532,9 +461,7 @@
 		"passwordRequirements": "Новый пароль должен содержать не менее 8 символов и содержать как минимум одну заглавную букву, одну строчную букву, одну цифру и один специальный символ.",
 		"saving": "Сохранение..."
 	},
-	"uptimeCreateSelectURL": "Введите URL-адрес или IP-адрес для отслеживания (например, https://example.com/ или 192.168.1.100) и добавьте понятное отображаемое имя, которое будет отображаться на панели мониторинга.",
 	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
 	"settingsTestEmail": "",
@@ -553,5 +480,271 @@
 	"settingsURLDescription": "",
 	"settingsURLSelectTitle": "",
 	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"settingURLDisabled": "",
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"webhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"settingsEmailTLSServername": "",
+	"settingsEmailIgnoreTLS": "",
+	"settingsEmailRequireTLS": "",
+	"settingsEmailRejectUnauthorized": "",
+	"settingsEmailSecure": "",
+	"settingsEmailPool": "",
+	"sendTestNotifications": "",
+	"selectAll": ""
 }

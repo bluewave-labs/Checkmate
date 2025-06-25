@@ -79,22 +79,35 @@ export const formatDurationSplit = (ms) => {
 
 export const getHumanReadableDuration = (ms) => {
 	const durationObj = dayjs.duration(ms);
-	if (durationObj.asDays() >= 1) {
-		const days = Math.floor(durationObj.asDays());
-		return { time: days, units: days === 1 ? "day" : "days" };
-	} else if (durationObj.asHours() >= 1) {
-		const hoursRounded = Math.round(durationObj.asHours() * 10) / 10;
-		const hours = Number.isInteger(hoursRounded)
-			? Math.floor(hoursRounded)
-			: hoursRounded;
-		return { time: hours, units: hours <= 1 ? "hour" : "hours" };
-	} else if (durationObj.asMinutes() >= 1) {
-		const minutes = Math.floor(durationObj.asMinutes());
-		return { time: minutes, units: minutes === 1 ? "minute" : "minutes" };
-	} else {
-		const seconds = Math.floor(durationObj.asSeconds());
-		return { time: seconds, units: seconds === 1 ? "second" : "seconds" };
+
+	const parts = {
+		days: Math.floor(durationObj.asDays()),
+		hours: durationObj.hours(),
+		minutes: durationObj.minutes(),
+		seconds: durationObj.seconds(),
+	};
+
+	const result = [];
+
+	if (parts.days > 0) {
+		result.push(`${parts.days}d`);
 	}
+	if (parts.hours > 0) {
+		result.push(`${parts.hours}h`);
+	}
+	if (result.length < 2 && parts.minutes > 0) {
+		result.push(`${parts.minutes}m`);
+	}
+	if (result.length < 2 && parts.seconds > 0) {
+		result.push(`${parts.seconds}s`);
+	}
+
+	if (result.length === 0) {
+		// fallback for durations < 1s
+		return "0s";
+	}
+
+	return result.join(" ");
 };
 
 export const formatDate = (date, customOptions) => {

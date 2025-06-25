@@ -5,10 +5,9 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Avatar from "../../Avatar";
 import TextInput from "../../Inputs/TextInput";
 import ImageUpload from "../../Inputs/ImageUpload";
-import { credentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
-import { clearUptimeMonitorState } from "../../../Features/UptimeMonitors/uptimeMonitorsSlice";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
 import { GenericDialog } from "../../Dialog/genericDialog";
@@ -58,7 +57,7 @@ const ProfilePanel = () => {
 			[name]: value,
 		}));
 
-		validateField({ [name]: value }, credentials, name);
+		validateField({ [name]: value }, newOrChangedCredentials, name);
 	};
 
 	// Validates input against provided schema and updates error state
@@ -162,7 +161,6 @@ const ProfilePanel = () => {
 		const action = await dispatch(deleteUser());
 		if (action.payload.success) {
 			dispatch(clearAuthState());
-			dispatch(clearUptimeMonitorState());
 		} else {
 			if (action.payload) {
 				// dispatch errors
@@ -240,7 +238,7 @@ const ProfilePanel = () => {
 					gap={SPACING_GAP}
 				>
 					<Stack flex={0.9}>
-						<Typography component="h1">{t("email")}</Typography>
+						<Typography component="h1">{t("auth.common.inputs.email.label")}</Typography>
 						<Typography
 							component="p"
 							sx={{ opacity: 0.6 }}

@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import Alert from "../Alert";
 import { useTranslation } from "react-i18next";
 import "./index.css";
-import { useFetchSettings } from "../../Hooks/useFetchSettings";
+import { useFetchSettings } from "../../Hooks/settingsHooks";
 import { useState } from "react";
 /**
  * Fallback component to display a fallback UI with a title, a list of checks, and a navigation button.
@@ -39,7 +39,11 @@ const Fallback = ({
 	const { t } = useTranslation();
 	const [settingsData, setSettingsData] = useState(undefined);
 
-	const [isLoading, error] = useFetchSettings({ setSettingsData });
+	const [isLoading, error] = useFetchSettings({
+		setSettingsData,
+		setIsApiKeySet: () => {},
+		setIsEmailPasswordSet: () => {},
+	});
 	// Custom warning message with clickable link
 	const renderWarningMessage = () => {
 		return (
