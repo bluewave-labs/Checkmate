@@ -37,3 +37,9 @@ export const PLACEHOLDER_MAP = {
 	webhook: "createNotifications.webhookSettings.webhookPlaceholder",
 	discord: "createNotifications.discordSettings.webhookPlaceholder",
 };
+
+export const WEBHOOK_AUTH_TYPES = [
+	{ _id: "none", name: "None" },
+	{ _id: "basic", name: "Basic Auth" },
+	{ _id: "bearer", name: "Bearer Token" },
+];

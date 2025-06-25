@@ -9,7 +9,7 @@ import Select from "../../../Components/Inputs/Select";
 import TextInput from "../../../Components/Inputs/TextInput";
 
 // Utils
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import {
 	useCreateNotification,
@@ -27,6 +27,7 @@ import {
 	DESCRIPTION_MAP,
 	LABEL_MAP,
 	PLACEHOLDER_MAP,
+	WEBHOOK_AUTH_TYPES,
 } from "../utils";
 
 // Setup
@@ -51,6 +52,10 @@ const CreateNotifications = () => {
 		notificationName: "",
 		address: "",
 		type: NOTIFICATION_TYPES[0]._id,
+		webhookAuthType: "none",
+		username: "",
+		password: "",
+		bearerToken: "",
 	});
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
@@ -59,6 +64,21 @@ const CreateNotifications = () => {
 		notificationId,
 		setNotification
 	);
+
+	useEffect(() => {
+		// This runs the validation on the whole form every time the user types
+		const { error } = notificationValidation.validate(notification, {
+			abortEarly: false,
+		});
+
+		const newErrors = {};
+		if (error) {
+			error.details.forEach((err) => {
+				newErrors[err.path[0]] = err.message;
+			});
+		}
+		setErrors(newErrors);
+	}, [notification]);
 
 	// handlers
 	const onSubmit = (e) => {
@@ -94,15 +114,10 @@ const CreateNotifications = () => {
 	const onChange = (e) => {
 		const { name, value } = e.target;
 
-		const newNotification = { ...notification, [name]: value };
-
-		const { error } = notificationValidation.extract(name).validate(value);
-		setErrors((prev) => ({
+		setNotification((prev) => ({
 			...prev,
-			[name]: error?.message,
+			[name]: value,
 		}));
-
-		setNotification(newNotification);
 	};
 
 	const onTestNotification = () => {
@@ -195,6 +210,46 @@ const CreateNotifications = () => {
 							error={Boolean(errors.address)}
 							helperText={errors["address"]}
 						/>
+						{type === "webhook" && (
+							<>
+								<Select
+									items={WEBHOOK_AUTH_TYPES}
+									label="Authentication Type"
+									name="webhookAuthType"
+									value={notification.webhookAuthType}
+									onChange={onChange}
+								/>
+								{notification.webhookAuthType === "basic" && (
+									<>
+										<TextInput
+											label="Username"
+											name="username"
+											placeholder="Enter your username"
+											value={notification.username}
+											onChange={onChange}
+										/>
+										<TextInput
+											label="Password"
+											name="password"
+											type="password"
+											placeholder="Enter your password"
+											value={notification.password}
+											onChange={onChange}
+										/>
+									</>
+								)}
+								{notification.webhookAuthType === "bearer" && (
+									<TextInput
+										label="Bearer Token"
+										name="bearerToken"
+										type="password"
+										placeholder="Enter your Bearer Token"
+										value={notification.bearerToken}
+										onChange={onChange}
+									/>
+								)}
+							</>
+						)}
 					</Stack>
 				</ConfigBox>
 
