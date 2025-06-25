@@ -49,6 +49,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { clearAuthState } from "../../Features/Auth/authSlice";
 import { toggleSidebar } from "../../Features/UI/uiSlice";
+import { TurnedIn } from "@mui/icons-material";
+import { rules } from "eslint-plugin-react-refresh";
 
 const getMenu = (t) => [
 	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
@@ -121,7 +123,6 @@ function Sidebar() {
 	const { t } = useTranslation();
 	const authState = useSelector((state) => state.auth);
 
-	const menu = getMenu(t);
 	const otherMenuItems = getOtherMenuItems(t);
 	const accountMenuItems = getAccountMenuItems(t);
 	const collapsed = useSelector((state) => state.ui.sidebar.collapsed);
@@ -133,6 +134,13 @@ function Sidebar() {
 	const sidebarRef = useRef(null);
 	const [sidebarReady, setSidebarReady] = useState(false);
 	const TRANSITION_DURATION = 200;
+	let menu = getMenu(t);
+	menu = menu.filter((item) => {
+		if (item.path === "logs") {
+			return user.role?.includes("admin") || user.role?.includes("superadmin");
+		}
+		return true;
+	});
 
 	useEffect(() => {
 		if (!collapsed) {

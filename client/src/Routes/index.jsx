@@ -48,6 +48,7 @@ import Settings from "../Pages/Settings";
 import Maintenance from "../Pages/Maintenance";
 
 import ProtectedRoute from "../Components/ProtectedRoute";
+import RoleProtectedRoute from "../Components/RoleProtectedRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport";
@@ -190,7 +191,11 @@ const Routes = () => {
 
 				<Route
 					path="logs"
-					element={<Logs />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Logs />
+						</RoleProtectedRoute>
+					}
 				/>
 			</Route>
 
