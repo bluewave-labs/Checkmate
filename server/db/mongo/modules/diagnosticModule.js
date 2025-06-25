@@ -19,7 +19,7 @@ const getMonitorsByTeamIdExecutionStats = async (req) => {
 			order = "asc";
 		}
 		// Build match stage
-		const matchStage = { teamId: ObjectId.createFromHexString(req.params.teamId) };
+		const matchStage = { teamId: new ObjectId(req.params.teamId) };
 		if (type !== undefined) {
 			matchStage.type = Array.isArray(type) ? { $in: type } : type;
 		}
