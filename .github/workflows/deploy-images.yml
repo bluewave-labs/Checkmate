@@ -18,12 +18,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version
+        id: vars
+        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       - name: Build Client Docker image
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate-client:latest \
             -f ./docker/dist/client.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
             .
 
       - name: Push Client Docker image
@@ -96,6 +100,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version
+        id: vars
+        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v5
         with:
@@ -107,6 +115,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           labels: |
             org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate
+          build-args: |
+            VITE_APP_VERSION=${{ env.VERSION }}
 
   docker-build-and-push-server-mono:
     runs-on: ubuntu-latest
