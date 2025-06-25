@@ -3,38 +3,11 @@
 	"title": "Título",
 	"distributedStatusHeaderText": "Cobertura em tempo real e em dispositivos reais",
 	"distributedStatusSubHeaderText": "Impulsionado por milhões de dispositivos em todo o mundo, visualize o desempenho do sistema por região global, país ou cidade",
-	"settingsGeneralSettings": "Configurações gerais",
-	"settingsDisplayTimezone": "Fuso horário",
-	"settingsDisplayTimezoneDescription": "Selecione o fuso horário usado para exibir datas e horas em todo o aplicativo.",
-	"settingsAppearance": "Aparência",
-	"settingsAppearanceDescription": "Alterne entre o modo claro e escuro ou altere o idioma da interface do usuário",
-	"settingsThemeMode": "Tema",
-	"settingsLanguage": "Linguagem",
-	"settingsEnabled": "Habilitado",
 	"settingsDisabled": "Desabilitado",
-	"settingsHistoryAndMonitoring": "Histórico de monitoramento",
-	"settingsHistoryAndMonitoringDescription": "Defina por quanto tempo você deseja manter os dados de histórico. Você também pode limpar todos os dados existentes.",
-	"settingsTTLLabel": "Os dias em que você deseja manter os dados de histórico.",
-	"settingsTTLOptionalLabel": "0 para infinito",
-	"settingsClearAllStats": "Limpe todas as estatísticas. Isso é irreversível.",
-	"settingsClearAllStatsButton": "Limpar todas as estatísticas",
-	"settingsClearAllStatsDialogTitle": "Você quer limpar todas as estatísticas?",
-	"settingsClearAllStatsDialogDescription": "Uma vez limpo, o histórico de monitoramento e as estatísticas não podem ser recuperados.",
-	"settingsClearAllStatsDialogConfirm": "Sim, limpar todas as estatísticas",
-	"settingsDemoMonitors": "Monitores de demonstração",
-	"settingsDemoMonitorsDescription": "Adicione monitores de genéricos para fins de demonstração.",
-	"settingsAddDemoMonitorsButton": "Adicionar monitores de demonstração",
-	"settingsRemoveAllMonitorsButton": "Remover todos os monitores",
-	"settingsRemoveAllMonitorsDialogTitle": "Você deseja remover todos os monitores?",
-	"settingsRemoveAllMonitorsDialogConfirm": "Sim, remova todos os monitores",
-	"settingsAbout": "Sobre",
-	"settingsDevelopedBy": "Desenvolvido pela Bluewave Labs.",
-	"settingsSave": "Salvar",
 	"settingsSuccessSaved": "Configurações salvas com sucesso",
 	"settingsFailedToSave": "Falha ao salvar as configurações",
 	"settingsStatsCleared": "Estatísticas limpas com sucesso",
 	"settingsFailedToClearStats": "Falha ao limpar estatísticas",
-	"settingsDemoMonitorsAdded": "Monitores de demonstração adicionados com sucesso",
 	"settingsFailedToAddDemoMonitors": "Falha ao adicionar monitores de demonstração",
 	"settingsMonitorsDeleted": "Todos os monitores foram excluídos com sucesso",
 	"settingsFailedToDeleteMonitors": "Falha ao excluir todos os monitores",
@@ -310,7 +283,6 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Mostrar mais detalhes na página de status",
 	"showCharts": "Mostrar gráficos",
 	"showUptimePercentage": "Mostrar porcentagem de Uptime",
-	"showAdminLoginLink": "Mostrar o link \"Administrador? Efetue login aqui\" na página de status",
 	"removeLogo": "Remover logo",
 	"statusPageStatus": "Uma página de status pública não está configurada.",
 	"statusPageStatusContactAdmin": "Entre em contato com seu administrador",
@@ -361,16 +333,10 @@
 		"noFileSelected": "Nenhum arquivo selecionado",
 		"fallbackPage": "Importe um arquivo para enviar uma lista de servidores em massa"
 	},
-	"settingsSystemReset": "Resetar sistema",
-	"settingsSystemResetDescription": "Remova todos os monitores do seu sistema.",
 	"DeleteAccountTitle": "Remover conta",
 	"DeleteAccountButton": "Remover conta",
 	"publicLink": "Link publico",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API key",
-	"pageSpeedApiKeyFieldLabel": "PageSpeed API key",
-	"pageSpeedApiKeyFieldDescription": "Insira sua chave da API do Google PageSpeed ​​para ativar o monitoramento de velocidade de página. Clique em Resetar para atualizar a chave.",
-	"pageSpeedApiKeyFieldResetLabel": "A chave de API está definida. Clique em Resetar para alterá-la.",
 	"reset": "Resetar",
 	"ignoreTLSError": "Ignorar erro TLS/SSL",
 	"tlsErrorIgnored": "Erros TLS/SSL ignorados",
@@ -432,22 +398,13 @@
 		"password": "Senha",
 		"team": "Equipe",
 		"logOut": "Sair",
-		"notifications": ""
+		"notifications": "",
+		"logs": ""
 	},
-	"settingsEmail": "E-mail",
-	"settingsEmailDescription": "Configurações de e-mail do seu sistema. Elas são usadas para enviar notificações e alertas.",
-	"settingsEmailHost": "Host de e-mail - Nome do host ou endereço IP do servidor SMTP",
-	"settingsEmailPort": "Porta de e-mail - Porta para conectar",
-	"settingsEmailAddress": "Endereço de e-mail - Usado para autenticação",
-	"settingsEmailPassword": "Senha de e-mail - Senha para autenticação",
 	"settingsEmailUser": "Usuário de e-mail - Nome de usuário para autenticação, substitui o endereço de e-mail, se especificado",
-	"settingsEmailFieldResetLabel": "A senha foi definida. Clique em Redefinir para alterá-la.",
 	"state": "Estado",
 	"statusBreadCrumbsStatusPages": "Pagina de status",
 	"statusBreadCrumbsDetails": "Detalhes",
-	"settingsThemeModeLight": "Claro",
-	"settingsThemeModeDark": "Escuro",
-	"settingsClearAllStatsDialogCancel": "Cancelar",
 	"commonSaving": "Salvando...",
 	"navControls": "Controles",
 	"incidentsPageTitle": "Incidentes",
@@ -462,26 +419,18 @@
 		"passwordRequirements": "A nova senha deve conter pelo menos 8 caracteres e deve ter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
 		"saving": "Salvando..."
 	},
-	"settingsEmailConnectionHost": "Host de conexão de e-mail - Nome do host a ser usado na saudação HELO/EHLO",
 	"emailSent": "E-mail enviado com sucesso",
 	"failedToSendEmail": "Falha ao enviar e-mail",
-	"settingsTestEmail": "Enviar e-mail de teste",
 	"settingsTestEmailSuccess": "E-mail de teste enviado com sucesso",
 	"settingsTestEmailFailed": "Falha ao enviar e-mail de teste",
 	"settingsTestEmailFailedWithReason": "Falha ao enviar e-mail de teste: {{reason}}",
 	"settingsTestEmailUnknownError": "Erro desconhecido",
-	"settingsEmailRequiredFields": "O host e a porta do e-mail são obrigatórios",
 	"statusMsg": {
 		"paused": "O monitoramento está pausado.",
 		"up": "Seu site está no ar.",
 		"down": "Seu site está fora do ar.",
 		"pending": "Pendente..."
 	},
-	"settingsURLTitle": "",
-	"settingsURLDescription": "",
-	"settingsURLSelectTitle": "",
-	"settingsURLEnabled": "",
-	"settingURLDisabled": "",
 	"uptimeGeneralInstructions": {
 		"http": "",
 		"ping": "",
@@ -740,12 +689,147 @@
 		"paused": ""
 	},
 	"advancedMatching": "",
-	"settingsEmailTLSServername": "",
-	"settingsEmailIgnoreTLS": "",
-	"settingsEmailRequireTLS": "",
-	"settingsEmailRejectUnauthorized": "",
-	"settingsEmailSecure": "",
-	"settingsEmailPool": "",
 	"sendTestNotifications": "",
-	"selectAll": ""
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

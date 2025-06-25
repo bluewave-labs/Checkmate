@@ -134,6 +134,9 @@ const getStatusPage = async (url) => {
 					},
 				},
 			},
+			{ $match: { "monitors.orderIndex": { $ne: -1 } } },
+			{ $sort: { "monitors.orderIndex": 1 } },
+
 			{
 				$group: {
 					_id: "$_id",
@@ -156,20 +159,7 @@ const getStatusPage = async (url) => {
 						showAdminLoginLink: 1,
 						url: 1,
 					},
-					monitors: {
-						$filter: {
-							input: {
-								$sortArray: {
-									input: "$monitors",
-									sortBy: { orderIndex: 1 },
-								},
-							},
-							as: "monitor",
-							cond: {
-								$ne: ["$$monitor.orderIndex", -1],
-							},
-						},
-					},
+					monitors: 1,
 				},
 			},
 		]);
