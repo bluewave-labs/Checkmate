@@ -20,14 +20,16 @@ const SettingsUI = ({ HEADING_SX, handleChange, mode, language }) => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsAppearance")}
+					{t("settingsPage.uiSettings.title")}
 				</Typography>
-				<Typography sx={HEADING_SX}>{t("settingsAppearanceDescription")}</Typography>
+				<Typography sx={HEADING_SX}>
+					{t("settingsPage.uiSettings.description")}
+				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<Select
 					name="mode"
-					label={t("settingsThemeMode")}
+					label={t("settingsPage.uiSettings.labelTheme")}
 					value={mode}
 					onChange={handleChange}
 					items={[
@@ -37,7 +39,7 @@ const SettingsUI = ({ HEADING_SX, handleChange, mode, language }) => {
 				></Select>
 				<Select
 					name="language"
-					label={t("settingsLanguage")}
+					label={t("settingsPage.uiSettings.labelLanguage")}
 					value={language}
 					onChange={handleChange}
 					items={languages.map((lang) => ({ _id: lang, name: lang.toUpperCase() }))}

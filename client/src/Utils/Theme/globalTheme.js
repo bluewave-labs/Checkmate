@@ -36,6 +36,11 @@ const baseTheme = (palette) => ({
 			color: palette.primary.contrastTextTertiary,
 			fontWeight: 400,
 		},
+		label: {
+			fontSize: "var(--env-var-font-size-medium)",
+			color: palette.primary.contrastTextSecondary,
+			fontWeight: 500,
+		},
 	},
 	/* TODO change to 4 */
 	spacing: 2,
