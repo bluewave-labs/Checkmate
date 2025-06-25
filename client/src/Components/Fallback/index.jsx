@@ -69,132 +69,129 @@ const Fallback = ({
 	};
 	return (
 		<Box
-		position="relative"
-		sx={{
-			height: "100vh",
-			width: "100%",
-			display: "flex",
-			justifyContent: "center",
-			alignItems: "center",
-		}}>
-			<Box
-			
-			border={1}
-			borderColor={theme.palette.primary.lowContrast}
-			borderRadius={theme.shape.borderRadius}
-			backgroundColor={theme.palette.primary.main}
-			overflow="hidden"
+			position="relative"
 			sx={{
+				height: "100vh",
+				width: "100%",
 				display: "flex",
-				borderStyle: "dashed",
-				height: "60vh",
-				width: "45%",
-				minWidth: "400px",
-				maxHeight:"700px",
-				maxWidth: "800px", 
+				justifyContent: "center",
+				alignItems: "center",
 			}}
 		>
-			<Stack
-				className={`fallback__${title?.trim().split(" ")[0]}`}
-				alignItems="center"
-				gap={theme.spacing(20)}
+			<Box
+				border={1}
+				borderColor={theme.palette.primary.lowContrast}
+				borderRadius={theme.shape.borderRadius}
+				backgroundColor={theme.palette.primary.main}
+				overflow="hidden"
 				sx={{
-				maxHeight:"70vh",
-				justifyContent:"center"
-
-			
-			}}
+					display: "flex",
+					borderStyle: "dashed",
+					height: "60vh",
+					width: "45%",
+					minWidth: "400px",
+					maxHeight: "700px",
+					maxWidth: "800px",
+				}}
 			>
-				{mode === "light" ? (
-					<Skeleton style={{ zIndex: 1 }} />
-				) : (
-					<SkeletonDark style={{ zIndex: 1 }} />
-				)}
-				<Box
-					className="background-pattern-svg"
+				<Stack
+					className={`fallback__${title?.trim().split(" ")[0]}`}
+					alignItems="center"
+					gap={theme.spacing(20)}
 					sx={{
-						"& svg g g:last-of-type path": {
-							stroke: theme.palette.primary.lowContrast,
-						},
+						maxHeight: "70vh",
+						justifyContent: "center",
 					}}
 				>
-					<Background style={{ width: "100%" }} />
-				</Box>
-				<Stack
-					gap={theme.spacing(4)}
-					maxWidth={"300px"}
-					zIndex={1}
-				>
-					<Typography
-						component="h1"
-						marginY={theme.spacing(4)}
-						color={theme.palette.primary.contrastTextTertiary}
-					>
-						{vowelStart ? "An" : "A"} {title} is used to:
-					</Typography>
-					{checks?.map((check, index) => (
-						<Check
-							text={check}
-							key={`${title.trim().split(" ")[0]}-${index}`}
-							outlined={true}
-						/>
-					))}
-				</Stack>
-				{/* TODO - display a different fallback if user is not an admin*/}
-				{isAdmin && (
-					<>
-						<Button
-							variant="contained"
-							color="accent"
-							sx={{ alignSelf: "center"
+					{mode === "light" ? (
+						<Skeleton style={{ zIndex: 1 }} />
+					) : (
+						<SkeletonDark style={{ zIndex: 1 }} />
+					)}
+					<Box
+						className="background-pattern-svg"
+						sx={{
+							"& svg g g:last-of-type path": {
+								stroke: theme.palette.primary.lowContrast,
+							},
 						}}
-							onClick={() => navigate(link)}
+					>
+						<Background style={{ width: "100%" }} />
+					</Box>
+					<Stack
+						gap={theme.spacing(4)}
+						maxWidth={"300px"}
+						zIndex={1}
+					>
+						<Typography
+							component="h1"
+							marginY={theme.spacing(4)}
+							color={theme.palette.primary.contrastTextTertiary}
 						>
-							Let's create your first {title}
-						</Button>
-						{/* Bulk create of uptime monitors */}
-						{title === "uptime monitor" && (
+							{vowelStart ? "An" : "A"} {title} is used to:
+						</Typography>
+						{checks?.map((check, index) => (
+							<Check
+								text={check}
+								key={`${title.trim().split(" ")[0]}-${index}`}
+								outlined={true}
+							/>
+						))}
+					</Stack>
+					{/* TODO - display a different fallback if user is not an admin*/}
+					{isAdmin && (
+						<>
 							<Button
 								variant="contained"
 								color="accent"
 								sx={{ alignSelf: "center" }}
-								onClick={() => navigate("/uptime/bulk-import")}
+								onClick={() => navigate(link)}
 							>
-								{t("bulkImport.fallbackPage")}
+								Let's create your first {title}
 							</Button>
-						)}
-
-						{/* Warning box for PageSpeed monitor */}
-						{title === "pagespeed monitor" && showPageSpeedWarning && (
-							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
-								<Box
-									sx={{
-										"& .alert.row-stack": {
-											backgroundColor: theme.palette.warningSecondary.main,
-											borderColor: theme.palette.warningSecondary.lowContrast,
-											"& .MuiTypography-root": {
-												color: theme.palette.warningSecondary.contrastText,
-											},
-											"& .MuiBox-root > svg": {
-												color: theme.palette.warningSecondary.contrastText,
-											},
-										},
-									}}
+							{/* Bulk create of uptime monitors */}
+							{title === "uptime monitor" && (
+								<Button
+									variant="contained"
+									color="accent"
+									sx={{ alignSelf: "center" }}
+									onClick={() => navigate("/uptime/bulk-import")}
 								>
-									{settingsData?.pagespeedKeySet === false && (
-										<Alert
-											variant="warning"
-											hasIcon={true}
-											body={renderWarningMessage()}
-										/>
-									)}
+									{t("bulkImport.fallbackPage")}
+								</Button>
+							)}
+
+							{/* Warning box for PageSpeed monitor */}
+							{title === "pagespeed monitor" && showPageSpeedWarning && (
+								<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
+									<Box
+										sx={{
+											"& .alert.row-stack": {
+												backgroundColor: theme.palette.warningSecondary.main,
+												borderColor: theme.palette.warningSecondary.lowContrast,
+												"& .MuiTypography-root": {
+													color: theme.palette.warningSecondary.contrastText,
+												},
+												"& .MuiBox-root > svg": {
+													color: theme.palette.warningSecondary.contrastText,
+												},
+											},
+										}}
+									>
+										{settingsData?.pagespeedKeySet === false && (
+											<Alert
+												variant="warning"
+												hasIcon={true}
+												body={renderWarningMessage()}
+											/>
+										)}
+									</Box>
 								</Box>
-							</Box>
-						)}
-					</>
-				)}
-			</Stack>
-		</Box>	
+							)}
+						</>
+					)}
+				</Stack>
+			</Box>
 		</Box>
 	);
 };
