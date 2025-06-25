@@ -289,16 +289,16 @@ const createCheckBodyValidation = joi.object({
 	message: joi.string().required(),
 });
 
-const updateCheckStatusBodyValidation = joi.object({
+const ackCheckBodyValidation = joi.object({
 	ack: joi.boolean(),
 });
 
-const updateCheckStatusParamValidation = joi.object({
+const ackAllChecksParamValidation = joi.object({
 	monitorId: joi.string().optional(),
 	path: joi.string().valid("monitor", "team").required(),
 });
 
-const updateAllChecksStatusBodyValidation = joi.object({
+const ackAllChecksBodyValidation = joi.object({
 	ack: joi.boolean(),
 });
 
@@ -669,9 +669,9 @@ export {
 	getChecksQueryValidation,
 	getTeamChecksParamValidation,
 	getTeamChecksQueryValidation,
-	updateCheckStatusBodyValidation,
-	updateAllChecksStatusBodyValidation,
-	updateCheckStatusParamValidation,
+	ackCheckBodyValidation,
+	ackAllChecksParamValidation,
+	ackAllChecksBodyValidation,
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,

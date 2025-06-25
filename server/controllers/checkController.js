@@ -8,9 +8,9 @@ import {
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,
-	updateCheckStatusBodyValidation,
-	updateAllChecksStatusBodyValidation,
-	updateCheckStatusParamValidation,
+	ackCheckBodyValidation,
+	ackAllChecksParamValidation,
+	ackAllChecksBodyValidation,
 } from "../validation/joi.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
@@ -114,7 +114,7 @@ class CheckController {
 
 	ackCheck = async (req, res, next) => {
 		try {
-			await updateCheckStatusBodyValidation.validateAsync(req.body);
+			await ackCheckBodyValidation.validateAsync(req.body);
 		} catch (error) {
 			next(handleValidationError(error, SERVICE_NAME));
 			return;
@@ -138,8 +138,8 @@ class CheckController {
 
 	ackAllChecks = async (req, res, next) => {
 		try {
-			await updateCheckStatusParamValidation.validateAsync(req.params);
-			await updateAllChecksStatusBodyValidation.validateAsync(req.body);
+			await ackAllChecksParamValidation.validateAsync(req.params);
+			await ackAllChecksBodyValidation.validateAsync(req.body);
 		} catch (error) {
 			next(handleValidationError(error, SERVICE_NAME));
 			return;

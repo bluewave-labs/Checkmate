@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { verifyOwnership } from "../middleware/verifyOwnership.js";
+import { verifyTeamAccess } from "../middleware/verifyTeamAccess.js";
 import { isAllowed } from "../middleware/isAllowed.js";
 import Monitor from "../db/models/Monitor.js";
+import Check from "../db/models/Check.js";
 
 class CheckRoutes {
 	constructor(checkController) {
@@ -20,7 +22,7 @@ class CheckRoutes {
 
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
 
-		this.router.put("/:checkId", this.checkController.ackCheck);
+		this.router.put("/:checkId", verifyTeamAccess(Check, "checkId"), this.checkController.ackCheck);
 
 		this.router.put("/:path/:monitorId?", this.checkController.ackAllChecks);
 

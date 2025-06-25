@@ -76,7 +76,7 @@ const getChecksByMonitor = async ({
 		const matchStage = {
 			monitorId: ObjectId.createFromHexString(monitorId),
 			...(typeof status !== "undefined" && { status }),
-			...(typeof ack !== "undefined" && { ack: ack === "true" ? true : false }),
+			...(typeof ack !== "undefined" && { ack: ack === "true" }),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -168,7 +168,7 @@ const getChecksByTeam = async ({
 		const matchStage = {
 			teamId: ObjectId.createFromHexString(teamId),
 			status: status,
-			...(typeof ack !== "undefined" && { ack: ack === "true" ? true : false }),
+			...(typeof ack !== "undefined" && { ack: ack === "true" }),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
