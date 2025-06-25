@@ -4,7 +4,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 	return [
 		{
 			$match: {
-				monitorId: ObjectId.createFromHexString(monitorId),
+				monitorId: new ObjectId(monitorId),
 				createdAt: { $gte: dates.start, $lte: dates.end },
 			},
 		},
@@ -407,6 +407,16 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 				],
 			},
 		},
+		{ $unwind: "$checks" },
+		{ $sort: { "checks._id": 1 } },
+		{
+			$group: {
+				_id: "$_id",
+				checks: { $push: "$checks" },
+				aggregateData: { $first: "$aggregateData" },
+				upChecks: { $first: "$upChecks" },
+			},
+		},
 		{
 			$project: {
 				aggregateData: {
@@ -415,12 +425,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 				upChecks: {
 					$arrayElemAt: ["$upChecks", 0],
 				},
-				checks: {
-					$sortArray: {
-						input: "$checks",
-						sortBy: { _id: 1 },
-					},
-				},
+				checks: 1,
 			},
 		},
 	];
@@ -734,7 +739,7 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 		order = "asc";
 	}
 	// Build the match stage
-	const matchStage = { teamId: ObjectId.createFromHexString(req.params.teamId) };
+	const matchStage = { teamId: new ObjectId(req.params.teamId) };
 	if (type !== undefined) {
 		matchStage.type = Array.isArray(type) ? { $in: type } : type;
 	}
