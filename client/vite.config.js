@@ -4,14 +4,8 @@ import svgr from "vite-plugin-svgr";
 import { execSync } from "child_process";
 
 export default defineConfig(({ mode }) => {
-	let version = process.env.VITE_APP_VERSION;
-	if (!version || version === "unknown") {
-		try {
-			version = execSync("git describe --tags --abbrev=0").toString().trim();
-		} catch {
-			version = "unknown";
-		}
-	}
+	const env = loadEnv(mode, process.cwd(), "");
+	let version = 2.2;
 
 	return {
 		base: "/",
