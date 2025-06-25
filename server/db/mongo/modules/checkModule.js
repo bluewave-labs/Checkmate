@@ -73,7 +73,7 @@ const getChecksByMonitor = async ({
 		rowsPerPage = parseInt(rowsPerPage);
 		// Match
 		const matchStage = {
-			monitorId: ObjectId.createFromHexString(monitorId),
+			monitorId: new ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
@@ -161,7 +161,7 @@ const getChecksByTeam = async ({
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 		const matchStage = {
-			teamId: ObjectId.createFromHexString(teamId),
+			teamId: new ObjectId(teamId),
 			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
