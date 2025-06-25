@@ -67,24 +67,43 @@ const Fallback = ({
 			</>
 		);
 	};
-
 	return (
 		<Box
-			position="relative"
+		position="relative"
+		sx={{
+			height: "100vh",
+			width: "100%",
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
+		}}>
+			<Box
+			
 			border={1}
 			borderColor={theme.palette.primary.lowContrast}
 			borderRadius={theme.shape.borderRadius}
 			backgroundColor={theme.palette.primary.main}
 			overflow="hidden"
 			sx={{
+				display: "flex",
 				borderStyle: "dashed",
-				minHeight: "calc(100vh - var(--env-var-spacing-2) * 2)",
+				height: "60vh",
+				width: "45%",
+				minWidth: "400px",
+				maxHeight:"700px",
+				maxWidth: "800px", 
 			}}
 		>
 			<Stack
 				className={`fallback__${title?.trim().split(" ")[0]}`}
 				alignItems="center"
 				gap={theme.spacing(20)}
+				sx={{
+				maxHeight:"70vh",
+				justifyContent:"center"
+
+			
+			}}
 			>
 				{mode === "light" ? (
 					<Skeleton style={{ zIndex: 1 }} />
@@ -127,7 +146,8 @@ const Fallback = ({
 						<Button
 							variant="contained"
 							color="accent"
-							sx={{ alignSelf: "center" }}
+							sx={{ alignSelf: "center"
+						}}
 							onClick={() => navigate(link)}
 						>
 							Let's create your first {title}
@@ -174,6 +194,7 @@ const Fallback = ({
 					</>
 				)}
 			</Stack>
+		</Box>	
 		</Box>
 	);
 };
