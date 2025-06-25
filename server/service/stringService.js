@@ -444,6 +444,10 @@ class StringService {
 	get verifyOwnerUnauthorized() {
 		return this.translationService.getTranslation("verifyOwnerUnauthorized");
 	}
+
+	get dbUserNotFound() {
+		return this.translationService.getTranslation("dbUserNotFound");
+	}
 }
 
 export default StringService;
