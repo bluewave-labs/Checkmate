@@ -3,38 +3,11 @@
 	"title": "Başlık",
 	"distributedStatusHeaderText": "Gerçek zamanlı, Gerçek cihazlar kapsamı",
 	"distributedStatusSubHeaderText": "Dünya çapında milyonlarca cihaz tarafından desteklenen sistem performansını küresel bölgeye, ülkeye veya şehre göre görüntüleyin",
-	"settingsGeneralSettings": "Genel ayarlar",
-	"settingsDisplayTimezone": "Görüntüleme saat dilimi",
-	"settingsDisplayTimezoneDescription": "Herkese açık olarak görüntülediğiniz kontrol panelinin saat dilimi.",
-	"settingsAppearance": "Görünüm",
-	"settingsAppearanceDescription": "Açık ve koyu mod arasında geçiş yapın veya kullanıcı arayüzü dilini değiştirin",
-	"settingsThemeMode": "Tema",
-	"settingsLanguage": "Dil",
-	"settingsEnabled": "Etkin",
 	"settingsDisabled": "Devre dışı",
-	"settingsHistoryAndMonitoring": "Geçmiş ve izleme",
-	"settingsHistoryAndMonitoringDescription": "Verileri ne kadar süreyle saklamak istediğinizi burada tanımlayın. Ayrıca tüm geçmiş verileri kaldırabilirsiniz.",
-	"settingsTTLLabel": "İzleme geçmişini saklamak istediğiniz gün sayısı.",
-	"settingsTTLOptionalLabel": "Sınırsız için 0",
-	"settingsClearAllStats": "Tüm istatistikleri temizle. Bu geri alınamaz.",
-	"settingsClearAllStatsButton": "Tüm istatistikleri temizle",
-	"settingsClearAllStatsDialogTitle": "Tüm istatistikleri temizlemek istiyor musunuz?",
-	"settingsClearAllStatsDialogDescription": "Silindikten sonra, monitörleriniz geri alınamaz.",
-	"settingsClearAllStatsDialogConfirm": "Evet, tüm istatistikleri temizle",
-	"settingsDemoMonitors": "Demo monitörler",
-	"settingsDemoMonitorsDescription": "Burada demo monitörler ekleyebilir ve kaldırabilirsiniz.",
-	"settingsAddDemoMonitorsButton": "Demo monitörler ekle",
-	"settingsRemoveAllMonitorsButton": "Tüm monitörleri kaldır",
-	"settingsRemoveAllMonitorsDialogTitle": "Tüm monitörleri kaldırmak istiyor musunuz?",
-	"settingsRemoveAllMonitorsDialogConfirm": "Evet, tüm monitörleri temizle",
-	"settingsAbout": "Hakkında",
-	"settingsDevelopedBy": "Bluewave Labs tarafından geliştirilmiştir.",
-	"settingsSave": "Kaydet",
 	"settingsSuccessSaved": "Ayarlar başarıyla kaydedildi",
 	"settingsFailedToSave": "Ayarlar kaydedilemedi",
 	"settingsStatsCleared": "İstatistikler başarıyla temizlendi",
 	"settingsFailedToClearStats": "İstatistikler temizlenemedi",
-	"settingsDemoMonitorsAdded": "Demo monitörler başarıyla eklendi",
 	"settingsFailedToAddDemoMonitors": "Demo monitörler eklenemedi",
 	"settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
 	"settingsFailedToDeleteMonitors": "Monitörler silinemedi",
@@ -360,16 +333,10 @@
 		"noFileSelected": "Hiçbir dosya seçilmedi",
 		"fallbackPage": "Toplu olarak sunucu listesini yüklemek için bir dosyayı içe aktarın"
 	},
-	"settingsSystemReset": "Sistem sıfırla",
-	"settingsSystemResetDescription": "Sistemdeki tüm monitörleri silin",
 	"DeleteAccountTitle": "Hesabı sil",
 	"DeleteAccountButton": "Hesabı sil",
 	"publicLink": "Herkese açık bağlantı",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API anahtarı",
-	"pageSpeedApiKeyFieldLabel": "PageSpeed API anahtarı",
-	"pageSpeedApiKeyFieldDescription": "Sayfa hızı izlemeyi etkinleştirmek için Google PageSpeed API anahtarınızı girin. Anahtarı güncellemek için Sıfırla'ya tıklayın.",
-	"pageSpeedApiKeyFieldResetLabel": "API anahtarı ayarlandı. Değiştirmek için Sıfırla'ya tıklayın.",
 	"reset": "Sıfırla",
 	"ignoreTLSError": "TLS/SSL hatalarını gözardı et",
 	"tlsErrorIgnored": "TLS/SSL hataları gözardı ediliyor",
@@ -431,22 +398,13 @@
 		"password": "Parola",
 		"team": "Ekip",
 		"logOut": "Çıkış yap",
-		"notifications": "Bildirimler"
+		"notifications": "Bildirimler",
+		"logs": ""
 	},
-	"settingsEmail": "Eposta",
-	"settingsEmailDescription": "Sistem için eposta ayarlarını düzenleyin. Bu işlem eposta üzerinden bildirim ve alarm almak için gereklidir.",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "",
-	"settingsEmailAddress": "",
-	"settingsEmailPassword": "E-posta şifresi - Kimlik doğrulama şifresi.",
 	"settingsEmailUser": "E-posta kullanıcısı – Kimlik doğrulama için kullanıcı adı; belirtilirse e-posta adresinin yerine geçer.",
-	"settingsEmailFieldResetLabel": "Şifre ayarlandı. Değiştirmek için \"Sıfırla\"ya tıklayın.",
 	"state": "Durum",
 	"statusBreadCrumbsStatusPages": "Durum sayfası",
 	"statusBreadCrumbsDetails": "Detaylar",
-	"settingsThemeModeLight": "Aydınlat",
-	"settingsThemeModeDark": "Karart",
-	"settingsClearAllStatsDialogCancel": "İptal",
 	"commonSaving": "Kaydediliyor.",
 	"navControls": "Kontroller",
 	"incidentsPageTitle": "Olaylar",
@@ -461,26 +419,18 @@
 		"passwordRequirements": "Yeni şifreniz en az 8 karakterden oluşmalı ve en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.",
 		"saving": "Kaydediliyor..."
 	},
-	"settingsEmailConnectionHost": "E-posta bağlantı ana bilgisayarı - HELO/EHLO selamlamasında kullanılacak ana bilgisayar adı",
 	"emailSent": "E-posta başarı ile gönderildi.",
 	"failedToSendEmail": "E-posta gönderimi başarısız.",
-	"settingsTestEmail": "Test  E-postası gönder.",
 	"settingsTestEmailSuccess": "Test E-postası başarı ile gönderildi.",
 	"settingsTestEmailFailed": "Test E-postası gönderimi başarısız.",
 	"settingsTestEmailFailedWithReason": "Test E-postası gönderimi başarısız: {{reason}}",
 	"settingsTestEmailUnknownError": "Bilinmeyen hata.",
-	"settingsEmailRequiredFields": "E-posta sunucusu ve portu gereklidir.",
 	"statusMsg": {
 		"paused": "İzleme duraklatıldı.",
 		"up": "Siteniz yayında.",
 		"down": "Siteniz kapalı.",
 		"pending": "Sırada.."
 	},
-	"settingsURLTitle": "Durum Sayfasında IP/URL'yi İzle",
-	"settingsURLDescription": "Genel Durum sayfasında monitörün IP adresini veya URL'sini görüntüleyin. Devre dışı bırakılırsa, hassas bilgileri korumak için yalnızca monitör adı gösterilecektir.",
-	"settingsURLSelectTitle": "Durum sayfasında IP/URL'yi görüntüle",
-	"settingsURLEnabled": "Etkinleştirilmiş",
-	"settingURLDisabled": "Devre dışı bırakılmış",
 	"uptimeGeneralInstructions": {
 		"http": "",
 		"ping": "",
@@ -739,12 +689,147 @@
 		"paused": "beklemede"
 	},
 	"advancedMatching": "",
-	"settingsEmailTLSServername": "",
-	"settingsEmailIgnoreTLS": "",
-	"settingsEmailRequireTLS": "",
-	"settingsEmailRejectUnauthorized": "",
-	"settingsEmailSecure": "Güvenli - SSL kullan",
-	"settingsEmailPool": "",
 	"sendTestNotifications": "Bildirimleri dene",
-	"selectAll": "Tümünü seç"
+	"selectAll": "Tümünü seç",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

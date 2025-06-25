@@ -3,38 +3,11 @@
 	"title": "",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
-	"settingsGeneralSettings": "Obecná nastavení",
-	"settingsDisplayTimezone": "",
-	"settingsDisplayTimezoneDescription": "",
-	"settingsAppearance": "Vzhled",
-	"settingsAppearanceDescription": "",
-	"settingsThemeMode": "",
-	"settingsLanguage": "Jazyk",
-	"settingsEnabled": "Zapnuto",
 	"settingsDisabled": "Vypnuto",
-	"settingsHistoryAndMonitoring": "Historie a monitorování",
-	"settingsHistoryAndMonitoringDescription": "",
-	"settingsTTLLabel": "",
-	"settingsTTLOptionalLabel": "",
-	"settingsClearAllStats": "",
-	"settingsClearAllStatsButton": "",
-	"settingsClearAllStatsDialogTitle": "",
-	"settingsClearAllStatsDialogDescription": "",
-	"settingsClearAllStatsDialogConfirm": "",
-	"settingsDemoMonitors": "",
-	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitorsButton": "",
-	"settingsRemoveAllMonitorsDialogTitle": "",
-	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsAbout": "",
-	"settingsDevelopedBy": "Vyvinuto společností Bluewave Labs.",
-	"settingsSave": "Uložit",
 	"settingsSuccessSaved": "Nastavení bylo úspěšně uloženo",
 	"settingsFailedToSave": "Nepodařilo se uložit nastavení",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
-	"settingsDemoMonitorsAdded": "",
 	"settingsFailedToAddDemoMonitors": "",
 	"settingsMonitorsDeleted": "",
 	"settingsFailedToDeleteMonitors": "",
@@ -360,16 +333,10 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"settingsSystemReset": "",
-	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "",
 	"DeleteAccountButton": "",
 	"publicLink": "",
 	"maskedPageSpeedKeyPlaceholder": "",
-	"pageSpeedApiKeyFieldTitle": "",
-	"pageSpeedApiKeyFieldLabel": "",
-	"pageSpeedApiKeyFieldDescription": "",
-	"pageSpeedApiKeyFieldResetLabel": "",
 	"reset": "",
 	"ignoreTLSError": "",
 	"tlsErrorIgnored": "",
@@ -431,22 +398,13 @@
 		"password": "",
 		"team": "",
 		"logOut": "",
-		"notifications": ""
+		"notifications": "",
+		"logs": ""
 	},
-	"settingsEmail": "",
-	"settingsEmailDescription": "",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "",
-	"settingsEmailAddress": "",
-	"settingsEmailPassword": "",
 	"settingsEmailUser": "",
-	"settingsEmailFieldResetLabel": "",
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"settingsThemeModeLight": "",
-	"settingsThemeModeDark": "",
-	"settingsClearAllStatsDialogCancel": "",
 	"commonSaving": "",
 	"navControls": "",
 	"incidentsPageTitle": "",
@@ -461,26 +419,18 @@
 		"passwordRequirements": "",
 		"saving": ""
 	},
-	"settingsEmailConnectionHost": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
-	"settingsTestEmail": "",
 	"settingsTestEmailSuccess": "",
 	"settingsTestEmailFailed": "",
 	"settingsTestEmailFailedWithReason": "",
 	"settingsTestEmailUnknownError": "",
-	"settingsEmailRequiredFields": "",
 	"statusMsg": {
 		"paused": "",
 		"up": "",
 		"down": "",
 		"pending": ""
 	},
-	"settingsURLTitle": "",
-	"settingsURLDescription": "",
-	"settingsURLSelectTitle": "",
-	"settingsURLEnabled": "",
-	"settingURLDisabled": "",
 	"uptimeGeneralInstructions": {
 		"http": "",
 		"ping": "",
@@ -739,12 +689,147 @@
 		"paused": ""
 	},
 	"advancedMatching": "",
-	"settingsEmailTLSServername": "",
-	"settingsEmailIgnoreTLS": "",
-	"settingsEmailRequireTLS": "",
-	"settingsEmailRejectUnauthorized": "",
-	"settingsEmailSecure": "",
-	"settingsEmailPool": "",
 	"sendTestNotifications": "",
-	"selectAll": ""
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

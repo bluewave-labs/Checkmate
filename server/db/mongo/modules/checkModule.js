@@ -80,7 +80,7 @@ const getChecksByMonitor = async ({
 
 		// Match
 		const matchStage = {
-			monitorId: ObjectId.createFromHexString(monitorId),
+			monitorId: new ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
 			...(typeof ack !== "undefined" && ackStage),
 			...(dateRangeLookup[dateRange] && {

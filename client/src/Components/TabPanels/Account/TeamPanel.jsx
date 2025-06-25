@@ -168,7 +168,7 @@ const TeamPanel = () => {
 			});
 		} catch (error) {
 			createToast({
-				body: error.message || "Unknown error.",
+				body: error?.response?.data?.msg || error.message || "Unknown error.",
 			});
 		} finally {
 			setIsSendingInvite(false);
@@ -268,7 +268,7 @@ const TeamPanel = () => {
 					value={toInvite.email}
 					onChange={handleChange}
 					error={errors.email ? true : false}
-					helperText={errors.email}
+					helperText={t(errors.email)}
 				/>
 				<Select
 					id="team-member-role"

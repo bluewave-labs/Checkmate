@@ -76,7 +76,7 @@ class Logger {
 	info(config) {
 		const logEntry = this.buildLogEntry("info", config);
 		this.cacheLog(logEntry);
-		this.logger.info(config.message, logEntry);
+		this.logger.info(logEntry);
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Logger {
 	warn(config) {
 		const logEntry = this.buildLogEntry("warn", config);
 		this.cacheLog(logEntry);
-		this.logger.warn(config.message, logEntry);
+		this.logger.warn(logEntry);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Logger {
 	error(config) {
 		const logEntry = this.buildLogEntry("error", config);
 		this.cacheLog(logEntry);
-		this.logger.error(config.message, logEntry);
+		this.logger.error(logEntry);
 	}
 	/**
 	 * Logs a debug message.
@@ -117,7 +117,7 @@ class Logger {
 	debug(config) {
 		const logEntry = this.buildLogEntry("debug", config);
 		this.cacheLog(logEntry);
-		this.logger.debug(config.message, logEntry);
+		this.logger.debug(logEntry);
 	}
 
 	cacheLog(entry) {
