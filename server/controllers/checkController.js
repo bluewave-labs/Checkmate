@@ -54,7 +54,18 @@ class CheckController {
 		}
 
 		try {
-			const result = await this.db.getChecksByMonitor(req);
+			const { monitorId } = req.params;
+			let { type, sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
+			const result = await this.db.getChecksByMonitor({
+				monitorId,
+				type,
+				sortOrder,
+				dateRange,
+				filter,
+				page,
+				rowsPerPage,
+				status,
+			});
 
 			return res.success({
 				msg: this.stringService.checkGet,
@@ -74,8 +85,17 @@ class CheckController {
 			return;
 		}
 		try {
-			const checkData = await this.db.getChecksByTeam(req);
+			let { sortOrder, dateRange, filter, page, rowsPerPage } = req.query;
+			const { teamId } = req.user;
 
+			const checkData = await this.db.getChecksByTeam({
+				sortOrder,
+				dateRange,
+				filter,
+				page,
+				rowsPerPage,
+				teamId,
+			});
 			return res.success({
 				msg: this.stringService.checkGet,
 				data: checkData,
@@ -114,7 +134,8 @@ class CheckController {
 		}
 
 		try {
-			const deletedCount = await this.db.deleteChecksByTeamId(req.params.teamId);
+			const { teamId } = req.user;
+			const deletedCount = await this.db.deleteChecksByTeamId(teamId);
 
 			return res.success({
 				msg: this.stringService.checkDelete,
@@ -137,9 +158,7 @@ class CheckController {
 
 		try {
 			// Get user's teamId
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { teamId } = jwt.verify(token, jwtSecret);
+			const { teamId } = req.user;
 			const ttl = parseInt(req.body.ttl, 10) * SECONDS_PER_DAY;
 			await this.db.updateChecksTTL(teamId, ttl);
 

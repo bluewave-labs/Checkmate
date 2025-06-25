@@ -2,7 +2,6 @@ import Check from "../../models/Check.js";
 import Monitor from "../../models/Monitor.js";
 import HardwareCheck from "../../models/HardwareCheck.js";
 import PageSpeedCheck from "../../models/PageSpeedCheck.js";
-import DistributedUptimeCheck from "../../models/DistributedUptimeCheck.js";
 import User from "../../models/User.js";
 import logger from "../../../utils/logger.js";
 import { ObjectId } from "mongodb";
@@ -58,16 +57,23 @@ const createChecks = async (checks) => {
  * @returns {Promise<Array<Check>>}
  * @throws {Error}
  */
-const getChecksByMonitor = async (req) => {
+const getChecksByMonitor = async ({
+	monitorId,
+	type,
+	sortOrder,
+	dateRange,
+	filter,
+	page,
+	rowsPerPage,
+	status,
+}) => {
 	try {
-		const { monitorId } = req.params;
-		let { type, sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
 		status = typeof status !== "undefined" ? false : undefined;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 		// Match
 		const matchStage = {
-			monitorId: ObjectId.createFromHexString(monitorId),
+			monitorId: new ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
@@ -111,8 +117,6 @@ const getChecksByMonitor = async (req) => {
 			port: Check,
 			pagespeed: PageSpeedCheck,
 			hardware: HardwareCheck,
-			distributed_http: DistributedUptimeCheck,
-			distributed_test: DistributedUptimeCheck,
 		};
 
 		const Model = checkModels[type];
@@ -145,14 +149,19 @@ const getChecksByMonitor = async (req) => {
 	}
 };
 
-const getChecksByTeam = async (req) => {
+const getChecksByTeam = async ({
+	sortOrder,
+	dateRange,
+	filter,
+	page,
+	rowsPerPage,
+	teamId,
+}) => {
 	try {
-		let { sortOrder, dateRange, filter, page, rowsPerPage } = req.query;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
-		const { teamId } = req.params;
 		const matchStage = {
-			teamId: ObjectId.createFromHexString(teamId),
+			teamId: new ObjectId(teamId),
 			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
@@ -202,12 +211,7 @@ const getChecksByTeam = async (req) => {
 					pipeline: [{ $match: matchStage }],
 				},
 			},
-			{
-				$unionWith: {
-					coll: "distributeduptimechecks",
-					pipeline: [{ $match: matchStage }],
-				},
-			},
+
 			{ $sort: { createdAt: sortOrder } },
 			{
 				$facet: {

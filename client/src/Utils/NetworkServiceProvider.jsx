@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { setNetworkService } from "./NetworkService";
 import NetworkService, { networkService } from "./NetworkService";
 import { store } from "../store";

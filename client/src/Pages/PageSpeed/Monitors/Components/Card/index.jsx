@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import PageSpeedIcon from "../../../../../assets/icons/page-speed.svg?react";
 import { StatusLabel } from "../../../../../Components/Label";
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { useSelector } from "react-redux";
 import { formatDateWithTz, formatDurationSplit } from "../../../../../Utils/timeUtils";
-import useUtils from "../../../../Uptime/Monitors/Hooks/useUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import IconBox from "../../../../../Components/IconBox";
@@ -118,7 +118,7 @@ const processData = (data) => {
 const PagespeedAreaChart = ({ data, status }) => {
 	const theme = useTheme();
 	const [isHovered, setIsHovered] = useState(false);
-	const { statusToTheme } = useUtils();
+	const { statusToTheme } = useMonitorUtils();
 
 	const themeColor = statusToTheme[status];
 
@@ -206,7 +206,7 @@ PagespeedAreaChart.propTypes = {
  * @returns {JSX.Element} - The rendered card.
  */
 const Card = ({ monitor }) => {
-	const { determineState, pagespeedStatusMsg } = useUtils();
+	const { determineState, pagespeedStatusMsg } = useMonitorUtils();
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -245,7 +245,7 @@ const Card = ({ monitor }) => {
 				</IconBox>
 				<Typography
 					component="h2"
-					variant="h2"
+					variant="monitorUrl"
 					fontWeight={500}
 					alignSelf="center"
 				>
@@ -275,7 +275,7 @@ const Card = ({ monitor }) => {
 					sx={{ gridColumnStart: 1, gridColumnEnd: 4 }}
 				>
 					<PagespeedAreaChart
-						data={monitor.checks.slice().reverse()}
+						data={monitor?.checks?.slice().reverse()}
 						status={monitorState}
 					/>
 				</Box>

@@ -22,29 +22,19 @@ const passwordPattern =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/])[A-Za-z0-9!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/]+$/;
 
 const loginValidation = joi.object({
-	email: joi
-		.string()
-		.email()
-		.required()
-		.custom((value, helpers) => {
-			const lowercasedValue = value.toLowerCase();
-			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
-			}
-			return lowercasedValue;
-		}),
-	password: joi.string().min(8).required().pattern(passwordPattern),
+	email: joi.string().email().required().lowercase(),
+	password: joi.string().required(),
 });
 const nameValidation = joi
 	.string()
 	.trim()
 	.max(50)
-	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s']+$/u)
+	.pattern(/^(?=.*[\p{L}\p{Sc}])[\p{L}\p{Sc}\s'\-().]+$/u)
 	.messages({
 		"string.empty": "Name is required",
 		"string.max": "Name must be less than 50 characters",
 		"string.pattern.base":
-			"Name must contain at least 1 letter or currency symbol and only allow letters, spaces, apostrophes, and currency symbols",
+			"Names must contain at least 1 letter and may only include letters, currency symbols, spaces, apostrophes, hyphens (-), periods (.), and parentheses ().",
 	});
 
 const registrationBodyValidation = joi.object({
@@ -136,9 +126,7 @@ const getMonitorByIdQueryValidation = joi.object({
 	normalize: joi.boolean(),
 });
 
-const getMonitorsByTeamIdParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const getMonitorsByTeamIdParamValidation = joi.object({});
 
 const getMonitorsByTeamIdQueryValidation = joi.object({
 	limit: joi.number(),
@@ -177,8 +165,6 @@ const getCertificateParamValidation = joi.object({
 
 const createMonitorBodyValidation = joi.object({
 	_id: joi.string(),
-	userId: joi.string().required(),
-	teamId: joi.string().required(),
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
@@ -193,25 +179,30 @@ const createMonitorBodyValidation = joi.object({
 		usage_disk: joi.number(),
 		usage_temperature: joi.number(),
 	}),
-	notifications: joi.array().items(joi.object()),
+	notifications: joi.array().items(joi.string()),
 	secret: joi.string(),
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
 });
 
-const createMonitorsBodyValidation = joi.array().items(createMonitorBodyValidation);
+const createMonitorsBodyValidation = joi.array().items(
+	createMonitorBodyValidation.keys({
+		userId: joi.string().required(),
+		teamId: joi.string().required(),
+	})
+);
 
 const editMonitorBodyValidation = joi.object({
 	name: joi.string(),
 	description: joi.string(),
 	interval: joi.number(),
-	notifications: joi.array().items(joi.object()),
+	notifications: joi.array().items(joi.string()),
 	secret: joi.string(),
 	ignoreTlsErrors: joi.boolean(),
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
-	matchMethod: joi.string(),
+	matchMethod: joi.string().allow(null, ""),
 	port: joi.number().min(1).max(65535),
 	thresholds: joi.object().keys({
 		usage_cpu: joi.number(),
@@ -303,18 +294,7 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi
-		.string()
-		.valid(
-			"http",
-			"ping",
-			"pagespeed",
-			"hardware",
-			"docker",
-			"port",
-			"distributed_http",
-			"distributed_test"
-		),
+	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port"),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
@@ -324,9 +304,7 @@ const getChecksQueryValidation = joi.object({
 	status: joi.boolean(),
 });
 
-const getTeamChecksParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const getTeamChecksParamValidation = joi.object({});
 
 const getTeamChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
@@ -342,9 +320,7 @@ const deleteChecksParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
 
-const deleteChecksByTeamIdParamValidation = joi.object({
-	teamId: joi.string().required(),
-});
+const deleteChecksByTeamIdParamValidation = joi.object({});
 
 const updateChecksTTLBodyValidation = joi.object({
 	ttl: joi.number().required(),
@@ -434,7 +410,13 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
-	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailConnectionHost: joi.string().allow("").optional(),
+	systemEmailTLSServername: joi.string().allow("").optional(),
+	systemEmailSecure: joi.boolean(),
+	systemEmailPool: joi.boolean(),
+	systemEmailIgnoreTLS: joi.boolean(),
+	systemEmailRequireTLS: joi.boolean(),
+	systemEmailRejectUnauthorized: joi.boolean(),
 });
 
 //****************************************
@@ -446,14 +428,12 @@ const getStatusPageParamValidation = joi.object({
 });
 
 const getStatusPageQueryValidation = joi.object({
-	type: joi.string().valid("uptime", "distributed").required(),
+	type: joi.string().valid("uptime").required(),
 	timeFrame: joi.number().optional(),
 });
 
 const createStatusPageBodyValidation = joi.object({
-	userId: joi.string().required(),
-	teamId: joi.string().required(),
-	type: joi.string().valid("uptime", "distributed").required(),
+	type: joi.string().valid("uptime").required(),
 	companyName: joi.string().required(),
 	url: joi
 		.string()
@@ -483,6 +463,7 @@ const createStatusPageBodyValidation = joi.object({
 	isPublished: joi.boolean(),
 	showCharts: joi.boolean().optional(),
 	showUptimePercentage: joi.boolean(),
+	showAdminLoginLink: joi.boolean().optional(),
 });
 
 const imageValidation = joi
@@ -577,6 +558,30 @@ const triggerNotificationBodyValidation = joi.object({
 	}),
 });
 
+const createNotificationBodyValidation = joi.object({
+	notificationName: joi.string().required().messages({
+		"string.empty": "Notification name is required",
+		"any.required": "Notification name is required",
+	}),
+	address: joi.when("type", {
+		is: "email",
+		then: joi.string().email().required().messages({
+			"string.empty": "E-mail address cannot be empty",
+			"any.required": "E-mail address is required",
+			"string.email": "Please enter a valid e-mail address",
+		}),
+	}),
+	type: joi
+		.string()
+		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.required()
+		.messages({
+			"string.empty": "Notification type is required",
+			"any.required": "Notification type is required",
+			"any.only": "Notification type must be email, webhook, or pager_duty",
+		}),
+});
+
 //****************************************
 // Announcetment Page Validation
 //****************************************
@@ -597,10 +602,16 @@ const sendTestEmailBodyValidation = joi.object({
 	to: joi.string().required(),
 	systemEmailHost: joi.string(),
 	systemEmailPort: joi.number(),
+	systemEmailSecure: joi.boolean(),
+	systemEmailPool: joi.boolean(),
 	systemEmailAddress: joi.string(),
 	systemEmailPassword: joi.string(),
 	systemEmailUser: joi.string(),
-	systemEmailConnectionHost: joi.string(),
+	systemEmailConnectionHost: joi.string().allow("").optional(),
+	systemEmailIgnoreTLS: joi.boolean(),
+	systemEmailRequireTLS: joi.boolean(),
+	systemEmailRejectUnauthorized: joi.boolean(),
+	systemEmailTLSServername: joi.string().allow("").optional(),
 });
 
 export {
@@ -664,6 +675,7 @@ export {
 	getStatusPageQueryValidation,
 	imageValidation,
 	triggerNotificationBodyValidation,
+	createNotificationBodyValidation,
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,

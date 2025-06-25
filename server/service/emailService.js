@@ -80,98 +80,90 @@ class EmailService {
 		 */
 	};
 
-	/**
-	 * Asynchronously builds and sends an email using a specified template and context.
-	 *
-	 * @param {string} template - The name of the template to use for the email body.
-	 * @param {Object} context - The data context to render the template with.
-	 * @param {string} to - The recipient's email address.
-	 * @param {string} subject - The subject of the email.
-	 * @returns {Promise<string>} A promise that resolves to the messageId of the sent email.
-	 */
-	buildAndSendEmail = async (template, context, to, subject, transportConfig) => {
-		// TODO - Consider an update transporter method so this only needs to be recreated when smtp settings change
+	buildEmail = async (template, context) => {
+		try {
+			const mjml = this.templateLookup[template](context);
+			const html = await this.mjml2html(mjml);
+			return html.html;
+		} catch (error) {
+			this.logger.error({
+				message: error.message,
+				service: SERVICE_NAME,
+				method: "buildEmail",
+				stack: error.stack,
+			});
+		}
+	};
+
+	sendEmail = async (to, subject, html, transportConfig) => {
 		let config;
 		if (typeof transportConfig !== "undefined") {
 			config = transportConfig;
 		} else {
 			config = await this.settingsService.getDBSettings();
 		}
-
 		const {
 			systemEmailHost,
 			systemEmailPort,
+			systemEmailSecure,
+			systemEmailPool,
 			systemEmailUser,
 			systemEmailAddress,
 			systemEmailPassword,
 			systemEmailConnectionHost,
+			systemEmailTLSServername,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
 		} = config;
 
-		const baseEmailConfig = {
+		const emailConfig = {
 			host: systemEmailHost,
-			port: systemEmailPort,
-			secure: true,
+			port: Number(systemEmailPort),
+			secure: systemEmailSecure,
 			auth: {
 				user: systemEmailUser || systemEmailAddress,
 				pass: systemEmailPassword,
 			},
+			name: systemEmailConnectionHost || "localhost",
 			connectionTimeout: 5000,
+			pool: systemEmailPool,
+			tls: {
+				rejectUnauthorized: systemEmailRejectUnauthorized,
+				ignoreTLS: systemEmailIgnoreTLS,
+				requireTLS: systemEmailRequireTLS,
+				servername: systemEmailTLSServername,
+			},
 		};
-
-		const isSmtps = Number(systemEmailPort) === 465;
-
-		const emailConfig = !isSmtps
-			? {
-					...baseEmailConfig,
-					name: systemEmailConnectionHost || "localhost",
-					secure: false,
-					pool: true,
-					tls: { rejectUnauthorized: false },
-				}
-			: baseEmailConfig;
-
-		if (!isSmtps) {
-			delete emailConfig.auth;
-		}
-
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 
-		const buildHtml = async (template, context) => {
-			try {
-				const mjml = this.templateLookup[template](context);
-				const html = await this.mjml2html(mjml);
-				return html.html;
-			} catch (error) {
-				this.logger.error({
-					message: error.message,
-					service: SERVICE_NAME,
-					method: "buildAndSendEmail",
-					stack: error.stack,
-				});
-			}
-		};
+		try {
+			await this.transporter.verify();
+		} catch (error) {
+			this.logger.warn({
+				message: "Email transporter verification failed",
+				service: SERVICE_NAME,
+				method: "verifyTransporter",
+			});
+			return false;
+		}
 
-		const sendEmail = async (to, subject, html) => {
-			try {
-				const info = await this.transporter.sendMail({
-					to: to,
-					from: systemEmailAddress,
-					subject: subject,
-					html: html,
-				});
-				return info;
-			} catch (error) {
-				this.logger.error({
-					message: error.message,
-					service: SERVICE_NAME,
-					method: "sendEmail",
-					stack: error.stack,
-				});
-			}
-		};
-		const html = await buildHtml(template, context);
-		const info = await sendEmail(to, subject, html);
-		return info?.messageId;
+		try {
+			const info = await this.transporter.sendMail({
+				to: to,
+				from: systemEmailAddress,
+				subject: subject,
+				html: html,
+			});
+			return info?.messageId;
+		} catch (error) {
+			this.logger.error({
+				message: error.message,
+				service: SERVICE_NAME,
+				method: "sendEmail",
+				stack: error.stack,
+			});
+		}
 	};
 }
 

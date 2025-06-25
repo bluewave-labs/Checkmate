@@ -13,7 +13,7 @@ import TableSkeleton from "../../../../../Components/Table/skeleton";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import useUtils from "../../Hooks/useUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -58,7 +58,7 @@ const UptimeDataTable = ({
 }) => {
 	// Utils
 	const navigate = useNavigate();
-	const { determineState } = useUtils();
+	const { determineState } = useMonitorUtils();
 	const theme = useTheme();
 	const { t } = useTranslation();
 

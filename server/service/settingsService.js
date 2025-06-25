@@ -28,8 +28,8 @@ class SettingsService {
 	 * Constructs a new SettingsService
 	 * @constructor
 	 * @throws {Error}
-	 */ constructor(appSettings) {
-		this.appSettings = appSettings;
+	 */ constructor(AppSettings) {
+		this.AppSettings = AppSettings;
 		this.settings = { ...envConfig };
 	}
 	/**
@@ -60,16 +60,14 @@ class SettingsService {
 
 	async getDBSettings() {
 		// Remove any old settings
-		await this.appSettings.deleteMany({ version: { $exists: false } });
+		await this.AppSettings.deleteMany({ version: { $exists: false } });
 
-		let settings = await this.appSettings
-			.findOne({ singleton: true })
+		let settings = await this.AppSettings.findOne({ singleton: true })
 			.select("-__v -_id -createdAt -updatedAt -singleton")
 			.lean();
 		if (settings === null) {
-			await this.appSettings.create({});
-			settings = await this.appSettings
-				.findOne({ singleton: true })
+			await this.AppSettings.create({});
+			settings = await this.AppSettings.findOne({ singleton: true })
 				.select("-__v -_id -createdAt -updatedAt -singleton")
 				.lean();
 		}

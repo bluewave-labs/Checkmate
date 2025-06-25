@@ -10,4 +10,5 @@ prod/redis/data/*
 dist/docker-compose-test.yaml
 /dist-mono/mongo/data/*
 /dist-mono/redis/data/*
+/dist-arm/mongo/data/*
 *.env

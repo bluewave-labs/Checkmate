@@ -3,8 +3,6 @@ import MonitorStats from "../../models/MonitorStats.js";
 import Check from "../../models/Check.js";
 import PageSpeedCheck from "../../models/PageSpeedCheck.js";
 import HardwareCheck from "../../models/HardwareCheck.js";
-import DistributedUptimeCheck from "../../models/DistributedUptimeCheck.js";
-import Notification from "../../models/Notification.js";
 import { NormalizeData, NormalizeDataUptimeDetails } from "../../../utils/dataUtils.js";
 import ServiceRegistry from "../../../service/serviceRegistry.js";
 import StringService from "../../../service/stringService.js";
@@ -16,14 +14,11 @@ import { ObjectId } from "mongodb";
 import {
 	buildUptimeDetailsPipeline,
 	buildHardwareDetailsPipeline,
-	buildMonitorStatsPipeline,
 	buildMonitorSummaryByTeamIdPipeline,
 	buildMonitorsByTeamIdPipeline,
 	buildMonitorsAndSummaryByTeamIdPipeline,
 	buildMonitorsWithChecksByTeamIdPipeline,
 	buildFilteredMonitorsByTeamIdPipeline,
-	buildDePINDetailsByDateRange,
-	buildDePINLatestChecks,
 } from "./monitorModuleQueries.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -336,11 +331,9 @@ const calculateGroupStats = (group) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const getUptimeDetailsById = async (req) => {
+const getUptimeDetailsById = async ({ monitorId, dateRange, normalize }) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
-		const { monitorId } = req.params;
-		const { dateRange, normalize } = req.query;
 		const dates = getDateRange(dateRange);
 		const formatLookup = {
 			recent: "%Y-%m-%dT%H:%M:00Z",
@@ -385,72 +378,6 @@ const getUptimeDetailsById = async (req) => {
 	}
 };
 
-const getDistributedUptimeDetailsById = async (req) => {
-	try {
-		const { monitorId } = req?.params ?? {};
-		if (typeof monitorId === "undefined") {
-			throw new Error();
-		}
-		const monitor = await Monitor.findById(monitorId);
-		if (monitor === null || monitor === undefined) {
-			throw new Error(this.stringService.dbFindMonitorById(monitorId));
-		}
-
-		const { dateRange, normalize } = req.query;
-		const dates = getDateRange(dateRange);
-		const formatLookup = {
-			recent: "%Y-%m-%dT%H:%M:00Z",
-			day: {
-				$concat: [
-					{ $dateToString: { format: "%Y-%m-%dT%H:", date: "$updatedAt" } },
-					{
-						$cond: [{ $lt: [{ $minute: "$updatedAt" }, 30] }, "00:00Z", "30:00Z"],
-					},
-				],
-			},
-			week: "%Y-%m-%dT%H:00:00Z",
-			month: "%Y-%m-%dT00:00:00Z",
-		};
-
-		const dateString = formatLookup[dateRange];
-
-		const monitorStatsResult = await MonitorStats.aggregate(
-			buildMonitorStatsPipeline(monitor)
-		);
-		const monitorStats = monitorStatsResult[0];
-		const dePINDetailsByDateRange = await DistributedUptimeCheck.aggregate(
-			buildDePINDetailsByDateRange(monitor, dates, dateString)
-		);
-		const latestChecks = await DistributedUptimeCheck.aggregate(
-			buildDePINLatestChecks(monitor)
-		);
-
-		const checkData = dePINDetailsByDateRange[0];
-		const normalizedGroupChecks = NormalizeDataUptimeDetails(
-			checkData.groupedChecks,
-			10,
-			100
-		);
-		const data = {
-			...monitor.toObject(),
-			latestChecks,
-			totalChecks: monitorStats?.totalChecks,
-			avgResponseTime: monitorStats?.avgResponseTime,
-			uptimePercentage: monitorStats?.uptimePercentage,
-			timeSinceLastCheck: monitorStats?.timeSinceLastCheck,
-			uptBurnt: monitorStats?.uptBurnt,
-			groupedChecks: normalizedGroupChecks,
-			groupedMapChecks: checkData.groupedMapChecks,
-		};
-
-		return data;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "getDistributedUptimeDetailsById";
-		throw error;
-	}
-};
-
 /**
  * Get stats by monitor ID
  * @async
@@ -459,11 +386,16 @@ const getDistributedUptimeDetailsById = async (req) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const getMonitorStatsById = async (req) => {
+const getMonitorStatsById = async ({
+	monitorId,
+	limit,
+	sortOrder,
+	dateRange,
+	numToDisplay,
+	normalize,
+}) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
-		const { monitorId } = req.params;
-
 		// Get monitor, if we can't find it, abort with error
 		const monitor = await Monitor.findById(monitorId);
 		if (monitor === null || monitor === undefined) {
@@ -471,7 +403,6 @@ const getMonitorStatsById = async (req) => {
 		}
 
 		// Get query params
-		let { limit, sortOrder, dateRange, numToDisplay, normalize } = req.query;
 		const sort = sortOrder === "asc" ? 1 : -1;
 
 		// Get Checks for monitor in date range requested
@@ -521,10 +452,8 @@ const getMonitorStatsById = async (req) => {
 	}
 };
 
-const getHardwareDetailsById = async (req) => {
+const getHardwareDetailsById = async ({ monitorId, dateRange }) => {
 	try {
-		const { monitorId } = req.params;
-		const { dateRange } = req.query;
 		const monitor = await Monitor.findById(monitorId);
 		const dates = getDateRange(dateRange);
 		const formatLookup = {
@@ -567,14 +496,6 @@ const getMonitorById = async (monitorId) => {
 			error.status = 404;
 			throw error;
 		}
-		// Get notifications
-		const notifications = await Notification.find({
-			monitorId: monitorId,
-		});
-
-		// Update monitor with notifications and save
-		monitor.notifications = notifications;
-		await monitor.save();
 
 		return monitor;
 	} catch (error) {
@@ -584,8 +505,16 @@ const getMonitorById = async (monitorId) => {
 	}
 };
 
-const getMonitorsByTeamId = async (req) => {
-	let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+const getMonitorsByTeamId = async ({
+	limit,
+	type,
+	page,
+	rowsPerPage,
+	filter,
+	field,
+	order,
+	teamId,
+}) => {
 	limit = parseInt(limit);
 	page = parseInt(page);
 	rowsPerPage = parseInt(rowsPerPage);
@@ -594,7 +523,7 @@ const getMonitorsByTeamId = async (req) => {
 		order = "asc";
 	}
 	// Build match stage
-	const matchStage = { teamId: ObjectId.createFromHexString(req.params.teamId) };
+	const matchStage = { teamId: new ObjectId(teamId) };
 	if (type !== undefined) {
 		matchStage.type = Array.isArray(type) ? { $in: type } : type;
 	}
@@ -632,16 +561,14 @@ const getMonitorsByTeamId = async (req) => {
 	return { summary, monitors, filteredMonitors: normalizedFilteredMonitors };
 };
 
-const getMonitorsAndSummaryByTeamId = async (req) => {
+const getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {
 	try {
-		const { type } = req.query;
-		const teamId = ObjectId.createFromHexString(req.params.teamId);
-		const matchStage = { teamId };
+		const matchStage = { teamId: new ObjectId(teamId) };
 		if (type !== undefined) {
 			matchStage.type = Array.isArray(type) ? { $in: type } : type;
 		}
 
-		if (req.explain === true) {
+		if (explain === true) {
 			return Monitor.aggregate(
 				buildMonitorsAndSummaryByTeamIdPipeline({ matchStage })
 			).explain("executionStats");
@@ -659,9 +586,18 @@ const getMonitorsAndSummaryByTeamId = async (req) => {
 	}
 };
 
-const getMonitorsWithChecksByTeamId = async (req) => {
+const getMonitorsWithChecksByTeamId = async ({
+	limit,
+	type,
+	page,
+	rowsPerPage,
+	filter,
+	field,
+	order,
+	teamId,
+	explain,
+}) => {
 	try {
-		let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
 		limit = parseInt(limit);
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
@@ -669,14 +605,13 @@ const getMonitorsWithChecksByTeamId = async (req) => {
 			field = "name";
 			order = "asc";
 		}
-		const teamId = ObjectId.createFromHexString(req.params.teamId);
 		// Build match stage
-		const matchStage = { teamId };
+		const matchStage = { teamId: new ObjectId(teamId) };
 		if (type !== undefined) {
 			matchStage.type = Array.isArray(type) ? { $in: type } : type;
 		}
 
-		if (req.explain === true) {
+		if (explain === true) {
 			return Monitor.aggregate(
 				buildMonitorsWithChecksByTeamIdPipeline({
 					matchStage,
@@ -728,13 +663,11 @@ const getMonitorsWithChecksByTeamId = async (req) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const createMonitor = async (req, res) => {
+const createMonitor = async ({ body, teamId, userId }) => {
 	try {
-		const monitor = new Monitor({ ...req.body });
-		// Remove notifications fom monitor as they aren't needed here
-		monitor.notifications = undefined;
-		await monitor.save();
-		return monitor;
+		const monitor = new Monitor({ ...body, teamId, userId });
+		const saved = await monitor.save();
+		return saved;
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "createMonitor";
@@ -771,15 +704,15 @@ const createBulkMonitors = async (req) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const deleteMonitor = async (req, res) => {
+const deleteMonitor = async ({ monitorId }) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
-
-	const monitorId = req.params.monitorId;
 	try {
 		const monitor = await Monitor.findByIdAndDelete(monitorId);
+
 		if (!monitor) {
 			throw new Error(stringService.getDbFindMonitorById(monitorId));
 		}
+
 		return monitor;
 	} catch (error) {
 		error.service = SERVICE_NAME;
@@ -831,8 +764,6 @@ const deleteMonitorsByUserId = async (userId) => {
  * @throws {Error}
  */
 const editMonitor = async (candidateId, candidateMonitor) => {
-	candidateMonitor.notifications = undefined;
-
 	try {
 		const editedMonitor = await Monitor.findByIdAndUpdate(candidateId, candidateMonitor, {
 			new: true,
@@ -867,6 +798,29 @@ const addDemoMonitors = async (userId, teamId) => {
 	}
 };
 
+const pauseMonitor = async ({ monitorId }) => {
+	try {
+		const monitor = await Monitor.findOneAndUpdate(
+			{ _id: monitorId },
+			[
+				{
+					$set: {
+						isActive: { $not: "$isActive" },
+						status: "$$REMOVE",
+					},
+				},
+			],
+			{ new: true }
+		);
+
+		return monitor;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "pauseMonitor";
+		throw error;
+	}
+};
+
 export {
 	getAllMonitors,
 	getAllMonitorsWithUptimeStats,
@@ -876,7 +830,6 @@ export {
 	getMonitorsAndSummaryByTeamId,
 	getMonitorsWithChecksByTeamId,
 	getUptimeDetailsById,
-	getDistributedUptimeDetailsById,
 	createMonitor,
 	createBulkMonitors,
 	deleteMonitor,
@@ -885,6 +838,7 @@ export {
 	editMonitor,
 	addDemoMonitors,
 	getHardwareDetailsById,
+	pauseMonitor,
 };
 
 // Helper functions

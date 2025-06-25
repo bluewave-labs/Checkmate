@@ -4,7 +4,7 @@ import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography, Button } from "@mui/material";
 import { PasswordEndAdornment } from "../../Inputs/TextInput/Adornments";
 import TextInput from "../../Inputs/TextInput";
-import { credentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation";
 import Alert from "../../Alert";
 import { update } from "../../../Features/Auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -61,7 +61,7 @@ const PasswordPanel = () => {
 			[name]: true,
 		};
 
-		const validation = credentials.validate(
+		const validation = newOrChangedCredentials.validate(
 			{ ...updatedData },
 			{ abortEarly: false, context: { password: updatedData.newPassword } }
 		);
@@ -79,7 +79,7 @@ const PasswordPanel = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const { error } = credentials.validate(localData, {
+		const { error } = newOrChangedCredentials.validate(localData, {
 			abortEarly: false,
 			context: { password: localData.newPassword },
 		});

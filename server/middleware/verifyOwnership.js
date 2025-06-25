@@ -1,14 +1,20 @@
 import logger from "../utils/logger.js";
 import ServiceRegistry from "../service/serviceRegistry.js";
 import StringService from "../service/stringService.js";
+import { ObjectId } from "mongodb";
+
 const SERVICE_NAME = "verifyOwnership";
 
 const verifyOwnership = (Model, paramName) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	return async (req, res, next) => {
 		const userId = req.user._id;
-		const documentId = req.params[paramName];
+		let documentId = req.params[paramName];
+
 		try {
+			if (typeof documentId === "string") {
+				documentId = ObjectId.createFromHexString(documentId);
+			}
 			const doc = await Model.findById(documentId);
 			//If the document is not found, return a 404 error
 			if (!doc) {
@@ -35,7 +41,7 @@ const verifyOwnership = (Model, paramName) => {
 
 			// If the userID does not match the document's userID, return a 403 error
 			if (userId.toString() !== doc.userId.toString()) {
-				const error = new Error(stringService.verifyOwnerUnauthorized);
+				const error = new Error("Unauthorized");
 				error.status = 403;
 				throw error;
 			}

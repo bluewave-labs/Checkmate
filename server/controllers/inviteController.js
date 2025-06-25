@@ -71,24 +71,30 @@ class InviteController {
 
 			const inviteToken = await this.db.requestInviteToken({ ...req.body });
 			const { clientHost } = this.settingsService.getSettings();
-			this.emailService
-				.buildAndSendEmail(
-					"employeeActivationTemplate",
-					{
-						name: firstname,
-						link: `${clientHost}/register/${inviteToken.token}`,
-					},
-					req.body.email,
-					"Welcome to Uptime Monitor"
-				)
-				.catch((error) => {
-					logger.error({
-						message: error.message,
-						service: SERVICE_NAME,
-						method: "issueInvitation",
-						stack: error.stack,
-					});
+
+			try {
+				const html = await this.emailService.buildEmail("employeeActivationTemplate", {
+					name: firstname,
+					link: `${clientHost}/register/${inviteToken.token}`,
 				});
+				const result = await this.emailService.sendEmail(
+					req.body.email,
+					"Welcome to Uptime Monitor",
+					html
+				);
+				if (!result) {
+					return res.error({
+						msg: "Failed to send invite e-mail... Please verify your settings.",
+					});
+				}
+			} catch (error) {
+				logger.warn({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "sendInviteEmail",
+					stack: error.stack,
+				});
+			}
 
 			return res.success({
 				msg: this.stringService.inviteIssued,

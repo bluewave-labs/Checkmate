@@ -1,4 +1,5 @@
 import Notification from "../../models/Notification.js";
+import Monitor from "../../models/Monitor.js";
 const SERVICE_NAME = "notificationModule";
 /**
  * Creates a new notification.
@@ -17,6 +18,28 @@ const createNotification = async (notificationData) => {
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "createNotification";
+		throw error;
+	}
+};
+
+const getNotificationsByTeamId = async (teamId) => {
+	try {
+		const notifications = await Notification.find({ teamId });
+		return notifications;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getNotificationsByTeamId";
+		throw error;
+	}
+};
+
+const getNotificationsByIds = async (notificationIds) => {
+	try {
+		const notifications = await Notification.find({ _id: { $in: notificationIds } });
+		return notifications;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getNotificationsByIds";
 		throw error;
 	}
 };
@@ -49,8 +72,49 @@ const deleteNotificationsByMonitorId = async (monitorId) => {
 	}
 };
 
+const deleteNotificationById = async (id) => {
+	try {
+		const result = await Notification.findByIdAndDelete(id);
+		await Monitor.updateMany({ notifications: id }, { $pull: { notifications: id } });
+		return result;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "deleteNotificationById";
+		throw error;
+	}
+};
+
+const getNotificationById = async (id) => {
+	try {
+		const notification = await Notification.findById(id);
+		return notification;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getNotificationById";
+		throw error;
+	}
+};
+
+const editNotification = async (id, notificationData) => {
+	try {
+		const notification = await Notification.findByIdAndUpdate(id, notificationData, {
+			new: true,
+		});
+		return notification;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "editNotification";
+		throw error;
+	}
+};
+
 export {
 	createNotification,
+	getNotificationsByTeamId,
+	getNotificationsByIds,
 	getNotificationsByMonitorId,
 	deleteNotificationsByMonitorId,
+	deleteNotificationById,
+	getNotificationById,
+	editNotification,
 };

@@ -1,101 +1,13 @@
 {
-	"dontHaveAccount": "Ei tiliä",
-	"email": "Sähköposti",
-	"forgotPassword": "Unohtunut salasana",
-	"password": "Salasana",
-	"signUp": "Rekisteröidy",
 	"submit": "Lähetä",
 	"title": "Otsikko",
-	"continue": "Jatka",
-	"enterEmail": "Syötä sähköpostiosoitteesi",
-	"authLoginTitle": "Kirjaudu",
-	"authLoginEnterPassword": "Syötä salasanasi",
-	"commonPassword": "Salasana",
-	"commonBack": "Takaisin",
-	"authForgotPasswordTitle": "Unohditko salasanasi?",
-	"authForgotPasswordResetPassword": "Nollaa salasana",
-	"createPassword": "Luo salasanasi",
-	"createAPassword": "Salasana",
-	"authRegisterAlreadyHaveAccount": "Onko sinulla jo tili?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Syötä salasanasi",
-	"authRegisterTitle": "Luo tili",
-	"authRegisterStepOneTitle": "Luo tilisi",
-	"authRegisterStepOneDescription": "Kirjoita tietosi aloittaaksesi",
-	"authRegisterStepTwoTitle": "Määritä profiilisi",
-	"authRegisterStepTwoDescription": "Kerro meille lisää itsestäsi",
-	"authRegisterStepThreeTitle": "Melkein valmis!",
-	"authRegisterStepThreeDescription": "Tarkista tietosi",
-	"authForgotPasswordDescription": "Ei hätää, lähetämme sinulle salasanan nollausohjeet.",
-	"authForgotPasswordSendInstructions": "Lähetä ohjeet",
-	"authForgotPasswordBackTo": "Palaa",
-	"authCheckEmailTitle": "Tarkista sähköpostisi",
-	"authCheckEmailDescription": "Lähetimme salasanan nollauslinkin osoitteeseen",
-	"authCheckEmailResendEmail": "Lähetä sähköposti uudelleen",
-	"authCheckEmailBackTo": "Palaa",
-	"goBackTo": "Palaa edelliseen",
-	"authCheckEmailDidntReceiveEmail": "Etkö saanut sähköpostia?",
-	"authCheckEmailClickToResend": "Klikkaa lähettääksesi uudelleen",
-	"authSetNewPasswordTitle": "Aseta uusi salasana",
-	"authSetNewPasswordDescription": "Uuden salasanan pitää olla eri kuin aiemmin käyttämäsi.",
-	"authSetNewPasswordNewPassword": "Uusi salasana",
-	"authSetNewPasswordConfirmPassword": "Vahvista salasana",
-	"confirmPassword": "Syötä salasana uudelleen",
-	"authSetNewPasswordResetPassword": "Nollaa salasana",
-	"authSetNewPasswordBackTo": "Takaisin",
-	"authPasswordMustBeAtLeast": "Vähintään",
-	"authPasswordCharactersLong": "8 merkkiä pitkä",
-	"authPasswordMustContainAtLeast": "Tulee sisältää vähintään",
-	"authPasswordSpecialCharacter": "yksi erikoismerkki",
-	"authPasswordOneNumber": "yksi numero",
-	"authPasswordUpperCharacter": "yksi pieni kirjain",
-	"authPasswordLowerCharacter": "yksi iso kirjain",
-	"authPasswordConfirmAndPassword": "Vahvista salasana ja salasana",
-	"authPasswordMustMatch": "Salasanojen on oltava samat",
-	"authRegisterCreateAccount": "Luo tili aloittaaksesi",
-	"authRegisterCreateSuperAdminAccount": "Luo pääkäyttäjän tili aloittaaksesi",
-	"authRegisterSignUpWithEmail": "Luo pääkäyttäjän tili",
-	"authRegisterBySigningUp": "Luomalla tilin hyväksyt <a1>Käyttöehdot</a1> ja <a2>Tietosuojakäytännön</a2>.",
 	"distributedStatusHeaderText": "Reaaliaikainen kattavuus oikeilla laitteilla",
 	"distributedStatusSubHeaderText": "Miljoonien laitteiden voimin ympäri maailman näet järjestelmän suorituskyvyn maailman alueittain, maittain tai kaupungeittain",
-	"settingsGeneralSettings": "Yleiset asetukset",
-	"settingsDisplayTimezone": "Näytä aikavyöhyke",
-	"settingsDisplayTimezoneDescription": "Valitse sovelluksessa käytettävä aikavyöhyke päivämäärien ja aikojen näyttämiseen.",
-	"settingsAppearance": "Ulkonäkö",
-	"settingsAppearanceDescription": "Vaihda teema vaaleaksi tai tummaksi tai vaihda käyttöliittymän kieli",
-	"settingsThemeMode": "Teematila",
-	"settingsLanguage": "Kieli",
-	"settingsDistributedUptime": "Hajautettu käyttöaika",
-	"settingsDistributedUptimeDescription": "Ota käyttöön tai poista käytöstä hajautettu käyttöaikavalvonta.",
-	"settingsEnabled": "Käytössä",
 	"settingsDisabled": "Poistettu käytöstä",
-	"settingsHistoryAndMonitoring": "Valvonnan historia",
-	"settingsHistoryAndMonitoringDescription": "Määritä, kuinka pitkään haluat säilyttää historiallisia tietoja. Voit myös tyhjentää kaikki olemassa olevat tiedot.",
-	"settingsTTLLabel": "Kuinka monta päivää haluat säilyttää valvontahistorian.",
-	"settingsTTLOptionalLabel": "0 on ääretön",
-	"settingsClearAllStats": "Tyhjennä kaikki tilastot. Tämä on peruuttamaton.",
-	"settingsClearAllStatsButton": "Tyhjennä kaikki tilastot",
-	"settingsClearAllStatsDialogTitle": "Haluatko tyhjentää kaikki tilastot?",
-	"settingsClearAllStatsDialogDescription": "Kun valvontahistoria ja tilastot on poistettu, niitä ei voi palauttaa.",
-	"settingsClearAllStatsDialogConfirm": "",
-	"settingsDemoMonitors": "",
-	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitors": "",
-	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitors": "",
-	"settingsRemoveAllMonitorsButton": "",
-	"settingsRemoveAllMonitorsDialogTitle": "",
-	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsWallet": "Lompakko",
-	"settingsWalletDescription": "",
-	"settingsAbout": "Tietoja",
-	"settingsDevelopedBy": "Kehittänyt Bluewave Labs.",
-	"settingsSave": "Tallenna",
 	"settingsSuccessSaved": "",
 	"settingsFailedToSave": "",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
-	"settingsDemoMonitorsAdded": "",
 	"settingsFailedToAddDemoMonitors": "",
 	"settingsMonitorsDeleted": "",
 	"settingsFailedToDeleteMonitors": "",
@@ -108,7 +20,6 @@
 	"now": "Nyt",
 	"delete": "Poista",
 	"configure": "Määritä",
-	"networkError": "Verkkovirhe",
 	"responseTime": "Vasteaika",
 	"ms": "ms",
 	"bar": "Palkki",
@@ -116,11 +27,6 @@
 	"country": "MAA",
 	"city": "KAUPUNKI",
 	"response": "Vastaus",
-	"checkConnection": "Tarkista yhteytesi",
-	"passwordreset": "Salasanan nollaus",
-	"authRegisterStepOnePersonalDetails": "Syötä henkilökohtaiset tietosi",
-	"authCheckEmailOpenEmailButton": "Avaa sähköpostisovellus",
-	"authNewPasswordConfirmed": "Salasanasi on onnistuneesti nollattu. Klikkaa alta kirjautuaksesi taianomaisesti.",
 	"monitorStatusUp": "Valvontakohde {name} ({url}) on nyt toiminnassa ja vastaa",
 	"monitorStatusDown": "Valvontakohde {name} ({url}) ei ole toiminnassa, eikä vastaa",
 	"webhookSendSuccess": "Webhook-ilmoitus lähetettiin onnistuneesti",
@@ -136,10 +42,6 @@
 	"distributedUptimeCreateIncidentDescription": "Jos ilmenee häiriö, ilmoita käyttäjille.",
 	"distributedUptimeCreateAdvancedSettings": "Lisäasetukset",
 	"distributedUptimeDetailsNoMonitorHistory": "Tälle valvontakohteelle ei ole vielä tarkistushistoriaa.",
-	"distributedUptimeDetailsFooterHeading": "Tehty ❤️:lla UpRockin ja Bluewave Labsin toimesta",
-	"distributedUptimeDetailsFooterBuilt": "",
-	"distributedUptimeDetailsFooterSolana": "Solana",
-	"distributedUptimeDetailsMonitorHeader": "",
 	"distributedUptimeDetailsStatusHeaderUptime": "",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "Viimeksi päivitetty",
 	"notifications": {
@@ -181,7 +83,33 @@
 		"testSuccess": "Testi ilmoituksen lähetys onnistui!",
 		"testFailed": "Testi ilmoituksen lähetys epäonnistui",
 		"unsupportedType": "",
-		"networkError": ""
+		"networkError": "",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "",
 	"add": "Lisää",
@@ -237,7 +165,7 @@
 	"infrastructureCustomizeAlerts": "",
 	"infrastructureAlertNotificationDescription": "",
 	"infrastructureCreateMonitor": "",
-	"infrastructureProtocol": "",
+	"infrastructureProtocol": "Protokolla",
 	"infrastructureServerUrlLabel": "Palvelimen URL-osoite",
 	"infrastructureDisplayNameLabel": "",
 	"infrastructureAuthorizationSecretLabel": "",
@@ -353,11 +281,11 @@
 	"statusPageCreateTabsContent": "",
 	"statusPageCreateTabsContentDescription": "",
 	"statusPageCreateTabsContentFeaturesDescription": "",
-	"showCharts": "",
+	"showCharts": "Näytä kaaviot",
 	"showUptimePercentage": "",
 	"removeLogo": "Poista logo",
 	"statusPageStatus": "",
-	"statusPageStatusContactAdmin": "",
+	"statusPageStatusContactAdmin": "Ota yhteyttä järjestelmänvalvojaan",
 	"statusPageStatusNotPublic": "",
 	"statusPageStatusNoPage": "",
 	"statusPageStatusServiceStatus": "",
@@ -394,10 +322,6 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "Haluatko todella poistaa tämän tilin?",
-	"authRegisterFirstName": "Nimi",
-	"authRegisterLastName": "Sukunimi",
-	"authRegisterEmail": "Sähköpostiosoite",
-	"authRegisterEmailRequired": "",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -409,55 +333,28 @@
 		"noFileSelected": "Ei valittua tiedostoa",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "Tervetuloa takaisin! Olet kirjautunut sisään.",
-	"authRegisterLoginLink": "Kirjaudu",
-	"validationNameRequired": "Kirjoita nimesi",
-	"validationNameTooLong": "Nimen tulee olla alle 50 merkkiä",
-	"validationNameInvalidCharacters": "Käytäthän vain kirjaimia, välilyöntejä, heittomerkkejä tai yhdysmerkkejä",
-	"settingsSystemReset": "Järjestelmän palautus",
-	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "Poista tili",
 	"DeleteAccountButton": "Poista tili",
-	"authRegisterEmailInvalid": "Kirjoita kelvollinen sähköpostiosoite",
 	"publicLink": "Julkinen linkki",
-	"doNotHaveAccount": "Onko sinulla tili?",
-	"registerHere": "Rekisteröidy tästä",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API-avain",
-	"pageSpeedApiKeyFieldLabel": "PageSpeed API-avain",
-	"pageSpeedApiKeyFieldDescription": "",
-	"pageSpeedApiKeyFieldResetLabel": "",
 	"reset": "Palauta",
 	"ignoreTLSError": "",
 	"tlsErrorIgnored": "",
 	"ignoreTLSErrorDescription": "",
 	"createNew": "Luo uusi",
 	"greeting": {
-		"prepend": "",
+		"prepend": "Hei",
 		"append": "",
 		"overview": ""
-	},
-	"monitorStatus": {
-		"up": "Ylös",
-		"down": "Alas",
-		"paused": "Tauko"
 	},
 	"roles": {
 		"superAdmin": "Pääylläpitäjä",
 		"admin": "Ylläpitäjä",
-		"teamMember": "",
+		"teamMember": "Tiimin jäsen",
 		"demoUser": "Demokäyttäjä"
 	},
 	"teamPanel": {
-		"teamMembers": "",
+		"teamMembers": "Tiimin jäsenet",
 		"filter": {
 			"all": "Kaikki",
 			"member": "Jäsen"
@@ -488,7 +385,6 @@
 		"uptime": "",
 		"pagespeed": "",
 		"infrastructure": "Infrastruktuuri",
-		"distributedUptime": "",
 		"incidents": "",
 		"statusPages": "Tilasivut",
 		"maintenance": "Huolto",
@@ -501,23 +397,14 @@
 		"profile": "Profiili",
 		"password": "Salasana",
 		"team": "Tiimi",
-		"logOut": "Kirjaudu ulos"
+		"logOut": "Kirjaudu ulos",
+		"notifications": "",
+		"logs": ""
 	},
-	"settingsEmail": "Sähköpostiasetukset",
-	"settingsEmailDescription": "Määritä sähköpostiasetukset",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "Sähköpostin portti - Portti johon yhdistetään",
-	"settingsEmailAddress": "Sähköpostiosoite - Käytetään tunnistautumiseen",
-	"settingsEmailPassword": "Sähköpostin salasana - Salasana tunnistautumiseen",
 	"settingsEmailUser": "",
-	"settingsEmailFieldResetLabel": "Salasana on asetettu. Paina Palauta vaihtaaksesi sen.",
 	"state": "Tila",
 	"statusBreadCrumbsStatusPages": "Tilasivut",
 	"statusBreadCrumbsDetails": "Tiedot",
-	"authForgotPasswordInstructions": "Ei hätää, lähetämme sinulle ohjeet salasanan palauttamiseen.",
-	"settingsThemeModeLight": "Vaalea",
-	"settingsThemeModeDark": "Tumma",
-	"settingsClearAllStatsDialogCancel": "Peruuta",
 	"commonSaving": "Tallennetaan...",
 	"navControls": "Ohjaimet",
 	"incidentsPageTitle": "Häiriöt",
@@ -532,26 +419,417 @@
 		"passwordRequirements": "Uuden salasanan on oltava vähintään 8 merkkiä pitkä ja sen on sisältävä vähintään yksi iso kirjain, yksi pieni kirjain, yksi numero sekä yksi erikoismerkki.",
 		"saving": "Tallennetaan..."
 	},
-	"uptimeCreateSelectURL": "",
-	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "Lähetä testi sähköposti",
 	"emailSent": "Sähköpostin lähetys onnistui",
 	"failedToSendEmail": "Sähköpostin lähetys epäonnistui",
-	"settingsTestEmail": "Lähetä testi sähköposti",
 	"settingsTestEmailSuccess": "Testisähköpostin lähetys onnistui",
 	"settingsTestEmailFailed": "Testisähköpostin lähetys epäonnistui",
 	"settingsTestEmailFailedWithReason": "Testisähköpostin lähetys epäonnistui: {{reason}}",
 	"settingsTestEmailUnknownError": "Tuntematon virhe",
-	"settingsEmailRequiredFields": "",
 	"statusMsg": {
 		"paused": "Valvonta on keskeytetty.",
 		"up": "Sivusi on ylhäällä.",
 		"down": "Sivusi on alhaalla.",
 		"pending": "Odottaa..."
 	},
-	"settingsURLTitle": "",
-	"settingsURLDescription": "",
-	"settingsURLSelectTitle": "",
-	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"webhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"sendTestNotifications": "",
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

@@ -209,25 +209,14 @@ class StatusService {
 			tls_took,
 		};
 
-		if (type === "distributed_http") {
-			if (typeof payload === "undefined") {
-				return undefined;
-			}
-			check.continent = payload.continent;
-			check.countryCode = payload.country_code;
-			check.city = payload.city;
-			check.location = payload.location;
-			check.uptBurnt = payload.upt_burnt;
-			check.first_byte_took = payload.first_byte_took;
-			check.body_read_took = payload.body_read_took;
-			check.dns_took = payload.dns_took;
-			check.conn_took = payload.conn_took;
-			check.connect_took = payload.connect_took;
-			check.tls_took = payload.tls_took;
-		}
-
 		if (type === "pagespeed") {
 			if (typeof payload === "undefined") {
+				this.logger.warn({
+					message: "Failed to build check",
+					service: this.SERVICE_NAME,
+					method: "buildCheck",
+					details: "empty payload",
+				});
 				return undefined;
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
@@ -254,6 +243,7 @@ class StatusService {
 			check.disk = disk ?? {};
 			check.host = host ?? {};
 			check.errors = errors ?? [];
+			check.capture = payload?.capture ?? {};
 		}
 		return check;
 	};
@@ -287,9 +277,11 @@ class StatusService {
 		} catch (error) {
 			this.logger.error({
 				message: error.message,
-				service: this.SERVICE_NAME,
-				method: "insertCheck",
-				details: `Error inserting check for monitor: ${networkResponse?.monitorId}`,
+				service: error.service || this.SERVICE_NAME,
+				method: error.method || "insertCheck",
+				details:
+					error.details ||
+					`Error inserting check for monitor: ${networkResponse?.monitorId}`,
 				stack: error.stack,
 			});
 		}

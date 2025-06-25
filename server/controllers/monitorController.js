@@ -1,4 +1,3 @@
-import Monitor from "../db/models/Monitor.js";
 import {
 	getMonitorByIdParamValidation,
 	getMonitorByIdQueryValidation,
@@ -16,13 +15,10 @@ import {
 	getHardwareDetailsByIdQueryValidation,
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
-import jwt from "jsonwebtoken";
-import { getTokenFromHeaders } from "../utils/utils.js";
 import logger from "../utils/logger.js";
 import { handleError, handleValidationError } from "./controllerUtils.js";
 import axios from "axios";
 import seedDb from "../db/mongo/utils/seedDb.js";
-import { seedDistributedTest } from "../db/mongo/utils/seedDb.js";
 const SERVICE_NAME = "monitorController";
 import pkg from "papaparse";
 
@@ -79,7 +75,14 @@ class MonitorController {
 
 	getUptimeDetailsById = async (req, res, next) => {
 		try {
-			const data = await this.db.getUptimeDetailsById(req);
+			const { monitorId } = req.params;
+			const { dateRange, normalize } = req.query;
+
+			const data = await this.db.getUptimeDetailsById({
+				monitorId,
+				dateRange,
+				normalize,
+			});
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
 				data,
@@ -108,7 +111,17 @@ class MonitorController {
 		}
 
 		try {
-			const monitorStats = await this.db.getMonitorStatsById(req);
+			let { limit, sortOrder, dateRange, numToDisplay, normalize } = req.query;
+			const { monitorId } = req.params;
+
+			const monitorStats = await this.db.getMonitorStatsById({
+				monitorId,
+				limit,
+				sortOrder,
+				dateRange,
+				numToDisplay,
+				normalize,
+			});
 			return res.success({
 				msg: this.stringService.monitorStatsById,
 				data: monitorStats,
@@ -136,7 +149,9 @@ class MonitorController {
 			return;
 		}
 		try {
-			const monitor = await this.db.getHardwareDetailsById(req);
+			const { monitorId } = req.params;
+			const { dateRange } = req.query;
+			const monitor = await this.db.getHardwareDetailsById({ monitorId, dateRange });
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
 				data: monitor,
@@ -220,19 +235,13 @@ class MonitorController {
 		}
 
 		try {
-			const notifications = req.body.notifications;
-			const monitor = await this.db.createMonitor(req, res);
+			const { _id, teamId } = req.user;
+			const monitor = await this.db.createMonitor({
+				body: req.body,
+				teamId,
+				userId: _id,
+			});
 
-			if (notifications && notifications.length > 0) {
-				monitor.notifications = await Promise.all(
-					notifications.map(async (notification) => {
-						notification.monitorId = monitor._id;
-						return await this.db.createNotification(notification);
-					})
-				);
-			}
-
-			await monitor.save();
 			// Add monitor to job queue
 			this.jobQueue.addJob(monitor._id, monitor);
 			return res.success({
@@ -273,10 +282,10 @@ class MonitorController {
 				throw new Error("File is empty");
 			}
 
-			const { userId, teamId } = req.body;
+			const { _id, teamId } = req.user;
 
-			if (!userId || !teamId) {
-				throw new Error("Missing userId or teamId in form data");
+			if (!_id || !teamId) {
+				throw new Error("Missing userId or teamId");
 			}
 
 			// Get file buffer from memory and convert to string
@@ -311,7 +320,7 @@ class MonitorController {
 						}
 
 						const enrichedData = data.map((monitor) => ({
-							userId,
+							userId: _id,
 							teamId,
 							...monitor,
 							description: monitor.description || monitor.name || monitor.url,
@@ -326,18 +335,6 @@ class MonitorController {
 
 							await Promise.all(
 								monitors.map(async (monitor, index) => {
-									const notifications = enrichedData[index].notifications;
-
-									if (notifications?.length) {
-										monitor.notifications = await Promise.all(
-											notifications.map(async (notification) => {
-												notification.monitorId = monitor._id;
-												return await this.db.createNotification(notification);
-											})
-										);
-										await monitor.save();
-									}
-
 									this.jobQueue.addJob(monitor._id, monitor);
 								})
 							);
@@ -412,59 +409,10 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await this.db.deleteMonitor(req, res, next);
-			// Delete associated checks,alerts,and notifications
-
-			try {
-				const operations = [
-					{ name: "deleteJob", fn: () => this.jobQueue.deleteJob(monitor) },
-					{ name: "deleteChecks", fn: () => this.db.deleteChecks(monitor._id) },
-					{
-						name: "deletePageSpeedChecks",
-						fn: () => this.db.deletePageSpeedChecksByMonitorId(monitor._id),
-					},
-					{
-						name: "deleteNotifications",
-						fn: () => this.db.deleteNotificationsByMonitorId(monitor._id),
-					},
-					{
-						name: "deleteHardwareChecks",
-						fn: () => this.db.deleteHardwareChecksByMonitorId(monitor._id),
-					},
-					{
-						name: "deleteDistributedUptimeChecks",
-						fn: () => this.db.deleteDistributedChecksByMonitorId(monitor._id),
-					},
-
-					// TODO  We don't actually want to delete the status page if there are other monitors in it
-					// We actually just want to remove the monitor being deleted from the status page.
-					// Only delete he status page if there are no other monitors in it.
-					{
-						name: "deleteStatusPages",
-						fn: () => this.db.deleteStatusPagesByMonitorId(monitor._id),
-					},
-				];
-				const results = await Promise.allSettled(operations.map((op) => op.fn()));
-
-				results.forEach((result, index) => {
-					if (result.status === "rejected") {
-						const operationName = operations[index].name;
-						logger.error({
-							message: `Failed to ${operationName} for monitor ${monitor._id}`,
-							service: SERVICE_NAME,
-							method: "deleteMonitor",
-							stack: result.reason.stack,
-						});
-					}
-				});
-			} catch (error) {
-				logger.error({
-					message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
-					service: SERVICE_NAME,
-					method: "deleteMonitor",
-					stack: error.stack,
-				});
-			}
+			const monitorId = req.params.monitorId;
+			const monitor = await this.db.deleteMonitor({ monitorId });
+			await this.jobQueue.deleteJob(monitor);
+			await this.db.deleteStatusPagesByMonitorId(monitor._id);
 			return res.success({ msg: this.stringService.monitorDelete });
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "deleteMonitor"));
@@ -484,9 +432,7 @@ class MonitorController {
 	 */
 	deleteAllMonitors = async (req, res, next) => {
 		try {
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { teamId } = jwt.verify(token, jwtSecret);
+			const { teamId } = req.user;
 			const { monitors, deletedCount } = await this.db.deleteAllMonitors(teamId);
 			await Promise.all(
 				monitors.map(async (monitor) => {
@@ -535,25 +481,11 @@ class MonitorController {
 
 		try {
 			const { monitorId } = req.params;
-			const monitorBeforeEdit = await this.db.getMonitorById(monitorId);
 
-			// Get notifications from the request body
-			const notifications = req.body.notifications ?? [];
 			const editedMonitor = await this.db.editMonitor(monitorId, req.body);
 
-			await this.db.deleteNotificationsByMonitorId(editedMonitor._id);
+			await this.jobQueue.updateJob(editedMonitor);
 
-			await Promise.all(
-				notifications.map(async (notification) => {
-					notification.monitorId = editedMonitor._id;
-					await this.db.createNotification(notification);
-				})
-			);
-
-			// Delete the old job(editedMonitor has the same ID as the old monitor)
-			await this.jobQueue.deleteJob(monitorBeforeEdit);
-			// Add the new job back to the queue
-			await this.jobQueue.addJob(editedMonitor._id, editedMonitor);
 			return res.success({
 				msg: this.stringService.monitorEdit,
 				data: editedMonitor,
@@ -582,21 +514,11 @@ class MonitorController {
 		}
 
 		try {
-			const monitor = await Monitor.findOneAndUpdate(
-				{ _id: req.params.monitorId },
-				[
-					{
-						$set: {
-							isActive: { $not: "$isActive" },
-							status: "$$REMOVE",
-						},
-					},
-				],
-				{ new: true }
-			);
+			const monitorId = req.params.monitorId;
+			const monitor = await this.db.pauseMonitor({ monitorId });
 			monitor.isActive === true
-				? await this.jobQueue.addJob(monitor._id, monitor)
-				: await this.jobQueue.deleteJob(monitor);
+				? await this.jobQueue.resumeJob(monitor._id, monitor)
+				: await this.jobQueue.pauseJob(monitor);
 
 			return res.success({
 				msg: monitor.isActive
@@ -622,9 +544,7 @@ class MonitorController {
 	 */
 	addDemoMonitors = async (req, res, next) => {
 		try {
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { _id, teamId } = jwt.verify(token, jwtSecret);
+			const { _id, teamId } = req.user;
 			const demoMonitors = await this.db.addDemoMonitors(_id, teamId);
 			await Promise.all(
 				demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor))
@@ -660,12 +580,8 @@ class MonitorController {
 			const subject = this.stringService.testEmailSubject;
 			const context = { testName: "Monitoring System" };
 
-			const messageId = await this.emailService.buildAndSendEmail(
-				"testEmailTemplate",
-				context,
-				to,
-				subject
-			);
+			const html = await this.emailService.buildEmail("testEmailTemplate", context);
+			const messageId = await this.emailService.sendEmail(to, subject, html);
 
 			if (!messageId) {
 				return res.error({
@@ -691,7 +607,19 @@ class MonitorController {
 		}
 
 		try {
-			const monitors = await this.db.getMonitorsByTeamId(req);
+			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+			const teamId = req.user.teamId;
+
+			const monitors = await this.db.getMonitorsByTeamId({
+				limit,
+				type,
+				page,
+				rowsPerPage,
+				filter,
+				field,
+				order,
+				teamId,
+			});
 			return res.success({
 				msg: this.stringService.monitorGetByTeamId,
 				data: monitors,
@@ -710,7 +638,15 @@ class MonitorController {
 		}
 
 		try {
-			const result = await this.db.getMonitorsAndSummaryByTeamId(req);
+			const { explain } = req;
+			const { type } = req.query;
+			const { teamId } = req.user;
+
+			const result = await this.db.getMonitorsAndSummaryByTeamId({
+				type,
+				explain,
+				teamId,
+			});
 			return res.success({
 				msg: "OK", // TODO
 				data: result,
@@ -729,9 +665,23 @@ class MonitorController {
 		}
 
 		try {
-			const result = await this.db.getMonitorsWithChecksByTeamId(req);
+			const { explain } = req;
+			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+			const { teamId } = req.user;
+
+			const result = await this.db.getMonitorsWithChecksByTeamId({
+				limit,
+				type,
+				page,
+				rowsPerPage,
+				filter,
+				field,
+				order,
+				teamId,
+				explain,
+			});
 			return res.success({
-				msg: "OK", // TODO
+				msg: "OK",
 				data: result,
 			});
 		} catch (error) {
@@ -741,18 +691,47 @@ class MonitorController {
 
 	seedDb = async (req, res, next) => {
 		try {
-			const { type } = req.body;
-			const token = getTokenFromHeaders(req.headers);
-			const { jwtSecret } = this.settingsService.getSettings();
-			const { _id, teamId } = jwt.verify(token, jwtSecret);
-			if (type === "distributed_test") {
-				await seedDistributedTest(_id, teamId);
-			} else {
-				await seedDb(_id, teamId);
-			}
+			const { _id, teamId } = req.user;
+			await seedDb(_id, teamId);
 			res.success({ msg: "Database seeded" });
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "seedDb"));
+		}
+	};
+
+	exportMonitorsToCSV = async (req, res, next) => {
+		try {
+			const { teamId } = req.user;
+
+			const monitors = await this.db.getMonitorsByTeamId({ teamId });
+			if (!monitors || monitors.length === 0) {
+				return res.success({
+					msg: this.stringService.noMonitorsFound,
+					data: null,
+				});
+			}
+			const csvData = monitors?.filteredMonitors?.map((monitor) => ({
+				name: monitor.name,
+				description: monitor.description,
+				type: monitor.type,
+				url: monitor.url,
+				interval: monitor.interval,
+				port: monitor.port,
+				ignoreTlsErrors: monitor.ignoreTlsErrors,
+				isActive: monitor.isActive,
+			}));
+
+			const csv = pkg.unparse(csvData);
+
+			return res.file({
+				data: csv,
+				headers: {
+					"Content-Type": "text/csv",
+					"Content-Disposition": "attachment; filename=monitors.csv",
+				},
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "exportMonitorsToCSV"));
 		}
 	};
 }

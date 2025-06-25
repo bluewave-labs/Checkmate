@@ -1,101 +1,13 @@
 {
-	"dontHaveAccount": "",
-	"email": "E-mail",
-	"forgotPassword": "Zapomenuté heslo",
-	"password": "",
-	"signUp": "Registace",
 	"submit": "Odeslat",
 	"title": "",
-	"continue": "Pokračovat",
-	"enterEmail": "Zadejte svůj e-mail",
-	"authLoginTitle": "Přihlášení",
-	"authLoginEnterPassword": "Zadejte své heslo",
-	"commonPassword": "Heslo",
-	"commonBack": "Zpět",
-	"authForgotPasswordTitle": "Zapomněli jste heslo?",
-	"authForgotPasswordResetPassword": "Resetovat heslo",
-	"createPassword": "",
-	"createAPassword": "",
-	"authRegisterAlreadyHaveAccount": "Máte již účet?",
-	"commonAppName": "Checkmate",
-	"authLoginEnterEmail": "Zadejte svůj e-mail",
-	"authRegisterTitle": "Vytvoření účtu",
-	"authRegisterStepOneTitle": "",
-	"authRegisterStepOneDescription": "Začněte tím, že zadáte své údaje",
-	"authRegisterStepTwoTitle": "",
-	"authRegisterStepTwoDescription": "Řekněte nám o sobě víc",
-	"authRegisterStepThreeTitle": "Téměř hotovo!",
-	"authRegisterStepThreeDescription": "Zkontrolujte své údaje",
-	"authForgotPasswordDescription": "Není se čeho obávat, zašleme vám instrukce k obnově.",
-	"authForgotPasswordSendInstructions": "",
-	"authForgotPasswordBackTo": "",
-	"authCheckEmailTitle": "",
-	"authCheckEmailDescription": "Odkaz pro obnovu hesla zašleme na",
-	"authCheckEmailResendEmail": "Znovu odeslat e-mail",
-	"authCheckEmailBackTo": "",
-	"goBackTo": "",
-	"authCheckEmailDidntReceiveEmail": "Neobdrželi jste e-mail?",
-	"authCheckEmailClickToResend": "Klepněte pro opětovné odeslání",
-	"authSetNewPasswordTitle": "Nastavení nového hesla",
-	"authSetNewPasswordDescription": "Nové heslo se musí lišit od těch, které jste použili dříve.",
-	"authSetNewPasswordNewPassword": "Nové heslo",
-	"authSetNewPasswordConfirmPassword": "",
-	"confirmPassword": "",
-	"authSetNewPasswordResetPassword": "Resetovat heslo",
-	"authSetNewPasswordBackTo": "",
-	"authPasswordMustBeAtLeast": "Musí být alespoň",
-	"authPasswordCharactersLong": "",
-	"authPasswordMustContainAtLeast": "",
-	"authPasswordSpecialCharacter": "",
-	"authPasswordOneNumber": "",
-	"authPasswordUpperCharacter": "",
-	"authPasswordLowerCharacter": "",
-	"authPasswordConfirmAndPassword": "",
-	"authPasswordMustMatch": "",
-	"authRegisterCreateAccount": "",
-	"authRegisterCreateSuperAdminAccount": "Začněte tím, že si vytvoříte účet superadministrátora",
-	"authRegisterSignUpWithEmail": "Registrovat přes e-mail",
-	"authRegisterBySigningUp": "Registrací souhlasíte s našimi",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
-	"settingsGeneralSettings": "Obecná nastavení",
-	"settingsDisplayTimezone": "",
-	"settingsDisplayTimezoneDescription": "",
-	"settingsAppearance": "Vzhled",
-	"settingsAppearanceDescription": "",
-	"settingsThemeMode": "",
-	"settingsLanguage": "Jazyk",
-	"settingsDistributedUptime": "",
-	"settingsDistributedUptimeDescription": "",
-	"settingsEnabled": "Zapnuto",
 	"settingsDisabled": "Vypnuto",
-	"settingsHistoryAndMonitoring": "Historie a monitorování",
-	"settingsHistoryAndMonitoringDescription": "",
-	"settingsTTLLabel": "",
-	"settingsTTLOptionalLabel": "",
-	"settingsClearAllStats": "",
-	"settingsClearAllStatsButton": "",
-	"settingsClearAllStatsDialogTitle": "",
-	"settingsClearAllStatsDialogDescription": "",
-	"settingsClearAllStatsDialogConfirm": "",
-	"settingsDemoMonitors": "",
-	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitors": "",
-	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitors": "",
-	"settingsRemoveAllMonitorsButton": "",
-	"settingsRemoveAllMonitorsDialogTitle": "",
-	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsWallet": "",
-	"settingsWalletDescription": "",
-	"settingsAbout": "",
-	"settingsDevelopedBy": "Vyvinuto společností Bluewave Labs.",
-	"settingsSave": "Uložit",
 	"settingsSuccessSaved": "Nastavení bylo úspěšně uloženo",
 	"settingsFailedToSave": "Nepodařilo se uložit nastavení",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
-	"settingsDemoMonitorsAdded": "",
 	"settingsFailedToAddDemoMonitors": "",
 	"settingsMonitorsDeleted": "",
 	"settingsFailedToDeleteMonitors": "",
@@ -108,7 +20,6 @@
 	"now": "",
 	"delete": "",
 	"configure": "",
-	"networkError": "",
 	"responseTime": "",
 	"ms": "",
 	"bar": "",
@@ -116,11 +27,6 @@
 	"country": "",
 	"city": "",
 	"response": "",
-	"checkConnection": "",
-	"passwordreset": "",
-	"authRegisterStepOnePersonalDetails": "Zadejte své osobní údaje",
-	"authCheckEmailOpenEmailButton": "",
-	"authNewPasswordConfirmed": "",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
 	"webhookSendSuccess": "",
@@ -136,10 +42,6 @@
 	"distributedUptimeCreateIncidentDescription": "",
 	"distributedUptimeCreateAdvancedSettings": "",
 	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsFooterHeading": "",
-	"distributedUptimeDetailsFooterBuilt": "",
-	"distributedUptimeDetailsFooterSolana": "",
-	"distributedUptimeDetailsMonitorHeader": "",
 	"distributedUptimeDetailsStatusHeaderUptime": "",
 	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
 	"notifications": {
@@ -181,7 +83,33 @@
 		"testSuccess": "",
 		"testFailed": "",
 		"unsupportedType": "",
-		"networkError": ""
+		"networkError": "",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
 	},
 	"testLocale": "",
 	"add": "",
@@ -394,10 +322,6 @@
 	"DeleteDescriptionText": "",
 	"DeleteAccountWarning": "",
 	"DeleteWarningTitle": "",
-	"authRegisterFirstName": "",
-	"authRegisterLastName": "",
-	"authRegisterEmail": "",
-	"authRegisterEmailRequired": "",
 	"bulkImport": {
 		"title": "",
 		"selectFileTips": "",
@@ -409,32 +333,10 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"welcomeBack": "",
-	"authRegisterLoginLink": "",
-	"validationNameRequired": "",
-	"validationNameTooLong": "",
-	"validationNameInvalidCharacters": "",
-	"settingsSystemReset": "",
-	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "",
 	"DeleteAccountButton": "",
-	"authRegisterEmailInvalid": "",
 	"publicLink": "",
-	"doNotHaveAccount": "",
-	"registerHere": "",
-	"backendUnreachable": "",
-	"backendUnreachableMessage": "",
-	"backendUnreachableError": "",
-	"retryConnection": "",
-	"retryingConnection": "",
-	"backendReconnected": "",
-	"backendStillUnreachable": "",
-	"backendConnectionError": "",
 	"maskedPageSpeedKeyPlaceholder": "",
-	"pageSpeedApiKeyFieldTitle": "",
-	"pageSpeedApiKeyFieldLabel": "",
-	"pageSpeedApiKeyFieldDescription": "",
-	"pageSpeedApiKeyFieldResetLabel": "",
 	"reset": "",
 	"ignoreTLSError": "",
 	"tlsErrorIgnored": "",
@@ -444,11 +346,6 @@
 		"prepend": "",
 		"append": "",
 		"overview": ""
-	},
-	"monitorStatus": {
-		"up": "",
-		"down": "",
-		"paused": ""
 	},
 	"roles": {
 		"superAdmin": "",
@@ -488,7 +385,6 @@
 		"uptime": "",
 		"pagespeed": "",
 		"infrastructure": "",
-		"distributedUptime": "",
 		"incidents": "",
 		"statusPages": "",
 		"maintenance": "",
@@ -501,23 +397,14 @@
 		"profile": "",
 		"password": "",
 		"team": "",
-		"logOut": ""
+		"logOut": "",
+		"notifications": "",
+		"logs": ""
 	},
-	"settingsEmail": "",
-	"settingsEmailDescription": "",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "",
-	"settingsEmailAddress": "",
-	"settingsEmailPassword": "",
 	"settingsEmailUser": "",
-	"settingsEmailFieldResetLabel": "",
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"authForgotPasswordInstructions": "",
-	"settingsThemeModeLight": "",
-	"settingsThemeModeDark": "",
-	"settingsClearAllStatsDialogCancel": "",
 	"commonSaving": "",
 	"navControls": "",
 	"incidentsPageTitle": "",
@@ -532,26 +419,417 @@
 		"passwordRequirements": "",
 		"saving": ""
 	},
-	"uptimeCreateSelectURL": "",
-	"settingsEmailConnectionHost": "",
-	"sendTestEmail": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
-	"settingsTestEmail": "",
 	"settingsTestEmailSuccess": "",
 	"settingsTestEmailFailed": "",
 	"settingsTestEmailFailedWithReason": "",
 	"settingsTestEmailUnknownError": "",
-	"settingsEmailRequiredFields": "",
 	"statusMsg": {
 		"paused": "",
 		"up": "",
 		"down": "",
 		"pending": ""
 	},
-	"settingsURLTitle": "",
-	"settingsURLDescription": "",
-	"settingsURLSelectTitle": "",
-	"settingsURLEnabled": "",
-	"settingURLDisabled": ""
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": ""
+	},
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": "Přepnout mezi světlým a tmavým motivem"
+		},
+		"toasts": {
+			"networkError": "Chyba připojení k síti",
+			"checkConnection": "Zkontrolujte prosím své připojení k síti",
+			"unknownError": "Nastala neznámá chyba"
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "Pokračovat",
+				"back": "Zpět"
+			},
+			"inputs": {
+				"email": {
+					"label": "E-mail",
+					"placeholder": "jan.novak@domena.cz",
+					"errors": {
+						"empty": "Zadejte prosím e-mailovou adresu",
+						"invalid": "Překontrolujte si prosím správnost zadané e-mailové adresy"
+					}
+				},
+				"password": {
+					"label": "Heslo",
+					"rules": {
+						"length": {
+							"beginning": "Heslo musí být dlouhé alespoň",
+							"highlighted": "8 znaků"
+						},
+						"special": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 speciální znak"
+						},
+						"number": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 číslo"
+						},
+						"uppercase": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 velké písmeno"
+						},
+						"lowercase": {
+							"beginning": "Heslo musí obsahovat alespoň",
+							"highlighted": "1 malé písmeno"
+						},
+						"match": {
+							"beginning": "Obě hesla se",
+							"highlighted": "musí shodovat"
+						}
+					},
+					"errors": {
+						"empty": "Zadejte prosím heslo",
+						"length": "Heslo musí být dlouhé alespoň 8 znaků",
+						"uppercase": "Heslo musí obsahovat alespoň 1 velké písmeno",
+						"lowercase": "Heslo musí obsahovat alespoň 1 malé písmeno",
+						"number": "Heslo musí obsahovat alespoň 1 číslo",
+						"special": "Heslo musí obsahovat alespoň 1 speciální znak",
+						"incorrect": "Zadané heslo neodpovídá tomu, co bylo nastaveno"
+					}
+				},
+				"passwordConfirm": {
+					"label": "Potvrzení hesla",
+					"placeholder": "Pro ověření správnosti zadejte heslo ještě jednou",
+					"errors": {
+						"empty": "Zadejte prosím své heslo ještě jednou, aby mohla být potvrzena jeho správnost (odhalí překlepy)",
+						"different": "Zadaná hesla se liší, takže je nejspíše jedno z nich špatně zapsané"
+					}
+				},
+				"firstName": {
+					"label": "Jméno",
+					"placeholder": "Jan",
+					"errors": {
+						"empty": "Zadejte prosím své křestní jméno",
+						"length": "Jméno se musí vejít do 50 znaků",
+						"pattern": "Součástí jména mohou být pouze písmena, mezery apostrofy nebo spojovníky"
+					}
+				},
+				"lastName": {
+					"label": "Příjmení",
+					"placeholder": "Novák",
+					"errors": {
+						"empty": "Zadejte prosím své příjmení",
+						"length": "Příjmení se musí vejít do 50 znaků",
+						"pattern": "Součástí příjmení mohou být pouze písmena, mezery apostrofy nebo spojovníky"
+					}
+				}
+			},
+			"errors": {
+				"validation": "Nastala chyba při ověřování dat."
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "Přihlášení",
+			"subheadings": {
+				"stepOne": "Zadejte svůj e-mail",
+				"stepTwo": "Zadejte své heslo"
+			},
+			"links": {
+				"forgotPassword": "Zapomněli jste heslo? <a>Obnovte si ho</a>",
+				"register": "Ještě nemáte účet? <a>Zaregistrujte se</a>",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "Vítejte zpět",
+				"incorrectPassword": "Nesprávné heslo"
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "Vytvoření superadministrátora",
+				"user": "Registrace"
+			},
+			"subheadings": {
+				"stepOne": "Zadejte své osobní údaje",
+				"stepTwo": "Zadejte svůj e-mail",
+				"stepThree": "Nastavte si heslo"
+			},
+			"description": {
+				"superAdmin": "Pro začátek vytvořte účet superadministrátora",
+				"user": "Zaregistrujte se jako uživatel a požádejte svého superadministrátora, aby vám přidělil oprávnění k hlídačům"
+			},
+			"gettingStartedButton": {
+				"superAdmin": "Vytvořit účet superadministrátora",
+				"user": "Zaregistrovat se jako běžný uživatel"
+			},
+			"termsAndPolicies": "Vytvořením účtu souhlasíte s našimi <a1>Podmínkami použití</a1> (anglicky) a <a2>Podmínkami zpracování osobních údajů</a2> (anglicky).",
+			"links": {
+				"login": "Máte již vytvořený účet? <a>Přihlašte se</a>"
+			},
+			"toasts": {
+				"success": "Vítejte! Váš účet byl úspěšně vytvořen."
+			}
+		},
+		"forgotPassword": {
+			"heading": "Zapomenuté heslo",
+			"subheadings": {
+				"stepOne": "Nebojte se, zašleme vám pokyny pro obnovení hesla.",
+				"stepTwo": "Odkaz pro obnovení hesla byl odeslán na <email/>",
+				"stepThree": "Nové heslo se musí lišit od těch, které jste již použili.",
+				"stepFour": "Heslo bylo úspěšně obnoveno. Klepněte na tlačítko a dojde k čarovnému přihlášení."
+			},
+			"buttons": {
+				"openEmail": "Otevřít e-mailovou aplikaci",
+				"resetPassword": "Obnovit heslo"
+			},
+			"imageAlts": {
+				"passwordKey": "Ikonka přístupového klíče",
+				"email": "Ikonka e-mailu",
+				"lock": "Ikonka zámku",
+				"passwordConfirm": "Ikonka potvrzeného hesla"
+			},
+			"links": {
+				"login": "Vrátit se k <a>Přihlášení</a>",
+				"resend": "Nedorazil vám e-mail? <a>Klepněte pro opětovné zaslání</a>"
+			},
+			"toasts": {
+				"sent": "Instrukce vám dorazí na <email/>.",
+				"emailNotFound": "Nepodařilo se nalézt e-mailovou adresu.",
+				"redirect": "Přesměrování proběhne za <seconds/>...",
+				"success": "Heslo bylo úspěšně obnoveno.",
+				"error": "Obnova hesla se nepodařila. Zkuste to prosím znovu nebo kontaktujte podporu."
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "Podařilo se úspěšně obnovit spojení se serverem",
+				"stillUnreachable": "Server je stále nedosažitelný. Zkuste to prosím později."
+			},
+			"alertBox": "Chyba připojení k serveru",
+			"description": "Nepodařilo se připojit k serveru. Zkontrolujte si prosím internetové připojení a pokud problém přetrvává, ověřte konfiguraci aplikace Checkmate.",
+			"retryButton": {
+				"default": "Zkusit se znovu připojit",
+				"processing": "Probíhá připojování…"
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"webhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"sendTestNotifications": "",
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

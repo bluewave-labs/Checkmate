@@ -4,14 +4,14 @@ import { useTheme } from "@emotion/react";
 import SkeletonLayout from "./skeleton";
 
 const MonitorCountHeader = ({
-	shouldRender = true,
+	isLoading = false,
 	monitorCount,
 	heading = "monitors",
 	sx,
 	children,
 }) => {
 	const theme = useTheme();
-	if (!shouldRender) return <SkeletonLayout />;
+	if (isLoading) return <SkeletonLayout />;
 
 	if (monitorCount === 1) {
 		heading = "monitor";
@@ -42,7 +42,7 @@ const MonitorCountHeader = ({
 };
 
 MonitorCountHeader.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	monitorCount: PropTypes.number,
 	heading: PropTypes.string,
 	children: PropTypes.node,
