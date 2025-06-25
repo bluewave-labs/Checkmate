@@ -138,6 +138,17 @@ class EmailService {
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 
 		try {
+			await this.transporter.verify();
+		} catch (error) {
+			this.logger.warn({
+				message: "Email transporter verification failed",
+				service: SERVICE_NAME,
+				method: "verifyTransporter",
+			});
+			return false;
+		}
+
+		try {
 			const info = await this.transporter.sendMail({
 				to: to,
 				from: systemEmailAddress,
