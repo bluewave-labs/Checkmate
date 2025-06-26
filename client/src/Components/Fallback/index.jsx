@@ -89,9 +89,9 @@ const Fallback = ({
 					borderStyle: "dashed",
 					height: "60vh",
 					width: "45%",
-					minWidth: "400px",
-					maxHeight: "700px",
-					maxWidth: "800px",
+					minWidth: theme.spacing(200),    
+					maxHeight: theme.breakpoints.values.sm,  
+        			maxWidth: theme.breakpoints.values.md,   
 				}}
 			>
 				<Stack
