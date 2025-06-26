@@ -122,6 +122,48 @@ const NotificationIntegrationModal = ({
 					placeholder: t("notifications.webhook.urlPlaceholder"),
 					type: "text",
 				},
+				{
+					id: "authType",
+					label: t("notifications.webhook.authTypeLabel"),
+					placeholder: t("notifications.webhook.authTypePlaceholder"),
+					type: "select",
+					options: [
+						{ value: "none", label: t("notifications.webhook.authTypeNone") },
+						{ value: "basic", label: t("notifications.webhook.authTypeBasic") },
+						{ value: "bearer", label: t("notifications.webhook.authTypeBearer") },
+					],
+				},
+				{
+					id: "username",
+					label: t("notifications.webhook.usernameLabel"),
+					placeholder: t("notifications.webhook.usernamePlaceholder"),
+					type: "text",
+					condition: { field: "authType", value: "basic" },
+				},
+				{
+					id: "password",
+					label: t("notifications.webhook.passwordLabel"),
+					placeholder: t("notifications.webhook.passwordPlaceholder"),
+					type: "password",
+					condition: { field: "authType", value: "basic" },
+				},
+				{
+					id: "bearerToken",
+					label: t("notifications.webhook.bearerTokenLabel"),
+					placeholder: t("notifications.webhook.bearerTokenPlaceholder"),
+					type: "password",
+					condition: { field: "authType", value: "bearer" },
+				},
+				{
+					id: "eventType",
+					label: t("notifications.webhook.eventTypeLabel"),
+					placeholder: t("notifications.webhook.eventTypePlaceholder"),
+					type: "select",
+					options: [
+						{ value: "alert", label: t("notifications.webhook.eventTypeAlert") },
+						{ value: "recovery", label: t("notifications.webhook.eventTypeRecovery") },
+					],
+				},
 			],
 		},
 	];
@@ -286,6 +328,18 @@ const NotificationIntegrationModal = ({
 					case "webhook":
 						notificationObject.config.webhookUrl =
 							integrations[getFieldKey(type.id, "url")];
+						// Add authentication fields
+						notificationObject.authType =
+							integrations[getFieldKey(type.id, "authType")] || "none";
+						if (notificationObject.authType === "basic") {
+							notificationObject.username =
+								integrations[getFieldKey(type.id, "username")];
+							notificationObject.password =
+								integrations[getFieldKey(type.id, "password")];
+						} else if (notificationObject.authType === "bearer") {
+							notificationObject.bearerToken =
+								integrations[getFieldKey(type.id, "bearerToken")];
+						}
 						break;
 				}
 

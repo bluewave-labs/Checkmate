@@ -432,12 +432,24 @@ class NetworkService {
 		throw err;
 	}
 
-	async requestWebhook(type, url, body) {
+	async requestWebhook(type, url, body, config = {}) {
 		try {
+			const headers = {
+				"Content-Type": "application/json",
+			};
+
+			// Handle authentication headers
+			if (config.authType === "basic" && config.username && config.password) {
+				const credentials = Buffer.from(`${config.username}:${config.password}`).toString(
+					"base64"
+				);
+				headers.Authorization = `Basic ${credentials}`;
+			} else if (config.authType === "bearer" && config.bearerToken) {
+				headers.Authorization = `Bearer ${config.bearerToken}`;
+			}
+
 			const response = await this.axios.post(url, body, {
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers,
 			});
 
 			return {

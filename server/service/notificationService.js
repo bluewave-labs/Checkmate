@@ -16,7 +16,7 @@ class NotificationService {
 	}
 
 	sendNotification = async ({ notification, subject, content, html }) => {
-		const { type, address } = notification;
+		const { type, address, authType, username, password, bearerToken } = notification;
 
 		if (type === "email") {
 			const messageId = await this.emailService.sendEmail(address, subject, html);
@@ -31,7 +31,24 @@ class NotificationService {
 		}
 
 		if (type === "slack" || type === "discord" || type === "webhook") {
-			const response = await this.networkService.requestWebhook(type, address, body);
+			// Prepare authentication config
+			const authConfig = {};
+			if (authType && authType !== "none") {
+				authConfig.authType = authType;
+				if (authType === "basic" && username && password) {
+					authConfig.username = username;
+					authConfig.password = password;
+				} else if (authType === "bearer" && bearerToken) {
+					authConfig.bearerToken = bearerToken;
+				}
+			}
+
+			const response = await this.networkService.requestWebhook(
+				type,
+				address,
+				body,
+				authConfig
+			);
 			return response.status;
 		}
 		if (type === "pager_duty") {

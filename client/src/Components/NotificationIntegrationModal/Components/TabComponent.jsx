@@ -3,6 +3,7 @@ import { Typography, Box, Button, CircularProgress } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 import TextInput from "../../../Components/Inputs/TextInput";
+import Select from "../../../Components/Inputs/Select";
 import Checkbox from "../../../Components/Inputs/Checkbox";
 
 const TabComponent = ({
@@ -21,9 +22,21 @@ const TabComponent = ({
 		return `${typeId}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`;
 	};
 
-	// Check if all fields have values to enable test button
+	// Check if a field should be shown based on conditions
+	const shouldShowField = (field) => {
+		if (!field.condition) return true;
+
+		const conditionFieldKey = getFieldKey(type.id, field.condition.field);
+		const conditionValue = integrations[conditionFieldKey];
+		return conditionValue === field.condition.value;
+	};
+
+	// Check if all required fields have values to enable test button
 	const areAllFieldsFilled = () => {
 		return type.fields.every((field) => {
+			// Skip conditional fields that shouldn't be shown
+			if (!shouldShowField(field)) return true;
+
 			const fieldKey = getFieldKey(type.id, field.id);
 			return integrations[fieldKey];
 		});
@@ -65,6 +78,9 @@ const TabComponent = ({
 			{type.fields.map((field) => {
 				const fieldKey = getFieldKey(type.id, field.id);
 
+				// Skip rendering if field shouldn't be shown
+				if (!shouldShowField(field)) return null;
+
 				return (
 					<Box
 						key={field.id}
@@ -80,14 +96,24 @@ const TabComponent = ({
 							{field.label}
 						</Typography>
 
-						<TextInput
-							id={`${type.id}-${field.id}`}
-							type={field.type}
-							placeholder={field.placeholder}
-							value={integrations[fieldKey]}
-							onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-							disabled={!integrations[type.id] || isLoading}
-						/>
+						{field.type === "select" ? (
+							<Select
+								id={`${type.id}-${field.id}`}
+								items={field.options}
+								value={integrations[fieldKey] || ""}
+								onChange={(e) => handleInputChange(fieldKey, e.target.value)}
+								disabled={!integrations[type.id] || isLoading}
+							/>
+						) : (
+							<TextInput
+								id={`${type.id}-${field.id}`}
+								type={field.type}
+								placeholder={field.placeholder}
+								value={integrations[fieldKey] || ""}
+								onChange={(e) => handleInputChange(fieldKey, e.target.value)}
+								disabled={!integrations[type.id] || isLoading}
+							/>
+						)}
 					</Box>
 				);
 			})}

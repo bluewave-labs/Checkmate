@@ -535,6 +535,31 @@ const webhookConfigValidation = joi
 			}),
 			otherwise: joi.optional(),
 		}),
+		authType: joi.string().valid("none", "basic", "bearer").default("none").optional(),
+		username: joi.string().when("authType", {
+			is: "basic",
+			then: joi.required().messages({
+				"string.empty": "Username is required for Basic Auth",
+				"any.required": "Username is required for Basic Auth",
+			}),
+			otherwise: joi.optional(),
+		}),
+		password: joi.string().when("authType", {
+			is: "basic",
+			then: joi.required().messages({
+				"string.empty": "Password is required for Basic Auth",
+				"any.required": "Password is required for Basic Auth",
+			}),
+			otherwise: joi.optional(),
+		}),
+		bearerToken: joi.string().when("authType", {
+			is: "bearer",
+			then: joi.required().messages({
+				"string.empty": "Bearer token is required",
+				"any.required": "Bearer token is required",
+			}),
+			otherwise: joi.optional(),
+		}),
 	})
 	.required();
 
@@ -570,6 +595,10 @@ const createNotificationBodyValidation = joi.object({
 			"any.required": "E-mail address is required",
 			"string.email": "Please enter a valid e-mail address",
 		}),
+		otherwise: joi.string().required().messages({
+			"string.empty": "Address is required",
+			"any.required": "Address is required",
+		}),
 	}),
 	type: joi
 		.string()
@@ -578,8 +607,35 @@ const createNotificationBodyValidation = joi.object({
 		.messages({
 			"string.empty": "Notification type is required",
 			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, or pager_duty",
+			"any.only":
+				"Notification type must be email, webhook, slack, discord, or pager_duty",
 		}),
+	// Authentication fields for webhook notifications
+	authType: joi.string().valid("none", "basic", "bearer").default("none").optional(),
+	username: joi.string().when("authType", {
+		is: "basic",
+		then: joi.required().messages({
+			"string.empty": "Username is required for Basic Auth",
+			"any.required": "Username is required for Basic Auth",
+		}),
+		otherwise: joi.optional(),
+	}),
+	password: joi.string().when("authType", {
+		is: "basic",
+		then: joi.required().messages({
+			"string.empty": "Password is required for Basic Auth",
+			"any.required": "Password is required for Basic Auth",
+		}),
+		otherwise: joi.optional(),
+	}),
+	bearerToken: joi.string().when("authType", {
+		is: "bearer",
+		then: joi.required().messages({
+			"string.empty": "Bearer token is required",
+			"any.required": "Bearer token is required",
+		}),
+		otherwise: joi.optional(),
+	}),
 });
 
 //****************************************

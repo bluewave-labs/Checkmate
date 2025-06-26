@@ -75,6 +75,14 @@ const useNotifications = () => {
 			case NOTIFICATION_TYPES.WEBHOOK:
 				payload.webhookUrl = config.url;
 				payload.platform = NOTIFICATION_TYPES.SLACK;
+				// Add authentication fields
+				payload.authType = config.authType || "none";
+				if (payload.authType === "basic") {
+					payload.username = config.username;
+					payload.password = config.password;
+				} else if (payload.authType === "bearer") {
+					payload.bearerToken = config.bearerToken;
+				}
 				if (typeof payload.webhookUrl === "undefined" || payload.webhookUrl === "") {
 					isValid = false;
 					errorMessage = t("notifications.webhook.urlRequired");

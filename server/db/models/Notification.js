@@ -28,6 +28,21 @@ const NotificationSchema = mongoose.Schema(
 		phone: {
 			type: String,
 		},
+		// Authentication fields for webhook notifications
+		authType: {
+			type: String,
+			enum: ["none", "basic", "bearer"],
+			default: "none",
+		},
+		username: {
+			type: String,
+		},
+		password: {
+			type: String,
+		},
+		bearerToken: {
+			type: String,
+		},
 	},
 	{
 		timestamps: true,
