@@ -549,6 +549,7 @@ class NetworkService {
 	 * @param {number} config.limit - The maximum number of checks to retrieve.
 	 * @param {string} config.dateRange - The range of dates for which to retrieve checks.
 	 * @param {string} config.filter - The filter to apply to the checks.
+	 * @param {boolean} config.ack - The acknowledgment status to apply to the checks.
 	 * @param {number} config.page - The page number to retrieve in a paginated list.
 	 * @param {number} config.rowsPerPage - The number of rows per page in a paginated list.
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
@@ -562,6 +563,7 @@ class NetworkService {
 		if (config.limit) params.append("limit", config.limit);
 		if (config.dateRange) params.append("dateRange", config.dateRange);
 		if (config.filter) params.append("filter", config.filter);
+		if (config.ack !== undefined) params.append("ack", config.ack);
 		if (config.page) params.append("page", config.page);
 		if (config.rowsPerPage) params.append("rowsPerPage", config.rowsPerPage);
 		if (config.status !== undefined) params.append("status", config.status);
@@ -581,6 +583,7 @@ class NetworkService {
 	 * @param {number} config.limit - The maximum number of checks to retrieve.
 	 * @param {string} config.dateRange - The range of dates for which to retrieve checks.
 	 * @param {string} config.filter - The filter to apply to the checks.
+	 * @param {boolean} config.ack - The acknowledgment status to apply to the checks.
 	 * @param {number} config.page - The page number to retrieve in a paginated list.
 	 * @param {number} config.rowsPerPage - The number of rows per page in a paginated list.
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
@@ -592,11 +595,29 @@ class NetworkService {
 		if (config.limit) params.append("limit", config.limit);
 		if (config.dateRange) params.append("dateRange", config.dateRange);
 		if (config.filter) params.append("filter", config.filter);
+		if (config.ack !== undefined) params.append("ack", config.ack);
 		if (config.page) params.append("page", config.page);
 		if (config.rowsPerPage) params.append("rowsPerPage", config.rowsPerPage);
-		if (config.status !== undefined) params.append("status", config.status);
 		return this.axiosInstance.get(`/checks/team?${params.toString()}`);
 	};
+
+	/**
+	 * ************************************
+	 * Update the status of a check
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.checkId - The ID of the check to update.
+	 * @param {boolean} config.ack - The acknowledgment to update the check to.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 *
+	 */
+	async updateCheckStatus(config) {
+		return this.axiosInstance.put(`/checks/check/${config.checkId}`, {
+			ack: config.ack,
+		});
+	}
 
 	/**
 	 * ************************************

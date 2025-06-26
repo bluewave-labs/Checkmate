@@ -8,6 +8,9 @@ import {
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,
+	ackCheckBodyValidation,
+	ackAllChecksParamValidation,
+	ackAllChecksBodyValidation,
 } from "../validation/joi.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
@@ -55,13 +58,15 @@ class CheckController {
 
 		try {
 			const { monitorId } = req.params;
-			let { type, sortOrder, dateRange, filter, page, rowsPerPage, status } = req.query;
+			let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } =
+				req.query;
 			const result = await this.db.getChecksByMonitor({
 				monitorId,
 				type,
 				sortOrder,
 				dateRange,
 				filter,
+				ack,
 				page,
 				rowsPerPage,
 				status,
@@ -85,13 +90,14 @@ class CheckController {
 			return;
 		}
 		try {
-			let { sortOrder, dateRange, filter, page, rowsPerPage } = req.query;
+			let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = req.query;
 			const { teamId } = req.user;
 
 			const checkData = await this.db.getChecksByTeam({
 				sortOrder,
 				dateRange,
 				filter,
+				ack,
 				page,
 				rowsPerPage,
 				teamId,
@@ -102,6 +108,55 @@ class CheckController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getTeamChecks"));
+		}
+	};
+
+	ackCheck = async (req, res, next) => {
+		try {
+			await ackCheckBodyValidation.validateAsync(req.body);
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+
+		try {
+			const { checkId } = req.params;
+			const { ack } = req.body;
+			const { teamId } = req.user;
+
+			const updatedCheck = await this.db.ackCheck(checkId, teamId, ack);
+
+			return res.success({
+				msg: this.stringService.checkUpdateStatus,
+				data: updatedCheck,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "ackCheck"));
+		}
+	};
+
+	ackAllChecks = async (req, res, next) => {
+		try {
+			await ackAllChecksParamValidation.validateAsync(req.params);
+			await ackAllChecksBodyValidation.validateAsync(req.body);
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+
+		try {
+			const { monitorId, path } = req.params;
+			const { ack } = req.body;
+			const { teamId } = req.user;
+
+			const updatedChecks = await this.db.ackAllChecks(monitorId, teamId, ack, path);
+
+			return res.success({
+				msg: this.stringService.checkUpdateStatus,
+				data: updatedChecks,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "ackAllChecks"));
 		}
 	};
 

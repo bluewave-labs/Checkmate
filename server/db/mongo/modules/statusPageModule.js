@@ -90,6 +90,45 @@ const getStatusPage = async (url) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 
 	try {
+		const preliminaryStatusPage = await StatusPage.findOne({ url });
+		if (!preliminaryStatusPage) {
+			const error = new Error(stringService.statusPageNotFound);
+			error.status = 404;
+			throw error;
+		}
+
+		if (!preliminaryStatusPage.monitors || preliminaryStatusPage.monitors.length === 0) {
+			const {
+				_id,
+				color,
+				companyName,
+				isPublished,
+				logo,
+				originalMonitors,
+				showCharts,
+				showUptimePercentage,
+				timezone,
+				showAdminLoginLink,
+				url,
+			} = preliminaryStatusPage;
+			return {
+				statusPage: {
+					_id,
+					color,
+					companyName,
+					isPublished,
+					logo,
+					originalMonitors,
+					showCharts,
+					showUptimePercentage,
+					timezone,
+					showAdminLoginLink,
+					url,
+				},
+				monitors: [],
+			};
+		}
+
 		const statusPageQuery = await StatusPage.aggregate([
 			{ $match: { url: url } },
 			{
