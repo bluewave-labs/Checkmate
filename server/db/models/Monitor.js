@@ -147,6 +147,7 @@ MonitorSchema.pre("findOneAndDelete", async function (next) {
 MonitorSchema.pre("deleteMany", async function (next) {
 	const filter = this.getFilter();
 	const monitors = await this.model.find(filter).select(["_id", "type"]).lean();
+
 	for (const monitor of monitors) {
 		if (monitor.type === "pagespeed") {
 			await PageSpeedCheck.deleteMany({ monitorId: monitor._id });
@@ -155,6 +156,10 @@ MonitorSchema.pre("deleteMany", async function (next) {
 		} else {
 			await Check.deleteMany({ monitorId: monitor._id });
 		}
+		await StatusPage.updateMany(
+			{ monitors: monitor._id },
+			{ $pull: { monitors: monitor._id } }
+		);
 		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
 	}
 	next();

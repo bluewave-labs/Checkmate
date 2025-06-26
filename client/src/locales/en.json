@@ -835,5 +835,8 @@
 			"selectEnabled": "Enabled",
 			"title": "Monitor IP/URL on Status Page"
 		}
+	},
+	"statusPageCreate": {
+		"buttonSave": "Save"
 	}
 }
