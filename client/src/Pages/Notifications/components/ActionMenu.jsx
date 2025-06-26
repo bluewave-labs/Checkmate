@@ -26,7 +26,8 @@ const ActionMenu = ({ notification, onDelete }) => {
 		setAnchorEl(null);
 	};
 
-	const handleRemove = () => {
+	const handleRemove = (e) => {
+		e.stopPropagation();
 		onDelete(notification._id);
 		handleClose();
 	};
