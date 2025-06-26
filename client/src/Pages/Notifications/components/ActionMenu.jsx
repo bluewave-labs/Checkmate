@@ -18,6 +18,7 @@ const ActionMenu = ({ notification, onDelete }) => {
 
 	// Handlers
 	const handleClick = (event) => {
+		event.stopPropagation();
 		setAnchorEl(event.currentTarget);
 	};
 
