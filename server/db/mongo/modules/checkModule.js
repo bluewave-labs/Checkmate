@@ -63,18 +63,26 @@ const getChecksByMonitor = async ({
 	sortOrder,
 	dateRange,
 	filter,
+	ack,
 	page,
 	rowsPerPage,
 	status,
 }) => {
 	try {
-		status = typeof status !== "undefined" ? false : undefined;
+		status = status === "true" ? true : status === "false" ? false : undefined;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
+
+		const ackStage =
+			ack === "true"
+				? { ack: true }
+				: { $or: [{ ack: false }, { ack: { $exists: false } }] };
+
 		// Match
 		const matchStage = {
 			monitorId: new ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
+			...(typeof ack !== "undefined" && ackStage),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -153,6 +161,7 @@ const getChecksByTeam = async ({
 	sortOrder,
 	dateRange,
 	filter,
+	ack,
 	page,
 	rowsPerPage,
 	teamId,
@@ -160,9 +169,16 @@ const getChecksByTeam = async ({
 	try {
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
+
+		const ackStage =
+			ack === "true"
+				? { ack: true }
+				: { $or: [{ ack: false }, { ack: { $exists: false } }] };
+
 		const matchStage = {
 			teamId: new ObjectId(teamId),
 			status: false,
+			...(typeof ack !== "undefined" && ackStage),
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -232,6 +248,58 @@ const getChecksByTeam = async ({
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "getChecksByTeam";
+		throw error;
+	}
+};
+
+/**
+ * Update the acknowledgment status of a check
+ * @async
+ * @param {string} checkId - The ID of the check to update
+ * @param {string} teamId - The ID of the team
+ * @param {boolean} ack - The acknowledgment status to set
+ * @returns {Promise<Check>}
+ * @throws {Error}
+ */
+const ackCheck = async (checkId, teamId, ack) => {
+	try {
+		const updatedCheck = await Check.findOneAndUpdate(
+			{ _id: checkId, teamId: teamId },
+			{ $set: { ack, ackAt: new Date() } },
+			{ new: true }
+		);
+
+		if (!updatedCheck) {
+			throw new Error("Check not found");
+		}
+
+		return updatedCheck;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "ackCheck";
+		throw error;
+	}
+};
+
+/**
+ * Update the acknowledgment status of all checks for a monitor or team
+ * @async
+ * @param {string} id - The monitor ID or team ID
+ * @param {boolean} ack - The acknowledgment status to set
+ * @param {string} path - The path type ('monitor' or 'team')
+ * @returns {Promise<number>}
+ * @throws {Error}
+ */
+const ackAllChecks = async (monitorId, teamId, ack, path) => {
+	try {
+		const updatedChecks = await Check.updateMany(
+			path === "monitor" ? { monitorId } : { teamId },
+			{ $set: { ack, ackAt: new Date() } }
+		);
+		return updatedChecks.modifiedCount;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "ackAllChecks";
 		throw error;
 	}
 };
@@ -317,6 +385,8 @@ export {
 	createChecks,
 	getChecksByMonitor,
 	getChecksByTeam,
+	ackCheck,
+	ackAllChecks,
 	deleteChecks,
 	deleteChecksByTeamId,
 	updateChecksTTL,
