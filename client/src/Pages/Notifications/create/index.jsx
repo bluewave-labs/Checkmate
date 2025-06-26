@@ -70,21 +70,6 @@ const CreateNotifications = () => {
 
 	const [isOpen, setIsOpen] = useState(false);
 
-	useEffect(() => {
-		// This runs the validation on the whole form every time the user types
-		const { error } = notificationValidation.validate(notification, {
-			abortEarly: false,
-		});
-
-		const newErrors = {};
-		if (error) {
-			error.details.forEach((err) => {
-				newErrors[err.path[0]] = err.message;
-			});
-		}
-		setErrors(newErrors);
-	}, [notification]);
-
 	// handlers
 	const onSubmit = (e) => {
 		e.preventDefault();
@@ -123,6 +108,14 @@ const CreateNotifications = () => {
 			...prev,
 			[name]: value,
 		}));
+
+		// Clear the error for the field being changed
+		if (errors[name]) {
+			setErrors((prev) => ({
+				...prev,
+				[name]: null,
+			}));
+		}
 	};
 
 	const onTestNotification = () => {
