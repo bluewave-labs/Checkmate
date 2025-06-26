@@ -410,17 +410,10 @@ const notificationValidation = joi.object({
 		"string.empty": "Notification name is required",
 		"any.required": "Notification name is required",
 	}),
-	address: joi.when("type", {
-		is: "email",
-		then: joi.string().email({ tlds: { allow: false } }).required().messages({
-			"string.empty": "E-mail address cannot be empty",
-			"any.required": "E-mail address is required",
-			"string.email": "Please enter a valid e-mail address",
-		}),
-		otherwise: joi.string().uri().required().messages({
-			"string.uri": "A valid URL is required for this notification type",
-			"any.required": "A valid URL is required"
-		})
+	address: joi.string().required().messages({
+		"string.empty": "This field cannot be empty",
+		"string.base": "This field must be a string",
+		"any.required": "This field is required",
 	}),
 	type: joi.string().required().messages({
 		"string.empty": "This field is required",
