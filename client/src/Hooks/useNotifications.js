@@ -103,6 +103,10 @@ const useGetNotificationById = (id, setNotification) => {
 				address: notification?.address,
 				notificationName: notification?.notificationName,
 				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?._id,
+				webhookAuthType: notification?.webhookAuthType || "none",
+				username: notification?.username || "",
+				password: notification?.password || "",
+				bearerToken: notification?.bearerToken || "",
 			};
 
 			setNotification(notificationData);
