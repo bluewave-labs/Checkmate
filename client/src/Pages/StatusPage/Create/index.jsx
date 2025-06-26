@@ -246,7 +246,7 @@ const CreateStatusPage = () => {
 					color="accent"
 					onClick={handleSubmit}
 				>
-					{t("settingsSave")}
+					{t("statusPageCreate.buttonSave")}
 				</Button>
 			</Stack>
 		</Stack>
