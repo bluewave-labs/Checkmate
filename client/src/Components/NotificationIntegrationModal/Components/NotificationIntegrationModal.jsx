@@ -142,7 +142,9 @@ const NotificationIntegrationModal = ({
 					placeholder: "Enter your username",
 					type: "text",
 					condition: (integrations) =>
-						integrations[getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)] === "basic",
+						integrations[
+							getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)
+						] === "basic",
 				},
 				{
 					id: FIELD_IDS.PASSWORD,
@@ -150,7 +152,9 @@ const NotificationIntegrationModal = ({
 					placeholder: "Enter your password",
 					type: "password",
 					condition: (integrations) =>
-						integrations[getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)] === "basic",
+						integrations[
+							getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)
+						] === "basic",
 				},
 				{
 					id: FIELD_IDS.BEARER_TOKEN,
@@ -158,7 +162,9 @@ const NotificationIntegrationModal = ({
 					placeholder: "Enter your Bearer Token",
 					type: "password",
 					condition: (integrations) =>
-						integrations[getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)] === "bearer",
+						integrations[
+							getFieldKey(NOTIFICATION_TYPES.WEBHOOK, FIELD_IDS.WEBHOOK_AUTH_TYPE)
+						] === "bearer",
 				},
 			],
 		},
