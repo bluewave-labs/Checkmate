@@ -33,15 +33,26 @@ class NotificationService {
 		if (type === "slack" || type === "discord" || type === "webhook") {
 			// Webhook Auth Headers
 			const headers = {};
-			if (type === "webhook" && notification.webhookAuthType && notification.webhookAuthType !== "none") {
-				if (notification.webhookAuthType === 'basic') {
-					const encodedCredentials = Buffer.from(`${notification.username}:${notification.password}`).toString('base64');
-					headers['Authorization'] = `Basic ${encodedCredentials}`;
-				} else if (notification.webhookAuthType === 'bearer') {
-					headers['Authorization'] = `Bearer ${notification.bearerToken}`;
+			if (
+				type === "webhook" &&
+				notification.webhookAuthType &&
+				notification.webhookAuthType !== "none"
+			) {
+				if (notification.webhookAuthType === "basic") {
+					const encodedCredentials = Buffer.from(
+						`${notification.username}:${notification.password}`
+					).toString("base64");
+					headers["Authorization"] = `Basic ${encodedCredentials}`;
+				} else if (notification.webhookAuthType === "bearer") {
+					headers["Authorization"] = `Bearer ${notification.bearerToken}`;
 				}
 			}
-			const response = await this.networkService.requestWebhook(type, address, body, headers);
+			const response = await this.networkService.requestWebhook(
+				type,
+				address,
+				body,
+				headers
+			);
 			return response.status;
 		}
 		if (type === "pager_duty") {

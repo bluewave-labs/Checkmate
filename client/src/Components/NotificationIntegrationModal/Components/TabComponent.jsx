@@ -96,10 +96,10 @@ const TabComponent = ({
 						{field.type === "select" ? (
 							<Select
 								id={`${type.id}-${field.id}`}
-								items={field.options.map(opt => ({ _id: opt.value, name: opt.label }))}
+								items={field.options.map((opt) => ({ _id: opt.value, name: opt.label }))}
 								value={integrations[fieldKey]}
 								onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-                				disabled={!integrations[type.id] || isLoading}
+								disabled={!integrations[type.id] || isLoading}
 							/>
 						) : (
 							<TextInput

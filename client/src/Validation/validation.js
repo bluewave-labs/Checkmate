@@ -419,21 +419,21 @@ const notificationValidation = joi.object({
 		"string.empty": "This field is required",
 		"any.required": "This field is required",
 	}),
-	webhookAuthType: joi.string().valid('none', 'basic', 'bearer').optional(),
-	username: joi.string().when('webhookAuthType', {
-		is: 'basic',
+	webhookAuthType: joi.string().valid("none", "basic", "bearer").optional(),
+	username: joi.string().when("webhookAuthType", {
+		is: "basic",
 		then: joi.required(),
-		otherwise: joi.optional().allow('')
+		otherwise: joi.optional().allow(""),
 	}),
-	password: joi.string().when('webhookAuthType', {
-		is: 'basic',
+	password: joi.string().when("webhookAuthType", {
+		is: "basic",
 		then: joi.required(),
-		otherwise: joi.optional().allow('')
+		otherwise: joi.optional().allow(""),
 	}),
-	bearerToken: joi.string().when('webhookAuthType', {
-		is: 'bearer',
+	bearerToken: joi.string().when("webhookAuthType", {
+		is: "bearer",
 		then: joi.required(),
-		otherwise: joi.optional().allow('')
+		otherwise: joi.optional().allow(""),
 	}),
 });
 
