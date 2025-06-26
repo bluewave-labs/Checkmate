@@ -87,21 +87,17 @@ const Fallback = ({
 				sx={{
 					display: "flex",
 					borderStyle: "dashed",
-					height: "60vh",
-					width: "45%",
+					height: { sm: "50vh", md: "60vh" },
+					width: { md: "45%", lg: "40%" },
 					minWidth: theme.spacing(200),
-					maxHeight: theme.breakpoints.values.sm,
-					maxWidth: theme.breakpoints.values.md,
+					maxHeight: theme.spacing(350),
+					maxWidth: theme.spacing(450),
 				}}
 			>
 				<Stack
 					className={`fallback__${title?.trim().split(" ")[0]}`}
 					alignItems="center"
 					gap={theme.spacing(20)}
-					sx={{
-						maxHeight: "70vh",
-						justifyContent: "center",
-					}}
 				>
 					{mode === "light" ? (
 						<Skeleton style={{ zIndex: 1 }} />
