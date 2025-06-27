@@ -256,7 +256,7 @@ class NetworkService {
 	async requestPagespeed(monitor) {
 		try {
 			const url = monitor.url;
-			const updatedMonitor = { ...monitor };
+			const updatedMonitor = monitor.toObject();
 			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
 
 			const dbSettings = await this.settingsService.getDBSettings();

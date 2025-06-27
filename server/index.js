@@ -53,6 +53,9 @@ import { Queue, Worker } from "bullmq";
 import PulseQueue from "./service/PulseQueue/PulseQueue.js";
 import PulseQueueHelper from "./service/PulseQueue/PulseQueueHelper.js";
 
+import SuperSimpleQueue from "./service/SuperSimpleQueue/SuperSimpleQueue.js";
+import SuperSimpleQueueHelper from "./service/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+
 //Network service and dependencies
 import NetworkService from "./service/networkService.js";
 import axios from "axios";
@@ -210,23 +213,38 @@ const startApp = async () => {
 	// 	stringService,
 	// });
 
-	const pulseQueueHelper = new PulseQueueHelper({
+	// const pulseQueueHelper = new PulseQueueHelper({
+	// 	db,
+	// 	logger,
+	// 	networkService,
+	// 	statusService,
+	// 	notificationService,
+	// });
+	// const pulseQueue = await PulseQueue.create({
+	// 	appSettings,
+	// 	db,
+	// 	pulseQueueHelper,
+	// 	logger,
+	// });
+	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,
 		logger,
 		networkService,
 		statusService,
 		notificationService,
 	});
-	const pulseQueue = await PulseQueue.create({
+
+	const superSimpleQueue = await SuperSimpleQueue.create({
 		appSettings,
 		db,
-		pulseQueueHelper,
 		logger,
+		helper: superSimpleQueueHelper,
 	});
 
 	// Register services
 	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
-	ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
+	// ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
+	ServiceRegistry.register(JobQueue.SERVICE_NAME, superSimpleQueue);
 	ServiceRegistry.register(MongoDB.SERVICE_NAME, db);
 	ServiceRegistry.register(SettingsService.SERVICE_NAME, settingsService);
 	ServiceRegistry.register(EmailService.SERVICE_NAME, emailService);
