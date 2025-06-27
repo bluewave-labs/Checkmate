@@ -18,15 +18,26 @@ class SuperSimpleQueue {
 	}
 
 	init = async () => {
-		this.scheduler = new Scheduler({
-			logLevel: process.env.LOG_LEVEL,
-			debug: process.env.NODE_ENV,
-		});
-		this.scheduler.start();
-		this.scheduler.addTemplate("test", this.helper.getMonitorJob());
-		const monitors = await this.db.getAllMonitors();
-		for (const monitor of monitors) {
-			await this.addJob(monitor._id, monitor);
+		try {
+			this.scheduler = new Scheduler({
+				logLevel: process.env.LOG_LEVEL,
+				debug: process.env.NODE_ENV,
+			});
+			this.scheduler.start();
+			this.scheduler.addTemplate("test", this.helper.getMonitorJob());
+			const monitors = await this.db.getAllMonitors();
+			for (const monitor of monitors) {
+				await this.addJob(monitor._id, monitor);
+			}
+			return true;
+		} catch (error) {
+			this.logger.error({
+				message: "Failed to initialize SuperSimpleQueue",
+				service: SERVICE_NAME,
+				method: "init",
+				details: error,
+			});
+			return false;
 		}
 	};
 
@@ -135,7 +146,12 @@ class SuperSimpleQueue {
 	};
 
 	flushQueues = async () => {
-		console.log("flush not implemented");
+		const stopRes = this.scheduler.stop();
+		const flushRes = this.scheduler.flushJobs();
+		const initRes = await this.init();
+		return {
+			success: stopRes && flushRes && initRes,
+		};
 	};
 
 	obliterate = async () => {
