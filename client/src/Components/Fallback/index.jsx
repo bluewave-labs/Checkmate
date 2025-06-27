@@ -67,113 +67,127 @@ const Fallback = ({
 			</>
 		);
 	};
-
 	return (
 		<Box
 			position="relative"
-			border={1}
-			borderColor={theme.palette.primary.lowContrast}
-			borderRadius={theme.shape.borderRadius}
-			backgroundColor={theme.palette.primary.main}
-			overflow="hidden"
 			sx={{
-				borderStyle: "dashed",
-				minHeight: "calc(100vh - var(--env-var-spacing-2) * 2)",
+				height: "100%",
+				width: "100%",
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
 			}}
 		>
-			<Stack
-				className={`fallback__${title?.trim().split(" ")[0]}`}
-				alignItems="center"
-				gap={theme.spacing(20)}
+			<Box
+				border={1}
+				borderColor={theme.palette.primary.lowContrast}
+				borderRadius={theme.shape.borderRadius}
+				backgroundColor={theme.palette.primary.main}
+				overflow="hidden"
+				sx={{
+					display: "flex",
+					borderStyle: "dashed",
+					height: { sm: "50vh", md: "60vh" },
+					width: { md: "45%", lg: "40%" },
+					minWidth: theme.spacing(200),
+					maxHeight: theme.spacing(350),
+					maxWidth: theme.spacing(450),
+				}}
 			>
-				{mode === "light" ? (
-					<Skeleton style={{ zIndex: 1 }} />
-				) : (
-					<SkeletonDark style={{ zIndex: 1 }} />
-				)}
-				<Box
-					className="background-pattern-svg"
-					sx={{
-						"& svg g g:last-of-type path": {
-							stroke: theme.palette.primary.lowContrast,
-						},
-					}}
-				>
-					<Background style={{ width: "100%" }} />
-				</Box>
 				<Stack
-					gap={theme.spacing(4)}
-					maxWidth={"300px"}
-					zIndex={1}
+					className={`fallback__${title?.trim().split(" ")[0]}`}
+					alignItems="center"
+					gap={theme.spacing(20)}
 				>
-					<Typography
-						component="h1"
-						marginY={theme.spacing(4)}
-						color={theme.palette.primary.contrastTextTertiary}
+					{mode === "light" ? (
+						<Skeleton style={{ zIndex: 1 }} />
+					) : (
+						<SkeletonDark style={{ zIndex: 1 }} />
+					)}
+					<Box
+						className="background-pattern-svg"
+						sx={{
+							"& svg g g:last-of-type path": {
+								stroke: theme.palette.primary.lowContrast,
+							},
+						}}
 					>
-						{vowelStart ? "An" : "A"} {title} is used to:
-					</Typography>
-					{checks?.map((check, index) => (
-						<Check
-							text={check}
-							key={`${title.trim().split(" ")[0]}-${index}`}
-							outlined={true}
-						/>
-					))}
-				</Stack>
-				{/* TODO - display a different fallback if user is not an admin*/}
-				{isAdmin && (
-					<>
-						<Button
-							variant="contained"
-							color="accent"
-							sx={{ alignSelf: "center" }}
-							onClick={() => navigate(link)}
+						<Background style={{ width: "100%" }} />
+					</Box>
+					<Stack
+						gap={theme.spacing(4)}
+						maxWidth={"300px"}
+						zIndex={1}
+					>
+						<Typography
+							component="h1"
+							marginY={theme.spacing(4)}
+							color={theme.palette.primary.contrastTextTertiary}
 						>
-							Let's create your first {title}
-						</Button>
-						{/* Bulk create of uptime monitors */}
-						{title === "uptime monitor" && (
+							{vowelStart ? "An" : "A"} {title} is used to:
+						</Typography>
+						{checks?.map((check, index) => (
+							<Check
+								text={check}
+								key={`${title.trim().split(" ")[0]}-${index}`}
+								outlined={true}
+							/>
+						))}
+					</Stack>
+					{/* TODO - display a different fallback if user is not an admin*/}
+					{isAdmin && (
+						<>
 							<Button
 								variant="contained"
 								color="accent"
 								sx={{ alignSelf: "center" }}
-								onClick={() => navigate("/uptime/bulk-import")}
+								onClick={() => navigate(link)}
 							>
-								{t("bulkImport.fallbackPage")}
+								Let's create your first {title}
 							</Button>
-						)}
-
-						{/* Warning box for PageSpeed monitor */}
-						{title === "pagespeed monitor" && showPageSpeedWarning && (
-							<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
-								<Box
-									sx={{
-										"& .alert.row-stack": {
-											backgroundColor: theme.palette.warningSecondary.main,
-											borderColor: theme.palette.warningSecondary.lowContrast,
-											"& .MuiTypography-root": {
-												color: theme.palette.warningSecondary.contrastText,
-											},
-											"& .MuiBox-root > svg": {
-												color: theme.palette.warningSecondary.contrastText,
-											},
-										},
-									}}
+							{/* Bulk create of uptime monitors */}
+							{title === "uptime monitor" && (
+								<Button
+									variant="contained"
+									color="accent"
+									sx={{ alignSelf: "center" }}
+									onClick={() => navigate("/uptime/bulk-import")}
 								>
-									{settingsData?.pagespeedKeySet === false && (
-										<Alert
-											variant="warning"
-											hasIcon={true}
-											body={renderWarningMessage()}
-										/>
-									)}
+									{t("bulkImport.fallbackPage")}
+								</Button>
+							)}
+
+							{/* Warning box for PageSpeed monitor */}
+							{title === "pagespeed monitor" && showPageSpeedWarning && (
+								<Box sx={{ width: "80%", maxWidth: "600px", zIndex: 1 }}>
+									<Box
+										sx={{
+											"& .alert.row-stack": {
+												backgroundColor: theme.palette.warningSecondary.main,
+												borderColor: theme.palette.warningSecondary.lowContrast,
+												"& .MuiTypography-root": {
+													color: theme.palette.warningSecondary.contrastText,
+												},
+												"& .MuiBox-root > svg": {
+													color: theme.palette.warningSecondary.contrastText,
+												},
+											},
+										}}
+									>
+										{settingsData?.pagespeedKeySet === false && (
+											<Alert
+												variant="warning"
+												hasIcon={true}
+												body={renderWarningMessage()}
+											/>
+										)}
+									</Box>
 								</Box>
-							</Box>
-						)}
-					</>
-				)}
-			</Stack>
+							)}
+						</>
+					)}
+				</Stack>
+			</Box>
 		</Box>
 	);
 };

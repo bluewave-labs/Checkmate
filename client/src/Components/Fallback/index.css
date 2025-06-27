@@ -1,19 +1,22 @@
 [class*="fallback__"] {
 	width: fit-content;
 	margin: auto;
-	margin-top: 100px;
 }
+
 [class*="fallback__"] h1.MuiTypography-root {
 	font-size: var(--env-var-font-size-large);
 	font-weight: 600;
 }
+
 [class*="fallback__"] button.MuiButtonBase-root,
 [class*="fallback__"] .check {
 	width: max-content;
 }
+
 [class*="fallback__"] button.MuiButtonBase-root {
 	min-height: 34px;
 }
+
 [class*="fallback__"] .check span.MuiTypography-root,
 [class*="fallback__"] button.MuiButtonBase-root {
 	font-size: var(--env-var-font-size-medium);
@@ -35,6 +38,7 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 }
+
 .fallback__status > .MuiStack-root {
 	margin-left: var(--env-var-spacing-2);
 }
