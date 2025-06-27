@@ -35,7 +35,7 @@ class SuperSimpleQueue {
 			id: monitorId.toString(),
 			template: "test",
 			repeat: monitor.interval,
-			data: monitor,
+			data: monitor.toObject(),
 		});
 	};
 
