@@ -211,7 +211,7 @@ InfrastructureMenu.propTypes = {
 	monitor: PropTypes.shape({
 		id: PropTypes.string.isRequired,
 		url: PropTypes.string,
-		// Note: type must remain optional. Making it required (type: PropTypes.string.isRequired) 
+		// Note: type must remain optional. Making it required (type: PropTypes.string.isRequired)
 		// causes runtime errors as some monitors don't have a defined type property
 		type: PropTypes.string,
 		isActive: PropTypes.bool, // Consider deprecating in favor of status
