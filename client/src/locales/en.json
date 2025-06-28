@@ -483,6 +483,9 @@
 	"message": "Message",
 	"monitor": "monitor",
 	"monitorActions": {
+		"deleteSuccess": "Monitor deleted successfully",
+		"deleteFailed": "Failed to delete monitor",
+		"details": "Details",
 		"export": "Export Monitors",
 		"import": "Import Monitors",
 		"title": "Export/Import"

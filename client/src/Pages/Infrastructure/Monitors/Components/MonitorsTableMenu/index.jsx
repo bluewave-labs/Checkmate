@@ -1,6 +1,6 @@
 /* TODO I basically copied and pasted this component from the actionsMenu. Check how we can make it reusable */
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../../../../Utils/toastUtils";
@@ -9,6 +9,8 @@ import Settings from "../../../../../assets/icons/settings-bold.svg?react";
 import PropTypes from "prop-types";
 import Dialog from "../../../../../Components/Dialog";
 import { networkService } from "../../../../../Utils/NetworkService.js";
+import { usePauseMonitor } from "../../../../../Hooks/monitorHooks";
+import { useTranslation } from "react-i18next";
 
 /**
  * InfrastructureMenu Component
@@ -28,7 +30,21 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const anchor = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [localMonitorState, setLocalMonitorState] = useState(monitor);
 	const theme = useTheme();
+	const [pauseMonitor] = usePauseMonitor();
+	const { t } = useTranslation();
+
+	// Update local state when monitor prop changes
+	useEffect(() => {
+		// Ensure we have a valid monitor object with default values for missing properties
+		if (monitor) {
+			setLocalMonitorState({
+				...monitor,
+				status: monitor.status || "active", // Default to active if status is undefined
+			});
+		}
+	}, [monitor]);
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -54,14 +70,40 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 		navigate(`/infrastructure/${id}`);
 	}
 
+	const openConfigure = (id) => {
+		navigate(`/infrastructure/configure/${id}`);
+	};
+
+	const handlePause = async () => {
+		try {
+			// Toggle the local state immediately for better UI responsiveness
+			setLocalMonitorState((prevState) => ({
+				...prevState,
+				status: prevState.status === "paused" ? "active" : "paused",
+			}));
+
+			// Pass updateCallback as triggerUpdate to the hook
+			await pauseMonitor({ monitorId: monitor.id, triggerUpdate: updateCallback });
+			// Toast is already displayed in the hook, no need to display it again
+		} catch (error) {
+			// Error handling is done in the hook - revert the local state on error
+			setLocalMonitorState((prevState) => ({
+				...prevState,
+				status: prevState.status === "paused" ? "active" : "paused",
+			}));
+		}
+	};
+
 	const handleRemove = async () => {
 		try {
 			await networkService.deleteMonitorById({
 				monitorId: monitor.id,
 			});
-			createToast({ body: "Monitor deleted successfully." });
+			createToast({
+				body: t("monitorActions.deleteSuccess", "Monitor deleted successfully"),
+			});
 		} catch (error) {
-			createToast({ body: "Failed to delete monitor." });
+			createToast({ body: t("monitorActions.deleteFailed", "Failed to delete monitor") });
 		} finally {
 			setIsDialogOpen(false);
 			updateCallback();
@@ -105,15 +147,58 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 					},
 				}}
 			>
-				{isAdmin && <MenuItem onClick={openRemove}>Remove</MenuItem>}
+				<MenuItem
+					onClick={(e) => {
+						e.stopPropagation();
+						openDetails(monitor.id);
+						closeMenu(e);
+					}}
+				>
+					{t("monitorActions.details", "Details")}
+				</MenuItem>
+				{isAdmin && (
+					<MenuItem
+						onClick={(e) => {
+							e.stopPropagation();
+							openConfigure(monitor.id);
+							closeMenu(e);
+						}}
+					>
+						{t("configure", "Configure")}
+					</MenuItem>
+				)}
+				{isAdmin && (
+					<MenuItem
+						onClick={async (e) => {
+							e.stopPropagation();
+							await handlePause();
+							closeMenu(e);
+						}}
+					>
+						{localMonitorState?.status === "paused"
+							? t("resume", "Resume")
+							: t("pause", "Pause")}
+					</MenuItem>
+				)}
+				{isAdmin && (
+					<MenuItem
+						onClick={openRemove}
+						sx={{ color: theme.palette.error.main }}
+					>
+						{t("remove", "Remove")}
+					</MenuItem>
+				)}
 			</Menu>
 			<Dialog
 				open={isDialogOpen}
 				theme={theme}
-				title="Do you really want to delete this monitor?"
-				description="Once deleted, this monitor cannot be retrieved."
+				title={t("deleteDialogTitle", "Do you really want to delete this monitor?")}
+				description={t(
+					"deleteDialogDescription",
+					"Once deleted, this monitor cannot be retrieved."
+				)}
 				onCancel={cancelRemove}
-				confirmationButtonLabel="Delete"
+				confirmationButtonLabel={t("delete", "Delete")}
 				onConfirm={handleRemove}
 				modelTitle="modal-delete-monitor"
 				modelDescription="delete-monitor-confirmation"
@@ -124,13 +209,16 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 
 InfrastructureMenu.propTypes = {
 	monitor: PropTypes.shape({
-		id: PropTypes.string,
+		id: PropTypes.string.isRequired,
 		url: PropTypes.string,
+		// Note: type must remain optional. Making it required (type: PropTypes.string.isRequired)
+		// causes runtime errors as some monitors don't have a defined type property
 		type: PropTypes.string,
-		isActive: PropTypes.bool,
+		isActive: PropTypes.bool, // Consider deprecating in favor of status
+		status: PropTypes.string,
 	}).isRequired,
-	isAdmin: PropTypes.bool,
-	updateCallback: PropTypes.func,
+	isAdmin: PropTypes.bool.isRequired,
+	updateCallback: PropTypes.func.isRequired,
 };
 
 export { InfrastructureMenu };
