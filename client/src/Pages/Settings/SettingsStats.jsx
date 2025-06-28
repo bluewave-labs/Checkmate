@@ -29,17 +29,17 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 					variant="h2"
 					sx={HEADING_SX}
 				>
-					{t("settingsHistoryAndMonitoring")}
+					{t("settingsPage.statsSettings.title")}
 				</Typography>
 				<Typography sx={{ mt: theme.spacing(2) }}>
-					{t("settingsHistoryAndMonitoringDescription")}
+					{t("settingsPage.statsSettings.description")}
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<TextInput
 					name="checkTTL"
-					label={t("settingsTTLLabel")}
-					optionalLabel={t("settingsTTLOptionalLabel")}
+					label={t("settingsPage.statsSettings.labelTTL")}
+					optionalLabel={t("settingsPage.statsSettings.labelTTLOptional")}
 					value={settingsData?.settings?.checkTTL ?? ""}
 					onChange={handleChange}
 					type="number"
@@ -47,24 +47,28 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 					helperText={errors.checkTTL}
 				/>
 				<Box>
-					<Typography>{t("settingsClearAllStats")}</Typography>
+					<Typography>
+						{t("settingsPage.statsSettings.clearAllStatsDescription")}
+					</Typography>
 					<Button
 						variant="contained"
 						color="error"
 						onClick={() => setIsOpen(true)}
 						sx={{ mt: theme.spacing(4) }}
 					>
-						{t("settingsClearAllStatsButton")}
+						{t("settingsPage.statsSettings.clearAllStatsButton")}
 					</Button>
 				</Box>
 			</Stack>
 			<Dialog
 				open={isOpen}
 				theme={theme}
-				title={t("settingsClearAllStatsDialogTitle")}
-				description={t("settingsClearAllStatsDialogDescription")}
+				title={t("settingsPage.statsSettings.clearAllStatsDialogTitle")}
+				description={t("settingsPage.statsSettings.clearAllStatsDialogDescription")}
 				onCancel={() => setIsOpen(false)}
-				confirmationButtonLabel={t("settingsClearAllStatsDialogConfirm")}
+				confirmationButtonLabel={t(
+					"settingsPage.statsSettings.clearAllStatsDialogConfirm"
+				)}
 				onConfirm={() => {
 					const syntheticEvent = {
 						target: {

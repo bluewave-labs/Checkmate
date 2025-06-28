@@ -77,11 +77,16 @@ class InviteController {
 					name: firstname,
 					link: `${clientHost}/register/${inviteToken.token}`,
 				});
-				await this.emailService.sendEmail(
+				const result = await this.emailService.sendEmail(
 					req.body.email,
 					"Welcome to Uptime Monitor",
 					html
 				);
+				if (!result) {
+					return res.error({
+						msg: "Failed to send invite e-mail... Please verify your settings.",
+					});
+				}
 			} catch (error) {
 				logger.warn({
 					message: error.message,

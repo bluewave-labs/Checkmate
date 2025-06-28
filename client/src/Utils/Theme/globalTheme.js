@@ -36,6 +36,11 @@ const baseTheme = (palette) => ({
 			color: palette.primary.contrastTextTertiary,
 			fontWeight: 400,
 		},
+		label: {
+			fontSize: "var(--env-var-font-size-medium)",
+			color: palette.primary.contrastTextSecondary,
+			fontWeight: 500,
+		},
 	},
 	/* TODO change to 4 */
 	spacing: 2,
@@ -407,6 +412,7 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
 		MuiTab: {
 			styleOverrides: {
 				root: ({ theme }) => ({
@@ -475,6 +481,8 @@ const baseTheme = (palette) => ({
 		MuiTabs: {
 			styleOverrides: {
 				root: ({ theme }) => ({
+					height: "34px",
+					minHeight: "34px",
 					display: "inline-flex",
 					borderRadius: 0,
 					"& .MuiTabs-indicator": {

@@ -90,6 +90,45 @@ const getStatusPage = async (url) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 
 	try {
+		const preliminaryStatusPage = await StatusPage.findOne({ url });
+		if (!preliminaryStatusPage) {
+			const error = new Error(stringService.statusPageNotFound);
+			error.status = 404;
+			throw error;
+		}
+
+		if (!preliminaryStatusPage.monitors || preliminaryStatusPage.monitors.length === 0) {
+			const {
+				_id,
+				color,
+				companyName,
+				isPublished,
+				logo,
+				originalMonitors,
+				showCharts,
+				showUptimePercentage,
+				timezone,
+				showAdminLoginLink,
+				url,
+			} = preliminaryStatusPage;
+			return {
+				statusPage: {
+					_id,
+					color,
+					companyName,
+					isPublished,
+					logo,
+					originalMonitors,
+					showCharts,
+					showUptimePercentage,
+					timezone,
+					showAdminLoginLink,
+					url,
+				},
+				monitors: [],
+			};
+		}
+
 		const statusPageQuery = await StatusPage.aggregate([
 			{ $match: { url: url } },
 			{
@@ -134,6 +173,9 @@ const getStatusPage = async (url) => {
 					},
 				},
 			},
+			{ $match: { "monitors.orderIndex": { $ne: -1 } } },
+			{ $sort: { "monitors.orderIndex": 1 } },
+
 			{
 				$group: {
 					_id: "$_id",
@@ -153,22 +195,10 @@ const getStatusPage = async (url) => {
 						showCharts: 1,
 						showUptimePercentage: 1,
 						timezone: 1,
+						showAdminLoginLink: 1,
 						url: 1,
 					},
-					monitors: {
-						$filter: {
-							input: {
-								$sortArray: {
-									input: "$monitors",
-									sortBy: { orderIndex: 1 },
-								},
-							},
-							as: "monitor",
-							cond: {
-								$ne: ["$$monitor.orderIndex", -1],
-							},
-						},
-					},
+					monitors: 1,
 				},
 			},
 		]);

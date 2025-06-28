@@ -8,6 +8,7 @@ const useFetchChecksTeam = ({
 	limit,
 	dateRange,
 	filter,
+	ack,
 	page,
 	rowsPerPage,
 	enabled = true,
@@ -29,6 +30,7 @@ const useFetchChecksTeam = ({
 				limit,
 				dateRange,
 				filter,
+				ack,
 				page,
 				rowsPerPage,
 			};
@@ -47,7 +49,7 @@ const useFetchChecksTeam = ({
 		};
 
 		fetchChecks();
-	}, [status, sortOrder, limit, dateRange, filter, page, rowsPerPage, enabled]);
+	}, [status, sortOrder, limit, dateRange, filter, ack, page, rowsPerPage, enabled]);
 
 	return [checks, checksCount, isLoading, networkError];
 };
@@ -60,6 +62,7 @@ const useFetchChecksByMonitor = ({
 	limit,
 	dateRange,
 	filter,
+	ack,
 	page,
 	rowsPerPage,
 	enabled = true,
@@ -83,6 +86,7 @@ const useFetchChecksByMonitor = ({
 				limit,
 				dateRange,
 				filter,
+				ack,
 				page,
 				rowsPerPage,
 			};
@@ -109,6 +113,7 @@ const useFetchChecksByMonitor = ({
 		limit,
 		dateRange,
 		filter,
+		ack,
 		page,
 		rowsPerPage,
 		enabled,

@@ -1,6 +1,6 @@
 services:
   server:
-    image: ghcr.io/bluewave-labs/checkmate:backend-dist-mono-multiarch
+    image: ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:latest
     restart: always
     ports:
       - "52345:52345"
@@ -12,16 +12,7 @@ services:
       - CLIENT_HOST=http://localhost
       - JWT_SECRET=my_secret
     depends_on:
-      - redis
       - mongodb
-  redis:
-    image: redis:7
-    container_name: checkmate-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis/data:/data
-    restart: unless-stopped
   mongodb:
     image: mongo:4.4.18
     container_name: checkmate-mongodb

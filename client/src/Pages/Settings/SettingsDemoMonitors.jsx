@@ -27,12 +27,13 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 						component="h1"
 						variant="h2"
 					>
-						{t("settingsDemoMonitors")}
+						{t("settingsPage.demoMonitorsSettings.title")}
 					</Typography>
-					<Typography sx={HEADER_SX}>{t("settingsDemoMonitorsDescription")}</Typography>
+					<Typography sx={HEADER_SX}>
+						{t("settingsPage.demoMonitorsSettings.description")}
+					</Typography>
 				</Box>
 				<Box>
-					<Typography>{t("settingsAddDemoMonitors")}</Typography>
 					<Button
 						variant="contained"
 						color="accent"
@@ -47,7 +48,7 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 						}}
 						sx={{ mt: theme.spacing(4) }}
 					>
-						{t("settingsAddDemoMonitorsButton")}
+						{t("settingsPage.demoMonitorsSettings.buttonAddMonitors")}
 					</Button>
 				</Box>
 			</ConfigBox>
@@ -57,14 +58,13 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 						component="h1"
 						variant="h2"
 					>
-						{t("settingsSystemReset")}
+						{t("settingsPage.systemResetSettings.title")}
 					</Typography>
 					<Typography sx={{ mt: theme.spacing(2) }}>
-						{t("settingsSystemResetDescription")}
+						{t("settingsPage.systemResetSettings.description")}
 					</Typography>
 				</Box>
 				<Box>
-					<Typography>{t("settingsRemoveAllMonitors")}</Typography>
 					<Button
 						variant="contained"
 						color="error"
@@ -72,15 +72,15 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 						onClick={() => setIsOpen(true)}
 						sx={{ mt: theme.spacing(4) }}
 					>
-						{t("settingsRemoveAllMonitorsButton")}
+						{t("settingsPage.systemResetSettings.buttonRemoveAllMonitors")}
 					</Button>
 				</Box>
 				<Dialog
 					open={isOpen}
 					theme={theme}
-					title={t("settingsRemoveAllMonitorsDialogTitle")}
+					title={t("settingsPage.systemResetSettings.dialogTitle")}
 					onCancel={() => setIsOpen(false)}
-					confirmationButtonLabel={t("settingsRemoveAllMonitorsDialogConfirm")}
+					confirmationButtonLabel={t("settingsPage.systemResetSettings.dialogConfirm")}
 					onConfirm={() => {
 						const syntheticEvent = {
 							target: {

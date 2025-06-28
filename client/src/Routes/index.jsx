@@ -48,9 +48,11 @@ import Settings from "../Pages/Settings";
 import Maintenance from "../Pages/Maintenance";
 
 import ProtectedRoute from "../Components/ProtectedRoute";
+import RoleProtectedRoute from "../Components/RoleProtectedRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport";
+import Logs from "../Pages/Logs";
 
 const Routes = () => {
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
@@ -185,6 +187,15 @@ const Routes = () => {
 				<Route
 					path="account/team"
 					element={<Account open={"team"} />}
+				/>
+
+				<Route
+					path="logs"
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Logs />
+						</RoleProtectedRoute>
+					}
 				/>
 			</Route>
 

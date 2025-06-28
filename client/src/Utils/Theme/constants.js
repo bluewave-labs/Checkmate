@@ -85,6 +85,7 @@ const semanticColors = {
 const newColors = {
 	offWhite: "#FEFEFE",
 	offBlack: "#131315",
+	gray0: "#FDFDFD",
 	gray10: "#F4F4FF",
 	gray100: "#F3F3F3",
 	gray200: "#EFEFEF",
@@ -178,7 +179,7 @@ const newSemanticColors = {
 	},
 	primaryBackground: {
 		main: {
-			light: newColors.gray10,
+			light: newColors.gray0,
 			dark: "#000000",
 		},
 	},

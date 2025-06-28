@@ -1,4 +1,6 @@
 import { Link as MuiLink, useTheme } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+
 import PropTypes from "prop-types";
 
 /**
@@ -10,7 +12,7 @@ import PropTypes from "prop-types";
  * @returns {JSX.Element}
  */
 
-const Link = ({ level, label, url }) => {
+const Link = ({ level, label, url, external = true }) => {
 	const theme = useTheme();
 
 	const levelConfig = {
@@ -49,11 +51,12 @@ const Link = ({ level, label, url }) => {
 	const { sx, color } = levelConfig[level];
 	return (
 		<MuiLink
-			href={url}
+			component={external ? "a" : RouterLink}
+			to={external ? undefined : url}
+			href={external ? url : undefined}
 			sx={{ width: "fit-content", ...sx }}
 			color={color}
-			target="_blank"
-			rel="noreferrer"
+			{...(external && { target: "_blank", rel: "noreferrer" })}
 		>
 			{label}
 		</MuiLink>
@@ -64,6 +67,7 @@ Link.propTypes = {
 	url: PropTypes.string.isRequired,
 	level: PropTypes.oneOf(["primary", "secondary", "tertiary", "error"]),
 	label: PropTypes.string.isRequired,
+	external: PropTypes.bool,
 };
 
 export default Link;

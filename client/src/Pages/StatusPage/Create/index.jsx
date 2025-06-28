@@ -20,7 +20,7 @@ const TAB_LIST = ["General settings", "Contents"];
 
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
-	["monitors", "showUptimePercentage", "showCharts"],
+	["monitors", "showUptimePercentage", "showCharts", "showAdminLoginLink"],
 ];
 
 const CreateStatusPage = () => {
@@ -39,6 +39,7 @@ const CreateStatusPage = () => {
 		monitors: [],
 		showCharts: true,
 		showUptimePercentage: true,
+		showAdminLoginLink: false,
 	});
 	const [errors, setErrors] = useState({});
 	const [selectedMonitors, setSelectedMonitors] = useState([]);
@@ -59,6 +60,7 @@ const CreateStatusPage = () => {
 	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
 		useStatusPageFetch(isCreate, url);
 
+	console.log(JSON.stringify(form, null, 2));
 	// Handlers
 	const handleFormChange = (e) => {
 		let { type, name, value, checked } = e.target;
@@ -176,7 +178,7 @@ const CreateStatusPage = () => {
 		}
 
 		let newLogo = undefined;
-		if (statusPage.logo) {
+		if (statusPage.logo && Object.keys(statusPage.logo).length > 0) {
 			newLogo = {
 				src: `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`,
 				name: "logo",
@@ -195,6 +197,7 @@ const CreateStatusPage = () => {
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? true,
 				showUptimePercentage: statusPage?.showUptimePercentage ?? true,
+				showAdminLoginLink: statusPage?.showAdminLoginLink ?? false,
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);
@@ -244,7 +247,7 @@ const CreateStatusPage = () => {
 					color="accent"
 					onClick={handleSubmit}
 				>
-					{t("settingsSave")}
+					{t("statusPageCreate.buttonSave")}
 				</Button>
 			</Stack>
 		</Stack>

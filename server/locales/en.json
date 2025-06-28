@@ -123,6 +123,7 @@
 	"monitorCertificate": "Got monitor certificate successfully",
 	"monitorDemoAdded": "Successfully added demo monitors",
 	"queueGetMetrics": "Got metrics successfully",
+	"queueGetJobs": "Got jobs successfully",
 	"queueAddJob": "Job added successfully",
 	"queueObliterate": "Queue obliterated",
 	"jobQueueDeleteJobSuccess": "Job removed successfully",
