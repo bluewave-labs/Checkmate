@@ -1,6 +1,6 @@
 /* TODO I basically copied and pasted this component from the actionsMenu. Check how we can make it reusable */
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../../../../Utils/toastUtils";
@@ -30,9 +30,21 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const anchor = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [localMonitorState, setLocalMonitorState] = useState(monitor);
 	const theme = useTheme();
 	const [pauseMonitor] = usePauseMonitor();
 	const { t } = useTranslation();
+	
+	// Update local state when monitor prop changes
+	useEffect(() => {
+		// Ensure we have a valid monitor object with default values for missing properties
+		if (monitor) {
+			setLocalMonitorState({
+				...monitor,
+				status: monitor.status || 'active' // Default to active if status is undefined
+			});
+		}
+	}, [monitor]);
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -64,19 +76,21 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 
 	const handlePause = async () => {
 		try {
-			await pauseMonitor({ monitorId: monitor.id });
-			createToast({
-				body: t("monitorActions.pauseResumeSuccess", "Monitor {{action}} successfully", {
-					action: monitor.isActive ? t("monitorActions.paused", "paused") : t("monitorActions.resumed", "resumed")
-				}),
-			});
-			updateCallback();
+			// Toggle the local state immediately for better UI responsiveness
+			setLocalMonitorState(prevState => ({
+				...prevState,
+				status: prevState.status === "paused" ? "active" : "paused"
+			}));
+			
+			// Pass updateCallback as triggerUpdate to the hook
+			await pauseMonitor({ monitorId: monitor.id, triggerUpdate: updateCallback });
+			// Toast is already displayed in the hook, no need to display it again
 		} catch (error) {
-			createToast({
-				body: t("monitorActions.pauseResumeFailed", "Failed to {{action}} monitor", {
-					action: monitor.isActive ? t("pause", "pause") : t("resume", "resume")
-				}),
-			});
+			// Error handling is done in the hook - revert the local state on error
+			setLocalMonitorState(prevState => ({
+				...prevState,
+				status: prevState.status === "paused" ? "active" : "paused"
+			}));
 		}
 	};
 
@@ -131,13 +145,25 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 					},
 				}}
 			>
-				<MenuItem onClick={() => openDetails(monitor.id)}>{t("monitorActions.details", "Details")}</MenuItem>
+				<MenuItem onClick={(e) => {
+					e.stopPropagation();
+					openDetails(monitor.id);
+					closeMenu(e);
+				}}>{t("monitorActions.details", "Details")}</MenuItem>
 				{isAdmin && (
-					<MenuItem onClick={() => openConfigure(monitor.id)}>{t("configure", "Configure")}</MenuItem>
+					<MenuItem onClick={(e) => {
+						e.stopPropagation();
+						openConfigure(monitor.id);
+						closeMenu(e);
+					}}>{t("configure", "Configure")}</MenuItem>
 				)}
 				{isAdmin && (
-					<MenuItem onClick={handlePause}>
-						{monitor.isActive ? t("pause", "Pause") : t("resume", "Resume")}
+					<MenuItem onClick={async (e) => {
+						e.stopPropagation();
+						await handlePause();
+						closeMenu(e);
+					}}>
+						{localMonitorState?.status === "paused" ? t("resume", "Resume") : t("pause", "Pause")}
 					</MenuItem>
 				)}
 				{isAdmin && (
@@ -166,13 +192,14 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 
 InfrastructureMenu.propTypes = {
 	monitor: PropTypes.shape({
-		id: PropTypes.string,
+		id: PropTypes.string.isRequired,
 		url: PropTypes.string,
-		type: PropTypes.string,
+		type: PropTypes.string, // Made optional
 		isActive: PropTypes.bool,
+		status: PropTypes.string,
 	}).isRequired,
-	isAdmin: PropTypes.bool,
-	updateCallback: PropTypes.func,
+	isAdmin: PropTypes.bool.isRequired,
+	updateCallback: PropTypes.func.isRequired,
 };
 
 export { InfrastructureMenu };
