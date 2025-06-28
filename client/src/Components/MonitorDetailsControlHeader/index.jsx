@@ -83,23 +83,24 @@ const MonitorDetailsControlHeader = ({
 				>
 					{t("menu.incidents")}
 				</Button>
-				<Button
-					variant="contained"
-					color="secondary"
-					loading={isPausing}
-					startIcon={
-						monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
-					}
-					onClick={() => {
-						pauseMonitor({
-							monitorId: monitor?._id,
-							triggerUpdate,
-						});
-					}}
-				>
-					{monitor?.isActive ? "Pause" : "Resume"}
-				</Button>
-
+				{isAdmin && (
+					<Button
+						variant="contained"
+						color="secondary"
+						loading={isPausing}
+						startIcon={
+							monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+						}
+						onClick={() => {
+							pauseMonitor({
+								monitorId: monitor?._id,
+								triggerUpdate,
+							});
+						}}
+					>
+						{monitor?.isActive ? "Pause" : "Resume"}
+					</Button>
+				)}
 				{isAdmin && (
 					<Button
 						variant="contained"

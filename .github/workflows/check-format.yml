@@ -59,4 +59,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr close "$PR_NUMBER" --delete-branch --comment "❌ Formatting check failed — PR auto-closed.
-          Please run \`npm run format\` and push again."
+          Please run \`npm run format\` in both `client` and `server` directories and push again."

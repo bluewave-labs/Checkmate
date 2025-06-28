@@ -53,7 +53,7 @@ const PublicStatus = () => {
 		return <SkeletonLayout />;
 	}
 
-	if (monitors.length === 0) {
+	if (monitors?.length === 0) {
 		return (
 			<GenericFallback>
 				<Typography
