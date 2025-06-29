@@ -1,0 +1,41 @@
+client:
+  image: bluewaveuptime/uptime_client:latest
+  port: 80
+  ingress:
+    enabled: true
+    host: checkmate-chart.local
+
+server:
+  image: bluewaveuptime/uptime_server:latest
+  port: 5000
+  protocol: http
+  ingress:
+    enabled: true
+    host: server.checkmate-chart.local
+
+redis:
+  image: redis:7.2
+  port: 6379
+
+mongodb:
+  image: mongo:7.0
+  port: 27017
+
+secrets:
+  JWT_SECRET: change_me
+  REFRESH_TOKEN_SECRET: change_me
+  SYSTEM_EMAIL_ADDRESS: test@example.com
+  SYSTEM_EMAIL_PASSWORD: change_me
+  SYSTEM_EMAIL_HOST: smtp.example.com
+  SYSTEM_EMAIL_PORT: "587"
+  PAGESPEED_API_KEY: change_me
+  DB_CONNECTION_STRING: mongodb://mongodb:27017/uptime_db
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  DB_TYPE: MongoDB
+  TOKEN_TTL: 99d
+  REFRESH_TOKEN_TTL: 99d
+
+persistence:
+  mongodbSize: 5Gi
+  redisSize: 1Gi
