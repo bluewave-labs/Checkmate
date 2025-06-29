@@ -6,7 +6,6 @@ import ControlsHeader from "./Components/ControlsHeader";
 import SkeletonLayout from "./Components/Skeleton";
 import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
-import Dialog from "../../../Components/Dialog";
 import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 import TextLink from "../../../Components/TextLink";
 
@@ -15,27 +14,19 @@ import { useStatusPageFetch } from "./Hooks/useStatusPageFetch";
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useLocation } from "react-router-dom";
-import { useStatusPageDelete } from "./Hooks/useStatusPageDelete";
-import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const PublicStatus = () => {
 	const { url } = useParams();
 
-	// Local state
-	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const location = useLocation();
-	const navigate = useNavigate();
 	const isAdmin = useIsAdmin();
 
-	const [statusPage, monitors, isLoading, networkError, fetchStatusPage] =
-		useStatusPageFetch(false, url);
-	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
+	const [statusPage, monitors, isLoading, networkError] = useStatusPageFetch(false, url);
 
 	// Breadcrumbs
 	const crumbs = [
@@ -158,9 +149,6 @@ const PublicStatus = () => {
 			{!isPublic && <Breadcrumbs list={crumbs} />}
 			<ControlsHeader
 				statusPage={statusPage}
-				isDeleting={isDeleting}
-				isDeleteOpen={isDeleteOpen}
-				setIsDeleteOpen={setIsDeleteOpen}
 				url={url}
 				isPublic={isPublic}
 			/>
@@ -168,21 +156,6 @@ const PublicStatus = () => {
 			<StatusBar monitors={monitors} />
 			<MonitorsList monitors={monitors} />
 			{link}
-			<Dialog
-				title={t("deleteStatusPage")}
-				onConfirm={() => {
-					deleteStatusPage();
-					setIsDeleteOpen(false);
-					navigate("/status");
-				}}
-				onCancel={() => {
-					setIsDeleteOpen(false);
-				}}
-				open={isDeleteOpen}
-				confirmationButtonLabel={t("deleteStatusPageConfirm")}
-				description={t("deleteStatusPageDescription")}
-				isLoading={isDeleting || isLoading}
-			/>
 		</Stack>
 	);
 };
