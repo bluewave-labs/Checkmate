@@ -284,6 +284,11 @@ const CreateStatusPage = () => {
 					t("statusPage.contents", "Contents"),
 				]}
 				isCreate={isCreate}
+				handleDelete={handleDelete}
+				isDeleteOpen={isDeleteOpen}
+				setIsDeleteOpen={setIsDeleteOpen}
+				isDeleting={isDeleting}
+				isLoading={statusPageIsLoading}
 			/>
 			<Stack
 				direction="row"
