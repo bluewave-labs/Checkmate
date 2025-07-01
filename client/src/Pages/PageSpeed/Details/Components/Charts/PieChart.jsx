@@ -221,7 +221,15 @@ const PieChart = ({ audits }) => {
 	const colorMap = getColors(performance);
 
 	return (
-		<Box onMouseLeave={() => setExpand(false)}>
+		<Box
+			onMouseLeave={() => setExpand(false)}
+			sx={{
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+				width: "100%",
+			}}
+		>
 			{expand ? (
 				<MuiPieChart
 					series={[

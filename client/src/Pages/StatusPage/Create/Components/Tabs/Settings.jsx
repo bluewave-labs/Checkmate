@@ -117,7 +117,7 @@ const TabSettings = ({
 							component="h2"
 							variant="h2"
 						>
-							{t("settingsAppearance")}
+							{t("statusPageCreateAppearanceTitle")}
 						</Typography>
 						<Typography component="p">
 							{t("statusPageCreateAppearanceDescription")}
