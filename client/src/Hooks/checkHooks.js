@@ -122,4 +122,30 @@ const useFetchChecksByMonitor = ({
 	return [checks, checksCount, isLoading, networkError];
 };
 
-export { useFetchChecksByMonitor, useFetchChecksTeam };
+const useFetchChecksSummaryByTeamId = () => {
+	const [summary, setSummary] = useState(undefined);
+	const [isLoading, setIsLoading] = useState(false);
+	const [networkError, setNetworkError] = useState(false);
+
+	useEffect(() => {
+		const fetchSummary = async () => {
+			try {
+				setIsLoading(true);
+
+				const res = await networkService.getChecksAndSummaryByTeamId();
+				setSummary(res.data.data);
+			} catch (error) {
+				setNetworkError(true);
+				createToast({ body: error.message });
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchSummary();
+	}, []);
+
+	return [summary, isLoading, networkError];
+};
+
+export { useFetchChecksByMonitor, useFetchChecksTeam, useFetchChecksSummaryByTeamId };

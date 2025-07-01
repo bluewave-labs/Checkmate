@@ -9,6 +9,7 @@ import StatusBoxes from "./Components/StatusBoxes";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
+import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
@@ -32,6 +33,8 @@ const Incidents = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
+	const [summary, isLoadingSummary, networkErrorSummary] =
+		useFetchChecksSummaryByTeamId();
 	const { monitorId } = useParams();
 
 	useEffect(() => {
@@ -52,7 +55,7 @@ const Incidents = () => {
 		setMonitorLookup(monitorLookup);
 	}, [monitors]);
 
-	if (networkError) {
+	if (networkError || networkErrorSummary) {
 		return (
 			<GenericFallback>
 				<NetworkError />
@@ -64,7 +67,8 @@ const Incidents = () => {
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
 			<StatusBoxes
-				isLoading={isLoading}
+				isLoading={isLoadingSummary}
+				summary={summary}
 			/>
 			<OptionsHeader
 				shouldRender={!isLoading}

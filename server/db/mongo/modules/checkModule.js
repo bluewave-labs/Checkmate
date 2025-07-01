@@ -312,12 +312,14 @@ const ackAllChecks = async (monitorId, teamId, ack, path) => {
  * @returns {Promise<Object>}
  * @throws {Error}
  */
-const getChecksAndSummaryByTeamId = async ({ teamId }) => {
+const getChecksSummaryByTeamId = async ({ teamId }) => {
 	try {
 		const matchStage = {
 			teamId: new ObjectId(teamId),
-		}
-		const checks = await Check.aggregate(buildChecksAndSummaryByTeamIdPipeline({ matchStage }));
+		};
+		const checks = await Check.aggregate(
+			buildChecksAndSummaryByTeamIdPipeline({ matchStage })
+		);
 		return checks[0].summary;
 	} catch (error) {
 		error.service = SERVICE_NAME;
@@ -409,7 +411,7 @@ export {
 	getChecksByTeam,
 	ackCheck,
 	ackAllChecks,
-	getChecksAndSummaryByTeamId,
+	getChecksSummaryByTeamId,
 	deleteChecks,
 	deleteChecksByTeamId,
 	updateChecksTTL,

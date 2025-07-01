@@ -22,31 +22,31 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: 8 }}>
-				<TaskAltOutlinedIcon fontSize="small"/>
+				<TaskAltOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, transform: "rotate(180deg)", top: 5 }}>
-				<CancelOutlinedIcon fontSize="small"/>
+				<CancelOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: 12, right: 12 }}>
-				<WarningAmberRoundedIcon fontSize="small"/>
+				<WarningAmberRoundedIcon fontSize="small" />
 			</Box>
 		);
 	} else {
-        color = theme.palette.accent.main;
-        icon = (
-            <Box sx={{ ...sharedStyles, top: 12, right: 12 }}>
-                <MonitorHeartOutlinedIcon fontSize="small"/>
-            </Box>
-        );
-    }
+		color = theme.palette.accent.main;
+		icon = (
+			<Box sx={{ ...sharedStyles, top: 12, right: 12 }}>
+				<MonitorHeartOutlinedIcon fontSize="small" />
+			</Box>
+		);
+	}
 
 	return (
 		<Box
