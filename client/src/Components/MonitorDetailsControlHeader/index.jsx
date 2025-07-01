@@ -74,30 +74,13 @@ const MonitorDetailsControlHeader = ({
 							: ""
 					}
 				>
-					{isTestNotificationsDisabled ? (
-						<span>
-							<Button
-								variant="contained"
-								color="secondary"
-								loading={isSending}
-								startIcon={<EmailIcon />}
-								disabled
-								onClick={() => {
-									testAllNotifications({ monitorId: monitor?._id });
-								}}
-								sx={{
-									whiteSpace: "nowrap",
-								}}
-							>
-								{t("sendTestNotifications")}
-							</Button>
-						</span>
-					) : (
+					<span>
 						<Button
 							variant="contained"
 							color="secondary"
 							loading={isSending}
 							startIcon={<EmailIcon />}
+							disabled={isTestNotificationsDisabled}
 							onClick={() => {
 								testAllNotifications({ monitorId: monitor?._id });
 							}}
@@ -107,7 +90,7 @@ const MonitorDetailsControlHeader = ({
 						>
 							{t("sendTestNotifications")}
 						</Button>
-					)}
+					</span>
 				</Tooltip>
 				<Button
 					variant="contained"
