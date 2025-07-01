@@ -495,6 +495,7 @@
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
+
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
@@ -536,7 +537,7 @@
 			"label": "Discord",
 			"webhookLabel": "Discord Webhook URL",
 			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
-			"webhookRequired": "Discord webhook URL is f"
+			"webhookRequired": "Discord webhook URL is required"
 		},
 		"edit": {
 			"failed": "Failed to update notification",
@@ -785,6 +786,7 @@
 		"buttonSave": "Save"
 	},
 	"statusPageCreateAppearanceDescription": "Define the default look and feel of your public status page.",
+	"statusPageCreateAppearanceTitle": "Appearance",
 	"statusPageCreateBasicInfoDescription": "Define company name and the subdomain that your status page points to.",
 	"statusPageCreateBasicInfoStatusPageAddress": "Your status page address",
 	"statusPageCreateSelectTimeZoneDescription": "Select the timezone that your status page will be displayed in.",

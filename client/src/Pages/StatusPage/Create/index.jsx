@@ -60,6 +60,7 @@ const CreateStatusPage = () => {
 	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
 		useStatusPageFetch(isCreate, url);
 
+	console.log(JSON.stringify(form, null, 2));
 	// Handlers
 	const handleFormChange = (e) => {
 		let { type, name, value, checked } = e.target;
@@ -177,7 +178,7 @@ const CreateStatusPage = () => {
 		}
 
 		let newLogo = undefined;
-		if (statusPage.logo) {
+		if (statusPage.logo && Object.keys(statusPage.logo).length > 0) {
 			newLogo = {
 				src: `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`,
 				name: "logo",
