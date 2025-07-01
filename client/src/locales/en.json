@@ -1,4 +1,6 @@
 {
+	"settingsAppearance": "Appearance",
+	"confirmPassword": "Confirm password",
 	"submit": "Submit",
 	"title": "Title",
 	"distributedStatusHeaderText": "Real-time, real-device coverage",
@@ -8,7 +10,6 @@
 	"settingsFailedToSave": "Failed to save settings",
 	"settingsStatsCleared": "Stats cleared successfully",
 	"settingsFailedToClearStats": "Failed to clear stats",
-	"settingsFailedToAddDemoMonitors": "Failed to add demo monitors",
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
 	"starPromptTitle": "Star Checkmate",
@@ -335,7 +336,9 @@
 		"uploadSuccess": "Monitors created successfully!",
 		"validationFailed": "Validation failed",
 		"noFileSelected": "No file selected",
-		"fallbackPage": "Import a file to upload a list of servers in bulk"
+		"fallbackPage": "Import a file to upload a list of servers in bulk",
+		"invalidFileType": "Invalid file type",
+		"uploadFailed": "Upload failed"
 	},
 	"DeleteAccountTitle": "Remove account",
 	"DeleteAccountButton": "Remove account",
@@ -839,5 +842,9 @@
 	},
 	"statusPageCreate": {
 		"buttonSave": "Save"
+	},
+	"monitorHooks": {
+		"successAddDemoMonitors": "Successfully added demo monitors",
+		"failureAddDemoMonitors": "Failed to add demo monitors"
 	}
 }

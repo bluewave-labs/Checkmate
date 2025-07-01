@@ -385,9 +385,9 @@ const useAddDemoMonitors = () => {
 		try {
 			setIsLoading(true);
 			await networkService.addDemoMonitors();
-			createToast({ body: t("settingsDemoMonitorsAdded") });
+			createToast({ body: t("monitorHooks.successAddDemoMonitors") });
 		} catch (error) {
-			createToast({ body: t("settingsFailedToAddDemoMonitors") });
+			createToast({ body: t("monitorHooks.failureAddDemoMonitors") });
 		} finally {
 			setIsLoading(false);
 		}
