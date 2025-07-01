@@ -4,6 +4,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import GenericFallback from "../../Components/GenericFallback";
 import IncidentTable from "./Components/IncidentTable";
 import OptionsHeader from "./Components/OptionsHeader";
+import StatusBoxes from "./Components/StatusBoxes";
 
 //Utils
 import { useTheme } from "@emotion/react";
@@ -62,6 +63,9 @@ const Incidents = () => {
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
+			<StatusBoxes
+				shouldRender={!isLoading}
+			/>
 			<OptionsHeader
 				shouldRender={!isLoading}
 				monitors={monitorLookup}
