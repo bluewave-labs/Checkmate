@@ -746,7 +746,6 @@
 			"title": "Monitor IP/URL on Status Page"
 		}
 	},
-	"settingsSave": "Save",
 	"settingsStatsCleared": "Stats cleared successfully",
 	"settingsSuccessSaved": "Settings saved successfully",
 	"settingsTestEmailFailed": "Failed to send test email",
@@ -775,7 +774,6 @@
 		"buttonSave": "Save"
 	},
 	"statusPageCreateAppearanceDescription": "Define the default look and feel of your public status page.",
-	"statusPageCreateAppearanceTitle": "Appearance",
 	"statusPageCreateBasicInfoDescription": "Define company name and the subdomain that your status page points to.",
 	"statusPageCreateBasicInfoStatusPageAddress": "Your status page address",
 	"statusPageCreateSelectTimeZoneDescription": "Select the timezone that your status page will be displayed in.",
