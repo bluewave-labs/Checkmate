@@ -197,12 +197,14 @@
 	"basicInformation": "Basic Information",
 	"bulkImport": {
 		"fallbackPage": "Import a file to upload a list of servers in bulk",
+		"invalidFileType": "Invalid file type",
 		"noFileSelected": "No file selected",
 		"parsingFailed": "Parsing failed",
 		"selectFile": "Select File",
 		"selectFileDescription": "You can download our <template>template</template> or <sample>sample</sample>",
 		"selectFileTips": "Select CSV file to upload",
 		"title": "Bulk Import",
+		"uploadFailed": "Upload failed",
 		"uploadSuccess": "Monitors created successfully!",
 		"validationFailed": "Validation failed"
 	},
@@ -226,6 +228,7 @@
 	"commonSaving": "Saving...",
 	"companyName": "Company name",
 	"configure": "Configure",
+	"confirmPassword": "Confirm password",
 	"cores": "Cores",
 	"country": "COUNTRY",
 	"cpu": "CPU",
@@ -488,6 +491,11 @@
 		"title": "Export/Import"
 	},
 	"monitorDisplayName": "Monitor display name",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "Failed to add demo monitors",
+		"successAddDemoMonitors": "Successfully added demo monitors"
+	},
+
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
@@ -661,12 +669,14 @@
 	"selectAll": "Select all",
 	"sendTestNotifications": "Send test notifications",
 	"seperateEmails": "You can separate multiple emails with a comma",
+	"settingsAppearance": "Appearance",
 	"settingsDisabled": "Disabled",
+	"settingsDisplayTimezone": "Display timezone",
 	"settingsEmailUser": "Email user - Username for authentication, overrides email address if specified",
-	"settingsFailedToAddDemoMonitors": "Failed to add demo monitors",
 	"settingsFailedToClearStats": "Failed to clear stats",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
 	"settingsFailedToSave": "Failed to save settings",
+	"settingsGeneralSettings": "General settings",
 	"settingsMonitorsDeleted": "Successfully deleted all monitors",
 	"settingsPage": {
 		"aboutSettings": {
@@ -698,7 +708,8 @@
 			"labelUser": "Email user - Username for authentication, overrides email address if specified",
 			"linkTransport": "See specifications here",
 			"placeholderUser": "Leave empty if not required",
-			"title": "Email"
+			"title": "Email",
+			"toastEmailRequiredFieldsError": "Email address, host, port and password are required"
 		},
 		"pageSpeedSettings": {
 			"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
