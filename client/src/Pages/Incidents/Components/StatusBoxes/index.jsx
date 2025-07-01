@@ -4,9 +4,9 @@ import StatusBox from "./StatusBox";
 import { useTheme } from "@emotion/react";
 import SkeletonLayout from "./skeleton";
 
-const StatusBoxes = ({ shouldRender }) => {
+const StatusBoxes = ({ isLoading, statusCounts }) => {
 	const theme = useTheme();
-	if (!shouldRender) return <SkeletonLayout shouldRender={shouldRender} />;
+	if (isLoading) return <SkeletonLayout shouldRender={isLoading} />;
 	return (
 		<Stack
 			gap={theme.spacing(12)}
@@ -15,29 +15,35 @@ const StatusBoxes = ({ shouldRender }) => {
 		>
 			<StatusBox
 				title={"Total Incidents"}
-				value={6}
+				value={statusCounts?.total || 0}
 			/>
 			<StatusBox
 				title={"Resolved"}
 				status="up"
-				value={3}
+				value={statusCounts?.resolved || 0}
 			/>
             <StatusBox
             title={"Cannot Resolve"}
             status="paused"
-            value={2}
+            value={statusCounts?.cannotResolve || 0}
             />
             <StatusBox
             title={"Down"}
             status="down"
-            value={1}
+            value={statusCounts?.down || 0}
             />
 		</Stack>
 	);
 };
 
 StatusBoxes.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
+	statusCounts: PropTypes.shape({
+		total: PropTypes.number,
+		resolved: PropTypes.number,
+		cannotResolve: PropTypes.number,
+		down: PropTypes.number,
+	}),
 };
 
 export default StatusBoxes;

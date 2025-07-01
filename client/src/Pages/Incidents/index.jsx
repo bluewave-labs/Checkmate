@@ -64,7 +64,7 @@ const Incidents = () => {
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
 			<StatusBoxes
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 			/>
 			<OptionsHeader
 				shouldRender={!isLoading}
