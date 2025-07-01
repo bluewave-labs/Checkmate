@@ -1,5 +1,6 @@
 {
 	"settingsAppearance": "Appearance",
+	"settingsDisplayTimezone": "Display timezone",
 	"confirmPassword": "Confirm password",
 	"submit": "Submit",
 	"title": "Title",
@@ -61,7 +62,7 @@
 			"description": "To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord's incoming Webhooks feature.",
 			"webhookLabel": "Discord Webhook URL",
 			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
-			"webhookRequired": "Discord webhook URL is required"
+			"webhookRequired": "Discord webhook URL is f"
 		},
 		"telegram": {
 			"label": "Telegram",
@@ -792,7 +793,8 @@
 			"labelUser": "Email user - Username for authentication, overrides email address if specified",
 			"linkTransport": "See specifications here",
 			"placeholderUser": "Leave empty if not required",
-			"title": "Email"
+			"title": "Email",
+			"toastEmailRequiredFieldsError": "Email address, host, port and password are required"
 		},
 		"pageSpeedSettings": {
 			"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",

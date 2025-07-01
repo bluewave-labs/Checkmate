@@ -87,10 +87,7 @@ const SettingsEmail = ({
 			!emailConfig.systemEmailPassword
 		) {
 			createToast({
-				body: t(
-					"settingsEmailRequiredFields",
-					"Email address, host, port and password are required"
-				),
+				body: t("settingsPage.emailSettings.toastEmailRequiredFieldsError"),
 				variant: "error",
 			});
 			return;
