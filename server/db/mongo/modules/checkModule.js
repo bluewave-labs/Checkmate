@@ -5,7 +5,7 @@ import PageSpeedCheck from "../../models/PageSpeedCheck.js";
 import User from "../../models/User.js";
 import logger from "../../../utils/logger.js";
 import { ObjectId } from "mongodb";
-import { buildChecksAndSummaryByTeamIdPipeline } from "./checkModuleQueries.js";
+import { buildChecksSummaryByTeamIdPipeline } from "./checkModuleQueries.js";
 
 const SERVICE_NAME = "checkModule";
 const dateRangeLookup = {
@@ -318,12 +318,12 @@ const getChecksSummaryByTeamId = async ({ teamId }) => {
 			teamId: new ObjectId(teamId),
 		};
 		const checks = await Check.aggregate(
-			buildChecksAndSummaryByTeamIdPipeline({ matchStage })
+			buildChecksSummaryByTeamIdPipeline({ matchStage })
 		);
 		return checks[0].summary;
 	} catch (error) {
 		error.service = SERVICE_NAME;
-		error.method = "getChecksAndSummaryByTeamId";
+		error.method = "getChecksSummaryByTeamId";
 		throw error;
 	}
 };

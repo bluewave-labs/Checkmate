@@ -1,4 +1,4 @@
-const buildChecksAndSummaryByTeamIdPipeline = ({ matchStage }) => {
+const buildChecksSummaryByTeamIdPipeline = ({ matchStage }) => {
 	return [
 		{ $match: matchStage },
 		{
@@ -45,4 +45,4 @@ const buildChecksAndSummaryByTeamIdPipeline = ({ matchStage }) => {
 	];
 };
 
-export { buildChecksAndSummaryByTeamIdPipeline };
+export { buildChecksSummaryByTeamIdPipeline };

@@ -108,7 +108,7 @@ const StatusBox = ({ title, value, status }) => {
 };
 
 StatusBox.propTypes = {
-	title: PropTypes.string,
+	title: PropTypes.string.isRequired,
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	status: PropTypes.string,
 };
