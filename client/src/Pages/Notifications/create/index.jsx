@@ -231,7 +231,7 @@ const CreateNotifications = () => {
 						color="secondary"
 						onClick={onTestNotification}
 					>
-						Test notification
+						{t("testNotification", "Test notification")}
 					</Button>
 					{notificationId && (
 						<Button
@@ -240,7 +240,7 @@ const CreateNotifications = () => {
 							color="error"
 							onClick={onDelete}
 						>
-							Delete
+							{t("delete", "Delete")}
 						</Button>
 					)}
 					<Button
@@ -249,7 +249,7 @@ const CreateNotifications = () => {
 						variant="contained"
 						color="accent"
 					>
-						Submit
+						{t("submit", "Submit")}
 					</Button>
 				</Stack>
 			</Stack>
