@@ -44,7 +44,10 @@ const CreateNotifications = () => {
 
 	const BREADCRUMBS = [
 		{ name: "notifications", path: "/notifications" },
-		{ name: notificationId ? "edit" : "create", path: notificationId ? `/notifications/${notificationId}` : "/notifications/create" },
+		{
+			name: notificationId ? "edit" : "create",
+			path: notificationId ? `/notifications/${notificationId}` : "/notifications/create",
+		},
 	];
 
 	// Redux state
@@ -133,9 +136,17 @@ const CreateNotifications = () => {
 
 	const onDelete = () => {
 		if (notificationId) {
-			deleteNotification(notificationId, () => {
-				navigate("/notifications");
-			});
+			deleteNotification(
+				notificationId,
+				() => navigate("/notifications"), // Success callback
+				(error) => {
+					// Error handling
+					createToast({
+						body: `Delete failed: ${error.message}`,
+						type: "error",
+					});
+				}
+			);
 		}
 	};
 
