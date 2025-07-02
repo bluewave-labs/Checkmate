@@ -9,13 +9,14 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const ActionMenu = ({ notification, onDelete }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
-
+	const { t } = useTranslation();
 	// Handlers
 	const handleClick = (event) => {
 		event.stopPropagation();
@@ -59,12 +60,12 @@ const ActionMenu = ({ notification, onDelete }) => {
 				onClick={(e) => e.stopPropagation()}
 				onMouseDown={(e) => e.stopPropagation()}
 			>
-				<MenuItem onClick={handleConfigure}>Configure</MenuItem>
+				<MenuItem onClick={handleConfigure}>{t("configure", "Configure")}</MenuItem>
 				<MenuItem
 					onClick={handleRemove}
 					sx={{ "&.MuiButtonBase-root": { color: theme.palette.error.main } }}
 				>
-					Remove
+					{t("delete", "Delete")}
 				</MenuItem>
 			</Menu>
 		</>
