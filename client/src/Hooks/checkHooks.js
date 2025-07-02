@@ -12,6 +12,7 @@ const useFetchChecksTeam = ({
 	page,
 	rowsPerPage,
 	enabled = true,
+	updateTrigger,
 }) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
@@ -49,7 +50,18 @@ const useFetchChecksTeam = ({
 		};
 
 		fetchChecks();
-	}, [status, sortOrder, limit, dateRange, filter, ack, page, rowsPerPage, enabled]);
+	}, [
+		status,
+		sortOrder,
+		limit,
+		dateRange,
+		filter,
+		ack,
+		page,
+		rowsPerPage,
+		enabled,
+		updateTrigger,
+	]);
 
 	return [checks, checksCount, isLoading, networkError];
 };
@@ -66,6 +78,7 @@ const useFetchChecksByMonitor = ({
 	page,
 	rowsPerPage,
 	enabled = true,
+	updateTrigger,
 }) => {
 	const [checks, setChecks] = useState(undefined);
 	const [checksCount, setChecksCount] = useState(undefined);
@@ -117,12 +130,13 @@ const useFetchChecksByMonitor = ({
 		page,
 		rowsPerPage,
 		enabled,
+		updateTrigger,
 	]);
 
 	return [checks, checksCount, isLoading, networkError];
 };
 
-const useFetchChecksSummaryByTeamId = () => {
+const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
 	const [summary, setSummary] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
@@ -143,7 +157,7 @@ const useFetchChecksSummaryByTeamId = () => {
 		};
 
 		fetchSummary();
-	}, []);
+	}, [updateTrigger]);
 
 	return [summary, isLoading, networkError];
 };
