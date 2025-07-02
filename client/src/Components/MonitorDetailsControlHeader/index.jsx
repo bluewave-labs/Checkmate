@@ -43,6 +43,8 @@ const MonitorDetailsControlHeader = ({
 
 	const isTestNotificationsDisabled = monitor?.notifications?.length === 0;
 
+	const tooltipTitle = isTestNotificationsDisabled ? t("testNotificationsDisabled") : "";
+
 	// const [isSending, emailError, sendTestEmail] = useSendTestEmail();
 
 	const [testAllNotifications, isSending, errorAllNotifications] =
@@ -66,13 +68,7 @@ const MonitorDetailsControlHeader = ({
 				<Tooltip
 					key={monitor?._id}
 					placement="bottom"
-					title={
-						isTestNotificationsDisabled
-							? t(
-									'There are no notifications setup for this monitor. You need to add one by clicking "Configure" button'
-								)
-							: ""
-					}
+					title={tooltipTitle}
 				>
 					<span>
 						<Button

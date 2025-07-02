@@ -690,6 +690,7 @@
 	},
 	"advancedMatching": "",
 	"sendTestNotifications": "Bildirimleri dene",
+	"testNotificationsDisabled": "",
 	"selectAll": "Tümünü seç",
 	"showAdminLoginLink": "",
 	"logsPage": {

@@ -690,6 +690,7 @@
 	},
 	"advancedMatching": "",
 	"sendTestNotifications": "",
+	"testNotificationsDisabled": "",
 	"selectAll": "",
 	"showAdminLoginLink": "",
 	"logsPage": {
