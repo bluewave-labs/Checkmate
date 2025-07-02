@@ -21,28 +21,28 @@ const StatusBox = ({ title, value, status }) => {
 	if (status === "up") {
 		color = theme.palette.success.lowContrast;
 		icon = (
-			<Box sx={{ ...sharedStyles, top: 8 }}>
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
 				<TaskAltOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
-			<Box sx={{ ...sharedStyles, transform: "rotate(180deg)", top: 5 }}>
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
 				<CancelOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
-			<Box sx={{ ...sharedStyles, top: 12, right: 12 }}>
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
 				<WarningAmberRoundedIcon fontSize="small" />
 			</Box>
 		);
 	} else {
 		color = theme.palette.accent.main;
 		icon = (
-			<Box sx={{ ...sharedStyles, top: 12, right: 12 }}>
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
 				<MonitorHeartOutlinedIcon fontSize="small" />
 			</Box>
 		);
@@ -84,15 +84,15 @@ const StatusBox = ({ title, value, status }) => {
 				<Stack
 					direction="row"
 					alignItems="flex-start"
-					fontSize={36}
+					fontSize={theme.typography.h1.fontSize}
 					fontWeight={600}
 					color={color}
-					gap="2px"
+					gap={theme.spacing(1)}
 				>
 					{value}
 
 					<Typography
-						fontSize={20}
+						fontSize={theme.typography.label.fontSize}
 						fontWeight={300}
 						color={theme.palette.primary.contrastTextSecondary}
 						sx={{
