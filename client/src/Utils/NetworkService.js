@@ -603,6 +603,18 @@ class NetworkService {
 
 	/**
 	 * ************************************
+	 * Get summary of checks by team ID
+	 * ************************************
+	 *
+	 * @async
+	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
+	 */
+	getChecksAndSummaryByTeamId = async () => {
+		return this.axiosInstance.get(`/checks/team/summary`);
+	};
+
+	/**
+	 * ************************************
 	 * Update the status of a check
 	 * ************************************
 	 *
