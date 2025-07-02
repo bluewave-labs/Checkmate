@@ -16,11 +16,12 @@ import {
 	useGetNotificationById,
 	useEditNotification,
 	useTestNotification,
+	useDeleteNotification,
 } from "../../../Hooks/useNotifications";
 import { notificationValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
 	NOTIFICATION_TYPES,
 	TITLE_MAP,
@@ -33,15 +34,17 @@ import {
 
 const CreateNotifications = () => {
 	const { notificationId } = useParams();
+	const navigate = useNavigate();
 	const theme = useTheme();
 	const [createNotification, isCreating, createNotificationError] =
 		useCreateNotification();
 	const [editNotification, isEditing, editNotificationError] = useEditNotification();
 	const [testNotification, isTesting, testNotificationError] = useTestNotification();
+	const [deleteNotification, isDeleting, deleteError] = useDeleteNotification();
 
 	const BREADCRUMBS = [
 		{ name: "notifications", path: "/notifications" },
-		{ name: "create", path: "/notifications/create" },
+		{ name: notificationId ? "edit" : "create", path: notificationId ? `/notifications/${notificationId}` : "/notifications/create" },
 	];
 
 	// Redux state
@@ -128,6 +131,14 @@ const CreateNotifications = () => {
 		testNotification(form);
 	};
 
+	const onDelete = () => {
+		if (notificationId) {
+			deleteNotification(notificationId, () => {
+				navigate("/notifications");
+			});
+		}
+	};
+
 	const type = NOTIFICATION_TYPES.find((type) => type._id === notification.type).value;
 	return (
 		<Stack gap={theme.spacing(10)}>
@@ -211,6 +222,16 @@ const CreateNotifications = () => {
 					>
 						Test notification
 					</Button>
+					{notificationId && (
+						<Button
+							loading={isDeleting}
+							variant="contained"
+							color="error"
+							onClick={onDelete}
+						>
+							Delete
+						</Button>
+					)}
 					<Button
 						loading={isCreating || isEditing || notificationIsLoading}
 						type="submit"
