@@ -87,11 +87,17 @@ const Fallback = ({
 				sx={{
 					display: "flex",
 					borderStyle: "dashed",
-					height: { sm: "50vh", md: "60vh" },
-					width: { md: "45%", lg: "40%" },
-					minWidth: theme.spacing(200),
-					maxHeight: theme.spacing(350),
-					maxWidth: theme.spacing(450),
+					height: {
+						xs: theme.spacing(200),
+						sm: theme.spacing(300),
+						md: theme.spacing(300),
+					},
+					width: {
+						xs: theme.spacing(100),
+						sm: theme.spacing(210),
+						md: theme.spacing(250),
+					},
+					padding: theme.spacing(10),
 				}}
 			>
 				<Stack
@@ -116,10 +122,11 @@ const Fallback = ({
 					</Box>
 					<Stack
 						gap={theme.spacing(4)}
-						maxWidth={"300px"}
+						maxWidth={theme.spacing(180)}
 						zIndex={1}
 					>
 						<Typography
+							alignSelf="center"
 							component="h1"
 							marginY={theme.spacing(4)}
 							color={theme.palette.primary.contrastTextTertiary}
