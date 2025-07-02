@@ -47,10 +47,10 @@
 		<mj-section>
 			<mj-column width="100%">
 				<mj-text>
-					<p>Hello {{name}}!</p>
-					<p>{{monitor}} at {{url}} has the following infrastructure alerts:</p>
+					<p>Hello {{ name }}!</p>
+					<p>{{ monitor }} at {{ url }} has the following infrastructure alerts:</p>
 					{{#each alerts}}
-					<p>• {{this}}</p>
+					<p>• {{ this }}</p>
 					{{/each}}
 				</mj-text>
 			</mj-column>

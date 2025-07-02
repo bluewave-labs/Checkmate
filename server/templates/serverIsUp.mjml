@@ -36,7 +36,7 @@
 					font-size="18px"
 					color="green"
 				>
-					{{monitor}} is up
+					{{ monitor }} is up
 				</mj-text>
 				<mj-divider
 					border-width="2px"
@@ -47,10 +47,10 @@
 		<mj-section>
 			<mj-column width="100%">
 				<mj-text>
-					<p>Hello {{name}}!</p>
+					<p>Hello {{ name }}!</p>
 					<p>Your latest incident is resolved and your monitored service is up again.</p>
-					<p><b>Monitor name:</b> {{monitor}}</p>
-					<p><b>URL:</b> {{url}}</p>
+					<p><b>Monitor name:</b> {{ monitor }}</p>
+					<p><b>URL:</b> {{ url }}</p>
 				</mj-text>
 			</mj-column>
 			<mj-column width="100%">
