@@ -6,17 +6,16 @@ import IncidentTable from "./Components/IncidentTable";
 import OptionsHeader from "./Components/OptionsHeader";
 import StatusBoxes from "./Components/StatusBoxes";
 import { Box, Button } from "@mui/material";
-import { createToast } from "../../Utils/toastUtils";
 
 //Utils
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
 import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
+import { useAckAllChecks } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { networkService } from "../../Utils/NetworkService";
 
 //Constants
 const Incidents = () => {
@@ -33,6 +32,9 @@ const Incidents = () => {
 	const [dateRange, setDateRange] = useState(undefined);
 	const [monitorLookup, setMonitorLookup] = useState(undefined);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+
+	//Hooks
+	const [ackAllChecks, ackAllLoading] = useAckAllChecks();
 
 	//Utils
 	const theme = useTheme();
@@ -60,13 +62,8 @@ const Incidents = () => {
 		setMonitorLookup(monitorLookup);
 	}, [monitors]);
 
-	const handleAckAllChecks = async () => {
-		try {
-			await networkService.updateAllChecksStatus({ ack: true });
-			setUpdateTrigger((prev) => !prev);
-		} catch (error) {
-			createToast({ body: "Failed to resolve all incidents." });
-		}
+	const handleAckAllChecks = () => {
+		ackAllChecks(setUpdateTrigger);
 	};
 
 	if (networkError || networkErrorSummary) {
@@ -85,6 +82,7 @@ const Incidents = () => {
 					variant="contained"
 					color="accent"
 					onClick={handleAckAllChecks}
+					disabled={ackAllLoading}
 				>
 					{t("incidentsPageActionResolve")}
 				</Button>

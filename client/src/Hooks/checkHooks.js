@@ -183,9 +183,28 @@ const useResolveIncident = () => {
 	return [resolveIncident, isLoading];
 };
 
+const useAckAllChecks = () => {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const ackAllChecks = async (setUpdateTrigger) => {
+		try {
+			setIsLoading(true);
+			await networkService.updateAllChecksStatus({ ack: true });
+			setUpdateTrigger((prev) => !prev);
+		} catch (error) {
+			createToast({ body: "Failed to resolve all incidents." });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [ackAllChecks, isLoading];
+};
+
 export {
 	useFetchChecksByMonitor,
 	useFetchChecksTeam,
 	useFetchChecksSummaryByTeamId,
 	useResolveIncident,
+	useAckAllChecks,
 };
