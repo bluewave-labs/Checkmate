@@ -15,9 +15,8 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
 import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
+import { useResolveIncident } from "../../../../Hooks/checkHooks";
 import { Button, Typography } from "@mui/material";
-import { networkService } from "../../../../Utils/NetworkService";
-import { createToast } from "../../../../Utils/toastUtils";
 
 const IncidentTable = ({
 	isLoading,
@@ -36,7 +35,9 @@ const IncidentTable = ({
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
-	const [resolveLoading, setResolveLoading] = useState(false);
+
+	//Hooks
+	const [resolveIncident, resolveLoading] = useResolveIncident();
 
 	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
 		useFetchChecksByMonitor({
@@ -84,19 +85,8 @@ const IncidentTable = ({
 		setRowsPerPage(event.target.value);
 	};
 
-	const handleResolveIncident = async (checkId) => {
-		try {
-			setResolveLoading(true);
-			await networkService.updateCheckStatus({
-				checkId,
-				ack: true,
-			});
-			setUpdateTrigger((prev) => !prev);
-		} catch (error) {
-			createToast({ body: "Failed to resolve incident." });
-		} finally {
-			setResolveLoading(false);
-		}
+	const handleResolveIncident = (checkId) => {
+		resolveIncident(checkId, setUpdateTrigger);
 	};
 
 	const headers = [

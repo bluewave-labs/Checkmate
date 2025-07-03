@@ -162,4 +162,30 @@ const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
 	return [summary, isLoading, networkError];
 };
 
-export { useFetchChecksByMonitor, useFetchChecksTeam, useFetchChecksSummaryByTeamId };
+const useResolveIncident = () => {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const resolveIncident = async (checkId, setUpdateTrigger) => {
+		try {
+			setIsLoading(true);
+			await networkService.updateCheckStatus({
+				checkId,
+				ack: true,
+			});
+			setUpdateTrigger((prev) => !prev);
+		} catch (error) {
+			createToast({ body: "Failed to resolve incident." });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [resolveIncident, isLoading];
+};
+
+export {
+	useFetchChecksByMonitor,
+	useFetchChecksTeam,
+	useFetchChecksSummaryByTeamId,
+	useResolveIncident,
+};
