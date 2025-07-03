@@ -3,15 +3,15 @@ client:
   port: 80
   ingress:
     enabled: true
-    host: checkmate-chart.local
+    host: change_me
 
 server:
   image: bluewaveuptime/uptime_server:latest
   port: 5000
-  protocol: http
+  protocol: change_me
   ingress:
     enabled: true
-    host: server.checkmate-chart.local
+    host: change_me
 
 redis:
   image: redis:7.2
