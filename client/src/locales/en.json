@@ -827,6 +827,7 @@
 		"teamMembers": "Team members"
 	},
 	"testLocale": "testLocale",
+	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
 	"title": "Title",
