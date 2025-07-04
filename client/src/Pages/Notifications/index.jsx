@@ -62,6 +62,9 @@ const Notifications = () => {
 		{
 			id: "actions",
 			content: "Actions",
+			onClick: (e) => {
+				e.stopPropagation();
+			},
 			render: (row) => {
 				return (
 					<ActionMenu

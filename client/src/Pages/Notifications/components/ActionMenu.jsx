@@ -9,20 +9,24 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const ActionMenu = ({ notification, onDelete }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
-
+	const { t } = useTranslation();
 	// Handlers
 	const handleClick = (event) => {
 		event.stopPropagation();
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleClose = () => {
+	const handleClose = (event) => {
+		if (event) {
+			event.stopPropagation();
+		}
 		setAnchorEl(null);
 	};
 
@@ -32,7 +36,8 @@ const ActionMenu = ({ notification, onDelete }) => {
 		handleClose();
 	};
 
-	const handleConfigure = () => {
+	const handleConfigure = (e) => {
+		e.stopPropagation();
 		navigate(`/notifications/${notification._id}`);
 		handleClose();
 	};
@@ -40,8 +45,9 @@ const ActionMenu = ({ notification, onDelete }) => {
 	return (
 		<>
 			<IconButton
-				aria-label="monitor actions"
+				aria-label="notification actions"
 				onClick={handleClick}
+				onMouseDown={(e) => e.stopPropagation()}
 			>
 				<SettingsOutlinedIcon />
 			</IconButton>
@@ -51,13 +57,15 @@ const ActionMenu = ({ notification, onDelete }) => {
 				open={open}
 				onClose={handleClose}
 				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+				onClick={(e) => e.stopPropagation()}
+				onMouseDown={(e) => e.stopPropagation()}
 			>
-				<MenuItem onClick={handleConfigure}>Configure</MenuItem>
+				<MenuItem onClick={handleConfigure}>{t("configure")}</MenuItem>
 				<MenuItem
 					onClick={handleRemove}
 					sx={{ "&.MuiButtonBase-root": { color: theme.palette.error.main } }}
 				>
-					Remove
+					{t("delete")}
 				</MenuItem>
 			</Menu>
 		</>
