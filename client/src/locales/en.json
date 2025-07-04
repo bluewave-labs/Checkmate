@@ -802,6 +802,14 @@
 	"statusPageStatusNoPage": "There's no status page here.",
 	"statusPageStatusNotPublic": "This status page is not public.",
 	"statusPageStatusServiceStatus": "Service status",
+	"statusPage": {
+		"deleteSuccess": "Status page deleted successfully",
+		"deleteFailed": "Failed to delete status page",
+		"createSuccess": "Status page created successfully",
+		"updateSuccess": "Status page updated successfully",
+		"generalSettings": "General settings",
+		"contents": "Contents"
+	},
 	"submit": "Submit",
 	"teamPanel": {
 		"cancel": "Cancel",
@@ -827,6 +835,7 @@
 		"teamMembers": "Team members"
 	},
 	"testLocale": "testLocale",
+	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
 	"title": "Title",
