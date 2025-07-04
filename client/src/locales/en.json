@@ -516,6 +516,10 @@
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
 	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
+	"checkHooks": {
+		"failureResolveOne": "Failed to resolve incident.",
+		"failureResolveAll": "Failed to resolve all incidents."
+	},
 	"ms": "ms",
 	"navControls": "Controls",
 	"nextWindow": "Next window",

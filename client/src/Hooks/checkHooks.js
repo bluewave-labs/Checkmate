@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
+import { useTranslation } from "react-i18next";
 
 const useFetchChecksTeam = ({
 	status,
@@ -164,6 +165,7 @@ const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
 
 const useResolveIncident = () => {
 	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
 
 	const resolveIncident = async (checkId, setUpdateTrigger) => {
 		try {
@@ -174,7 +176,7 @@ const useResolveIncident = () => {
 			});
 			setUpdateTrigger((prev) => !prev);
 		} catch (error) {
-			createToast({ body: "Failed to resolve incident." });
+			createToast({ body: t("checkHooks.failureResolveOne") });
 		} finally {
 			setIsLoading(false);
 		}
@@ -185,6 +187,7 @@ const useResolveIncident = () => {
 
 const useAckAllChecks = () => {
 	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
 
 	const ackAllChecks = async (setUpdateTrigger) => {
 		try {
@@ -192,7 +195,7 @@ const useAckAllChecks = () => {
 			await networkService.updateAllChecksStatus({ ack: true });
 			setUpdateTrigger((prev) => !prev);
 		} catch (error) {
-			createToast({ body: "Failed to resolve all incidents." });
+			createToast({ body: t("checkHooks.failureResolveAll") });
 		} finally {
 			setIsLoading(false);
 		}
