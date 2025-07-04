@@ -36,11 +36,10 @@ const CreateNotifications = () => {
 	const { notificationId } = useParams();
 	const navigate = useNavigate();
 	const theme = useTheme();
-	const [createNotification, isCreating, createNotificationError] =
-		useCreateNotification();
-	const [editNotification, isEditing, editNotificationError] = useEditNotification();
-	const [testNotification, isTesting, testNotificationError] = useTestNotification();
-	const [deleteNotification, isDeleting, deleteError] = useDeleteNotification();
+	const [createNotification, isCreating] = useCreateNotification();
+	const [editNotification, isEditing] = useEditNotification();
+	const [testNotification, isTesting] = useTestNotification();
+	const [deleteNotification, isDeleting] = useDeleteNotification();
 
 	const BREADCRUMBS = [
 		{ name: "notifications", path: "/notifications" },
@@ -61,7 +60,7 @@ const CreateNotifications = () => {
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
 
-	const [notificationIsLoading, getNotificationError] = useGetNotificationById(
+	const [notificationIsLoading] = useGetNotificationById(
 		notificationId,
 		setNotification
 	);
@@ -136,17 +135,7 @@ const CreateNotifications = () => {
 
 	const onDelete = () => {
 		if (notificationId) {
-			deleteNotification(
-				notificationId,
-				() => navigate("/notifications"), // Success callback
-				(error) => {
-					// Error handling
-					createToast({
-						body: `Delete failed: ${error.message}`,
-						type: "error",
-					});
-				}
-			);
+			deleteNotification(notificationId, () => navigate("/notifications"));
 		}
 	};
 

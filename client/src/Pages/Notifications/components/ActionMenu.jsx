@@ -60,12 +60,12 @@ const ActionMenu = ({ notification, onDelete }) => {
 				onClick={(e) => e.stopPropagation()}
 				onMouseDown={(e) => e.stopPropagation()}
 			>
-				<MenuItem onClick={handleConfigure}>{t("configure", "Configure")}</MenuItem>
+				<MenuItem onClick={handleConfigure}>{t("configure")}</MenuItem>
 				<MenuItem
 					onClick={handleRemove}
 					sx={{ "&.MuiButtonBase-root": { color: theme.palette.error.main } }}
 				>
-					{t("delete", "Delete")}
+					{t("delete")}
 				</MenuItem>
 			</Menu>
 		</>
