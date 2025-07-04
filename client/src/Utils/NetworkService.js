@@ -631,6 +631,12 @@ class NetworkService {
 		});
 	}
 
+	async updateAllChecksStatus(config) {
+		return this.axiosInstance.put(`/checks/team/`, {
+			ack: config.ack,
+		});
+	}
+
 	/**
 	 * ************************************
 	 * Get all checks for a given user

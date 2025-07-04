@@ -88,14 +88,15 @@ const Fallback = ({
 					display: "flex",
 					borderStyle: "dashed",
 					height: {
-						xs: theme.spacing(200),
-						sm: theme.spacing(300),
-						md: theme.spacing(300),
+						sm: "50vh",
+						md: "70vh",
+						lg: "60vh",
+						xl: "55vh",
 					},
 					width: {
-						xs: theme.spacing(100),
-						sm: theme.spacing(210),
-						md: theme.spacing(250),
+						sm: "90%",
+						md: "50%",
+						lg: "40%",
 					},
 					padding: theme.spacing(10),
 				}}

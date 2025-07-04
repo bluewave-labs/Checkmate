@@ -10,7 +10,11 @@ const buildChecksSummaryByTeamIdPipeline = ({ matchStage }) => {
 							totalChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
 							resolvedChecks: {
 								$sum: {
-									$cond: [{ $eq: ["$ack", true] }, 1, 0],
+									$cond: [
+										{ $and: [{ $eq: ["$ack", true] }, { $eq: ["$status", false] }] },
+										1,
+										0,
+									],
 								},
 							},
 							downChecks: {

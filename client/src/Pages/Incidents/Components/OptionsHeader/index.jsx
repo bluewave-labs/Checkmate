@@ -21,6 +21,12 @@ const OptionsHeader = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const monitorNames = typeof monitors !== "undefined" ? Object.values(monitors) : [];
+	const filterOptions = [
+		{ _id: "all", name: t("incidentsOptionsHeaderFilterAll") },
+		{ _id: "down", name: t("incidentsOptionsHeaderFilterDown") },
+		{ _id: "resolve", name: t("incidentsOptionsHeaderFilterCannotResolve") },
+		{ _id: "resolved", name: t("incidentsOptionsHeaderFilterResolved") },
+	];
 
 	// The stacks below which are three in number have the same style so
 	const stackStyles = {
@@ -65,36 +71,16 @@ const OptionsHeader = ({
 				>
 					{t("incidentsOptionsHeaderFilterBy")}
 				</Typography>
-				<ButtonGroup>
-					<Button
-						variant="group"
-						filled={(filter === "all").toString()}
-						onClick={() => setFilter("all")}
-					>
-						{t("incidentsOptionsHeaderFilterAll")}
-					</Button>
-					<Button
-						variant="group"
-						filled={(filter === "down").toString()}
-						onClick={() => setFilter("down")}
-					>
-						{t("incidentsOptionsHeaderFilterDown")}
-					</Button>
-					<Button
-						variant="group"
-						filled={(filter === "resolve").toString()}
-						onClick={() => setFilter("resolve")}
-					>
-						{t("incidentsOptionsHeaderFilterCannotResolve")}
-					</Button>
-					<Button
-						variant="group"
-						filled={(filter === "resolved").toString()}
-						onClick={() => setFilter("resolved")}
-					>
-						{t("incidentsOptionsHeaderFilterResolved")}
-					</Button>
-				</ButtonGroup>
+				<Select
+					id="incidents-select-filter"
+					value={filter}
+					onChange={(e) => setFilter(e.target.value)}
+					items={filterOptions}
+					sx={{
+						backgroundColor: theme.palette.primary.main,
+						color: theme.palette.primary.contrastTextSecondary,
+					}}
+				/>
 			</Stack>
 			<Stack {...stackStyles}>
 				<Typography
