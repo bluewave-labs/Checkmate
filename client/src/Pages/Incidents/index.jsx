@@ -5,11 +5,13 @@ import GenericFallback from "../../Components/GenericFallback";
 import IncidentTable from "./Components/IncidentTable";
 import OptionsHeader from "./Components/OptionsHeader";
 import StatusBoxes from "./Components/StatusBoxes";
+import { Box, Button } from "@mui/material";
 
 //Utils
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
 import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
+import { useAckAllChecks } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
@@ -29,12 +31,17 @@ const Incidents = () => {
 	const [filter, setFilter] = useState(undefined);
 	const [dateRange, setDateRange] = useState(undefined);
 	const [monitorLookup, setMonitorLookup] = useState(undefined);
+	const [updateTrigger, setUpdateTrigger] = useState(false);
+
+	//Hooks
+	const [ackAllChecks, ackAllLoading] = useAckAllChecks();
 
 	//Utils
 	const theme = useTheme();
 	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
-	const [summary, isLoadingSummary, networkErrorSummary] =
-		useFetchChecksSummaryByTeamId();
+	const [summary, isLoadingSummary, networkErrorSummary] = useFetchChecksSummaryByTeamId({
+		updateTrigger,
+	});
 	const { monitorId } = useParams();
 
 	useEffect(() => {
@@ -55,6 +62,10 @@ const Incidents = () => {
 		setMonitorLookup(monitorLookup);
 	}, [monitors]);
 
+	const handleAckAllChecks = () => {
+		ackAllChecks(setUpdateTrigger);
+	};
+
 	if (networkError || networkErrorSummary) {
 		return (
 			<GenericFallback>
@@ -66,6 +77,16 @@ const Incidents = () => {
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
+			<Box alignSelf="flex-end">
+				<Button
+					variant="contained"
+					color="accent"
+					onClick={handleAckAllChecks}
+					disabled={ackAllLoading}
+				>
+					{t("incidentsPageActionResolve")}
+				</Button>
+			</Box>
 			<StatusBoxes
 				isLoading={isLoadingSummary}
 				summary={summary}
@@ -81,11 +102,13 @@ const Incidents = () => {
 				setDateRange={setDateRange}
 			/>
 			<IncidentTable
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				monitors={monitorLookup ? monitorLookup : {}}
 				selectedMonitor={selectedMonitor}
 				filter={filter}
 				dateRange={dateRange}
+				updateTrigger={updateTrigger}
+				setUpdateTrigger={setUpdateTrigger}
 			/>
 		</Stack>
 	);
