@@ -5,6 +5,7 @@ import PageSpeedCheck from "../../models/PageSpeedCheck.js";
 import User from "../../models/User.js";
 import logger from "../../../utils/logger.js";
 import { ObjectId } from "mongodb";
+import { buildChecksSummaryByTeamIdPipeline } from "./checkModuleQueries.js";
 
 const SERVICE_NAME = "checkModule";
 const dateRangeLookup = {
@@ -305,6 +306,29 @@ const ackAllChecks = async (monitorId, teamId, ack, path) => {
 };
 
 /**
+ * Get checks and summary by team ID
+ * @async
+ * @param {string} teamId
+ * @returns {Promise<Object>}
+ * @throws {Error}
+ */
+const getChecksSummaryByTeamId = async ({ teamId }) => {
+	try {
+		const matchStage = {
+			teamId: new ObjectId(teamId),
+		};
+		const checks = await Check.aggregate(
+			buildChecksSummaryByTeamIdPipeline({ matchStage })
+		);
+		return checks[0].summary;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getChecksSummaryByTeamId";
+		throw error;
+	}
+};
+
+/**
  * Delete all checks for a monitor
  * @async
  * @param {string} monitorId
@@ -387,6 +411,7 @@ export {
 	getChecksByTeam,
 	ackCheck,
 	ackAllChecks,
+	getChecksSummaryByTeamId,
 	deleteChecks,
 	deleteChecksByTeamId,
 	updateChecksTTL,

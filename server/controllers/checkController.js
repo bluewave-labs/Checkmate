@@ -111,6 +111,19 @@ class CheckController {
 		}
 	};
 
+	getChecksSummaryByTeamId = async (req, res, next) => {
+		try {
+			const { teamId } = req.user;
+			const summary = await this.db.getChecksSummaryByTeamId({ teamId });
+			return res.success({
+				msg: this.stringService.checkGetSummary,
+				data: summary,
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "getChecksSummaryByTeamId"));
+		}
+	};
+
 	ackCheck = async (req, res, next) => {
 		try {
 			await ackCheckBodyValidation.validateAsync(req.body);
