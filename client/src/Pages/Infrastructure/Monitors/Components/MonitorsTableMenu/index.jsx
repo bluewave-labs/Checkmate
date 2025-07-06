@@ -34,8 +34,6 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const [pauseMonitor] = usePauseMonitor();
 	const { t } = useTranslation();
 
-
-
 	const openMenu = (e) => {
 		e.stopPropagation();
 		setIsOpen(true);
@@ -155,9 +153,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 							closeMenu(e);
 						}}
 					>
-						{monitor.status === "paused"
-							? t("resume", "Resume")
-							: t("pause", "Pause")}
+						{monitor.status === "paused" ? t("resume", "Resume") : t("pause", "Pause")}
 					</MenuItem>
 				)}
 				{isAdmin && (
