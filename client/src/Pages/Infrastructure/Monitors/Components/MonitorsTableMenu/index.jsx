@@ -1,6 +1,6 @@
 /* TODO I basically copied and pasted this component from the actionsMenu. Check how we can make it reusable */
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "../../../../../Utils/toastUtils";
@@ -30,21 +30,11 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	const anchor = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [localMonitorState, setLocalMonitorState] = useState(monitor);
 	const theme = useTheme();
 	const [pauseMonitor] = usePauseMonitor();
 	const { t } = useTranslation();
 
-	// Update local state when monitor prop changes
-	useEffect(() => {
-		// Ensure we have a valid monitor object with default values for missing properties
-		if (monitor) {
-			setLocalMonitorState({
-				...monitor,
-				status: monitor.status || "active", // Default to active if status is undefined
-			});
-		}
-	}, [monitor]);
+
 
 	const openMenu = (e) => {
 		e.stopPropagation();
@@ -76,21 +66,11 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 
 	const handlePause = async () => {
 		try {
-			// Toggle the local state immediately for better UI responsiveness
-			setLocalMonitorState((prevState) => ({
-				...prevState,
-				status: prevState.status === "paused" ? "active" : "paused",
-			}));
-
 			// Pass updateCallback as triggerUpdate to the hook
 			await pauseMonitor({ monitorId: monitor.id, triggerUpdate: updateCallback });
 			// Toast is already displayed in the hook, no need to display it again
 		} catch (error) {
-			// Error handling is done in the hook - revert the local state on error
-			setLocalMonitorState((prevState) => ({
-				...prevState,
-				status: prevState.status === "paused" ? "active" : "paused",
-			}));
+			// Error handling is done in the hook
 		}
 	};
 
@@ -175,7 +155,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 							closeMenu(e);
 						}}
 					>
-						{localMonitorState?.status === "paused"
+						{monitor.status === "paused"
 							? t("resume", "Resume")
 							: t("pause", "Pause")}
 					</MenuItem>
