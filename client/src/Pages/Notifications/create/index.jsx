@@ -7,6 +7,7 @@ import ConfigBox from "../../../Components/ConfigBox";
 import Box from "@mui/material/Box";
 import Select from "../../../Components/Inputs/Select";
 import TextInput from "../../../Components/Inputs/TextInput";
+import Dialog from "../../../Components/Dialog";
 
 // Utils
 import { useState } from "react";
@@ -60,10 +61,9 @@ const CreateNotifications = () => {
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
 
-	const [notificationIsLoading] = useGetNotificationById(
-		notificationId,
-		setNotification
-	);
+	const [notificationIsLoading] = useGetNotificationById(notificationId, setNotification);
+
+	const [isOpen, setIsOpen] = useState(false);
 
 	// handlers
 	const onSubmit = (e) => {
@@ -220,14 +220,14 @@ const CreateNotifications = () => {
 						color="secondary"
 						onClick={onTestNotification}
 					>
-						{t("testNotification")}
+						{t("createNotifications.testNotification")}
 					</Button>
 					{notificationId && (
 						<Button
 							loading={isDeleting}
 							variant="contained"
 							color="error"
-							onClick={onDelete}
+							onClick={() => setIsOpen(true)}
 						>
 							{t("delete")}
 						</Button>
@@ -242,6 +242,15 @@ const CreateNotifications = () => {
 					</Button>
 				</Stack>
 			</Stack>
+			<Dialog
+				open={isOpen}
+				onClose={() => setIsOpen(false)}
+				onCancel={() => setIsOpen(false)}
+				title={t("createNotifications.dialogDeleteTitle")}
+				confirmationButtonLabel={t("createNotifications.dialogDeleteConfirm")}
+				onConfirm={onDelete}
+				isLoading={isDeleting}
+			/>
 		</Stack>
 	);
 };
