@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
  * @param {string} props.monitor.id - Unique ID of the monitor.
  * @param {string} [props.monitor.url] - URL associated with the monitor.
  * @param {string} props.monitor.type - Type of monitor (e.g., uptime, infrastructure).
- * @param {boolean} props.monitor.isActive - Indicates if the monitor is currently active.
+ * @param {boolean} props.monitor.isActive - Indicates if the monitor is currently active (true) or paused (false).
  * @param {boolean} props.isAdmin - Whether the user has admin privileges.
  * @param {Function} props.updateCallback - Callback to trigger when the monitor data is updated.
  * @returns {JSX.Element} The rendered component.
@@ -63,13 +63,9 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 	};
 
 	const handlePause = async () => {
-		try {
-			// Pass updateCallback as triggerUpdate to the hook
-			await pauseMonitor({ monitorId: monitor.id, triggerUpdate: updateCallback });
-			// Toast is already displayed in the hook, no need to display it again
-		} catch (error) {
-			// Error handling is done in the hook
-		}
+		// Pass updateCallback as triggerUpdate to the hook
+		await pauseMonitor({ monitorId: monitor.id, triggerUpdate: updateCallback });
+		// Toast is already displayed in the hook, no need to display it again
 	};
 
 	const handleRemove = async () => {
@@ -153,7 +149,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 							closeMenu(e);
 						}}
 					>
-						{monitor.status === "paused" ? t("resume", "Resume") : t("pause", "Pause")}
+						{!monitor.isActive ? t("resume", "Resume") : t("pause", "Pause")}
 					</MenuItem>
 				)}
 				{isAdmin && (
@@ -190,8 +186,8 @@ InfrastructureMenu.propTypes = {
 		// Note: type must remain optional. Making it required (type: PropTypes.string.isRequired)
 		// causes runtime errors as some monitors don't have a defined type property
 		type: PropTypes.string,
-		isActive: PropTypes.bool, // Consider deprecating in favor of status
-		status: PropTypes.string,
+		isActive: PropTypes.bool, // Determines whether the monitor is paused (false) or active (true)
+		status: PropTypes.string, // Represents the monitor's operational status (e.g., 'up', 'down', etc.)
 	}).isRequired,
 	isAdmin: PropTypes.bool.isRequired,
 	updateCallback: PropTypes.func.isRequired,
