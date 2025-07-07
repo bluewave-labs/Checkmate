@@ -15,13 +15,17 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
 import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
+import { useResolveIncident } from "../../../../Hooks/checkHooks";
+import { Button, Typography } from "@mui/material";
 
 const IncidentTable = ({
-	shouldRender,
+	isLoading,
 	monitors,
 	selectedMonitor,
 	filter,
 	dateRange,
+	updateTrigger,
+	setUpdateTrigger,
 }) => {
 	//Redux state
 	const uiTimezone = useSelector((state) => state.ui.timezone);
@@ -32,6 +36,9 @@ const IncidentTable = ({
 	const selectedMonitorDetails = monitors?.[selectedMonitor];
 	const selectedMonitorType = selectedMonitorDetails?.type;
 
+	//Hooks
+	const [resolveIncident, resolveLoading] = useResolveIncident();
+
 	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
 		useFetchChecksByMonitor({
 			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
@@ -40,10 +47,12 @@ const IncidentTable = ({
 			sortOrder: "desc",
 			limit: null,
 			dateRange,
-			filter: filter,
+			filter: filter === "resolved" ? "all" : filter,
+			ack: filter === "resolved" ? true : false,
 			page: page,
 			rowsPerPage: rowsPerPage,
 			enabled: selectedMonitor !== "0",
+			updateTrigger,
 		});
 
 	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] =
@@ -52,15 +61,17 @@ const IncidentTable = ({
 			sortOrder: "desc",
 			limit: null,
 			dateRange,
-			filter: filter,
+			filter: filter === "resolved" ? "all" : filter,
+			ack: filter === "resolved" ? true : false,
 			page: page,
 			rowsPerPage: rowsPerPage,
 			enabled: selectedMonitor === "0",
+			updateTrigger,
 		});
 
 	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
 	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
-	const isLoading = isLoadingTeam || isLoadingMonitor;
+	isLoading = isLoadingTeam || isLoadingMonitor;
 	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
 
 	const { t } = useTranslation();
@@ -72,6 +83,10 @@ const IncidentTable = ({
 
 	const handleChangeRowsPerPage = (event) => {
 		setRowsPerPage(event.target.value);
+	};
+
+	const handleResolveIncident = (checkId) => {
+		resolveIncident(checkId, setUpdateTrigger);
 	};
 
 	const headers = [
@@ -112,9 +127,31 @@ const IncidentTable = ({
 			render: (row) => <HttpStatusLabel status={row.statusCode} />,
 		},
 		{ id: "message", content: t("incidentsTableMessage"), render: (row) => row.message },
+		{
+			id: "action",
+			content: t("actions"),
+			render: (row) => {
+				return row.ack === false ? (
+					<Button
+						variant="contained"
+						color="accent"
+						onClick={() => {
+							handleResolveIncident(row._id);
+						}}
+					>
+						{t("incidentsTableActionResolve")}
+					</Button>
+				) : (
+					<Typography>
+						{t("incidentsTableResolvedAt")}{" "}
+						{formatDateWithTz(row.ackAt, "YYYY-MM-DD HH:mm:ss A", uiTimezone)}
+					</Typography>
+				);
+			},
+		},
 	];
 
-	if (!shouldRender || isLoading) return <TableSkeleton />;
+	if (isLoading || resolveLoading) return <TableSkeleton />;
 
 	if (networkError) {
 		return (
@@ -147,10 +184,12 @@ const IncidentTable = ({
 };
 
 IncidentTable.propTypes = {
-	shouldRender: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	monitors: PropTypes.object,
 	selectedMonitor: PropTypes.string,
 	filter: PropTypes.string,
 	dateRange: PropTypes.string,
+	updateTrigger: PropTypes.bool,
+	setUpdateTrigger: PropTypes.func,
 };
 export default IncidentTable;
