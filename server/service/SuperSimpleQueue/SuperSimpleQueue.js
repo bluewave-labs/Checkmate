@@ -87,7 +87,7 @@ class SuperSimpleQueue {
 	};
 
 	getMetrics = async () => {
-		const jobs = this.scheduler.getJobs();
+		const jobs = await this.scheduler.getJobs();
 		const metrics = jobs.reduce(
 			(acc, job) => {
 				acc.totalRuns += job.runCount || 0;
@@ -126,7 +126,7 @@ class SuperSimpleQueue {
 	};
 
 	getJobs = async () => {
-		const jobs = this.scheduler.getJobs();
+		const jobs = await this.scheduler.getJobs();
 		return jobs.map((job) => {
 			return {
 				monitorId: job.id,
