@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import Status from "./status";
 import Skeleton from "./skeleton";
 import Button from "@mui/material/Button";
+import { Tooltip } from "@mui/material";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
@@ -40,6 +41,10 @@ const MonitorDetailsControlHeader = ({
 	const { t } = useTranslation();
 	const [pauseMonitor, isPausing, error] = usePauseMonitor();
 
+	const isTestNotificationsDisabled = monitor?.notifications?.length === 0;
+
+	const tooltipTitle = isTestNotificationsDisabled ? t("testNotificationsDisabled") : "";
+
 	// const [isSending, emailError, sendTestEmail] = useSendTestEmail();
 
 	const [testAllNotifications, isSending, errorAllNotifications] =
@@ -60,20 +65,29 @@ const MonitorDetailsControlHeader = ({
 				direction="row"
 				gap={theme.spacing(2)}
 			>
-				<Button
-					variant="contained"
-					color="secondary"
-					loading={isSending}
-					startIcon={<EmailIcon />}
-					onClick={() => {
-						testAllNotifications({ monitorId: monitor?._id });
-					}}
-					sx={{
-						whiteSpace: "nowrap",
-					}}
+				<Tooltip
+					key={monitor?._id}
+					placement="bottom"
+					title={tooltipTitle}
 				>
-					{t("sendTestNotifications")}
-				</Button>
+					<span>
+						<Button
+							variant="contained"
+							color="secondary"
+							loading={isSending}
+							startIcon={<EmailIcon />}
+							disabled={isTestNotificationsDisabled}
+							onClick={() => {
+								testAllNotifications({ monitorId: monitor?._id });
+							}}
+							sx={{
+								whiteSpace: "nowrap",
+							}}
+						>
+							{t("sendTestNotifications")}
+						</Button>
+					</span>
+				</Tooltip>
 				<Button
 					variant="contained"
 					color="secondary"
@@ -83,23 +97,24 @@ const MonitorDetailsControlHeader = ({
 				>
 					{t("menu.incidents")}
 				</Button>
-				<Button
-					variant="contained"
-					color="secondary"
-					loading={isPausing}
-					startIcon={
-						monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
-					}
-					onClick={() => {
-						pauseMonitor({
-							monitorId: monitor?._id,
-							triggerUpdate,
-						});
-					}}
-				>
-					{monitor?.isActive ? "Pause" : "Resume"}
-				</Button>
-
+				{isAdmin && (
+					<Button
+						variant="contained"
+						color="secondary"
+						loading={isPausing}
+						startIcon={
+							monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+						}
+						onClick={() => {
+							pauseMonitor({
+								monitorId: monitor?._id,
+								triggerUpdate,
+							});
+						}}
+					>
+						{monitor?.isActive ? "Pause" : "Resume"}
+					</Button>
+				)}
 				{isAdmin && (
 					<Button
 						variant="contained"

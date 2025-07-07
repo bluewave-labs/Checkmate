@@ -64,6 +64,23 @@ const BaseCheckSchema = mongoose.Schema({
 		default: Date.now,
 		expires: 60 * 60 * 24 * 30, // 30 days
 	},
+	/**
+	 * Acknowledgment of the check.
+	 *
+	 * @type {Boolean}
+	 */
+	ack: {
+		type: Boolean,
+		default: false,
+	},
+	/**
+	 * Resolution date of the check (when the check was resolved).
+	 *
+	 * @type {Date}
+	 */
+	ackAt: {
+		type: Date,
+	},
 });
 
 /**
