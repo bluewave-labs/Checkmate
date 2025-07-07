@@ -74,10 +74,10 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 				monitorId: monitor.id,
 			});
 			createToast({
-				body: t("monitorActions.deleteSuccess", "Monitor deleted successfully"),
+				body: t("monitorActions.deleteSuccess"),
 			});
 		} catch (error) {
-			createToast({ body: t("monitorActions.deleteFailed", "Failed to delete monitor") });
+			createToast({ body: t("monitorActions.deleteFailed") });
 		} finally {
 			setIsDialogOpen(false);
 			updateCallback();
@@ -128,7 +128,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 						closeMenu(e);
 					}}
 				>
-					{t("monitorActions.details", "Details")}
+					{t("monitorActions.details")}
 				</MenuItem>
 				{isAdmin && (
 					<MenuItem
@@ -138,7 +138,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 							closeMenu(e);
 						}}
 					>
-						{t("configure", "Configure")}
+						{t("configure")}
 					</MenuItem>
 				)}
 				{isAdmin && (
@@ -149,7 +149,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 							closeMenu(e);
 						}}
 					>
-						{!monitor.isActive ? t("resume", "Resume") : t("pause", "Pause")}
+						{!monitor.isActive ? t("resume") : t("pause")}
 					</MenuItem>
 				)}
 				{isAdmin && (
@@ -157,20 +157,17 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 						onClick={openRemove}
 						sx={{ color: theme.palette.error.main }}
 					>
-						{t("remove", "Remove")}
+						{t("remove")}
 					</MenuItem>
 				)}
 			</Menu>
 			<Dialog
 				open={isDialogOpen}
 				theme={theme}
-				title={t("deleteDialogTitle", "Do you really want to delete this monitor?")}
-				description={t(
-					"deleteDialogDescription",
-					"Once deleted, this monitor cannot be retrieved."
-				)}
+				title={t("deleteDialogTitle")}
+				description={t("deleteDialogDescription")}
 				onCancel={cancelRemove}
-				confirmationButtonLabel={t("delete", "Delete")}
+				confirmationButtonLabel={t("delete")}
 				onConfirm={handleRemove}
 				modelTitle="modal-delete-monitor"
 				modelDescription="delete-monitor-confirmation"
