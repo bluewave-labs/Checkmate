@@ -16,11 +16,12 @@ import {
 	useGetNotificationById,
 	useEditNotification,
 	useTestNotification,
+	useDeleteNotification,
 } from "../../../Hooks/useNotifications";
 import { notificationValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
 	NOTIFICATION_TYPES,
 	TITLE_MAP,
@@ -33,15 +34,19 @@ import {
 
 const CreateNotifications = () => {
 	const { notificationId } = useParams();
+	const navigate = useNavigate();
 	const theme = useTheme();
-	const [createNotification, isCreating, createNotificationError] =
-		useCreateNotification();
-	const [editNotification, isEditing, editNotificationError] = useEditNotification();
-	const [testNotification, isTesting, testNotificationError] = useTestNotification();
+	const [createNotification, isCreating] = useCreateNotification();
+	const [editNotification, isEditing] = useEditNotification();
+	const [testNotification, isTesting] = useTestNotification();
+	const [deleteNotification, isDeleting] = useDeleteNotification();
 
 	const BREADCRUMBS = [
 		{ name: "notifications", path: "/notifications" },
-		{ name: "create", path: "/notifications/create" },
+		{
+			name: notificationId ? "edit" : "create",
+			path: notificationId ? `/notifications/${notificationId}` : "/notifications/create",
+		},
 	];
 
 	// Redux state
@@ -55,7 +60,7 @@ const CreateNotifications = () => {
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
 
-	const [notificationIsLoading, getNotificationError] = useGetNotificationById(
+	const [notificationIsLoading] = useGetNotificationById(
 		notificationId,
 		setNotification
 	);
@@ -126,6 +131,12 @@ const CreateNotifications = () => {
 		}
 
 		testNotification(form);
+	};
+
+	const onDelete = () => {
+		if (notificationId) {
+			deleteNotification(notificationId, () => navigate("/notifications"));
+		}
 	};
 
 	const type = NOTIFICATION_TYPES.find((type) => type._id === notification.type).value;
@@ -209,15 +220,25 @@ const CreateNotifications = () => {
 						color="secondary"
 						onClick={onTestNotification}
 					>
-						Test notification
+						{t("testNotification")}
 					</Button>
+					{notificationId && (
+						<Button
+							loading={isDeleting}
+							variant="contained"
+							color="error"
+							onClick={onDelete}
+						>
+							{t("delete")}
+						</Button>
+					)}
 					<Button
 						loading={isCreating || isEditing || notificationIsLoading}
 						type="submit"
 						variant="contained"
 						color="accent"
 					>
-						Submit
+						{t("submit")}
 					</Button>
 				</Stack>
 			</Stack>
