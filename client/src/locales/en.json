@@ -284,7 +284,10 @@
 			"title": "Webhook",
 			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
-		}
+		},
+		"testNotification": "Test notification",
+		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
+		"dialogDeleteConfirm": "Delete"
 	},
 	"createYour": "Create your",
 	"date&Time": "Date & Time",
