@@ -50,7 +50,7 @@ Usage instructions can be found [here](https://docs.checkmate.so/checkmate-2.1).
 
 ## 🛠️ Installation
 
-See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). Alternatively, you can also use [Coolify](https://coolify.io/) or [Elestio](https://elest.io/open-source/checkmate) for a one-click Docker deployment. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ## 🏁 Translations
 

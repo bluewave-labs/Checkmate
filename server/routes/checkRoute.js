@@ -14,6 +14,7 @@ class CheckRoutes {
 
 	initRoutes() {
 		this.router.get("/team", this.checkController.getChecksByTeam);
+		this.router.get("/team/summary", this.checkController.getChecksSummaryByTeamId);
 		this.router.delete(
 			"/team",
 			isAllowed(["admin", "superadmin"]),

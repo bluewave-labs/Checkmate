@@ -3,6 +3,8 @@ import { Stack, Button, Typography } from "@mui/material";
 import Tabs from "./Components/Tabs";
 import GenericFallback from "../../../Components/GenericFallback";
 import SkeletonLayout from "./Components/Skeleton";
+import Dialog from "../../../Components/Dialog";
+import Breadcrumbs from "../../../Components/Breadcrumbs";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -15,9 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
 //Constants
-const TAB_LIST = ["General settings", "Contents"];
-
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
 	["monitors", "showUptimePercentage", "showCharts", "showAdminLoginLink"],
@@ -28,6 +29,7 @@ const CreateStatusPage = () => {
 	//Local state
 	const [tab, setTab] = useState(0);
 	const [progress, setProgress] = useState({ value: 0, isLoading: false });
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 	const [form, setForm] = useState({
 		isPublished: false,
 		companyName: "",
@@ -52,14 +54,15 @@ const CreateStatusPage = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, isLoading, networkError] = useMonitorsFetch();
-	const [createStatusPage, createStatusIsLoading, createStatusPageNetworkError] =
-		useCreateStatusPage(isCreate);
+	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const [statusPage, statusPageMonitors, statusPageIsLoading, statusPageNetworkError] =
+	const [statusPage, statusPageMonitors, statusPageIsLoading, , fetchStatusPage] =
 		useStatusPageFetch(isCreate, url);
+	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
+	console.log(JSON.stringify(form, null, 2));
 	// Handlers
 	const handleFormChange = (e) => {
 		let { type, name, value, checked } = e.target;
@@ -123,6 +126,19 @@ const CreateStatusPage = () => {
 		setProgress({ value: 0, isLoading: false });
 	};
 
+	/**
+	 * Handle status page deletion with optimistic UI update
+	 * Immediately navigates away without waiting for the deletion to complete
+	 * to prevent unnecessary network requests for the deleted page
+	 */
+	const handleDelete = async () => {
+		setIsDeleteOpen(false);
+		// Start deletion process but don't wait for it
+		deleteStatusPage();
+		// Immediately navigate away to prevent additional fetches for the deleted page
+		navigate("/status");
+	};
+
 	const handleSubmit = async () => {
 		let toSubmit = {
 			...form,
@@ -136,9 +152,7 @@ const CreateStatusPage = () => {
 			const success = await createStatusPage({ form });
 			if (success) {
 				createToast({
-					body: isCreate
-						? "Status page created successfully"
-						: "Status page updated successfully",
+					body: isCreate ? t("statusPage.createSuccess") : t("statusPage.updateSuccess"),
 				});
 				navigate(`/status/uptime/${form.url}`);
 			}
@@ -161,7 +175,7 @@ const CreateStatusPage = () => {
 
 		// If we get -1, there's an unknown error
 		if (errorTabs[0] === -1) {
-			createToast({ body: "Unknown error" });
+			createToast({ body: t("common.toasts.unknownError") });
 			return;
 		}
 
@@ -177,7 +191,7 @@ const CreateStatusPage = () => {
 		}
 
 		let newLogo = undefined;
-		if (statusPage.logo) {
+		if (statusPage.logo && Object.keys(statusPage.logo).length > 0) {
 			newLogo = {
 				src: `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`,
 				name: "logo",
@@ -222,6 +236,37 @@ const CreateStatusPage = () => {
 	// Load fields
 	return (
 		<Stack gap={theme.spacing(10)}>
+			<Breadcrumbs
+				list={[
+					{ name: t("statusBreadCrumbsStatusPages", "Status"), path: "/status" },
+					{ name: t("statusBreadCrumbsDetails", "Details"), path: `/status/${url}` },
+					{ name: t("configure", "Configure"), path: `/status/create/${url}` },
+				]}
+			/>
+			{!isCreate && (
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+				>
+					<Button
+						loading={isDeleting}
+						variant="contained"
+						color="error"
+						onClick={() => setIsDeleteOpen(true)}
+					>
+						{t("remove")}
+					</Button>
+					<Dialog
+						title={t("deleteStatusPage")}
+						onConfirm={handleDelete}
+						onCancel={() => setIsDeleteOpen(false)}
+						open={isDeleteOpen}
+						confirmationButtonLabel={t("deleteStatusPageConfirm")}
+						description={t("deleteStatusPageDescription")}
+						isLoading={isDeleting || statusPageIsLoading}
+					/>
+				</Stack>
+			)}
 			<Tabs
 				form={form}
 				errors={errors}
@@ -234,8 +279,16 @@ const CreateStatusPage = () => {
 				removeLogo={removeLogo}
 				tab={tab}
 				setTab={setTab}
-				TAB_LIST={TAB_LIST}
+				TAB_LIST={[
+					t("statusPage.generalSettings", "General settings"),
+					t("statusPage.contents", "Contents"),
+				]}
 				isCreate={isCreate}
+				handleDelete={handleDelete}
+				isDeleteOpen={isDeleteOpen}
+				setIsDeleteOpen={setIsDeleteOpen}
+				isDeleting={isDeleting}
+				isLoading={statusPageIsLoading}
 			/>
 			<Stack
 				direction="row"

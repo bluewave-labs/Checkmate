@@ -26,6 +26,9 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 			<Typography
 				variant="body1"
 				mt="auto"
+				sx={{
+					textAlign: "center",
+				}}
 			>
 				{t("pageSpeedDetailsPerformanceReport")}{" "}
 				<Typography

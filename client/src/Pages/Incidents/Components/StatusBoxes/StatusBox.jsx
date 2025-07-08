@@ -1,9 +1,11 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
-import Arrow from "../../../../../assets/icons/top-right-arrow.svg?react";
-import Background from "../../../../../assets/Images/background-grid.svg?react";
-import ClockSnooze from "../../../../../assets/icons/clock-snooze.svg?react";
+import Background from "../../../../assets/Images/background-grid.svg?react";
+import MonitorHeartOutlinedIcon from "@mui/icons-material/MonitorHeartOutlined";
+import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
@@ -19,22 +21,29 @@ const StatusBox = ({ title, value, status }) => {
 	if (status === "up") {
 		color = theme.palette.success.lowContrast;
 		icon = (
-			<Box sx={{ ...sharedStyles, top: theme.spacing(4) }}>
-				<Arrow />
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
+				<TaskAltOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
-			<Box sx={{ ...sharedStyles, transform: "rotate(180deg)", top: theme.spacing(2) }}>
-				<Arrow />
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
+				<CancelOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<ClockSnooze />
+				<WarningAmberRoundedIcon fontSize="small" />
+			</Box>
+		);
+	} else {
+		color = theme.palette.accent.main;
+		icon = (
+			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
+				<MonitorHeartOutlinedIcon fontSize="small" />
 			</Box>
 		);
 	}
@@ -99,7 +108,7 @@ const StatusBox = ({ title, value, status }) => {
 };
 
 StatusBox.propTypes = {
-	title: PropTypes.string,
+	title: PropTypes.string.isRequired,
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	status: PropTypes.string,
 };

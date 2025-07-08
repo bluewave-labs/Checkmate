@@ -65,14 +65,16 @@ const useDeleteNotification = () => {
 	const [error, setError] = useState(null);
 	const { t } = useTranslation();
 
-	const deleteNotification = async (id, triggerUpdate) => {
+	const deleteNotification = async (id, callback) => {
 		try {
 			setIsLoading(true);
 			await networkService.deleteNotificationById({ id });
 			createToast({
 				body: t("notifications.delete.success"),
 			});
-			triggerUpdate();
+			if (callback) {
+				callback();
+			}
 		} catch (error) {
 			setError(error);
 			createToast({
