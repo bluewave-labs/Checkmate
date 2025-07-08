@@ -53,7 +53,7 @@ const PageSpeedSetup = ({ configure }) => {
 		...(isConfigure
 			? [
 					{ name: "details", path: `/pagespeed/${monitorId}` },
-					{ name: "configure", path: `/pagespeed/setup/${monitorId}` },
+					{ name: "configure", path: `/pagespeed/configure/${monitorId}` },
 				]
 			: [{ name: "create", path: `/pagespeed/create` }]),
 	];
