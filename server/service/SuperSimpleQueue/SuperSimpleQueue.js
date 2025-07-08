@@ -20,11 +20,14 @@ class SuperSimpleQueue {
 	init = async () => {
 		try {
 			this.scheduler = new Scheduler({
-				logLevel: process.env.LOG_LEVEL,
-				debug: process.env.NODE_ENV,
+				storeType: "mongo",
+				logLevel: "debug",
+				debug: true,
+				dbUri: this.appSettings.dbConnectionString,
 			});
 			this.scheduler.start();
-			this.scheduler.addTemplate("test", this.helper.getMonitorJob());
+
+			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
 			const monitors = await this.db.getAllMonitors();
 			for (const monitor of monitors) {
 				await this.addJob(monitor._id, monitor);
@@ -44,7 +47,7 @@ class SuperSimpleQueue {
 	addJob = async (monitorId, monitor) => {
 		this.scheduler.addJob({
 			id: monitorId.toString(),
-			template: "test",
+			template: "monitor-job",
 			repeat: monitor.interval,
 			data: monitor.toObject(),
 		});
