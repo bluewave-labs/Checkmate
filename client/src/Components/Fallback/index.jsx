@@ -88,15 +88,18 @@ const Fallback = ({
 					display: "flex",
 					borderStyle: "dashed",
 					height: {
-						sm: "50vh",
-						md: "70vh",
-						lg: "60vh",
-						xl: "55vh",
+						sm: "55vh",
+						md: "50vh",
+						lg: "70vh",
+						xl: "58vh",
 					},
 					width: {
 						sm: "90%",
-						md: "50%",
-						lg: "40%",
+						md: "70%",
+						lg: "42%",
+					},
+					minHeight: {
+						sm: theme.spacing(280),
 					},
 					padding: theme.spacing(10),
 				}}
@@ -144,11 +147,11 @@ const Fallback = ({
 					</Stack>
 					{/* TODO - display a different fallback if user is not an admin*/}
 					{isAdmin && (
-						<>
+						<Stack gap={theme.spacing(10)}>
 							<Button
 								variant="contained"
 								color="accent"
-								sx={{ alignSelf: "center" }}
+								sx={{ alignSelf: "center", mb: "2px" }}
 								onClick={() => navigate(link)}
 							>
 								Let's create your first {title}
@@ -192,7 +195,7 @@ const Fallback = ({
 									</Box>
 								</Box>
 							)}
-						</>
+						</Stack>
 					)}
 				</Stack>
 			</Box>
