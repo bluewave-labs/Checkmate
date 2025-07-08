@@ -18,10 +18,8 @@ import UptimeConfigure from "../Pages/Uptime/Configure";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors";
-import PageSpeedSetup from "../Pages/PageSpeed/Setup";
-import PageSpeedCreate from "../Pages/PageSpeed/Create";
 import PageSpeedDetails from "../Pages/PageSpeed/Details";
-import PageSpeedConfigure from "../Pages/PageSpeed/Configure";
+import PageSpeedSetup from "../Pages/PageSpeed/Setup";
 
 // Infrastructure
 import Infrastructure from "../Pages/Infrastructure/Monitors";
@@ -108,7 +106,7 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedSetup monitor={true} />}
+					element={<PageSpeedSetup configure={true} />}
 				/>
 				<Route
 					path="infrastructure"

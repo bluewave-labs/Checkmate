@@ -34,8 +34,9 @@ import {
   usePauseMonitor,
 } from "../../../Hooks/monitorHooks";
 
+// Constants
 const MS_PER_MINUTE = 60000;
-const SELECT_VALUES = [
+const FREQUENCIES = [
   { _id: 3, name: "3 minutes" },
   { _id: 5, name: "5 minutes" },
   { _id: 10, name: "10 minutes" },
@@ -45,107 +46,75 @@ const SELECT_VALUES = [
   { _id: 10080, name: "1 week" },
 ];
 
-const PageSpeedSetup = ({ monitor }) => {
-  const isConfigure = monitor;
-  const { t } = useTranslation();
-  const theme = useTheme();
+const PageSpeedSetup = ({ configure }) => {
+  const isConfigure = configure;
   const { monitorId } = useParams();
-  const { statusColor, pagespeedStatusMsg, determineState } = useMonitorUtils();
-  const [notifications, notificationsAreLoading] = useGetNotificationsByTeamId();
-  const [https, setHttps] = useState(true);
-  const [errors, setErrors] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
-  const [updateTrigger, setUpdateTrigger] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isPausing, setIsPausing] = useState(false);
+  const CRUMBS = [
+    { name: "pagespeed", path: "/pagespeed" },
+    ...(isConfigure
+      ? [
+          { name: "details", path: `/pagespeed/${monitorId}` },
+          { name: "configure", path: `/pagespeed/setup/${monitorId}` },
+        ]
+      : [{ name: "create", path: `/pagespeed/create` }]),
+  ];
 
-  // Monitor state
-  const [monitorData, setMonitorData] = useState({
+  // States
+  const [monitor, setMonitor] = useState(isConfigure ? {} : {
     url: "",
     name: "",
     type: "pagespeed",
     notifications: [],
-    interval: 3,
+    interval: 180000,
   });
+  const [https, setHttps] = useState(true);
+  const [errors, setErrors] = useState({});
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [updateTrigger, setUpdateTrigger] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isPausing, setIsPausing] = useState(false);
+
+  // Setup
+  const { t } = useTranslation();
+  const theme = useTheme();
+
+	const { user } = useSelector((state) => state.auth);
+  const {
+    statusColor,
+    pagespeedStatusMsg,
+    determineState
+  } = useMonitorUtils();
+  const [
+    notifications,
+    notificationsAreLoading,
+    notificationsError
+  ] = useGetNotificationsByTeamId();
 
   // Hooks for API actions
   const [createMonitor, isCreating] = useCreateMonitor();
-  const [fetchMonitor] = monitor
-    ? useFetchMonitorById({ monitorId, setMonitor: setMonitorData, updateTrigger })
-    : [null];
+  const [isLoading] = isConfigure
+    ? useFetchMonitorById({ monitorId, setMonitor, updateTrigger })
+    : [false];
   const [deleteMonitor] = useDeleteMonitor();
   const [updateMonitor] = useUpdateMonitor();
   const [pauseMonitor] = usePauseMonitor();
 
-	const frequencies = [
-		{ _id: 3, name: "3 minutes" },
-		{ _id: 5, name: "5 minutes" },
-		{ _id: 10, name: "10 minutes" },
-		{ _id: 20, name: "20 minutes" },
-		{ _id: 60, name: "1 hour" },
-		{ _id: 1440, name: "1 day" },
-		{ _id: 10080, name: "1 week" },
-	];
-
-  // Fetch monitor if in configure mode
-  useEffect(() => {
-    if (monitor && monitorId && typeof fetchMonitor === 'function') {
-      setIsLoading(true);
-      fetchMonitor().finally(() => setIsLoading(false));
-    }
-  }, [monitor, monitorId, updateTrigger, fetchMonitor]);
 
   // Handlers
-
-  const handleChange = (event) => {
-    let { value, name } = event.target;
-    if (name === "interval") {
-      value = value * MS_PER_MINUTE;
-    }
-    setMonitorData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-    const validation = monitorValidation.validate(
-      { [name]: value },
-      { abortEarly: false }
-    );
-
-    setErrors((prev) => {
-      const updatedErrors = { ...prev };
-      if (validation.error) {
-        updatedErrors[name] = validation.error.details[0].message;
-      } else {
-        delete updatedErrors[name];
-      }
-      return updatedErrors;
-    });
-  };
-
-  const handleBlur = (event) => {
-    const { name, value } = event.target;
-    if (name === "url" && monitorData.name === "") {
-      setMonitorData((prev) => ({ ...prev, name: parseDomainName(value) }));
-    }
-  };
-
   const onSubmit = async (event) => {
     event.preventDefault();
     if (isConfigure) {
-      setIsUpdating(true);
-      await updateMonitor({ monitor: monitorData, redirect: "/pagespeed" });
-      setIsUpdating(false);
+      await updateMonitor({ monitor, redirect: "/pagespeed" });
     } else {
       let form = {
-        url: `http${https ? "s" : ""}://` + monitorData.url,
-        name: monitorData.name === "" ? monitorData.url : monitorData.name,
-        type: monitorData.type,
-        interval: monitorData.interval * MS_PER_MINUTE,
-        description: monitorData.name === "" ? monitorData.url : monitorData.name,
-        notifications: monitorData.notifications,
+        url: `http${https ? "s" : ""}://` + monitor.url,
+        name: monitor.name === "" ? monitor.url : monitor.name,
+        type: monitor.type,
+        interval: monitor.interval,
       };
+
       const { error } = monitorValidation.validate(form, { abortEarly: false });
       if (error) {
         const newErrors = {};
@@ -156,296 +125,350 @@ const PageSpeedSetup = ({ monitor }) => {
         createToast({ body: "Please check the form for errors." });
         return;
       }
-      setIsLoading(true);
+
+      form = {
+        ...form,
+        description: form.name,
+        notifications: monitor.notifications,
+      };
       await createMonitor({ monitor: form, redirect: "/pagespeed" });
-      setIsLoading(false);
     }
   };
 
+  const handleChange = (event) => {
+    let { value, name } = event.target;
+
+    if (name === "interval") {
+			value = value * MS_PER_MINUTE;
+		}
+
+    setMonitor({
+      ...monitor,
+      [name]: value
+    });
+
+    const { error } = monitorValidation.validate(
+      { [name]: value },
+      { abortEarly: false }
+    );
+    setErrors((prev) => ({
+      ...prev,
+      ...(error ? { [name]: error.details[0].message } : { [name]: undefined})
+    }));
+  };
+
+  const handleBlur = (event) => {
+    const { name, value } = event.target;
+    if (name === "url" && monitor.name === "") {
+      setMonitor((prev) => ({ ...prev, name: parseDomainName(value) }));
+    }
+  };
+
+	const triggerUpdate = () => {
+		setUpdateTrigger(!updateTrigger);
+	};
+
   const handlePause = async () => {
-    setIsPausing(true);
-    await pauseMonitor({ monitorId, triggerUpdate: () => setUpdateTrigger((u) => !u) });
-    setIsPausing(false);
+    await pauseMonitor({ monitorId, triggerUpdate });
   };
 
   const handleRemove = async (event) => {
     event.preventDefault();
-    setIsDeleting(true);
-    await deleteMonitor({ monitor: monitorData, redirect: "/pagespeed" });
-    setIsDeleting(false);
+    await deleteMonitor({ monitor, redirect: "/pagespeed" });
   };
 
-  // Loading skeleton
-  if (isConfigure && (isLoading || !monitorData._id)) {
-    return <SkeletonLayout />;
-  }
+  // // Loading skeleton
+  // if (isConfigure && (isLoading || !monitor._id)) {
+  //   return <SkeletonLayout />;
+  // }
 
   return (
     <Box
       className={isConfigure ? "configure-pagespeed" : "create-monitor"}
+			// gap={theme.spacing(10)}
       sx={{
         "& h1": { color: theme.palette.primary.contrastText },
       }}
     >
-      <Breadcrumbs
-        list={
-          isConfigure
-            ? [
-                { name: "pagespeed", path: "/pagespeed" },
-                { name: "details", path: `/pagespeed/${monitorId}` },
-                { name: "configure", path: `/pagespeed/setup/${monitorId}` },
-              ]
-            : [
-                { name: "pagespeed", path: "/pagespeed" },
-                { name: "create", path: `/pagespeed/setup` },
-              ]
-        }
-      />
-      <Stack
-        component="form"
-        className={isConfigure ? undefined : "create-monitor-form"}
-        onSubmit={onSubmit}
-        noValidate
-        spellCheck="false"
-        gap={theme.spacing(12)}
-        mt={theme.spacing(6)}
-      >
-        <Typography component="h1" variant="h1">
-          <Typography component="span" fontSize="inherit">
-            {isConfigure ? monitorData.name : t("createYour") + " "}
-          </Typography>
-          { !isConfigure 
-            ? (
-            <Typography
-              component="span"
-              fontSize="inherit"
-              fontWeight="inherit"
-              color={theme.palette.primary.contrastTextSecondary}
-            >
-              {t("pageSpeedMonitor")}
-            </Typography>
-            )
-            : <></>
-          }
-        </Typography>
-        {isConfigure && (
-          <Stack direction="row" gap={theme.spacing(2)}>
-            <Box>
-              <Stack direction="row" alignItems="center" height="fit-content" gap={theme.spacing(2)}>
-                <Tooltip
-                  title={pagespeedStatusMsg[determineState(monitorData)]}
-                  disableInteractive
-                  slotProps={{
-                    popper: {
-                      modifiers: [
-                        {
-                          name: "offset",
-                          options: { offset: [0, -8] },
+      {Object.keys(monitor).length === 0 ? (
+        <SkeletonLayout />
+      ) : (
+        <>
+          <Breadcrumbs
+            list={ CRUMBS }
+          />
+          <Stack
+            component="form"
+            className={isConfigure ? "" : "create-monitor-form"}
+            onSubmit={onSubmit}
+            noValidate
+            spellCheck="false"
+            gap={theme.spacing(12)}
+            mt={theme.spacing(6)}
+          >
+            <Stack direction="row" gap={theme.spacing(2)}>
+              <Box>
+                <Typography component="h1" variant="h1">
+                  <Typography
+                    component="span"
+                    fontSize="inherit"
+                    color={isConfigure ? theme.palette.primary.contrastTextSecondary : undefined}
+                  >
+                    {isConfigure ? monitor.name : t("createYour") + " "}
+                  </Typography>
+                  { !isConfigure 
+                    ? (
+                    <Typography
+                      component="span"
+                      fontSize="inherit"
+                      fontWeight="inherit"
+                      color={theme.palette.primary.contrastTextSecondary}
+                    >
+                      {t("pageSpeedMonitor")}
+                    </Typography>
+                    )
+                    : <></>
+                  }
+                </Typography>
+                {isConfigure && (
+                  <Stack direction="row" alignItems="center" height="fit-content" gap={theme.spacing(2)}>
+                    <Tooltip
+                      title={pagespeedStatusMsg[determineState(monitor)]}
+                      disableInteractive
+                      slotProps={{
+                        popper: {
+                          modifiers: [
+                            {
+                              name: "offset",
+                              options: { offset: [0, -8] },
+                            },
+                          ],
                         },
-                      ],
-                    },
-                  }}
-                >
-                  <Box>
-                    <PulseDot color={statusColor[determineState(monitorData)]} />
-                  </Box>
-                </Tooltip>
-                <Typography component="h2" variant="monitorUrl">
-                  {monitorData.url?.replace(/^https?:\/\//, "") || "..."}
-                </Typography>
-                <Typography
-                  position="relative"
-                  variant="body2"
-                  ml={theme.spacing(6)}
-                  mt={theme.spacing(1)}
-                  sx={{
-                    "&:before": {
-                      position: "absolute",
-                      content: `""`,
-                      width: 4,
-                      height: 4,
-                      borderRadius: "50%",
-                      backgroundColor: theme.palette.primary.contrastTextTertiary,
-                      opacity: 0.8,
-                      left: -10,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                    },
-                  }}
-                >
-                  {t("editing")}
-                </Typography>
-              </Stack>
-            </Box>
-            <Box alignSelf="flex-end" ml="auto">
-              <Button
-                onClick={handlePause}
-                loading={isLoading}
-                variant="contained"
-                color="secondary"
-                sx={{
-                  pl: theme.spacing(4),
-                  pr: theme.spacing(6),
-                  "& svg": {
-                    mr: theme.spacing(2),
-                    "& path": {
-                      stroke: theme.palette.primary.contrastTextTertiary,
-                      strokeWidth: 0.1,
-                    },
-                  },
-                }}
-              >
-                {monitorData?.isActive ? (
-                  <>
-                    <PauseCircleOutlineIcon />
-                    {t("pause")}
-                  </>
-                ) : (
-                  <>
-                    <PlayCircleOutlineRoundedIcon />
-                    {t("resume")}
-                  </>
+                      }}
+                    >
+                      <Box>
+                        <PulseDot color={statusColor[determineState(monitor)]} />
+                      </Box>
+                    </Tooltip>
+                    <Typography component="h2" variant="monitorUrl">
+                      {monitor.url?.replace(/^https?:\/\//, "") || "..."}
+                    </Typography>
+                    <Typography
+                      position="relative"
+                      variant="body2"
+                      ml={theme.spacing(6)}
+                      mt={theme.spacing(1)}
+                      sx={{
+                        "&:before": {
+                          position: "absolute",
+                          content: `""`,
+                          width: 4,
+                          height: 4,
+                          borderRadius: "50%",
+                          backgroundColor: theme.palette.primary.contrastTextTertiary,
+                          opacity: 0.8,
+                          left: -10,
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        },
+                      }}
+                    >
+                      {t("editing")}
+                    </Typography>
+                  </Stack>
                 )}
-              </Button>
-              <Button
-                loading={isLoading}
-                variant="contained"
-                color="error"
-                onClick={() => setIsOpen(true)}
-                sx={{ ml: theme.spacing(6) }}
+              </Box>
+              {isConfigure && (
+                <Box alignSelf="flex-end" ml="auto">
+                  <Button
+                    onClick={handlePause}
+                    loading={isLoading}
+                    variant="contained"
+                    color="secondary"
+                    sx={{
+                      pl: theme.spacing(4),
+                      pr: theme.spacing(6),
+                      "& svg": {
+                        mr: theme.spacing(2),
+                        "& path": {
+                          stroke: theme.palette.primary.contrastTextTertiary,
+                          strokeWidth: 0.1,
+                        },
+                      },
+                    }}
+                  >
+                    {monitor?.isActive ? (
+                      <>
+                        <PauseCircleOutlineIcon />
+                        {t("pause")}
+                      </>
+                    ) : (
+                      <>
+                        <PlayCircleOutlineRoundedIcon />
+                        {t("resume")}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    loading={isLoading}
+                    variant="contained"
+                    color="error"
+                    onClick={() => setIsOpen(true)}
+                    sx={{ ml: theme.spacing(6) }}
+                  >
+                    {t("remove")}
+                  </Button>
+                </Box>
+              )}
+            </Stack>
+            <ConfigBox>
+              <Box>
+                <Typography component="h2" variant="h2">
+                  {t("settingsGeneralSettings")}
+                </Typography>
+                <Typography component="p">
+                  {t("pageSpeedConfigureSettingsDescription")}
+                </Typography>
+              </Box>
+              <Stack
+                gap={isConfigure ? theme.spacing(20) : theme.spacing(15)}
+								sx={{
+									".MuiInputBase-root:has(> .Mui-disabled)": {
+										backgroundColor: theme.palette.tertiary.main,
+									},
+								}}
               >
-                {t("remove")}
-              </Button>
-            </Box>
-          </Stack>
-        )}
-        <ConfigBox>
-          <Box>
-            <Typography component="h2" variant="h2">
-              {t("settingsGeneralSettings")}
-            </Typography>
-            <Typography component="p">
-              {isConfigure ? t("pageSpeedConfigureSettingsDescription") : t("distributedUptimeCreateSelectURL")}
-            </Typography>
-          </Box>
-          <Stack gap={isConfigure ? theme.spacing(20) : theme.spacing(15)}>
-            <TextInput
-              type={"url"}
-              name="url"
-              id="monitor-url"
-              label={t("url")}
-              startAdornment={!isConfigure ? <HttpAdornment https={https} /> : undefined}
-              placeholder={isConfigure ? "random.website.com" : "google.com"}
-              value={monitorData.url || ""}
-              onChange={handleChange}
-              onBlur={!isConfigure ? handleBlur : undefined}
-              error={!!errors["url"]}
-              helperText={errors["url"]}
-              disabled={isConfigure}
-            />
-            <TextInput
-              type="text"
-              id="monitor-name"
-              name="name"
-              label={t("monitorDisplayName")}
-              isOptional={true}
-              placeholder={isConfigure ? "Example monitor" : "Google"}
-              value={monitorData.name || ""}
-              onChange={handleChange}
-              error={!!errors["name"]}
-              helperText={errors["name"]}
-            />
-          </Stack>
-        </ConfigBox>
-        {!isConfigure && (
-          <ConfigBox>
-            <Box>
-              <Typography component="h2" variant="h2">
-                {t("distributedUptimeCreateChecks")}
-              </Typography>
-              <Typography component="p">
-                {t("distributedUptimeCreateChecksDescription")}
-              </Typography>
-            </Box>
-            <Stack gap={theme.spacing(12)}>
-              <Stack gap={theme.spacing(6)}>
-                <Radio
-                  id="monitor-checks-http"
-                  title="PageSpeed"
-                  desc="Use the Lighthouse PageSpeed API to monitor your website"
-                  size="small"
-                  value="http"
-                  checked={monitorData.type === "pagespeed"}
+                <TextInput
+                  type={"url"}
+                  name="url"
+                  id="monitor-url"
+                  label={isConfigure ? t("url") : "URL to monitor"}
+                  startAdornment={!isConfigure ? <HttpAdornment https={https} /> : undefined}
+                  placeholder="random.website.com"
+                  value={monitor.url || ""}
+                  onChange={handleChange}
+                  onBlur={!isConfigure ? handleBlur : undefined}
+                  error={!!errors["url"]}
+                  helperText={errors["url"]}
+                  disabled={isConfigure}
                 />
-                <ButtonGroup sx={{ ml: "32px" }}>
-                  <Button
-                    variant="group"
-                    filled={https.toString()}
-                    onClick={() => setHttps(true)}
-                  >
-                    {t("https")}
-                  </Button>
-                  <Button
-                    variant="group"
-                    filled={(!https).toString()}
-                    onClick={() => setHttps(false)}
-                  >
-                    {t("http")}
-                  </Button>
-                </ButtonGroup>
+                <TextInput
+                  type="text"
+                  id="monitor-name"
+                  name="name"
+                  label={t("monitorDisplayName")}
+                  isOptional={true}
+                  placeholder="Google"
+                  value={monitor.name || ""}
+                  onChange={handleChange}
+                  error={!!errors["name"]}
+                  helperText={errors["name"]}
+                />
               </Stack>
-              {errors["type"] ? (
-                <Box className="error-container">
-                  <Typography component="p" className="input-error" color={theme.palette.error.contrastText}>
-                    {errors["type"]}
+            </ConfigBox>
+            {!isConfigure && (
+              <ConfigBox>
+                <Box>
+                  <Typography component="h2" variant="h2">
+                    {t("distributedUptimeCreateChecks")}
+                  </Typography>
+                  <Typography component="p">
+                    {t("distributedUptimeCreateChecksDescription")}
                   </Typography>
                 </Box>
-              ) : null}
+                <Stack gap={theme.spacing(12)}>
+                  <Stack gap={theme.spacing(6)}>
+                    <Radio
+                      id="monitor-checks-http"
+                      title="PageSpeed"
+                      desc="Use the Lighthouse PageSpeed API to monitor your website"
+                      size="small"
+                      value="http"
+                      checked={monitor.type === "pagespeed"}
+                    />
+                    <ButtonGroup sx={{ ml: "32px" }}>
+                      <Button
+                        variant="group"
+                        filled={https.toString()}
+                        onClick={() => setHttps(true)}
+                      >
+                        {t("https")}
+                      </Button>
+                      <Button
+                        variant="group" // Why does this work?
+                        filled={(!https).toString()} // There's nothing in the docs about this either
+                        onClick={() => setHttps(false)}
+                      >
+                        {t("http")}
+                      </Button>
+                    </ButtonGroup>
+                  </Stack>
+                  {errors["type"] ? (
+                    <Box className="error-container">
+                      <Typography
+                        component="p"
+                        className="input-error"
+                        color={theme.palette.error.contrastText}
+                      >
+                        {errors["type"]}
+                      </Typography>
+                    </Box>
+                  ) : ""}
+                </Stack>
+              </ConfigBox>
+            )}
+            <ConfigBox>
+              <Box>
+                <Typography component="h2" variant="h2">
+                  {t("notificationConfig.title")}
+                </Typography>
+                <Typography component="p">{t("notificationConfig.description")}</Typography>
+              </Box>
+              <NotificationsConfig
+                notifications={notifications}
+                setMonitor={setMonitor}
+                setNotifications={isConfigure ? monitor.notifications : undefined}
+              />
+            </ConfigBox>
+            <ConfigBox>
+              <Box>
+                <Typography
+                  component="h2"
+                  variant="h2"
+                >
+                  {t("distributedUptimeCreateAdvancedSettings")}
+                </Typography>
+              </Box>
+              <Stack gap={theme.spacing(isConfigure ? 20 : 12)}>
+                <Select
+                  id="monitor-interval"
+                  name="interval"
+                  label={t("checkFrequency")}
+                  value={monitor?.interval / MS_PER_MINUTE || 3}
+                  onChange={handleChange}
+                  items={FREQUENCIES}
+                />
+              </Stack>
+            </ConfigBox>
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              mt={isConfigure ? "auto" : undefined}
+            >
+              <Button
+                type="submit"
+                variant="contained"
+                color="accent"
+                disabled={!Object.values(errors).every((value) => value === undefined)}
+                loading={isLoading || isDeleting || isUpdating || isPausing || isCreating}
+                sx={isConfigure ? { px: theme.spacing(12) } : undefined}
+              >
+                {isConfigure ? t("settingsSave") : t("createMonitor")}
+              </Button>
             </Stack>
-          </ConfigBox>
-        )}
-        <ConfigBox>
-          <Box>
-            <Typography component="h2" variant="h2">
-              {t("notificationConfig.title")}
-            </Typography>
-            <Typography component="p">{t("notificationConfig.description")}</Typography>
-          </Box>
-          <NotificationsConfig
-            notifications={notifications}
-            setMonitor={setMonitorData}
-            setNotifications={isConfigure ? monitorData.notifications : undefined}
-          />
-        </ConfigBox>
-        <ConfigBox>
-          <Box>
-            <Typography component="h2" variant="h2">
-              {t("distributedUptimeCreateAdvancedSettings")}
-            </Typography>
-          </Box>
-          <Stack gap={isConfigure ? theme.spacing(20) : theme.spacing(12)}>
-            <Select
-              name="interval"
-              label={t("checkFrequency")}
-              value={isConfigure ? monitorData.interval / MS_PER_MINUTE || 3 : monitorData.interval || 3}
-              onChange={handleChange}
-              items={frequencies}
-            />
           </Stack>
-        </ConfigBox>
-        <Stack direction="row" justifyContent="flex-end" mt={isConfigure ? "auto" : undefined}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="accent"
-            disabled={!Object.values(errors).every((value) => value === undefined)}
-            loading={isLoading || isDeleting || isUpdating || isPausing || isCreating}
-            sx={isConfigure ? { px: theme.spacing(12) } : undefined}
-          >
-            {isConfigure ? t("settingsSave") : t("createMonitor")}
-          </Button>
-        </Stack>
-      </Stack>
+        </>
+      )}
       {isConfigure && (
         <Dialog
           open={isOpen}
