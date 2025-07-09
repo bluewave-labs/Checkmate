@@ -106,7 +106,7 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedCreate configure={true} />}
+					element={<PageSpeedCreate />}
 				/>
 				<Route
 					path="infrastructure"

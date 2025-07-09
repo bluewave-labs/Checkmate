@@ -209,7 +209,12 @@
 		"validationFailed": "Validation failed"
 	},
 	"cancel": "Cancel",
+	"checkFormError": "Please check the form for errors.",
 	"checkFrequency": "Check frequency",
+	"checkHooks": {
+		"failureResolveOne": "Failed to resolve incident.",
+		"failureResolveAll": "Failed to resolve all incidents."
+	},
 	"checkingEvery": "Checking every",
 	"city": "CITY",
 	"common": {
@@ -499,7 +504,6 @@
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
-
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
@@ -516,10 +520,6 @@
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
 	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
-	"checkHooks": {
-		"failureResolveOne": "Failed to resolve incident.",
-		"failureResolveAll": "Failed to resolve all incidents."
-	},
 	"ms": "ms",
 	"navControls": "Controls",
 	"nextWindow": "Next window",
@@ -608,6 +608,7 @@
 	"pageSpeedDetailsPerformanceReport": "Values are estimated and may vary.",
 	"pageSpeedDetailsPerformanceReportCalculator": "See calculator",
 	"pageSpeedLearnMoreLink": "Click here",
+	"pageSpeedLighthouseAPI": "Use the Lighthouse PageSpeed API to monitor your website",
 	"pageSpeedMonitor": "PageSpeed monitor",
 	"pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key yet. Without it, the PageSpeed monitor won't function.",
 	"passwordPanel": {
@@ -843,6 +844,15 @@
 	},
 	"testLocale": "testLocale",
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
+	"time": {
+		"threeMinutes": "3 minutes",
+		"fiveMinutes": "5 minutes",
+		"tenMinutes": "10 minutes",
+		"twentyMinutes": "20 minutes",
+		"oneHour": "1 hour",
+		"oneDay": "1 day",
+		"oneWeek": "1 week"
+	},
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
 	"title": "Title",

@@ -33,21 +33,9 @@ import {
 	usePauseMonitor,
 } from "../../../Hooks/monitorHooks";
 
-// Constants
-const MS_PER_MINUTE = 60000;
-const FREQUENCIES = [
-	{ _id: 3, name: "3 minutes" },
-	{ _id: 5, name: "5 minutes" },
-	{ _id: 10, name: "10 minutes" },
-	{ _id: 20, name: "20 minutes" },
-	{ _id: 60, name: "1 hour" },
-	{ _id: 1440, name: "1 day" },
-	{ _id: 10080, name: "1 week" },
-];
-
-const PageSpeedSetup = ({ configure }) => {
-	const isConfigure = configure;
+const PageSpeedSetup = () => {
 	const { monitorId } = useParams();
+	const isConfigure = !!monitorId;
 	const CRUMBS = [
 		{ name: "pagespeed", path: "/pagespeed" },
 		...(isConfigure
@@ -82,6 +70,17 @@ const PageSpeedSetup = ({ configure }) => {
 	// Setup
 	const { t } = useTranslation();
 	const theme = useTheme();
+	// Constants
+	const MS_PER_MINUTE = 60000;
+	const FREQUENCIES = [
+		{ _id: 3, name: t("time.threeMinutes") },
+		{ _id: 5, name: t("time.fiveMinutes") },
+		{ _id: 10, name: t("time.tenMinutes") },
+		{ _id: 20, name: t("time.twentyMinutes") },
+		{ _id: 60, name: t("time.oneHour") },
+		{ _id: 1440, name: t("time.oneDay") },
+		{ _id: 10080, name: t("time.oneWeek") },
+	];
 
 	const { user } = useSelector((state) => state.auth);
 	const { statusColor, pagespeedStatusMsg, determineState } = useMonitorUtils();
@@ -117,7 +116,7 @@ const PageSpeedSetup = ({ configure }) => {
 					newErrors[err.path[0]] = err.message;
 				});
 				setErrors(newErrors);
-				createToast({ body: "Please check the form for errors." });
+				createToast({ body: t("checkFormError") });
 				return;
 			}
 
@@ -352,7 +351,7 @@ const PageSpeedSetup = ({ configure }) => {
 									type={"url"}
 									name="url"
 									id="monitor-url"
-									label={isConfigure ? t("url") : "URL to monitor"}
+									label={isConfigure ? t("url") : t("urlMonitor")}
 									startAdornment={
 										!isConfigure ? <HttpAdornment https={https} /> : undefined
 									}
@@ -396,7 +395,7 @@ const PageSpeedSetup = ({ configure }) => {
 										<Radio
 											id="monitor-checks-http"
 											title="PageSpeed"
-											desc="Use the Lighthouse PageSpeed API to monitor your website"
+											desc={t("pageSpeedLighthouseAPI")}
 											size="small"
 											value="http"
 											checked={monitor.type === "pagespeed"}
