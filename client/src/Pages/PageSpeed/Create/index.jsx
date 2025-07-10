@@ -35,37 +35,33 @@ import {
 
 const PageSpeedSetup = () => {
 	const { monitorId } = useParams();
-	const isConfigure = !!monitorId;
+	const isCreate = typeof monitorId === "undefined";
 	const CRUMBS = [
 		{ name: "pagespeed", path: "/pagespeed" },
-		...(isConfigure
-			? [
+		...(isCreate
+			? [{ name: "create", path: `/pagespeed/create` }]
+			: [
 					{ name: "details", path: `/pagespeed/${monitorId}` },
 					{ name: "configure", path: `/pagespeed/configure/${monitorId}` },
-				]
-			: [{ name: "create", path: `/pagespeed/create` }]),
+				]),
 	];
 
 	// States
 	const [monitor, setMonitor] = useState(
-		isConfigure
-			? {}
-			: {
+		isCreate
+			? {
 					url: "",
 					name: "",
 					type: "pagespeed",
 					notifications: [],
 					interval: 180000,
 				}
+			: {}
 	);
 	const [https, setHttps] = useState(true);
 	const [errors, setErrors] = useState({});
-
 	const [isOpen, setIsOpen] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const [isUpdating, setIsUpdating] = useState(false);
-	const [isPausing, setIsPausing] = useState(false);
 
 	// Setup
 	const { t } = useTranslation();
@@ -89,9 +85,9 @@ const PageSpeedSetup = () => {
 
 	// Hooks for API actions
 	const [createMonitor, isCreating] = useCreateMonitor();
-	const [isLoading] = isConfigure
-		? useFetchMonitorById({ monitorId, setMonitor, updateTrigger })
-		: [false];
+	const [isLoading] = isCreate
+		? [false]
+		: useFetchMonitorById({ monitorId, setMonitor, updateTrigger });
 	const [deleteMonitor] = useDeleteMonitor();
 	const [updateMonitor] = useUpdateMonitor();
 	const [pauseMonitor] = usePauseMonitor();
@@ -99,9 +95,7 @@ const PageSpeedSetup = () => {
 	// Handlers
 	const onSubmit = async (event) => {
 		event.preventDefault();
-		if (isConfigure) {
-			await updateMonitor({ monitor, redirect: "/pagespeed" });
-		} else {
+		if (isCreate) {
 			let form = {
 				url: `http${https ? "s" : ""}://` + monitor.url,
 				name: monitor.name === "" ? monitor.url : monitor.name,
@@ -126,6 +120,25 @@ const PageSpeedSetup = () => {
 				notifications: monitor.notifications,
 			};
 			await createMonitor({ monitor: form, redirect: "/pagespeed" });
+		} else {
+			const monitorParams = {
+				url: monitor.url,
+				name: monitor.name === "" ? monitor.url : monitor.name,
+				type: monitor.type,
+				interval: monitor.interval,
+			};
+			const { error } = monitorValidation.validate(monitorParams, { abortEarly: false });
+			if (error) {
+				const newErrors = {};
+				error.details.forEach((err) => {
+					newErrors[err.path[0]] = err.message;
+				});
+				setErrors(newErrors);
+				console.log(newErrors);
+				createToast({ body: t("checkFormError") });
+				return;
+			}
+			await updateMonitor({ monitor, redirect: "/pagespeed" });
 		}
 	};
 
@@ -173,7 +186,7 @@ const PageSpeedSetup = () => {
 
 	return (
 		<Box
-			className={isConfigure ? "configure-pagespeed" : "create-monitor"}
+			className={!isCreate ? "configure-pagespeed" : "create-monitor"}
 			sx={{
 				"& h1": { color: theme.palette.primary.contrastText },
 			}}
@@ -185,7 +198,7 @@ const PageSpeedSetup = () => {
 					<Breadcrumbs list={CRUMBS} />
 					<Stack
 						component="form"
-						className={isConfigure ? "" : "create-monitor-form"}
+						className={!isCreate ? "" : "create-monitor-form"}
 						onSubmit={onSubmit}
 						noValidate
 						spellCheck="false"
@@ -205,14 +218,12 @@ const PageSpeedSetup = () => {
 										component="span"
 										fontSize="inherit"
 										color={
-											isConfigure
-												? theme.palette.primary.contrastTextSecondary
-												: undefined
+											!isCreate ? theme.palette.primary.contrastTextSecondary : undefined
 										}
 									>
-										{isConfigure ? monitor.name : t("createYour") + " "}
+										{!isCreate ? monitor.name : t("createYour") + " "}
 									</Typography>
-									{!isConfigure ? (
+									{isCreate ? (
 										<Typography
 											component="span"
 											fontSize="inherit"
@@ -225,7 +236,7 @@ const PageSpeedSetup = () => {
 										<></>
 									)}
 								</Typography>
-								{isConfigure && (
+								{!isCreate && (
 									<Stack
 										direction="row"
 										alignItems="center"
@@ -281,7 +292,7 @@ const PageSpeedSetup = () => {
 									</Stack>
 								)}
 							</Box>
-							{isConfigure && (
+							{!isCreate && (
 								<Box
 									alignSelf="flex-end"
 									ml="auto"
@@ -340,7 +351,7 @@ const PageSpeedSetup = () => {
 								</Typography>
 							</Box>
 							<Stack
-								gap={isConfigure ? theme.spacing(20) : theme.spacing(15)}
+								gap={!isCreate ? theme.spacing(20) : theme.spacing(15)}
 								sx={{
 									".MuiInputBase-root:has(> .Mui-disabled)": {
 										backgroundColor: theme.palette.tertiary.main,
@@ -351,17 +362,15 @@ const PageSpeedSetup = () => {
 									type={"url"}
 									name="url"
 									id="monitor-url"
-									label={isConfigure ? t("url") : t("urlMonitor")}
-									startAdornment={
-										!isConfigure ? <HttpAdornment https={https} /> : undefined
-									}
+									label={!isCreate ? t("url") : t("urlMonitor")}
+									startAdornment={isCreate ? <HttpAdornment https={https} /> : undefined}
 									placeholder="random.website.com"
 									value={monitor.url || ""}
 									onChange={handleChange}
-									onBlur={!isConfigure ? handleBlur : undefined}
+									onBlur={isCreate ? handleBlur : undefined}
 									error={!!errors["url"]}
 									helperText={errors["url"]}
-									disabled={isConfigure}
+									disabled={!isCreate}
 								/>
 								<TextInput
 									type="text"
@@ -377,7 +386,7 @@ const PageSpeedSetup = () => {
 								/>
 							</Stack>
 						</ConfigBox>
-						{!isConfigure && (
+						{isCreate && (
 							<ConfigBox>
 								<Box>
 									<Typography
@@ -448,7 +457,7 @@ const PageSpeedSetup = () => {
 							<NotificationsConfig
 								notifications={notifications}
 								setMonitor={setMonitor}
-								setNotifications={isConfigure ? monitor.notifications : undefined}
+								setNotifications={isCreate ? undefined : monitor.notifications}
 							/>
 						</ConfigBox>
 						<ConfigBox>
@@ -460,7 +469,7 @@ const PageSpeedSetup = () => {
 									{t("distributedUptimeCreateAdvancedSettings")}
 								</Typography>
 							</Box>
-							<Stack gap={theme.spacing(isConfigure ? 20 : 12)}>
+							<Stack gap={theme.spacing(isCreate ? 12 : 20)}>
 								<Select
 									id="monitor-interval"
 									name="interval"
@@ -474,23 +483,22 @@ const PageSpeedSetup = () => {
 						<Stack
 							direction="row"
 							justifyContent="flex-end"
-							mt={isConfigure ? "auto" : undefined}
+							mt={isCreate ? undefined : "auto"}
 						>
 							<Button
 								type="submit"
 								variant="contained"
 								color="accent"
 								disabled={!Object.values(errors).every((value) => value === undefined)}
-								loading={isLoading || isDeleting || isUpdating || isPausing || isCreating}
-								sx={isConfigure ? { px: theme.spacing(12) } : undefined}
+								sx={isCreate ? undefined : { px: theme.spacing(12) }}
 							>
-								{isConfigure ? t("settingsSave") : t("createMonitor")}
+								{isCreate ? t("createMonitor") : t("settingsSave")}
 							</Button>
 						</Stack>
 					</Stack>
 				</>
 			)}
-			{isConfigure && (
+			{!isCreate && (
 				<Dialog
 					open={isOpen}
 					theme={theme}
@@ -499,7 +507,6 @@ const PageSpeedSetup = () => {
 					onCancel={() => setIsOpen(false)}
 					confirmationButtonLabel={t("delete")}
 					onConfirm={handleRemove}
-					isLoading={isLoading || isDeleting || isUpdating || isPausing}
 				/>
 			)}
 		</Box>
