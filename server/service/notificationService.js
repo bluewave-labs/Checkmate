@@ -1,4 +1,8 @@
+const SERVICE_NAME = "NotificationService";
+
 class NotificationService {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({
 		emailService,
 		db,
