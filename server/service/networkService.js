@@ -1,5 +1,6 @@
 import jmespath from "jmespath";
 import https from "https";
+import { decrypt } from "../utils/encryptionUtil.js";
 
 const SERVICE_NAME = "NetworkService";
 const UPROCK_ENDPOINT = "https://api.uprock.com/checkmate/push";
@@ -432,13 +433,36 @@ class NetworkService {
 		throw err;
 	}
 
-	async requestWebhook(type, url, body, headers = {}) {
+	async requestWebhook(notification, body) {
 		try {
-			const response = await this.axios.post(url, body, {
-				headers: {
-					"Content-Type": "application/json",
-					...headers,
-				},
+			const { type, address } = notification;
+
+			// Webhook Auth Headers
+			const headers = { "Content-Type": "application/json" };
+
+			if (
+				type === "webhook" &&
+				notification.webhookAuthType &&
+				notification.webhookAuthType !== "none"
+			) {
+				if (notification.webhookAuthType === "basic") {
+					const password = decrypt(notification.password);
+					if (password) {
+						const encodedCredentials = Buffer.from(
+							`${notification.username}:${password}`
+						).toString("base64");
+						headers["Authorization"] = `Basic ${encodedCredentials}`;
+					}
+				} else if (notification.webhookAuthType === "bearer") {
+					const bearerToken = decrypt(notification.bearerToken);
+					if (bearerToken) {
+						headers["Authorization"] = `Bearer ${bearerToken}`;
+					}
+				}
+			}
+
+			const response = await this.axios.post(address, body, {
+				headers: headers,
 			});
 
 			return {
@@ -459,7 +483,7 @@ class NetworkService {
 				type: "webhook",
 				status: false,
 				code: error.response?.status || this.NETWORK_ERROR,
-				message: `Failed to send ${type} notification`,
+				message: `Failed to send ${notification.type} notification`,
 				payload: error.response?.data,
 			};
 		}
