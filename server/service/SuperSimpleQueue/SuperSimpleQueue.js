@@ -20,7 +20,8 @@ class SuperSimpleQueue {
 	init = async () => {
 		try {
 			this.scheduler = new Scheduler({
-				storeType: "mongo",
+				// storeType: "mongo",
+				// storeType: "redis",
 				logLevel: "debug",
 				debug: true,
 				dbUri: this.appSettings.dbConnectionString,
