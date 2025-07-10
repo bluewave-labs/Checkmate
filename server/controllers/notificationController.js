@@ -3,6 +3,7 @@ import {
 	createNotificationBodyValidation,
 } from "../validation/joi.js";
 import { handleError, handleValidationError } from "./controllerUtils.js";
+import { encrypt } from "../utils/encryptionUtil.js";
 
 const SERVICE_NAME = "NotificationController";
 
@@ -61,6 +62,14 @@ class NotificationController {
 			const { _id, teamId } = req.user;
 			body.userId = _id;
 			body.teamId = teamId;
+
+			if (body.password) {
+				body.password = encrypt(body.password);
+			}
+			if (body.bearerToken) {
+				body.bearerToken = encrypt(body.bearerToken);
+			}
+
 			const notification = await this.db.createNotification(body);
 			return res.success({
 				msg: "Notification created successfully",
@@ -117,7 +126,16 @@ class NotificationController {
 		}
 
 		try {
-			const notification = await this.db.editNotification(req.params.id, req.body);
+			const body = req.body;
+
+			if (body.password) {
+				body.password = encrypt(body.password);
+			}
+			if (body.bearerToken) {
+				body.bearerToken = encrypt(body.bearerToken);
+			}
+
+			const notification = await this.db.editNotification(req.params.id, body);
 			return res.success({
 				msg: "Notification updated successfully",
 				data: notification,
