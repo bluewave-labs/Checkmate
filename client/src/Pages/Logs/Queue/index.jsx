@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 
 // Utils
 import { useState } from "react";
-import { useFetchQueueData, useFlushQueue } from "../../../Hooks/queueHooks";
+import { useFetchQueueData, useFlushQueue } from "../../../Hooks/logHooks";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 

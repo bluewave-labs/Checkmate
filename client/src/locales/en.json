@@ -451,12 +451,16 @@
 		},
 		"tabs": {
 			"logs": "Server logs",
-			"queue": "Job queue"
+			"queue": "Job queue",
+			"diagnostics": "Diagnostics"
 		},
 		"title": "Logs",
 		"toast": {
 			"fetchLogsSuccess": "Logs fetched successfully"
 		}
+	},
+	"diagnosticsPage": {
+		"description": "System diagnostics"
 	},
 	"low": "low",
 	"maintenance": "maintenance",

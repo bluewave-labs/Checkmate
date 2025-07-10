@@ -51,7 +51,7 @@ const Logs = () => {
 	return (
 		<Stack gap={theme.spacing(4)}>
 			<Box>
-				<Typography variant="body">{t("logsPage.description")}</Typography>
+				<Typography variant="h2">{t("logsPage.description")}</Typography>
 			</Box>
 			<Stack
 				direction="row"
