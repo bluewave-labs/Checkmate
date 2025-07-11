@@ -9,6 +9,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { maintenanceWindowValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
+import MonitorList from "./Components/MonitorList";
+import Checkbox from "../../../Components/Inputs/Checkbox";
 
 import dayjs from "dayjs";
 import Select from "../../../Components/Inputs/Select";
@@ -129,6 +131,7 @@ const CreateMaintenance = () => {
 		monitors: [],
 	});
 	const [errors, setErrors] = useState({});
+	const [selectedMonitors, setSelectedMonitors] = useState([]);
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
@@ -165,6 +168,7 @@ const CreateMaintenance = () => {
 					durationUnit,
 					monitors: monitor ? [monitor] : [],
 				});
+				setSelectedMonitors(monitor ? [monitor] : []);
 			} catch (error) {
 				createToast({ body: "Failed to fetch data" });
 				logger.error("Failed to fetch monitors", error);
@@ -174,6 +178,11 @@ const CreateMaintenance = () => {
 		};
 		fetchMonitors();
 	}, [user]);
+
+	// Sync form.monitors with selectedMonitors
+	useEffect(() => {
+		setForm((prev) => ({ ...prev, monitors: selectedMonitors }));
+	}, [selectedMonitors]);
 
 	const handleSearch = (value) => {
 		setSearch(value);
@@ -211,6 +220,33 @@ const CreateMaintenance = () => {
 			return buildErrors(prev, key, error);
 		});
 	};
+
+	const handleMonitorsChange = (selected) => {
+		if (selected.some((m) => m._id === "__all__")) {
+			if (selectedMonitors.length !== monitors.length) {
+				setSelectedMonitors(monitors);
+			} else {
+				setSelectedMonitors([]);
+			}
+		} else {
+			// Ensure all are objects
+			const selectedObjs = selected
+				.map((sel) =>
+					typeof sel === "string" ? monitors.find((m) => m._id === sel) : sel
+				)
+				.filter(Boolean);
+			setSelectedMonitors(selectedObjs);
+		}
+		const { error } = maintenanceWindowValidation.validate(
+			{ monitors: selected },
+			{ abortEarly: false }
+		);
+		setErrors((prev) => {
+			return buildErrors(prev, "monitors", error);
+		});
+	};
+
+	const allSelected = selectedMonitors.length === monitors.length && monitors.length > 0;
 
 	const handleSubmit = async () => {
 		if (hasValidationErrors(form, maintenanceWindowValidation, setErrors)) return;
@@ -266,6 +302,10 @@ const CreateMaintenance = () => {
 			setIsLoading(false);
 		}
 	};
+
+	// Add Select All option to the dropdown
+	const selectAllOption = { _id: "__all__", name: "Select All" };
+	const monitorOptions = [selectAllOption, ...monitors];
 
 	return (
 		<Box className="create-maintenance">
@@ -526,18 +566,23 @@ const CreateMaintenance = () => {
 							label={t("addMonitors")}
 							multiple={true}
 							isAdorned={false}
-							options={monitors ? monitors : []}
+							options={monitorOptions}
 							filteredBy="name"
 							secondaryLabel={"type"}
 							inputValue={search}
-							value={form.monitors}
-							handleInputChange={handleSearch}
-							handleChange={handleSelectMonitors}
+							value={selectedMonitors}
+							handleInputChange={setSearch}
+							handleChange={handleMonitorsChange}
 							error={errors["monitors"]}
-							disabled={maintenanceWindowId !== undefined}
+							disabled={form.isAllMonitors}
+						/>
+						<MonitorList
+							selectedMonitors={selectedMonitors}
+							setSelectedMonitors={setSelectedMonitors}
 						/>
 					</Stack>
 				</ConfigBox>
+
 				<Box
 					ml="auto"
 					display="inline-block"
