@@ -85,6 +85,7 @@ export const getHumanReadableDuration = (ms) => {
 		hours: durationObj.hours(),
 		minutes: durationObj.minutes(),
 		seconds: durationObj.seconds(),
+		milliseconds: durationObj.milliseconds(),
 	};
 
 	const result = [];
@@ -100,6 +101,9 @@ export const getHumanReadableDuration = (ms) => {
 	}
 	if (result.length < 2 && parts.seconds > 0) {
 		result.push(`${parts.seconds}s`);
+	}
+	if (result.length < 2 && parts.milliseconds > 0 && parts.seconds < 1) {
+		result.push(`${parts.milliseconds.toFixed(2)}ms`);
 	}
 
 	if (result.length === 0) {

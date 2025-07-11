@@ -1,8 +1,6 @@
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import StatBox from "../../../../../Components/StatBox";
 import StatusBoxes from "../../../../../Components/StatusBoxes";
-
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 
@@ -24,20 +22,17 @@ const Metrics = ({ metrics = {} }) => {
 		});
 
 	return (
-		<Stack gap={theme.spacing(2)}>
-			<Typography variant="h2">{t("queuePage.metricsTable.title")}</Typography>
-			<StatusBoxes flexWrap="wrap">
-				{data.map((metric) => {
-					return (
-						<StatBox
-							key={metric.key}
-							heading={metric.title}
-							subHeading={metric.value}
-						/>
-					);
-				})}
-			</StatusBoxes>
-		</Stack>
+		<StatusBoxes flexWrap="wrap">
+			{data.map((metric) => {
+				return (
+					<StatBox
+						key={metric.key}
+						heading={metric.title}
+						subHeading={metric.value}
+					/>
+				);
+			})}
+		</StatusBoxes>
 	);
 };
 export default Metrics;

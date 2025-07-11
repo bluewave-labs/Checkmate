@@ -5,10 +5,12 @@ import Metrics from "./components/Metrics";
 import FailedJobTable from "./components/FailedJobTable";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
 
 // Utils
 import { useState } from "react";
-import { useFetchQueueData, useFlushQueue } from "../../../Hooks/queueHooks";
+import { useFetchQueueData, useFlushQueue } from "../../../Hooks/logHooks";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 
@@ -26,39 +28,46 @@ const QueueDetails = () => {
 	if (error || flushError) return <div>Error: {error.message}</div>;
 
 	return (
-		<Stack gap={theme.spacing(20)}>
-			<Metrics metrics={metrics} />
-			<JobTable jobs={jobs} />
-			<FailedJobTable metrics={metrics} />
-
-			<ButtonGroup
-				variant="contained"
-				color="accent"
-				sx={{
-					position: "sticky",
-					bottom: 0,
-					zIndex: 1000,
-					backgroundColor: theme.palette.primary.main,
-					p: theme.spacing(4),
-					border: `1px solid ${theme.palette.primary.lowContrast}`,
-					borderRadius: theme.spacing(2),
-				}}
+		<Stack gap={theme.spacing(4)}>
+			<Typography variant="h2">{t("queuePage.metricsTable.title")}</Typography>
+			<Divider color={theme.palette.accent.main} />
+			<Stack
+				gap={theme.spacing(20)}
+				mt={theme.spacing(10)}
 			>
-				<Button
-					onClick={() => {
-						setTrigger(!trigger);
+				<Metrics metrics={metrics} />
+				<JobTable jobs={jobs} />
+				<FailedJobTable metrics={metrics} />
+
+				<ButtonGroup
+					variant="contained"
+					color="accent"
+					sx={{
+						position: "sticky",
+						bottom: 0,
+						zIndex: 1000,
+						backgroundColor: theme.palette.primary.main,
+						p: theme.spacing(4),
+						border: `1px solid ${theme.palette.primary.lowContrast}`,
+						borderRadius: theme.spacing(2),
 					}}
-					loading={isLoading}
 				>
-					{t("queuePage.refreshButton")}
-				</Button>
-				<Button
-					onClick={() => flushQueue(trigger, setTrigger)}
-					loading={isFlushing}
-				>
-					{t("queuePage.flushButton")}
-				</Button>
-			</ButtonGroup>
+					<Button
+						onClick={() => {
+							setTrigger(!trigger);
+						}}
+						loading={isLoading}
+					>
+						{t("queuePage.refreshButton")}
+					</Button>
+					<Button
+						onClick={() => flushQueue(trigger, setTrigger)}
+						loading={isFlushing}
+					>
+						{t("queuePage.flushButton")}
+					</Button>
+				</ButtonGroup>
+			</Stack>
 		</Stack>
 	);
 };

@@ -13,6 +13,7 @@ class DiagnosticRoutes {
 		);
 
 		this.router.post("/db/stats", this.diagnosticController.getDbStats);
+		this.router.get("/system", this.diagnosticController.getSystemStats);
 	}
 
 	getRouter() {
