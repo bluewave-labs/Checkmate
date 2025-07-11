@@ -84,13 +84,11 @@ const PageSpeedSetup = () => {
 		useGetNotificationsByTeamId();
 
 	// Hooks for API actions
+	const [isLoading] = useFetchMonitorById({ monitorId, setMonitor, updateTrigger });
 	const [createMonitor, isCreating] = useCreateMonitor();
-	const [isLoading] = isCreate
-		? [false]
-		: useFetchMonitorById({ monitorId, setMonitor, updateTrigger });
-	const [deleteMonitor] = useDeleteMonitor();
-	const [updateMonitor] = useUpdateMonitor();
-	const [pauseMonitor] = usePauseMonitor();
+	const [deleteMonitor, isDeleting] = useDeleteMonitor();
+	const [updateMonitor, isUpdating] = useUpdateMonitor();
+	const [pauseMonitor, isPausing] = usePauseMonitor();
 
 	// Handlers
 	const onSubmit = async (event) => {
@@ -186,7 +184,6 @@ const PageSpeedSetup = () => {
 
 	return (
 		<Box
-			className={!isCreate ? "configure-pagespeed" : "create-monitor"}
 			sx={{
 				"& h1": { color: theme.palette.primary.contrastText },
 			}}
@@ -198,7 +195,6 @@ const PageSpeedSetup = () => {
 					<Breadcrumbs list={CRUMBS} />
 					<Stack
 						component="form"
-						className={!isCreate ? "" : "create-monitor-form"}
 						onSubmit={onSubmit}
 						noValidate
 						spellCheck="false"
@@ -299,7 +295,7 @@ const PageSpeedSetup = () => {
 								>
 									<Button
 										onClick={handlePause}
-										loading={isLoading}
+										loading={isLoading || isCreating || isDeleting || isUpdating || isPausing}
 										variant="contained"
 										color="secondary"
 										sx={{
@@ -327,7 +323,7 @@ const PageSpeedSetup = () => {
 										)}
 									</Button>
 									<Button
-										loading={isLoading}
+										loading={isLoading || isCreating || isDeleting || isUpdating || isPausing}
 										variant="contained"
 										color="error"
 										onClick={() => setIsOpen(true)}
@@ -427,10 +423,9 @@ const PageSpeedSetup = () => {
 										</ButtonGroup>
 									</Stack>
 									{errors["type"] ? (
-										<Box className="error-container">
+										<Box>
 											<Typography
 												component="p"
-												className="input-error"
 												color={theme.palette.error.contrastText}
 											>
 												{errors["type"]}
@@ -489,6 +484,7 @@ const PageSpeedSetup = () => {
 								type="submit"
 								variant="contained"
 								color="accent"
+								loading={isLoading || isCreating || isDeleting || isUpdating || isPausing}
 								disabled={!Object.values(errors).every((value) => value === undefined)}
 								sx={isCreate ? undefined : { px: theme.spacing(12) }}
 							>
