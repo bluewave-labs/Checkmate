@@ -205,18 +205,22 @@ const useFetchStatsByMonitorId = ({
 const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
-		const fetchMonitor = async () => {
-			try {
-				setIsLoading(true);
-				const res = await networkService.getMonitorById({ monitorId: monitorId });
-				setMonitor(res.data.data);
-			} catch (error) {
-				createToast({ body: error.message });
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchMonitor();
+		if (monitorId !== undefined) {
+			const fetchMonitor = async () => {
+				try {
+					setIsLoading(true);
+					const res = await networkService.getMonitorById({ monitorId: monitorId });
+					setMonitor(res.data.data);
+				} catch (error) {
+					createToast({ body: error.message });
+				} finally {
+					setIsLoading(false);
+				}
+			};
+			fetchMonitor();
+		} else {
+			setIsLoading(false);
+		}
 	}, [monitorId, setMonitor, updateTrigger]);
 	return [isLoading];
 };
