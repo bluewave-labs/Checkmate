@@ -304,7 +304,7 @@ const CreateMaintenance = () => {
 	};
 
 	// Add Select All option to the dropdown
-	const selectAllOption = { _id: "__all__", name: "Select All" };
+	const selectAllOption = { _id: "__all__", name: t("selectAll") };
 	const monitorOptions = [selectAllOption, ...monitors];
 
 	return (
