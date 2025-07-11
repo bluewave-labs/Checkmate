@@ -132,7 +132,6 @@ const PageSpeedSetup = () => {
 					newErrors[err.path[0]] = err.message;
 				});
 				setErrors(newErrors);
-				console.log(newErrors);
 				createToast({ body: t("checkFormError") });
 				return;
 			}
@@ -295,7 +294,9 @@ const PageSpeedSetup = () => {
 								>
 									<Button
 										onClick={handlePause}
-										loading={isLoading || isCreating || isDeleting || isUpdating || isPausing}
+										loading={
+											isLoading || isCreating || isDeleting || isUpdating || isPausing
+										}
 										variant="contained"
 										color="secondary"
 										sx={{
@@ -323,7 +324,9 @@ const PageSpeedSetup = () => {
 										)}
 									</Button>
 									<Button
-										loading={isLoading || isCreating || isDeleting || isUpdating || isPausing}
+										loading={
+											isLoading || isCreating || isDeleting || isUpdating || isPausing
+										}
 										variant="contained"
 										color="error"
 										onClick={() => setIsOpen(true)}
