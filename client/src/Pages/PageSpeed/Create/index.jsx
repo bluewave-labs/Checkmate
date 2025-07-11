@@ -181,322 +181,316 @@ const PageSpeedSetup = () => {
 		await deleteMonitor({ monitor, redirect: "/pagespeed" });
 	};
 
+	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
+
+	if (Object.keys(monitor).length === 0) {
+		return <SkeletonLayout />;
+	}
+
 	return (
 		<Box
 			sx={{
 				"& h1": { color: theme.palette.primary.contrastText },
 			}}
 		>
-			{Object.keys(monitor).length === 0 ? (
-				<SkeletonLayout />
-			) : (
-				<>
-					<Breadcrumbs list={CRUMBS} />
-					<Stack
-						component="form"
-						onSubmit={onSubmit}
-						noValidate
-						spellCheck="false"
-						gap={theme.spacing(12)}
-						mt={theme.spacing(6)}
-					>
-						<Stack
-							direction="row"
-							gap={theme.spacing(2)}
+			<Breadcrumbs list={CRUMBS} />
+			<Stack
+				component="form"
+				onSubmit={onSubmit}
+				noValidate
+				spellCheck="false"
+				gap={theme.spacing(12)}
+				mt={theme.spacing(6)}
+			>
+				<Stack
+					direction="row"
+					gap={theme.spacing(2)}
+				>
+					<Box>
+						<Typography
+							component="h1"
+							variant="h1"
 						>
-							<Box>
+							<Typography
+								component="span"
+								fontSize="inherit"
+								color={
+									!isCreate ? theme.palette.primary.contrastTextSecondary : undefined
+								}
+							>
+								{!isCreate ? monitor.name : t("createYour") + " "}
+							</Typography>
+							{isCreate ? (
 								<Typography
-									component="h1"
-									variant="h1"
+									component="span"
+									fontSize="inherit"
+									fontWeight="inherit"
+									color={theme.palette.primary.contrastTextSecondary}
 								>
-									<Typography
-										component="span"
-										fontSize="inherit"
-										color={
-											!isCreate ? theme.palette.primary.contrastTextSecondary : undefined
-										}
-									>
-										{!isCreate ? monitor.name : t("createYour") + " "}
-									</Typography>
-									{isCreate ? (
-										<Typography
-											component="span"
-											fontSize="inherit"
-											fontWeight="inherit"
-											color={theme.palette.primary.contrastTextSecondary}
-										>
-											{t("pageSpeedMonitor")}
-										</Typography>
-									) : (
-										<></>
-									)}
+									{t("pageSpeedMonitor")}
 								</Typography>
-								{!isCreate && (
-									<Stack
-										direction="row"
-										alignItems="center"
-										height="fit-content"
-										gap={theme.spacing(2)}
-									>
-										<Tooltip
-											title={pagespeedStatusMsg[determineState(monitor)]}
-											disableInteractive
-											slotProps={{
-												popper: {
-													modifiers: [
-														{
-															name: "offset",
-															options: { offset: [0, -8] },
-														},
-													],
-												},
-											}}
-										>
-											<Box>
-												<PulseDot color={statusColor[determineState(monitor)]} />
-											</Box>
-										</Tooltip>
-										<Typography
-											component="h2"
-											variant="monitorUrl"
-										>
-											{monitor.url?.replace(/^https?:\/\//, "") || "..."}
-										</Typography>
-										<Typography
-											position="relative"
-											variant="body2"
-											ml={theme.spacing(6)}
-											mt={theme.spacing(1)}
-											sx={{
-												"&:before": {
-													position: "absolute",
-													content: `""`,
-													width: 4,
-													height: 4,
-													borderRadius: "50%",
-													backgroundColor: theme.palette.primary.contrastTextTertiary,
-													opacity: 0.8,
-													left: -10,
-													top: "50%",
-													transform: "translateY(-50%)",
-												},
-											}}
-										>
-											{t("editing")}
-										</Typography>
-									</Stack>
-								)}
-							</Box>
-							{!isCreate && (
-								<Box
-									alignSelf="flex-end"
-									ml="auto"
-								>
-									<Button
-										onClick={handlePause}
-										loading={
-											isLoading || isCreating || isDeleting || isUpdating || isPausing
-										}
-										variant="contained"
-										color="secondary"
-										sx={{
-											pl: theme.spacing(4),
-											pr: theme.spacing(6),
-											"& svg": {
-												mr: theme.spacing(2),
-												"& path": {
-													stroke: theme.palette.primary.contrastTextTertiary,
-													strokeWidth: 0.1,
-												},
-											},
-										}}
-									>
-										{monitor?.isActive ? (
-											<>
-												<PauseCircleOutlineIcon />
-												{t("pause")}
-											</>
-										) : (
-											<>
-												<PlayCircleOutlineRoundedIcon />
-												{t("resume")}
-											</>
-										)}
-									</Button>
-									<Button
-										loading={
-											isLoading || isCreating || isDeleting || isUpdating || isPausing
-										}
-										variant="contained"
-										color="error"
-										onClick={() => setIsOpen(true)}
-										sx={{ ml: theme.spacing(6) }}
-									>
-										{t("remove")}
-									</Button>
-								</Box>
+							) : (
+								<></>
 							)}
-						</Stack>
-						<ConfigBox>
-							<Box>
+						</Typography>
+						{!isCreate && (
+							<Stack
+								direction="row"
+								alignItems="center"
+								height="fit-content"
+								gap={theme.spacing(2)}
+							>
+								<Tooltip
+									title={pagespeedStatusMsg[determineState(monitor)]}
+									disableInteractive
+									slotProps={{
+										popper: {
+											modifiers: [
+												{
+													name: "offset",
+													options: { offset: [0, -8] },
+												},
+											],
+										},
+									}}
+								>
+									<Box>
+										<PulseDot color={statusColor[determineState(monitor)]} />
+									</Box>
+								</Tooltip>
 								<Typography
 									component="h2"
-									variant="h2"
+									variant="monitorUrl"
 								>
-									{t("settingsGeneralSettings")}
+									{monitor.url?.replace(/^https?:\/\//, "") || "..."}
 								</Typography>
-								<Typography component="p">
-									{t("pageSpeedConfigureSettingsDescription")}
+								<Typography
+									position="relative"
+									variant="body2"
+									ml={theme.spacing(6)}
+									mt={theme.spacing(1)}
+									sx={{
+										"&:before": {
+											position: "absolute",
+											content: `""`,
+											width: theme.spacing(2),
+											height: theme.spacing(2),
+											borderRadius: "50%",
+											backgroundColor: theme.palette.primary.contrastTextTertiary,
+											opacity: 0.8,
+											left: theme.spacing(-5),
+											top: "50%",
+											transform: "translateY(-50%)",
+										},
+									}}
+								>
+									{t("editing")}
 								</Typography>
-							</Box>
-							<Stack
-								gap={!isCreate ? theme.spacing(20) : theme.spacing(15)}
+							</Stack>
+						)}
+					</Box>
+					{!isCreate && (
+						<Box
+							alignSelf="flex-end"
+							ml="auto"
+						>
+							<Button
+								onClick={handlePause}
+								loading={isBusy}
+								variant="contained"
+								color="secondary"
 								sx={{
-									".MuiInputBase-root:has(> .Mui-disabled)": {
-										backgroundColor: theme.palette.tertiary.main,
+									pl: theme.spacing(4),
+									pr: theme.spacing(6),
+									"& svg": {
+										mr: theme.spacing(2),
+										"& path": {
+											stroke: theme.palette.primary.contrastTextTertiary,
+											strokeWidth: 0.1,
+										},
 									},
 								}}
 							>
-								<TextInput
-									type={"url"}
-									name="url"
-									id="monitor-url"
-									label={!isCreate ? t("url") : t("urlMonitor")}
-									startAdornment={isCreate ? <HttpAdornment https={https} /> : undefined}
-									placeholder="random.website.com"
-									value={monitor.url || ""}
-									onChange={handleChange}
-									onBlur={isCreate ? handleBlur : undefined}
-									error={!!errors["url"]}
-									helperText={errors["url"]}
-									disabled={!isCreate}
+								{monitor?.isActive ? (
+									<>
+										<PauseCircleOutlineIcon />
+										{t("pause")}
+									</>
+								) : (
+									<>
+										<PlayCircleOutlineRoundedIcon />
+										{t("resume")}
+									</>
+								)}
+							</Button>
+							<Button
+								loading={isBusy}
+								variant="contained"
+								color="error"
+								onClick={() => setIsOpen(true)}
+								sx={{ ml: theme.spacing(6) }}
+							>
+								{t("remove")}
+							</Button>
+						</Box>
+					)}
+				</Stack>
+				<ConfigBox>
+					<Box>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("settingsGeneralSettings")}
+						</Typography>
+						<Typography component="p">
+							{t("pageSpeedConfigureSettingsDescription")}
+						</Typography>
+					</Box>
+					<Stack
+						gap={!isCreate ? theme.spacing(20) : theme.spacing(15)}
+						sx={{
+							".MuiInputBase-root:has(> .Mui-disabled)": {
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
+					>
+						<TextInput
+							type={"url"}
+							name="url"
+							id="monitor-url"
+							label={!isCreate ? t("url") : t("urlMonitor")}
+							startAdornment={isCreate ? <HttpAdornment https={https} /> : undefined}
+							placeholder="random.website.com"
+							value={monitor.url || ""}
+							onChange={handleChange}
+							onBlur={isCreate ? handleBlur : undefined}
+							error={!!errors["url"]}
+							helperText={errors["url"]}
+							disabled={!isCreate}
+						/>
+						<TextInput
+							type="text"
+							id="monitor-name"
+							name="name"
+							label={t("monitorDisplayName")}
+							isOptional={true}
+							placeholder="Google"
+							value={monitor.name || ""}
+							onChange={handleChange}
+							error={!!errors["name"]}
+							helperText={errors["name"]}
+						/>
+					</Stack>
+				</ConfigBox>
+				{isCreate && (
+					<ConfigBox>
+						<Box>
+							<Typography
+								component="h2"
+								variant="h2"
+							>
+								{t("distributedUptimeCreateChecks")}
+							</Typography>
+							<Typography component="p">
+								{t("distributedUptimeCreateChecksDescription")}
+							</Typography>
+						</Box>
+						<Stack gap={theme.spacing(12)}>
+							<Stack gap={theme.spacing(6)}>
+								<Radio
+									id="monitor-checks-http"
+									title="PageSpeed"
+									desc={t("pageSpeedLighthouseAPI")}
+									size="small"
+									value="http"
+									checked={monitor.type === "pagespeed"}
 								/>
-								<TextInput
-									type="text"
-									id="monitor-name"
-									name="name"
-									label={t("monitorDisplayName")}
-									isOptional={true}
-									placeholder="Google"
-									value={monitor.name || ""}
-									onChange={handleChange}
-									error={!!errors["name"]}
-									helperText={errors["name"]}
-								/>
+								<ButtonGroup sx={{ ml: "32px" }}>
+									<Button
+										variant="group"
+										filled={https.toString()}
+										onClick={() => setHttps(true)}
+									>
+										{t("https")}
+									</Button>
+									<Button
+										variant="group" // Why does this work?
+										filled={(!https).toString()} // There's nothing in the docs about this either
+										onClick={() => setHttps(false)}
+									>
+										{t("http")}
+									</Button>
+								</ButtonGroup>
 							</Stack>
-						</ConfigBox>
-						{isCreate && (
-							<ConfigBox>
+							{errors["type"] ? (
 								<Box>
 									<Typography
-										component="h2"
-										variant="h2"
+										component="p"
+										color={theme.palette.error.contrastText}
 									>
-										{t("distributedUptimeCreateChecks")}
-									</Typography>
-									<Typography component="p">
-										{t("distributedUptimeCreateChecksDescription")}
+										{errors["type"]}
 									</Typography>
 								</Box>
-								<Stack gap={theme.spacing(12)}>
-									<Stack gap={theme.spacing(6)}>
-										<Radio
-											id="monitor-checks-http"
-											title="PageSpeed"
-											desc={t("pageSpeedLighthouseAPI")}
-											size="small"
-											value="http"
-											checked={monitor.type === "pagespeed"}
-										/>
-										<ButtonGroup sx={{ ml: "32px" }}>
-											<Button
-												variant="group"
-												filled={https.toString()}
-												onClick={() => setHttps(true)}
-											>
-												{t("https")}
-											</Button>
-											<Button
-												variant="group" // Why does this work?
-												filled={(!https).toString()} // There's nothing in the docs about this either
-												onClick={() => setHttps(false)}
-											>
-												{t("http")}
-											</Button>
-										</ButtonGroup>
-									</Stack>
-									{errors["type"] ? (
-										<Box>
-											<Typography
-												component="p"
-												color={theme.palette.error.contrastText}
-											>
-												{errors["type"]}
-											</Typography>
-										</Box>
-									) : (
-										""
-									)}
-								</Stack>
-							</ConfigBox>
-						)}
-						<ConfigBox>
-							<Box>
-								<Typography
-									component="h2"
-									variant="h2"
-								>
-									{t("notificationConfig.title")}
-								</Typography>
-								<Typography component="p">
-									{t("notificationConfig.description")}
-								</Typography>
-							</Box>
-							<NotificationsConfig
-								notifications={notifications}
-								setMonitor={setMonitor}
-								setNotifications={isCreate ? undefined : monitor.notifications}
-							/>
-						</ConfigBox>
-						<ConfigBox>
-							<Box>
-								<Typography
-									component="h2"
-									variant="h2"
-								>
-									{t("distributedUptimeCreateAdvancedSettings")}
-								</Typography>
-							</Box>
-							<Stack gap={theme.spacing(isCreate ? 12 : 20)}>
-								<Select
-									id="monitor-interval"
-									name="interval"
-									label={t("checkFrequency")}
-									value={monitor?.interval / MS_PER_MINUTE || 3}
-									onChange={handleChange}
-									items={FREQUENCIES}
-								/>
-							</Stack>
-						</ConfigBox>
-						<Stack
-							direction="row"
-							justifyContent="flex-end"
-							mt={isCreate ? undefined : "auto"}
-						>
-							<Button
-								type="submit"
-								variant="contained"
-								color="accent"
-								loading={isLoading || isCreating || isDeleting || isUpdating || isPausing}
-								disabled={!Object.values(errors).every((value) => value === undefined)}
-								sx={isCreate ? undefined : { px: theme.spacing(12) }}
-							>
-								{isCreate ? t("createMonitor") : t("settingsSave")}
-							</Button>
+							) : (
+								""
+							)}
 						</Stack>
+					</ConfigBox>
+				)}
+				<ConfigBox>
+					<Box>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("notificationConfig.title")}
+						</Typography>
+						<Typography component="p">{t("notificationConfig.description")}</Typography>
+					</Box>
+					<NotificationsConfig
+						notifications={notifications}
+						setMonitor={setMonitor}
+						setNotifications={isCreate ? undefined : monitor.notifications}
+					/>
+				</ConfigBox>
+				<ConfigBox>
+					<Box>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("distributedUptimeCreateAdvancedSettings")}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(isCreate ? 12 : 20)}>
+						<Select
+							id="monitor-interval"
+							name="interval"
+							label={t("checkFrequency")}
+							value={monitor?.interval / MS_PER_MINUTE || 3}
+							onChange={handleChange}
+							items={FREQUENCIES}
+						/>
 					</Stack>
-				</>
-			)}
+				</ConfigBox>
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+					mt={isCreate ? undefined : "auto"}
+				>
+					<Button
+						type="submit"
+						variant="contained"
+						color="accent"
+						loading={isBusy}
+						disabled={!Object.values(errors).every((value) => value === undefined)}
+						sx={isCreate ? undefined : { px: theme.spacing(12) }}
+					>
+						{isCreate ? t("createMonitor") : t("settingsSave")}
+					</Button>
+				</Stack>
+			</Stack>
 			{!isCreate && (
 				<Dialog
 					open={isOpen}
