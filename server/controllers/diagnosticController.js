@@ -53,15 +53,34 @@ class DiagnosticController {
 		}
 	}
 
-	async getSystemStats(req, res, next) {
+	async getCPUUsage() {
+		try {
+			const startUsage = process.cpuUsage();
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const endUsage = process.cpuUsage(startUsage);
+			const cpuUsage = {
+				userUsageMs: endUsage.user / 1000,
+				systemUsageMs: endUsage.system / 1000,
+				usagePercentage: ((endUsage.user + endUsage.system) / 1000 / 1000) * 100,
+			};
+			return cpuUsage;
+		} catch (error) {
+			return {
+				userUsageMs: 0,
+				systemUsageMs: 0,
+			};
+		}
+	}
+
+	getSystemStats = async (req, res, next) => {
 		try {
 			// Memory Usage
 			const totalMemory = os.totalmem();
 			const freeMemory = os.freemem();
 
 			const osStats = {
-				freeMemoryMb: freeMemory / 1024 / 1024, // MB
-				totalMemoryMb: totalMemory / 1024 / 1024, // MB
+				freeMemoryBytes: freeMemory, // bytes
+				totalMemoryBytes: totalMemory, // bytes
 			};
 
 			const used = process.memoryUsage();
@@ -71,18 +90,14 @@ class DiagnosticController {
 			}
 
 			// CPU Usage
-			const cpuUsage = process.cpuUsage();
-			const cpuMetrics = {
-				userUsageMs: cpuUsage.user / 1000, // ms
-				systemUsageMs: cpuUsage.system / 1000, // ms
-			};
+			const cpuMetrics = await this.getCPUUsage();
 
 			// V8 Heap Statistics
 			const heapStats = v8.getHeapStatistics();
 			const v8Metrics = {
-				totalHeapSizeMb: heapStats.total_heap_size / 1024 / 1024, // MB
-				usedHeapSizeMb: heapStats.used_heap_size / 1024 / 1024, // MB
-				heapSizeLimitMb: heapStats.heap_size_limit / 1024 / 1024, // MB
+				totalHeapSizeBytes: heapStats.total_heap_size, // bytes
+				usedHeapSizeBytes: heapStats.used_heap_size, // bytes
+				heapSizeLimitBytes: heapStats.heap_size_limit, // bytes
 			};
 
 			// Event Loop Delay
@@ -97,7 +112,7 @@ class DiagnosticController {
 			}
 
 			// Uptime
-			const uptime = process.uptime(); // seconds
+			const uptimeMs = process.uptime() * 1000; // ms
 
 			// Combine Metrics
 			const diagnostics = {
@@ -106,7 +121,7 @@ class DiagnosticController {
 				cpuUsage: cpuMetrics,
 				v8HeapStats: v8Metrics,
 				eventLoopDelayMs: eventLoopDelay,
-				uptimeSeconds: uptime,
+				uptimeMs,
 			};
 
 			return res.success({
@@ -116,6 +131,6 @@ class DiagnosticController {
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getMemoryUsage"));
 		}
-	}
+	};
 }
 export default DiagnosticController;
