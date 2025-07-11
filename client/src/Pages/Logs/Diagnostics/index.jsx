@@ -2,6 +2,8 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Gauges from "./components/gauges";
+import Stats from "./components/stats";
+import Divider from "@mui/material/Divider";
 
 import { useTheme } from "@emotion/react";
 import { useState } from "react";
@@ -15,14 +17,26 @@ const Diagnostics = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [diagnostics, isLoading, error] = useFetchDiagnostics();
-	console.log(diagnostics);
 	// Setup
 	return (
 		<Stack gap={theme.spacing(4)}>
 			<Box>
-				<Typography variant="h2">{t("diagnosticsPage.description")}</Typography>
+				<Typography variant="h2">{t("diagnosticsPage.diagnosticDescription")}</Typography>
 			</Box>
-			<Gauges diagnostics={diagnostics} />
+			<Divider color={theme.palette.accent.main} />
+			<Stack
+				gap={theme.spacing(20)}
+				mt={theme.spacing(10)}
+			>
+				<Gauges
+					diagnostics={diagnostics}
+					isLoading={isLoading}
+				/>
+				<Stats
+					diagnostics={diagnostics}
+					isLoading={isLoading}
+				/>
+			</Stack>
 		</Stack>
 	);
 };

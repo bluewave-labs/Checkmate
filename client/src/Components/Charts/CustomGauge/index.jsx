@@ -1,8 +1,10 @@
 import { useTheme } from "@emotion/react";
 import { useEffect, useState, useMemo } from "react";
+import Stack from "@mui/material/Stack";
 import { Box, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import "./index.css";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const MINIMUM_VALUE = 0;
 const MAXIMUM_VALUE = 100;
@@ -16,6 +18,8 @@ const MAXIMUM_VALUE = 100;
  * @param {number} [props.radius=60] - Radius of the gauge circle
  * @param {number} [props.strokeWidth=15] - Width of the gauge stroke
  * @param {number} [props.threshold=50] - Threshold for color change
+ * @param {number} [props.precision=1] - Precision of the progress percentage
+ * @param {string} [props.unit="%"] - Unit of progress
  *
  * @example
  * <CustomGauge
@@ -27,7 +31,15 @@ const MAXIMUM_VALUE = 100;
  *
  * @returns {React.ReactElement} Rendered CustomGauge component
  */
-const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 50 }) => {
+const CustomGauge = ({
+	isLoading = false,
+	progress = 0,
+	radius = 70,
+	strokeWidth = 15,
+	threshold = 50,
+	precision = 1,
+	unit = "%",
+}) => {
 	const theme = useTheme();
 	// Calculate the length of the stroke for the circle
 	const { circumference, totalSize, strokeLength } = useMemo(
@@ -57,6 +69,20 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 			? theme.palette.error.lowContrast
 			: theme.palette.accent.main;
 
+	if (isLoading) {
+		return (
+			<Stack
+				className="radial-chart"
+				width={radius}
+				height={radius}
+				alignItems="center"
+				justifyContent="center"
+			>
+				<CircularProgress color="accent" />
+			</Stack>
+		);
+	}
+
 	return (
 		<Box
 			className="radial-chart"
@@ -71,7 +97,7 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 			>
 				<circle
 					className="radial-chart-base"
-					stroke={theme.palette.secondary.light} // CAIO_REVIEW
+					stroke={theme.palette.secondary.light}
 					strokeWidth={strokeWidth}
 					fill="none"
 					cx={totalSize / 2} // Center the circle
@@ -103,7 +129,7 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 					fill: theme.typography.h2.color,
 				}}
 			>
-				{`${progressWithinRange.toFixed(1)}%`}
+				{`${progressWithinRange.toFixed(precision)}${unit}`}
 			</Typography>
 		</Box>
 	);
@@ -112,8 +138,11 @@ const CustomGauge = ({ progress = 0, radius = 70, strokeWidth = 15, threshold = 
 export default CustomGauge;
 
 CustomGauge.propTypes = {
+	isLoading: PropTypes.bool,
 	progress: PropTypes.number,
 	radius: PropTypes.number,
 	strokeWidth: PropTypes.number,
 	threshold: PropTypes.number,
+	precision: PropTypes.number,
+	unit: PropTypes.string,
 };

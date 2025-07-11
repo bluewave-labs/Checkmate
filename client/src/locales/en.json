@@ -438,7 +438,7 @@
 	"inviteNoTokenFound": "No invite token found",
 	"loginHere": "Login here",
 	"logsPage": {
-		"description": "This page shows the latest 1000 lines of logs from the Checkmate server",
+		"description": "System logs - last 1000 lines",
 		"logLevelSelect": {
 			"title": "Log level",
 			"values": {
@@ -460,7 +460,25 @@
 		}
 	},
 	"diagnosticsPage": {
-		"description": "System diagnostics"
+		"diagnosticDescription": "System diagnostics",
+		"statsDescription": "System statistics",
+		"gauges": {
+			"heapAllocationTitle": "Heap allocation",
+			"heapAllocationSubtitle": "% of available memory",
+			"heapUsageTitle": "Heap usage",
+			"heapUsageSubtitle": "% of available memory",
+			"heapUtilizationTitle": "Heap utilization",
+			"heapUtilizationSubtitle": "% of allocated",
+			"instantCpuUsageTitle": "Instant CPU usage",
+			"instantCpuUsageSubtitle": "% of 1s used by CPU"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "Event loop delay",
+			"uptimeTitle": "Uptime",
+			"usedHeapSizeTitle": "Used heap size",
+			"totalHeapSizeTitle": "Total heap size",
+			"osMemoryLimitTitle": "OS Memory Limit"
+		}
 	},
 	"low": "low",
 	"maintenance": "maintenance",
