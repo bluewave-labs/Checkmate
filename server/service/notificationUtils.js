@@ -167,7 +167,9 @@ class NotificationUtils {
 
 		// Apply jitter (random factor to prevent thundering herd)
 		const jitterRange = nextDelay * jitterFactor;
-		nextDelay = nextDelay - jitterRange / 2 + Math.random() * jitterRange;
+		// Ensure delay never goes negative
+		const minDelay = Math.max(0, nextDelay - jitterRange / 2);
+		nextDelay = minDelay + Math.random() * jitterRange;
 
 		return Math.floor(nextDelay);
 	};
