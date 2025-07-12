@@ -150,9 +150,16 @@ class StatusService {
 			await monitor.save();
 
 			// If status changed from down to up, reset backoff parameters for all associated notifications
-			if (prevStatus === false && status === true && monitor.notifications && monitor.notifications.length > 0) {
+			if (
+				prevStatus === false &&
+				status === true &&
+				monitor.notifications &&
+				monitor.notifications.length > 0
+			) {
 				try {
-					const notifications = await this.db.getNotificationsByIds(monitor.notifications);
+					const notifications = await this.db.getNotificationsByIds(
+						monitor.notifications
+					);
 					for (const notification of notifications) {
 						// Reset backoff parameters
 						notification.currentBackoffDelay = null;

@@ -57,38 +57,39 @@ class NotificationService {
 
 		// Get all notifications that need to be sent
 		const notifications = await this.db.getNotificationsByIds(notificationIDs);
-		
+
 		// Filter notifications based on backoff settings
 		const notificationsToSend = [];
 		const notificationsToUpdate = [];
-		
+
 		for (const notification of notifications) {
 			// Check if we should send this notification based on backoff settings
 			if (this.notificationUtils.shouldSendNotification(notification)) {
 				notificationsToSend.push(notification);
-				
+
 				// Update backoff parameters
 				notification.lastNotificationTime = new Date();
-				
+
 				// If first notification, set current delay to initial
 				if (!notification.currentBackoffDelay) {
 					notification.currentBackoffDelay = notification.initialBackoffDelay;
 				} else {
 					// Calculate next backoff with jitter
-					notification.currentBackoffDelay = this.notificationUtils.calculateNextBackoffDelay(
-						notification.currentBackoffDelay,
-						notification.backoffMultiplier,
-						notification.maxBackoffDelay
-					);
+					notification.currentBackoffDelay =
+						this.notificationUtils.calculateNextBackoffDelay(
+							notification.currentBackoffDelay,
+							notification.backoffMultiplier,
+							notification.maxBackoffDelay
+						);
 				}
-				
+
 				notificationsToUpdate.push(notification);
 			}
 		}
-		
+
 		// If no notifications to send after filtering, we're done
 		if (notificationsToSend.length === 0) return false;
-		
+
 		// Save updated notification backoff parameters
 		for (const notification of notificationsToUpdate) {
 			await notification.save();
@@ -112,8 +113,13 @@ class NotificationService {
 				await this.notificationUtils.buildHardwareNotificationMessage(alerts);
 
 			// Use filtered notifications instead of all notificationIDs
-			const notificationIDsToSend = notificationsToSend.map(n => n._id.toString());
-			const success = await this.notifyAll({ notificationIDs: notificationIDsToSend, subject, html, content });
+			const notificationIDsToSend = notificationsToSend.map((n) => n._id.toString());
+			const success = await this.notifyAll({
+				notificationIDs: notificationIDsToSend,
+				subject,
+				html,
+				content,
+			});
 			return success;
 		}
 
@@ -121,10 +127,15 @@ class NotificationService {
 		const { subject, html } =
 			await this.notificationUtils.buildStatusEmail(networkResponse);
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
-		
+
 		// Use filtered notifications instead of all notificationIDs
-		const notificationIDsToSend = notificationsToSend.map(n => n._id.toString());
-		const success = this.notifyAll({ notificationIDs: notificationIDsToSend, subject, html, content });
+		const notificationIDsToSend = notificationsToSend.map((n) => n._id.toString());
+		const success = this.notifyAll({
+			notificationIDs: notificationIDsToSend,
+			subject,
+			html,
+			content,
+		});
 		return success;
 	}
 
@@ -142,7 +153,7 @@ class NotificationService {
 					service: "NotificationService",
 					method: "notifyAll",
 					message: `Failed to send notification: ${error.message}`,
-					notificationId: notification._id
+					notificationId: notification._id,
 				});
 				return false;
 			}

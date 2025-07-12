@@ -146,30 +146,35 @@ class NotificationUtils {
 
 	/**
 	 * Calculates the next backoff delay with jitter for exponential backoff strategy
-	 * 
+	 *
 	 * @param {Number} currentDelay - Current delay in milliseconds
 	 * @param {Number} multiplier - Multiplier for exponential growth
 	 * @param {Number} maxDelay - Maximum delay in milliseconds
 	 * @param {Number} jitterFactor - Factor for randomness (0-1)
 	 * @returns {Number} - Next delay in milliseconds
 	 */
-	calculateNextBackoffDelay = (currentDelay, multiplier, maxDelay, jitterFactor = notificationConfig.JITTER_FACTOR) => {
+	calculateNextBackoffDelay = (
+		currentDelay,
+		multiplier,
+		maxDelay,
+		jitterFactor = notificationConfig.JITTER_FACTOR
+	) => {
 		// Calculate base delay with exponential growth
 		let nextDelay = currentDelay * multiplier;
-		
+
 		// Apply maximum limit
 		nextDelay = Math.min(nextDelay, maxDelay);
-		
+
 		// Apply jitter (random factor to prevent thundering herd)
 		const jitterRange = nextDelay * jitterFactor;
-		nextDelay = nextDelay - (jitterRange / 2) + (Math.random() * jitterRange);
-		
+		nextDelay = nextDelay - jitterRange / 2 + Math.random() * jitterRange;
+
 		return Math.floor(nextDelay);
 	};
 
 	/**
 	 * Determines if a notification should be sent based on backoff settings
-	 * 
+	 *
 	 * @param {Object} notification - Notification object with backoff settings
 	 * @returns {Boolean} - Whether notification should be sent
 	 */
@@ -185,10 +190,12 @@ class NotificationUtils {
 		}
 
 		// Get current backoff delay (or use initial if not set)
-		const currentDelay = notification.currentBackoffDelay || notification.initialBackoffDelay;
-		
+		const currentDelay =
+			notification.currentBackoffDelay || notification.initialBackoffDelay;
+
 		// Check if enough time has passed since last notification
-		const timeSinceLastNotification = Date.now() - new Date(notification.lastNotificationTime).getTime();
+		const timeSinceLastNotification =
+			Date.now() - new Date(notification.lastNotificationTime).getTime();
 		return timeSinceLastNotification >= currentDelay;
 	};
 }
