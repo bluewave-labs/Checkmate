@@ -4,7 +4,7 @@ import { TabPanel } from "@mui/lab";
 import ConfigBox from "../../../../../Components/ConfigBox";
 import Checkbox from "../../../../../Components/Inputs/Checkbox";
 import TextInput from "../../../../../Components/Inputs/TextInput";
-import Select from "../../../../../Components/Inputs/Select";
+import Search from "../../../../../Components/Inputs/Search";
 import ImageUpload from "../../../../../Components/Inputs/ImageUpload";
 import ColorPicker from "../../../../../Components/Inputs/ColorPicker";
 import Progress from "../Progress";
@@ -14,6 +14,8 @@ import { useTheme } from "@emotion/react";
 import timezones from "../../../../../Utils/timezones.json";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+
 
 const TabSettings = ({
 	isCreate,
@@ -28,6 +30,7 @@ const TabSettings = ({
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const [timezoneValue, setTimezoneValue] = useState("");
 
 	return (
 		<TabPanel value={tabValue}>
@@ -101,13 +104,21 @@ const TabSettings = ({
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(6)}>
-						<Select
+						<Search
 							id="timezone"
-							name="timezone"
 							label={t("settingsDisplayTimezone")}
-							items={timezones}
-							value={form.timezone}
-							onChange={handleFormChange}
+							options={timezones}
+							filteredBy="name"
+							value={timezones.find((tz) => tz._id === form.timezone) || null}
+							inputValue={timezoneValue}
+							handleInputChange={(newVal) => setTimezoneValue(newVal)}
+							handleChange={(newValue) => {
+								setTimezoneValue("");
+								handleFormChange({
+									target: { name: "timezone", value: newValue?._id || "" },
+								});
+							}}
+							isAdorned={false}
 						/>
 					</Stack>
 				</ConfigBox>
