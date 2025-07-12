@@ -222,31 +222,20 @@ const CreateMaintenance = () => {
 	};
 
 	const handleMonitorsChange = (selected) => {
-		if (selected.some((m) => m._id === "__all__")) {
-			if (selectedMonitors.length !== monitors.length) {
-				setSelectedMonitors(monitors);
-			} else {
-				setSelectedMonitors([]);
-			}
-		} else {
-			// Ensure all are objects
-			const selectedObjs = selected
-				.map((sel) =>
-					typeof sel === "string" ? monitors.find((m) => m._id === sel) : sel
-				)
-				.filter(Boolean);
-			setSelectedMonitors(selectedObjs);
-		}
+		// Ensure all are objects
+		const selectedObjs = selected
+			.map((sel) => (typeof sel === "string" ? monitors.find((m) => m._id === sel) : sel))
+			.filter(Boolean);
+		setSelectedMonitors(selectedObjs);
+
 		const { error } = maintenanceWindowValidation.validate(
-			{ monitors: selected },
+			{ monitors: selectedObjs },
 			{ abortEarly: false }
 		);
 		setErrors((prev) => {
 			return buildErrors(prev, "monitors", error);
 		});
 	};
-
-	const allSelected = selectedMonitors.length === monitors.length && monitors.length > 0;
 
 	const handleSubmit = async () => {
 		if (hasValidationErrors(form, maintenanceWindowValidation, setErrors)) return;
@@ -302,10 +291,6 @@ const CreateMaintenance = () => {
 			setIsLoading(false);
 		}
 	};
-
-	// Add Select All option to the dropdown
-	const selectAllOption = { _id: "__all__", name: t("selectAll") };
-	const monitorOptions = [selectAllOption, ...monitors];
 
 	return (
 		<Box className="create-maintenance">
@@ -565,8 +550,8 @@ const CreateMaintenance = () => {
 							id={"monitors"}
 							label={t("addMonitors")}
 							multiple={true}
-							isAdorned={false}
-							options={monitorOptions}
+							isAdorned={true}
+							options={monitors}
 							filteredBy="name"
 							secondaryLabel={"type"}
 							inputValue={search}
