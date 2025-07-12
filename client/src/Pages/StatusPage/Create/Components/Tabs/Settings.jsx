@@ -14,7 +14,7 @@ import { useTheme } from "@emotion/react";
 import timezones from "../../../../../Utils/timezones.json";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 
 const TabSettings = ({
 	isCreate,
@@ -29,7 +29,25 @@ const TabSettings = ({
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const [timezoneValue, setTimezoneValue] = useState("");
+	const [rawInput, setRawInput] = useState("");
+
+	const selectedTimezone = useMemo(
+		() => timezones.find((tz) => tz._id === form.timezone) ?? null,
+		[form.timezone, timezones]
+	);
+
+	const handleTimezoneChange = useCallback(
+		(newValue) => {
+			setRawInput("");
+			handleFormChange({
+				target: {
+					name: "timezone",
+					value: newValue?._id ?? "",
+				},
+			});
+		},
+		[handleFormChange]
+	);
 
 	return (
 		<TabPanel value={tabValue}>
@@ -108,16 +126,12 @@ const TabSettings = ({
 							label={t("settingsDisplayTimezone")}
 							options={timezones}
 							filteredBy="name"
-							value={timezones.find((tz) => tz._id === form.timezone) || null}
-							inputValue={timezoneValue}
-							handleInputChange={(newVal) => setTimezoneValue(newVal)}
-							handleChange={(newValue) => {
-								setTimezoneValue("");
-								handleFormChange({
-									target: { name: "timezone", value: newValue?._id || "" },
-								});
-							}}
+							value={selectedTimezone}
+							inputValue={rawInput}
+							handleInputChange={(newVal) => setRawInput(newVal)}
+							handleChange={handleTimezoneChange}
 							isAdorned={false}
+							unit="timezone"
 						/>
 					</Stack>
 				</ConfigBox>

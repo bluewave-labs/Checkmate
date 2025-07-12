@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
  * @param {Function} props.handleChange - Function to call when the input changes
  * @param {Function} Prop.onBlur - Function to call when the input is blured
  * @param {Object} props.sx - Additional styles to apply to the component
+ * @param {string} props.unit - Label to identify type of options
  * @returns {JSX.Element} The rendered Search component
  */
 
@@ -68,6 +69,7 @@ const Search = ({
 	startAdornment,
 	endAdornment,
 	onBlur,
+	unit = "option",
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -186,7 +188,12 @@ const Search = ({
 				);
 
 				if (filtered.length === 0) {
-					return [{ [filteredBy]: "No monitors found", noOptions: true }];
+					return [
+						{
+							[filteredBy]: t("general.noOptionsFound", { unit: unit }),
+							noOptions: true,
+						},
+					];
 				}
 				return filtered;
 			}}

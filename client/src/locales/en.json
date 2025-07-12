@@ -224,6 +224,9 @@
 			"unknownError": "Unknown error"
 		}
 	},
+	"general": {
+		"noOptionsFound": "No {{unit}} found"
+	},
 	"commonSave": "Save",
 	"commonSaving": "Saving...",
 	"companyName": "Company name",
@@ -505,7 +508,6 @@
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
-
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
