@@ -16,7 +16,6 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
-
 const TabSettings = ({
 	isCreate,
 	tabValue,
