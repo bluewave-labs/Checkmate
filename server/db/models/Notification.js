@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import notificationConfig from "../../utils/notificationConfig.js";
 
 const NotificationSchema = mongoose.Schema(
 	{
@@ -27,6 +28,31 @@ const NotificationSchema = mongoose.Schema(
 		},
 		phone: {
 			type: String,
+		},
+		// Exponential backoff configuration
+		backoffEnabled: {
+			type: Boolean,
+			default: notificationConfig.BACKOFF_ENABLED_DEFAULT,
+		},
+		initialBackoffDelay: {
+			type: Number,
+			default: notificationConfig.INITIAL_BACKOFF_DELAY_MS,
+		},
+		maxBackoffDelay: {
+			type: Number,
+			default: notificationConfig.MAX_BACKOFF_DELAY_MS,
+		},
+		backoffMultiplier: {
+			type: Number,
+			default: notificationConfig.BACKOFF_MULTIPLIER,
+		},
+		currentBackoffDelay: {
+			type: Number,
+			default: null,
+		},
+		lastNotificationTime: {
+			type: Date,
+			default: null,
 		},
 	},
 	{
