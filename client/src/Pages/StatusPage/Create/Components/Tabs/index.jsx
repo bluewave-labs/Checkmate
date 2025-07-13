@@ -1,6 +1,6 @@
 // Components
 import { TabContext } from "@mui/lab";
-import { Tab, useTheme } from "@mui/material";
+import { Tab } from "@mui/material";
 import Settings from "./Settings";
 import Content from "./Content";
 
@@ -22,8 +22,12 @@ const Tabs = ({
 	tab,
 	setTab,
 	TAB_LIST,
+	handleDelete,
+	isDeleteOpen,
+	setIsDeleteOpen,
+	isDeleting,
+	isLoading,
 }) => {
-	const theme = useTheme();
 	return (
 		<TabContext value={TAB_LIST[tab]}>
 			<CustomTabList
@@ -32,7 +36,7 @@ const Tabs = ({
 				}}
 				aria-label="status page tabs"
 			>
-				{TAB_LIST.map((tabLabel, idx) => (
+				{TAB_LIST.map((tabLabel) => (
 					<Tab
 						key={tabLabel}
 						label={tabLabel}
@@ -50,6 +54,11 @@ const Tabs = ({
 					removeLogo={removeLogo}
 					errors={errors}
 					isCreate={isCreate}
+					handleDelete={handleDelete}
+					isDeleteOpen={isDeleteOpen}
+					setIsDeleteOpen={setIsDeleteOpen}
+					isDeleting={isDeleting}
+					isLoading={isLoading}
 				/>
 			) : (
 				<Content
@@ -67,6 +76,7 @@ const Tabs = ({
 };
 
 Tabs.propTypes = {
+	isCreate: PropTypes.bool,
 	form: PropTypes.object,
 	errors: PropTypes.object,
 	monitors: PropTypes.array,
@@ -79,6 +89,11 @@ Tabs.propTypes = {
 	tab: PropTypes.number,
 	setTab: PropTypes.func,
 	TAB_LIST: PropTypes.array,
+	handleDelete: PropTypes.func,
+	isDeleteOpen: PropTypes.bool,
+	setIsDeleteOpen: PropTypes.func,
+	isDeleting: PropTypes.bool,
+	isLoading: PropTypes.bool,
 };
 
 export default Tabs;
