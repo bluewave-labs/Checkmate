@@ -1,13 +1,13 @@
 client:
-  image: bluewaveuptime/uptime_client:latest
+  image: ghcr.io/bluewave-labs/checkmate-client:v2.3
   port: 80
   ingress:
     enabled: true
     host: change_me
 
 server:
-  image: bluewaveuptime/uptime_server:latest
-  port: 5000
+  image: ghcr.io/bluewave-labs/checkmate-backend:v2.3
+  port: 52345
   protocol: change_me
   ingress:
     enabled: true
