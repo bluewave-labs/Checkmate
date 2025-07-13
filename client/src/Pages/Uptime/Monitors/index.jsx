@@ -21,7 +21,7 @@ import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 import { Stack, Box, Button, Typography } from "@mui/material";
 
 // Utils
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
@@ -145,6 +145,12 @@ const UptimeMonitors = () => {
 		order: sort?.order,
 		monitorUpdateTrigger,
 	});
+
+	useEffect(() => {
+		if (isSearching) {
+			setPage(undefined);
+		}
+	}, [isSearching]);
 
 	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
 	if (networkError) {
