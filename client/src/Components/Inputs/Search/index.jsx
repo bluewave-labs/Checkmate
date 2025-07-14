@@ -12,6 +12,7 @@ import { useTheme } from "@emotion/react";
 import SearchIcon from "../../../assets/icons/search.svg?react";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import FieldWrapper from "../FieldWrapper";
 
 /**
  * Search component using Material UI's Autocomplete.
@@ -49,7 +50,7 @@ const SearchAdornment = () => {
 	);
 };
 
-//TODO keep search state inside of component
+//TODO keep search state inside of component.
 const Search = ({
 	label,
 	id,
@@ -68,6 +69,12 @@ const Search = ({
 	startAdornment,
 	endAdornment,
 	onBlur,
+	//FieldWrapper's props
+	gap,
+	labelMb,
+	labelFontWeight,
+	labelVariant,
+	labelSx = {},
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -139,15 +146,17 @@ const Search = ({
 			getOptionLabel={(option) => option[filteredBy]}
 			isOptionEqualToValue={(option, value) => option._id === value._id} // Compare by unique identifier
 			renderInput={(params) => (
-				<Stack>
-					<Typography
-						component="h3"
-						fontSize={"var(--env-var-font-size-medium)"}
-						color={theme.palette.primary.contrastTextSecondary}
-						fontWeight={500}
-					>
-						{label}
-					</Typography>
+				<FieldWrapper
+					label={label}
+					labelMb={labelMb}
+					labelVariant={labelVariant}
+					labelFontWeight={labelFontWeight}
+					labelSx={labelSx}
+					gap={gap}
+					sx={{
+						...sx,
+					}}
+				>
 					<TextField
 						{...params}
 						error={Boolean(error)}
@@ -175,7 +184,7 @@ const Search = ({
 							{error}
 						</Typography>
 					)}
-				</Stack>
+				</FieldWrapper>
 			)}
 			filterOptions={(options, { inputValue }) => {
 				if (inputValue.trim() === "" && multiple && isAdorned) {

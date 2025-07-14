@@ -24,7 +24,17 @@ import "./index.css";
  * @returns {JSX.Element} - The rendered Radio component.
  */
 
-const Radio = ({ name, checked, value, id, size, title, desc, onChange }) => {
+const Radio = ({
+	name,
+	checked,
+	value,
+	id,
+	size,
+	title,
+	desc,
+	onChange,
+	labelSpacing,
+}) => {
 	const theme = useTheme();
 
 	return (
@@ -53,7 +63,14 @@ const Radio = ({ name, checked, value, id, size, title, desc, onChange }) => {
 			onChange={onChange}
 			label={
 				<>
-					<Typography component="p">{title}</Typography>
+					<Typography
+						component="p"
+						mb={
+							labelSpacing !== undefined ? theme.spacing(labelSpacing) : theme.spacing(2)
+						}
+					>
+						{title}
+					</Typography>
 					<Typography
 						component="h6"
 						mt={theme.spacing(1)}
