@@ -3,40 +3,11 @@
 	"title": "Titre",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
-	"settingsGeneralSettings": "Paramètres généraux",
-	"settingsDisplayTimezone": "Fuseau horaire d'affichage",
-	"settingsDisplayTimezoneDescription": "Le fuseau horaire du tableau de bord que vous affichez publiquement.",
-	"settingsAppearance": "Apparence",
-	"settingsAppearanceDescription": "",
-	"settingsThemeMode": "",
-	"settingsLanguage": "Langue",
-	"settingsEnabled": "Activé",
 	"settingsDisabled": "Désactivé",
-	"settingsHistoryAndMonitoring": "",
-	"settingsHistoryAndMonitoringDescription": "",
-	"settingsTTLLabel": "",
-	"settingsTTLOptionalLabel": "0 pour infini",
-	"settingsClearAllStats": "Effacer les stats. C'est irréversible.",
-	"settingsClearAllStatsButton": "Effacer les stats",
-	"settingsClearAllStatsDialogTitle": "Voulez-vous effacer toutes les stats ?",
-	"settingsClearAllStatsDialogDescription": "",
-	"settingsClearAllStatsDialogConfirm": "Oui, effacer les stats",
-	"settingsDemoMonitors": "",
-	"settingsDemoMonitorsDescription": "",
-	"settingsAddDemoMonitors": "",
-	"settingsAddDemoMonitorsButton": "",
-	"settingsRemoveAllMonitors": "",
-	"settingsRemoveAllMonitorsButton": "",
-	"settingsRemoveAllMonitorsDialogTitle": "",
-	"settingsRemoveAllMonitorsDialogConfirm": "",
-	"settingsAbout": "",
-	"settingsDevelopedBy": "",
-	"settingsSave": "",
 	"settingsSuccessSaved": "",
 	"settingsFailedToSave": "",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
-	"settingsDemoMonitorsAdded": "",
 	"settingsFailedToAddDemoMonitors": "",
 	"settingsMonitorsDeleted": "",
 	"settingsFailedToDeleteMonitors": "",
@@ -362,16 +333,10 @@
 		"noFileSelected": "",
 		"fallbackPage": ""
 	},
-	"settingsSystemReset": "",
-	"settingsSystemResetDescription": "",
 	"DeleteAccountTitle": "Supprimer le compte",
 	"DeleteAccountButton": "Supprimer le compte",
 	"publicLink": "",
 	"maskedPageSpeedKeyPlaceholder": "",
-	"pageSpeedApiKeyFieldTitle": "",
-	"pageSpeedApiKeyFieldLabel": "",
-	"pageSpeedApiKeyFieldDescription": "",
-	"pageSpeedApiKeyFieldResetLabel": "",
 	"reset": "",
 	"ignoreTLSError": "",
 	"tlsErrorIgnored": "",
@@ -433,22 +398,13 @@
 		"password": "",
 		"team": "",
 		"logOut": "Déconnexion",
-		"notifications": ""
+		"notifications": "",
+		"logs": ""
 	},
-	"settingsEmail": "Email",
-	"settingsEmailDescription": "",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "",
-	"settingsEmailAddress": "",
-	"settingsEmailPassword": "",
 	"settingsEmailUser": "",
-	"settingsEmailFieldResetLabel": "",
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"settingsThemeModeLight": "Clair",
-	"settingsThemeModeDark": "Sombre",
-	"settingsClearAllStatsDialogCancel": "Annuler",
 	"commonSaving": "Sauvegarde...",
 	"navControls": "",
 	"incidentsPageTitle": "Incidents",
@@ -463,26 +419,18 @@
 		"passwordRequirements": "Le nouveau mot de passe doit contenir au moins 8 caractères et au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
 		"saving": "Sauvegarde..."
 	},
-	"settingsEmailConnectionHost": "",
 	"emailSent": "",
 	"failedToSendEmail": "",
-	"settingsTestEmail": "",
 	"settingsTestEmailSuccess": "",
 	"settingsTestEmailFailed": "",
 	"settingsTestEmailFailedWithReason": "",
 	"settingsTestEmailUnknownError": "Erreur inconnue",
-	"settingsEmailRequiredFields": "",
 	"statusMsg": {
 		"paused": "",
 		"up": "",
 		"down": "",
 		"pending": ""
 	},
-	"settingsURLTitle": "",
-	"settingsURLDescription": "",
-	"settingsURLSelectTitle": "",
-	"settingsURLEnabled": "",
-	"settingURLDisabled": "",
 	"uptimeGeneralInstructions": {
 		"http": "",
 		"ping": "",
@@ -583,6 +531,13 @@
 			},
 			"errors": {
 				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
 			}
 		},
 		"login": {
@@ -709,13 +664,13 @@
 			"integrationKeyLabel": "",
 			"integrationKeyPlaceholder": ""
 		},
-		"genericWebhookSettings": {
+		"discordSettings": {
 			"title": "",
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
 		},
-		"discordSettings": {
+		"webhookSettings": {
 			"title": "",
 			"description": "",
 			"webhookLabel": "",
@@ -734,11 +689,148 @@
 		"paused": ""
 	},
 	"advancedMatching": "",
-	"settingsEmailTLSServername": "",
-	"settingsEmailIgnoreTLS": "",
-	"settingsEmailRequireTLS": "",
-	"settingsEmailRejectUnauthorized": "",
-	"settingsEmailSecure": "",
-	"settingsEmailPool": "",
-	"sendTestNotifications": ""
+	"sendTestNotifications": "",
+	"testNotificationsDisabled": "",
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

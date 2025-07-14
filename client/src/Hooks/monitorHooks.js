@@ -205,6 +205,10 @@ const useFetchStatsByMonitorId = ({
 const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
+		if (typeof monitorId === "undefined") {
+			setIsLoading(false);
+			return;
+		}
 		const fetchMonitor = async () => {
 			try {
 				setIsLoading(true);
@@ -385,9 +389,9 @@ const useAddDemoMonitors = () => {
 		try {
 			setIsLoading(true);
 			await networkService.addDemoMonitors();
-			createToast({ body: t("settingsDemoMonitorsAdded") });
+			createToast({ body: t("monitorHooks.successAddDemoMonitors") });
 		} catch (error) {
-			createToast({ body: t("settingsFailedToAddDemoMonitors") });
+			createToast({ body: t("monitorHooks.failureAddDemoMonitors") });
 		} finally {
 			setIsLoading(false);
 		}
@@ -453,6 +457,39 @@ const useCreateBulkMonitors = () => {
 	return [createBulkMonitors, isLoading];
 };
 
+const useExportMonitors = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const { t } = useTranslation();
+
+	const exportMonitors = async () => {
+		setIsLoading(true);
+		try {
+			const response = await networkService.exportMonitors();
+
+			// Create a download link
+			const url = window.URL.createObjectURL(response.data);
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "monitors.csv");
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+
+			createToast({ body: t("export.success") });
+			return [true, null];
+		} catch (err) {
+			const errorMessage = err?.response?.data?.msg || err.message;
+			createToast({ body: errorMessage || t("export.failed") });
+			return [false, errorMessage];
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return [exportMonitors, isLoading];
+};
+
 export {
 	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
@@ -469,4 +506,5 @@ export {
 	useDeleteAllMonitors,
 	useDeleteMonitorStats,
 	useCreateBulkMonitors,
+	useExportMonitors,
 };

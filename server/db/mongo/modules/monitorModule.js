@@ -523,7 +523,7 @@ const getMonitorsByTeamId = async ({
 		order = "asc";
 	}
 	// Build match stage
-	const matchStage = { teamId: ObjectId.createFromHexString(teamId) };
+	const matchStage = { teamId: new ObjectId(teamId) };
 	if (type !== undefined) {
 		matchStage.type = Array.isArray(type) ? { $in: type } : type;
 	}
@@ -563,8 +563,7 @@ const getMonitorsByTeamId = async ({
 
 const getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {
 	try {
-		const parsedTeamId = ObjectId.createFromHexString(teamId);
-		const matchStage = { teamId: parsedTeamId };
+		const matchStage = { teamId: new ObjectId(teamId) };
 		if (type !== undefined) {
 			matchStage.type = Array.isArray(type) ? { $in: type } : type;
 		}
@@ -606,9 +605,8 @@ const getMonitorsWithChecksByTeamId = async ({
 			field = "name";
 			order = "asc";
 		}
-		const parsedTeamId = ObjectId.createFromHexString(teamId);
 		// Build match stage
-		const matchStage = { teamId: parsedTeamId };
+		const matchStage = { teamId: new ObjectId(teamId) };
 		if (type !== undefined) {
 			matchStage.type = Array.isArray(type) ? { $in: type } : type;
 		}

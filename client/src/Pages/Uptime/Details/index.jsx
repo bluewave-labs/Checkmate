@@ -111,6 +111,7 @@ const UptimeDetails = () => {
 		return (
 			<Stack gap={theme.spacing(10)}>
 				<Breadcrumbs list={BREADCRUMBS} />
+
 				<MonitorDetailsControlHeader
 					path={"uptime"}
 					isAdmin={isAdmin}
@@ -118,6 +119,19 @@ const UptimeDetails = () => {
 					monitor={monitor}
 					triggerUpdate={triggerUpdate}
 				/>
+				<UptimeStatusBoxes
+					isLoading={monitorIsLoading}
+					monitor={monitor}
+					monitorStats={monitorStats}
+					certificateExpiry={certificateExpiry}
+				/>
+				<MonitorTimeFrameHeader
+					isLoading={monitorIsLoading}
+					hasDateRange={true}
+					dateRange={dateRange}
+					setDateRange={setDateRange}
+				/>
+
 				<GenericFallback>
 					<Typography>{t("distributedUptimeDetailsNoMonitorHistory")}</Typography>
 				</GenericFallback>

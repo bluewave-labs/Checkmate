@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { verifyOwnership } from "../middleware/verifyOwnership.js";
+import { verifyTeamAccess } from "../middleware/verifyTeamAccess.js";
 import Monitor from "../db/models/Monitor.js";
-
+import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 class MaintenanceWindowRoutes {
 	constructor(maintenanceWindowController) {
 		this.router = Router();
@@ -24,9 +25,17 @@ class MaintenanceWindowRoutes {
 
 		this.router.get("/:id", this.maintenanceWindowController.getMaintenanceWindowById);
 
-		this.router.put("/:id", this.maintenanceWindowController.editMaintenanceWindow);
+		this.router.put(
+			"/:id",
+			verifyTeamAccess(MaintenanceWindow, "id"),
+			this.maintenanceWindowController.editMaintenanceWindow
+		);
 
-		this.router.delete("/:id", this.maintenanceWindowController.deleteMaintenanceWindow);
+		this.router.delete(
+			"/:id",
+			verifyTeamAccess(MaintenanceWindow, "id"),
+			this.maintenanceWindowController.deleteMaintenanceWindow
+		);
 	}
 
 	getRouter() {

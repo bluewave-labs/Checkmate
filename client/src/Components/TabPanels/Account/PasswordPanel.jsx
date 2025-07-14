@@ -214,7 +214,7 @@ const PasswordPanel = () => {
 					<TextInput
 						type="password"
 						id="edit-confirm-password"
-						placeholder={t("confirmPassword", "Confirm password")}
+						placeholder={t("confirmPassword")}
 						autoComplete="new-password"
 						value={localData.confirm}
 						onChange={handleChange}

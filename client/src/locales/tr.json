@@ -3,40 +3,11 @@
 	"title": "Başlık",
 	"distributedStatusHeaderText": "Gerçek zamanlı, Gerçek cihazlar kapsamı",
 	"distributedStatusSubHeaderText": "Dünya çapında milyonlarca cihaz tarafından desteklenen sistem performansını küresel bölgeye, ülkeye veya şehre göre görüntüleyin",
-	"settingsGeneralSettings": "Genel ayarlar",
-	"settingsDisplayTimezone": "Görüntüleme saat dilimi",
-	"settingsDisplayTimezoneDescription": "Herkese açık olarak görüntülediğiniz kontrol panelinin saat dilimi.",
-	"settingsAppearance": "Görünüm",
-	"settingsAppearanceDescription": "Açık ve koyu mod arasında geçiş yapın veya kullanıcı arayüzü dilini değiştirin",
-	"settingsThemeMode": "Tema",
-	"settingsLanguage": "Dil",
-	"settingsEnabled": "Etkin",
 	"settingsDisabled": "Devre dışı",
-	"settingsHistoryAndMonitoring": "Geçmiş ve izleme",
-	"settingsHistoryAndMonitoringDescription": "Verileri ne kadar süreyle saklamak istediğinizi burada tanımlayın. Ayrıca tüm geçmiş verileri kaldırabilirsiniz.",
-	"settingsTTLLabel": "İzleme geçmişini saklamak istediğiniz gün sayısı.",
-	"settingsTTLOptionalLabel": "Sınırsız için 0",
-	"settingsClearAllStats": "Tüm istatistikleri temizle. Bu geri alınamaz.",
-	"settingsClearAllStatsButton": "Tüm istatistikleri temizle",
-	"settingsClearAllStatsDialogTitle": "Tüm istatistikleri temizlemek istiyor musunuz?",
-	"settingsClearAllStatsDialogDescription": "Silindikten sonra, monitörleriniz geri alınamaz.",
-	"settingsClearAllStatsDialogConfirm": "Evet, tüm istatistikleri temizle",
-	"settingsDemoMonitors": "Demo monitörler",
-	"settingsDemoMonitorsDescription": "Burada demo monitörler ekleyebilir ve kaldırabilirsiniz.",
-	"settingsAddDemoMonitors": "Demo monitörler ekle",
-	"settingsAddDemoMonitorsButton": "Demo monitörler ekle",
-	"settingsRemoveAllMonitors": "Tüm monitörleri kaldır",
-	"settingsRemoveAllMonitorsButton": "Tüm monitörleri kaldır",
-	"settingsRemoveAllMonitorsDialogTitle": "Tüm monitörleri kaldırmak istiyor musunuz?",
-	"settingsRemoveAllMonitorsDialogConfirm": "Evet, tüm monitörleri temizle",
-	"settingsAbout": "Hakkında",
-	"settingsDevelopedBy": "Bluewave Labs tarafından geliştirilmiştir.",
-	"settingsSave": "Kaydet",
 	"settingsSuccessSaved": "Ayarlar başarıyla kaydedildi",
 	"settingsFailedToSave": "Ayarlar kaydedilemedi",
 	"settingsStatsCleared": "İstatistikler başarıyla temizlendi",
 	"settingsFailedToClearStats": "İstatistikler temizlenemedi",
-	"settingsDemoMonitorsAdded": "Demo monitörler başarıyla eklendi",
 	"settingsFailedToAddDemoMonitors": "Demo monitörler eklenemedi",
 	"settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
 	"settingsFailedToDeleteMonitors": "Monitörler silinemedi",
@@ -117,11 +88,11 @@
 			"title": "",
 			"checks": [""]
 		},
-		"createButton": "",
-		"createTitle": "",
+		"createButton": "Bildirim kanalı oluştur",
+		"createTitle": "Bildirim kanalı",
 		"create": {
 			"success": "",
-			"failed": ""
+			"failed": "Bildirim kanalı oluşturulamadı"
 		},
 		"fetch": {
 			"success": "",
@@ -136,7 +107,7 @@
 			"failed": ""
 		},
 		"test": {
-			"success": "",
+			"success": "Test bildirimi başarıyla gönderildi",
 			"failed": ""
 		}
 	},
@@ -362,44 +333,38 @@
 		"noFileSelected": "Hiçbir dosya seçilmedi",
 		"fallbackPage": "Toplu olarak sunucu listesini yüklemek için bir dosyayı içe aktarın"
 	},
-	"settingsSystemReset": "Sistem sıfırla",
-	"settingsSystemResetDescription": "Sistemdeki tüm monitörleri silin",
 	"DeleteAccountTitle": "Hesabı sil",
 	"DeleteAccountButton": "Hesabı sil",
 	"publicLink": "Herkese açık bağlantı",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"pageSpeedApiKeyFieldTitle": "Google PageSpeed API anahtarı",
-	"pageSpeedApiKeyFieldLabel": "PageSpeed API anahtarı",
-	"pageSpeedApiKeyFieldDescription": "Sayfa hızı izlemeyi etkinleştirmek için Google PageSpeed API anahtarınızı girin. Anahtarı güncellemek için Sıfırla'ya tıklayın.",
-	"pageSpeedApiKeyFieldResetLabel": "API anahtarı ayarlandı. Değiştirmek için Sıfırla'ya tıklayın.",
 	"reset": "Sıfırla",
-	"ignoreTLSError": "",
-	"tlsErrorIgnored": "",
+	"ignoreTLSError": "TLS/SSL hatalarını gözardı et",
+	"tlsErrorIgnored": "TLS/SSL hataları gözardı ediliyor",
 	"ignoreTLSErrorDescription": "",
-	"createNew": "",
+	"createNew": "Yeni oluştur",
 	"greeting": {
-		"prepend": "",
+		"prepend": "Merhaba",
 		"append": "",
 		"overview": ""
 	},
 	"roles": {
-		"superAdmin": "",
-		"admin": "",
-		"teamMember": "",
-		"demoUser": ""
+		"superAdmin": "Süper yönetici",
+		"admin": "Yönetici",
+		"teamMember": "Ekip elemanı",
+		"demoUser": "Demo kullanıcısı"
 	},
 	"teamPanel": {
-		"teamMembers": "",
+		"teamMembers": "Ekip elemanları",
 		"filter": {
-			"all": "",
-			"member": ""
+			"all": "Tümü",
+			"member": "Eleman"
 		},
-		"inviteTeamMember": "",
-		"inviteNewTeamMember": "",
+		"inviteTeamMember": "Ekip elemanı davet et",
+		"inviteNewTeamMember": "Yeni ekip elemanı davet et",
 		"inviteDescription": "",
-		"email": "",
-		"selectRole": "",
-		"inviteLink": "",
+		"email": "Eposta",
+		"selectRole": "Rolü seçin",
+		"inviteLink": "Davet linki",
 		"cancel": "",
 		"noMembers": "",
 		"getToken": "",
@@ -422,33 +387,24 @@
 		"infrastructure": "",
 		"incidents": "",
 		"statusPages": "",
-		"maintenance": "",
-		"integrations": "",
-		"settings": "",
-		"support": "",
-		"discussions": "",
-		"docs": "",
-		"changelog": "",
-		"profile": "",
-		"password": "",
-		"team": "",
+		"maintenance": "Bakım",
+		"integrations": "Entegrasyonlar",
+		"settings": "Ayarlar",
+		"support": "Destek",
+		"discussions": "Soru-cevap",
+		"docs": "Dokümanlar",
+		"changelog": "Değişiklik günlüğü",
+		"profile": "Profil",
+		"password": "Parola",
+		"team": "Ekip",
 		"logOut": "Çıkış yap",
-		"notifications": ""
+		"notifications": "Bildirimler",
+		"logs": ""
 	},
-	"settingsEmail": "",
-	"settingsEmailDescription": "",
-	"settingsEmailHost": "",
-	"settingsEmailPort": "",
-	"settingsEmailAddress": "",
-	"settingsEmailPassword": "E-posta şifresi - Kimlik doğrulama şifresi.",
 	"settingsEmailUser": "E-posta kullanıcısı – Kimlik doğrulama için kullanıcı adı; belirtilirse e-posta adresinin yerine geçer.",
-	"settingsEmailFieldResetLabel": "Şifre ayarlandı. Değiştirmek için \"Sıfırla\"ya tıklayın.",
 	"state": "Durum",
 	"statusBreadCrumbsStatusPages": "Durum sayfası",
 	"statusBreadCrumbsDetails": "Detaylar",
-	"settingsThemeModeLight": "Aydınlat",
-	"settingsThemeModeDark": "Karart",
-	"settingsClearAllStatsDialogCancel": "İptal",
 	"commonSaving": "Kaydediliyor.",
 	"navControls": "Kontroller",
 	"incidentsPageTitle": "Olaylar",
@@ -463,26 +419,18 @@
 		"passwordRequirements": "Yeni şifreniz en az 8 karakterden oluşmalı ve en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.",
 		"saving": "Kaydediliyor..."
 	},
-	"settingsEmailConnectionHost": "E-posta bağlantı ana bilgisayarı - HELO/EHLO selamlamasında kullanılacak ana bilgisayar adı",
 	"emailSent": "E-posta başarı ile gönderildi.",
 	"failedToSendEmail": "E-posta gönderimi başarısız.",
-	"settingsTestEmail": "Test  E-postası gönder.",
 	"settingsTestEmailSuccess": "Test E-postası başarı ile gönderildi.",
 	"settingsTestEmailFailed": "Test E-postası gönderimi başarısız.",
 	"settingsTestEmailFailedWithReason": "Test E-postası gönderimi başarısız: {{reason}}",
 	"settingsTestEmailUnknownError": "Bilinmeyen hata.",
-	"settingsEmailRequiredFields": "E-posta sunucusu ve portu gereklidir.",
 	"statusMsg": {
 		"paused": "İzleme duraklatıldı.",
 		"up": "Siteniz yayında.",
 		"down": "Siteniz kapalı.",
 		"pending": "Sırada.."
 	},
-	"settingsURLTitle": "Durum Sayfasında IP/URL'yi İzle",
-	"settingsURLDescription": "Genel Durum sayfasında monitörün IP adresini veya URL'sini görüntüleyin. Devre dışı bırakılırsa, hassas bilgileri korumak için yalnızca monitör adı gösterilecektir.",
-	"settingsURLSelectTitle": "Durum sayfasında IP/URL'yi görüntüle",
-	"settingsURLEnabled": "Etkinleştirilmiş",
-	"settingURLDisabled": "Devre dışı bırakılmış",
 	"uptimeGeneralInstructions": {
 		"http": "",
 		"ping": "",
@@ -490,73 +438,73 @@
 		"port": ""
 	},
 	"common": {
-		"appName": "",
+		"appName": "Checkmate",
 		"monitoringAgentName": "",
 		"buttons": {
 			"toggleTheme": ""
 		},
 		"toasts": {
 			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
+			"checkConnection": "Lütfen bağlantınızı kontrol edin",
+			"unknownError": "Bilinmeyen hata"
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "",
-				"back": ""
+				"continue": "Devam et",
+				"back": "Geri"
 			},
 			"inputs": {
 				"email": {
-					"label": "",
+					"label": "Eposta",
 					"placeholder": "",
 					"errors": {
-						"empty": "",
+						"empty": "Devam etmek için eposta adresinizi girin",
 						"invalid": ""
 					}
 				},
 				"password": {
-					"label": "",
+					"label": "Parola",
 					"rules": {
 						"length": {
 							"beginning": "",
-							"highlighted": ""
+							"highlighted": "8 karakter uzunluğunda"
 						},
 						"special": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "En az içermelidir: ",
+							"highlighted": "bir özel karakter"
 						},
 						"number": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "En az içermelidir: ",
+							"highlighted": "bir sayı"
 						},
 						"uppercase": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "En az içermelidir: ",
+							"highlighted": "Bir büyük harf"
 						},
 						"lowercase": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "En az içermelidir: ",
+							"highlighted": "Bir küçük harf"
 						},
 						"match": {
 							"beginning": "",
-							"highlighted": ""
+							"highlighted": "eşleşmelidir"
 						}
 					},
 					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
+						"empty": "Lütfen parolanızı girin",
+						"length": "Parolanız en az 8 karakter uzunluğunda olmalıdır",
+						"uppercase": "Parola en az 1 büyük harf içermelidir",
+						"lowercase": "Parola en az 1 küçük harf içermelidir",
+						"number": "Parola en az 1 sayı içermelidir",
+						"special": "Parola en az 1 özel karakter içermelidir",
+						"incorrect": "Parolanız sistemdeki ile uyuşmuyor"
 					}
 				},
 				"passwordConfirm": {
-					"label": "",
-					"placeholder": "",
+					"label": "Parolayı onayla",
+					"placeholder": "Onaylamak için parolayı yeniden gir",
 					"errors": {
 						"empty": "",
 						"different": ""
@@ -572,78 +520,85 @@
 					}
 				},
 				"lastName": {
-					"label": "",
-					"placeholder": "",
+					"label": "Soyadı",
+					"placeholder": "Ellis",
 					"errors": {
-						"empty": "",
-						"length": "",
+						"empty": "Lütfen soyadınızı girin",
+						"length": "Soyadı en çok 50 karakter olmalıdır",
 						"pattern": ""
 					}
 				}
 			},
 			"errors": {
 				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
 			}
 		},
 		"login": {
 			"heading": "",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
+				"stepOne": "Eposta adresinizi girin",
+				"stepTwo": "Parolanızı girin"
 			},
 			"links": {
-				"forgotPassword": "",
-				"register": "",
-				"forgotPasswordLink": "",
-				"registerLink": ""
+				"forgotPassword": "Parolanızı mı unuttunuz?",
+				"register": "Hesabınız yok mu?",
+				"forgotPasswordLink": "Parolayı sıfırla",
+				"registerLink": "Buradan kayıt olun"
 			},
 			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
+				"success": "Tekrar hoşgeldiniz! Başarıyla sisteme giriş yaptınız.",
+				"incorrectPassword": "Hatalı parola"
 			},
 			"errors": {
 				"password": {
-					"incorrect": ""
+					"incorrect": "Giriş yaptığınız parola sistemdekiyle uyuşmuyor"
 				}
 			}
 		},
 		"registration": {
 			"heading": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Süper yönetici oluştur",
+				"user": "Kayıt ol"
 			},
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": ""
+				"stepOne": "Kişisel bilgilerinizi girin",
+				"stepTwo": "Eposta adresinizi girin",
+				"stepThree": "Parolanızı oluturun"
 			},
 			"description": {
-				"superAdmin": "",
+				"superAdmin": "Başlamak için süper yönetici hesabı oluşturun",
 				"user": ""
 			},
 			"gettingStartedButton": {
-				"superAdmin": "",
+				"superAdmin": "Süper yönetici hesabı oluşturun",
 				"user": ""
 			},
 			"termsAndPolicies": "",
 			"links": {
-				"login": ""
+				"login": "Bir hesabınız mı var? <a>Giriş yapın</a>"
 			},
 			"toasts": {
-				"success": ""
+				"success": "Hoşgeldiniz! Hesabınız başarıyla oluşturuldu."
 			}
 		},
 		"forgotPassword": {
-			"heading": "",
+			"heading": "Parolanızı mı kaybettiniz?",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
+				"stepOne": "Endişelenmeyin, sıfırlamak için gerekli bilgileri göndereceğiz.",
+				"stepTwo": "Parola sıfırlama için gerekli bilgileri <email/> hesabına ilettik.",
 				"stepThree": "",
 				"stepFour": ""
 			},
 			"buttons": {
-				"openEmail": "",
-				"resetPassword": ""
+				"openEmail": "Eposta uygulamasını aç",
+				"resetPassword": "Parolayı sıfırla"
 			},
 			"imageAlts": {
 				"passwordKey": "",
@@ -670,75 +625,212 @@
 				"reconnected": "",
 				"stillUnreachable": ""
 			},
-			"alertBox": "",
+			"alertBox": "Sunucu bağlantı hatası",
 			"description": "",
 			"retryButton": {
-				"default": "",
-				"processing": ""
+				"default": "Bağlantıyı tekrarla",
+				"processing": "Bağlanıyor..."
 			}
 		}
 	},
 	"createNotifications": {
-		"title": "",
+		"title": "Bildirim kanalları oluştur",
 		"nameSettings": {
-			"title": "",
-			"description": "",
-			"nameLabel": "",
-			"namePlaceholder": ""
+			"title": "İsim",
+			"description": "Entegrasyon için açıklama",
+			"nameLabel": "İsim",
+			"namePlaceholder": "örn. Slack bildirimleri"
 		},
 		"typeSettings": {
-			"title": "",
+			"title": "Tür",
 			"description": "",
-			"typeLabel": ""
+			"typeLabel": "Tür"
 		},
 		"emailSettings": {
-			"title": "",
-			"description": "",
-			"emailLabel": "",
-			"emailPlaceholder": ""
+			"title": "Eposta",
+			"description": "Hedef eposta adresi",
+			"emailLabel": "Eposta adresi",
+			"emailPlaceholder": "örn. john@example.com"
 		},
 		"slackSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Slack",
+			"description": "Slack webhook'u burada tanımlayın",
+			"webhookLabel": "Slack webhook adresi",
+			"webhookPlaceholder": "https://hooks.slack.com/services/...\n"
 		},
 		"pagerdutySettings": {
-			"title": "",
-			"description": "",
-			"integrationKeyLabel": "",
-			"integrationKeyPlaceholder": ""
-		},
-		"genericWebhookSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "PagerDuty",
+			"description": "PagerDuty entegrasyonunu burada yapın",
+			"integrationKeyLabel": "Entegrasyon anahtarı",
+			"integrationKeyPlaceholder": "1234567890"
 		},
 		"discordSettings": {
-			"title": "",
+			"title": "Discord",
+			"description": "Discord webhook'u buradan ayarlayın",
+			"webhookLabel": "Discord Webhook adresi",
+			"webhookPlaceholder": "https://sunucu-adı.com/webhook\n"
+		},
+		"webhookSettings": {
+			"title": "Webhook",
 			"description": "",
 			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"webhookPlaceholder": "https://sunucu-adı.com/webhook\n"
 		}
 	},
 	"notificationConfig": {
-		"title": "",
+		"title": "Bildirimler",
 		"description": ""
 	},
 	"monitorStatus": {
 		"checkingEvery": "",
 		"withCaptureAgent": "",
-		"up": "",
-		"down": "",
-		"paused": ""
+		"up": "ayakta",
+		"down": "çalışmıyor",
+		"paused": "beklemede"
 	},
 	"advancedMatching": "",
-	"settingsEmailTLSServername": "",
-	"settingsEmailIgnoreTLS": "",
-	"settingsEmailRequireTLS": "",
-	"settingsEmailRejectUnauthorized": "",
-	"settingsEmailSecure": "",
-	"settingsEmailPool": "",
-	"sendTestNotifications": ""
+	"sendTestNotifications": "Bildirimleri dene",
+	"testNotificationsDisabled": "",
+	"selectAll": "Tümünü seç",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
 }

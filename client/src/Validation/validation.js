@@ -277,6 +277,7 @@ const statusPageValidation = joi.object({
 	logo: logoImageValidation,
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
+	showAdminLoginLink: joi.boolean(),
 });
 
 const settingsValidation = joi.object({

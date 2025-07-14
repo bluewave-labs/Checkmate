@@ -18,9 +18,8 @@ import UptimeConfigure from "../Pages/Uptime/Configure";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors";
-import PageSpeedCreate from "../Pages/PageSpeed/Create";
 import PageSpeedDetails from "../Pages/PageSpeed/Details";
-import PageSpeedConfigure from "../Pages/PageSpeed/Configure";
+import PageSpeedCreate from "../Pages/PageSpeed/Create";
 
 // Infrastructure
 import Infrastructure from "../Pages/Infrastructure/Monitors";
@@ -48,9 +47,11 @@ import Settings from "../Pages/Settings";
 import Maintenance from "../Pages/Maintenance";
 
 import ProtectedRoute from "../Components/ProtectedRoute";
+import RoleProtectedRoute from "../Components/RoleProtectedRoute";
 import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport";
+import Logs from "../Pages/Logs";
 
 const Routes = () => {
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
@@ -105,7 +106,7 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedConfigure />}
+					element={<PageSpeedCreate />}
 				/>
 				<Route
 					path="infrastructure"
@@ -185,6 +186,15 @@ const Routes = () => {
 				<Route
 					path="account/team"
 					element={<Account open={"team"} />}
+				/>
+
+				<Route
+					path="logs"
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Logs />
+						</RoleProtectedRoute>
+					}
 				/>
 			</Route>
 
