@@ -4,9 +4,9 @@ import Typography from "@mui/material/Typography";
 import Gauges from "./components/gauges";
 import Stats from "./components/stats";
 import Divider from "@mui/material/Divider";
+import Button from "@mui/material/Button";
 
 import { useTheme } from "@emotion/react";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchDiagnostics } from "../../../Hooks/logHooks";
 
@@ -16,7 +16,7 @@ const Diagnostics = () => {
 	// Hooks
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const [diagnostics, isLoading, error] = useFetchDiagnostics();
+	const [diagnostics, fetchDiagnostics, isLoading, error] = useFetchDiagnostics();
 	// Setup
 	return (
 		<Stack gap={theme.spacing(4)}>
@@ -36,6 +36,16 @@ const Diagnostics = () => {
 					diagnostics={diagnostics}
 					isLoading={isLoading}
 				/>
+				<Box>
+					<Button
+						variant="contained"
+						color="accent"
+						onClick={fetchDiagnostics}
+						loading={isLoading}
+					>
+						Fetch Diagnostics
+					</Button>
+				</Box>
 			</Stack>
 		</Stack>
 	);
