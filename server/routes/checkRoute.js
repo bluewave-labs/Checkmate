@@ -20,17 +20,18 @@ class CheckRoutes {
 			isAllowed(["admin", "superadmin"]),
 			this.checkController.deleteChecksByTeamId
 		);
-
-		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
-
 		this.router.put(
 			"/check/:checkId",
 			verifyTeamAccess(Check, "checkId"),
 			this.checkController.ackCheck
 		);
+		this.router.put(
+			"/team/ttl",
+			isAllowed(["admin", "superadmin"]),
+			this.checkController.updateChecksTTL
+		);
 
-		this.router.put("/:path/:monitorId?", this.checkController.ackAllChecks);
-
+		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
 		this.router.post(
 			"/:monitorId",
 			verifyOwnership(Monitor, "monitorId"),
@@ -41,12 +42,7 @@ class CheckRoutes {
 			verifyOwnership(Monitor, "monitorId"),
 			this.checkController.deleteChecks
 		);
-
-		this.router.put(
-			"/team/ttl",
-			isAllowed(["admin", "superadmin"]),
-			this.checkController.updateChecksTTL
-		);
+		this.router.put("/:path/:monitorId?", this.checkController.ackAllChecks);
 	}
 
 	getRouter() {
