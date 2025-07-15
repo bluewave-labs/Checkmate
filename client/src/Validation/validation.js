@@ -410,14 +410,33 @@ const notificationValidation = joi.object({
 		"string.empty": "Notification name is required",
 		"any.required": "Notification name is required",
 	}),
-	address: joi.string().required().messages({
-		"string.empty": "This field cannot be empty",
-		"string.base": "This field must be a string",
-		"any.required": "This field is required",
-	}),
-	type: joi.string().required().messages({
-		"string.empty": "This field is required",
-		"any.required": "This field is required",
+
+	type: joi
+		.string()
+		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.required()
+		.messages({
+			"string.empty": "Notification type is required",
+			"any.required": "Notification type is required",
+			"any.only": "Notification type must be email, webhook, or pager_duty",
+		}),
+
+	address: joi.when("type", {
+		is: "email",
+		then: joi
+			.string()
+			.email({ tlds: { allow: false } })
+			.required()
+			.messages({
+				"string.empty": "E-mail address cannot be empty",
+				"any.required": "E-mail address is required",
+				"string.email": "Please enter a valid e-mail address",
+			}),
+		otherwise: joi.string().uri().required().messages({
+			"string.empty": "Webhook URL cannot be empty",
+			"any.required": "Webhook URL is required",
+			"string.uri": "Please enter a valid Webhook URL",
+		}),
 	}),
 });
 
