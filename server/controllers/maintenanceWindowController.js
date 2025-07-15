@@ -7,7 +7,7 @@ import {
 	getMaintenanceWindowsByTeamIdQueryValidation,
 	deleteMaintenanceWindowByIdParamValidation,
 } from "../validation/joi.js";
-import { handleValidationError, handleError } from "./controllerUtils.js";
+import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "maintenanceWindowController";
 
@@ -18,14 +18,10 @@ class MaintenanceWindowController {
 		this.stringService = stringService;
 	}
 
-	createMaintenanceWindows = async (req, res, next) => {
-		try {
+	createMaintenanceWindows = asyncHandler(
+		async (req, res, next) => {
 			await createMaintenanceWindowBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-		try {
+
 			const { teamId } = req.user;
 			const monitorIds = req.body.monitors;
 			const dbTransactions = monitorIds.map((monitorId) => {
@@ -44,39 +40,28 @@ class MaintenanceWindowController {
 			return res.success({
 				msg: this.stringService.maintenanceWindowCreate,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createMaintenanceWindow"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"createMaintenanceWindows"
+	);
 
-	getMaintenanceWindowById = async (req, res, next) => {
-		try {
+	getMaintenanceWindowById = asyncHandler(
+		async (req, res, next) => {
 			await getMaintenanceWindowByIdParamValidation.validateAsync(req.params);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-		try {
 			const maintenanceWindow = await this.db.getMaintenanceWindowById(req.params.id);
-
 			return res.success({
 				msg: this.stringService.maintenanceWindowGetById,
 				data: maintenanceWindow,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMaintenanceWindowById"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMaintenanceWindowById"
+	);
 
-	getMaintenanceWindowsByTeamId = async (req, res, next) => {
-		try {
+	getMaintenanceWindowsByTeamId = asyncHandler(
+		async (req, res, next) => {
 			await getMaintenanceWindowsByTeamIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const { teamId } = req.user;
 			const maintenanceWindows = await this.db.getMaintenanceWindowsByTeamId(
 				teamId,
@@ -87,20 +72,15 @@ class MaintenanceWindowController {
 				msg: this.stringService.maintenanceWindowGetByTeam,
 				data: maintenanceWindows,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMaintenanceWindowsByUserId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMaintenanceWindowsByTeamId"
+	);
 
-	getMaintenanceWindowsByMonitorId = async (req, res, next) => {
-		try {
+	getMaintenanceWindowsByMonitorId = asyncHandler(
+		async (req, res, next) => {
 			await getMaintenanceWindowsByMonitorIdParamValidation.validateAsync(req.params);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const maintenanceWindows = await this.db.getMaintenanceWindowsByMonitorId(
 				req.params.monitorId
 			);
@@ -109,37 +89,27 @@ class MaintenanceWindowController {
 				msg: this.stringService.maintenanceWindowGetByUser,
 				data: maintenanceWindows,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMaintenanceWindowsByMonitorId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMaintenanceWindowsByMonitorId"
+	);
 
-	deleteMaintenanceWindow = async (req, res, next) => {
-		try {
+	deleteMaintenanceWindow = asyncHandler(
+		async (req, res, next) => {
 			await deleteMaintenanceWindowByIdParamValidation.validateAsync(req.params);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-		try {
 			await this.db.deleteMaintenanceWindowById(req.params.id);
 			return res.success({
 				msg: this.stringService.maintenanceWindowDelete,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "deleteMaintenanceWindow"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"deleteMaintenanceWindow"
+	);
 
-	editMaintenanceWindow = async (req, res, next) => {
-		try {
+	editMaintenanceWindow = asyncHandler(
+		async (req, res, next) => {
 			await editMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 			await editMaintenanceByIdWindowBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-		try {
 			const editedMaintenanceWindow = await this.db.editMaintenanceWindowById(
 				req.params.id,
 				req.body
@@ -148,10 +118,10 @@ class MaintenanceWindowController {
 				msg: this.stringService.maintenanceWindowEdit,
 				data: editedMaintenanceWindow,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "editMaintenanceWindow"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"editMaintenanceWindow"
+	);
 }
 
 export default MaintenanceWindowController;

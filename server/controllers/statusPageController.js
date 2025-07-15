@@ -1,10 +1,10 @@
-import { handleError, handleValidationError } from "./controllerUtils.js";
 import {
 	createStatusPageBodyValidation,
 	getStatusPageParamValidation,
 	getStatusPageQueryValidation,
 	imageValidation,
 } from "../validation/joi.js";
+import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "statusPageController";
 
@@ -14,16 +14,11 @@ class StatusPageController {
 		this.stringService = stringService;
 	}
 
-	createStatusPage = async (req, res, next) => {
-		try {
+	createStatusPage = asyncHandler(
+		async (req, res, next) => {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const { _id, teamId } = req.user;
 			const statusPage = await this.db.createStatusPage({
 				statusPageData: req.body,
@@ -35,21 +30,16 @@ class StatusPageController {
 				msg: this.stringService.statusPageCreate,
 				data: statusPage,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createStatusPage"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"createStatusPage"
+	);
 
-	updateStatusPage = async (req, res, next) => {
-		try {
+	updateStatusPage = asyncHandler(
+		async (req, res, next) => {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const statusPage = await this.db.updateStatusPage(req.body, req.file);
 			if (statusPage === null) {
 				const error = new Error(this.stringService.statusPageNotFound);
@@ -60,45 +50,40 @@ class StatusPageController {
 				msg: this.stringService.statusPageUpdate,
 				data: statusPage,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "updateStatusPage"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"updateStatusPage"
+	);
 
-	getStatusPage = async (req, res, next) => {
-		try {
+	getStatusPage = asyncHandler(
+		async (req, res, next) => {
 			const statusPage = await this.db.getStatusPage();
 			return res.success({
 				msg: this.stringService.statusPageByUrl,
 				data: statusPage,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getStatusPage"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getStatusPage"
+	);
 
-	getStatusPageByUrl = async (req, res, next) => {
-		try {
+	getStatusPageByUrl = asyncHandler(
+		async (req, res, next) => {
 			await getStatusPageParamValidation.validateAsync(req.params);
 			await getStatusPageQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const statusPage = await this.db.getStatusPageByUrl(req.params.url, req.query.type);
 			return res.success({
 				msg: this.stringService.statusPageByUrl,
 				data: statusPage,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getStatusPageByUrl"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getStatusPageByUrl"
+	);
 
-	getStatusPagesByTeamId = async (req, res, next) => {
-		try {
+	getStatusPagesByTeamId = asyncHandler(
+		async (req, res, next) => {
 			const teamId = req.user.teamId;
 			const statusPages = await this.db.getStatusPagesByTeamId(teamId);
 
@@ -106,21 +91,21 @@ class StatusPageController {
 				msg: this.stringService.statusPageByTeamId,
 				data: statusPages,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getStatusPageByTeamId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getStatusPagesByTeamId"
+	);
 
-	deleteStatusPage = async (req, res, next) => {
-		try {
+	deleteStatusPage = asyncHandler(
+		async (req, res, next) => {
 			await this.db.deleteStatusPage(req.params.url);
 			return res.success({
 				msg: this.stringService.statusPageDelete,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "deleteStatusPage"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"deleteStatusPage"
+	);
 }
 
 export default StatusPageController;
