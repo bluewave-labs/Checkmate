@@ -288,7 +288,7 @@ Search.propTypes = {
 	options: PropTypes.array.isRequired,
 	filteredBy: PropTypes.string.isRequired,
 	secondaryLabel: PropTypes.string,
-	value: PropTypes.array,
+	value: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 	inputValue: PropTypes.string.isRequired,
 	handleInputChange: PropTypes.func.isRequired,
 	handleChange: PropTypes.func,
@@ -299,6 +299,7 @@ Search.propTypes = {
 	startAdornment: PropTypes.object,
 	endAdornment: PropTypes.object,
 	onBlur: PropTypes.func,
+	unit: PropTypes.string,
 };
 
 export default Search;

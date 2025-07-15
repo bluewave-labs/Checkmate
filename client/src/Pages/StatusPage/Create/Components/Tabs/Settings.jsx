@@ -33,7 +33,7 @@ const TabSettings = ({
 
 	const selectedTimezone = useMemo(
 		() => timezones.find((tz) => tz._id === form.timezone) ?? null,
-		[form.timezone, timezones]
+		[form.timezone]
 	);
 
 	const handleTimezoneChange = useCallback(

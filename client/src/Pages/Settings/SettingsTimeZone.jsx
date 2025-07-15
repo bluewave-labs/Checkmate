@@ -17,7 +17,7 @@ const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
 
 	const selectedTimezone = useMemo(
 		() => timezones.find((tz) => tz._id === timezone) ?? null,
-		[timezone, timezones]
+		[timezone]
 	);
 
 	const handleTimezoneChange = useCallback(
