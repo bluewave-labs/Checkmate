@@ -131,7 +131,6 @@ const CreateMaintenance = () => {
 		monitors: [],
 	});
 	const [errors, setErrors] = useState({});
-	const [selectedMonitors, setSelectedMonitors] = useState([]);
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
@@ -168,7 +167,6 @@ const CreateMaintenance = () => {
 					durationUnit,
 					monitors: monitor ? [monitor] : [],
 				});
-				setSelectedMonitors(monitor ? [monitor] : []);
 			} catch (error) {
 				createToast({ body: "Failed to fetch data" });
 				logger.error("Failed to fetch monitors", error);
@@ -178,11 +176,6 @@ const CreateMaintenance = () => {
 		};
 		fetchMonitors();
 	}, [user]);
-
-	// Sync form.monitors with selectedMonitors
-	useEffect(() => {
-		setForm((prev) => ({ ...prev, monitors: selectedMonitors }));
-	}, [selectedMonitors]);
 
 	const handleSearch = (value) => {
 		setSearch(value);
@@ -222,14 +215,9 @@ const CreateMaintenance = () => {
 	};
 
 	const handleMonitorsChange = (selected) => {
-		// Ensure all are objects
-		const selectedObjs = selected
-			.map((sel) => (typeof sel === "string" ? monitors.find((m) => m._id === sel) : sel))
-			.filter(Boolean);
-		setSelectedMonitors(selectedObjs);
-
+		setForm((prev) => ({ ...prev, monitors: selected }));
 		const { error } = maintenanceWindowValidation.validate(
-			{ monitors: selectedObjs },
+			{ monitors: selected },
 			{ abortEarly: false }
 		);
 		setErrors((prev) => {
@@ -555,15 +543,17 @@ const CreateMaintenance = () => {
 							filteredBy="name"
 							secondaryLabel={"type"}
 							inputValue={search}
-							value={selectedMonitors}
+							value={form.monitors}
 							handleInputChange={setSearch}
 							handleChange={handleMonitorsChange}
 							error={errors["monitors"]}
 							disabled={form.isAllMonitors}
 						/>
 						<MonitorList
-							selectedMonitors={selectedMonitors}
-							setSelectedMonitors={setSelectedMonitors}
+							selectedMonitors={form.monitors}
+							setSelectedMonitors={(monitors) =>
+								setForm((prev) => ({ ...prev, monitors }))
+							}
 						/>
 					</Stack>
 				</ConfigBox>
