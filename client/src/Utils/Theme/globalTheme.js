@@ -553,6 +553,13 @@ const baseTheme = (palette) => ({
 					"&:hover .MuiOutlinedInput-notchedOutline": {
 						borderColor: theme.palette.primary.lowContrast,
 					},
+					"& .MuiSelect-select": {
+						padding: "0 13px",
+						minHeight: "34px",
+						display: "flex",
+						alignItems: "center",
+						lineHeight: 1,
+					},
 				}),
 			},
 		},
