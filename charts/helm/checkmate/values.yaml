@@ -1,0 +1,41 @@
+client:
+  image: ghcr.io/bluewave-labs/checkmate-client:v2.3
+  port: 80
+  ingress:
+    enabled: true
+    host: change_me
+
+server:
+  image: ghcr.io/bluewave-labs/checkmate-backend:v2.3
+  port: 52345
+  protocol: change_me
+  ingress:
+    enabled: true
+    host: change_me
+
+redis:
+  image: redis:7.2
+  port: 6379
+
+mongodb:
+  image: mongo:7.0
+  port: 27017
+
+secrets:
+  JWT_SECRET: change_me
+  REFRESH_TOKEN_SECRET: change_me
+  SYSTEM_EMAIL_ADDRESS: test@example.com
+  SYSTEM_EMAIL_PASSWORD: change_me
+  SYSTEM_EMAIL_HOST: smtp.example.com
+  SYSTEM_EMAIL_PORT: "587"
+  PAGESPEED_API_KEY: change_me
+  DB_CONNECTION_STRING: mongodb://mongodb:27017/uptime_db
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  DB_TYPE: MongoDB
+  TOKEN_TTL: 99d
+  REFRESH_TOKEN_TTL: 99d
+
+persistence:
+  mongodbSize: 5Gi
+  redisSize: 1Gi

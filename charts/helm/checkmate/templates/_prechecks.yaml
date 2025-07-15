@@ -1,0 +1,12 @@
+{{- if eq .Values.client.ingress.host "change_me" }}
+  {{- fail "client.ingress.host must be overridden and not set to 'change_me'" }}
+{{- end }}
+
+{{- if eq .Values.server.ingress.host "change_me" }}
+  {{- fail "server.ingress.host must be overridden and not set to 'change_me'" }}
+{{- end }}
+
+{{- $protocol := .Values.server.protocol }}
+{{- if not (or (eq $protocol "http") (eq $protocol "https")) }}
+  {{- fail "server.protocol must be either 'http' or 'https'" }}
+{{- end }}
