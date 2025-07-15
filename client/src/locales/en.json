@@ -229,6 +229,9 @@
 			"unknownError": "Unknown error"
 		}
 	},
+	"general": {
+		"noOptionsFound": "No {{unit}} found"
+	},
 	"commonSave": "Save",
 	"commonSaving": "Saving...",
 	"companyName": "Company name",
