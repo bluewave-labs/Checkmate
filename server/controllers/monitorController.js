@@ -14,7 +14,7 @@ import {
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	getNetworkDetailsByIdParamValidation,
-	getNetworkDetailsByIdQueryValidation
+	getNetworkDetailsByIdQueryValidation,
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
 import logger from "../utils/logger.js";
@@ -25,12 +25,20 @@ const SERVICE_NAME = "monitorController";
 import pkg from "papaparse";
 
 class MonitorController {
-	constructor(db, settingsService, jobQueue, stringService, emailService) {
+	constructor(
+		db,
+		settingsService,
+		jobQueue,
+		stringService,
+		emailService,
+		networkService
+	) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.networkService = networkService;
 	}
 
 	/**
@@ -180,11 +188,14 @@ class MonitorController {
 		}
 		try {
 			const { monitorId } = req.params;
-			const { dateRange } = req.query;
-			const data = await this.db.getNetworkDetailsById({ monitorId, dateRange });
+			const monitor = await this.db.getMonitorById(monitorId);
+			if (!monitor) {
+				return res.status(404).json({ msg: "Monitor not found" });
+			}
+			const networkResult = await this.networkService.requestNetwork(monitor);
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
-				data: data,
+				data: networkResult.payload?.data?.net || [],
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getNetworkDetailsById"));

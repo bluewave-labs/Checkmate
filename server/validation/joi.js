@@ -133,11 +133,15 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "network"),
+			joi
+				.string()
+				.valid("http", "ping", "pagespeed", "docker", "hardware", "port", "network"),
 			joi
 				.array()
 				.items(
-					joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "network")
+					joi
+						.string()
+						.valid("http", "ping", "pagespeed", "docker", "hardware", "port", "network")
 				)
 		),
 	page: joi.number(),
@@ -704,4 +708,6 @@ export {
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,
+	getNetworkDetailsByIdParamValidation,
+	getNetworkDetailsByIdQueryValidation,
 };

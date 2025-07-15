@@ -23,6 +23,24 @@ const createNetworkCheck = async (networkCheckData) => {
 };
 
 /**
+ * Batch create network checks.
+ * @async
+ * @param {Array<object>} networkChecksData - Array of network check objects.
+ * @returns {Promise<Array<object>>} - The created network check documents.
+ */
+const createNetworkChecks = async (networkChecksData) => {
+	try {
+		if (!Array.isArray(networkChecksData) || networkChecksData.length === 0) return [];
+		const result = await NetworkCheck.insertMany(networkChecksData);
+		return result;
+	} catch (error) {
+		error.service = "networkCheckModule";
+		error.method = "createNetworkChecks";
+		throw error;
+	}
+};
+
+/**
  * Retrieves a list of network checks for a specific monitor, sorted by most recent.
  * @async
  * @param {string} monitorId - The ID of the monitor to retrieve checks for.
@@ -43,4 +61,4 @@ const getNetworkChecksByMonitorId = async (monitorId, limit = 100) => {
 	}
 };
 
-export { createNetworkCheck, getNetworkChecksByMonitorId };
+export { createNetworkCheck, createNetworkChecks, getNetworkChecksByMonitorId };
