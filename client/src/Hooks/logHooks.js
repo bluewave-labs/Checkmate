@@ -89,22 +89,26 @@ const useFetchDiagnostics = () => {
 	const [error, setError] = useState(undefined);
 	const [diagnostics, setDiagnostics] = useState(undefined);
 
+	const fetchDiagnostics = async () => {
+		try {
+			setIsLoading(true);
+			const response = await networkService.getDiagnostics();
+			setDiagnostics(response.data.data);
+		} catch (error) {
+			createToast({
+				body: error.message,
+			});
+			setError(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	useEffect(() => {
-		const fetchDiagnostics = async () => {
-			try {
-				setIsLoading(true);
-				const response = await networkService.getDiagnostics();
-				setDiagnostics(response.data.data);
-			} catch (error) {
-				setError(error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
 		fetchDiagnostics();
 	}, []);
 
-	return [diagnostics, isLoading, error];
+	return [diagnostics, fetchDiagnostics, isLoading, error];
 };
 
 export { useFetchLogs, useFetchQueueData, useFlushQueue, useFetchDiagnostics };

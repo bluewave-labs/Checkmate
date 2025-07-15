@@ -56,12 +56,13 @@ class DiagnosticController {
 	async getCPUUsage() {
 		try {
 			const startUsage = process.cpuUsage();
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const timingPeriod = 1000; // measured in ms
+			await new Promise((resolve) => setTimeout(resolve, timingPeriod));
 			const endUsage = process.cpuUsage(startUsage);
 			const cpuUsage = {
 				userUsageMs: endUsage.user / 1000,
 				systemUsageMs: endUsage.system / 1000,
-				usagePercentage: ((endUsage.user + endUsage.system) / 1000 / 1000) * 100,
+				usagePercentage: ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100,
 			};
 			return cpuUsage;
 		} catch (error) {
