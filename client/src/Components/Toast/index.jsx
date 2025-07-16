@@ -48,12 +48,25 @@ const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
 						{title}
 					</Typography>
 				)}
-				<IconButton onClick={onClick}>
-					<CloseIcon />
-				</IconButton>
+				{title && (
+					<IconButton onClick={onClick}>
+						<CloseIcon />
+					</IconButton>
+				)}
 			</Stack>
 
-			<ToastBody body={body} />
+			<Stack
+				direction="row"
+				gap={theme.spacing(2)}
+				alignItems="center"
+			>
+				<ToastBody body={body} />
+				{!title && (
+					<IconButton onClick={onClick}>
+						<CloseIcon />
+					</IconButton>
+				)}
+			</Stack>
 			{hasDismiss && (
 				<Button
 					variant="text"
