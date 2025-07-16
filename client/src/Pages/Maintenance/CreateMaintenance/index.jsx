@@ -547,7 +547,6 @@ const CreateMaintenance = () => {
 							handleInputChange={setSearch}
 							handleChange={handleMonitorsChange}
 							error={errors["monitors"]}
-							disabled={form.isAllMonitors}
 						/>
 						<MonitorList
 							selectedMonitors={form.monitors}

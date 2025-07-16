@@ -2,6 +2,7 @@
 import { Stack, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTheme } from "@emotion/react";
+import PropTypes from "prop-types";
 
 const MonitorListItem = ({ monitor, onDelete }) => {
 	const theme = useTheme();
@@ -19,6 +20,14 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 			/>
 		</Stack>
 	);
+};
+
+MonitorListItem.propTypes = {
+	monitor: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+	}).isRequired,
+	onDelete: PropTypes.func.isRequired,
 };
 
 const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
@@ -45,6 +54,16 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 			))}
 		</Stack>
 	);
+};
+
+MonitorList.propTypes = {
+	selectedMonitors: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			name: PropTypes.string.isRequired,
+		})
+	).isRequired,
+	setSelectedMonitors: PropTypes.func.isRequired,
 };
 
 export default MonitorList;
