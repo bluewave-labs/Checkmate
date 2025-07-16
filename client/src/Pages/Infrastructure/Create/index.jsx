@@ -25,6 +25,7 @@ import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import { createToast } from "../../../Utils/toastUtils";
 import Select from "../../../Components/Inputs/Select";
 import { CustomThreshold } from "./Components/CustomThreshold";
+import FieldWrapper from "../../../Components/Inputs/FieldWrapper";
 
 const SELECT_VALUES = [
 	{ _id: 0.25, name: "15 seconds" },
@@ -283,7 +284,7 @@ const CreateInfrastructureMonitor = () => {
 							/>
 						</Typography>
 					</Stack>
-					<Stack gap={theme.spacing(15)}>
+					<Stack gap={theme.spacing(8)}>
 						<TextInput
 							type="url"
 							id="url"
@@ -299,8 +300,10 @@ const CreateInfrastructureMonitor = () => {
 							disabled={!isCreate}
 						/>
 						{isCreate && (
-							<Box>
-								<Typography component="p">{t("infrastructureProtocol")}</Typography>
+							<FieldWrapper
+								label={t("infrastructureProtocol")}
+								labelVariant="p"
+							>
 								<ButtonGroup>
 									<Button
 										variant="group"
@@ -317,7 +320,7 @@ const CreateInfrastructureMonitor = () => {
 										{t("http")}
 									</Button>
 								</ButtonGroup>
-							</Box>
+							</FieldWrapper>
 						)}
 						<TextInput
 							type="text"
