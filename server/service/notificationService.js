@@ -35,7 +35,7 @@ class NotificationService {
 		}
 
 		if (type === "slack" || type === "discord" || type === "webhook") {
-			const response = await this.networkService.requestWebhook(type, address, body);
+			const response = await this.networkService.requestWebhook(notification, body);
 			return response.status;
 		}
 		if (type === "pager_duty") {
