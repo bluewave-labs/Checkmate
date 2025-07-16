@@ -11,6 +11,12 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
       - ./certbot/www/:/var/www/certbot/:ro
   certbot:
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/lib/letsencrypt
+      - /var/log/letsencrypt
+      - /etc/letsencrypt
     image: certbot/certbot:latest
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
