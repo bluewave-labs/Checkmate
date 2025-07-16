@@ -11,7 +11,7 @@ import Filter from "./Components/Filters";
 import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
@@ -57,6 +57,12 @@ const InfrastructureMonitors = () => {
 		);
 		setPage(0);
 	};
+
+	useEffect(() => {
+		if (isSearching) {
+			setPage(0);
+		}
+	}, [isSearching]);
 
 	const handleReset = () => {
 		setSelectedStatus(undefined);
