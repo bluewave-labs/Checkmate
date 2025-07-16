@@ -13,6 +13,8 @@ import {
 	getCertificateParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
+	getNetworkDetailsByIdParamValidation,
+	getNetworkDetailsByIdQueryValidation,
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
 import logger from "../utils/logger.js";
@@ -23,12 +25,20 @@ const SERVICE_NAME = "monitorController";
 import pkg from "papaparse";
 
 class MonitorController {
-	constructor(db, settingsService, jobQueue, stringService, emailService) {
+	constructor(
+		db,
+		settingsService,
+		jobQueue,
+		stringService,
+		emailService,
+		networkService
+	) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.networkService = networkService;
 	}
 
 	/**
@@ -158,6 +168,37 @@ class MonitorController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getHardwareDetailsById"));
+		}
+	};
+
+	/**
+	 * Retrieves the details and recent checks for a specific network monitor.
+	 * @async
+	 * @param {object} req - The Express request object.
+	 * @param {object} res - The Express response object.
+	 * @param {function} next - The next middleware function.
+	 */
+	getNetworkDetailsById = async (req, res, next) => {
+		try {
+			await getNetworkDetailsByIdParamValidation.validateAsync(req.params);
+			await getNetworkDetailsByIdQueryValidation.validateAsync(req.query);
+		} catch (error) {
+			next(handleValidationError(error, SERVICE_NAME));
+			return;
+		}
+		try {
+			const { monitorId } = req.params;
+			const monitor = await this.db.getMonitorById(monitorId);
+			if (!monitor) {
+				return res.status(404).json({ msg: "Monitor not found" });
+			}
+			const networkResult = await this.networkService.requestNetwork(monitor);
+			return res.success({
+				msg: this.stringService.monitorGetByIdSuccess,
+				data: networkResult.payload?.data?.net || [],
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "getNetworkDetailsById"));
 		}
 	};
 

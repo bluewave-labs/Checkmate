@@ -21,6 +21,7 @@ class NetworkService {
 		this.TYPE_HTTP = "http";
 		this.TYPE_PAGESPEED = "pagespeed";
 		this.TYPE_HARDWARE = "hardware";
+		this.TYPE_NETWORK = "network";
 		this.TYPE_DOCKER = "docker";
 		this.TYPE_PORT = "port";
 		this.SERVICE_NAME = SERVICE_NAME;
@@ -488,6 +489,55 @@ class NetworkService {
 	}
 
 	/**
+	 * Sends a request to the hardware API to get network interface data.
+	 * The monitor's URL and secret are used for the request.
+	 * @param {object} monitor - The monitor object from the database.
+	 * @returns {Promise<object>} An object containing the network status and response details.
+	 */
+	async requestNetwork(monitor) {
+		try {
+			const { url, secret, _id, teamId, type } = monitor;
+			const networkUrl = url;
+			const config = {};
+
+			// Add authorization header if a secret is provided
+			if (secret) {
+				config.headers = { Authorization: `Bearer ${secret}` };
+			}
+
+			const { response, responseTime, error } = await this.timeRequest(() =>
+				this.axios.get(networkUrl, config)
+			);
+
+			const networkResponse = {
+				monitorId: _id,
+				teamId,
+				type,
+				responseTime,
+				payload: response?.data,
+			};
+
+			if (error) {
+				const code = error.response?.status || this.NETWORK_ERROR;
+				networkResponse.code = code;
+				networkResponse.status = false;
+				networkResponse.message =
+					this.http.STATUS_CODES[code] || "Network request failed";
+				return networkResponse;
+			}
+
+			networkResponse.code = response.status;
+			networkResponse.status = true;
+			networkResponse.message = this.http.STATUS_CODES[response.status];
+			return networkResponse;
+		} catch (error) {
+			error.service = this.SERVICE_NAME;
+			error.method = "requestNetwork";
+			throw error;
+		}
+	}
+
+	/**
 	 * Gets the status of a job based on its type and returns the appropriate response.
 	 *
 	 * @param {Object} job - The job object containing the data for the status request.
@@ -511,6 +561,8 @@ class NetworkService {
 				return await this.requestDocker(monitor);
 			case this.TYPE_PORT:
 				return await this.requestPort(monitor);
+			case this.TYPE_NETWORK:
+					return await this.requestNetwork(monitor);
 			default:
 				return this.handleUnsupportedType(type);
 		}

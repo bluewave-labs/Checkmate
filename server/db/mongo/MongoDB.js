@@ -68,6 +68,11 @@ import * as statusPageModule from "./modules/statusPageModule.js";
 //****************************************
 import * as diagnosticModule from "./modules/diagnosticModule.js";
 
+//****************************************
+// Network
+//****************************************
+import * as networkCheckModule from "./modules/networkCheckModule.js"
+
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
@@ -85,6 +90,7 @@ class MongoDB {
 		Object.assign(this, settingsModule);
 		Object.assign(this, statusPageModule);
 		Object.assign(this, diagnosticModule);
+		Object.assign(this, networkCheckModule)
 	}
 
 	connect = async () => {

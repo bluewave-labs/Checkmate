@@ -20,6 +20,8 @@ import {
 	buildMonitorsWithChecksByTeamIdPipeline,
 	buildFilteredMonitorsByTeamIdPipeline,
 } from "./monitorModuleQueries.js";
+import { getNetworkChecksByMonitorId } from "./networkCheckModule.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -821,6 +823,35 @@ const pauseMonitor = async ({ monitorId }) => {
 	}
 };
 
+/**
+ * Get network details by monitor ID
+ * @async
+ * @param {Object} params
+ * @param {string} params.monitorId
+ * @param {string} params.dateRange
+ * @returns {Promise<Array>}
+ */
+const getNetworkDetailsById = async ({ monitorId, dateRange }) => {
+	try {
+		const monitor = await Monitor.findById(monitorId);
+		if (!monitor) {
+			const error = new Error("Monitor not found");
+			error.status = 404;
+			throw error;
+		}
+		const { start, end } = getDateRange(dateRange || "recent");
+		const checks = await getNetworkChecksByMonitorId(monitorId, 1000);
+		const filtered = checks.filter(
+			(c) => new Date(c.createdAt) >= start && new Date(c.createdAt) <= end
+		);
+		return filtered;
+	} catch (error) {
+		error.service = "monitorModule";
+		error.method = "getNetworkDetailsById";
+		throw error;
+	}
+};
+
 export {
 	getAllMonitors,
 	getAllMonitorsWithUptimeStats,
@@ -839,6 +870,7 @@ export {
 	addDemoMonitors,
 	getHardwareDetailsById,
 	pauseMonitor,
+	getNetworkDetailsById,
 };
 
 // Helper functions
