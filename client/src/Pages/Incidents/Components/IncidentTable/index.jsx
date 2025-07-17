@@ -96,6 +96,14 @@ const IncidentTable = ({
 			render: (row) => monitors[row.monitorId]?.name ?? "N/A",
 		},
 		{
+			id: "type",
+			content: t("incidentsTableType", "Type"),
+			render: (row) => {
+				const type = monitors[row.monitorId]?.type || "unknown";
+				return type === "hardware" ? "infrastructure" : type;
+			},
+		},
+		{
 			id: "status",
 			content: t("incidentsTableStatus"),
 			render: (row) => {

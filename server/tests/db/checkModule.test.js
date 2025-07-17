@@ -12,6 +12,8 @@ import Check from "../../db/models/Check.js";
 import Monitor from "../../db/models/Monitor.js";
 import User from "../../db/models/User.js";
 import logger from "../../utils/logger.js";
+import HardwareCheck from "../../db/models/HardwareCheck.js";
+import mongoose from "mongoose";
 
 describe("checkModule", function () {
 	describe("createCheck", function () {
@@ -588,6 +590,37 @@ describe("checkModule", function () {
 			} catch (error) {
 				expect(error).to.deep.equal(err);
 			}
+		});
+	});
+
+	describe("getChecksByTeam", function () {
+		it("should include hardware incidents in getChecksByTeam results", async function () {
+			const teamId = new mongoose.Types.ObjectId();
+			const monitorId = new mongoose.Types.ObjectId();
+			await HardwareCheck.create({
+				monitorId,
+				teamId,
+				status: false,
+				message: "Hardware failure",
+				cpu: {},
+				memory: {},
+				disk: [],
+				host: {},
+				errors: [],
+				capture: {},
+			});
+
+			const result = await getChecksByTeam({
+				teamId,
+				sortOrder: "desc",
+				page: 0,
+				rowsPerPage: 10,
+			});
+
+			const found = result.checks.some(
+				(check) => check.message === "Hardware failure" && check.status === false
+			);
+			expect(found).to.be.true;
 		});
 	});
 });

@@ -74,7 +74,7 @@ class NotificationService {
 				alerts
 			);
 			const content =
-				await this.notificationUtils.buildHardwareNotificationMessage(alerts);
+				await this.notificationUtils.buildHardwareNotificationMessage(alerts, networkResponse.monitor);
 
 			const success = await this.notifyAll({ notificationIDs, subject, html, content });
 			return success;

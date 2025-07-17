@@ -138,8 +138,13 @@ class NotificationUtils {
 		return { subject, html };
 	};
 
-	buildHardwareNotificationMessage = (alerts) => {
-		return alerts.map((alert) => alert).join("\n");
+	buildHardwareNotificationMessage = (alerts, monitor) => {
+		const baseUrl = process.env.CLIENT_BASE_URL || 'http://localhost:3000';
+		const monitorName = monitor?.name || 'Unknown Server';
+		const monitorId = monitor?._id || monitor?.id || '';
+		const detailsUrl = `${baseUrl}/infrastructure/${monitorId}`;
+		const header = `*${monitorName}* has infrastructure alert(s):\n[View Details](${detailsUrl})`;
+		return [header, ...alerts].join("\n\n");
 	};
 }
 
