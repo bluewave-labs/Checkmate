@@ -1,6 +1,7 @@
 import { updateAppSettingsBodyValidation } from "../validation/joi.js";
-import { handleValidationError, handleError } from "./controllerUtils.js";
 import { sendTestEmailBodyValidation } from "../validation/joi.js";
+import { asyncHandler, createServerError } from "../utils/errorUtils.js";
+
 const SERVICE_NAME = "SettingsController";
 
 class SettingsController {
@@ -32,45 +33,44 @@ class SettingsController {
 		return returnSettings;
 	};
 
-	getAppSettings = async (req, res, next) => {
-		const dbSettings = await this.settingsService.getDBSettings();
+	getAppSettings = asyncHandler(
+		async (req, res, next) => {
+			const dbSettings = await this.settingsService.getDBSettings();
 
-		const returnSettings = this.buildAppSettings(dbSettings);
-		return res.success({
-			msg: this.stringService.getAppSettings,
-			data: returnSettings,
-		});
-	};
+			const returnSettings = this.buildAppSettings(dbSettings);
+			return res.success({
+				msg: this.stringService.getAppSettings,
+				data: returnSettings,
+			});
+		},
+		SERVICE_NAME,
+		"getAppSettings"
+	);
 
-	updateAppSettings = async (req, res, next) => {
-		try {
+	updateAppSettings = asyncHandler(
+		async (req, res, next) => {
 			await updateAppSettingsBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const updatedSettings = await this.db.updateAppSettings(req.body);
 			const returnSettings = this.buildAppSettings(updatedSettings);
 			return res.success({
 				msg: this.stringService.updateAppSettings,
 				data: returnSettings,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "updateAppSettings"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"updateAppSettings"
+	);
 
-	sendTestEmail = async (req, res, next) => {
-		try {
-			await sendTestEmailBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
+	sendTestEmail = asyncHandler(
+		async (req, res, next) => {
+			try {
+				await sendTestEmailBodyValidation.validateAsync(req.body);
+			} catch (error) {
+				next(handleValidationError(error, SERVICE_NAME));
+				return;
+			}
 
-		try {
 			const {
 				to,
 				systemEmailHost,
@@ -107,20 +107,17 @@ class SettingsController {
 			});
 
 			if (!messageId) {
-				return res.error({
-					msg: "Failed to send test email.",
-				});
+				throw createServerError("Failed to send test email.");
 			}
 
 			return res.success({
 				msg: this.stringService.sendTestEmail,
 				data: { messageId },
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"sendTestEmail"
+	);
 }
 
 export default SettingsController;

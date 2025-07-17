@@ -3,10 +3,9 @@ import {
 	inviteBodyValidation,
 	inviteVerificationBodyValidation,
 } from "../validation/joi.js";
-import logger from "../utils/logger.js";
 import jwt from "jsonwebtoken";
-import { handleError, handleValidationError } from "./controllerUtils.js";
 import { getTokenFromHeaders } from "../utils/utils.js";
+import { asyncHandler, createServerError } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "inviteController";
 
@@ -31,99 +30,73 @@ class InviteController {
 	 * @returns {Object} The response object with a success status, a message indicating the sending of the invitation, and the invitation token.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	getInviteToken = async (req, res, next) => {
-		try {
+	getInviteToken = asyncHandler(
+		async (req, res, next) => {
 			// Only admins can invite
 			const token = getTokenFromHeaders(req.headers);
 			const { role, teamId } = jwt.decode(token);
 			req.body.teamId = teamId;
-			try {
-				await inviteRoleValidation.validateAsync({ roles: role });
-				await inviteBodyValidation.validateAsync(req.body);
-			} catch (error) {
-				next(handleValidationError(error, SERVICE_NAME));
-				return;
-			}
+			await inviteRoleValidation.validateAsync({ roles: role });
+			await inviteBodyValidation.validateAsync(req.body);
 
 			const inviteToken = await this.db.requestInviteToken({ ...req.body });
 			return res.success({
 				msg: this.stringService.inviteIssued,
 				data: inviteToken,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "inviteController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getInviteToken"
+	);
 
-	sendInviteEmail = async (req, res, next) => {
-		try {
+	sendInviteEmail = asyncHandler(
+		async (req, res, next) => {
 			// Only admins can invite
 			const token = getTokenFromHeaders(req.headers);
 			const { role, firstname, teamId } = jwt.decode(token);
 			req.body.teamId = teamId;
-			try {
-				await inviteRoleValidation.validateAsync({ roles: role });
-				await inviteBodyValidation.validateAsync(req.body);
-			} catch (error) {
-				next(handleValidationError(error, SERVICE_NAME));
-				return;
-			}
+			await inviteRoleValidation.validateAsync({ roles: role });
+			await inviteBodyValidation.validateAsync(req.body);
 
 			const inviteToken = await this.db.requestInviteToken({ ...req.body });
 			const { clientHost } = this.settingsService.getSettings();
 
-			try {
-				const html = await this.emailService.buildEmail("employeeActivationTemplate", {
-					name: firstname,
-					link: `${clientHost}/register/${inviteToken.token}`,
-				});
-				const result = await this.emailService.sendEmail(
-					req.body.email,
-					"Welcome to Uptime Monitor",
-					html
+			const html = await this.emailService.buildEmail("employeeActivationTemplate", {
+				name: firstname,
+				link: `${clientHost}/register/${inviteToken.token}`,
+			});
+			const result = await this.emailService.sendEmail(
+				req.body.email,
+				"Welcome to Uptime Monitor",
+				html
+			);
+			if (!result) {
+				throw createServerError(
+					"Failed to send invite e-mail... Please verify your settings."
 				);
-				if (!result) {
-					return res.error({
-						msg: "Failed to send invite e-mail... Please verify your settings.",
-					});
-				}
-			} catch (error) {
-				logger.warn({
-					message: error.message,
-					service: SERVICE_NAME,
-					method: "sendInviteEmail",
-					stack: error.stack,
-				});
 			}
 
 			return res.success({
 				msg: this.stringService.inviteIssued,
 				data: inviteToken,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "inviteController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"sendInviteEmail"
+	);
 
-	inviteVerifyController = async (req, res, next) => {
-		try {
+	inviteVerifyController = asyncHandler(
+		async (req, res, next) => {
 			await inviteVerificationBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
 			const invite = await this.db.getInviteToken(req.body.token);
-
 			return res.success({
 				msg: this.stringService.inviteVerified,
 				data: invite,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "inviteVerifyController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"inviteVerifyController"
+	);
 }
 
 export default InviteController;

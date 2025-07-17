@@ -10,7 +10,8 @@ import {
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
 import crypto from "crypto";
-import { handleValidationError, handleError } from "./controllerUtils.js";
+import { asyncHandler, createAuthError, createError } from "../utils/errorUtils.js";
+
 const SERVICE_NAME = "authController";
 
 class AuthController {
@@ -32,15 +33,10 @@ class AuthController {
 	 * @throws {Error}
 	 */
 	issueToken = (payload, appSettings) => {
-		try {
-			const tokenTTL = appSettings?.jwtTTL ?? "2h";
-			const tokenSecret = appSettings?.jwtSecret;
-			const payloadData = payload;
-
-			return jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
-		} catch (error) {
-			throw handleError(error, SERVICE_NAME, "issueToken");
-		}
+		const tokenTTL = appSettings?.jwtTTL ?? "2h";
+		const tokenSecret = appSettings?.jwtSecret;
+		const payloadData = payload;
+		return jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
 	};
 
 	/**
@@ -55,19 +51,14 @@ class AuthController {
 	 * @returns {Object} The response object with a success status, a message indicating the creation of the user, the created user data, and a JWT token.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	registerUser = async (req, res, next) => {
-		try {
+	registerUser = asyncHandler(
+		async (req, res, next) => {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
 			await registrationBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			const validationError = handleValidationError(error, SERVICE_NAME);
-			next(validationError);
-			return;
-		}
-		// Create a new user
-		try {
+
+			// Create a new user
 			const user = req.body;
 			// If superAdmin exists, a token should be attached to all further register requests
 			const superAdminExists = await this.db.checkSuperadmin(req, res);
@@ -123,10 +114,10 @@ class AuthController {
 				msg: this.stringService.authCreateUser,
 				data: { user: newUser, token: token },
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "registerController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"registerUser"
+	);
 
 	/**
 	 * Logs in a user by validating the user's credentials and issuing a JWT token.
@@ -140,18 +131,13 @@ class AuthController {
 	 * @returns {Object} The response object with a success status, a message indicating the login of the user, the user data (without password and avatar image), and a JWT token.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422) or the password is incorrect.
 	 */
-	loginUser = async (req, res, next) => {
-		try {
+	loginUser = asyncHandler(
+		async (req, res, next) => {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
 			await loginValidation.validateAsync(req.body);
-		} catch (error) {
-			const validationError = handleValidationError(error, SERVICE_NAME);
-			next(validationError);
-			return;
-		}
-		try {
+
 			const { email, password } = req.body;
 
 			// Check if user exists
@@ -160,10 +146,7 @@ class AuthController {
 			// Compare password
 			const match = await user.comparePassword(password);
 			if (match !== true) {
-				const error = new Error(this.stringService.authIncorrectPassword);
-				error.status = 401;
-				next(error);
-				return;
+				throw createAuthError(this.stringService.authIncorrectPassword);
 			}
 
 			// Remove password from user object.  Should this be abstracted to DB layer?
@@ -184,11 +167,10 @@ class AuthController {
 					token: token,
 				},
 			});
-		} catch (error) {
-			error.status = 401;
-			next(handleError(error, SERVICE_NAME, "loginUser"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"loginUser"
+	);
 
 	/**
 	 * Edits a user's information. If the user wants to change their password, the current password is checked before updating to the new password.
@@ -204,26 +186,16 @@ class AuthController {
 	 * @returns {Object} The response object with a success status, a message indicating the update of the user, and the updated user data.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422), the user is unauthorized (401), or the password is incorrect (403).
 	 */
-	editUser = async (req, res, next) => {
-		try {
+	editUser = asyncHandler(
+		async (req, res, next) => {
 			await editUserParamValidation.validateAsync(req.params);
 			await editUserBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			const validationError = handleValidationError(error, SERVICE_NAME);
-			next(validationError);
-			return;
-		}
 
-		// TODO is this neccessary any longer? Verify ownership middleware should handle this
-		if (req.params.userId !== req.user._id.toString()) {
-			const error = new Error(this.stringService.unauthorized);
-			error.status = 401;
-			error.service = SERVICE_NAME;
-			next(error);
-			return;
-		}
+			// TODO is this neccessary any longer? Verify ownership middleware should handle this
+			if (req.params.userId !== req.user._id.toString()) {
+				throw createAuthError(this.stringService.unauthorized);
+			}
 
-		try {
 			// Change Password check
 			if (req.body.password && req.body.newPassword) {
 				// Get token from headers
@@ -240,10 +212,7 @@ class AuthController {
 				// If not a match, throw a 403
 				// 403 instead of 401 to avoid triggering axios interceptor
 				if (!match) {
-					const error = new Error(this.stringService.authIncorrectPassword);
-					error.status = 403;
-					next(error);
-					return;
+					throw createError(this.stringService.authIncorrectPassword, 403);
 				}
 				// If a match, update the password
 				req.body.password = req.body.newPassword;
@@ -254,10 +223,10 @@ class AuthController {
 				msg: this.stringService.authUpdateUser,
 				data: updatedUser,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "userEditController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"editUser"
+	);
 
 	/**
 	 * Checks if a superadmin account exists in the database.
@@ -268,18 +237,17 @@ class AuthController {
 	 * @returns {Object} The response object with a success status, a message indicating the existence of a superadmin, and a boolean indicating the existence of a superadmin.
 	 * @throws {Error} If there is an error during the process.
 	 */
-	checkSuperadminExists = async (req, res, next) => {
-		try {
+	checkSuperadminExists = asyncHandler(
+		async (req, res, next) => {
 			const superAdminExists = await this.db.checkSuperadmin(req, res);
-
 			return res.success({
 				msg: this.stringService.authAdminExists,
 				data: superAdminExists,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "checkSuperadminController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"checkSuperadminExists"
+	);
 	/**
 	 * Requests a recovery token for a user. The user's email is validated and a recovery token is created and sent via email.
 	 * @async
@@ -291,16 +259,9 @@ class AuthController {
 	 * @returns {Object} The response object with a success status, a message indicating the creation of the recovery token, and the message ID of the sent email.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	requestRecovery = async (req, res, next) => {
-		try {
+	requestRecovery = asyncHandler(
+		async (req, res, next) => {
 			await recoveryValidation.validateAsync(req.body);
-		} catch (error) {
-			const validationError = handleValidationError(error, SERVICE_NAME);
-			next(validationError);
-			return;
-		}
-
-		try {
 			const { email } = req.body;
 			const user = await this.db.getUserByEmail(email);
 			const recoveryToken = await this.db.requestRecoveryToken(req, res);
@@ -323,10 +284,10 @@ class AuthController {
 				msg: this.stringService.authCreateRecoveryToken,
 				data: msgId,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "recoveryRequestController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"requestRecovery"
+	);
 	/**
 	 * Validates a recovery token. The recovery token is validated and if valid, a success message is returned.
 	 * @async
@@ -338,25 +299,17 @@ class AuthController {
 	 * @returns {Object} The response object with a success status and a message indicating the validation of the recovery token.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	validateRecovery = async (req, res, next) => {
-		try {
+	validateRecovery = asyncHandler(
+		async (req, res, next) => {
 			await recoveryTokenValidation.validateAsync(req.body);
-		} catch (error) {
-			const validationError = handleValidationError(error, SERVICE_NAME);
-			next(validationError);
-			return;
-		}
-
-		try {
 			await this.db.validateRecoveryToken(req, res);
-
 			return res.success({
 				msg: this.stringService.authVerifyRecoveryToken,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "validateRecoveryTokenController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"validateRecovery"
+	);
 
 	/**
 	 * Resets a user's password. The new password is validated and if valid, the user's password is updated in the database and a new JWT token is issued.
@@ -370,27 +323,20 @@ class AuthController {
 	 * @returns {Object} The response object with a success status, a message indicating the reset of the password, the updated user data (without password and avatar image), and a new JWT token.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	resetPassword = async (req, res, next) => {
-		try {
+	resetPassword = asyncHandler(
+		async (req, res, next) => {
 			await newPasswordValidation.validateAsync(req.body);
-		} catch (error) {
-			const validationError = handleValidationError(error, SERVICE_NAME);
-			next(validationError);
-			return;
-		}
-		try {
 			const user = await this.db.resetPassword(req, res);
 			const appSettings = await this.settingsService.getSettings();
 			const token = this.issueToken(user._doc, appSettings);
-
 			return res.success({
 				msg: this.stringService.authResetPassword,
 				data: { user, token },
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "resetPasswordController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"resetPassword"
+	);
 
 	/**
 	 * Deletes a user and all associated monitors, checks, and alerts.
@@ -401,8 +347,8 @@ class AuthController {
 	 * @returns {Object} The response object with success status and message.
 	 * @throws {Error} If user validation fails or user is not found in the database.
 	 */
-	deleteUser = async (req, res, next) => {
-		try {
+	deleteUser = asyncHandler(
+		async (req, res, next) => {
 			const token = getTokenFromHeaders(req.headers);
 			const decodedToken = jwt.decode(token);
 			const { email } = decodedToken;
@@ -430,23 +376,22 @@ class AuthController {
 			return res.success({
 				msg: this.stringService.authDeleteUser,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "deleteUserController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"deleteUser"
+	);
 
-	getAllUsers = async (req, res, next) => {
-		try {
+	getAllUsers = asyncHandler(
+		async (req, res, next) => {
 			const allUsers = await this.db.getAllUsers(req, res);
-
 			return res.success({
 				msg: this.stringService.authGetAllUsers,
 				data: allUsers,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getAllUsersController"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getAllUsers"
+	);
 }
 
 export default AuthController;

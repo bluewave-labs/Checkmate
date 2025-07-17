@@ -1,6 +1,6 @@
-import { handleError } from "./controllerUtils.js";
 import v8 from "v8";
 import os from "os";
+import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "diagnosticController";
 
@@ -17,20 +17,20 @@ class DiagnosticController {
 		this.getDbStats = this.getDbStats.bind(this);
 	}
 
-	async getMonitorsByTeamIdExecutionStats(req, res, next) {
-		try {
+	getMonitorsByTeamIdExecutionStats = asyncHandler(
+		async (req, res, next) => {
 			const data = await this.db.getMonitorsByTeamIdExecutionStats(req);
 			return res.success({
 				msg: "OK",
 				data,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorsByTeamIdExecutionStats"));
-		}
-	}
+		},
+		SERVICE_NAME,
+		"getMonitorsByTeamIdExecutionStats"
+	);
 
-	async getDbStats(req, res, next) {
-		try {
+	getDbStats = asyncHandler(
+		async (req, res, next) => {
 			const { methodName, args = [] } = req.body;
 			if (!methodName || !this.db[methodName]) {
 				return res.error({
@@ -48,13 +48,13 @@ class DiagnosticController {
 				msg: "OK",
 				data: stats,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getDbStats"));
-		}
-	}
+		},
+		SERVICE_NAME,
+		"getDbStats"
+	);
 
-	async getCPUUsage() {
-		try {
+	getCPUUsage = asyncHandler(
+		async (req, res, next) => {
 			const startUsage = process.cpuUsage();
 			const timingPeriod = 1000; // measured in ms
 			await new Promise((resolve) => setTimeout(resolve, timingPeriod));
@@ -65,16 +65,13 @@ class DiagnosticController {
 				usagePercentage: ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100,
 			};
 			return cpuUsage;
-		} catch (error) {
-			return {
-				userUsageMs: 0,
-				systemUsageMs: 0,
-			};
-		}
-	}
+		},
+		SERVICE_NAME,
+		"getCPUUsage"
+	);
 
-	getSystemStats = async (req, res, next) => {
-		try {
+	getSystemStats = asyncHandler(
+		async (req, res, next) => {
 			// Memory Usage
 			const totalMemory = os.totalmem();
 			const freeMemory = os.freemem();
@@ -129,9 +126,9 @@ class DiagnosticController {
 				msg: "OK",
 				data: diagnostics,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMemoryUsage"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getSystemStats"
+	);
 }
 export default DiagnosticController;
