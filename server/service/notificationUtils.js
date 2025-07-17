@@ -1,7 +1,8 @@
 class NotificationUtils {
-	constructor({ stringService, emailService }) {
+	constructor({ stringService, emailService, incidentService }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.incidentService = this.incidentService;
 	}
 
 	buildTestEmail = async () => {
@@ -111,17 +112,30 @@ class NotificationUtils {
 
 					const formatAlert = {
 						cpu: () =>
-							`Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
+							`Infrastructure: <${monitor,name}>*\nYour current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
 						memory: () =>
-							`Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
+							`Infrastructure: <${monitor,name}>*\nYour current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
 						disk: () =>
-							`Your current disk usage: ${disk
+							`Infrastructure: <${monitor,name}>*\nYour current disk usage: ${disk
 								.map((d, idx) => `(Disk${idx}: ${(d.usage_percent * 100).toFixed(0)}%)`)
 								.join(
 									", "
 								)} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
 					};
-					alertsToSend.push(formatAlert[type]());
+
+					const  alertMessage = formatAlert[type]();
+
+					const newIncident = await this.incidentService.create({
+						monitorId: monitor.id,
+						type: type.toUpperCase() + '_USAGE',
+						title: `High ${type} usage on ${monitor.name}`
+					});
+					
+
+					alertsToSend.push({
+						message: alertMessage,
+						incident:newIncident
+					});
 				}
 			}
 		}
@@ -139,7 +153,41 @@ class NotificationUtils {
 	};
 
 	buildHardwareNotificationMessage = (alerts) => {
-		return alerts.map((alert) => alert).join("\n");
+		const blocks = [];
+
+        alerts.forEach(alert => {
+            const { message, incident } = alert;
+            const incidentUrl = `https://checkmate-host/infrastructure/${incident.id}`;
+
+            blocks.push({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": message
+                }
+            });
+
+            blocks.push({
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Go to Incident",
+                            "emoji": true
+                        },
+                        "url": incidentUrl
+                    }
+                ]
+            });
+        });
+
+        return {
+            text: alerts.map(a => a.message).join('\n'),
+            blocks: blocks
+        };
+		
 	};
 }
 
