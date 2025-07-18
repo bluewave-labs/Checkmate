@@ -130,7 +130,7 @@ const monitorValidation = joi.object({
 			.custom((value, helpers) => {
 				const noProtocol = value.replace(/^(https?:\/\/)/, "");
 
-				if (/^[a-zA-Z0-9-]+(:\d{1,5})?$/.test(noProtocol)) {
+				if (/^[a-zA-Z0-9.-]+(:\d{1,5})?$/.test(noProtocol)) {
 					return value;
 				}
 

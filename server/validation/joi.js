@@ -168,7 +168,52 @@ const createMonitorBodyValidation = joi.object({
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
-	url: joi.string().required(),
+	url: joi
+		.string()
+		.required()
+		.custom((value, helpers) => {
+			const noProtocol = value.replace(/^(https?:\/\/)/, "");
+
+			if (/^[a-zA-Z0-9.-]+(:\d{1,5})?$/.test(noProtocol)) {
+				return value;
+			}
+
+			// Existing complex URL validation as fallback
+			var urlRegex = new RegExp(
+				"^" +
+					"(?:(?:https?|ftp):\\/\\/)?" +
+					"(?:" +
+					"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+					"(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+					"(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+					"|" +
+					"(?:" +
+					"(?:" +
+					"[a-z0-9\\u00a1-\\uffff]" +
+					"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+					")?" +
+					"[a-z0-9\\u00a1-\\uffff]\\." +
+					")+" +
+					"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+					")" +
+					"(?::\\d{2,5})?" +
+					"(?:[/?#]\\S*)?" +
+					"$",
+				"i"
+			);
+
+			if (urlRegex.test(value)) {
+				return value;
+			}
+
+			return helpers.error("string.invalidUrl");
+		})
+		.messages({
+			"string.empty": "This field is required.",
+			"string.uri": "The URL you provided is not valid.",
+			"string.invalidUrl":
+				"Please enter a valid URL, hostname, or container name (with optional port).",
+		}),
 	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
