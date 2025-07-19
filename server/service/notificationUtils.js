@@ -1,9 +1,10 @@
 import notificationConfig from "../utils/notificationConfig.js";
 
 class NotificationUtils {
-	constructor({ stringService, emailService }) {
+	constructor({ stringService, emailService, db }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.db = db;
 	}
 
 	buildTestEmail = async () => {
@@ -175,29 +176,29 @@ class NotificationUtils {
 	};
 
 	/**
-	 * Determines if a notification should be sent based on backoff settings
+	 * Determines if a notification should be sent based on monitor's backoff settings
 	 *
-	 * @param {Object} notification - Notification object with backoff settings
+	 * @param {Object} monitor - Monitor object with backoff settings
 	 * @returns {Boolean} - Whether notification should be sent
 	 */
-	shouldSendNotification = (notification) => {
+	shouldSendNotification = (monitor) => {
 		// If backoff is disabled, always send
-		if (!notification.backoffEnabled) {
+		if (!monitor.backoffEnabled) {
 			return true;
 		}
 
 		// If no previous notification sent, always send
-		if (!notification.lastNotificationTime) {
+		if (!monitor.lastNotificationTime) {
 			return true;
 		}
 
 		// Get current backoff delay (or use initial if not set)
 		const currentDelay =
-			notification.currentBackoffDelay || notification.initialBackoffDelay;
+			monitor.currentBackoffDelay || monitor.initialBackoffDelay;
 
 		// Check if enough time has passed since last notification
 		const timeSinceLastNotification =
-			Date.now() - new Date(notification.lastNotificationTime).getTime();
+			Date.now() - new Date(monitor.lastNotificationTime).getTime();
 		return timeSinceLastNotification >= currentDelay;
 	};
 }

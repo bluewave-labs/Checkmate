@@ -55,45 +55,41 @@ class NotificationService {
 		const notificationIDs = networkResponse.monitor?.notifications ?? [];
 		if (notificationIDs.length === 0) return false;
 
-		// Get all notifications that need to be sent
-		const notifications = await this.db.getNotificationsByIds(notificationIDs);
+		// We don't need to fetch notifications here anymore since we're using monitor-level backoff
+		// Just verify that the notifications exist
+		const notificationsExist = await this.db.getNotificationsByIds(notificationIDs);
+		if (notificationsExist.length === 0) return false;
 
-		// Filter notifications based on backoff settings
-		const notificationsToSend = [];
-		const notificationsToUpdate = [];
-
-		for (const notification of notifications) {
-			// Check if we should send this notification based on backoff settings
-			if (this.notificationUtils.shouldSendNotification(notification)) {
-				notificationsToSend.push(notification);
-
-				// Update backoff parameters
-				notification.lastNotificationTime = new Date();
-
-				// If first notification, set current delay to initial
-				if (!notification.currentBackoffDelay) {
-					notification.currentBackoffDelay = notification.initialBackoffDelay;
-				} else {
-					// Calculate next backoff with jitter
-					notification.currentBackoffDelay =
-						this.notificationUtils.calculateNextBackoffDelay(
-							notification.currentBackoffDelay,
-							notification.backoffMultiplier,
-							notification.maxBackoffDelay
-						);
-				}
-
-				notificationsToUpdate.push(notification);
-			}
+		// Check if we should send notifications based on monitor's backoff settings
+		if (!this.notificationUtils.shouldSendNotification(monitor)) {
+			this.logger.info({
+				service: "NotificationService",
+				method: "handleNotifications",
+				message: `Skipping notifications due to backoff for monitor ${monitor.name} (ID: ${monitor._id})`,
+			});
+			return false;
 		}
 
-		// If no notifications to send after filtering, we're done
-		if (notificationsToSend.length === 0) return false;
+		// Update monitor's backoff parameters
+		monitor.lastNotificationTime = new Date();
 
-		// Save updated notification backoff parameters
-		for (const notification of notificationsToUpdate) {
-			await notification.save();
+		// If first notification, set current delay to initial
+		if (!monitor.currentBackoffDelay) {
+			monitor.currentBackoffDelay = monitor.initialBackoffDelay;
+		} else {
+			// Calculate next backoff with jitter
+			monitor.currentBackoffDelay =
+				this.notificationUtils.calculateNextBackoffDelay(
+					monitor.currentBackoffDelay,
+					monitor.backoffMultiplier,
+					monitor.maxBackoffDelay
+				);
 		}
+
+		// Save updated monitor backoff parameters
+		await monitor.save();
+
+		// All notifications can be sent since we've already checked the monitor's backoff
 
 		if (networkResponse.monitor.type === "hardware") {
 			const thresholds = networkResponse?.monitor?.thresholds;
@@ -112,10 +108,9 @@ class NotificationService {
 			const content =
 				await this.notificationUtils.buildHardwareNotificationMessage(alerts);
 
-			// Use filtered notifications instead of all notificationIDs
-			const notificationIDsToSend = notificationsToSend.map((n) => n._id.toString());
+			// Use all notifications since we've already checked monitor backoff
 			const success = await this.notifyAll({
-				notificationIDs: notificationIDsToSend,
+				notificationIDs,
 				subject,
 				html,
 				content,
@@ -128,10 +123,9 @@ class NotificationService {
 			await this.notificationUtils.buildStatusEmail(networkResponse);
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
 
-		// Use filtered notifications instead of all notificationIDs
-		const notificationIDsToSend = notificationsToSend.map((n) => n._id.toString());
+		// Use all notifications since we've already checked monitor backoff
 		const success = this.notifyAll({
-			notificationIDs: notificationIDsToSend,
+			notificationIDs,
 			subject,
 			html,
 			content,
