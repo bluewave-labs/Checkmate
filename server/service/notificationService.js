@@ -59,6 +59,41 @@ class NotificationService {
 		const notificationIDs = networkResponse.monitor?.notifications ?? [];
 		if (notificationIDs.length === 0) return false;
 
+		// We don't need to fetch notifications here anymore since we're using monitor-level backoff
+		// Just verify that the notifications exist
+		const notificationsExist = await this.db.getNotificationsByIds(notificationIDs);
+		if (notificationsExist.length === 0) return false;
+
+		// Check if we should send notifications based on monitor's backoff settings
+		if (!this.notificationUtils.shouldSendNotification(monitor)) {
+			this.logger.info({
+				service: "NotificationService",
+				method: "handleNotifications",
+				message: `Skipping notifications due to backoff for monitor ${monitor.name} (ID: ${monitor._id})`,
+			});
+			return false;
+		}
+
+		// Update monitor's backoff parameters
+		monitor.lastNotificationTime = new Date();
+
+		// If first notification, set current delay to initial
+		if (!monitor.currentBackoffDelay) {
+			monitor.currentBackoffDelay = monitor.initialBackoffDelay;
+		} else {
+			// Calculate next backoff with jitter
+			monitor.currentBackoffDelay = this.notificationUtils.calculateNextBackoffDelay(
+				monitor.currentBackoffDelay,
+				monitor.backoffMultiplier,
+				monitor.maxBackoffDelay
+			);
+		}
+
+		// Save updated monitor backoff parameters
+		await monitor.save();
+
+		// All notifications can be sent since we've already checked the monitor's backoff
+
 		if (networkResponse.monitor.type === "hardware") {
 			const thresholds = networkResponse?.monitor?.thresholds;
 
@@ -76,7 +111,13 @@ class NotificationService {
 			const content =
 				await this.notificationUtils.buildHardwareNotificationMessage(alerts);
 
-			const success = await this.notifyAll({ notificationIDs, subject, html, content });
+			// Use all notifications since we've already checked monitor backoff
+			const success = await this.notifyAll({
+				notificationIDs,
+				subject,
+				html,
+				content,
+			});
 			return success;
 		}
 
@@ -84,7 +125,14 @@ class NotificationService {
 		const { subject, html } =
 			await this.notificationUtils.buildStatusEmail(networkResponse);
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
-		const success = this.notifyAll({ notificationIDs, subject, html, content });
+
+		// Use all notifications since we've already checked monitor backoff
+		const success = this.notifyAll({
+			notificationIDs,
+			subject,
+			html,
+			content,
+		});
 		return success;
 	}
 
@@ -96,7 +144,14 @@ class NotificationService {
 			try {
 				await this.sendNotification({ notification, subject, content, html });
 				return true;
-			} catch (err) {
+			} catch (error) {
+				// Log the error but continue with other notifications
+				this.logger.error({
+					service: "NotificationService",
+					method: "notifyAll",
+					message: `Failed to send notification: ${error.message}`,
+					notificationId: notification._id,
+				});
 				return false;
 			}
 		});

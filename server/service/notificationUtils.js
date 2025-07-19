@@ -1,7 +1,10 @@
+import notificationConfig from "../utils/notificationConfig.js";
+
 class NotificationUtils {
-	constructor({ stringService, emailService }) {
+	constructor({ stringService, emailService, db }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.db = db;
 	}
 
 	buildTestEmail = async () => {
@@ -140,6 +143,62 @@ class NotificationUtils {
 
 	buildHardwareNotificationMessage = (alerts) => {
 		return alerts.map((alert) => alert).join("\n");
+	};
+
+	/**
+	 * Calculates the next backoff delay with jitter for exponential backoff strategy
+	 *
+	 * @param {Number} currentDelay - Current delay in milliseconds
+	 * @param {Number} multiplier - Multiplier for exponential growth
+	 * @param {Number} maxDelay - Maximum delay in milliseconds
+	 * @param {Number} jitterFactor - Factor for randomness (0-1)
+	 * @returns {Number} - Next delay in milliseconds
+	 */
+	calculateNextBackoffDelay = (
+		currentDelay,
+		multiplier,
+		maxDelay,
+		jitterFactor = notificationConfig.JITTER_FACTOR
+	) => {
+		// Calculate base delay with exponential growth
+		let nextDelay = currentDelay * multiplier;
+
+		// Apply maximum limit
+		nextDelay = Math.min(nextDelay, maxDelay);
+
+		// Apply jitter (random factor to prevent thundering herd)
+		const jitterRange = nextDelay * jitterFactor;
+		// Ensure delay never goes negative
+		const minDelay = Math.max(0, nextDelay - jitterRange / 2);
+		nextDelay = minDelay + Math.random() * jitterRange;
+
+		return Math.floor(nextDelay);
+	};
+
+	/**
+	 * Determines if a notification should be sent based on monitor's backoff settings
+	 *
+	 * @param {Object} monitor - Monitor object with backoff settings
+	 * @returns {Boolean} - Whether notification should be sent
+	 */
+	shouldSendNotification = (monitor) => {
+		// If backoff is disabled, always send
+		if (!monitor.backoffEnabled) {
+			return true;
+		}
+
+		// If no previous notification sent, always send
+		if (!monitor.lastNotificationTime) {
+			return true;
+		}
+
+		// Get current backoff delay (or use initial if not set)
+		const currentDelay = monitor.currentBackoffDelay || monitor.initialBackoffDelay;
+
+		// Check if enough time has passed since last notification
+		const timeSinceLastNotification =
+			Date.now() - new Date(monitor.lastNotificationTime).getTime();
+		return timeSinceLastNotification >= currentDelay;
 	};
 }
 
