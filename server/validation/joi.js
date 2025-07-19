@@ -172,40 +172,36 @@ const createMonitorBodyValidation = joi.object({
 		.string()
 		.required()
 		.custom((value, helpers) => {
-			const noProtocol = value.replace(/^(https?:\/\/)/, "");
+			// 1. Standard URLs: must have protocol and pass canParse()
+			if (/^(https?:\/\/)/.test(value)) {
+				if (
+					typeof URL !== "undefined" &&
+					typeof URL.canParse === "function" &&
+					URL.canParse(value)
+				) {
+					return value;
+				}
+				// else, it's a malformed URL with protocol
+				return helpers.error("string.invalidUrl");
+			}
 
-			if (/^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:\d{1,5})?$/.test(noProtocol)) {
+			// 2. Docker/internal hostnames (no protocol)
+			if (/^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:\d{1,5})?$/.test(value)) {
+				if (value.includes("..")) {
+					return helpers.error("string.invalidUrl");
+				}
+				// Split by dot, check each label
+				const labels = value.split(":")[0].split(".");
+				for (const label of labels) {
+					if (!label) return helpers.error("string.invalidUrl");
+					if (label.startsWith("-") || label.endsWith("-")) {
+						return helpers.error("string.invalidUrl");
+					}
+				}
 				return value;
 			}
 
-			// Existing complex URL validation as fallback
-			var urlRegex = new RegExp(
-				"^" +
-					"(?:(?:https?|ftp):\\/\\/)?" +
-					"(?:" +
-					"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-					"(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-					"(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
-					"|" +
-					"(?:" +
-					"(?:" +
-					"[a-z0-9\\u00a1-\\uffff]" +
-					"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
-					")?" +
-					"[a-z0-9\\u00a1-\\uffff]\\." +
-					")+" +
-					"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
-					")" +
-					"(?::\\d{2,5})?" +
-					"(?:[/?#]\\S*)?" +
-					"$",
-				"i"
-			);
-
-			if (urlRegex.test(value)) {
-				return value;
-			}
-
+			// 3. Everything else is invalid
 			return helpers.error("string.invalidUrl");
 		})
 		.messages({
