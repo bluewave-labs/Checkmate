@@ -90,8 +90,17 @@ const CreateInfrastructureMonitor = () => {
 	useEffect(() => {
 		if (isCreate || !monitor) return;
 
+		// Clean URL including any trailing slashes
+		let urlFixed = monitor.url.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+
+		// Create default port if none included
+		if (!/:\d+(\/|$)/.test(urlFixed)) urlFixed += ":59232";
+
+		// Ensure path is exactly /api/v1/metrics
+		urlFixed = urlFixed.replace(/\/.*$/, "") + "/api/v1/metrics";
+
 		setInfrastructureMonitor({
-			url: monitor.url.replace(/^https?:\/\//, ""),
+			url: urlFixed,
 			name: monitor.name || "",
 			notifications: monitor.notifications,
 			interval: monitor.interval / MS_PER_MINUTE,
@@ -232,9 +241,9 @@ const CreateInfrastructureMonitor = () => {
 					...(isCreate
 						? [{ name: "Create", path: "/infrastructure/create" }]
 						: [
-								{ name: "Details", path: `/infrastructure/${monitorId}` },
-								{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
-							]),
+							{ name: "Details", path: `/infrastructure/${monitorId}` },
+							{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
+						]),
 				]}
 			/>
 			<Stack
@@ -290,7 +299,7 @@ const CreateInfrastructureMonitor = () => {
 							id="url"
 							name="url"
 							startAdornment={<HttpAdornment https={https} />}
-							placeholder={"localhost:59232/api/v1/metrics"}
+							placeholder={"e.g. localhost or 192.168.1.100"}
 							label={t("infrastructureServerUrlLabel")}
 							https={https}
 							value={infrastructureMonitor.url}
