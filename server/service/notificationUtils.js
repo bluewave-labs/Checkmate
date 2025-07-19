@@ -193,8 +193,7 @@ class NotificationUtils {
 		}
 
 		// Get current backoff delay (or use initial if not set)
-		const currentDelay =
-			monitor.currentBackoffDelay || monitor.initialBackoffDelay;
+		const currentDelay = monitor.currentBackoffDelay || monitor.initialBackoffDelay;
 
 		// Check if enough time has passed since last notification
 		const timeSinceLastNotification =

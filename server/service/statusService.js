@@ -156,7 +156,7 @@ class StatusService {
 					monitor.currentBackoffDelay = null;
 					monitor.lastNotificationTime = null;
 					// No need for an additional save as we're already saving the monitor below
-					
+
 					this.logger.info({
 						service: this.SERVICE_NAME,
 						message: `Reset backoff parameters for monitor ${monitor.name} due to recovery`,
