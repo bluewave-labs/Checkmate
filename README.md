@@ -72,14 +72,20 @@ You can see the memory footprint of MongoDB and Redis on the same server (398Mb 
 
 ## 💚 Questions & Ideas
 
-If you have any questions, suggestions or comments, please use our [Discord channel](https://discord.gg/NAb6H3UTjK). We've also launched our [Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions) page! Feel free to ask questions or share your ideas—we'd love to hear from you!
+If you have any questions, suggestions or comments, you have several options: 
+
+- [Discord channel](https://discord.gg/NAb6H3UTjK)
+- [GitHub Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions)
+- [Reddit group](https://www.reddit.com/r/CheckmateMonitoring/)
+
+Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 ## 🧩 Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
 - Website monitoring
 - Page speed monitoring
-- Infrastructure monitoring (memory, disk usage, CPU performance etc) - requires [Capture](https://github.com/bluewave-labs/capture)
+- Infrastructure monitoring (memory, disk usage, CPU performance etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
 - Docker monitoring
 - Ping monitoring
 - SSL monitoring
