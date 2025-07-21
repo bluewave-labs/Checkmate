@@ -20,10 +20,9 @@ class MonitorRoutes {
 		// Team routes
 		this.router.get("/team", this.monitorController.getMonitorsByTeamId);
 		this.router.get("/team/with-checks", this.monitorController.getMonitorsWithChecksByTeamId);
-		this.router.get("/team/summary", this.monitorController.getMonitorsAndSummaryByTeamId); // TODO should be /team/summary
+		this.router.get("/team/summary", this.monitorController.getMonitorsAndSummaryByTeamId);
 
 		// Uptime routes
-		this.router.get("/uptime", this.monitorController.getAllMonitorsWithUptimeStats);
 		this.router.get("/uptime/details/:monitorId", this.monitorController.getUptimeDetailsById);
 
 		// Hardware routes
@@ -53,13 +52,8 @@ class MonitorRoutes {
 
 		// Individual monitor CRUD routes
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);
-		this.router.put("/:monitorId", verifyTeamAccess(Monitor, "monitorId"), isAllowed(["admin", "superadmin"]), this.monitorController.editMonitor);
-		this.router.delete(
-			"/:monitorId",
-			verifyOwnership(Monitor, "monitorId"),
-			isAllowed(["admin", "superadmin"]),
-			this.monitorController.deleteMonitor
-		);
+		this.router.put("/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.editMonitor);
+		this.router.delete("/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.deleteMonitor);
 	}
 
 	getRouter() {
