@@ -91,16 +91,14 @@ class AuthController {
 				const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
 					name: newUser.firstName,
 				});
-				this.emailService
-					.sendEmail(newUser.email, "Welcome to Uptime Monitor", html)
-					.catch((error) => {
-						this.logger.warn({
-							message: error.message,
-							service: SERVICE_NAME,
-							method: "registerUser",
-							stack: error.stack,
-						});
+				this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error) => {
+					this.logger.warn({
+						message: error.message,
+						service: SERVICE_NAME,
+						method: "registerUser",
+						stack: error.stack,
 					});
+				});
 			} catch (error) {
 				this.logger.warn({
 					message: error.message,
@@ -274,11 +272,7 @@ class AuthController {
 				email,
 				url,
 			});
-			const msgId = await this.emailService.sendEmail(
-				email,
-				"Checkmate Password Reset",
-				html
-			);
+			const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
 
 			return res.success({
 				msg: this.stringService.authCreateRecoveryToken,

@@ -31,11 +31,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 						$project: {
 							_id: 0,
 							percentage: {
-								$cond: [
-									{ $eq: ["$totalChecks", 0] },
-									0,
-									{ $divide: ["$upChecks", "$totalChecks"] },
-								],
+								$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
 							},
 						},
 					},
@@ -235,11 +231,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 								{
 									$match: {
 										$expr: {
-											$and: [
-												{ $eq: ["$monitorId", monitor._id] },
-												{ $gte: ["$createdAt", dates.start] },
-												{ $lte: ["$createdAt", dates.end] },
-											],
+											$and: [{ $eq: ["$monitorId", monitor._id] }, { $gte: ["$createdAt", dates.start] }, { $lte: ["$createdAt", dates.end] }],
 										},
 									},
 								},
@@ -326,10 +318,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																input: "$disks",
 																as: "diskArray",
 																in: {
-																	$arrayElemAt: [
-																		"$$diskArray.read_speed_bytes",
-																		"$$diskIndex",
-																	],
+																	$arrayElemAt: ["$$diskArray.read_speed_bytes", "$$diskIndex"],
 																},
 															},
 														},
@@ -340,10 +329,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																input: "$disks",
 																as: "diskArray",
 																in: {
-																	$arrayElemAt: [
-																		"$$diskArray.write_speed_bytes",
-																		"$$diskIndex",
-																	],
+																	$arrayElemAt: ["$$diskArray.write_speed_bytes", "$$diskIndex"],
 																},
 															},
 														},
@@ -354,10 +340,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																input: "$disks",
 																as: "diskArray",
 																in: {
-																	$arrayElemAt: [
-																		"$$diskArray.total_bytes",
-																		"$$diskIndex",
-																	],
+																	$arrayElemAt: ["$$diskArray.total_bytes", "$$diskIndex"],
 																},
 															},
 														},
@@ -379,10 +362,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																input: "$disks",
 																as: "diskArray",
 																in: {
-																	$arrayElemAt: [
-																		"$$diskArray.usage_percent",
-																		"$$diskIndex",
-																	],
+																	$arrayElemAt: ["$$diskArray.usage_percent", "$$diskIndex"],
 																},
 															},
 														},
@@ -556,26 +536,14 @@ const buildMonitorsAndSummaryByTeamIdPipeline = ({ matchStage }) => {
 	];
 };
 
-const buildMonitorsWithChecksByTeamIdPipeline = ({
-	matchStage,
-	filter,
-	page,
-	rowsPerPage,
-	field,
-	order,
-	limit,
-	type,
-}) => {
+const buildMonitorsWithChecksByTeamIdPipeline = ({ matchStage, filter, page, rowsPerPage, field, order, limit, type }) => {
 	const skip = page && rowsPerPage ? page * rowsPerPage : 0;
 	const sort = { [field]: order === "asc" ? 1 : -1 };
 	const limitStage = rowsPerPage ? [{ $limit: rowsPerPage }] : [];
 
 	// Match name
 	if (typeof filter !== "undefined" && field === "name") {
-		matchStage.$or = [
-			{ name: { $regex: filter, $options: "i" } },
-			{ url: { $regex: filter, $options: "i" } },
-		];
+		matchStage.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
 	}
 
 	// Match isActive
@@ -667,37 +635,20 @@ const buildMonitorsWithChecksByTeamIdPipeline = ({
 	return pipeline;
 };
 
-const buildFilteredMonitorsByTeamIdPipeline = ({
-	matchStage,
-	filter,
-	page,
-	rowsPerPage,
-	field,
-	order,
-	limit,
-	type,
-}) => {
+const buildFilteredMonitorsByTeamIdPipeline = ({ matchStage, filter, page, rowsPerPage, field, order, limit, type }) => {
 	const skip = page && rowsPerPage ? page * rowsPerPage : 0;
 	const sort = { [field]: order === "asc" ? 1 : -1 };
 	const limitStage = rowsPerPage ? [{ $limit: rowsPerPage }] : [];
 
 	if (typeof filter !== "undefined" && field === "name") {
-		matchStage.$or = [
-			{ name: { $regex: filter, $options: "i" } },
-			{ url: { $regex: filter, $options: "i" } },
-		];
+		matchStage.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
 	}
 
 	if (typeof filter !== "undefined" && field === "status") {
 		matchStage.status = filter === "true";
 	}
 
-	const pipeline = [
-		{ $match: matchStage },
-		{ $sort: sort },
-		{ $skip: skip },
-		...limitStage,
-	];
+	const pipeline = [{ $match: matchStage }, { $sort: sort }, { $skip: skip }, ...limitStage];
 
 	// Add checks
 	if (limit) {
@@ -792,10 +743,7 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 						? [
 								{
 									$match: {
-										$or: [
-											{ name: { $regex: filter, $options: "i" } },
-											{ url: { $regex: filter, $options: "i" } },
-										],
+										$or: [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }],
 									},
 								},
 							]

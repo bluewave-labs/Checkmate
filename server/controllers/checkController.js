@@ -46,8 +46,7 @@ class CheckController {
 			await getChecksQueryValidation.validateAsync(req.query);
 
 			const { monitorId } = req.params;
-			let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } =
-				req.query;
+			let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = req.query;
 			const result = await this.db.getChecksByMonitor({
 				monitorId,
 				type,

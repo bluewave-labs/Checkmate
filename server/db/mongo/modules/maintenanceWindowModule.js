@@ -63,8 +63,7 @@ const getMaintenanceWindowsByTeamId = async (teamId, query) => {
 
 		if (active !== undefined) maintenanceQuery.active = active;
 
-		const maintenanceWindowCount =
-			await MaintenanceWindow.countDocuments(maintenanceQuery);
+		const maintenanceWindowCount = await MaintenanceWindow.countDocuments(maintenanceQuery);
 
 		// Pagination
 		let skip = 0;
@@ -78,10 +77,7 @@ const getMaintenanceWindowsByTeamId = async (teamId, query) => {
 			sort[field] = order === "asc" ? 1 : -1;
 		}
 
-		const maintenanceWindows = await MaintenanceWindow.find(maintenanceQuery)
-			.skip(skip)
-			.limit(rowsPerPage)
-			.sort(sort);
+		const maintenanceWindows = await MaintenanceWindow.find(maintenanceQuery).skip(skip).limit(rowsPerPage).sort(sort);
 
 		return { maintenanceWindows, maintenanceWindowCount };
 	} catch (error) {
@@ -122,8 +118,7 @@ const getMaintenanceWindowsByMonitorId = async (monitorId) => {
  */
 const deleteMaintenanceWindowById = async (maintenanceWindowId) => {
 	try {
-		const maintenanceWindow =
-			await MaintenanceWindow.findByIdAndDelete(maintenanceWindowId);
+		const maintenanceWindow = await MaintenanceWindow.findByIdAndDelete(maintenanceWindowId);
 		return maintenanceWindow;
 	} catch (error) {
 		error.service = SERVICE_NAME;
@@ -174,11 +169,7 @@ const deleteMaintenanceWindowByUserId = async (userId) => {
 
 const editMaintenanceWindowById = async (maintenanceWindowId, maintenanceWindowData) => {
 	try {
-		const editedMaintenanceWindow = await MaintenanceWindow.findByIdAndUpdate(
-			maintenanceWindowId,
-			maintenanceWindowData,
-			{ new: true }
-		);
+		const editedMaintenanceWindow = await MaintenanceWindow.findByIdAndUpdate(maintenanceWindowId, maintenanceWindowData, { new: true });
 		return editedMaintenanceWindow;
 	} catch (error) {
 		error.service = SERVICE_NAME;

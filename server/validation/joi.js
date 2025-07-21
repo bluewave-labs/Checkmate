@@ -7,9 +7,7 @@ import joi from "joi";
 const roleValidatior = (role) => (value, helpers) => {
 	const hasRole = role.some((role) => value.includes(role));
 	if (!hasRole) {
-		throw new joi.ValidationError(
-			`You do not have the required authorization. Required roles: ${role.join(", ")}`
-		);
+		throw new joi.ValidationError(`You do not have the required authorization. Required roles: ${role.join(", ")}`);
 	}
 	return value;
 };
@@ -134,11 +132,7 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 		.alternatives()
 		.try(
 			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"),
-			joi
-				.array()
-				.items(
-					joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port")
-				)
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"))
 		),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
@@ -454,8 +448,7 @@ const createStatusPageBodyValidation = joi.object({
 		.pattern(/^[a-zA-Z0-9_-]+$/) // Only allow alphanumeric, underscore, and hyphen
 		.required()
 		.messages({
-			"string.pattern.base":
-				"URL can only contain letters, numbers, underscores, and hyphens",
+			"string.pattern.base": "URL can only contain letters, numbers, underscores, and hyphens",
 		}),
 	timezone: joi.string().optional(),
 	color: joi.string().optional(),
@@ -485,13 +478,9 @@ const imageValidation = joi
 		fieldname: joi.string().required(),
 		originalname: joi.string().required(),
 		encoding: joi.string().required(),
-		mimetype: joi
-			.string()
-			.valid("image/jpeg", "image/png", "image/jpg")
-			.required()
-			.messages({
-				"string.valid": "File must be a valid image (jpeg, jpg, or png)",
-			}),
+		mimetype: joi.string().valid("image/jpeg", "image/png", "image/jpg").required().messages({
+			"string.valid": "File must be a valid image (jpeg, jpg, or png)",
+		}),
 		size: joi.number().max(3145728).required().messages({
 			"number.max": "File size must be less than 3MB",
 		}),
@@ -578,15 +567,11 @@ const createNotificationBodyValidation = joi.object({
 		"any.required": "Notification name is required",
 	}),
 
-	type: joi
-		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty")
-		.required()
-		.messages({
-			"string.empty": "Notification type is required",
-			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, or pager_duty",
-		}),
+	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty").required().messages({
+		"string.empty": "Notification type is required",
+		"any.required": "Notification type is required",
+		"any.only": "Notification type must be email, webhook, or pager_duty",
+	}),
 
 	address: joi.when("type", {
 		is: "email",

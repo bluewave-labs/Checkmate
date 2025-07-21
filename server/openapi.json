@@ -100,14 +100,7 @@
 						"application/json": {
 							"schema": {
 								"type": "object",
-								"required": [
-									"firstName",
-									"lastName",
-									"email",
-									"password",
-									"role",
-									"teamId"
-								],
+								"required": ["firstName", "lastName", "email", "password", "role", "teamId"],
 								"properties": {
 									"firstName": {
 										"type": "string"

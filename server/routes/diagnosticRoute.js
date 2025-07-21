@@ -12,32 +12,33 @@ const authenticate = (req, res, next) => {
 };
 
 class DiagnosticRoutes {
-	constructor(diagnosticController) {
-		this.router = Router();
-		this.diagnosticController = diagnosticController;
-		this.initRoutes();
-	}
+      constructor(diagnosticController) {
+        this.router = Router();
+        this.diagnosticController = diagnosticController;
+        this.initRoutes();
+      }
 
-	initRoutes() {
-		this.router.get(
-			"/db/monitors/:teamId",
-			authenticate,
-			validateRequest,
-			this.diagnosticController.getMonitorsByTeamIdExecutionStats.bind(this.diagnosticController)
-		);
+      initRoutes() {
+        this.router.get(
+          "/db/monitors/:teamId",
+          authenticate,
+          validateRequest,
+          this.diagnosticController.getMonitorsByTeamIdExecutionStats.bind(this.diagnosticController)
+        );
 
-		this.router.post(
-			"/db/stats",
-			authenticate,
-			validateRequest,
-			this.diagnosticController.getDbStats.bind(this.diagnosticController)
-		);
+        this.router.post(
+          "/db/stats",
+          authenticate,
+          validateRequest,
+          this.diagnosticController.getDbStats.bind(this.diagnosticController)
+        );
 
-		this.router.get(
-			"/system",
-			authenticate,
-			this.diagnosticController.getSystemStats.bind(this.diagnosticController)
-		);
+        this.router.get(
+          "/system",
+          authenticate,
+          this.diagnosticController.getSystemStats.bind(this.diagnosticController)
+        );
+    }
 	}
 
 	getRouter() {

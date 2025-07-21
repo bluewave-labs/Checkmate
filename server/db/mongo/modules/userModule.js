@@ -16,11 +16,7 @@ const SERVICE_NAME = "userModule";
  * @returns {Promise<UserModel>}
  * @throws {Error}
  */
-const insertUser = async (
-	userData,
-	imageFile,
-	generateAvatarImage = GenerateAvatarImage
-) => {
+const insertUser = async (userData, imageFile, generateAvatarImage = GenerateAvatarImage) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
 		if (imageFile) {
@@ -47,9 +43,7 @@ const insertUser = async (
 
 		const newUser = new UserModel(userData);
 		await newUser.save();
-		return await UserModel.findOne({ _id: newUser._id })
-			.select("-password")
-			.select("-profileImage"); // .select() doesn't work with create, need to save then find
+		return await UserModel.findOne({ _id: newUser._id }).select("-password").select("-profileImage"); // .select() doesn't work with create, need to save then find
 	} catch (error) {
 		if (error.code === DUPLICATE_KEY_CODE) {
 			error.message = stringService.dbUserExists;
@@ -98,12 +92,7 @@ const getUserByEmail = async (email) => {
  * @throws {Error}
  */
 
-const updateUser = async (
-	req,
-	res,
-	parseBoolean = ParseBoolean,
-	generateAvatarImage = GenerateAvatarImage
-) => {
+const updateUser = async (req, res, parseBoolean = ParseBoolean, generateAvatarImage = GenerateAvatarImage) => {
 	const candidateUserId = req.params.userId;
 	try {
 		const candidateUser = { ...req.body };
@@ -220,13 +209,4 @@ const logoutUser = async (userId) => {
 	}
 };
 
-export {
-	insertUser,
-	getUserByEmail,
-	updateUser,
-	deleteUser,
-	deleteTeam,
-	deleteAllOtherUsers,
-	getAllUsers,
-	logoutUser,
-};
+export { insertUser, getUserByEmail, updateUser, deleteUser, deleteTeam, deleteAllOtherUsers, getAllUsers, logoutUser };

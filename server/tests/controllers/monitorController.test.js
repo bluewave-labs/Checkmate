@@ -623,9 +623,7 @@ describe("Monitor Controller - deleteMonitor", function () {
 		req.jobQueue.deleteJob.rejects(error);
 		await deleteMonitor(req, res, next);
 		expect(logger.error.calledOnce).to.be.true;
-		expect(logger.error.firstCall.args[0].message).to.equal(
-			`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`
-		);
+		expect(logger.error.firstCall.args[0].message).to.equal(`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`);
 	});
 
 	it("should log an error if deleteChecks throws an error", async function () {
@@ -635,9 +633,7 @@ describe("Monitor Controller - deleteMonitor", function () {
 		req.db.deleteChecks.rejects(error);
 		await deleteMonitor(req, res, next);
 		expect(logger.error.calledOnce).to.be.true;
-		expect(logger.error.firstCall.args[0].message).to.equal(
-			`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`
-		);
+		expect(logger.error.firstCall.args[0].message).to.equal(`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`);
 	});
 
 	it("should log an error if deletePageSpeedChecksByMonitorId throws an error", async function () {
@@ -647,9 +643,7 @@ describe("Monitor Controller - deleteMonitor", function () {
 		req.db.deletePageSpeedChecksByMonitorId.rejects(error);
 		await deleteMonitor(req, res, next);
 		expect(logger.error.calledOnce).to.be.true;
-		expect(logger.error.firstCall.args[0].message).to.equal(
-			`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`
-		);
+		expect(logger.error.firstCall.args[0].message).to.equal(`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`);
 	});
 
 	it("should log an error if deleteNotificationsByMonitorId throws an error", async function () {
@@ -659,9 +653,7 @@ describe("Monitor Controller - deleteMonitor", function () {
 		req.db.deleteNotificationsByMonitorId.rejects(error);
 		await deleteMonitor(req, res, next);
 		expect(logger.error.calledOnce).to.be.true;
-		expect(logger.error.firstCall.args[0].message).to.equal(
-			`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`
-		);
+		expect(logger.error.firstCall.args[0].message).to.equal(`Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`);
 	});
 
 	it("should return success message if all operations succeed", async function () {

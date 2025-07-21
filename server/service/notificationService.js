@@ -3,14 +3,7 @@ const SERVICE_NAME = "NotificationService";
 class NotificationService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({
-		emailService,
-		db,
-		logger,
-		networkService,
-		stringService,
-		notificationUtils,
-	}) {
+	constructor({ emailService, db, logger, networkService, stringService, notificationUtils }) {
 		this.emailService = emailService;
 		this.db = db;
 		this.logger = logger;
@@ -69,20 +62,15 @@ class NotificationService {
 			const alerts = await this.notificationUtils.buildHardwareAlerts(networkResponse);
 			if (alerts.length === 0) return false;
 
-			const { subject, html } = await this.notificationUtils.buildHardwareEmail(
-				networkResponse,
-				alerts
-			);
-			const content =
-				await this.notificationUtils.buildHardwareNotificationMessage(alerts);
+			const { subject, html } = await this.notificationUtils.buildHardwareEmail(networkResponse, alerts);
+			const content = await this.notificationUtils.buildHardwareNotificationMessage(alerts);
 
 			const success = await this.notifyAll({ notificationIDs, subject, html, content });
 			return success;
 		}
 
 		// Status monitors
-		const { subject, html } =
-			await this.notificationUtils.buildStatusEmail(networkResponse);
+		const { subject, html } = await this.notificationUtils.buildStatusEmail(networkResponse);
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
 		const success = this.notifyAll({ notificationIDs, subject, html, content });
 		return success;

@@ -150,11 +150,7 @@ class JobQueue {
 		};
 
 		const schedulerId = getSchedulerId(monitor);
-		await queue.upsertJobScheduler(
-			schedulerId,
-			{ every: monitor?.interval ?? 60000 },
-			jobTemplate
-		);
+		await queue.upsertJobScheduler(schedulerId, { every: monitor?.interval ?? 60000 }, jobTemplate);
 	}
 
 	async deleteJob(monitor) {

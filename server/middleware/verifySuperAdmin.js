@@ -47,9 +47,7 @@ const verifySuperAdmin = (req, res, next) => {
 				stack: err.stack,
 				details: stringService.invalidAuthToken,
 			});
-			return res
-				.status(401)
-				.json({ success: false, msg: stringService.invalidAuthToken });
+			return res.status(401).json({ success: false, msg: stringService.invalidAuthToken });
 		}
 
 		if (decoded.role.includes("superadmin") === false) {

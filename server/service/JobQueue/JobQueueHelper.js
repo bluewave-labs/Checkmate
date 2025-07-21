@@ -1,16 +1,7 @@
 const SERVICE_NAME = "JobQueueHelper";
 
 class JobQueueHelper {
-	constructor({
-		redisService,
-		Queue,
-		Worker,
-		logger,
-		db,
-		networkService,
-		statusService,
-		notificationService,
-	}) {
+	constructor({ redisService, Queue, Worker, logger, db, networkService, statusService, notificationService }) {
 		this.db = db;
 		this.redisService = redisService;
 		this.Queue = Queue;
@@ -265,11 +256,7 @@ class JobQueueHelper {
 
 				// Handle status change
 				await job.updateProgress(60);
-				const {
-					monitor: updatedMonitor,
-					statusChanged,
-					prevStatus,
-				} = await this.statusService.updateStatus(networkResponse);
+				const { monitor: updatedMonitor, statusChanged, prevStatus } = await this.statusService.updateStatus(networkResponse);
 				// Handle notifications
 				await job.updateProgress(80);
 				this.notificationService

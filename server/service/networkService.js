@@ -78,9 +78,7 @@ class NetworkService {
 	async requestPing(monitor) {
 		try {
 			const url = monitor.url;
-			const { response, responseTime, error } = await this.timeRequest(() =>
-				this.ping.promise.probe(url)
-			);
+			const { response, responseTime, error } = await this.timeRequest(() => this.ping.promise.probe(url));
 
 			const pingResponse = {
 				monitorId: monitor._id,
@@ -133,18 +131,7 @@ class NetworkService {
 	 */
 	async requestHttp(monitor) {
 		try {
-			const {
-				url,
-				secret,
-				_id,
-				name,
-				teamId,
-				type,
-				ignoreTlsErrors,
-				jsonPath,
-				matchMethod,
-				expectedValue,
-			} = monitor;
+			const { url, secret, _id, name, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
 			const config = {};
 
 			secret !== undefined && (config.headers = { Authorization: `Bearer ${secret}` });
@@ -155,9 +142,7 @@ class NetworkService {
 				});
 			}
 
-			const { response, responseTime, error } = await this.timeRequest(() =>
-				this.axios.get(url, config)
-			);
+			const { response, responseTime, error } = await this.timeRequest(() => this.axios.get(url, config));
 
 			const httpResponse = {
 				monitorId: _id,
@@ -171,8 +156,7 @@ class NetworkService {
 				const code = error.response?.status || this.NETWORK_ERROR;
 				httpResponse.code = code;
 				httpResponse.status = false;
-				httpResponse.message =
-					this.http.STATUS_CODES[code] || this.stringService.httpNetworkError;
+				httpResponse.message = this.http.STATUS_CODES[code] || this.stringService.httpNetworkError;
 				return httpResponse;
 			}
 
@@ -227,9 +211,7 @@ class NetworkService {
 			else match = result === expectedValue;
 
 			httpResponse.status = match;
-			httpResponse.message = match
-				? this.stringService.httpMatchSuccess
-				: this.stringService.httpMatchFail;
+			httpResponse.message = match ? this.stringService.httpMatchSuccess : this.stringService.httpMatchFail;
 			return httpResponse;
 		} catch (error) {
 			error.service = this.SERVICE_NAME;
@@ -320,9 +302,7 @@ class NetworkService {
 			}
 			const container = docker.getContainer(monitor.url);
 
-			const { response, responseTime, error } = await this.timeRequest(() =>
-				container.inspect()
-			);
+			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
 
 			const dockerResponse = {
 				monitorId: monitor._id,
@@ -333,8 +313,7 @@ class NetworkService {
 			if (error) {
 				dockerResponse.status = false;
 				dockerResponse.code = error.statusCode || this.NETWORK_ERROR;
-				dockerResponse.message =
-					error.reason || "Failed to fetch Docker container information";
+				dockerResponse.message = error.reason || "Failed to fetch Docker container information";
 				return dockerResponse;
 			}
 			dockerResponse.status = response?.State?.Status === "running" ? true : false;

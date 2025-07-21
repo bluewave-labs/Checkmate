@@ -63,10 +63,7 @@ class MaintenanceWindowController {
 			await getMaintenanceWindowsByTeamIdQueryValidation.validateAsync(req.query);
 
 			const { teamId } = req.user;
-			const maintenanceWindows = await this.db.getMaintenanceWindowsByTeamId(
-				teamId,
-				req.query
-			);
+			const maintenanceWindows = await this.db.getMaintenanceWindowsByTeamId(teamId, req.query);
 
 			return res.success({
 				msg: this.stringService.maintenanceWindowGetByTeam,
@@ -81,9 +78,7 @@ class MaintenanceWindowController {
 		async (req, res, next) => {
 			await getMaintenanceWindowsByMonitorIdParamValidation.validateAsync(req.params);
 
-			const maintenanceWindows = await this.db.getMaintenanceWindowsByMonitorId(
-				req.params.monitorId
-			);
+			const maintenanceWindows = await this.db.getMaintenanceWindowsByMonitorId(req.params.monitorId);
 
 			return res.success({
 				msg: this.stringService.maintenanceWindowGetByUser,
@@ -110,10 +105,7 @@ class MaintenanceWindowController {
 		async (req, res, next) => {
 			await editMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 			await editMaintenanceByIdWindowBodyValidation.validateAsync(req.body);
-			const editedMaintenanceWindow = await this.db.editMaintenanceWindowById(
-				req.params.id,
-				req.body
-			);
+			const editedMaintenanceWindow = await this.db.editMaintenanceWindowById(req.params.id, req.body);
 			return res.success({
 				msg: this.stringService.maintenanceWindowEdit,
 				data: editedMaintenanceWindow,
