@@ -34,10 +34,11 @@ const createMaintenanceWindow = async (maintenanceWindowData) => {
 	}
 };
 
-const getMaintenanceWindowById = async (maintenanceWindowId) => {
+const getMaintenanceWindowById = async ({ id, teamId }) => {
 	try {
-		const maintenanceWindow = await MaintenanceWindow.findById({
-			_id: maintenanceWindowId,
+		const maintenanceWindow = await MaintenanceWindow.findOne({
+			_id: id,
+			teamId: teamId,
 		});
 		return maintenanceWindow;
 	} catch (error) {
@@ -63,8 +64,7 @@ const getMaintenanceWindowsByTeamId = async (teamId, query) => {
 
 		if (active !== undefined) maintenanceQuery.active = active;
 
-		const maintenanceWindowCount =
-			await MaintenanceWindow.countDocuments(maintenanceQuery);
+		const maintenanceWindowCount = await MaintenanceWindow.countDocuments(maintenanceQuery);
 
 		// Pagination
 		let skip = 0;
@@ -78,10 +78,7 @@ const getMaintenanceWindowsByTeamId = async (teamId, query) => {
 			sort[field] = order === "asc" ? 1 : -1;
 		}
 
-		const maintenanceWindows = await MaintenanceWindow.find(maintenanceQuery)
-			.skip(skip)
-			.limit(rowsPerPage)
-			.sort(sort);
+		const maintenanceWindows = await MaintenanceWindow.find(maintenanceQuery).skip(skip).limit(rowsPerPage).sort(sort);
 
 		return { maintenanceWindows, maintenanceWindowCount };
 	} catch (error) {
@@ -99,10 +96,11 @@ const getMaintenanceWindowsByTeamId = async (teamId, query) => {
  * @returns {Promise<Array<MaintenanceWindow>>} An array of MaintenanceWindow documents.
  * @throws {Error} If there is an error retrieving the documents.
  */
-const getMaintenanceWindowsByMonitorId = async (monitorId) => {
+const getMaintenanceWindowsByMonitorId = async ({ monitorId, teamId }) => {
 	try {
 		const maintenanceWindows = await MaintenanceWindow.find({
 			monitorId: monitorId,
+			teamId: teamId,
 		});
 		return maintenanceWindows;
 	} catch (error) {
@@ -120,10 +118,9 @@ const getMaintenanceWindowsByMonitorId = async (monitorId) => {
  * @returns {Promise<MaintenanceWindow>} The deleted MaintenanceWindow document.
  * @throws {Error} If there is an error deleting the document.
  */
-const deleteMaintenanceWindowById = async (maintenanceWindowId) => {
+const deleteMaintenanceWindowById = async ({ id, teamId }) => {
 	try {
-		const maintenanceWindow =
-			await MaintenanceWindow.findByIdAndDelete(maintenanceWindowId);
+		const maintenanceWindow = await MaintenanceWindow.findOneAndDelete({ _id: id, teamId });
 		return maintenanceWindow;
 	} catch (error) {
 		error.service = SERVICE_NAME;
@@ -172,13 +169,9 @@ const deleteMaintenanceWindowByUserId = async (userId) => {
 	}
 };
 
-const editMaintenanceWindowById = async (maintenanceWindowId, maintenanceWindowData) => {
+const editMaintenanceWindowById = async ({ id, body, teamId }) => {
 	try {
-		const editedMaintenanceWindow = await MaintenanceWindow.findByIdAndUpdate(
-			maintenanceWindowId,
-			maintenanceWindowData,
-			{ new: true }
-		);
+		const editedMaintenanceWindow = await MaintenanceWindow.findByIdAndUpdate(id, body, { new: true });
 		return editedMaintenanceWindow;
 	} catch (error) {
 		error.service = SERVICE_NAME;

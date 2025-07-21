@@ -12,63 +12,20 @@ obs.observe({ entryTypes: ["measure"] });
 class DiagnosticController {
 	constructor(db) {
 		this.db = db;
-		this.getMonitorsByTeamIdExecutionStats =
-			this.getMonitorsByTeamIdExecutionStats.bind(this);
-		this.getDbStats = this.getDbStats.bind(this);
 	}
 
-	getMonitorsByTeamIdExecutionStats = asyncHandler(
-		async (req, res, next) => {
-			const data = await this.db.getMonitorsByTeamIdExecutionStats(req);
-			return res.success({
-				msg: "OK",
-				data,
-			});
-		},
-		SERVICE_NAME,
-		"getMonitorsByTeamIdExecutionStats"
-	);
-
-	getDbStats = asyncHandler(
-		async (req, res, next) => {
-			const { methodName, args = [] } = req.body;
-			if (!methodName || !this.db[methodName]) {
-				return res.error({
-					msg: "Invalid method name or method doesn't exist",
-					status: 400,
-				});
-			}
-			const explainMethod = await this.db[methodName].apply(this.db, args);
-			const stats = {
-				methodName,
-				timestamp: new Date(),
-				explain: explainMethod,
-			};
-			return res.success({
-				msg: "OK",
-				data: stats,
-			});
-		},
-		SERVICE_NAME,
-		"getDbStats"
-	);
-
-	getCPUUsage = asyncHandler(
-		async (req, res, next) => {
-			const startUsage = process.cpuUsage();
-			const timingPeriod = 1000; // measured in ms
-			await new Promise((resolve) => setTimeout(resolve, timingPeriod));
-			const endUsage = process.cpuUsage(startUsage);
-			const cpuUsage = {
-				userUsageMs: endUsage.user / 1000,
-				systemUsageMs: endUsage.system / 1000,
-				usagePercentage: ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100,
-			};
-			return cpuUsage;
-		},
-		SERVICE_NAME,
-		"getCPUUsage"
-	);
+	getCPUUsage = async () => {
+		const startUsage = process.cpuUsage();
+		const timingPeriod = 1000; // measured in ms
+		await new Promise((resolve) => setTimeout(resolve, timingPeriod));
+		const endUsage = process.cpuUsage(startUsage);
+		const cpuUsage = {
+			userUsageMs: endUsage.user / 1000,
+			systemUsageMs: endUsage.system / 1000,
+			usagePercentage: ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100,
+		};
+		return cpuUsage;
+	};
 
 	getSystemStats = asyncHandler(
 		async (req, res, next) => {

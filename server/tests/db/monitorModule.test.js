@@ -120,12 +120,7 @@ describe("monitorModule", function () {
 				},
 			];
 
-			const mockChecks = [
-				{ status: true },
-				{ status: true },
-				{ status: false },
-				{ status: true },
-			];
+			const mockChecks = [{ status: true }, { status: true }, { status: false }, { status: true }];
 
 			monitorFindStub.resolves(mockMonitors);
 			checkFindStub.resolves(mockChecks);
@@ -166,12 +161,7 @@ describe("monitorModule", function () {
 				},
 			];
 
-			const mockChecks = [
-				{ status: true },
-				{ status: true },
-				{ status: false },
-				{ status: true },
-			];
+			const mockChecks = [{ status: true }, { status: true }, { status: false }, { status: true }];
 
 			monitorFindStub.resolves(mockMonitors);
 			pageSpeedCheckFindStub.resolves(mockChecks);
@@ -212,12 +202,7 @@ describe("monitorModule", function () {
 				},
 			];
 
-			const mockChecks = [
-				{ status: true },
-				{ status: true },
-				{ status: false },
-				{ status: true },
-			];
+			const mockChecks = [{ status: true }, { status: true }, { status: false }, { status: true }];
 
 			monitorFindStub.resolves(mockMonitors);
 			hardwareCheckFindStub.resolves(mockChecks);
@@ -400,10 +385,7 @@ describe("monitorModule", function () {
 		});
 
 		it("should handle missing responseTime in checks", function () {
-			const checks = [
-				{ createdAt: "2024-01-01T11:30:00Z" },
-				{ responseTime: 200, createdAt: "2024-01-01T11:00:00Z" },
-			];
+			const checks = [{ createdAt: "2024-01-01T11:30:00Z" }, { responseTime: 200, createdAt: "2024-01-01T11:00:00Z" }];
 
 			expect(getLatestResponseTime(checks)).to.equal(0);
 		});
@@ -441,10 +423,7 @@ describe("monitorModule", function () {
 		});
 
 		it("should return 0 when no checks have responseTime", function () {
-			const checks = [
-				{ createdAt: "2024-01-01T11:30:00Z" },
-				{ createdAt: "2024-01-01T11:00:00Z" },
-			];
+			const checks = [{ createdAt: "2024-01-01T11:30:00Z" }, { createdAt: "2024-01-01T11:00:00Z" }];
 
 			expect(getAverageResponseTime(checks)).to.equal(0);
 		});
@@ -470,12 +449,7 @@ describe("monitorModule", function () {
 		});
 
 		it("should calculate correct percentage for mixed status checks", function () {
-			const checks = [
-				{ status: true },
-				{ status: false },
-				{ status: true },
-				{ status: true },
-			];
+			const checks = [{ status: true }, { status: false }, { status: true }, { status: true }];
 			// 3 up out of 4 total = 75%
 			expect(getUptimePercentage(checks)).to.equal(75);
 		});
@@ -507,23 +481,12 @@ describe("monitorModule", function () {
 		});
 
 		it("should count correct number of incidents for mixed status checks", function () {
-			const checks = [
-				{ status: true },
-				{ status: false },
-				{ status: true },
-				{ status: false },
-				{ status: true },
-			];
+			const checks = [{ status: true }, { status: false }, { status: true }, { status: false }, { status: true }];
 			expect(getIncidents(checks)).to.equal(2);
 		});
 
 		it("should handle undefined status values", function () {
-			const checks = [
-				{ status: true },
-				{ status: undefined },
-				{ status: false },
-				{ status: false },
-			];
+			const checks = [{ status: true }, { status: undefined }, { status: false }, { status: false }];
 			// Only counts explicit false values
 			expect(getIncidents(checks)).to.equal(2);
 		});
@@ -628,12 +591,8 @@ describe("monitorModule", function () {
 			);
 
 			// Assert
-			expect(result.checksAll[0].createdAt).to.be.greaterThan(
-				result.checksAll[1].createdAt
-			);
-			expect(result.checksForDateRange[0].createdAt).to.be.greaterThan(
-				result.checksForDateRange[1].createdAt
-			);
+			expect(result.checksAll[0].createdAt).to.be.greaterThan(result.checksAll[1].createdAt);
+			expect(result.checksForDateRange[0].createdAt).to.be.greaterThan(result.checksForDateRange[1].createdAt);
 		});
 	});
 
@@ -753,10 +712,7 @@ describe("monitorModule", function () {
 		});
 
 		it("should handle checks in same time group", function () {
-			const checksInSameHour = [
-				{ createdAt: "2024-01-15T10:15:00Z" },
-				{ createdAt: "2024-01-15T10:45:00Z" },
-			];
+			const checksInSameHour = [{ createdAt: "2024-01-15T10:15:00Z" }, { createdAt: "2024-01-15T10:45:00Z" }];
 
 			const result = groupChecksByTime(checksInSameHour, "day");
 
@@ -816,11 +772,7 @@ describe("monitorModule", function () {
 		it("should handle missing responseTime values", function () {
 			const mockGroup = {
 				time: "2024-01-15",
-				checks: [
-					{ status: true },
-					{ status: false, responseTime: 200 },
-					{ status: true, responseTime: undefined },
-				],
+				checks: [{ status: true }, { status: false, responseTime: 200 }, { status: true, responseTime: undefined }],
 			};
 
 			const result = calculateGroupStats(mockGroup, uptimePercentageStub);
@@ -1413,10 +1365,7 @@ describe("monitorModule", function () {
 
 			expect(Monitor.find.firstCall.args[0]).to.deep.equal({
 				teamId: "team123",
-				$or: [
-					{ name: { $regex: "search", $options: "i" } },
-					{ url: { $regex: "search", $options: "i" } },
-				],
+				$or: [{ name: { $regex: "search", $options: "i" } }, { url: { $regex: "search", $options: "i" } }],
 			});
 		});
 
@@ -1816,14 +1765,9 @@ describe("monitorModule", function () {
 
 			// Assert
 			expect(result).to.deep.equal(mockUpdatedMonitor);
-			sinon.assert.calledWith(
-				monitorFindByIdAndUpdateStub,
-				candidateId,
-				expectedUpdateData,
-				{
-					new: true,
-				}
-			);
+			sinon.assert.calledWith(monitorFindByIdAndUpdateStub, candidateId, expectedUpdateData, {
+				new: true,
+			});
 		});
 
 		it("should return null when monitor not found", async function () {
@@ -1840,12 +1784,7 @@ describe("monitorModule", function () {
 
 			// Assert
 			expect(result).to.be.null;
-			sinon.assert.calledWith(
-				monitorFindByIdAndUpdateStub,
-				candidateId,
-				{ name: "Updated Monitor", notifications: undefined },
-				{ new: true }
-			);
+			sinon.assert.calledWith(monitorFindByIdAndUpdateStub, candidateId, { name: "Updated Monitor", notifications: undefined }, { new: true });
 		});
 
 		it("should remove notifications from update data", async function () {
@@ -1870,14 +1809,9 @@ describe("monitorModule", function () {
 			await editMonitor(candidateId, candidateMonitor);
 
 			// Assert
-			sinon.assert.calledWith(
-				monitorFindByIdAndUpdateStub,
-				candidateId,
-				expectedUpdateData,
-				{
-					new: true,
-				}
-			);
+			sinon.assert.calledWith(monitorFindByIdAndUpdateStub, candidateId, expectedUpdateData, {
+				new: true,
+			});
 		});
 
 		it("should handle database errors", async function () {

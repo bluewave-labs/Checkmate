@@ -26,9 +26,7 @@ describe("Network Service", function () {
 		};
 		ping = {
 			promise: {
-				probe: sinon
-					.stub()
-					.resolves({ response: { alive: true }, responseTime: 100, alive: true }),
+				probe: sinon.stub().resolves({ response: { alive: true }, responseTime: 100, alive: true }),
 			},
 		};
 		logger = { error: sinon.stub() };
@@ -73,9 +71,7 @@ describe("Network Service", function () {
 
 		it("should return a response object if ping unsuccessful", async function () {
 			const error = new Error("Test error");
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const pingResult = await networkService.requestPing({
 				data: { url: "http://test.com", _id: "123" },
 			});
@@ -113,9 +109,7 @@ describe("Network Service", function () {
 		it("should return a response object if http unsuccessful", async function () {
 			const error = new Error("Test error");
 			error.response = { status: 404 };
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const job = { data: { url: "http://test.com", _id: "123", type: "http" } };
 			const httpResult = await networkService.requestHttp(job);
 			expect(httpResult.monitorId).to.equal("123");
@@ -128,9 +122,7 @@ describe("Network Service", function () {
 		it("should return a response object if http unsuccessful with unknown code", async function () {
 			const error = new Error("Test error");
 			error.response = {};
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const job = { data: { url: "http://test.com", _id: "123", type: "http" } };
 			const httpResult = await networkService.requestHttp(job);
 			expect(httpResult.monitorId).to.equal("123");
@@ -167,9 +159,7 @@ describe("Network Service", function () {
 		it("should return a response object if pagespeed unsuccessful", async function () {
 			const error = new Error("Test error");
 			error.response = { status: 404 };
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const job = { data: { url: "http://test.com", _id: "123", type: "pagespeed" } };
 			const pagespeedResult = await networkService.requestPagespeed(job);
 			expect(pagespeedResult.monitorId).to.equal("123");
@@ -182,9 +172,7 @@ describe("Network Service", function () {
 		it("should return a response object if pagespeed unsuccessful with an unknown code", async function () {
 			const error = new Error("Test error");
 			error.response = {};
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const job = { data: { url: "http://test.com", _id: "123", type: "pagespeed" } };
 			const pagespeedResult = await networkService.requestPagespeed(job);
 			expect(pagespeedResult.monitorId).to.equal("123");
@@ -237,9 +225,7 @@ describe("Network Service", function () {
 		it("should return a response object if hardware unsuccessful", async function () {
 			const error = new Error("Test error");
 			error.response = { status: 404 };
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const job = { data: { url: "http://test.com", _id: "123", type: "hardware" } };
 			const httpResult = await networkService.requestHardware(job);
 			expect(httpResult.monitorId).to.equal("123");
@@ -252,9 +238,7 @@ describe("Network Service", function () {
 		it("should return a response object if hardware unsuccessful with unknown code", async function () {
 			const error = new Error("Test error");
 			error.response = {};
-			networkService.timeRequest = sinon
-				.stub()
-				.resolves({ response: null, responseTime: 1, error });
+			networkService.timeRequest = sinon.stub().resolves({ response: null, responseTime: 1, error });
 			const job = { data: { url: "http://test.com", _id: "123", type: "hardware" } };
 			const httpResult = await networkService.requestHardware(job);
 			expect(httpResult.monitorId).to.equal("123");

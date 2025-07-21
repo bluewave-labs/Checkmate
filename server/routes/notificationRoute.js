@@ -13,25 +13,16 @@ class NotificationRoutes {
 	initializeRoutes() {
 		this.router.use(verifyJWT);
 
-		this.router.post("/test", this.notificationController.testNotification);
-		this.router.post("/test/all", this.notificationController.testAllNotifications);
-
 		this.router.post("/", this.notificationController.createNotification);
+
+		this.router.post("/test/all", this.notificationController.testAllNotifications);
+		this.router.post("/test", this.notificationController.testNotification);
 
 		this.router.get("/team", this.notificationController.getNotificationsByTeamId);
 
-		this.router.delete(
-			"/:id",
-			verifyOwnership(Notification, "id"),
-			this.notificationController.deleteNotification
-		);
-
+		this.router.delete("/:id", verifyOwnership(Notification, "id"), this.notificationController.deleteNotification);
 		this.router.get("/:id", this.notificationController.getNotificationById);
-		this.router.put(
-			"/:id",
-			verifyTeamAccess(Notification, "id"),
-			this.notificationController.editNotification
-		);
+		this.router.put("/:id", verifyTeamAccess(Notification, "id"), this.notificationController.editNotification);
 	}
 
 	getRouter() {

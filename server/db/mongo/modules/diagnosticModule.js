@@ -2,11 +2,7 @@ import Monitor from "../../models/Monitor.js";
 import { ObjectId } from "mongodb";
 
 const SERVICE_NAME = "diagnosticModule";
-import {
-	buildMonitorSummaryByTeamIdPipeline,
-	buildMonitorsByTeamIdPipeline,
-	buildFilteredMonitorsByTeamIdPipeline,
-} from "./monitorModuleQueries.js";
+import { buildMonitorSummaryByTeamIdPipeline, buildMonitorsByTeamIdPipeline, buildFilteredMonitorsByTeamIdPipeline } from "./monitorModuleQueries.js";
 
 const getMonitorsByTeamIdExecutionStats = async (req) => {
 	try {
@@ -24,13 +20,9 @@ const getMonitorsByTeamIdExecutionStats = async (req) => {
 			matchStage.type = Array.isArray(type) ? { $in: type } : type;
 		}
 
-		const summary = await Monitor.aggregate(
-			buildMonitorSummaryByTeamIdPipeline({ matchStage })
-		).explain("executionStats");
+		const summary = await Monitor.aggregate(buildMonitorSummaryByTeamIdPipeline({ matchStage })).explain("executionStats");
 
-		const monitors = await Monitor.aggregate(
-			buildMonitorsByTeamIdPipeline({ matchStage, field, order })
-		).explain("executionStats");
+		const monitors = await Monitor.aggregate(buildMonitorsByTeamIdPipeline({ matchStage, field, order })).explain("executionStats");
 
 		const filteredMonitors = await Monitor.aggregate(
 			buildFilteredMonitorsByTeamIdPipeline({

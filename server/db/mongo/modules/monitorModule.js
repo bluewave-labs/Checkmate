@@ -285,10 +285,7 @@ const groupChecksByTime = (checks, dateRange) => {
 			return acc;
 		}
 
-		const time =
-			dateRange === "day"
-				? checkDate.setMinutes(0, 0, 0)
-				: checkDate.toISOString().split("T")[0];
+		const time = dateRange === "day" ? checkDate.setMinutes(0, 0, 0) : checkDate.toISOString().split("T")[0];
 
 		if (!acc[time]) {
 			acc[time] = { time, checks: [] };
@@ -306,9 +303,7 @@ const groupChecksByTime = (checks, dateRange) => {
 const calculateGroupStats = (group) => {
 	const totalChecks = group.checks.length;
 
-	const checksWithResponseTime = group.checks.filter(
-		(check) => typeof check.responseTime === "number" && !Number.isNaN(check.responseTime)
-	);
+	const checksWithResponseTime = group.checks.filter((check) => typeof check.responseTime === "number" && !Number.isNaN(check.responseTime));
 
 	return {
 		time: group.time,
@@ -317,8 +312,7 @@ const calculateGroupStats = (group) => {
 		totalIncidents: group.checks.filter((check) => !check.status).length,
 		avgResponseTime:
 			checksWithResponseTime.length > 0
-				? checksWithResponseTime.reduce((sum, check) => sum + check.responseTime, 0) /
-					checksWithResponseTime.length
+				? checksWithResponseTime.reduce((sum, check) => sum + check.responseTime, 0) / checksWithResponseTime.length
 				: 0,
 	};
 };
@@ -344,29 +338,15 @@ const getUptimeDetailsById = async ({ monitorId, dateRange, normalize }) => {
 
 		const dateString = formatLookup[dateRange];
 
-		const results = await Check.aggregate(
-			buildUptimeDetailsPipeline(monitorId, dates, dateString)
-		);
+		const results = await Check.aggregate(buildUptimeDetailsPipeline(monitorId, dates, dateString));
 
 		const monitorData = results[0];
 
-		monitorData.groupedUpChecks = NormalizeDataUptimeDetails(
-			monitorData.groupedUpChecks,
-			10,
-			100
-		);
+		monitorData.groupedUpChecks = NormalizeDataUptimeDetails(monitorData.groupedUpChecks, 10, 100);
 
-		monitorData.groupedDownChecks = NormalizeDataUptimeDetails(
-			monitorData.groupedDownChecks,
-			10,
-			100
-		);
+		monitorData.groupedDownChecks = NormalizeDataUptimeDetails(monitorData.groupedDownChecks, 10, 100);
 
-		const normalizedGroupChecks = NormalizeDataUptimeDetails(
-			monitorData.groupedChecks,
-			10,
-			100
-		);
+		const normalizedGroupChecks = NormalizeDataUptimeDetails(monitorData.groupedChecks, 10, 100);
 
 		monitorData.groupedChecks = normalizedGroupChecks;
 		const monitorStats = await MonitorStats.findOne({ monitorId });
@@ -386,14 +366,7 @@ const getUptimeDetailsById = async ({ monitorId, dateRange, normalize }) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const getMonitorStatsById = async ({
-	monitorId,
-	limit,
-	sortOrder,
-	dateRange,
-	numToDisplay,
-	normalize,
-}) => {
+const getMonitorStatsById = async ({ monitorId, limit, sortOrder, dateRange, numToDisplay, normalize }) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
 		// Get monitor, if we can't find it, abort with error
@@ -408,12 +381,7 @@ const getMonitorStatsById = async ({
 		// Get Checks for monitor in date range requested
 		const model = CHECK_MODEL_LOOKUP[monitor.type];
 		const dates = getDateRange(dateRange);
-		const { checksAll, checksForDateRange } = await getMonitorChecks(
-			monitorId,
-			model,
-			dates,
-			sort
-		);
+		const { checksAll, checksForDateRange } = await getMonitorChecks(monitorId, model, dates, sort);
 
 		// Build monitor stats
 		const monitorStats = {
@@ -423,20 +391,10 @@ const getMonitorStatsById = async ({
 			latestResponseTime: getLatestResponseTime(checksAll),
 			periodIncidents: getIncidents(checksForDateRange),
 			periodTotalChecks: checksForDateRange.length,
-			checks: processChecksForDisplay(
-				NormalizeData,
-				checksForDateRange,
-				numToDisplay,
-				normalize
-			),
+			checks: processChecksForDisplay(NormalizeData, checksForDateRange, numToDisplay, normalize),
 		};
 
-		if (
-			monitor.type === "http" ||
-			monitor.type === "ping" ||
-			monitor.type === "docker" ||
-			monitor.type === "port"
-		) {
+		if (monitor.type === "http" || monitor.type === "ping" || monitor.type === "docker" || monitor.type === "port") {
 			// HTTP/PING Specific stats
 			monitorStats.periodAvgResponseTime = getAverageResponseTime(checksForDateRange);
 			monitorStats.periodUptime = getUptimePercentage(checksForDateRange);
@@ -463,9 +421,7 @@ const getHardwareDetailsById = async ({ monitorId, dateRange }) => {
 			month: "%Y-%m-%dT00:00:00Z",
 		};
 		const dateString = formatLookup[dateRange];
-		const hardwareStats = await HardwareCheck.aggregate(
-			buildHardwareDetailsPipeline(monitor, dates, dateString)
-		);
+		const hardwareStats = await HardwareCheck.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
 
 		const monitorStats = {
 			...monitor.toObject(),
@@ -505,16 +461,18 @@ const getMonitorById = async (monitorId) => {
 	}
 };
 
-const getMonitorsByTeamId = async ({
-	limit,
-	type,
-	page,
-	rowsPerPage,
-	filter,
-	field,
-	order,
-	teamId,
-}) => {
+const getMonitorsByIds = async (monitorIds) => {
+	try {
+		const objectIds = monitorIds.map((id) => new ObjectId(id));
+		return await Monitor.find({ _id: { $in: objectIds } }, { _id: 1, teamId: 1 }).lean();
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getMonitorsByIds";
+		throw error;
+	}
+};
+
+const getMonitorsByTeamId = async ({ limit, type, page, rowsPerPage, filter, field, order, teamId }) => {
 	limit = parseInt(limit);
 	page = parseInt(page);
 	rowsPerPage = parseInt(rowsPerPage);
@@ -528,14 +486,10 @@ const getMonitorsByTeamId = async ({
 		matchStage.type = Array.isArray(type) ? { $in: type } : type;
 	}
 
-	const summaryResult = await Monitor.aggregate(
-		buildMonitorSummaryByTeamIdPipeline({ matchStage })
-	);
+	const summaryResult = await Monitor.aggregate(buildMonitorSummaryByTeamIdPipeline({ matchStage }));
 	const summary = summaryResult[0];
 
-	const monitors = await Monitor.aggregate(
-		buildMonitorsByTeamIdPipeline({ matchStage, field, order })
-	);
+	const monitors = await Monitor.aggregate(buildMonitorsByTeamIdPipeline({ matchStage, field, order }));
 
 	const filteredMonitors = await Monitor.aggregate(
 		buildFilteredMonitorsByTeamIdPipeline({
@@ -569,14 +523,10 @@ const getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {
 		}
 
 		if (explain === true) {
-			return Monitor.aggregate(
-				buildMonitorsAndSummaryByTeamIdPipeline({ matchStage })
-			).explain("executionStats");
+			return Monitor.aggregate(buildMonitorsAndSummaryByTeamIdPipeline({ matchStage })).explain("executionStats");
 		}
 
-		const queryResult = await Monitor.aggregate(
-			buildMonitorsAndSummaryByTeamIdPipeline({ matchStage })
-		);
+		const queryResult = await Monitor.aggregate(buildMonitorsAndSummaryByTeamIdPipeline({ matchStage }));
 		const { monitors, summary } = queryResult?.[0] ?? {};
 		return { monitors, summary };
 	} catch (error) {
@@ -586,17 +536,7 @@ const getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {
 	}
 };
 
-const getMonitorsWithChecksByTeamId = async ({
-	limit,
-	type,
-	page,
-	rowsPerPage,
-	filter,
-	field,
-	order,
-	teamId,
-	explain,
-}) => {
+const getMonitorsWithChecksByTeamId = async ({ limit, type, page, rowsPerPage, filter, field, order, teamId, explain }) => {
 	try {
 		limit = parseInt(limit);
 		page = parseInt(page);
@@ -684,9 +624,7 @@ const createMonitor = async ({ body, teamId, userId }) => {
  */
 const createBulkMonitors = async (req) => {
 	try {
-		const monitors = req.map(
-			(item) => new Monitor({ ...item, notifications: undefined })
-		);
+		const monitors = req.map((item) => new Monitor({ ...item, notifications: undefined }));
 		await Monitor.bulkSave(monitors);
 		return monitors;
 	} catch (error) {
@@ -826,6 +764,7 @@ export {
 	getAllMonitorsWithUptimeStats,
 	getMonitorStatsById,
 	getMonitorById,
+	getMonitorsByIds,
 	getMonitorsByTeamId,
 	getMonitorsAndSummaryByTeamId,
 	getMonitorsWithChecksByTeamId,

@@ -1,8 +1,5 @@
 import sinon from "sinon";
-import {
-	getAppSettings,
-	updateAppSettings,
-} from "../../db/mongo/modules/settingsModule.js";
+import { getAppSettings, updateAppSettings } from "../../db/mongo/modules/settingsModule.js";
 import AppSettings from "../../db/models/AppSettings.js";
 
 const mockAppSettings = {

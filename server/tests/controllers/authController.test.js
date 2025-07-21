@@ -28,9 +28,7 @@ describe("Auth Controller - issueToken", function () {
 		stub = sinon.stub(jwt, "sign").throws(error);
 		const payload = { id: "123" };
 		const appSettings = { jwtSecret: "my_secret" };
-		expect(() => issueToken(payload, tokenType.ACCESS_TOKEN, appSettings)).to.throw(
-			error
-		);
+		expect(() => issueToken(payload, tokenType.ACCESS_TOKEN, appSettings)).to.throw(error);
 	});
 
 	it("should return a token if jwt.sign is successful and appSettings.jwtTTL is not defined", function () {
@@ -163,9 +161,7 @@ describe("Auth Controller - registerUser", function () {
 		req.db.checkSuperadmin.resolves(false);
 		req.db.updateAppSettings.resolves();
 		req.db.insertUser.resolves({ _id: "123" });
-		req.settingsService.getSettings.rejects(
-			new Error("settingsService.getSettings error")
-		);
+		req.settingsService.getSettings.rejects(new Error("settingsService.getSettings error"));
 		await registerUser(req, res, next);
 		expect(next.firstCall.args[0]).to.be.an("error");
 		expect(next.firstCall.args[0].message).to.equal("settingsService.getSettings error");
@@ -304,9 +300,7 @@ describe("Auth Controller - loginUser", function () {
 		user.comparePassword.resolves(false);
 		await loginUser(req, res, next);
 		expect(next.firstCall.args[0]).to.be.an("error");
-		expect(next.firstCall.args[0].message).to.equal(
-			errorMessages.AUTH_INCORRECT_PASSWORD
-		);
+		expect(next.firstCall.args[0].message).to.equal(errorMessages.AUTH_INCORRECT_PASSWORD);
 	});
 });
 
@@ -370,9 +364,7 @@ describe("Auth Controller - refreshAuthToken", function () {
 	});
 
 	it("should reject if settingsService.getSettings fails", async function () {
-		req.settingsService.getSettings.rejects(
-			new Error("settingsService.getSettings error")
-		);
+		req.settingsService.getSettings.rejects(new Error("settingsService.getSettings error"));
 		await refreshAuthToken(req, res, next);
 
 		expect(next.firstCall.args[0]).to.be.an("error");
@@ -475,9 +467,7 @@ describe("Auth Controller - editUser", function () {
 		await editUser(req, res, next);
 		expect(next.firstCall.args[0]).to.be.an("error");
 		expect(next.firstCall.args[0].status).to.equal(401);
-		expect(next.firstCall.args[0].message).to.equal(
-			errorMessages.AUTH_INCORRECT_PASSWORD
-		);
+		expect(next.firstCall.args[0].message).to.equal(errorMessages.AUTH_INCORRECT_PASSWORD);
 	});
 
 	it("should edit a user if it receives a proper request", async function () {
@@ -863,8 +853,7 @@ describe("Auth Controller - deleteUser", function () {
 		).to.be.true;
 		expect(req.jobQueue.deleteJob.calledOnceWith(monitors[0])).to.be.true;
 		expect(req.db.deleteChecks.calledOnceWith("monitor_id")).to.be.true;
-		expect(req.db.deletePageSpeedChecksByMonitorId.calledOnceWith("monitor_id")).to.be
-			.true;
+		expect(req.db.deletePageSpeedChecksByMonitorId.calledOnceWith("monitor_id")).to.be.true;
 		expect(req.db.deleteNotificationsByMonitorId.calledOnceWith("monitor_id")).to.be.true;
 		expect(req.db.deleteTeam.calledOnceWith("team_id")).to.be.true;
 		expect(req.db.deleteAllOtherUsers.calledOnce).to.be.true;

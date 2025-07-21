@@ -1,10 +1,6 @@
 import sinon from "sinon";
 import InviteToken from "../../db/models/InviteToken.js";
-import {
-	requestInviteToken,
-	getInviteToken,
-	getInviteTokenAndDelete,
-} from "../../db/mongo/modules/inviteModule.js";
+import { requestInviteToken, getInviteToken, getInviteTokenAndDelete } from "../../db/mongo/modules/inviteModule.js";
 import { errorMessages } from "../../utils/messages.js";
 
 describe("Invite Module", function () {
@@ -15,10 +11,7 @@ describe("Invite Module", function () {
 		token: "123",
 	};
 	const mockInviteToken = { _id: 123, time: 123 };
-	let inviteTokenDeleteManyStub,
-		inviteTokenSaveStub,
-		inviteTokenFindOneStub,
-		inviteTokenFindOneAndDeleteStub;
+	let inviteTokenDeleteManyStub, inviteTokenSaveStub, inviteTokenFindOneStub, inviteTokenFindOneAndDeleteStub;
 
 	beforeEach(function () {
 		inviteTokenDeleteManyStub = sinon.stub(InviteToken, "deleteMany");

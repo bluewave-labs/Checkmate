@@ -42,10 +42,7 @@ class EmailService {
 		 */
 		this.loadTemplate = (templateName) => {
 			try {
-				const templatePath = this.path.join(
-					__dirname,
-					`../templates/${templateName}.mjml`
-				);
+				const templatePath = this.path.join(__dirname, `../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				return this.compile(templateContent);
 			} catch (error) {

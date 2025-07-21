@@ -51,13 +51,7 @@ describe("NormalizeData", function () {
 
 describe("calculatePercentile", function () {
 	it("should return the lower value when upper is greater than or equal to the length of the sorted array", function () {
-		const checks = [
-			{ responseTime: 10 },
-			{ responseTime: 20 },
-			{ responseTime: 30 },
-			{ responseTime: 40 },
-			{ responseTime: 50 },
-		];
+		const checks = [{ responseTime: 10 }, { responseTime: 20 }, { responseTime: 30 }, { responseTime: 40 }, { responseTime: 50 }];
 
 		const percentile = 100;
 		const result = calculatePercentile(checks, percentile);
