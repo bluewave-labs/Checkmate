@@ -1,6 +1,4 @@
 import {
-	createCheckParamValidation,
-	createCheckBodyValidation,
 	getChecksParamValidation,
 	getChecksQueryValidation,
 	getTeamChecksParamValidation,
@@ -23,29 +21,40 @@ class CheckController {
 		this.stringService = stringService;
 	}
 
-	createCheck = asyncHandler(
-		async (req, res, next) => {
-			await createCheckParamValidation.validateAsync(req.params);
-			await createCheckBodyValidation.validateAsync(req.body);
-
-			const checkData = { ...req.body };
-			const check = await this.db.createCheck(checkData);
-
-			return res.success({
-				msg: this.stringService.checkCreate,
-				data: check,
-			});
-		},
-		SERVICE_NAME,
-		"createCheck"
-	);
-
 	getChecksByMonitor = asyncHandler(
 		async (req, res, next) => {
 			await getChecksParamValidation.validateAsync(req.params);
 			await getChecksQueryValidation.validateAsync(req.query);
 
-			const { monitorId } = req.params;
+			const monitorId = req?.params?.monitorId;
+
+			if (!monitorId) {
+				throw new Error("No monitor ID in request");
+			}
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const monitor = await this.db.getMonitorById(monitorId);
+
+			if (!monitor) {
+				const err = new Error("Monitor not found");
+				err.status = 404;
+				err.service = SERVICE_NAME;
+				err.method = "getChecksByMonitor";
+				throw err;
+			}
+
+			if (!monitor.teamId.equals(teamId)) {
+				const err = new Error("Unauthorized");
+				err.status = 403;
+				err.service = SERVICE_NAME;
+				err.method = "getChecksByMonitor";
+				throw err;
+			}
+
 			let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = req.query;
 			const result = await this.db.getChecksByMonitor({
 				monitorId,
@@ -74,7 +83,11 @@ class CheckController {
 			await getTeamChecksQueryValidation.validateAsync(req.query);
 
 			let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = req.query;
-			const { teamId } = req.user;
+			const teamId = req?.user?.teamId;
+
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
 
 			const checkData = await this.db.getChecksByTeam({
 				sortOrder,
@@ -96,7 +109,12 @@ class CheckController {
 
 	getChecksSummaryByTeamId = asyncHandler(
 		async (req, res, next) => {
-			const { teamId } = req.user;
+			const teamId = req?.user?.teamId;
+
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
 			const summary = await this.db.getChecksSummaryByTeamId({ teamId });
 			return res.success({
 				msg: this.stringService.checkGetSummary,
@@ -111,9 +129,17 @@ class CheckController {
 		async (req, res, next) => {
 			await ackCheckBodyValidation.validateAsync(req.body);
 
-			const { checkId } = req.params;
-			const { ack } = req.body;
-			const { teamId } = req.user;
+			const checkId = req?.params?.checkId;
+			const ack = req?.body?.ack;
+			const teamId = req?.user?.teamId;
+
+			if (!checkId) {
+				throw new Error("No check ID in request");
+			}
+
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
 
 			const updatedCheck = await this.db.ackCheck(checkId, teamId, ack);
 
@@ -131,9 +157,35 @@ class CheckController {
 			await ackAllChecksParamValidation.validateAsync(req.params);
 			await ackAllChecksBodyValidation.validateAsync(req.body);
 
-			const { monitorId, path } = req.params;
-			const { ack } = req.body;
-			const { teamId } = req.user;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const monitorId = req?.params?.monitorId;
+
+			const path = req?.params?.path;
+
+			const ack = req?.body?.ack;
+
+			if (path === "monitor") {
+				if (!monitorId) {
+					throw new Error("No monitor ID in request");
+				}
+
+				const monitor = await this.db.getMonitorById(monitorId);
+				if (!monitor) {
+					throw new Error("Monitor not found");
+				}
+
+				if (!monitor.teamId.equals(teamId)) {
+					const err = new Error("Unauthorized");
+					err.status = 403;
+					err.service = SERVICE_NAME;
+					err.method = "ackAllChecks";
+					throw err;
+				}
+			}
 
 			const updatedChecks = await this.db.ackAllChecks(monitorId, teamId, ack, path);
 
@@ -150,6 +202,35 @@ class CheckController {
 		async (req, res, next) => {
 			await deleteChecksParamValidation.validateAsync(req.params);
 
+			const monitorId = req?.params?.monitorId;
+			const teamId = req?.user?.teamId;
+
+			if (!monitorId) {
+				throw new Error("No monitor ID in request");
+			}
+
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const monitor = await this.db.getMonitorById(monitorId);
+
+			if (!monitor) {
+				const err = new Error("Monitor not found");
+				err.status = 404;
+				err.service = SERVICE_NAME;
+				err.method = "deleteChecks";
+				throw err;
+			}
+
+			if (!monitor.teamId.equals(teamId)) {
+				const err = new Error("Unauthorized");
+				err.status = 403;
+				err.service = SERVICE_NAME;
+				err.method = "deleteChecks";
+				throw err;
+			}
+
 			const deletedCount = await this.db.deleteChecks(req.params.monitorId);
 
 			return res.success({
@@ -165,7 +246,11 @@ class CheckController {
 		async (req, res, next) => {
 			await deleteChecksByTeamIdParamValidation.validateAsync(req.params);
 
-			const { teamId } = req.user;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
 			const deletedCount = await this.db.deleteChecksByTeamId(teamId);
 
 			return res.success({
