@@ -39,9 +39,19 @@ class NotificationController {
 			});
 
 			const body = req.body;
-			const { _id, teamId } = req.user;
-			body.userId = _id;
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const userId = req?.user?._id;
+			if (!userId) {
+				throw new Error("No user ID in request");
+			}
+			body.userId = userId;
 			body.teamId = teamId;
+
 			const notification = await this.db.createNotification(body);
 			return res.success({
 				msg: "Notification created successfully",
@@ -54,7 +64,13 @@ class NotificationController {
 
 	getNotificationsByTeamId = asyncHandler(
 		async (req, res, next) => {
-			const notifications = await this.db.getNotificationsByTeamId(req.user.teamId);
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const notifications = await this.db.getNotificationsByTeamId(teamId);
+
 			return res.success({
 				msg: "Notifications fetched successfully",
 				data: notifications,
@@ -66,6 +82,18 @@ class NotificationController {
 
 	deleteNotification = asyncHandler(
 		async (req, res, next) => {
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const notification = await this.db.getNotificationById(req.params.id);
+			if (!notification.teamId.equals(teamId)) {
+				const error = new Error("Unauthorized");
+				error.status = 403;
+				throw error;
+			}
+
 			await this.db.deleteNotificationById(req.params.id);
 			return res.success({
 				msg: "Notification deleted successfully",
@@ -78,6 +106,17 @@ class NotificationController {
 	getNotificationById = asyncHandler(
 		async (req, res, next) => {
 			const notification = await this.db.getNotificationById(req.params.id);
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			if (!notification.teamId.equals(teamId)) {
+				const error = new Error("Unauthorized");
+				error.status = 403;
+				throw error;
+			}
 			return res.success({
 				msg: "Notification fetched successfully",
 				data: notification,
@@ -93,10 +132,23 @@ class NotificationController {
 				abortEarly: false,
 			});
 
-			const notification = await this.db.editNotification(req.params.id, req.body);
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			const notification = await this.db.getNotificationById(req.params.id);
+
+			if (!notification.teamId.equals(teamId)) {
+				const error = new Error("Unauthorized");
+				error.status = 403;
+				throw error;
+			}
+
+			const editedNotification = await this.db.editNotification(req.params.id, req.body);
 			return res.success({
 				msg: "Notification updated successfully",
-				data: notification,
+				data: editedNotification,
 			});
 		},
 		SERVICE_NAME,
@@ -105,8 +157,20 @@ class NotificationController {
 
 	testAllNotifications = asyncHandler(
 		async (req, res, next) => {
-			const { monitorId } = req.body;
+			const monitorId = req.body.monitorId;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
 			const monitor = await this.db.getMonitorById(monitorId);
+
+			if (!monitor.teamId.equals(teamId)) {
+				const error = new Error("Unauthorized");
+				error.status = 403;
+				throw error;
+			}
+
 			const notifications = monitor.notifications;
 			if (notifications.length === 0) throw new Error("No notifications");
 			const result = await this.notificationService.testAllNotifications(notifications);
