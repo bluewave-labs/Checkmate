@@ -393,7 +393,7 @@ class NetworkService {
 	 *
 	 */
 	async updateUser(config) {
-		return this.axiosInstance.put(`/auth/user/${config.userId}`, config.form);
+		return this.axiosInstance.put(`/auth/user`, config.form);
 	}
 
 	/**
@@ -406,8 +406,8 @@ class NetworkService {
 	 * @param {string} config.userId - The ID of the user to be deleted.
 	 *
 	 **/
-	async deleteUser(config) {
-		return this.axiosInstance.delete(`/auth/user/${config.userId}`);
+	async deleteUser() {
+		return this.axiosInstance.delete(`/auth/user`);
 	}
 
 	/**
