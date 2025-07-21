@@ -13,7 +13,6 @@ class StatusPageRoutes {
 	initRoutes() {
 		this.router.get("/", this.statusPageController.getStatusPage);
 		this.router.get("/team", verifyJWT, this.statusPageController.getStatusPagesByTeamId);
-		this.router.get("/:url", this.statusPageController.getStatusPageByUrl);
 
 		this.router.post(
 			"/",
@@ -27,6 +26,8 @@ class StatusPageRoutes {
 			verifyJWT,
 			this.statusPageController.updateStatusPage
 		);
+
+		this.router.get("/:url", this.statusPageController.getStatusPageByUrl);
 		this.router.delete("/:url(*)", verifyJWT, this.statusPageController.deleteStatusPage);
 	}
 
