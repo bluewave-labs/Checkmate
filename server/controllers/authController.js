@@ -1,7 +1,6 @@
 import {
 	registrationBodyValidation,
 	loginValidation,
-	editUserParamValidation,
 	editUserBodyValidation,
 	recoveryValidation,
 	recoveryTokenValidation,
@@ -186,13 +185,7 @@ class AuthController {
 	 */
 	editUser = asyncHandler(
 		async (req, res, next) => {
-			await editUserParamValidation.validateAsync(req.params);
 			await editUserBodyValidation.validateAsync(req.body);
-
-			// TODO is this neccessary any longer? Verify ownership middleware should handle this
-			if (req.params.userId !== req.user._id.toString()) {
-				throw createAuthError(this.stringService.unauthorized);
-			}
 
 			// Change Password check
 			if (req.body.password && req.body.newPassword) {
@@ -216,7 +209,7 @@ class AuthController {
 				req.body.password = req.body.newPassword;
 			}
 
-			const updatedUser = await this.db.updateUser(req, res);
+			const updatedUser = await this.db.updateUser({ userId: req?.user?._id, user: req.body, file: req.file });
 			res.success({
 				msg: this.stringService.authUpdateUser,
 				data: updatedUser,
@@ -343,20 +336,31 @@ class AuthController {
 	 */
 	deleteUser = asyncHandler(
 		async (req, res, next) => {
-			const token = getTokenFromHeaders(req.headers);
-			const decodedToken = jwt.decode(token);
-			const { email } = decodedToken;
-
-			// Check if the user exists
-			const user = await this.db.getUserByEmail(email);
+			const email = req?.user?.email;
+			if (!email) {
+				throw new Error("No email in request");
+			}
 			// 1. Find all the monitors associated with the team ID if superadmin
 
+			const teamId = req?.user?.teamId;
+			const userId = req?.user?._id;
+
+			if (!teamId) {
+				throw new Error("No team ID in request");
+			}
+
+			if (!userId) {
+				throw new Error("No user ID in request");
+			}
+
+			const roles = req.user.role;
+
 			const result = await this.db.getMonitorsByTeamId({
-				teamId: user.teamId.toString(),
+				teamId: teamId,
 			});
 
-			if (user.role.includes("superadmin")) {
-				//2.  Remove all jobs, delete checks and alerts
+			if (roles.includes("superadmin")) {
+				// 2.  Remove all jobs, delete checks and alerts
 				result?.monitors.length > 0 &&
 					(await Promise.all(
 						result.monitors.map(async (monitor) => {
@@ -365,7 +369,7 @@ class AuthController {
 					));
 			}
 			// 6. Delete the user by id
-			await this.db.deleteUser(user._id);
+			await this.db.deleteUser(userId);
 
 			return res.success({
 				msg: this.stringService.authDeleteUser,

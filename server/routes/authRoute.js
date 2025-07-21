@@ -23,10 +23,11 @@ class AuthRoutes {
 		this.router.post("/recovery/reset/", this.authController.resetPassword);
 
 		this.router.get("/users/superadmin", this.authController.checkSuperadminExists);
+
 		this.router.get("/users", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getAllUsers);
 
-		this.router.put("/user/:userId", verifyJWT, upload.single("profileImage"), this.authController.editUser);
-		this.router.delete("/user/:userId", verifyJWT, verifyOwnership(User, "userId"), this.authController.deleteUser);
+		this.router.put("/user", verifyJWT, upload.single("profileImage"), this.authController.editUser);
+		this.router.delete("/user", verifyJWT, this.authController.deleteUser);
 	}
 
 	getRouter() {
