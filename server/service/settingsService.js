@@ -62,14 +62,10 @@ class SettingsService {
 		// Remove any old settings
 		await this.AppSettings.deleteMany({ version: { $exists: false } });
 
-		let settings = await this.AppSettings.findOne({ singleton: true })
-			.select("-__v -_id -createdAt -updatedAt -singleton")
-			.lean();
+		let settings = await this.AppSettings.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
 		if (settings === null) {
 			await this.AppSettings.create({});
-			settings = await this.AppSettings.findOne({ singleton: true })
-				.select("-__v -_id -createdAt -updatedAt -singleton")
-				.lean();
+			settings = await this.AppSettings.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
 		}
 		return settings;
 	}

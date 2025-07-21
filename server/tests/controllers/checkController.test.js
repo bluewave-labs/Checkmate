@@ -1,11 +1,4 @@
-import {
-	createCheck,
-	getChecks,
-	getTeamChecks,
-	deleteChecks,
-	deleteChecksByTeamId,
-	updateChecksTTL,
-} from "../../controllers/checkController.js";
+import { createCheck, getChecks, getTeamChecks, deleteChecks, deleteChecksByTeamId, updateChecksTTL } from "../../controllers/checkController.js";
 import jwt from "jsonwebtoken";
 import { errorMessages, successMessages } from "../../utils/messages.js";
 import sinon from "sinon";

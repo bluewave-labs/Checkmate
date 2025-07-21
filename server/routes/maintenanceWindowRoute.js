@@ -13,23 +13,11 @@ class MaintenanceWindowRoutes {
 		this.router.post("/", this.mwController.createMaintenanceWindows);
 		this.router.get("/team/", this.mwController.getMaintenanceWindowsByTeamId);
 
-		this.router.get(
-			"/monitor/:monitorId",
-			verifyOwnership(Monitor, "monitorId"),
-			this.mwController.getMaintenanceWindowsByMonitorId
-		);
+		this.router.get("/monitor/:monitorId", verifyOwnership(Monitor, "monitorId"), this.mwController.getMaintenanceWindowsByMonitorId);
 
 		this.router.get("/:id", this.mwController.getMaintenanceWindowById);
-		this.router.put(
-			"/:id",
-			verifyTeamAccess(MaintenanceWindow, "id"),
-			this.mwController.editMaintenanceWindow
-		);
-		this.router.delete(
-			"/:id",
-			verifyTeamAccess(MaintenanceWindow, "id"),
-			this.mwController.deleteMaintenanceWindow
-		);
+		this.router.put("/:id", verifyTeamAccess(MaintenanceWindow, "id"), this.mwController.editMaintenanceWindow);
+		this.router.delete("/:id", verifyTeamAccess(MaintenanceWindow, "id"), this.mwController.deleteMaintenanceWindow);
 	}
 
 	getRouter() {

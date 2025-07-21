@@ -15,34 +15,14 @@ class CheckRoutes {
 	initRoutes() {
 		this.router.get("/team/summary", this.checkController.getChecksSummaryByTeamId);
 		this.router.get("/team", this.checkController.getChecksByTeam);
-		this.router.put(
-			"/team/ttl",
-			isAllowed(["admin", "superadmin"]),
-			this.checkController.updateChecksTTL
-		);
-		this.router.delete(
-			"/team",
-			isAllowed(["admin", "superadmin"]),
-			this.checkController.deleteChecksByTeamId
-		);
+		this.router.put("/team/ttl", isAllowed(["admin", "superadmin"]), this.checkController.updateChecksTTL);
+		this.router.delete("/team", isAllowed(["admin", "superadmin"]), this.checkController.deleteChecksByTeamId);
 
-		this.router.put(
-			"/check/:checkId",
-			verifyTeamAccess(Check, "checkId"),
-			this.checkController.ackCheck
-		);
+		this.router.put("/check/:checkId", verifyTeamAccess(Check, "checkId"), this.checkController.ackCheck);
 
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);
-		this.router.post(
-			"/:monitorId",
-			verifyOwnership(Monitor, "monitorId"),
-			this.checkController.createCheck
-		);
-		this.router.delete(
-			"/:monitorId",
-			verifyOwnership(Monitor, "monitorId"),
-			this.checkController.deleteChecks
-		);
+		this.router.post("/:monitorId", verifyOwnership(Monitor, "monitorId"), this.checkController.createCheck);
+		this.router.delete("/:monitorId", verifyOwnership(Monitor, "monitorId"), this.checkController.deleteChecks);
 
 		this.router.put("/:path/:monitorId?", this.checkController.ackAllChecks);
 	}

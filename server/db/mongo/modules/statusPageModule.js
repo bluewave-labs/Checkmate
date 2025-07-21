@@ -48,13 +48,9 @@ const updateStatusPage = async (statusPageData, image) => {
 		if (statusPageData.deleteSubmonitors === "true") {
 			statusPageData.subMonitors = [];
 		}
-		const statusPage = await StatusPage.findOneAndUpdate(
-			{ url: statusPageData.url },
-			statusPageData,
-			{
-				new: true,
-			}
-		);
+		const statusPage = await StatusPage.findOneAndUpdate({ url: statusPageData.url }, statusPageData, {
+			new: true,
+		});
 
 		return statusPage;
 	} catch (error) {
@@ -98,19 +94,8 @@ const getStatusPage = async (url) => {
 		}
 
 		if (!preliminaryStatusPage.monitors || preliminaryStatusPage.monitors.length === 0) {
-			const {
-				_id,
-				color,
-				companyName,
-				isPublished,
-				logo,
-				originalMonitors,
-				showCharts,
-				showUptimePercentage,
-				timezone,
-				showAdminLoginLink,
-				url,
-			} = preliminaryStatusPage;
+			const { _id, color, companyName, isPublished, logo, originalMonitors, showCharts, showUptimePercentage, timezone, showAdminLoginLink, url } =
+				preliminaryStatusPage;
 			return {
 				statusPage: {
 					_id,

@@ -1,8 +1,4 @@
-import {
-	inviteRoleValidation,
-	inviteBodyValidation,
-	inviteVerificationBodyValidation,
-} from "../validation/joi.js";
+import { inviteRoleValidation, inviteBodyValidation, inviteVerificationBodyValidation } from "../validation/joi.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
 import { asyncHandler, createServerError } from "../utils/errorUtils.js";
@@ -65,15 +61,9 @@ class InviteController {
 				name: firstname,
 				link: `${clientHost}/register/${inviteToken.token}`,
 			});
-			const result = await this.emailService.sendEmail(
-				req.body.email,
-				"Welcome to Uptime Monitor",
-				html
-			);
+			const result = await this.emailService.sendEmail(req.body.email, "Welcome to Uptime Monitor", html);
 			if (!result) {
-				throw createServerError(
-					"Failed to send invite e-mail... Please verify your settings."
-				);
+				throw createServerError("Failed to send invite e-mail... Please verify your settings.");
 			}
 
 			return res.success({

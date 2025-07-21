@@ -29,9 +29,7 @@ const updateAppSettings = async (newSettings) => {
 		await AppSettings.findOneAndUpdate({}, update, {
 			upsert: true,
 		});
-		const settings = await AppSettings.findOne()
-			.select("-__v -_id -createdAt -updatedAt -singleton")
-			.lean();
+		const settings = await AppSettings.findOne().select("-__v -_id -createdAt -updatedAt -singleton").lean();
 		return settings;
 	} catch (error) {
 		error.service = SERVICE_NAME;

@@ -211,23 +211,16 @@ class StringService {
 	}
 
 	getWebhookUnsupportedPlatform(platform) {
-		return this.translationService
-			.getTranslation("webhookUnsupportedPlatform")
-			.replace("{platform}", platform);
+		return this.translationService.getTranslation("webhookUnsupportedPlatform").replace("{platform}", platform);
 	}
 
 	getWebhookSendError(platform) {
-		return this.translationService
-			.getTranslation("webhookSendError")
-			.replace("{platform}", platform);
+		return this.translationService.getTranslation("webhookSendError").replace("{platform}", platform);
 	}
 
 	getMonitorStatus(name, status, url) {
 		const translationKey = status === true ? "monitorStatusUp" : "monitorStatusDown";
-		return this.translationService
-			.getTranslation(translationKey)
-			.replace("{name}", name)
-			.replace("{url}", url);
+		return this.translationService.getTranslation(translationKey).replace("{name}", name).replace("{url}", url);
 	}
 
 	// Error Messages
@@ -378,9 +371,7 @@ class StringService {
 	}
 
 	getDeletedCount(count) {
-		return this.translationService
-			.getTranslation("deletedCount")
-			.replace("{count}", count);
+		return this.translationService.getTranslation("deletedCount").replace("{count}", count);
 	}
 
 	get pingSuccess() {
@@ -424,9 +415,7 @@ class StringService {
 	}
 
 	getDbFindMonitorById(monitorId) {
-		return this.translationService
-			.getTranslation("dbFindMonitorById")
-			.replace("${monitorId}", monitorId);
+		return this.translationService.getTranslation("dbFindMonitorById").replace("${monitorId}", monitorId);
 	}
 
 	get dbUserExists() {

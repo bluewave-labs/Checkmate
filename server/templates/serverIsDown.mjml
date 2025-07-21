@@ -48,10 +48,7 @@
 			<mj-column width="100%">
 				<mj-text>
 					<p>Hello {{ name }}!</p>
-					<p>
-						We detected an incident on one of your monitors. Your service is currently
-						down. We'll send a message to you once it is up again.
-					</p>
+					<p>We detected an incident on one of your monitors. Your service is currently down. We'll send a message to you once it is up again.</p>
 					<p><b>Monitor name:</b> {{ monitor }}</p>
 					<p><b>URL:</b> {{ url }}</p>
 				</mj-text>

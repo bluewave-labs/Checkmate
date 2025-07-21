@@ -38,9 +38,7 @@ class TranslationService {
 				return false;
 			}
 
-			const files = fs
-				.readdirSync(this.localesDir)
-				.filter((file) => file.endsWith(".json"));
+			const files = fs.readdirSync(this.localesDir).filter((file) => file.endsWith(".json"));
 
 			if (files.length === 0) {
 				return false;

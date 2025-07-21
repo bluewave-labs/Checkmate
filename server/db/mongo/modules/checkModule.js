@@ -58,26 +58,13 @@ const createChecks = async (checks) => {
  * @returns {Promise<Array<Check>>}
  * @throws {Error}
  */
-const getChecksByMonitor = async ({
-	monitorId,
-	type,
-	sortOrder,
-	dateRange,
-	filter,
-	ack,
-	page,
-	rowsPerPage,
-	status,
-}) => {
+const getChecksByMonitor = async ({ monitorId, type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status }) => {
 	try {
 		status = status === "true" ? true : status === "false" ? false : undefined;
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 
-		const ackStage =
-			ack === "true"
-				? { ack: true }
-				: { $or: [{ ack: false }, { ack: { $exists: false } }] };
+		const ackStage = ack === "true" ? { ack: true } : { $or: [{ ack: false }, { ack: { $exists: false } }] };
 
 		// Match
 		const matchStage = {
@@ -158,23 +145,12 @@ const getChecksByMonitor = async ({
 	}
 };
 
-const getChecksByTeam = async ({
-	sortOrder,
-	dateRange,
-	filter,
-	ack,
-	page,
-	rowsPerPage,
-	teamId,
-}) => {
+const getChecksByTeam = async ({ sortOrder, dateRange, filter, ack, page, rowsPerPage, teamId }) => {
 	try {
 		page = parseInt(page);
 		rowsPerPage = parseInt(rowsPerPage);
 
-		const ackStage =
-			ack === "true"
-				? { ack: true }
-				: { $or: [{ ack: false }, { ack: { $exists: false } }] };
+		const ackStage = ack === "true" ? { ack: true } : { $or: [{ ack: false }, { ack: { $exists: false } }] };
 
 		const matchStage = {
 			teamId: new ObjectId(teamId),
@@ -264,11 +240,7 @@ const getChecksByTeam = async ({
  */
 const ackCheck = async (checkId, teamId, ack) => {
 	try {
-		const updatedCheck = await Check.findOneAndUpdate(
-			{ _id: checkId, teamId: teamId },
-			{ $set: { ack, ackAt: new Date() } },
-			{ new: true }
-		);
+		const updatedCheck = await Check.findOneAndUpdate({ _id: checkId, teamId: teamId }, { $set: { ack, ackAt: new Date() } }, { new: true });
 
 		if (!updatedCheck) {
 			throw new Error("Check not found");
@@ -293,10 +265,7 @@ const ackCheck = async (checkId, teamId, ack) => {
  */
 const ackAllChecks = async (monitorId, teamId, ack, path) => {
 	try {
-		const updatedChecks = await Check.updateMany(
-			path === "monitor" ? { monitorId } : { teamId },
-			{ $set: { ack, ackAt: new Date() } }
-		);
+		const updatedChecks = await Check.updateMany(path === "monitor" ? { monitorId } : { teamId }, { $set: { ack, ackAt: new Date() } });
 		return updatedChecks.modifiedCount;
 	} catch (error) {
 		error.service = SERVICE_NAME;
@@ -317,9 +286,7 @@ const getChecksSummaryByTeamId = async ({ teamId }) => {
 		const matchStage = {
 			teamId: new ObjectId(teamId),
 		};
-		const checks = await Check.aggregate(
-			buildChecksSummaryByTeamIdPipeline({ matchStage })
-		);
+		const checks = await Check.aggregate(buildChecksSummaryByTeamIdPipeline({ matchStage }));
 		return checks[0].summary;
 	} catch (error) {
 		error.service = SERVICE_NAME;

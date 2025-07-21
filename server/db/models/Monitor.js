@@ -156,10 +156,7 @@ MonitorSchema.pre("deleteMany", async function (next) {
 		} else {
 			await Check.deleteMany({ monitorId: monitor._id });
 		}
-		await StatusPage.updateMany(
-			{ monitors: monitor._id },
-			{ $pull: { monitors: monitor._id } }
-		);
+		await StatusPage.updateMany({ monitors: monitor._id }, { $pull: { monitors: monitor._id } });
 		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
 	}
 	next();

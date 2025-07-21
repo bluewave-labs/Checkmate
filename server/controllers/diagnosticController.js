@@ -12,8 +12,7 @@ obs.observe({ entryTypes: ["measure"] });
 class DiagnosticController {
 	constructor(db) {
 		this.db = db;
-		this.getMonitorsByTeamIdExecutionStats =
-			this.getMonitorsByTeamIdExecutionStats.bind(this);
+		this.getMonitorsByTeamIdExecutionStats = this.getMonitorsByTeamIdExecutionStats.bind(this);
 		this.getDbStats = this.getDbStats.bind(this);
 	}
 

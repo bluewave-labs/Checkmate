@@ -1,10 +1,5 @@
 import { afterEach } from "node:test";
-import {
-	getMetrics,
-	getJobs,
-	addJob,
-	obliterateQueue,
-} from "../../controllers/queueController.js";
+import { getMetrics, getJobs, addJob, obliterateQueue } from "../../controllers/queueController.js";
 import { successMessages } from "../../utils/messages.js";
 import sinon from "sinon";
 

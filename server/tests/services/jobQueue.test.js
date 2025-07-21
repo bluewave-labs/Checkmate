@@ -52,13 +52,7 @@ class WorkerStub {
 }
 
 describe("JobQueue", function () {
-	let settingsService,
-		logger,
-		db,
-		networkService,
-		statusService,
-		notificationService,
-		jobQueue;
+	let settingsService, logger, db, networkService, statusService, notificationService, jobQueue;
 
 	beforeEach(async function () {
 		settingsService = { getSettings: sinon.stub() };
@@ -71,16 +65,7 @@ describe("JobQueue", function () {
 			getMaintenanceWindowsByMonitorId: sinon.stub().returns([]),
 		};
 		networkService = { getStatus: sinon.stub() };
-		jobQueue = await JobQueue.createJobQueue(
-			db,
-			networkService,
-			statusService,
-			notificationService,
-			settingsService,
-			logger,
-			QueueStub,
-			WorkerStub
-		);
+		jobQueue = await JobQueue.createJobQueue(db, networkService, statusService, notificationService, settingsService, logger, QueueStub, WorkerStub);
 	});
 
 	afterEach(function () {
@@ -327,9 +312,7 @@ describe("JobQueue", function () {
 			const handler = jobQueue.createJobHandler();
 			await handler({ data: { _id: 1 } });
 			expect(logger.info.calledOnce).to.be.true;
-			expect(logger.info.firstCall.args[0].message).to.equal(
-				"Monitor 1 is in maintenance window"
-			);
+			expect(logger.info.firstCall.args[0].message).to.equal("Monitor 1 is in maintenance window");
 		});
 
 		it("should return if status has not changed", async function () {
@@ -362,9 +345,7 @@ describe("JobQueue", function () {
 				WorkerStub
 			);
 			jobQueue.isInMaintenanceWindow = sinon.stub().returns(false);
-			statusService.updateStatus = sinon
-				.stub()
-				.returns({ statusChanged: true, prevStatus: undefined });
+			statusService.updateStatus = sinon.stub().returns({ statusChanged: true, prevStatus: undefined });
 			const handler = jobQueue.createJobHandler();
 			await handler({ data: { _id: 1 } });
 			expect(jobQueue.notificationService.handleNotifications.notCalled).to.be.true;
@@ -382,9 +363,7 @@ describe("JobQueue", function () {
 				WorkerStub
 			);
 			jobQueue.isInMaintenanceWindow = sinon.stub().returns(false);
-			statusService.updateStatus = sinon
-				.stub()
-				.returns({ statusChanged: true, prevStatus: false });
+			statusService.updateStatus = sinon.stub().returns({ statusChanged: true, prevStatus: false });
 			const handler = jobQueue.createJobHandler();
 			await handler({ data: { _id: 1 } });
 			expect(jobQueue.notificationService.handleNotifications.calledOnce).to.be.true;

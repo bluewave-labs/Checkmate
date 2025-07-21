@@ -20,17 +20,9 @@ class NotificationRoutes {
 
 		this.router.get("/team", this.notificationController.getNotificationsByTeamId);
 
-		this.router.delete(
-			"/:id",
-			verifyOwnership(Notification, "id"),
-			this.notificationController.deleteNotification
-		);
+		this.router.delete("/:id", verifyOwnership(Notification, "id"), this.notificationController.deleteNotification);
 		this.router.get("/:id", this.notificationController.getNotificationById);
-		this.router.put(
-			"/:id",
-			verifyTeamAccess(Notification, "id"),
-			this.notificationController.editNotification
-		);
+		this.router.put("/:id", verifyTeamAccess(Notification, "id"), this.notificationController.editNotification);
 	}
 
 	getRouter() {

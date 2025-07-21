@@ -39,10 +39,7 @@ const verifyJWT = (req, res, next) => {
 	const { jwtSecret } = ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings();
 	jwt.verify(parsedToken, jwtSecret, (err, decoded) => {
 		if (err) {
-			const errorMessage =
-				err.name === "TokenExpiredError"
-					? stringService.expiredAuthToken
-					: stringService.invalidAuthToken;
+			const errorMessage = err.name === "TokenExpiredError" ? stringService.expiredAuthToken : stringService.invalidAuthToken;
 			err.details = { msg: errorMessage };
 			err.status = 401;
 			err.service = SERVICE_NAME;

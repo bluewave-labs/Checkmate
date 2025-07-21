@@ -73,9 +73,7 @@ describe("StatusService", () => {
 		});
 
 		it("should return {statusChanged: true} if status has changed from down to up", async function () {
-			statusService.db.getMonitorById = sinon
-				.stub()
-				.returns({ status: false, save: sinon.stub() });
+			statusService.db.getMonitorById = sinon.stub().returns({ status: false, save: sinon.stub() });
 			const result = await statusService.updateStatus({
 				monitorId: "test",
 				status: true,
@@ -87,9 +85,7 @@ describe("StatusService", () => {
 		});
 
 		it("should return {statusChanged: true} if status has changed from up to down", async function () {
-			statusService.db.getMonitorById = sinon
-				.stub()
-				.returns({ status: true, save: sinon.stub() });
+			statusService.db.getMonitorById = sinon.stub().returns({ status: true, save: sinon.stub() });
 			const result = await statusService.updateStatus({
 				monitorId: "test",
 				status: false,

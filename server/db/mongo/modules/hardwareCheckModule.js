@@ -23,14 +23,10 @@ const createHardwareCheck = async (hardwareCheckData) => {
 		if (monitor.uptimePercentage === undefined) {
 			newUptimePercentage = status === true ? 1 : 0;
 		} else {
-			newUptimePercentage =
-				(monitor.uptimePercentage * (n - 1) + (status === true ? 1 : 0)) / n;
+			newUptimePercentage = (monitor.uptimePercentage * (n - 1) + (status === true ? 1 : 0)) / n;
 		}
 
-		await Monitor.findOneAndUpdate(
-			{ _id: monitorId },
-			{ uptimePercentage: newUptimePercentage }
-		);
+		await Monitor.findOneAndUpdate({ _id: monitorId }, { uptimePercentage: newUptimePercentage });
 
 		const hardwareCheck = await new HardwareCheck({
 			...hardwareCheckData,

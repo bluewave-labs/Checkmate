@@ -40,15 +40,9 @@ describe("MaintenanceWindow Module", function () {
 				}),
 			}),
 		});
-		maintenanceWindowFindByIdAndDeleteStub = sinon.stub(
-			MaintenanceWindow,
-			"findByIdAndDelete"
-		);
+		maintenanceWindowFindByIdAndDeleteStub = sinon.stub(MaintenanceWindow, "findByIdAndDelete");
 		maintenanceWindowDeleteManyStub = sinon.stub(MaintenanceWindow, "deleteMany");
-		maintenanceWindowFindByIdAndUpdateStub = sinon.stub(
-			MaintenanceWindow,
-			"findByIdAndUpdate"
-		);
+		maintenanceWindowFindByIdAndUpdateStub = sinon.stub(MaintenanceWindow, "findByIdAndUpdate");
 	});
 
 	afterEach(function () {
@@ -110,10 +104,7 @@ describe("MaintenanceWindow Module", function () {
 
 		it("should return a list of maintenance windows and count", async function () {
 			maintenanceWindowCountDocumentsStub.resolves(1);
-			const result = await getMaintenanceWindowsByTeamId(
-				mockMaintenanceWindow.teamId,
-				query
-			);
+			const result = await getMaintenanceWindowsByTeamId(mockMaintenanceWindow.teamId, query);
 			expect(result).to.deep.equal({
 				maintenanceWindows: mockMaintenanceWindows,
 				maintenanceWindowCount: 1,
@@ -123,10 +114,7 @@ describe("MaintenanceWindow Module", function () {
 		it("should return a list of maintenance windows and count with empty query", async function () {
 			query = undefined;
 			maintenanceWindowCountDocumentsStub.resolves(1);
-			const result = await getMaintenanceWindowsByTeamId(
-				mockMaintenanceWindow.teamId,
-				query
-			);
+			const result = await getMaintenanceWindowsByTeamId(mockMaintenanceWindow.teamId, query);
 			expect(result).to.deep.equal({
 				maintenanceWindows: mockMaintenanceWindows,
 				maintenanceWindowCount: 1,
@@ -137,10 +125,7 @@ describe("MaintenanceWindow Module", function () {
 			query.page = undefined;
 			query.rowsPerPage = undefined;
 			maintenanceWindowCountDocumentsStub.resolves(1);
-			const result = await getMaintenanceWindowsByTeamId(
-				mockMaintenanceWindow.teamId,
-				query
-			);
+			const result = await getMaintenanceWindowsByTeamId(mockMaintenanceWindow.teamId, query);
 			expect(result).to.deep.equal({
 				maintenanceWindows: mockMaintenanceWindows,
 				maintenanceWindowCount: 1,
@@ -150,10 +135,7 @@ describe("MaintenanceWindow Module", function () {
 		it("should return a list of maintenance windows and count with field and desc order", async function () {
 			query.order = "desc";
 			maintenanceWindowCountDocumentsStub.resolves(1);
-			const result = await getMaintenanceWindowsByTeamId(
-				mockMaintenanceWindow.teamId,
-				query
-			);
+			const result = await getMaintenanceWindowsByTeamId(mockMaintenanceWindow.teamId, query);
 			expect(result).to.deep.equal({
 				maintenanceWindows: mockMaintenanceWindows,
 				maintenanceWindowCount: 1,
@@ -163,10 +145,7 @@ describe("MaintenanceWindow Module", function () {
 		it("should return a list of maintenance windows and count no field", async function () {
 			query.field = undefined;
 			maintenanceWindowCountDocumentsStub.resolves(1);
-			const result = await getMaintenanceWindowsByTeamId(
-				mockMaintenanceWindow.teamId,
-				query
-			);
+			const result = await getMaintenanceWindowsByTeamId(mockMaintenanceWindow.teamId, query);
 			expect(result).to.deep.equal({
 				maintenanceWindows: mockMaintenanceWindows,
 				maintenanceWindowCount: 1,
@@ -187,9 +166,7 @@ describe("MaintenanceWindow Module", function () {
 	describe("getMaintenanceWindowsByMonitorId", function () {
 		it("should return a list of maintenance windows", async function () {
 			maintenanceWindowFindStub.resolves(mockMaintenanceWindows);
-			const result = await getMaintenanceWindowsByMonitorId(
-				mockMaintenanceWindow.monitorId
-			);
+			const result = await getMaintenanceWindowsByMonitorId(mockMaintenanceWindow.monitorId);
 			expect(result).to.deep.equal(mockMaintenanceWindows);
 		});
 
@@ -225,9 +202,7 @@ describe("MaintenanceWindow Module", function () {
 	describe("deleteMaintenanceWindowByMonitorId", function () {
 		it("should return the number of documents deleted", async function () {
 			maintenanceWindowDeleteManyStub.resolves({ deletedCount: 1 });
-			const result = await deleteMaintenanceWindowByMonitorId(
-				mockMaintenanceWindow.monitorId
-			);
+			const result = await deleteMaintenanceWindowByMonitorId(mockMaintenanceWindow.monitorId);
 			expect(result).to.deep.equal({ deletedCount: 1 });
 		});
 
@@ -263,10 +238,7 @@ describe("MaintenanceWindow Module", function () {
 	describe("editMaintenanceWindowById", function () {
 		it("should return the updated maintenance window", async function () {
 			maintenanceWindowFindByIdAndUpdateStub.resolves(mockMaintenanceWindow);
-			const result = await editMaintenanceWindowById(
-				mockMaintenanceWindow.id,
-				mockMaintenanceWindow
-			);
+			const result = await editMaintenanceWindowById(mockMaintenanceWindow.id, mockMaintenanceWindow);
 			expect(result).to.deep.equal(mockMaintenanceWindow);
 		});
 

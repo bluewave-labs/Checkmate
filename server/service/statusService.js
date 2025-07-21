@@ -48,9 +48,7 @@ class StatusService {
 				if (avgResponseTime === 0) {
 					avgResponseTime = responseTime;
 				} else {
-					avgResponseTime =
-						(avgResponseTime * (stats.totalChecks - 1) + responseTime) /
-						stats.totalChecks;
+					avgResponseTime = (avgResponseTime * (stats.totalChecks - 1) + responseTime) / stats.totalChecks;
 				}
 			}
 			stats.avgResponseTime = avgResponseTime;
@@ -138,9 +136,7 @@ class StatusService {
 			// Monitor status changed, save prev status and update monitor
 			this.logger.info({
 				service: this.SERVICE_NAME,
-				message: `${monitor.name} went from ${this.getStatusString(
-					monitor.status
-				)} to ${this.getStatusString(status)}`,
+				message: `${monitor.name} went from ${this.getStatusString(monitor.status)} to ${this.getStatusString(status)}`,
 				prevStatus: monitor.status,
 				newStatus: status,
 			});
@@ -279,9 +275,7 @@ class StatusService {
 				message: error.message,
 				service: error.service || this.SERVICE_NAME,
 				method: error.method || "insertCheck",
-				details:
-					error.details ||
-					`Error inserting check for monitor: ${networkResponse?.monitorId}`,
+				details: error.details || `Error inserting check for monitor: ${networkResponse?.monitorId}`,
 				stack: error.stack,
 			});
 		}

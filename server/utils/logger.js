@@ -6,43 +6,41 @@ class Logger {
 	constructor() {
 		this.logCache = [];
 		this.maxCacheSize = 1000;
-		const consoleFormat = format.printf(
-			({ level, message, service, method, details, timestamp, stack }) => {
-				if (message instanceof Object) {
-					message = JSON.stringify(message, null, 2);
-				}
-
-				if (details instanceof Object) {
-					details = JSON.stringify(details, null, 2);
-				}
-				let msg = `${timestamp} ${level}:`;
-				service && (msg += ` [${service}]`);
-				method && (msg += `(${method})`);
-				message && (msg += ` ${message}`);
-				details && (msg += ` (details: ${details})`);
-
-				if (typeof stack !== "undefined") {
-					const stackTrace = stack
-						?.split("\n")
-						.slice(1) // Remove first line (error message)
-						.map((line) => {
-							const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
-							if (match) {
-								return {
-									function: match[1],
-									file: match[2],
-									line: parseInt(match[3]),
-									column: parseInt(match[4]),
-								};
-							}
-							return line.trim();
-						});
-					stack && (msg += ` (stack: ${JSON.stringify(stackTrace, null, 2)})`);
-				}
-
-				return msg;
+		const consoleFormat = format.printf(({ level, message, service, method, details, timestamp, stack }) => {
+			if (message instanceof Object) {
+				message = JSON.stringify(message, null, 2);
 			}
-		);
+
+			if (details instanceof Object) {
+				details = JSON.stringify(details, null, 2);
+			}
+			let msg = `${timestamp} ${level}:`;
+			service && (msg += ` [${service}]`);
+			method && (msg += `(${method})`);
+			message && (msg += ` ${message}`);
+			details && (msg += ` (details: ${details})`);
+
+			if (typeof stack !== "undefined") {
+				const stackTrace = stack
+					?.split("\n")
+					.slice(1) // Remove first line (error message)
+					.map((line) => {
+						const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
+						if (match) {
+							return {
+								function: match[1],
+								file: match[2],
+								line: parseInt(match[3]),
+								column: parseInt(match[4]),
+							};
+						}
+						return line.trim();
+					});
+				stack && (msg += ` (stack: ${JSON.stringify(stackTrace, null, 2)})`);
+			}
+
+			return msg;
+		});
 
 		const logLevel = process.env.LOG_LEVEL || "info";
 
@@ -51,12 +49,7 @@ class Logger {
 			format: format.combine(format.timestamp()),
 			transports: [
 				new transports.Console({
-					format: format.combine(
-						format.colorize(),
-						format.prettyPrint(),
-						format.json(),
-						consoleFormat
-					),
+					format: format.combine(format.colorize(), format.prettyPrint(), format.json(), consoleFormat),
 				}),
 				new transports.File({
 					format: format.combine(format.json()),

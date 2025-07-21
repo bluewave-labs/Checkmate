@@ -1,9 +1,4 @@
-import {
-	createStatusPageBodyValidation,
-	getStatusPageParamValidation,
-	getStatusPageQueryValidation,
-	imageValidation,
-} from "../validation/joi.js";
+import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation, imageValidation } from "../validation/joi.js";
 import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "statusPageController";

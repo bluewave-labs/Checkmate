@@ -15,9 +15,7 @@ const calculatePercentileUptimeDetails = (arr, percentile) => {
 	const upper = lower + 1;
 	const weight = index % 1;
 	if (upper >= sorted.length) return sorted[lower].avgResponseTime;
-	return (
-		sorted[lower].avgResponseTime * (1 - weight) + sorted[upper].avgResponseTime * weight
-	);
+	return sorted[lower].avgResponseTime * (1 - weight) + sorted[upper].avgResponseTime * weight;
 };
 
 const NormalizeData = (checks, rangeMin, rangeMax) => {
@@ -28,15 +26,11 @@ const NormalizeData = (checks, rangeMin, rangeMax) => {
 		const normalizedChecks = checks.map((check) => {
 			const originalResponseTime = check.responseTime;
 			// Normalize the response time between 1 and 100
-			let normalizedResponseTime =
-				rangeMin + ((check.responseTime - min) * (rangeMax - rangeMin)) / (max - min);
+			let normalizedResponseTime = rangeMin + ((check.responseTime - min) * (rangeMax - rangeMin)) / (max - min);
 
 			// Put a floor on the response times so we don't have extreme outliers
 			// Better visuals
-			normalizedResponseTime = Math.max(
-				rangeMin,
-				Math.min(rangeMax, normalizedResponseTime)
-			);
+			normalizedResponseTime = Math.max(rangeMin, Math.min(rangeMax, normalizedResponseTime));
 			return {
 				...check,
 				responseTime: normalizedResponseTime,
@@ -60,15 +54,11 @@ const NormalizeDataUptimeDetails = (checks, rangeMin, rangeMax) => {
 		const normalizedChecks = checks.map((check) => {
 			const originalResponseTime = check.avgResponseTime;
 			// Normalize the response time between 1 and 100
-			let normalizedResponseTime =
-				rangeMin + ((check.avgResponseTime - min) * (rangeMax - rangeMin)) / (max - min);
+			let normalizedResponseTime = rangeMin + ((check.avgResponseTime - min) * (rangeMax - rangeMin)) / (max - min);
 
 			// Put a floor on the response times so we don't have extreme outliers
 			// Better visuals
-			normalizedResponseTime = Math.max(
-				rangeMin,
-				Math.min(rangeMax, normalizedResponseTime)
-			);
+			normalizedResponseTime = Math.max(rangeMin, Math.min(rangeMax, normalizedResponseTime));
 			return {
 				...check,
 				avgResponseTime: normalizedResponseTime,
@@ -107,10 +97,4 @@ const safelyParseFloat = (value, defaultValue = 0) => {
 	return parsedValue;
 };
 
-export {
-	safelyParseFloat,
-	calculatePercentile,
-	NormalizeData,
-	calculatePercentileUptimeDetails,
-	NormalizeDataUptimeDetails,
-};
+export { safelyParseFloat, calculatePercentile, NormalizeData, calculatePercentileUptimeDetails, NormalizeDataUptimeDetails };

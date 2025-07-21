@@ -463,14 +463,10 @@ class MonitorController {
 
 			const monitorId = req.params.monitorId;
 			const monitor = await this.db.pauseMonitor({ monitorId });
-			monitor.isActive === true
-				? await this.jobQueue.resumeJob(monitor._id, monitor)
-				: await this.jobQueue.pauseJob(monitor);
+			monitor.isActive === true ? await this.jobQueue.resumeJob(monitor._id, monitor) : await this.jobQueue.pauseJob(monitor);
 
 			return res.success({
-				msg: monitor.isActive
-					? this.stringService.monitorResume
-					: this.stringService.monitorPause,
+				msg: monitor.isActive ? this.stringService.monitorResume : this.stringService.monitorPause,
 				data: monitor,
 			});
 		},
@@ -493,9 +489,7 @@ class MonitorController {
 		async (req, res, next) => {
 			const { _id, teamId } = req.user;
 			const demoMonitors = await this.db.addDemoMonitors(_id, teamId);
-			await Promise.all(
-				demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor))
-			);
+			await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor)));
 
 			return res.success({
 				msg: this.stringService.monitorDemoAdded,
