@@ -62,14 +62,15 @@ export const CustomThreshold = ({
 	const theme = useTheme();
 	return (
 		<Stack
-			direction={"row"}
-			sx={{
-				width: "50%",
-				justifyContent: "space-between",
-				flexWrap: "wrap",
-			}}
+			direction={{ sm: "column", md: "row" }}
+			spacing={theme.spacing(2)}
 		>
-			<Box>
+			<Box
+				sx={{
+					width: { md: "45%", lg: "25%", xl: "20%" },
+				}}
+				justifyContent="flex-start"
+			>
 				<Checkbox
 					id={checkboxId}
 					name={checkboxName}
@@ -81,8 +82,10 @@ export const CustomThreshold = ({
 			<Stack
 				direction={"row"}
 				sx={{
-					justifyContent: "flex-end",
+					justifyContent: "flex-start",
 				}}
+				alignItems="center"
+				spacing={theme.spacing(4)}
 			>
 				<TextInput
 					maxWidth="var(--env-var-width-4)"

@@ -9,6 +9,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { maintenanceWindowValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
+import MonitorList from "./Components/MonitorList";
+import Checkbox from "../../../Components/Inputs/Checkbox";
 
 import dayjs from "dayjs";
 import Select from "../../../Components/Inputs/Select";
@@ -209,6 +211,17 @@ const CreateMaintenance = () => {
 		);
 		setErrors((prev) => {
 			return buildErrors(prev, key, error);
+		});
+	};
+
+	const handleMonitorsChange = (selected) => {
+		setForm((prev) => ({ ...prev, monitors: selected }));
+		const { error } = maintenanceWindowValidation.validate(
+			{ monitors: selected },
+			{ abortEarly: false }
+		);
+		setErrors((prev) => {
+			return buildErrors(prev, "monitors", error);
 		});
 	};
 
@@ -525,19 +538,25 @@ const CreateMaintenance = () => {
 							id={"monitors"}
 							label={t("addMonitors")}
 							multiple={true}
-							isAdorned={false}
-							options={monitors ? monitors : []}
+							isAdorned={true}
+							options={monitors}
 							filteredBy="name"
 							secondaryLabel={"type"}
 							inputValue={search}
 							value={form.monitors}
-							handleInputChange={handleSearch}
-							handleChange={handleSelectMonitors}
+							handleInputChange={setSearch}
+							handleChange={handleMonitorsChange}
 							error={errors["monitors"]}
-							disabled={maintenanceWindowId !== undefined}
+						/>
+						<MonitorList
+							selectedMonitors={form.monitors}
+							setSelectedMonitors={(monitors) =>
+								setForm((prev) => ({ ...prev, monitors }))
+							}
 						/>
 					</Stack>
 				</ConfigBox>
+
 				<Box
 					ml="auto"
 					display="inline-block"

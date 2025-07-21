@@ -1091,6 +1091,14 @@ class NetworkService {
 			},
 		});
 	}
+
+	async getDiagnostics() {
+		return this.axiosInstance.get(`/diagnostic/system`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }
 
 export default NetworkService;

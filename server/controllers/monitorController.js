@@ -16,12 +16,12 @@ import {
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
 import logger from "../utils/logger.js";
-import { handleError, handleValidationError } from "./controllerUtils.js";
 import axios from "axios";
 import seedDb from "../db/mongo/utils/seedDb.js";
-const SERVICE_NAME = "monitorController";
 import pkg from "papaparse";
+import { asyncHandler, createServerError } from "../utils/errorUtils.js";
 
+const SERVICE_NAME = "monitorController";
 class MonitorController {
 	constructor(db, settingsService, jobQueue, stringService, emailService) {
 		this.db = db;
@@ -40,17 +40,17 @@ class MonitorController {
 	 * @returns {Promise<Express.Response>}
 	 * @throws {Error}
 	 */
-	getAllMonitors = async (req, res, next) => {
-		try {
+	getAllMonitors = asyncHandler(
+		async (req, res, next) => {
 			const monitors = await this.db.getAllMonitors();
 			return res.success({
 				msg: this.stringService.monitorGetAll,
 				data: monitors,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getAllMonitors"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getAllMonitors"
+	);
 
 	/**
 	 * Returns all monitors with uptime stats for 1,7,30, and 90 days
@@ -61,20 +61,20 @@ class MonitorController {
 	 * @returns {Promise<Express.Response>}
 	 * @throws {Error}
 	 */
-	getAllMonitorsWithUptimeStats = async (req, res, next) => {
-		try {
+	getAllMonitorsWithUptimeStats = asyncHandler(
+		async (req, res, next) => {
 			const monitors = await this.db.getAllMonitorsWithUptimeStats();
 			return res.success({
 				msg: this.stringService.monitorGetAll,
 				data: monitors,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getAllMonitorsWithUptimeStats"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getAllMonitorsWithUptimeStats"
+	);
 
-	getUptimeDetailsById = async (req, res, next) => {
-		try {
+	getUptimeDetailsById = asyncHandler(
+		async (req, res, next) => {
 			const { monitorId } = req.params;
 			const { dateRange, normalize } = req.query;
 
@@ -87,10 +87,10 @@ class MonitorController {
 				msg: this.stringService.monitorGetByIdSuccess,
 				data,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorDetailsById"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getUptimeDetailsById"
+	);
 
 	/**
 	 * Returns monitor stats for monitor with matching ID
@@ -101,16 +101,11 @@ class MonitorController {
 	 * @returns {Promise<Express.Response>}
 	 * @throws {Error}
 	 */
-	getMonitorStatsById = async (req, res, next) => {
-		try {
+	getMonitorStatsById = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorStatsByIdParamValidation.validateAsync(req.params);
 			await getMonitorStatsByIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			let { limit, sortOrder, dateRange, numToDisplay, normalize } = req.query;
 			const { monitorId } = req.params;
 
@@ -126,10 +121,10 @@ class MonitorController {
 				msg: this.stringService.monitorStatsById,
 				data: monitorStats,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorStatsById"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMonitorStatsById"
+	);
 
 	/**
 	 * Get hardware details for a specific monitor by ID
@@ -140,15 +135,11 @@ class MonitorController {
 	 * @returns {Promise<Express.Response>}
 	 * @throws {Error} - Throws error if monitor not found or other database errors
 	 */
-	getHardwareDetailsById = async (req, res, next) => {
-		try {
+	getHardwareDetailsById = asyncHandler(
+		async (req, res, next) => {
 			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
 			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-		try {
+
 			const { monitorId } = req.params;
 			const { dateRange } = req.query;
 			const monitor = await this.db.getHardwareDetailsById({ monitorId, dateRange });
@@ -156,19 +147,15 @@ class MonitorController {
 				msg: this.stringService.monitorGetByIdSuccess,
 				data: monitor,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getHardwareDetailsById"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getHardwareDetailsById"
+	);
 
-	getMonitorCertificate = async (req, res, next, fetchMonitorCertificate) => {
-		try {
+	getMonitorCertificate = asyncHandler(
+		async (req, res, next, fetchMonitorCertificate) => {
 			await getCertificateParamValidation.validateAsync(req.params);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-		}
 
-		try {
 			const { monitorId } = req.params;
 			const monitor = await this.db.getMonitorById(monitorId);
 			const certificate = await fetchMonitorCertificate(sslChecker, monitor);
@@ -179,10 +166,10 @@ class MonitorController {
 					certificateDate: new Date(certificate.validTo),
 				},
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorCertificate"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMonitorCertificate"
+	);
 
 	/**
 	 * Retrieves a monitor by its ID.
@@ -195,25 +182,20 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status, a message, and the retrieved monitor data.
 	 * @throws {Error} If there is an error during the process, especially if the monitor is not found (404) or if there is a validation error (422).
 	 */
-	getMonitorById = async (req, res, next) => {
-		try {
+	getMonitorById = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			await getMonitorByIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const monitor = await this.db.getMonitorById(req.params.monitorId);
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
 				data: monitor,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorById"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMonitorById"
+	);
 
 	/**
 	 * Creates a new monitor and adds it to the job queue.
@@ -226,15 +208,10 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status, a message indicating the creation of the monitor, and the created monitor data.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	createMonitor = async (req, res, next) => {
-		try {
+	createMonitor = asyncHandler(
+		async (req, res, next) => {
 			await createMonitorBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const { _id, teamId } = req.user;
 			const monitor = await this.db.createMonitor({
 				body: req.body,
@@ -248,10 +225,10 @@ class MonitorController {
 				msg: this.stringService.monitorCreate,
 				data: monitor,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createMonitor"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"createMonitor"
+	);
 
 	/**
 	 * Creates bulk monitors and adds them to the job queue after parsing CSV.
@@ -263,8 +240,8 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status and message.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	createBulkMonitors = async (req, res, next) => {
-		try {
+	createBulkMonitors = asyncHandler(
+		async (req, res, next) => {
 			const { parse } = pkg;
 
 			// validate the file
@@ -310,51 +287,43 @@ class MonitorController {
 					return value;
 				},
 				complete: async ({ data, errors }) => {
-					try {
-						if (errors.length > 0) {
-							throw new Error("Error parsing CSV");
-						}
-
-						if (!data || data.length === 0) {
-							throw new Error("CSV file contains no data rows");
-						}
-
-						const enrichedData = data.map((monitor) => ({
-							userId: _id,
-							teamId,
-							...monitor,
-							description: monitor.description || monitor.name || monitor.url,
-							name: monitor.name || monitor.url,
-							type: monitor.type || "http",
-						}));
-
-						await createMonitorsBodyValidation.validateAsync(enrichedData);
-
-						try {
-							const monitors = await this.db.createBulkMonitors(enrichedData);
-
-							await Promise.all(
-								monitors.map(async (monitor, index) => {
-									this.jobQueue.addJob(monitor._id, monitor);
-								})
-							);
-
-							return res.success({
-								msg: this.stringService.bulkMonitorsCreate,
-								data: monitors,
-							});
-						} catch (error) {
-							next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
-						}
-					} catch (error) {
-						next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
+					if (errors.length > 0) {
+						throw createServerError("Error parsing CSV");
 					}
+
+					if (!data || data.length === 0) {
+						throw createServerError("CSV file contains no data rows");
+					}
+
+					const enrichedData = data.map((monitor) => ({
+						userId: _id,
+						teamId,
+						...monitor,
+						description: monitor.description || monitor.name || monitor.url,
+						name: monitor.name || monitor.url,
+						type: monitor.type || "http",
+					}));
+
+					await createMonitorsBodyValidation.validateAsync(enrichedData);
+
+					const monitors = await this.db.createBulkMonitors(enrichedData);
+
+					await Promise.all(
+						monitors.map(async (monitor, index) => {
+							this.jobQueue.addJob(monitor._id, monitor);
+						})
+					);
+
+					return res.success({
+						msg: this.stringService.bulkMonitorsCreate,
+						data: monitors,
+					});
 				},
 			});
-		} catch (error) {
-			return next(handleError(error, SERVICE_NAME, "createBulkMonitors"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"createBulkMonitors"
+	);
 	/**
 	 * Checks if the endpoint can be resolved
 	 * @async
@@ -365,15 +334,9 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status, a message, and the resolution result.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	checkEndpointResolution = async (req, res, next) => {
-		try {
+	checkEndpointResolution = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorURLByQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
 			const { monitorURL } = req.query;
 			const parsedUrl = new URL(monitorURL);
 			const response = await axios.get(parsedUrl, {
@@ -384,10 +347,10 @@ class MonitorController {
 				status: response.status,
 				msg: response.statusText,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "checkEndpointResolution"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"checkEndpointResolution"
+	);
 
 	/**
 	 * Deletes a monitor by its ID and also deletes associated checks, alerts, and notifications.
@@ -400,24 +363,18 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status and a message indicating the deletion of the monitor.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422) or an error in deleting associated records.
 	 */
-	deleteMonitor = async (req, res, next) => {
-		try {
+	deleteMonitor = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
 			const monitorId = req.params.monitorId;
 			const monitor = await this.db.deleteMonitor({ monitorId });
 			await this.jobQueue.deleteJob(monitor);
 			await this.db.deleteStatusPagesByMonitorId(monitor._id);
 			return res.success({ msg: this.stringService.monitorDelete });
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "deleteMonitor"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"deleteMonitor"
+	);
 
 	/**
 	 * Deletes all monitors associated with a team.
@@ -430,8 +387,8 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status and a message indicating the number of deleted monitors.
 	 * @throws {Error} If there is an error during the deletion process.
 	 */
-	deleteAllMonitors = async (req, res, next) => {
-		try {
+	deleteAllMonitors = asyncHandler(
+		async (req, res, next) => {
 			const { teamId } = req.user;
 			const { monitors, deletedCount } = await this.db.deleteAllMonitors(teamId);
 			await Promise.all(
@@ -442,7 +399,7 @@ class MonitorController {
 						await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
 						await this.db.deleteNotificationsByMonitorId(monitor._id);
 					} catch (error) {
-						logger.error({
+						logger.warn({
 							message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
 							service: SERVICE_NAME,
 							method: "deleteAllMonitors",
@@ -452,10 +409,10 @@ class MonitorController {
 				})
 			);
 			return res.success({ msg: `Deleted ${deletedCount} monitors` });
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "deleteAllMonitors"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"deleteAllMonitors"
+	);
 
 	/**
 	 * Edits a monitor by its ID, updates its notifications, and updates its job in the job queue.
@@ -470,16 +427,10 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status, a message indicating the editing of the monitor, and the edited monitor data.
 	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
 	 */
-	editMonitor = async (req, res, next) => {
-		try {
+	editMonitor = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			await editMonitorBodyValidation.validateAsync(req.body);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
-
-		try {
 			const { monitorId } = req.params;
 
 			const editedMonitor = await this.db.editMonitor(monitorId, req.body);
@@ -490,10 +441,10 @@ class MonitorController {
 				msg: this.stringService.monitorEdit,
 				data: editedMonitor,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "editMonitor"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"editMonitor"
+	);
 
 	/**
 	 * Pauses or resumes a monitor based on its current state.
@@ -506,14 +457,10 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status, a message indicating the new state of the monitor, and the updated monitor data.
 	 * @throws {Error} If there is an error during the process.
 	 */
-	pauseMonitor = async (req, res, next) => {
-		try {
+	pauseMonitor = asyncHandler(
+		async (req, res, next) => {
 			await pauseMonitorParamValidation.validateAsync(req.params);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-		}
 
-		try {
 			const monitorId = req.params.monitorId;
 			const monitor = await this.db.pauseMonitor({ monitorId });
 			monitor.isActive === true
@@ -526,10 +473,10 @@ class MonitorController {
 					: this.stringService.monitorPause,
 				data: monitor,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "pauseMonitor"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"pauseMonitor"
+	);
 
 	/**
 	 * Adds demo monitors for a team.
@@ -542,8 +489,8 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status, a message indicating the addition of demo monitors, and the number of demo monitors added.
 	 * @throws {Error} If there is an error during the process.
 	 */
-	addDemoMonitors = async (req, res, next) => {
-		try {
+	addDemoMonitors = asyncHandler(
+		async (req, res, next) => {
 			const { _id, teamId } = req.user;
 			const demoMonitors = await this.db.addDemoMonitors(_id, teamId);
 			await Promise.all(
@@ -554,10 +501,10 @@ class MonitorController {
 				msg: this.stringService.monitorDemoAdded,
 				data: demoMonitors.length,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "addDemoMonitors"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"addDemoMonitors"
+	);
 
 	/**
 	 * Sends a test email to verify email delivery functionality.
@@ -570,8 +517,8 @@ class MonitorController {
 	 * @returns {Object} The response object with a success status and the email delivery message ID.
 	 * @throws {Error} If there is an error while sending the test email.
 	 */
-	sendTestEmail = async (req, res, next) => {
-		try {
+	sendTestEmail = asyncHandler(
+		async (req, res, next) => {
 			const { to } = req.body;
 			if (!to || typeof to !== "string") {
 				throw new Error(this.stringService.errorForValidEmailAddress);
@@ -584,29 +531,23 @@ class MonitorController {
 			const messageId = await this.emailService.sendEmail(to, subject, html);
 
 			if (!messageId) {
-				return res.error({
-					msg: "Failed to send test email.",
-				});
+				throw createServerError("Failed to send test email.");
 			}
 
 			return res.success({
 				msg: this.stringService.sendTestEmail,
 				data: { messageId },
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "sendTestEmail"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"sendTestEmail"
+	);
 
-	getMonitorsByTeamId = async (req, res, next) => {
-		try {
+	getMonitorsByTeamId = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-		}
 
-		try {
 			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
 			const teamId = req.user.teamId;
 
@@ -624,20 +565,16 @@ class MonitorController {
 				msg: this.stringService.monitorGetByTeamId,
 				data: monitors,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorsByTeamId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMonitorsByTeamId"
+	);
 
-	getMonitorsAndSummaryByTeamId = async (req, res, next) => {
-		try {
+	getMonitorsAndSummaryByTeamId = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			return next(handleValidationError(error, SERVICE_NAME));
-		}
 
-		try {
 			const { explain } = req;
 			const { type } = req.query;
 			const { teamId } = req.user;
@@ -651,20 +588,16 @@ class MonitorController {
 				msg: "OK", // TODO
 				data: result,
 			});
-		} catch (error) {
-			return next(handleError(error, SERVICE_NAME, "getMonitorsAndSummaryByTeamId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMonitorsAndSummaryByTeamId"
+	);
 
-	getMonitorsWithChecksByTeamId = async (req, res, next) => {
-		try {
+	getMonitorsWithChecksByTeamId = asyncHandler(
+		async (req, res, next) => {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
-		} catch (error) {
-			return next(handleValidationError(error, SERVICE_NAME));
-		}
 
-		try {
 			const { explain } = req;
 			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
 			const { teamId } = req.user;
@@ -684,23 +617,23 @@ class MonitorController {
 				msg: "OK",
 				data: result,
 			});
-		} catch (error) {
-			return next(handleError(error, SERVICE_NAME, "getMonitorsWithChecksByTeamId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMonitorsWithChecksByTeamId"
+	);
 
-	seedDb = async (req, res, next) => {
-		try {
+	seedDb = asyncHandler(
+		async (req, res, next) => {
 			const { _id, teamId } = req.user;
 			await seedDb(_id, teamId);
 			res.success({ msg: "Database seeded" });
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "seedDb"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"seedDb"
+	);
 
-	exportMonitorsToCSV = async (req, res, next) => {
-		try {
+	exportMonitorsToCSV = asyncHandler(
+		async (req, res, next) => {
 			const { teamId } = req.user;
 
 			const monitors = await this.db.getMonitorsByTeamId({ teamId });
@@ -730,10 +663,10 @@ class MonitorController {
 					"Content-Disposition": "attachment; filename=monitors.csv",
 				},
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "exportMonitorsToCSV"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"exportMonitorsToCSV"
+	);
 }
 
 export default MonitorController;
