@@ -30,7 +30,7 @@
 		<mj-section>
 			<mj-column width="100%">
 				<mj-text>
-					<p>Hello {{name}}!</p>
+					<p>Hello {{ name }}!</p>
 					<p>
 						Thank you for trying out Checkmate! We developed it with great care to meet
 						our own needs, and we're excited to share it with you.
