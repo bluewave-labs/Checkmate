@@ -56,10 +56,6 @@ const registrationBodyValidation = joi.object({
 	inviteToken: joi.string().allow("").required(),
 });
 
-const editUserParamValidation = joi.object({
-	userId: joi.string().required(),
-});
-
 const editUserBodyValidation = joi.object({
 	firstName: nameValidation.required(),
 	lastName: nameValidation.required(),
@@ -644,7 +640,6 @@ export {
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
 	getMonitorURLByQueryValidation,
-	editUserParamValidation,
 	editUserBodyValidation,
 	createAlertParamValidation,
 	createAlertBodyValidation,
