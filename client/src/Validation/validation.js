@@ -128,48 +128,37 @@ const monitorValidation = joi.object({
 			.string()
 			.trim()
 			.custom((value, helpers) => {
-				// Regex from https://gist.github.com/dperini/729294
-				var urlRegex = new RegExp(
-					"^" +
-						// protocol identifier (optional)
-						// short syntax // still required
-						"(?:(?:https?|ftp):\\/\\/)?" +
-						// user:pass BasicAuth (optional)
-						"(?:" +
-						// IP address dotted notation octets
-						// excludes loopback network 0.0.0.0
-						// excludes reserved space >= 224.0.0.0
-						// excludes network & broadcast addresses
-						// (first & last IP address of each class)
-						"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-						"(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-						"(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
-						"|" +
-						// host & domain names, may end with dot
-						// can be replaced by a shortest alternative
-						// (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
-						"(?:" +
-						"(?:" +
-						"[a-z0-9\\u00a1-\\uffff]" +
-						"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
-						")?" +
-						"[a-z0-9\\u00a1-\\uffff]\\." +
-						")+" +
-						// TLD identifier name, may end with dot
-						"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
-						")" +
-						// port number (optional)
-						"(?::\\d{2,5})?" +
-						// resource path (optional)
-						"(?:[/?#]\\S*)?" +
-						"$",
-					"i"
-				);
-				if (!urlRegex.test(value)) {
+				// 1. Standard URLs: must have protocol and pass canParse()
+				if (/^(https?:\/\/)/.test(value)) {
+					if (
+						typeof URL !== "undefined" &&
+						typeof URL.canParse === "function" &&
+						URL.canParse(value)
+					) {
+						return value;
+					}
+					// else, it's a malformed URL with protocol
 					return helpers.error("string.invalidUrl");
 				}
 
-				return value;
+				// 2. Docker/internal hostnames (no protocol)
+				if (/^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:\d{1,5})?$/.test(value)) {
+					if (value.includes("..")) {
+						return helpers.error("string.invalidUrl");
+					}
+					// Split by dot, check each label
+					const labels = value.split(":")[0].split(".");
+					for (const label of labels) {
+						if (!label) return helpers.error("string.invalidUrl");
+						if (label.startsWith("-") || label.endsWith("-")) {
+							return helpers.error("string.invalidUrl");
+						}
+					}
+					return value;
+				}
+
+				// 3. Everything else is invalid
+				return helpers.error("string.invalidUrl");
 			})
 			.messages({
 				"string.empty": "This field is required.",
