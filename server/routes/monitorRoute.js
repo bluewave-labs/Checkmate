@@ -20,7 +20,7 @@ class MonitorRoutes {
 		// Team routes
 		this.router.get("/team", this.monitorController.getMonitorsByTeamId);
 		this.router.get("/team/with-checks", this.monitorController.getMonitorsWithChecksByTeamId);
-		this.router.get("/summary/team", this.monitorController.getMonitorsAndSummaryByTeamId); // TODO should be /team/summary
+		this.router.get("/team/summary", this.monitorController.getMonitorsAndSummaryByTeamId); // TODO should be /team/summary
 
 		// Uptime routes
 		this.router.get("/uptime", this.monitorController.getAllMonitorsWithUptimeStats);
