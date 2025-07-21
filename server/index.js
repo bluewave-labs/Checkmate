@@ -343,16 +343,17 @@ const startApp = async () => {
 
 	//routes
 	app.use("/api/v1/auth", authRoutes.getRouter());
-	app.use("/api/v1/settings", verifyJWT, settingsRoutes.getRouter());
-	app.use("/api/v1/invite", inviteRoutes.getRouter());
-	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
-	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
-	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
-	app.use("/api/v1/logs", verifyJWT, logRoutes.getRouter());
-	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
-	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
+	app.use("/api/v1/invite", inviteRoutes.getRouter());
+	app.use("/api/v1/logs", verifyJWT, logRoutes.getRouter());
+	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
+	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
+	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
+	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
+	app.use("/api/v1/settings", verifyJWT, settingsRoutes.getRouter());
+	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
+
 	app.use("/api/v1/health", (req, res) => {
 		res.json({
 			status: "OK",
