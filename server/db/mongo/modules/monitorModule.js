@@ -57,53 +57,6 @@ const getAllMonitors = async (req, res) => {
 };
 
 /**
- * Get all monitors with uptime stats for 1,7,30, and 90 days
- * @async
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @returns {Promise<Array<Monitor>>}
- * @throws {Error}
- */
-const getAllMonitorsWithUptimeStats = async () => {
-	const timeRanges = {
-		1: new Date(Date.now() - 24 * 60 * 60 * 1000),
-		7: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-		30: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-		90: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
-	};
-
-	try {
-		const monitors = await Monitor.find();
-		const monitorsWithStats = await Promise.all(
-			monitors.map(async (monitor) => {
-				const model = CHECK_MODEL_LOOKUP[monitor.type];
-
-				const uptimeStats = await Promise.all(
-					Object.entries(timeRanges).map(async ([days, startDate]) => {
-						const checks = await model.find({
-							monitorId: monitor._id,
-							createdAt: { $gte: startDate },
-						});
-						return [days, getUptimePercentage(checks)];
-					})
-				);
-
-				return {
-					...monitor.toObject(),
-					...Object.fromEntries(uptimeStats),
-				};
-			})
-		);
-
-		return monitorsWithStats;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "getAllMonitorsWithUptimeStats";
-		throw error;
-	}
-};
-
-/**
  * Function to calculate uptime duration based on the most recent check.
  * @param {Array} checks Array of check objects.
  * @returns {number} Uptime duration in ms.
@@ -761,7 +714,6 @@ const pauseMonitor = async ({ monitorId }) => {
 
 export {
 	getAllMonitors,
-	getAllMonitorsWithUptimeStats,
 	getMonitorStatsById,
 	getMonitorById,
 	getMonitorsByIds,
