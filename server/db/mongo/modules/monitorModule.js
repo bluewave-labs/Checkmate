@@ -461,6 +461,17 @@ const getMonitorById = async (monitorId) => {
 	}
 };
 
+const getMonitorsByIds = async (monitorIds) => {
+	try {
+		const objectIds = monitorIds.map((id) => new ObjectId(id));
+		return await Monitor.find({ _id: { $in: objectIds } }, { _id: 1, teamId: 1 }).lean();
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getMonitorsByIds";
+		throw error;
+	}
+};
+
 const getMonitorsByTeamId = async ({ limit, type, page, rowsPerPage, filter, field, order, teamId }) => {
 	limit = parseInt(limit);
 	page = parseInt(page);
@@ -753,6 +764,7 @@ export {
 	getAllMonitorsWithUptimeStats,
 	getMonitorStatsById,
 	getMonitorById,
+	getMonitorsByIds,
 	getMonitorsByTeamId,
 	getMonitorsAndSummaryByTeamId,
 	getMonitorsWithChecksByTeamId,
