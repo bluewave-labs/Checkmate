@@ -15,13 +15,13 @@ const FallbackContainer = ({ children, type }) => {
 				display: "flex",
 				borderStyle: "dashed",
 				height: "fit-content",
-				minHeight: theme.spacing(280),
+				minHeight: "60vh",
 				width: {
 					sm: "90%",
 					md: "70%",
 					lg: "50%",
+					xl: "40%",
 				},
-				maxWidth: theme.spacing(250),
 				padding: `${theme.spacing(20)} ${theme.spacing(10)}`,
 			}}
 		>
