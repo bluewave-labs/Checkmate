@@ -393,6 +393,44 @@ class AuthController {
 		SERVICE_NAME,
 		"getAllUsers"
 	);
+
+	getUserById = asyncHandler(
+		async (req, res, next) => {
+			const userId = req?.params?.userId;
+			const roles = req?.user?.role;
+
+			if (!userId) {
+				throw new Error("No user ID in request");
+			}
+
+			if (!roles || roles.length === 0) {
+				throw new Error("No roles in request");
+			}
+
+			const user = await this.db.getUserById(roles, userId);
+
+			return res.success({ msg: "ok", data: user });
+		},
+		SERVICE_NAME,
+		"getUserById"
+	);
+
+	editUserById = asyncHandler(
+		async (req, res, next) => {
+			const userId = req.params.userId;
+			const user = req.body;
+
+			const roles = req?.user?.role;
+			if (!roles.includes("superadmin")) {
+				throw createError("Unauthorized", 403);
+			}
+
+			await this.db.editUserById(userId, user);
+			return res.success({ msg: "ok" });
+		},
+		SERVICE_NAME,
+		"editUserById"
+	);
 }
 
 export default AuthController;
