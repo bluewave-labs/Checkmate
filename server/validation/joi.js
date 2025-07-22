@@ -1,4 +1,5 @@
 import joi from "joi";
+import { ROLES, VALID_ROLES } from "../../client/src/Utils/roleUtils.js";
 
 //****************************************
 // Custom Validators
@@ -164,11 +165,7 @@ const createMonitorBodyValidation = joi.object({
 		.custom((value, helpers) => {
 			// 1. Standard URLs: must have protocol and pass canParse()
 			if (/^(https?:\/\/)/.test(value)) {
-				if (
-					typeof URL !== "undefined" &&
-					typeof URL.canParse === "function" &&
-					URL.canParse(value)
-				) {
+				if (typeof URL !== "undefined" && typeof URL.canParse === "function" && URL.canParse(value)) {
 					return value;
 				}
 				// else, it's a malformed URL with protocol
@@ -197,8 +194,7 @@ const createMonitorBodyValidation = joi.object({
 		.messages({
 			"string.empty": "This field is required.",
 			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl":
-				"Please enter a valid URL, hostname, or container name (with optional port).",
+			"string.invalidUrl": "Please enter a valid URL, hostname, or container name (with optional port).",
 		}),
 	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
@@ -657,6 +653,36 @@ const sendTestEmailBodyValidation = joi.object({
 	systemEmailTLSServername: joi.string().allow("").optional(),
 });
 
+const getUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES))
+		.min(1)
+		.required(),
+});
+
+const editSuperadminUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES, ROLES.SUPERADMIN))
+		.min(1)
+		.required(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -724,4 +750,8 @@ export {
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,
+	getUserByIdParamValidation,
+	editUserByIdParamValidation,
+	editUserByIdBodyValidation,
+	editSuperadminUserByIdBodyValidation,
 };
