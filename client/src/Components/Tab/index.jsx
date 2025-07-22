@@ -16,6 +16,7 @@ const CustomTabList = ({ value, onChange, children, ...props }) => {
 	return (
 		<Box
 			sx={{
+				marginBottom: theme.spacing(12),
 				borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
 				"& .MuiTabs-root": { height: "fit-content", minHeight: "0" },
 			}}

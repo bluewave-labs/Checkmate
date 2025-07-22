@@ -32,6 +32,11 @@
 					"errors": {
 						"incorrect": "The password you provided does not match our records"
 					}
+				},
+				"role": {
+					"errors": {
+						"min": "At least one role is required"
+					}
 				}
 			},
 			"inputs": {
@@ -445,6 +450,7 @@
 	"invalidFileSize": "File size is too large!",
 	"inviteNoTokenFound": "No invite token found",
 	"loginHere": "Login here",
+
 	"logsPage": {
 		"description": "System logs - last 1000 lines",
 		"logLevelSelect": {
@@ -500,6 +506,24 @@
 	"mem": "Mem",
 	"memory": "Memory",
 	"memoryUsage": "Memory usage",
+	"editUserPage": {
+		"title": "Edit user",
+		"form": {
+			"firstName": "First name",
+			"lastName": "Last name",
+			"email": "Email",
+			"role": "Roles",
+			"save": "Save"
+		},
+		"table": {
+			"roleHeader": "Role",
+			"actionHeader": "Action"
+		},
+		"toast": {
+			"validationErrors": "Validation errors",
+			"successUserUpdate": "User updated successfully"
+		}
+	},
 	"menu": {
 		"changelog": "Changelog",
 		"discussions": "Discussions",

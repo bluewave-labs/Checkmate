@@ -1099,6 +1099,24 @@ class NetworkService {
 			},
 		});
 	}
+
+	async getUserById(config) {
+		const userId = config?.userId;
+		return this.axiosInstance.get(`auth/users/${userId}`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async editUser(config) {
+		const { userId, user } = config;
+		return this.axiosInstance.put(`auth/users/${userId}`, user, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }
 
 export default NetworkService;
