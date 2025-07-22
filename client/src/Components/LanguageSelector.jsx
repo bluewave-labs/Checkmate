@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "../Features/UI/uiSlice";
 
-
 const langMap = {
 	cs: "cz",
 	ja: "jp",
