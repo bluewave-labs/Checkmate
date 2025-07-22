@@ -977,7 +977,7 @@ class NetworkService {
 			});
 		}
 
-		return this.axiosInstance.get(`/monitors/summary/team?${params.toString()}`, {
+		return this.axiosInstance.get(`/monitors/team/summary?${params.toString()}`, {
 			headers: {
 				"Content-Type": "application/json",
 			},

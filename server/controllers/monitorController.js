@@ -20,6 +20,7 @@ import axios from "axios";
 import seedDb from "../db/mongo/utils/seedDb.js";
 import pkg from "papaparse";
 import { asyncHandler, createServerError } from "../utils/errorUtils.js";
+import { fetchMonitorCertificate } from "./controllerUtils.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController {
@@ -29,6 +30,15 @@ class MonitorController {
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
 		this.emailService = emailService;
+	}
+
+	async verifyTeamAccess(teamId, monitorId) {
+		const monitor = await this.db.getMonitorById(monitorId);
+		if (!monitor.teamId.equals(teamId)) {
+			const error = new Error("Unauthorized");
+			error.status = 403;
+			throw error;
+		}
 	}
 
 	/**
@@ -52,31 +62,17 @@ class MonitorController {
 		"getAllMonitors"
 	);
 
-	/**
-	 * Returns all monitors with uptime stats for 1,7,30, and 90 days
-	 * @async
-	 * @param {Express.Request} req
-	 * @param {Express.Response} res
-	 * @param {function} next
-	 * @returns {Promise<Express.Response>}
-	 * @throws {Error}
-	 */
-	getAllMonitorsWithUptimeStats = asyncHandler(
-		async (req, res, next) => {
-			const monitors = await this.db.getAllMonitorsWithUptimeStats();
-			return res.success({
-				msg: this.stringService.monitorGetAll,
-				data: monitors,
-			});
-		},
-		SERVICE_NAME,
-		"getAllMonitorsWithUptimeStats"
-	);
-
 	getUptimeDetailsById = asyncHandler(
 		async (req, res, next) => {
 			const { monitorId } = req.params;
 			const { dateRange, normalize } = req.query;
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			await this.verifyTeamAccess(teamId, monitorId);
 
 			const data = await this.db.getUptimeDetailsById({
 				monitorId,
@@ -109,6 +105,13 @@ class MonitorController {
 			let { limit, sortOrder, dateRange, numToDisplay, normalize } = req.query;
 			const { monitorId } = req.params;
 
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			await this.verifyTeamAccess(teamId, monitorId);
+
 			const monitorStats = await this.db.getMonitorStatsById({
 				monitorId,
 				limit,
@@ -140,8 +143,14 @@ class MonitorController {
 			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
 			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
 
-			const { monitorId } = req.params;
-			const { dateRange } = req.query;
+			const monitorId = req?.params?.monitorId;
+			const dateRange = req?.query?.dateRange;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			await this.verifyTeamAccess(teamId, monitorId);
 			const monitor = await this.db.getHardwareDetailsById({ monitorId, dateRange });
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
@@ -153,7 +162,7 @@ class MonitorController {
 	);
 
 	getMonitorCertificate = asyncHandler(
-		async (req, res, next, fetchMonitorCertificate) => {
+		async (req, res, next) => {
 			await getCertificateParamValidation.validateAsync(req.params);
 
 			const { monitorId } = req.params;
@@ -188,6 +197,18 @@ class MonitorController {
 			await getMonitorByIdQueryValidation.validateAsync(req.query);
 
 			const monitor = await this.db.getMonitorById(req.params.monitorId);
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			if (!monitor.teamId.equals(teamId)) {
+				const error = new Error("Unauthorized");
+				error.status = 403;
+				throw error;
+			}
+
 			return res.success({
 				msg: this.stringService.monitorGetByIdSuccess,
 				data: monitor,
@@ -367,6 +388,13 @@ class MonitorController {
 		async (req, res, next) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			const monitorId = req.params.monitorId;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			await this.verifyTeamAccess(teamId, monitorId);
+
 			const monitor = await this.db.deleteMonitor({ monitorId });
 			await this.jobQueue.deleteJob(monitor);
 			await this.db.deleteStatusPagesByMonitorId(monitor._id);
@@ -389,7 +417,7 @@ class MonitorController {
 	 */
 	deleteAllMonitors = asyncHandler(
 		async (req, res, next) => {
-			const { teamId } = req.user;
+			const teamId = req?.user?.teamId;
 			const { monitors, deletedCount } = await this.db.deleteAllMonitors(teamId);
 			await Promise.all(
 				monitors.map(async (monitor) => {
@@ -431,7 +459,14 @@ class MonitorController {
 		async (req, res, next) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			await editMonitorBodyValidation.validateAsync(req.body);
-			const { monitorId } = req.params;
+			const monitorId = req?.params?.monitorId;
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			await this.verifyTeamAccess(teamId, monitorId);
 
 			const editedMonitor = await this.db.editMonitor(monitorId, req.body);
 
@@ -462,6 +497,13 @@ class MonitorController {
 			await pauseMonitorParamValidation.validateAsync(req.params);
 
 			const monitorId = req.params.monitorId;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw new Error("Team ID is required");
+			}
+
+			await this.verifyTeamAccess(teamId, monitorId);
+
 			const monitor = await this.db.pauseMonitor({ monitorId });
 			monitor.isActive === true ? await this.jobQueue.resumeJob(monitor._id, monitor) : await this.jobQueue.pauseJob(monitor);
 
