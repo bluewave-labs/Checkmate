@@ -74,6 +74,11 @@ const deleteNotificationsByMonitorId = async (monitorId) => {
 
 const deleteNotificationById = async (id) => {
 	try {
+		const notification = await Notification.findById(id);
+		if (!notification) {
+			throw new Error("Notification not found");
+		}
+
 		const result = await Notification.findByIdAndDelete(id);
 		await Monitor.updateMany({ notifications: id }, { $pull: { notifications: id } });
 		return result;

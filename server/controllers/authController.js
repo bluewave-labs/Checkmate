@@ -340,7 +340,6 @@ class AuthController {
 			if (!email) {
 				throw new Error("No email in request");
 			}
-			// 1. Find all the monitors associated with the team ID if superadmin
 
 			const teamId = req?.user?.teamId;
 			const userId = req?.user?._id;
@@ -354,7 +353,11 @@ class AuthController {
 			}
 
 			const roles = req.user.role;
+			if (roles.includes("demo")) {
+				throw new Error("Demo user cannot be deleted");
+			}
 
+			// 1. Find all the monitors associated with the team ID if superadmin
 			const result = await this.db.getMonitorsByTeamId({
 				teamId: teamId,
 			});
