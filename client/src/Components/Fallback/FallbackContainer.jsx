@@ -22,6 +22,7 @@ const FallbackContainer = ({ children, type }) => {
 					lg: "50%",
 					xl: "40%",
 				},
+
 				padding: `${theme.spacing(20)} ${theme.spacing(10)}`,
 			}}
 		>
