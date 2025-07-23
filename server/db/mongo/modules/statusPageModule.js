@@ -1,7 +1,7 @@
 import StatusPage from "../../models/StatusPage.js";
 import { NormalizeData } from "../../../utils/dataUtils.js";
-import ServiceRegistry from "../../../service/serviceRegistry.js";
-import StringService from "../../../service/stringService.js";
+import ServiceRegistry from "../../../service/system/serviceRegistry.js";
+import StringService from "../../../service/system/stringService.js";
 
 const SERVICE_NAME = "statusPageModule";
 

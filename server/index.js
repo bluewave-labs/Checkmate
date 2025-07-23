@@ -47,58 +47,58 @@ import DiagnosticRoutes from "./routes/diagnosticRoute.js";
 import DiagnosticController from "./controllers/diagnosticController.js";
 
 //JobQueue service and dependencies
-import JobQueue from "./service/JobQueue/JobQueue.js";
-import JobQueueHelper from "./service/JobQueue/JobQueueHelper.js";
+import JobQueue from "./service/infrastructure/JobQueue/JobQueue.js";
+import JobQueueHelper from "./service/infrastructure/JobQueue/JobQueueHelper.js";
 import { Queue, Worker } from "bullmq";
 
-import PulseQueue from "./service/PulseQueue/PulseQueue.js";
-import PulseQueueHelper from "./service/PulseQueue/PulseQueueHelper.js";
+import PulseQueue from "./service/infrastructure/PulseQueue/PulseQueue.js";
+import PulseQueueHelper from "./service/infrastructure/PulseQueue/PulseQueueHelper.js";
 
-import SuperSimpleQueue from "./service/SuperSimpleQueue/SuperSimpleQueue.js";
-import SuperSimpleQueueHelper from "./service/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import SuperSimpleQueue from "./service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import SuperSimpleQueueHelper from "./service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 
-import UserService from "./service/userService.js";
+import UserService from "./service/business/userService.js";
 
 //Network service and dependencies
-import NetworkService from "./service/networkService.js";
+import NetworkService from "./service/infrastructure/networkService.js";
 import axios from "axios";
 import ping from "ping";
 import http from "http";
 import Docker from "dockerode";
 import net from "net";
 // Email service and dependencies
-import EmailService from "./service/emailService.js";
+import EmailService from "./service/infrastructure/emailService.js";
 import nodemailer from "nodemailer";
 import pkg from "handlebars";
 const { compile } = pkg;
 import mjml2html from "mjml";
 
 // Settings Service and dependencies
-import SettingsService from "./service/settingsService.js";
+import SettingsService from "./service/system/settingsService.js";
 import AppSettings from "./db/models/AppSettings.js";
 
 // Status Service and dependencies
-import StatusService from "./service/statusService.js";
+import StatusService from "./service/infrastructure/statusService.js";
 
 // Notification Service and dependencies
-import NotificationService from "./service/notificationService.js";
-import NotificationUtils from "./service/notificationUtils.js";
+import NotificationService from "./service/infrastructure/notificationService.js";
+import NotificationUtils from "./service/infrastructure/notificationUtils.js";
 
 // Buffer Service and dependencies
-import BufferService from "./service/bufferService.js";
+import BufferService from "./service/infrastructure/bufferService.js";
 
 // Service Registry
-import ServiceRegistry from "./service/serviceRegistry.js";
+import ServiceRegistry from "./service/system/serviceRegistry.js";
 
 import MongoDB from "./db/mongo/MongoDB.js";
 
 // Redis Service and dependencies
 import IORedis from "ioredis";
-import RedisService from "./service/redisService.js";
+import RedisService from "./service/data/redisService.js";
 
-import TranslationService from "./service/translationService.js";
+import TranslationService from "./service/system/translationService.js";
 import languageMiddleware from "./middleware/languageMiddleware.js";
-import StringService from "./service/stringService.js";
+import StringService from "./service/system/stringService.js";
 
 const SERVICE_NAME = "Server";
 const SHUTDOWN_TIMEOUT = 1000;
