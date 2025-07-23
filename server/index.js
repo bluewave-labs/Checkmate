@@ -60,6 +60,7 @@ import SuperSimpleQueueHelper from "./service/infrastructure/SuperSimpleQueue/Su
 // Business services
 import UserService from "./service/business/userService.js";
 import CheckService from "./service/business/checkService.js";
+import DiagnosticService from "./service/business/diagnosticService.js";
 
 //Network service and dependencies
 import NetworkService from "./service/infrastructure/networkService.js";
@@ -196,6 +197,7 @@ const startApp = async () => {
 		settingsService,
 		stringService,
 	});
+	const diagnosticService = new DiagnosticService();
 
 	// const jobQueueHelper = new JobQueueHelper({
 	// 	redisService,
@@ -328,7 +330,9 @@ const startApp = async () => {
 		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
 	});
 
-	const diagnosticController = new DiagnosticController(ServiceRegistry.get(MongoDB.SERVICE_NAME));
+	const diagnosticController = new DiagnosticController({
+		diagnosticService,
+	});
 
 	//Create routes
 	const authRoutes = new AuthRoutes(authController);
