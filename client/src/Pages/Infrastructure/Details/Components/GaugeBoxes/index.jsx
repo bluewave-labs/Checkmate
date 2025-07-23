@@ -2,18 +2,19 @@
 import { Stack } from "@mui/material";
 import Gauge from "./Gauge";
 import SkeletonLayout from "./skeleton";
+import PropTypes from "prop-types";
 
 // Utils
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
-const Gauges = ({ shouldRender, monitor }) => {
+const Gauges = ({ isLoading = false, monitor }) => {
 	const { decimalToPercentage, formatBytes } = useHardwareUtils();
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	if (!shouldRender) {
+	if (isLoading) {
 		return <SkeletonLayout />;
 	}
 
@@ -60,6 +61,7 @@ const Gauges = ({ shouldRender, monitor }) => {
 	return (
 		<Stack
 			direction="row"
+			flexWrap="wrap"
 			gap={theme.spacing(8)}
 		>
 			{gauges.map((gauge) => {
@@ -77,6 +79,11 @@ const Gauges = ({ shouldRender, monitor }) => {
 			})}
 		</Stack>
 	);
+};
+
+Gauges.propTypes = {
+	isLoading: PropTypes.bool,
+	monitor: PropTypes.object,
 };
 
 export default Gauges;
