@@ -11,11 +11,7 @@ import { Box, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
 import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
-import {
-	useAckAllChecks,
-	useAckMonitorChecks,
-	useAcknowledgeChecks,
-} from "../../Hooks/checkHooks";
+import { useAcknowledgeChecks } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
@@ -38,8 +34,6 @@ const Incidents = () => {
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 
 	//Hooks
-	const [ackAllChecks, ackAllLoading] = useAckAllChecks();
-	const [ackMonitorChecks, ackMonitorLoading] = useAckMonitorChecks();
 	const { acknowledge, isLoadingAcknowledge } = useAcknowledgeChecks();
 
 	//Utils
@@ -67,14 +61,6 @@ const Incidents = () => {
 		}, {});
 		setMonitorLookup(monitorLookup);
 	}, [monitors]);
-
-	const handleAckAllChecks = () => {
-		if (selectedMonitor === "0") {
-			ackAllChecks(setUpdateTrigger);
-		} else {
-			ackMonitorChecks(selectedMonitor, setUpdateTrigger);
-		}
-	};
 
 	const handleAcknowledge = () => {
 		const monitorId = selectedMonitor === "0" ? null : selectedMonitor;

@@ -185,47 +185,6 @@ const useResolveIncident = () => {
 	return [resolveIncident, isLoading];
 };
 
-const useAckMonitorChecks = () => {
-	const [isLoading, setIsLoading] = useState(false);
-	const { t } = useTranslation();
-
-	const ackMonitorChecks = async (monitorId, setUpdateTrigger) => {
-		try {
-			setIsLoading(true);
-			await networkService.updateMonitorChecksStatus({
-				monitorId,
-				ack: true,
-			});
-			setUpdateTrigger((prev) => !prev);
-		} catch (error) {
-			createToast({ body: t("checkHooks.failureResolveMonitor") });
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return [ackMonitorChecks, isLoading];
-};
-
-const useAckAllChecks = () => {
-	const [isLoading, setIsLoading] = useState(false);
-	const { t } = useTranslation();
-
-	const ackAllChecks = async (setUpdateTrigger) => {
-		try {
-			setIsLoading(true);
-			await networkService.updateAllChecksStatus({ ack: true });
-			setUpdateTrigger((prev) => !prev);
-		} catch (error) {
-			createToast({ body: t("checkHooks.failureResolveAll") });
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return [ackAllChecks, isLoading];
-};
-
 const useAcknowledgeChecks = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
@@ -257,7 +216,5 @@ export {
 	useFetchChecksTeam,
 	useFetchChecksSummaryByTeamId,
 	useResolveIncident,
-	useAckMonitorChecks,
-	useAckAllChecks,
 	useAcknowledgeChecks,
 };
