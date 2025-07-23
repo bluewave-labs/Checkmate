@@ -543,6 +543,15 @@
 	"maintenanceWindowName": "Maintenance Window Name",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"matchMethod": "Match Method",
+	"matchMethodOptions": {
+		"equal": "Equal",
+		"equalPlaceholder": "success",
+		"include": "Include",
+		"includePlaceholder": "ok",
+		"regex": "Regex",
+		"regexPlaceholder": "^(success|ok)$",
+		"text": "Match Method"
+	},
 	"mb": "MB",
 	"mem": "Mem",
 	"memory": "Memory",
@@ -598,6 +607,28 @@
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
 	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
+	"monitorType": {
+		"docker": {
+			"label": "Container ID",
+			"placeholder": "abcd1234",
+			"namePlaceholder": "My Container"
+		},
+		"http": {
+			"label": "URL to monitor",
+			"placeholder": "google.com",
+			"namePlaceholder": "Google"
+		},
+		"ping": {
+			"label": "IP address to monitor",
+			"placeholder": "1.1.1.1",
+			"namePlaceholder": "Google"
+		},
+		"port": {
+			"label": "URL to monitor",
+			"placeholder": "localhost",
+			"namePlaceholder": "Localhost:5173"
+		}
+	},
 	"ms": "ms",
 	"navControls": "Controls",
 	"nextWindow": "Next window",
@@ -952,6 +983,9 @@
 	"testLocale": "testLocale",
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"time": {
+		"oneMinute": "1 minute",
+		"twoMinutes": "2 minutes",
+		"fourMinutes": "4 minutes",
 		"fiveMinutes": "5 minutes",
 		"oneDay": "1 day",
 		"oneHour": "1 hour",
@@ -968,6 +1002,9 @@
 	"type": "Type",
 	"update": "Update",
 	"uptime": "Uptime",
+	"uptimeAdvancedMatching": {
+		"jsonPath": "JSON Path"
+	},
 	"uptimeCreate": "The expected value is used to match against response result, and the match determines the status.",
 	"uptimeCreateJsonPath": "This expression will be evaluated against the reponse JSON data and the result will be used to match against the expected value. See",
 	"uptimeCreateJsonPathQuery": "for query language documentation.",

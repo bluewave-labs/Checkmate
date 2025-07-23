@@ -14,7 +14,6 @@ import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed";
 import Uptime from "../Pages/Uptime/Monitors";
 import UptimeDetails from "../Pages/Uptime/Details";
 import UptimeCreate from "../Pages/Uptime/Create";
-import UptimeConfigure from "../Pages/Uptime/Configure";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors";
@@ -81,7 +80,7 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="/uptime/create/:monitorId?"
+					path="/uptime/create"
 					element={<UptimeCreate />}
 				/>
 				<Route
@@ -90,7 +89,7 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<UptimeConfigure />}
+					element={<UptimeCreate />}
 				/>
 
 				<Route
