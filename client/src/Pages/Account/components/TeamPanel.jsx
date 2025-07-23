@@ -3,14 +3,16 @@ import TabPanel from "@mui/lab/TabPanel";
 import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import TextInput from "../../Inputs/TextInput";
+import TextInput from "../../../Components/Inputs/TextInput";
 import { newOrChangedCredentials } from "../../../Validation/validation";
 import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
-import Select from "../../Inputs/Select";
-import { GenericDialog } from "../../Dialog/genericDialog";
-import DataTable from "../../Table/";
+import Select from "../../../Components/Inputs/Select";
+import { GenericDialog } from "../../../Components/Dialog/genericDialog";
+import DataTable from "../../../Components/Table";
 import { useGetInviteToken } from "../../../Hooks/inviteHooks";
+import { useNavigate } from "react-router-dom";
+import { useIsSuperAdmin } from "../../../Hooks/useIsAdmin";
 /**
  * TeamPanel component manages the organization and team members,
  * providing functionalities like renaming the organization, managing team members,
@@ -34,8 +36,9 @@ const TeamPanel = () => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [errors, setErrors] = useState({});
 	const [isSendingInvite, setIsSendingInvite] = useState(false);
-
+	const navigate = useNavigate();
 	const [getInviteToken, clearToken, isLoading, error, token] = useGetInviteToken();
+	const isSuperAdmin = useIsSuperAdmin();
 
 	const headers = [
 		{
@@ -184,7 +187,6 @@ const TeamPanel = () => {
 
 	return (
 		<TabPanel
-			className="team-panel table-container"
 			value="team"
 			sx={{
 				"& h1": {
@@ -249,7 +251,17 @@ const TeamPanel = () => {
 				<DataTable
 					headers={headers}
 					data={data}
-					config={{ emptyView: t("teamPanel.noMembers") }}
+					config={{
+						emptyView: t("teamPanel.noMembers"),
+						rowSX: {
+							cursor: isSuperAdmin ? "pointer" : "default",
+						},
+						onRowClick: (row) => {
+							if (isSuperAdmin) {
+								navigate(`/account/team/${row.id}`);
+							}
+						},
+					}}
 				/>
 			</Stack>
 

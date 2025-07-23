@@ -2,16 +2,16 @@ import { useTheme } from "@emotion/react";
 import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
-import Avatar from "../../Avatar";
-import TextInput from "../../Inputs/TextInput";
-import ImageUpload from "../../Inputs/ImageUpload";
+import Avatar from "../../../Components/Avatar";
+import TextInput from "../../../Components/Inputs/TextInput";
+import ImageUpload from "../../../Components/Inputs/ImageUpload";
 import { newOrChangedCredentials } from "../../../Validation/validation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
 import { createToast } from "../../../Utils/toastUtils";
 import { logger } from "../../../Utils/Logger";
-import { GenericDialog } from "../../Dialog/genericDialog";
-import Dialog from "../../Dialog";
+import { GenericDialog } from "../../../Components/Dialog/genericDialog";
+import Dialog from "../../../Components/Dialog";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -191,7 +191,6 @@ const ProfilePanel = () => {
 		>
 			<Stack
 				component="form"
-				className="edit-profile-form"
 				noValidate
 				spellCheck="false"
 				gap={SPACING_GAP}

@@ -209,4 +209,33 @@ const logoutUser = async (userId) => {
 	}
 };
 
-export { insertUser, getUserByEmail, updateUser, deleteUser, deleteTeam, deleteAllOtherUsers, getAllUsers, logoutUser };
+const getUserById = async (roles, userId) => {
+	try {
+		if (!roles.includes("superadmin")) {
+			throw new Error("User is not a superadmin");
+		}
+
+		const user = await UserModel.findById(userId).select("-password").select("-profileImage");
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		return user;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getUserById";
+		throw error;
+	}
+};
+
+const editUserById = async (userId, user) => {
+	try {
+		await UserModel.findByIdAndUpdate(userId, user, { new: true }).select("-password").select("-profileImage");
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "editUserById";
+		throw error;
+	}
+};
+
+export { insertUser, getUserByEmail, updateUser, deleteUser, deleteTeam, deleteAllOtherUsers, getAllUsers, logoutUser, getUserById, editUserById };

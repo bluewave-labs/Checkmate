@@ -1,4 +1,5 @@
 import joi from "joi";
+import { ROLES, VALID_ROLES } from "../../client/src/Utils/roleUtils.js";
 
 //****************************************
 // Custom Validators
@@ -652,6 +653,36 @@ const sendTestEmailBodyValidation = joi.object({
 	systemEmailTLSServername: joi.string().allow("").optional(),
 });
 
+const getUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES))
+		.min(1)
+		.required(),
+});
+
+const editSuperadminUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES, ROLES.SUPERADMIN))
+		.min(1)
+		.required(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -719,4 +750,8 @@ export {
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,
+	getUserByIdParamValidation,
+	editUserByIdParamValidation,
+	editUserByIdBodyValidation,
+	editSuperadminUserByIdBodyValidation,
 };

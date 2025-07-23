@@ -5,6 +5,10 @@ import {
 	recoveryValidation,
 	recoveryTokenValidation,
 	newPasswordValidation,
+	getUserByIdParamValidation,
+	editUserByIdParamValidation,
+	editUserByIdBodyValidation,
+	editSuperadminUserByIdBodyValidation,
 } from "../validation/joi.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
@@ -392,6 +396,53 @@ class AuthController {
 		},
 		SERVICE_NAME,
 		"getAllUsers"
+	);
+
+	getUserById = asyncHandler(
+		async (req, res, next) => {
+			await getUserByIdParamValidation.validateAsync(req.params);
+			const userId = req?.params?.userId;
+			const roles = req?.user?.role;
+
+			if (!userId) {
+				throw new Error("No user ID in request");
+			}
+
+			if (!roles || roles.length === 0) {
+				throw new Error("No roles in request");
+			}
+
+			const user = await this.db.getUserById(roles, userId);
+
+			return res.success({ msg: "ok", data: user });
+		},
+		SERVICE_NAME,
+		"getUserById"
+	);
+
+	editUserById = asyncHandler(
+		async (req, res, next) => {
+			const roles = req?.user?.role;
+			if (!roles.includes("superadmin")) {
+				throw createError("Unauthorized", 403);
+			}
+
+			const userId = req.params.userId;
+			const user = { ...req.body };
+
+			await editUserByIdParamValidation.validateAsync(req.params);
+			// If this is superadmin self edit, allow "superadmin" role
+			if (userId === req.user._id) {
+				await editSuperadminUserByIdBodyValidation.validateAsync(req.body);
+			} else {
+				await editUserByIdBodyValidation.validateAsync(req.body);
+			}
+
+			await this.db.editUserById(userId, user);
+			return res.success({ msg: "ok" });
+		},
+		SERVICE_NAME,
+		"editUserById"
 	);
 }
 

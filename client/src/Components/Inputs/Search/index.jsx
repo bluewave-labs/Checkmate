@@ -77,6 +77,7 @@ const Search = ({
 	labelVariant,
 	labelSx = {},
 	unit = "option",
+	maxWidth = "100%",
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();

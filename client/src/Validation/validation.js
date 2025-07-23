@@ -1,5 +1,6 @@
 import joi from "joi";
 import dayjs from "dayjs";
+import { ROLES } from "../Utils/roleUtils";
 
 const THRESHOLD_COMMON_BASE_MSG = "Threshold must be a number.";
 
@@ -429,6 +430,24 @@ const notificationValidation = joi.object({
 	}),
 });
 
+const editUserValidation = joi.object({
+	firstName: nameSchema,
+	lastName: lastnameSchema,
+	role: joi
+		.array()
+		.items(joi.string().valid(...Object.values(ROLES)))
+		.min(1)
+		.messages({
+			"array.min": "auth.common.fields.role.errors.min",
+		}),
+	email: joi
+		.string()
+		.required()
+		.trim()
+		.email({ tlds: { allow: false } })
+		.lowercase(),
+});
+
 export {
 	newOrChangedCredentials,
 	loginCredentials,
@@ -441,4 +460,5 @@ export {
 	statusPageValidation,
 	logoImageValidation,
 	notificationValidation,
+	editUserValidation,
 };

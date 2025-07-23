@@ -32,6 +32,11 @@
 					"errors": {
 						"incorrect": "The password you provided does not match our records"
 					}
+				},
+				"role": {
+					"errors": {
+						"min": "At least one role is required"
+					}
 				}
 			},
 			"inputs": {
@@ -212,8 +217,8 @@
 	"checkFormError": "Please check the form for errors.",
 	"checkFrequency": "Check frequency",
 	"checkHooks": {
-		"failureResolveOne": "Failed to resolve incident.",
-		"failureResolveAll": "Failed to resolve all incidents."
+		"failureResolveAll": "Failed to resolve all incidents.",
+		"failureResolveOne": "Failed to resolve incident."
 	},
 	"checkingEvery": "Checking every",
 	"city": "CITY",
@@ -228,9 +233,6 @@
 			"networkError": "Network error",
 			"unknownError": "Unknown error"
 		}
-	},
-	"general": {
-		"noOptionsFound": "No {{unit}} found"
 	},
 	"commonSave": "Save",
 	"commonSaving": "Saving...",
@@ -251,6 +253,8 @@
 	"createMonitor": "Create monitor",
 	"createNew": "Create new",
 	"createNotifications": {
+		"dialogDeleteConfirm": "Delete",
+		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
 		"discordSettings": {
 			"description": "Configure your Discord webhook here",
 			"title": "Discord",
@@ -281,6 +285,7 @@
 			"webhookLabel": "Slack webhook URL",
 			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
+		"testNotification": "Test notification",
 		"title": "Create notification channel",
 		"typeSettings": {
 			"description": "Select the type of notification channel you want to create.",
@@ -292,10 +297,7 @@
 			"title": "Webhook",
 			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
-		},
-		"testNotification": "Test notification",
-		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
-		"dialogDeleteConfirm": "Delete"
+		}
 	},
 	"createYour": "Create your",
 	"date&Time": "Date & Time",
@@ -305,6 +307,27 @@
 	"deleteStatusPage": "Do you want to delete this status page?",
 	"deleteStatusPageConfirm": "Yes, delete status page",
 	"deleteStatusPageDescription": "Once deleted, your status page cannot be retrieved.",
+	"diagnosticsPage": {
+		"diagnosticDescription": "System diagnostics",
+		"gauges": {
+			"heapAllocationSubtitle": "% of available memory",
+			"heapAllocationTitle": "Heap allocation",
+			"heapUsageSubtitle": "% of available memory",
+			"heapUsageTitle": "Heap usage",
+			"heapUtilizationSubtitle": "% of allocated",
+			"heapUtilizationTitle": "Heap utilization",
+			"instantCpuUsageSubtitle": "% of 1s used by CPU",
+			"instantCpuUsageTitle": "Instant CPU usage"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "Event loop delay",
+			"osMemoryLimitTitle": "OS Memory Limit",
+			"totalHeapSizeTitle": "Total heap size",
+			"uptimeTitle": "Uptime",
+			"usedHeapSizeTitle": "Used heap size"
+		},
+		"statsDescription": "System statistics"
+	},
 	"disk": "Disk",
 	"diskUsage": "Disk Usage",
 	"displayName": "Display name",
@@ -355,6 +378,24 @@
 	"duration": "Duration",
 	"edit": "Edit",
 	"editMaintenance": "Edit maintenance",
+	"editUserPage": {
+		"form": {
+			"email": "Email",
+			"firstName": "First name",
+			"lastName": "Last name",
+			"role": "Roles",
+			"save": "Save"
+		},
+		"table": {
+			"actionHeader": "Action",
+			"roleHeader": "Role"
+		},
+		"title": "Edit user",
+		"toast": {
+			"successUserUpdate": "User updated successfully",
+			"validationErrors": "Validation errors"
+		}
+	},
 	"editing": "Editing...",
 	"emailSent": "Email sent successfully",
 	"errorInvalidFieldId": "Invalid field ID provided",
@@ -385,6 +426,9 @@
 	"friendlyNameInput": "Friendly name",
 	"friendlyNamePlaceholder": "Maintenance at __ : __ for ___ minutes",
 	"gb": "GB",
+	"general": {
+		"noOptionsFound": "No {{unit}} found"
+	},
 	"greeting": {
 		"append": "The afternoon is your playground—let's make it epic!",
 		"overview": "Here's an overview of your {{type}} monitors.",
@@ -399,24 +443,24 @@
 	"incidentsOptionsHeader": "Incidents for:",
 	"incidentsOptionsHeaderFilterAll": "All",
 	"incidentsOptionsHeaderFilterBy": "Filter by:",
-	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
 	"incidentsOptionsHeaderFilterCannotResolve": "Cannot Resolve",
-	"incidentsTableResolvedAt": "Resolved at",
 	"incidentsOptionsHeaderFilterDown": "Down",
-	"incidentsTableActionResolve": "Resolve",
-	"incidentsPageActionResolve": "Resolve all incidents",
 	"incidentsOptionsHeaderFilterResolved": "Resolved",
 	"incidentsOptionsHeaderLastDay": "Last day",
 	"incidentsOptionsHeaderLastHour": "Last hour",
 	"incidentsOptionsHeaderLastWeek": "Last week",
 	"incidentsOptionsHeaderShow": "Show:",
+	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
 	"incidentsOptionsPlaceholderAllServers": "All servers",
+	"incidentsPageActionResolve": "Resolve all incidents",
 	"incidentsPageTitle": "Incidents",
+	"incidentsTableActionResolve": "Resolve",
 	"incidentsTableDateTime": "Date & Time",
 	"incidentsTableMessage": "Message",
 	"incidentsTableMonitorName": "Monitor Name",
 	"incidentsTableNoIncidents": "No incidents recorded",
 	"incidentsTablePaginationLabel": "incidents",
+	"incidentsTableResolvedAt": "Resolved at",
 	"incidentsTableStatus": "Status",
 	"incidentsTableStatusCode": "Status Code",
 	"infrastructureAlertNotificationDescription": "Send a notification to user(s) when thresholds exceed a specified percentage.",
@@ -469,34 +513,13 @@
 			}
 		},
 		"tabs": {
+			"diagnostics": "Diagnostics",
 			"logs": "Server logs",
-			"queue": "Job queue",
-			"diagnostics": "Diagnostics"
+			"queue": "Job queue"
 		},
 		"title": "Logs",
 		"toast": {
 			"fetchLogsSuccess": "Logs fetched successfully"
-		}
-	},
-	"diagnosticsPage": {
-		"diagnosticDescription": "System diagnostics",
-		"statsDescription": "System statistics",
-		"gauges": {
-			"heapAllocationTitle": "Heap allocation",
-			"heapAllocationSubtitle": "% of available memory",
-			"heapUsageTitle": "Heap usage",
-			"heapUsageSubtitle": "% of available memory",
-			"heapUtilizationTitle": "Heap utilization",
-			"heapUtilizationSubtitle": "% of allocated",
-			"instantCpuUsageTitle": "Instant CPU usage",
-			"instantCpuUsageSubtitle": "% of 1s used by CPU"
-		},
-		"stats": {
-			"eventLoopDelayTitle": "Event loop delay",
-			"uptimeTitle": "Uptime",
-			"usedHeapSizeTitle": "Used heap size",
-			"totalHeapSizeTitle": "Total heap size",
-			"osMemoryLimitTitle": "OS Memory Limit"
 		}
 	},
 	"low": "low",
@@ -545,8 +568,8 @@
 	"message": "Message",
 	"monitor": "monitor",
 	"monitorActions": {
-		"deleteSuccess": "Monitor deleted successfully",
 		"deleteFailed": "Failed to delete monitor",
+		"deleteSuccess": "Monitor deleted successfully",
 		"details": "Details",
 		"export": "Export Monitors",
 		"import": "Import Monitors",
@@ -856,6 +879,14 @@
 		"pending": "Pending...",
 		"up": "Your site is up."
 	},
+	"statusPage": {
+		"contents": "Contents",
+		"createSuccess": "Status page created successfully",
+		"deleteFailed": "Failed to delete status page",
+		"deleteSuccess": "Status page deleted successfully",
+		"generalSettings": "General settings",
+		"updateSuccess": "Status page updated successfully"
+	},
 	"statusPageCreate": {
 		"buttonSave": "Save"
 	},
@@ -919,13 +950,13 @@
 	"testLocale": "testLocale",
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"time": {
-		"threeMinutes": "3 minutes",
 		"fiveMinutes": "5 minutes",
-		"tenMinutes": "10 minutes",
-		"twentyMinutes": "20 minutes",
-		"oneHour": "1 hour",
 		"oneDay": "1 day",
-		"oneWeek": "1 week"
+		"oneHour": "1 hour",
+		"oneWeek": "1 week",
+		"tenMinutes": "10 minutes",
+		"threeMinutes": "3 minutes",
+		"twentyMinutes": "20 minutes"
 	},
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
