@@ -472,6 +472,17 @@
 	"infrastructureDisplayNameLabel": "Display name",
 	"infrastructureEditMonitor": "Save Infrastructure Monitor",
 	"infrastructureEditYour": "Edit your",
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [
+				"Track the performance of your servers",
+				"Identify bottlenecks and optimize usage",
+				"Ensure reliability with real-time monitoring"
+			],
+			"title": "An infrastructure monitor is used to:",
+			"actionButton": "Let's create your first infrastructure monitor!"
+		}
+	},
 	"infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
 	"infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
 	"infrastructureProtocol": "Protocol",
@@ -515,6 +526,17 @@
 	"maintenance": "maintenance",
 	"maintenanceRepeat": "Maintenance Repeat",
 	"maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [
+				"Mark your maintenance periods",
+				"Eliminate any misunderstandings",
+				"Stop sending alerts in maintenance windows"
+			],
+			"title": "A maintenance window is used to:",
+			"actionButton": "Let's create your first maintenance window!"
+		}
+	},
 	"maintenanceWindowDescription": "Your pings won't be sent during this time frame",
 	"maintenanceWindowName": "Maintenance Window Name",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
@@ -612,7 +634,8 @@
 				"Let engineers know when incidents happen",
 				"Keep administrators informed of system changes"
 			],
-			"title": "notification channel"
+			"title": "A notification channel is used to:",
+			"actionButton": "Let's create your first notification channel!"
 		},
 		"fetch": {
 			"failed": "Failed to fetch notifications",
@@ -657,6 +680,17 @@
 	"notifySMS": "Notify via SMS (coming soon)",
 	"now": "Now",
 	"os": "OS",
+	"pageSpeed": {
+		"fallback": {
+			"checks": [
+				"Report on the user experience of a page",
+				"Help analyze webpage speed",
+				"Give suggestions on how the page can be improved"
+			],
+			"title": "A PageSpeed monitor is used to:",
+			"actionButton": "Let's create your first PageSpeed monitor!"
+		}
+	},
 	"pageSpeedAddApiKey": "to add your API key.",
 	"pageSpeedConfigureSettingsDescription": "Here you can select the URL of the host, together with the type of monitor.",
 	"pageSpeedDetailsPerformanceReport": "Values are estimated and may vary.",
@@ -872,6 +906,23 @@
 	"statusPageStatusNoPage": "There's no status page here.",
 	"statusPageStatusNotPublic": "This status page is not public.",
 	"statusPageStatusServiceStatus": "Service status",
+	"statusPage": {
+		"deleteSuccess": "Status page deleted successfully",
+		"deleteFailed": "Failed to delete status page",
+		"createSuccess": "Status page created successfully",
+		"updateSuccess": "Status page updated successfully",
+		"generalSettings": "General settings",
+		"contents": "Contents",
+		"fallback": {
+			"checks": [
+				"Monitor and display the health of your services in real time",
+				"Track multiple services and share their status",
+				"Keep users informed about outages and performance"
+			],
+			"title": "A status page is used to:",
+			"actionButton": "Let's create your first status page!"
+		}
+	},
 	"submit": "Submit",
 	"teamPanel": {
 		"cancel": "Cancel",
@@ -923,6 +974,18 @@
 		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [
+				"Check if websites or servers are online & responsive",
+				"Alert teams about downtime or performance issues",
+				"Monitor HTTP endpoints, pings, containers & ports",
+				"Track historical uptime and reliability trends"
+			],
+			"title": "An uptime monitor is used to:",
+			"actionButton": "Let's create your first uptime monitor!"
+		}
 	},
 	"url": "URL",
 	"urlMonitor": "URL to monitor",
