@@ -39,6 +39,7 @@ export const useEditUserForm = (user) => {
 	};
 
 	const handleDeleteRole = (role) => {
+		if (role === ROLES.SUPERADMIN) return;
 		setForm({ ...form, role: form?.role?.filter((r) => r !== role) });
 	};
 
