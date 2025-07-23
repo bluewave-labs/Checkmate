@@ -218,6 +218,7 @@
 	"checkFrequency": "Check frequency",
 	"checkHooks": {
 		"failureResolveAll": "Failed to resolve all incidents.",
+		"failureResolveMonitor": "Failed to resolve monitor incidents.",
 		"failureResolveOne": "Failed to resolve incident."
 	},
 	"checkingEvery": "Checking every",

@@ -631,6 +631,12 @@ class NetworkService {
 		});
 	}
 
+	async updateMonitorChecksStatus(config) {
+		return this.axiosInstance.put(`/checks/monitor/${config.monitorId}`, {
+			ack: config.ack,
+		});
+	}
+
 	async updateAllChecksStatus(config) {
 		return this.axiosInstance.put(`/checks/team/`, {
 			ack: config.ack,
