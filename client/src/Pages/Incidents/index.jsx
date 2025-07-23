@@ -84,7 +84,7 @@ const Incidents = () => {
 					onClick={handleAckAllChecks}
 					disabled={ackAllLoading}
 				>
-					{t("incidentsPageActionResolve")}
+					{selectedMonitor === "0" ? t("incidentsPageActionResolveAll") : t("incidentsPageActionResolveMonitor")}
 				</Button>
 			</Box>
 			<StatusBoxes
