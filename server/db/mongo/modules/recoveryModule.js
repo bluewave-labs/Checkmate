@@ -1,6 +1,5 @@
 import UserModel from "../../models/User.js";
 import RecoveryToken from "../../models/RecoveryToken.js";
-import crypto from "crypto";
 import serviceRegistry from "../../../service/serviceRegistry.js";
 import StringService from "../../../service/stringService.js";
 
@@ -9,17 +8,16 @@ const SERVICE_NAME = "recoveryModule";
 /**
  * Request a recovery token
  * @async
- * @param {Express.Request} req
- * @param {Express.Response} res
+ * @param {string} email
  * @returns {Promise<UserModel>}
  * @throws {Error}
  */
-const requestRecoveryToken = async (req, res) => {
+const requestRecoveryToken = async (email) => {
 	try {
 		// Delete any existing tokens
-		await RecoveryToken.deleteMany({ email: req.body.email });
+		await RecoveryToken.deleteMany({ email });
 		let recoveryToken = new RecoveryToken({
-			email: req.body.email,
+			email,
 			token: crypto.randomBytes(32).toString("hex"),
 		});
 		await recoveryToken.save();
@@ -31,10 +29,9 @@ const requestRecoveryToken = async (req, res) => {
 	}
 };
 
-const validateRecoveryToken = async (req, res) => {
+const validateRecoveryToken = async (candidateToken) => {
 	const stringService = serviceRegistry.get(StringService.SERVICE_NAME);
 	try {
-		const candidateToken = req.body.recoveryToken;
 		const recoveryToken = await RecoveryToken.findOne({
 			token: candidateToken,
 		});
@@ -50,10 +47,10 @@ const validateRecoveryToken = async (req, res) => {
 	}
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (password, candidateToken) => {
 	const stringService = serviceRegistry.get(StringService.SERVICE_NAME);
 	try {
-		const newPassword = req.body.password;
+		const newPassword = password;
 
 		// Validate token again
 		const recoveryToken = await validateRecoveryToken(req, res);

@@ -138,13 +138,6 @@ class MongoDB {
 			});
 		}
 	};
-	checkSuperadmin = async (req, res) => {
-		const superAdmin = await UserModel.findOne({ role: "superadmin" });
-		if (superAdmin !== null) {
-			return true;
-		}
-		return false;
-	};
 }
 
 export default MongoDB;
