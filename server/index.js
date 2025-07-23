@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import swaggerUi from "swagger-ui-express";
+import jwt from "jsonwebtoken";
 
 import express from "express";
 import helmet from "helmet";
@@ -55,6 +56,8 @@ import PulseQueueHelper from "./service/PulseQueue/PulseQueueHelper.js";
 
 import SuperSimpleQueue from "./service/SuperSimpleQueue/SuperSimpleQueue.js";
 import SuperSimpleQueueHelper from "./service/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+
+import UserService from "./service/userService.js";
 
 //Network service and dependencies
 import NetworkService from "./service/networkService.js";
@@ -176,6 +179,14 @@ const startApp = async () => {
 	});
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
+	const userService = new UserService({
+		db,
+		emailService,
+		settingsService,
+		logger,
+		stringService,
+		jwt,
+	});
 
 	// const jobQueueHelper = new JobQueueHelper({
 	// 	redisService,
@@ -235,6 +246,7 @@ const startApp = async () => {
 	ServiceRegistry.register(NotificationService.SERVICE_NAME, notificationService);
 	ServiceRegistry.register(TranslationService.SERVICE_NAME, translationService);
 	ServiceRegistry.register(RedisService.SERVICE_NAME, redisService);
+	ServiceRegistry.register(UserService.SERVICE_NAME, userService);
 
 	await translationService.initialize();
 
@@ -255,6 +267,7 @@ const startApp = async () => {
 		jobQueue: ServiceRegistry.get(JobQueue.SERVICE_NAME),
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		logger: logger,
+		userService: ServiceRegistry.get(UserService.SERVICE_NAME),
 	});
 
 	const monitorController = new MonitorController(
