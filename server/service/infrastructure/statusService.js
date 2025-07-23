@@ -1,5 +1,5 @@
-import MonitorStats from "../db/models/MonitorStats.js";
-import { safelyParseFloat } from "../utils/dataUtils.js";
+import MonitorStats from "../../db/models/MonitorStats.js";
+import { safelyParseFloat } from "../../utils/dataUtils.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {

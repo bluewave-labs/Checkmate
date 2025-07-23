@@ -58,8 +58,8 @@ const registrationBodyValidation = joi.object({
 });
 
 const editUserBodyValidation = joi.object({
-	firstName: nameValidation.required(),
-	lastName: nameValidation.required(),
+	firstName: nameValidation.optional(),
+	lastName: nameValidation.optional(),
 	profileImage: joi.any(),
 	newPassword: joi.string().min(8).pattern(passwordPattern),
 	password: joi.string().min(8).pattern(passwordPattern),
@@ -73,7 +73,7 @@ const recoveryValidation = joi.object({
 		.required(),
 });
 
-const recoveryTokenValidation = joi.object({
+const recoveryTokenBodyValidation = joi.object({
 	recoveryToken: joi.string().required(),
 });
 
@@ -688,7 +688,7 @@ export {
 	loginValidation,
 	registrationBodyValidation,
 	recoveryValidation,
-	recoveryTokenValidation,
+	recoveryTokenBodyValidation,
 	newPasswordValidation,
 	inviteRoleValidation,
 	inviteBodyValidation,

@@ -4,9 +4,17 @@ import { GenerateAvatarImage } from "../../../utils/imageProcessing.js";
 
 const DUPLICATE_KEY_CODE = 11000; // MongoDB error code for duplicate key
 import { ParseBoolean } from "../../../utils/utils.js";
-import ServiceRegistry from "../../../service/serviceRegistry.js";
-import StringService from "../../../service/stringService.js";
+import ServiceRegistry from "../../../service/system/serviceRegistry.js";
+import StringService from "../../../service/system/stringService.js";
 const SERVICE_NAME = "userModule";
+
+const checkSuperadmin = async () => {
+	const superAdmin = await UserModel.findOne({ role: "superadmin" });
+	if (superAdmin !== null) {
+		return true;
+	}
+	return false;
+};
 
 /**
  * Insert a User
@@ -187,7 +195,7 @@ const deleteAllOtherUsers = async () => {
 	}
 };
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async () => {
 	try {
 		const users = await UserModel.find().select("-password").select("-profileImage");
 		return users;
@@ -238,4 +246,16 @@ const editUserById = async (userId, user) => {
 	}
 };
 
-export { insertUser, getUserByEmail, updateUser, deleteUser, deleteTeam, deleteAllOtherUsers, getAllUsers, logoutUser, getUserById, editUserById };
+export {
+	checkSuperadmin,
+	insertUser,
+	getUserByEmail,
+	updateUser,
+	deleteUser,
+	deleteTeam,
+	deleteAllOtherUsers,
+	getAllUsers,
+	logoutUser,
+	getUserById,
+	editUserById,
+};
