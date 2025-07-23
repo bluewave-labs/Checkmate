@@ -31,11 +31,7 @@ class SuperSimpleQueueHelper {
 					throw new Error("No network response");
 				}
 
-				const {
-					monitor: updatedMonitor,
-					statusChanged,
-					prevStatus,
-				} = await this.statusService.updateStatus(networkResponse);
+				const { monitor: updatedMonitor, statusChanged, prevStatus } = await this.statusService.updateStatus(networkResponse);
 
 				this.notificationService
 					.handleNotifications({
