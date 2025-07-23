@@ -79,7 +79,7 @@ const Notifications = () => {
 	if (notifications?.length === 0) {
 		return (
 			<Fallback
-				vowelStart={false}
+				type="notifications"
 				title={t("notifications.fallback.title")}
 				checks={t("notifications.fallback.checks", { returnObjects: true })}
 				link="/notifications/create"
