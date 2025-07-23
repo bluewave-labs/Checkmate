@@ -1,7 +1,6 @@
 import {
 	getChecksParamValidation,
 	getChecksQueryValidation,
-	getTeamChecksParamValidation,
 	getTeamChecksQueryValidation,
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
@@ -14,58 +13,69 @@ import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "checkController";
 
+/**
+ * Check Controller
+ *
+ * Handles all check-related HTTP requests including retrieving checks,
+ * acknowledging checks, deleting checks, and managing check TTL settings.
+ *
+ * @class CheckController
+ * @description Manages check operations and monitoring data
+ */
 class CheckController {
-	constructor(db, settingsService, stringService) {
+	/**
+	 * Creates an instance of CheckController.
+	 *
+	 * @param {Object} dependencies - The dependencies required by the controller
+	 * @param {Object} dependencies.db - Database service for data operations
+	 * @param {Object} dependencies.settingsService - Service for application settings
+	 * @param {Object} dependencies.stringService - Service for string/localization
+	 * @param {Object} dependencies.checkService - Check business logic service
+	 */
+	constructor({ db, settingsService, stringService, checkService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
+		this.checkService = checkService;
 	}
 
+	/**
+	 * Retrieves checks for a specific monitor with filtering and pagination.
+	 *
+	 * @async
+	 * @function getChecksByMonitor
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.params - URL parameters
+	 * @param {string} req.params.monitorId - ID of the monitor to get checks for
+	 * @param {Object} req.query - Query parameters for filtering and pagination
+	 * @param {string} [req.query.type] - Type of checks to filter by
+	 * @param {string} [req.query.sortOrder] - Sort order (asc/desc)
+	 * @param {string} [req.query.dateRange] - Date range filter
+	 * @param {string} [req.query.filter] - General filter string
+	 * @param {boolean} [req.query.ack] - Filter by acknowledgment status
+	 * @param {number} [req.query.page] - Page number for pagination
+	 * @param {number} [req.query.rowsPerPage] - Number of rows per page
+	 * @param {string} [req.query.status] - Filter by check status
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with checks data
+	 * @throws {Error} 422 - Validation error if parameters are invalid
+	 * @throws {Error} 404 - Not found if monitor doesn't exist
+	 * @throws {Error} 403 - Forbidden if user doesn't have access to monitor
+	 * @example
+	 * GET /checks/monitor/507f1f77bcf86cd799439011?page=1&rowsPerPage=10&status=down
+	 * // Requires JWT authentication
+	 */
 	getChecksByMonitor = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await getChecksParamValidation.validateAsync(req.params);
 			await getChecksQueryValidation.validateAsync(req.query);
 
-			const monitorId = req?.params?.monitorId;
-
-			if (!monitorId) {
-				throw new Error("No monitor ID in request");
-			}
-
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const monitor = await this.db.getMonitorById(monitorId);
-
-			if (!monitor) {
-				const err = new Error("Monitor not found");
-				err.status = 404;
-				err.service = SERVICE_NAME;
-				err.method = "getChecksByMonitor";
-				throw err;
-			}
-
-			if (!monitor.teamId.equals(teamId)) {
-				const err = new Error("Unauthorized");
-				err.status = 403;
-				err.service = SERVICE_NAME;
-				err.method = "getChecksByMonitor";
-				throw err;
-			}
-
-			let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = req.query;
-			const result = await this.db.getChecksByMonitor({
-				monitorId,
-				type,
-				sortOrder,
-				dateRange,
-				filter,
-				ack,
-				page,
-				rowsPerPage,
-				status,
+			const result = await this.checkService.getChecksByMonitor({
+				monitorId: req?.params?.monitorId,
+				query: req?.query,
+				teamId: req?.user?.teamId,
 			});
 
 			return res.success({
@@ -77,26 +87,34 @@ class CheckController {
 		"getChecksByMonitor"
 	);
 
+	/**
+	 * Retrieves all checks for the current user's team with filtering and pagination.
+	 *
+	 * @async
+	 * @function getChecksByTeam
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.query - Query parameters for filtering and pagination
+	 * @param {string} [req.query.sortOrder] - Sort order (asc/desc)
+	 * @param {string} [req.query.dateRange] - Date range filter
+	 * @param {string} [req.query.filter] - General filter string
+	 * @param {boolean} [req.query.ack] - Filter by acknowledgment status
+	 * @param {number} [req.query.page] - Page number for pagination
+	 * @param {number} [req.query.rowsPerPage] - Number of rows per page
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with checks data
+	 * @throws {Error} 422 - Validation error if query parameters are invalid
+	 * @example
+	 * GET /checks/team?page=1&rowsPerPage=20&status=down&ack=false
+	 * // Requires JWT authentication
+	 */
 	getChecksByTeam = asyncHandler(
-		async (req, res, next) => {
-			await getTeamChecksParamValidation.validateAsync(req.params);
+		async (req, res) => {
 			await getTeamChecksQueryValidation.validateAsync(req.query);
-
-			let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = req.query;
-			const teamId = req?.user?.teamId;
-
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const checkData = await this.db.getChecksByTeam({
-				sortOrder,
-				dateRange,
-				filter,
-				ack,
-				page,
-				rowsPerPage,
-				teamId,
+			const checkData = await this.checkService.getChecksByTeam({
+				teamId: req?.user?.teamId,
+				query: req?.query,
 			});
 			return res.success({
 				msg: this.stringService.checkGet,
@@ -107,15 +125,24 @@ class CheckController {
 		"getChecksByTeam"
 	);
 
+	/**
+	 * Retrieves a summary of checks for the current user's team.
+	 *
+	 * @async
+	 * @function getChecksSummaryByTeamId
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with checks summary
+	 * @example
+	 * GET /checks/summary
+	 * // Requires JWT authentication
+	 * // Response includes counts by status, time ranges, etc.
+	 */
 	getChecksSummaryByTeamId = asyncHandler(
-		async (req, res, next) => {
-			const teamId = req?.user?.teamId;
-
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const summary = await this.db.getChecksSummaryByTeamId({ teamId });
+		async (req, res) => {
+			const summary = await this.checkService.getChecksSummaryByTeamId({ teamId: req?.user?.teamId });
 			return res.success({
 				msg: this.stringService.checkGetSummary,
 				data: summary,
@@ -125,23 +152,39 @@ class CheckController {
 		"getChecksSummaryByTeamId"
 	);
 
+	/**
+	 * Acknowledges a specific check by ID.
+	 *
+	 * @async
+	 * @function ackCheck
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.params - URL parameters
+	 * @param {string} req.params.checkId - ID of the check to acknowledge
+	 * @param {Object} req.body - Request body containing acknowledgment data
+	 * @param {boolean} req.body.ack - Acknowledgment status (true/false)
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with updated check data
+	 * @throws {Error} 422 - Validation error if request body is invalid
+	 * @throws {Error} 404 - Not found if check doesn't exist
+	 * @throws {Error} 403 - Forbidden if user doesn't have access to check
+	 * @example
+	 * PUT /checks/507f1f77bcf86cd799439011/ack
+	 * {
+	 *   "ack": true
+	 * }
+	 * // Requires JWT authentication
+	 */
 	ackCheck = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await ackCheckBodyValidation.validateAsync(req.body);
 
-			const checkId = req?.params?.checkId;
-			const ack = req?.body?.ack;
-			const teamId = req?.user?.teamId;
-
-			if (!checkId) {
-				throw new Error("No check ID in request");
-			}
-
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const updatedCheck = await this.db.ackCheck(checkId, teamId, ack);
+			const updatedCheck = await this.checkService.ackCheck({
+				checkId: req?.params?.checkId,
+				teamId: req?.user?.teamId,
+				ack: req?.body?.ack,
+			});
 
 			return res.success({
 				msg: this.stringService.checkUpdateStatus,
@@ -152,8 +195,33 @@ class CheckController {
 		"ackCheck"
 	);
 
+	/**
+	 * Acknowledges all checks for a specific monitor or path.
+	 *
+	 * @async
+	 * @function ackAllChecks
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.params - URL parameters
+	 * @param {string} req.params.monitorId - ID of the monitor
+	 * @param {string} req.params.path - Path for acknowledgment (e.g., "monitor")
+	 * @param {Object} req.body - Request body containing acknowledgment data
+	 * @param {boolean} req.body.ack - Acknowledgment status (true/false)
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with updated checks data
+	 * @throws {Error} 422 - Validation error if parameters or body are invalid
+	 * @throws {Error} 404 - Not found if monitor doesn't exist
+	 * @throws {Error} 403 - Forbidden if user doesn't have access to monitor
+	 * @example
+	 * PUT /checks/monitor/507f1f77bcf86cd799439011/ack
+	 * {
+	 *   "ack": true
+	 * }
+	 * // Requires JWT authentication
+	 */
 	ackAllChecks = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await ackAllChecksParamValidation.validateAsync(req.params);
 			await ackAllChecksBodyValidation.validateAsync(req.body);
 
@@ -162,32 +230,12 @@ class CheckController {
 				throw new Error("No team ID in request");
 			}
 
-			const monitorId = req?.params?.monitorId;
-
-			const path = req?.params?.path;
-
-			const ack = req?.body?.ack;
-
-			if (path === "monitor") {
-				if (!monitorId) {
-					throw new Error("No monitor ID in request");
-				}
-
-				const monitor = await this.db.getMonitorById(monitorId);
-				if (!monitor) {
-					throw new Error("Monitor not found");
-				}
-
-				if (!monitor.teamId.equals(teamId)) {
-					const err = new Error("Unauthorized");
-					err.status = 403;
-					err.service = SERVICE_NAME;
-					err.method = "ackAllChecks";
-					throw err;
-				}
-			}
-
-			const updatedChecks = await this.db.ackAllChecks(monitorId, teamId, ack, path);
+			const updatedChecks = await this.checkService.ackAllChecks({
+				monitorId: req?.params?.monitorId,
+				path: req?.params?.path,
+				teamId: req?.user?.teamId,
+				ack: req?.body?.ack,
+			});
 
 			return res.success({
 				msg: this.stringService.checkUpdateStatus,
@@ -198,40 +246,34 @@ class CheckController {
 		"ackAllChecks"
 	);
 
+	/**
+	 * Deletes all checks for a specific monitor.
+	 *
+	 * @async
+	 * @function deleteChecks
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.params - URL parameters
+	 * @param {string} req.params.monitorId - ID of the monitor whose checks to delete
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with deletion count
+	 * @throws {Error} 422 - Validation error if monitorId is invalid
+	 * @throws {Error} 404 - Not found if monitor doesn't exist
+	 * @throws {Error} 403 - Forbidden if user doesn't have access to monitor
+	 * @example
+	 * DELETE /checks/monitor/507f1f77bcf86cd799439011
+	 * // Requires JWT authentication
+	 * // Response: { "data": { "deletedCount": 150 } }
+	 */
 	deleteChecks = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await deleteChecksParamValidation.validateAsync(req.params);
 
-			const monitorId = req?.params?.monitorId;
-			const teamId = req?.user?.teamId;
-
-			if (!monitorId) {
-				throw new Error("No monitor ID in request");
-			}
-
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const monitor = await this.db.getMonitorById(monitorId);
-
-			if (!monitor) {
-				const err = new Error("Monitor not found");
-				err.status = 404;
-				err.service = SERVICE_NAME;
-				err.method = "deleteChecks";
-				throw err;
-			}
-
-			if (!monitor.teamId.equals(teamId)) {
-				const err = new Error("Unauthorized");
-				err.status = 403;
-				err.service = SERVICE_NAME;
-				err.method = "deleteChecks";
-				throw err;
-			}
-
-			const deletedCount = await this.db.deleteChecks(req.params.monitorId);
+			const deletedCount = await this.checkService.deleteChecks({
+				monitorId: req.params.monitorId,
+				teamId: req?.user?.teamId,
+			});
 
 			return res.success({
 				msg: this.stringService.checkDelete,
@@ -242,16 +284,27 @@ class CheckController {
 		"deleteChecks"
 	);
 
+	/**
+	 * Deletes all checks for the current user's team.
+	 *
+	 * @async
+	 * @function deleteChecksByTeamId
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with deletion count
+	 * @throws {Error} 422 - Validation error if parameters are invalid
+	 * @example
+	 * DELETE /checks/team
+	 * // Requires JWT authentication
+	 * // Response: { "data": { "deletedCount": 1250 } }
+	 */
 	deleteChecksByTeamId = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await deleteChecksByTeamIdParamValidation.validateAsync(req.params);
 
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const deletedCount = await this.db.deleteChecksByTeamId(teamId);
+			const deletedCount = await this.checkService.deleteChecksByTeamId({ teamId: req?.user?.teamId });
 
 			return res.success({
 				msg: this.stringService.checkDelete,
@@ -262,15 +315,35 @@ class CheckController {
 		"deleteChecksByTeamId"
 	);
 
+	/**
+	 * Updates the TTL (Time To Live) setting for checks in the current user's team.
+	 *
+	 * @async
+	 * @function updateChecksTTL
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.body - Request body containing TTL data
+	 * @param {number} req.body.ttl - TTL value in days
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response confirming TTL update
+	 * @throws {Error} 422 - Validation error if TTL value is invalid
+	 * @example
+	 * PUT /checks/ttl
+	 * {
+	 *   "ttl": 30
+	 * }
+	 * // Requires JWT authentication
+	 * // Sets check TTL to 30 days
+	 */
 	updateChecksTTL = asyncHandler(
-		async (req, res, next) => {
-			const SECONDS_PER_DAY = 86400;
-
+		async (req, res) => {
 			await updateChecksTTLBodyValidation.validateAsync(req.body);
 
-			const { teamId } = req.user;
-			const ttl = parseInt(req.body.ttl, 10) * SECONDS_PER_DAY;
-			await this.db.updateChecksTTL(teamId, ttl);
+			await this.checkService.updateChecksTTL({
+				teamId: req?.user?.teamId,
+				ttl: req?.body?.ttl,
+			});
 
 			return res.success({
 				msg: this.stringService.checkUpdateTTL,
@@ -280,4 +353,5 @@ class CheckController {
 		"updateChecksTtl"
 	);
 }
+
 export default CheckController;
