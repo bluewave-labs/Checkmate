@@ -1,5 +1,5 @@
 import joi from "joi";
-import { ROLES, VALID_ROLES } from "../../client/src/Utils/roleUtils.js";
+import { ROLES, VALID_ROLES } from "../utils/roleUtils.js";
 
 //****************************************
 // Custom Validators
