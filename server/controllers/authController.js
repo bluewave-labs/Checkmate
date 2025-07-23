@@ -12,160 +12,50 @@ import {
 } from "../validation/joi.js";
 import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
-import crypto from "crypto";
-import { asyncHandler, createAuthError, createError } from "../utils/errorUtils.js";
+import { asyncHandler, createError } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "authController";
 
 class AuthController {
-	constructor({ db, settingsService, emailService, jobQueue, stringService, logger }) {
+	constructor({ db, settingsService, emailService, jobQueue, stringService, logger, userService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
 		this.logger = logger;
+		this.userService = userService;
 	}
 
-	/**
-	 * Creates and returns JWT token with an arbitrary payload
-	 * @function
-	 * @param {Object} payload
-	 * @param {Object} appSettings
-	 * @returns {String}
-	 * @throws {Error}
-	 */
-	issueToken = (payload, appSettings) => {
-		const tokenTTL = appSettings?.jwtTTL ?? "2h";
-		const tokenSecret = appSettings?.jwtSecret;
-		const payloadData = payload;
-		return jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
-	};
-
-	/**
-	 * Registers a new user. If the user is the first account, a JWT secret is created. If not, an invite token is required.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
-	 * @property {string} req.body.inviteToken - The invite token for registration.
-	 * @property {Object} req.file - The file object for the user's profile image.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the creation of the user, the created user data, and a JWT token.
-	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
-	 */
 	registerUser = asyncHandler(
 		async (req, res, next) => {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
 			await registrationBodyValidation.validateAsync(req.body);
-
-			// Create a new user
-			const user = req.body;
-			// If superAdmin exists, a token should be attached to all further register requests
-			const superAdminExists = await this.db.checkSuperadmin(req, res);
-			if (superAdminExists) {
-				const invitedUser = await this.db.getInviteTokenAndDelete(user.inviteToken);
-				user.role = invitedUser.role;
-				user.teamId = invitedUser.teamId;
-			} else {
-				// This is the first account, create JWT secret to use if one is not supplied by env
-				const jwtSecret = crypto.randomBytes(64).toString("hex");
-				await this.db.updateAppSettings({ jwtSecret });
-			}
-
-			const newUser = await this.db.insertUser({ ...req.body }, req.file);
-			this.logger.info({
-				message: this.stringService.authCreateUser,
-				service: SERVICE_NAME,
-				details: newUser._id,
-			});
-
-			const userForToken = { ...newUser._doc };
-			delete userForToken.profileImage;
-			delete userForToken.avatarImage;
-
-			const appSettings = await this.settingsService.getSettings();
-
-			const token = this.issueToken(userForToken, appSettings);
-
-			try {
-				const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
-					name: newUser.firstName,
-				});
-				this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error) => {
-					this.logger.warn({
-						message: error.message,
-						service: SERVICE_NAME,
-						method: "registerUser",
-						stack: error.stack,
-					});
-				});
-			} catch (error) {
-				this.logger.warn({
-					message: error.message,
-					service: SERVICE_NAME,
-					method: "registerUser",
-					stack: error.stack,
-				});
-			}
-
+			const { user, token } = await this.userService.registerUser(req.body, req.file);
 			res.success({
 				msg: this.stringService.authCreateUser,
-				data: { user: newUser, token: token },
+				data: { user, token },
 			});
 		},
 		SERVICE_NAME,
 		"registerUser"
 	);
 
-	/**
-	 * Logs in a user by validating the user's credentials and issuing a JWT token.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
-	 * @property {string} req.body.email - The email of the user.
-	 * @property {string} req.body.password - The password of the user.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the login of the user, the user data (without password and avatar image), and a JWT token.
-	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422) or the password is incorrect.
-	 */
 	loginUser = asyncHandler(
 		async (req, res, next) => {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
 			await loginValidation.validateAsync(req.body);
-
-			const { email, password } = req.body;
-
-			// Check if user exists
-			const user = await this.db.getUserByEmail(email);
-
-			// Compare password
-			const match = await user.comparePassword(password);
-			if (match !== true) {
-				throw createAuthError(this.stringService.authIncorrectPassword);
-			}
-
-			// Remove password from user object.  Should this be abstracted to DB layer?
-			const userWithoutPassword = { ...user._doc };
-			delete userWithoutPassword.password;
-			delete userWithoutPassword.avatarImage;
-
-			// Happy path, return token
-			const appSettings = await this.settingsService.getSettings();
-			const token = this.issueToken(userWithoutPassword, appSettings);
-			// reset avatar image
-			userWithoutPassword.avatarImage = user.avatarImage;
+			const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
 
 			return res.success({
 				msg: this.stringService.authLoginUser,
 				data: {
-					user: userWithoutPassword,
-					token: token,
+					user,
+					token,
 				},
 			});
 		},
@@ -173,47 +63,12 @@ class AuthController {
 		"loginUser"
 	);
 
-	/**
-	 * Edits a user's information. If the user wants to change their password, the current password is checked before updating to the new password.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.params - The parameters of the request.
-	 * @property {string} req.params.userId - The ID of the user to be edited.
-	 * @property {Object} req.body - The body of the request.
-	 * @property {string} req.body.password - The current password of the user.
-	 * @property {string} req.body.newPassword - The new password of the user.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the update of the user, and the updated user data.
-	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422), the user is unauthorized (401), or the password is incorrect (403).
-	 */
 	editUser = asyncHandler(
 		async (req, res, next) => {
 			await editUserBodyValidation.validateAsync(req.body);
 
-			// Change Password check
-			if (req.body.password && req.body.newPassword) {
-				// Get token from headers
-				const token = getTokenFromHeaders(req.headers);
-				// Get email from token
-				const { jwtSecret } = this.settingsService.getSettings();
-				const { email } = jwt.verify(token, jwtSecret);
-				// Add user email to body for DB operation
-				req.body.email = email;
-				// Get user
-				const user = await this.db.getUserByEmail(email);
-				// Compare passwords
-				const match = await user.comparePassword(req.body.password);
-				// If not a match, throw a 403
-				// 403 instead of 401 to avoid triggering axios interceptor
-				if (!match) {
-					throw createError(this.stringService.authIncorrectPassword, 403);
-				}
-				// If a match, update the password
-				req.body.password = req.body.newPassword;
-			}
+			const updatedUser = await this.userService.editUser(req.body, req.file, req.user);
 
-			const updatedUser = await this.db.updateUser({ userId: req?.user?._id, user: req.body, file: req.file });
 			res.success({
 				msg: this.stringService.authUpdateUser,
 				data: updatedUser,
