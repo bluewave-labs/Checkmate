@@ -62,6 +62,7 @@ import UserService from "./service/business/userService.js";
 import CheckService from "./service/business/checkService.js";
 import DiagnosticService from "./service/business/diagnosticService.js";
 import InviteService from "./service/business/inviteService.js";
+import MaintenanceWindowService from "./service/business/maintenanceWindowService.js";
 
 //Network service and dependencies
 import NetworkService from "./service/infrastructure/networkService.js";
@@ -205,6 +206,11 @@ const startApp = async () => {
 		emailService,
 		stringService,
 	});
+	const maintenanceWindowService = new MaintenanceWindowService({
+		db,
+		settingsService,
+		stringService,
+	});
 	// const jobQueueHelper = new JobQueueHelper({
 	// 	redisService,
 	// 	Queue,
@@ -265,6 +271,8 @@ const startApp = async () => {
 	ServiceRegistry.register(RedisService.SERVICE_NAME, redisService);
 	ServiceRegistry.register(UserService.SERVICE_NAME, userService);
 	ServiceRegistry.register(CheckService.SERVICE_NAME, checkService);
+	ServiceRegistry.register(InviteService.SERVICE_NAME, inviteService);
+	ServiceRegistry.register(MaintenanceWindowService.SERVICE_NAME, maintenanceWindowService);
 
 	await translationService.initialize();
 
@@ -311,18 +319,16 @@ const startApp = async () => {
 	});
 
 	const inviteController = new InviteController({
-		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		inviteService,
 	});
 
-	const maintenanceWindowController = new MaintenanceWindowController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const maintenanceWindowController = new MaintenanceWindowController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		maintenanceWindowService: ServiceRegistry.get(MaintenanceWindowService.SERVICE_NAME),
+	});
 
 	const queueController = new QueueController(ServiceRegistry.get(JobQueue.SERVICE_NAME), ServiceRegistry.get(StringService.SERVICE_NAME));
 

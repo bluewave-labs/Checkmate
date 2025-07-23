@@ -11,16 +11,10 @@ class InviteController {
 	/**
 	 * Creates a new InviteController instance
 	 * @param {Object} dependencies - Dependencies injected into the controller
-	 * @param {Object} dependencies.db - Database connection instance
-	 * @param {Object} dependencies.settingsService - Service for managing application settings
-	 * @param {Object} dependencies.emailService - Service for sending emails
 	 * @param {Object} dependencies.stringService - Service for internationalized strings
 	 * @param {Object} dependencies.inviteService - Service for invite-related operations
 	 */
-	constructor({ db, settingsService, emailService, stringService, inviteService }) {
-		this.db = db;
-		this.settingsService = settingsService;
-		this.emailService = emailService;
+	constructor({ stringService, inviteService }) {
 		this.stringService = stringService;
 		this.inviteService = inviteService;
 	}
