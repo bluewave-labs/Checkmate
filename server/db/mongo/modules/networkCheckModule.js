@@ -32,9 +32,7 @@ const createNetworkCheck = async (networkCheckData) => {
  */
 const getNetworkChecksByMonitorId = async (monitorId, limit = 100) => {
 	try {
-		const networkChecks = await NetworkCheck.find({ monitorId })
-			.sort({ createdAt: -1 })
-			.limit(limit);
+		const networkChecks = await NetworkCheck.find({ monitorId }).sort({ createdAt: -1 }).limit(limit);
 		return networkChecks;
 	} catch (error) {
 		error.service = SERVICE_NAME;

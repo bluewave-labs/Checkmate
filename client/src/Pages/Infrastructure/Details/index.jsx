@@ -92,11 +92,11 @@ const InfrastructureDetails = () => {
 				monitor={monitor}
 			/>
 			<GaugeBoxes
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				monitor={monitor}
 			/>
 			<MonitorTimeFrameHeader
-				shouldRender={!isLoading}
+				isLoading={isLoading}
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>

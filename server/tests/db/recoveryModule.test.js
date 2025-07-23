@@ -1,11 +1,7 @@
 import sinon from "sinon";
 import RecoveryToken from "../../db/models/RecoveryToken.js";
 import User from "../../db/models/User.js";
-import {
-	requestRecoveryToken,
-	validateRecoveryToken,
-	resetPassword,
-} from "../../db/mongo/modules/recoveryModule.js";
+import { requestRecoveryToken, validateRecoveryToken, resetPassword } from "../../db/mongo/modules/recoveryModule.js";
 import { errorMessages } from "../../utils/messages.js";
 
 const mockRecoveryToken = {
@@ -44,12 +40,7 @@ const createQueryChain = (finalResult, comparePasswordResult = false) => ({
 });
 
 describe("recoveryModule", function () {
-	let deleteManyStub,
-		saveStub,
-		findOneStub,
-		userCompareStub,
-		userSaveStub,
-		userFindOneStub;
+	let deleteManyStub, saveStub, findOneStub, userCompareStub, userSaveStub, userFindOneStub;
 	let req, res;
 
 	beforeEach(function () {
@@ -153,9 +144,7 @@ describe("recoveryModule", function () {
 		it("should throw an error if the passwords match", async function () {
 			findOneStub.resolves(mockRecoveryToken);
 			saveStub.resolves();
-			userFindOneStub = sinon
-				.stub(User, "findOne")
-				.returns(createQueryChain(mockUser, true));
+			userFindOneStub = sinon.stub(User, "findOne").returns(createQueryChain(mockUser, true));
 			try {
 				await resetPassword(req, res);
 			} catch (error) {

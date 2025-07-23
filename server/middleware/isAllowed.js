@@ -29,9 +29,7 @@ const isAllowed = (allowedRoles) => {
 		// Parse the token
 		try {
 			const parsedToken = token.slice(TOKEN_PREFIX.length, token.length);
-			const { jwtSecret } = ServiceRegistry.get(
-				SettingsService.SERVICE_NAME
-			).getSettings();
+			const { jwtSecret } = ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings();
 			var decoded = jwt.verify(parsedToken, jwtSecret);
 			const userRoles = decoded.role;
 

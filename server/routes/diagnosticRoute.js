@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { verifyJWT } from "../middleware/verifyJWT.js";
+import { isAllowed } from "../middleware/isAllowed.js";
 
 class DiagnosticRoutes {
 	constructor(diagnosticController) {
@@ -7,12 +9,7 @@ class DiagnosticRoutes {
 		this.initRoutes();
 	}
 	initRoutes() {
-		this.router.get(
-			"/db/get-monitors-by-team-id/:teamId",
-			this.diagnosticController.getMonitorsByTeamIdExecutionStats
-		);
-
-		this.router.post("/db/stats", this.diagnosticController.getDbStats);
+		this.router.get("/system", verifyJWT, isAllowed(["admin", "superadmin"]), this.diagnosticController.getSystemStats);
 	}
 
 	getRouter() {

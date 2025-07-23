@@ -5,11 +5,10 @@ import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
 import CustomTabList from "../../Components/Tab";
 import TabContext from "@mui/lab/TabContext";
-import ProfilePanel from "../../Components/TabPanels/Account/ProfilePanel";
-import PasswordPanel from "../../Components/TabPanels/Account/PasswordPanel";
-import TeamPanel from "../../Components/TabPanels/Account/TeamPanel";
+import ProfilePanel from "./components/ProfilePanel";
+import PasswordPanel from "./components/PasswordPanel";
+import TeamPanel from "./components/TeamPanel";
 import { useTranslation } from "react-i18next";
-import "./index.css";
 
 /**
  * Account component renders a settings page with tabs for Profile, Password, and Team settings.
@@ -33,7 +32,9 @@ const Account = ({ open = "profile" }) => {
 		{ name: t("menu.password"), value: "password" },
 		{ name: t("menu.team"), value: "team" },
 	];
+
 	const hideTeams = !requiredRoles.some((role) => user.role.includes(role));
+
 	if (hideTeams) {
 		tabList = [
 			{ name: t("menu.profile"), value: "profile" },
@@ -63,7 +64,6 @@ const Account = ({ open = "profile" }) => {
 
 	return (
 		<Box
-			className="account"
 			px={theme.spacing(20)}
 			py={theme.spacing(12)}
 		>

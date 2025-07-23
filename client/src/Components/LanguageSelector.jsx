@@ -6,6 +6,13 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "../Features/UI/uiSlice";
 
+const langMap = {
+	cs: "cz",
+	ja: "jp",
+	uk: "ua",
+	vi: "vn",
+};
+
 const LanguageSelector = () => {
 	const { i18n } = useTranslation();
 	const theme = useTheme();
@@ -28,13 +35,11 @@ const LanguageSelector = () => {
 			{languages.map((lang) => {
 				let parsedLang = lang === "en" ? "gb" : lang;
 
-				// Fix for Czech
-				if (parsedLang === "cs") {
-					parsedLang = "cz";
-				}
 				if (parsedLang.includes("-")) {
 					parsedLang = parsedLang.split("-")[1].toLowerCase();
 				}
+
+				parsedLang = langMap[parsedLang] || parsedLang;
 
 				const flag = parsedLang ? `fi fi-${parsedLang}` : null;
 

@@ -11,7 +11,7 @@ import Filter from "./Components/Filters";
 import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
@@ -58,6 +58,12 @@ const InfrastructureMonitors = () => {
 		setPage(0);
 	};
 
+	useEffect(() => {
+		if (isSearching) {
+			setPage(0);
+		}
+	}, [isSearching]);
+
 	const handleReset = () => {
 		setSelectedStatus(undefined);
 		setToFilterStatus(undefined);
@@ -93,13 +99,9 @@ const InfrastructureMonitors = () => {
 	if (!isLoading && typeof summary?.totalMonitors === "undefined") {
 		return (
 			<Fallback
-				vowelStart={true}
-				title="infrastructure monitor"
-				checks={[
-					"Track the performance of your servers",
-					"Identify bottlenecks and optimize usage",
-					"Ensure reliability with real-time monitoring",
-				]}
+				type="infrastructureMonitor"
+				title={t("infrastructureMonitor.fallback.title")}
+				checks={t("infrastructureMonitor.fallback.checks", { returnObjects: true })}
 				link="/infrastructure/create"
 				isAdmin={isAdmin}
 			/>

@@ -117,8 +117,8 @@ const SettingsEmail = ({
 			<Box>
 				<Stack gap={theme.spacing(10)}>
 					<Box>
-						<Typography>{t("settingsPage.emailSettings.labelHost")}</Typography>
 						<TextInput
+							label={t("settingsPage.emailSettings.labelHost")}
 							name="systemEmailHost"
 							placeholder="smtp.gmail.com"
 							value={systemEmailHost}
@@ -126,8 +126,8 @@ const SettingsEmail = ({
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsPage.emailSettings.labelPort")}</Typography>
 						<TextInput
+							label={t("settingsPage.emailSettings.labelPort")}
 							name="systemEmailPort"
 							placeholder="425"
 							type="number"
@@ -136,8 +136,8 @@ const SettingsEmail = ({
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsPage.emailSettings.labelUser")}</Typography>
 						<TextInput
+							label={t("settingsPage.emailSettings.labelUser")}
 							name="systemEmailUser"
 							placeholder={t("settingsPage.emailSettings.placeholderUser")}
 							value={systemEmailUser}
@@ -145,8 +145,8 @@ const SettingsEmail = ({
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsPage.emailSettings.labelAddress")}</Typography>
 						<TextInput
+							label={t("settingsPage.emailSettings.labelAddress")}
 							name="systemEmailAddress"
 							placeholder="uptime@bluewavelabs.ca"
 							value={systemEmailAddress}
@@ -155,8 +155,8 @@ const SettingsEmail = ({
 					</Box>
 					{(isEmailPasswordSet === false || emailPasswordHasBeenReset === true) && (
 						<Box>
-							<Typography>{t("settingsPage.emailSettings.labelPassword")}</Typography>
 							<TextInput
+								label={t("settingsPage.emailSettings.labelPassword")}
 								name="systemEmailPassword"
 								type="password"
 								placeholder="123 456 789 101112"
@@ -188,8 +188,8 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
-						<Typography>{t("settingsPage.emailSettings.labelTLSServername")}</Typography>
 						<TextInput
+							label={t("settingsPage.emailSettings.labelTLSServername")}
 							name="systemEmailTLSServername"
 							placeholder="bluewavelabs.ca"
 							value={systemEmailTLSServername}
@@ -197,8 +197,8 @@ const SettingsEmail = ({
 						/>
 					</Box>
 					<Box>
-						<Typography>{t("settingsPage.emailSettings.labelConnectionHost")}</Typography>
 						<TextInput
+							label={t("settingsPage.emailSettings.labelConnectionHost")}
 							name="systemEmailConnectionHost"
 							placeholder="bluewavelabs.ca"
 							value={systemEmailConnectionHost}

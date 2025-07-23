@@ -1,4 +1,5 @@
 import joi from "joi";
+import { ROLES, VALID_ROLES } from "../../client/src/Utils/roleUtils.js";
 
 //****************************************
 // Custom Validators
@@ -7,9 +8,7 @@ import joi from "joi";
 const roleValidatior = (role) => (value, helpers) => {
 	const hasRole = role.some((role) => value.includes(role));
 	if (!hasRole) {
-		throw new joi.ValidationError(
-			`You do not have the required authorization. Required roles: ${role.join(", ")}`
-		);
+		throw new joi.ValidationError(`You do not have the required authorization. Required roles: ${role.join(", ")}`);
 	}
 	return value;
 };
@@ -56,10 +55,6 @@ const registrationBodyValidation = joi.object({
 	role: joi.array().items(joi.string().valid("superadmin", "admin", "user", "demo")),
 	teamId: joi.string().allow("").required(),
 	inviteToken: joi.string().allow("").required(),
-});
-
-const editUserParamValidation = joi.object({
-	userId: joi.string().required(),
 });
 
 const editUserBodyValidation = joi.object({
@@ -134,11 +129,7 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 		.alternatives()
 		.try(
 			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"),
-			joi
-				.array()
-				.items(
-					joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port")
-				)
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"))
 		),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
@@ -168,7 +159,43 @@ const createMonitorBodyValidation = joi.object({
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
-	url: joi.string().required(),
+	url: joi
+		.string()
+		.required()
+		.custom((value, helpers) => {
+			// 1. Standard URLs: must have protocol and pass canParse()
+			if (/^(https?:\/\/)/.test(value)) {
+				if (typeof URL !== "undefined" && typeof URL.canParse === "function" && URL.canParse(value)) {
+					return value;
+				}
+				// else, it's a malformed URL with protocol
+				return helpers.error("string.invalidUrl");
+			}
+
+			// 2. Docker/internal hostnames (no protocol)
+			if (/^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:\d{1,5})?$/.test(value)) {
+				if (value.includes("..")) {
+					return helpers.error("string.invalidUrl");
+				}
+				// Split by dot, check each label
+				const labels = value.split(":")[0].split(".");
+				for (const label of labels) {
+					if (!label) return helpers.error("string.invalidUrl");
+					if (label.startsWith("-") || label.endsWith("-")) {
+						return helpers.error("string.invalidUrl");
+					}
+				}
+				return value;
+			}
+
+			// 3. Everything else is invalid
+			return helpers.error("string.invalidUrl");
+		})
+		.messages({
+			"string.empty": "This field is required.",
+			"string.uri": "The URL you provided is not valid.",
+			"string.invalidUrl": "Please enter a valid URL, hostname, or container name (with optional port).",
+		}),
 	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
@@ -454,8 +481,7 @@ const createStatusPageBodyValidation = joi.object({
 		.pattern(/^[a-zA-Z0-9_-]+$/) // Only allow alphanumeric, underscore, and hyphen
 		.required()
 		.messages({
-			"string.pattern.base":
-				"URL can only contain letters, numbers, underscores, and hyphens",
+			"string.pattern.base": "URL can only contain letters, numbers, underscores, and hyphens",
 		}),
 	timezone: joi.string().optional(),
 	color: joi.string().optional(),
@@ -485,13 +511,9 @@ const imageValidation = joi
 		fieldname: joi.string().required(),
 		originalname: joi.string().required(),
 		encoding: joi.string().required(),
-		mimetype: joi
-			.string()
-			.valid("image/jpeg", "image/png", "image/jpg")
-			.required()
-			.messages({
-				"string.valid": "File must be a valid image (jpeg, jpg, or png)",
-			}),
+		mimetype: joi.string().valid("image/jpeg", "image/png", "image/jpg").required().messages({
+			"string.valid": "File must be a valid image (jpeg, jpg, or png)",
+		}),
 		size: joi.number().max(3145728).required().messages({
 			"number.max": "File size must be less than 3MB",
 		}),
@@ -577,6 +599,13 @@ const createNotificationBodyValidation = joi.object({
 		"string.empty": "Notification name is required",
 		"any.required": "Notification name is required",
 	}),
+
+	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty").required().messages({
+		"string.empty": "Notification type is required",
+		"any.required": "Notification type is required",
+		"any.only": "Notification type must be email, webhook, or pager_duty",
+	}),
+
 	address: joi.when("type", {
 		is: "email",
 		then: joi.string().email().required().messages({
@@ -584,16 +613,12 @@ const createNotificationBodyValidation = joi.object({
 			"any.required": "E-mail address is required",
 			"string.email": "Please enter a valid e-mail address",
 		}),
-	}),
-	type: joi
-		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty")
-		.required()
-		.messages({
-			"string.empty": "Notification type is required",
-			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, or pager_duty",
+		otherwise: joi.string().uri().required().messages({
+			"string.empty": "Webhook URL cannot be empty",
+			"any.required": "Webhook URL is required",
+			"string.uri": "Please enter a valid Webhook URL",
 		}),
+	}),
 });
 
 //****************************************
@@ -628,6 +653,36 @@ const sendTestEmailBodyValidation = joi.object({
 	systemEmailTLSServername: joi.string().allow("").optional(),
 });
 
+const getUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES))
+		.min(1)
+		.required(),
+});
+
+const editSuperadminUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES, ROLES.SUPERADMIN))
+		.min(1)
+		.required(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -652,7 +707,6 @@ export {
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
 	getMonitorURLByQueryValidation,
-	editUserParamValidation,
 	editUserBodyValidation,
 	createAlertParamValidation,
 	createAlertBodyValidation,
@@ -696,4 +750,8 @@ export {
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,
+	getUserByIdParamValidation,
+	editUserByIdParamValidation,
+	editUserByIdBodyValidation,
+	editSuperadminUserByIdBodyValidation,
 };

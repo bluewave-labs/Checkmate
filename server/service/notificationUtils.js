@@ -26,10 +26,7 @@ class NotificationUtils {
 			const date = new Date(timestamp);
 
 			// Get timezone abbreviation and format the date
-			const timeZoneAbbr = date
-				.toLocaleTimeString("en-US", { timeZoneName: "short" })
-				.split(" ")
-				.pop();
+			const timeZoneAbbr = date.toLocaleTimeString("en-US", { timeZoneName: "short" }).split(" ").pop();
 
 			// Format the date with readable format
 			return (
@@ -50,9 +47,7 @@ class NotificationUtils {
 		};
 
 		// Get formatted time
-		const formattedTime = timestamp
-			? formatTime(timestamp)
-			: formatTime(new Date().getTime());
+		const formattedTime = timestamp ? formatTime(timestamp) : formatTime(new Date().getTime());
 
 		// Create different messages based on status with extra spacing
 		let messageText;
@@ -73,29 +68,15 @@ class NotificationUtils {
 	buildHardwareAlerts = async (networkResponse) => {
 		const monitor = networkResponse?.monitor;
 		const thresholds = networkResponse?.monitor?.thresholds;
-		const {
-			usage_cpu: cpuThreshold = -1,
-			usage_memory: memoryThreshold = -1,
-			usage_disk: diskThreshold = -1,
-		} = thresholds;
+		const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
 
 		const metrics = networkResponse?.payload?.data;
-		const {
-			cpu: { usage_percent: cpuUsage = -1 } = {},
-			memory: { usage_percent: memoryUsage = -1 } = {},
-			disk = [],
-		} = metrics;
+		const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
 
 		const alerts = {
 			cpu: cpuThreshold !== -1 && cpuUsage > cpuThreshold ? true : false,
 			memory: memoryThreshold !== -1 && memoryUsage > memoryThreshold ? true : false,
-			disk:
-				disk?.some(
-					(d) =>
-						diskThreshold !== -1 &&
-						typeof d?.usage_percent === "number" &&
-						d?.usage_percent > diskThreshold
-				) ?? false,
+			disk: disk?.some((d) => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold) ?? false,
 		};
 
 		const alertsToSend = [];
@@ -110,16 +91,13 @@ class NotificationUtils {
 					monitor[`${type}AlertThreshold`] = monitor.alertThreshold;
 
 					const formatAlert = {
-						cpu: () =>
-							`Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
+						cpu: () => `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
 						memory: () =>
 							`Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
 						disk: () =>
 							`Your current disk usage: ${disk
 								.map((d, idx) => `(Disk${idx}: ${(d.usage_percent * 100).toFixed(0)}%)`)
-								.join(
-									", "
-								)} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
+								.join(", ")} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
 					};
 					alertsToSend.push(formatAlert[type]());
 				}

@@ -12,9 +12,7 @@ describe("imageProcessing - GenerateAvatarImage", function () {
 		// Stub the sharp function
 		const toBufferStub = sinon.stub().resolves(Buffer.from("resized image buffer"));
 		const resizeStub = sinon.stub().returns({ toBuffer: toBufferStub });
-		const sharpStub = sinon
-			.stub(sharp.prototype, "resize")
-			.returns({ toBuffer: toBufferStub });
+		const sharpStub = sinon.stub(sharp.prototype, "resize").returns({ toBuffer: toBufferStub });
 
 		const result = await GenerateAvatarImage(file);
 
@@ -38,9 +36,7 @@ describe("imageProcessing - GenerateAvatarImage", function () {
 		// Stub the sharp function to throw an error
 		const toBufferStub = sinon.stub().rejects(new Error("Resizing failed"));
 		const resizeStub = sinon.stub().returns({ toBuffer: toBufferStub });
-		const sharpStub = sinon
-			.stub(sharp.prototype, "resize")
-			.returns({ toBuffer: toBufferStub });
+		const sharpStub = sinon.stub(sharp.prototype, "resize").returns({ toBuffer: toBufferStub });
 
 		try {
 			await GenerateAvatarImage(file);

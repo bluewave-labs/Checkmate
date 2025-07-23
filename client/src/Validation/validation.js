@@ -1,5 +1,6 @@
 import joi from "joi";
 import dayjs from "dayjs";
+import { ROLES } from "../Utils/roleUtils";
 
 const THRESHOLD_COMMON_BASE_MSG = "Threshold must be a number.";
 
@@ -128,48 +129,37 @@ const monitorValidation = joi.object({
 			.string()
 			.trim()
 			.custom((value, helpers) => {
-				// Regex from https://gist.github.com/dperini/729294
-				var urlRegex = new RegExp(
-					"^" +
-						// protocol identifier (optional)
-						// short syntax // still required
-						"(?:(?:https?|ftp):\\/\\/)?" +
-						// user:pass BasicAuth (optional)
-						"(?:" +
-						// IP address dotted notation octets
-						// excludes loopback network 0.0.0.0
-						// excludes reserved space >= 224.0.0.0
-						// excludes network & broadcast addresses
-						// (first & last IP address of each class)
-						"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-						"(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-						"(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
-						"|" +
-						// host & domain names, may end with dot
-						// can be replaced by a shortest alternative
-						// (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
-						"(?:" +
-						"(?:" +
-						"[a-z0-9\\u00a1-\\uffff]" +
-						"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
-						")?" +
-						"[a-z0-9\\u00a1-\\uffff]\\." +
-						")+" +
-						// TLD identifier name, may end with dot
-						"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
-						")" +
-						// port number (optional)
-						"(?::\\d{2,5})?" +
-						// resource path (optional)
-						"(?:[/?#]\\S*)?" +
-						"$",
-					"i"
-				);
-				if (!urlRegex.test(value)) {
+				// 1. Standard URLs: must have protocol and pass canParse()
+				if (/^(https?:\/\/)/.test(value)) {
+					if (
+						typeof URL !== "undefined" &&
+						typeof URL.canParse === "function" &&
+						URL.canParse(value)
+					) {
+						return value;
+					}
+					// else, it's a malformed URL with protocol
 					return helpers.error("string.invalidUrl");
 				}
 
-				return value;
+				// 2. Docker/internal hostnames (no protocol)
+				if (/^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:\d{1,5})?$/.test(value)) {
+					if (value.includes("..")) {
+						return helpers.error("string.invalidUrl");
+					}
+					// Split by dot, check each label
+					const labels = value.split(":")[0].split(".");
+					for (const label of labels) {
+						if (!label) return helpers.error("string.invalidUrl");
+						if (label.startsWith("-") || label.endsWith("-")) {
+							return helpers.error("string.invalidUrl");
+						}
+					}
+					return value;
+				}
+
+				// 3. Everything else is invalid
+				return helpers.error("string.invalidUrl");
 			})
 			.messages({
 				"string.empty": "This field is required.",
@@ -410,15 +400,52 @@ const notificationValidation = joi.object({
 		"string.empty": "Notification name is required",
 		"any.required": "Notification name is required",
 	}),
-	address: joi.string().required().messages({
-		"string.empty": "This field cannot be empty",
-		"string.base": "This field must be a string",
-		"any.required": "This field is required",
+
+	type: joi
+		.string()
+		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.required()
+		.messages({
+			"string.empty": "Notification type is required",
+			"any.required": "Notification type is required",
+			"any.only": "Notification type must be email, webhook, or pager_duty",
+		}),
+
+	address: joi.when("type", {
+		is: "email",
+		then: joi
+			.string()
+			.email({ tlds: { allow: false } })
+			.required()
+			.messages({
+				"string.empty": "E-mail address cannot be empty",
+				"any.required": "E-mail address is required",
+				"string.email": "Please enter a valid e-mail address",
+			}),
+		otherwise: joi.string().uri().required().messages({
+			"string.empty": "Webhook URL cannot be empty",
+			"any.required": "Webhook URL is required",
+			"string.uri": "Please enter a valid Webhook URL",
+		}),
 	}),
-	type: joi.string().required().messages({
-		"string.empty": "This field is required",
-		"any.required": "This field is required",
-	}),
+});
+
+const editUserValidation = joi.object({
+	firstName: nameSchema,
+	lastName: lastnameSchema,
+	role: joi
+		.array()
+		.items(joi.string().valid(...Object.values(ROLES)))
+		.min(1)
+		.messages({
+			"array.min": "auth.common.fields.role.errors.min",
+		}),
+	email: joi
+		.string()
+		.required()
+		.trim()
+		.email({ tlds: { allow: false } })
+		.lowercase(),
 });
 
 export {
@@ -433,4 +460,5 @@ export {
 	statusPageValidation,
 	logoImageValidation,
 	notificationValidation,
+	editUserValidation,
 };

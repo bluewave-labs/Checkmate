@@ -102,9 +102,7 @@ const SHUTDOWN_TIMEOUT = 1000;
 let isShuttingDown = false;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const openApiSpec = JSON.parse(
-	fs.readFileSync(path.join(__dirname, "openapi.json"), "utf8")
-);
+const openApiSpec = JSON.parse(fs.readFileSync(path.join(__dirname, "openapi.json"), "utf8"));
 
 const frontendPath = path.join(__dirname, "public");
 
@@ -159,25 +157,8 @@ const startApp = async () => {
 	// Set allowed origin
 	const allowedOrigin = appSettings.clientHost;
 
-	const networkService = new NetworkService(
-		axios,
-		ping,
-		logger,
-		http,
-		Docker,
-		net,
-		stringService,
-		settingsService
-	);
-	const emailService = new EmailService(
-		settingsService,
-		fs,
-		path,
-		compile,
-		mjml2html,
-		nodemailer,
-		logger
-	);
+	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);
+	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 	const bufferService = new BufferService({ db, logger });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
 	const notificationUtils = new NotificationUtils({
@@ -310,17 +291,11 @@ const startApp = async () => {
 		ServiceRegistry.get(StringService.SERVICE_NAME)
 	);
 
-	const queueController = new QueueController(
-		ServiceRegistry.get(JobQueue.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const queueController = new QueueController(ServiceRegistry.get(JobQueue.SERVICE_NAME), ServiceRegistry.get(StringService.SERVICE_NAME));
 
 	const logController = new LogController(logger);
 
-	const statusPageController = new StatusPageController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const statusPageController = new StatusPageController(ServiceRegistry.get(MongoDB.SERVICE_NAME), ServiceRegistry.get(StringService.SERVICE_NAME));
 
 	const notificationController = new NotificationController({
 		notificationService: ServiceRegistry.get(NotificationService.SERVICE_NAME),
@@ -329,9 +304,7 @@ const startApp = async () => {
 		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
 	});
 
-	const diagnosticController = new DiagnosticController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME)
-	);
+	const diagnosticController = new DiagnosticController(ServiceRegistry.get(MongoDB.SERVICE_NAME));
 
 	//Create routes
 	const authRoutes = new AuthRoutes(authController);
@@ -339,9 +312,7 @@ const startApp = async () => {
 	const settingsRoutes = new SettingsRoutes(settingsController);
 	const checkRoutes = new CheckRoutes(checkController);
 	const inviteRoutes = new InviteRoutes(inviteController);
-	const maintenanceWindowRoutes = new MaintenanceWindowRoutes(
-		maintenanceWindowController
-	);
+	const maintenanceWindowRoutes = new MaintenanceWindowRoutes(maintenanceWindowController);
 	const queueRoutes = new QueueRoutes(queueController);
 	const logRoutes = new LogRoutes(logController);
 	const statusPageRoutes = new StatusPageRoutes(statusPageController);
@@ -390,16 +361,17 @@ const startApp = async () => {
 
 	//routes
 	app.use("/api/v1/auth", authRoutes.getRouter());
-	app.use("/api/v1/settings", verifyJWT, settingsRoutes.getRouter());
-	app.use("/api/v1/invite", inviteRoutes.getRouter());
-	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
-	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
-	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
-	app.use("/api/v1/logs", verifyJWT, logRoutes.getRouter());
-	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
-	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
+	app.use("/api/v1/invite", inviteRoutes.getRouter());
+	app.use("/api/v1/logs", verifyJWT, logRoutes.getRouter());
+	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
+	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
+	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
+	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());
+	app.use("/api/v1/settings", verifyJWT, settingsRoutes.getRouter());
+	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
+
 	app.use("/api/v1/health", (req, res) => {
 		res.json({
 			status: "OK",

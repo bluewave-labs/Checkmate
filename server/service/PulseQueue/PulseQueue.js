@@ -22,8 +22,7 @@ class PulseQueue {
 	// ****************************************
 	init = async () => {
 		try {
-			const mongoConnectionString =
-				this.appSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
+			const mongoConnectionString = this.appSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
 			this.pulse = new Pulse({ db: { address: mongoConnectionString } });
 			await this.pulse.start();
 			this.pulse.define("monitor-job", this.pulseQueueHelper.getMonitorJob(), {});
@@ -186,9 +185,7 @@ class PulseQueue {
 				failReason: job.attrs.failReason,
 				lastRunAt: job.attrs.lastRunAt,
 				lastFinishedAt: job.attrs.lastFinishedAt,
-				lastRunTook: job.attrs.lockedAt
-					? null
-					: job.attrs.lastFinishedAt - job.attrs.lastRunAt,
+				lastRunTook: job.attrs.lockedAt ? null : job.attrs.lastFinishedAt - job.attrs.lastRunAt,
 				lastFailedAt: job.attrs.failedAt,
 			};
 		});

@@ -553,6 +553,11 @@ const baseTheme = (palette) => ({
 					"&:hover .MuiOutlinedInput-notchedOutline": {
 						borderColor: theme.palette.primary.lowContrast,
 					},
+					padding: "0 13px",
+					minHeight: "34px",
+					display: "flex",
+					alignItems: "center",
+					lineHeight: 1,
 				}),
 			},
 		},

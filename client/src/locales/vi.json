@@ -1,11 +1,11 @@
 {
-	"submit": "Odeslat",
+	"submit": "",
 	"title": "",
 	"distributedStatusHeaderText": "",
 	"distributedStatusSubHeaderText": "",
-	"settingsDisabled": "Vypnuto",
-	"settingsSuccessSaved": "Nastavení bylo úspěšně uloženo",
-	"settingsFailedToSave": "Nepodařilo se uložit nastavení",
+	"settingsDisabled": "",
+	"settingsSuccessSaved": "",
+	"settingsFailedToSave": "",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
 	"settingsFailedToAddDemoMonitors": "",
@@ -438,99 +438,99 @@
 		"port": ""
 	},
 	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
+		"appName": "",
+		"monitoringAgentName": "",
 		"buttons": {
-			"toggleTheme": "Přepnout mezi světlým a tmavým motivem"
+			"toggleTheme": ""
 		},
 		"toasts": {
-			"networkError": "Chyba připojení k síti",
-			"checkConnection": "Zkontrolujte prosím své připojení k síti",
-			"unknownError": "Nastala neznámá chyba"
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "Pokračovat",
-				"back": "Zpět"
+				"continue": "",
+				"back": ""
 			},
 			"inputs": {
 				"email": {
-					"label": "E-mail",
-					"placeholder": "jan.novak@domena.cz",
+					"label": "",
+					"placeholder": "",
 					"errors": {
-						"empty": "Zadejte prosím e-mailovou adresu",
-						"invalid": "Překontrolujte si prosím správnost zadané e-mailové adresy"
+						"empty": "",
+						"invalid": ""
 					}
 				},
 				"password": {
-					"label": "Heslo",
+					"label": "",
 					"rules": {
 						"length": {
-							"beginning": "Heslo musí být dlouhé alespoň",
-							"highlighted": "8 znaků"
+							"beginning": "",
+							"highlighted": ""
 						},
 						"special": {
-							"beginning": "Heslo musí obsahovat alespoň",
-							"highlighted": "1 speciální znak"
+							"beginning": "",
+							"highlighted": ""
 						},
 						"number": {
-							"beginning": "Heslo musí obsahovat alespoň",
-							"highlighted": "1 číslo"
+							"beginning": "",
+							"highlighted": ""
 						},
 						"uppercase": {
-							"beginning": "Heslo musí obsahovat alespoň",
-							"highlighted": "1 velké písmeno"
+							"beginning": "",
+							"highlighted": ""
 						},
 						"lowercase": {
-							"beginning": "Heslo musí obsahovat alespoň",
-							"highlighted": "1 malé písmeno"
+							"beginning": "",
+							"highlighted": ""
 						},
 						"match": {
-							"beginning": "Obě hesla se",
-							"highlighted": "musí shodovat"
+							"beginning": "",
+							"highlighted": ""
 						}
 					},
 					"errors": {
-						"empty": "Zadejte prosím heslo",
-						"length": "Heslo musí být dlouhé alespoň 8 znaků",
-						"uppercase": "Heslo musí obsahovat alespoň 1 velké písmeno",
-						"lowercase": "Heslo musí obsahovat alespoň 1 malé písmeno",
-						"number": "Heslo musí obsahovat alespoň 1 číslo",
-						"special": "Heslo musí obsahovat alespoň 1 speciální znak",
-						"incorrect": "Zadané heslo neodpovídá tomu, co bylo nastaveno"
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
 					}
 				},
 				"passwordConfirm": {
-					"label": "Potvrzení hesla",
-					"placeholder": "Pro ověření správnosti zadejte heslo ještě jednou",
+					"label": "",
+					"placeholder": "",
 					"errors": {
-						"empty": "Zadejte prosím své heslo ještě jednou, aby mohla být potvrzena jeho správnost (odhalí překlepy)",
-						"different": "Zadaná hesla se liší, takže je nejspíše jedno z nich špatně zapsané"
+						"empty": "",
+						"different": ""
 					}
 				},
 				"firstName": {
-					"label": "Jméno",
-					"placeholder": "Jan",
+					"label": "",
+					"placeholder": "",
 					"errors": {
-						"empty": "Zadejte prosím své křestní jméno",
-						"length": "Jméno se musí vejít do 50 znaků",
-						"pattern": "Součástí jména mohou být pouze písmena, mezery apostrofy nebo spojovníky"
+						"empty": "",
+						"length": "",
+						"pattern": ""
 					}
 				},
 				"lastName": {
-					"label": "Příjmení",
-					"placeholder": "Novák",
+					"label": "",
+					"placeholder": "",
 					"errors": {
-						"empty": "Zadejte prosím své příjmení",
-						"length": "Příjmení se musí vejít do 50 znaků",
-						"pattern": "Součástí příjmení mohou být pouze písmena, mezery apostrofy nebo spojovníky"
+						"empty": "",
+						"length": "",
+						"pattern": ""
 					}
 				}
 			},
 			"errors": {
-				"validation": "Nastala chyba při ověřování dat."
+				"validation": ""
 			},
 			"fields": {
 				"password": {
@@ -541,20 +541,20 @@
 			}
 		},
 		"login": {
-			"heading": "Přihlášení",
+			"heading": "",
 			"subheadings": {
-				"stepOne": "Zadejte svůj e-mail",
-				"stepTwo": "Zadejte své heslo"
+				"stepOne": "",
+				"stepTwo": ""
 			},
 			"links": {
-				"forgotPassword": "Zapomněli jste heslo? <a>Obnovte si ho</a>",
-				"register": "Ještě nemáte účet? <a>Zaregistrujte se</a>",
+				"forgotPassword": "",
+				"register": "",
 				"forgotPasswordLink": "",
 				"registerLink": ""
 			},
 			"toasts": {
-				"success": "Vítejte zpět",
-				"incorrectPassword": "Nesprávné heslo"
+				"success": "",
+				"incorrectPassword": ""
 			},
 			"errors": {
 				"password": {
@@ -564,72 +564,72 @@
 		},
 		"registration": {
 			"heading": {
-				"superAdmin": "Vytvoření superadministrátora",
-				"user": "Registrace"
+				"superAdmin": "",
+				"user": ""
 			},
 			"subheadings": {
-				"stepOne": "Zadejte své osobní údaje",
-				"stepTwo": "Zadejte svůj e-mail",
-				"stepThree": "Nastavte si heslo"
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
 			},
 			"description": {
-				"superAdmin": "Pro začátek vytvořte účet superadministrátora",
-				"user": "Zaregistrujte se jako uživatel a požádejte svého superadministrátora, aby vám přidělil oprávnění k hlídačům"
+				"superAdmin": "",
+				"user": ""
 			},
 			"gettingStartedButton": {
-				"superAdmin": "Vytvořit účet superadministrátora",
-				"user": "Zaregistrovat se jako běžný uživatel"
+				"superAdmin": "",
+				"user": ""
 			},
-			"termsAndPolicies": "Vytvořením účtu souhlasíte s našimi <a1>Podmínkami použití</a1> (anglicky) a <a2>Podmínkami zpracování osobních údajů</a2> (anglicky).",
+			"termsAndPolicies": "",
 			"links": {
-				"login": "Máte již vytvořený účet? <a>Přihlašte se</a>"
+				"login": ""
 			},
 			"toasts": {
-				"success": "Vítejte! Váš účet byl úspěšně vytvořen."
+				"success": ""
 			}
 		},
 		"forgotPassword": {
-			"heading": "Zapomenuté heslo",
+			"heading": "",
 			"subheadings": {
-				"stepOne": "Nebojte se, zašleme vám pokyny pro obnovení hesla.",
-				"stepTwo": "Odkaz pro obnovení hesla byl odeslán na <email/>",
-				"stepThree": "Nové heslo se musí lišit od těch, které jste již použili.",
-				"stepFour": "Heslo bylo úspěšně obnoveno. Klepněte na tlačítko a dojde k čarovnému přihlášení."
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
 			},
 			"buttons": {
-				"openEmail": "Otevřít e-mailovou aplikaci",
-				"resetPassword": "Obnovit heslo"
+				"openEmail": "",
+				"resetPassword": ""
 			},
 			"imageAlts": {
-				"passwordKey": "Ikonka přístupového klíče",
-				"email": "Ikonka e-mailu",
-				"lock": "Ikonka zámku",
-				"passwordConfirm": "Ikonka potvrzeného hesla"
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
 			},
 			"links": {
-				"login": "Vrátit se k <a>Přihlášení</a>",
-				"resend": "Nedorazil vám e-mail? <a>Klepněte pro opětovné zaslání</a>"
+				"login": "",
+				"resend": ""
 			},
 			"toasts": {
-				"sent": "Instrukce vám dorazí na <email/>.",
-				"emailNotFound": "Nepodařilo se nalézt e-mailovou adresu.",
-				"redirect": "Přesměrování proběhne za <seconds/>...",
-				"success": "Heslo bylo úspěšně obnoveno.",
-				"error": "Obnova hesla se nepodařila. Zkuste to prosím znovu nebo kontaktujte podporu."
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
 			}
 		}
 	},
 	"errorPages": {
 		"serverUnreachable": {
 			"toasts": {
-				"reconnected": "Podařilo se úspěšně obnovit spojení se serverem",
-				"stillUnreachable": "Server je stále nedosažitelný. Zkuste to prosím později."
+				"reconnected": "",
+				"stillUnreachable": ""
 			},
-			"alertBox": "Chyba připojení k serveru",
-			"description": "Nepodařilo se připojit k serveru. Zkontrolujte si prosím internetové připojení a pokud problém přetrvává, ověřte konfiguraci aplikace Checkmate.",
+			"alertBox": "",
+			"description": "",
 			"retryButton": {
-				"default": "Zkusit se znovu připojit",
-				"processing": "Probíhá připojování…"
+				"default": "",
+				"processing": ""
 			}
 		}
 	},

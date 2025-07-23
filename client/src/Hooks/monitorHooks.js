@@ -205,6 +205,10 @@ const useFetchStatsByMonitorId = ({
 const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
+		if (typeof monitorId === "undefined") {
+			setIsLoading(false);
+			return;
+		}
 		const fetchMonitor = async () => {
 			try {
 				setIsLoading(true);

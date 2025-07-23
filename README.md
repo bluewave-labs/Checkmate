@@ -28,7 +28,8 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 
 - [📦 Demo](#-demo)  
 - [🔗 User's guide](#-users-guide)  
-- [🛠️ Installation](#️-installation)  
+- [🛠️ Installation](#️-installation)
+- [🚀 Deploying Checkmate with Helm](#-deploying-checkmate-with-helm)
 - [🏁 Translations](#-translations)  
 - [🚀 Performance](#-performance)  
 - [💚 Questions & Ideas](#-questions--ideas)  
@@ -50,7 +51,10 @@ Usage instructions can be found [here](https://docs.checkmate.so/checkmate-2.1).
 
 ## 🛠️ Installation
 
-See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). 
+
+Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+
 
 ## 🏁 Translations
 
@@ -68,14 +72,20 @@ You can see the memory footprint of MongoDB and Redis on the same server (398Mb 
 
 ## 💚 Questions & Ideas
 
-If you have any questions, suggestions or comments, please use our [Discord channel](https://discord.gg/NAb6H3UTjK). We've also launched our [Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions) page! Feel free to ask questions or share your ideas—we'd love to hear from you!
+If you have any questions, suggestions or comments, you have several options: 
+
+- [Discord channel](https://discord.gg/NAb6H3UTjK)
+- [GitHub Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions)
+- [Reddit group](https://www.reddit.com/r/CheckmateMonitoring/)
+
+Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 ## 🧩 Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
 - Website monitoring
 - Page speed monitoring
-- Infrastructure monitoring (memory, disk usage, CPU performance etc) - requires [Capture](https://github.com/bluewave-labs/capture)
+- Infrastructure monitoring (memory, disk usage, CPU performance etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
 - Docker monitoring
 - Ping monitoring
 - SSL monitoring
@@ -130,7 +140,7 @@ If you have any questions, suggestions or comments, please use our [Discord chan
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Vishnu](http://github.com/vishnusn77), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer) and [Mert](https://github.com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
-We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 6000+ stars and attracted 80+ contributors from around the globe.
+We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 7000+ stars and attracted 90+ contributors from around the globe.
 
 Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes and NEC**, so don’t hold back — jump in, contribute and learn with us!
 

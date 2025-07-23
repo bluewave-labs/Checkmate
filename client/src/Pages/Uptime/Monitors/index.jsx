@@ -21,7 +21,7 @@ import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 import { Stack, Box, Button, Typography } from "@mui/material";
 
 // Utils
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
@@ -146,6 +146,12 @@ const UptimeMonitors = () => {
 		monitorUpdateTrigger,
 	});
 
+	useEffect(() => {
+		if (isSearching) {
+			setPage(undefined);
+		}
+	}, [isSearching]);
+
 	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
 	if (networkError) {
 		return (
@@ -168,14 +174,9 @@ const UptimeMonitors = () => {
 	) {
 		return (
 			<Fallback
-				vowelStart={true}
-				title="uptime monitor"
-				checks={[
-					"Check if websites or servers are online & responsive",
-					"Alert teams about downtime or performance issues",
-					"Monitor HTTP endpoints, pings, containers & ports",
-					"Track historical uptime and reliability trends",
-				]}
+				type="uptimeMonitor"
+				title={t("uptimeMonitor.fallback.title")}
+				checks={t("uptimeMonitor.fallback.checks", { returnObjects: true })}
 				link="/uptime/create"
 				isAdmin={isAdmin}
 			/>

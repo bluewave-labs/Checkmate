@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { toast, Slide } from "react-toastify";
-import Alert from "../Components/Alert";
-
+import Toast from "../Components/Toast";
 /**
  * @param {object} props
  * @param {'info' | 'error' | 'warning'} - The variant of the alert (e.g., "info", "error").
@@ -15,6 +14,7 @@ export const createToast = ({
 	variant = "info",
 	title,
 	body,
+	hasDismiss = false,
 	hasIcon = false,
 	config = {},
 }) => {
@@ -29,13 +29,14 @@ export const createToast = ({
 
 	toast(
 		({ closeToast }) => (
-			<Alert
+			<Toast
 				variant={variant}
 				title={title}
 				body={body}
 				isToast={true}
-				hasIcon={hasIcon}
 				onClick={closeToast}
+				hasDismiss={hasDismiss}
+				hasIcon={hasIcon}
 			/>
 		),
 		toastConfig
@@ -47,5 +48,6 @@ createToast.propTypes = {
 	title: PropTypes.string,
 	body: PropTypes.string.isRequired,
 	hasIcon: PropTypes.bool,
+	hasDismiss: PropTypes.bool,
 	config: PropTypes.object,
 };

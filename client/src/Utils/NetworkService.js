@@ -393,7 +393,7 @@ class NetworkService {
 	 *
 	 */
 	async updateUser(config) {
-		return this.axiosInstance.put(`/auth/user/${config.userId}`, config.form);
+		return this.axiosInstance.put(`/auth/user`, config.form);
 	}
 
 	/**
@@ -406,8 +406,8 @@ class NetworkService {
 	 * @param {string} config.userId - The ID of the user to be deleted.
 	 *
 	 **/
-	async deleteUser(config) {
-		return this.axiosInstance.delete(`/auth/user/${config.userId}`);
+	async deleteUser() {
+		return this.axiosInstance.delete(`/auth/user`);
 	}
 
 	/**
@@ -977,7 +977,7 @@ class NetworkService {
 			});
 		}
 
-		return this.axiosInstance.get(`/monitors/summary/team?${params.toString()}`, {
+		return this.axiosInstance.get(`/monitors/team/summary?${params.toString()}`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -1086,6 +1086,32 @@ class NetworkService {
 
 	async getLogs() {
 		return this.axiosInstance.get(`/logs`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async getDiagnostics() {
+		return this.axiosInstance.get(`/diagnostic/system`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async getUserById(config) {
+		const userId = config?.userId;
+		return this.axiosInstance.get(`auth/users/${userId}`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async editUser(config) {
+		const { userId, user } = config;
+		return this.axiosInstance.put(`auth/users/${userId}`, user, {
 			headers: {
 				"Content-Type": "application/json",
 			},

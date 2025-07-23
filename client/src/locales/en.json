@@ -32,6 +32,11 @@
 					"errors": {
 						"incorrect": "The password you provided does not match our records"
 					}
+				},
+				"role": {
+					"errors": {
+						"min": "At least one role is required"
+					}
 				}
 			},
 			"inputs": {
@@ -209,7 +214,12 @@
 		"validationFailed": "Validation failed"
 	},
 	"cancel": "Cancel",
+	"checkFormError": "Please check the form for errors.",
 	"checkFrequency": "Check frequency",
+	"checkHooks": {
+		"failureResolveAll": "Failed to resolve all incidents.",
+		"failureResolveOne": "Failed to resolve incident."
+	},
 	"checkingEvery": "Checking every",
 	"city": "CITY",
 	"common": {
@@ -243,6 +253,8 @@
 	"createMonitor": "Create monitor",
 	"createNew": "Create new",
 	"createNotifications": {
+		"dialogDeleteConfirm": "Delete",
+		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
 		"discordSettings": {
 			"description": "Configure your Discord webhook here",
 			"title": "Discord",
@@ -273,6 +285,7 @@
 			"webhookLabel": "Slack webhook URL",
 			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
+		"testNotification": "Test notification",
 		"title": "Create notification channel",
 		"typeSettings": {
 			"description": "Select the type of notification channel you want to create.",
@@ -284,10 +297,7 @@
 			"title": "Webhook",
 			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
-		},
-		"testNotification": "Test notification",
-		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
-		"dialogDeleteConfirm": "Delete"
+		}
 	},
 	"createYour": "Create your",
 	"date&Time": "Date & Time",
@@ -297,6 +307,27 @@
 	"deleteStatusPage": "Do you want to delete this status page?",
 	"deleteStatusPageConfirm": "Yes, delete status page",
 	"deleteStatusPageDescription": "Once deleted, your status page cannot be retrieved.",
+	"diagnosticsPage": {
+		"diagnosticDescription": "System diagnostics",
+		"gauges": {
+			"heapAllocationSubtitle": "% of available memory",
+			"heapAllocationTitle": "Heap allocation",
+			"heapUsageSubtitle": "% of available memory",
+			"heapUsageTitle": "Heap usage",
+			"heapUtilizationSubtitle": "% of allocated",
+			"heapUtilizationTitle": "Heap utilization",
+			"instantCpuUsageSubtitle": "% of 1s used by CPU",
+			"instantCpuUsageTitle": "Instant CPU usage"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "Event loop delay",
+			"osMemoryLimitTitle": "OS Memory Limit",
+			"totalHeapSizeTitle": "Total heap size",
+			"uptimeTitle": "Uptime",
+			"usedHeapSizeTitle": "Used heap size"
+		},
+		"statsDescription": "System statistics"
+	},
 	"disk": "Disk",
 	"diskUsage": "Disk Usage",
 	"displayName": "Display name",
@@ -347,6 +378,24 @@
 	"duration": "Duration",
 	"edit": "Edit",
 	"editMaintenance": "Edit maintenance",
+	"editUserPage": {
+		"form": {
+			"email": "Email",
+			"firstName": "First name",
+			"lastName": "Last name",
+			"role": "Roles",
+			"save": "Save"
+		},
+		"table": {
+			"actionHeader": "Action",
+			"roleHeader": "Role"
+		},
+		"title": "Edit user",
+		"toast": {
+			"successUserUpdate": "User updated successfully",
+			"validationErrors": "Validation errors"
+		}
+	},
 	"editing": "Editing...",
 	"emailSent": "Email sent successfully",
 	"errorInvalidFieldId": "Invalid field ID provided",
@@ -377,6 +426,9 @@
 	"friendlyNameInput": "Friendly name",
 	"friendlyNamePlaceholder": "Maintenance at __ : __ for ___ minutes",
 	"gb": "GB",
+	"general": {
+		"noOptionsFound": "No {{unit}} found"
+	},
 	"greeting": {
 		"append": "The afternoon is your playground—let's make it epic!",
 		"overview": "Here's an overview of your {{type}} monitors.",
@@ -391,24 +443,24 @@
 	"incidentsOptionsHeader": "Incidents for:",
 	"incidentsOptionsHeaderFilterAll": "All",
 	"incidentsOptionsHeaderFilterBy": "Filter by:",
-	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
 	"incidentsOptionsHeaderFilterCannotResolve": "Cannot Resolve",
-	"incidentsTableResolvedAt": "Resolved at",
 	"incidentsOptionsHeaderFilterDown": "Down",
-	"incidentsTableActionResolve": "Resolve",
-	"incidentsPageActionResolve": "Resolve all incidents",
 	"incidentsOptionsHeaderFilterResolved": "Resolved",
 	"incidentsOptionsHeaderLastDay": "Last day",
 	"incidentsOptionsHeaderLastHour": "Last hour",
 	"incidentsOptionsHeaderLastWeek": "Last week",
 	"incidentsOptionsHeaderShow": "Show:",
+	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
 	"incidentsOptionsPlaceholderAllServers": "All servers",
+	"incidentsPageActionResolve": "Resolve all incidents",
 	"incidentsPageTitle": "Incidents",
+	"incidentsTableActionResolve": "Resolve",
 	"incidentsTableDateTime": "Date & Time",
 	"incidentsTableMessage": "Message",
 	"incidentsTableMonitorName": "Monitor Name",
 	"incidentsTableNoIncidents": "No incidents recorded",
 	"incidentsTablePaginationLabel": "incidents",
+	"incidentsTableResolvedAt": "Resolved at",
 	"incidentsTableStatus": "Status",
 	"incidentsTableStatusCode": "Status Code",
 	"infrastructureAlertNotificationDescription": "Send a notification to user(s) when thresholds exceed a specified percentage.",
@@ -420,6 +472,17 @@
 	"infrastructureDisplayNameLabel": "Display name",
 	"infrastructureEditMonitor": "Save Infrastructure Monitor",
 	"infrastructureEditYour": "Edit your",
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [
+				"Track the performance of your servers",
+				"Identify bottlenecks and optimize usage",
+				"Ensure reliability with real-time monitoring"
+			],
+			"title": "An infrastructure monitor is used to:",
+			"actionButton": "Let's create your first infrastructure monitor!"
+		}
+	},
 	"infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
 	"infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
 	"infrastructureProtocol": "Protocol",
@@ -438,7 +501,7 @@
 	"inviteNoTokenFound": "No invite token found",
 	"loginHere": "Login here",
 	"logsPage": {
-		"description": "This page shows the latest 1000 lines of logs from the Checkmate server",
+		"description": "System logs - last 1000 lines",
 		"logLevelSelect": {
 			"title": "Log level",
 			"values": {
@@ -450,6 +513,7 @@
 			}
 		},
 		"tabs": {
+			"diagnostics": "Diagnostics",
 			"logs": "Server logs",
 			"queue": "Job queue"
 		},
@@ -462,6 +526,17 @@
 	"maintenance": "maintenance",
 	"maintenanceRepeat": "Maintenance Repeat",
 	"maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [
+				"Mark your maintenance periods",
+				"Eliminate any misunderstandings",
+				"Stop sending alerts in maintenance windows"
+			],
+			"title": "A maintenance window is used to:",
+			"actionButton": "Let's create your first maintenance window!"
+		}
+	},
 	"maintenanceWindowDescription": "Your pings won't be sent during this time frame",
 	"maintenanceWindowName": "Maintenance Window Name",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
@@ -493,8 +568,8 @@
 	"message": "Message",
 	"monitor": "monitor",
 	"monitorActions": {
-		"deleteSuccess": "Monitor deleted successfully",
 		"deleteFailed": "Failed to delete monitor",
+		"deleteSuccess": "Monitor deleted successfully",
 		"details": "Details",
 		"export": "Export Monitors",
 		"import": "Import Monitors",
@@ -505,7 +580,6 @@
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
-
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
@@ -522,10 +596,6 @@
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
 	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
-	"checkHooks": {
-		"failureResolveOne": "Failed to resolve incident.",
-		"failureResolveAll": "Failed to resolve all incidents."
-	},
 	"ms": "ms",
 	"navControls": "Controls",
 	"nextWindow": "Next window",
@@ -564,7 +634,8 @@
 				"Let engineers know when incidents happen",
 				"Keep administrators informed of system changes"
 			],
-			"title": "notification channel"
+			"title": "A notification channel is used to:",
+			"actionButton": "Let's create your first notification channel!"
 		},
 		"fetch": {
 			"failed": "Failed to fetch notifications",
@@ -609,11 +680,23 @@
 	"notifySMS": "Notify via SMS (coming soon)",
 	"now": "Now",
 	"os": "OS",
+	"pageSpeed": {
+		"fallback": {
+			"checks": [
+				"Report on the user experience of a page",
+				"Help analyze webpage speed",
+				"Give suggestions on how the page can be improved"
+			],
+			"title": "A PageSpeed monitor is used to:",
+			"actionButton": "Let's create your first PageSpeed monitor!"
+		}
+	},
 	"pageSpeedAddApiKey": "to add your API key.",
 	"pageSpeedConfigureSettingsDescription": "Here you can select the URL of the host, together with the type of monitor.",
 	"pageSpeedDetailsPerformanceReport": "Values are estimated and may vary.",
 	"pageSpeedDetailsPerformanceReportCalculator": "See calculator",
 	"pageSpeedLearnMoreLink": "Click here",
+	"pageSpeedLighthouseAPI": "Use the Lighthouse PageSpeed API to monitor your website",
 	"pageSpeedMonitor": "PageSpeed monitor",
 	"pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key yet. Without it, the PageSpeed monitor won't function.",
 	"passwordPanel": {
@@ -796,6 +879,14 @@
 		"pending": "Pending...",
 		"up": "Your site is up."
 	},
+	"statusPage": {
+		"contents": "Contents",
+		"createSuccess": "Status page created successfully",
+		"deleteFailed": "Failed to delete status page",
+		"deleteSuccess": "Status page deleted successfully",
+		"generalSettings": "General settings",
+		"updateSuccess": "Status page updated successfully"
+	},
 	"statusPageCreate": {
 		"buttonSave": "Save"
 	},
@@ -821,7 +912,16 @@
 		"createSuccess": "Status page created successfully",
 		"updateSuccess": "Status page updated successfully",
 		"generalSettings": "General settings",
-		"contents": "Contents"
+		"contents": "Contents",
+		"fallback": {
+			"checks": [
+				"Monitor and display the health of your services in real time",
+				"Track multiple services and share their status",
+				"Keep users informed about outages and performance"
+			],
+			"title": "A status page is used to:",
+			"actionButton": "Let's create your first status page!"
+		}
 	},
 	"submit": "Submit",
 	"teamPanel": {
@@ -849,6 +949,15 @@
 	},
 	"testLocale": "testLocale",
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
+	"time": {
+		"fiveMinutes": "5 minutes",
+		"oneDay": "1 day",
+		"oneHour": "1 hour",
+		"oneWeek": "1 week",
+		"tenMinutes": "10 minutes",
+		"threeMinutes": "3 minutes",
+		"twentyMinutes": "20 minutes"
+	},
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
 	"title": "Title",
@@ -865,6 +974,18 @@
 		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [
+				"Check if websites or servers are online & responsive",
+				"Alert teams about downtime or performance issues",
+				"Monitor HTTP endpoints, pings, containers & ports",
+				"Track historical uptime and reliability trends"
+			],
+			"title": "An uptime monitor is used to:",
+			"actionButton": "Let's create your first uptime monitor!"
+		}
 	},
 	"url": "URL",
 	"urlMonitor": "URL to monitor",
