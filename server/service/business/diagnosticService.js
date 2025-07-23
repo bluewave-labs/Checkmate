@@ -5,7 +5,18 @@ const SERVICE_NAME = "diagnosticService";
 
 class DiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor() {}
+	constructor() {
+		/**
+		 * Performance Observer for monitoring system performance metrics.
+		 * Clears performance marks after each measurement to prevent memory leaks.
+		 */
+		const obs = new PerformanceObserver((items) => {
+			// Get the first entry but we don't need to store it
+			items.getEntries()[0];
+			performance.clearMarks();
+		});
+		obs.observe({ entryTypes: ["measure"] });
+	}
 
 	getCPUUsage = async () => {
 		const startUsage = process.cpuUsage();
