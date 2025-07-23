@@ -73,7 +73,7 @@ const recoveryValidation = joi.object({
 		.required(),
 });
 
-const recoveryTokenValidation = joi.object({
+const recoveryTokenBodyValidation = joi.object({
 	recoveryToken: joi.string().required(),
 });
 
@@ -688,7 +688,7 @@ export {
 	loginValidation,
 	registrationBodyValidation,
 	recoveryValidation,
-	recoveryTokenValidation,
+	recoveryTokenBodyValidation,
 	newPasswordValidation,
 	inviteRoleValidation,
 	inviteBodyValidation,

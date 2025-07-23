@@ -195,7 +195,7 @@ const deleteAllOtherUsers = async () => {
 	}
 };
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async () => {
 	try {
 		const users = await UserModel.find().select("-password").select("-profileImage");
 		return users;

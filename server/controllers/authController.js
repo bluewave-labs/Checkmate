@@ -3,7 +3,7 @@ import {
 	loginValidation,
 	editUserBodyValidation,
 	recoveryValidation,
-	recoveryTokenValidation,
+	recoveryTokenBodyValidation,
 	newPasswordValidation,
 	getUserByIdParamValidation,
 	editUserByIdParamValidation,
@@ -93,20 +93,8 @@ class AuthController {
 	requestRecovery = asyncHandler(
 		async (req, res, next) => {
 			await recoveryValidation.validateAsync(req.body);
-			const { email } = req.body;
-			const user = await this.db.getUserByEmail(email);
-			const recoveryToken = await this.db.requestRecoveryToken(req, res);
-			const name = user.firstName;
-			const { clientHost } = this.settingsService.getSettings();
-			const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
-
-			const html = await this.emailService.buildEmail("passwordResetTemplate", {
-				name,
-				email,
-				url,
-			});
-			const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
-
+			const email = req?.body?.email;
+			const msgId = await this.userService.requestRecovery(email);
 			return res.success({
 				msg: this.stringService.authCreateRecoveryToken,
 				data: msgId,
@@ -115,21 +103,11 @@ class AuthController {
 		SERVICE_NAME,
 		"requestRecovery"
 	);
-	/**
-	 * Validates a recovery token. The recovery token is validated and if valid, a success message is returned.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
-	 * @property {string} req.body.token - The recovery token to be validated.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status and a message indicating the validation of the recovery token.
-	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
-	 */
+
 	validateRecovery = asyncHandler(
 		async (req, res, next) => {
-			await recoveryTokenValidation.validateAsync(req.body);
-			await this.db.validateRecoveryToken(req, res);
+			await recoveryTokenBodyValidation.validateAsync(req.body);
+			await this.userService.validateRecovery(req.body.recoveryToken);
 			return res.success({
 				msg: this.stringService.authVerifyRecoveryToken,
 			});
@@ -138,24 +116,10 @@ class AuthController {
 		"validateRecovery"
 	);
 
-	/**
-	 * Resets a user's password. The new password is validated and if valid, the user's password is updated in the database and a new JWT token is issued.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
-	 * @property {string} req.body.token - The recovery token.
-	 * @property {string} req.body.password - The new password of the user.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the reset of the password, the updated user data (without password and avatar image), and a new JWT token.
-	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
-	 */
 	resetPassword = asyncHandler(
 		async (req, res, next) => {
 			await newPasswordValidation.validateAsync(req.body);
-			const user = await this.db.resetPassword(req, res);
-			const appSettings = await this.settingsService.getSettings();
-			const token = this.issueToken(user._doc, appSettings);
+			const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
 			return res.success({
 				msg: this.stringService.authResetPassword,
 				data: { user, token },
@@ -165,55 +129,9 @@ class AuthController {
 		"resetPassword"
 	);
 
-	/**
-	 * Deletes a user and all associated monitors, checks, and alerts.
-	 *
-	 * @param {Object} req - The request object.
-	 * @param {Object} res - The response object.
-	 * @param {Function} next - The next middleware function.
-	 * @returns {Object} The response object with success status and message.
-	 * @throws {Error} If user validation fails or user is not found in the database.
-	 */
 	deleteUser = asyncHandler(
 		async (req, res, next) => {
-			const email = req?.user?.email;
-			if (!email) {
-				throw new Error("No email in request");
-			}
-
-			const teamId = req?.user?.teamId;
-			const userId = req?.user?._id;
-
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			if (!userId) {
-				throw new Error("No user ID in request");
-			}
-
-			const roles = req.user.role;
-			if (roles.includes("demo")) {
-				throw new Error("Demo user cannot be deleted");
-			}
-
-			// 1. Find all the monitors associated with the team ID if superadmin
-			const result = await this.db.getMonitorsByTeamId({
-				teamId: teamId,
-			});
-
-			if (roles.includes("superadmin")) {
-				// 2.  Remove all jobs, delete checks and alerts
-				result?.monitors.length > 0 &&
-					(await Promise.all(
-						result.monitors.map(async (monitor) => {
-							await this.jobQueue.deleteJob(monitor);
-						})
-					));
-			}
-			// 6. Delete the user by id
-			await this.db.deleteUser(userId);
-
+			await this.userService.deleteUser(req.user);
 			return res.success({
 				msg: this.stringService.authDeleteUser,
 			});
@@ -224,7 +142,7 @@ class AuthController {
 
 	getAllUsers = asyncHandler(
 		async (req, res, next) => {
-			const allUsers = await this.db.getAllUsers(req, res);
+			const allUsers = await this.userService.getAllUsers();
 			return res.success({
 				msg: this.stringService.authGetAllUsers,
 				data: allUsers,
@@ -248,7 +166,7 @@ class AuthController {
 				throw new Error("No roles in request");
 			}
 
-			const user = await this.db.getUserById(roles, userId);
+			const user = await this.userService.getUserById(roles, userId);
 
 			return res.success({ msg: "ok", data: user });
 		},
@@ -274,7 +192,7 @@ class AuthController {
 				await editUserByIdBodyValidation.validateAsync(req.body);
 			}
 
-			await this.db.editUserById(userId, user);
+			await this.userService.editUserById(userId, user);
 			return res.success({ msg: "ok" });
 		},
 		SERVICE_NAME,

@@ -118,6 +118,91 @@ class UserService {
 		const updatedUser = await this.db.updateUser({ userId: currentUser?._id, user: updates, file: file });
 		return updatedUser;
 	};
-}
 
+	checkSuperadminExists = async () => {
+		const superAdminExists = await this.db.checkSuperadmin();
+		return superAdminExists;
+	};
+
+	requestRecovery = async (email) => {
+		const user = await this.db.getUserByEmail(email);
+		const recoveryToken = await this.db.requestRecoveryToken(email);
+		const name = user.firstName;
+		const { clientHost } = this.settingsService.getSettings();
+		const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
+
+		const html = await this.emailService.buildEmail("passwordResetTemplate", {
+			name,
+			email,
+			url,
+		});
+		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
+		return msgId;
+	};
+
+	validateRecovery = async (recoveryToken) => {
+		await this.db.validateRecoveryToken(recoveryToken);
+	};
+
+	resetPassword = async (password, recoveryToken) => {
+		const user = await this.db.resetPassword(password, recoveryToken);
+		const appSettings = await this.settingsService.getSettings();
+		const token = this.issueToken(user._doc, appSettings);
+		return { user, token };
+	};
+
+	deleteUser = async (user) => {
+		const email = user?.email;
+		if (!email) {
+			throw new Error("No email in request");
+		}
+
+		const teamId = user?.teamId;
+		const userId = user?._id;
+
+		if (!teamId) {
+			throw new Error("No team ID in request");
+		}
+
+		if (!userId) {
+			throw new Error("No user ID in request");
+		}
+
+		const roles = user?.role;
+		if (roles.includes("demo")) {
+			throw new Error("Demo user cannot be deleted");
+		}
+
+		// 1. Find all the monitors associated with the team ID if superadmin
+		const result = await this.db.getMonitorsByTeamId({
+			teamId: teamId,
+		});
+
+		if (roles.includes("superadmin")) {
+			// 2.  Remove all jobs, delete checks and alerts
+			result?.monitors.length > 0 &&
+				(await Promise.all(
+					result.monitors.map(async (monitor) => {
+						await this.jobQueue.deleteJob(monitor);
+					})
+				));
+		}
+		// 6. Delete the user by id
+		await this.db.deleteUser(userId);
+	};
+
+	getAllUsers = async () => {
+		const users = await this.db.getAllUsers();
+		return users;
+	};
+
+	getUserById = async (roles, userId) => {
+		const user = await this.db.getUserById(roles, userId);
+		return user;
+	};
+
+	editUserById = async (userId, user) => {
+		await this.db.editUserById(userId, user);
+	};
+}
 export default UserService;
