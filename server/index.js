@@ -57,7 +57,9 @@ import PulseQueueHelper from "./service/infrastructure/PulseQueue/PulseQueueHelp
 import SuperSimpleQueue from "./service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import SuperSimpleQueueHelper from "./service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 
+// Business services
 import UserService from "./service/business/userService.js";
+import CheckService from "./service/business/checkService.js";
 
 //Network service and dependencies
 import NetworkService from "./service/infrastructure/networkService.js";
@@ -179,6 +181,8 @@ const startApp = async () => {
 	});
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
+
+	// Business services
 	const userService = new UserService({
 		db,
 		emailService,
@@ -186,6 +190,11 @@ const startApp = async () => {
 		logger,
 		stringService,
 		jwt,
+	});
+	const checkService = new CheckService({
+		db,
+		settingsService,
+		stringService,
 	});
 
 	// const jobQueueHelper = new JobQueueHelper({
@@ -247,6 +256,7 @@ const startApp = async () => {
 	ServiceRegistry.register(TranslationService.SERVICE_NAME, translationService);
 	ServiceRegistry.register(RedisService.SERVICE_NAME, redisService);
 	ServiceRegistry.register(UserService.SERVICE_NAME, userService);
+	ServiceRegistry.register(CheckService.SERVICE_NAME, checkService);
 
 	await translationService.initialize();
 
@@ -285,11 +295,12 @@ const startApp = async () => {
 		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
 	});
 
-	const checkController = new CheckController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const checkController = new CheckController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		checkService: ServiceRegistry.get(CheckService.SERVICE_NAME),
+	});
 
 	const inviteController = new InviteController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),

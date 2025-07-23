@@ -345,8 +345,6 @@ const getChecksQueryValidation = joi.object({
 	status: joi.boolean(),
 });
 
-const getTeamChecksParamValidation = joi.object({});
-
 const getTeamChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
@@ -720,7 +718,6 @@ export {
 	createCheckBodyValidation,
 	getChecksParamValidation,
 	getChecksQueryValidation,
-	getTeamChecksParamValidation,
 	getTeamChecksQueryValidation,
 	ackCheckBodyValidation,
 	ackAllChecksParamValidation,
