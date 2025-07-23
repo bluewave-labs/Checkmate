@@ -631,12 +631,35 @@ class NetworkService {
 		});
 	}
 
+	/**
+	 * ************************************
+	 * Update the status of all checks for a given monitor
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.monitorId - The ID of the monitor.
+	 * @param {boolean} config.ack - The acknowledgment to update the checks to.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 *
+	 */
 	async updateMonitorChecksStatus(config) {
 		return this.axiosInstance.put(`/checks/monitor/${config.monitorId}`, {
 			ack: config.ack,
 		});
 	}
 
+	/**
+	 * ************************************
+	 * Update the status of all checks for a given team
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {boolean} config.ack - The acknowledgment to update the checks to.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 *
+	 */
 	async updateAllChecksStatus(config) {
 		return this.axiosInstance.put(`/checks/team/`, {
 			ack: config.ack,
