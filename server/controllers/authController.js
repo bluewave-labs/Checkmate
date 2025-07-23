@@ -78,18 +78,9 @@ class AuthController {
 		"editUser"
 	);
 
-	/**
-	 * Checks if a superadmin account exists in the database.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the existence of a superadmin, and a boolean indicating the existence of a superadmin.
-	 * @throws {Error} If there is an error during the process.
-	 */
 	checkSuperadminExists = asyncHandler(
 		async (req, res, next) => {
-			const superAdminExists = await this.db.checkSuperadmin(req, res);
+			const superAdminExists = await this.userService.checkSuperadminExists();
 			return res.success({
 				msg: this.stringService.authAdminExists,
 				data: superAdminExists,
@@ -98,17 +89,7 @@ class AuthController {
 		SERVICE_NAME,
 		"checkSuperadminExists"
 	);
-	/**
-	 * Requests a recovery token for a user. The user's email is validated and a recovery token is created and sent via email.
-	 * @async
-	 * @param {Object} req - The Express request object.
-	 * @property {Object} req.body - The body of the request.
-	 * @property {string} req.body.email - The email of the user requesting recovery.
-	 * @param {Object} res - The Express response object.
-	 * @param {function} next - The next middleware function.
-	 * @returns {Object} The response object with a success status, a message indicating the creation of the recovery token, and the message ID of the sent email.
-	 * @throws {Error} If there is an error during the process, especially if there is a validation error (422).
-	 */
+
 	requestRecovery = asyncHandler(
 		async (req, res, next) => {
 			await recoveryValidation.validateAsync(req.body);
