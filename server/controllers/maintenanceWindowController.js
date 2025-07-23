@@ -12,14 +12,15 @@ import { asyncHandler } from "../utils/errorUtils.js";
 const SERVICE_NAME = "maintenanceWindowController";
 
 class MaintenanceWindowController {
-	constructor(db, settingsService, stringService) {
+	constructor({ db, settingsService, stringService, maintenanceWindowService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
+		this.maintenanceWindowService = maintenanceWindowService;
 	}
 
 	createMaintenanceWindows = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await createMaintenanceWindowBodyValidation.validateAsync(req.body);
 
 			const teamId = req?.user?.teamId;
@@ -27,32 +28,7 @@ class MaintenanceWindowController {
 				throw new Error("Team ID is required");
 			}
 
-			const monitorIds = req.body.monitors;
-
-			const monitors = await this.db.getMonitorsByIds(monitorIds);
-
-			const unauthorizedMonitors = monitors.filter((monitor) => !monitor.teamId.equals(teamId));
-
-			if (unauthorizedMonitors.length > 0) {
-				const error = new Error("Unauthorized access to one or more monitors");
-				error.status = 403;
-				error.service = SERVICE_NAME;
-				error.method = "createMaintenanceWindows";
-				throw error;
-			}
-
-			const dbTransactions = monitorIds.map((monitorId) => {
-				return this.db.createMaintenanceWindow({
-					teamId,
-					monitorId,
-					name: req.body.name,
-					active: req.body.active ? req.body.active : true,
-					repeat: req.body.repeat,
-					start: req.body.start,
-					end: req.body.end,
-				});
-			});
-			await Promise.all(dbTransactions);
+			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: req.body });
 
 			return res.success({
 				msg: this.stringService.maintenanceWindowCreate,
@@ -63,7 +39,7 @@ class MaintenanceWindowController {
 	);
 
 	getMaintenanceWindowById = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await getMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 
 			const teamId = req.user.teamId;
@@ -71,7 +47,8 @@ class MaintenanceWindowController {
 				throw new Error("Team ID is required");
 			}
 
-			const maintenanceWindow = await this.db.getMaintenanceWindowById({ id: req.params.id, teamId });
+			const maintenanceWindow = await this.maintenanceWindowService.getMaintenanceWindowById({ id: req.params.id, teamId });
+
 			return res.success({
 				msg: this.stringService.maintenanceWindowGetById,
 				data: maintenanceWindow,
@@ -82,7 +59,7 @@ class MaintenanceWindowController {
 	);
 
 	getMaintenanceWindowsByTeamId = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await getMaintenanceWindowsByTeamIdQueryValidation.validateAsync(req.query);
 
 			const teamId = req?.user?.teamId;
@@ -91,7 +68,7 @@ class MaintenanceWindowController {
 				throw new Error("Team ID is required");
 			}
 
-			const maintenanceWindows = await this.db.getMaintenanceWindowsByTeamId(teamId, req.query);
+			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByTeamId({ teamId, query: req.query });
 
 			return res.success({
 				msg: this.stringService.maintenanceWindowGetByTeam,
@@ -103,17 +80,15 @@ class MaintenanceWindowController {
 	);
 
 	getMaintenanceWindowsByMonitorId = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await getMaintenanceWindowsByMonitorIdParamValidation.validateAsync(req.params);
-
-			const monitorId = req.params.monitorId;
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
 				throw new Error("Team ID is required");
 			}
 
-			const maintenanceWindows = await this.db.getMaintenanceWindowsByMonitorId({ monitorId, teamId });
+			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByMonitorId({ monitorId: req.params.monitorId, teamId });
 
 			return res.success({
 				msg: this.stringService.maintenanceWindowGetByUser,
@@ -125,7 +100,7 @@ class MaintenanceWindowController {
 	);
 
 	deleteMaintenanceWindow = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await deleteMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 
 			const teamId = req?.user?.teamId;
@@ -133,7 +108,8 @@ class MaintenanceWindowController {
 				throw new Error("Team ID is required");
 			}
 
-			await this.db.deleteMaintenanceWindowById({ id: req.params.id, teamId });
+			await this.maintenanceWindowService.deleteMaintenanceWindow({ id: req.params.id, teamId });
+
 			return res.success({
 				msg: this.stringService.maintenanceWindowDelete,
 			});
@@ -143,7 +119,7 @@ class MaintenanceWindowController {
 	);
 
 	editMaintenanceWindow = asyncHandler(
-		async (req, res, next) => {
+		async (req, res) => {
 			await editMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 			await editMaintenanceByIdWindowBodyValidation.validateAsync(req.body);
 
@@ -152,8 +128,7 @@ class MaintenanceWindowController {
 				throw new Error("Team ID is required");
 			}
 
-			const editedMaintenanceWindow = await this.db.editMaintenanceWindowById({ id: req.params.id, body: req.body, teamId });
-
+			const editedMaintenanceWindow = await this.maintenanceWindowService.editMaintenanceWindow({ id: req.params.id, body: req.body, teamId });
 			return res.success({
 				msg: this.stringService.maintenanceWindowEdit,
 				data: editedMaintenanceWindow,
