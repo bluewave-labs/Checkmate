@@ -192,6 +192,11 @@ const useAckMonitorChecks = () => {
 	const ackMonitorChecks = async (monitorId, setUpdateTrigger) => {
 		try {
 			setIsLoading(true);
+			await networkService.updateMonitorChecksStatus({
+				monitorId,
+				ack: true,
+			});
+			setUpdateTrigger((prev) => !prev);
 		} catch (error) {
 			createToast({ body: t("checkHooks.failureResolveMonitor") });
 		} finally {
