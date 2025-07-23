@@ -1,7 +1,8 @@
 import UserModel from "../../models/User.js";
 import RecoveryToken from "../../models/RecoveryToken.js";
-import serviceRegistry from "../../../service/serviceRegistry.js";
-import StringService from "../../../service/stringService.js";
+import crypto from "crypto";
+import serviceRegistry from "../../../service/system/serviceRegistry.js";
+import StringService from "../../../service/system/stringService.js";
 
 const SERVICE_NAME = "recoveryModule";
 
@@ -53,7 +54,7 @@ const resetPassword = async (password, candidateToken) => {
 		const newPassword = password;
 
 		// Validate token again
-		const recoveryToken = await validateRecoveryToken(req, res);
+		const recoveryToken = await validateRecoveryToken(candidateToken);
 		const user = await UserModel.findOne({ email: recoveryToken.email });
 
 		if (user === null) {

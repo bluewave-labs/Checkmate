@@ -1,5 +1,5 @@
 const SERVICE_NAME = "ServiceRegistry";
-import logger from "../utils/logger.js";
+import logger from "../../utils/logger.js";
 class ServiceRegistry {
 	static SERVICE_NAME = SERVICE_NAME;
 	constructor() {

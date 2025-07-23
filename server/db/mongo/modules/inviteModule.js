@@ -1,7 +1,7 @@
 import InviteToken from "../../models/InviteToken.js";
 import crypto from "crypto";
-import ServiceRegistry from "../../../service/serviceRegistry.js";
-import StringService from "../../../service/stringService.js";
+import ServiceRegistry from "../../../service/system/serviceRegistry.js";
+import StringService from "../../../service/system/stringService.js";
 
 const SERVICE_NAME = "inviteModule";
 /**
