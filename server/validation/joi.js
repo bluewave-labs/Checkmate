@@ -159,43 +159,7 @@ const createMonitorBodyValidation = joi.object({
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
-	url: joi
-		.string()
-		.required()
-		.custom((value, helpers) => {
-			// 1. Standard URLs: must have protocol and pass canParse()
-			if (/^(https?:\/\/)/.test(value)) {
-				if (typeof URL !== "undefined" && typeof URL.canParse === "function" && URL.canParse(value)) {
-					return value;
-				}
-				// else, it's a malformed URL with protocol
-				return helpers.error("string.invalidUrl");
-			}
-
-			// 2. Docker/internal hostnames (no protocol)
-			if (/^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:\d{1,5})?$/.test(value)) {
-				if (value.includes("..")) {
-					return helpers.error("string.invalidUrl");
-				}
-				// Split by dot, check each label
-				const labels = value.split(":")[0].split(".");
-				for (const label of labels) {
-					if (!label) return helpers.error("string.invalidUrl");
-					if (label.startsWith("-") || label.endsWith("-")) {
-						return helpers.error("string.invalidUrl");
-					}
-				}
-				return value;
-			}
-
-			// 3. Everything else is invalid
-			return helpers.error("string.invalidUrl");
-		})
-		.messages({
-			"string.empty": "This field is required.",
-			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl": "Please enter a valid URL, hostname, or container name (with optional port).",
-		}),
+	url: joi.string().required(),
 	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
