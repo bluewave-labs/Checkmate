@@ -218,6 +218,7 @@
 	"checkFrequency": "Check frequency",
 	"checkHooks": {
 		"failureResolveAll": "Failed to resolve all incidents.",
+		"failureResolveMonitor": "Failed to resolve monitor incidents.",
 		"failureResolveOne": "Failed to resolve incident."
 	},
 	"checkingEvery": "Checking every",
@@ -452,7 +453,8 @@
 	"incidentsOptionsHeaderShow": "Show:",
 	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
 	"incidentsOptionsPlaceholderAllServers": "All servers",
-	"incidentsPageActionResolve": "Resolve all incidents",
+	"incidentsPageActionResolveMonitor": "Resolve monitor incidents",
+	"incidentsPageActionResolveAll": "Resolve all incidents",
 	"incidentsPageTitle": "Incidents",
 	"incidentsTableActionResolve": "Resolve",
 	"incidentsTableDateTime": "Date & Time",
