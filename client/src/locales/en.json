@@ -378,6 +378,7 @@
 	"dockerContainerMonitoringDescription": "Check whether your Docker container is running or not.",
 	"duration": "Duration",
 	"edit": "Edit",
+	"editing": "Editing...",
 	"editMaintenance": "Edit maintenance",
 	"editUserPage": {
 		"form": {
@@ -397,7 +398,6 @@
 			"validationErrors": "Validation errors"
 		}
 	},
-	"editing": "Editing...",
 	"emailSent": "Email sent successfully",
 	"errorInvalidFieldId": "Invalid field ID provided",
 	"errorInvalidTypeId": "Invalid notification type provided",
@@ -453,8 +453,8 @@
 	"incidentsOptionsHeaderShow": "Show:",
 	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
 	"incidentsOptionsPlaceholderAllServers": "All servers",
-	"incidentsPageActionResolveMonitor": "Resolve monitor incidents",
 	"incidentsPageActionResolveAll": "Resolve all incidents",
+	"incidentsPageActionResolveMonitor": "Resolve monitor incidents",
 	"incidentsPageTitle": "Incidents",
 	"incidentsTableActionResolve": "Resolve",
 	"incidentsTableDateTime": "Date & Time",
@@ -476,13 +476,13 @@
 	"infrastructureEditYour": "Edit your",
 	"infrastructureMonitor": {
 		"fallback": {
+			"actionButton": "Let's create your first infrastructure monitor!",
 			"checks": [
 				"Track the performance of your servers",
 				"Identify bottlenecks and optimize usage",
 				"Ensure reliability with real-time monitoring"
 			],
-			"title": "An infrastructure monitor is used to:",
-			"actionButton": "Let's create your first infrastructure monitor!"
+			"title": "An infrastructure monitor is used to:"
 		}
 	},
 	"infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
@@ -530,13 +530,13 @@
 	"maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
 	"maintenanceWindow": {
 		"fallback": {
+			"actionButton": "Let's create your first maintenance window!",
 			"checks": [
 				"Mark your maintenance periods",
 				"Eliminate any misunderstandings",
 				"Stop sending alerts in maintenance windows"
 			],
-			"title": "A maintenance window is used to:",
-			"actionButton": "Let's create your first maintenance window!"
+			"title": "A maintenance window is used to:"
 		}
 	},
 	"maintenanceWindowDescription": "Your pings won't be sent during this time frame",
@@ -591,6 +591,7 @@
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
+	"monitors": "monitors",
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
@@ -605,28 +606,27 @@
 	},
 	"monitorStatusDown": "Monitor {name} ({url}) is DOWN and not responding",
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
-	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
 	"monitorType": {
 		"docker": {
 			"label": "Container ID",
-			"placeholder": "abcd1234",
-			"namePlaceholder": "My Container"
+			"namePlaceholder": "My Container",
+			"placeholder": "abcd1234"
 		},
 		"http": {
 			"label": "URL to monitor",
-			"placeholder": "google.com",
-			"namePlaceholder": "Google"
+			"namePlaceholder": "Google",
+			"placeholder": "google.com"
 		},
 		"ping": {
 			"label": "IP address to monitor",
-			"placeholder": "1.1.1.1",
-			"namePlaceholder": "Google"
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
 		},
 		"port": {
 			"label": "URL to monitor",
-			"placeholder": "localhost",
-			"namePlaceholder": "Localhost:5173"
+			"namePlaceholder": "Localhost:5173",
+			"placeholder": "localhost"
 		}
 	},
 	"ms": "ms",
@@ -662,13 +662,13 @@
 		},
 		"enableNotifications": "Enable {{platform}} notifications",
 		"fallback": {
+			"actionButton": "Let's create your first notification channel!",
 			"checks": [
 				"Alert teams about downtime or performance issues",
 				"Let engineers know when incidents happen",
 				"Keep administrators informed of system changes"
 			],
-			"title": "A notification channel is used to:",
-			"actionButton": "Let's create your first notification channel!"
+			"title": "A notification channel is used to:"
 		},
 		"fetch": {
 			"failed": "Failed to fetch notifications",
@@ -715,13 +715,13 @@
 	"os": "OS",
 	"pageSpeed": {
 		"fallback": {
+			"actionButton": "Let's create your first PageSpeed monitor!",
 			"checks": [
 				"Report on the user experience of a page",
 				"Help analyze webpage speed",
 				"Give suggestions on how the page can be improved"
 			],
-			"title": "A PageSpeed monitor is used to:",
-			"actionButton": "Let's create your first PageSpeed monitor!"
+			"title": "A PageSpeed monitor is used to:"
 		}
 	},
 	"pageSpeedAddApiKey": "to add your API key.",
@@ -754,8 +754,8 @@
 	"queuePage": {
 		"failedJobTable": {
 			"failCountHeader": "Fail count",
-			"failReasonHeader": "Fail reason",
 			"failedAtHeader": "Last failed at",
+			"failReasonHeader": "Fail reason",
 			"monitorIdHeader": "Monitor ID",
 			"monitorUrlHeader": "Monitor URL",
 			"title": "Failed jobs"
@@ -896,8 +896,8 @@
 	"settingsTestEmailUnknownError": "Unknown error",
 	"showAdminLoginLink": "Show \"Administrator? Login Here\" link on the status page",
 	"showCharts": "Show charts",
-	"showUptimePercentage": "Show uptime percentage",
 	"shown": "Shown",
+	"showUptimePercentage": "Show uptime percentage",
 	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
 	"starPromptTitle": "Star Checkmate",
 	"startTime": "Start time",
@@ -917,6 +917,15 @@
 		"createSuccess": "Status page created successfully",
 		"deleteFailed": "Failed to delete status page",
 		"deleteSuccess": "Status page deleted successfully",
+		"fallback": {
+			"actionButton": "Let's create your first status page!",
+			"checks": [
+				"Monitor and display the health of your services in real time",
+				"Track multiple services and share their status",
+				"Keep users informed about outages and performance"
+			],
+			"title": "A status page is used to:"
+		},
 		"generalSettings": "General settings",
 		"updateSuccess": "Status page updated successfully"
 	},
@@ -939,23 +948,6 @@
 	"statusPageStatusNoPage": "There's no status page here.",
 	"statusPageStatusNotPublic": "This status page is not public.",
 	"statusPageStatusServiceStatus": "Service status",
-	"statusPage": {
-		"deleteSuccess": "Status page deleted successfully",
-		"deleteFailed": "Failed to delete status page",
-		"createSuccess": "Status page created successfully",
-		"updateSuccess": "Status page updated successfully",
-		"generalSettings": "General settings",
-		"contents": "Contents",
-		"fallback": {
-			"checks": [
-				"Monitor and display the health of your services in real time",
-				"Track multiple services and share their status",
-				"Keep users informed about outages and performance"
-			],
-			"title": "A status page is used to:",
-			"actionButton": "Let's create your first status page!"
-		}
-	},
 	"submit": "Submit",
 	"teamPanel": {
 		"cancel": "Cancel",
@@ -983,19 +975,19 @@
 	"testLocale": "testLocale",
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"time": {
-		"oneMinute": "1 minute",
-		"twoMinutes": "2 minutes",
-		"fourMinutes": "4 minutes",
 		"fiveMinutes": "5 minutes",
+		"fourMinutes": "4 minutes",
 		"oneDay": "1 day",
 		"oneHour": "1 hour",
+		"oneMinute": "1 minute",
 		"oneWeek": "1 week",
 		"tenMinutes": "10 minutes",
 		"threeMinutes": "3 minutes",
-		"twentyMinutes": "20 minutes"
+		"twentyMinutes": "20 minutes",
+		"twoMinutes": "2 minutes"
 	},
-	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
+	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"title": "Title",
 	"tlsErrorIgnored": "TLS/SSL errors ignored",
 	"total": "Total",
@@ -1016,14 +1008,14 @@
 	},
 	"uptimeMonitor": {
 		"fallback": {
+			"actionButton": "Let's create your first uptime monitor!",
 			"checks": [
 				"Check if websites or servers are online & responsive",
 				"Alert teams about downtime or performance issues",
 				"Monitor HTTP endpoints, pings, containers & ports",
 				"Track historical uptime and reliability trends"
 			],
-			"title": "An uptime monitor is used to:",
-			"actionButton": "Let's create your first uptime monitor!"
+			"title": "An uptime monitor is used to:"
 		}
 	},
 	"url": "URL",
