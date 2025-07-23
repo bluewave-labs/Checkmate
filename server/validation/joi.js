@@ -87,10 +87,6 @@ const deleteUserParamValidation = joi.object({
 	email: joi.string().email().required(),
 });
 
-const inviteRoleValidation = joi.object({
-	roles: joi.custom(roleValidatior(["admin", "superadmin"])).required(),
-});
-
 const inviteBodyValidation = joi.object({
 	email: joi.string().trim().email().required().messages({
 		"string.empty": "Email is required",
@@ -652,7 +648,6 @@ export {
 	recoveryValidation,
 	recoveryTokenBodyValidation,
 	newPasswordValidation,
-	inviteRoleValidation,
 	inviteBodyValidation,
 	inviteVerificationBodyValidation,
 	createMonitorBodyValidation,

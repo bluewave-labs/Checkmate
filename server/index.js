@@ -61,6 +61,7 @@ import SuperSimpleQueueHelper from "./service/infrastructure/SuperSimpleQueue/Su
 import UserService from "./service/business/userService.js";
 import CheckService from "./service/business/checkService.js";
 import DiagnosticService from "./service/business/diagnosticService.js";
+import InviteService from "./service/business/inviteService.js";
 
 //Network service and dependencies
 import NetworkService from "./service/infrastructure/networkService.js";
@@ -198,7 +199,12 @@ const startApp = async () => {
 		stringService,
 	});
 	const diagnosticService = new DiagnosticService();
-
+	const inviteService = new InviteService({
+		db,
+		settingsService,
+		emailService,
+		stringService,
+	});
 	// const jobQueueHelper = new JobQueueHelper({
 	// 	redisService,
 	// 	Queue,
@@ -304,12 +310,13 @@ const startApp = async () => {
 		checkService: ServiceRegistry.get(CheckService.SERVICE_NAME),
 	});
 
-	const inviteController = new InviteController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(EmailService.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME)
-	);
+	const inviteController = new InviteController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		inviteService,
+	});
 
 	const maintenanceWindowController = new MaintenanceWindowController(
 		ServiceRegistry.get(MongoDB.SERVICE_NAME),
