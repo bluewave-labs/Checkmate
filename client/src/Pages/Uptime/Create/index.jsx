@@ -35,7 +35,7 @@ import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 import { useParams } from "react-router-dom";
 import {
-  useCreateMonitor,
+	useCreateMonitor,
 	useDeleteMonitor,
 	useUpdateMonitor,
 	usePauseMonitor,
@@ -83,10 +83,6 @@ const UptimeCreate = () => {
 	const triggerUpdate = () => {
 		setUpdateTrigger(!updateTrigger);
 	};
-	// const formatAndSet = (monitor) => {
-	// 	monitor.interval = monitor.interval / MS_PER_MINUTE;
-	// 	setMonitor(monitor);
-	// };
 
 	// Hooks
 	const [notifications, notificationsAreLoading, notificationsError] =
@@ -95,7 +91,7 @@ const UptimeCreate = () => {
 	// Network
 	const [isLoading] = useFetchMonitorById({
 		monitorId,
-		setMonitor, // : formatAndSet,
+		setMonitor,
 		updateTrigger: true,
 	});
 	const [createMonitor, isCreating] = useCreateMonitor();
@@ -264,6 +260,7 @@ const UptimeCreate = () => {
 	};
 
 	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
+	const displayInterval = monitor?.interval / MS_PER_MINUTE || 1;
 	const parsedUrl = parseUrl(monitor?.url);
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
@@ -526,7 +523,7 @@ const UptimeCreate = () => {
 									: monitorTypeMaps[monitor.type].label || t("urlMonitor")
 							}
 							placeholder={monitorTypeMaps[monitor.type].placeholder || ""}
-							value={parsedUrl?.host || monitor?.url || ""}
+							value={parsedUrl?.host + parsedUrl?.pathname || monitor?.url || ""}
 							https={isCreate ? https : protocol === "https"}
 							startAdornment={
 								monitor?.type === "http" && (
@@ -610,7 +607,7 @@ const UptimeCreate = () => {
 						<Select
 							name="interval"
 							label={t("checkFrequency")}
-							value={monitor?.interval / MS_PER_MINUTE || 1}
+							value={displayInterval}
 							onChange={onChange}
 							items={FREQUENCIES}
 						/>
