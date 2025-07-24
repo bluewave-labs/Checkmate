@@ -22,22 +22,20 @@ import PulseDot from "../../../Components/Animated/PulseDot";
 import SkeletonLayout from "./skeleton";
 
 // Utils
-import { useParams } from "react-router";
 import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
-import { useTranslation } from "react-i18next";
 import {
 	PauseOutlined as PauseOutlinedIcon,
 	PlayArrowOutlined as PlayArrowOutlinedIcon,
 } from "@mui/icons-material";
 import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
-import { useCreateMonitor, useFetchMonitorById } from "../../../Hooks/monitorHooks";
 import { useParams } from "react-router-dom";
 import {
+  useCreateMonitor,
 	useDeleteMonitor,
 	useUpdateMonitor,
 	usePauseMonitor,
@@ -85,6 +83,10 @@ const UptimeCreate = () => {
 	const triggerUpdate = () => {
 		setUpdateTrigger(!updateTrigger);
 	};
+	// const formatAndSet = (monitor) => {
+	// 	monitor.interval = monitor.interval / MS_PER_MINUTE;
+	// 	setMonitor(monitor);
+	// };
 
 	// Hooks
 	const [notifications, notificationsAreLoading, notificationsError] =
@@ -93,7 +95,7 @@ const UptimeCreate = () => {
 	// Network
 	const [isLoading] = useFetchMonitorById({
 		monitorId,
-		setMonitor: formatAndSet,
+		setMonitor, // : formatAndSet,
 		updateTrigger: true,
 	});
 	const [createMonitor, isCreating] = useCreateMonitor();
@@ -154,10 +156,6 @@ const UptimeCreate = () => {
 			placeholder: t("monitorType.port.placeholder"),
 			namePlaceholder: t("monitorType.port.namePlaceholder"),
 		},
-	};
-	const formatAndSet = (monitor) => {
-		monitor.interval = monitor.interval / MS_PER_MINUTE;
-		setMonitor(monitor);
 	};
 
 	// Handlers
@@ -269,9 +267,6 @@ const UptimeCreate = () => {
 	const parsedUrl = parseUrl(monitor?.url);
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
-	if (Object.keys(monitor).length === 0) {
-		return <SkeletonLayout />;
-	}
 	useEffect(() => {
 		if (!isCreate) {
 			if (monitor.matchMethod) {
@@ -280,7 +275,11 @@ const UptimeCreate = () => {
 				setUseAdvancedMatching(false);
 			}
 		}
-	}, [monitor]);
+	}, [monitor, isCreate]);
+
+	if (Object.keys(monitor).length === 0) {
+		return <SkeletonLayout />;
+	}
 
 	return (
 		<Stack gap={theme.spacing(10)}>
@@ -365,12 +364,12 @@ const UptimeCreate = () => {
 										"&:before": {
 											position: "absolute",
 											content: `""`,
-											width: 4,
-											height: 4,
+											width: theme.spacing(2),
+											height: theme.spacing(2),
 											borderRadius: "50%",
 											backgroundColor: theme.palette.primary.contrastTextTertiary,
 											opacity: 0.8,
-											left: -10,
+											left: theme.spacing(-5),
 											top: "50%",
 											transform: "translateY(-50%)",
 										},
