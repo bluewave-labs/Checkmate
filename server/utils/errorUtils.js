@@ -65,12 +65,16 @@ export const asyncHandler = (fn, serviceName, methodName) => {
 				return next(appError);
 			}
 
+			if (error.status) {
+				const appError = createError(error.message, error.status, serviceName, methodName, { originalError: error.message, stack: error.stack });
+				return next(appError);
+			}
+
 			// For unknown errors, create a server error
 			const appError = createServerError(error.message || "An unexpected error occurred", { originalError: error.message, stack: error.stack });
 			appError.service = serviceName;
 			appError.method = methodName;
 			appError.stack = error.stack; // Preserve original stack
-
 			return next(appError);
 		}
 	};

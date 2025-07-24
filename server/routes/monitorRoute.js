@@ -2,9 +2,6 @@ import { Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
 import multer from "multer";
 import { fetchMonitorCertificate } from "../controllers/controllerUtils.js";
-import Monitor from "../db/models/Monitor.js";
-import { verifyOwnership } from "../middleware/verifyOwnership.js";
-import { verifyTeamAccess } from "../middleware/verifyTeamAccess.js";
 const upload = multer({
 	storage: multer.memoryStorage(), // Store file in memory as Buffer
 });
@@ -33,7 +30,6 @@ class MonitorRoutes {
 		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
 
 		// Util routes
-		this.router.get("/resolution/url", isAllowed(["admin", "superadmin"]), this.monitorController.checkEndpointResolution);
 		this.router.get("/certificate/:monitorId", (req, res, next) => {
 			this.monitorController.getMonitorCertificate(req, res, next, fetchMonitorCertificate);
 		});
@@ -46,7 +42,6 @@ class MonitorRoutes {
 		// Other static routes
 		this.router.post("/demo", isAllowed(["admin", "superadmin"]), this.monitorController.addDemoMonitors);
 		this.router.get("/export", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToCSV);
-		this.router.post("/seed", isAllowed(["superadmin"]), this.monitorController.seedDb);
 		this.router.post("/bulk", isAllowed(["admin", "superadmin"]), upload.single("csvFile"), this.monitorController.createBulkMonitors);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
 
