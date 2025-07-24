@@ -1,14 +1,14 @@
 const SERVICE_NAME = "inviteService";
-import { createServerError } from "../../utils/errorUtils.js";
 
 class InviteService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, settingsService, emailService, stringService }) {
+	constructor({ db, settingsService, emailService, stringService, errorService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.stringService = stringService;
+		this.errorService = errorService;
 	}
 
 	getInviteToken = async ({ invite, teamId }) => {
@@ -27,7 +27,7 @@ class InviteService {
 		});
 		const result = await this.emailService.sendEmail(inviteRequest.email, "Welcome to Uptime Monitor", html);
 		if (!result) {
-			throw createServerError("Failed to send invite e-mail... Please verify your settings.");
+			throw this.errorService.createServerError("Failed to send invite e-mail... Please verify your settings.");
 		}
 	};
 

@@ -1,27 +1,27 @@
 import { createNotificationBodyValidation } from "../validation/joi.js";
-import { asyncHandler } from "../utils/errorUtils.js";
+import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "NotificationController";
 
-class NotificationController {
-	constructor({ notificationService, stringService, statusService, db }) {
+class NotificationController extends BaseController {
+	constructor({ notificationService, stringService, statusService, db, errorService }) {
+		super();
 		this.notificationService = notificationService;
 		this.stringService = stringService;
 		this.statusService = statusService;
 		this.db = db;
+		this.errorService = errorService;
+		this.asyncHandler = errorService.asyncHandler;
 	}
 
-	testNotification = asyncHandler(
-		async (req, res, next) => {
+	testNotification = this.asyncHandler(
+		async (req, res) => {
 			const notification = req.body;
 
 			const success = await this.notificationService.sendTestNotification(notification);
 
 			if (!success) {
-				return res.error({
-					msg: "Sending notification failed",
-					status: 400,
-				});
+				throw this.errorService.createServerError("Sending notification failed");
 			}
 
 			return res.success({
@@ -32,8 +32,8 @@ class NotificationController {
 		"testNotification"
 	);
 
-	createNotification = asyncHandler(
-		async (req, res, next) => {
+	createNotification = this.asyncHandler(
+		async (req, res) => {
 			await createNotificationBodyValidation.validateAsync(req.body, {
 				abortEarly: false,
 			});
@@ -42,12 +42,12 @@ class NotificationController {
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("No team ID in request");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const userId = req?.user?._id;
 			if (!userId) {
-				throw new Error("No user ID in request");
+				throw this.errorService.createBadRequestError("User ID is required");
 			}
 			body.userId = userId;
 			body.teamId = teamId;
@@ -62,11 +62,11 @@ class NotificationController {
 		"createNotification"
 	);
 
-	getNotificationsByTeamId = asyncHandler(
-		async (req, res, next) => {
+	getNotificationsByTeamId = this.asyncHandler(
+		async (req, res) => {
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("No team ID in request");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const notifications = await this.db.getNotificationsByTeamId(teamId);
@@ -80,18 +80,16 @@ class NotificationController {
 		"getNotificationsByTeamId"
 	);
 
-	deleteNotification = asyncHandler(
-		async (req, res, next) => {
+	deleteNotification = this.asyncHandler(
+		async (req, res) => {
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("No team ID in request");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const notification = await this.db.getNotificationById(req.params.id);
 			if (!notification.teamId.equals(teamId)) {
-				const error = new Error("Unauthorized");
-				error.status = 403;
-				throw error;
+				throw this.errorService.createAuthorizationError();
 			}
 
 			await this.db.deleteNotificationById(req.params.id);
@@ -103,19 +101,17 @@ class NotificationController {
 		"deleteNotification"
 	);
 
-	getNotificationById = asyncHandler(
-		async (req, res, next) => {
+	getNotificationById = this.asyncHandler(
+		async (req, res) => {
 			const notification = await this.db.getNotificationById(req.params.id);
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("No team ID in request");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			if (!notification.teamId.equals(teamId)) {
-				const error = new Error("Unauthorized");
-				error.status = 403;
-				throw error;
+				throw this.errorService.createAuthorizationError();
 			}
 			return res.success({
 				msg: "Notification fetched successfully",
@@ -126,23 +122,21 @@ class NotificationController {
 		"getNotificationById"
 	);
 
-	editNotification = asyncHandler(
-		async (req, res, next) => {
+	editNotification = this.asyncHandler(
+		async (req, res) => {
 			await createNotificationBodyValidation.validateAsync(req.body, {
 				abortEarly: false,
 			});
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("No team ID in request");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const notification = await this.db.getNotificationById(req.params.id);
 
 			if (!notification.teamId.equals(teamId)) {
-				const error = new Error("Unauthorized");
-				error.status = 403;
-				throw error;
+				throw this.errorService.createAuthorizationError();
 			}
 
 			const editedNotification = await this.db.editNotification(req.params.id, req.body);
@@ -155,26 +149,24 @@ class NotificationController {
 		"editNotification"
 	);
 
-	testAllNotifications = asyncHandler(
-		async (req, res, next) => {
+	testAllNotifications = this.asyncHandler(
+		async (req, res) => {
 			const monitorId = req.body.monitorId;
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("No team ID in request");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const monitor = await this.db.getMonitorById(monitorId);
 
 			if (!monitor.teamId.equals(teamId)) {
-				const error = new Error("Unauthorized");
-				error.status = 403;
-				throw error;
+				throw this.errorService.createAuthorizationError();
 			}
 
 			const notifications = monitor.notifications;
-			if (notifications.length === 0) throw new Error("No notifications");
+			if (notifications.length === 0) throw this.errorService.createBadRequestError("No notifications");
 			const result = await this.notificationService.testAllNotifications(notifications);
-			if (!result) throw new Error("Failed to send all notifications");
+			if (!result) throw this.errorService.createServerError("Failed to send all notifications");
 			return res.success({
 				msg: "All notifications sent successfully",
 			});

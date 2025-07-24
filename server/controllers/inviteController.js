@@ -1,22 +1,24 @@
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "../validation/joi.js";
-import { asyncHandler } from "../utils/errorUtils.js";
-
+import BaseController from "./baseController.js";
 const SERVICE_NAME = "inviteController";
 
 /**
  * Controller for handling user invitation operations
  * Manages invite token generation, email sending, and token verification
  */
-class InviteController {
+class InviteController extends BaseController {
 	/**
 	 * Creates a new InviteController instance
 	 * @param {Object} dependencies - Dependencies injected into the controller
 	 * @param {Object} dependencies.stringService - Service for internationalized strings
-	 * @param {Object} dependencies.inviteService - Service for invite-related operations
+	 * @param {Object} dependencies.inviteServ	ice - Service for invite-related operations
+	 * @param {Object} dependencies.errorService - Service for error handling
 	 */
-	constructor({ stringService, inviteService }) {
+	constructor({ stringService, inviteService, errorService }) {
+		super();
 		this.stringService = stringService;
 		this.inviteService = inviteService;
+		this.errorService = errorService;
 	}
 
 	/**
@@ -28,7 +30,7 @@ class InviteController {
 	 * @param {Object} res - Express response object
 	 * @returns {Promise<Object>} Response with invite token data
 	 */
-	getInviteToken = asyncHandler(
+	getInviteToken = this.asyncHandler(
 		async (req, res) => {
 			const invite = req.body;
 			const teamId = req?.user?.teamId;
@@ -54,7 +56,7 @@ class InviteController {
 	 * @param {Object} res - Express response object
 	 * @returns {Promise<Object>} Response with invite token data
 	 */
-	sendInviteEmail = asyncHandler(
+	sendInviteEmail = this.asyncHandler(
 		async (req, res) => {
 			const inviteRequest = req.body;
 			inviteRequest.teamId = req?.user?.teamId;
@@ -81,7 +83,7 @@ class InviteController {
 	 * @param {Object} res - Express response object
 	 * @returns {Promise<Object>} Response with verified invite data
 	 */
-	verifyInviteToken = asyncHandler(
+	verifyInviteToken = this.asyncHandler(
 		async (req, res) => {
 			await inviteVerificationBodyValidation.validateAsync(req.body);
 			const invite = await this.inviteService.verifyInviteToken({ inviteToken: req?.body?.token });

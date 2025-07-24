@@ -3,7 +3,6 @@ import fs from "fs";
 import swaggerUi from "swagger-ui-express";
 import jwt from "jsonwebtoken";
 import papaparse from "papaparse";
-
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -57,6 +56,8 @@ import PulseQueueHelper from "./service/infrastructure/PulseQueue/PulseQueueHelp
 
 import SuperSimpleQueue from "./service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import SuperSimpleQueueHelper from "./service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+
+import ErrorService from "./service/infrastructure/errorService.js";
 
 // Business services
 import UserService from "./service/business/userService.js";
@@ -186,6 +187,7 @@ const startApp = async () => {
 	});
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
+	const errorService = new ErrorService();
 
 	// const jobQueueHelper = new JobQueueHelper({
 	// 	redisService,
@@ -240,6 +242,7 @@ const startApp = async () => {
 		logger,
 		stringService,
 		jwt,
+		errorService,
 	});
 	const checkService = new CheckService({
 		db,
@@ -252,6 +255,7 @@ const startApp = async () => {
 		settingsService,
 		emailService,
 		stringService,
+		errorService,
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
 		db,
@@ -266,11 +270,13 @@ const startApp = async () => {
 		emailService,
 		papaparse,
 		logger,
+		errorService,
 	});
 	// Register services
 	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
 	// ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
 	ServiceRegistry.register(JobQueue.SERVICE_NAME, superSimpleQueue);
+	ServiceRegistry.register(ErrorService.SERVICE_NAME, errorService);
 	ServiceRegistry.register(MongoDB.SERVICE_NAME, db);
 	ServiceRegistry.register(SettingsService.SERVICE_NAME, settingsService);
 	ServiceRegistry.register(EmailService.SERVICE_NAME, emailService);
@@ -285,6 +291,7 @@ const startApp = async () => {
 	ServiceRegistry.register(InviteService.SERVICE_NAME, inviteService);
 	ServiceRegistry.register(MaintenanceWindowService.SERVICE_NAME, maintenanceWindowService);
 	ServiceRegistry.register(MonitorService.SERVICE_NAME, monitorService);
+	ServiceRegistry.register(DiagnosticService.SERVICE_NAME, diagnosticService);
 
 	await translationService.initialize();
 
@@ -306,6 +313,7 @@ const startApp = async () => {
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		logger: logger,
 		userService: ServiceRegistry.get(UserService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	const monitorController = new MonitorController({
@@ -315,6 +323,7 @@ const startApp = async () => {
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
 		monitorService: ServiceRegistry.get(MonitorService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	const settingsController = new SettingsController({
@@ -322,6 +331,7 @@ const startApp = async () => {
 		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	const checkController = new CheckController({
@@ -329,11 +339,13 @@ const startApp = async () => {
 		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		checkService: ServiceRegistry.get(CheckService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	const inviteController = new InviteController({
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
-		inviteService,
+		inviteService: ServiceRegistry.get(InviteService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	const maintenanceWindowController = new MaintenanceWindowController({
@@ -341,23 +353,34 @@ const startApp = async () => {
 		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		maintenanceWindowService: ServiceRegistry.get(MaintenanceWindowService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
-	const queueController = new QueueController(ServiceRegistry.get(JobQueue.SERVICE_NAME), ServiceRegistry.get(StringService.SERVICE_NAME));
+	const queueController = new QueueController({
+		jobQueue: ServiceRegistry.get(JobQueue.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
+	});
 
-	const logController = new LogController(logger);
+	const logController = new LogController({ logger, errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME) });
 
-	const statusPageController = new StatusPageController(ServiceRegistry.get(MongoDB.SERVICE_NAME), ServiceRegistry.get(StringService.SERVICE_NAME));
+	const statusPageController = new StatusPageController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
+	});
 
 	const notificationController = new NotificationController({
 		notificationService: ServiceRegistry.get(NotificationService.SERVICE_NAME),
 		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
 		statusService: ServiceRegistry.get(StatusService.SERVICE_NAME),
 		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	const diagnosticController = new DiagnosticController({
-		diagnosticService,
+		diagnosticService: ServiceRegistry.get(DiagnosticService.SERVICE_NAME),
+		errorService: ServiceRegistry.get(ErrorService.SERVICE_NAME),
 	});
 
 	//Create routes

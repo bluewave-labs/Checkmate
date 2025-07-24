@@ -1,16 +1,18 @@
 import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation, imageValidation } from "../validation/joi.js";
-import { asyncHandler } from "../utils/errorUtils.js";
+import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "statusPageController";
 
-class StatusPageController {
-	constructor(db, stringService) {
+class StatusPageController extends BaseController {
+	constructor({ db, stringService, errorService }) {
+		super();
 		this.db = db;
 		this.stringService = stringService;
+		this.errorService = errorService;
 	}
 
-	createStatusPage = asyncHandler(
-		async (req, res, next) => {
+	createStatusPage = this.asyncHandler(
+		async (req, res) => {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 
@@ -30,16 +32,14 @@ class StatusPageController {
 		"createStatusPage"
 	);
 
-	updateStatusPage = asyncHandler(
-		async (req, res, next) => {
+	updateStatusPage = this.asyncHandler(
+		async (req, res) => {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 
 			const statusPage = await this.db.updateStatusPage(req.body, req.file);
 			if (statusPage === null) {
-				const error = new Error(this.stringService.statusPageNotFound);
-				error.status = 404;
-				throw error;
+				throw this.errorService.createNotFoundError(this.stringService.statusPageNotFound);
 			}
 			return res.success({
 				msg: this.stringService.statusPageUpdate,
@@ -50,8 +50,8 @@ class StatusPageController {
 		"updateStatusPage"
 	);
 
-	getStatusPage = asyncHandler(
-		async (req, res, next) => {
+	getStatusPage = this.asyncHandler(
+		async (req, res) => {
 			const statusPage = await this.db.getStatusPage();
 			return res.success({
 				msg: this.stringService.statusPageByUrl,
@@ -62,8 +62,8 @@ class StatusPageController {
 		"getStatusPage"
 	);
 
-	getStatusPageByUrl = asyncHandler(
-		async (req, res, next) => {
+	getStatusPageByUrl = this.asyncHandler(
+		async (req, res) => {
 			await getStatusPageParamValidation.validateAsync(req.params);
 			await getStatusPageQueryValidation.validateAsync(req.query);
 
@@ -77,8 +77,8 @@ class StatusPageController {
 		"getStatusPageByUrl"
 	);
 
-	getStatusPagesByTeamId = asyncHandler(
-		async (req, res, next) => {
+	getStatusPagesByTeamId = this.asyncHandler(
+		async (req, res) => {
 			const teamId = req.user.teamId;
 			const statusPages = await this.db.getStatusPagesByTeamId(teamId);
 
@@ -91,8 +91,8 @@ class StatusPageController {
 		"getStatusPagesByTeamId"
 	);
 
-	deleteStatusPage = asyncHandler(
-		async (req, res, next) => {
+	deleteStatusPage = this.asyncHandler(
+		async (req, res) => {
 			await this.db.deleteStatusPage(req.params.url);
 			return res.success({
 				msg: this.stringService.statusPageDelete,

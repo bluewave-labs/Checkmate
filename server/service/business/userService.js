@@ -1,15 +1,15 @@
 const SERVICE_NAME = "userService";
-import { createAuthError, createError } from "../../utils/errorUtils.js";
 
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor({ db, emailService, settingsService, logger, stringService, jwt }) {
+	constructor({ db, emailService, settingsService, logger, stringService, jwt, errorService }) {
 		this.db = db;
 		this.emailService = emailService;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.stringService = stringService;
 		this.jwt = jwt;
+		this.errorService = errorService;
 	}
 
 	issueToken = (payload, appSettings) => {
@@ -80,7 +80,7 @@ class UserService {
 		// Compare password
 		const match = await user.comparePassword(password);
 		if (match !== true) {
-			throw createAuthError(this.stringService.authIncorrectPassword);
+			throw this.errorService.createAuthenticationError(this.stringService.authIncorrectPassword);
 		}
 
 		// Remove password from user object.  Should this be abstracted to DB layer?
@@ -109,7 +109,7 @@ class UserService {
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
-				throw createError(this.stringService.authIncorrectPassword, 403);
+				throw this.errorService.createAuthorizationError(this.stringService.authIncorrectPassword);
 			}
 			// If a match, update the password
 			updates.password = updates.newPassword;

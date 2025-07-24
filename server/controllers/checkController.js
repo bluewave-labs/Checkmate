@@ -1,3 +1,4 @@
+import BaseController from "./baseController.js";
 import {
 	getChecksParamValidation,
 	getChecksQueryValidation,
@@ -9,7 +10,6 @@ import {
 	ackAllChecksParamValidation,
 	ackAllChecksBodyValidation,
 } from "../validation/joi.js";
-import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "checkController";
 
@@ -22,7 +22,7 @@ const SERVICE_NAME = "checkController";
  * @class CheckController
  * @description Manages check operations and monitoring data
  */
-class CheckController {
+class CheckController extends BaseController {
 	/**
 	 * Creates an instance of CheckController.
 	 *
@@ -31,12 +31,15 @@ class CheckController {
 	 * @param {Object} dependencies.settingsService - Service for application settings
 	 * @param {Object} dependencies.stringService - Service for string/localization
 	 * @param {Object} dependencies.checkService - Check business logic service
+	 * @param {Object} dependencies.errorService - Error service for error handling
 	 */
-	constructor({ db, settingsService, stringService, checkService }) {
+	constructor({ db, settingsService, stringService, checkService, errorService }) {
+		super();
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
 		this.checkService = checkService;
+		this.errorService = errorService;
 	}
 
 	/**
@@ -67,7 +70,7 @@ class CheckController {
 	 * GET /checks/monitor/507f1f77bcf86cd799439011?page=1&rowsPerPage=10&status=down
 	 * // Requires JWT authentication
 	 */
-	getChecksByMonitor = asyncHandler(
+	getChecksByMonitor = this.asyncHandler(
 		async (req, res) => {
 			await getChecksParamValidation.validateAsync(req.params);
 			await getChecksQueryValidation.validateAsync(req.query);
@@ -109,7 +112,7 @@ class CheckController {
 	 * GET /checks/team?page=1&rowsPerPage=20&status=down&ack=false
 	 * // Requires JWT authentication
 	 */
-	getChecksByTeam = asyncHandler(
+	getChecksByTeam = this.asyncHandler(
 		async (req, res) => {
 			await getTeamChecksQueryValidation.validateAsync(req.query);
 			const checkData = await this.checkService.getChecksByTeam({
@@ -140,7 +143,7 @@ class CheckController {
 	 * // Requires JWT authentication
 	 * // Response includes counts by status, time ranges, etc.
 	 */
-	getChecksSummaryByTeamId = asyncHandler(
+	getChecksSummaryByTeamId = this.asyncHandler(
 		async (req, res) => {
 			const summary = await this.checkService.getChecksSummaryByTeamId({ teamId: req?.user?.teamId });
 			return res.success({
@@ -176,7 +179,7 @@ class CheckController {
 	 * }
 	 * // Requires JWT authentication
 	 */
-	ackCheck = asyncHandler(
+	ackCheck = this.asyncHandler(
 		async (req, res) => {
 			await ackCheckBodyValidation.validateAsync(req.body);
 
@@ -220,7 +223,7 @@ class CheckController {
 	 * }
 	 * // Requires JWT authentication
 	 */
-	ackAllChecks = asyncHandler(
+	ackAllChecks = this.asyncHandler(
 		async (req, res) => {
 			await ackAllChecksParamValidation.validateAsync(req.params);
 			await ackAllChecksBodyValidation.validateAsync(req.body);
@@ -266,7 +269,7 @@ class CheckController {
 	 * // Requires JWT authentication
 	 * // Response: { "data": { "deletedCount": 150 } }
 	 */
-	deleteChecks = asyncHandler(
+	deleteChecks = this.asyncHandler(
 		async (req, res) => {
 			await deleteChecksParamValidation.validateAsync(req.params);
 
@@ -300,7 +303,7 @@ class CheckController {
 	 * // Requires JWT authentication
 	 * // Response: { "data": { "deletedCount": 1250 } }
 	 */
-	deleteChecksByTeamId = asyncHandler(
+	deleteChecksByTeamId = this.asyncHandler(
 		async (req, res) => {
 			await deleteChecksByTeamIdParamValidation.validateAsync(req.params);
 
@@ -336,7 +339,7 @@ class CheckController {
 	 * // Requires JWT authentication
 	 * // Sets check TTL to 30 days
 	 */
-	updateChecksTTL = asyncHandler(
+	updateChecksTTL = this.asyncHandler(
 		async (req, res) => {
 			await updateChecksTTLBodyValidation.validateAsync(req.body);
 
