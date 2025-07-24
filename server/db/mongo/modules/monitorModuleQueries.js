@@ -138,6 +138,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 					{
 						$project: {
 							_id: 1,
+							teamId: 1,
 							name: 1,
 							status: 1,
 							interval: 1,

@@ -279,7 +279,6 @@ const calculateGroupStats = (group) => {
  * @throws {Error}
  */
 const getUptimeDetailsById = async ({ monitorId, dateRange, normalize }) => {
-	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
 		const dates = getDateRange(dateRange);
 		const formatLookup = {
@@ -595,16 +594,16 @@ const createBulkMonitors = async (req) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const deleteMonitor = async ({ monitorId }) => {
+const deleteMonitor = async ({ teamId, monitorId }) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
-		const monitor = await Monitor.findByIdAndDelete(monitorId);
+		const deletedMonitor = await Monitor.findOneAndDelete({ _id: monitorId, teamId });
 
-		if (!monitor) {
+		if (!deletedMonitor) {
 			throw new Error(stringService.getDbFindMonitorById(monitorId));
 		}
 
-		return monitor;
+		return deletedMonitor;
 	} catch (error) {
 		error.service = SERVICE_NAME;
 		error.method = "deleteMonitor";
@@ -654,9 +653,9 @@ const deleteMonitorsByUserId = async (userId) => {
  * @returns {Promise<Monitor>}
  * @throws {Error}
  */
-const editMonitor = async (candidateId, candidateMonitor) => {
+const editMonitor = async ({ monitorId, body }) => {
 	try {
-		const editedMonitor = await Monitor.findByIdAndUpdate(candidateId, candidateMonitor, {
+		const editedMonitor = await Monitor.findByIdAndUpdate(monitorId, body, {
 			new: true,
 		});
 		return editedMonitor;

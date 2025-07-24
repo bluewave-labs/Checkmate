@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import swaggerUi from "swagger-ui-express";
 import jwt from "jsonwebtoken";
+import papaparse from "papaparse";
 
 import express from "express";
 import helmet from "helmet";
@@ -63,6 +64,7 @@ import CheckService from "./service/business/checkService.js";
 import DiagnosticService from "./service/business/diagnosticService.js";
 import InviteService from "./service/business/inviteService.js";
 import MaintenanceWindowService from "./service/business/maintenanceWindowService.js";
+import MonitorService from "./service/business/monitorService.js";
 
 //Network service and dependencies
 import NetworkService from "./service/infrastructure/networkService.js";
@@ -185,32 +187,6 @@ const startApp = async () => {
 
 	const redisService = new RedisService({ Redis: IORedis, logger });
 
-	// Business services
-	const userService = new UserService({
-		db,
-		emailService,
-		settingsService,
-		logger,
-		stringService,
-		jwt,
-	});
-	const checkService = new CheckService({
-		db,
-		settingsService,
-		stringService,
-	});
-	const diagnosticService = new DiagnosticService();
-	const inviteService = new InviteService({
-		db,
-		settingsService,
-		emailService,
-		stringService,
-	});
-	const maintenanceWindowService = new MaintenanceWindowService({
-		db,
-		settingsService,
-		stringService,
-	});
 	// const jobQueueHelper = new JobQueueHelper({
 	// 	redisService,
 	// 	Queue,
@@ -256,6 +232,41 @@ const startApp = async () => {
 		helper: superSimpleQueueHelper,
 	});
 
+	// Business services
+	const userService = new UserService({
+		db,
+		emailService,
+		settingsService,
+		logger,
+		stringService,
+		jwt,
+	});
+	const checkService = new CheckService({
+		db,
+		settingsService,
+		stringService,
+	});
+	const diagnosticService = new DiagnosticService();
+	const inviteService = new InviteService({
+		db,
+		settingsService,
+		emailService,
+		stringService,
+	});
+	const maintenanceWindowService = new MaintenanceWindowService({
+		db,
+		settingsService,
+		stringService,
+	});
+	const monitorService = new MonitorService({
+		db,
+		settingsService,
+		jobQueue: superSimpleQueue,
+		stringService,
+		emailService,
+		papaparse,
+		logger,
+	});
 	// Register services
 	// ServiceRegistry.register(JobQueue.SERVICE_NAME, jobQueue);
 	// ServiceRegistry.register(JobQueue.SERVICE_NAME, pulseQueue);
@@ -273,6 +284,7 @@ const startApp = async () => {
 	ServiceRegistry.register(CheckService.SERVICE_NAME, checkService);
 	ServiceRegistry.register(InviteService.SERVICE_NAME, inviteService);
 	ServiceRegistry.register(MaintenanceWindowService.SERVICE_NAME, maintenanceWindowService);
+	ServiceRegistry.register(MonitorService.SERVICE_NAME, monitorService);
 
 	await translationService.initialize();
 
@@ -296,13 +308,14 @@ const startApp = async () => {
 		userService: ServiceRegistry.get(UserService.SERVICE_NAME),
 	});
 
-	const monitorController = new MonitorController(
-		ServiceRegistry.get(MongoDB.SERVICE_NAME),
-		ServiceRegistry.get(SettingsService.SERVICE_NAME),
-		ServiceRegistry.get(JobQueue.SERVICE_NAME),
-		ServiceRegistry.get(StringService.SERVICE_NAME),
-		ServiceRegistry.get(EmailService.SERVICE_NAME)
-	);
+	const monitorController = new MonitorController({
+		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
+		settingsService: ServiceRegistry.get(SettingsService.SERVICE_NAME),
+		jobQueue: ServiceRegistry.get(JobQueue.SERVICE_NAME),
+		stringService: ServiceRegistry.get(StringService.SERVICE_NAME),
+		emailService: ServiceRegistry.get(EmailService.SERVICE_NAME),
+		monitorService: ServiceRegistry.get(MonitorService.SERVICE_NAME),
+	});
 
 	const settingsController = new SettingsController({
 		db: ServiceRegistry.get(MongoDB.SERVICE_NAME),
