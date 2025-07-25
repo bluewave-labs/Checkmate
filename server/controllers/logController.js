@@ -1,14 +1,13 @@
-import { asyncHandler } from "../utils/errorUtils.js";
-
+import BaseController from "./baseController.js";
 const SERVICE_NAME = "LogController";
 
-class LogController {
-	constructor(logger) {
-		this.logger = logger;
+class LogController extends BaseController {
+	constructor(commonDependencies) {
+		super(commonDependencies);
 	}
 
-	getLogs = asyncHandler(
-		async (req, res, next) => {
+	getLogs = this.asyncHandler(
+		async (req, res) => {
 			const logs = await this.logger.getLogs();
 			res.success({
 				msg: "Logs fetched successfully",

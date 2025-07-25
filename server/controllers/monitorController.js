@@ -13,16 +13,15 @@ import {
 	getHardwareDetailsByIdQueryValidation,
 } from "../validation/joi.js";
 import sslChecker from "ssl-checker";
-import { asyncHandler } from "../utils/errorUtils.js";
 import { fetchMonitorCertificate } from "./controllerUtils.js";
+import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "monitorController";
-class MonitorController {
-	constructor({ db, settingsService, jobQueue, stringService, emailService, monitorService }) {
-		this.db = db;
+class MonitorController extends BaseController {
+	constructor(commonDependencies, { settingsService, jobQueue, emailService, monitorService }) {
+		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
-		this.stringService = stringService;
 		this.emailService = emailService;
 		this.monitorService = monitorService;
 	}
@@ -30,13 +29,11 @@ class MonitorController {
 	async verifyTeamAccess(teamId, monitorId) {
 		const monitor = await this.db.getMonitorById(monitorId);
 		if (!monitor.teamId.equals(teamId)) {
-			const error = new Error("Unauthorized");
-			error.status = 403;
-			throw error;
+			throw this.errorService.createAuthorizationError();
 		}
 	}
 
-	getAllMonitors = asyncHandler(
+	getAllMonitors = this.asyncHandler(
 		async (req, res) => {
 			const monitors = await this.monitorService.getAllMonitors();
 			return res.success({
@@ -48,7 +45,7 @@ class MonitorController {
 		"getAllMonitors"
 	);
 
-	getUptimeDetailsById = asyncHandler(
+	getUptimeDetailsById = this.asyncHandler(
 		async (req, res) => {
 			const monitorId = req?.params?.monitorId;
 			const dateRange = req?.query?.dateRange;
@@ -57,7 +54,7 @@ class MonitorController {
 			const teamId = req?.user?.teamId;
 
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const data = await this.monitorService.getUptimeDetailsById({
@@ -75,7 +72,7 @@ class MonitorController {
 		"getUptimeDetailsById"
 	);
 
-	getMonitorStatsById = asyncHandler(
+	getMonitorStatsById = this.asyncHandler(
 		async (req, res) => {
 			await getMonitorStatsByIdParamValidation.validateAsync(req.params);
 			await getMonitorStatsByIdQueryValidation.validateAsync(req.query);
@@ -85,7 +82,7 @@ class MonitorController {
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const monitorStats = await this.monitorService.getMonitorStatsById({
@@ -116,7 +113,7 @@ class MonitorController {
 	 * @returns {Promise<Express.Response>}
 	 * @throws {Error} - Throws error if monitor not found or other database errors
 	 */
-	getHardwareDetailsById = asyncHandler(
+	getHardwareDetailsById = this.asyncHandler(
 		async (req, res) => {
 			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
 			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
@@ -125,7 +122,7 @@ class MonitorController {
 			const dateRange = req?.query?.dateRange;
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const monitor = await this.monitorService.getHardwareDetailsById({
@@ -143,8 +140,8 @@ class MonitorController {
 		"getHardwareDetailsById"
 	);
 
-	getMonitorCertificate = asyncHandler(
-		async (req, res, next) => {
+	getMonitorCertificate = this.asyncHandler(
+		async (req, res) => {
 			await getCertificateParamValidation.validateAsync(req.params);
 
 			const { monitorId } = req.params;
@@ -162,14 +159,14 @@ class MonitorController {
 		"getMonitorCertificate"
 	);
 
-	getMonitorById = asyncHandler(
+	getMonitorById = this.asyncHandler(
 		async (req, res) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			await getMonitorByIdQueryValidation.validateAsync(req.query);
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const monitor = await this.monitorService.getMonitorById({ teamId, monitorId: req?.params?.monitorId });
@@ -183,7 +180,7 @@ class MonitorController {
 		"getMonitorById"
 	);
 
-	createMonitor = asyncHandler(
+	createMonitor = this.asyncHandler(
 		async (req, res) => {
 			await createMonitorBodyValidation.validateAsync(req.body);
 
@@ -201,30 +198,30 @@ class MonitorController {
 		"createMonitor"
 	);
 
-	createBulkMonitors = asyncHandler(
+	createBulkMonitors = this.asyncHandler(
 		async (req, res) => {
 			if (!req.file) {
-				throw new Error("No file uploaded");
+				throw this.errorService.createBadRequestError("No file uploaded");
 			}
 
 			if (!req.file.mimetype.includes("csv")) {
-				throw new Error("File is not a CSV");
+				throw this.errorService.createBadRequestError("File is not a CSV");
 			}
 
 			if (req.file.size === 0) {
-				throw new Error("File is empty");
+				throw this.errorService.createBadRequestError("File is empty");
 			}
 
 			const userId = req?.user?._id;
 			const teamId = req?.user?.teamId;
 
 			if (!userId || !teamId) {
-				throw new Error("Missing userId or teamId");
+				throw this.errorService.createBadRequestError("Missing userId or teamId");
 			}
 
 			const fileData = req?.file?.buffer?.toString("utf-8");
 			if (!fileData) {
-				throw new Error("Cannot get file from buffer");
+				throw this.errorService.createBadRequestError("Cannot get file from buffer");
 			}
 
 			const monitors = await this.monitorService.createBulkMonitors({ fileData, userId, teamId });
@@ -238,13 +235,13 @@ class MonitorController {
 		"createBulkMonitors"
 	);
 
-	deleteMonitor = asyncHandler(
+	deleteMonitor = this.asyncHandler(
 		async (req, res) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			const monitorId = req.params.monitorId;
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const deletedMonitor = await this.monitorService.deleteMonitor({ teamId, monitorId });
@@ -255,11 +252,11 @@ class MonitorController {
 		"deleteMonitor"
 	);
 
-	deleteAllMonitors = asyncHandler(
+	deleteAllMonitors = this.asyncHandler(
 		async (req, res) => {
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const deletedCount = await this.monitorService.deleteAllMonitors({ teamId });
@@ -270,7 +267,7 @@ class MonitorController {
 		"deleteAllMonitors"
 	);
 
-	editMonitor = asyncHandler(
+	editMonitor = this.asyncHandler(
 		async (req, res) => {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
 			await editMonitorBodyValidation.validateAsync(req.body);
@@ -278,7 +275,7 @@ class MonitorController {
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const editedMonitor = await this.monitorService.editMonitor({ teamId, monitorId, body: req.body });
@@ -292,14 +289,14 @@ class MonitorController {
 		"editMonitor"
 	);
 
-	pauseMonitor = asyncHandler(
+	pauseMonitor = this.asyncHandler(
 		async (req, res) => {
 			await pauseMonitorParamValidation.validateAsync(req.params);
 
 			const monitorId = req.params.monitorId;
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const monitor = await this.monitorService.pauseMonitor({ teamId, monitorId });
@@ -313,7 +310,7 @@ class MonitorController {
 		"pauseMonitor"
 	);
 
-	addDemoMonitors = asyncHandler(
+	addDemoMonitors = this.asyncHandler(
 		async (req, res) => {
 			const { _id, teamId } = req.user;
 			const demoMonitors = await this.monitorService.addDemoMonitors({ userId: _id, teamId });
@@ -327,11 +324,11 @@ class MonitorController {
 		"addDemoMonitors"
 	);
 
-	sendTestEmail = asyncHandler(
+	sendTestEmail = this.asyncHandler(
 		async (req, res) => {
 			const { to } = req.body;
 			if (!to || typeof to !== "string") {
-				throw new Error(this.stringService.errorForValidEmailAddress);
+				throw this.errorService.createBadRequestError(this.stringService.errorForValidEmailAddress);
 			}
 
 			const messageId = await this.monitorService.sendTestEmail({ to });
@@ -344,8 +341,8 @@ class MonitorController {
 		"sendTestEmail"
 	);
 
-	getMonitorsByTeamId = asyncHandler(
-		async (req, res, next) => {
+	getMonitorsByTeamId = this.asyncHandler(
+		async (req, res) => {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
 
@@ -363,7 +360,7 @@ class MonitorController {
 		"getMonitorsByTeamId"
 	);
 
-	getMonitorsAndSummaryByTeamId = asyncHandler(
+	getMonitorsAndSummaryByTeamId = this.asyncHandler(
 		async (req, res) => {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
@@ -372,7 +369,7 @@ class MonitorController {
 			const type = req?.query?.type;
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const result = await this.monitorService.getMonitorsAndSummaryByTeamId({ teamId, type, explain });
@@ -386,7 +383,7 @@ class MonitorController {
 		"getMonitorsAndSummaryByTeamId"
 	);
 
-	getMonitorsWithChecksByTeamId = asyncHandler(
+	getMonitorsWithChecksByTeamId = this.asyncHandler(
 		async (req, res) => {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
@@ -395,7 +392,7 @@ class MonitorController {
 			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const monitors = await this.monitorService.getMonitorsWithChecksByTeamId({
@@ -419,11 +416,11 @@ class MonitorController {
 		"getMonitorsWithChecksByTeamId"
 	);
 
-	exportMonitorsToCSV = asyncHandler(
+	exportMonitorsToCSV = this.asyncHandler(
 		async (req, res) => {
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
-				throw new Error("Team ID is required");
+				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
 			const csv = await this.monitorService.exportMonitorsToCSV({ teamId });

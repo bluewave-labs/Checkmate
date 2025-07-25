@@ -3,7 +3,6 @@ import ServiceRegistry from "../service/system/serviceRegistry.js";
 import StringService from "../service/system/stringService.js";
 
 const handleErrors = (error, req, res, next) => {
-	console.log("ERROR", error);
 	const status = error.status || 500;
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	const message = error.message || stringService.authIncorrectPassword;

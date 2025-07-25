@@ -1,12 +1,10 @@
 import { createMonitorsBodyValidation } from "../../validation/joi.js";
-import { createServerError } from "../../utils/errorUtils.js";
-import logger from "../../utils/logger.js";
 
 const SERVICE_NAME = "MonitorService";
 class MonitorService {
 	SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, settingsService, jobQueue, stringService, emailService, papaparse }) {
+	constructor({ db, settingsService, jobQueue, stringService, emailService, papaparse, logger, errorService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
@@ -14,14 +12,13 @@ class MonitorService {
 		this.emailService = emailService;
 		this.papaparse = papaparse;
 		this.logger = logger;
+		this.errorService = errorService;
 	}
 
 	verifyTeamAccess = async ({ teamId, monitorId }) => {
 		const monitor = await this.db.getMonitorById(monitorId);
 		if (!monitor?.teamId?.equals(teamId)) {
-			const error = new Error("Unauthorized");
-			error.status = 403;
-			throw error;
+			throw this.errorService.createAuthorizationError();
 		}
 	};
 
@@ -93,7 +90,7 @@ class MonitorService {
 					if (["port", "interval"].includes(header)) {
 						const num = parseInt(value, 10);
 						if (isNaN(num)) {
-							throw new Error(`${header} should be a valid number, got: ${value}`);
+							throw this.errorService.createBadRequestError(`${header} should be a valid number, got: ${value}`);
 						}
 						return num;
 					}
@@ -103,11 +100,11 @@ class MonitorService {
 				complete: async ({ data, errors }) => {
 					try {
 						if (errors.length > 0) {
-							throw createServerError("Error parsing CSV");
+							throw this.errorService.createServerError("Error parsing CSV");
 						}
 
 						if (!data || data.length === 0) {
-							throw createServerError("CSV file contains no data rows");
+							throw this.errorService.createServerError("CSV file contains no data rows");
 						}
 
 						const enrichedData = data.map((monitor) => ({
@@ -156,7 +153,7 @@ class MonitorService {
 					await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
 					await this.db.deleteNotificationsByMonitorId(monitor._id);
 				} catch (error) {
-					logger.warn({
+					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
 						service: SERVICE_NAME,
 						method: "deleteAllMonitors",
@@ -195,7 +192,7 @@ class MonitorService {
 		const messageId = await this.emailService.sendEmail(to, subject, html);
 
 		if (!messageId) {
-			throw createServerError("Failed to send test email.");
+			throw this.errorService.createServerError("Failed to send test email.");
 		}
 
 		return messageId;
@@ -240,10 +237,10 @@ class MonitorService {
 	};
 
 	exportMonitorsToCSV = async ({ teamId }) => {
-		const monitors = await this.monitorService.getMonitorsByTeamId({ teamId });
+		const monitors = await this.db.getMonitorsByTeamId({ teamId });
 
 		if (!monitors || monitors.length === 0) {
-			throw new Error("No monitors to export");
+			throw this.errorService.createNotFoundError("No monitors to export");
 		}
 
 		const csvData = monitors?.filteredMonitors?.map((monitor) => ({

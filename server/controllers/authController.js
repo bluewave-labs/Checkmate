@@ -1,3 +1,4 @@
+import BaseController from "./baseController.js";
 import {
 	registrationBodyValidation,
 	loginValidation,
@@ -10,7 +11,6 @@ import {
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
 } from "../validation/joi.js";
-import { asyncHandler, createError } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "authController";
 
@@ -23,26 +23,22 @@ const SERVICE_NAME = "authController";
  * @class AuthController
  * @description Manages user authentication and authorization operations
  */
-class AuthController {
+class AuthController extends BaseController {
 	/**
 	 * Creates an instance of AuthController.
 	 *
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
 	 * @param {Object} dependencies - The dependencies required by the controller
-	 * @param {Object} dependencies.db - Database service for data operations
 	 * @param {Object} dependencies.settingsService - Service for application settings
 	 * @param {Object} dependencies.emailService - Service for email operations
 	 * @param {Object} dependencies.jobQueue - Service for job queue operations
-	 * @param {Object} dependencies.stringService - Service for string/localization
-	 * @param {Object} dependencies.logger - Logger service
 	 * @param {Object} dependencies.userService - User business logic service
 	 */
-	constructor({ db, settingsService, emailService, jobQueue, stringService, logger, userService }) {
-		this.db = db;
+	constructor(commonDependencies, { settingsService, emailService, jobQueue, userService }) {
+		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.jobQueue = jobQueue;
-		this.stringService = stringService;
-		this.logger = logger;
 		this.userService = userService;
 	}
 
@@ -85,7 +81,7 @@ class AuthController {
 	 *   "inviteToken": "abc123..."
 	 * }
 	 */
-	registerUser = asyncHandler(
+	registerUser = this.asyncHandler(
 		async (req, res) => {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
@@ -121,7 +117,7 @@ class AuthController {
 	 *   "password": "SecurePass123!"
 	 * }
 	 */
-	loginUser = asyncHandler(
+	loginUser = this.asyncHandler(
 		async (req, res) => {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
@@ -173,7 +169,7 @@ class AuthController {
 	 *   "newPassword": "NewPass123!"
 	 * }
 	 */
-	editUser = asyncHandler(
+	editUser = this.asyncHandler(
 		async (req, res) => {
 			await editUserBodyValidation.validateAsync(req.body);
 
@@ -200,7 +196,7 @@ class AuthController {
 	 * GET /auth/users/superadmin
 	 * // Response: { "data": true } or { "data": false }
 	 */
-	checkSuperadminExists = asyncHandler(
+	checkSuperadminExists = this.asyncHandler(
 		async (req, res) => {
 			const superAdminExists = await this.userService.checkSuperadminExists();
 			return res.success({
@@ -230,7 +226,7 @@ class AuthController {
 	 *   "email": "john@example.com"
 	 * }
 	 */
-	requestRecovery = asyncHandler(
+	requestRecovery = this.asyncHandler(
 		async (req, res) => {
 			await recoveryValidation.validateAsync(req.body);
 			const email = req?.body?.email;
@@ -262,7 +258,7 @@ class AuthController {
 	 *   "recoveryToken": "abc123..."
 	 * }
 	 */
-	validateRecovery = asyncHandler(
+	validateRecovery = this.asyncHandler(
 		async (req, res) => {
 			await recoveryTokenBodyValidation.validateAsync(req.body);
 			await this.userService.validateRecovery(req.body.recoveryToken);
@@ -294,7 +290,7 @@ class AuthController {
 	 *   "recoveryToken": "abc123..."
 	 * }
 	 */
-	resetPassword = asyncHandler(
+	resetPassword = this.asyncHandler(
 		async (req, res) => {
 			await newPasswordValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
@@ -326,7 +322,7 @@ class AuthController {
 	 * DELETE /auth/user
 	 * // Requires JWT authentication
 	 */
-	deleteUser = asyncHandler(
+	deleteUser = this.asyncHandler(
 		async (req, res) => {
 			await this.userService.deleteUser(req.user);
 			return res.success({
@@ -350,7 +346,7 @@ class AuthController {
 	 * GET /auth/users
 	 * // Requires JWT authentication with admin/superadmin role
 	 */
-	getAllUsers = asyncHandler(
+	getAllUsers = this.asyncHandler(
 		async (req, res) => {
 			const allUsers = await this.userService.getAllUsers();
 			return res.success({
@@ -381,7 +377,7 @@ class AuthController {
 	 * GET /auth/users/507f1f77bcf86cd799439011
 	 * // Requires JWT authentication with superadmin role
 	 */
-	getUserById = asyncHandler(
+	getUserById = this.asyncHandler(
 		async (req, res) => {
 			await getUserByIdParamValidation.validateAsync(req.params);
 			const userId = req?.params?.userId;
@@ -431,7 +427,7 @@ class AuthController {
 	 * }
 	 * // Requires JWT authentication with superadmin role
 	 */
-	editUserById = asyncHandler(
+	editUserById = this.asyncHandler(
 		async (req, res) => {
 			const roles = req?.user?.role;
 			if (!roles.includes("superadmin")) {

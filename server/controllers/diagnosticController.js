@@ -1,6 +1,5 @@
-import { asyncHandler } from "../utils/errorUtils.js";
-
 const SERVICE_NAME = "diagnosticController";
+import BaseController from "./baseController.js";
 /**
  * Diagnostic Controller
  *
@@ -10,14 +9,15 @@ const SERVICE_NAME = "diagnosticController";
  * @class DiagnosticController
  * @description Manages system diagnostics and performance monitoring
  */
-class DiagnosticController {
+class DiagnosticController extends BaseController {
 	/**
 	 * Creates an instance of DiagnosticController.
-	 *
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
 	 * @param {Object} dependencies - The dependencies required by the controller
 	 * @param {Object} dependencies.diagnosticService - Service for system diagnostics and monitoring
 	 */
-	constructor({ diagnosticService }) {
+	constructor(commonDependencies, { diagnosticService }) {
+		super(commonDependencies);
 		this.diagnosticService = diagnosticService;
 	}
 
@@ -41,7 +41,7 @@ class DiagnosticController {
 	 * // - Database connection status
 	 * // - Active processes/connections
 	 */
-	getSystemStats = asyncHandler(
+	getSystemStats = this.asyncHandler(
 		async (req, res) => {
 			const diagnostics = await this.diagnosticService.getSystemStats();
 			return res.success({

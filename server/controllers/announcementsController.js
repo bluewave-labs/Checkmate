@@ -1,5 +1,4 @@
 import { createAnnouncementValidation } from "../validation/joi.js";
-import { asyncHandler } from "../utils/errorUtils.js";
 
 const SERVICE_NAME = "announcementController";
 
@@ -10,10 +9,9 @@ const SERVICE_NAME = "announcementController";
  * @class AnnouncementController
  */
 
-class AnnouncementController {
-	constructor(db, stringService) {
-		this.db = db;
-		this.stringService = stringService;
+class AnnouncementController extends BaseController {
+	constructor(commonDependencies) {
+		super(commonDependencies);
 		this.createAnnouncement = this.createAnnouncement.bind(this);
 		this.getAnnouncement = this.getAnnouncement.bind(this);
 	}

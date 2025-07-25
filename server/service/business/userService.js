@@ -1,15 +1,15 @@
 const SERVICE_NAME = "userService";
-import { createAuthError, createError } from "../../utils/errorUtils.js";
 
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor({ db, emailService, settingsService, logger, stringService, jwt }) {
+	constructor({ db, emailService, settingsService, logger, stringService, jwt, errorService }) {
 		this.db = db;
 		this.emailService = emailService;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.stringService = stringService;
 		this.jwt = jwt;
+		this.errorService = errorService;
 	}
 
 	issueToken = (payload, appSettings) => {
@@ -80,7 +80,7 @@ class UserService {
 		// Compare password
 		const match = await user.comparePassword(password);
 		if (match !== true) {
-			throw createAuthError(this.stringService.authIncorrectPassword);
+			throw this.errorService.createAuthenticationError(this.stringService.authIncorrectPassword);
 		}
 
 		// Remove password from user object.  Should this be abstracted to DB layer?
@@ -109,7 +109,7 @@ class UserService {
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
-				throw createError(this.stringService.authIncorrectPassword, 403);
+				throw this.errorService.createAuthorizationError(this.stringService.authIncorrectPassword);
 			}
 			// If a match, update the password
 			updates.password = updates.newPassword;
@@ -154,23 +154,23 @@ class UserService {
 	deleteUser = async (user) => {
 		const email = user?.email;
 		if (!email) {
-			throw new Error("No email in request");
+			throw this.errorService.createBadRequestError("No email in request");
 		}
 
 		const teamId = user?.teamId;
 		const userId = user?._id;
 
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		if (!userId) {
-			throw new Error("No user ID in request");
+			throw this.errorService.createBadRequestError("No user ID in request");
 		}
 
 		const roles = user?.role;
 		if (roles.includes("demo")) {
-			throw new Error("Demo user cannot be deleted");
+			throw this.errorService.createBadRequestError("Demo user cannot be deleted");
 		}
 
 		// 1. Find all the monitors associated with the team ID if superadmin

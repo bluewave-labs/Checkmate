@@ -1,14 +1,13 @@
 import { updateAppSettingsBodyValidation } from "../validation/joi.js";
 import { sendTestEmailBodyValidation } from "../validation/joi.js";
-import { asyncHandler, createServerError } from "../utils/errorUtils.js";
+import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "SettingsController";
 
-class SettingsController {
-	constructor({ db, settingsService, stringService, emailService }) {
-		this.db = db;
+class SettingsController extends BaseController {
+	constructor(commonDependencies, { settingsService, emailService }) {
+		super(commonDependencies);
 		this.settingsService = settingsService;
-		this.stringService = stringService;
 		this.emailService = emailService;
 	}
 
@@ -33,8 +32,8 @@ class SettingsController {
 		return returnSettings;
 	};
 
-	getAppSettings = asyncHandler(
-		async (req, res, next) => {
+	getAppSettings = this.asyncHandler(
+		async (req, res) => {
 			const dbSettings = await this.settingsService.getDBSettings();
 
 			const returnSettings = this.buildAppSettings(dbSettings);
@@ -47,8 +46,8 @@ class SettingsController {
 		"getAppSettings"
 	);
 
-	updateAppSettings = asyncHandler(
-		async (req, res, next) => {
+	updateAppSettings = this.asyncHandler(
+		async (req, res) => {
 			await updateAppSettingsBodyValidation.validateAsync(req.body);
 
 			const updatedSettings = await this.db.updateAppSettings(req.body);
@@ -62,14 +61,9 @@ class SettingsController {
 		"updateAppSettings"
 	);
 
-	sendTestEmail = asyncHandler(
-		async (req, res, next) => {
-			try {
-				await sendTestEmailBodyValidation.validateAsync(req.body);
-			} catch (error) {
-				next(handleValidationError(error, SERVICE_NAME));
-				return;
-			}
+	sendTestEmail = this.asyncHandler(
+		async (req, res) => {
+			await sendTestEmailBodyValidation.validateAsync(req.body);
 
 			const {
 				to,
@@ -107,7 +101,7 @@ class SettingsController {
 			});
 
 			if (!messageId) {
-				throw createServerError("Failed to send test email.");
+				throw this.errorService.createServerError("Failed to send test email.");
 			}
 
 			return res.success({

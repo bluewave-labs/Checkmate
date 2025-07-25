@@ -1,15 +1,14 @@
-import { asyncHandler } from "../utils/errorUtils.js";
-
+import BaseController from "./baseController.js";
 const SERVICE_NAME = "JobQueueController";
 
-class JobQueueController {
-	constructor(jobQueue, stringService) {
+class JobQueueController extends BaseController {
+	constructor(commonDependencies, { jobQueue }) {
+		super(commonDependencies);
 		this.jobQueue = jobQueue;
-		this.stringService = stringService;
 	}
 
-	getMetrics = asyncHandler(
-		async (req, res, next) => {
+	getMetrics = this.asyncHandler(
+		async (req, res) => {
 			const metrics = await this.jobQueue.getMetrics();
 			res.success({
 				msg: this.stringService.queueGetMetrics,
@@ -20,8 +19,8 @@ class JobQueueController {
 		"getMetrics"
 	);
 
-	getJobs = asyncHandler(
-		async (req, res, next) => {
+	getJobs = this.asyncHandler(
+		async (req, res) => {
 			const jobs = await this.jobQueue.getJobs();
 			return res.success({
 				msg: this.stringService.queueGetJobs,
@@ -32,8 +31,8 @@ class JobQueueController {
 		"getJobs"
 	);
 
-	getAllMetrics = asyncHandler(
-		async (req, res, next) => {
+	getAllMetrics = this.asyncHandler(
+		async (req, res) => {
 			const jobs = await this.jobQueue.getJobs();
 			const metrics = await this.jobQueue.getMetrics();
 			return res.success({
@@ -45,8 +44,8 @@ class JobQueueController {
 		"getAllMetrics"
 	);
 
-	addJob = asyncHandler(
-		async (req, res, next) => {
+	addJob = this.asyncHandler(
+		async (req, res) => {
 			await this.jobQueue.addJob(Math.random().toString(36).substring(7));
 			return res.success({
 				msg: this.stringService.queueAddJob,
@@ -56,8 +55,8 @@ class JobQueueController {
 		"addJob"
 	);
 
-	flushQueue = asyncHandler(
-		async (req, res, next) => {
+	flushQueue = this.asyncHandler(
+		async (req, res) => {
 			const result = await this.jobQueue.flushQueues();
 			return res.success({
 				msg: this.stringService.jobQueueFlush,
@@ -68,8 +67,8 @@ class JobQueueController {
 		"flushQueue"
 	);
 
-	checkQueueHealth = asyncHandler(
-		async (req, res, next) => {
+	checkQueueHealth = this.asyncHandler(
+		async (req, res) => {
 			const stuckQueues = await this.jobQueue.checkQueueHealth();
 			return res.success({
 				msg: this.stringService.queueHealthCheck,

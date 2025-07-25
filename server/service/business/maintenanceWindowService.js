@@ -2,10 +2,11 @@ const SERVICE_NAME = "maintenanceWindowService";
 
 class MaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor({ db, settingsService, stringService }) {
+	constructor({ db, settingsService, stringService, errorService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
+		this.errorService = errorService;
 	}
 
 	createMaintenanceWindow = async ({ teamId, body }) => {
@@ -15,11 +16,7 @@ class MaintenanceWindowService {
 		const unauthorizedMonitors = monitors.filter((monitor) => !monitor.teamId.equals(teamId));
 
 		if (unauthorizedMonitors.length > 0) {
-			const error = new Error("Unauthorized access to one or more monitors");
-			error.status = 403;
-			error.service = SERVICE_NAME;
-			error.method = "createMaintenanceWindows";
-			throw error;
+			throw this.errorService.createAuthorizationError();
 		}
 
 		const dbTransactions = monitorIds.map((monitorId) => {
