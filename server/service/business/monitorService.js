@@ -90,7 +90,7 @@ class MonitorService {
 					if (["port", "interval"].includes(header)) {
 						const num = parseInt(value, 10);
 						if (isNaN(num)) {
-							throw new Error(`${header} should be a valid number, got: ${value}`);
+							throw this.errorService.createBadRequestError(`${header} should be a valid number, got: ${value}`);
 						}
 						return num;
 					}
@@ -237,10 +237,10 @@ class MonitorService {
 	};
 
 	exportMonitorsToCSV = async ({ teamId }) => {
-		const monitors = await this.monitorService.getMonitorsByTeamId({ teamId });
+		const monitors = await this.db.getMonitorsByTeamId({ teamId });
 
 		if (!monitors || monitors.length === 0) {
-			throw new Error("No monitors to export");
+			throw this.errorService.createNotFoundError("No monitors to export");
 		}
 
 		const csvData = monitors?.filteredMonitors?.map((monitor) => ({
