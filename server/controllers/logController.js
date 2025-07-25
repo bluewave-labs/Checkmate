@@ -2,10 +2,8 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "LogController";
 
 class LogController extends BaseController {
-	constructor({ logger, errorService }) {
-		super();
-		this.logger = logger;
-		this.errorService = errorService;
+	constructor(commonDependencies) {
+		super(commonDependencies);
 	}
 
 	getLogs = this.asyncHandler(

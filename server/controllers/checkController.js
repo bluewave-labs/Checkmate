@@ -26,20 +26,15 @@ class CheckController extends BaseController {
 	/**
 	 * Creates an instance of CheckController.
 	 *
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
 	 * @param {Object} dependencies - The dependencies required by the controller
-	 * @param {Object} dependencies.db - Database service for data operations
 	 * @param {Object} dependencies.settingsService - Service for application settings
-	 * @param {Object} dependencies.stringService - Service for string/localization
 	 * @param {Object} dependencies.checkService - Check business logic service
-	 * @param {Object} dependencies.errorService - Error service for error handling
 	 */
-	constructor({ db, settingsService, stringService, checkService, errorService }) {
-		super();
-		this.db = db;
+	constructor(commonDependencies, { settingsService, checkService }) {
+		super(commonDependencies);
 		this.settingsService = settingsService;
-		this.stringService = stringService;
 		this.checkService = checkService;
-		this.errorService = errorService;
 	}
 
 	/**

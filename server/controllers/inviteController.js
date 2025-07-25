@@ -9,16 +9,12 @@ const SERVICE_NAME = "inviteController";
 class InviteController extends BaseController {
 	/**
 	 * Creates a new InviteController instance
-	 * @param {Object} dependencies - Dependencies injected into the controller
-	 * @param {Object} dependencies.stringService - Service for internationalized strings
-	 * @param {Object} dependencies.inviteServ	ice - Service for invite-related operations
-	 * @param {Object} dependencies.errorService - Service for error handling
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
+	 * @param {Object} dependencies.inviteService - Service for invite-related operations
 	 */
-	constructor({ stringService, inviteService, errorService }) {
-		super();
-		this.stringService = stringService;
+	constructor(commonDependencies, { inviteService }) {
+		super(commonDependencies);
 		this.inviteService = inviteService;
-		this.errorService = errorService;
 	}
 
 	/**

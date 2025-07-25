@@ -1,4 +1,4 @@
-class AppError extends Error {
+export class AppError extends Error {
 	constructor(message, status = 500, service = null, method = null, details = null) {
 		super(message);
 		this.status = status;
@@ -96,66 +96,3 @@ class ErrorService {
 }
 
 export default ErrorService;
-
-export const asyncHandler = (fn, serviceName, methodName) => {
-	return async (req, res, next) => {
-		try {
-			await fn(req, res, next);
-		} catch (error) {
-			// Handle validation errors
-			if (error.isJoi) {
-				const validationError = this.createValidationError(error.message, error.details, serviceName, methodName);
-				return next(validationError);
-			}
-
-			if (error.name === "ValidationError") {
-				const validationError = this.createValidationError("Database validation failed", error.errors, serviceName, methodName);
-				return next(validationError);
-			}
-
-			if (error.name === "CastError") {
-				const notFoundError = this.createNotFoundError(
-					"Invalid resource identifier",
-					{ field: error.path, value: error.value },
-					serviceName,
-					methodName
-				);
-				return next(notFoundError);
-			}
-
-			if (error.code === "11000") {
-				const conflictError = this.createConflictError("Resource already exists", {
-					originalError: error.message,
-					code: error.code,
-				});
-				conflictError.service = serviceName;
-				conflictError.method = methodName;
-				return next(conflictError);
-			}
-
-			if (error instanceof AppError) {
-				error.service = error.service || serviceName;
-				error.method = error.method || methodName;
-				return next(error);
-			}
-
-			if (error.status) {
-				const appError = this.createError(error.message, error.status, serviceName, methodName, {
-					originalError: error.message,
-					stack: error.stack,
-				});
-				return next(appError);
-			}
-
-			// For unknown errors, create a server error
-			const appError = this.createServerError(error.message || "An unexpected error occurred", {
-				originalError: error.message,
-				stack: error.stack,
-			});
-			appError.service = serviceName;
-			appError.method = methodName;
-			appError.stack = error.stack; // Preserve original stack
-			return next(appError);
-		}
-	};
-};

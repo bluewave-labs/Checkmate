@@ -12,15 +12,13 @@ import BaseController from "./baseController.js";
 class DiagnosticController extends BaseController {
 	/**
 	 * Creates an instance of DiagnosticController.
-	 *
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
 	 * @param {Object} dependencies - The dependencies required by the controller
 	 * @param {Object} dependencies.diagnosticService - Service for system diagnostics and monitoring
-	 * @param {Object} dependencies.errorService - Service for error handling
 	 */
-	constructor({ diagnosticService, errorService }) {
-		super();
+	constructor(commonDependencies, { diagnosticService }) {
+		super(commonDependencies);
 		this.diagnosticService = diagnosticService;
-		this.errorService = errorService;
 	}
 
 	/**

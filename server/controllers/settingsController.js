@@ -5,13 +5,10 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "SettingsController";
 
 class SettingsController extends BaseController {
-	constructor({ db, settingsService, stringService, emailService, errorService }) {
-		super();
-		this.db = db;
+	constructor(commonDependencies, { settingsService, emailService }) {
+		super(commonDependencies);
 		this.settingsService = settingsService;
-		this.stringService = stringService;
 		this.emailService = emailService;
-		this.errorService = errorService;
 	}
 
 	buildAppSettings = (dbSettings) => {

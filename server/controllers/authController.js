@@ -27,25 +27,19 @@ class AuthController extends BaseController {
 	/**
 	 * Creates an instance of AuthController.
 	 *
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
 	 * @param {Object} dependencies - The dependencies required by the controller
-	 * @param {Object} dependencies.db - Database service for data operations
 	 * @param {Object} dependencies.settingsService - Service for application settings
 	 * @param {Object} dependencies.emailService - Service for email operations
 	 * @param {Object} dependencies.jobQueue - Service for job queue operations
-	 * @param {Object} dependencies.stringService - Service for string/localization
-	 * @param {Object} dependencies.logger - Logger service
 	 * @param {Object} dependencies.userService - User business logic service
 	 */
-	constructor({ db, settingsService, emailService, jobQueue, stringService, logger, userService, errorService }) {
-		super();
-		this.db = db;
+	constructor(commonDependencies, { settingsService, emailService, jobQueue, userService }) {
+		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.jobQueue = jobQueue;
-		this.stringService = stringService;
-		this.logger = logger;
 		this.userService = userService;
-		this.errorService = errorService;
 	}
 
 	/**

@@ -3,37 +3,30 @@ const SERVICE_NAME = "checkService";
 class CheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, settingsService, stringService }) {
+	constructor({ db, settingsService, stringService, errorService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
+		this.errorService = errorService;
 	}
 
 	getChecksByMonitor = async ({ monitorId, query, teamId }) => {
 		if (!monitorId) {
-			throw new Error("No monitor ID in request");
+			throw this.errorService.createBadRequestError("No monitor ID in request");
 		}
 
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		const monitor = await this.db.getMonitorById(monitorId);
 
 		if (!monitor) {
-			const err = new Error("Monitor not found");
-			err.status = 404;
-			err.service = SERVICE_NAME;
-			err.method = "getChecksByMonitor";
-			throw err;
+			throw this.errorService.createNotFoundError("Monitor not found");
 		}
 
 		if (!monitor.teamId.equals(teamId)) {
-			const err = new Error("Unauthorized");
-			err.status = 403;
-			err.service = SERVICE_NAME;
-			err.method = "getChecksByMonitor";
-			throw err;
+			throw this.errorService.createAuthorizationError();
 		}
 
 		let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
@@ -55,7 +48,7 @@ class CheckService {
 		let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = query;
 
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		const checkData = await this.db.getChecksByTeam({
@@ -72,7 +65,7 @@ class CheckService {
 
 	getChecksSummaryByTeamId = async ({ teamId }) => {
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		const summary = await this.db.getChecksSummaryByTeamId({ teamId });
@@ -81,11 +74,11 @@ class CheckService {
 
 	ackCheck = async ({ checkId, teamId, ack }) => {
 		if (!checkId) {
-			throw new Error("No check ID in request");
+			throw this.errorService.createBadRequestError("No check ID in request");
 		}
 
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		const updatedCheck = await this.db.ackCheck(checkId, teamId, ack);
@@ -95,20 +88,16 @@ class CheckService {
 	ackAllChecks = async ({ monitorId, path, teamId, ack }) => {
 		if (path === "monitor") {
 			if (!monitorId) {
-				throw new Error("No monitor ID in request");
+				throw this.errorService.createBadRequestError("No monitor ID in request");
 			}
 
 			const monitor = await this.db.getMonitorById(monitorId);
 			if (!monitor) {
-				throw new Error("Monitor not found");
+				throw this.errorService.createNotFoundError("Monitor not found");
 			}
 
 			if (!monitor.teamId.equals(teamId)) {
-				const err = new Error("Unauthorized");
-				err.status = 403;
-				err.service = SERVICE_NAME;
-				err.method = "ackAllChecks";
-				throw err;
+				throw this.errorService.createAuthorizationError();
 			}
 		}
 
@@ -118,29 +107,21 @@ class CheckService {
 
 	deleteChecks = async ({ monitorId, teamId }) => {
 		if (!monitorId) {
-			throw new Error("No monitor ID in request");
+			throw this.errorService.createBadRequestError("No monitor ID in request");
 		}
 
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		const monitor = await this.db.getMonitorById(monitorId);
 
 		if (!monitor) {
-			const err = new Error("Monitor not found");
-			err.status = 404;
-			err.service = SERVICE_NAME;
-			err.method = "deleteChecks";
-			throw err;
+			throw this.errorService.createNotFoundError("Monitor not found");
 		}
 
 		if (!monitor.teamId.equals(teamId)) {
-			const err = new Error("Unauthorized");
-			err.status = 403;
-			err.service = SERVICE_NAME;
-			err.method = "deleteChecks";
-			throw err;
+			throw this.errorService.createAuthorizationError();
 		}
 
 		const deletedCount = await this.db.deleteChecks(monitorId);
@@ -148,7 +129,7 @@ class CheckService {
 	};
 	deleteChecksByTeamId = async ({ teamId }) => {
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		const deletedCount = await this.db.deleteChecksByTeamId(teamId);

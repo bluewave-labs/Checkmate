@@ -154,23 +154,23 @@ class UserService {
 	deleteUser = async (user) => {
 		const email = user?.email;
 		if (!email) {
-			throw new Error("No email in request");
+			throw this.errorService.createBadRequestError("No email in request");
 		}
 
 		const teamId = user?.teamId;
 		const userId = user?._id;
 
 		if (!teamId) {
-			throw new Error("No team ID in request");
+			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
 		if (!userId) {
-			throw new Error("No user ID in request");
+			throw this.errorService.createBadRequestError("No user ID in request");
 		}
 
 		const roles = user?.role;
 		if (roles.includes("demo")) {
-			throw new Error("Demo user cannot be deleted");
+			throw this.errorService.createBadRequestError("Demo user cannot be deleted");
 		}
 
 		// 1. Find all the monitors associated with the team ID if superadmin

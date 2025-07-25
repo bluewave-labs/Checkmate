@@ -13,7 +13,6 @@ class MonitorService {
 		this.papaparse = papaparse;
 		this.logger = logger;
 		this.errorService = errorService;
-		this.asyncHandler = errorService.asyncHandler;
 	}
 
 	verifyTeamAccess = async ({ teamId, monitorId }) => {

@@ -4,11 +4,8 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "statusPageController";
 
 class StatusPageController extends BaseController {
-	constructor({ db, stringService, errorService }) {
-		super();
-		this.db = db;
-		this.stringService = stringService;
-		this.errorService = errorService;
+	constructor(commonDependencies) {
+		super(commonDependencies);
 	}
 
 	createStatusPage = this.asyncHandler(

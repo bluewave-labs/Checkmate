@@ -2,7 +2,10 @@ import { createLogger, format, transports } from "winston";
 import dotenv from "dotenv";
 dotenv.config();
 
+const SERVICE_NAME = "Logger";
+
 class Logger {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor() {
 		this.logCache = [];
 		this.maxCacheSize = 1000;
