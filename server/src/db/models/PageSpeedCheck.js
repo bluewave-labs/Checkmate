@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 import { BaseCheckSchema } from "./Check.js";
-import logger from "../../utils/logger.js";
-import { time } from "console";
 const AuditSchema = mongoose.Schema({
 	id: { type: String, required: true },
 	title: { type: String, required: true },
