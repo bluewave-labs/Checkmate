@@ -2,7 +2,7 @@ import { createMonitorsBodyValidation } from "../../validation/joi.js";
 
 const SERVICE_NAME = "MonitorService";
 class MonitorService {
-	SERVICE_NAME = SERVICE_NAME;
+	static SERVICE_NAME = SERVICE_NAME;
 
 	constructor({ db, settingsService, jobQueue, stringService, emailService, papaparse, logger, errorService }) {
 		this.db = db;
@@ -13,6 +13,10 @@ class MonitorService {
 		this.papaparse = papaparse;
 		this.logger = logger;
 		this.errorService = errorService;
+	}
+
+	get serviceName() {
+		return MonitorService.SERVICE_NAME;
 	}
 
 	verifyTeamAccess = async ({ teamId, monitorId }) => {

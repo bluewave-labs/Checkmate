@@ -1,6 +1,6 @@
 import { Pulse } from "@pulsecron/pulse";
 
-const SERVICE_NAME = "PulseQueue";
+const SERVICE_NAME = "JobQueue";
 class PulseQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -9,6 +9,10 @@ class PulseQueue {
 		this.appSettings = appSettings;
 		this.pulseQueueHelper = pulseQueueHelper;
 		this.logger = logger;
+	}
+
+	get serviceName() {
+		return PulseQueue.SERVICE_NAME;
 	}
 
 	static async create({ appSettings, db, pulseQueueHelper, logger }) {

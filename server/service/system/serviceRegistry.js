@@ -6,6 +6,10 @@ class ServiceRegistry {
 		this.services = {};
 	}
 
+	get serviceName() {
+		return ServiceRegistry.SERVICE_NAME;
+	}
+
 	register(name, service) {
 		logger.info({
 			message: `Registering service ${name}`,

@@ -1,6 +1,8 @@
 const SERVICE_NAME = "JobQueueHelper";
 
 class JobQueueHelper {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ redisService, Queue, Worker, logger, db, networkService, statusService, notificationService }) {
 		this.db = db;
 		this.redisService = redisService;
@@ -10,6 +12,10 @@ class JobQueueHelper {
 		this.networkService = networkService;
 		this.statusService = statusService;
 		this.notificationService = notificationService;
+	}
+
+	get serviceName() {
+		return JobQueueHelper.SERVICE_NAME;
 	}
 
 	createQueue(queueName) {

@@ -2,9 +2,14 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "JobQueueController";
 
 class JobQueueController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies, { jobQueue }) {
 		super(commonDependencies);
 		this.jobQueue = jobQueue;
+	}
+
+	get serviceName() {
+		return JobQueueController.SERVICE_NAME;
 	}
 
 	getMetrics = this.asyncHandler(

@@ -1,4 +1,5 @@
 import { createAnnouncementValidation } from "../validation/joi.js";
+import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "announcementController";
 
@@ -10,10 +11,15 @@ const SERVICE_NAME = "announcementController";
  */
 
 class AnnouncementController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies) {
 		super(commonDependencies);
 		this.createAnnouncement = this.createAnnouncement.bind(this);
 		this.getAnnouncement = this.getAnnouncement.bind(this);
+	}
+
+	get serviceName() {
+		return AnnouncementController.SERVICE_NAME;
 	}
 
 	/**

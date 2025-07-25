@@ -1,5 +1,7 @@
+const SERVICE_NAME = "StringService";
+
 class StringService {
-	static SERVICE_NAME = "StringService";
+	static SERVICE_NAME = SERVICE_NAME;
 
 	constructor(translationService) {
 		if (StringService.instance) {
@@ -9,6 +11,10 @@ class StringService {
 		this.translationService = translationService;
 		this._language = "en"; // default language
 		StringService.instance = this;
+	}
+
+	get serviceName() {
+		return StringService.SERVICE_NAME;
 	}
 
 	setLanguage(language) {

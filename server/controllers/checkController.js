@@ -23,6 +23,7 @@ const SERVICE_NAME = "checkController";
  * @description Manages check operations and monitoring data
  */
 class CheckController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	/**
 	 * Creates an instance of CheckController.
 	 *
@@ -35,6 +36,10 @@ class CheckController extends BaseController {
 		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.checkService = checkService;
+	}
+
+	get serviceName() {
+		return CheckController.SERVICE_NAME;
 	}
 
 	/**

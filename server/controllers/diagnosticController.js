@@ -10,6 +10,7 @@ import BaseController from "./baseController.js";
  * @description Manages system diagnostics and performance monitoring
  */
 class DiagnosticController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	/**
 	 * Creates an instance of DiagnosticController.
 	 * @param {Object} commonDependencies - Common dependencies injected into the controller
@@ -21,6 +22,9 @@ class DiagnosticController extends BaseController {
 		this.diagnosticService = diagnosticService;
 	}
 
+	get serviceName() {
+		return DiagnosticController.SERVICE_NAME;
+	}
 	/**
 	 * Retrieves comprehensive system statistics and performance metrics.
 	 *

@@ -24,6 +24,7 @@ const SERVICE_NAME = "authController";
  * @description Manages user authentication and authorization operations
  */
 class AuthController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	/**
 	 * Creates an instance of AuthController.
 	 *
@@ -40,6 +41,10 @@ class AuthController extends BaseController {
 		this.emailService = emailService;
 		this.jobQueue = jobQueue;
 		this.userService = userService;
+	}
+
+	get serviceName() {
+		return AuthController.SERVICE_NAME;
 	}
 
 	/**

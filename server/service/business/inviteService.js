@@ -11,6 +11,10 @@ class InviteService {
 		this.errorService = errorService;
 	}
 
+	get serviceName() {
+		return InviteService.SERVICE_NAME;
+	}
+
 	getInviteToken = async ({ invite, teamId }) => {
 		invite.teamId = teamId;
 		const inviteToken = await this.db.requestInviteToken(invite);

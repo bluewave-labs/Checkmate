@@ -23,6 +23,10 @@ class JobQueue {
 		this.workers = [];
 	}
 
+	get serviceName() {
+		return JobQueue.SERVICE_NAME;
+	}
+
 	static async create({ db, jobQueueHelper, logger, stringService }) {
 		const instance = new JobQueue({ db, jobQueueHelper, logger, stringService });
 		await instance.init();

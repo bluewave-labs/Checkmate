@@ -2,10 +2,15 @@ const SERVICE_NAME = "RedisService";
 
 class RedisService {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ Redis, logger }) {
 		this.Redis = Redis;
 		this.connections = new Set();
 		this.logger = logger;
+	}
+
+	get serviceName() {
+		return RedisService.SERVICE_NAME;
 	}
 
 	getNewConnection(options = {}) {

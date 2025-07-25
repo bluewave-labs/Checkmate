@@ -1,11 +1,11 @@
 import { AppError } from "../service/infrastructure/errorService.js";
 
-export const createCommonDependencies = (serviceRegistry, dbServiceName, loggerServiceName, errorServiceName, stringServiceName) => {
+export const createCommonDependencies = (db, errorService, logger, stringService) => {
 	return {
-		db: serviceRegistry.get(dbServiceName),
-		errorService: serviceRegistry.get(errorServiceName),
-		logger: serviceRegistry.get(loggerServiceName),
-		stringService: serviceRegistry.get(stringServiceName),
+		db,
+		errorService,
+		logger,
+		stringService,
 	};
 };
 

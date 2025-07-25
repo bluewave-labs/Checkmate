@@ -1,4 +1,5 @@
 const SERVICE_NAME = "SettingsService";
+
 const envConfig = {
 	nodeEnv: process.env.NODE_ENV,
 	logLevel: process.env.LOG_LEVEL,
@@ -23,7 +24,8 @@ const envConfig = {
  * This service is responsible for loading and managing the application settings.
  */
 class SettingsService {
-	static SERVICE_NAME = SERVICE_NAME;
+	static SERVICE_NAME = "SettingsService";
+
 	/**
 	 * Constructs a new SettingsService
 	 * @constructor
@@ -32,6 +34,11 @@ class SettingsService {
 		this.AppSettings = AppSettings;
 		this.settings = { ...envConfig };
 	}
+
+	get serviceName() {
+		return SettingsService.SERVICE_NAME;
+	}
+
 	/**
 	 * Load settings from env settings
 	 * @returns {Object>} The settings.

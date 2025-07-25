@@ -2,11 +2,16 @@ const SERVICE_NAME = "maintenanceWindowService";
 
 class MaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ db, settingsService, stringService, errorService }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
 		this.errorService = errorService;
+	}
+
+	get serviceName() {
+		return MaintenanceWindowService.SERVICE_NAME;
 	}
 
 	createMaintenanceWindow = async ({ teamId, body }) => {

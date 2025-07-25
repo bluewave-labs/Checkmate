@@ -1,12 +1,18 @@
 const SERVICE_NAME = "PulseQueueHelper";
 
 class PulseQueueHelper {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ db, logger, networkService, statusService, notificationService }) {
 		this.db = db;
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
 		this.notificationService = notificationService;
+	}
+
+	get serviceName() {
+		return PulseQueueHelper.SERVICE_NAME;
 	}
 
 	getMonitorJob = () => {

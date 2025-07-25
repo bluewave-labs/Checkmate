@@ -3,12 +3,15 @@ import path from "path";
 
 class TranslationService {
 	static SERVICE_NAME = "TranslationService";
-
 	constructor(logger) {
 		this.logger = logger;
 		this.translations = {};
 		this._language = "en";
 		this.localesDir = path.join(process.cwd(), "locales");
+	}
+
+	get serviceName() {
+		return TranslationService.SERVICE_NAME;
 	}
 
 	setLanguage(language) {

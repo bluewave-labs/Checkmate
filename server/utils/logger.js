@@ -61,6 +61,11 @@ class Logger {
 			],
 		});
 	}
+
+	get serviceName() {
+		return Logger.SERVICE_NAME;
+	}
+
 	/**
 	 * Logs an informational message.
 	 * @param {Object} config - The configuration object.

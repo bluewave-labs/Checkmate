@@ -1,7 +1,15 @@
+const SERVICE_NAME = "NotificationUtils";
+
 class NotificationUtils {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ stringService, emailService }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
+	}
+
+	get serviceName() {
+		return NotificationUtils.SERVICE_NAME;
 	}
 
 	buildTestEmail = async () => {

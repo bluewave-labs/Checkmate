@@ -36,6 +36,10 @@ class NetworkService {
 		this.settingsService = settingsService;
 	}
 
+	get serviceName() {
+		return NetworkService.SERVICE_NAME;
+	}
+
 	/**
 	 * Times the execution of an asynchronous operation.
 	 *

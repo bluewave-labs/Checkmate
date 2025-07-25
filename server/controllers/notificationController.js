@@ -4,10 +4,15 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "NotificationController";
 
 class NotificationController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies, { notificationService, statusService }) {
 		super(commonDependencies);
 		this.notificationService = notificationService;
 		this.statusService = statusService;
+	}
+
+	get serviceName() {
+		return NotificationController.SERVICE_NAME;
 	}
 
 	testNotification = this.asyncHandler(

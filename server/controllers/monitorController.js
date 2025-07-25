@@ -18,12 +18,17 @@ import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies, { settingsService, jobQueue, emailService, monitorService }) {
 		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
 		this.emailService = emailService;
 		this.monitorService = monitorService;
+	}
+
+	get serviceName() {
+		return MonitorController.SERVICE_NAME;
 	}
 
 	async verifyTeamAccess(teamId, monitorId) {

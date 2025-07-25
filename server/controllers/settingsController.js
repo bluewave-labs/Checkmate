@@ -5,10 +5,15 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "SettingsController";
 
 class SettingsController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies, { settingsService, emailService }) {
 		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.emailService = emailService;
+	}
+
+	get serviceName() {
+		return SettingsController.SERVICE_NAME;
 	}
 
 	buildAppSettings = (dbSettings) => {

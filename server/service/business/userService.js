@@ -2,6 +2,7 @@ const SERVICE_NAME = "userService";
 
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ db, emailService, settingsService, logger, stringService, jwt, errorService }) {
 		this.db = db;
 		this.emailService = emailService;
@@ -10,6 +11,10 @@ class UserService {
 		this.stringService = stringService;
 		this.jwt = jwt;
 		this.errorService = errorService;
+	}
+
+	get serviceName() {
+		return UserService.SERVICE_NAME;
 	}
 
 	issueToken = (payload, appSettings) => {

@@ -12,6 +12,10 @@ class NotificationService {
 		this.notificationUtils = notificationUtils;
 	}
 
+	get serviceName() {
+		return NotificationService.SERVICE_NAME;
+	}
+
 	sendNotification = async ({ notification, subject, content, html }) => {
 		const { type, address } = notification;
 

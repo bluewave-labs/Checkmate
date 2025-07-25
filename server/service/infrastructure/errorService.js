@@ -55,8 +55,11 @@ class BadRequestError extends AppError {
 const SERVICE_NAME = "ErrorService";
 class ErrorService {
 	static SERVICE_NAME = SERVICE_NAME;
-
 	constructor() {}
+
+	get serviceName() {
+		return ErrorService.SERVICE_NAME;
+	}
 
 	createError = (message, status = 500, service = null, method = null, details = null) => {
 		return new AppError(message, status, service, method, details);

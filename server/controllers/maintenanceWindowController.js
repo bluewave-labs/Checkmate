@@ -12,10 +12,15 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "maintenanceWindowController";
 
 class MaintenanceWindowController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies, { settingsService, maintenanceWindowService }) {
 		super(commonDependencies);
 		this.settingsService = settingsService;
 		this.maintenanceWindowService = maintenanceWindowService;
+	}
+
+	get serviceName() {
+		return MaintenanceWindowController.SERVICE_NAME;
 	}
 
 	createMaintenanceWindows = this.asyncHandler(

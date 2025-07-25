@@ -5,6 +5,7 @@ const SERVICE_NAME = "diagnosticService";
 
 class DiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor() {
 		/**
 		 * Performance Observer for monitoring system performance metrics.
@@ -16,6 +17,10 @@ class DiagnosticService {
 			performance.clearMarks();
 		});
 		obs.observe({ entryTypes: ["measure"] });
+	}
+
+	get serviceName() {
+		return DiagnosticService.SERVICE_NAME;
 	}
 
 	getCPUUsage = async () => {

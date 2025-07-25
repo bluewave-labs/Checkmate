@@ -10,6 +10,10 @@ class CheckService {
 		this.errorService = errorService;
 	}
 
+	get serviceName() {
+		return CheckService.SERVICE_NAME;
+	}
+
 	getChecksByMonitor = async ({ monitorId, query, teamId }) => {
 		if (!monitorId) {
 			throw this.errorService.createBadRequestError("No monitor ID in request");

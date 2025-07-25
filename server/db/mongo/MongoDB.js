@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import UserModel from "../models/User.js";
 import AppSettings from "../models/AppSettings.js";
 import logger from "../../utils/logger.js";
 
@@ -85,6 +84,10 @@ class MongoDB {
 		Object.assign(this, settingsModule);
 		Object.assign(this, statusPageModule);
 		Object.assign(this, diagnosticModule);
+	}
+
+	get serviceName() {
+		return MongoDB.SERVICE_NAME;
 	}
 
 	connect = async () => {

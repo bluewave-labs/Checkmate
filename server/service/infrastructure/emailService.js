@@ -33,6 +33,10 @@ class EmailService {
 		this.init();
 	}
 
+	get serviceName() {
+		return EmailService.SERVICE_NAME;
+	}
+
 	init = async () => {
 		/**
 		 * Loads an email template from the filesystem.
@@ -42,7 +46,7 @@ class EmailService {
 		 */
 		this.loadTemplate = (templateName) => {
 			try {
-				const templatePath = this.path.join(__dirname, `../templates/${templateName}.mjml`);
+				const templatePath = this.path.join(__dirname, `../../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				return this.compile(templateContent);
 			} catch (error) {

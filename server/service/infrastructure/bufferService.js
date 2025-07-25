@@ -10,6 +10,7 @@ const TYPE_MAP = {
 };
 
 class BufferService {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor({ db, logger }) {
 		this.db = db;
 		this.logger = logger;
@@ -32,7 +33,10 @@ class BufferService {
 			method: "constructor",
 		});
 	}
-	static SERVICE_NAME = SERVICE_NAME;
+
+	get serviceName() {
+		return BufferService.SERVICE_NAME;
+	}
 
 	addToBuffer({ check, type }) {
 		try {

@@ -1,5 +1,5 @@
 import Scheduler from "super-simple-scheduler";
-const SERVICE_NAME = "SuperSimpleQueue";
+const SERVICE_NAME = "JobQueue";
 
 class SuperSimpleQueue {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -9,6 +9,10 @@ class SuperSimpleQueue {
 		this.db = db;
 		this.logger = logger;
 		this.helper = helper;
+	}
+
+	get serviceName() {
+		return SuperSimpleQueue.SERVICE_NAME;
 	}
 
 	static async create({ appSettings, db, logger, helper }) {

@@ -7,6 +7,7 @@ const SERVICE_NAME = "inviteController";
  * Manages invite token generation, email sending, and token verification
  */
 class InviteController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	/**
 	 * Creates a new InviteController instance
 	 * @param {Object} commonDependencies - Common dependencies injected into the controller
@@ -15,6 +16,10 @@ class InviteController extends BaseController {
 	constructor(commonDependencies, { inviteService }) {
 		super(commonDependencies);
 		this.inviteService = inviteService;
+	}
+
+	get serviceName() {
+		return InviteController.SERVICE_NAME;
 	}
 
 	/**

@@ -4,8 +4,13 @@ import BaseController from "./baseController.js";
 const SERVICE_NAME = "statusPageController";
 
 class StatusPageController extends BaseController {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor(commonDependencies) {
 		super(commonDependencies);
+	}
+
+	get serviceName() {
+		return StatusPageController.SERVICE_NAME;
 	}
 
 	createStatusPage = this.asyncHandler(
