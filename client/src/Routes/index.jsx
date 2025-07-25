@@ -84,6 +84,10 @@ const Routes = () => {
 					element={<UptimeCreate />}
 				/>
 				<Route
+					path="/uptime/create/:monitorId"
+					element={<UptimeCreate clone={true} />}
+				/>
+				<Route
 					path="/uptime/:monitorId/"
 					element={<UptimeDetails />}
 				/>

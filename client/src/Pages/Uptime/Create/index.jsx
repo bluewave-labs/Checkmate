@@ -60,9 +60,10 @@ const parseUrl = (url) => {
  * Create page renders monitor creation or configuration views.
  * @component
  */
-const UptimeCreate = () => {
+const UptimeCreate = ({ clone }) => {
 	const { monitorId } = useParams();
-	const isCreate = typeof monitorId === "undefined";
+	const isCreate = typeof monitorId === "undefined" || clone === true;
+	const isClone = clone === true;
 
 	// States
 	const [monitor, setMonitor] = useState({
@@ -162,15 +163,18 @@ const UptimeCreate = () => {
 		let form = {};
 		if (isCreate) {
 			form = {
-				...rest,
 				url:
-					monitor.type === "http"
+					monitor.type === "http" && !isClone
 						? `http${https ? "s" : ""}://` + monitor.url
 						: monitor.url,
-				port: monitor.type === "port" ? monitor.port : undefined,
 				name: monitor.name || monitor.url.substring(0, 50),
 				type: monitor.type,
+				port: monitor.type === "port" ? monitor.port : undefined,
 				interval: monitor.interval,
+				matchMethod: monitor.matchMethod,
+				expectedValue: monitor.expectedValue,
+				jsonPath: monitor.jsonPath,
+				ignoreTlsErrors: monitor.ignoreTlsErrors,
 			};
 		} else {
 			form = {
@@ -265,7 +269,7 @@ const UptimeCreate = () => {
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
-		if (!isCreate) {
+		if (!isCreate || isClone) {
 			if (monitor.matchMethod) {
 				setUseAdvancedMatching(true);
 			} else {
