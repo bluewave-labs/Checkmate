@@ -22,6 +22,7 @@ import PulseDot from "../../../Components/Animated/PulseDot";
 import SkeletonLayout from "./skeleton";
 
 // Utils
+import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -60,10 +61,9 @@ const parseUrl = (url) => {
  * Create page renders monitor creation or configuration views.
  * @component
  */
-const UptimeCreate = ({ clone }) => {
+const UptimeCreate = ({ isClone = false }) => {
 	const { monitorId } = useParams();
-	const isCreate = typeof monitorId === "undefined" || clone === true;
-	const isClone = clone === true;
+	const isCreate = typeof monitorId === "undefined" || isClone;
 
 	// States
 	const [monitor, setMonitor] = useState({
@@ -718,6 +718,10 @@ const UptimeCreate = ({ clone }) => {
 			)}
 		</Stack>
 	);
+};
+
+UptimeCreate.propTypes = {
+	isClone: PropTypes.bool,
 };
 
 export default UptimeCreate;
