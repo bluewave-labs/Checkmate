@@ -8,6 +8,7 @@ import SettingsPagespeed from "./SettingsPagespeed";
 import SettingsDemoMonitors from "./SettingsDemoMonitors";
 import SettingsAbout from "./SettingsAbout";
 import SettingsEmail from "./SettingsEmail";
+import SettingsGlobalThresholds from "./SettingsGlobalThresholds";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "../../Validation/validation";
@@ -48,6 +49,7 @@ const Settings = () => {
 		setIsApiKeySet,
 		setIsEmailPasswordSet,
 	});
+	
 	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
 
 	const [isSaving, saveError, saveSettings] = useSaveSettings({
@@ -60,6 +62,7 @@ const Settings = () => {
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
 	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
+	
 	// Setup
 	const isAdmin = useIsAdmin();
 	const theme = useTheme();
@@ -149,6 +152,7 @@ const Settings = () => {
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
+			
 			setErrors(newErrors);
 		}
 		saveSettings(settingsData?.settings);
@@ -190,6 +194,13 @@ const Settings = () => {
 				handleChange={handleChange}
 				errors={errors}
 			/>
+			<SettingsGlobalThresholds
+				isAdmin={isAdmin}
+				HEADING_SX={HEADING_SX}
+				settingsData={settingsData}
+				setSettingsData={setSettingsData}
+			/>
+
 			<SettingsDemoMonitors
 				isAdmin={isAdmin}
 				HEADER_SX={HEADING_SX}
