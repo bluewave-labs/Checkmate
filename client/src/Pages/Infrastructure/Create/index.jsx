@@ -3,7 +3,7 @@ import { useTheme } from "@emotion/react";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-
+import axios from "axios";
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
 import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
@@ -86,35 +86,59 @@ const CreateInfrastructureMonitor = () => {
 	});
 
 	// Populate form fields if editing
+	// Populate global thresholds from /settings if creating
+	const { authToken } = useSelector((state) => state.auth);
+
 	useEffect(() => {
-		if (isCreate || !monitor) return;
+		const fetchGlobalThresholds = async () => {
+			if (!isCreate) return;
 
-		setInfrastructureMonitor({
-			url: monitor.url.replace(/^https?:\/\//, ""),
-			name: monitor.name || "",
-			notifications: monitor.notifications,
-			interval: monitor.interval / MS_PER_MINUTE,
-			cpu: monitor.thresholds?.usage_cpu !== undefined,
-			usage_cpu: monitor.thresholds?.usage_cpu ? monitor.thresholds.usage_cpu * 100 : "",
+			try {
+				const token = authToken;
+				if (!token) {
+					console.warn("No token found for fetching global thresholds.");
+					return;
+				}
 
-			memory: monitor.thresholds?.usage_memory !== undefined,
-			usage_memory: monitor.thresholds?.usage_memory
-				? monitor.thresholds.usage_memory * 100
-				: "",
+				const response = await axios.get(`${import.meta.env.VITE_APP_API_BASE_URL}/settings`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
 
-			disk: monitor.thresholds?.usage_disk !== undefined,
-			usage_disk: monitor.thresholds?.usage_disk
-				? monitor.thresholds.usage_disk * 100
-				: "",
+				const globalThresholds = response.data?.data?.settings?.globalThresholds;
 
-			temperature: monitor.thresholds?.usage_temperature !== undefined,
-			usage_temperature: monitor.thresholds?.usage_temperature
-				? monitor.thresholds.usage_temperature * 100
-				: "",
-			secret: monitor.secret || "",
-		});
-		setHttps(monitor.url.startsWith("https"));
-	}, [isCreate, monitor]);
+				if (!globalThresholds) {
+					console.warn("No global thresholds found in /settings response.");
+					return;
+				}
+ 
+				setInfrastructureMonitor((prev) => ({
+					...prev,
+					cpu: globalThresholds.cpu != null,
+					usage_cpu: globalThresholds.cpu != null ? globalThresholds.cpu.toString() : "",
+
+					memory: globalThresholds.memory != null,
+					usage_memory:
+						globalThresholds.memory != null ? globalThresholds.memory.toString() : "",
+
+					disk: globalThresholds.disk != null,
+					usage_disk:
+						globalThresholds.disk != null ? globalThresholds.disk.toString() : "",
+
+					temperature: globalThresholds.temperature != null,
+					usage_temperature:
+						globalThresholds.temperature != null
+							? globalThresholds.temperature.toString()
+							: "",
+				}));
+			} catch (error) {
+				console.error("Failed to fetch global thresholds:", error);
+			}
+		};
+
+		fetchGlobalThresholds();
+	}, [isCreate, user]);
 
 	// Handlers
 	const onSubmit = async (event) => {
