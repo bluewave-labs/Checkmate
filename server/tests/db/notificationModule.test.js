@@ -1,10 +1,6 @@
 import sinon from "sinon";
 import Notification from "../../db/models/Notification.js";
-import {
-	createNotification,
-	getNotificationsByMonitorId,
-	deleteNotificationsByMonitorId,
-} from "../../db/mongo/modules/notificationModule.js";
+import { createNotification, getNotificationsByMonitorId, deleteNotificationsByMonitorId } from "../../db/mongo/modules/notificationModule.js";
 
 describe("notificationModule", function () {
 	const mockNotification = {

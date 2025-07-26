@@ -1,9 +1,6 @@
 import sinon from "sinon";
 import PageSpeedCheck from "../../db/models/PageSpeedCheck.js";
-import {
-	createPageSpeedCheck,
-	deletePageSpeedChecksByMonitorId,
-} from "../../db/mongo/modules/pageSpeedCheckModule.js";
+import { createPageSpeedCheck, deletePageSpeedChecksByMonitorId } from "../../db/mongo/modules/pageSpeedCheckModule.js";
 
 const mockPageSpeedCheck = {
 	monitorId: "monitorId",

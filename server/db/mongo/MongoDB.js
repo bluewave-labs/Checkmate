@@ -89,8 +89,7 @@ class MongoDB {
 
 	connect = async () => {
 		try {
-			const connectionString =
-				this.appSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
+			const connectionString = this.appSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
 			await mongoose.connect(connectionString);
 			// If there are no AppSettings, create one
 			await AppSettings.findOneAndUpdate(
@@ -138,13 +137,6 @@ class MongoDB {
 				stack: error.stack,
 			});
 		}
-	};
-	checkSuperadmin = async (req, res) => {
-		const superAdmin = await UserModel.findOne({ role: "superadmin" });
-		if (superAdmin !== null) {
-			return true;
-		}
-		return false;
 	};
 }
 

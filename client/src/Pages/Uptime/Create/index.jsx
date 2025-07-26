@@ -17,12 +17,13 @@ import Checkbox from "../../../Components/Inputs/Checkbox";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
-import { useCreateMonitor } from "../../../Hooks/monitorHooks";
+import { useCreateMonitor, useFetchMonitorById } from "../../../Hooks/monitorHooks";
+import { useParams } from "react-router-dom";
 
 const CreateMonitor = () => {
 	// Local state
@@ -42,12 +43,23 @@ const CreateMonitor = () => {
 	});
 
 	// Setup
+	const MS_PER_MINUTE = 60000;
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [notifications, notificationsAreLoading, error] = useGetNotificationsByTeamId();
 	const [createMonitor, isCreating] = useCreateMonitor();
+	const { monitorId } = useParams();
 
-	const MS_PER_MINUTE = 60000;
+	const formatAndSet = (monitor) => {
+		monitor.interval = monitor.interval / MS_PER_MINUTE;
+		setMonitor(monitor);
+	};
+	const [isLoading] = useFetchMonitorById({
+		monitorId,
+		setMonitor: formatAndSet,
+		updateTrigger: true,
+	});
+
 	const SELECT_VALUES = [
 		{ _id: 1, name: "1 minute" },
 		{ _id: 2, name: "2 minutes" },

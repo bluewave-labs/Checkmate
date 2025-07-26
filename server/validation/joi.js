@@ -1,4 +1,5 @@
 import joi from "joi";
+import { ROLES, VALID_ROLES } from "../utils/roleUtils.js";
 
 //****************************************
 // Custom Validators
@@ -7,9 +8,7 @@ import joi from "joi";
 const roleValidatior = (role) => (value, helpers) => {
 	const hasRole = role.some((role) => value.includes(role));
 	if (!hasRole) {
-		throw new joi.ValidationError(
-			`You do not have the required authorization. Required roles: ${role.join(", ")}`
-		);
+		throw new joi.ValidationError(`You do not have the required authorization. Required roles: ${role.join(", ")}`);
 	}
 	return value;
 };
@@ -58,13 +57,9 @@ const registrationBodyValidation = joi.object({
 	inviteToken: joi.string().allow("").required(),
 });
 
-const editUserParamValidation = joi.object({
-	userId: joi.string().required(),
-});
-
 const editUserBodyValidation = joi.object({
-	firstName: nameValidation.required(),
-	lastName: nameValidation.required(),
+	firstName: nameValidation.optional(),
+	lastName: nameValidation.optional(),
 	profileImage: joi.any(),
 	newPassword: joi.string().min(8).pattern(passwordPattern),
 	password: joi.string().min(8).pattern(passwordPattern),
@@ -78,7 +73,7 @@ const recoveryValidation = joi.object({
 		.required(),
 });
 
-const recoveryTokenValidation = joi.object({
+const recoveryTokenBodyValidation = joi.object({
 	recoveryToken: joi.string().required(),
 });
 
@@ -90,10 +85,6 @@ const newPasswordValidation = joi.object({
 
 const deleteUserParamValidation = joi.object({
 	email: joi.string().email().required(),
-});
-
-const inviteRoleValidation = joi.object({
-	roles: joi.custom(roleValidatior(["admin", "superadmin"])).required(),
 });
 
 const inviteBodyValidation = joi.object({
@@ -134,11 +125,7 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 		.alternatives()
 		.try(
 			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"),
-			joi
-				.array()
-				.items(
-					joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port")
-				)
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"))
 		),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
@@ -318,8 +305,6 @@ const getChecksQueryValidation = joi.object({
 	status: joi.boolean(),
 });
 
-const getTeamChecksParamValidation = joi.object({});
-
 const getTeamChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
@@ -454,8 +439,7 @@ const createStatusPageBodyValidation = joi.object({
 		.pattern(/^[a-zA-Z0-9_-]+$/) // Only allow alphanumeric, underscore, and hyphen
 		.required()
 		.messages({
-			"string.pattern.base":
-				"URL can only contain letters, numbers, underscores, and hyphens",
+			"string.pattern.base": "URL can only contain letters, numbers, underscores, and hyphens",
 		}),
 	timezone: joi.string().optional(),
 	color: joi.string().optional(),
@@ -485,13 +469,9 @@ const imageValidation = joi
 		fieldname: joi.string().required(),
 		originalname: joi.string().required(),
 		encoding: joi.string().required(),
-		mimetype: joi
-			.string()
-			.valid("image/jpeg", "image/png", "image/jpg")
-			.required()
-			.messages({
-				"string.valid": "File must be a valid image (jpeg, jpg, or png)",
-			}),
+		mimetype: joi.string().valid("image/jpeg", "image/png", "image/jpg").required().messages({
+			"string.valid": "File must be a valid image (jpeg, jpg, or png)",
+		}),
 		size: joi.number().max(3145728).required().messages({
 			"number.max": "File size must be less than 3MB",
 		}),
@@ -577,6 +557,13 @@ const createNotificationBodyValidation = joi.object({
 		"string.empty": "Notification name is required",
 		"any.required": "Notification name is required",
 	}),
+
+	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty").required().messages({
+		"string.empty": "Notification type is required",
+		"any.required": "Notification type is required",
+		"any.only": "Notification type must be email, webhook, or pager_duty",
+	}),
+
 	address: joi.when("type", {
 		is: "email",
 		then: joi.string().email().required().messages({
@@ -584,16 +571,12 @@ const createNotificationBodyValidation = joi.object({
 			"any.required": "E-mail address is required",
 			"string.email": "Please enter a valid e-mail address",
 		}),
-	}),
-	type: joi
-		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty")
-		.required()
-		.messages({
-			"string.empty": "Notification type is required",
-			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, or pager_duty",
+		otherwise: joi.string().uri().required().messages({
+			"string.empty": "Webhook URL cannot be empty",
+			"any.required": "Webhook URL is required",
+			"string.uri": "Please enter a valid Webhook URL",
 		}),
+	}),
 });
 
 //****************************************
@@ -628,14 +611,43 @@ const sendTestEmailBodyValidation = joi.object({
 	systemEmailTLSServername: joi.string().allow("").optional(),
 });
 
+const getUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdParamValidation = joi.object({
+	userId: joi.string().required(),
+});
+
+const editUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES))
+		.min(1)
+		.required(),
+});
+
+const editSuperadminUserByIdBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi.string().email().required(),
+	role: joi
+		.array()
+		.items(joi.string().valid(...VALID_ROLES, ROLES.SUPERADMIN))
+		.min(1)
+		.required(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
 	registrationBodyValidation,
 	recoveryValidation,
-	recoveryTokenValidation,
+	recoveryTokenBodyValidation,
 	newPasswordValidation,
-	inviteRoleValidation,
 	inviteBodyValidation,
 	inviteVerificationBodyValidation,
 	createMonitorBodyValidation,
@@ -652,7 +664,6 @@ export {
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
 	getMonitorURLByQueryValidation,
-	editUserParamValidation,
 	editUserBodyValidation,
 	createAlertParamValidation,
 	createAlertBodyValidation,
@@ -666,7 +677,6 @@ export {
 	createCheckBodyValidation,
 	getChecksParamValidation,
 	getChecksQueryValidation,
-	getTeamChecksParamValidation,
 	getTeamChecksQueryValidation,
 	ackCheckBodyValidation,
 	ackAllChecksParamValidation,
@@ -696,4 +706,8 @@ export {
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,
+	getUserByIdParamValidation,
+	editUserByIdParamValidation,
+	editUserByIdBodyValidation,
+	editSuperadminUserByIdBodyValidation,
 };

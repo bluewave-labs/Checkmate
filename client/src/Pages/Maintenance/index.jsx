@@ -68,12 +68,9 @@ const Maintenance = () => {
 	if (isDataFetched && maintenanceWindows.length === 0) {
 		return (
 			<Fallback
-				title="maintenance window"
-				checks={[
-					"Mark your maintenance periods",
-					"Eliminate any misunderstandings",
-					"Stop sending alerts in maintenance windows",
-				]}
+				type="maintenanceWindow"
+				title={t("maintenanceWindow.fallback.title")}
+				checks={t("maintenanceWindow.fallback.checks", { returnObjects: true })}
 				link="/maintenance/create"
 				isAdmin={isAdmin}
 			/>

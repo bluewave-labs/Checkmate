@@ -4,9 +4,17 @@ import { GenerateAvatarImage } from "../../../utils/imageProcessing.js";
 
 const DUPLICATE_KEY_CODE = 11000; // MongoDB error code for duplicate key
 import { ParseBoolean } from "../../../utils/utils.js";
-import ServiceRegistry from "../../../service/serviceRegistry.js";
-import StringService from "../../../service/stringService.js";
+import ServiceRegistry from "../../../service/system/serviceRegistry.js";
+import StringService from "../../../service/system/stringService.js";
 const SERVICE_NAME = "userModule";
+
+const checkSuperadmin = async () => {
+	const superAdmin = await UserModel.findOne({ role: "superadmin" });
+	if (superAdmin !== null) {
+		return true;
+	}
+	return false;
+};
 
 /**
  * Insert a User
@@ -16,11 +24,7 @@ const SERVICE_NAME = "userModule";
  * @returns {Promise<UserModel>}
  * @throws {Error}
  */
-const insertUser = async (
-	userData,
-	imageFile,
-	generateAvatarImage = GenerateAvatarImage
-) => {
+const insertUser = async (userData, imageFile, generateAvatarImage = GenerateAvatarImage) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	try {
 		if (imageFile) {
@@ -47,9 +51,7 @@ const insertUser = async (
 
 		const newUser = new UserModel(userData);
 		await newUser.save();
-		return await UserModel.findOne({ _id: newUser._id })
-			.select("-password")
-			.select("-profileImage"); // .select() doesn't work with create, need to save then find
+		return await UserModel.findOne({ _id: newUser._id }).select("-password").select("-profileImage"); // .select() doesn't work with create, need to save then find
 	} catch (error) {
 		if (error.code === DUPLICATE_KEY_CODE) {
 			error.message = stringService.dbUserExists;
@@ -98,31 +100,26 @@ const getUserByEmail = async (email) => {
  * @throws {Error}
  */
 
-const updateUser = async (
-	req,
-	res,
-	parseBoolean = ParseBoolean,
-	generateAvatarImage = GenerateAvatarImage
-) => {
-	const candidateUserId = req.params.userId;
-	try {
-		const candidateUser = { ...req.body };
-		// ******************************************
-		// Handle profile image
-		// ******************************************
+const updateUser = async ({ userId, user, file }) => {
+	if (!userId) {
+		throw new Error("No user in request");
+	}
 
-		if (parseBoolean(candidateUser.deleteProfileImage) === true) {
+	try {
+		const candidateUser = { ...user };
+
+		if (ParseBoolean(candidateUser.deleteProfileImage) === true) {
 			candidateUser.profileImage = null;
 			candidateUser.avatarImage = null;
-		} else if (req.file) {
+		} else if (file) {
 			// 1.  Save the full size image
 			candidateUser.profileImage = {
-				data: req.file.buffer,
-				contentType: req.file.mimetype,
+				data: file.buffer,
+				contentType: file.mimetype,
 			};
 
 			// 2.  Get the avatar sized image
-			const avatar = await generateAvatarImage(req.file);
+			const avatar = await GenerateAvatarImage(file);
 			candidateUser.avatarImage = avatar;
 		}
 
@@ -131,7 +128,7 @@ const updateUser = async (
 		// ******************************************
 
 		const updatedUser = await UserModel.findByIdAndUpdate(
-			candidateUserId,
+			userId,
 			candidateUser,
 			{ new: true } // Returns updated user instead of pre-update user
 		)
@@ -198,7 +195,7 @@ const deleteAllOtherUsers = async () => {
 	}
 };
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async () => {
 	try {
 		const users = await UserModel.find().select("-password").select("-profileImage");
 		return users;
@@ -220,7 +217,37 @@ const logoutUser = async (userId) => {
 	}
 };
 
+const getUserById = async (roles, userId) => {
+	try {
+		if (!roles.includes("superadmin")) {
+			throw new Error("User is not a superadmin");
+		}
+
+		const user = await UserModel.findById(userId).select("-password").select("-profileImage");
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		return user;
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "getUserById";
+		throw error;
+	}
+};
+
+const editUserById = async (userId, user) => {
+	try {
+		await UserModel.findByIdAndUpdate(userId, user, { new: true }).select("-password").select("-profileImage");
+	} catch (error) {
+		error.service = SERVICE_NAME;
+		error.method = "editUserById";
+		throw error;
+	}
+};
+
 export {
+	checkSuperadmin,
 	insertUser,
 	getUserByEmail,
 	updateUser,
@@ -229,4 +256,6 @@ export {
 	deleteAllOtherUsers,
 	getAllUsers,
 	logoutUser,
+	getUserById,
+	editUserById,
 };

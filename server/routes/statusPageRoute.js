@@ -13,20 +13,11 @@ class StatusPageRoutes {
 	initRoutes() {
 		this.router.get("/", this.statusPageController.getStatusPage);
 		this.router.get("/team", verifyJWT, this.statusPageController.getStatusPagesByTeamId);
-		this.router.get("/:url", this.statusPageController.getStatusPageByUrl);
 
-		this.router.post(
-			"/",
-			upload.single("logo"),
-			verifyJWT,
-			this.statusPageController.createStatusPage
-		);
-		this.router.put(
-			"/",
-			upload.single("logo"),
-			verifyJWT,
-			this.statusPageController.updateStatusPage
-		);
+		this.router.post("/", upload.single("logo"), verifyJWT, this.statusPageController.createStatusPage);
+		this.router.put("/", upload.single("logo"), verifyJWT, this.statusPageController.updateStatusPage);
+
+		this.router.get("/:url", this.statusPageController.getStatusPageByUrl);
 		this.router.delete("/:url(*)", verifyJWT, this.statusPageController.deleteStatusPage);
 	}
 

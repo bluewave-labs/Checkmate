@@ -4,7 +4,7 @@ import { TabPanel } from "@mui/lab";
 import ConfigBox from "../../../../../Components/ConfigBox";
 import Checkbox from "../../../../../Components/Inputs/Checkbox";
 import TextInput from "../../../../../Components/Inputs/TextInput";
-import Select from "../../../../../Components/Inputs/Select";
+import Search from "../../../../../Components/Inputs/Search";
 import ImageUpload from "../../../../../Components/Inputs/ImageUpload";
 import ColorPicker from "../../../../../Components/Inputs/ColorPicker";
 import Progress from "../Progress";
@@ -14,6 +14,7 @@ import { useTheme } from "@emotion/react";
 import timezones from "../../../../../Utils/timezones.json";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useMemo, useState, useCallback } from "react";
 
 const TabSettings = ({
 	isCreate,
@@ -28,6 +29,25 @@ const TabSettings = ({
 	// Utils
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const [rawInput, setRawInput] = useState("");
+
+	const selectedTimezone = useMemo(
+		() => timezones.find((tz) => tz._id === form.timezone) ?? null,
+		[form.timezone]
+	);
+
+	const handleTimezoneChange = useCallback(
+		(newValue) => {
+			setRawInput("");
+			handleFormChange({
+				target: {
+					name: "timezone",
+					value: newValue?._id ?? "",
+				},
+			});
+		},
+		[handleFormChange]
+	);
 
 	return (
 		<TabPanel value={tabValue}>
@@ -101,13 +121,17 @@ const TabSettings = ({
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(6)}>
-						<Select
+						<Search
 							id="timezone"
-							name="timezone"
 							label={t("settingsDisplayTimezone")}
-							items={timezones}
-							value={form.timezone}
-							onChange={handleFormChange}
+							options={timezones}
+							filteredBy="name"
+							value={selectedTimezone}
+							inputValue={rawInput}
+							handleInputChange={(newVal) => setRawInput(newVal)}
+							handleChange={handleTimezoneChange}
+							isAdorned={false}
+							unit="timezone"
 						/>
 					</Stack>
 				</ConfigBox>

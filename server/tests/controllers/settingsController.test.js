@@ -1,8 +1,5 @@
 import { afterEach } from "node:test";
-import {
-	getAppSettings,
-	updateAppSettings,
-} from "../../controllers/settingsController.js";
+import { getAppSettings, updateAppSettings } from "../../controllers/settingsController.js";
 
 import { successMessages } from "../../utils/messages.js";
 import sinon from "sinon";

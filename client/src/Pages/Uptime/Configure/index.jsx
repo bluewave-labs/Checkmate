@@ -163,18 +163,18 @@ const Configure = () => {
 		e.preventDefault();
 
 		const toSubmit = {
-			_id: form._id,
-			url: form.url,
-			name: form.name,
-			type: form.type,
-			matchMethod: form.matchMethod,
-			expectedValue: form.expectedValue,
-			jsonPath: form.jsonPath,
-			interval: form.interval,
-			teamId: form.teamId,
-			userId: form.userId,
-			port: form.port,
-			ignoreTlsErrors: form.ignoreTlsErrors,
+			_id: form?._id,
+			url: form?.url,
+			name: form?.name,
+			type: form?.type,
+			matchMethod: form?.matchMethod,
+			expectedValue: form?.expectedValue,
+			jsonPath: form?.jsonPath,
+			interval: form?.interval,
+			teamId: form?.teamId,
+			userId: form?.userId,
+			port: form?.port,
+			ignoreTlsErrors: form?.ignoreTlsErrors,
 		};
 
 		if (!useAdvancedMatching) {
@@ -197,7 +197,7 @@ const Configure = () => {
 			return;
 		}
 
-		toSubmit.notifications = form.notifications;
+		toSubmit.notifications = form?.notifications;
 		await updateMonitor({ monitor: toSubmit, redirect: "/uptime" });
 	};
 
@@ -235,7 +235,7 @@ const Configure = () => {
 							component="h1"
 							variant="monitorName"
 						>
-							{form.name}
+							{form?.name}
 						</Typography>
 						<Stack
 							direction="row"
@@ -267,7 +267,7 @@ const Configure = () => {
 								component="h2"
 								variant="monitorUrl"
 							>
-								{form.url?.replace(/^https?:\/\//, "") || "..."}
+								{form?.url?.replace(/^https?:\/\//, "") || "..."}
 							</Typography>
 							<Typography
 								position="relative"
@@ -352,11 +352,11 @@ const Configure = () => {
 							type="number"
 							label={t("portToMonitor")}
 							placeholder="5173"
-							value={form.port || ""}
+							value={form?.port || ""}
 							onChange={onChange}
 							error={errors["port"] ? true : false}
 							helperText={errors["port"]}
-							hidden={form.type !== "port"}
+							hidden={form?.type !== "port"}
 						/>
 						<TextInput
 							name="name"
@@ -379,7 +379,7 @@ const Configure = () => {
 					<NotificationsConfig
 						notifications={notifications}
 						setMonitor={setForm}
-						setNotifications={form.notifications}
+						setNotifications={form?.notifications}
 					/>
 				</ConfigBox>
 				<ConfigBox>
@@ -398,7 +398,7 @@ const Configure = () => {
 							control={
 								<Switch
 									name="ignoreTlsErrors"
-									checked={form.ignoreTlsErrors ?? false}
+									checked={form?.ignoreTlsErrors ?? false}
 									onChange={onChange}
 									sx={{ mr: theme.spacing(2) }}
 								/>
@@ -430,12 +430,12 @@ const Configure = () => {
 							isChecked={useAdvancedMatching}
 							onChange={onChange}
 						/>
-						{form.type === "http" && useAdvancedMatching && (
+						{form?.type === "http" && useAdvancedMatching && (
 							<>
 								<Select
 									name="matchMethod"
 									label={t("matchMethod")}
-									value={form.matchMethod || "equal"}
+									value={form?.matchMethod || "equal"}
 									onChange={onChange}
 									items={matchMethodOptions}
 								/>
@@ -445,8 +445,8 @@ const Configure = () => {
 										name="expectedValue"
 										label={t("expectedValue")}
 										isOptional={true}
-										placeholder={expectedValuePlaceholders[form.matchMethod || "equal"]}
-										value={form.expectedValue}
+										placeholder={expectedValuePlaceholders[form?.matchMethod || "equal"]}
+										value={form?.expectedValue}
 										onChange={onChange}
 										error={errors["expectedValue"] ? true : false}
 										helperText={errors["expectedValue"]}
@@ -466,7 +466,7 @@ const Configure = () => {
 										label="JSON Path"
 										isOptional={true}
 										placeholder="data.status"
-										value={form.jsonPath}
+										value={form?.jsonPath}
 										onChange={onChange}
 										error={errors["jsonPath"] ? true : false}
 										helperText={errors["jsonPath"]}

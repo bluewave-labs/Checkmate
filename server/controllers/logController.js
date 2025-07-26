@@ -1,23 +1,21 @@
-import { handleError } from "./controllerUtils.js";
+import BaseController from "./baseController.js";
+const SERVICE_NAME = "LogController";
 
-const SERVICE_NAME = "JobQueueController";
-
-class LogController {
-	constructor(logger) {
-		this.logger = logger;
+class LogController extends BaseController {
+	constructor(commonDependencies) {
+		super(commonDependencies);
 	}
 
-	getLogs = async (req, res, next) => {
-		try {
+	getLogs = this.asyncHandler(
+		async (req, res) => {
 			const logs = await this.logger.getLogs();
 			res.success({
 				msg: "Logs fetched successfully",
 				data: logs,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getLogs"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getLogs"
+	);
 }
 export default LogController;

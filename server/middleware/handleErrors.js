@@ -1,6 +1,6 @@
 import logger from "../utils/logger.js";
-import ServiceRegistry from "../service/serviceRegistry.js";
-import StringService from "../service/stringService.js";
+import ServiceRegistry from "../service/system/serviceRegistry.js";
+import StringService from "../service/system/stringService.js";
 
 const handleErrors = (error, req, res, next) => {
 	const status = error.status || 500;

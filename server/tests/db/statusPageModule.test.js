@@ -1,8 +1,5 @@
 import sinon from "sinon";
-import {
-	createStatusPage,
-	getStatusPageByUrl,
-} from "../../db/mongo/modules/statusPageModule.js";
+import { createStatusPage, getStatusPageByUrl } from "../../db/mongo/modules/statusPageModule.js";
 import StatusPage from "../../db/models/StatusPage.js";
 import { errorMessages } from "../../utils/messages.js";
 

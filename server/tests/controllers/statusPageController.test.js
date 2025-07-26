@@ -1,8 +1,5 @@
 import sinon from "sinon";
-import {
-	createStatusPage,
-	getStatusPageByUrl,
-} from "../../controllers/statusPageController.js";
+import { createStatusPage, getStatusPageByUrl } from "../../controllers/statusPageController.js";
 
 describe("statusPageController", function () {
 	let req, res, next;

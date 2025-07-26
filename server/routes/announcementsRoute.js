@@ -15,12 +15,7 @@ class AnnouncementRoutes {
 		 * @desc    Create a new announcement
 		 * @access  Private (Requires JWT verification)
 		 */
-		this.router.post(
-			"/",
-			verifyJWT,
-			isAllowed(["admin", "superadmin"]),
-			this.announcementController.createAnnouncement
-		);
+		this.router.post("/", verifyJWT, isAllowed(["admin", "superadmin"]), this.announcementController.createAnnouncement);
 
 		/**
 		 * @route   GET /
