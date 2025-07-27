@@ -6,6 +6,7 @@ class NotificationService {
 		networkService,
 		stringService,
 		notificationUtils,
+		settingsService,
 	}) {
 		this.emailService = emailService;
 		this.db = db;
@@ -13,6 +14,7 @@ class NotificationService {
 		this.networkService = networkService;
 		this.stringService = stringService;
 		this.notificationUtils = notificationUtils;
+		this.settingsService = settingsService;
 	}
 
 	sendNotification = async ({ notification, subject, content, html }) => {
@@ -55,6 +57,10 @@ class NotificationService {
 		const notificationIDs = networkResponse.monitor?.notifications ?? [];
 		if (notificationIDs.length === 0) return false;
 
+		// Get user timezone from settings
+		const appSettings = await this.settingsService.getDBSettings();
+		const userTimezone = appSettings.timezone || "America/Toronto";
+
 		if (networkResponse.monitor.type === "hardware") {
 			const thresholds = networkResponse?.monitor?.thresholds;
 
@@ -79,7 +85,10 @@ class NotificationService {
 		// Status monitors
 		const { subject, html } =
 			await this.notificationUtils.buildStatusEmail(networkResponse);
-		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
+		const content = await this.notificationUtils.buildWebhookMessage(
+			networkResponse,
+			userTimezone
+		);
 		const success = this.notifyAll({ notificationIDs, subject, html, content });
 		return success;
 	}
@@ -103,7 +112,33 @@ class NotificationService {
 
 	async getTestNotification() {
 		const html = await this.notificationUtils.buildTestEmail();
-		const content = "This is a test notification";
+
+		// Get user timezone from settings
+		const appSettings = await this.settingsService.getDBSettings();
+		const userTimezone = appSettings.timezone || "America/Toronto";
+
+		// Create a test message with timestamp
+		const currentTime = new Date();
+		const formattedTime = currentTime.toLocaleString("en-US", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: false,
+			timeZone: userTimezone,
+		});
+
+		const timeZoneAbbr = currentTime
+			.toLocaleTimeString("en-US", {
+				timeZoneName: "short",
+				timeZone: userTimezone,
+			})
+			.split(" ")
+			.pop();
+
+		const content = `This is a test notification\n📅 Time: ${formattedTime.replace(/(\d+)\/(\d+)\/(\d+),\s/, "$3-$1-$2 ")} ${timeZoneAbbr}`;
 		const subject = "Test Notification";
 		return { subject, html, content };
 	}

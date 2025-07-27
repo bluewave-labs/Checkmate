@@ -93,6 +93,12 @@ const Settings = () => {
 
 		if (name === "timezone") {
 			dispatch(setTimezone({ timezone: value }));
+			// Also save to database settings
+			const newSettingsData = {
+				...settingsData,
+				settings: { ...settingsData.settings, timezone: value },
+			};
+			setSettingsData(newSettingsData);
 			return;
 		}
 

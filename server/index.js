@@ -189,6 +189,7 @@ const startApp = async () => {
 		networkService,
 		stringService,
 		notificationUtils,
+		settingsService,
 	});
 
 	const redisService = new RedisService({ Redis: IORedis, logger });

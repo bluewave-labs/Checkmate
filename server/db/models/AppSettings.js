@@ -10,6 +10,10 @@ const AppSettingsSchema = mongoose.Schema(
 			type: String,
 			default: "gb",
 		},
+		timezone: {
+			type: String,
+			default: "America/Toronto",
+		},
 		pagespeedApiKey: {
 			type: String,
 		},
