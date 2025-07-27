@@ -1,3 +1,5 @@
+import { formatTimestampInTimezone } from "../utils/timezoneUtils.js";
+
 class NotificationUtils {
 	constructor({ stringService, emailService }) {
 		this.stringService = stringService;
@@ -21,41 +23,11 @@ class NotificationUtils {
 
 	buildWebhookMessage = (networkResponse, timezone = "America/Toronto") => {
 		const { monitor, status, code, timestamp } = networkResponse;
-		// Format timestamp using the user's selected timezone
-		const formatTime = (timestamp, userTimezone) => {
-			const date = new Date(timestamp);
 
-			// Format the date with the user's timezone
-			const formattedDate = date.toLocaleString("en-US", {
-				year: "numeric",
-				month: "2-digit",
-				day: "2-digit",
-				hour: "2-digit",
-				minute: "2-digit",
-				second: "2-digit",
-				hour12: false,
-				timeZone: userTimezone,
-			});
-
-			// Get timezone abbreviation
-			const timeZoneAbbr = date
-				.toLocaleTimeString("en-US", {
-					timeZoneName: "short",
-					timeZone: userTimezone,
-				})
-				.split(" ")
-				.pop();
-
-			// Format the date with readable format
-			return (
-				formattedDate.replace(/(\d+)\/(\d+)\/(\d+),\s/, "$3-$1-$2 ") + " " + timeZoneAbbr
-			);
-		};
-
-		// Get formatted time
+		// Get formatted time using shared utility
 		const formattedTime = timestamp
-			? formatTime(timestamp, timezone)
-			: formatTime(new Date().getTime(), timezone);
+			? formatTimestampInTimezone(timestamp, timezone)
+			: formatTimestampInTimezone(new Date().getTime(), timezone);
 
 		// Create different messages based on status with extra spacing
 		let messageText;

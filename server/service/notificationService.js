@@ -1,3 +1,5 @@
+import { formatTimestampInTimezone } from "../utils/timezoneUtils.js";
+
 class NotificationService {
 	constructor({
 		emailService,
@@ -15,6 +17,12 @@ class NotificationService {
 		this.stringService = stringService;
 		this.notificationUtils = notificationUtils;
 		this.settingsService = settingsService;
+	}
+
+	// Helper method to get user timezone
+	async getUserTimezone() {
+		const appSettings = await this.settingsService.getDBSettings();
+		return appSettings.timezone || "America/Toronto";
 	}
 
 	sendNotification = async ({ notification, subject, content, html }) => {
@@ -58,8 +66,7 @@ class NotificationService {
 		if (notificationIDs.length === 0) return false;
 
 		// Get user timezone from settings
-		const appSettings = await this.settingsService.getDBSettings();
-		const userTimezone = appSettings.timezone || "America/Toronto";
+		const userTimezone = await this.getUserTimezone();
 
 		if (networkResponse.monitor.type === "hardware") {
 			const thresholds = networkResponse?.monitor?.thresholds;
@@ -114,31 +121,13 @@ class NotificationService {
 		const html = await this.notificationUtils.buildTestEmail();
 
 		// Get user timezone from settings
-		const appSettings = await this.settingsService.getDBSettings();
-		const userTimezone = appSettings.timezone || "America/Toronto";
+		const userTimezone = await this.getUserTimezone();
 
-		// Create a test message with timestamp
+		// Create a test message with timestamp using shared utility
 		const currentTime = new Date();
-		const formattedTime = currentTime.toLocaleString("en-US", {
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-			hour: "2-digit",
-			minute: "2-digit",
-			second: "2-digit",
-			hour12: false,
-			timeZone: userTimezone,
-		});
+		const formattedTime = formatTimestampInTimezone(currentTime, userTimezone);
 
-		const timeZoneAbbr = currentTime
-			.toLocaleTimeString("en-US", {
-				timeZoneName: "short",
-				timeZone: userTimezone,
-			})
-			.split(" ")
-			.pop();
-
-		const content = `This is a test notification\n📅 Time: ${formattedTime.replace(/(\d+)\/(\d+)\/(\d+),\s/, "$3-$1-$2 ")} ${timeZoneAbbr}`;
+		const content = `This is a test notification\n📅 Time: ${formattedTime}`;
 		const subject = "Test Notification";
 		return { subject, html, content };
 	}
