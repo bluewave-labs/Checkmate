@@ -265,7 +265,7 @@ const CreateInfrastructureMonitor = () => {
 					</Typography>
 				</Typography>
 				<ConfigBox>
-					<Stack gap={theme.spacing(6)}>
+					<Stack>
 						<Typography
 							component="h2"
 							variant="h2"
@@ -347,7 +347,12 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("notificationConfig.title")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("notificationConfig.title")}
+						</Typography>
 						<Typography component="p">{t("notificationConfig.description")}</Typography>
 					</Box>
 					<NotificationsConfig

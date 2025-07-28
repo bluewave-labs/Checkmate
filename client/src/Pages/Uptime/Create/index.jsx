@@ -357,7 +357,12 @@ const CreateMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("notificationConfig.title")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("notificationConfig.title")}
+						</Typography>
 						<Typography component="p">{t("notificationConfig.description")}</Typography>
 					</Box>
 					<NotificationsConfig

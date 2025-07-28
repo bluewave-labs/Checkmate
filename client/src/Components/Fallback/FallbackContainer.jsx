@@ -7,9 +7,9 @@ const FallbackContainer = ({ children, type }) => {
 	return (
 		<Box
 			border={1}
-			borderColor={theme.palette.primary.lowContrast}
+			borderColor={theme.palette.container.border}
 			borderRadius={theme.shape.borderRadius}
-			backgroundColor={theme.palette.primary.main}
+			backgroundColor={theme.palette.container.background}
 			overflow="hidden"
 			sx={{
 				display: "flex",

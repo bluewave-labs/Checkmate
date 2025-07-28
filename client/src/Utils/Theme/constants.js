@@ -87,8 +87,10 @@ const newColors = {
 	offBlack: "#131315",
 	gray0: "#FDFDFD",
 	gray10: "#F4F4FF",
+	gray50: "#F9F9F9",
 	gray100: "#F3F3F3",
 	gray200: "#EFEFEF",
+	gray250: "#DADADA",
 	gray500: "#A2A3A3",
 	gray900: "#1c1c1c",
 	blueGray50: "#E8F0FE",
@@ -173,7 +175,7 @@ const newSemanticColors = {
 			dark: newColors.blueGray800,
 		},
 		lowContrast: {
-			light: newColors.gray200,
+			light: newColors.gray250,
 			dark: newColors.blueGray600,
 		},
 	},
@@ -335,6 +337,16 @@ const newSemanticColors = {
 		contrastText: {
 			light: newColors.blueGray600,
 			dark: newColors.blueGray900,
+		},
+	},
+	container: {
+		background: {
+			light: newColors.gray50,
+			dark: newColors.offBlack,
+		},
+		border: {
+			light: newColors.gray500,
+			dark: newColors.blueGray600,
 		},
 	},
 };
