@@ -8,7 +8,6 @@
 	"settingsFailedToSave": "Ayarlar kaydedilemedi",
 	"settingsStatsCleared": "İstatistikler başarıyla temizlendi",
 	"settingsFailedToClearStats": "İstatistikler temizlenemedi",
-	"settingsFailedToAddDemoMonitors": "Demo monitörler eklenemedi",
 	"settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
 	"settingsFailedToDeleteMonitors": "Monitörler silinemedi",
 	"starPromptTitle": "Checkmate yıldızla değerlendirin",
@@ -86,7 +85,8 @@
 		"networkError": "Ağ hatası oluştu",
 		"fallback": {
 			"title": "",
-			"checks": [""]
+			"checks": [""],
+			"actionButton": ""
 		},
 		"createButton": "Bildirim kanalı oluştur",
 		"createTitle": "Bildirim kanalı",
@@ -95,16 +95,16 @@
 			"failed": "Bildirim kanalı oluşturulamadı"
 		},
 		"fetch": {
-			"success": "",
-			"failed": ""
+			"success": "Bildirimler başarıyla alındı",
+			"failed": "Bildirimler alınamadı"
 		},
 		"delete": {
-			"success": "",
-			"failed": ""
+			"success": "Bildirim başarıyla silindi",
+			"failed": "Bildirim silinemedi"
 		},
 		"edit": {
-			"success": "",
-			"failed": ""
+			"success": "Bildirim başarıyla güncellendi",
+			"failed": "Bildirim güncellenemedi"
 		},
 		"test": {
 			"success": "Test bildirimi başarıyla gönderildi",
@@ -331,7 +331,9 @@
 		"uploadSuccess": "Monitör başarıyla oluşturuldu!",
 		"validationFailed": "Doğrulama başarısız oldu",
 		"noFileSelected": "Hiçbir dosya seçilmedi",
-		"fallbackPage": "Toplu olarak sunucu listesini yüklemek için bir dosyayı içe aktarın"
+		"fallbackPage": "Toplu olarak sunucu listesini yüklemek için bir dosyayı içe aktarın",
+		"invalidFileType": "",
+		"uploadFailed": ""
 	},
 	"DeleteAccountTitle": "Hesabı sil",
 	"DeleteAccountButton": "Hesabı sil",
@@ -340,11 +342,11 @@
 	"reset": "Sıfırla",
 	"ignoreTLSError": "TLS/SSL hatalarını gözardı et",
 	"tlsErrorIgnored": "TLS/SSL hataları gözardı ediliyor",
-	"ignoreTLSErrorDescription": "",
+	"ignoreTLSErrorDescription": "TLS/SSL hatalarını gözardı et ve websitesinin ayakta olduğunu denetle",
 	"createNew": "Yeni oluştur",
 	"greeting": {
 		"prepend": "Merhaba",
-		"append": "",
+		"append": "Öğleden sonra muhteşem geçsin!",
 		"overview": ""
 	},
 	"roles": {
@@ -365,28 +367,28 @@
 		"email": "Eposta",
 		"selectRole": "Rolü seçin",
 		"inviteLink": "Davet linki",
-		"cancel": "",
-		"noMembers": "",
+		"cancel": "İptal",
+		"noMembers": "Bu role sahip hiç üye yok",
 		"getToken": "",
 		"emailToken": "",
 		"table": {
-			"name": "",
-			"email": "",
-			"role": "",
-			"created": ""
+			"name": "İsim",
+			"email": "Eposta",
+			"role": "Rol",
+			"created": "Oluşturulma"
 		}
 	},
 	"monitorState": {
-		"paused": "",
-		"resumed": "",
-		"active": ""
+		"paused": "Durduruldu",
+		"resumed": "Yeniden başlatıldı",
+		"active": "Aktif"
 	},
 	"menu": {
 		"uptime": "",
-		"pagespeed": "",
+		"pagespeed": "Sayfa hızı",
 		"infrastructure": "",
-		"incidents": "",
-		"statusPages": "",
+		"incidents": "Olaylar",
+		"statusPages": "Durum sayfaları",
 		"maintenance": "Bakım",
 		"integrations": "Entegrasyonlar",
 		"settings": "Ayarlar",
@@ -399,7 +401,7 @@
 		"team": "Ekip",
 		"logOut": "Çıkış yap",
 		"notifications": "Bildirimler",
-		"logs": ""
+		"logs": "Günlükler"
 	},
 	"settingsEmailUser": "E-posta kullanıcısı – Kimlik doğrulama için kullanıcı adı; belirtilirse e-posta adresinin yerine geçer.",
 	"state": "Durum",
@@ -512,11 +514,11 @@
 				},
 				"firstName": {
 					"label": "",
-					"placeholder": "",
+					"placeholder": "Jordan",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Lütfen adınızı girin",
+						"length": "İsim 50 karakterden az olmalıdır",
+						"pattern": "İsim yalnızca harfler, boşluklar, kesme işaretleri veya tireler içerebilir"
 					}
 				},
 				"lastName": {
@@ -525,23 +527,28 @@
 					"errors": {
 						"empty": "Lütfen soyadınızı girin",
 						"length": "Soyadı en çok 50 karakter olmalıdır",
-						"pattern": ""
+						"pattern": "Soyad yalnızca harfler, boşluklar, kesme işaretleri veya tireler içerebilir"
 					}
 				}
 			},
 			"errors": {
-				"validation": ""
+				"validation": "Veriyi işlerken hata oluştu."
 			},
 			"fields": {
 				"password": {
 					"errors": {
 						"incorrect": ""
 					}
+				},
+				"role": {
+					"errors": {
+						"min": ""
+					}
 				}
 			}
 		},
 		"login": {
-			"heading": "",
+			"heading": "Giriş yap",
 			"subheadings": {
 				"stepOne": "Eposta adresinizi girin",
 				"stepTwo": "Parolanızı girin"
@@ -580,7 +587,7 @@
 				"superAdmin": "Süper yönetici hesabı oluşturun",
 				"user": ""
 			},
-			"termsAndPolicies": "",
+			"termsAndPolicies": "Bir hesap oluşturarak <a1>Hizmet Şartları</a1> ve <a2>Gizlilik Politikası</a2>'nı kabul etmiş olursunuz.",
 			"links": {
 				"login": "Bir hesabınız mı var? <a>Giriş yapın</a>"
 			},
@@ -593,8 +600,8 @@
 			"subheadings": {
 				"stepOne": "Endişelenmeyin, sıfırlamak için gerekli bilgileri göndereceğiz.",
 				"stepTwo": "Parola sıfırlama için gerekli bilgileri <email/> hesabına ilettik.",
-				"stepThree": "",
-				"stepFour": ""
+				"stepThree": "Parolanız daha önce kullandığınız paroladan farklı olmalıdır.",
+				"stepFour": "Parolanız başarıyla sıfırlandı. Buraya tıklayarak giriş yapabilirsiniz."
 			},
 			"buttons": {
 				"openEmail": "Eposta uygulamasını aç",
@@ -612,7 +619,7 @@
 			},
 			"toasts": {
 				"sent": "",
-				"emailNotFound": "",
+				"emailNotFound": "Eposta bulunamadı.",
 				"redirect": "",
 				"success": "",
 				"error": ""
@@ -675,7 +682,10 @@
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": "https://sunucu-adı.com/webhook\n"
-		}
+		},
+		"testNotification": "Test bildirimi",
+		"dialogDeleteTitle": "Gerçekten bu bildirimi silmek istiyor musunuz?",
+		"dialogDeleteConfirm": "Sil"
 	},
 	"notificationConfig": {
 		"title": "Bildirimler",
@@ -688,20 +698,20 @@
 		"down": "çalışmıyor",
 		"paused": "beklemede"
 	},
-	"advancedMatching": "",
+	"advancedMatching": "Gelişmiş eşleştirme",
 	"sendTestNotifications": "Bildirimleri dene",
-	"testNotificationsDisabled": "",
 	"selectAll": "Tümünü seç",
 	"showAdminLoginLink": "",
 	"logsPage": {
-		"title": "",
-		"description": "",
+		"title": "Günlükler",
+		"description": "Sistem günlükleri - son 1000 satır",
 		"tabs": {
-			"queue": "",
-			"logs": ""
+			"queue": "İş kuyruğu",
+			"logs": "Sunucu günlükleri",
+			"diagnostics": "Teşhis"
 		},
 		"toast": {
-			"fetchLogsSuccess": ""
+			"fetchLogsSuccess": "Günlükler başarıyla alındı"
 		},
 		"logLevelSelect": {
 			"title": "",
@@ -723,37 +733,40 @@
 			"idHeader": "",
 			"urlHeader": "",
 			"typeHeader": "",
-			"activeHeader": "",
+			"activeHeader": "Aktif",
 			"lockedAtHeader": "",
 			"runCountHeader": "",
 			"failCountHeader": "",
 			"lastRunHeader": "",
-			"lastFinishedAtHeader": "",
+			"lastFinishedAtHeader": "Son tamamlama",
 			"lastRunTookHeader": ""
 		},
 		"metricsTable": {
 			"title": "",
-			"metricHeader": "",
-			"valueHeader": ""
+			"metricHeader": "Metrik",
+			"valueHeader": "Değer"
 		},
 		"failedJobTable": {
-			"title": "",
-			"monitorIdHeader": "",
-			"monitorUrlHeader": "",
-			"failCountHeader": "",
+			"title": "Tamamlanamayan işler",
+			"monitorIdHeader": "Monitör ID",
+			"monitorUrlHeader": "Monitör URL",
+			"failCountHeader": "Hata sayısı",
 			"failedAtHeader": "",
 			"failReasonHeader": ""
 		}
 	},
 	"export": {
-		"title": "",
-		"success": "",
-		"failed": ""
+		"title": "Monitörleri dışarı al",
+		"success": "Monitörler başarıyla dışarıya alındı",
+		"failed": "Monitörleri dışarıya alırken bir hata oluştu"
 	},
 	"monitorActions": {
-		"title": "",
+		"title": "Dışarı/İçeri al",
 		"import": "",
-		"export": ""
+		"export": "",
+		"deleteSuccess": "Monitör başarıyla silindi",
+		"deleteFailed": "Monitör silinemedi",
+		"details": "Detaylar"
 	},
 	"settingsPage": {
 		"aboutSettings": {
@@ -784,16 +797,17 @@
 			"labelTLSServername": "",
 			"labelUser": "",
 			"linkTransport": "",
-			"placeholderUser": "",
-			"title": ""
+			"placeholderUser": "Eğer gerekmiyorsa boş bırakabilirsiniz",
+			"title": "Eposta",
+			"toastEmailRequiredFieldsError": ""
 		},
 		"pageSpeedSettings": {
-			"description": "",
-			"labelApiKeySet": "",
-			"labelApiKey": "",
-			"title": ""
+			"description": "Google PageSpeed izlemeyi etkinleştirmek için Google PageSpeed API anahtarınızı girin. Anahtarı güncellemek için Sıfırla'ya tıklayın.",
+			"labelApiKeySet": "API key tanımlandı. Sıfırla düğmesine tıklayarak değiştirebilirsiniz.",
+			"labelApiKey": "PageSpeed API anahtarı",
+			"title": "Google PageSpeed API anahtarı"
 		},
-		"saveButtonLabel": "",
+		"saveButtonLabel": "Kaydet",
 		"statsSettings": {
 			"clearAllStatsButton": "",
 			"clearAllStatsDescription": "",
@@ -802,35 +816,154 @@
 			"clearAllStatsDialogTitle": "",
 			"description": "",
 			"labelTTL": "",
-			"labelTTLOptional": "",
-			"title": ""
+			"labelTTLOptional": "Sonsuz için 0",
+			"title": "İzleme geçmişi"
 		},
 		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "",
-			"description": "",
-			"dialogConfirm": "",
+			"buttonRemoveAllMonitors": "Tüm monitörleri sil",
+			"description": "Sistemden tüm monitörleri sil",
+			"dialogConfirm": "Evet, tüm monitörleri sil",
 			"dialogDescription": "",
-			"dialogTitle": "",
-			"title": ""
+			"dialogTitle": "Gerçekten tüm monitörleri silmek istiyor musunuz?",
+			"title": "Sistemi sıfırla"
 		},
 		"timezoneSettings": {
 			"description": "",
-			"label": "",
-			"title": ""
+			"label": "Görünüm zaman dilimi",
+			"title": "Görünüm zaman dilimi"
 		},
-		"title": "",
+		"title": "Ayarlar",
 		"uiSettings": {
-			"description": "",
-			"labelLanguage": "",
-			"labelTheme": "",
-			"title": ""
+			"description": "Aydınlık ve karanlık mod arasında geçiş yapın ya da kullanıcı arayüzü dilini değiştirin.",
+			"labelLanguage": "Dil",
+			"labelTheme": "Tema modu",
+			"title": "Görünüm"
 		},
 		"urlSettings": {
 			"description": "",
 			"label": "",
-			"selectDisabled": "",
-			"selectEnabled": "",
+			"selectDisabled": "Kapalı",
+			"selectEnabled": "Etkin",
 			"title": ""
 		}
-	}
+	},
+	"statusPageCreate": {
+		"buttonSave": ""
+	},
+	"incidentsOptionsHeaderFilterResolved": "",
+	"settingsSave": "",
+	"statusPageCreateAppearanceTitle": "",
+	"confirmPassword": "",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "",
+		"successAddDemoMonitors": ""
+	},
+	"settingsAppearance": "",
+	"settingsDisplayTimezone": "",
+	"settingsGeneralSettings": "",
+	"incidentsOptionsHeaderTotalIncidents": "",
+	"statusPage": {
+		"deleteSuccess": "Durum sayfası başarıyla silindi",
+		"deleteFailed": "Durum sayfası silinemedi",
+		"createSuccess": "Durum sayfası başarıyla oluşturuldu",
+		"updateSuccess": "Durum sayfası başarıyla güncellendi",
+		"generalSettings": "Genel ayarlar",
+		"contents": "İçerikler",
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"testNotificationsDisabled": "Bu izleyici için ayarlanmış bir bildirim yok. 'Yapılandır' düğmesine tıklayarak bir bildirim eklemeniz gerekiyor.",
+	"incidentsTableResolvedAt": "",
+	"incidentsTableActionResolve": "Çözümle",
+	"checkHooks": {
+		"failureResolveOne": "Olay çözümlenirken bir hata oluştu.",
+		"failureResolveAll": "Tüm olayları çözümlerken bir hata oluştu.",
+		"failureResolveMonitor": ""
+	},
+	"checkFormError": "Formda hatalar var. Lütfen kontrol edin.",
+	"diagnosticsPage": {
+		"diagnosticDescription": "",
+		"statsDescription": "",
+		"gauges": {
+			"heapAllocationTitle": "",
+			"heapAllocationSubtitle": "",
+			"heapUsageTitle": "",
+			"heapUsageSubtitle": "",
+			"heapUtilizationTitle": "",
+			"heapUtilizationSubtitle": "",
+			"instantCpuUsageTitle": "",
+			"instantCpuUsageSubtitle": ""
+		},
+		"stats": {
+			"eventLoopDelayTitle": "",
+			"uptimeTitle": "",
+			"usedHeapSizeTitle": "",
+			"totalHeapSizeTitle": "",
+			"osMemoryLimitTitle": ""
+		}
+	},
+	"pageSpeedLighthouseAPI": "",
+	"time": {
+		"threeMinutes": "",
+		"fiveMinutes": "",
+		"tenMinutes": "",
+		"twentyMinutes": "",
+		"oneHour": "1 saat",
+		"oneDay": "1 gün",
+		"oneWeek": "1 hafta"
+	},
+	"general": {
+		"noOptionsFound": ""
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "",
+			"firstName": "",
+			"lastName": "",
+			"role": "",
+			"save": ""
+		},
+		"table": {
+			"actionHeader": "",
+			"roleHeader": ""
+		},
+		"title": "",
+		"toast": {
+			"successUserUpdate": "",
+			"validationErrors": ""
+		}
+	},
+	"incidentsPageActionResolveMonitor": "",
+	"incidentsPageActionResolveAll": ""
 }
