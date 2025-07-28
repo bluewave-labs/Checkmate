@@ -90,10 +90,22 @@ class NotificationService {
 
 		// Use atomic editMonitor to prevent race conditions
 		// This performs a findByIdAndUpdate operation which is atomic
-		await this.db.editMonitor(monitor._id, {
-			lastNotificationTime: now,
-			currentBackoffDelay: nextBackoffDelay,
-		});
+		try {
+			await this.db.editMonitor(monitor._id, {
+				lastNotificationTime: now,
+				currentBackoffDelay: nextBackoffDelay,
+			});
+		} catch (error) {
+			this.logger.error({
+				service: "NotificationService",
+				method: "handleNotifications",
+				message: `Failed to update backoff state for monitor ${monitor.name}`,
+				error: error.message,
+				monitorId: monitor._id,
+			});
+			// Don't send notifications if we can't update backoff state
+			return false;
+		}
 
 		// Update the in-memory monitor object to reflect the changes
 		monitor.lastNotificationTime = now;
