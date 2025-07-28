@@ -80,12 +80,11 @@ class NotificationService {
 			monitor.currentBackoffDelay = monitor.initialBackoffDelay;
 		} else {
 			// Calculate next backoff with jitter
-			monitor.currentBackoffDelay =
-				await this.notificationUtils.calculateNextBackoffDelay(
-					monitor.currentBackoffDelay,
-					monitor.backoffMultiplier,
-					monitor.maxBackoffDelay
-				);
+			monitor.currentBackoffDelay = await this.notificationUtils.calculateNextBackoffDelay(
+				monitor.currentBackoffDelay,
+				monitor.backoffMultiplier,
+				monitor.maxBackoffDelay
+			);
 		}
 
 		// Save updated monitor backoff parameters

@@ -165,26 +165,15 @@ class NotificationUtils {
 		}
 
 		return {
-			backoffEnabled:
-				this.appSettings.backoffEnabled ?? notificationConfig.BACKOFF_ENABLED_DEFAULT,
-			initialBackoffDelay:
-				this.appSettings.initialBackoffDelay ??
-				notificationConfig.INITIAL_BACKOFF_DELAY_MS,
-			maxBackoffDelay:
-				this.appSettings.maxBackoffDelay ?? notificationConfig.MAX_BACKOFF_DELAY_MS,
-			backoffMultiplier:
-				this.appSettings.backoffMultiplier ?? notificationConfig.BACKOFF_MULTIPLIER,
-			backoffJitterFactor:
-				this.appSettings.backoffJitterFactor ?? notificationConfig.JITTER_FACTOR,
+			backoffEnabled: this.appSettings.backoffEnabled ?? notificationConfig.BACKOFF_ENABLED_DEFAULT,
+			initialBackoffDelay: this.appSettings.initialBackoffDelay ?? notificationConfig.INITIAL_BACKOFF_DELAY_MS,
+			maxBackoffDelay: this.appSettings.maxBackoffDelay ?? notificationConfig.MAX_BACKOFF_DELAY_MS,
+			backoffMultiplier: this.appSettings.backoffMultiplier ?? notificationConfig.BACKOFF_MULTIPLIER,
+			backoffJitterFactor: this.appSettings.backoffJitterFactor ?? notificationConfig.JITTER_FACTOR,
 		};
 	};
 
-	calculateNextBackoffDelay = async (
-		currentDelay,
-		multiplier,
-		maxDelay,
-		jitterFactor = null
-	) => {
+	calculateNextBackoffDelay = async (currentDelay, multiplier, maxDelay, jitterFactor = null) => {
 		// If jitterFactor is not provided, get it from settings
 		if (jitterFactor === null) {
 			const settings = await this.getBackoffSettings();
@@ -229,8 +218,7 @@ class NotificationUtils {
 		const currentDelay = monitor.currentBackoffDelay || monitor.initialBackoffDelay;
 
 		// Check if enough time has passed since last notification
-		const timeSinceLastNotification =
-			Date.now() - new Date(monitor.lastNotificationTime).getTime();
+		const timeSinceLastNotification = Date.now() - new Date(monitor.lastNotificationTime).getTime();
 		return timeSinceLastNotification >= currentDelay;
 	};
 }
