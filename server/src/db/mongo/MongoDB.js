@@ -70,8 +70,8 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ appSettings }) {
-		this.appSettings = appSettings;
+	constructor({ envSettings }) {
+		this.envSettings = envSettings;
 		Object.assign(this, userModule);
 		Object.assign(this, inviteModule);
 		Object.assign(this, recoveryModule);
@@ -92,9 +92,9 @@ class MongoDB {
 
 	connect = async () => {
 		try {
-			const connectionString = this.appSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
+			const connectionString = this.envSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
 			await mongoose.connect(connectionString);
-			// If there are no AppSettings, create one
+			// If there are no AppSettings, create one // TODO why is this here?
 			await AppSettings.findOneAndUpdate(
 				{}, // empty filter to match any document
 				{}, // empty update

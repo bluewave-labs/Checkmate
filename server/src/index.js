@@ -20,10 +20,10 @@ const startApp = async () => {
 	const frontendPath = path.join(__dirname, "public");
 	// Create services
 	const settingsService = new SettingsService(AppSettings);
-	const appSettings = settingsService.loadSettings();
+	const envSettings = settingsService.loadSettings();
 
 	// Initialize services
-	const services = await initializeServices(appSettings, settingsService);
+	const services = await initializeServices(envSettings, settingsService);
 
 	// Initialize controllers
 	const controllers = initializeControllers(services);
@@ -31,12 +31,12 @@ const startApp = async () => {
 	const app = createApp({
 		services,
 		controllers,
-		appSettings,
+		envSettings,
 		frontendPath,
 		openApiSpec,
 	});
 
-	const port = appSettings.port || 52345;
+	const port = envSettings.port || 52345;
 	const server = app.listen(port, () => {
 		logger.info({ message: `Server started on port:${port}` });
 	});
