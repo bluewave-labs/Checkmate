@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import AppSettings from "../models/AppSettings.js";
-import logger from "../../utils/logger.js";
 
 //****************************************
 // User Operations
@@ -70,7 +69,8 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ envSettings }) {
+	constructor({ logger, envSettings }) {
+		this.logger = logger;
 		this.envSettings = envSettings;
 		Object.assign(this, userModule);
 		Object.assign(this, inviteModule);
@@ -110,13 +110,13 @@ class MongoDB {
 				await model.syncIndexes();
 			}
 
-			logger.info({
+			this.logger.info({
 				message: "Connected to MongoDB",
 				service: this.SERVICE_NAME,
 				method: "connect",
 			});
 		} catch (error) {
-			logger.error({
+			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "connect",
@@ -128,12 +128,12 @@ class MongoDB {
 
 	disconnect = async () => {
 		try {
-			logger.info({ message: "Disconnecting from MongoDB" });
+			this.logger.info({ message: "Disconnecting from MongoDB" });
 			await mongoose.disconnect();
-			logger.info({ message: "Disconnected from MongoDB" });
+			this.logger.info({ message: "Disconnected from MongoDB" });
 			return;
 		} catch (error) {
-			logger.error({
+			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "disconnect",

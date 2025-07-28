@@ -1,9 +1,9 @@
 const SERVICE_NAME = "ServiceRegistry";
-import logger from "../../utils/logger.js";
 class ServiceRegistry {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor() {
+	constructor({ logger }) {
 		this.services = {};
+		this.logger = logger;
 	}
 
 	get serviceName() {
@@ -11,7 +11,7 @@ class ServiceRegistry {
 	}
 
 	register(name, service) {
-		logger.info({
+		this.logger.info({
 			message: `Registering service ${name}`,
 			service: SERVICE_NAME,
 			method: "register",
@@ -21,7 +21,7 @@ class ServiceRegistry {
 
 	get(name) {
 		if (!this.services[name]) {
-			logger.error({
+			this.logger.error({
 				message: `Service ${name} is not registered`,
 				service: SERVICE_NAME,
 				method: "get",
@@ -36,4 +36,4 @@ class ServiceRegistry {
 	}
 }
 
-export default new ServiceRegistry();
+export default ServiceRegistry;

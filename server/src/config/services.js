@@ -33,14 +33,16 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-export const initializeServices = async (envSettings, settingsService) => {
+export const initializeServices = async ({ logger, envSettings, settingsService }) => {
+	const serviceRegistry = new ServiceRegistry({ logger });
+
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
 
 	const stringService = new StringService(translationService);
 
 	// Create DB
-	const db = new MongoDB({ envSettings });
+	const db = new MongoDB({ logger, envSettings });
 	await db.connect();
 
 	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);
@@ -144,7 +146,7 @@ export const initializeServices = async (envSettings, settingsService) => {
 	};
 
 	Object.values(services).forEach((service) => {
-		ServiceRegistry.register(service.serviceName, service);
+		serviceRegistry.register(service.serviceName, service);
 	});
 
 	return services;
