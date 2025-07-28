@@ -147,7 +147,6 @@ class StatusService {
 
 			const prevStatus = monitor.status;
 			monitor.status = status;
-			await monitor.save();
 
 			// If status changed from down to up, reset backoff parameters for the monitor
 			if (prevStatus === false && status === true) {
@@ -155,7 +154,6 @@ class StatusService {
 					// Reset backoff parameters on the monitor
 					monitor.currentBackoffDelay = null;
 					monitor.lastNotificationTime = null;
-					// No need for an additional save as we're already saving the monitor below
 
 					this.logger.info({
 						service: this.SERVICE_NAME,
@@ -173,6 +171,9 @@ class StatusService {
 					});
 				}
 			}
+
+			// Save the monitor with all changes including backoff parameter resets
+			await monitor.save();
 
 			return {
 				monitor,
