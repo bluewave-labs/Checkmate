@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: {{ .Values.server.image }}
+          ports:
+            - containerPort: {{ .Values.server.port }}
+          envFrom:
+            - secretRef:
+                name: checkmate-secrets

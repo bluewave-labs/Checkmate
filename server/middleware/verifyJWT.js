@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import ServiceRegistry from "../service/serviceRegistry.js";
-import SettingsService from "../service/settingsService.js";
-import StringService from "../service/stringService.js";
+import ServiceRegistry from "../service/system/serviceRegistry.js";
+import SettingsService from "../service/system/settingsService.js";
+import StringService from "../service/system/stringService.js";
 const SERVICE_NAME = "verifyJWT";
 const TOKEN_PREFIX = "Bearer ";
 
@@ -39,13 +39,13 @@ const verifyJWT = (req, res, next) => {
 	const { jwtSecret } = ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings();
 	jwt.verify(parsedToken, jwtSecret, (err, decoded) => {
 		if (err) {
-			if (err) {
-				const errorMessage =
-					err.name === "TokenExpiredError"
-						? stringService.expiredAuthToken
-						: stringService.invalidAuthToken;
-				return res.status(401).json({ success: false, msg: errorMessage });
-			}
+			const errorMessage = err.name === "TokenExpiredError" ? stringService.expiredAuthToken : stringService.invalidAuthToken;
+			err.details = { msg: errorMessage };
+			err.status = 401;
+			err.service = SERVICE_NAME;
+			err.method = "verifyJWT";
+			next(err);
+			return;
 		} else {
 			// Token is valid, carry on
 			req.user = decoded;

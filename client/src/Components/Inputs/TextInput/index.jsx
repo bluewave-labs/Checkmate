@@ -2,6 +2,7 @@ import { Stack, TextField, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { forwardRef, useState, cloneElement } from "react";
 import PropTypes from "prop-types";
+import FieldWrapper from "../FieldWrapper";
 
 const getSx = (theme, type, maxWidth) => {
 	const sx = {
@@ -85,31 +86,43 @@ const TextInput = forwardRef(
 			marginLeft,
 			disabled = false,
 			hidden = false,
+			//FieldWrapper's props
+			gap,
+			labelMb,
+			labelFontWeight,
+			labelVariant,
+			labelSx = {},
+			sx = {},
 		},
 		ref
 	) => {
 		const [fieldType, setFieldType] = useState(type);
 		const theme = useTheme();
+		const labelContent = label && (
+			<>
+				{label}
+				{isRequired && <Required />}
+				{isOptional && <Optional optionalLabel={optionalLabel} />}
+			</>
+		);
 		return (
-			<Stack
-				flex={flex}
-				display={hidden ? "none" : ""}
-				marginTop={marginTop}
-				marginRight={marginRight}
-				marginBottom={marginBottom}
-				marginLeft={marginLeft}
+			<FieldWrapper
+				label={labelContent}
+				labelMb={labelMb}
+				labelVariant={labelVariant}
+				labelFontWeight={labelFontWeight}
+				labelSx={labelSx}
+				gap={gap}
+				sx={{
+					flex,
+					display: hidden ? "none" : "",
+					mt: marginTop,
+					mr: marginRight,
+					mb: marginBottom,
+					ml: marginLeft,
+					...sx,
+				}}
 			>
-				<Typography
-					component="h3"
-					fontSize={"var(--env-var-font-size-medium)"}
-					color={theme.palette.primary.contrastTextSecondary}
-					fontWeight={500}
-					mb={theme.spacing(2)}
-				>
-					{label}
-					{isRequired && <Required />}
-					{isOptional && <Optional optionalLabel={optionalLabel} />}
-				</Typography>
 				<TextField
 					id={id}
 					name={name}
@@ -132,7 +145,7 @@ const TextInput = forwardRef(
 					}}
 					disabled={disabled}
 				/>
-			</Stack>
+			</FieldWrapper>
 		);
 	}
 );

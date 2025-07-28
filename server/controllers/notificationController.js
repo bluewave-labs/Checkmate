@@ -1,147 +1,175 @@
-import {
-	triggerNotificationBodyValidation,
-	createNotificationBodyValidation,
-} from "../validation/joi.js";
-import { handleError, handleValidationError } from "./controllerUtils.js";
+import { createNotificationBodyValidation } from "../validation/joi.js";
+import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "NotificationController";
 
-const NOTIFICATION_TYPES = {
-	WEBHOOK: "webhook",
-	TELEGRAM: "telegram",
-};
-
-const PLATFORMS = {
-	SLACK: "slack",
-	DISCORD: "discord",
-	TELEGRAM: "telegram",
-};
-
-class NotificationController {
-	constructor({ notificationService, stringService, statusService, db }) {
+class NotificationController extends BaseController {
+	constructor(commonDependencies, { notificationService, statusService }) {
+		super(commonDependencies);
 		this.notificationService = notificationService;
-		this.stringService = stringService;
 		this.statusService = statusService;
-		this.db = db;
 	}
 
-	testNotification = async (req, res, next) => {
-		try {
+	testNotification = this.asyncHandler(
+		async (req, res) => {
 			const notification = req.body;
 
 			const success = await this.notificationService.sendTestNotification(notification);
 
 			if (!success) {
-				return res.error({
-					msg: "Sending notification failed",
-					status: 400,
-				});
+				throw this.errorService.createServerError("Sending notification failed");
 			}
 
 			return res.success({
 				msg: "Notification sent successfully",
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "testWebhook"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"testNotification"
+	);
 
-	createNotification = async (req, res, next) => {
-		try {
+	createNotification = this.asyncHandler(
+		async (req, res) => {
 			await createNotificationBodyValidation.validateAsync(req.body, {
 				abortEarly: false,
 			});
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
 			const body = req.body;
-			const { _id, teamId } = req.user;
-			body.userId = _id;
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const userId = req?.user?._id;
+			if (!userId) {
+				throw this.errorService.createBadRequestError("User ID is required");
+			}
+			body.userId = userId;
 			body.teamId = teamId;
+
 			const notification = await this.db.createNotification(body);
 			return res.success({
 				msg: "Notification created successfully",
 				data: notification,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createNotification"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"createNotification"
+	);
 
-	getNotificationsByTeamId = async (req, res, next) => {
-		try {
-			const notifications = await this.db.getNotificationsByTeamId(req.user.teamId);
+	getNotificationsByTeamId = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const notifications = await this.db.getNotificationsByTeamId(teamId);
+
 			return res.success({
 				msg: "Notifications fetched successfully",
 				data: notifications,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getNotificationsByTeamId"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getNotificationsByTeamId"
+	);
 
-	deleteNotification = async (req, res, next) => {
-		try {
+	deleteNotification = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const notification = await this.db.getNotificationById(req.params.id);
+			if (!notification.teamId.equals(teamId)) {
+				throw this.errorService.createAuthorizationError();
+			}
+
 			await this.db.deleteNotificationById(req.params.id);
 			return res.success({
 				msg: "Notification deleted successfully",
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "deleteNotification"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"deleteNotification"
+	);
 
-	getNotificationById = async (req, res, next) => {
-		try {
+	getNotificationById = this.asyncHandler(
+		async (req, res) => {
 			const notification = await this.db.getNotificationById(req.params.id);
+
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			if (!notification.teamId.equals(teamId)) {
+				throw this.errorService.createAuthorizationError();
+			}
 			return res.success({
 				msg: "Notification fetched successfully",
 				data: notification,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getNotificationById"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getNotificationById"
+	);
 
-	editNotification = async (req, res, next) => {
-		try {
+	editNotification = this.asyncHandler(
+		async (req, res) => {
 			await createNotificationBodyValidation.validateAsync(req.body, {
 				abortEarly: false,
 			});
-		} catch (error) {
-			next(handleValidationError(error, SERVICE_NAME));
-			return;
-		}
 
-		try {
-			const notification = await this.db.editNotification(req.params.id, req.body);
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const notification = await this.db.getNotificationById(req.params.id);
+
+			if (!notification.teamId.equals(teamId)) {
+				throw this.errorService.createAuthorizationError();
+			}
+
+			const editedNotification = await this.db.editNotification(req.params.id, req.body);
 			return res.success({
 				msg: "Notification updated successfully",
-				data: notification,
+				data: editedNotification,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "editNotification"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"editNotification"
+	);
 
-	testAllNotifications = async (req, res, next) => {
-		try {
-			const { monitorId } = req.body;
+	testAllNotifications = this.asyncHandler(
+		async (req, res) => {
+			const monitorId = req.body.monitorId;
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
 			const monitor = await this.db.getMonitorById(monitorId);
+
+			if (!monitor.teamId.equals(teamId)) {
+				throw this.errorService.createAuthorizationError();
+			}
+
 			const notifications = monitor.notifications;
-			if (notifications.length === 0) throw new Error("No notifications");
+			if (notifications.length === 0) throw this.errorService.createBadRequestError("No notifications");
 			const result = await this.notificationService.testAllNotifications(notifications);
-			if (!result) throw new Error("Failed to send all notifications");
+			if (!result) throw this.errorService.createServerError("Failed to send all notifications");
 			return res.success({
 				msg: "All notifications sent successfully",
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "testAllNotifications"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"testAllNotifications"
+	);
 }
 
 export default NotificationController;

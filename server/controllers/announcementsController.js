@@ -1,5 +1,4 @@
 import { createAnnouncementValidation } from "../validation/joi.js";
-import { handleError } from "./controllerUtils.js";
 
 const SERVICE_NAME = "announcementController";
 
@@ -10,10 +9,9 @@ const SERVICE_NAME = "announcementController";
  * @class AnnouncementController
  */
 
-class AnnouncementController {
-	constructor(db, stringService) {
-		this.db = db;
-		this.stringService = stringService;
+class AnnouncementController extends BaseController {
+	constructor(commonDependencies) {
+		super(commonDependencies);
 		this.createAnnouncement = this.createAnnouncement.bind(this);
 		this.getAnnouncement = this.getAnnouncement.bind(this);
 	}
@@ -28,16 +26,10 @@ class AnnouncementController {
 	 *
 	 * @returns {Promise<void>} A promise that resolves once the response is sent.
 	 */
-	createAnnouncement = async (req, res, next) => {
-		try {
+	createAnnouncement = asyncHandler(
+		async (req, res, next) => {
 			await createAnnouncementValidation.validateAsync(req.body);
-		} catch (error) {
-			return next(handleError(error, SERVICE_NAME)); // Handle Joi validation errors
-		}
-
-		const { title, message } = req.body;
-
-		try {
+			const { title, message } = req.body;
 			const announcementData = {
 				title: title.trim(),
 				message: message.trim(),
@@ -49,10 +41,10 @@ class AnnouncementController {
 				msg: this.stringService.createAnnouncement,
 				data: newAnnouncement,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "createAnnouncement"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"createAnnouncement"
+	);
 
 	/**
 	 * Handles retrieving announcements with pagination.
@@ -63,17 +55,17 @@ class AnnouncementController {
 	 *  - `msg`: A message about the success of the request.
 	 * @param {Function} next - The next middleware function in the stack for error handling.
 	 */
-	getAnnouncement = async (req, res, next) => {
-		try {
+	getAnnouncement = asyncHandler(
+		async (req, res, next) => {
 			const allAnnouncements = await this.db.getAnnouncements();
 			return res.success({
 				msg: this.stringService.getAnnouncement,
 				data: allAnnouncements,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getAnnouncement"));
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getAnnouncement"
+	);
 }
 
 export default AnnouncementController;

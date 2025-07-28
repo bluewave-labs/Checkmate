@@ -42,12 +42,9 @@ const StatusPages = () => {
 	if (!isLoading && typeof statusPages !== "undefined" && statusPages.length === 0) {
 		return (
 			<Fallback
-				title="status page"
-				checks={[
-					"Monitor and display the health of your services in real time",
-					"Track multiple services and share their status",
-					"Keep users informed about outages and performance",
-				]}
+				title={t("statusPage.fallback.title")}
+				checks={t("statusPage.fallback.checks", { returnObjects: true })}
+				type="statusPage"
 				link="/status/uptime/create"
 				isAdmin={isAdmin}
 			/>

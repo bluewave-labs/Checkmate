@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 const TOKEN_PREFIX = "Bearer ";
 const SERVICE_NAME = "allowedRoles";
-import ServiceRegistry from "../service/serviceRegistry.js";
-import StringService from "../service/stringService.js";
-import SettingsService from "../service/settingsService.js";
+import ServiceRegistry from "../service/system/serviceRegistry.js";
+import StringService from "../service/system/stringService.js";
+import SettingsService from "../service/system/settingsService.js";
 
 const isAllowed = (allowedRoles) => {
 	return (req, res, next) => {
@@ -29,9 +29,7 @@ const isAllowed = (allowedRoles) => {
 		// Parse the token
 		try {
 			const parsedToken = token.slice(TOKEN_PREFIX.length, token.length);
-			const { jwtSecret } = ServiceRegistry.get(
-				SettingsService.SERVICE_NAME
-			).getSettings();
+			const { jwtSecret } = ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings();
 			var decoded = jwt.verify(parsedToken, jwtSecret);
 			const userRoles = decoded.role;
 

@@ -1,89 +1,82 @@
-import { handleError } from "./controllerUtils.js";
-
+import BaseController from "./baseController.js";
 const SERVICE_NAME = "JobQueueController";
 
-class JobQueueController {
-	constructor(jobQueue, stringService) {
+class JobQueueController extends BaseController {
+	constructor(commonDependencies, { jobQueue }) {
+		super(commonDependencies);
 		this.jobQueue = jobQueue;
-		this.stringService = stringService;
 	}
 
-	getMetrics = async (req, res, next) => {
-		try {
+	getMetrics = this.asyncHandler(
+		async (req, res) => {
 			const metrics = await this.jobQueue.getMetrics();
 			res.success({
 				msg: this.stringService.queueGetMetrics,
 				data: metrics,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMetrics"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getMetrics"
+	);
 
-	getJobs = async (req, res, next) => {
-		try {
+	getJobs = this.asyncHandler(
+		async (req, res) => {
 			const jobs = await this.jobQueue.getJobs();
 			return res.success({
 				msg: this.stringService.queueGetJobs,
 				data: jobs,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getJobs"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getJobs"
+	);
 
-	getAllMetrics = async (req, res, next) => {
-		try {
+	getAllMetrics = this.asyncHandler(
+		async (req, res) => {
 			const jobs = await this.jobQueue.getJobs();
 			const metrics = await this.jobQueue.getMetrics();
 			return res.success({
 				msg: this.stringService.queueGetAllMetrics,
 				data: { jobs, metrics },
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getAllMetrics"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"getAllMetrics"
+	);
 
-	addJob = async (req, res, next) => {
-		try {
+	addJob = this.asyncHandler(
+		async (req, res) => {
 			await this.jobQueue.addJob(Math.random().toString(36).substring(7));
 			return res.success({
 				msg: this.stringService.queueAddJob,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "addJob"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"addJob"
+	);
 
-	flushQueue = async (req, res, next) => {
-		try {
+	flushQueue = this.asyncHandler(
+		async (req, res) => {
 			const result = await this.jobQueue.flushQueues();
 			return res.success({
 				msg: this.stringService.jobQueueFlush,
 				data: result,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "flushQueue"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"flushQueue"
+	);
 
-	checkQueueHealth = async (req, res, next) => {
-		try {
+	checkQueueHealth = this.asyncHandler(
+		async (req, res) => {
 			const stuckQueues = await this.jobQueue.checkQueueHealth();
 			return res.success({
 				msg: this.stringService.queueHealthCheck,
 				data: stuckQueues,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "checkQueueHealth"));
-			return;
-		}
-	};
+		},
+		SERVICE_NAME,
+		"checkQueueHealth"
+	);
 }
 export default JobQueueController;

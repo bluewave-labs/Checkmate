@@ -1,48 +1,57 @@
-import { handleError } from "./controllerUtils.js";
 const SERVICE_NAME = "diagnosticController";
-
-class DiagnosticController {
-	constructor(db) {
-		this.db = db;
-		this.getMonitorsByTeamIdExecutionStats =
-			this.getMonitorsByTeamIdExecutionStats.bind(this);
-		this.getDbStats = this.getDbStats.bind(this);
+import BaseController from "./baseController.js";
+/**
+ * Diagnostic Controller
+ *
+ * Handles system diagnostic and monitoring requests including system statistics,
+ * performance metrics, and health checks.
+ *
+ * @class DiagnosticController
+ * @description Manages system diagnostics and performance monitoring
+ */
+class DiagnosticController extends BaseController {
+	/**
+	 * Creates an instance of DiagnosticController.
+	 * @param {Object} commonDependencies - Common dependencies injected into the controller
+	 * @param {Object} dependencies - The dependencies required by the controller
+	 * @param {Object} dependencies.diagnosticService - Service for system diagnostics and monitoring
+	 */
+	constructor(commonDependencies, { diagnosticService }) {
+		super(commonDependencies);
+		this.diagnosticService = diagnosticService;
 	}
 
-	async getMonitorsByTeamIdExecutionStats(req, res, next) {
-		try {
-			const data = await this.db.getMonitorsByTeamIdExecutionStats(req);
+	/**
+	 * Retrieves comprehensive system statistics and performance metrics.
+	 *
+	 * @async
+	 * @function getSystemStats
+	 * @param {Object} req - Express request object
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with system diagnostics data
+	 * @description Returns system performance metrics, memory usage, CPU statistics,
+	 * and other diagnostic information useful for monitoring system health.
+	 * @example
+	 * GET /diagnostics/stats
+	 * // Response includes:
+	 * // - Memory usage (heap, external, arrayBuffers)
+	 * // - CPU usage statistics
+	 * // - System uptime
+	 * // - Performance metrics
+	 * // - Database connection status
+	 * // - Active processes/connections
+	 */
+	getSystemStats = this.asyncHandler(
+		async (req, res) => {
+			const diagnostics = await this.diagnosticService.getSystemStats();
 			return res.success({
 				msg: "OK",
-				data,
+				data: diagnostics,
 			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getMonitorsByTeamIdExecutionStats"));
-		}
-	}
-
-	async getDbStats(req, res, next) {
-		try {
-			const { methodName, args = [] } = req.body;
-			if (!methodName || !this.db[methodName]) {
-				return res.error({
-					msg: "Invalid method name or method doesn't exist",
-					status: 400,
-				});
-			}
-			const explainMethod = await this.db[methodName].apply(this.db, args);
-			const stats = {
-				methodName,
-				timestamp: new Date(),
-				explain: explainMethod,
-			};
-			return res.success({
-				msg: "OK",
-				data: stats,
-			});
-		} catch (error) {
-			next(handleError(error, SERVICE_NAME, "getDbStats"));
-		}
-	}
+		},
+		SERVICE_NAME,
+		"getSystemStats"
+	);
 }
+
 export default DiagnosticController;

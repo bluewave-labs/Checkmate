@@ -152,18 +152,22 @@ MonitorSchema.pre("findOneAndDelete", async function (next) {
 	try {
 		const doc = await this.model.findOne(this.getFilter());
 
-		if (doc.type === "pagespeed") {
+		if (!doc) {
+			throw new Error("Monitor not found");
+		}
+
+		if (doc?.type === "pagespeed") {
 			await PageSpeedCheck.deleteMany({ monitorId: doc._id });
-		} else if (doc.type === "hardware") {
+		} else if (doc?.type === "hardware") {
 			await HardwareCheck.deleteMany({ monitorId: doc._id });
 		} else {
 			await Check.deleteMany({ monitorId: doc._id });
 		}
 
 		// Deal with status pages
-		await StatusPage.updateMany({ monitors: doc._id }, { $pull: { monitors: doc._id } });
+		await StatusPage.updateMany({ monitors: doc?._id }, { $pull: { monitors: doc?._id } });
 
-		await MonitorStats.deleteMany({ monitorId: doc._id.toString() });
+		await MonitorStats.deleteMany({ monitorId: doc?._id.toString() });
 		next();
 	} catch (error) {
 		next(error);
@@ -182,10 +186,7 @@ MonitorSchema.pre("deleteMany", async function (next) {
 		} else {
 			await Check.deleteMany({ monitorId: monitor._id });
 		}
-		await StatusPage.updateMany(
-			{ monitors: monitor._id },
-			{ $pull: { monitors: monitor._id } }
-		);
+		await StatusPage.updateMany({ monitors: monitor._id }, { $pull: { monitors: monitor._id } });
 		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
 	}
 	next();

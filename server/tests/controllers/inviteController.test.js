@@ -1,7 +1,4 @@
-import {
-	issueInvitation,
-	inviteVerifyController,
-} from "../../controllers/inviteController.js";
+import { issueInvitation, inviteVerifyController } from "../../controllers/inviteController.js";
 import jwt from "jsonwebtoken";
 import sinon from "sinon";
 import joi from "joi";

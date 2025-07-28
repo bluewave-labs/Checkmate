@@ -62,6 +62,9 @@ const Notifications = () => {
 		{
 			id: "actions",
 			content: "Actions",
+			onClick: (e) => {
+				e.stopPropagation();
+			},
 			render: (row) => {
 				return (
 					<ActionMenu
@@ -76,7 +79,7 @@ const Notifications = () => {
 	if (notifications?.length === 0) {
 		return (
 			<Fallback
-				vowelStart={false}
+				type="notifications"
 				title={t("notifications.fallback.title")}
 				checks={t("notifications.fallback.checks", { returnObjects: true })}
 				link="/notifications/create"
