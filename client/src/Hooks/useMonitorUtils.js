@@ -6,18 +6,18 @@ const useMonitorUtils = () => {
 		let uptimePercentage = "";
 		let percentageColor = "";
 
-		if (monitor.uptimePercentage !== undefined) {
+		if (monitor?.uptimePercentage !== undefined) {
 			uptimePercentage =
-				monitor.uptimePercentage === 0
+				monitor?.uptimePercentage === 0
 					? "0"
-					: (monitor.uptimePercentage * 100).toFixed(2);
+					: (monitor?.uptimePercentage * 100).toFixed(2);
 
 			percentageColor =
-				monitor.uptimePercentage < 0.25
+				monitor?.uptimePercentage < 0.25
 					? theme.palette.error.main
-					: monitor.uptimePercentage < 0.5
+					: monitor?.uptimePercentage < 0.5
 						? theme.palette.warning.main
-						: monitor.uptimePercentage < 0.75
+						: monitor?.uptimePercentage < 0.75
 							? theme.palette.success.main
 							: theme.palette.success.main;
 		}
@@ -32,7 +32,7 @@ const useMonitorUtils = () => {
 
 	const determineState = useCallback((monitor) => {
 		if (typeof monitor === "undefined") return "pending";
-		if (monitor.isActive === false) return "paused";
+		if (monitor?.isActive === false) return "paused";
 		if (monitor?.status === undefined) return "pending";
 		return monitor?.status == true ? "up" : "down";
 	}, []);
