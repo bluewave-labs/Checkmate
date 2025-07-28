@@ -382,7 +382,16 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 												as: "netIndex",
 												in: {
 													name: {
-														$concat: ["net", { $toString: "$$netIndex" }],
+														$arrayElemAt: [
+															{
+																$map: {
+																	input: "$net",
+																	as: "netArray",
+																	in: { $arrayElemAt: ["$$netArray.name", "$$netIndex"] },
+																},
+															},
+															0,
+														],
 													},
 													bytesSent: {
 														$avg: {
@@ -434,7 +443,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																input: "$net",
 																as: "netArray",
 																in: {
-																	$arrayElemAt: ["$$netArray.errin", "$$netIndex"],
+																	$arrayElemAt: ["$$netArray.err_in", "$$netIndex"],
 																},
 															},
 														},
@@ -445,7 +454,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																input: "$net",
 																as: "netArray",
 																in: {
-																	$arrayElemAt: ["$$netArray.errout", "$$netIndex"],
+																	$arrayElemAt: ["$$netArray.err_out", "$$netIndex"],
 																},
 															},
 														},
