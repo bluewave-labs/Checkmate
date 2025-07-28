@@ -35,6 +35,7 @@ import crypto from "crypto";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
+	ServiceRegistry.instance = serviceRegistry;
 
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
@@ -146,7 +147,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	};
 
 	Object.values(services).forEach((service) => {
-		serviceRegistry.register(service.serviceName, service);
+		ServiceRegistry.register(service.serviceName, service);
 	});
 
 	return services;

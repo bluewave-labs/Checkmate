@@ -3,9 +3,9 @@ const SERVICE_NAME = "SettingsService";
 const envConfig = {
 	nodeEnv: process.env.NODE_ENV,
 	logLevel: process.env.LOG_LEVEL,
-	clientHost: process.env.CLIENT_HOST, //*
-	dbConnectionString: process.env.DB_CONNECTION_STRING, //*
-	port: process.env.PORT, //*
+	clientHost: process.env.CLIENT_HOST,
+	dbConnectionString: process.env.DB_CONNECTION_STRING,
+	port: process.env.PORT,
 };
 /**
  * SettingsService

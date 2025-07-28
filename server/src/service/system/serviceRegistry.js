@@ -1,6 +1,8 @@
 const SERVICE_NAME = "ServiceRegistry";
+
 class ServiceRegistry {
 	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor({ logger }) {
 		this.services = {};
 		this.logger = logger;
@@ -10,6 +12,7 @@ class ServiceRegistry {
 		return ServiceRegistry.SERVICE_NAME;
 	}
 
+	// Instance methods
 	register(name, service) {
 		this.logger.info({
 			message: `Registering service ${name}`,
@@ -33,6 +36,27 @@ class ServiceRegistry {
 
 	listServices() {
 		return Object.keys(this.services);
+	}
+
+	static get(name) {
+		if (!ServiceRegistry.instance) {
+			throw new Error("ServiceRegistry not initialized");
+		}
+		return ServiceRegistry.instance.get(name);
+	}
+
+	static register(name, service) {
+		if (!ServiceRegistry.instance) {
+			throw new Error("ServiceRegistry not initialized");
+		}
+		return ServiceRegistry.instance.register(name, service);
+	}
+
+	static listServices() {
+		if (!ServiceRegistry.instance) {
+			throw new Error("ServiceRegistry not initialized");
+		}
+		return ServiceRegistry.instance.listServices();
 	}
 }
 
