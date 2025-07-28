@@ -125,7 +125,7 @@ class NotificationService {
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
 
 		// Use all notifications since we've already checked monitor backoff
-		const success = this.notifyAll({
+		const success = await this.notifyAll({
 			notificationIDs,
 			subject,
 			html,
