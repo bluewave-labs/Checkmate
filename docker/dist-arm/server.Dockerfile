@@ -22,4 +22,4 @@ RUN chmod +x ./scripts/inject-vars.sh
 
 EXPOSE 52345
 
-CMD ./scripts/inject-vars.sh && node ./index.js
+CMD ./scripts/inject-vars.sh && node ./src/index.js

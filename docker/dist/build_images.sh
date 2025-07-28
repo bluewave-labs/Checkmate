@@ -12,10 +12,10 @@ declare -A services=(
 )
 
 for service in "${!services[@]}"; do
-  docker buildx build \
-    --platform linux/amd64,linux/arm64 \
+  docker build \
     -f "${services[$service]}" \
     -t "$service" \
+    .
 
   if [ $? -ne 0 ]; then
     echo "Error building $service image. Exiting..."

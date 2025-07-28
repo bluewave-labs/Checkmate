@@ -112,30 +112,6 @@ class NetworkService {
 	}
 
 	/**
-	 *
-	 * ************************************
-	 * Check the endpoint resolution
-	 * ************************************
-	 *
-	 * @async
-	 * @param {Object} config - The configuration object.
-	 * @param {Object} config.monitorURL - The monitor url to be sent in the request body.
-	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
-	 */
-	async checkEndpointResolution(config) {
-		const { monitorURL } = config;
-		const params = new URLSearchParams();
-
-		if (monitorURL) params.append("monitorURL", monitorURL);
-
-		return this.axiosInstance.get(`/monitors/resolution/url?${params.toString()}`, {
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	}
-
-	/**
 	 * ************************************
 	 * Get all uptime monitors for a Team
 	 * ************************************

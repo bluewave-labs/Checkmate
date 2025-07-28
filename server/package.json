@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"test": "c8 mocha",
-		"dev": "nodemon index.js",
+		"dev": "nodemon src/index.js",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",
 		"format": "prettier --write .",
