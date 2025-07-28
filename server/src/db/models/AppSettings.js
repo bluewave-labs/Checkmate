@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import notificationConfig from "../../utils/notificationConfig.js";
 
 const AppSettingsSchema = mongoose.Schema(
 	{
@@ -68,23 +69,23 @@ const AppSettingsSchema = mongoose.Schema(
 		// Exponential backoff configuration
 		backoffEnabled: {
 			type: Boolean,
-			default: false,
+			default: notificationConfig.BACKOFF_ENABLED_DEFAULT,
 		},
 		initialBackoffDelay: {
 			type: Number,
-			default: 60000, // 1 minute in ms
+			default: notificationConfig.INITIAL_BACKOFF_DELAY_MS,
 		},
 		maxBackoffDelay: {
 			type: Number,
-			default: 3600000, // 1 hour in ms
+			default: notificationConfig.MAX_BACKOFF_DELAY_MS,
 		},
 		backoffMultiplier: {
 			type: Number,
-			default: 2,
+			default: notificationConfig.BACKOFF_MULTIPLIER,
 		},
 		backoffJitterFactor: {
 			type: Number,
-			default: 0.2, // 20% randomness
+			default: notificationConfig.JITTER_FACTOR,
 		},
 	},
 	{
