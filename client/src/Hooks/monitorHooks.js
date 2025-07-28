@@ -309,7 +309,6 @@ const useFetchGlobalSettings = () => {
       try {
         const res = await networkService.getAppSettings();
         setGlobalSettings(res?.data);
-		setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch global settings:", error);
       } finally {
