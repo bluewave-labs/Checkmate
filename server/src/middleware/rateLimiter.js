@@ -10,7 +10,7 @@ export const generalApiLimiter = rateLimit({
 
 export const authApiLimiter = rateLimit({
 	window: 60 * 1000,
-	limit: 5,
+	limit: 15,
 	standardHeaders: true,
 	legacyHeaders: false,
 	ipv6Subnet: 64,
