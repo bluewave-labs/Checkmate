@@ -137,6 +137,14 @@ const getStatusPage = async (url) => {
 			},
 			{
 				$lookup: {
+					from: "maintenancewindows",
+					let: { monitorId: "$monitors._id" },
+					pipeline: [{ $match: { $expr: { $eq: ["$monitorId", "$$monitorId"] } } }],
+					as: "monitors.maintenanceWindows",
+				},
+			},
+			{
+				$lookup: {
 					from: "checks",
 					let: { monitorId: "$monitors._id" },
 					pipeline: [
@@ -155,6 +163,20 @@ const getStatusPage = async (url) => {
 				$addFields: {
 					"monitors.orderIndex": {
 						$indexOfArray: ["$originalMonitors", "$monitors._id"],
+					},
+					"monitors.isMaintenance": {
+						$reduce: {
+							input: "$monitors.maintenanceWindows",
+							initialValue: false,
+							in: {
+								$or: [
+									"$$value",
+									{
+										$and: [{ $eq: ["$$this.active", true] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
+									},
+								],
+							},
+						},
 					},
 				},
 			},
@@ -183,7 +205,36 @@ const getStatusPage = async (url) => {
 						showAdminLoginLink: 1,
 						url: 1,
 					},
-					monitors: 1,
+					monitors: {
+						_id: 1,
+						userId: 1,
+						teamId: 1,
+						name: 1,
+						description: 1,
+						status: 1,
+						type: 1,
+						ignoreTlsErrors: 1,
+						jsonPath: 1,
+						expectedValue: 1,
+						matchMethod: 1,
+						url: 1,
+						port: 1,
+						isActive: 1,
+						interval: 1,
+						uptimePercentage: 1,
+						notifications: 1,
+						secret: 1,
+						thresholds: 1,
+						alertThreshold: 1,
+						cpuAlertThreshold: 1,
+						memoryAlertThreshold: 1,
+						diskAlertThreshold: 1,
+						tempAlertThreshold: 1,
+						checks: 1,
+						isMaintenance: 1,
+						createdAt: 1,
+						updatedAt: 1,
+					},
 				},
 			},
 		]);
