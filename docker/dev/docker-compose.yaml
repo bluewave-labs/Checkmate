@@ -1,9 +1,29 @@
 services:
-  redis:
-    image: redis:latest
+  client:
+    image: uptime_client:latest
     restart: always
     ports:
-      - "6379:6379"  # ✅ Expose Redis to host
+      - "80:80"
+    environment:
+      UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
+      UPTIME_APP_CLIENT_HOST: "http://localhost"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d/
+    depends_on:
+      - server
+  server:
+    image: uptime_server:latest
+    restart: always
+    ports:
+      - "52345:52345"
+    env_file:
+      - server.env
+    depends_on:
+      - redis
+      - mongodb
+  redis:
+    image: uptime_redis:latest
+    restart: always
     volumes:
       - ./redis/data:/data
     healthcheck:
@@ -12,17 +32,14 @@ services:
       timeout: 10s
       retries: 5
       start_period: 5s
-
   mongodb:
-    image: mongo:latest
+    image: uptime_mongo:latest
     restart: always
-    ports:
-      - "27017:27017"  # ✅ Expose MongoDB to host
     command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
     volumes:
       - ./mongo/data:/data/db
     healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}) }" | mongosh --port 27017 --quiet
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
       interval: 5s
       timeout: 30s
       start_period: 0s
