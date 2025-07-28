@@ -11,7 +11,11 @@ import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 import NotificationsConfig from "../../../Components/NotificationConfig";
-import { useUpdateMonitor, useCreateMonitor } from "../../../Hooks/monitorHooks";
+import {
+	useUpdateMonitor,
+	useCreateMonitor,
+	useFetchGlobalSettings,
+} from "../../../Hooks/monitorHooks";
 
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
@@ -65,6 +69,7 @@ const CreateInfrastructureMonitor = () => {
 		useGetNotificationsByTeamId();
 	const [updateMonitor, isUpdating] = useUpdateMonitor();
 	const [createMonitor, isCreating] = useCreateMonitor();
+	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -87,59 +92,30 @@ const CreateInfrastructureMonitor = () => {
 	});
 
 	// Populate form fields if editing
-	// Populate global thresholds from /settings if creating
-	const { authToken } = useSelector((state) => state.auth);
 
 	useEffect(() => {
-		const fetchGlobalThresholds = async () => {
-			if (!isCreate) return;
+		if (!isCreate || globalSettingsLoading) return;
+		const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
 
-			try {
-				const token = authToken;
-				if (!token) {
-					console.warn("No token found for fetching global thresholds.");
-					return;
-				}
+		setInfrastructureMonitor((prev) => ({
+			...prev,
+			cpu: globalThresholds.cpu != null,
+			usage_cpu: globalThresholds.cpu != null ? globalThresholds.cpu.toString() : "",
 
-				const response = await axios.get(`${import.meta.env.VITE_APP_API_BASE_URL}/settings`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
+			memory: globalThresholds.memory != null,
+			usage_memory:
+				globalThresholds.memory != null ? globalThresholds.memory.toString() : "",
 
-				const globalThresholds = response.data?.data?.settings?.globalThresholds;
+			disk: globalThresholds.disk != null,
+			usage_disk: globalThresholds.disk != null ? globalThresholds.disk.toString() : "",
 
-				if (!globalThresholds) {
-					console.warn("No global thresholds found in /settings response.");
-					return;
-				}
- 
-				setInfrastructureMonitor((prev) => ({
-					...prev,
-					cpu: globalThresholds.cpu != null,
-					usage_cpu: globalThresholds.cpu != null ? globalThresholds.cpu.toString() : "",
-
-					memory: globalThresholds.memory != null,
-					usage_memory:
-						globalThresholds.memory != null ? globalThresholds.memory.toString() : "",
-
-					disk: globalThresholds.disk != null,
-					usage_disk:
-						globalThresholds.disk != null ? globalThresholds.disk.toString() : "",
-
-					temperature: globalThresholds.temperature != null,
-					usage_temperature:
-						globalThresholds.temperature != null
-							? globalThresholds.temperature.toString()
-							: "",
-				}));
-			} catch (error) {
-				console.error("Failed to fetch global thresholds:", error);
-			}
-		};
-
-		fetchGlobalThresholds();
-	}, [isCreate, user]);
+			temperature: globalThresholds.temperature != null,
+			usage_temperature:
+				globalThresholds.temperature != null
+					? globalThresholds.temperature.toString()
+					: "",
+		}));
+	}, [isCreate, globalSettings]);
 
 	// Handlers
 	const onSubmit = async (event) => {

@@ -300,6 +300,31 @@ const useCreateMonitor = () => {
 	return [createMonitor, isLoading];
 };
 
+const useFetchGlobalSettings = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [globalSettings, setGlobalSettings] = useState(null);
+
+  useEffect(() => {
+    const fetchGlobalSettings = async () => {
+      try {
+        const res = await networkService.getAppSettings();
+        setGlobalSettings(res?.data);
+		setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch global settings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGlobalSettings();
+  }, []);
+
+  return [globalSettings, isLoading]; 
+};
+
+
+
 const useDeleteMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
@@ -499,6 +524,7 @@ export {
 	useFetchUptimeMonitorById,
 	useFetchHardwareMonitorById,
 	useCreateMonitor,
+	useFetchGlobalSettings,
 	useDeleteMonitor,
 	useUpdateMonitor,
 	usePauseMonitor,
