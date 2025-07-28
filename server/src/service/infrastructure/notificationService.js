@@ -72,23 +72,32 @@ class NotificationService {
 			return false;
 		}
 
-		// Update monitor's backoff parameters
-		monitor.lastNotificationTime = new Date();
+		// Calculate the next backoff delay
+		const now = new Date();
+		let nextBackoffDelay;
 
-		// If first notification, set current delay to initial
+		// If first notification, set current delay to initial, otherwise calculate next delay with jitter
 		if (!monitor.currentBackoffDelay) {
-			monitor.currentBackoffDelay = monitor.initialBackoffDelay;
+			nextBackoffDelay = monitor.initialBackoffDelay;
 		} else {
 			// Calculate next backoff with jitter
-			monitor.currentBackoffDelay = await this.notificationUtils.calculateNextBackoffDelay(
+			nextBackoffDelay = await this.notificationUtils.calculateNextBackoffDelay(
 				monitor.currentBackoffDelay,
 				monitor.backoffMultiplier,
 				monitor.maxBackoffDelay
 			);
 		}
 
-		// Save updated monitor backoff parameters
-		await monitor.save();
+		// Use atomic editMonitor to prevent race conditions
+		// This performs a findByIdAndUpdate operation which is atomic
+		await this.db.editMonitor(monitor._id, {
+			lastNotificationTime: now,
+			currentBackoffDelay: nextBackoffDelay,
+		});
+
+		// Update the in-memory monitor object to reflect the changes
+		monitor.lastNotificationTime = now;
+		monitor.currentBackoffDelay = nextBackoffDelay;
 
 		// All notifications can be sent since we've already checked the monitor's backoff
 
