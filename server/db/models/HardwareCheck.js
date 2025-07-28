@@ -40,6 +40,20 @@ const captureSchema = mongoose.Schema({
 	mode: { type: String, default: "" },
 });
 
+const networkInterfaceSchema = mongoose.Schema({
+	name: { type: String, required: true },
+	bytes_sent: { type: Number, default: 0 },
+	bytes_recv: { type: Number, default: 0 },
+	packets_sent: { type: Number, default: 0 },
+	packets_recv: { type: Number, default: 0 },
+	err_in: { type: Number, default: 0 },
+	err_out: { type: Number, default: 0 },
+	drop_in: { type: Number, default: 0 },
+	drop_out: { type: Number, default: 0 },
+	fifo_in: { type: Number, default: 0 },
+	fifo_out: { type: Number, default: 0 },
+});
+
 const HardwareCheckSchema = mongoose.Schema(
 	{
 		...BaseCheckSchema.obj,
@@ -68,6 +82,11 @@ const HardwareCheckSchema = mongoose.Schema(
 		capture: {
 			type: captureSchema,
 			default: () => ({}),
+		},
+
+		net: {
+			type: [networkInterfaceSchema],
+			default: () => [],
 		},
 	},
 	{ timestamps: true }
