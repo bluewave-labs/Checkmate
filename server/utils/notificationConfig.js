@@ -4,7 +4,7 @@
  */
 export default {
 	// Whether backoff is enabled by default for new notifications
-	BACKOFF_ENABLED_DEFAULT: true,
+	BACKOFF_ENABLED_DEFAULT: false,
 
 	// Initial delay before sending another notification (1 minute in ms)
 	INITIAL_BACKOFF_DELAY_MS: 60000,
