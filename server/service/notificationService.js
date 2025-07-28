@@ -61,7 +61,8 @@ class NotificationService {
 		if (notificationsExist.length === 0) return false;
 
 		// Check if we should send notifications based on monitor's backoff settings
-		if (!this.notificationUtils.shouldSendNotification(monitor)) {
+		const shouldSend = await this.notificationUtils.shouldSendNotification(monitor);
+		if (!shouldSend) {
 			this.logger.info({
 				service: "NotificationService",
 				method: "handleNotifications",
@@ -78,11 +79,12 @@ class NotificationService {
 			monitor.currentBackoffDelay = monitor.initialBackoffDelay;
 		} else {
 			// Calculate next backoff with jitter
-			monitor.currentBackoffDelay = this.notificationUtils.calculateNextBackoffDelay(
-				monitor.currentBackoffDelay,
-				monitor.backoffMultiplier,
-				monitor.maxBackoffDelay
-			);
+			monitor.currentBackoffDelay =
+				await this.notificationUtils.calculateNextBackoffDelay(
+					monitor.currentBackoffDelay,
+					monitor.backoffMultiplier,
+					monitor.maxBackoffDelay
+				);
 		}
 
 		// Save updated monitor backoff parameters

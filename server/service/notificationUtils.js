@@ -1,10 +1,13 @@
 import notificationConfig from "../utils/notificationConfig.js";
 
 class NotificationUtils {
-	constructor({ stringService, emailService, db }) {
+	constructor({ stringService, emailService, db, settingsService }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
 		this.db = db;
+		this.settingsService = settingsService;
+		// Cache for app settings
+		this.appSettings = null;
 	}
 
 	buildTestEmail = async () => {
@@ -154,12 +157,53 @@ class NotificationUtils {
 	 * @param {Number} jitterFactor - Factor for randomness (0-1)
 	 * @returns {Number} - Next delay in milliseconds
 	 */
-	calculateNextBackoffDelay = (
+	/**
+	 * Get backoff settings from AppSettings or fallback to notificationConfig
+	 * @returns {Object} Backoff settings
+	 */
+	getBackoffSettings = async () => {
+		if (!this.appSettings) {
+			try {
+				// Get settings from database
+				this.appSettings = await this.settingsService.getDBSettings();
+			} catch {
+				// Fallback to default config if settings service fails
+				return {
+					backoffEnabled: notificationConfig.BACKOFF_ENABLED_DEFAULT,
+					initialBackoffDelay: notificationConfig.INITIAL_BACKOFF_DELAY_MS,
+					maxBackoffDelay: notificationConfig.MAX_BACKOFF_DELAY_MS,
+					backoffMultiplier: notificationConfig.BACKOFF_MULTIPLIER,
+					backoffJitterFactor: notificationConfig.JITTER_FACTOR,
+				};
+			}
+		}
+
+		return {
+			backoffEnabled:
+				this.appSettings.backoffEnabled ?? notificationConfig.BACKOFF_ENABLED_DEFAULT,
+			initialBackoffDelay:
+				this.appSettings.initialBackoffDelay ??
+				notificationConfig.INITIAL_BACKOFF_DELAY_MS,
+			maxBackoffDelay:
+				this.appSettings.maxBackoffDelay ?? notificationConfig.MAX_BACKOFF_DELAY_MS,
+			backoffMultiplier:
+				this.appSettings.backoffMultiplier ?? notificationConfig.BACKOFF_MULTIPLIER,
+			backoffJitterFactor:
+				this.appSettings.backoffJitterFactor ?? notificationConfig.JITTER_FACTOR,
+		};
+	};
+
+	calculateNextBackoffDelay = async (
 		currentDelay,
 		multiplier,
 		maxDelay,
-		jitterFactor = notificationConfig.JITTER_FACTOR
+		jitterFactor = null
 	) => {
+		// If jitterFactor is not provided, get it from settings
+		if (jitterFactor === null) {
+			const settings = await this.getBackoffSettings();
+			jitterFactor = settings.backoffJitterFactor;
+		}
 		// Calculate base delay with exponential growth
 		let nextDelay = currentDelay * multiplier;
 
@@ -181,9 +225,12 @@ class NotificationUtils {
 	 * @param {Object} monitor - Monitor object with backoff settings
 	 * @returns {Boolean} - Whether notification should be sent
 	 */
-	shouldSendNotification = (monitor) => {
-		// If backoff is disabled, always send
-		if (!monitor.backoffEnabled) {
+	shouldSendNotification = async (monitor) => {
+		// Get global settings
+		const settings = await this.getBackoffSettings();
+
+		// If backoff is disabled globally or for this monitor, always send
+		if (!settings.backoffEnabled || !monitor.backoffEnabled) {
 			return true;
 		}
 

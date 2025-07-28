@@ -79,7 +79,7 @@ const MonitorSchema = mongoose.Schema(
 		// Exponential backoff configuration
 		backoffEnabled: {
 			type: Boolean,
-			default: notificationConfig.BACKOFF_ENABLED_DEFAULT,
+			default: false, // Disabled by default until UI support exists
 		},
 		initialBackoffDelay: {
 			type: Number,
