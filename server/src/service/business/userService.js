@@ -3,7 +3,7 @@ const SERVICE_NAME = "userService";
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, emailService, settingsService, logger, stringService, jwt, errorService }) {
+	constructor({ crypto, db, emailService, settingsService, logger, stringService, jwt, errorService, jobQueue }) {
 		this.db = db;
 		this.emailService = emailService;
 		this.settingsService = settingsService;
@@ -11,6 +11,8 @@ class UserService {
 		this.stringService = stringService;
 		this.jwt = jwt;
 		this.errorService = errorService;
+		this.jobQueue = jobQueue;
+		this.crypto = crypto;
 	}
 
 	get serviceName() {

@@ -17,7 +17,7 @@ import DiagnosticController from "../controllers/diagnosticController.js";
 
 export const initializeControllers = (services) => {
 	const controllers = {};
-	const commonDependencies = createCommonDependencies(services.db, services.logger, services.errorService, services.stringService);
+	const commonDependencies = createCommonDependencies(services.db, services.errorService, services.logger, services.stringService);
 
 	controllers.authController = new AuthController(commonDependencies, {
 		settingsService: services.settingsService,

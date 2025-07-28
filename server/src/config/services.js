@@ -33,6 +33,7 @@ import pkg from "handlebars";
 const { compile } = pkg;
 import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 export const initializeServices = async (appSettings, settingsService) => {
 	const translationService = new TranslationService(logger);
@@ -83,6 +84,7 @@ export const initializeServices = async (appSettings, settingsService) => {
 
 	// Business services
 	const userService = new UserService({
+		crypto,
 		db,
 		emailService,
 		settingsService,
@@ -90,6 +92,7 @@ export const initializeServices = async (appSettings, settingsService) => {
 		stringService,
 		jwt,
 		errorService,
+		jobQueue: superSimpleQueue,
 	});
 	const checkService = new CheckService({
 		db,
