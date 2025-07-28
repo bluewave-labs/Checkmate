@@ -1,4 +1,5 @@
 import { verifyJWT } from "../middleware/verifyJWT.js";
+import { authApiLimiter } from "../middleware/rateLimiter.js";
 
 import AuthRoutes from "../routes/authRoute.js";
 import InviteRoutes from "../routes/inviteRoute.js";
@@ -25,7 +26,7 @@ export const setupRoutes = (app, controllers) => {
 	const notificationRoutes = new NotificationRoutes(controllers.notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController);
 
-	app.use("/api/v1/auth", authRoutes.getRouter());
+	app.use("/api/v1/auth", authApiLimiter, authRoutes.getRouter());
 	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
 	app.use("/api/v1/settings", verifyJWT, settingsRoutes.getRouter());
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());

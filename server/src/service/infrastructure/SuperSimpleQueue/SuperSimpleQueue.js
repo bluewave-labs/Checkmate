@@ -28,7 +28,7 @@ class SuperSimpleQueue {
 				// storeType: "redis",
 				logLevel: "debug",
 				debug: true,
-				dbUri: this.appSettings.dbConnectionString,
+				// dbUri: this.appSettings.dbConnectionString,
 			});
 			this.scheduler.start();
 
