@@ -5,7 +5,7 @@ import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
 
 // Utils
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../../../../Hooks/useHardwareUtils";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 

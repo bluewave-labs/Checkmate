@@ -11,7 +11,7 @@ import { Box } from "@mui/material";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../../../../Hooks/useHardwareUtils";
 import PropTypes from "prop-types";
 
 const BaseContainer = ({ children, sx = {} }) => {

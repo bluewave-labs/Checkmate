@@ -11,7 +11,7 @@ import {
 	TemperatureTooltip,
 } from "../../../../../Components/Charts/Utils/chartUtils";
 import { useTheme } from "@emotion/react";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../../../../Hooks/useHardwareUtils";
 import { useTranslation } from "react-i18next";
 const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 	const theme = useTheme();

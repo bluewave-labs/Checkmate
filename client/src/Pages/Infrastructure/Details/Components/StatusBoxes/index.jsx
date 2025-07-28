@@ -5,7 +5,7 @@ import StatBox from "../../../../../Components/StatBox";
 
 //Utils
 import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../../../../Hooks/useHardwareUtils";
 import { useTranslation } from "react-i18next";
 
 const InfraStatBoxes = ({ shouldRender, monitor }) => {
