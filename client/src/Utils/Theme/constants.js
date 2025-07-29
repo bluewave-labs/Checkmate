@@ -208,6 +208,14 @@ const newSemanticColors = {
 			light: newColors.blueGray800,
 			dark: newColors.gray100,
 		},
+		background: {
+			light: newColors.gray50,
+			dark: newColors.offBlack,
+		},
+		border: {
+			light: newColors.gray500,
+			dark: newColors.blueGray600,
+		},
 	},
 	success: {
 		main: {
@@ -337,16 +345,6 @@ const newSemanticColors = {
 		contrastText: {
 			light: newColors.blueGray600,
 			dark: newColors.blueGray900,
-		},
-	},
-	container: {
-		background: {
-			light: newColors.gray50,
-			dark: newColors.offBlack,
-		},
-		border: {
-			light: newColors.gray500,
-			dark: newColors.blueGray600,
 		},
 	},
 };

@@ -20,7 +20,7 @@ const ConfigBox = styled(Stack)(({ theme }) => ({
 		borderRightColor: theme.palette.primary.lowContrast,
 		paddingRight: theme.spacing(15),
 		paddingLeft: theme.spacing(15),
-		backgroundColor: theme.palette.container.background,
+		backgroundColor: theme.palette.tertiary.background,
 		"& :is(h1, h2):first-of-type": {
 			fontWeight: 600,
 			marginBottom: theme.spacing(4),
