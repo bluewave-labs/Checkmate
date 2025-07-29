@@ -302,7 +302,7 @@ const useCreateMonitor = () => {
 
 const useFetchGlobalSettings = () => {
 	const [isLoading, setIsLoading] = useState(true);
-	const [globalSettings, setGlobalSettings] = useState(null);
+	const [globalSettings, setGlobalSettings] = useState(undefined);
 	useEffect(() => {
 		const fetchGlobalSettings = async () => {
 			try {

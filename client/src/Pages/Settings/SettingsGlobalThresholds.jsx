@@ -6,7 +6,6 @@ import TextInput from "../../Components/Inputs/TextInput";
 
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
-import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const SettingsGlobalThresholds = ({
@@ -18,26 +17,7 @@ const SettingsGlobalThresholds = ({
 	const { t } = useTranslation(); // For language translation
 	const theme = useTheme(); // MUI theme access
 
-	// Local state for thresholds
-	const [thresholds, setThresholds] = useState({
-		cpu: "",
-		memory: "",
-		disk: "",
-		temperature: "",
-	});
-
-	// Load existing thresholds from settingsData
-
-	if (settingsData?.settings?.globalThresholds) {
-		setThresholds({
-			cpu: settingsData.settings.globalThresholds.cpu || "",
-			memory: settingsData.settings.globalThresholds.memory || "",
-			disk: settingsData.settings.globalThresholds.disk || "",
-			temperature: settingsData.settings.globalThresholds.temperature || "",
-		});
-	}
-
-	// Handles input change and updates state & parent data
+	// Handles input change and updates parent state
 	const handleChange = (e, min, max) => {
 		const { name, value } = e.target;
 
@@ -47,19 +27,16 @@ const SettingsGlobalThresholds = ({
 			(!isNaN(numValue) && isFinite(numValue) && numValue >= min && numValue <= max);
 
 		if (isValidNumber) {
-			const updatedThresholds = {
-				...thresholds,
-				[name]: value,
-			};
-
-			setThresholds(updatedThresholds);
-			setSettingsData({
-				...settingsData,
+			setSettingsData((prev) => ({
+				...prev,
 				settings: {
-					...settingsData.settings,
-					globalThresholds: updatedThresholds,
+					...prev.settings,
+					globalThresholds: {
+						...prev.settings?.globalThresholds,
+						[name]: value,
+					},
 				},
-			});
+			}));
 		}
 	};
 
@@ -98,7 +75,7 @@ const SettingsGlobalThresholds = ({
 						label={label}
 						placeholder={`${min} - ${max}`}
 						type="number"
-						value={thresholds[name]}
+						value={settingsData?.settings?.globalThresholds?.[name] || ""}
 						onChange={(e) => handleChange(e, min, max)}
 					/>
 				))}
