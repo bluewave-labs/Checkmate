@@ -153,7 +153,7 @@ class MonitorService {
 			monitors.map(async (monitor) => {
 				try {
 					await this.jobQueue.deleteJob(monitor);
-					await this.db.deleteChecks(monitor._id);
+					await this.db.checkModule.deleteChecks(monitor._id);
 					await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
 					await this.db.deleteNotificationsByMonitorId(monitor._id);
 				} catch (error) {

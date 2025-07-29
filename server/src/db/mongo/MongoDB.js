@@ -69,7 +69,7 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings }) {
+	constructor({ logger, envSettings, checkModule }) {
 		this.logger = logger;
 		this.envSettings = envSettings;
 		Object.assign(this, userModule);
@@ -78,7 +78,7 @@ class MongoDB {
 		Object.assign(this, monitorModule);
 		Object.assign(this, pageSpeedCheckModule);
 		Object.assign(this, hardwareCheckModule);
-		Object.assign(this, checkModule);
+		this.checkModule = checkModule;
 		Object.assign(this, maintenanceWindowModule);
 		Object.assign(this, notificationModule);
 		Object.assign(this, settingsModule);
