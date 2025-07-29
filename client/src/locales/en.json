@@ -378,6 +378,7 @@
 	"dockerContainerMonitoringDescription": "Check whether your Docker container is running or not.",
 	"duration": "Duration",
 	"edit": "Edit",
+	"editing": "Editing...",
 	"editMaintenance": "Edit maintenance",
 	"editUserPage": {
 		"form": {
@@ -397,7 +398,6 @@
 			"validationErrors": "Validation errors"
 		}
 	},
-	"editing": "Editing...",
 	"emailSent": "Email sent successfully",
 	"errorInvalidFieldId": "Invalid field ID provided",
 	"errorInvalidTypeId": "Invalid notification type provided",
@@ -543,6 +543,15 @@
 	"maintenanceWindowName": "Maintenance Window Name",
 	"maskedPageSpeedKeyPlaceholder": "*************************************",
 	"matchMethod": "Match Method",
+	"matchMethodOptions": {
+		"equal": "Equal",
+		"equalPlaceholder": "success",
+		"include": "Include",
+		"includePlaceholder": "ok",
+		"regex": "Regex",
+		"regexPlaceholder": "^(success|ok)$",
+		"text": "Match Method"
+	},
 	"mb": "MB",
 	"mem": "Mem",
 	"memory": "Memory",
@@ -582,6 +591,7 @@
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
+	"monitors": "monitors",
 	"monitorState": {
 		"active": "Active",
 		"paused": "Paused",
@@ -596,8 +606,29 @@
 	},
 	"monitorStatusDown": "Monitor {name} ({url}) is DOWN and not responding",
 	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
-	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
+	"monitorType": {
+		"docker": {
+			"label": "Container ID",
+			"namePlaceholder": "My Container",
+			"placeholder": "abcd1234"
+		},
+		"http": {
+			"label": "URL to monitor",
+			"namePlaceholder": "Google",
+			"placeholder": "google.com"
+		},
+		"ping": {
+			"label": "IP address to monitor",
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
+		},
+		"port": {
+			"label": "URL to monitor",
+			"namePlaceholder": "Localhost:5173",
+			"placeholder": "localhost"
+		}
+	},
 	"ms": "ms",
 	"navControls": "Controls",
 	"nextWindow": "Next window",
@@ -723,8 +754,8 @@
 	"queuePage": {
 		"failedJobTable": {
 			"failCountHeader": "Fail count",
-			"failReasonHeader": "Fail reason",
 			"failedAtHeader": "Last failed at",
+			"failReasonHeader": "Fail reason",
 			"monitorIdHeader": "Monitor ID",
 			"monitorUrlHeader": "Monitor URL",
 			"title": "Failed jobs"
@@ -865,8 +896,8 @@
 	"settingsTestEmailUnknownError": "Unknown error",
 	"showAdminLoginLink": "Show \"Administrator? Login Here\" link on the status page",
 	"showCharts": "Show charts",
-	"showUptimePercentage": "Show uptime percentage",
 	"shown": "Shown",
+	"showUptimePercentage": "Show uptime percentage",
 	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
 	"starPromptTitle": "Star Checkmate",
 	"startTime": "Start time",
@@ -945,21 +976,27 @@
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"time": {
 		"fiveMinutes": "5 minutes",
+		"fourMinutes": "4 minutes",
 		"oneDay": "1 day",
 		"oneHour": "1 hour",
+		"oneMinute": "1 minute",
 		"oneWeek": "1 week",
 		"tenMinutes": "10 minutes",
 		"threeMinutes": "3 minutes",
-		"twentyMinutes": "20 minutes"
+		"twentyMinutes": "20 minutes",
+		"twoMinutes": "2 minutes"
 	},
-	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
+	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"title": "Title",
 	"tlsErrorIgnored": "TLS/SSL errors ignored",
 	"total": "Total",
 	"type": "Type",
 	"update": "Update",
 	"uptime": "Uptime",
+	"uptimeAdvancedMatching": {
+		"jsonPath": "JSON Path"
+	},
 	"uptimeCreate": "The expected value is used to match against response result, and the match determines the status.",
 	"uptimeCreateJsonPath": "This expression will be evaluated against the reponse JSON data and the result will be used to match against the expected value. See",
 	"uptimeCreateJsonPathQuery": "for query language documentation.",
