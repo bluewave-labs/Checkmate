@@ -1,5 +1,4 @@
 import ServiceRegistry from "../service/system/serviceRegistry.js";
-import logger from "../utils/logger.js";
 import TranslationService from "../service/system/translationService.js";
 import StringService from "../service/system/stringService.js";
 import MongoDB from "../db/mongo/MongoDB.js";
@@ -9,7 +8,6 @@ import BufferService from "../service/infrastructure/bufferService.js";
 import StatusService from "../service/infrastructure/statusService.js";
 import NotificationUtils from "../service/infrastructure/notificationUtils.js";
 import NotificationService from "../service/infrastructure/notificationService.js";
-import RedisService from "../service/data/redisService.js";
 import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -19,7 +17,6 @@ import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
 import MonitorService from "../service/business/monitorService.js";
-import IORedis from "ioredis";
 import papaparse from "papaparse";
 import axios from "axios";
 import ping from "ping";
@@ -35,19 +32,22 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-export const initializeServices = async (appSettings, settingsService) => {
+export const initializeServices = async ({ logger, envSettings, settingsService }) => {
+	const serviceRegistry = new ServiceRegistry({ logger });
+	ServiceRegistry.instance = serviceRegistry;
+
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
 
 	const stringService = new StringService(translationService);
 
 	// Create DB
-	const db = new MongoDB({ appSettings });
+	const db = new MongoDB({ logger, envSettings });
 	await db.connect();
 
 	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
-	const bufferService = new BufferService({ db, logger });
+	const bufferService = new BufferService({ db, logger, envSettings });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
 
 	const notificationUtils = new NotificationUtils({
@@ -64,7 +64,6 @@ export const initializeServices = async (appSettings, settingsService) => {
 		notificationUtils,
 	});
 
-	const redisService = new RedisService({ Redis: IORedis, logger });
 	const errorService = new ErrorService();
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
@@ -76,7 +75,7 @@ export const initializeServices = async (appSettings, settingsService) => {
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
-		appSettings,
+		envSettings,
 		db,
 		logger,
 		helper: superSimpleQueueHelper,
@@ -135,7 +134,6 @@ export const initializeServices = async (appSettings, settingsService) => {
 		bufferService,
 		statusService,
 		notificationService,
-		redisService,
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,

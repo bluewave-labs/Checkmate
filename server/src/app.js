@@ -10,8 +10,8 @@ import { handleErrors } from "./middleware/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
 import { generalApiLimiter } from "./middleware/rateLimiter.js";
 
-export const createApp = ({ services, controllers, appSettings, frontendPath, openApiSpec }) => {
-	const allowedOrigin = appSettings.clientHost;
+export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
+	const allowedOrigin = envSettings.clientHost;
 
 	const app = express();
 	app.use(generalApiLimiter);

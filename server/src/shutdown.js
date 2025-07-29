@@ -1,4 +1,4 @@
-import logger from "./utils/logger.js";
+import { logger } from "./utils/logger.js";
 
 export const initShutdownListener = (server, services) => {
 	const SERVICE_NAME = "Server";

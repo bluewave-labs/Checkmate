@@ -4,8 +4,8 @@ const SERVICE_NAME = "JobQueue";
 class SuperSimpleQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ appSettings, db, logger, helper }) {
-		this.appSettings = appSettings;
+	constructor({ envSettings, db, logger, helper }) {
+		this.envSettings = envSettings;
 		this.db = db;
 		this.logger = logger;
 		this.helper = helper;
@@ -15,8 +15,8 @@ class SuperSimpleQueue {
 		return SuperSimpleQueue.SERVICE_NAME;
 	}
 
-	static async create({ appSettings, db, logger, helper }) {
-		const instance = new SuperSimpleQueue({ appSettings, db, logger, helper });
+	static async create({ envSettings, db, logger, helper }) {
+		const instance = new SuperSimpleQueue({ envSettings, db, logger, helper });
 		await instance.init();
 		return instance;
 	}
@@ -28,7 +28,7 @@ class SuperSimpleQueue {
 				// storeType: "redis",
 				logLevel: "debug",
 				debug: true,
-				// dbUri: this.appSettings.dbConnectionString,
+				// dbUri: this.envSettings.dbConnectionString,
 			});
 			this.scheduler.start();
 
