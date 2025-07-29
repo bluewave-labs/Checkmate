@@ -1,6 +1,9 @@
 const SERVICE_NAME = "SettingsService";
 
 const envConfig = {
+	jwtSecret: process.env.JWT_SECRET,
+	jwtTTL: process.env.TOKEN_TTL,
+	systemEmailHost: process.env.SYSTEM_EMAIL_HOST,
 	nodeEnv: process.env.NODE_ENV,
 	logLevel: process.env.LOG_LEVEL,
 	clientHost: process.env.CLIENT_HOST,
