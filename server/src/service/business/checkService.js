@@ -34,7 +34,7 @@ class CheckService {
 		}
 
 		let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
-		const result = await this.db.getChecksByMonitor({
+		const result = await this.db.checkModule.getChecksByMonitor({
 			monitorId,
 			type,
 			sortOrder,
@@ -55,7 +55,7 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const checkData = await this.db.getChecksByTeam({
+		const checkData = await this.db.checkModule.getChecksByTeam({
 			sortOrder,
 			dateRange,
 			filter,
@@ -72,7 +72,7 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const summary = await this.db.getChecksSummaryByTeamId({ teamId });
+		const summary = await this.db.checkModule.getChecksSummaryByTeamId({ teamId });
 		return summary;
 	};
 
@@ -85,7 +85,7 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const updatedCheck = await this.db.ackCheck(checkId, teamId, ack);
+		const updatedCheck = await this.db.checkModule.ackCheck(checkId, teamId, ack);
 		return updatedCheck;
 	};
 
@@ -105,7 +105,7 @@ class CheckService {
 			}
 		}
 
-		const updatedChecks = await this.db.ackAllChecks(monitorId, teamId, ack, path);
+		const updatedChecks = await this.db.checkModule.ackAllChecks(monitorId, teamId, ack, path);
 		return updatedChecks;
 	};
 
@@ -128,7 +128,7 @@ class CheckService {
 			throw this.errorService.createAuthorizationError();
 		}
 
-		const deletedCount = await this.db.deleteChecks(monitorId);
+		const deletedCount = await this.db.checkModule.deleteChecks(monitorId);
 		return deletedCount;
 	};
 	deleteChecksByTeamId = async ({ teamId }) => {
@@ -136,14 +136,14 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const deletedCount = await this.db.deleteChecksByTeamId(teamId);
+		const deletedCount = await this.db.checkModule.deleteChecksByTeamId(teamId);
 		return deletedCount;
 	};
 
 	updateChecksTTL = async ({ teamId, ttl }) => {
 		const SECONDS_PER_DAY = 86400;
 		const newTTL = parseInt(ttl, 10) * SECONDS_PER_DAY;
-		await this.db.updateChecksTTL(teamId, newTTL);
+		await this.db.checkModule.updateChecksTTL(teamId, newTTL);
 	};
 }
 

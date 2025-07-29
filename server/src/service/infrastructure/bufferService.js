@@ -21,7 +21,7 @@ class BufferService {
 			hardwareChecks: [],
 		};
 		this.OPERATION_MAP = {
-			checks: this.db.createChecks,
+			checks: this.db.checkModule.createChecks,
 			pagespeedChecks: this.db.createPageSpeedChecks,
 			hardwareChecks: this.db.createHardwareChecks,
 		};
