@@ -26,17 +26,16 @@ const SettingsGlobalThresholds = ({
 		temperature: "",
 	});
 
-	// Load existing thresholds from settingsData on first render or when settingsData changes
-	useEffect(() => {
-		if (settingsData?.settings?.globalThresholds) {
-			setThresholds({
-				cpu: settingsData.settings.globalThresholds.cpu || "",
-				memory: settingsData.settings.globalThresholds.memory || "",
-				disk: settingsData.settings.globalThresholds.disk || "",
-				temperature: settingsData.settings.globalThresholds.temperature || "",
-			});
-		}
-	}, [settingsData]);
+	// Load existing thresholds from settingsData
+
+	if (settingsData?.settings?.globalThresholds) {
+		setThresholds({
+			cpu: settingsData.settings.globalThresholds.cpu || "",
+			memory: settingsData.settings.globalThresholds.memory || "",
+			disk: settingsData.settings.globalThresholds.disk || "",
+			temperature: settingsData.settings.globalThresholds.temperature || "",
+		});
+	}
 
 	// Handles input change and updates state & parent data
 	const handleChange = (e, min, max) => {
