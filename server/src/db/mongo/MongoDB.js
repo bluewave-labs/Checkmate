@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import AppSettings from "../models/AppSettings.js";
-import logger from "../../utils/logger.js";
 
 //****************************************
 // User Operations
@@ -70,8 +69,9 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ appSettings }) {
-		this.appSettings = appSettings;
+	constructor({ logger, envSettings }) {
+		this.logger = logger;
+		this.envSettings = envSettings;
 		Object.assign(this, userModule);
 		Object.assign(this, inviteModule);
 		Object.assign(this, recoveryModule);
@@ -92,9 +92,9 @@ class MongoDB {
 
 	connect = async () => {
 		try {
-			const connectionString = this.appSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
+			const connectionString = this.envSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
 			await mongoose.connect(connectionString);
-			// If there are no AppSettings, create one
+			// If there are no AppSettings, create one // TODO why is this here?
 			await AppSettings.findOneAndUpdate(
 				{}, // empty filter to match any document
 				{}, // empty update
@@ -110,13 +110,13 @@ class MongoDB {
 				await model.syncIndexes();
 			}
 
-			logger.info({
+			this.logger.info({
 				message: "Connected to MongoDB",
 				service: this.SERVICE_NAME,
 				method: "connect",
 			});
 		} catch (error) {
-			logger.error({
+			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "connect",
@@ -128,12 +128,12 @@ class MongoDB {
 
 	disconnect = async () => {
 		try {
-			logger.info({ message: "Disconnecting from MongoDB" });
+			this.logger.info({ message: "Disconnecting from MongoDB" });
 			await mongoose.disconnect();
-			logger.info({ message: "Disconnected from MongoDB" });
+			this.logger.info({ message: "Disconnected from MongoDB" });
 			return;
 		} catch (error) {
-			logger.error({
+			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "disconnect",
