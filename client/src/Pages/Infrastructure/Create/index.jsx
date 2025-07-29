@@ -3,7 +3,6 @@ import { useTheme } from "@emotion/react";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
 import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
@@ -95,25 +94,41 @@ const CreateInfrastructureMonitor = () => {
 
 	useEffect(() => {
 		if (!isCreate || globalSettingsLoading) return;
-		const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
+		const globalThresholds = globalSettings?.data?.settings?.globalThresholds || {};
+
+		// Define default empty string for all thresholds
+		const defaultThresholds = {
+			cpu: "",
+			memory: "",
+			disk: "",
+			temperature: "",
+		};
 
 		setInfrastructureMonitor((prev) => ({
 			...prev,
 			cpu: globalThresholds.cpu != null,
-			usage_cpu: globalThresholds.cpu != null ? globalThresholds.cpu.toString() : "",
+			usage_cpu:
+				globalThresholds.cpu != null
+					? globalThresholds.cpu.toString()
+					: defaultThresholds.cpu,
 
 			memory: globalThresholds.memory != null,
 			usage_memory:
-				globalThresholds.memory != null ? globalThresholds.memory.toString() : "",
+				globalThresholds.memory != null
+					? globalThresholds.memory.toString()
+					: defaultThresholds.memory,
 
 			disk: globalThresholds.disk != null,
-			usage_disk: globalThresholds.disk != null ? globalThresholds.disk.toString() : "",
+			usage_disk:
+				globalThresholds.disk != null
+					? globalThresholds.disk.toString()
+					: defaultThresholds.disk,
 
 			temperature: globalThresholds.temperature != null,
 			usage_temperature:
 				globalThresholds.temperature != null
 					? globalThresholds.temperature.toString()
-					: "",
+					: defaultThresholds.temperature,
 		}));
 	}, [isCreate, globalSettings]);
 

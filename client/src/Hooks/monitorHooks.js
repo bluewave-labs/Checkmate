@@ -301,28 +301,26 @@ const useCreateMonitor = () => {
 };
 
 const useFetchGlobalSettings = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [globalSettings, setGlobalSettings] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [globalSettings, setGlobalSettings] = useState(null);
+	useEffect(() => {
+		const fetchGlobalSettings = async () => {
+			try {
+				const res = await networkService.getAppSettings();
+				setGlobalSettings(res?.data);
+			} catch (error) {
+				console.error("Failed to fetch global settings:", error);
+				createToast({ body: "Failed to load global settings" });
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-  useEffect(() => {
-    const fetchGlobalSettings = async () => {
-      try {
-        const res = await networkService.getAppSettings();
-        setGlobalSettings(res?.data);
-      } catch (error) {
-        console.error("Failed to fetch global settings:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+		fetchGlobalSettings();
+	}, []);
 
-    fetchGlobalSettings();
-  }, []);
-
-  return [globalSettings, isLoading]; 
+	return [globalSettings, isLoading];
 };
-
-
 
 const useDeleteMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);

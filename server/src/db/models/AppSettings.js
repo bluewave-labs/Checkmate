@@ -66,12 +66,12 @@ const AppSettingsSchema = mongoose.Schema(
 			default: 1,
 		},
 		globalThresholds: {
-    		cpu: { type: Number },
-    		memory: { type: Number},
-    		disk: { type: Number},
-    		temperature: { type: Number},
-  		}	
-},
+			cpu: { type: Number },
+			memory: { type: Number },
+			disk: { type: Number },
+			temperature: { type: Number },
+		},
+	},
 	{
 		timestamps: true,
 	}

@@ -15,8 +15,8 @@ const SettingsGlobalThresholds = ({
 	settingsData,
 	setSettingsData,
 }) => {
-	const { t } = useTranslation();     // For language translation
-	const theme = useTheme();           // MUI theme access
+	const { t } = useTranslation(); // For language translation
+	const theme = useTheme(); // MUI theme access
 
 	// Local state for thresholds
 	const [thresholds, setThresholds] = useState({
@@ -42,19 +42,18 @@ const SettingsGlobalThresholds = ({
 	const handleChange = (e, min, max) => {
 		const { name, value } = e.target;
 
-		// Allow empty or numeric value within range
-		if (
+		const numValue = parseFloat(value);
+		const isValidNumber =
 			value === "" ||
-			(/^\d+$/.test(value) && Number(value) >= min && Number(value) <= max)
-		) {
+			(!isNaN(numValue) && isFinite(numValue) && numValue >= min && numValue <= max);
+
+		if (isValidNumber) {
 			const updatedThresholds = {
 				...thresholds,
 				[name]: value,
 			};
 
 			setThresholds(updatedThresholds);
-
-			// Update settingsData without enabling/disabling metrics
 			setSettingsData({
 				...settingsData,
 				settings: {
@@ -72,7 +71,10 @@ const SettingsGlobalThresholds = ({
 		<ConfigBox>
 			{/* Header and description */}
 			<Box>
-				<Typography component="h1" variant="h2">
+				<Typography
+					component="h1"
+					variant="h2"
+				>
 					{t("settingsPage.globalThresholds.title", "Global Thresholds")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
