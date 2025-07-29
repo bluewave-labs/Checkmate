@@ -1,6 +1,6 @@
 import Monitor from "../../models/Monitor.js";
 import Check from "../../models/Check.js";
-import logger from "../../../utils/logger.js";
+import { logger } from "../../../utils/logger.js";
 
 const generateRandomUrl = () => {
 	const domains = ["example.com", "test.org", "demo.net", "sample.io", "mock.dev"];

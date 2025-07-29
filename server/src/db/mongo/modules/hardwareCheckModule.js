@@ -1,6 +1,6 @@
 import HardwareCheck from "../../models/HardwareCheck.js";
 import Monitor from "../../models/Monitor.js";
-import logger from "../../../utils/logger.js";
+import { logger } from "../../../utils/logger.js";
 
 const SERVICE_NAME = "hardwareCheckModule";
 const createHardwareCheck = async (hardwareCheckData) => {
