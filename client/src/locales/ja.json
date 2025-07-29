@@ -1,836 +1,973 @@
 {
-	"submit": "",
-	"title": "",
-	"distributedStatusHeaderText": "",
-	"distributedStatusSubHeaderText": "",
-	"settingsDisabled": "",
-	"settingsSuccessSaved": "",
-	"settingsFailedToSave": "",
-	"settingsStatsCleared": "",
-	"settingsFailedToClearStats": "",
-	"settingsFailedToAddDemoMonitors": "",
-	"settingsMonitorsDeleted": "",
-	"settingsFailedToDeleteMonitors": "",
-	"starPromptTitle": "",
-	"starPromptDescription": "",
-	"https": "",
-	"http": "",
-	"monitor": "",
-	"aboutus": "",
-	"now": "",
-	"delete": "",
-	"configure": "",
-	"responseTime": "",
-	"ms": "",
-	"bar": "",
-	"area": "",
-	"country": "",
-	"city": "",
-	"response": "",
-	"monitorStatusUp": "",
-	"monitorStatusDown": "",
-	"webhookSendSuccess": "",
-	"webhookSendError": "",
-	"webhookUnsupportedPlatform": "",
-	"distributedRightCategoryTitle": "",
-	"distributedStatusServerMonitors": "",
-	"distributedStatusServerMonitorsDescription": "",
-	"distributedUptimeCreateSelectURL": "",
-	"distributedUptimeCreateChecks": "",
-	"distributedUptimeCreateChecksDescription": "",
-	"distributedUptimeCreateIncidentNotification": "",
-	"distributedUptimeCreateIncidentDescription": "",
-	"distributedUptimeCreateAdvancedSettings": "",
-	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsStatusHeaderUptime": "",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
+	"submit": "送信",
+	"title": "タイトル",
+	"distributedStatusHeaderText": "リアルタイム、実デバイス対応",
+	"distributedStatusSubHeaderText": "世界中の数百万台のデバイスを活用し、グローバル地域、国、都市別にシステムパフォーマンスを表示",
+	"settingsDisabled": "無効",
+	"settingsSuccessSaved": "設定が正常に保存されました",
+	"settingsFailedToSave": "設定の保存に失敗しました",
+	"settingsStatsCleared": "統計が正常にクリアされました",
+	"settingsFailedToClearStats": "統計のクリアに失敗しました",
+	"settingsMonitorsDeleted": "すべてのモニターが正常に削除されました",
+	"settingsFailedToDeleteMonitors": "すべてのモニターの削除に失敗しました",
+	"starPromptTitle": "Checkmateにスター",
+	"starPromptDescription": "GitHubで最新リリースを確認し、コミュニティの成長を支援",
+	"https": "HTTPS",
+	"http": "HTTP",
+	"monitor": "モニター",
+	"aboutus": "私たちについて",
+	"now": "今",
+	"delete": "削除",
+	"configure": "設定",
+	"responseTime": "レスポンス時間",
+	"ms": "ミリ秒",
+	"bar": "バー",
+	"area": "エリア",
+	"country": "国",
+	"city": "都市",
+	"response": "レスポンス",
+	"monitorStatusUp": "モニター {name} ({url}) がアップして応答中です",
+	"monitorStatusDown": "モニター {name} ({url}) がダウンして応答していません",
+	"webhookSendSuccess": "Webhook通知が正常に送信されました",
+	"webhookSendError": "{platform}へのWebhook通知送信エラー",
+	"webhookUnsupportedPlatform": "サポートされていないプラットフォーム: {platform}",
+	"distributedRightCategoryTitle": "モニター",
+	"distributedStatusServerMonitors": "サーバーモニター",
+	"distributedStatusServerMonitorsDescription": "関連サーバーのステータスを監視",
+	"distributedUptimeCreateSelectURL": "ここでホストのURL、モニタータイプを選択できます。",
+	"distributedUptimeCreateChecks": "実行するチェック",
+	"distributedUptimeCreateChecksDescription": "サイト追加後はいつでもチェックを追加・削除できます。",
+	"distributedUptimeCreateIncidentNotification": "インシデント通知",
+	"distributedUptimeCreateIncidentDescription": "インシデント発生時、ユーザーに通知。",
+	"distributedUptimeCreateAdvancedSettings": "詳細設定",
+	"distributedUptimeDetailsNoMonitorHistory": "このモニターのチェック履歴はまだありません。",
+	"distributedUptimeDetailsStatusHeaderUptime": "稼働時間:",
+	"distributedUptimeDetailsStatusHeaderLastUpdate": "最終更新",
 	"notifications": {
-		"enableNotifications": "",
-		"testNotification": "",
-		"addOrEditNotifications": "",
+		"enableNotifications": "{{platform}}通知を有効化",
+		"testNotification": "テスト通知",
+		"addOrEditNotifications": "通知を追加または編集",
 		"slack": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
+			"label": "Slack",
+			"description": "Slack通知を有効にするには、Slackアプリを作成し、incoming webhookを有効にします。その後、ここでWebhook URLを提供するだけです。",
+			"webhookLabel": "Webhook URL",
+			"webhookPlaceholder": "https://hooks.slack.com/services/...",
+			"webhookRequired": "Slack Webhook URLが必要です"
 		},
 		"discord": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
+			"label": "Discord",
+			"description": "Webhookを使用してDiscord通知経由でCheckmateからDiscordチャンネルにデータを送信するには、DiscordのIncoming Webhook機能を使用できます。",
+			"webhookLabel": "Discord Webhook URL",
+			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
+			"webhookRequired": "Discord Webhook URLが必要です"
 		},
 		"telegram": {
-			"label": "",
-			"description": "",
-			"tokenLabel": "",
-			"tokenPlaceholder": "",
-			"chatIdLabel": "",
-			"chatIdPlaceholder": "",
-			"fieldsRequired": ""
+			"label": "Telegram",
+			"description": "Telegram通知を有効にするには、Telegramボットを作成・管理するための公式ボットであるBotFatherを使用してTelegramボットを作成します。次に、APIトークンとチャットIDを取得してここに記入します。",
+			"tokenLabel": "ボットトークン",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+			"chatIdLabel": "チャットID",
+			"chatIdPlaceholder": "-1001234567890",
+			"fieldsRequired": "TelegramトークンとチャットIDが必要です"
 		},
 		"webhook": {
-			"label": "",
-			"description": "",
-			"urlLabel": "",
-			"urlPlaceholder": "",
-			"urlRequired": ""
+			"label": "Webhook",
+			"description": "インシデント発生時に通知を受信するためのカスタムWebhookを設定できます。",
+			"urlLabel": "Webhook URL",
+			"urlPlaceholder": "https://your-server.com/webhook",
+			"urlRequired": "Webhook URLが必要です"
 		},
-		"testNotificationDevelop": "",
-		"integrationButton": "",
-		"testSuccess": "",
-		"testFailed": "",
-		"unsupportedType": "",
-		"networkError": "",
+		"testNotificationDevelop": "テスト通知2",
+		"integrationButton": "通知統合",
+		"testSuccess": "テスト通知が正常に送信されました！",
+		"testFailed": "テスト通知の送信に失敗しました",
+		"unsupportedType": "サポートされていない通知タイプ",
+		"networkError": "ネットワークエラーが発生しました",
 		"fallback": {
-			"title": "",
-			"checks": [""]
+			"title": "通知チャンネル",
+			"checks": [
+				"ダウンタイムやパフォーマンス問題についてチームにアラート",
+				"インシデント発生時にエンジニアに通知",
+				"システム変更について管理者に情報提供"
+			],
+			"actionButton": ""
 		},
-		"createButton": "",
-		"createTitle": "",
+		"createButton": "通知チャンネルを作成",
+		"createTitle": "通知チャンネル",
 		"create": {
-			"success": "",
-			"failed": ""
+			"success": "通知が正常に作成されました",
+			"failed": "通知の作成に失敗しました"
 		},
 		"fetch": {
-			"success": "",
-			"failed": ""
+			"success": "通知が正常に取得されました",
+			"failed": "通知の取得に失敗しました"
 		},
 		"delete": {
-			"success": "",
-			"failed": ""
+			"success": "通知が正常に削除されました",
+			"failed": "通知の削除に失敗しました"
 		},
 		"edit": {
-			"success": "",
-			"failed": ""
+			"success": "通知が正常に更新されました",
+			"failed": "通知の更新に失敗しました"
 		},
 		"test": {
-			"success": "",
-			"failed": ""
+			"success": "テスト通知が正常に送信されました",
+			"failed": "テスト通知の送信に失敗しました"
 		}
 	},
-	"testLocale": "",
-	"add": "",
-	"monitors": "",
-	"distributedUptimeStatusCreateStatusPage": "",
-	"distributedUptimeStatusCreateStatusPageAccess": "",
-	"distributedUptimeStatusCreateStatusPageReady": "",
-	"distributedUptimeStatusBasicInfoHeader": "",
-	"distributedUptimeStatusBasicInfoDescription": "",
-	"distributedUptimeStatusLogoHeader": "",
-	"distributedUptimeStatusLogoDescription": "",
-	"distributedUptimeStatusLogoUploadButton": "",
-	"distributedUptimeStatusStandardMonitorsHeader": "",
-	"distributedUptimeStatusStandardMonitorsDescription": "",
-	"distributedUptimeStatusCreateYour": "",
-	"distributedUptimeStatusEditYour": "",
-	"distributedUptimeStatusPublishedLabel": "",
-	"distributedUptimeStatusCompanyNameLabel": "",
-	"distributedUptimeStatusPageAddressLabel": "",
-	"distributedUptimeStatus30Days": "",
-	"distributedUptimeStatus60Days": "",
-	"distributedUptimeStatus90Days": "",
-	"distributedUptimeStatusPageNotSetUp": "",
-	"distributedUptimeStatusContactAdmin": "",
-	"distributedUptimeStatusPageNotPublic": "",
-	"distributedUptimeStatusPageDeleteDialog": "",
-	"distributedUptimeStatusPageDeleteConfirm": "",
-	"distributedUptimeStatusPageDeleteDescription": "",
-	"distributedUptimeStatusDevices": "",
-	"distributedUptimeStatusUpt": "",
-	"distributedUptimeStatusUptBurned": "",
-	"distributedUptimeStatusUptLogo": "",
-	"incidentsTableNoIncidents": "",
-	"incidentsTablePaginationLabel": "",
-	"incidentsTableMonitorName": "",
-	"incidentsTableStatus": "",
-	"incidentsTableDateTime": "",
-	"incidentsTableStatusCode": "",
-	"incidentsTableMessage": "",
-	"incidentsOptionsHeader": "",
-	"incidentsOptionsHeaderFilterBy": "",
-	"incidentsOptionsHeaderFilterAll": "",
-	"incidentsOptionsHeaderFilterDown": "",
-	"incidentsOptionsHeaderFilterCannotResolve": "",
-	"incidentsOptionsHeaderShow": "",
-	"incidentsOptionsHeaderLastHour": "",
-	"incidentsOptionsHeaderLastDay": "",
-	"incidentsOptionsHeaderLastWeek": "",
-	"incidentsOptionsPlaceholderAllServers": "",
-	"infrastructureCreateYour": "",
-	"infrastructureCreateGeneralSettingsDescription": "",
-	"infrastructureServerRequirement": "",
-	"infrastructureCustomizeAlerts": "",
-	"infrastructureAlertNotificationDescription": "",
-	"infrastructureCreateMonitor": "",
-	"infrastructureProtocol": "",
-	"infrastructureServerUrlLabel": "",
-	"infrastructureDisplayNameLabel": "",
-	"infrastructureAuthorizationSecretLabel": "",
-	"gb": "",
-	"mb": "",
-	"mem": "",
-	"memoryUsage": "",
-	"cpu": "",
-	"cpuUsage": "",
-	"cpuTemperature": "",
-	"diskUsage": "",
-	"used": "",
-	"total": "",
-	"cores": "",
-	"frequency": "",
-	"status": "",
-	"cpuPhysical": "",
-	"cpuLogical": "",
-	"cpuFrequency": "",
-	"avgCpuTemperature": "",
-	"memory": "",
-	"disk": "",
-	"uptime": "",
-	"os": "",
-	"host": "",
-	"actions": "",
-	"integrations": "",
-	"integrationsPrism": "",
-	"integrationsSlack": "",
-	"integrationsSlackInfo": "",
-	"integrationsDiscord": "",
-	"integrationsDiscordInfo": "",
-	"integrationsZapier": "",
-	"integrationsZapierInfo": "",
-	"commonSave": "",
-	"createYour": "",
-	"createMonitor": "",
-	"pause": "",
-	"resume": "",
-	"editing": "",
-	"url": "",
-	"access": "",
-	"timezone": "",
-	"features": "",
-	"administrator": "",
-	"loginHere": "",
-	"displayName": "",
-	"urlMonitor": "",
-	"portToMonitor": "",
-	"websiteMonitoring": "",
-	"websiteMonitoringDescription": "",
-	"pingMonitoring": "",
-	"pingMonitoringDescription": "",
-	"dockerContainerMonitoring": "",
-	"dockerContainerMonitoringDescription": "",
-	"portMonitoring": "",
-	"portMonitoringDescription": "",
-	"createMaintenanceWindow": "",
-	"createMaintenance": "",
-	"editMaintenance": "",
-	"maintenanceWindowName": "",
-	"friendlyNameInput": "",
-	"friendlyNamePlaceholder": "",
-	"maintenanceRepeat": "",
-	"maintenance": "",
-	"duration": "",
-	"addMonitors": "",
-	"window": "",
-	"cancel": "",
-	"message": "",
-	"low": "",
-	"high": "",
-	"statusCode": "",
-	"date&Time": "",
-	"type": "",
-	"statusPageName": "",
-	"publicURL": "",
-	"repeat": "",
-	"edit": "",
-	"createA": "",
-	"remove": "",
-	"maintenanceWindowDescription": "",
-	"startTime": "",
-	"timeZoneInfo": "",
-	"monitorsToApply": "",
-	"nextWindow": "",
-	"notFoundButton": "",
-	"pageSpeedConfigureSettingsDescription": "",
-	"monitorDisplayName": "",
-	"whenNewIncident": "",
-	"notifySMS": "",
-	"notifyEmails": "",
-	"seperateEmails": "",
-	"checkFrequency": "",
-	"matchMethod": "",
-	"expectedValue": "",
-	"deleteDialogTitle": "",
-	"deleteDialogDescription": "",
-	"pageSpeedMonitor": "",
-	"shown": "",
-	"ago": "",
-	"companyName": "",
-	"pageSpeedDetailsPerformanceReport": "",
-	"pageSpeedDetailsPerformanceReportCalculator": "",
-	"checkingEvery": "",
-	"statusPageCreateSettings": "",
-	"basicInformation": "",
-	"statusPageCreateBasicInfoDescription": "",
-	"statusPageCreateSelectTimeZoneDescription": "",
-	"statusPageCreateAppearanceDescription": "",
-	"statusPageCreateSettingsCheckboxLabel": "",
-	"statusPageCreateBasicInfoStatusPageAddress": "",
-	"statusPageCreateTabsContent": "",
-	"statusPageCreateTabsContentDescription": "",
-	"statusPageCreateTabsContentFeaturesDescription": "",
-	"showCharts": "",
-	"showUptimePercentage": "",
-	"removeLogo": "",
-	"statusPageStatus": "",
-	"statusPageStatusContactAdmin": "",
-	"statusPageStatusNotPublic": "",
-	"statusPageStatusNoPage": "",
-	"statusPageStatusServiceStatus": "",
-	"deleteStatusPage": "",
-	"deleteStatusPageConfirm": "",
-	"deleteStatusPageDescription": "",
-	"uptimeCreate": "",
-	"uptimeCreateJsonPath": "",
-	"uptimeCreateJsonPathQuery": "",
-	"maintenanceTableActionMenuDialogTitle": "",
-	"infrastructureEditYour": "",
-	"infrastructureEditMonitor": "",
-	"infrastructureMonitorCreated": "",
-	"infrastructureMonitorUpdated": "",
-	"errorInvalidTypeId": "",
-	"errorInvalidFieldId": "",
-	"inviteNoTokenFound": "",
-	"pageSpeedWarning": "",
-	"pageSpeedLearnMoreLink": "",
-	"pageSpeedAddApiKey": "",
-	"update": "",
-	"invalidFileFormat": "",
-	"invalidFileSize": "",
-	"ClickUpload": "",
-	"DragandDrop": "",
-	"MaxSize": "",
-	"SupportedFormats": "",
-	"FirstName": "",
-	"LastName": "",
-	"EmailDescriptionText": "",
-	"YourPhoto": "",
-	"PhotoDescriptionText": "",
-	"save": "",
-	"DeleteDescriptionText": "",
-	"DeleteAccountWarning": "",
-	"DeleteWarningTitle": "",
+	"testLocale": "テストロケール",
+	"add": "追加",
+	"monitors": "モニター",
+	"distributedUptimeStatusCreateStatusPage": "ステータスページ",
+	"distributedUptimeStatusCreateStatusPageAccess": "アクセス",
+	"distributedUptimeStatusCreateStatusPageReady": "ステータスページの準備ができたら、公開済みとしてマークできます。",
+	"distributedUptimeStatusBasicInfoHeader": "基本情報",
+	"distributedUptimeStatusBasicInfoDescription": "会社名とステータスページが指すサブドメインを定義。",
+	"distributedUptimeStatusLogoHeader": "ロゴ",
+	"distributedUptimeStatusLogoDescription": "ステータスページ用のロゴをアップロード",
+	"distributedUptimeStatusLogoUploadButton": "ロゴをアップロード",
+	"distributedUptimeStatusStandardMonitorsHeader": "標準モニター",
+	"distributedUptimeStatusStandardMonitorsDescription": "標準モニターをステータスページに添付。",
+	"distributedUptimeStatusCreateYour": "作成する",
+	"distributedUptimeStatusEditYour": "編集する",
+	"distributedUptimeStatusPublishedLabel": "公開済みで一般に表示",
+	"distributedUptimeStatusCompanyNameLabel": "会社名",
+	"distributedUptimeStatusPageAddressLabel": "ステータスページアドレス",
+	"distributedUptimeStatus30Days": "30日",
+	"distributedUptimeStatus60Days": "60日",
+	"distributedUptimeStatus90Days": "90日",
+	"distributedUptimeStatusPageNotSetUp": "ステータスページが設定されていません。",
+	"distributedUptimeStatusContactAdmin": "管理者にお問い合わせください",
+	"distributedUptimeStatusPageNotPublic": "このステータスページは非公開です。",
+	"distributedUptimeStatusPageDeleteDialog": "このステータスページを削除しますか？",
+	"distributedUptimeStatusPageDeleteConfirm": "はい、ステータスページを削除",
+	"distributedUptimeStatusPageDeleteDescription": "削除されると、ステータスページは復元できません。",
+	"distributedUptimeStatusDevices": "デバイス",
+	"distributedUptimeStatusUpt": "UPT",
+	"distributedUptimeStatusUptBurned": "UPT消費",
+	"distributedUptimeStatusUptLogo": "Uptロゴ",
+	"incidentsTableNoIncidents": "記録されたインシデントはありません",
+	"incidentsTablePaginationLabel": "インシデント",
+	"incidentsTableMonitorName": "モニター名",
+	"incidentsTableStatus": "ステータス",
+	"incidentsTableDateTime": "日付と時刻",
+	"incidentsTableStatusCode": "ステータスコード",
+	"incidentsTableMessage": "メッセージ",
+	"incidentsOptionsHeader": "インシデント対象:",
+	"incidentsOptionsHeaderFilterBy": "フィルター:",
+	"incidentsOptionsHeaderFilterAll": "すべて",
+	"incidentsOptionsHeaderFilterDown": "ダウン",
+	"incidentsOptionsHeaderFilterCannotResolve": "解決不可",
+	"incidentsOptionsHeaderShow": "表示:",
+	"incidentsOptionsHeaderLastHour": "最終時間",
+	"incidentsOptionsHeaderLastDay": "最終日",
+	"incidentsOptionsHeaderLastWeek": "最終週",
+	"incidentsOptionsPlaceholderAllServers": "すべてのサーバー",
+	"infrastructureCreateYour": "作成する",
+	"infrastructureCreateGeneralSettingsDescription": "ここでホストのURL、フレンドリーネーム、サーバーエージェントに接続するための認証シークレットを選択できます。",
+	"infrastructureServerRequirement": "監視中のサーバーで実行されている必要があります",
+	"infrastructureCustomizeAlerts": "アラートをカスタマイズ",
+	"infrastructureAlertNotificationDescription": "しきい値が指定された割合を超えた場合にユーザーに通知を送信。",
+	"infrastructureCreateMonitor": "インフラストラクチャモニターを作成",
+	"infrastructureProtocol": "プロトコル",
+	"infrastructureServerUrlLabel": "サーバーURL",
+	"infrastructureDisplayNameLabel": "表示名",
+	"infrastructureAuthorizationSecretLabel": "認証シークレット",
+	"gb": "GB",
+	"mb": "MB",
+	"mem": "メモリ",
+	"memoryUsage": "メモリ使用率",
+	"cpu": "CPU",
+	"cpuUsage": "CPU使用率",
+	"cpuTemperature": "CPU温度",
+	"diskUsage": "ディスク使用率",
+	"used": "使用済み",
+	"total": "合計",
+	"cores": "コア",
+	"frequency": "頻度",
+	"status": "ステータス",
+	"cpuPhysical": "CPU（物理）",
+	"cpuLogical": "CPU（論理）",
+	"cpuFrequency": "CPU周波数",
+	"avgCpuTemperature": "平均CPU温度",
+	"memory": "メモリ",
+	"disk": "ディスク",
+	"uptime": "稼働時間",
+	"os": "OS",
+	"host": "ホスト",
+	"actions": "アクション",
+	"integrations": "統合",
+	"integrationsPrism": "Prismをお気に入りのサービスに接続。",
+	"integrationsSlack": "Slack",
+	"integrationsSlackInfo": "Slackと接続してチャンネルでインシデントを表示",
+	"integrationsDiscord": "Discord",
+	"integrationsDiscordInfo": "Discordと接続してチャンネルでインシデントを直接表示",
+	"integrationsZapier": "Zapier",
+	"integrationsZapierInfo": "すべてのインシデントをZapierに送信し、どこでも表示",
+	"commonSave": "保存",
+	"createYour": "作成する",
+	"createMonitor": "モニターを作成",
+	"pause": "一時停止",
+	"resume": "再開",
+	"editing": "編集中...",
+	"url": "URL",
+	"access": "アクセス",
+	"timezone": "タイムゾーン",
+	"features": "機能",
+	"administrator": "管理者？",
+	"loginHere": "こちらでログイン",
+	"displayName": "表示名",
+	"urlMonitor": "監視するURL",
+	"portToMonitor": "監視するポート",
+	"websiteMonitoring": "ウェブサイト監視",
+	"websiteMonitoringDescription": "HTTP(s)を使用してウェブサイトやAPIエンドポイントを監視。",
+	"pingMonitoring": "Ping監視",
+	"pingMonitoringDescription": "サーバーが利用可能かどうかをチェック。",
+	"dockerContainerMonitoring": "Dockerコンテナ監視",
+	"dockerContainerMonitoringDescription": "Dockerコンテナが実行中かどうかをチェック。",
+	"portMonitoring": "ポート監視",
+	"portMonitoringDescription": "ポートが開いているかどうかをチェック。",
+	"createMaintenanceWindow": "メンテナンスウィンドウを作成",
+	"createMaintenance": "メンテナンスを作成",
+	"editMaintenance": "メンテナンスを編集",
+	"maintenanceWindowName": "メンテナンスウィンドウ名",
+	"friendlyNameInput": "フレンドリーネーム",
+	"friendlyNamePlaceholder": "__:__で___分間のメンテナンス",
+	"maintenanceRepeat": "メンテナンス繰り返し",
+	"maintenance": "メンテナンス",
+	"duration": "期間",
+	"addMonitors": "モニターを追加",
+	"window": "ウィンドウ",
+	"cancel": "キャンセル",
+	"message": "メッセージ",
+	"low": "低",
+	"high": "高",
+	"statusCode": "ステータスコード",
+	"date&Time": "日付と時刻",
+	"type": "タイプ",
+	"statusPageName": "ステータスページ名",
+	"publicURL": "公開URL",
+	"repeat": "繰り返し",
+	"edit": "編集",
+	"createA": "作成する",
+	"remove": "削除",
+	"maintenanceWindowDescription": "この時間帯はpingが送信されません",
+	"startTime": "開始時刻",
+	"timeZoneInfo": "すべての日付と時刻はGMT+0タイムゾーンです。",
+	"monitorsToApply": "メンテナンスウィンドウを適用するモニター",
+	"nextWindow": "次のウィンドウ",
+	"notFoundButton": "メインダッシュボードに移動",
+	"pageSpeedConfigureSettingsDescription": "ここでホストのURL、モニタータイプを選択できます。",
+	"monitorDisplayName": "モニター表示名",
+	"whenNewIncident": "新しいインシデントが発生した場合、",
+	"notifySMS": "SMS経由で通知（近日公開）",
+	"notifyEmails": "複数のアドレスにメールでも通知（近日公開）",
+	"seperateEmails": "複数のメールはカンマで区切ることができます",
+	"checkFrequency": "チェック頻度",
+	"matchMethod": "マッチ方法",
+	"expectedValue": "期待値",
+	"deleteDialogTitle": "本当にこのモニターを削除しますか？",
+	"deleteDialogDescription": "削除されると、このモニターは復元できません。",
+	"pageSpeedMonitor": "PageSpeedモニター",
+	"shown": "表示",
+	"ago": "前",
+	"companyName": "会社名",
+	"pageSpeedDetailsPerformanceReport": "値は推定値で変動する可能性があります。",
+	"pageSpeedDetailsPerformanceReportCalculator": "計算機を見る",
+	"checkingEvery": "チェック間隔",
+	"statusPageCreateSettings": "ステータスページの準備ができたら、公開済みとしてマークできます。",
+	"basicInformation": "基本情報",
+	"statusPageCreateBasicInfoDescription": "会社名とステータスページが指すサブドメインを定義。",
+	"statusPageCreateSelectTimeZoneDescription": "ステータスページが表示されるタイムゾーンを選択。",
+	"statusPageCreateAppearanceDescription": "公開ステータスページのデフォルトの外観を定義。",
+	"statusPageCreateSettingsCheckboxLabel": "公開済みで一般に表示",
+	"statusPageCreateBasicInfoStatusPageAddress": "ステータスページアドレス",
+	"statusPageCreateTabsContent": "ステータスページサーバー",
+	"statusPageCreateTabsContentDescription": "監視している任意の数のサーバーをステータスページに追加できます。最適な表示体験のために並び替えることもできます。",
+	"statusPageCreateTabsContentFeaturesDescription": "ステータスページでより多くの詳細を表示",
+	"showCharts": "チャートを表示",
+	"showUptimePercentage": "稼働率を表示",
+	"removeLogo": "ロゴを削除",
+	"statusPageStatus": "公開ステータスページが設定されていません。",
+	"statusPageStatusContactAdmin": "管理者にお問い合わせください",
+	"statusPageStatusNotPublic": "このステータスページは非公開です。",
+	"statusPageStatusNoPage": "ここにはステータスページがありません。",
+	"statusPageStatusServiceStatus": "サービスステータス",
+	"deleteStatusPage": "このステータスページを削除しますか？",
+	"deleteStatusPageConfirm": "はい、ステータスページを削除",
+	"deleteStatusPageDescription": "削除されると、ステータスページは復元できません。",
+	"uptimeCreate": "期待値はレスポンス結果と照合するために使用され、マッチがステータスを決定します。",
+	"uptimeCreateJsonPath": "この式はレスポンスJSONデータに対して評価され、結果は期待値との照合に使用されます。参照",
+	"uptimeCreateJsonPathQuery": "クエリ言語ドキュメント。",
+	"maintenanceTableActionMenuDialogTitle": "本当にこのメンテナンスウィンドウを削除しますか？",
+	"infrastructureEditYour": "編集する",
+	"infrastructureEditMonitor": "インフラストラクチャモニターを保存",
+	"infrastructureMonitorCreated": "インフラストラクチャモニターが正常に作成されました！",
+	"infrastructureMonitorUpdated": "インフラストラクチャモニターが正常に更新されました！",
+	"errorInvalidTypeId": "無効な通知タイプが提供されました",
+	"errorInvalidFieldId": "無効なフィールドIDが提供されました",
+	"inviteNoTokenFound": "招待トークンが見つかりません",
+	"pageSpeedWarning": "警告: Google PageSpeed APIキーがまだ追加されていません。これがないとPageSpeedモニターは機能しません。",
+	"pageSpeedLearnMoreLink": "こちらをクリック",
+	"pageSpeedAddApiKey": "APIキーを追加する。",
+	"update": "更新",
+	"invalidFileFormat": "サポートされていないファイル形式！",
+	"invalidFileSize": "ファイルサイズが大きすぎます！",
+	"ClickUpload": "クリックしてアップロード",
+	"DragandDrop": "ドラッグアンドドロップ",
+	"MaxSize": "最大サイズ",
+	"SupportedFormats": "対応フォーマット",
+	"FirstName": "名",
+	"LastName": "姓",
+	"EmailDescriptionText": "こちらは現在ご使用のメールアドレスです — 変更することはできません。",
+	"YourPhoto": "プロフィール写真",
+	"PhotoDescriptionText": "この写真はプロフィールページに表示されます。",
+	"save": "保存",
+	"DeleteDescriptionText": "これにより、アカウントと関連するすべてのデータがサーバーから削除されます。この操作は元に戻せません。",
+	"DeleteAccountWarning": "アカウントを削除すると、再度サインインできなくなり、すべてのデータが削除されます。この操作は元に戻せません。",
+	"DeleteWarningTitle": "本当にこのアカウントを削除しますか？",
 	"bulkImport": {
-		"title": "",
-		"selectFileTips": "",
-		"selectFileDescription": "",
-		"selectFile": "",
-		"parsingFailed": "",
-		"uploadSuccess": "",
-		"validationFailed": "",
-		"noFileSelected": "",
-		"fallbackPage": ""
+		"title": "一括インポート",
+		"selectFileTips": "アップロードするCSVファイルを選択",
+		"selectFileDescription": "<template>テンプレート</template>または<sample>サンプル</sample>をダウンロードできます",
+		"selectFile": "ファイルを選択",
+		"parsingFailed": "解析に失敗しました",
+		"uploadSuccess": "モニターが正常に作成されました！",
+		"validationFailed": "検証に失敗しました",
+		"noFileSelected": "ファイルが選択されていません",
+		"fallbackPage": "サーバーのリストを一括アップロードするためのファイルをインポート",
+		"invalidFileType": "無効なファイルタイプ",
+		"uploadFailed": "アップロードに失敗しました"
 	},
-	"DeleteAccountTitle": "",
-	"DeleteAccountButton": "",
-	"publicLink": "",
-	"maskedPageSpeedKeyPlaceholder": "",
-	"reset": "",
-	"ignoreTLSError": "",
-	"tlsErrorIgnored": "",
-	"ignoreTLSErrorDescription": "",
-	"createNew": "",
+	"DeleteAccountTitle": "アカウントを削除",
+	"DeleteAccountButton": "アカウントを削除",
+	"publicLink": "公開リンク",
+	"maskedPageSpeedKeyPlaceholder": "*************************************",
+	"reset": "リセット",
+	"ignoreTLSError": "TLS/SSLエラーを無視",
+	"tlsErrorIgnored": "TLS/SSLエラーが無視されました",
+	"ignoreTLSErrorDescription": "TLS/SSLエラーを無視してウェブサイトの可用性をチェック続行",
+	"createNew": "新規作成",
 	"greeting": {
-		"prepend": "",
-		"append": "",
-		"overview": ""
+		"prepend": "こんにちは",
+		"append": "午後はあなたの遊び場です—壮大なものにしましょう！",
+		"overview": "{{type}}モニターの概要です。"
 	},
 	"roles": {
-		"superAdmin": "",
-		"admin": "",
-		"teamMember": "",
-		"demoUser": ""
+		"superAdmin": "スーパー管理者",
+		"admin": "管理者",
+		"teamMember": "チームメンバー",
+		"demoUser": "デモユーザー"
 	},
 	"teamPanel": {
-		"teamMembers": "",
+		"teamMembers": "チームメンバー",
 		"filter": {
-			"all": "",
-			"member": ""
+			"all": "すべて",
+			"member": "メンバー"
 		},
-		"inviteTeamMember": "",
-		"inviteNewTeamMember": "",
-		"inviteDescription": "",
-		"email": "",
-		"selectRole": "",
-		"inviteLink": "",
-		"cancel": "",
-		"noMembers": "",
-		"getToken": "",
-		"emailToken": "",
+		"inviteTeamMember": "チームメンバーを招待",
+		"inviteNewTeamMember": "新しいチームメンバーを招待",
+		"inviteDescription": "新しいチームメンバーを追加すると、すべてのモニターへのアクセス権が付与されます。",
+		"email": "メール",
+		"selectRole": "役割を選択",
+		"inviteLink": "招待リンク",
+		"cancel": "キャンセル",
+		"noMembers": "この役割のチームメンバーはいません",
+		"getToken": "トークンを取得",
+		"emailToken": "メールトークン",
 		"table": {
-			"name": "",
-			"email": "",
-			"role": "",
-			"created": ""
+			"name": "名前",
+			"email": "メール",
+			"role": "役割",
+			"created": "作成日"
 		}
 	},
 	"monitorState": {
-		"paused": "",
-		"resumed": "",
-		"active": ""
+		"paused": "一時停止",
+		"resumed": "再開",
+		"active": "アクティブ"
 	},
 	"menu": {
-		"uptime": "",
-		"pagespeed": "",
-		"infrastructure": "",
-		"incidents": "",
-		"statusPages": "",
-		"maintenance": "",
-		"integrations": "",
-		"settings": "",
-		"support": "",
-		"discussions": "",
-		"docs": "",
-		"changelog": "",
-		"profile": "",
-		"password": "",
-		"team": "",
-		"logOut": "",
-		"notifications": "",
-		"logs": ""
+		"uptime": "稼働時間",
+		"pagespeed": "ページ速度",
+		"infrastructure": "インフラストラクチャ",
+		"incidents": "インシデント",
+		"statusPages": "ステータスページ",
+		"maintenance": "メンテナンス",
+		"integrations": "統合",
+		"settings": "設定",
+		"support": "サポート",
+		"discussions": "ディスカッション",
+		"docs": "ドキュメント",
+		"changelog": "変更履歴",
+		"profile": "プロフィール",
+		"password": "パスワード",
+		"team": "チーム",
+		"logOut": "ログアウト",
+		"notifications": "通知",
+		"logs": "ログ"
 	},
-	"settingsEmailUser": "",
-	"state": "",
-	"statusBreadCrumbsStatusPages": "",
-	"statusBreadCrumbsDetails": "",
-	"commonSaving": "",
-	"navControls": "",
-	"incidentsPageTitle": "",
+	"settingsEmailUser": "メールユーザー - 認証用ユーザー名、指定されている場合はメールアドレスを上書き",
+	"state": "状態",
+	"statusBreadCrumbsStatusPages": "ステータスページ",
+	"statusBreadCrumbsDetails": "詳細",
+	"commonSaving": "保存中...",
+	"navControls": "コントロール",
+	"incidentsPageTitle": "インシデント",
 	"passwordPanel": {
-		"passwordChangedSuccess": "",
-		"passwordInputIncorrect": "",
-		"currentPassword": "",
-		"enterCurrentPassword": "",
-		"newPassword": "",
-		"enterNewPassword": "",
-		"confirmNewPassword": "",
-		"passwordRequirements": "",
-		"saving": ""
+		"passwordChangedSuccess": "パスワードが正常に変更されました。",
+		"passwordInputIncorrect": "パスワード入力が間違っています。",
+		"currentPassword": "現在のパスワード",
+		"enterCurrentPassword": "現在のパスワードを入力",
+		"newPassword": "新しいパスワード",
+		"enterNewPassword": "新しいパスワードを入力",
+		"confirmNewPassword": "新しいパスワードの確認",
+		"passwordRequirements": "新しいパスワードは少なくとも8文字で、少なくとも1つの大文字、1つの小文字、1つの数字、1つの特殊文字を含む必要があります。",
+		"saving": "保存中..."
 	},
-	"emailSent": "",
-	"failedToSendEmail": "",
-	"settingsTestEmailSuccess": "",
-	"settingsTestEmailFailed": "",
-	"settingsTestEmailFailedWithReason": "",
-	"settingsTestEmailUnknownError": "",
+	"emailSent": "メールが正常に送信されました",
+	"failedToSendEmail": "メールの送信に失敗しました",
+	"settingsTestEmailSuccess": "テストメールが正常に送信されました",
+	"settingsTestEmailFailed": "テストメールの送信に失敗しました",
+	"settingsTestEmailFailedWithReason": "テストメールの送信に失敗しました: {{reason}}",
+	"settingsTestEmailUnknownError": "不明なエラー",
 	"statusMsg": {
-		"paused": "",
-		"up": "",
-		"down": "",
-		"pending": ""
+		"paused": "監視が一時停止されています。",
+		"up": "サイトが稼働中です。",
+		"down": "サイトがダウンしています。",
+		"pending": "保留中..."
 	},
 	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": ""
+		"http": "監視するURLまたはIPを入力（例: https://example.com/ または 192.168.1.100）し、ダッシュボードに表示される明確な表示名を追加。",
+		"ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
+		"docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
+		"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。"
 	},
 	"common": {
-		"appName": "",
-		"monitoringAgentName": "",
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
 		"buttons": {
-			"toggleTheme": ""
+			"toggleTheme": "ライト＆ダークを切り替え"
 		},
 		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
+			"networkError": "ネットワークエラー",
+			"checkConnection": "接続を確認してください",
+			"unknownError": "不明なエラー"
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "",
-				"back": ""
+				"continue": "続行",
+				"back": "戻る"
 			},
 			"inputs": {
 				"email": {
-					"label": "",
-					"placeholder": "",
+					"label": "メール",
+					"placeholder": "jordan.ellis@domain.com",
 					"errors": {
-						"empty": "",
-						"invalid": ""
+						"empty": "続行するには、メールアドレスを入力してください",
+						"invalid": "入力されたメールアドレスの有効性を再確認してください"
 					}
 				},
 				"password": {
-					"label": "",
+					"label": "パスワード",
 					"rules": {
 						"length": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "少なくとも",
+							"highlighted": "8文字である必要があります"
 						},
 						"special": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "少なくとも",
+							"highlighted": "1つの特殊文字を含む必要があります"
 						},
 						"number": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "少なくとも",
+							"highlighted": "1つの数字を含む必要があります"
 						},
 						"uppercase": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "少なくとも",
+							"highlighted": "1つの大文字を含む必要があります"
 						},
 						"lowercase": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "少なくとも",
+							"highlighted": "1つの小文字を含む必要があります"
 						},
 						"match": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "パスワードの確認とパスワードは",
+							"highlighted": "一致する必要があります"
 						}
 					},
 					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
+						"empty": "パスワードを入力してください",
+						"length": "パスワードは少なくとも8文字である必要があります",
+						"uppercase": "パスワードは少なくとも1つの大文字を含む必要があります",
+						"lowercase": "パスワードは少なくとも1つの小文字を含む必要があります",
+						"number": "パスワードは少なくとも1つの数字を含む必要があります",
+						"special": "パスワードは少なくとも1つの特殊文字を含む必要があります",
+						"incorrect": "入力されたパスワードが記録と一致しません"
 					}
 				},
 				"passwordConfirm": {
-					"label": "",
-					"placeholder": "",
+					"label": "パスワードの確認",
+					"placeholder": "確認のためにパスワードを再入力",
 					"errors": {
-						"empty": "",
-						"different": ""
+						"empty": "確認のためにパスワードを再度入力してください（タイプミスを防ぐため）",
+						"different": "入力されたパスワードが一致しないため、どちらかが間違っています"
 					}
 				},
 				"firstName": {
-					"label": "",
-					"placeholder": "",
+					"label": "名前",
+					"placeholder": "太郎",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "名前を入力してください",
+						"length": "名前は50文字未満である必要があります",
+						"pattern": "名前は文字、スペース、アポストロフィ、またはハイフンのみを含む必要があります"
 					}
 				},
 				"lastName": {
-					"label": "",
-					"placeholder": "",
+					"label": "姓",
+					"placeholder": "田中",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "姓を入力してください",
+						"length": "姓は50文字未満である必要があります",
+						"pattern": "姓は文字、スペース、アポストロフィ、またはハイフンのみを含む必要があります"
 					}
 				}
 			},
 			"errors": {
-				"validation": ""
+				"validation": "データの検証エラー。"
 			},
 			"fields": {
 				"password": {
 					"errors": {
-						"incorrect": ""
+						"incorrect": "入力されたパスワードが記録と一致しません"
+					}
+				},
+				"role": {
+					"errors": {
+						"min": ""
 					}
 				}
 			}
 		},
 		"login": {
-			"heading": "",
+			"heading": "ログイン",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
+				"stepOne": "メールアドレスを入力",
+				"stepTwo": "パスワードを入力"
 			},
 			"links": {
-				"forgotPassword": "",
-				"register": "",
-				"forgotPasswordLink": "",
-				"registerLink": ""
+				"forgotPassword": "パスワードを忘れましたか？",
+				"register": "アカウントをお持ちでないですか？",
+				"forgotPasswordLink": "パスワードをリセット",
+				"registerLink": "こちらで登録"
 			},
 			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
+				"success": "おかえりなさい！正常にログインしました。",
+				"incorrectPassword": "パスワードが間違っています"
 			},
 			"errors": {
 				"password": {
-					"incorrect": ""
+					"incorrect": "入力されたパスワードが記録と一致しません"
 				}
 			}
 		},
 		"registration": {
 			"heading": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "スーパー管理者を作成",
+				"user": "サインアップ"
 			},
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": ""
+				"stepOne": "個人情報を入力",
+				"stepTwo": "メールアドレスを入力",
+				"stepThree": "パスワードを作成"
 			},
 			"description": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "スーパー管理者アカウントを作成して開始",
+				"user": "ユーザーとしてサインアップし、スーパー管理者にモニターへのアクセスを求める"
 			},
 			"gettingStartedButton": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "スーパー管理者アカウントを作成",
+				"user": "一般ユーザーでサインアップ"
 			},
-			"termsAndPolicies": "",
+			"termsAndPolicies": "アカウントを作成することで、<a1>利用規約</a1>と<a2>プライバシーポリシー</a2>に同意したことになります。",
 			"links": {
-				"login": ""
+				"login": "既にアカウントをお持ちですか？ <a>ログイン</a>"
 			},
 			"toasts": {
-				"success": ""
+				"success": "ようこそ！アカウントが正常に作成されました。"
 			}
 		},
 		"forgotPassword": {
-			"heading": "",
+			"heading": "パスワードを忘れましたか？",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": "",
-				"stepFour": ""
+				"stepOne": "ご心配なく、リセット手順をお送りします。",
+				"stepTwo": "パスワードリセットリンクを <email/> に送信しました",
+				"stepThree": "新しいパスワードは以前に使用したパスワードとは異なる必要があります。",
+				"stepFour": "パスワードが正常にリセットされました。下記をクリックして魔法のようにログインしてください。"
 			},
 			"buttons": {
-				"openEmail": "",
-				"resetPassword": ""
+				"openEmail": "メールアプリを開く",
+				"resetPassword": "パスワードをリセット"
 			},
 			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
+				"passwordKey": "パスワードキーアイコン",
+				"email": "メールアイコン",
+				"lock": "ロックアイコン",
+				"passwordConfirm": "パスワード確認アイコン"
 			},
 			"links": {
-				"login": "",
-				"resend": ""
+				"login": "<a>ログイン</a>に戻る",
+				"resend": "メールが届きませんか？ <a>クリックして再送信</a>"
 			},
 			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
+				"sent": "手順を <email/> に送信しました。",
+				"emailNotFound": "メールが見つかりません。",
+				"redirect": "<seconds/>秒後にリダイレクトします...",
+				"success": "パスワードが正常にリセットされました。",
+				"error": "パスワードをリセットできません。後でもう一度試すか、サポートにお問い合わせください。"
 			}
 		}
 	},
 	"errorPages": {
 		"serverUnreachable": {
 			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
+				"reconnected": "サーバーに正常に再接続しました。",
+				"stillUnreachable": "サーバーにまだ到達できません。後でもう一度お試しください。"
 			},
-			"alertBox": "",
-			"description": "",
+			"alertBox": "サーバー接続エラー",
+			"description": "サーバーに接続できません。インターネット接続を確認するか、問題が続く場合はデプロイ設定を確認してください。",
 			"retryButton": {
-				"default": "",
-				"processing": ""
+				"default": "接続を再試行",
+				"processing": "接続中..."
 			}
 		}
 	},
 	"createNotifications": {
-		"title": "",
+		"title": "通知チャンネルを作成",
 		"nameSettings": {
-			"title": "",
-			"description": "",
-			"nameLabel": "",
-			"namePlaceholder": ""
+			"title": "名前",
+			"description": "統合の説明的な名前。",
+			"nameLabel": "名前",
+			"namePlaceholder": "例: Slack通知"
 		},
 		"typeSettings": {
-			"title": "",
-			"description": "",
-			"typeLabel": ""
+			"title": "タイプ",
+			"description": "作成したい通知チャンネルのタイプを選択。",
+			"typeLabel": "タイプ"
 		},
 		"emailSettings": {
-			"title": "",
-			"description": "",
-			"emailLabel": "",
-			"emailPlaceholder": ""
+			"title": "メール",
+			"description": "送信先メールアドレス。",
+			"emailLabel": "メールアドレス",
+			"emailPlaceholder": "例: john@example.com"
 		},
 		"slackSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Slack",
+			"description": "Slack Webhookをここで設定",
+			"webhookLabel": "Slack Webhook URL",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
 		"pagerdutySettings": {
-			"title": "",
-			"description": "",
-			"integrationKeyLabel": "",
-			"integrationKeyPlaceholder": ""
+			"title": "PagerDuty",
+			"description": "PagerDuty統合をここで設定",
+			"integrationKeyLabel": "統合キー",
+			"integrationKeyPlaceholder": "1234567890"
 		},
 		"discordSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Discord",
+			"description": "Discord Webhookをここで設定",
+			"webhookLabel": "Discord Webhook URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
 		"webhookSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		}
+			"title": "Webhook",
+			"description": "Webhookをここで設定",
+			"webhookLabel": "Webhook URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"testNotification": "テスト通知",
+		"dialogDeleteTitle": "この通知を削除してもよろしいですか？",
+		"dialogDeleteConfirm": "削除"
 	},
 	"notificationConfig": {
-		"title": "",
-		"description": ""
+		"title": "通知",
+		"description": "使用したい通知チャンネルを選択"
 	},
 	"monitorStatus": {
-		"checkingEvery": "",
-		"withCaptureAgent": "",
-		"up": "",
-		"down": "",
-		"paused": ""
+		"checkingEvery": "{{interval}}ごとにチェック",
+		"withCaptureAgent": "Captureエージェント{{version}}で",
+		"up": "アップ",
+		"down": "ダウン",
+		"paused": "一時停止"
 	},
-	"advancedMatching": "",
-	"sendTestNotifications": "",
-	"testNotificationsDisabled": "",
-	"selectAll": "",
-	"showAdminLoginLink": "",
+	"advancedMatching": "高度なマッチング",
+	"sendTestNotifications": "テスト通知を送信",
+	"selectAll": "すべて選択",
+	"showAdminLoginLink": "ステータスページに「管理者？こちらでログイン」リンクを表示",
 	"logsPage": {
-		"title": "",
-		"description": "",
+		"title": "ログ",
+		"description": "システムログ - 最新1000行",
 		"tabs": {
-			"queue": "",
-			"logs": ""
+			"queue": "ジョブキュー",
+			"logs": "サーバーログ",
+			"diagnostics": "診断"
 		},
 		"toast": {
-			"fetchLogsSuccess": ""
+			"fetchLogsSuccess": "ログが正常に取得されました"
 		},
 		"logLevelSelect": {
-			"title": "",
+			"title": "ログレベル",
 			"values": {
-				"all": "",
-				"info": "",
-				"warn": "",
-				"error": "",
-				"debug": ""
+				"all": "すべて",
+				"info": "情報",
+				"warn": "警告",
+				"error": "エラー",
+				"debug": "デバッグ"
 			}
 		}
 	},
 	"queuePage": {
-		"title": "",
-		"refreshButton": "",
-		"flushButton": "",
+		"title": "キュー",
+		"refreshButton": "更新",
+		"flushButton": "キューをフラッシュ",
 		"jobTable": {
-			"title": "",
-			"idHeader": "",
-			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "",
-			"lockedAtHeader": "",
-			"runCountHeader": "",
-			"failCountHeader": "",
-			"lastRunHeader": "",
-			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": ""
+			"title": "現在キューにあるジョブ",
+			"idHeader": "モニターID",
+			"urlHeader": "URL",
+			"typeHeader": "タイプ",
+			"activeHeader": "アクティブ",
+			"lockedAtHeader": "ロック日時",
+			"runCountHeader": "実行回数",
+			"failCountHeader": "失敗回数",
+			"lastRunHeader": "最終実行日時",
+			"lastFinishedAtHeader": "最終完了日時",
+			"lastRunTookHeader": "最終実行時間"
 		},
 		"metricsTable": {
-			"title": "",
-			"metricHeader": "",
-			"valueHeader": ""
+			"title": "キューメトリック",
+			"metricHeader": "メトリック",
+			"valueHeader": "値"
 		},
 		"failedJobTable": {
-			"title": "",
-			"monitorIdHeader": "",
-			"monitorUrlHeader": "",
-			"failCountHeader": "",
-			"failedAtHeader": "",
-			"failReasonHeader": ""
+			"title": "失敗したジョブ",
+			"monitorIdHeader": "モニターID",
+			"monitorUrlHeader": "モニターURL",
+			"failCountHeader": "失敗回数",
+			"failedAtHeader": "最終失敗日時",
+			"failReasonHeader": "失敗理由"
 		}
 	},
 	"export": {
-		"title": "",
-		"success": "",
-		"failed": ""
+		"title": "モニターをエクスポート",
+		"success": "モニターが正常にエクスポートされました！",
+		"failed": "モニターのエクスポートに失敗しました"
 	},
 	"monitorActions": {
-		"title": "",
-		"import": "",
-		"export": ""
+		"title": "エクスポート/インポート",
+		"import": "モニターをインポート",
+		"export": "モニターをエクスポート",
+		"deleteSuccess": "モニターが正常に削除されました",
+		"deleteFailed": "モニターの削除に失敗しました",
+		"details": "詳細"
 	},
 	"settingsPage": {
 		"aboutSettings": {
-			"labelDevelopedBy": "",
-			"labelVersion": "",
-			"title": ""
+			"labelDevelopedBy": "Bluewave Labsによる開発",
+			"labelVersion": "バージョン",
+			"title": "について"
 		},
 		"demoMonitorsSettings": {
-			"buttonAddMonitors": "",
-			"description": "",
-			"title": ""
+			"buttonAddMonitors": "デモモニターを追加",
+			"description": "デモンストレーション目的でサンプルモニターを追加。",
+			"title": "デモモニター"
 		},
 		"emailSettings": {
-			"buttonSendTestEmail": "",
-			"description": "",
-			"descriptionTransport": "",
-			"labelAddress": "",
-			"labelConnectionHost": "",
-			"labelHost": "",
-			"labelIgnoreTLS": "",
-			"labelPassword": "",
-			"labelPasswordSet": "",
-			"labelPool": "",
-			"labelPort": "",
-			"labelRejectUnauthorized": "",
-			"labelRequireTLS": "",
-			"labelSecure": "",
-			"labelTLSServername": "",
-			"labelUser": "",
-			"linkTransport": "",
-			"placeholderUser": "",
-			"title": ""
+			"buttonSendTestEmail": "テストメールを送信",
+			"description": "システムのメール設定を構成。これは通知とアラートの送信に使用されます。",
+			"descriptionTransport": "これはNodeMailer用のSMTPトランスポートを構築します",
+			"labelAddress": "メールアドレス - 認証に使用",
+			"labelConnectionHost": "メール接続ホスト - HELO/EHLO挨拶で使用するホスト名",
+			"labelHost": "メールホスト - 接続するホスト名またはIPアドレス",
+			"labelIgnoreTLS": "STARTTLSを無効化: サーバーがサポートしていてもTLSを使用しない",
+			"labelPassword": "メールパスワード - 認証用パスワード",
+			"labelPasswordSet": "パスワードが設定されています。変更するにはリセットをクリック。",
+			"labelPool": "接続プーリングを有効化: パフォーマンス向上のため既存接続を再利用",
+			"labelPort": "メールポート - 接続するポート",
+			"labelRejectUnauthorized": "無効な証明書を拒否: 自己署名または信頼されていない証明書での接続を拒否",
+			"labelRequireTLS": "STARTTLSを強制: TLSアップグレードを必須とし、サポートされていない場合は失敗",
+			"labelSecure": "SSL使用（推奨）: SSL/TLSを使用して接続を暗号化",
+			"labelTLSServername": "TLS Servername - ホストがIPの場合のTLS検証用オプションホスト名",
+			"labelUser": "メールユーザー - 認証用ユーザー名、指定されている場合はメールアドレスを上書き",
+			"linkTransport": "仕様はこちらを参照",
+			"placeholderUser": "不要な場合は空白のまま",
+			"title": "メール",
+			"toastEmailRequiredFieldsError": "メールアドレス、ホスト、ポート、パスワードが必要です"
 		},
 		"pageSpeedSettings": {
-			"description": "",
-			"labelApiKeySet": "",
-			"labelApiKey": "",
-			"title": ""
+			"description": "Google PageSpeed APIキーを入力してGoogle PageSpeed監視を有効化。キーを更新するにはリセットをクリック。",
+			"labelApiKeySet": "APIキーが設定されています。変更するにはリセットをクリック。",
+			"labelApiKey": "PageSpeed APIキー",
+			"title": "Google PageSpeed APIキー"
 		},
-		"saveButtonLabel": "",
+		"saveButtonLabel": "保存",
 		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
-			"description": "",
-			"labelTTL": "",
-			"labelTTLOptional": "",
-			"title": ""
+			"clearAllStatsButton": "すべての統計をクリア",
+			"clearAllStatsDescription": "すべての統計をクリア。この操作は元に戻せません。",
+			"clearAllStatsDialogConfirm": "はい、すべての統計をクリア",
+			"clearAllStatsDialogDescription": "削除されると、監視履歴と統計は復元できません。",
+			"clearAllStatsDialogTitle": "すべての統計をクリアしますか？",
+			"description": "履歴データを保持する期間を定義。既存のデータをすべてクリアすることもできます。",
+			"labelTTL": "監視履歴を保持したい日数。",
+			"labelTTLOptional": "0で無限",
+			"title": "モニター履歴"
 		},
 		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "",
-			"description": "",
-			"dialogConfirm": "",
-			"dialogDescription": "",
-			"dialogTitle": "",
-			"title": ""
+			"buttonRemoveAllMonitors": "すべてのモニターを削除",
+			"description": "システムからすべてのモニターを削除。",
+			"dialogConfirm": "はい、すべてのモニターを削除",
+			"dialogDescription": "削除されると、モニターは復元できません。",
+			"dialogTitle": "すべてのモニターを削除しますか？",
+			"title": "システムリセット"
 		},
 		"timezoneSettings": {
-			"description": "",
-			"label": "",
-			"title": ""
+			"description": "アプリケーション全体で日付と時刻を表示するために使用するタイムゾーンを選択。",
+			"label": "表示タイムゾーン",
+			"title": "表示タイムゾーン"
 		},
-		"title": "",
+		"title": "設定",
 		"uiSettings": {
-			"description": "",
-			"labelLanguage": "",
-			"labelTheme": "",
-			"title": ""
+			"description": "ライトモードとダークモードを切り替えるか、ユーザーインターフェース言語を変更。",
+			"labelLanguage": "言語",
+			"labelTheme": "テーマモード",
+			"title": "外観"
 		},
 		"urlSettings": {
-			"description": "",
-			"label": "",
-			"selectDisabled": "",
-			"selectEnabled": "",
-			"title": ""
+			"description": "公開ステータスページでモニターのIPアドレスまたはURLを表示。無効にすると、機密情報を保護するためモニター名のみが表示されます。",
+			"label": "ステータスページでIP/URLを表示",
+			"selectDisabled": "無効",
+			"selectEnabled": "有効",
+			"title": "ステータスページのモニターIP/URL"
 		}
-	}
+	},
+	"statusPageCreate": {
+		"buttonSave": "保存"
+	},
+	"incidentsOptionsHeaderFilterResolved": "解決済み",
+	"settingsSave": "保存",
+	"statusPageCreateAppearanceTitle": "外観",
+	"confirmPassword": "パスワードの確認",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "デモモニターの追加に失敗しました",
+		"successAddDemoMonitors": "デモモニターが正常に追加されました"
+	},
+	"settingsAppearance": "外観",
+	"settingsDisplayTimezone": "表示タイムゾーン",
+	"settingsGeneralSettings": "一般設定",
+	"incidentsOptionsHeaderTotalIncidents": "総インシデント",
+	"statusPage": {
+		"deleteSuccess": "ステータスページが正常に削除されました",
+		"deleteFailed": "ステータスページの削除に失敗しました",
+		"createSuccess": "ステータスページが正常に作成されました",
+		"updateSuccess": "ステータスページが正常に更新されました",
+		"generalSettings": "一般設定",
+		"contents": "コンテンツ",
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"testNotificationsDisabled": "このモニターには通知が設定されていません。「設定」ボタンをクリックして追加する必要があります",
+	"incidentsTableResolvedAt": "解決日時",
+	"incidentsTableActionResolve": "解決",
+	"checkHooks": {
+		"failureResolveOne": "インシデントの解決に失敗しました。",
+		"failureResolveAll": "すべてのインシデントの解決に失敗しました。",
+		"failureResolveMonitor": ""
+	},
+	"checkFormError": "フォームでエラーを確認してください。",
+	"diagnosticsPage": {
+		"diagnosticDescription": "システム診断",
+		"statsDescription": "システム統計",
+		"gauges": {
+			"heapAllocationTitle": "ヒープ割り当て",
+			"heapAllocationSubtitle": "利用可能メモリの%",
+			"heapUsageTitle": "ヒープ使用量",
+			"heapUsageSubtitle": "利用可能メモリの%",
+			"heapUtilizationTitle": "ヒープ利用率",
+			"heapUtilizationSubtitle": "割り当て済みの%",
+			"instantCpuUsageTitle": "瞬間CPU使用率",
+			"instantCpuUsageSubtitle": "CPUが使用した1秒の%"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "イベントループ遅延",
+			"uptimeTitle": "稼働時間",
+			"usedHeapSizeTitle": "使用ヒープサイズ",
+			"totalHeapSizeTitle": "総ヒープサイズ",
+			"osMemoryLimitTitle": "OSメモリ制限"
+		}
+	},
+	"pageSpeedLighthouseAPI": "Lighthouse PageSpeed APIを使用してウェブサイトを監視",
+	"time": {
+		"threeMinutes": "3分",
+		"fiveMinutes": "5分",
+		"tenMinutes": "10分",
+		"twentyMinutes": "20分",
+		"oneHour": "1時間",
+		"oneDay": "1日",
+		"oneWeek": "1週間"
+	},
+	"general": {
+		"noOptionsFound": ""
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "",
+			"firstName": "",
+			"lastName": "",
+			"role": "",
+			"save": ""
+		},
+		"table": {
+			"actionHeader": "",
+			"roleHeader": ""
+		},
+		"title": "",
+		"toast": {
+			"successUserUpdate": "",
+			"validationErrors": ""
+		}
+	},
+	"incidentsPageActionResolveMonitor": "",
+	"incidentsPageActionResolveAll": ""
 }
