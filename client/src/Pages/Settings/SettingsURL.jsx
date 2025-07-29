@@ -15,7 +15,12 @@ const SettingsURL = ({ HEADING_SX, handleChange, showURL = false }) => {
 	return (
 		<ConfigBox>
 			<Box>
-				<Typography component="h1">{t("settingsPage.urlSettings.title")}</Typography>
+				<Typography
+					component="h1"
+					variant="h2"
+				>
+					{t("settingsPage.urlSettings.title")}
+				</Typography>
 				<Typography sx={HEADING_SX}>
 					{t("settingsPage.urlSettings.description")}
 				</Typography>
