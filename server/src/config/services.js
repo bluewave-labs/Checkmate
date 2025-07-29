@@ -1,5 +1,4 @@
 import ServiceRegistry from "../service/system/serviceRegistry.js";
-import logger from "../utils/logger.js";
 import TranslationService from "../service/system/translationService.js";
 import StringService from "../service/system/stringService.js";
 import MongoDB from "../db/mongo/MongoDB.js";

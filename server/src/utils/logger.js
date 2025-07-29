@@ -147,3 +147,7 @@ class Logger {
 }
 
 export default Logger;
+
+// Legacy logger
+const logger = new Logger({ envSettings: { logLevel: "debug" } });
+export { logger };
