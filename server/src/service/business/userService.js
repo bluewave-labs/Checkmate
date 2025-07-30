@@ -181,7 +181,7 @@ class UserService {
 		}
 
 		// 1. Find all the monitors associated with the team ID if superadmin
-		const result = await this.db.getMonitorsByTeamId({
+		const result = await this.db.monitorModule.getMonitorsByTeamId({
 			teamId: teamId,
 		});
 

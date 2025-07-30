@@ -33,7 +33,7 @@ class SuperSimpleQueue {
 			this.scheduler.start();
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
-			const monitors = await this.db.getAllMonitors();
+			const monitors = await this.db.monitorModule.getAllMonitors();
 			for (const monitor of monitors) {
 				await this.addJob(monitor._id, monitor);
 			}
