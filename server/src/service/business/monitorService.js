@@ -155,7 +155,7 @@ class MonitorService {
 					await this.jobQueue.deleteJob(monitor);
 					await this.db.checkModule.deleteChecks(monitor._id);
 					await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
-					await this.db.deleteNotificationsByMonitorId(monitor._id);
+					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor._id);
 				} catch (error) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
