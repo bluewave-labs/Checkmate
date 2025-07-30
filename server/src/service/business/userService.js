@@ -36,7 +36,7 @@ class UserService {
 			user.teamId = invitedUser.teamId;
 		} else {
 			// This is the first account, create JWT secret to use if one is not supplied by env
-			const jwtSecret = crypto.randomBytes(64).toString("hex");
+			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
 			await this.db.updateAppSettings({ jwtSecret });
 		}
 
