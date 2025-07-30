@@ -158,7 +158,7 @@ class NotificationController extends BaseController {
 				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
-			const monitor = await this.db.getMonitorById(monitorId);
+			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 
 			if (!monitor.teamId.equals(teamId)) {
 				throw this.errorService.createAuthorizationError();

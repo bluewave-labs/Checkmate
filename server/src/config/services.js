@@ -32,8 +32,11 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+import { fileURLToPath } from "url";
+import { ObjectId } from "mongodb";
+
 // DB Modules
-import { NormalizeData } from "../utils/dataUtils.js";
+import { NormalizeData, NormalizeDataUptimeDetails } from "../utils/dataUtils.js";
 import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
@@ -47,6 +50,7 @@ import InviteToken from "../db/models/InviteToken.js";
 import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
+import MonitorStats from "../db/models/MonitorStats.js";
 
 import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
@@ -54,7 +58,7 @@ import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
 import UserModule from "../db/mongo/modules/userModule.js";
 import HardwareCheckModule from "../db/mongo/modules/hardwareCheckModule.js";
 import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule.js";
-
+import MonitorModule from "../db/mongo/modules/monitorModule.js";
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
 	ServiceRegistry.instance = serviceRegistry;
@@ -71,6 +75,20 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const hardwareCheckModule = new HardwareCheckModule({ HardwareCheck, Monitor, logger });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
+	const monitorModule = new MonitorModule({
+		Monitor,
+		MonitorStats,
+		Check,
+		PageSpeedCheck,
+		HardwareCheck,
+		stringService,
+		fs,
+		path,
+		fileURLToPath,
+		ObjectId,
+		NormalizeData,
+		NormalizeDataUptimeDetails,
+	});
 	const db = new MongoDB({
 		logger,
 		envSettings,
@@ -80,6 +98,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		userModule,
 		hardwareCheckModule,
 		maintenanceWindowModule,
+		monitorModule,
 	});
 
 	await db.connect();

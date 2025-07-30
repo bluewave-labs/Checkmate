@@ -16,7 +16,7 @@ class MaintenanceWindowService {
 
 	createMaintenanceWindow = async ({ teamId, body }) => {
 		const monitorIds = body.monitors;
-		const monitors = await this.db.getMonitorsByIds(monitorIds);
+		const monitors = await this.db.monitorModule.getMonitorsByIds(monitorIds);
 
 		const unauthorizedMonitors = monitors.filter((monitor) => !monitor.teamId.equals(teamId));
 
