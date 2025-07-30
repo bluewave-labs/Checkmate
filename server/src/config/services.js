@@ -34,7 +34,10 @@ import crypto from "crypto";
 
 // DB Modules
 import { NormalizeData } from "../utils/dataUtils.js";
+import { GenerateAvatarImage } from "../utils/imageProcessing.js";
+import { ParseBoolean } from "../utils/utils.js";
 
+// Models
 import Check from "../db/models/Check.js";
 import HardwareCheck from "../db/models/HardwareCheck.js";
 import PageSpeedCheck from "../db/models/PageSpeedCheck.js";
@@ -42,10 +45,12 @@ import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
 import InviteToken from "../db/models/InviteToken.js";
 import StatusPage from "../db/models/StatusPage.js";
+import Team from "../db/models/Team.js";
 
 import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
 import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
+import UserModule from "../db/mongo/modules/userModule.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -60,7 +65,9 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const checkModule = new CheckModule({ logger, Check, HardwareCheck, PageSpeedCheck, Monitor, User });
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
-	const db = new MongoDB({ logger, envSettings, checkModule, inviteModule, statusPageModule });
+	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
+	const db = new MongoDB({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule });
+
 	await db.connect();
 
 	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);
