@@ -96,8 +96,9 @@ const CreateInfrastructureMonitor = () => {
 		if (isCreate) {
 			// If global settings are not loaded yet, use default thresholds
 			if (globalSettingsLoading) return;
+
 			// Create mode: use global thresholds
-			const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
+			const globalThresholds = globalSettings?.data?.settings?.globalThresholds || {};
 			const defaultThresholds = {
 				cpu: "",
 				memory: "",
@@ -111,15 +112,26 @@ const CreateInfrastructureMonitor = () => {
 				name: "",
 				notifications: [],
 				interval: 0.25,
-				cpu: globalThresholds?.cpu != null,
-				usage_cpu: globalThresholds?.cpu?.toString() || defaultThresholds.cpu,
-				memory: globalThresholds?.memory != null,
-				usage_memory: globalThresholds?.memory?.toString() || defaultThresholds.memory,
-				disk: globalThresholds?.disk != null,
-				usage_disk: globalThresholds?.disk?.toString() || defaultThresholds.disk,
-				temperature: globalThresholds?.temperature != null,
+				cpu: globalThresholds.cpu != null,
+				usage_cpu:
+					globalThresholds.cpu != null
+						? globalThresholds.cpu.toString()
+						: defaultThresholds.cpu,
+				memory: globalThresholds.memory != null,
+				usage_memory:
+					globalThresholds.memory != null
+						? globalThresholds.memory.toString()
+						: defaultThresholds.memory,
+				disk: globalThresholds.disk != null,
+				usage_disk:
+					globalThresholds.disk != null
+						? globalThresholds.disk.toString()
+						: defaultThresholds.disk,
+				temperature: globalThresholds.temperature != null,
 				usage_temperature:
-					globalThresholds?.temperature?.toString() || defaultThresholds.temperature,
+					globalThresholds.temperature != null
+						? globalThresholds.temperature.toString()
+						: defaultThresholds.temperature,
 			}));
 		} else if (monitor) {
 			// Edit mode: use monitor only, ignore global thresholds
@@ -129,15 +141,30 @@ const CreateInfrastructureMonitor = () => {
 				name: monitor.name || "",
 				notifications: monitor.notifications || [],
 				interval: monitor.interval / MS_PER_MINUTE,
-				cpu: !!monitor.thresholds?.usage_cpu ?? false,
-				usage_cpu: monitor.thresholds?.usage_cpu * 100?.toString() || "",
-				memory: !!monitor.thresholds?.usage_memory ?? false,
-				usage_memory: monitor.thresholds?.usage_memory * 100?.toString() || "",
-				disk: !!monitor.thresholds?.usage_disk ?? false,
-				usage_disk: monitor.thresholds?.usage_disk * 100?.toString() || "",
-				temperature: !!monitor.thresholds?.usage_temperature ?? false,
-				usage_temperature: monitor.thresholds?.usage_temperature * 100?.toString() || "",
+				cpu: monitor.thresholds?.usage_cpu != null,
+				usage_cpu:
+					monitor.thresholds?.usage_cpu != null
+						? (monitor.thresholds.usage_cpu * 100).toString()
+						: "",
+				memory: monitor.thresholds?.usage_memory != null,
+				usage_memory:
+					monitor.thresholds?.usage_memory != null
+						? (monitor.thresholds.usage_memory * 100).toString()
+						: "",
+				disk: monitor.thresholds?.usage_disk != null,
+				usage_disk:
+					monitor.thresholds?.usage_disk != null
+						? (monitor.thresholds.usage_disk * 100).toString()
+						: "",
+				temperature: monitor.thresholds?.usage_temperature != null,
+				usage_temperature:
+					monitor.thresholds?.usage_temperature != null
+						? (monitor.thresholds.usage_temperature * 100).toString()
+						: "",
+				secret: monitor.secret || "",
 			}));
+
+			setHttps(monitor.url?.startsWith("https"));
 		}
 	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
 
