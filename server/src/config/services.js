@@ -52,6 +52,7 @@ import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
 import NetworkCheck from "../db/models/NetworkCheck.js";
+import Notification from "../db/models/Notification.js";
 
 import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
@@ -61,6 +62,7 @@ import HardwareCheckModule from "../db/mongo/modules/hardwareCheckModule.js";
 import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule.js";
 import MonitorModule from "../db/mongo/modules/monitorModule.js";
 import NetworkCheckModule from "../db/mongo/modules/networkCheckModule.js";
+import NotificationModule from "../db/mongo/modules/notificationModule.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -93,6 +95,8 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		NormalizeDataUptimeDetails,
 	});
 	const networkCheckModule = new NetworkCheckModule({ NetworkCheck });
+	const notificationModule = new NotificationModule({ Notification, Monitor });
+
 	const db = new MongoDB({
 		logger,
 		envSettings,
@@ -104,6 +108,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		maintenanceWindowModule,
 		monitorModule,
 		networkCheckModule,
+		notificationModule,
 	});
 
 	await db.connect();

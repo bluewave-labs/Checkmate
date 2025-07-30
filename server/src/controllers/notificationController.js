@@ -53,7 +53,7 @@ class NotificationController extends BaseController {
 			body.userId = userId;
 			body.teamId = teamId;
 
-			const notification = await this.db.createNotification(body);
+			const notification = await this.db.notificationModule.createNotification(body);
 			return res.success({
 				msg: "Notification created successfully",
 				data: notification,
@@ -70,7 +70,7 @@ class NotificationController extends BaseController {
 				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
-			const notifications = await this.db.getNotificationsByTeamId(teamId);
+			const notifications = await this.db.notificationModule.getNotificationsByTeamId(teamId);
 
 			return res.success({
 				msg: "Notifications fetched successfully",
@@ -88,12 +88,12 @@ class NotificationController extends BaseController {
 				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
-			const notification = await this.db.getNotificationById(req.params.id);
+			const notification = await this.db.notificationModule.getNotificationById(req.params.id);
 			if (!notification.teamId.equals(teamId)) {
 				throw this.errorService.createAuthorizationError();
 			}
 
-			await this.db.deleteNotificationById(req.params.id);
+			await this.db.notificationModule.deleteNotificationById(req.params.id);
 			return res.success({
 				msg: "Notification deleted successfully",
 			});
@@ -104,7 +104,7 @@ class NotificationController extends BaseController {
 
 	getNotificationById = this.asyncHandler(
 		async (req, res) => {
-			const notification = await this.db.getNotificationById(req.params.id);
+			const notification = await this.db.notificationModule.getNotificationById(req.params.id);
 
 			const teamId = req?.user?.teamId;
 			if (!teamId) {
@@ -134,13 +134,13 @@ class NotificationController extends BaseController {
 				throw this.errorService.createBadRequestError("Team ID is required");
 			}
 
-			const notification = await this.db.getNotificationById(req.params.id);
+			const notification = await this.db.notificationModule.getNotificationById(req.params.id);
 
 			if (!notification.teamId.equals(teamId)) {
 				throw this.errorService.createAuthorizationError();
 			}
 
-			const editedNotification = await this.db.editNotification(req.params.id, req.body);
+			const editedNotification = await this.db.notificationModule.editNotification(req.params.id, req.body);
 			return res.success({
 				msg: "Notification updated successfully",
 				data: editedNotification,
