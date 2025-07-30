@@ -164,7 +164,6 @@ const CreateInfrastructureMonitor = () => {
 				secret: monitor.secret || "",
 			}));
 
-			setHttps(monitor.url?.startsWith("https"));
 		}
 	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
 
