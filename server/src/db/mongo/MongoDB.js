@@ -19,11 +19,6 @@ import * as monitorModule from "./modules/monitorModule.js";
 import * as pageSpeedCheckModule from "./modules/pageSpeedCheckModule.js";
 
 //****************************************
-// Hardware Checks
-//****************************************
-import * as hardwareCheckModule from "./modules/hardwareCheckModule.js";
-
-//****************************************
 // Maintenance Window
 //****************************************
 import * as maintenanceWindowModule from "./modules/maintenanceWindowModule.js";
@@ -46,7 +41,7 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule }) {
+	constructor({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule, hardwareCheckModule }) {
 		this.logger = logger;
 		this.envSettings = envSettings;
 		this.userModule = userModule;
@@ -54,7 +49,7 @@ class MongoDB {
 		Object.assign(this, recoveryModule);
 		Object.assign(this, monitorModule);
 		Object.assign(this, pageSpeedCheckModule);
-		Object.assign(this, hardwareCheckModule);
+		this.hardwareCheckModule = hardwareCheckModule;
 		this.checkModule = checkModule;
 		Object.assign(this, maintenanceWindowModule);
 		Object.assign(this, notificationModule);

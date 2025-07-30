@@ -51,7 +51,7 @@ import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
 import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
 import UserModule from "../db/mongo/modules/userModule.js";
-
+import HardwareCheckModule from "../db/mongo/modules/hardwareCheckModule.js";
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
 	ServiceRegistry.instance = serviceRegistry;
@@ -66,7 +66,8 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
-	const db = new MongoDB({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule });
+	const hardwareCheckModule = new HardwareCheckModule({ HardwareCheck, Monitor, logger });
+	const db = new MongoDB({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule, hardwareCheckModule });
 
 	await db.connect();
 
