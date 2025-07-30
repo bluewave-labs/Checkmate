@@ -133,7 +133,7 @@ class UserService {
 
 	requestRecovery = async (email) => {
 		const user = await this.db.userModule.getUserByEmail(email);
-		const recoveryToken = await this.db.requestRecoveryToken(email);
+		const recoveryToken = await this.db.recoveryModule.requestRecoveryToken(email);
 		const name = user.firstName;
 		const { clientHost } = this.settingsService.getSettings();
 		const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
@@ -148,11 +148,11 @@ class UserService {
 	};
 
 	validateRecovery = async (recoveryToken) => {
-		await this.db.validateRecoveryToken(recoveryToken);
+		await this.db.recoveryModule.validateRecoveryToken(recoveryToken);
 	};
 
 	resetPassword = async (password, recoveryToken) => {
-		const user = await this.db.resetPassword(password, recoveryToken);
+		const user = await this.db.recoveryModule.resetPassword(password, recoveryToken);
 		const appSettings = await this.settingsService.getSettings();
 		const token = this.issueToken(user._doc, appSettings);
 		return { user, token };

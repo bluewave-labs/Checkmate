@@ -53,6 +53,7 @@ import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
 import NetworkCheck from "../db/models/NetworkCheck.js";
 import Notification from "../db/models/Notification.js";
+import RecoveryToken from "../db/models/RecoveryToken.js";
 
 import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
@@ -64,6 +65,7 @@ import MonitorModule from "../db/mongo/modules/monitorModule.js";
 import NetworkCheckModule from "../db/mongo/modules/networkCheckModule.js";
 import NotificationModule from "../db/mongo/modules/notificationModule.js";
 import PageSpeedCheckModule from "../db/mongo/modules/pageSpeedCheckModule.js";
+import RecoveryModule from "../db/mongo/modules/recoveryModule.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -98,6 +100,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const networkCheckModule = new NetworkCheckModule({ NetworkCheck });
 	const notificationModule = new NotificationModule({ Notification, Monitor });
 	const pageSpeedCheckModule = new PageSpeedCheckModule({ PageSpeedCheck });
+	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
 
 	const db = new MongoDB({
 		logger,
@@ -112,6 +115,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		networkCheckModule,
 		notificationModule,
 		pageSpeedCheckModule,
+		recoveryModule,
 	});
 
 	await db.connect();

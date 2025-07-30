@@ -1,86 +1,88 @@
-import UserModel from "../../models/User.js";
-import RecoveryToken from "../../models/RecoveryToken.js";
-import crypto from "crypto";
-import serviceRegistry from "../../../service/system/serviceRegistry.js";
-import StringService from "../../../service/system/stringService.js";
+// import UserModel from "../../models/User.js";
+// import RecoveryToken from "../../models/RecoveryToken.js";
+// import crypto from "crypto";
+// import serviceRegistry from "../../../service/system/serviceRegistry.js";
+// import StringService from "../../../service/system/stringService.js";
 
 const SERVICE_NAME = "recoveryModule";
 
-/**
- * Request a recovery token
- * @async
- * @param {string} email
- * @returns {Promise<UserModel>}
- * @throws {Error}
- */
-const requestRecoveryToken = async (email) => {
-	try {
-		// Delete any existing tokens
-		await RecoveryToken.deleteMany({ email });
-		let recoveryToken = new RecoveryToken({
-			email,
-			token: crypto.randomBytes(32).toString("hex"),
-		});
-		await recoveryToken.save();
-		return recoveryToken;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "requestRecoveryToken";
-		throw error;
+class RecoveryModule {
+	constructor({ User, RecoveryToken, crypto, stringService }) {
+		this.User = User;
+		this.RecoveryToken = RecoveryToken;
+		this.crypto = crypto;
+		this.stringService = stringService;
 	}
-};
 
-const validateRecoveryToken = async (candidateToken) => {
-	const stringService = serviceRegistry.get(StringService.SERVICE_NAME);
-	try {
-		const recoveryToken = await RecoveryToken.findOne({
-			token: candidateToken,
-		});
-		if (recoveryToken !== null) {
+	requestRecoveryToken = async (email) => {
+		try {
+			// Delete any existing tokens
+			await this.RecoveryToken.deleteMany({ email });
+			let recoveryToken = new this.RecoveryToken({
+				email,
+				token: this.crypto.randomBytes(32).toString("hex"),
+			});
+			await recoveryToken.save();
 			return recoveryToken;
-		} else {
-			throw new Error(stringService.dbTokenNotFound);
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "requestRecoveryToken";
+			throw error;
 		}
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "validateRecoveryToken";
-		throw error;
-	}
-};
-
-const resetPassword = async (password, candidateToken) => {
-	const stringService = serviceRegistry.get(StringService.SERVICE_NAME);
-	try {
-		const newPassword = password;
-
-		// Validate token again
-		const recoveryToken = await validateRecoveryToken(candidateToken);
-		const user = await UserModel.findOne({ email: recoveryToken.email });
-
-		if (user === null) {
-			throw new Error(stringService.dbUserNotFound);
+	};
+	validateRecoveryToken = async (candidateToken) => {
+		try {
+			const recoveryToken = await this.RecoveryToken.findOne({
+				token: candidateToken,
+			});
+			if (recoveryToken !== null) {
+				return recoveryToken;
+			} else {
+				throw new Error(this.stringService.dbTokenNotFound);
+			}
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "validateRecoveryToken";
+			throw error;
 		}
+	};
 
-		const match = await user.comparePassword(newPassword);
-		if (match === true) {
-			throw new Error(stringService.dbResetPasswordBadMatch);
+	resetPassword = async (password, candidateToken) => {
+		try {
+			const newPassword = password;
+
+			// Validate token again
+			const recoveryToken = await this.validateRecoveryToken(candidateToken);
+			const user = await this.User.findOne({ email: recoveryToken.email });
+
+			if (user === null) {
+				console.log("WTF2");
+				throw new Error(this.stringService.dbUserNotFound);
+			}
+
+			const match = await user.comparePassword(newPassword);
+
+			if (match === true) {
+				console.log("WTF");
+				throw new Error("Password cannot be the same as the old password");
+			}
+
+			user.password = newPassword;
+			await user.save();
+			await this.RecoveryToken.deleteMany({ email: recoveryToken.email });
+			// Fetch the user again without the password
+			const userWithoutPassword = await this.User.findOne({
+				email: recoveryToken.email,
+			})
+				.select("-password")
+				.select("-profileImage");
+			return userWithoutPassword;
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "resetPassword";
+			throw error;
 		}
+	};
+}
 
-		user.password = newPassword;
-		await user.save();
-		await RecoveryToken.deleteMany({ email: recoveryToken.email });
-		// Fetch the user again without the password
-		const userWithoutPassword = await UserModel.findOne({
-			email: recoveryToken.email,
-		})
-			.select("-password")
-			.select("-profileImage");
-		return userWithoutPassword;
-	} catch (error) {
-		error.service = SERVICE_NAME;
-		error.method = "resetPassword";
-		throw error;
-	}
-};
-
-export { requestRecoveryToken, validateRecoveryToken, resetPassword };
+export default RecoveryModule;
