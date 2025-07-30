@@ -154,7 +154,7 @@ class MonitorService {
 				try {
 					await this.jobQueue.deleteJob(monitor);
 					await this.db.checkModule.deleteChecks(monitor._id);
-					await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
+					await this.db.pageSpeedCheckModule.deletePageSpeedChecksByMonitorId(monitor._id);
 					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor._id);
 				} catch (error) {
 					this.logger.warn({

@@ -22,7 +22,7 @@ class BufferService {
 		};
 		this.OPERATION_MAP = {
 			checks: this.db.checkModule.createChecks,
-			pagespeedChecks: this.db.createPageSpeedChecks,
+			pagespeedChecks: this.db.pageSpeedCheckModule.createPageSpeedChecks,
 			hardwareChecks: this.db.hardwareCheckModule.createHardwareChecks,
 		};
 

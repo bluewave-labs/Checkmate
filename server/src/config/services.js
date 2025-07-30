@@ -63,6 +63,7 @@ import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule
 import MonitorModule from "../db/mongo/modules/monitorModule.js";
 import NetworkCheckModule from "../db/mongo/modules/networkCheckModule.js";
 import NotificationModule from "../db/mongo/modules/notificationModule.js";
+import PageSpeedCheckModule from "../db/mongo/modules/pageSpeedCheckModule.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -96,6 +97,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 	const networkCheckModule = new NetworkCheckModule({ NetworkCheck });
 	const notificationModule = new NotificationModule({ Notification, Monitor });
+	const pageSpeedCheckModule = new PageSpeedCheckModule({ PageSpeedCheck });
 
 	const db = new MongoDB({
 		logger,
@@ -109,6 +111,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		monitorModule,
 		networkCheckModule,
 		notificationModule,
+		pageSpeedCheckModule,
 	});
 
 	await db.connect();
