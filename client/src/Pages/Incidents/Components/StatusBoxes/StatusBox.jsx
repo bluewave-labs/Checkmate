@@ -2,10 +2,10 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import Background from "../../../../assets/Images/background-grid.svg?react";
-import MonitorHeartOutlinedIcon from "@mui/icons-material/MonitorHeartOutlined";
-import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import AlertIcon from "../../../../assets/icons/alert-icon.svg?react";
+import CheckIcon from "../../../../assets/icons/check-icon.svg?react";
+import CloseIcon from "../../../../assets/icons/close-icon.svg?react";
+import WarningIcon from "../../../../assets/icons/warning-icon.svg?react";
 
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
@@ -22,28 +22,28 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<TaskAltOutlinedIcon fontSize="small" />
+				<CheckIcon />
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<CancelOutlinedIcon fontSize="small" />
+				<CloseIcon />
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<WarningAmberRoundedIcon fontSize="small" />
+				<WarningIcon />
 			</Box>
 		);
 	} else {
 		color = theme.palette.accent.main;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<MonitorHeartOutlinedIcon fontSize="small" />
+				<AlertIcon />
 			</Box>
 		);
 	}
@@ -79,7 +79,18 @@ const StatusBox = ({ title, value, status }) => {
 					>
 						{title}
 					</Typography>
-					{icon}
+					<Box
+						sx={{
+							"& .MuiList-root svg path": {
+								stroke: theme.palette.primary.contrastTextTertiary,
+							},
+							"& .selected-path .MuiListItemIcon-root svg path": {
+								stroke: theme.palette.secondary.contrastText,
+							},
+						}}
+					>
+						{icon}
+					</Box>
 				</Stack>
 				<Stack
 					direction="row"

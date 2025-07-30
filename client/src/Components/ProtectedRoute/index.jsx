@@ -1,5 +1,3 @@
-import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
 /**
@@ -12,18 +10,7 @@ import PropTypes from "prop-types";
  * @returns {React.ReactElement} The children wrapped in a protected route or a redirect to the login page.
  */
 
-const ProtectedRoute = ({ children }) => {
-	const authState = useSelector((state) => state.auth);
-
-	return authState.authToken ? (
-		children
-	) : (
-		<Navigate
-			to="/login"
-			replace
-		/>
-	);
-};
+const ProtectedRoute = ({ children }) => children;
 
 ProtectedRoute.propTypes = {
 	children: PropTypes.element.isRequired,
