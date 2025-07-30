@@ -42,6 +42,7 @@ class MongoDB {
 		monitorModule,
 		networkCheckModule,
 		notificationModule,
+		pageSpeedCheckModule,
 	}) {
 		this.logger = logger;
 		this.envSettings = envSettings;
@@ -49,7 +50,7 @@ class MongoDB {
 		this.inviteModule = inviteModule;
 		Object.assign(this, recoveryModule);
 		Object.assign(this, monitorModule);
-		Object.assign(this, pageSpeedCheckModule);
+		this.pageSpeedCheckModule = pageSpeedCheckModule;
 		this.hardwareCheckModule = hardwareCheckModule;
 		this.checkModule = checkModule;
 		this.maintenanceWindowModule = maintenanceWindowModule;
