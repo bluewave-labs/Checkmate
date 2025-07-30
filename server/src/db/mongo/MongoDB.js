@@ -2,12 +2,6 @@ import mongoose from "mongoose";
 import AppSettings from "../models/AppSettings.js";
 
 //****************************************
-// User Operations
-//****************************************
-
-import * as userModule from "./modules/userModule.js";
-
-//****************************************
 // Recovery Operations
 //****************************************
 import * as recoveryModule from "./modules/recoveryModule.js";
@@ -52,10 +46,10 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings, checkModule, inviteModule, statusPageModule }) {
+	constructor({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule }) {
 		this.logger = logger;
 		this.envSettings = envSettings;
-		Object.assign(this, userModule);
+		this.userModule = userModule;
 		this.inviteModule = inviteModule;
 		Object.assign(this, recoveryModule);
 		Object.assign(this, monitorModule);
