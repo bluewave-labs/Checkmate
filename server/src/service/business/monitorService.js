@@ -143,7 +143,7 @@ class MonitorService {
 		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitor = await this.db.deleteMonitor({ teamId, monitorId });
 		await this.jobQueue.deleteJob(monitor);
-		await this.db.deleteStatusPagesByMonitorId(monitor._id);
+		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor._id);
 		return monitor;
 	};
 
