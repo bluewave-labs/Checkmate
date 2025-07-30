@@ -45,11 +45,6 @@ import * as notificationModule from "./modules/notificationModule.js";
 import * as settingsModule from "./modules/settingsModule.js";
 
 //****************************************
-// Status Page
-//****************************************
-import * as statusPageModule from "./modules/statusPageModule.js";
-
-//****************************************
 // Diagnostic
 //****************************************
 import * as diagnosticModule from "./modules/diagnosticModule.js";
@@ -57,7 +52,7 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings, checkModule, inviteModule }) {
+	constructor({ logger, envSettings, checkModule, inviteModule, statusPageModule }) {
 		this.logger = logger;
 		this.envSettings = envSettings;
 		Object.assign(this, userModule);
@@ -70,7 +65,7 @@ class MongoDB {
 		Object.assign(this, maintenanceWindowModule);
 		Object.assign(this, notificationModule);
 		Object.assign(this, settingsModule);
-		Object.assign(this, statusPageModule);
+		this.statusPageModule = statusPageModule;
 		Object.assign(this, diagnosticModule);
 	}
 
