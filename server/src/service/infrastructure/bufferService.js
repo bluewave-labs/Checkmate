@@ -23,7 +23,7 @@ class BufferService {
 		this.OPERATION_MAP = {
 			checks: this.db.checkModule.createChecks,
 			pagespeedChecks: this.db.createPageSpeedChecks,
-			hardwareChecks: this.db.createHardwareChecks,
+			hardwareChecks: this.db.hardwareCheckModule.createHardwareChecks,
 		};
 
 		this.scheduleNextFlush();
