@@ -93,8 +93,8 @@ const CreateInfrastructureMonitor = () => {
 	// Populate form fields if editing
 
 	useEffect(() => {
-		if (!isCreate || globalSettingsLoading) return;
-		const globalThresholds = globalSettings?.data?.settings?.globalThresholds || {};
+		if (monitor == undefined && (!isCreate || globalSettingsLoading)) return;
+		const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
 
 		// Define default empty string for all thresholds
 		const defaultThresholds = {
@@ -106,6 +106,10 @@ const CreateInfrastructureMonitor = () => {
 
 		setInfrastructureMonitor((prev) => ({
 			...prev,
+			url: monitor != undefined ? monitor.url.replace(/^https?:\/\//, "") : "",
+			name: monitor != undefined ? monitor.name || "" : "",
+			notifications: monitor != undefined ? monitor.notifications : [],
+			interval: monitor != undefined ? monitor.interval / MS_PER_MINUTE : 0.25,
 			cpu: globalThresholds.cpu != null,
 			usage_cpu:
 				globalThresholds.cpu != null
@@ -130,7 +134,7 @@ const CreateInfrastructureMonitor = () => {
 					? globalThresholds.temperature.toString()
 					: defaultThresholds.temperature,
 		}));
-	}, [isCreate, globalSettings]);
+	}, [isCreate, globalSettings, monitor, globalSettingsLoading]);
 
 	// Handlers
 	const onSubmit = async (event) => {
