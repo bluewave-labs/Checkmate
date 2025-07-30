@@ -49,7 +49,7 @@ const Settings = () => {
 		setIsApiKeySet,
 		setIsEmailPasswordSet,
 	});
-	
+
 	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
 
 	const [isSaving, saveError, saveSettings] = useSaveSettings({
@@ -62,7 +62,6 @@ const Settings = () => {
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
 	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
 
-	
 	// Setup
 	const isAdmin = useIsAdmin();
 	const theme = useTheme();
@@ -152,7 +151,7 @@ const Settings = () => {
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
-			
+
 			setErrors(newErrors);
 		}
 		saveSettings(settingsData?.settings);

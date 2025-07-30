@@ -838,8 +838,8 @@
 		},
 		"title": "Settings",
 		"globalThresholds": {
-      		"title": "Global Thresholds",
-      		"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring."
+			"title": "Global Thresholds",
+			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring."
 		},
 		"uiSettings": {
 			"description": "Switch between light and dark mode, or change user interface language.",
