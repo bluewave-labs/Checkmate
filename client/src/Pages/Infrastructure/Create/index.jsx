@@ -93,18 +93,18 @@ const CreateInfrastructureMonitor = () => {
 	// Populate form fields if editing
 
 	useEffect(() => {
-		const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
-		const defaultThresholds = {
-			cpu: "",
-			memory: "",
-			disk: "",
-			temperature: "",
-		};
-
 		if (isCreate) {
 			// If global settings are not loaded yet, use default thresholds
 			if (globalSettingsLoading) return;
 			// Create mode: use global thresholds
+			const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
+			const defaultThresholds = {
+				cpu: "",
+				memory: "",
+				disk: "",
+				temperature: "",
+			};
+
 			setInfrastructureMonitor((prev) => ({
 				...prev,
 				url: "",
