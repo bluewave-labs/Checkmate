@@ -46,12 +46,15 @@ import User from "../db/models/User.js";
 import InviteToken from "../db/models/InviteToken.js";
 import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
+import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 
 import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
 import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
 import UserModule from "../db/mongo/modules/userModule.js";
 import HardwareCheckModule from "../db/mongo/modules/hardwareCheckModule.js";
+import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule.js";
+
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
 	ServiceRegistry.instance = serviceRegistry;
@@ -67,7 +70,17 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const hardwareCheckModule = new HardwareCheckModule({ HardwareCheck, Monitor, logger });
-	const db = new MongoDB({ logger, envSettings, checkModule, inviteModule, statusPageModule, userModule, hardwareCheckModule });
+	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
+	const db = new MongoDB({
+		logger,
+		envSettings,
+		checkModule,
+		inviteModule,
+		statusPageModule,
+		userModule,
+		hardwareCheckModule,
+		maintenanceWindowModule,
+	});
 
 	await db.connect();
 
