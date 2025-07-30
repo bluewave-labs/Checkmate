@@ -1,11 +1,17 @@
+import notificationConfig from "../../utils/notificationConfig.js";
+
 const SERVICE_NAME = "NotificationUtils";
 
 class NotificationUtils {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ stringService, emailService }) {
+	constructor({ stringService, emailService, db, settingsService }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.db = db;
+		this.settingsService = settingsService;
+		// Cache for app settings
+		this.appSettings = null;
 	}
 
 	get serviceName() {
@@ -126,6 +132,94 @@ class NotificationUtils {
 
 	buildHardwareNotificationMessage = (alerts) => {
 		return alerts.map((alert) => alert).join("\n");
+	};
+
+	/**
+	 * Calculates the next backoff delay with jitter for exponential backoff strategy
+	 *
+	 * @param {Number} currentDelay - Current delay in milliseconds
+	 * @param {Number} multiplier - Multiplier for exponential growth
+	 * @param {Number} maxDelay - Maximum delay in milliseconds
+	 * @param {Number} jitterFactor - Factor for randomness (0-1)
+	 * @returns {Number} - Next delay in milliseconds
+	 */
+	/**
+	 * Get backoff settings from AppSettings or fallback to notificationConfig
+	 * @returns {Object} Backoff settings
+	 */
+	getBackoffSettings = async () => {
+		if (!this.appSettings) {
+			try {
+				// Get settings from database
+				this.appSettings = await this.settingsService.getDBSettings();
+			} catch {
+				// Fallback to default config if settings service fails
+				return {
+					backoffEnabled: notificationConfig.BACKOFF_ENABLED_DEFAULT,
+					initialBackoffDelay: notificationConfig.INITIAL_BACKOFF_DELAY_MS,
+					maxBackoffDelay: notificationConfig.MAX_BACKOFF_DELAY_MS,
+					backoffMultiplier: notificationConfig.BACKOFF_MULTIPLIER,
+					backoffJitterFactor: notificationConfig.JITTER_FACTOR,
+				};
+			}
+		}
+
+		return {
+			backoffEnabled: this.appSettings.backoffEnabled ?? notificationConfig.BACKOFF_ENABLED_DEFAULT,
+			initialBackoffDelay: this.appSettings.initialBackoffDelay ?? notificationConfig.INITIAL_BACKOFF_DELAY_MS,
+			maxBackoffDelay: this.appSettings.maxBackoffDelay ?? notificationConfig.MAX_BACKOFF_DELAY_MS,
+			backoffMultiplier: this.appSettings.backoffMultiplier ?? notificationConfig.BACKOFF_MULTIPLIER,
+			backoffJitterFactor: this.appSettings.backoffJitterFactor ?? notificationConfig.JITTER_FACTOR,
+		};
+	};
+
+	calculateNextBackoffDelay = async (currentDelay, multiplier, maxDelay, jitterFactor = null) => {
+		// If jitterFactor is not provided, get it from settings
+		if (jitterFactor === null) {
+			const settings = await this.getBackoffSettings();
+			jitterFactor = settings.backoffJitterFactor;
+		}
+		// Calculate base delay with exponential growth
+		let nextDelay = currentDelay * multiplier;
+
+		// Apply maximum limit
+		nextDelay = Math.min(nextDelay, maxDelay);
+
+		// Apply jitter (random factor to prevent thundering herd)
+		const jitterRange = nextDelay * jitterFactor;
+		// Ensure delay never goes negative
+		const minDelay = Math.max(0, nextDelay - jitterRange / 2);
+		nextDelay = minDelay + Math.random() * jitterRange;
+
+		return Math.floor(nextDelay);
+	};
+
+	/**
+	 * Determines if a notification should be sent based on monitor's backoff settings
+	 *
+	 * @param {Object} monitor - Monitor object with backoff settings
+	 * @returns {Boolean} - Whether notification should be sent
+	 */
+	shouldSendNotification = async (monitor) => {
+		// Get global settings
+		const settings = await this.getBackoffSettings();
+
+		// If backoff is disabled globally or for this monitor, always send
+		if (!settings.backoffEnabled || !monitor.backoffEnabled) {
+			return true;
+		}
+
+		// If no previous notification sent, always send
+		if (!monitor.lastNotificationTime) {
+			return true;
+		}
+
+		// Get current backoff delay (or use initial if not set)
+		const currentDelay = monitor.currentBackoffDelay || monitor.initialBackoffDelay;
+
+		// Check if enough time has passed since last notification
+		const timeSinceLastNotification = Date.now() - new Date(monitor.lastNotificationTime).getTime();
+		return timeSinceLastNotification >= currentDelay;
 	};
 }
 

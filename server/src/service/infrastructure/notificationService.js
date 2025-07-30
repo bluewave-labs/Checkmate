@@ -56,6 +56,63 @@ class NotificationService {
 		const notificationIDs = networkResponse.monitor?.notifications ?? [];
 		if (notificationIDs.length === 0) return false;
 
+		// We don't need to fetch notifications here anymore since we're using monitor-level backoff
+		// Just verify that the notifications exist
+		const notificationsExist = await this.db.getNotificationsByIds(notificationIDs);
+		if (notificationsExist.length === 0) return false;
+
+		// Check if we should send notifications based on monitor's backoff settings
+		const shouldSend = await this.notificationUtils.shouldSendNotification(monitor);
+		if (!shouldSend) {
+			this.logger.info({
+				service: "NotificationService",
+				method: "handleNotifications",
+				message: `Skipping notifications due to backoff for monitor ${monitor.name} (ID: ${monitor._id})`,
+			});
+			return false;
+		}
+
+		// Calculate the next backoff delay
+		const now = new Date();
+		let nextBackoffDelay;
+
+		// If first notification, set current delay to initial, otherwise calculate next delay with jitter
+		if (!monitor.currentBackoffDelay) {
+			nextBackoffDelay = monitor.initialBackoffDelay;
+		} else {
+			// Calculate next backoff with jitter
+			nextBackoffDelay = await this.notificationUtils.calculateNextBackoffDelay(
+				monitor.currentBackoffDelay,
+				monitor.backoffMultiplier,
+				monitor.maxBackoffDelay
+			);
+		}
+
+		// Use atomic editMonitor to prevent race conditions
+		// This performs a findByIdAndUpdate operation which is atomic
+		try {
+			await this.db.editMonitor(monitor._id, {
+				lastNotificationTime: now,
+				currentBackoffDelay: nextBackoffDelay,
+			});
+		} catch (error) {
+			this.logger.error({
+				service: "NotificationService",
+				method: "handleNotifications",
+				message: `Failed to update backoff state for monitor ${monitor.name}`,
+				error: error.message,
+				monitorId: monitor._id,
+			});
+			// Don't send notifications if we can't update backoff state
+			return false;
+		}
+
+		// Update the in-memory monitor object to reflect the changes
+		monitor.lastNotificationTime = now;
+		monitor.currentBackoffDelay = nextBackoffDelay;
+
+		// All notifications can be sent since we've already checked the monitor's backoff
+
 		if (networkResponse.monitor.type === "hardware") {
 			const thresholds = networkResponse?.monitor?.thresholds;
 
@@ -69,14 +126,27 @@ class NotificationService {
 			const { subject, html } = await this.notificationUtils.buildHardwareEmail(networkResponse, alerts);
 			const content = await this.notificationUtils.buildHardwareNotificationMessage(alerts);
 
-			const success = await this.notifyAll({ notificationIDs, subject, html, content });
+			// Use all notifications since we've already checked monitor backoff
+			const success = await this.notifyAll({
+				notificationIDs,
+				subject,
+				html,
+				content,
+			});
 			return success;
 		}
 
 		// Status monitors
 		const { subject, html } = await this.notificationUtils.buildStatusEmail(networkResponse);
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
-		const success = this.notifyAll({ notificationIDs, subject, html, content });
+
+		// Use all notifications since we've already checked monitor backoff
+		const success = await this.notifyAll({
+			notificationIDs,
+			subject,
+			html,
+			content,
+		});
 		return success;
 	}
 
@@ -88,7 +158,14 @@ class NotificationService {
 			try {
 				await this.sendNotification({ notification, subject, content, html });
 				return true;
-			} catch (err) {
+			} catch (error) {
+				// Log the error but continue with other notifications
+				this.logger.error({
+					service: "NotificationService",
+					method: "notifyAll",
+					message: `Failed to send notification: ${error.message}`,
+					notificationId: notification._id,
+				});
 				return false;
 			}
 		});

@@ -147,6 +147,32 @@ class StatusService {
 
 			const prevStatus = monitor.status;
 			monitor.status = status;
+
+			// If status changed from down to up, reset backoff parameters for the monitor
+			if (prevStatus === false && status === true) {
+				try {
+					// Reset backoff parameters on the monitor
+					monitor.currentBackoffDelay = null;
+					monitor.lastNotificationTime = null;
+
+					this.logger.info({
+						service: this.SERVICE_NAME,
+						message: `Reset backoff parameters for monitor ${monitor.name} due to recovery`,
+						method: "updateStatus",
+						monitorId,
+					});
+				} catch (error) {
+					this.logger.error({
+						service: this.SERVICE_NAME,
+						message: "Failed to reset monitor backoff parameters on recovery",
+						method: "updateStatus",
+						error: error.message,
+						stack: error.stack,
+					});
+				}
+			}
+
+			// Save the monitor with all changes including backoff parameter resets
 			await monitor.save();
 
 			return {
