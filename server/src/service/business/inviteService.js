@@ -17,12 +17,12 @@ class InviteService {
 
 	getInviteToken = async ({ invite, teamId }) => {
 		invite.teamId = teamId;
-		const inviteToken = await this.db.requestInviteToken(invite);
+		const inviteToken = await this.db.inviteModule.requestInviteToken(invite);
 		return inviteToken;
 	};
 
 	sendInviteEmail = async ({ inviteRequest, firstName }) => {
-		const inviteToken = await this.db.requestInviteToken({ ...inviteRequest });
+		const inviteToken = await this.db.inviteModule.requestInviteToken({ ...inviteRequest });
 		const { clientHost } = this.settingsService.getSettings();
 
 		const html = await this.emailService.buildEmail("employeeActivationTemplate", {
@@ -36,7 +36,7 @@ class InviteService {
 	};
 
 	verifyInviteToken = async ({ inviteToken }) => {
-		const invite = await this.db.getInviteToken(inviteToken);
+		const invite = await this.db.inviteModule.getInviteToken(inviteToken);
 		return invite;
 	};
 }

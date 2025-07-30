@@ -31,7 +31,7 @@ class UserService {
 		// If superAdmin exists, a token should be attached to all further register requests
 		const superAdminExists = await this.db.checkSuperadmin();
 		if (superAdminExists) {
-			const invitedUser = await this.db.getInviteTokenAndDelete(user.inviteToken);
+			const invitedUser = await this.db.inviteModule.getInviteTokenAndDelete(user.inviteToken);
 			user.role = invitedUser.role;
 			user.teamId = invitedUser.teamId;
 		} else {

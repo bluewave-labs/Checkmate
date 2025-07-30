@@ -38,7 +38,9 @@ import HardwareCheck from "../db/models/HardwareCheck.js";
 import PageSpeedCheck from "../db/models/PageSpeedCheck.js";
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
+import InviteToken from "../db/models/InviteToken.js";
 
+import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
@@ -52,7 +54,8 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 
 	// Create DB
 	const checkModule = new CheckModule({ logger, Check, HardwareCheck, PageSpeedCheck, Monitor, User });
-	const db = new MongoDB({ logger, envSettings, checkModule });
+	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
+	const db = new MongoDB({ logger, envSettings, checkModule, inviteModule });
 	await db.connect();
 
 	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);

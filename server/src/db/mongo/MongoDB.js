@@ -8,12 +8,6 @@ import AppSettings from "../models/AppSettings.js";
 import * as userModule from "./modules/userModule.js";
 
 //****************************************
-// Invite Token Operations
-//****************************************
-
-import * as inviteModule from "./modules/inviteModule.js";
-
-//****************************************
 // Recovery Operations
 //****************************************
 import * as recoveryModule from "./modules/recoveryModule.js";
@@ -34,12 +28,6 @@ import * as pageSpeedCheckModule from "./modules/pageSpeedCheckModule.js";
 // Hardware Checks
 //****************************************
 import * as hardwareCheckModule from "./modules/hardwareCheckModule.js";
-
-//****************************************
-// Checks
-//****************************************
-
-import * as checkModule from "./modules/checkModule.js";
 
 //****************************************
 // Maintenance Window
@@ -69,11 +57,11 @@ import * as diagnosticModule from "./modules/diagnosticModule.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings, checkModule }) {
+	constructor({ logger, envSettings, checkModule, inviteModule }) {
 		this.logger = logger;
 		this.envSettings = envSettings;
 		Object.assign(this, userModule);
-		Object.assign(this, inviteModule);
+		this.inviteModule = inviteModule;
 		Object.assign(this, recoveryModule);
 		Object.assign(this, monitorModule);
 		Object.assign(this, pageSpeedCheckModule);
