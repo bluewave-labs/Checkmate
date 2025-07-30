@@ -1,9 +1,3 @@
-// import UserModel from "../../models/User.js";
-// import RecoveryToken from "../../models/RecoveryToken.js";
-// import crypto from "crypto";
-// import serviceRegistry from "../../../service/system/serviceRegistry.js";
-// import StringService from "../../../service/system/stringService.js";
-
 const SERVICE_NAME = "recoveryModule";
 
 class RecoveryModule {
