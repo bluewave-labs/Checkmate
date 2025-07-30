@@ -40,6 +40,7 @@ class MongoDB {
 		hardwareCheckModule,
 		maintenanceWindowModule,
 		monitorModule,
+		networkCheckModule,
 	}) {
 		this.logger = logger;
 		this.envSettings = envSettings;
@@ -56,6 +57,7 @@ class MongoDB {
 		Object.assign(this, settingsModule);
 		this.statusPageModule = statusPageModule;
 		Object.assign(this, diagnosticModule);
+		this.networkCheckModule = networkCheckModule;
 	}
 
 	get serviceName() {
