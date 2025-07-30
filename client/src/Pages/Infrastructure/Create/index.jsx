@@ -93,10 +93,7 @@ const CreateInfrastructureMonitor = () => {
 	// Populate form fields if editing
 
 	useEffect(() => {
-		if (monitor == undefined && (!isCreate || globalSettingsLoading)) return;
 		const globalThresholds = globalSettings?.data?.settings?.globalThresholds;
-
-		// Define default empty string for all thresholds
 		const defaultThresholds = {
 			cpu: "",
 			memory: "",
@@ -104,37 +101,45 @@ const CreateInfrastructureMonitor = () => {
 			temperature: "",
 		};
 
-		setInfrastructureMonitor((prev) => ({
-			...prev,
-			url: monitor != undefined ? monitor.url.replace(/^https?:\/\//, "") : "",
-			name: monitor != undefined ? monitor.name || "" : "",
-			notifications: monitor != undefined ? monitor.notifications : [],
-			interval: monitor != undefined ? monitor.interval / MS_PER_MINUTE : 0.25,
-			cpu: globalThresholds.cpu != null,
-			usage_cpu:
-				globalThresholds.cpu != null
-					? globalThresholds.cpu.toString()
-					: defaultThresholds.cpu,
-
-			memory: globalThresholds.memory != null,
-			usage_memory:
-				globalThresholds.memory != null
-					? globalThresholds.memory.toString()
-					: defaultThresholds.memory,
-
-			disk: globalThresholds.disk != null,
-			usage_disk:
-				globalThresholds.disk != null
-					? globalThresholds.disk.toString()
-					: defaultThresholds.disk,
-
-			temperature: globalThresholds.temperature != null,
-			usage_temperature:
-				globalThresholds.temperature != null
-					? globalThresholds.temperature.toString()
-					: defaultThresholds.temperature,
-		}));
-	}, [isCreate, globalSettings, monitor, globalSettingsLoading]);
+		if (isCreate) {
+			// If global settings are not loaded yet, use default thresholds
+			if (globalSettingsLoading) return;
+			// Create mode: use global thresholds
+			setInfrastructureMonitor((prev) => ({
+				...prev,
+				url: "",
+				name: "",
+				notifications: [],
+				interval: 0.25,
+				cpu: globalThresholds?.cpu != null,
+				usage_cpu: globalThresholds?.cpu?.toString() || defaultThresholds.cpu,
+				memory: globalThresholds?.memory != null,
+				usage_memory: globalThresholds?.memory?.toString() || defaultThresholds.memory,
+				disk: globalThresholds?.disk != null,
+				usage_disk: globalThresholds?.disk?.toString() || defaultThresholds.disk,
+				temperature: globalThresholds?.temperature != null,
+				usage_temperature:
+					globalThresholds?.temperature?.toString() || defaultThresholds.temperature,
+			}));
+		} else if (monitor) {
+			// Edit mode: use monitor only, ignore global thresholds
+			setInfrastructureMonitor((prev) => ({
+				...prev,
+				url: monitor.url?.replace(/^https?:\/\//, "") || "",
+				name: monitor.name || "",
+				notifications: monitor.notifications || [],
+				interval: monitor.interval / MS_PER_MINUTE,
+				cpu: !!monitor.thresholds?.usage_cpu ?? false,
+				usage_cpu: monitor.thresholds?.usage_cpu * 100?.toString() || "",
+				memory: !!monitor.thresholds?.usage_memory ?? false,
+				usage_memory: monitor.thresholds?.usage_memory * 100?.toString() || "",
+				disk: !!monitor.thresholds?.usage_disk ?? false,
+				usage_disk: monitor.thresholds?.usage_disk * 100?.toString() || "",
+				temperature: !!monitor.thresholds?.usage_temperature ?? false,
+				usage_temperature: monitor.thresholds?.usage_temperature * 100?.toString() || "",
+			}));
+		}
+	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
 
 	// Handlers
 	const onSubmit = async (event) => {
