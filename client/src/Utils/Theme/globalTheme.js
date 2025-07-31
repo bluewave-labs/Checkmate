@@ -233,16 +233,16 @@ const baseTheme = (palette) => ({
 		},
 		MuiList: {
 			styleOverrides: {
-				root: {
+				root: ({ theme }) => ({
 					padding: 0,
-				},
+				}),
 			},
 		},
 		MuiListItemButton: {
 			styleOverrides: {
-				root: {
-					transition: "none",
-				},
+				root: ({ theme }) => ({
+					transition: "background-color .3s",
+				}),
 			},
 		},
 		MuiListItemText: {
@@ -279,6 +279,7 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+
 		MuiTableHead: {
 			styleOverrides: {
 				root: ({ theme }) => ({

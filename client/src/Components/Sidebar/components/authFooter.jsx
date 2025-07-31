@@ -1,0 +1,260 @@
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import Avatar from "../../Avatar";
+import ThemeSwitch from "../../ThemeSwitch";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Divider from "@mui/material/Divider";
+import DotsVertical from "../../../assets/icons/dots-vertical.svg?react";
+import LogoutSvg from "../../../assets/icons/logout.svg?react";
+
+import { useTheme } from "@emotion/react";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { clearAuthState } from "../../../Features/Auth/authSlice";
+import { useDispatch } from "react-redux";
+
+const AuthFooter = ({ collapsed, accountMenuItems }) => {
+	const { t } = useTranslation();
+	const theme = useTheme();
+	const authState = useSelector((state) => state.auth);
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
+	const [anchorEl, setAnchorEl] = useState(null);
+	const [popup, setPopup] = useState();
+
+	const openPopup = (event, id) => {
+		setAnchorEl(event.currentTarget);
+		setPopup(id);
+	};
+
+	const closePopup = () => {
+		setAnchorEl(null);
+	};
+
+	const logout = async () => {
+		// Clear auth state
+		dispatch(clearAuthState());
+		navigate("/login");
+	};
+	const renderAccountMenuItems = (user, items) => {
+		let filteredAccountMenuItems = [...items];
+
+		// If the user is in demo mode, remove the "Password" option
+		if (user.role?.includes("demo")) {
+			filteredAccountMenuItems = filteredAccountMenuItems.filter(
+				(item) => item.name !== "Password"
+			);
+		}
+
+		// If the user is NOT a superadmin, remove the "Team" option
+		if (user.role && !user.role.includes("superadmin")) {
+			filteredAccountMenuItems = filteredAccountMenuItems.filter(
+				(item) => item.name !== "Team"
+			);
+		}
+
+		return filteredAccountMenuItems.map((item) => (
+			<MenuItem
+				key={item.name}
+				onClick={() => {
+					closePopup();
+					navigate(item.path);
+				}}
+				sx={{
+					gap: theme.spacing(2),
+					borderRadius: theme.shape.borderRadius,
+					pl: theme.spacing(4),
+				}}
+			>
+				{item.icon}
+				{item.name}
+			</MenuItem>
+		));
+	};
+	return (
+		<Stack
+			direction="row"
+			height="50px"
+			alignItems="center"
+			py={theme.spacing(4)}
+			px={theme.spacing(8)}
+			gap={theme.spacing(2)}
+			borderRadius={theme.shape.borderRadius}
+		>
+			<>
+				<Avatar small={true} />
+				<Stack
+					direction="row"
+					alignItems="center"
+					sx={{
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						maxWidth: collapsed ? 0 : 400,
+						transition: "max-width 300ms ease, opacity 300ms ease",
+					}}
+				>
+					<Box
+						ml={theme.spacing(2)}
+						sx={{ maxWidth: "50%", overflow: "hidden" }}
+					>
+						<Typography
+							component="span"
+							fontWeight={500}
+							sx={{
+								display: "block",
+								whiteSpace: "nowrap",
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+							}}
+						>
+							{authState.user?.firstName} {authState.user?.lastName}
+						</Typography>
+						<Typography sx={{ textTransform: "capitalize" }}>
+							{authState.user?.role?.includes("superadmin")
+								? t("roles.superAdmin")
+								: authState.user?.role?.includes("admin")
+									? t("roles.admin")
+									: authState.user?.role?.includes("user")
+										? t("roles.teamMember")
+										: authState.user?.role?.includes("demo")
+											? t("roles.demoUser")
+											: authState.user?.role}
+						</Typography>
+					</Box>
+					<Stack
+						className="sidebar-delay-fade"
+						flexDirection={"row"}
+						marginLeft={"auto"}
+						columnGap={theme.spacing(2)}
+					>
+						<ThemeSwitch color={theme.palette.primary.contrastTextTertiary} />
+						<Tooltip
+							title={t("navControls")}
+							disableInteractive
+						>
+							<IconButton
+								sx={{
+									ml: "auto",
+									mr: "-8px",
+									"&:focus": { outline: "none" },
+									alignSelf: "center",
+									padding: "10px",
+
+									"& svg": {
+										width: "22px",
+										height: "22px",
+									},
+									"& svg path": {
+										/* Vertical three dots */
+										stroke: theme.palette.primary.contrastTextTertiary,
+									},
+								}}
+								onClick={(event) => openPopup(event, "logout")}
+							>
+								<DotsVertical />
+							</IconButton>
+						</Tooltip>
+					</Stack>
+				</Stack>
+			</>
+			<Menu
+				className="sidebar-popup"
+				anchorEl={anchorEl}
+				open={Boolean(anchorEl) && popup === "logout"}
+				onClose={closePopup}
+				disableScrollLock
+				anchorOrigin={{
+					vertical: "top",
+					horizontal: "right",
+				}}
+				slotProps={{
+					paper: {
+						sx: {
+							marginTop: theme.spacing(-4),
+							marginLeft: collapsed ? theme.spacing(2) : 0,
+						},
+					},
+				}}
+				MenuListProps={{
+					sx: {
+						p: 2,
+						"& li": { m: 0 },
+						"& li:has(.MuiBox-root):hover": {
+							backgroundColor: "transparent",
+						},
+					},
+				}}
+				sx={{
+					ml: theme.spacing(4),
+				}}
+			>
+				{collapsed && (
+					<MenuItem sx={{ cursor: "default", minWidth: "50%" }}>
+						<Box
+							mb={theme.spacing(2)}
+							sx={{
+								minWidth: "50%",
+								maxWidth: "max-content",
+								overflow: "visible",
+								whiteSpace: "nowrap",
+							}}
+						>
+							<Typography
+								component="span"
+								fontWeight={500}
+								fontSize={13}
+								sx={{
+									display: "block",
+									whiteSpace: "nowrap",
+									overflow: "visible",
+									// wordBreak: "break-word",
+									textOverflow: "clip",
+								}}
+							>
+								{authState.user?.firstName} {authState.user?.lastName}
+							</Typography>
+							<Typography
+								sx={{
+									textTransform: "capitalize",
+									fontSize: 12,
+									whiteSpace: "nowrap",
+									overflow: "visible",
+									// wordBreak: "break-word",
+								}}
+							>
+								{authState.user?.role}
+							</Typography>
+						</Box>
+					</MenuItem>
+				)}
+				{/* TODO Do we need two dividers? */}
+				{collapsed && <Divider />}
+				{/* <Divider /> */}
+				{renderAccountMenuItems(authState.user, accountMenuItems)}
+				<MenuItem
+					onClick={logout}
+					sx={{
+						gap: theme.spacing(4),
+						borderRadius: theme.shape.borderRadius,
+						pl: theme.spacing(4),
+						"& svg path": {
+							stroke: theme.palette.primary.contrastTextTertiary,
+						},
+					}}
+				>
+					<LogoutSvg />
+					{t("menu.logOut", "Log out")}
+				</MenuItem>
+			</Menu>
+		</Stack>
+	);
+};
+
+export default AuthFooter;

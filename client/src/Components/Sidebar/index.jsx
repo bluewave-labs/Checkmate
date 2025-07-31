@@ -1,21 +1,16 @@
-import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
-import ArrowRight from "../../assets/icons/right-arrow.svg?react";
-import ArrowLeft from "../../assets/icons/left-arrow.svg?react";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Tooltip from "@mui/material/Tooltip";
-import Logo from "./logo";
 
-import ThemeSwitch from "../ThemeSwitch";
-import Avatar from "../Avatar";
+import List from "@mui/material/List";
+import Logo from "./logo";
+import CollapseButton from "./collapseButton";
+import Divider from "@mui/material/Divider";
+import NavItem from "./components/navItem";
+import AuthFooter from "./components/authFooter";
+
 import StarPrompt from "../StarPrompt";
 import LockSvg from "../../assets/icons/lock.svg?react";
 import UserSvg from "../../assets/icons/user.svg?react";
 import TeamSvg from "../../assets/icons/user-two.svg?react";
-import LogoutSvg from "../../assets/icons/logout.svg?react";
 import Support from "../../assets/icons/support.svg?react";
 import Maintenance from "../../assets/icons/maintenance.svg?react";
 import Monitors from "../../assets/icons/monitors.svg?react";
@@ -25,7 +20,6 @@ import PageSpeed from "../../assets/icons/page-speed.svg?react";
 import Settings from "../../assets/icons/settings.svg?react";
 import ArrowDown from "../../assets/icons/down-arrow.svg?react";
 import ArrowUp from "../../assets/icons/up-arrow.svg?react";
-import DotsVertical from "../../assets/icons/dots-vertical.svg?react";
 import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
@@ -35,11 +29,17 @@ import Logs from "../../assets/icons/logs.svg?react";
 
 // Utils
 import { useTheme } from "@mui/material/styles";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleSidebar } from "../../Features/UI/uiSlice";
+import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+
+const URL_MAP = {
+	support: "https://discord.com/invite/NAb6H3UTjK",
+	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
+	docs: "https://bluewavelabs.gitbook.io/checkmate",
+	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+};
 
 const getMenu = (t) => [
 	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
@@ -64,9 +64,25 @@ const getMenu = (t) => [
 	},
 ];
 
+const getOtherMenuItems = (t) => [
+	{ name: t("menu.support"), path: "support", icon: <Support /> },
+	{
+		name: t("menu.discussions"),
+		path: "discussions",
+		icon: <Discussions />,
+	},
+	{ name: t("menu.docs"), path: "docs", icon: <Docs /> },
+	{ name: t("menu.changelog"), path: "changelog", icon: <ChangeLog /> },
+];
+
+const getAccountMenuItems = (t) => [
+	{ name: t("menu.profile"), path: "account/profile", icon: <UserSvg /> },
+	{ name: t("menu.password"), path: "account/password", icon: <LockSvg /> },
+	{ name: t("menu.team"), path: "account/team", icon: <TeamSvg /> },
+];
+
 const Sidebar = () => {
 	const theme = useTheme();
-	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	// Redux state
@@ -76,100 +92,82 @@ const Sidebar = () => {
 	const [open, setOpen] = useState({ Dashboard: false, Account: false, Other: false });
 
 	const menu = getMenu(t);
-	console.log(collapsed);
+	const otherMenuItems = getOtherMenuItems(t);
+	const accountMenuItems = getAccountMenuItems(t);
+
 	return (
 		<Stack
 			width={collapsed ? "64px" : "var(--env-var-side-bar-width)"}
 			component="aside"
 			position="relative"
 			borderRight={`1px solid ${theme.palette.primary.lowContrast}`}
+			paddingTop={theme.spacing(6)}
+			paddingBottom={theme.spacing(6)}
+			gap={theme.spacing(6)}
+			sx={{
+				transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
+			}}
 		>
-			<IconButton
-				sx={{
-					position: "absolute",
-					/* TODO 60 is a magic number. if logo chnges size this might break */
-					top: 60,
-					right: 0,
-					transform: `translate(50%, 0)`,
-					backgroundColor: theme.palette.tertiary.main,
-					border: 1,
-					borderColor: theme.palette.primary.lowContrast,
-					p: theme.spacing(2.5),
-					"& svg": {
-						width: theme.spacing(8),
-						height: theme.spacing(8),
-						"& path": {
-							stroke: theme.palette.primary.contrastTextSecondary,
-						},
-					},
-					"&:focus": { outline: "none" },
-					"&:hover": {
-						backgroundColor: theme.palette.primary.lowContrast,
-						borderColor: theme.palette.primary.lowContrast,
-					},
-				}}
-				onClick={() => {
-					setOpen((prev) =>
-						Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
-					);
-					dispatch(toggleSidebar());
-				}}
-			>
-				{collapsed ? <ArrowRight /> : <ArrowLeft />}
-			</IconButton>
-			<Logo />
+			<CollapseButton
+				collapsed={collapsed}
+				setOpen={setOpen}
+			/>
+			<Logo collapsed={collapsed} />
 			<List
 				component="nav"
 				aria-labelledby="nested-menu-subheader"
 				disablePadding
 				sx={{
-					mt: theme.spacing(12),
 					px: theme.spacing(6),
 					height: "100%",
 					/* overflow: "hidden", */
 				}}
 			>
 				{menu.map((item) => {
-					return item.path ? (
-						/* If item has a path */
-						<Tooltip
+					const selected = location.pathname.startsWith(`/${item.path}`);
+					return (
+						<NavItem
 							key={item.path}
-							placement="right"
-							title={collapsed ? item.name : ""}
-							slotProps={{
-								popper: {
-									modifiers: [
-										{
-											name: "offset",
-											options: {
-												offset: [0, -16],
-											},
-										},
-									],
-								},
-							}}
-							disableInteractive
-						>
-							<ListItemButton
-								className={
-									location.pathname.startsWith(`/${item.path}`) ? "selected-path" : ""
-								}
-								onClick={() => navigate(`/${item.path}`)}
-								sx={{
-									height: "37px",
-									gap: theme.spacing(4),
-									borderRadius: theme.shape.borderRadius,
-									px: theme.spacing(4),
-									pl: theme.spacing(5),
-								}}
-							>
-								<ListItemIcon sx={{ minWidth: 0 }}>{item.icon}</ListItemIcon>
-								{!collapsed && <ListItemText>{item.name}</ListItemText>}
-							</ListItemButton>
-						</Tooltip>
-					) : null;
+							item={item}
+							collapsed={collapsed}
+							selected={selected}
+							onClick={() => navigate(`/${item.path}`)}
+						/>
+					);
 				})}
 			</List>
+			{!collapsed && <StarPrompt />}
+			<List
+				component="nav"
+				disablePadding
+				sx={{ px: theme.spacing(6) }}
+			>
+				{otherMenuItems.map((item) => {
+					const selected = location.pathname.startsWith(`/${item.path}`);
+
+					return (
+						<NavItem
+							key={item.path}
+							item={item}
+							collapsed={collapsed}
+							selected={selected}
+							onClick={() => {
+								const url = URL_MAP[item.path];
+								if (url) {
+									window.open(url, "_blank", "noreferrer");
+								} else {
+									navigate(`/${item.path}`);
+								}
+							}}
+						/>
+					);
+				})}
+			</List>
+			<Divider sx={{ mt: "auto", borderColor: theme.palette.primary.lowContrast }} />
+			<AuthFooter
+				collapsed={collapsed}
+				accountMenuItems={accountMenuItems}
+			/>
 		</Stack>
 	);
 };

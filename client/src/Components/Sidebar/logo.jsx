@@ -1,10 +1,11 @@
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
-const Logo = () => {
+const Logo = ({ collapsed }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
@@ -35,20 +36,31 @@ const Logo = () => {
 					sx={{
 						position: "relative",
 						backgroundColor: theme.palette.accent.main,
-						color: theme.palette.accent.contrastText,
 						borderRadius: theme.shape.borderRadius,
 						userSelect: "none",
 					}}
 				>
 					C
 				</Stack>
-				<Typography
-					component="span"
-					mt={theme.spacing(2)}
-					sx={{ opacity: 0.8, fontWeight: 500 }}
+				<Box
+					sx={{
+						overflow: "hidden",
+						transition: "opacity 900ms ease",
+						opacity: collapsed ? 0 : 1,
+						whiteSpace: "nowrap",
+					}}
 				>
-					{t("common.appName")}
-				</Typography>
+					{" "}
+					<Typography
+						component="span"
+						mt={theme.spacing(2)}
+						color={theme.palette.accent.contrastText}
+						fontSize={"var(--env-var-font-size-medium-plus)"}
+						sx={{ opacity: 0.8, fontWeight: 500 }}
+					>
+						{t("common.appName")}
+					</Typography>
+				</Box>
 			</Stack>
 		</Stack>
 	);
