@@ -1,5 +1,4 @@
-/* TODO  */
-aside .MuiList-root svg {
+TODO aside .MuiList-root svg {
 	width: 20px;
 	height: 20px;
 	opacity: 0.9;
