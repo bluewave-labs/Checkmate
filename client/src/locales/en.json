@@ -154,7 +154,7 @@
 					"incorrect": "The password you provided does not match our records"
 				}
 			},
-			"heading": "Log In",
+			"heading": "Log in to continue",
 			"links": {
 				"forgotPassword": "Forgot password?",
 				"forgotPasswordLink": "Reset password",
@@ -168,7 +168,8 @@
 			"toasts": {
 				"incorrectPassword": "Incorrect password",
 				"success": "Welcome back! You're successfully logged in."
-			}
+			},
+			"welcome": "Welcome back to Checkmate!"
 		},
 		"registration": {
 			"description": {

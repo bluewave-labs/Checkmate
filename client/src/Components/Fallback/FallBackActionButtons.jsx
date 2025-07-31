@@ -17,6 +17,7 @@ const FallbackActionButtons = ({ link, type }) => {
 			<Button
 				variant="contained"
 				color="accent"
+				sx={{ fontWeight: 700 }}
 				onClick={() => navigate(link)}
 			>
 				{t(`${type}.fallback.actionButton`)}
