@@ -37,7 +37,7 @@ class UserService {
 		} else {
 			// This is the first account, create JWT secret to use if one is not supplied by env
 			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
-			await this.db.updateAppSettings({ jwtSecret });
+			await this.db.settingsModule.updateAppSettings({ jwtSecret });
 		}
 
 		const newUser = await this.db.userModule.insertUser({ ...user }, file);
