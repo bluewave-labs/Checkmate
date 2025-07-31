@@ -94,76 +94,59 @@ const CreateInfrastructureMonitor = () => {
 
 	useEffect(() => {
 		if (isCreate) {
-			// If global settings are not loaded yet, use default thresholds
 			if (globalSettingsLoading) return;
 
-			// Create mode: use global thresholds
-			const globalThresholds = globalSettings?.data?.settings?.globalThresholds || {};
-			const defaultThresholds = {
-				cpu: "",
-				memory: "",
-				disk: "",
-				temperature: "",
-			};
+			const gt = globalSettings?.data?.settings?.globalThresholds || {};
 
-			setInfrastructureMonitor((prev) => ({
-				...prev,
+			setHttps(false);
+
+			setInfrastructureMonitor({
 				url: "",
 				name: "",
 				notifications: [],
 				interval: 0.25,
-				cpu: globalThresholds.cpu != null,
-				usage_cpu:
-					globalThresholds.cpu != null
-						? globalThresholds.cpu.toString()
-						: defaultThresholds.cpu,
-				memory: globalThresholds.memory != null,
-				usage_memory:
-					globalThresholds.memory != null
-						? globalThresholds.memory.toString()
-						: defaultThresholds.memory,
-				disk: globalThresholds.disk != null,
-				usage_disk:
-					globalThresholds.disk != null
-						? globalThresholds.disk.toString()
-						: defaultThresholds.disk,
-				temperature: globalThresholds.temperature != null,
-				usage_temperature:
-					globalThresholds.temperature != null
-						? globalThresholds.temperature.toString()
-						: defaultThresholds.temperature,
-			}));
+				cpu: gt.cpu !== undefined,
+				usage_cpu: gt.cpu !== undefined ? gt.cpu.toString() : "",
+				memory: gt.memory !== undefined,
+				usage_memory: gt.memory !== undefined ? gt.memory.toString() : "",
+				disk: gt.disk !== undefined,
+				usage_disk: gt.disk !== undefined ? gt.disk.toString() : "",
+				temperature: gt.temperature !== undefined,
+				usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
+				secret: "",
+			});
 		} else if (monitor) {
-			// Edit mode: use monitor only, ignore global thresholds
-			setInfrastructureMonitor((prev) => ({
-				...prev,
-				url: monitor.url?.replace(/^https?:\/\//, "") || "",
+			const { thresholds = {} } = monitor;
+
+			setHttps(monitor.url.startsWith("https"));
+
+			setInfrastructureMonitor({
+				url: monitor.url.replace(/^https?:\/\//, ""),
 				name: monitor.name || "",
 				notifications: monitor.notifications || [],
 				interval: monitor.interval / MS_PER_MINUTE,
-				cpu: monitor.thresholds?.usage_cpu != null,
+				cpu: thresholds.usage_cpu !== undefined,
 				usage_cpu:
-					monitor.thresholds?.usage_cpu != null
-						? (monitor.thresholds.usage_cpu * 100).toString()
+					thresholds.usage_cpu !== undefined
+						? (thresholds.usage_cpu * 100).toString()
 						: "",
-				memory: monitor.thresholds?.usage_memory != null,
+				memory: thresholds.usage_memory !== undefined,
 				usage_memory:
-					monitor.thresholds?.usage_memory != null
-						? (monitor.thresholds.usage_memory * 100).toString()
+					thresholds.usage_memory !== undefined
+						? (thresholds.usage_memory * 100).toString()
 						: "",
-				disk: monitor.thresholds?.usage_disk != null,
+				disk: thresholds.usage_disk !== undefined,
 				usage_disk:
-					monitor.thresholds?.usage_disk != null
-						? (monitor.thresholds.usage_disk * 100).toString()
+					thresholds.usage_disk !== undefined
+						? (thresholds.usage_disk * 100).toString()
 						: "",
-				temperature: monitor.thresholds?.usage_temperature != null,
+				temperature: thresholds.usage_temperature !== undefined,
 				usage_temperature:
-					monitor.thresholds?.usage_temperature != null
-						? (monitor.thresholds.usage_temperature * 100).toString()
+					thresholds.usage_temperature !== undefined
+						? (thresholds.usage_temperature * 100).toString()
 						: "",
 				secret: monitor.secret || "",
-			}));
-
+			});
 		}
 	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
 
