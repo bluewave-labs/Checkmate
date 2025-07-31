@@ -71,7 +71,7 @@ class MonitorService {
 	};
 
 	createMonitor = async ({ teamId, userId, body }) => {
-		const monitor = await this.db.createMonitor({
+		const monitor = await this.db.monitorModule.createMonitor({
 			body,
 			teamId,
 			userId,
@@ -122,7 +122,7 @@ class MonitorService {
 
 						await createMonitorsBodyValidation.validateAsync(enrichedData);
 
-						const monitors = await this.db.createBulkMonitors(enrichedData);
+						const monitors = await this.db.monitorModule.createBulkMonitors(enrichedData);
 
 						await Promise.all(
 							monitors.map(async (monitor) => {
@@ -141,14 +141,14 @@ class MonitorService {
 
 	deleteMonitor = async ({ teamId, monitorId }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.deleteMonitor({ teamId, monitorId });
+		const monitor = await this.db.monitorModule.deleteMonitor({ teamId, monitorId });
 		await this.jobQueue.deleteJob(monitor);
 		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor._id);
 		return monitor;
 	};
 
 	deleteAllMonitors = async ({ teamId }) => {
-		const { monitors, deletedCount } = await this.db.deleteAllMonitors(teamId);
+		const { monitors, deletedCount } = await this.db.monitorModule.deleteAllMonitors(teamId);
 		await Promise.all(
 			monitors.map(async (monitor) => {
 				try {
@@ -171,19 +171,19 @@ class MonitorService {
 
 	editMonitor = async ({ teamId, monitorId, body }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const editedMonitor = await this.db.editMonitor({ monitorId, body });
+		const editedMonitor = await this.db.monitorModule.editMonitor({ monitorId, body });
 		await this.jobQueue.updateJob(editedMonitor);
 	};
 
 	pauseMonitor = async ({ teamId, monitorId }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.pauseMonitor({ monitorId });
+		const monitor = await this.db.monitorModule.pauseMonitor({ monitorId });
 		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor._id, monitor) : await this.jobQueue.pauseJob(monitor);
 		return monitor;
 	};
 
 	addDemoMonitors = async ({ userId, teamId }) => {
-		const demoMonitors = await this.db.addDemoMonitors(userId, teamId);
+		const demoMonitors = await this.db.monitorModuleaddDemoMonitors(userId, teamId);
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor)));
 		return demoMonitors;
 	};
