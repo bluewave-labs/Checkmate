@@ -44,20 +44,20 @@ class MongoDB {
 		notificationModule,
 		pageSpeedCheckModule,
 		recoveryModule,
+		settingsModule,
 	}) {
 		this.logger = logger;
 		this.envSettings = envSettings;
 		this.userModule = userModule;
 		this.inviteModule = inviteModule;
 		this.recoveryModule = recoveryModule;
-		Object.assign(this, monitorModule);
 		this.pageSpeedCheckModule = pageSpeedCheckModule;
 		this.hardwareCheckModule = hardwareCheckModule;
 		this.checkModule = checkModule;
 		this.maintenanceWindowModule = maintenanceWindowModule;
 		this.monitorModule = monitorModule;
 		this.notificationModule = notificationModule;
-		Object.assign(this, settingsModule);
+		this.settingsModule = settingsModule;
 		this.statusPageModule = statusPageModule;
 		Object.assign(this, diagnosticModule);
 		this.networkCheckModule = networkCheckModule;
