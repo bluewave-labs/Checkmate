@@ -302,6 +302,14 @@ const settingsValidation = joi.object({
 	systemEmailIgnoreTLS: joi.boolean(),
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
+	globalThresholds: joi
+		.object({
+			cpu: joi.number().min(1).max(100).allow("").optional(),
+			memory: joi.number().min(1).max(100).allow("").optional(),
+			disk: joi.number().min(1).max(100).allow("").optional(),
+			temperature: joi.number().min(1).max(150).allow("").optional(),
+		})
+		.optional(),
 });
 
 const dayjsValidator = (value, helpers) => {
