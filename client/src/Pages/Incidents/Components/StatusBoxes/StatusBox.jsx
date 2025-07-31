@@ -12,7 +12,6 @@ const StatusBox = ({ title, value, status }) => {
 	let sharedStyles = {
 		position: "absolute",
 		right: 8,
-		opacity: 0.5,
 		"& svg path": { stroke: theme.palette.primary.contrastTextTertiary },
 	};
 
