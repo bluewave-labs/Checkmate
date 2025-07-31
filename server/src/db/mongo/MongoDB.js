@@ -1,32 +1,6 @@
 import mongoose from "mongoose";
 import AppSettings from "../models/AppSettings.js";
 
-//****************************************
-// Recovery Operations
-//****************************************
-import * as recoveryModule from "./modules/recoveryModule.js";
-
-//****************************************
-// Page Speed Checks
-//****************************************
-
-import * as pageSpeedCheckModule from "./modules/pageSpeedCheckModule.js";
-
-//****************************************
-// Notifications
-//****************************************
-import * as notificationModule from "./modules/notificationModule.js";
-
-//****************************************
-// AppSettings
-//****************************************
-import * as settingsModule from "./modules/settingsModule.js";
-
-//****************************************
-// Diagnostic
-//****************************************
-import * as diagnosticModule from "./modules/diagnosticModule.js";
-
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
@@ -59,7 +33,6 @@ class MongoDB {
 		this.notificationModule = notificationModule;
 		this.settingsModule = settingsModule;
 		this.statusPageModule = statusPageModule;
-		Object.assign(this, diagnosticModule);
 		this.networkCheckModule = networkCheckModule;
 	}
 
