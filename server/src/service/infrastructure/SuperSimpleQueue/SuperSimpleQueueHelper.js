@@ -67,7 +67,7 @@ class SuperSimpleQueueHelper {
 	};
 
 	async isInMaintenanceWindow(monitorId) {
-		const maintenanceWindows = await this.db.getMaintenanceWindowsByMonitorId(monitorId);
+		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId(monitorId);
 		// Check for active maintenance window:
 		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc, window) => {
 			if (window.active) {

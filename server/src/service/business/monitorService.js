@@ -20,20 +20,20 @@ class MonitorService {
 	}
 
 	verifyTeamAccess = async ({ teamId, monitorId }) => {
-		const monitor = await this.db.getMonitorById(monitorId);
+		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 		if (!monitor?.teamId?.equals(teamId)) {
 			throw this.errorService.createAuthorizationError();
 		}
 	};
 
 	getAllMonitors = async () => {
-		const monitors = await this.db.getAllMonitors();
+		const monitors = await this.db.monitorModule.getAllMonitors();
 		return monitors;
 	};
 
 	getUptimeDetailsById = async ({ teamId, monitorId, dateRange, normalize }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const data = await this.db.getUptimeDetailsById({
+		const data = await this.db.monitorModule.getUptimeDetailsById({
 			monitorId,
 			dateRange,
 			normalize,
@@ -44,7 +44,7 @@ class MonitorService {
 
 	getMonitorStatsById = async ({ teamId, monitorId, limit, sortOrder, dateRange, numToDisplay, normalize }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitorStats = await this.db.getMonitorStatsById({
+		const monitorStats = await this.db.monitorModule.getMonitorStatsById({
 			monitorId,
 			limit,
 			sortOrder,
@@ -58,20 +58,20 @@ class MonitorService {
 
 	getHardwareDetailsById = async ({ teamId, monitorId, dateRange }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.getHardwareDetailsById({ monitorId, dateRange });
+		const monitor = await this.db.monitorModule.getHardwareDetailsById({ monitorId, dateRange });
 
 		return monitor;
 	};
 
 	getMonitorById = async ({ teamId, monitorId }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.getMonitorById(monitorId);
+		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 
 		return monitor;
 	};
 
 	createMonitor = async ({ teamId, userId, body }) => {
-		const monitor = await this.db.createMonitor({
+		const monitor = await this.db.monitorModule.createMonitor({
 			body,
 			teamId,
 			userId,
@@ -122,7 +122,7 @@ class MonitorService {
 
 						await createMonitorsBodyValidation.validateAsync(enrichedData);
 
-						const monitors = await this.db.createBulkMonitors(enrichedData);
+						const monitors = await this.db.monitorModule.createBulkMonitors(enrichedData);
 
 						await Promise.all(
 							monitors.map(async (monitor) => {
@@ -141,21 +141,21 @@ class MonitorService {
 
 	deleteMonitor = async ({ teamId, monitorId }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.deleteMonitor({ teamId, monitorId });
+		const monitor = await this.db.monitorModule.deleteMonitor({ teamId, monitorId });
 		await this.jobQueue.deleteJob(monitor);
-		await this.db.deleteStatusPagesByMonitorId(monitor._id);
+		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor._id);
 		return monitor;
 	};
 
 	deleteAllMonitors = async ({ teamId }) => {
-		const { monitors, deletedCount } = await this.db.deleteAllMonitors(teamId);
+		const { monitors, deletedCount } = await this.db.monitorModule.deleteAllMonitors(teamId);
 		await Promise.all(
 			monitors.map(async (monitor) => {
 				try {
 					await this.jobQueue.deleteJob(monitor);
 					await this.db.checkModule.deleteChecks(monitor._id);
-					await this.db.deletePageSpeedChecksByMonitorId(monitor._id);
-					await this.db.deleteNotificationsByMonitorId(monitor._id);
+					await this.db.pageSpeedCheckModule.deletePageSpeedChecksByMonitorId(monitor._id);
+					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor._id);
 				} catch (error) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
@@ -171,19 +171,19 @@ class MonitorService {
 
 	editMonitor = async ({ teamId, monitorId, body }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const editedMonitor = await this.db.editMonitor({ monitorId, body });
+		const editedMonitor = await this.db.monitorModule.editMonitor({ monitorId, body });
 		await this.jobQueue.updateJob(editedMonitor);
 	};
 
 	pauseMonitor = async ({ teamId, monitorId }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.pauseMonitor({ monitorId });
+		const monitor = await this.db.monitorModule.pauseMonitor({ monitorId });
 		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor._id, monitor) : await this.jobQueue.pauseJob(monitor);
 		return monitor;
 	};
 
 	addDemoMonitors = async ({ userId, teamId }) => {
-		const demoMonitors = await this.db.addDemoMonitors(userId, teamId);
+		const demoMonitors = await this.db.monitorModuleaddDemoMonitors(userId, teamId);
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor)));
 		return demoMonitors;
 	};
@@ -203,7 +203,7 @@ class MonitorService {
 	};
 
 	getMonitorsByTeamId = async ({ teamId, limit, type, page, rowsPerPage, filter, field, order }) => {
-		const monitors = await this.db.getMonitorsByTeamId({
+		const monitors = await this.db.monitorModule.getMonitorsByTeamId({
 			limit,
 			type,
 			page,
@@ -217,7 +217,7 @@ class MonitorService {
 	};
 
 	getMonitorsAndSummaryByTeamId = async ({ teamId, type, explain }) => {
-		const result = await this.db.getMonitorsAndSummaryByTeamId({
+		const result = await this.db.monitorModule.getMonitorsAndSummaryByTeamId({
 			type,
 			explain,
 			teamId,
@@ -226,7 +226,7 @@ class MonitorService {
 	};
 
 	getMonitorsWithChecksByTeamId = async ({ teamId, limit, type, page, rowsPerPage, filter, field, order, explain }) => {
-		const result = await this.db.getMonitorsWithChecksByTeamId({
+		const result = await this.db.monitorModule.getMonitorsWithChecksByTeamId({
 			limit,
 			type,
 			page,
@@ -241,7 +241,7 @@ class MonitorService {
 	};
 
 	exportMonitorsToCSV = async ({ teamId }) => {
-		const monitors = await this.db.getMonitorsByTeamId({ teamId });
+		const monitors = await this.db.monitorModule.getMonitorsByTeamId({ teamId });
 
 		if (!monitors || monitors.length === 0) {
 			throw this.errorService.createNotFoundError("No monitors to export");

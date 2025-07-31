@@ -23,7 +23,7 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const monitor = await this.db.getMonitorById(monitorId);
+		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 
 		if (!monitor) {
 			throw this.errorService.createNotFoundError("Monitor not found");
@@ -95,7 +95,7 @@ class CheckService {
 				throw this.errorService.createBadRequestError("No monitor ID in request");
 			}
 
-			const monitor = await this.db.getMonitorById(monitorId);
+			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 			if (!monitor) {
 				throw this.errorService.createNotFoundError("Monitor not found");
 			}
@@ -118,7 +118,7 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const monitor = await this.db.getMonitorById(monitorId);
+		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 
 		if (!monitor) {
 			throw this.errorService.createNotFoundError("Monitor not found");

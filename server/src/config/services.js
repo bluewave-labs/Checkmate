@@ -32,14 +32,42 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+import { fileURLToPath } from "url";
+import { ObjectId } from "mongodb";
+
 // DB Modules
+import { NormalizeData, NormalizeDataUptimeDetails } from "../utils/dataUtils.js";
+import { GenerateAvatarImage } from "../utils/imageProcessing.js";
+import { ParseBoolean } from "../utils/utils.js";
+
+// Models
 import Check from "../db/models/Check.js";
 import HardwareCheck from "../db/models/HardwareCheck.js";
 import PageSpeedCheck from "../db/models/PageSpeedCheck.js";
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
+import InviteToken from "../db/models/InviteToken.js";
+import StatusPage from "../db/models/StatusPage.js";
+import Team from "../db/models/Team.js";
+import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
+import MonitorStats from "../db/models/MonitorStats.js";
+import NetworkCheck from "../db/models/NetworkCheck.js";
+import Notification from "../db/models/Notification.js";
+import RecoveryToken from "../db/models/RecoveryToken.js";
+import AppSettings from "../db/models/AppSettings.js";
 
+import InviteModule from "../db/mongo/modules/inviteModule.js";
 import CheckModule from "../db/mongo/modules/checkModule.js";
+import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
+import UserModule from "../db/mongo/modules/userModule.js";
+import HardwareCheckModule from "../db/mongo/modules/hardwareCheckModule.js";
+import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule.js";
+import MonitorModule from "../db/mongo/modules/monitorModule.js";
+import NetworkCheckModule from "../db/mongo/modules/networkCheckModule.js";
+import NotificationModule from "../db/mongo/modules/notificationModule.js";
+import PageSpeedCheckModule from "../db/mongo/modules/pageSpeedCheckModule.js";
+import RecoveryModule from "../db/mongo/modules/recoveryModule.js";
+import SettingsModule from "../db/mongo/modules/settingsModule.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -52,7 +80,48 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 
 	// Create DB
 	const checkModule = new CheckModule({ logger, Check, HardwareCheck, PageSpeedCheck, Monitor, User });
-	const db = new MongoDB({ logger, envSettings, checkModule });
+	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
+	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
+	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
+	const hardwareCheckModule = new HardwareCheckModule({ HardwareCheck, Monitor, logger });
+	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
+	const monitorModule = new MonitorModule({
+		Monitor,
+		MonitorStats,
+		Check,
+		PageSpeedCheck,
+		HardwareCheck,
+		stringService,
+		fs,
+		path,
+		fileURLToPath,
+		ObjectId,
+		NormalizeData,
+		NormalizeDataUptimeDetails,
+	});
+	const networkCheckModule = new NetworkCheckModule({ NetworkCheck });
+	const notificationModule = new NotificationModule({ Notification, Monitor });
+	const pageSpeedCheckModule = new PageSpeedCheckModule({ PageSpeedCheck });
+	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
+	const settingsModule = new SettingsModule({ AppSettings });
+
+	const db = new MongoDB({
+		logger,
+		envSettings,
+		checkModule,
+		inviteModule,
+		statusPageModule,
+		userModule,
+		hardwareCheckModule,
+		maintenanceWindowModule,
+		monitorModule,
+		networkCheckModule,
+		notificationModule,
+		pageSpeedCheckModule,
+		recoveryModule,
+		settingsModule,
+	});
+
 	await db.connect();
 
 	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);

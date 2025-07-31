@@ -1,89 +1,39 @@
 import mongoose from "mongoose";
 import AppSettings from "../models/AppSettings.js";
 
-//****************************************
-// User Operations
-//****************************************
-
-import * as userModule from "./modules/userModule.js";
-
-//****************************************
-// Invite Token Operations
-//****************************************
-
-import * as inviteModule from "./modules/inviteModule.js";
-
-//****************************************
-// Recovery Operations
-//****************************************
-import * as recoveryModule from "./modules/recoveryModule.js";
-
-//****************************************
-//  Monitors
-//****************************************
-
-import * as monitorModule from "./modules/monitorModule.js";
-
-//****************************************
-// Page Speed Checks
-//****************************************
-
-import * as pageSpeedCheckModule from "./modules/pageSpeedCheckModule.js";
-
-//****************************************
-// Hardware Checks
-//****************************************
-import * as hardwareCheckModule from "./modules/hardwareCheckModule.js";
-
-//****************************************
-// Checks
-//****************************************
-
-import * as checkModule from "./modules/checkModule.js";
-
-//****************************************
-// Maintenance Window
-//****************************************
-import * as maintenanceWindowModule from "./modules/maintenanceWindowModule.js";
-
-//****************************************
-// Notifications
-//****************************************
-import * as notificationModule from "./modules/notificationModule.js";
-
-//****************************************
-// AppSettings
-//****************************************
-import * as settingsModule from "./modules/settingsModule.js";
-
-//****************************************
-// Status Page
-//****************************************
-import * as statusPageModule from "./modules/statusPageModule.js";
-
-//****************************************
-// Diagnostic
-//****************************************
-import * as diagnosticModule from "./modules/diagnosticModule.js";
-
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings, checkModule }) {
+	constructor({
+		logger,
+		envSettings,
+		checkModule,
+		inviteModule,
+		statusPageModule,
+		userModule,
+		hardwareCheckModule,
+		maintenanceWindowModule,
+		monitorModule,
+		networkCheckModule,
+		notificationModule,
+		pageSpeedCheckModule,
+		recoveryModule,
+		settingsModule,
+	}) {
 		this.logger = logger;
 		this.envSettings = envSettings;
-		Object.assign(this, userModule);
-		Object.assign(this, inviteModule);
-		Object.assign(this, recoveryModule);
-		Object.assign(this, monitorModule);
-		Object.assign(this, pageSpeedCheckModule);
-		Object.assign(this, hardwareCheckModule);
+		this.userModule = userModule;
+		this.inviteModule = inviteModule;
+		this.recoveryModule = recoveryModule;
+		this.pageSpeedCheckModule = pageSpeedCheckModule;
+		this.hardwareCheckModule = hardwareCheckModule;
 		this.checkModule = checkModule;
-		Object.assign(this, maintenanceWindowModule);
-		Object.assign(this, notificationModule);
-		Object.assign(this, settingsModule);
-		Object.assign(this, statusPageModule);
-		Object.assign(this, diagnosticModule);
+		this.maintenanceWindowModule = maintenanceWindowModule;
+		this.monitorModule = monitorModule;
+		this.notificationModule = notificationModule;
+		this.settingsModule = settingsModule;
+		this.statusPageModule = statusPageModule;
+		this.networkCheckModule = networkCheckModule;
 	}
 
 	get serviceName() {
