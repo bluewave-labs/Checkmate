@@ -50,14 +50,12 @@ class RecoveryModule {
 			const user = await this.User.findOne({ email: recoveryToken.email });
 
 			if (user === null) {
-				console.log("WTF2");
 				throw new Error(this.stringService.dbUserNotFound);
 			}
 
 			const match = await user.comparePassword(newPassword);
 
 			if (match === true) {
-				console.log("WTF");
 				throw new Error("Password cannot be the same as the old password");
 			}
 
