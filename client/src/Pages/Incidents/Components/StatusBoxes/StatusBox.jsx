@@ -6,7 +6,7 @@ import AlertIcon from "../../../../assets/icons/alert-icon.svg?react";
 import CheckIcon from "../../../../assets/icons/check-icon.svg?react";
 import CloseIcon from "../../../../assets/icons/close-icon.svg?react";
 import WarningIcon from "../../../../assets/icons/warning-icon.svg?react";
-
+import "./StatusBox.css";
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
 	let sharedStyles = {
