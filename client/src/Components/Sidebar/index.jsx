@@ -18,8 +18,6 @@ import Incidents from "../../assets/icons/incidents.svg?react";
 import Integrations from "../../assets/icons/integrations.svg?react";
 import PageSpeed from "../../assets/icons/page-speed.svg?react";
 import Settings from "../../assets/icons/settings.svg?react";
-import ArrowDown from "../../assets/icons/down-arrow.svg?react";
-import ArrowUp from "../../assets/icons/up-arrow.svg?react";
 import ChangeLog from "../../assets/icons/changeLog.svg?react";
 import Docs from "../../assets/icons/docs.svg?react";
 import StatusPages from "../../assets/icons/status-pages.svg?react";
@@ -30,7 +28,6 @@ import Logs from "../../assets/icons/logs.svg?react";
 // Utils
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
@@ -88,9 +85,6 @@ const Sidebar = () => {
 	// Redux state
 	const collapsed = useSelector((state) => state.ui.sidebar.collapsed);
 
-	// Local state
-	const [open, setOpen] = useState({ Dashboard: false, Account: false, Other: false });
-
 	const menu = getMenu(t);
 	const otherMenuItems = getOtherMenuItems(t);
 	const accountMenuItems = getAccountMenuItems(t);
@@ -108,10 +102,7 @@ const Sidebar = () => {
 				transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
 			}}
 		>
-			<CollapseButton
-				collapsed={collapsed}
-				setOpen={setOpen}
-			/>
+			<CollapseButton collapsed={collapsed} />
 			<Logo collapsed={collapsed} />
 			<List
 				component="nav"
@@ -120,7 +111,6 @@ const Sidebar = () => {
 				sx={{
 					px: theme.spacing(6),
 					height: "100%",
-					/* overflow: "hidden", */
 				}}
 			>
 				{menu.map((item) => {

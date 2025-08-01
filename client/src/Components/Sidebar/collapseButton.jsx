@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../../Features/UI/uiSlice";
 
-const CollapseButton = ({ collapsed, setOpen }) => {
+const CollapseButton = ({ collapsed }) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	return (
@@ -34,9 +34,6 @@ const CollapseButton = ({ collapsed, setOpen }) => {
 				},
 			}}
 			onClick={() => {
-				setOpen((prev) =>
-					Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
-				);
 				dispatch(toggleSidebar());
 			}}
 		>
