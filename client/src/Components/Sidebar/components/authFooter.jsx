@@ -20,6 +20,22 @@ import { clearAuthState } from "../../../Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
+const getFilteredAccountMenuItems = (user, items) => {
+	if (!user) return [];
+
+	let filtered = [...items];
+
+	if (user.role?.includes("demo")) {
+		filtered = filtered.filter((item) => item.name !== "Password");
+	}
+
+	if (!user.role?.includes("superadmin")) {
+		filtered = filtered.filter((item) => item.name !== "Team");
+	}
+
+	return filtered;
+};
+
 const AuthFooter = ({ collapsed, accountMenuItems }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -43,23 +59,9 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 		navigate("/login");
 	};
 	const renderAccountMenuItems = (user, items) => {
-		let filteredAccountMenuItems = [...items];
+		const filteredItems = getFilteredAccountMenuItems(user, items);
 
-		// If the user is in demo mode, remove the "Password" option
-		if (user.role?.includes("demo")) {
-			filteredAccountMenuItems = filteredAccountMenuItems.filter(
-				(item) => item.name !== "Password"
-			);
-		}
-
-		// If the user is NOT a superadmin, remove the "Team" option
-		if (user.role && !user.role.includes("superadmin")) {
-			filteredAccountMenuItems = filteredAccountMenuItems.filter(
-				(item) => item.name !== "Team"
-			);
-		}
-
-		return filteredAccountMenuItems.map((item) => (
+		return filteredItems.map((item) => (
 			<MenuItem
 				key={item.name}
 				onClick={() => {
