@@ -100,7 +100,13 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 			borderRadius={theme.shape.borderRadius}
 			boxSizing={"border-box"}
 		>
-			<Avatar small={true} />
+			<Avatar
+				small={true}
+				onClick={(e) => collapsed && openPopup(e)}
+				sx={{
+					cursor: collapsed ? "pointer" : "default",
+				}}
+			/>
 
 			<Stack
 				direction={"row"}
