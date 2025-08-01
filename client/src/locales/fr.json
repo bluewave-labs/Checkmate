@@ -264,6 +264,7 @@
 	"notifyEmails": "Envoyer également une notification par email à plusieurs adresses (bientôt).",
 	"seperateEmails": "Vous pouvez ajouter plusieurs adresses emails en les séparant par une virgule",
 	"checkFrequency": "Vérifier la fréquence",
+	"chooseGame": "",
 	"matchMethod": "Méthode de rapprochement",
 	"expectedValue": "Valeur attendue",
 	"deleteDialogTitle": "Voulez-vous vraiment supprimer ce moniteur ?",
@@ -441,7 +442,8 @@
 		"http": "Entrez l'URL ou l'IP du moniteur (par exemple https://exemple.fr ou 192.168.1.100) et ajoutez un nom familier qui apparaîtra sur le tableau de bord.",
 		"ping": "Entrez l'adresse IP ou le nom d'hôte à tester (par exemple, 192.168.1.100 ou exemple.fr) et ajoutez un nom familier qui apparaîtra sur le tableau de bord.",
 		"docker": "Entrer l'ID Docker du container. Les identifiants Docker doivent être les 64 caractères de l'ID Docker. Vous pouvez utiliser la commande docker inspect <short_id> pour avoir l'ID complet.",
-		"port": "Entrez l'URL ou l'adresse IP du serveur, le numéro de port et un nom d'affichage familier qui apparaîtra sur le tableau de bord."
+		"port": "Entrez l'URL ou l'adresse IP du serveur, le numéro de port et un nom d'affichage familier qui apparaîtra sur le tableau de bord.",
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",

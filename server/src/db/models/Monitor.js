@@ -33,7 +33,7 @@ const MonitorSchema = mongoose.Schema(
 		type: {
 			type: String,
 			required: true,
-			enum: ["http", "ping", "pagespeed", "hardware", "docker", "port"],
+			enum: ["http", "ping", "pagespeed", "hardware", "docker", "port", "game"],
 		},
 		ignoreTlsErrors: {
 			type: Boolean,
@@ -114,6 +114,9 @@ const MonitorSchema = mongoose.Schema(
 			default: function () {
 				return this.alertThreshold;
 			},
+		},
+		gameId: {
+			type: String,
 		},
 	},
 	{

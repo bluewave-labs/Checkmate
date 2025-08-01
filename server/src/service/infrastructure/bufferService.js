@@ -6,6 +6,7 @@ const TYPE_MAP = {
 	docker: "checks",
 	pagespeed: "pagespeedChecks",
 	hardware: "hardwareChecks",
+	game: "checks",
 };
 
 class BufferService {

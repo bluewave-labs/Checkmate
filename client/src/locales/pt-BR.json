@@ -260,6 +260,7 @@
 	"notifyEmails": "Também notificar por e-mail para vários endereços (em breve)",
 	"seperateEmails": "Você pode separar vários e-mails com uma vírgula",
 	"checkFrequency": "Verifique a frequência",
+	"chooseGame": "",
 	"matchMethod": "Método de correspondência",
 	"expectedValue": "Valor esperado",
 	"deleteDialogTitle": "Você realmente deseja excluir este monitor?",
@@ -437,7 +438,8 @@
 		"http": "Insira a URL ou IP para monitorar (ex. https://exemplo.com.br/ ou 192.168.1.100) e adicione uma descrição que aparecerá na dashboard.",
 		"ping": "Insira o endereço IP ou nome de domínio para ping (ex. 192.168.1.100 ou exemplo.com.br) e adicione uma descrição que aparecerá na dashboard.",
 		"docker": "Insira o Docker Id do seu container. Docker Ids devem ser todos os 64 caracteres. Você pode executar docker inspect <short_id> para descobrir o Id completo.",
-		"port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard."
+		"port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard.",
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",

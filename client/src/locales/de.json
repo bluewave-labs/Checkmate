@@ -260,6 +260,7 @@
 	"notifyEmails": "Benachrichtige auch per E-Mail an mehrere Adressen (kommt bald)",
 	"seperateEmails": "Du kannst mehrere E-Mails mit einem Komma trennen",
 	"checkFrequency": "Überprüfungsfrequenz",
+	"chooseGame": "",
 	"matchMethod": "",
 	"expectedValue": "Erwarteter Wert",
 	"deleteDialogTitle": "Möchtest du diesen Monitor wirklich löschen?",
@@ -437,7 +438,8 @@
 		"http": "",
 		"ping": "",
 		"docker": "",
-		"port": ""
+		"port": "",
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",

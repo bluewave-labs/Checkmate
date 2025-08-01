@@ -260,6 +260,7 @@
 	"notifyEmails": "",
 	"seperateEmails": "",
 	"checkFrequency": "",
+	"chooseGame": "",
 	"matchMethod": "",
 	"expectedValue": "",
 	"deleteDialogTitle": "",
@@ -435,7 +436,8 @@
 		"http": "",
 		"ping": "",
 		"docker": "",
-		"port": ""
+		"port": "",
+		"game": ""
 	},
 	"common": {
 		"appName": "",

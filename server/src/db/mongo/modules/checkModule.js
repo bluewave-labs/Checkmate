@@ -86,6 +86,7 @@ class CheckModule {
 				port: this.Check,
 				pagespeed: this.PageSpeedCheck,
 				hardware: this.HardwareCheck,
+				game: this.Check,
 			};
 
 			const Model = checkModels[type];

@@ -32,6 +32,7 @@ const getTypeOptions = () => [
 	{ value: "ping", label: "Ping" },
 	{ value: "docker", label: "Docker" },
 	{ value: "port", label: "Port" },
+	{ value: "game", label: "Game" },
 ];
 
 // These functions were moved inline to ensure translations are applied correctly
