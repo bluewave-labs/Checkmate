@@ -1,8 +1,8 @@
 import Stack from "@mui/material/Stack";
 
 import List from "@mui/material/List";
-import Logo from "./logo";
-import CollapseButton from "./collapseButton";
+import Logo from "./components/logo";
+import CollapseButton from "./components/collapseButton";
 import Divider from "@mui/material/Divider";
 import NavItem from "./components/navItem";
 import AuthFooter from "./components/authFooter";

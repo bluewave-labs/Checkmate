@@ -4,27 +4,24 @@ import ArrowLeft from "../../ArrowLeft";
 import { useTheme } from "@mui/material/styles";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../../../Features/UI/uiSlice";
-
 import PropTypes from "prop-types";
 
 const CollapseButton = ({ collapsed }) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-
 	const arrowIcon = collapsed ? (
 		<ArrowRight
-			width={theme.spacing(8)}
 			height={theme.spacing(8)}
+			width={theme.spacing(8)}
 			color={theme.palette.primary.contrastTextSecondary}
 		/>
 	) : (
 		<ArrowLeft
-			width={theme.spacing(8)}
 			height={theme.spacing(8)}
+			width={theme.spacing(8)}
 			color={theme.palette.primary.contrastTextSecondary}
 		/>
 	);
-
 	return (
 		<IconButton
 			sx={{
@@ -53,7 +50,6 @@ const CollapseButton = ({ collapsed }) => {
 };
 
 CollapseButton.propTypes = {
-	collapsed: PropTypes.bool,
+	collapsed: PropTypes.bool.isRequired,
 };
-
 export default CollapseButton;
