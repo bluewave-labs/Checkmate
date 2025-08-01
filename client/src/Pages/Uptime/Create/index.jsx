@@ -43,7 +43,7 @@ import {
 	useFetchMonitorById,
 } from "../../../Hooks/monitorHooks";
 
-import { GAMES } from '../../../Utils/games';
+import { GAMES } from "../../../Utils/games";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -115,10 +115,10 @@ const UptimeCreate = ({ isClone = false }) => {
 		{ _id: 4, name: t("time.fourMinutes") },
 		{ _id: 5, name: t("time.fiveMinutes") },
 	];
- 
+
 	const GAMELIST = Object.entries(GAMES).map(([key, value]) => ({
 		_id: key,
-		name: value.name
+		name: value.name,
 	}));
 
 	const CRUMBS = [
@@ -165,7 +165,7 @@ const UptimeCreate = ({ isClone = false }) => {
 			label: t("monitorType.game.label"),
 			placeholder: t("monitorType.game.placeholder"),
 			namePlaceholder: t("monitorType.game.namePlaceholder"),
-		}
+		},
 	};
 
 	// Handlers
@@ -182,7 +182,8 @@ const UptimeCreate = ({ isClone = false }) => {
 						: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
 				type: monitor.type,
-				port: (monitor.type === "port" || monitor.type === "game") ? monitor.port : undefined,
+				port:
+					monitor.type === "port" || monitor.type === "game" ? monitor.port : undefined,
 				interval: monitor.interval,
 				matchMethod: monitor.matchMethod,
 				expectedValue: monitor.expectedValue,
@@ -202,7 +203,8 @@ const UptimeCreate = ({ isClone = false }) => {
 				interval: monitor.interval,
 				teamId: monitor.teamId,
 				userId: monitor.userId,
-				port: (monitor.type === "port" || monitor.type === "game") ? monitor.port : undefined,
+				port:
+					monitor.type === "port" || monitor.type === "game" ? monitor.port : undefined,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				gameId: monitor.gameId || undefined,
 			};
@@ -573,16 +575,16 @@ const UptimeCreate = ({ isClone = false }) => {
 							helperText={errors["port"]}
 							hidden={monitor.type !== "port" && monitor.type !== "game"}
 						/>
-						{
-							monitor.type === "game" &&
-						(<Select
-							name="gameId"
-							label={t("chooseGame")}
-							value={monitor.gameId || ""}
-							placeholder={t('chooseGame')}
-							onChange={onChange}
-							items={GAMELIST}
-						/>)}
+						{monitor.type === "game" && (
+							<Select
+								name="gameId"
+								label={t("chooseGame")}
+								value={monitor.gameId || ""}
+								placeholder={t("chooseGame")}
+								onChange={onChange}
+								items={GAMELIST}
+							/>
+						)}
 						<TextInput
 							name="name"
 							type="text"

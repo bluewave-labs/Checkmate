@@ -1,6 +1,6 @@
 import jmespath from "jmespath";
 import https from "https";
-import { GameDig } from 'gamedig';
+import { GameDig } from "gamedig";
 
 const SERVICE_NAME = "NetworkService";
 const UPROCK_ENDPOINT = "https://api.uprock.com/checkmate/push";
@@ -487,7 +487,7 @@ class NetworkService {
 	 * @property {string} message - A message indicating the result of the request.
 	 */
 	async requestGame(monitor) {
-		try {		
+		try {
 			const { url, port, gameId } = monitor;
 
 			const gameResponse = {

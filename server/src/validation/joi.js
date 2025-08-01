@@ -171,7 +171,7 @@ const createMonitorBodyValidation = joi.object({
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
-	gameId: joi.string()
+	gameId: joi.string(),
 });
 
 const createMonitorsBodyValidation = joi.array().items(
@@ -198,7 +198,7 @@ const editMonitorBodyValidation = joi.object({
 		usage_disk: joi.number(),
 		usage_temperature: joi.number(),
 	}),
-	gameId: joi.string()
+	gameId: joi.string(),
 });
 
 const pauseMonitorParamValidation = joi.object({

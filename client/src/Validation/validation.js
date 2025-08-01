@@ -205,7 +205,7 @@ const monitorValidation = joi.object({
 	expectedValue: joi.string().allow(null, ""),
 	jsonPath: joi.string().allow(null, ""),
 	matchMethod: joi.string().allow(null, ""),
-	gameId: joi.string().allow(null, "")
+	gameId: joi.string().allow(null, ""),
 });
 
 const imageValidation = joi.object({
