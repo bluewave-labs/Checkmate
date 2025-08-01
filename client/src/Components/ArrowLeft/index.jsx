@@ -4,7 +4,6 @@ import LeftArrowLong from "../../assets/icons/left-arrow-long.svg?react";
 import PropTypes from "prop-types";
 
 const ArrowLeft = ({ type, color = "#667085", ...props }) => {
-	console.log(color);
 	if (type === "double") {
 		return (
 			<LeftArrowDouble
