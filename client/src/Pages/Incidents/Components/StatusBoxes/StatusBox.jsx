@@ -6,14 +6,18 @@ import AlertIcon from "../../../../assets/icons/alert-icon.svg?react";
 import CheckIcon from "../../../../assets/icons/check-icon.svg?react";
 import CloseIcon from "../../../../assets/icons/close-icon.svg?react";
 import WarningIcon from "../../../../assets/icons/warning-icon.svg?react";
-import "./StatusBox.css";
 
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
 	let sharedStyles = {
 		position: "absolute",
 		right: 8,
-		"& svg path": { stroke: theme.palette.primary.contrastTextTertiary },
+		"& svg": {
+			width: 20,
+			height: 20,
+			opacity: 0.9,
+			"& path": { stroke: theme.palette.primary.contrastTextTertiary, strokeWidth: 1.7 },
+		},
 	};
 
 	let color;
