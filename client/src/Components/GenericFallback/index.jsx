@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Box, Stack } from "@mui/material";
-import Skeleton from "../../assets/Images/create-placeholder.svg?react";
-import SkeletonDark from "../../assets/Images/create-placeholder-dark.svg?react";
+import OutputAnimation from "../../assets/Animations/output.gif";
+import DarkmodeOutput from "../../assets/Animations/darkmodeOutput.gif";
 import Background from "../../assets/Images/background-grid.svg?react";
 import { useSelector } from "react-redux";
 
@@ -37,11 +37,18 @@ const GenericFallback = ({ children }) => {
 					marginTop: "100px",
 				}}
 			>
-				{mode === "light" ? (
-					<Skeleton style={{ zIndex: 1 }} />
-				) : (
-					<SkeletonDark style={{ zIndex: 1 }} />
-				)}
+				<Box
+					component="img"
+					src={mode === "light" ? OutputAnimation : DarkmodeOutput}
+					Background="transparent"
+					alt="Loading animation"
+					sx={{
+						zIndex: 1,
+						border: "none",
+						borderRadius: theme.spacing(8),
+						width: "100%",
+					}}
+				/>
 				<Box
 					sx={{
 						"& svg g g:last-of-type path": {
