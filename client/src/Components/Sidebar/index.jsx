@@ -91,9 +91,15 @@ const Sidebar = () => {
 
 	return (
 		<Stack
-			width={collapsed ? "64px" : "var(--env-var-side-bar-width)"}
+			height="100vh"
+			width={
+				collapsed
+					? "var(--env-var-side-bar-collapsed-width)"
+					: "var(--env-var-side-bar-width)"
+			}
 			component="aside"
-			position="relative"
+			position="sticky"
+			top={0}
 			borderRight={`1px solid ${theme.palette.primary.lowContrast}`}
 			paddingTop={theme.spacing(6)}
 			paddingBottom={theme.spacing(6)}

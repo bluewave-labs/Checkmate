@@ -81,7 +81,7 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 	return (
 		<Stack
 			direction="row"
-			height="50px"
+			height="var(--env-var-side-bar-auth-footer-height)"
 			alignItems="center"
 			py={theme.spacing(4)}
 			px={theme.spacing(8)}
