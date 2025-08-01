@@ -88,82 +88,82 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 			gap={theme.spacing(2)}
 			borderRadius={theme.shape.borderRadius}
 		>
-			<>
-				<Avatar small={true} />
-				<Stack
-					direction="row"
-					alignItems="center"
+			<Avatar small={true} />
+
+			<Stack
+				ml={theme.spacing(2)}
+				sx={{ maxWidth: "50%", overflow: "hidden" }}
+			>
+				<Typography
+					color={theme.palette.primary.contrastText}
+					fontWeight={500}
+					lineHeight={1}
+					fontSize={"var(--env-var-font-size-medium)"}
 					sx={{
+						display: "block",
 						whiteSpace: "nowrap",
 						overflow: "hidden",
-						maxWidth: collapsed ? 0 : 400,
-						transition: "max-width 300ms ease, opacity 300ms ease",
+						textOverflow: "ellipsis",
 					}}
 				>
-					<Box
-						ml={theme.spacing(2)}
-						sx={{ maxWidth: "50%", overflow: "hidden" }}
-					>
-						<Typography
-							component="span"
-							fontWeight={500}
-							sx={{
-								display: "block",
-								whiteSpace: "nowrap",
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-							}}
-						>
-							{authState.user?.firstName} {authState.user?.lastName}
-						</Typography>
-						<Typography sx={{ textTransform: "capitalize" }}>
-							{authState.user?.role?.includes("superadmin")
-								? t("roles.superAdmin")
-								: authState.user?.role?.includes("admin")
-									? t("roles.admin")
-									: authState.user?.role?.includes("user")
-										? t("roles.teamMember")
-										: authState.user?.role?.includes("demo")
-											? t("roles.demoUser")
-											: authState.user?.role}
-						</Typography>
-					</Box>
-					<Stack
-						className="sidebar-delay-fade"
-						flexDirection={"row"}
-						marginLeft={"auto"}
-						columnGap={theme.spacing(2)}
-					>
-						<ThemeSwitch color={theme.palette.primary.contrastTextTertiary} />
-						<Tooltip
-							title={t("navControls")}
-							disableInteractive
-						>
-							<IconButton
-								sx={{
-									ml: "auto",
-									mr: "-8px",
-									"&:focus": { outline: "none" },
-									alignSelf: "center",
-									padding: "10px",
+					{authState.user?.firstName} {authState.user?.lastName}
+				</Typography>
+				<Typography
+					color={theme.palette.primary.contrastText}
+					fontSize={"var(--env-var-font-size-small)"}
+					textOverflow="ellipsis"
+					overflow="hidden"
+					whiteSpace="nowrap"
+					sx={{ textTransform: "capitalize", opacity: 0.8 }}
+				>
+					{authState.user?.role?.includes("superadmin")
+						? t("roles.superAdmin")
+						: authState.user?.role?.includes("admin")
+							? t("roles.admin")
+							: authState.user?.role?.includes("user")
+								? t("roles.teamMember")
+								: authState.user?.role?.includes("demo")
+									? t("roles.demoUser")
+									: authState.user?.role}
+				</Typography>
+			</Stack>
+			<Stack
+				direction="row"
+				columnGap={theme.spacing(2)}
+				sx={{
+					opacity: collapsed ? 0 : 1,
+					transition: "opacity 300ms ease",
+					transitionDelay: collapsed ? "0ms" : "300ms",
+				}}
+			>
+				<ThemeSwitch color={theme.palette.primary.contrastTextTertiary} />
+				<Tooltip
+					title={t("navControls")}
+					disableInteractive
+				>
+					<IconButton
+						sx={{
+							ml: "auto",
+							mr: "-8px",
+							"&:focus": { outline: "none" },
+							alignSelf: "center",
+							padding: "10px",
 
-									"& svg": {
-										width: "22px",
-										height: "22px",
-									},
-									"& svg path": {
-										/* Vertical three dots */
-										stroke: theme.palette.primary.contrastTextTertiary,
-									},
-								}}
-								onClick={(event) => openPopup(event, "logout")}
-							>
-								<DotsVertical />
-							</IconButton>
-						</Tooltip>
-					</Stack>
-				</Stack>
-			</>
+							"& svg": {
+								width: "22px",
+								height: "22px",
+							},
+							"& svg path": {
+								/* Vertical three dots */
+								stroke: theme.palette.primary.contrastTextTertiary,
+							},
+						}}
+						onClick={(event) => openPopup(event, "logout")}
+					>
+						<DotsVertical />
+					</IconButton>
+				</Tooltip>
+			</Stack>
 			<Menu
 				className="sidebar-popup"
 				anchorEl={anchorEl}
