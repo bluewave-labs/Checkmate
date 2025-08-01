@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { clearAuthState } from "../../../Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 
 const AuthFooter = ({ collapsed, accountMenuItems }) => {
 	const { t } = useTranslation();
@@ -27,11 +28,9 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 	const dispatch = useDispatch();
 
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [popup, setPopup] = useState();
 
-	const openPopup = (event, id) => {
+	const openPopup = (event) => {
 		setAnchorEl(event.currentTarget);
-		setPopup(id);
 	};
 
 	const closePopup = () => {
@@ -169,7 +168,7 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 									stroke: theme.palette.primary.contrastTextTertiary,
 								},
 							}}
-							onClick={(event) => openPopup(event, "logout")}
+							onClick={(event) => openPopup(event)}
 						>
 							<DotsVertical />
 						</IconButton>
@@ -179,7 +178,7 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 			<Menu
 				className="sidebar-popup"
 				anchorEl={anchorEl}
-				open={Boolean(anchorEl) && popup === "logout"}
+				open={Boolean(anchorEl)}
 				onClose={closePopup}
 				disableScrollLock
 				anchorOrigin={{
@@ -267,6 +266,11 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 			</Menu>
 		</Stack>
 	);
+};
+
+AuthFooter.propTypes = {
+	collapsed: PropTypes.bool,
+	accountMenuItems: PropTypes.array,
 };
 
 export default AuthFooter;
