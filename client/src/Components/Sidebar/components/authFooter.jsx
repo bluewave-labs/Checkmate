@@ -36,6 +36,17 @@ const getFilteredAccountMenuItems = (user, items) => {
 	return filtered;
 };
 
+const getRoleDisplayText = (user, t) => {
+	if (!user?.role) return "";
+
+	if (user.role.includes("superadmin")) return t("roles.superAdmin");
+	if (user.role.includes("admin")) return t("roles.admin");
+	if (user.role.includes("user")) return t("roles.teamMember");
+	if (user.role.includes("demo")) return t("roles.demoUser");
+
+	return user.role;
+};
+
 const AuthFooter = ({ collapsed, accountMenuItems }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -54,7 +65,6 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 	};
 
 	const logout = async () => {
-		// Clear auth state
 		dispatch(clearAuthState());
 		navigate("/login");
 	};
@@ -133,15 +143,7 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 						whiteSpace="nowrap"
 						sx={{ textTransform: "capitalize", opacity: 0.8 }}
 					>
-						{authState.user?.role?.includes("superadmin")
-							? t("roles.superAdmin")
-							: authState.user?.role?.includes("admin")
-								? t("roles.admin")
-								: authState.user?.role?.includes("user")
-									? t("roles.teamMember")
-									: authState.user?.role?.includes("demo")
-										? t("roles.demoUser")
-										: authState.user?.role}
+						{getRoleDisplayText(authState.user, t)}
 					</Typography>
 				</Stack>
 				<Stack
