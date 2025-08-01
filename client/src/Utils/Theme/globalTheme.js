@@ -61,7 +61,6 @@ const baseTheme = (palette) => ({
 							style: {
 								backgroundColor: theme.palette.accent.main,
 								color: theme.palette.primary.contrastTextSecondaryDarkBg,
-								fontWeight: 700,
 								letterSpacing: "0.5px",
 								textShadow: "0 0 1px rgba(0, 0, 0, 0.15)",
 								"&:hover": {
@@ -722,6 +721,14 @@ const baseTheme = (palette) => ({
 					},
 				},
 			],
+		},
+
+		MuiTooltip: {
+			styleOverrides: {
+				tooltip: () => ({
+					fontSize: typographyLevels.m,
+				}),
+			},
 		},
 	},
 	shape: {

@@ -70,6 +70,9 @@ const DataTable = ({
 						backgroundColor: theme.palette.primary.main,
 						color: theme.palette.primary.contrastTextSecondary,
 					},
+					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
+						borderBottom: "none",
+					},
 				}}
 			>
 				<TableHead>
