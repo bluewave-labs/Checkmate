@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 const Logo = ({ collapsed }) => {
 	const { t } = useTranslation();
@@ -38,10 +39,10 @@ const Logo = ({ collapsed }) => {
 			<Box
 				overflow={"hidden"}
 				sx={{
-					transition: "opacity 900ms ease",
+					transition: "opacity 900ms ease, width 900ms ease",
 					opacity: collapsed ? 0 : 1,
 					whiteSpace: "nowrap",
-					width: collapsed ? 0 : "auto",
+					width: collapsed ? 0 : "100%",
 				}}
 			>
 				{" "}
@@ -57,6 +58,10 @@ const Logo = ({ collapsed }) => {
 			</Box>
 		</Stack>
 	);
+};
+
+Logo.propTypes = {
+	collapsed: PropTypes.bool,
 };
 
 export default Logo;

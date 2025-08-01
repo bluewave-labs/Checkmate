@@ -3,13 +3,11 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-
 import { useTheme } from "@emotion/react";
-import { useNavigate } from "react-router";
+import PropTypes from "prop-types";
 
 const NavItem = ({ item, collapsed, selected, onClick }) => {
 	const theme = useTheme();
-	const navigate = useNavigate();
 
 	return (
 		<Tooltip
@@ -86,4 +84,10 @@ const NavItem = ({ item, collapsed, selected, onClick }) => {
 	);
 };
 
+NavItem.propTypes = {
+	item: PropTypes.object,
+	collapsed: PropTypes.bool,
+	selected: PropTypes.bool,
+	onClick: PropTypes.func,
+};
 export default NavItem;
