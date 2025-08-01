@@ -18,6 +18,12 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const FilterHeader = ({ header, options, value, onChange, multiple = true }) => {
 	const theme = useTheme();
+	
+	// Shared flexbox styles to avoid duplication
+	const flexCenterStyles = {
+		display: "flex",
+		alignItems: "center"
+	};
 
 	const controlledValue = value === undefined ? [] : value; // Ensure value is always treated as an array for controlled component purposes
 
@@ -25,8 +31,7 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 		<FormControl
 			sx={{ 
 				minWidth: "10%",
-				display: "flex",
-				alignItems: "center"
+				...flexCenterStyles
 			}}
 			size="small"
 		>
@@ -41,10 +46,6 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 				displayEmpty
 				value={controlledValue}
 				onChange={onChange}
-				sx={{
-					display: "flex",
-					alignItems: "center"
-				}}
 				renderValue={(selected) => {
 					if (!selected?.length) {
 						return header;
@@ -77,8 +78,6 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						sx={{
 							height: theme.spacing(17),
 							padding: 0,
-							display: "flex",
-							alignItems: "center",
 						}}
 					>
 						<Checkbox
