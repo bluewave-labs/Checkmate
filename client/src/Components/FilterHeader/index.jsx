@@ -23,7 +23,11 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 
 	return (
 		<FormControl
-			sx={{ minWidth: "10%" }}
+			sx={{ 
+				minWidth: "10%",
+				display: "flex",
+				alignItems: "center"
+			}}
 			size="small"
 		>
 			<Select
@@ -37,6 +41,10 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 				displayEmpty
 				value={controlledValue}
 				onChange={onChange}
+				sx={{
+					display: "flex",
+					alignItems: "center"
+				}}
 				renderValue={(selected) => {
 					if (!selected?.length) {
 						return header;
@@ -69,6 +77,8 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 						sx={{
 							height: theme.spacing(17),
 							padding: 0,
+							display: "flex",
+							alignItems: "center",
 						}}
 					>
 						<Checkbox
