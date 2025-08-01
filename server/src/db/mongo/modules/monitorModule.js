@@ -310,7 +310,7 @@ class MonitorModule {
 				checks: this.processChecksForDisplay(this.NormalizeData, checksForDateRange, numToDisplay, normalize),
 			};
 
-			if (monitor.type === "http" || monitor.type === "ping" || monitor.type === "docker" || monitor.type === "port") {
+			if (monitor.type === "http" || monitor.type === "ping" || monitor.type === "docker" || monitor.type === "port" || monitor.type === "game") {
 				// HTTP/PING Specific stats
 				monitorStats.periodAvgResponseTime = this.getAverageResponseTime(checksForDateRange);
 				monitorStats.periodUptime = this.getUptimePercentage(checksForDateRange);

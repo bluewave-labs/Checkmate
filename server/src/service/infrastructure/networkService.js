@@ -1,5 +1,6 @@
 import jmespath from "jmespath";
 import https from "https";
+import { GameDig } from 'gamedig';
 
 const SERVICE_NAME = "NetworkService";
 const UPROCK_ENDPOINT = "https://api.uprock.com/checkmate/push";
@@ -23,6 +24,7 @@ class NetworkService {
 		this.TYPE_HARDWARE = "hardware";
 		this.TYPE_DOCKER = "docker";
 		this.TYPE_PORT = "port";
+		this.TYPE_GAME = "game";
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
@@ -471,6 +473,57 @@ class NetworkService {
 	}
 
 	/**
+	 * Requests the status of a game monitor.
+	 *
+	 * @param {Object} monitor - The monitor object to request the status for.
+	 * @returns {Promise<Object>} The response from the game status request.
+	 * @throws {Error} Throws an error if the request fails or if the monitor is not configured correctly.
+	 * @property {string} monitorId - The ID of the monitor.
+	 * @property {string} type - The type of the monitor (should be "game").
+	 * @property {number} responseTime - The time taken for the request.
+	 * @property {Object|null} payload - The game state response or null if the request failed.
+	 * @property {boolean} status - Indicates if the request was successful (true) or not (false).
+	 * @property {number} code - The status code of the request (200 for success, NETWORK_ERROR for failure).
+	 * @property {string} message - A message indicating the result of the request.
+	 */
+	async requestGame(monitor) {
+		try {		
+			const { url, port, gameId } = monitor;
+
+			const gameResponse = {
+				code: 200,
+				status: true,
+				message: "Success",
+				monitorId: monitor._id,
+				type: "game",
+			};
+
+			const state = await GameDig.query({
+				type: gameId,
+				host: url,
+				port: port,
+			}).catch((error) => {
+				return false;
+			});
+
+			if (!state) {
+				gameResponse.status = false;
+				gameResponse.code = this.NETWORK_ERROR;
+				gameResponse.message = "No response";
+				return gameResponse;
+			}
+
+			gameResponse.responseTime = state.ping;
+			gameResponse.payload = state;
+			return gameResponse;
+		} catch (error) {
+			error.service = this.SERVICE_NAME;
+			error.method = "requestPing";
+			throw error;
+		}
+	}
+
+	/**
 	 * Gets the status of a job based on its type and returns the appropriate response.
 	 *
 	 * @param {Object} job - The job object containing the data for the status request.
@@ -494,6 +547,8 @@ class NetworkService {
 				return await this.requestDocker(monitor);
 			case this.TYPE_PORT:
 				return await this.requestPort(monitor);
+			case this.TYPE_GAME:
+				return await this.requestGame(monitor);
 			default:
 				return this.handleUnsupportedType(type);
 		}

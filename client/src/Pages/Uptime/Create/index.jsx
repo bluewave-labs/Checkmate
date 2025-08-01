@@ -43,6 +43,8 @@ import {
 	useFetchMonitorById,
 } from "../../../Hooks/monitorHooks";
 
+import { GAMES } from '../../../Utils/games';
+
 /**
  * Parses a URL string and returns a URL object.
  *
@@ -113,6 +115,12 @@ const UptimeCreate = ({ isClone = false }) => {
 		{ _id: 4, name: t("time.fourMinutes") },
 		{ _id: 5, name: t("time.fiveMinutes") },
 	];
+ 
+	const GAMELIST = Object.entries(GAMES).map(([key, value]) => ({
+		_id: key,
+		name: value.name
+	}));
+
 	const CRUMBS = [
 		{ name: "uptime", path: "/uptime" },
 		...(isCreate
@@ -153,6 +161,11 @@ const UptimeCreate = ({ isClone = false }) => {
 			placeholder: t("monitorType.port.placeholder"),
 			namePlaceholder: t("monitorType.port.namePlaceholder"),
 		},
+		game: {
+			label: t("monitorType.game.label"),
+			placeholder: t("monitorType.game.placeholder"),
+			namePlaceholder: t("monitorType.game.namePlaceholder"),
+		}
 	};
 
 	// Handlers
@@ -169,12 +182,13 @@ const UptimeCreate = ({ isClone = false }) => {
 						: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
 				type: monitor.type,
-				port: monitor.type === "port" ? monitor.port : undefined,
+				port: (monitor.type === "port" || monitor.type === "game") ? monitor.port : undefined,
 				interval: monitor.interval,
 				matchMethod: monitor.matchMethod,
 				expectedValue: monitor.expectedValue,
 				jsonPath: monitor.jsonPath,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
+				gameId: monitor.gameId || undefined,
 			};
 		} else {
 			form = {
@@ -188,8 +202,9 @@ const UptimeCreate = ({ isClone = false }) => {
 				interval: monitor.interval,
 				teamId: monitor.teamId,
 				userId: monitor.userId,
-				port: monitor.type === "port" ? monitor.port : undefined,
+				port: (monitor.type === "port" || monitor.type === "game") ? monitor.port : undefined,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
+				gameId: monitor.gameId || undefined,
 			};
 		}
 		if (!useAdvancedMatching) {
@@ -486,6 +501,15 @@ const UptimeCreate = ({ isClone = false }) => {
 								checked={monitor.type === "port"}
 								onChange={onChange}
 							/>
+							<Radio
+								name="type"
+								title={t("gameServerMonitoring")}
+								desc={t("gameServerMonitoringDescription")}
+								size="small"
+								value="game"
+								checked={monitor.type === "game"}
+								onChange={onChange}
+							/>
 							{errors["type"] ? (
 								<Box className="error-container">
 									<Typography
@@ -547,8 +571,18 @@ const UptimeCreate = ({ isClone = false }) => {
 							onChange={onChange}
 							error={errors["port"] ? true : false}
 							helperText={errors["port"]}
-							hidden={monitor.type !== "port"}
+							hidden={monitor.type !== "port" && monitor.type !== "game"}
 						/>
+						{
+							monitor.type === "game" &&
+						(<Select
+							name="gameId"
+							label={t("chooseGame")}
+							value={monitor.gameId || ""}
+							placeholder={t('chooseGame')}
+							onChange={onChange}
+							items={GAMELIST}
+						/>)}
 						<TextInput
 							name="name"
 							type="text"

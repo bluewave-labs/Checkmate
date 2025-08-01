@@ -357,7 +357,7 @@ const useUpdateMonitor = () => {
 				expectedValue: monitor.expectedValue,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				jsonPath: monitor.jsonPath,
-				...(monitor.type === "port" && { port: monitor.port }),
+				...((monitor.type === "port" || monitor.type === "game") && { port: monitor.port }),
 				...(monitor.type === "hardware" && {
 					thresholds: monitor.thresholds,
 					secret: monitor.secret,
