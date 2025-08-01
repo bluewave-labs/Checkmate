@@ -1,9 +1,7 @@
 import PropTypes from "prop-types";
 import { Box, Button } from "@mui/material";
-import LeftArrowDouble from "../../../../assets/icons/left-arrow-double.svg?react";
-import RightArrowDouble from "../../../../assets/icons/right-arrow-double.svg?react";
-import LeftArrow from "../../../../assets/icons/left-arrow.svg?react";
-import RightArrow from "../../../../assets/icons/right-arrow.svg?react";
+import LeftArrow from "../../../ArrowLeft";
+import RightArrow from "../../../ArrowRight";
 import { useTheme } from "@emotion/react";
 
 TablePaginationActions.propTypes = {
@@ -50,7 +48,7 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
 				disabled={page === 0}
 				aria-label="first page"
 			>
-				<LeftArrowDouble />
+				<LeftArrow type="double" />
 			</Button>
 			<Button
 				variant="group"
@@ -74,7 +72,7 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="last page"
 			>
-				<RightArrowDouble />
+				<RightArrow type="double" />
 			</Button>
 		</Box>
 	);
