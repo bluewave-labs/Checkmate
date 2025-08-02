@@ -980,6 +980,7 @@
 	"testLocale": "testLocale",
 	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"time": {
+		"fifteenSeconds": "15 seconds",
 		"fiveMinutes": "5 minutes",
 		"fourMinutes": "4 minutes",
 		"oneDay": "1 day",
@@ -987,6 +988,7 @@
 		"oneMinute": "1 minute",
 		"oneWeek": "1 week",
 		"tenMinutes": "10 minutes",
+		"thirtySeconds": "30 seconds",
 		"threeMinutes": "3 minutes",
 		"twentyMinutes": "20 minutes",
 		"twoMinutes": "2 minutes"
