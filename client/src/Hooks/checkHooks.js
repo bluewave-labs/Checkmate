@@ -2,166 +2,50 @@ import { useState, useEffect } from "react";
 import { networkService } from "../main";
 import { createToast } from "../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
+import { useFetchData } from "./useFetchData";
 
-const useFetchChecksTeam = ({
-	status,
-	sortOrder,
-	limit,
-	dateRange,
-	filter,
-	ack,
-	page,
-	rowsPerPage,
-	enabled = true,
-	updateTrigger,
-}) => {
-	const [checks, setChecks] = useState(undefined);
-	const [checksCount, setChecksCount] = useState(undefined);
-	const [isLoading, setIsLoading] = useState(false);
-	const [networkError, setNetworkError] = useState(false);
 
-	useEffect(() => {
-		const fetchChecks = async () => {
-			if (!enabled) {
-				return;
-			}
+const useFetchChecksTeam = (params) => {
+	const config = { ...params };
+	const deps = Object.values(config); // Safe enough for now
 
-			const config = {
-				status,
-				sortOrder,
-				limit,
-				dateRange,
-				filter,
-				ack,
-				page,
-				rowsPerPage,
-			};
+	const requestFn = () => networkService.getChecksByTeam(config);
 
-			try {
-				setIsLoading(true);
-				const res = await networkService.getChecksByTeam(config);
-				setChecks(res.data.data.checks);
-				setChecksCount(res.data.data.checksCount);
-			} catch (error) {
-				setNetworkError(true);
-				createToast({ body: error.message });
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchChecks();
-	}, [
-		status,
-		sortOrder,
-		limit,
-		dateRange,
-		filter,
-		ack,
-		page,
-		rowsPerPage,
-		enabled,
-		updateTrigger,
-	]);
-
-	return [checks, checksCount, isLoading, networkError];
+	return useFetchData({
+		requestFn,
+		enabled: config.enabled,
+		deps,
+	});
 };
 
-const useFetchChecksByMonitor = ({
-	monitorId,
-	type,
-	status,
-	sortOrder,
-	limit,
-	dateRange,
-	filter,
-	ack,
-	page,
-	rowsPerPage,
-	enabled = true,
-	updateTrigger,
-}) => {
-	const [checks, setChecks] = useState(undefined);
-	const [checksCount, setChecksCount] = useState(undefined);
-	const [isLoading, setIsLoading] = useState(false);
-	const [networkError, setNetworkError] = useState(false);
 
-	useEffect(() => {
-		const fetchChecks = async () => {
-			if (!enabled || !type) {
-				return;
-			}
+const useFetchChecksByMonitor = (params) => {
+	const config = { ...params };
+	const deps = Object.values(config);
 
-			const config = {
-				monitorId,
-				type,
-				status,
-				sortOrder,
-				limit,
-				dateRange,
-				filter,
-				ack,
-				page,
-				rowsPerPage,
-			};
+	const requestFn = () => networkService.getChecksByMonitor(config);
 
-			try {
-				setIsLoading(true);
-				const res = await networkService.getChecksByMonitor(config);
-				setChecks(res.data.data.checks);
-				setChecksCount(res.data.data.checksCount);
-			} catch (error) {
-				setNetworkError(true);
-				createToast({ body: error.message });
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchChecks();
-	}, [
-		monitorId,
-		type,
-		status,
-		sortOrder,
-		limit,
-		dateRange,
-		filter,
-		ack,
-		page,
-		rowsPerPage,
-		enabled,
-		updateTrigger,
-	]);
-
-	return [checks, checksCount, isLoading, networkError];
+	return useFetchData({
+		requestFn,
+		enabled: config.enabled,
+		deps,
+		shouldRun: !!config.type, // only run if 'type' is truthy
+	});
 };
+
 
 const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
-	const [summary, setSummary] = useState(undefined);
-	const [isLoading, setIsLoading] = useState(false);
-	const [networkError, setNetworkError] = useState(false);
+	const deps = [updateTrigger];
 
-	useEffect(() => {
-		const fetchSummary = async () => {
-			try {
-				setIsLoading(true);
+	const requestFn = () => networkService.getChecksAndSummaryByTeamId();
 
-				const res = await networkService.getChecksAndSummaryByTeamId();
-				setSummary(res.data.data);
-			} catch (error) {
-				setNetworkError(true);
-				createToast({ body: error.message });
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchSummary();
-	}, [updateTrigger]);
-
-	return [summary, isLoading, networkError];
+	return useFetchData({
+		requestFn,
+		enabled: true,
+		deps,
+	});
 };
+
 
 const useResolveIncident = () => {
 	const [isLoading, setIsLoading] = useState(false);

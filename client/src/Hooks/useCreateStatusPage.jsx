@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { networkService } from "../../../../main";
-import { createToast } from "../../../../Utils/toastUtils";
+import { networkService } from "../main";
+import { createToast } from "../Utils/toastUtils";
 
 const useCreateStatusPage = (isCreate, url) => {
 	const [isLoading, setIsLoading] = useState(false);
