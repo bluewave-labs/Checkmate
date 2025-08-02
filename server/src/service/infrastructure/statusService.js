@@ -236,7 +236,7 @@ class StatusService {
 		}
 
 		if (type === "hardware") {
-			const { cpu, memory, disk, host } = payload?.data ?? {};
+			const { cpu, memory, disk, host, net } = payload?.data ?? {};
 			const { errors } = payload?.errors ?? [];
 			check.cpu = cpu ?? {};
 			check.memory = memory ?? {};
@@ -244,6 +244,7 @@ class StatusService {
 			check.host = host ?? {};
 			check.errors = errors ?? [];
 			check.capture = payload?.capture ?? {};
+			check.net = net ?? {};
 		}
 		return check;
 	};
