@@ -102,9 +102,8 @@ const CreateInfrastructureMonitor = () => {
 	};
 
 	const getAlertError = (errors) => {
-		return Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX))
-			? errors[Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX))]
-			: null;
+		const errorKey = Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX));
+		return errorKey ? errors[errorKey] : null;
 	};
 
 	// Populate form fields if editing
