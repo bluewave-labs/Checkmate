@@ -112,6 +112,7 @@ export const InfrastructureTooltip = ({
 	yLabel,
 	dotColor,
 	dateRange,
+	formatter = getFormattedPercentage,
 }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 	const theme = useTheme();
@@ -166,8 +167,8 @@ export const InfrastructureTooltip = ({
 							sx={{ opacity: 0.8 }}
 						>
 							{yIdx >= 0
-								? `${yLabel} ${getFormattedPercentage(payload[0].payload[hardwareType][yIdx][metric])}`
-								: `${yLabel} ${getFormattedPercentage(payload[0].payload[yKey])}`}
+								? `${yLabel} ${formatter(payload[0].payload[hardwareType][yIdx][metric])}`
+								: `${yLabel} ${formatter(payload[0].payload[yKey])}`}
 						</Typography>
 					</Stack>
 				</Box>
