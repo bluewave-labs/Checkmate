@@ -1,78 +1,51 @@
-// React, Redux, Router
-import { useTheme } from "@emotion/react";
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-// Utility and Network
-import { infrastructureMonitorValidation } from "../../../Validation/validation";
-import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
-import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
-import { useTranslation } from "react-i18next";
-import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
-import NotificationsConfig from "../../../Components/NotificationConfig";
-import {
-	useUpdateMonitor,
-	useCreateMonitor,
-	useFetchGlobalSettings,
-} from "../../../Hooks/monitorHooks";
-
-// MUI
-import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
-
 //Components
 import Breadcrumbs from "../../../Components/Breadcrumbs";
-import Link from "../../../Components/Link";
 import ConfigBox from "../../../Components/ConfigBox";
+import Dialog from "../../../Components/Dialog";
+import FieldWrapper from "../../../Components/Inputs/FieldWrapper";
+import Link from "../../../Components/Link";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
+import PulseDot from "../../../Components/Animated/PulseDot";
+import Select from "../../../Components/Inputs/Select";
 import TextInput from "../../../Components/Inputs/TextInput";
+import { Box, Stack, Tooltip, Typography, Button, ButtonGroup } from "@mui/material";
+import { CustomThreshold } from "./Components/CustomThreshold";
 import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import { createToast } from "../../../Utils/toastUtils";
-import Select from "../../../Components/Inputs/Select";
-import { CustomThreshold } from "./Components/CustomThreshold";
-import FieldWrapper from "../../../Components/Inputs/FieldWrapper";
-
-const SELECT_VALUES = [
-	{ _id: 0.25, name: "15 seconds" },
-	{ _id: 0.5, name: "30 seconds" },
-	{ _id: 1, name: "1 minute" },
-	{ _id: 2, name: "2 minutes" },
-	{ _id: 5, name: "5 minutes" },
-	{ _id: 10, name: "10 minutes" },
-];
-
-const METRICS = ["cpu", "memory", "disk", "temperature"];
-const METRIC_PREFIX = "usage_";
-const MS_PER_MINUTE = 60000;
-
-const hasAlertError = (errors) => {
-	return Object.keys(errors).filter((k) => k.startsWith(METRIC_PREFIX)).length > 0;
-};
-
-const getAlertError = (errors) => {
-	return Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX))
-		? errors[Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX))]
-		: null;
-};
+// Utils
+import NotificationsConfig from "../../../Components/NotificationConfig";
+import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
+import { infrastructureMonitorValidation } from "../../../Validation/validation";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
+import {
+	useCreateMonitor,
+	useDeleteMonitor,
+	useFetchGlobalSettings,
+	useFetchHardwareMonitorById,
+	usePauseMonitor,
+	useUpdateMonitor,
+} from "../../../Hooks/monitorHooks";
 
 const CreateInfrastructureMonitor = () => {
-	const theme = useTheme();
 	const { user } = useSelector((state) => state.auth);
 	const { monitorId } = useParams();
-	const { t } = useTranslation();
-
-	// Determine if we are creating or editing
 	const isCreate = typeof monitorId === "undefined";
 
-	// Fetch monitor details if editing
-	const [monitor, isLoading, networkError] = useFetchHardwareMonitorById({ monitorId });
-	const [notifications, notificationsAreLoading, notificationsError] =
-		useGetNotificationsByTeamId();
-	const [updateMonitor, isUpdating] = useUpdateMonitor();
-	const [createMonitor, isCreating] = useCreateMonitor();
-	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
+	const theme = useTheme();
+	const { t } = useTranslation();
 
 	// State
 	const [errors, setErrors] = useState({});
 	const [https, setHttps] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
+	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [infrastructureMonitor, setInfrastructureMonitor] = useState({
 		url: "",
 		name: "",
@@ -90,8 +63,51 @@ const CreateInfrastructureMonitor = () => {
 		secret: "",
 	});
 
-	// Populate form fields if editing
+	// Fetch monitor details if editing
+	const { statusColor, pagespeedStatusMsg, determineState } = useMonitorUtils();
+	const [monitor, isLoading] = useFetchHardwareMonitorById({
+		monitorId,
+		updateTrigger,
+	});
+	const [createMonitor, isCreating] = useCreateMonitor();
+	const [deleteMonitor, isDeleting] = useDeleteMonitor();
+	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
+	const [notifications, notificationsAreLoading] = useGetNotificationsByTeamId();
+	const [pauseMonitor, isPausing] = usePauseMonitor();
+	const [updateMonitor, isUpdating] = useUpdateMonitor();
 
+	const FREQUENCIES = [
+		{ _id: 0.25, name: t("time.fifteenSeconds") },
+		{ _id: 0.5, name: t("time.thirtySeconds") },
+		{ _id: 1, name: t("time.oneMinute") },
+		{ _id: 2, name: t("time.twoMinutes") },
+		{ _id: 5, name: t("time.fiveMinutes") },
+		{ _id: 10, name: t("time.tenMinutes") },
+	];
+	const CRUMBS = [
+		{ name: "Infrastructure monitors", path: "/infrastructure" },
+		...(isCreate
+			? [{ name: "Create", path: "/infrastructure/create" }]
+			: [
+					{ name: "Details", path: `/infrastructure/${monitorId}` },
+					{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
+				]),
+	];
+	const METRICS = ["cpu", "memory", "disk", "temperature"];
+	const METRIC_PREFIX = "usage_";
+	const MS_PER_MINUTE = 60000;
+
+	const hasAlertError = (errors) => {
+		return Object.keys(errors).filter((k) => k.startsWith(METRIC_PREFIX)).length > 0;
+	};
+
+	const getAlertError = (errors) => {
+		return Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX))
+			? errors[Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX))]
+			: null;
+	};
+
+	// Populate form fields if editing
 	useEffect(() => {
 		if (isCreate) {
 			if (globalSettingsLoading) return;
@@ -231,6 +247,10 @@ const CreateInfrastructureMonitor = () => {
 			: await updateMonitor({ monitor: form, redirect: "/infrastructure" });
 	};
 
+	const triggerUpdate = () => {
+		setUpdateTrigger(!updateTrigger);
+	};
+
 	const onChange = (event) => {
 		const { value, name } = event.target;
 		setInfrastructureMonitor({
@@ -257,19 +277,26 @@ const CreateInfrastructureMonitor = () => {
 		});
 	};
 
+	const handlePause = async () => {
+		await pauseMonitor({ monitorId, triggerUpdate });
+	};
+
+	const handleRemove = async (event) => {
+		event.preventDefault();
+		await deleteMonitor({ monitor, redirect: "/infrastructure" });
+	};
+
+	const isBusy =
+		isLoading ||
+		isUpdating ||
+		isCreating ||
+		isDeleting ||
+		isPausing ||
+		notificationsAreLoading;
+
 	return (
 		<Box className="create-infrastructure-monitor">
-			<Breadcrumbs
-				list={[
-					{ name: "Infrastructure monitors", path: "/infrastructure" },
-					...(isCreate
-						? [{ name: "Create", path: "/infrastructure/create" }]
-						: [
-								{ name: "Details", path: `/infrastructure/${monitorId}` },
-								{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
-							]),
-				]}
-			/>
+			<Breadcrumbs list={CRUMBS} />
 			<Stack
 				component="form"
 				onSubmit={onSubmit}
@@ -278,25 +305,139 @@ const CreateInfrastructureMonitor = () => {
 				gap={theme.spacing(12)}
 				mt={theme.spacing(6)}
 			>
-				<Typography
-					component="h1"
-					variant="h1"
+				<Stack
+					direction="row"
+					gap={theme.spacing(2)}
 				>
-					<Typography
-						component="span"
-						fontSize="inherit"
-					>
-						{t(isCreate ? "infrastructureCreateYour" : "infrastructureEditYour")}{" "}
-					</Typography>
-					<Typography
-						component="span"
-						variant="h2"
-						fontSize="inherit"
-						fontWeight="inherit"
-					>
-						{t("monitor")}
-					</Typography>
-				</Typography>
+					<Box>
+						<Typography
+							component="h1"
+							variant="h1"
+						>
+							<Typography
+								component="span"
+								fontSize="inherit"
+								color={
+									!isCreate ? theme.palette.primary.contrastTextSecondary : undefined
+								}
+							>
+								{!isCreate ? infrastructureMonitor.name : t("createYour") + " "}
+							</Typography>
+							{isCreate ? (
+								<Typography
+									component="span"
+									fontSize="inherit"
+									fontWeight="inherit"
+									color={theme.palette.primary.contrastTextSecondary}
+								>
+									{t("monitor")}
+								</Typography>
+							) : (
+								<></>
+							)}
+						</Typography>
+						{!isCreate && (
+							<Stack
+								direction="row"
+								alignItems="center"
+								height="fit-content"
+								gap={theme.spacing(2)}
+							>
+								<Tooltip
+									title={pagespeedStatusMsg[determineState(monitor)]}
+									disableInteractive
+									slotProps={{
+										popper: {
+											modifiers: [
+												{
+													name: "offset",
+													options: { offset: [0, -8] },
+												},
+											],
+										},
+									}}
+								>
+									<Box>
+										<PulseDot color={statusColor[determineState(monitor)]} />
+									</Box>
+								</Tooltip>
+								<Typography
+									component="h2"
+									variant="monitorUrl"
+								>
+									{infrastructureMonitor.url?.replace(/^https?:\/\//, "") || "..."}
+								</Typography>
+								<Typography
+									position="relative"
+									variant="body2"
+									ml={theme.spacing(6)}
+									mt={theme.spacing(1)}
+									sx={{
+										"&:before": {
+											position: "absolute",
+											content: `""`,
+											width: theme.spacing(2),
+											height: theme.spacing(2),
+											borderRadius: "50%",
+											backgroundColor: theme.palette.primary.contrastTextTertiary,
+											opacity: 0.8,
+											left: theme.spacing(-5),
+											top: "50%",
+											transform: "translateY(-50%)",
+										},
+									}}
+								>
+									{t("editing")}
+								</Typography>
+							</Stack>
+						)}
+					</Box>
+					{!isCreate && (
+						<Box
+							alignSelf="flex-end"
+							ml="auto"
+						>
+							<Button
+								onClick={handlePause}
+								loading={isBusy}
+								variant="contained"
+								color="secondary"
+								sx={{
+									pl: theme.spacing(4),
+									pr: theme.spacing(6),
+									"& svg": {
+										mr: theme.spacing(2),
+										"& path": {
+											stroke: theme.palette.primary.contrastTextTertiary,
+											strokeWidth: 0.1,
+										},
+									},
+								}}
+							>
+								{monitor?.isActive ? (
+									<>
+										<PauseCircleOutlineIcon />
+										{t("pause")}
+									</>
+								) : (
+									<>
+										<PlayCircleOutlineRoundedIcon />
+										{t("resume")}
+									</>
+								)}
+							</Button>
+							<Button
+								loading={isBusy}
+								variant="contained"
+								color="error"
+								onClick={() => setIsOpen(true)}
+								sx={{ ml: theme.spacing(6) }}
+							>
+								{t("remove")}
+							</Button>
+						</Box>
+					)}
+				</Stack>
 				<ConfigBox>
 					<Stack>
 						<Typography
@@ -462,7 +603,7 @@ const CreateInfrastructureMonitor = () => {
 							label="Check frequency"
 							value={infrastructureMonitor.interval || 15}
 							onChange={onChange}
-							items={SELECT_VALUES}
+							items={FREQUENCIES}
 						/>
 					</Stack>
 				</ConfigBox>
@@ -474,12 +615,23 @@ const CreateInfrastructureMonitor = () => {
 						type="submit"
 						variant="contained"
 						color="accent"
-						loading={isLoading || isUpdating || isCreating || notificationsAreLoading}
+						loading={isBusy}
 					>
 						{t(isCreate ? "infrastructureCreateMonitor" : "infrastructureEditMonitor")}
 					</Button>
 				</Stack>
 			</Stack>
+			{!isCreate && (
+				<Dialog
+					open={isOpen}
+					theme={theme}
+					title={t("deleteDialogTitle")}
+					description={t("deleteDialogDescription")}
+					onCancel={() => setIsOpen(false)}
+					confirmationButtonLabel={t("delete")}
+					onConfirm={handleRemove}
+				/>
+			)}
 		</Box>
 	);
 };
