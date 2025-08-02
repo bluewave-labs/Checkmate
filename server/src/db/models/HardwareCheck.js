@@ -41,7 +41,7 @@ const captureSchema = mongoose.Schema({
 });
 
 const networkInterfaceSchema = mongoose.Schema({
-	name: { type: String},
+	name: { type: String },
 	bytes_sent: { type: Number, default: 0 },
 	bytes_recv: { type: Number, default: 0 },
 	packets_sent: { type: Number, default: 0 },
