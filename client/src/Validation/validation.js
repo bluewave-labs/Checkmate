@@ -279,6 +279,30 @@ const statusPageValidation = joi.object({
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
 	showAdminLoginLink: joi.boolean(),
+	customCSS: joi
+		.string()
+		.allow("")
+		.custom((value, helpers) => {
+			// Basic XSS protection - prevent script tags and dangerous CSS properties
+			const dangerousPatterns = [
+				/<script/i,
+				/javascript:/i,
+				/expression\(/i,
+				/url\([^)]*data:/i,
+				/-moz-binding/i,
+				/behavior:/i,
+			];
+
+			for (const pattern of dangerousPatterns) {
+				if (pattern.test(value)) {
+					return helpers.error("string.xss");
+				}
+			}
+			return value;
+		})
+		.messages({
+			"string.xss": "CSS contains potentially unsafe content",
+		}),
 });
 
 const settingsValidation = joi.object({

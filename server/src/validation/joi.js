@@ -8,7 +8,9 @@ import { ROLES, VALID_ROLES } from "../utils/roleUtils.js";
 const roleValidatior = (role) => (value, helpers) => {
 	const hasRole = role.some((role) => value.includes(role));
 	if (!hasRole) {
-		throw new joi.ValidationError(`You do not have the required authorization. Required roles: ${role.join(", ")}`);
+		return helpers.error("any.invalid", {
+			message: `You do not have the required authorization. Required roles: ${role.join(", ")}`,
+		});
 	}
 	return value;
 };
@@ -471,6 +473,25 @@ const createStatusPageBodyValidation = joi.object({
 	showCharts: joi.boolean().optional(),
 	showUptimePercentage: joi.boolean(),
 	showAdminLoginLink: joi.boolean().optional(),
+	customCSS: joi
+		.string()
+		.allow("")
+		.custom((value, helpers) => {
+			// Basic XSS protection - prevent script tags and dangerous CSS properties
+			if (!value) return value;
+			const dangerousPatterns = [/<script/i, /javascript:/i, /expression\(/i, /url\([^)]*data:/i, /-moz-binding/i, /behavior:/i];
+
+			for (const pattern of dangerousPatterns) {
+				if (pattern.test(value)) {
+					return helpers.error("string.xss");
+				}
+			}
+			return value;
+		})
+		.messages({
+			"string.xss": "CSS contains potentially unsafe content",
+		})
+		.optional(),
 });
 
 const imageValidation = joi
