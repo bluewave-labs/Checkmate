@@ -12,13 +12,13 @@
 	}
 } */
 
-.home-layout aside {
+/* .home-layout aside {
 	position: sticky;
 	top: 0;
 	left: 0;
 	height: 100vh;
 	max-width: var(--env-var-side-bar-width);
-}
+} */
 
 .home-layout > div {
 	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
