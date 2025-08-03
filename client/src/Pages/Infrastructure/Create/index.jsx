@@ -3,7 +3,6 @@ import { useTheme } from "@emotion/react";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-
 // Utility and Network
 import { infrastructureMonitorValidation } from "../../../Validation/validation";
 import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
@@ -11,7 +10,11 @@ import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
 import { useTranslation } from "react-i18next";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
 import NotificationsConfig from "../../../Components/NotificationConfig";
-import { useUpdateMonitor, useCreateMonitor } from "../../../Hooks/monitorHooks";
+import {
+	useUpdateMonitor,
+	useCreateMonitor,
+	useFetchGlobalSettings,
+} from "../../../Hooks/monitorHooks";
 
 // MUI
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
@@ -65,6 +68,7 @@ const CreateInfrastructureMonitor = () => {
 		useGetNotificationsByTeamId();
 	const [updateMonitor, isUpdating] = useUpdateMonitor();
 	const [createMonitor, isCreating] = useCreateMonitor();
+	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
 
 	// State
 	const [errors, setErrors] = useState({});
@@ -87,35 +91,64 @@ const CreateInfrastructureMonitor = () => {
 	});
 
 	// Populate form fields if editing
+
 	useEffect(() => {
-		if (isCreate || !monitor) return;
+		if (isCreate) {
+			if (globalSettingsLoading) return;
 
-		setInfrastructureMonitor({
-			url: monitor.url.replace(/^https?:\/\//, ""),
-			name: monitor.name || "",
-			notifications: monitor.notifications,
-			interval: monitor.interval / MS_PER_MINUTE,
-			cpu: monitor.thresholds?.usage_cpu !== undefined,
-			usage_cpu: monitor.thresholds?.usage_cpu ? monitor.thresholds.usage_cpu * 100 : "",
+			const gt = globalSettings?.data?.settings?.globalThresholds || {};
 
-			memory: monitor.thresholds?.usage_memory !== undefined,
-			usage_memory: monitor.thresholds?.usage_memory
-				? monitor.thresholds.usage_memory * 100
-				: "",
+			setHttps(false);
 
-			disk: monitor.thresholds?.usage_disk !== undefined,
-			usage_disk: monitor.thresholds?.usage_disk
-				? monitor.thresholds.usage_disk * 100
-				: "",
+			setInfrastructureMonitor({
+				url: "",
+				name: "",
+				notifications: [],
+				interval: 0.25,
+				cpu: gt.cpu !== undefined,
+				usage_cpu: gt.cpu !== undefined ? gt.cpu.toString() : "",
+				memory: gt.memory !== undefined,
+				usage_memory: gt.memory !== undefined ? gt.memory.toString() : "",
+				disk: gt.disk !== undefined,
+				usage_disk: gt.disk !== undefined ? gt.disk.toString() : "",
+				temperature: gt.temperature !== undefined,
+				usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
+				secret: "",
+			});
+		} else if (monitor) {
+			const { thresholds = {} } = monitor;
 
-			temperature: monitor.thresholds?.usage_temperature !== undefined,
-			usage_temperature: monitor.thresholds?.usage_temperature
-				? monitor.thresholds.usage_temperature * 100
-				: "",
-			secret: monitor.secret || "",
-		});
-		setHttps(monitor.url.startsWith("https"));
-	}, [isCreate, monitor]);
+			setHttps(monitor.url.startsWith("https"));
+
+			setInfrastructureMonitor({
+				url: monitor.url.replace(/^https?:\/\//, ""),
+				name: monitor.name || "",
+				notifications: monitor.notifications || [],
+				interval: monitor.interval / MS_PER_MINUTE,
+				cpu: thresholds.usage_cpu !== undefined,
+				usage_cpu:
+					thresholds.usage_cpu !== undefined
+						? (thresholds.usage_cpu * 100).toString()
+						: "",
+				memory: thresholds.usage_memory !== undefined,
+				usage_memory:
+					thresholds.usage_memory !== undefined
+						? (thresholds.usage_memory * 100).toString()
+						: "",
+				disk: thresholds.usage_disk !== undefined,
+				usage_disk:
+					thresholds.usage_disk !== undefined
+						? (thresholds.usage_disk * 100).toString()
+						: "",
+				temperature: thresholds.usage_temperature !== undefined,
+				usage_temperature:
+					thresholds.usage_temperature !== undefined
+						? (thresholds.usage_temperature * 100).toString()
+						: "",
+				secret: monitor.secret || "",
+			});
+		}
+	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
 
 	// Handlers
 	const onSubmit = async (event) => {
@@ -265,7 +298,7 @@ const CreateInfrastructureMonitor = () => {
 					</Typography>
 				</Typography>
 				<ConfigBox>
-					<Stack gap={theme.spacing(6)}>
+					<Stack>
 						<Typography
 							component="h2"
 							variant="h2"
@@ -347,7 +380,12 @@ const CreateInfrastructureMonitor = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t("notificationConfig.title")}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("notificationConfig.title")}
+						</Typography>
 						<Typography component="p">{t("notificationConfig.description")}</Typography>
 					</Box>
 					<NotificationsConfig

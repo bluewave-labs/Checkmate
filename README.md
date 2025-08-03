@@ -94,13 +94,15 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 - E-mail, Webhooks, Discord, Telegram, Slack notifications
 - Scheduled maintenance
 - JSON query monitoring
-- Support for multiple languages
+- Multi-language support for English, German, Japanese, Portuguese (Brazil), Russian, Turkish, Ukrainian, Vietnamese, Chinese (Traditional, Taiwan)
 
-**Short term roadmap:** ([Milestone 2.2](https://github.com/bluewave-labs/Checkmate/milestone/8))
+**Short term roadmap:** 
 
 - Better notifications
 - Network monitoring
 - ..and a few more features
+
+If you would like to sponsor an additional feature, [see this page](https://checkmate.so/sponsored-features).
 
 ## Screenshots
 

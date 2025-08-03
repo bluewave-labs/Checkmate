@@ -9,7 +9,7 @@ const FallbackTitle = ({ title }) => {
 			alignSelf="center"
 			component="h1"
 			marginY={theme.spacing(4)}
-			color={theme.palette.primary.contrastTextTertiary}
+			color={theme.palette.primary.contrastText}
 		>
 			{title}
 		</Typography>

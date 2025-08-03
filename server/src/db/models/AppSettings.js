@@ -87,6 +87,12 @@ const AppSettingsSchema = mongoose.Schema(
 			type: Number,
 			default: notificationConfig.JITTER_FACTOR,
 		},
+		globalThresholds: {
+			cpu: { type: Number },
+			memory: { type: Number },
+			disk: { type: Number },
+			temperature: { type: Number },
+		},
 	},
 	{
 		timestamps: true,
