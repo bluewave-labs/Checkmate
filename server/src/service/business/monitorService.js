@@ -184,6 +184,7 @@ class MonitorService {
 
 	addDemoMonitors = async ({ userId, teamId }) => {
 		const demoMonitors = await this.db.monitorModule.addDemoMonitors(userId, teamId);
+
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor)));
 		return demoMonitors;
 	};

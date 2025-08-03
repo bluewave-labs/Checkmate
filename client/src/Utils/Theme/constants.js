@@ -216,6 +216,10 @@ const newSemanticColors = {
 			light: newColors.gray500,
 			dark: newColors.blueGray600,
 		},
+		cardShadow: {
+			light: "0 0 0 1px rgba(0, 0, 0, 0.04), 0 12px 24px rgba(0, 0, 0, 0.08)",
+			dark: "0 2px 10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.04)",
+		},
 	},
 	success: {
 		main: {
