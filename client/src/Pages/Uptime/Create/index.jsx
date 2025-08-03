@@ -41,9 +41,8 @@ import {
 	useUpdateMonitor,
 	usePauseMonitor,
 	useFetchMonitorById,
+	useFetchMonitorGames,
 } from "../../../Hooks/monitorHooks";
-
-import { GAMES } from "../../../Utils/games";
 
 /**
  * Parses a URL string and returns a URL object.
@@ -83,6 +82,7 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [useAdvancedMatching, setUseAdvancedMatching] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [games, setGames] = useState({});
 	const triggerUpdate = () => {
 		setUpdateTrigger(!updateTrigger);
 	};
@@ -91,12 +91,22 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [notifications, notificationsAreLoading, notificationsError] =
 		useGetNotificationsByTeamId();
 	const { determineState, statusColor } = useMonitorUtils();
-	// Network
-	const [isLoading] = useFetchMonitorById({
+	// Fetch monitor details
+	const [isFetchingMonitor] = useFetchMonitorById({
 		monitorId,
 		setMonitor,
 		updateTrigger: true,
 	});
+
+	// Fetch games
+	const [isFetchingGames] = useFetchMonitorGames({
+		setGames,
+		triggerUpdate: true,
+	});
+
+	// Combine the loading states
+	const isLoading = isFetchingMonitor || isFetchingGames;
+
 	const [createMonitor, isCreating] = useCreateMonitor();
 	const [pauseMonitor, isPausing] = usePauseMonitor({});
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
@@ -116,7 +126,7 @@ const UptimeCreate = ({ isClone = false }) => {
 		{ _id: 5, name: t("time.fiveMinutes") },
 	];
 
-	const GAMELIST = Object.entries(GAMES).map(([key, value]) => ({
+	const GAMELIST = Object.entries(games).map(([key, value]) => ({
 		_id: key,
 		name: value.name,
 	}));

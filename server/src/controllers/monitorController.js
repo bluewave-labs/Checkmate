@@ -15,6 +15,7 @@ import {
 import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate } from "./controllerUtils.js";
 import BaseController from "./baseController.js";
+import { games } from "gamedig";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController extends BaseController {
@@ -440,6 +441,17 @@ class MonitorController extends BaseController {
 		},
 		SERVICE_NAME,
 		"exportMonitorsToCSV"
+	);
+
+	getAllGames = this.asyncHandler(
+		async (req, res) => {
+			return res.success({
+				msg: "OK",
+				data: games,
+			});
+		},
+		SERVICE_NAME,
+		"getAllGames"
 	);
 }
 

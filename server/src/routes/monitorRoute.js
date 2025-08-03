@@ -25,6 +25,9 @@ class MonitorRoutes {
 		// Hardware routes
 		this.router.get("/hardware/details/:monitorId", this.monitorController.getHardwareDetailsById);
 
+		// Game routes
+		this.router.get("/games", this.monitorController.getAllGames);
+
 		// General monitor routes
 		this.router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.pauseMonitor);
 		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
