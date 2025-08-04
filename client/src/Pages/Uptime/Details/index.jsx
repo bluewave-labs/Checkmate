@@ -18,7 +18,7 @@ import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useFetchUptimeMonitorById } from "../../../Hooks/monitorHooks";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
-import { useFetchChecksByMonitor } from "../../../Hooks/checkHooks";
+import { useFetchData } from "../../../Hooks/useFetchData";
 import { useTranslation } from "react-i18next";
 
 // Constants
@@ -66,16 +66,21 @@ const UptimeDetails = () => {
 
 	const monitorType = monitor?.type;
 
-	const [checks, checksCount, checksAreLoading, checksNetworkError] =
-		useFetchChecksByMonitor({
-			monitorId,
-			type: monitorType,
-			sortOrder: "desc",
-			limit: null,
-			dateRange,
-			filter: null,
-			page,
-			rowsPerPage,
+	const [{ checks, checksCount } = {}, checksAreLoading, checksNetworkError] =
+		useFetchData({
+			requestFn: () =>
+				networkService.getChecksByMonitor({
+					monitorId,
+					type: monitorType,
+					sortOrder: "desc",
+					limit: null,
+					dateRange,
+					filter: null,
+					page,
+					rowsPerPage,
+				}),
+			deps: [monitorId, monitorType, dateRange, page, rowsPerPage],
+			enabled: !!monitorType,
 		});
 
 	// Handlers

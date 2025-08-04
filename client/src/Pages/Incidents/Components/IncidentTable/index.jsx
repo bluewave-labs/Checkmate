@@ -13,8 +13,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
-import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
+import { useFetchData } from "../../../../Hooks/useFetchData";
 import { useResolveIncident } from "../../../../Hooks/checkHooks";
 import { Button, Typography } from "@mui/material";
 
@@ -40,34 +39,49 @@ const IncidentTable = ({
 	const [resolveIncident, resolveLoading] = useResolveIncident();
 
 	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
-		useFetchChecksByMonitor({
-			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
-			type: selectedMonitorType,
-			status: false,
-			sortOrder: "desc",
-			limit: null,
-			dateRange,
-			filter: filter === "resolved" ? "all" : filter,
-			ack: filter === "resolved" ? true : false,
-			page: page,
-			rowsPerPage: rowsPerPage,
+		useFetchData({
+			requestFn: () =>
+				networkService.getChecksByMonitor({
+					monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
+					type: selectedMonitorType,
+					status: false,
+					sortOrder: "desc",
+					limit: null,
+					dateRange,
+					filter: filter === "resolved" ? "all" : filter,
+					ack: filter === "resolved" ? true : false,
+					page,
+					rowsPerPage,
+				}),
 			enabled: selectedMonitor !== "0",
-			updateTrigger,
+			deps: [
+				selectedMonitor,
+				selectedMonitorType,
+				dateRange,
+				filter,
+				page,
+				rowsPerPage,
+				updateTrigger,
+			],
+			shouldRun: Boolean(selectedMonitorType), // only run if type is truthy
 		});
 
-	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] =
-		useFetchChecksTeam({
-			status: false,
-			sortOrder: "desc",
-			limit: null,
-			dateRange,
-			filter: filter === "resolved" ? "all" : filter,
-			ack: filter === "resolved" ? true : false,
-			page: page,
-			rowsPerPage: rowsPerPage,
-			enabled: selectedMonitor === "0",
-			updateTrigger,
-		});
+	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] = useFetchData({
+		requestFn: () =>
+			networkService.getChecksByTeam({
+				status: false,
+				sortOrder: "desc",
+				limit: null,
+				dateRange,
+				filter: filter === "resolved" ? "all" : filter,
+				ack: filter === "resolved" ? true : false,
+				page,
+				rowsPerPage,
+			}),
+		enabled: selectedMonitor === "0",
+		deps: [dateRange, filter, page, rowsPerPage, selectedMonitor, updateTrigger],
+		shouldRun: true, // optional
+	});
 
 	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
 	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
