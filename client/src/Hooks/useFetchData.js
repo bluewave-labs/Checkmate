@@ -2,31 +2,6 @@ import { useEffect, useState } from "react";
 import { createToast } from "../Utils/toastUtils";
 
 /**
- * Checks dependencies for potential issues in development mode.
- * Warns if dependencies are non-memoized functions or objects, which may cause unnecessary re-renders.
- *
- * @param {Array<any>} deps - Dependency array passed to useEffect
- * @param {Array<string>} depsNames - Optional array of names corresponding to dependencies for better warnings
- */
-const validateDeps = (deps, depsNames = []) => {
-	if (process.env.NODE_ENV !== "development") return;
-
-	deps.forEach((dep, index) => {
-		const name = depsNames[index] || `deps[${index}]`;
-
-		if (typeof dep === "function") {
-			console.warn(
-				`[useFetchData] Dependency "${name}" is a function. Use useCallback to memoize it.`
-			);
-		} else if (typeof dep === "object" && dep !== null && !Array.isArray(dep)) {
-			console.warn(
-				`[useFetchData] Dependency "${name}" is an object. Use useMemo to memoize it.`
-			);
-		}
-	});
-};
-
-/**
  * Generic reusable hook to fetch data asynchronously.
  *
  * @param {Object} params - Parameters object
@@ -34,7 +9,6 @@ const validateDeps = (deps, depsNames = []) => {
  * @param {boolean} [params.enabled=true] - Whether the hook should perform fetching
  * @param {boolean} [params.shouldRun=true] - Additional conditional flag to control fetching
  * @param {Array<any>} [params.deps=[]] - Dependencies array to control when the effect reruns
- * @param {Array<string>} [params.depsNames=[]] - Optional dependency names for dev warnings
  * @param {(responseData: any) => { data: any, count?: number }} [params.extractFn=null] - Optional function to customize how data and count are extracted from response
  *
  * @returns {[any, number|undefined, boolean, boolean]} Returns an array with:
@@ -48,18 +22,12 @@ export const useFetchData = ({
 	enabled = true,
 	shouldRun = true,
 	deps = [],
-	depsNames = [],
 	extractFn = null,
 }) => {
 	const [data, setData] = useState(undefined);
 	const [count, setCount] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
-
-	// Dev-only dependency validation
-	useEffect(() => {
-		validateDeps(deps, depsNames);
-	}, []);
 
 	// Reset data if disabled
 	useEffect(() => {
