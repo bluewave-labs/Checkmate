@@ -20,6 +20,7 @@ import { useFetchUptimeMonitorById } from "../../../Hooks/monitorHooks";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
 import { useFetchData } from "../../../Hooks/useFetchData";
 import { useTranslation } from "react-i18next";
+import { networkService } from "../../../main";
 
 // Constants
 const BREADCRUMBS = [

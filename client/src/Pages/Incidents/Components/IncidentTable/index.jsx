@@ -6,6 +6,7 @@ import { StatusLabel } from "../../../../Components/Label";
 import { HttpStatusLabel } from "../../../../Components/HttpStatusLabel";
 import GenericFallback from "../../../../Components/GenericFallback";
 import NetworkError from "../../../../Components/GenericFallback/NetworkError";
+import { useFetchData } from "../../../../Hooks/useFetchData";
 
 //Utils
 import { formatDateWithTz } from "../../../../Utils/timeUtils";
@@ -13,9 +14,9 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchData } from "../../../../Hooks/useFetchData";
 import { useResolveIncident } from "../../../../Hooks/checkHooks";
 import { Button, Typography } from "@mui/material";
+import { networkService } from "../../../../main";
 
 const IncidentTable = ({
 	isLoading,
