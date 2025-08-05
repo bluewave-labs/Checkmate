@@ -20,39 +20,39 @@ const Diagnostics = () => {
 	// Setup
 	return (
 		<Stack gap={theme.spacing(10)}>
-			<StatusBoxes shouldRender={!isLoading} flexWrap="wrap">
+			<StatusBoxes flexWrap="wrap">
 				<StatBox
 					gradient={true}
 					status="up"
 					heading={t("status")}
 					subHeading={
 						error 
-							? "Error" 
+							? t("logsPage.logLevelSelect.values.error")
 							: isLoading 
-								? "Loading..." 
+								? t("commonSaving")
 								: diagnostics 
-									? "Diagnostics Available" 
-									: "No Data"
+									? t("diagnosticsPage.diagnosticDescription") 
+									: t("general.noOptionsFound", { unit: "data" })
 					}
 				/>
 				<StatBox
-					heading="Event loop delay"
+					heading={t("diagnosticsPage.stats.eventLoopDelayTitle")}
 					subHeading={getHumanReadableDuration(diagnostics?.eventLoopDelayMs)}
 				/>
 				<StatBox
-					heading="Uptime"
+					heading={t("diagnosticsPage.stats.uptimeTitle")}
 					subHeading={getHumanReadableDuration(diagnostics?.uptimeMs)}
 				/>
 				<StatBox
-					heading="Used Heap Size"
+					heading={t("diagnosticsPage.stats.usedHeapSizeTitle")}
 					subHeading={formatBytes(diagnostics?.v8HeapStats?.usedHeapSizeBytes)}
 				/>
 				<StatBox
-					heading="Total Heap Size"
+					heading={t("diagnosticsPage.stats.totalHeapSizeTitle")}
 					subHeading={formatBytes(diagnostics?.v8HeapStats?.totalHeapSizeBytes)}
 				/>
 				<StatBox
-					heading="OS Memory Limit"
+					heading={t("diagnosticsPage.stats.osMemoryLimitTitle")}
 					subHeading={formatBytes(diagnostics?.osStats?.totalMemoryBytes)}
 				/>
 			</StatusBoxes>
@@ -67,7 +67,7 @@ const Diagnostics = () => {
 					onClick={fetchDiagnostics}
 					loading={isLoading}
 				>
-					Fetch Diagnostics
+					{t("queuePage.refreshButton")}
 				</Button>
 			</Box>
 		</Stack>
