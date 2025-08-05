@@ -6,7 +6,8 @@ const SERVICE_NAME = "Logger";
 
 class Logger {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor() {
+	constructor({ envSettings }) {
+		this.envSettings = envSettings;
 		this.logCache = [];
 		this.maxCacheSize = 1000;
 		const consoleFormat = format.printf(({ level, message, service, method, details, timestamp, stack }) => {
@@ -45,7 +46,7 @@ class Logger {
 			return msg;
 		});
 
-		const logLevel = process.env.LOG_LEVEL || "info";
+		const logLevel = this.envSettings.logLevel || "info";
 
 		this.logger = createLogger({
 			level: logLevel,
@@ -145,7 +146,8 @@ class Logger {
 	}
 }
 
-const logger = new Logger();
-export { Logger };
+export default Logger;
 
-export default logger;
+// Legacy logger
+const logger = new Logger({ envSettings: { logLevel: "debug" } });
+export { logger };

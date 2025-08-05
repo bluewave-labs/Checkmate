@@ -170,7 +170,10 @@ const CreateNotifications = () => {
 			>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
+						<Typography
+							component="h2"
+							variant="h2"
+						>
 							{t("createNotifications.nameSettings.title")}
 						</Typography>
 						<Typography component="p">
@@ -191,7 +194,10 @@ const CreateNotifications = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
+						<Typography
+							component="h2"
+							variant="h2"
+						>
 							{t("createNotifications.typeSettings.title")}
 						</Typography>
 						<Typography component="p">
@@ -210,7 +216,12 @@ const CreateNotifications = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t(TITLE_MAP[type])}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t(TITLE_MAP[type])}
+						</Typography>
 						<Typography component="p">{t(DESCRIPTION_MAP[type])}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>

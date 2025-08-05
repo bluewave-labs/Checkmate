@@ -239,7 +239,10 @@ const CreateStatusPage = () => {
 			<Breadcrumbs
 				list={[
 					{ name: t("statusBreadCrumbsStatusPages", "Status"), path: "/status" },
-					{ name: t("statusBreadCrumbsDetails", "Details"), path: `/status/${url}` },
+					{
+						name: t("statusBreadCrumbsDetails", "Details"),
+						path: `/status/uptime/${url}`,
+					},
 					{ name: t("configure", "Configure"), path: `/status/create/${url}` },
 				]}
 			/>

@@ -1,5 +1,4 @@
 import ServiceRegistry from "../service/system/serviceRegistry.js";
-import logger from "../utils/logger.js";
 import TranslationService from "../service/system/translationService.js";
 import StringService from "../service/system/stringService.js";
 import MongoDB from "../db/mongo/MongoDB.js";
@@ -9,7 +8,6 @@ import BufferService from "../service/infrastructure/bufferService.js";
 import StatusService from "../service/infrastructure/statusService.js";
 import NotificationUtils from "../service/infrastructure/notificationUtils.js";
 import NotificationService from "../service/infrastructure/notificationService.js";
-import RedisService from "../service/data/redisService.js";
 import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -19,7 +17,6 @@ import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
 import MonitorService from "../service/business/monitorService.js";
-import IORedis from "ioredis";
 import papaparse from "papaparse";
 import axios from "axios";
 import ping from "ping";
@@ -35,19 +32,101 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-export const initializeServices = async (appSettings, settingsService) => {
+import { fileURLToPath } from "url";
+import { ObjectId } from "mongodb";
+
+// DB Modules
+import { NormalizeData, NormalizeDataUptimeDetails } from "../utils/dataUtils.js";
+import { GenerateAvatarImage } from "../utils/imageProcessing.js";
+import { ParseBoolean } from "../utils/utils.js";
+
+// Models
+import Check from "../db/models/Check.js";
+import HardwareCheck from "../db/models/HardwareCheck.js";
+import PageSpeedCheck from "../db/models/PageSpeedCheck.js";
+import Monitor from "../db/models/Monitor.js";
+import User from "../db/models/User.js";
+import InviteToken from "../db/models/InviteToken.js";
+import StatusPage from "../db/models/StatusPage.js";
+import Team from "../db/models/Team.js";
+import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
+import MonitorStats from "../db/models/MonitorStats.js";
+import NetworkCheck from "../db/models/NetworkCheck.js";
+import Notification from "../db/models/Notification.js";
+import RecoveryToken from "../db/models/RecoveryToken.js";
+import AppSettings from "../db/models/AppSettings.js";
+
+import InviteModule from "../db/mongo/modules/inviteModule.js";
+import CheckModule from "../db/mongo/modules/checkModule.js";
+import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
+import UserModule from "../db/mongo/modules/userModule.js";
+import HardwareCheckModule from "../db/mongo/modules/hardwareCheckModule.js";
+import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule.js";
+import MonitorModule from "../db/mongo/modules/monitorModule.js";
+import NetworkCheckModule from "../db/mongo/modules/networkCheckModule.js";
+import NotificationModule from "../db/mongo/modules/notificationModule.js";
+import PageSpeedCheckModule from "../db/mongo/modules/pageSpeedCheckModule.js";
+import RecoveryModule from "../db/mongo/modules/recoveryModule.js";
+import SettingsModule from "../db/mongo/modules/settingsModule.js";
+
+export const initializeServices = async ({ logger, envSettings, settingsService }) => {
+	const serviceRegistry = new ServiceRegistry({ logger });
+	ServiceRegistry.instance = serviceRegistry;
+
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
 
 	const stringService = new StringService(translationService);
 
 	// Create DB
-	const db = new MongoDB({ appSettings });
+	const checkModule = new CheckModule({ logger, Check, HardwareCheck, PageSpeedCheck, Monitor, User });
+	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
+	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
+	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
+	const hardwareCheckModule = new HardwareCheckModule({ HardwareCheck, Monitor, logger });
+	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
+	const monitorModule = new MonitorModule({
+		Monitor,
+		MonitorStats,
+		Check,
+		PageSpeedCheck,
+		HardwareCheck,
+		stringService,
+		fs,
+		path,
+		fileURLToPath,
+		ObjectId,
+		NormalizeData,
+		NormalizeDataUptimeDetails,
+	});
+	const networkCheckModule = new NetworkCheckModule({ NetworkCheck });
+	const notificationModule = new NotificationModule({ Notification, Monitor });
+	const pageSpeedCheckModule = new PageSpeedCheckModule({ PageSpeedCheck });
+	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
+	const settingsModule = new SettingsModule({ AppSettings });
+
+	const db = new MongoDB({
+		logger,
+		envSettings,
+		checkModule,
+		inviteModule,
+		statusPageModule,
+		userModule,
+		hardwareCheckModule,
+		maintenanceWindowModule,
+		monitorModule,
+		networkCheckModule,
+		notificationModule,
+		pageSpeedCheckModule,
+		recoveryModule,
+		settingsModule,
+	});
+
 	await db.connect();
 
 	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
-	const bufferService = new BufferService({ db, logger });
+	const bufferService = new BufferService({ db, logger, envSettings });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
 
 	const notificationUtils = new NotificationUtils({
@@ -64,7 +143,6 @@ export const initializeServices = async (appSettings, settingsService) => {
 		notificationUtils,
 	});
 
-	const redisService = new RedisService({ Redis: IORedis, logger });
 	const errorService = new ErrorService();
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
@@ -76,7 +154,7 @@ export const initializeServices = async (appSettings, settingsService) => {
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
-		appSettings,
+		envSettings,
 		db,
 		logger,
 		helper: superSimpleQueueHelper,
@@ -135,7 +213,6 @@ export const initializeServices = async (appSettings, settingsService) => {
 		bufferService,
 		statusService,
 		notificationService,
-		redisService,
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,

@@ -15,7 +15,7 @@ import { useTheme } from "@emotion/react";
  * <Avatar src="assets/img" first="Alex" last="Holliday" small />
  */
 
-const Avatar = ({ src, small, sx }) => {
+const Avatar = ({ src, small, sx, onClick = () => {} }) => {
 	const { user } = useSelector((state) => state.auth);
 	const theme = useTheme();
 
@@ -31,6 +31,7 @@ const Avatar = ({ src, small, sx }) => {
 
 	return (
 		<MuiAvatar
+			onClick={onClick}
 			alt={`${user?.firstName} ${user?.lastName}`}
 			/* TODO What is the  /static/images/avatar/2.jpg ?*/
 			src={src ? src : user?.avatarImage ? image : "/static/images/avatar/2.jpg"}
@@ -66,6 +67,7 @@ Avatar.propTypes = {
 	src: PropTypes.string,
 	small: PropTypes.bool,
 	sx: PropTypes.object,
+	onClick: PropTypes.func,
 };
 
 export default Avatar;

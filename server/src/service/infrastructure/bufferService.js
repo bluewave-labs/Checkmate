@@ -1,5 +1,4 @@
 const SERVICE_NAME = "BufferService";
-const BUFFER_TIMEOUT = process.env.NODE_ENV === "development" ? 5000 : 1000 * 60 * 1; // 1 minute
 const TYPE_MAP = {
 	http: "checks",
 	ping: "checks",
@@ -11,7 +10,8 @@ const TYPE_MAP = {
 
 class BufferService {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor({ db, logger }) {
+	constructor({ db, logger, envSettings }) {
+		this.BUFFER_TIMEOUT = envSettings.nodeEnv === "development" ? 5000 : 1000 * 60 * 1; // 1 minute
 		this.db = db;
 		this.logger = logger;
 		this.SERVICE_NAME = SERVICE_NAME;
@@ -21,14 +21,14 @@ class BufferService {
 			hardwareChecks: [],
 		};
 		this.OPERATION_MAP = {
-			checks: this.db.createChecks,
-			pagespeedChecks: this.db.createPageSpeedChecks,
-			hardwareChecks: this.db.createHardwareChecks,
+			checks: this.db.checkModule.createChecks,
+			pagespeedChecks: this.db.pageSpeedCheckModule.createPageSpeedChecks,
+			hardwareChecks: this.db.hardwareCheckModule.createHardwareChecks,
 		};
 
 		this.scheduleNextFlush();
 		this.logger.info({
-			message: `Buffer service initialized, flushing every ${BUFFER_TIMEOUT / 1000}s`,
+			message: `Buffer service initialized, flushing every ${this.BUFFER_TIMEOUT / 1000}s`,
 			service: this.SERVICE_NAME,
 			method: "constructor",
 		});
@@ -66,7 +66,7 @@ class BufferService {
 				// Schedule the next flush only after the current one completes
 				this.scheduleNextFlush();
 			}
-		}, BUFFER_TIMEOUT);
+		}, this.BUFFER_TIMEOUT);
 	}
 	async flushBuffers() {
 		let items = 0;

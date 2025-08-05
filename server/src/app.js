@@ -8,11 +8,13 @@ import languageMiddleware from "./middleware/languageMiddleware.js";
 import swaggerUi from "swagger-ui-express";
 import { handleErrors } from "./middleware/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
-export const createApp = ({ services, controllers, appSettings, frontendPath, openApiSpec }) => {
-	const allowedOrigin = appSettings.clientHost;
+import { generalApiLimiter } from "./middleware/rateLimiter.js";
+
+export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
+	const allowedOrigin = envSettings.clientHost;
 
 	const app = express();
-
+	app.use(generalApiLimiter);
 	// Static files
 	app.use(express.static(frontendPath));
 

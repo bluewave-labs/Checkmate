@@ -9,7 +9,7 @@ import ThemeSwitch from "../../../Components/ThemeSwitch";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
-const AuthHeader = () => {
+const AuthHeader = ({ hideLogo = false }) => {
 	// Hooks
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -27,8 +27,12 @@ const AuthHeader = () => {
 				alignItems="center"
 				gap={theme.spacing(4)}
 			>
-				<Logo style={{ borderRadius: theme.shape.borderRadius }} />
-				<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
+				{!hideLogo && (
+					<>
+						<Logo style={{ borderRadius: theme.shape.borderRadius }} />
+						<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
+					</>
+				)}
 			</Stack>
 			<Stack
 				direction="row"

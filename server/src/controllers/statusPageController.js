@@ -19,7 +19,7 @@ class StatusPageController extends BaseController {
 			await imageValidation.validateAsync(req.file);
 
 			const { _id, teamId } = req.user;
-			const statusPage = await this.db.createStatusPage({
+			const statusPage = await this.db.statusPageModule.createStatusPage({
 				statusPageData: req.body,
 				image: req.file,
 				userId: _id,
@@ -39,7 +39,7 @@ class StatusPageController extends BaseController {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 
-			const statusPage = await this.db.updateStatusPage(req.body, req.file);
+			const statusPage = await this.db.statusPageModule.updateStatusPage(req.body, req.file);
 			if (statusPage === null) {
 				throw this.errorService.createNotFoundError(this.stringService.statusPageNotFound);
 			}
@@ -54,7 +54,7 @@ class StatusPageController extends BaseController {
 
 	getStatusPage = this.asyncHandler(
 		async (req, res) => {
-			const statusPage = await this.db.getStatusPage();
+			const statusPage = await this.db.statusPageModule.getStatusPage();
 			return res.success({
 				msg: this.stringService.statusPageByUrl,
 				data: statusPage,
@@ -69,7 +69,7 @@ class StatusPageController extends BaseController {
 			await getStatusPageParamValidation.validateAsync(req.params);
 			await getStatusPageQueryValidation.validateAsync(req.query);
 
-			const statusPage = await this.db.getStatusPageByUrl(req.params.url, req.query.type);
+			const statusPage = await this.db.statusPageModule.getStatusPageByUrl(req.params.url);
 			return res.success({
 				msg: this.stringService.statusPageByUrl,
 				data: statusPage,
@@ -82,7 +82,7 @@ class StatusPageController extends BaseController {
 	getStatusPagesByTeamId = this.asyncHandler(
 		async (req, res) => {
 			const teamId = req.user.teamId;
-			const statusPages = await this.db.getStatusPagesByTeamId(teamId);
+			const statusPages = await this.db.statusPageModule.getStatusPagesByTeamId(teamId);
 
 			return res.success({
 				msg: this.stringService.statusPageByTeamId,
