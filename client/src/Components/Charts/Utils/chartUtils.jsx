@@ -88,7 +88,7 @@ PercentTick.propTypes = {
  */
 const getFormattedPercentage = (value) => {
 	if (typeof value !== "number") return value;
-	return `${(value * 100).toFixed(2)}.%`;
+	return `${(value * 100).toFixed(2)}%`;
 };
 
 /**

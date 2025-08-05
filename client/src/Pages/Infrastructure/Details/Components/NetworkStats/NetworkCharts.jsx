@@ -1,111 +1,130 @@
 // NetworkCharts.jsx
-import { Grid, Card, CardContent, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import AreaChart from "../../../../../Components/Charts/AreaChart";
-import { TzTick, InfrastructureTooltip } from '../../../../../Components/Charts/Utils/chartUtils';
+import PropTypes from "prop-types";
+import { Stack } from "@mui/material";
+import InfraAreaChart from "../../../../../Pages/Infrastructure/Details/Components/AreaChartBoxes/InfraAreaChart";
 
-const BytesTick = ({ x, y, payload }) => {
-  const value = payload.value;
-  const label =
-    value >= 1024 ** 3
-      ? `${(value / 1024 ** 3).toFixed(2)} GB`
-      : value >= 1024 ** 2
-      ? `${(value / 1024 ** 2).toFixed(2)} MB`
-      : `${(value / 1024).toFixed(2)} KB`;
-
-  return <text x={x} y={y} textAnchor="end" fill="#888">{label}</text>;
-};
+// Utils
+import {
+	TzTick,
+	InfrastructureTooltip,
+} from "../../../../../Components/Charts/Utils/chartUtils";
+import { useTheme } from "@emotion/react";
 
 const getFormattedNetworkMetric = (value) => {
-    if (typeof value !== "number" || isNaN(value)) return "0";
-        if (value >= 1024 ** 3) return `${(value / 1024 ** 3).toFixed(1)} GB/s`;
-        if (value >= 1024 ** 2) return `${(value / 1024 ** 2).toFixed(1)} MB/s`;
-        if (value >= 1024) return `${(value / 1024).toFixed(1)} KB/s`;
-        return `${Math.round(value)} B/s`;
+	if (typeof value !== "number" || isNaN(value)) return "0";
+	if (value >= 1024 ** 3) return `${(value / 1024 ** 3).toFixed(1)} GB/s`;
+	if (value >= 1024 ** 2) return `${(value / 1024 ** 2).toFixed(1)} MB/s`;
+	if (value >= 1024) return `${(value / 1024).toFixed(1)} KB/s`;
+	return `${Math.round(value)} B/s`;
 };
 
 const NetworkCharts = ({ eth0Data, dateRange }) => {
-  const theme = useTheme();
-  const textColor = theme.palette.primary.contrastTextTertiary;
+	const theme = useTheme();
 
-  const charts = [
-    { title: "Bytes per second", key: "bytesPerSec", color: theme.palette.info.main, yTick: <BytesTick /> },
-    { title: "Packets per second", key: "packetsPerSec", color: theme.palette.success.main },
-    { title: "Errors", key: "errors", color: theme.palette.error.main },
-    { title: "Drops", key: "drops", color: theme.palette.warning.main }
-  ];
+	const configs = [
+		{
+			type: "network-bytes",
+			data: eth0Data,
+			dataKeys: ["bytesPerSec"],
+			heading: "Bytes per second",
+			strokeColor: theme.palette.info.main,
+			gradientStartColor: theme.palette.info.main,
+			yLabel: "Bytes per second",
+			xTick: <TzTick dateRange={dateRange} />,
+			toolTip: (
+				<InfrastructureTooltip
+					dotColor={theme.palette.info.main}
+					yKey={"bytesPerSec"}
+					yLabel={"Bytes per second"}
+					dateRange={dateRange}
+					formatter={getFormattedNetworkMetric}
+				/>
+			),
+		},
+		{
+			type: "network-packets",
+			data: eth0Data,
+			dataKeys: ["packetsPerSec"],
+			heading: "Packets per second",
+			strokeColor: theme.palette.success.main,
+			gradientStartColor: theme.palette.success.main,
+			yLabel: "Packets per second",
+			xTick: <TzTick dateRange={dateRange} />,
+			toolTip: (
+				<InfrastructureTooltip
+					dotColor={theme.palette.success.main}
+					yKey={"packetsPerSec"}
+					yLabel={"Packets per second"}
+					dateRange={dateRange}
+					formatter={(value) => Math.round(value).toLocaleString()}
+				/>
+			),
+		},
+		{
+			type: "network-errors",
+			data: eth0Data,
+			dataKeys: ["errors"],
+			heading: "Errors",
+			strokeColor: theme.palette.error.main,
+			gradientStartColor: theme.palette.error.main,
+			yLabel: "Errors",
+			xTick: <TzTick dateRange={dateRange} />,
+			toolTip: (
+				<InfrastructureTooltip
+					dotColor={theme.palette.error.main}
+					yKey={"errors"}
+					yLabel={"Errors"}
+					dateRange={dateRange}
+					formatter={(value) => Math.round(value).toLocaleString()}
+				/>
+			),
+		},
+		{
+			type: "network-drops",
+			data: eth0Data,
+			dataKeys: ["drops"],
+			heading: "Drops",
+			strokeColor: theme.palette.warning.main,
+			gradientStartColor: theme.palette.warning.main,
+			yLabel: "Drops",
+			xTick: <TzTick dateRange={dateRange} />,
+			toolTip: (
+				<InfrastructureTooltip
+					dotColor={theme.palette.warning.main}
+					yKey={"drops"}
+					yLabel={"Drops"}
+					dateRange={dateRange}
+					formatter={(value) => Math.round(value).toLocaleString()}
+				/>
+			),
+		},
+	];
 
-  const formatYAxis = (key, value) => {
-    if (key === "bytesPerSec") {
-      // Format as MB/s or GB/s if large
-      if (value >= 1024 ** 3) return `${(value / 1024 ** 3).toFixed(1)} GB/s`;
-      if (value >= 1024 ** 2) return `${(value / 1024 ** 2).toFixed(1)} MB/s`;
-      if (value >= 1024) return `${(value / 1024).toFixed(1)} KB/s`;
-      return `${Math.round(value)} B/s`;
-    }
-    return Math.round(value).toLocaleString();
-  };
+	return (
+		<Stack
+			direction={"row"}
+			gap={theme.spacing(8)}
+			flexWrap="wrap"
+			sx={{
+				"& > *": {
+					flexBasis: `calc(50% - ${theme.spacing(8)})`,
+					maxWidth: `calc(50% - ${theme.spacing(8)})`,
+				},
+			}}
+		>
+			{configs.map((config) => (
+				<InfraAreaChart
+					key={config.type}
+					config={config}
+				/>
+			))}
+		</Stack>
+	);
+};
 
-  const CustomTick = ({ x, y, payload, chartKey }) => {
-    // Ensure value is always rounded for display
-    let value = payload.value;
-    if (typeof value === 'number') {
-      value = Math.round(value);
-    }
-    return (
-      <text x={x} y={y} textAnchor="end" fill="#888">
-        {formatYAxis(chartKey, value)}
-      </text>
-    );
-  };
-
-  const chartConfigs = charts.map((chart) => ({
-    data: eth0Data,
-    dataKeys: [chart.key],
-    heading: chart.title,
-    strokeColor: chart.color,
-    gradientStartColor: chart.color,
-    yTick: chart.yTick || <CustomTick chartKey={chart.key} />,
-    xTick: <TzTick dateRange={dateRange} />,
-    toolTip: (
-      <InfrastructureTooltip
-        dotColor={chart.color}
-        yKey={chart.key}
-        yLabel={chart.title}
-        dateRange={dateRange}
-        formatter={getFormattedNetworkMetric}
-      />
-    ),
-  }));
-
-  return (
-    <Grid container spacing={3}>
-      {chartConfigs.map((config, idx) => (
-        <Grid item xs={12} md={6} key={config.heading}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h6" sx={{ color: textColor }} mb={2}>
-                {config.heading}
-              </Typography>
-              <AreaChart
-                data={config.data}
-                dataKeys={config.dataKeys}
-                xKey="time"
-                yTick={config.yTick}
-                xTick={config.xTick}
-                strokeColor={config.strokeColor}
-                gradient
-                gradientStartColor={config.gradientStartColor}
-                gradientEndColor="#fff"
-                height={200}
-                customTooltip={config.toolTip}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  );
+NetworkCharts.propTypes = {
+	eth0Data: PropTypes.array.isRequired,
+	dateRange: PropTypes.string.isRequired,
 };
 
 export default NetworkCharts;

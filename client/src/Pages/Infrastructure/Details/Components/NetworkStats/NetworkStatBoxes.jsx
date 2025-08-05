@@ -1,15 +1,8 @@
 // NetworkStatBoxes.jsx
-import DataUsageIcon from "@mui/icons-material/DataUsage";
-import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import PropTypes from "prop-types";
 import StatusBoxes from "../../../../../Components/StatusBoxes";
 import StatBox from "../../../../../Components/StatBox";
 import { Typography } from "@mui/material";
-
-const INTERFACE_LABELS = {
-	en0: "Ethernet/Wi-Fi (Primary)",
-	wlan0: "Wi-Fi (Secondary)",
-};
 
 function formatBytes(bytes) {
 	if (bytes === 0 || bytes == null) return "0 B";
@@ -37,48 +30,57 @@ const NetworkStatBoxes = ({ shouldRender, net }) => {
 			shouldRender={shouldRender}
 			flexWrap="wrap"
 		>
-			{filtered.map((iface) => (
-				<>
+			{filtered
+				.map((iface) => [
 					<StatBox
-						heading={`${INTERFACE_LABELS[iface.name] || iface.name} - Bytes Sent`}
+						key={`${iface.name}-bytes-sent`}
+						heading="Bytes Sent"
 						subHeading={formatBytes(iface.bytes_sent)}
-						icon={DataUsageIcon}
-						iconProps={{ color: "action" }}
-					/>
+					/>,
 					<StatBox
+						key={`${iface.name}-bytes-recv`}
 						heading="Bytes Received"
 						subHeading={formatBytes(iface.bytes_recv)}
-						icon={DataUsageIcon}
-						iconProps={{ color: "action", sx: { transform: "rotate(180deg)" } }}
-					/>
+					/>,
 					<StatBox
+						key={`${iface.name}-packets-sent`}
 						heading="Packets Sent"
 						subHeading={formatNumber(iface.packets_sent)}
-						icon={NetworkCheckIcon}
-						iconProps={{ color: "action" }}
-					/>
+					/>,
 					<StatBox
+						key={`${iface.name}-packets-recv`}
 						heading="Packets Received"
 						subHeading={formatNumber(iface.packets_recv)}
-						icon={NetworkCheckIcon}
-						iconProps={{ color: "action", sx: { transform: "rotate(180deg)" } }}
-					/>
+					/>,
 					<StatBox
+						key={`${iface.name}-err-in`}
 						heading="Errors In"
 						subHeading={formatNumber(iface.err_in)}
-						icon={ErrorOutlineIcon}
-						iconProps={{ color: "error" }}
-					/>
+					/>,
 					<StatBox
+						key={`${iface.name}-err-out`}
 						heading="Errors Out"
 						subHeading={formatNumber(iface.err_out)}
-						icon={ErrorOutlineIcon}
-						iconProps={{ color: "error" }}
-					/>
-				</>
-			))}
+					/>,
+				])
+				.flat()}
 		</StatusBoxes>
 	);
+};
+
+NetworkStatBoxes.propTypes = {
+	shouldRender: PropTypes.bool.isRequired,
+	net: PropTypes.arrayOf(
+		PropTypes.shape({
+			name: PropTypes.string.isRequired,
+			bytes_sent: PropTypes.number,
+			bytes_recv: PropTypes.number,
+			packets_sent: PropTypes.number,
+			packets_recv: PropTypes.number,
+			err_in: PropTypes.number,
+			err_out: PropTypes.number,
+		})
+	),
 };
 
 export default NetworkStatBoxes;
