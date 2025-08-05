@@ -171,7 +171,7 @@ const createMonitorBodyValidation = joi.object({
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
-	gameId: joi.string(),
+	gameId: joi.string().allow(""),
 });
 
 const createMonitorsBodyValidation = joi.array().items(

@@ -503,7 +503,7 @@ class NetworkService {
 				host: url,
 				port: port,
 			}).catch((error) => {
-				return false;
+				null;
 			});
 
 			if (!state) {

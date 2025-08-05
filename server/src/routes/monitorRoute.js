@@ -25,9 +25,6 @@ class MonitorRoutes {
 		// Hardware routes
 		this.router.get("/hardware/details/:monitorId", this.monitorController.getHardwareDetailsById);
 
-		// Game routes
-		this.router.get("/games", this.monitorController.getAllGames);
-
 		// General monitor routes
 		this.router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.pauseMonitor);
 		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
@@ -47,6 +44,7 @@ class MonitorRoutes {
 		this.router.get("/export", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToCSV);
 		this.router.post("/bulk", isAllowed(["admin", "superadmin"]), upload.single("csvFile"), this.monitorController.createBulkMonitors);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
+		this.router.get("/games", this.monitorController.getAllGames);
 
 		// Individual monitor CRUD routes
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);

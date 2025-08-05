@@ -270,6 +270,11 @@ const UptimeCreate = ({ isClone = false }) => {
 
 		setMonitor((prev) => ({ ...prev, [name]: value }));
 
+		if (name === "type") {
+			setErrors({});
+			return;
+		}
+
 		const { error } = monitorValidation.validate(
 			{ type: monitor.type, [name]: value },
 			{ abortEarly: false }
@@ -277,7 +282,9 @@ const UptimeCreate = ({ isClone = false }) => {
 
 		setErrors((prev) => ({
 			...prev,
-			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
+			...(error && error.details[0].path[0] === name
+				? { [name]: error.details[0].message }
+				: { [name]: undefined }),
 		}));
 	};
 
@@ -593,6 +600,7 @@ const UptimeCreate = ({ isClone = false }) => {
 								placeholder={t("chooseGame")}
 								onChange={onChange}
 								items={GAMELIST}
+								error={errors["gameId"] ? true : false}
 							/>
 						)}
 						<TextInput
