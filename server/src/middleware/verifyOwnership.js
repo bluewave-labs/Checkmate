@@ -1,4 +1,4 @@
-import logger from "../utils/logger.js";
+import { logger } from "../utils/logger.js";
 import ServiceRegistry from "../service/system/serviceRegistry.js";
 import StringService from "../service/system/stringService.js";
 import { ObjectId } from "mongodb";

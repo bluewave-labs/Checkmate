@@ -32,7 +32,7 @@ class MonitorController extends BaseController {
 	}
 
 	async verifyTeamAccess(teamId, monitorId) {
-		const monitor = await this.db.getMonitorById(monitorId);
+		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 		if (!monitor.teamId.equals(teamId)) {
 			throw this.errorService.createAuthorizationError();
 		}
@@ -150,7 +150,7 @@ class MonitorController extends BaseController {
 			await getCertificateParamValidation.validateAsync(req.params);
 
 			const { monitorId } = req.params;
-			const monitor = await this.db.getMonitorById(monitorId);
+			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 			const certificate = await fetchMonitorCertificate(sslChecker, monitor);
 
 			return res.success({

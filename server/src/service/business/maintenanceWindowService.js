@@ -16,7 +16,7 @@ class MaintenanceWindowService {
 
 	createMaintenanceWindow = async ({ teamId, body }) => {
 		const monitorIds = body.monitors;
-		const monitors = await this.db.getMonitorsByIds(monitorIds);
+		const monitors = await this.db.monitorModule.getMonitorsByIds(monitorIds);
 
 		const unauthorizedMonitors = monitors.filter((monitor) => !monitor.teamId.equals(teamId));
 
@@ -25,7 +25,7 @@ class MaintenanceWindowService {
 		}
 
 		const dbTransactions = monitorIds.map((monitorId) => {
-			return this.db.createMaintenanceWindow({
+			return this.db.maintenanceWindowModule.createMaintenanceWindow({
 				teamId,
 				monitorId,
 				name: body.name,
@@ -39,26 +39,26 @@ class MaintenanceWindowService {
 	};
 
 	getMaintenanceWindowById = async ({ id, teamId }) => {
-		const maintenanceWindow = await this.db.getMaintenanceWindowById({ id, teamId });
+		const maintenanceWindow = await this.db.maintenanceWindowModule.getMaintenanceWindowById({ id, teamId });
 		return maintenanceWindow;
 	};
 
 	getMaintenanceWindowsByTeamId = async ({ teamId, query }) => {
-		const maintenanceWindows = await this.db.getMaintenanceWindowsByTeamId(teamId, query);
+		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByTeamId(teamId, query);
 		return maintenanceWindows;
 	};
 
 	getMaintenanceWindowsByMonitorId = async ({ monitorId, teamId }) => {
-		const maintenanceWindows = await this.db.getMaintenanceWindowsByMonitorId({ monitorId, teamId });
+		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId({ monitorId, teamId });
 		return maintenanceWindows;
 	};
 
 	deleteMaintenanceWindow = async ({ id, teamId }) => {
-		await this.db.deleteMaintenanceWindowById({ id, teamId });
+		await this.db.maintenanceWindowModule.deleteMaintenanceWindowById({ id, teamId });
 	};
 
 	editMaintenanceWindow = async ({ id, teamId, body }) => {
-		const editedMaintenanceWindow = await this.db.editMaintenanceWindowById({ id, body, teamId });
+		const editedMaintenanceWindow = await this.db.maintenanceWindowModule.editMaintenanceWindowById({ id, body, teamId });
 		return editedMaintenanceWindow;
 	};
 }

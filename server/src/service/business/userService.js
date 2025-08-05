@@ -29,18 +29,18 @@ class UserService {
 	registerUser = async (user, file) => {
 		// Create a new user
 		// If superAdmin exists, a token should be attached to all further register requests
-		const superAdminExists = await this.db.checkSuperadmin();
+		const superAdminExists = await this.db.userModule.checkSuperadmin();
 		if (superAdminExists) {
-			const invitedUser = await this.db.getInviteTokenAndDelete(user.inviteToken);
+			const invitedUser = await this.db.inviteModule.getInviteTokenAndDelete(user.inviteToken);
 			user.role = invitedUser.role;
 			user.teamId = invitedUser.teamId;
 		} else {
 			// This is the first account, create JWT secret to use if one is not supplied by env
-			const jwtSecret = crypto.randomBytes(64).toString("hex");
-			await this.db.updateAppSettings({ jwtSecret });
+			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
+			await this.db.settingsModule.updateAppSettings({ jwtSecret });
 		}
 
-		const newUser = await this.db.insertUser({ ...user }, file);
+		const newUser = await this.db.userModule.insertUser({ ...user }, file);
 
 		this.logger.debug({
 			message: "New user created",
@@ -83,7 +83,7 @@ class UserService {
 
 	loginUser = async (email, password) => {
 		// Check if user exists
-		const user = await this.db.getUserByEmail(email);
+		const user = await this.db.userModule.getUserByEmail(email);
 		// Compare password
 		const match = await user.comparePassword(password);
 		if (match !== true) {
@@ -110,7 +110,7 @@ class UserService {
 			// Add user email to body for DB operation
 			updates.email = currentUser.email;
 			// Get user
-			const user = await this.db.getUserByEmail(currentUser.email);
+			const user = await this.db.userModule.getUserByEmail(currentUser.email);
 			// Compare passwords
 			const match = await user.comparePassword(updates?.password);
 			// If not a match, throw a 403
@@ -122,18 +122,18 @@ class UserService {
 			updates.password = updates.newPassword;
 		}
 
-		const updatedUser = await this.db.updateUser({ userId: currentUser?._id, user: updates, file: file });
+		const updatedUser = await this.db.userModule.updateUser({ userId: currentUser?._id, user: updates, file: file });
 		return updatedUser;
 	};
 
 	checkSuperadminExists = async () => {
-		const superAdminExists = await this.db.checkSuperadmin();
+		const superAdminExists = await this.db.userModule.checkSuperadmin();
 		return superAdminExists;
 	};
 
 	requestRecovery = async (email) => {
-		const user = await this.db.getUserByEmail(email);
-		const recoveryToken = await this.db.requestRecoveryToken(email);
+		const user = await this.db.userModule.getUserByEmail(email);
+		const recoveryToken = await this.db.recoveryModule.requestRecoveryToken(email);
 		const name = user.firstName;
 		const { clientHost } = this.settingsService.getSettings();
 		const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
@@ -148,11 +148,11 @@ class UserService {
 	};
 
 	validateRecovery = async (recoveryToken) => {
-		await this.db.validateRecoveryToken(recoveryToken);
+		await this.db.recoveryModule.validateRecoveryToken(recoveryToken);
 	};
 
 	resetPassword = async (password, recoveryToken) => {
-		const user = await this.db.resetPassword(password, recoveryToken);
+		const user = await this.db.recoveryModule.resetPassword(password, recoveryToken);
 		const appSettings = await this.settingsService.getSettings();
 		const token = this.issueToken(user._doc, appSettings);
 		return { user, token };
@@ -181,7 +181,7 @@ class UserService {
 		}
 
 		// 1. Find all the monitors associated with the team ID if superadmin
-		const result = await this.db.getMonitorsByTeamId({
+		const result = await this.db.monitorModule.getMonitorsByTeamId({
 			teamId: teamId,
 		});
 
@@ -195,21 +195,21 @@ class UserService {
 				));
 		}
 		// 6. Delete the user by id
-		await this.db.deleteUser(userId);
+		await this.db.userModule.deleteUser(userId);
 	};
 
 	getAllUsers = async () => {
-		const users = await this.db.getAllUsers();
+		const users = await this.db.userModule.getAllUsers();
 		return users;
 	};
 
 	getUserById = async (roles, userId) => {
-		const user = await this.db.getUserById(roles, userId);
+		const user = await this.db.userModule.getUserById(roles, userId);
 		return user;
 	};
 
 	editUserById = async (userId, user) => {
-		await this.db.editUserById(userId, user);
+		await this.db.userModule.editUserById(userId, user);
 	};
 }
 export default UserService;

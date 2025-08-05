@@ -81,7 +81,7 @@ class NotificationService {
 	}
 
 	async notifyAll({ notificationIDs, subject, html, content }) {
-		const notifications = await this.db.getNotificationsByIds(notificationIDs);
+		const notifications = await this.db.notificationModule.getNotificationsByIds(notificationIDs);
 
 		// Map each notification to a test promise
 		const promises = notifications.map(async (notification) => {

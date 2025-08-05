@@ -55,7 +55,7 @@ class SettingsController extends BaseController {
 		async (req, res) => {
 			await updateAppSettingsBodyValidation.validateAsync(req.body);
 
-			const updatedSettings = await this.db.updateAppSettings(req.body);
+			const updatedSettings = await this.db.settingsModule.updateAppSettings(req.body);
 			const returnSettings = this.buildAppSettings(updatedSettings);
 			return res.success({
 				msg: this.stringService.updateAppSettings,

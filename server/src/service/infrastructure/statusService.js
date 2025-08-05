@@ -122,7 +122,7 @@ class StatusService {
 		this.insertCheck(networkResponse);
 		try {
 			const { monitorId, status, code } = networkResponse;
-			const monitor = await this.db.getMonitorById(monitorId);
+			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
 
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
