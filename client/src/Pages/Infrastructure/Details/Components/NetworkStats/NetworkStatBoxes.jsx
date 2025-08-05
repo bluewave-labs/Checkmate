@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import StatusBoxes from "../../../../../Components/StatusBoxes";
 import StatBox from "../../../../../Components/StatBox";
 import { Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 function formatBytes(bytes) {
 	if (bytes === 0 || bytes == null) return "0 B";
@@ -18,11 +19,12 @@ function formatNumber(num) {
 }
 
 const NetworkStatBoxes = ({ shouldRender, net }) => {
+	const { t } = useTranslation();
 	const filtered =
 		net?.filter((iface) => iface.name === "en0" || iface.name === "wlan0") || [];
 
 	if (!net?.length) {
-		return <Typography>No network stats available.</Typography>;
+		return <Typography>{t("noNetworkStatsAvailable")}</Typography>;
 	}
 
 	return (
@@ -34,32 +36,32 @@ const NetworkStatBoxes = ({ shouldRender, net }) => {
 				.map((iface) => [
 					<StatBox
 						key={`${iface.name}-bytes-sent`}
-						heading="Bytes Sent"
+						heading={t("bytesSent")}
 						subHeading={formatBytes(iface.bytes_sent)}
 					/>,
 					<StatBox
 						key={`${iface.name}-bytes-recv`}
-						heading="Bytes Received"
+						heading={t("bytesReceived")}
 						subHeading={formatBytes(iface.bytes_recv)}
 					/>,
 					<StatBox
 						key={`${iface.name}-packets-sent`}
-						heading="Packets Sent"
+						heading={t("packetsSent")}
 						subHeading={formatNumber(iface.packets_sent)}
 					/>,
 					<StatBox
 						key={`${iface.name}-packets-recv`}
-						heading="Packets Received"
+						heading={t("packetsReceived")}
 						subHeading={formatNumber(iface.packets_recv)}
 					/>,
 					<StatBox
 						key={`${iface.name}-err-in`}
-						heading="Errors In"
+						heading={t("errorsIn")}
 						subHeading={formatNumber(iface.err_in)}
 					/>,
 					<StatBox
 						key={`${iface.name}-err-out`}
-						heading="Errors Out"
+						heading={t("errorsOut")}
 						subHeading={formatNumber(iface.err_out)}
 					/>,
 				])

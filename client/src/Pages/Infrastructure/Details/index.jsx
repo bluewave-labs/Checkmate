@@ -25,7 +25,6 @@ const BREADCRUMBS = [
 	{ name: "details", path: "" },
 ];
 const InfrastructureDetails = () => {
-
 	// Local state
 	const [dateRange, setDateRange] = useState("recent");
 	const [trigger, setTrigger] = useState(false);
@@ -96,11 +95,11 @@ const InfrastructureDetails = () => {
 					onChange={(e, v) => setTab(v)}
 				>
 					<Tab
-						label="Details"
+						label={t("details")}
 						value="details"
 					/>
 					<Tab
-						label="Network"
+						label={t("network")}
 						value="network"
 					/>
 				</CustomTabList>

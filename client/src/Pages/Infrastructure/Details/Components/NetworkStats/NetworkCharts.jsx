@@ -9,6 +9,7 @@ import {
 	InfrastructureTooltip,
 } from "../../../../../Components/Charts/Utils/chartUtils";
 import { useTheme } from "@emotion/react";
+import { useTranslation } from "react-i18next";
 
 const getFormattedNetworkMetric = (value) => {
 	if (typeof value !== "number" || isNaN(value)) return "0";
@@ -20,22 +21,23 @@ const getFormattedNetworkMetric = (value) => {
 
 const NetworkCharts = ({ eth0Data, dateRange }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const configs = [
 		{
 			type: "network-bytes",
 			data: eth0Data,
 			dataKeys: ["bytesPerSec"],
-			heading: "Bytes per second",
+			heading: t("bytesPerSecond"),
 			strokeColor: theme.palette.info.main,
 			gradientStartColor: theme.palette.info.main,
-			yLabel: "Bytes per second",
+			yLabel: t("bytesPerSecond"),
 			xTick: <TzTick dateRange={dateRange} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.info.main}
 					yKey={"bytesPerSec"}
-					yLabel={"Bytes per second"}
+					yLabel={t("bytesPerSecond")}
 					dateRange={dateRange}
 					formatter={getFormattedNetworkMetric}
 				/>
@@ -45,16 +47,16 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 			type: "network-packets",
 			data: eth0Data,
 			dataKeys: ["packetsPerSec"],
-			heading: "Packets per second",
+			heading: t("packetsPerSecond"),
 			strokeColor: theme.palette.success.main,
 			gradientStartColor: theme.palette.success.main,
-			yLabel: "Packets per second",
+			yLabel: t("packetsPerSecond"),
 			xTick: <TzTick dateRange={dateRange} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.success.main}
 					yKey={"packetsPerSec"}
-					yLabel={"Packets per second"}
+					yLabel={t("packetsPerSecond")}
 					dateRange={dateRange}
 					formatter={(value) => Math.round(value).toLocaleString()}
 				/>
@@ -64,16 +66,16 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 			type: "network-errors",
 			data: eth0Data,
 			dataKeys: ["errors"],
-			heading: "Errors",
+			heading: t("errors"),
 			strokeColor: theme.palette.error.main,
 			gradientStartColor: theme.palette.error.main,
-			yLabel: "Errors",
+			yLabel: t("errors"),
 			xTick: <TzTick dateRange={dateRange} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.error.main}
 					yKey={"errors"}
-					yLabel={"Errors"}
+					yLabel={t("errors")}
 					dateRange={dateRange}
 					formatter={(value) => Math.round(value).toLocaleString()}
 				/>
@@ -83,16 +85,16 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 			type: "network-drops",
 			data: eth0Data,
 			dataKeys: ["drops"],
-			heading: "Drops",
+			heading: t("drops"),
 			strokeColor: theme.palette.warning.main,
 			gradientStartColor: theme.palette.warning.main,
-			yLabel: "Drops",
+			yLabel: t("drops"),
 			xTick: <TzTick dateRange={dateRange} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.warning.main}
 					yKey={"drops"}
-					yLabel={"Drops"}
+					yLabel={t("drops")}
 					dateRange={dateRange}
 					formatter={(value) => Math.round(value).toLocaleString()}
 				/>
