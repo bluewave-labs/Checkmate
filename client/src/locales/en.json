@@ -87,7 +87,7 @@
 							"highlighted": "one lower character"
 						},
 						"match": {
-							"beginning": "Confirm password and password",
+							"beginning": "Passwords",
 							"highlighted": "must match"
 						},
 						"number": {
@@ -195,7 +195,8 @@
 			"termsAndPolicies": "By creating an account, you agree to our <a1>Terms of Service</a1> and <a2>Privacy Policy</a2>.",
 			"toasts": {
 				"success": "Welcome! Your account was created successfully."
-			}
+			},
+			"welcome": "Welcome to Checkmate!"
 		}
 	},
 	"avgCpuTemperature": "Average CPU Temperature",
