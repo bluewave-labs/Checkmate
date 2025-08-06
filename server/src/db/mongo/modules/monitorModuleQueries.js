@@ -220,6 +220,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 							diskCount: {
 								$size: "$disk",
 							},
+							netCount: { $size: "$net" },
 						},
 					},
 					{
@@ -227,6 +228,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 							from: "hardwarechecks",
 							let: {
 								diskCount: "$diskCount",
+								netCount: "$netCount",
 							},
 							pipeline: [
 								{
@@ -257,6 +259,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 										},
 										disks: {
 											$push: "$disk",
+										},
+										net: {
+											$push: "$net",
 										},
 									},
 								},
@@ -364,6 +369,92 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																as: "diskArray",
 																in: {
 																	$arrayElemAt: ["$$diskArray.usage_percent", "$$diskIndex"],
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										net: {
+											$map: {
+												input: { $range: [0, "$$netCount"] },
+												as: "netIndex",
+												in: {
+													name: {
+														$arrayElemAt: [
+															{
+																$map: {
+																	input: "$net",
+																	as: "netArray",
+																	in: { $arrayElemAt: ["$$netArray.name", "$$netIndex"] },
+																},
+															},
+															0,
+														],
+													},
+													avgBytesSent: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.bytes_sent", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgBytesRecv: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.bytes_recv", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgPacketsSent: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.packets_sent", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgPacketsRecv: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.packets_recv", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgErrIn: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.err_in", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgErrOut: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.err_out", "$$netIndex"],
 																},
 															},
 														},
