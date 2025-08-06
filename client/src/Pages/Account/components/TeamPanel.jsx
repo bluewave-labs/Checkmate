@@ -90,14 +90,14 @@ const TeamPanel = () => {
 		};
 		let team = members;
 		if (filter !== "all")
-			team = members.filter((member) => {
+			team = members?.filter((member) => {
 				if (filter === "admin") {
 					return member.role.includes("admin") || member.role.includes("superadmin");
 				}
 				return member.role.includes(filter);
 			});
 
-		team = team.map((member) => ({
+		team = team?.map((member) => ({
 			...member,
 			id: member._id,
 			role: member.role.map((role) => ROLE_MAP[role]).join(","),

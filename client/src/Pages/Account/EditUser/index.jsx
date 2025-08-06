@@ -9,17 +9,28 @@ import Button from "@mui/material/Button";
 import RoleTable from "../components/RoleTable";
 
 // Utils
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useGetUser, useEditUser } from "../../../Hooks/userHooks";
 import { EDITABLE_ROLES, ROLES } from "../../../Utils/roleUtils";
 import { useEditUserForm, useValidateEditUserForm } from "./hooks/editUser";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const EditUser = () => {
 	const { userId } = useParams();
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const navigate = useNavigate();
+	const currentUser = useSelector((state) => state.auth.user);
+
+	useEffect(() => {
+		if (currentUser?._id && userId === currentUser._id) {
+			navigate("/account/profile");
+		}
+	}, [userId, currentUser?._id, navigate]);
+
 	const BREADCRUMBS = [
 		{ name: t("menu.team"), path: "/account/team" },
 		{ name: t("editUserPage.title"), path: "" },
