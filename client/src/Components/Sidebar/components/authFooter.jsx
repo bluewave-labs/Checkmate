@@ -136,6 +136,7 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 							display: "block",
 							whiteSpace: "nowrap",
 							overflow: "hidden",
+							textOverflow: "ellipsis",
 						}}
 					>
 						{authState.user?.firstName} {authState.user?.lastName}
@@ -157,11 +158,9 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 				>
 					<IconButton
 						sx={{
-							ml: "auto",
-							mr: "-8px",
+							ml: "50px",
 							"&:focus": { outline: "none" },
 							alignSelf: "center",
-							padding: "10px",
 
 							"& svg": {
 								width: "22px",
