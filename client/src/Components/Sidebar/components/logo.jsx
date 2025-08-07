@@ -49,9 +49,9 @@ const Logo = ({ collapsed }) => {
 				<Typography
 					lineHeight={1}
 					mt={theme.spacing(2)}
-					color={theme.palette.accent.contrastText}
+					color={theme.palette.primary.contrastText}
 					fontSize={"var(--env-var-font-size-medium-plus)"}
-					sx={{ opacity: 0.8, fontWeight: 500 }}
+					sx={{ opacity: 1, fontWeight: 500 }}
 				>
 					{t("common.appName")}
 				</Typography>
