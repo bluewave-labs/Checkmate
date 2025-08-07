@@ -136,7 +136,6 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 							display: "block",
 							whiteSpace: "nowrap",
 							overflow: "hidden",
-							textOverflow: "ellipsis",
 						}}
 					>
 						{authState.user?.firstName} {authState.user?.lastName}
@@ -152,37 +151,32 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 						{getRoleDisplayText(authState.user, t)}
 					</Typography>
 				</Stack>
-				<Stack
-					direction="row"
-					columnGap={theme.spacing(2)}
+				<Tooltip
+					title={t("navControls")}
+					disableInteractive
 				>
-					<Tooltip
-						title={t("navControls")}
-						disableInteractive
-					>
-						<IconButton
-							sx={{
-								ml: "auto",
-								mr: "-8px",
-								"&:focus": { outline: "none" },
-								alignSelf: "center",
-								padding: "10px",
+					<IconButton
+						sx={{
+							ml: "auto",
+							mr: "-8px",
+							"&:focus": { outline: "none" },
+							alignSelf: "center",
+							padding: "10px",
 
-								"& svg": {
-									width: "22px",
-									height: "22px",
-								},
-								"& svg path": {
-									/* Vertical three dots */
-									stroke: theme.palette.primary.contrastTextTertiary,
-								},
-							}}
-							onClick={(event) => openPopup(event)}
-						>
-							<DotsVertical />
-						</IconButton>
-					</Tooltip>
-				</Stack>
+							"& svg": {
+								width: "22px",
+								height: "22px",
+							},
+							"& svg path": {
+								/* Vertical three dots */
+								stroke: theme.palette.primary.contrastTextTertiary,
+							},
+						}}
+						onClick={(event) => openPopup(event)}
+					>
+						<DotsVertical />
+					</IconButton>
+				</Tooltip>
 			</Stack>
 			<Menu
 				className="sidebar-popup"
