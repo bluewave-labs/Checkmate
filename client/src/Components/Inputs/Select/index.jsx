@@ -112,7 +112,7 @@ const Select = ({
 						fill: theme.palette.primary.contrastTextTertiary,
 					},
 					"& .MuiSelect-select": {
-						padding: "0 13px",
+						padding: "0",
 						minHeight: "34px",
 						display: "flex",
 						alignItems: "center",
