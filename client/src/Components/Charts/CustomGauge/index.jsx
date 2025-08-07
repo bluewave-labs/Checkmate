@@ -66,11 +66,11 @@ const CustomGauge = ({
 
 	let fillColor;
 	if (progressWithinRange < 50) {
-	fillColor = theme.palette.success.main;
+		fillColor = theme.palette.success.main;
 	} else if (progressWithinRange < 80) {
-	fillColor = theme.palette.warning.lowContrast;
+		fillColor = theme.palette.warning.lowContrast;
 	} else {
-	fillColor = theme.palette.error.lowContrast;
+		fillColor = theme.palette.error.lowContrast;
 	}
 
 	if (isLoading) {
