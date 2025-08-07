@@ -30,7 +30,17 @@ const LanguageSelector = () => {
 			value={language}
 			onChange={handleChange}
 			size="small"
-			sx={{ minWidth: 80 }}
+			sx={{
+				minWidth: 80,
+				"& .MuiSelect-select": {
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				},
+				"& .MuiSelect-icon": {
+					alignSelf: "center",
+				},
+			}}
 		>
 			{languages.map((lang) => {
 				let parsedLang = lang === "en" ? "gb" : lang;
@@ -47,11 +57,17 @@ const LanguageSelector = () => {
 					<MenuItem
 						key={lang}
 						value={lang}
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
 					>
 						<Stack
 							direction="row"
 							spacing={theme.spacing(2)}
 							alignItems="center"
+							justifyContent="center"
 						>
 							<Box
 								component="span"
