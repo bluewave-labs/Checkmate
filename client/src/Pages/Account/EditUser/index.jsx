@@ -9,7 +9,7 @@ import Button from "@mui/material/Button";
 import RoleTable from "../components/RoleTable";
 
 // Utils
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useGetUser, useEditUser } from "../../../Hooks/userHooks";
@@ -22,15 +22,16 @@ const EditUser = () => {
 	const { userId } = useParams();
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const currentUser = useSelector((state) => state.auth.user);
 
-	useEffect(() => {
-		if (currentUser?._id && userId === currentUser._id) {
-			navigate("/account/profile");
-		}
-	}, [userId, currentUser?._id, navigate]);
-
+	if (currentUser?._id && userId === currentUser._id) {
+		return (
+			<Navigate
+				to="/account/profile"
+				replace
+			/>
+		);
+	}
 	const BREADCRUMBS = [
 		{ name: t("menu.team"), path: "/account/team" },
 		{ name: t("editUserPage.title"), path: "" },
