@@ -64,10 +64,14 @@ const CustomGauge = ({
 
 	const progressWithinRange = Math.max(MINIMUM_VALUE, Math.min(progress, MAXIMUM_VALUE));
 
-	const fillColor =
-		progressWithinRange > threshold
-			? theme.palette.error.lowContrast
-			: theme.palette.accent.main;
+	let fillColor;
+	if (progressWithinRange < 50) {
+	fillColor = theme.palette.success.main;
+	} else if (progressWithinRange < 80) {
+	fillColor = theme.palette.warning.lowContrast;
+	} else {
+	fillColor = theme.palette.error.lowContrast;
+	}
 
 	if (isLoading) {
 		return (
