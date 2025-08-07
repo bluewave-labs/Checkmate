@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { newOrChangedCredentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../Validation/validation";
 
 const getFeedbackStatus = (form, errors, field, criteria) => {
 	const fieldErrors = errors[field];

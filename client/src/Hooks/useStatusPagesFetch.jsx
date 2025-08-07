@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { networkService } from "../../../../main";
+import { networkService } from "../main";
 import { useSelector } from "react-redux";
-import { createToast } from "../../../../Utils/toastUtils";
+import { createToast } from "../Utils/toastUtils";
 
 const useStatusPagesFetch = () => {
 	const { user } = useSelector((state) => state.auth);
