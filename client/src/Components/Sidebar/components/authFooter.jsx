@@ -156,7 +156,6 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 					direction="row"
 					columnGap={theme.spacing(2)}
 				>
-					<ThemeSwitch color={theme.palette.primary.contrastTextTertiary} />
 					<Tooltip
 						title={t("navControls")}
 						disableInteractive
