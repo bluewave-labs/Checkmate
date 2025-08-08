@@ -234,6 +234,7 @@ const CreateInfrastructureMonitor = () => {
 		form = {
 			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
+			url: `http${https ? "s" : ""}://` + infrastructureMonitor.url,
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
@@ -470,31 +471,31 @@ const CreateInfrastructureMonitor = () => {
 							onChange={onChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
-							disabled={!isCreate}
+							disabled={false}
 						/>
-						{isCreate && (
-							<FieldWrapper
-								label={t("infrastructureProtocol")}
-								labelVariant="p"
-							>
-								<ButtonGroup>
-									<Button
-										variant="group"
-										filled={https.toString()}
-										onClick={() => setHttps(true)}
-									>
-										{t("https")}
-									</Button>
-									<Button
-										variant="group"
-										filled={(!https).toString()}
-										onClick={() => setHttps(false)}
-									>
-										{t("http")}
-									</Button>
-								</ButtonGroup>
-							</FieldWrapper>
-						)}
+
+						<FieldWrapper
+							label={t("infrastructureProtocol")}
+							labelVariant="p"
+						>
+							<ButtonGroup>
+								<Button
+									variant="group"
+									filled={https.toString()}
+									onClick={() => setHttps(true)}
+								>
+									{t("https")}
+								</Button>
+								<Button
+									variant="group"
+									filled={(!https).toString()}
+									onClick={() => setHttps(false)}
+								>
+									{t("http")}
+								</Button>
+							</ButtonGroup>
+						</FieldWrapper>
+
 						<TextInput
 							type="text"
 							id="name"

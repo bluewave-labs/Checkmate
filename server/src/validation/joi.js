@@ -181,6 +181,7 @@ const createMonitorsBodyValidation = joi.array().items(
 );
 
 const editMonitorBodyValidation = joi.object({
+	url: joi.string(),
 	name: joi.string(),
 	description: joi.string(),
 	interval: joi.number(),
