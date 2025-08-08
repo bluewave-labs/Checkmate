@@ -472,7 +472,6 @@ const CreateInfrastructureMonitor = () => {
 							onChange={onChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
-							disabled={false}
 						/>
 
 						<FieldWrapper
