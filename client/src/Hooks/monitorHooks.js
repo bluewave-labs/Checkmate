@@ -5,6 +5,7 @@ import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "./useMonitorUtils";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { validateUrl } from "../Utils/url";
 
 const useFetchMonitorsWithSummary = ({ types, monitorUpdateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -344,8 +345,12 @@ const useDeleteMonitor = () => {
 
 const useUpdateMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
+
 	const navigate = useNavigate();
 	const updateMonitor = async ({ monitor, redirect }) => {
+		if (monitor.url && !validateUrl(monitor.url)) {
+			throw new Error("Invalid URL format");
+		}
 		try {
 			setIsLoading(true);
 			const updatedFields = {

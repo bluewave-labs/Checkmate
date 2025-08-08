@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
+import { normalizeUrl } from "../../../Utils/url";
 import {
 	useCreateMonitor,
 	useDeleteMonitor,
@@ -234,7 +235,7 @@ const CreateInfrastructureMonitor = () => {
 		form = {
 			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
-			url: `http${https ? "s" : ""}://` + infrastructureMonitor.url,
+			url: normalizeUrl(infrastructureMonitor.url, https),
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
