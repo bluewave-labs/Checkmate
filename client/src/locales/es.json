@@ -665,6 +665,12 @@
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
 		},
+		"telegramSettings": {
+			"title": "",
+			"description": "",
+			"tokenLabel": "",
+			"tokenPlaceholder": ""
+		},
 		"pagerdutySettings": {
 			"title": "",
 			"description": "",

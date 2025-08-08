@@ -288,6 +288,12 @@
 			"webhookLabel": "Slack webhook URL",
 			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
+		"telegramSettings": {
+			"description": "Configure your Telegram bot here",
+			"title": "Telegram",
+			"tokenLabel": "Bot token",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+		},
 		"testNotification": "Test notification",
 		"title": "Create notification channel",
 		"typeSettings": {

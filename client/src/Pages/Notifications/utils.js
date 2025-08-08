@@ -4,6 +4,7 @@ export const NOTIFICATION_TYPES = [
 	{ _id: 3, name: "PagerDuty", value: "pager_duty" },
 	{ _id: 4, name: "Webhook", value: "webhook" },
 	{ _id: 5, name: "Discord", value: "discord" },
+	{ _id: 6, name: "Telegram", value: "telegram" },
 ];
 
 export const TITLE_MAP = {
@@ -12,6 +13,7 @@ export const TITLE_MAP = {
 	pager_duty: "createNotifications.pagerDutySettings.title",
 	webhook: "createNotifications.webhookSettings.title",
 	discord: "createNotifications.discordSettings.title",
+	telegram: "createNotifications.telegramSettings.title",
 };
 
 export const DESCRIPTION_MAP = {
@@ -20,6 +22,7 @@ export const DESCRIPTION_MAP = {
 	pager_duty: "createNotifications.pagerDutySettings.description",
 	webhook: "createNotifications.webhookSettings.description",
 	discord: "createNotifications.discordSettings.description",
+	telegram: "createNotifications.telegramSettings.description",
 };
 
 export const LABEL_MAP = {
@@ -28,6 +31,7 @@ export const LABEL_MAP = {
 	pager_duty: "createNotifications.pagerDutySettings.integrationKeyLabel",
 	webhook: "createNotifications.webhookSettings.webhookLabel",
 	discord: "createNotifications.discordSettings.webhookLabel",
+	telegram: "createNotifications.telegramSettings.tokenLabel",
 };
 
 export const PLACEHOLDER_MAP = {
@@ -36,4 +40,5 @@ export const PLACEHOLDER_MAP = {
 	pager_duty: "createNotifications.pagerDutySettings.integrationKeyPlaceholder",
 	webhook: "createNotifications.webhookSettings.webhookPlaceholder",
 	discord: "createNotifications.discordSettings.webhookPlaceholder",
+	telegram: "createNotifications.telegramSettings.tokenPlaceholder",
 };

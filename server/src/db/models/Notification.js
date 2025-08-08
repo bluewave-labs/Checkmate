@@ -16,7 +16,7 @@ const NotificationSchema = mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: ["email", "slack", "discord", "webhook", "pager_duty"],
+			enum: ["email", "slack", "discord", "webhook", "pager_duty", "telegram"],
 		},
 		notificationName: {
 			type: String,
