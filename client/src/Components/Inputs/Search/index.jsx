@@ -4,7 +4,6 @@ import {
 	ListItem,
 	Autocomplete,
 	TextField,
-	Stack,
 	Typography,
 	Checkbox,
 } from "@mui/material";
@@ -33,7 +32,6 @@ const SearchAdornment = () => {
 	const theme = useTheme();
 	return (
 		<Box
-			mr={theme.spacing(4)}
 			height={16}
 			sx={{
 				"& svg": {
@@ -284,7 +282,9 @@ const Search = ({
 			}}
 			sx={{
 				/* 	height: 34,*/
-				"&.MuiAutocomplete-root .MuiAutocomplete-input": { p: 0 },
+				"&.MuiAutocomplete-root .MuiAutocomplete-input": {
+					padding: `0 ${theme.spacing(5)}`,
+				},
 				...sx,
 			}}
 		/>

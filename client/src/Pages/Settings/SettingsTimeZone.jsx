@@ -58,7 +58,7 @@ const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
 					inputValue={rawInput}
 					handleInputChange={(val) => setRawInput(val)}
 					handleChange={handleTimezoneChange}
-					isAdorned={false}
+					isAdorned={true}
 					unit="timezone"
 				/>
 			</Stack>
