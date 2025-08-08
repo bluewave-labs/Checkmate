@@ -441,6 +441,17 @@ class MonitorController extends BaseController {
 		SERVICE_NAME,
 		"exportMonitorsToCSV"
 	);
+
+	getAllGames = this.asyncHandler(
+		async (req, res) => {
+			return res.success({
+				msg: "OK",
+				data: this.monitorService.getAllGames(),
+			});
+		},
+		SERVICE_NAME,
+		"getAllGames"
+	);
 }
 
 export default MonitorController;

@@ -44,6 +44,7 @@ class MonitorRoutes {
 		this.router.get("/export", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToCSV);
 		this.router.post("/bulk", isAllowed(["admin", "superadmin"]), upload.single("csvFile"), this.monitorController.createBulkMonitors);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
+		this.router.get("/games", this.monitorController.getAllGames);
 
 		// Individual monitor CRUD routes
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);

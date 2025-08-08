@@ -34,7 +34,7 @@ import {
 } from "../../../Hooks/monitorHooks";
 import { useTranslation } from "react-i18next";
 
-const TYPES = ["http", "ping", "docker", "port"];
+const TYPES = ["http", "ping", "docker", "port", "game"];
 const CreateMonitorButton = ({ shouldRender }) => {
 	// Utils
 	const navigate = useNavigate();

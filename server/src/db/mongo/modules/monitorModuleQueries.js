@@ -910,7 +910,7 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 								$switch: {
 									branches: [
 										{
-											case: { $in: ["$type", ["http", "ping", "docker", "port"]] },
+											case: { $in: ["$type", ["http", "ping", "docker", "port", "game"]] },
 											then: "$standardchecks",
 										},
 										{

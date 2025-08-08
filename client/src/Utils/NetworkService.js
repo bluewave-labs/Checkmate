@@ -75,6 +75,20 @@ class NetworkService {
 	}
 
 	/**
+	 * Fetch the games associated with a monitor
+	 *
+	 * @async
+	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
+	 */
+	async getMonitorGames() {
+		return this.axiosInstance.get(`/monitors/games`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	/**
 	 *
 	 * ************************************
 	 * Create a new monitor
