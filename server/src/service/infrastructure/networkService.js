@@ -503,7 +503,12 @@ class NetworkService {
 				host: url,
 				port: port,
 			}).catch((error) => {
-				null;
+				this.logger.warn({
+					message: error.message,
+					service: this.SERVICE_NAME,
+					method: "requestGame",
+					details: { url, port, gameId },
+				});
 			});
 
 			if (!state) {
