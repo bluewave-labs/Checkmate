@@ -202,6 +202,25 @@ const useFetchStatsByMonitorId = ({
 	return [monitor, audits, isLoading, networkError];
 };
 
+const useFetchMonitorGames = ({ setGames, updateTrigger }) => {
+	const [isLoading, setIsLoading] = useState(true);
+	useEffect(() => {
+		const fetchGames = async () => {
+			try {
+				setIsLoading(true);
+				const res = await networkService.getMonitorGames();
+				setGames(res.data.data);
+			} catch (error) {
+				createToast({ body: error.message });
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchGames();
+	}, [setGames, updateTrigger]);
+	return [isLoading];
+};
+
 const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
@@ -359,7 +378,12 @@ const useUpdateMonitor = () => {
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				jsonPath: monitor.jsonPath,
 				url: monitor.url,
-				...(monitor.type === "port" && { port: monitor.port }),
+				...((monitor.type === "port" || monitor.type === "game") && {
+					port: monitor.port,
+				}),
+				...(monitor.type === "game" && {
+					gameId: monitor.gameId,
+				}),
 				...(monitor.type === "hardware" && {
 					thresholds: monitor.thresholds,
 					secret: monitor.secret,
@@ -532,4 +556,5 @@ export {
 	useDeleteMonitorStats,
 	useCreateBulkMonitors,
 	useExportMonitors,
+	useFetchMonitorGames,
 };

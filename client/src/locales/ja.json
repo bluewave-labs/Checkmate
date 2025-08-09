@@ -264,6 +264,7 @@
 	"notifyEmails": "複数のアドレスにメールでも通知（近日公開）",
 	"seperateEmails": "複数のメールはカンマで区切ることができます",
 	"checkFrequency": "チェック頻度",
+	"chooseGame": "",
 	"matchMethod": "マッチ方法",
 	"expectedValue": "期待値",
 	"deleteDialogTitle": "本当にこのモニターを削除しますか？",
@@ -441,7 +442,8 @@
 		"http": "監視するURLまたはIPを入力（例: https://example.com/ または 192.168.1.100）し、ダッシュボードに表示される明確な表示名を追加。",
 		"ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
 		"docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
-		"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。"
+		"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。",
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",

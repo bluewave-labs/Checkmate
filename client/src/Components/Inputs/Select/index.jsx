@@ -50,6 +50,7 @@ const Select = ({
 	onChange,
 	onBlur,
 	sx,
+	error = false,
 	name = "",
 	labelControlSpacing = 6,
 	maxWidth,
@@ -93,6 +94,7 @@ const Select = ({
 				onChange={onChange}
 				onBlur={onBlur}
 				displayEmpty
+				error={error}
 				name={name}
 				inputProps={{ id: id }}
 				IconComponent={KeyboardArrowDownIcon}
@@ -112,7 +114,7 @@ const Select = ({
 						fill: theme.palette.primary.contrastTextTertiary,
 					},
 					"& .MuiSelect-select": {
-						padding: "0 13px",
+						padding: "0",
 						minHeight: "34px",
 						display: "flex",
 						alignItems: "center",
@@ -172,6 +174,7 @@ Select.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	isHidden: PropTypes.bool,
+	error: PropTypes.bool,
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
 		.isRequired,
 	items: PropTypes.arrayOf(

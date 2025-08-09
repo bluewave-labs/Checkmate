@@ -124,8 +124,8 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"),
-			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port"))
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
 		),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
@@ -175,6 +175,7 @@ const createMonitorBodyValidation = joi.object({
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
+	gameId: joi.string().allow(""),
 });
 
 const createMonitorsBodyValidation = joi.array().items(
@@ -205,6 +206,7 @@ const editMonitorBodyValidation = joi.object({
 		usage_disk: joi.number(),
 		usage_temperature: joi.number(),
 	}),
+	gameId: joi.string(),
 });
 
 const pauseMonitorParamValidation = joi.object({
@@ -302,7 +304,7 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port"),
+	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "game"),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
