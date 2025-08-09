@@ -88,7 +88,49 @@ PercentTick.propTypes = {
  */
 const getFormattedPercentage = (value) => {
 	if (typeof value !== "number") return value;
-	return `${(value * 100).toFixed(2)}.%`;
+	return `${(value * 100).toFixed(2)}%`;
+};
+
+/**
+ * Custom tick component for rendering network bytes per second.
+ *
+ * @param {Object} props - The properties object.
+ * @param {number} props.x - The x-coordinate for the tick.
+ * @param {number} props.y - The y-coordinate for the tick.
+ * @param {Object} props.payload - The payload object containing tick data.
+ * @param {number} props.index - The index of the tick.
+ * @returns {JSX.Element|null} The rendered tick component or null for the first tick.
+ */
+export const NetworkTick = ({ x, y, payload, index }) => {
+	const theme = useTheme();
+	if (index === 0) return null;
+
+	const formatBytes = (bytes) => {
+		if (bytes >= 1_000_000_000) return `${(bytes / 1_000_000_000).toFixed(1)} GB/s`;
+		if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB/s`;
+		if (bytes >= 1_000) return `${(bytes / 1_000).toFixed(1)} KB/s`;
+		return `${bytes} B/s`;
+	};
+
+	return (
+		<Text
+			x={x - 20}
+			y={y}
+			textAnchor="middle"
+			fill={theme.palette.primary.contrastTextTertiary}
+			fontSize={11}
+			fontWeight={400}
+		>
+			{formatBytes(payload?.value)}
+		</Text>
+	);
+};
+
+NetworkTick.propTypes = {
+	x: PropTypes.number,
+	y: PropTypes.number,
+	payload: PropTypes.object,
+	index: PropTypes.number,
 };
 
 /**
@@ -112,6 +154,7 @@ export const InfrastructureTooltip = ({
 	yLabel,
 	dotColor,
 	dateRange,
+	formatter = getFormattedPercentage,
 }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 	const theme = useTheme();
@@ -166,8 +209,8 @@ export const InfrastructureTooltip = ({
 							sx={{ opacity: 0.8 }}
 						>
 							{yIdx >= 0
-								? `${yLabel} ${getFormattedPercentage(payload[0].payload[hardwareType][yIdx][metric])}`
-								: `${yLabel} ${getFormattedPercentage(payload[0].payload[yKey])}`}
+								? `${yLabel} ${formatter(payload[0].payload[hardwareType][yIdx][metric])}`
+								: `${yLabel} ${formatter(payload[0].payload[yKey])}`}
 						</Typography>
 					</Stack>
 				</Box>

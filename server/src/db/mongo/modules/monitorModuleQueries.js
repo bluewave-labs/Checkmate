@@ -459,6 +459,28 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														},
 													},
+													avgDropIn: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.drop_in", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgDropOut: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.drop_out", "$$netIndex"],
+																},
+															},
+														},
+													},
 												},
 											},
 										},
