@@ -7,6 +7,7 @@ import InfraAreaChart from "../../../../../Pages/Infrastructure/Details/Componen
 import {
 	TzTick,
 	InfrastructureTooltip,
+	NetworkTick,
 } from "../../../../../Components/Charts/Utils/chartUtils";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
+
 	const configs = [
 		{
 			type: "network-bytes",
@@ -33,6 +35,7 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 			gradientStartColor: theme.palette.info.main,
 			yLabel: t("bytesPerSecond"),
 			xTick: <TzTick dateRange={dateRange} />,
+			yTick: <NetworkTick />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.info.main}

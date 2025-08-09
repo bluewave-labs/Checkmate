@@ -393,7 +393,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															0,
 														],
 													},
-													bytesSent: {
+													avgBytesSent: {
 														$avg: {
 															$map: {
 																input: "$net",
@@ -404,7 +404,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														},
 													},
-													bytesRecv: {
+													avgBytesRecv: {
 														$avg: {
 															$map: {
 																input: "$net",
@@ -415,7 +415,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														},
 													},
-													packetsSent: {
+													avgPacketsSent: {
 														$avg: {
 															$map: {
 																input: "$net",
@@ -426,7 +426,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														},
 													},
-													packetsRecv: {
+													avgPacketsRecv: {
 														$avg: {
 															$map: {
 																input: "$net",
@@ -437,7 +437,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														},
 													},
-													errIn: {
+													avgErrIn: {
 														$avg: {
 															$map: {
 																input: "$net",
@@ -448,13 +448,35 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														},
 													},
-													errOut: {
+													avgErrOut: {
 														$avg: {
 															$map: {
 																input: "$net",
 																as: "netArray",
 																in: {
 																	$arrayElemAt: ["$$netArray.err_out", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgDropIn: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.drop_in", "$$netIndex"],
+																},
+															},
+														},
+													},
+													avgDropOut: {
+														$avg: {
+															$map: {
+																input: "$net",
+																as: "netArray",
+																in: {
+																	$arrayElemAt: ["$$netArray.drop_out", "$$netIndex"],
 																},
 															},
 														},
