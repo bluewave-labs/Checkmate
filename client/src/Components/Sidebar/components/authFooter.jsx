@@ -4,7 +4,6 @@ import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "../../Avatar";
-import ThemeSwitch from "../../ThemeSwitch";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
@@ -152,38 +151,30 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 						{getRoleDisplayText(authState.user, t)}
 					</Typography>
 				</Stack>
-				<Stack
-					direction="row"
-					columnGap={theme.spacing(2)}
+				<Tooltip
+					title={t("navControls")}
+					disableInteractive
 				>
-					<ThemeSwitch color={theme.palette.primary.contrastTextTertiary} />
-					<Tooltip
-						title={t("navControls")}
-						disableInteractive
-					>
-						<IconButton
-							sx={{
-								ml: "auto",
-								mr: "-8px",
-								"&:focus": { outline: "none" },
-								alignSelf: "center",
-								padding: "10px",
+					<IconButton
+						sx={{
+							ml: "50px",
+							"&:focus": { outline: "none" },
+							alignSelf: "center",
 
-								"& svg": {
-									width: "22px",
-									height: "22px",
-								},
-								"& svg path": {
-									/* Vertical three dots */
-									stroke: theme.palette.primary.contrastTextTertiary,
-								},
-							}}
-							onClick={(event) => openPopup(event)}
-						>
-							<DotsVertical />
-						</IconButton>
-					</Tooltip>
-				</Stack>
+							"& svg": {
+								width: "22px",
+								height: "22px",
+							},
+							"& svg path": {
+								/* Vertical three dots */
+								stroke: theme.palette.primary.contrastTextTertiary,
+							},
+						}}
+						onClick={(event) => openPopup(event)}
+					>
+						<DotsVertical />
+					</IconButton>
+				</Tooltip>
 			</Stack>
 			<Menu
 				className="sidebar-popup"

@@ -353,7 +353,7 @@ const baseTheme = (palette) => ({
 					},
 
 					"& .MuiInputBase-input.MuiOutlinedInput-input": {
-						padding: "0 var(--env-var-spacing-1-minus) !important",
+						padding: `0 ${theme.spacing(5)}`,
 					},
 
 					"& .MuiOutlinedInput-root": {
@@ -408,6 +408,7 @@ const baseTheme = (palette) => ({
 					"& .MuiOutlinedInput-root": {
 						paddingTop: 0,
 						paddingBottom: 0,
+						paddingRight: theme.spacing(5),
 					},
 					"& fieldset": {
 						borderColor: theme.palette.primary.lowContrast,
@@ -569,7 +570,7 @@ const baseTheme = (palette) => ({
 					"&:hover .MuiOutlinedInput-notchedOutline": {
 						borderColor: theme.palette.primary.lowContrast,
 					},
-					padding: "0 13px",
+					padding: `0 ${theme.spacing(5)}`,
 					minHeight: "34px",
 					display: "flex",
 					alignItems: "center",

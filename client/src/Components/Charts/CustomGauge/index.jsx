@@ -17,7 +17,6 @@ const MAXIMUM_VALUE = 100;
  * @param {number} [props.progress=0] - Progress percentage (0-100)
  * @param {number} [props.radius=60] - Radius of the gauge circle
  * @param {number} [props.strokeWidth=15] - Width of the gauge stroke
- * @param {number} [props.threshold=50] - Threshold for color change
  * @param {number} [props.precision=1] - Precision of the progress percentage
  * @param {string} [props.unit="%"] - Unit of progress
  *
@@ -26,7 +25,6 @@ const MAXIMUM_VALUE = 100;
  *   progress={75}
  *   radius={50}
  *   strokeWidth={10}
- * 	 threshold={50}
  * />
  *
  * @returns {React.ReactElement} Rendered CustomGauge component
@@ -36,7 +34,6 @@ const CustomGauge = ({
 	progress = 0,
 	radius = 70,
 	strokeWidth = 15,
-	threshold = 50,
 	precision = 1,
 	unit = "%",
 }) => {
@@ -64,10 +61,14 @@ const CustomGauge = ({
 
 	const progressWithinRange = Math.max(MINIMUM_VALUE, Math.min(progress, MAXIMUM_VALUE));
 
-	const fillColor =
-		progressWithinRange > threshold
-			? theme.palette.error.lowContrast
-			: theme.palette.accent.main;
+	let fillColor;
+	if (progressWithinRange < 50) {
+		fillColor = theme.palette.success.main;
+	} else if (progressWithinRange < 80) {
+		fillColor = theme.palette.warning.lowContrast;
+	} else {
+		fillColor = theme.palette.error.lowContrast;
+	}
 
 	if (isLoading) {
 		return (
@@ -142,7 +143,6 @@ CustomGauge.propTypes = {
 	progress: PropTypes.number,
 	radius: PropTypes.number,
 	strokeWidth: PropTypes.number,
-	threshold: PropTypes.number,
 	precision: PropTypes.number,
 	unit: PropTypes.string,
 };

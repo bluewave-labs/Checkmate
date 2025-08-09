@@ -130,7 +130,7 @@ const TabSettings = ({
 							inputValue={rawInput}
 							handleInputChange={(newVal) => setRawInput(newVal)}
 							handleChange={handleTimezoneChange}
-							isAdorned={false}
+							isAdorned={true}
 							unit="timezone"
 						/>
 					</Stack>

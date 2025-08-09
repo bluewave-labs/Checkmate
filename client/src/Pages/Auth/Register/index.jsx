@@ -1,10 +1,10 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import AuthHeader from "../components/AuthHeader";
 import TextInput from "../../../Components/Inputs/TextInput";
-import Check from "../../../Components/Check/Check";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import PasswordTooltip from "../components/PasswordTooltip";
 
 // Utils
 import { useTheme } from "@emotion/react";
@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom";
 import { networkService } from "../../../main";
 import { newOrChangedCredentials } from "../../../Validation/validation";
 import { register } from "../../../Features/Auth/authSlice";
+import AuthPageWrapper from "../components/AuthPageWrapper";
 import { createToast } from "../../../Utils/toastUtils";
 import PropTypes from "prop-types";
 
@@ -195,59 +196,38 @@ const Register = ({ superAdminExists }) => {
 	};
 
 	return (
-		<Stack
-			gap={theme.spacing(10)}
-			minHeight="100vh"
+		<AuthPageWrapper
+			heading={t("auth.registration.heading.user")}
+			welcome={t("auth.registration.welcome")}
 		>
-			<AuthHeader />
 			<Stack
-				margin="auto"
+				component="form"
 				width="100%"
-				alignItems="center"
-				gap={theme.spacing(10)}
+				padding={theme.spacing(8)}
+				gap={theme.spacing(8)}
+				onSubmit={onSubmit}
+				sx={{
+					width: {
+						sm: "80%",
+					},
+				}}
 			>
-				<Typography variant="h1">{t("auth.registration.heading.user")}</Typography>
-
+				<Typography variant="h2">
+					{superAdminExists
+						? t("auth.registration.description.user")
+						: t("auth.registration.description.superAdmin")}
+				</Typography>
 				<Stack
-					component="form"
-					width="100%"
-					maxWidth={600}
-					alignSelf="center"
-					justifyContent="center"
-					border={1}
-					borderRadius={theme.spacing(5)}
-					borderColor={theme.palette.primary.lowContrast}
-					backgroundColor={theme.palette.primary.main}
-					padding={theme.spacing(12)}
-					gap={theme.spacing(12)}
-					onSubmit={onSubmit}
+					direction={{ xs: "column", lg: "row" }}
+					justifyContent="space-between"
+					gap={theme.spacing(4)}
 				>
-					<Typography variant="h1">
-						{superAdminExists
-							? t("auth.registration.heading.user")
-							: t("auth.registration.heading.superAdmin")}
-					</Typography>
-					<Typography>
-						{superAdminExists
-							? t("auth.registration.description.user")
-							: t("auth.registration.description.superAdmin")}
-					</Typography>
-					<TextInput
-						type="email"
-						name="email"
-						label={t("auth.common.inputs.email.label")}
-						isRequired={true}
-						placeholder={t("auth.common.inputs.email.placeholder")}
-						autoComplete="email"
-						value={form.email}
-						onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
-						onChange={onChange}
-						error={errors.email ? true : false}
-						helperText={errors.email ? t(errors.email) : ""} // Localization keys are in validation.js
-					/>
 					<TextInput
 						name="firstName"
+						sx={{ flex: 1 }}
 						label={t("auth.common.inputs.firstName.label")}
+						width="100%"
+						gap={theme.spacing(4)}
 						isRequired={true}
 						placeholder={t("auth.common.inputs.firstName.placeholder")}
 						autoComplete="given-name"
@@ -259,6 +239,9 @@ const Register = ({ superAdminExists }) => {
 					<TextInput
 						name="lastName"
 						label={t("auth.common.inputs.lastName.label")}
+						sx={{ flex: 1 }}
+						width="100%"
+						gap={theme.spacing(4)}
 						isRequired={true}
 						placeholder={t("auth.common.inputs.lastName.placeholder")}
 						autoComplete="family-name"
@@ -267,82 +250,76 @@ const Register = ({ superAdminExists }) => {
 						error={errors.lastName ? true : false}
 						helperText={errors.lastName ? t(errors.lastName) : ""} // Localization keys are in validation.js
 					/>
-					<TextInput
-						type="password"
-						id="register-password-input"
-						name="password"
-						label={t("auth.common.inputs.password.label")}
-						isRequired={true}
-						placeholder="••••••••••"
-						autoComplete="current-password"
-						value={form.password}
-						onChange={onPasswordChange}
-						error={errors.password && errors.password[0] ? true : false}
-						helperText={
-							errors.password === "auth.common.inputs.password.errors.empty"
-								? t(errors.password)
-								: ""
-						} // Other errors are related to required password conditions and are visualized below the input
-					/>
-					<TextInput
-						type="password"
-						id="register-confirm-input"
-						name="confirm"
-						label={t("auth.common.inputs.passwordConfirm.label")}
-						isRequired={true}
-						placeholder={t("auth.common.inputs.passwordConfirm.placeholder")}
-						autoComplete="current-password"
-						value={form.confirm}
-						onChange={onPasswordChange}
-						error={errors.confirm && errors.confirm[0] ? true : false}
-					/>
-					<Stack
-						gap={theme.spacing(4)}
-						mb={{ xs: theme.spacing(6), sm: theme.spacing(8) }}
-					>
-						<Check
-							noHighlightText={t("auth.common.inputs.password.rules.length.beginning")}
-							text={t("auth.common.inputs.password.rules.length.highlighted")}
-							variant={feedback.length}
-						/>
-						<Check
-							noHighlightText={t("auth.common.inputs.password.rules.special.beginning")}
-							text={t("auth.common.inputs.password.rules.special.highlighted")}
-							variant={feedback.special}
-						/>
-						<Check
-							noHighlightText={t("auth.common.inputs.password.rules.number.beginning")}
-							text={t("auth.common.inputs.password.rules.number.highlighted")}
-							variant={feedback.number}
-						/>
-						<Check
-							noHighlightText={t("auth.common.inputs.password.rules.uppercase.beginning")}
-							text={t("auth.common.inputs.password.rules.uppercase.highlighted")}
-							variant={feedback.uppercase}
-						/>
-						<Check
-							noHighlightText={t("auth.common.inputs.password.rules.lowercase.beginning")}
-							text={t("auth.common.inputs.password.rules.lowercase.highlighted")}
-							variant={feedback.lowercase}
-						/>
-						<Check
-							noHighlightText={t("auth.common.inputs.password.rules.match.beginning")}
-							text={t("auth.common.inputs.password.rules.match.highlighted")}
-							variant={feedback.confirm}
-						/>
-					</Stack>
-					<Button
-						disabled={isLoading}
-						variant="contained"
-						color="accent"
-						type="submit"
-						sx={{ width: "30%", alignSelf: "flex-end" }}
-					>
-						{t("auth.common.navigation.continue")}
-					</Button>
 				</Stack>
+				<TextInput
+					type="email"
+					name="email"
+					gap={theme.spacing(4)}
+					label={t("auth.common.inputs.email.label")}
+					isRequired={true}
+					placeholder={t("auth.common.inputs.email.placeholder")}
+					autoComplete="email"
+					value={form.email}
+					onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
+					onChange={onChange}
+					error={errors.email ? true : false}
+					helperText={errors.email ? t(errors.email) : ""} // Localization keys are in validation.js
+				/>
+				<PasswordTooltip
+					feedback={feedback}
+					form={form}
+				>
+					<Box>
+						<TextInput
+							type="password"
+							id="register-password-input"
+							name="password"
+							label={t("auth.common.inputs.password.label")}
+							gap={theme.spacing(4)}
+							isRequired={true}
+							placeholder="••••••••••"
+							autoComplete="current-password"
+							value={form.password}
+							onChange={onPasswordChange}
+							error={errors.password && errors.password[0] ? true : false}
+							helperText={
+								errors.password === "auth.common.inputs.password.errors.empty"
+									? t(errors.password)
+									: ""
+							}
+						/>
+					</Box>
+				</PasswordTooltip>
+				<TextInput
+					type="password"
+					id="register-confirm-input"
+					name="confirm"
+					label={t("auth.common.inputs.passwordConfirm.label")}
+					gap={theme.spacing(4)}
+					isRequired={true}
+					placeholder={t("auth.common.inputs.passwordConfirm.placeholder")}
+					autoComplete="current-password"
+					value={form.confirm}
+					onChange={onPasswordChange}
+					marginBottom={theme.spacing(4)}
+					error={errors.confirm && errors.confirm[0] ? true : false}
+				/>
+				<Button
+					disabled={isLoading}
+					variant="contained"
+					color="accent"
+					type="submit"
+					sx={{
+						width: "100%",
+						alignSelf: "center",
+						fontWeight: 700,
+						mt: theme.spacing(10),
+					}}
+				>
+					{t("auth.common.navigation.continue")}
+				</Button>
 			</Stack>
-		</Stack>
+		</AuthPageWrapper>
 	);
 };
 

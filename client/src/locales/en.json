@@ -87,7 +87,7 @@
 							"highlighted": "one lower character"
 						},
 						"match": {
-							"beginning": "Confirm password and password",
+							"beginning": "Passwords",
 							"highlighted": "must match"
 						},
 						"number": {
@@ -195,7 +195,8 @@
 			"termsAndPolicies": "By creating an account, you agree to our <a1>Terms of Service</a1> and <a2>Privacy Policy</a2>.",
 			"toasts": {
 				"success": "Welcome! Your account was created successfully."
-			}
+			},
+			"welcome": "Welcome to Checkmate!"
 		}
 	},
 	"avgCpuTemperature": "Average CPU Temperature",
@@ -220,6 +221,7 @@
 	"cancel": "Cancel",
 	"checkFormError": "Please check the form for errors.",
 	"checkFrequency": "Check frequency",
+	"chooseGame": "Choose game",
 	"checkHooks": {
 		"failureResolveAll": "Failed to resolve all incidents.",
 		"failureResolveMonitor": "Failed to resolve monitor incidents.",
@@ -636,6 +638,11 @@
 			"label": "URL to monitor",
 			"namePlaceholder": "Localhost:5173",
 			"placeholder": "localhost"
+		},
+		"game": {
+			"label": "URL to monitor",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
 		}
 	},
 	"ms": "ms",
@@ -762,6 +769,8 @@
 	"pingMonitoringDescription": "Check whether your server is available or not.",
 	"portMonitoring": "Port monitoring",
 	"portMonitoringDescription": "Check whether your port is open or not.",
+	"gameServerMonitoring": "Game Server Monitoring",
+	"gameServerMonitoringDescription": "Check whether your game server is running or not",
 	"portToMonitor": "Port to monitor",
 	"publicLink": "Public link",
 	"publicURL": "Public URL",
@@ -1024,7 +1033,8 @@
 		"docker": "Enter the Docker ID of your container. Docker IDs must be the full 64 char Docker ID. You can run docker inspect <short_id> to get the full container ID.",
 		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
-		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
+		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
+		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
 	},
 	"uptimeMonitor": {
 		"fallback": {
