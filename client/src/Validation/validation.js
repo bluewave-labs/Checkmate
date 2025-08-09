@@ -378,11 +378,20 @@ const infrastructureMonitorValidation = joi.object({
 			if (!/^https?:\/\//i.test(value)) return helpers.error("string.uri");
 			try {
 				const u = new URL(value);
-				const hasPath = u.pathname && u.pathname !== "/";
-				const hasQuery = !!u.search;
-				const hasHash = !!u.hash;
-				if (hasPath || hasQuery || hasHash) {
+				// Host-only constraints
+				const hasCreds = u.username || u.password;
+				const invalidPath = u.pathname !== "/";
+				const hasQuery = u.search !== "";
+				const hasHash = u.hash !== "";
+				if (hasCreds || invalidPath || hasQuery || hasHash) {
 					return helpers.error("string.invalidUrl");
+				}
+
+				if (u.port) {
+					const portNum = Number(u.port);
+					if (!Number.isInteger(portNum) || portNum < 1 || portNum > 65535) {
+						return helpers.error("string.invalidUrl");
+					}
 				}
 				return value;
 			} catch {
@@ -393,7 +402,7 @@ const infrastructureMonitorValidation = joi.object({
 			"string.empty": "This field is required.",
 			"string.uri": "Please enter a valid URL starting with http:// or https://",
 			"string.invalidUrl":
-				"Only hostname (optional port) is allowed — no path, query, or fragment.",
+				"Only hostname (optional port 1–65535) is allowed — no path, query, fragment, or credentials.",
 		}),
 
 	name: joi.string().trim().max(50).allow("").messages({

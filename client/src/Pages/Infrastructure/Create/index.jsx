@@ -272,8 +272,6 @@ const CreateInfrastructureMonitor = () => {
 			}));
 			return;
 		}
-
-		// leave other fields exactly as they were (or no per-field validation if that’s your current behavior)
 	};
 
 	const handleCheckboxChange = (event) => {
