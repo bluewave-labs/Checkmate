@@ -367,20 +367,27 @@ const infrastructureMonitorValidation = joi.object({
 		.string()
 		.trim()
 		.custom((value, helpers) => {
-			const urlRegex =
-				/^(https?:\/\/)?(([0-9]{1,3}\.){3}[0-9]{1,3}|[\da-z\.-]+)(\.[a-z\.]{2,6})?(:(\d+))?([\/\w \.-]*)*\/?$/i;
-
-			if (!urlRegex.test(value)) {
-				return helpers.error("string.invalidUrl");
+			if (!/^https?:\/\//i.test(value)) return helpers.error("string.uri");
+			try {
+				const u = new URL(value);
+				const hasPath = u.pathname && u.pathname !== "/";
+				const hasQuery = !!u.search;
+				const hasHash = !!u.hash;
+				if (hasPath || hasQuery || hasHash) {
+					return helpers.error("string.invalidUrl");
+				}
+				return value;
+			} catch {
+				return helpers.error("string.uri");
 			}
-
-			return value;
 		})
 		.messages({
 			"string.empty": "This field is required.",
-			"string.uri": "The URL you provided is not valid.",
-			"string.invalidUrl": "Please enter a valid URL with optional port",
+			"string.uri": "Please enter a valid URL starting with http:// or https://",
+			"string.invalidUrl":
+				"Only hostname (optional port) is allowed — no path, query, or fragment.",
 		}),
+
 	name: joi.string().trim().max(50).allow("").messages({
 		"string.max": "This field should not exceed the 50 characters limit.",
 	}),

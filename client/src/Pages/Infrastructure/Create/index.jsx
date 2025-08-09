@@ -24,7 +24,6 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { normalizeUrl } from "../../../Utils/url";
 import {
 	useCreateMonitor,
 	useDeleteMonitor,
@@ -106,6 +105,10 @@ const CreateInfrastructureMonitor = () => {
 		const errorKey = Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX));
 		return errorKey ? errors[errorKey] : null;
 	};
+
+	const pageSchema = infrastructureMonitorValidation.fork(["url"], (s) =>
+		isCreate ? s.required() : s.optional()
+	);
 
 	// Populate form fields if editing
 	useEffect(() => {
@@ -197,7 +200,7 @@ const CreateInfrastructureMonitor = () => {
 			secret: infrastructureMonitor.secret,
 		};
 
-		const { error } = infrastructureMonitorValidation.validate(form, {
+		const { error } = pageSchema.validate(form, {
 			abortEarly: false,
 		});
 
@@ -235,7 +238,7 @@ const CreateInfrastructureMonitor = () => {
 		form = {
 			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
-			url: normalizeUrl(infrastructureMonitor.url, https),
+			url: `http${https ? "s" : ""}://` + infrastructureMonitor.url,
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
@@ -253,20 +256,24 @@ const CreateInfrastructureMonitor = () => {
 	};
 
 	const onChange = (event) => {
-		const { value, name } = event.target;
-		setInfrastructureMonitor({
-			...infrastructureMonitor,
-			[name]: value,
-		});
+		const { name, value } = event.target;
 
-		const { error } = infrastructureMonitorValidation.validate(
-			{ [name]: value },
-			{ abortEarly: false }
-		);
-		setErrors((prev) => ({
-			...prev,
-			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
-		}));
+		setInfrastructureMonitor((prev) => ({ ...prev, [name]: value }));
+
+		if (name === "url") {
+			const candidate = value ? `http${https ? "s" : ""}://` + value : value;
+
+			const urlSchema = pageSchema.extract("url");
+			const { error } = urlSchema.validate(candidate, { abortEarly: false });
+
+			setErrors((prev) => ({
+				...prev,
+				url: error ? error.details[0].message : undefined,
+			}));
+			return;
+		}
+
+		// leave other fields exactly as they were (or no per-field validation if that’s your current behavior)
 	};
 
 	const handleCheckboxChange = (event) => {
