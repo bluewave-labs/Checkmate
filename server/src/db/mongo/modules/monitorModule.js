@@ -351,8 +351,8 @@ class MonitorModule {
 					if (dt > 0) {
 						newNet.push({
 							name: iface.name,
-							avgBytesRecv: (iface.avgBytesRecv - prev.avgBytesRecv),
-							avgPacketsRecv: (iface.avgPacketsRecv - prev.avgPacketsRecv),
+							avgBytesRecv: iface.avgBytesRecv - prev.avgBytesRecv,
+							avgPacketsRecv: iface.avgPacketsRecv - prev.avgPacketsRecv,
 							avgErrOut: iface.avgErrOut - prev.avgErrOut,
 							avgDropOut: iface.avgDropOut,
 						});

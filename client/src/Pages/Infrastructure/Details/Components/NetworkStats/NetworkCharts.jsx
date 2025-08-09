@@ -24,7 +24,6 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-
 	const configs = [
 		{
 			type: "network-bytes",

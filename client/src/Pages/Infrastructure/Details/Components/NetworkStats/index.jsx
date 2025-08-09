@@ -10,11 +10,11 @@ const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
 			if (!en0) return null;
 
 			return {
-				_id: check._id,                 
+				_id: check._id,
 				bytesPerSec: en0.avgBytesRecv,
 				packetsPerSec: en0.avgPacketsRecv,
-				errors: (en0.avgErrOut ?? 0),
-				drops: (en0.avgDropOut ?? 0)
+				errors: en0.avgErrOut ?? 0,
+				drops: en0.avgDropOut ?? 0,
 			};
 		})
 		.filter(Boolean);
@@ -23,13 +23,19 @@ const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
 
 	return (
 		<>
-			<NetworkStatBoxes shouldRender={!isLoading} net={net} />
+			<NetworkStatBoxes
+				shouldRender={!isLoading}
+				net={net}
+			/>
 			<MonitorTimeFrameHeader
 				isLoading={isLoading}
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
-			<NetworkCharts eth0Data={eth0Data} dateRange={dateRange} />
+			<NetworkCharts
+				eth0Data={eth0Data}
+				dateRange={dateRange}
+			/>
 		</>
 	);
 };

@@ -133,7 +133,6 @@ NetworkTick.propTypes = {
 	index: PropTypes.number,
 };
 
-
 /**
  * Custom tooltip component for displaying infrastructure data.
  *
