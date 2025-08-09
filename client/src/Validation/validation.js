@@ -184,12 +184,12 @@ const monitorValidation = joi.object({
 		.min(1)
 		.max(65535)
 		.when("type", {
-			is: joi.valid("port", "game"),
-			then: joi.required().messages({
+			is: "port",
+			then: joi.number().messages({
 				"number.base": "Port must be a number.",
 				"number.min": "Port must be at least 1.",
 				"number.max": "Port must be at most 65535.",
-				"any.required": "Port is required for port and game monitors.",
+				"any.required": "Port is required for port monitors.",
 			}),
 			otherwise: joi.optional(),
 		}),
@@ -205,14 +205,6 @@ const monitorValidation = joi.object({
 	expectedValue: joi.string().allow(null, ""),
 	jsonPath: joi.string().allow(null, ""),
 	matchMethod: joi.string().allow(null, ""),
-	gameId: joi.when("type", {
-		is: "game",
-		then: joi.string().required().messages({
-			"string.empty": "Game selection is required for game monitors.",
-			"any.required": "Game selection is required for game monitors.",
-		}),
-		otherwise: joi.string().allow(null, ""),
-	}),
 });
 
 const imageValidation = joi.object({
@@ -378,21 +370,21 @@ const infrastructureMonitorValidation = joi.object({
 			if (!/^https?:\/\//i.test(value)) return helpers.error("string.uri");
 			try {
 				const u = new URL(value);
-				// Host-only constraints
-				const hasCreds = u.username || u.password;
-				const invalidPath = u.pathname !== "/";
-				const hasQuery = u.search !== "";
-				const hasHash = u.hash !== "";
-				if (hasCreds || invalidPath || hasQuery || hasHash) {
+
+				// Disallow credentials like http://user:pass@host
+				if (u.username || u.password) {
 					return helpers.error("string.invalidUrl");
 				}
 
+				// Enforce valid port range when present
 				if (u.port) {
 					const portNum = Number(u.port);
 					if (!Number.isInteger(portNum) || portNum < 1 || portNum > 65535) {
 						return helpers.error("string.invalidUrl");
 					}
 				}
+
+				//Paths, query, and fragments are now allowed
 				return value;
 			} catch {
 				return helpers.error("string.uri");
@@ -401,8 +393,7 @@ const infrastructureMonitorValidation = joi.object({
 		.messages({
 			"string.empty": "This field is required.",
 			"string.uri": "Please enter a valid URL starting with http:// or https://",
-			"string.invalidUrl":
-				"Only hostname (optional port 1–65535) is allowed — no path, query, fragment, or credentials.",
+			"string.invalidUrl": "Invalid URL (credentials not allowed; port must be 1–65535).",
 		}),
 
 	name: joi.string().trim().max(50).allow("").messages({
