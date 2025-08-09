@@ -106,6 +106,10 @@ const CreateInfrastructureMonitor = () => {
 		return errorKey ? errors[errorKey] : null;
 	};
 
+	const pageSchema = infrastructureMonitorValidation.fork(["url"], (s) =>
+		isCreate ? s.required() : s.optional()
+	);
+
 	// Populate form fields if editing
 	useEffect(() => {
 		if (isCreate) {
@@ -196,7 +200,7 @@ const CreateInfrastructureMonitor = () => {
 			secret: infrastructureMonitor.secret,
 		};
 
-		const { error } = infrastructureMonitorValidation.validate(form, {
+		const { error } = pageSchema.validate(form, {
 			abortEarly: false,
 		});
 
@@ -234,6 +238,7 @@ const CreateInfrastructureMonitor = () => {
 		form = {
 			...(isCreate ? {} : { _id: monitorId }),
 			...rest,
+			url: `http${https ? "s" : ""}://` + infrastructureMonitor.url,
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
@@ -251,20 +256,22 @@ const CreateInfrastructureMonitor = () => {
 	};
 
 	const onChange = (event) => {
-		const { value, name } = event.target;
-		setInfrastructureMonitor({
-			...infrastructureMonitor,
-			[name]: value,
-		});
+		const { name, value } = event.target;
 
-		const { error } = infrastructureMonitorValidation.validate(
-			{ [name]: value },
-			{ abortEarly: false }
-		);
-		setErrors((prev) => ({
-			...prev,
-			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
-		}));
+		setInfrastructureMonitor((prev) => ({ ...prev, [name]: value }));
+
+		if (name === "url") {
+			const candidate = value ? `http${https ? "s" : ""}://` + value : value;
+
+			const urlSchema = pageSchema.extract("url");
+			const { error } = urlSchema.validate(candidate, { abortEarly: false });
+
+			setErrors((prev) => ({
+				...prev,
+				url: error ? error.details[0].message : undefined,
+			}));
+			return;
+		}
 	};
 
 	const handleCheckboxChange = (event) => {
@@ -470,31 +477,30 @@ const CreateInfrastructureMonitor = () => {
 							onChange={onChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
-							disabled={!isCreate}
 						/>
-						{isCreate && (
-							<FieldWrapper
-								label={t("infrastructureProtocol")}
-								labelVariant="p"
-							>
-								<ButtonGroup>
-									<Button
-										variant="group"
-										filled={https.toString()}
-										onClick={() => setHttps(true)}
-									>
-										{t("https")}
-									</Button>
-									<Button
-										variant="group"
-										filled={(!https).toString()}
-										onClick={() => setHttps(false)}
-									>
-										{t("http")}
-									</Button>
-								</ButtonGroup>
-							</FieldWrapper>
-						)}
+
+						<FieldWrapper
+							label={t("infrastructureProtocol")}
+							labelVariant="p"
+						>
+							<ButtonGroup>
+								<Button
+									variant="group"
+									filled={https.toString()}
+									onClick={() => setHttps(true)}
+								>
+									{t("https")}
+								</Button>
+								<Button
+									variant="group"
+									filled={(!https).toString()}
+									onClick={() => setHttps(false)}
+								>
+									{t("http")}
+								</Button>
+							</ButtonGroup>
+						</FieldWrapper>
+
 						<TextInput
 							type="text"
 							id="name"
