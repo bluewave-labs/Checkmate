@@ -21,6 +21,7 @@ class AuthRoutes {
 			this.authController.registerUser
 		);
 		this.router.post("/login", this.authController.loginUser);
+		this.router.post("/logout", verifyJWT, this.authController.logoutUser);
 
 		this.router.put(
 			"/user/:userId",

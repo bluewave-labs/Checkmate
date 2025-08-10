@@ -6,10 +6,12 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
+import cookieParser from "cookie-parser";
 import logger from "./utils/logger.js";
 import { verifyJWT } from "./middleware/verifyJWT.js";
 import { handleErrors } from "./middleware/handleErrors.js";
 import { responseHandler } from "./middleware/responseHandler.js";
+import { sanitizeBody, sanitizeQuery } from "./utils/sanitization.js";
 import { fileURLToPath } from "url";
 
 import AuthRoutes from "./routes/authRoute.js";
@@ -153,8 +155,10 @@ const startApp = async () => {
 	const db = new MongoDB({ appSettings });
 	await db.connect();
 
-	// Set allowed origin
-	const allowedOrigin = appSettings.clientHost;
+	// Set allowed origin - allow localhost in development
+	const allowedOrigin = process.env.NODE_ENV === 'production' 
+		? appSettings.clientHost 
+		: [appSettings.clientHost, 'http://localhost:5173', 'http://localhost:3000'];
 
 	const networkService = new NetworkService(
 		axios,
@@ -342,6 +346,12 @@ const startApp = async () => {
 		})
 	);
 	app.use(express.json());
+	app.use(cookieParser());
+	
+	// Add input sanitization middleware
+	app.use(sanitizeBody());
+	app.use(sanitizeQuery());
+	
 	app.use(
 		helmet({
 			hsts: false,
@@ -349,6 +359,9 @@ const startApp = async () => {
 				useDefaults: true,
 				directives: {
 					upgradeInsecureRequests: null,
+					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+					"object-src": ["'none'"],
+					"base-uri": ["'self'"],
 				},
 			},
 		})

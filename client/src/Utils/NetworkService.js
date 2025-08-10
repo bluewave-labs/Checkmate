@@ -26,13 +26,19 @@ class NetworkService {
 			(config) => {
 				const currentLanguage = i18next.language || "en";
 
+				// Remove Authorization header - JWT tokens now sent via httpOnly cookies
+				// Keep backward compatibility by checking if authToken exists in state
 				const { authToken } = store.getState().auth;
-
+				
 				config.headers = {
-					Authorization: `Bearer ${authToken}`,
+					// Only set Authorization header if token exists in Redux (for backward compatibility)
+					...(authToken && { Authorization: `Bearer ${authToken}` }),
 					"Accept-Language": currentLanguage === "gb" ? "en" : currentLanguage,
 					...config.headers,
 				};
+
+				// Ensure cookies are sent with requests
+				config.withCredentials = true;
 
 				return config;
 			},
@@ -378,6 +384,19 @@ class NetworkService {
 	 */
 	async loginUser(form) {
 		return this.axiosInstance.post(`/auth/login`, form);
+	}
+
+	/**
+	 * ************************************
+	 * Logs out a user by clearing httpOnly cookies
+	 * ************************************
+	 *
+	 * @async
+	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
+	 *
+	 */
+	async logoutUser() {
+		return this.axiosInstance.post(`/auth/logout`);
 	}
 
 	/**

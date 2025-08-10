@@ -22,8 +22,8 @@ services:
       - REDIS_URL=redis://redis:6379
       - CLIENT_HOST=http://localhost
       - JWT_SECRET=my_secret
-    # volumes:
-    # - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   mongodb:
     image: ghcr.io/bluewave-labs/checkmate-mongo:latest
     restart: always

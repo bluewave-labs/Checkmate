@@ -11,6 +11,7 @@ import jwt from "jsonwebtoken";
 import { getTokenFromHeaders } from "../utils/utils.js";
 import crypto from "crypto";
 import { handleValidationError, handleError } from "./controllerUtils.js";
+import { getAuthCookieOptions, getClearAuthCookieOptions } from "../utils/cookieHelpers.js";
 const SERVICE_NAME = "authController";
 
 class AuthController {
@@ -96,6 +97,9 @@ class AuthController {
 
 			const token = this.issueToken(userForToken, appSettings);
 
+			// Set httpOnly cookie for secure token storage
+			res.cookie('authToken', token, getAuthCookieOptions());
+
 			try {
 				const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
 					name: newUser.firstName,
@@ -174,6 +178,10 @@ class AuthController {
 			// Happy path, return token
 			const appSettings = await this.settingsService.getSettings();
 			const token = this.issueToken(userWithoutPassword, appSettings);
+			
+			// Set httpOnly cookie for secure token storage
+			res.cookie('authToken', token, getAuthCookieOptions());
+			
 			// reset avatar image
 			userWithoutPassword.avatarImage = user.avatarImage;
 
@@ -383,6 +391,9 @@ class AuthController {
 			const appSettings = await this.settingsService.getSettings();
 			const token = this.issueToken(user._doc, appSettings);
 
+			// Set httpOnly cookie for secure token storage
+			res.cookie('authToken', token, getAuthCookieOptions());
+
 			return res.success({
 				msg: this.stringService.authResetPassword,
 				data: { user, token },
@@ -445,6 +456,27 @@ class AuthController {
 			});
 		} catch (error) {
 			next(handleError(error, SERVICE_NAME, "getAllUsersController"));
+		}
+	};
+
+	/**
+	 * Logs out a user by clearing the authToken cookie
+	 * @async
+	 * @param {Object} req - The Express request object.
+	 * @param {Object} res - The Express response object.
+	 * @param {function} next - The next middleware function.
+	 * @returns {Object} The response object with success status and message.
+	 */
+	logoutUser = async (req, res, next) => {
+		try {
+			// Clear the httpOnly cookie
+			res.clearCookie('authToken', getClearAuthCookieOptions());
+
+			return res.success({
+				msg: "User logged out successfully",
+			});
+		} catch (error) {
+			next(handleError(error, SERVICE_NAME, "logoutUserController"));
 		}
 	};
 }
