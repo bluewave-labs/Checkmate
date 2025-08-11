@@ -21,6 +21,7 @@
 		"bcryptjs": "3.0.2",
 		"bullmq": "5.41.2",
 		"compression": "1.8.1",
+		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"dockerode": "4.0.6",
 		"dotenv": "^16.4.5",
