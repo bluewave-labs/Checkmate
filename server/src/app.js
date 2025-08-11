@@ -9,7 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import { handleErrors } from "./middleware/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
 import { generalApiLimiter } from "./middleware/rateLimiter.js";
-import { sanitizeBody, sanitizeQuery } from "./utils/sanitization.js";
+import { sanitizeBody, sanitizeQuery } from "./middleware/sanitization.js";
 
 export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
 	const allowedOrigin = envSettings.clientHost;
