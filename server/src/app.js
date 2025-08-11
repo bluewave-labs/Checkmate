@@ -4,6 +4,7 @@ import { responseHandler } from "./middleware/responseHandler.js";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
+import cookieParser from "cookie-parser";
 import languageMiddleware from "./middleware/languageMiddleware.js";
 import swaggerUi from "swagger-ui-express";
 import { handleErrors } from "./middleware/handleErrors.js";
@@ -30,6 +31,7 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 		})
 	);
 	app.use(express.json());
+	app.use(cookieParser());
 	app.use(
 		helmet({
 			hsts: false,
