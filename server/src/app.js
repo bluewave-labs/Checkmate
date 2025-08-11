@@ -31,11 +31,11 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 		})
 	);
 	app.use(express.json());
-	
+
 	// Apply input sanitization middleware
 	app.use(sanitizeBody());
 	app.use(sanitizeQuery());
-	
+
 	app.use(
 		helmet({
 			hsts: false,
