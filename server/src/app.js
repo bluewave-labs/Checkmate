@@ -10,6 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import { handleErrors } from "./middleware/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
 import { generalApiLimiter } from "./middleware/rateLimiter.js";
+import { sanitizeBody, sanitizeQuery } from "./middleware/sanitization.js";
 
 export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
 	const allowedOrigin = envSettings.clientHost;
@@ -32,6 +33,10 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 	);
 	app.use(express.json());
 	app.use(cookieParser());
+
+	app.use(sanitizeBody());
+	app.use(sanitizeQuery());
+
 	app.use(
 		helmet({
 			hsts: false,
@@ -39,6 +44,9 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 				useDefaults: true,
 				directives: {
 					upgradeInsecureRequests: null,
+					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+					"object-src": ["'none'"],
+					"base-uri": ["'self'"],
 				},
 			},
 		})
