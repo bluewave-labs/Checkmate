@@ -18,7 +18,6 @@ const useLoginSubmit = () => {
 			});
 		} else {
 			if (action.payload) {
-				console.log(action.payload);
 				if (action.payload.msg === "Incorrect password")
 					setErrors({
 						password: t("auth.login.errors.password.incorrect"),
