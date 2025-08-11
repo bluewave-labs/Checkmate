@@ -31,6 +31,7 @@ const { compile } = pkg;
 import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { games } from "gamedig";
 
 import { fileURLToPath } from "url";
 import { ObjectId } from "mongodb";
@@ -201,6 +202,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		papaparse,
 		logger,
 		errorService,
+		games,
 	});
 
 	const services = {

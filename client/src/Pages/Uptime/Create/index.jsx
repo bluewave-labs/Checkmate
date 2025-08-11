@@ -41,6 +41,7 @@ import {
 	useUpdateMonitor,
 	usePauseMonitor,
 	useFetchMonitorById,
+	useFetchMonitorGames,
 } from "../../../Hooks/monitorHooks";
 
 /**
@@ -81,6 +82,7 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [useAdvancedMatching, setUseAdvancedMatching] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [games, setGames] = useState({});
 	const triggerUpdate = () => {
 		setUpdateTrigger(!updateTrigger);
 	};
@@ -89,12 +91,22 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [notifications, notificationsAreLoading, notificationsError] =
 		useGetNotificationsByTeamId();
 	const { determineState, statusColor } = useMonitorUtils();
-	// Network
-	const [isLoading] = useFetchMonitorById({
+	// Fetch monitor details
+	const [isFetchingMonitor] = useFetchMonitorById({
 		monitorId,
 		setMonitor,
 		updateTrigger: true,
 	});
+
+	// Fetch games
+	const [isFetchingGames] = useFetchMonitorGames({
+		setGames,
+		triggerUpdate: true,
+	});
+
+	// Combine the loading states
+	const isLoading = isFetchingMonitor || isFetchingGames;
+
 	const [createMonitor, isCreating] = useCreateMonitor();
 	const [pauseMonitor, isPausing] = usePauseMonitor({});
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
@@ -113,6 +125,12 @@ const UptimeCreate = ({ isClone = false }) => {
 		{ _id: 4, name: t("time.fourMinutes") },
 		{ _id: 5, name: t("time.fiveMinutes") },
 	];
+
+	const GAMELIST = Object.entries(games).map(([key, value]) => ({
+		_id: key,
+		name: value.name,
+	}));
+
 	const CRUMBS = [
 		{ name: "uptime", path: "/uptime" },
 		...(isCreate
@@ -153,6 +171,11 @@ const UptimeCreate = ({ isClone = false }) => {
 			placeholder: t("monitorType.port.placeholder"),
 			namePlaceholder: t("monitorType.port.namePlaceholder"),
 		},
+		game: {
+			label: t("monitorType.game.label"),
+			placeholder: t("monitorType.game.placeholder"),
+			namePlaceholder: t("monitorType.game.namePlaceholder"),
+		},
 	};
 
 	// Handlers
@@ -169,12 +192,14 @@ const UptimeCreate = ({ isClone = false }) => {
 						: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
 				type: monitor.type,
-				port: monitor.type === "port" ? monitor.port : undefined,
+				port:
+					monitor.type === "port" || monitor.type === "game" ? monitor.port : undefined,
 				interval: monitor.interval,
 				matchMethod: monitor.matchMethod,
 				expectedValue: monitor.expectedValue,
 				jsonPath: monitor.jsonPath,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
+				gameId: monitor.gameId || undefined,
 			};
 		} else {
 			form = {
@@ -188,8 +213,10 @@ const UptimeCreate = ({ isClone = false }) => {
 				interval: monitor.interval,
 				teamId: monitor.teamId,
 				userId: monitor.userId,
-				port: monitor.type === "port" ? monitor.port : undefined,
+				port:
+					monitor.type === "port" || monitor.type === "game" ? monitor.port : undefined,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
+				gameId: monitor.gameId || undefined,
 			};
 		}
 		if (!useAdvancedMatching) {
@@ -243,6 +270,11 @@ const UptimeCreate = ({ isClone = false }) => {
 
 		setMonitor((prev) => ({ ...prev, [name]: value }));
 
+		if (name === "type") {
+			setErrors({});
+			return;
+		}
+
 		const { error } = monitorValidation.validate(
 			{ type: monitor.type, [name]: value },
 			{ abortEarly: false }
@@ -250,7 +282,9 @@ const UptimeCreate = ({ isClone = false }) => {
 
 		setErrors((prev) => ({
 			...prev,
-			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
+			...(error && error.details[0].path[0] === name
+				? { [name]: error.details[0].message }
+				: { [name]: undefined }),
 		}));
 	};
 
@@ -486,6 +520,15 @@ const UptimeCreate = ({ isClone = false }) => {
 								checked={monitor.type === "port"}
 								onChange={onChange}
 							/>
+							<Radio
+								name="type"
+								title={t("gameServerMonitoring")}
+								desc={t("gameServerMonitoringDescription")}
+								size="small"
+								value="game"
+								checked={monitor.type === "game"}
+								onChange={onChange}
+							/>
 							{errors["type"] ? (
 								<Box className="error-container">
 									<Typography
@@ -547,8 +590,19 @@ const UptimeCreate = ({ isClone = false }) => {
 							onChange={onChange}
 							error={errors["port"] ? true : false}
 							helperText={errors["port"]}
-							hidden={monitor.type !== "port"}
+							hidden={monitor.type !== "port" && monitor.type !== "game"}
 						/>
+						{monitor.type === "game" && (
+							<Select
+								name="gameId"
+								label={t("chooseGame")}
+								value={monitor.gameId || ""}
+								placeholder={t("chooseGame")}
+								onChange={onChange}
+								items={GAMELIST}
+								error={errors["gameId"] ? true : false}
+							/>
+						)}
 						<TextInput
 							name="name"
 							type="text"

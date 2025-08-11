@@ -4,7 +4,7 @@ const SERVICE_NAME = "MonitorService";
 class MonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, settingsService, jobQueue, stringService, emailService, papaparse, logger, errorService }) {
+	constructor({ db, settingsService, jobQueue, stringService, emailService, papaparse, logger, errorService, games }) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
@@ -13,6 +13,7 @@ class MonitorService {
 		this.papaparse = papaparse;
 		this.logger = logger;
 		this.errorService = errorService;
+		this.games = games;
 	}
 
 	get serviceName() {
@@ -183,7 +184,8 @@ class MonitorService {
 	};
 
 	addDemoMonitors = async ({ userId, teamId }) => {
-		const demoMonitors = await this.db.monitorModuleaddDemoMonitors(userId, teamId);
+		const demoMonitors = await this.db.monitorModule.addDemoMonitors(userId, teamId);
+
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor._id, monitor)));
 		return demoMonitors;
 	};
@@ -260,6 +262,10 @@ class MonitorService {
 
 		const csv = this.papaparse.unparse(csvData);
 		return csv;
+	};
+
+	getAllGames = () => {
+		return this.games;
 	};
 }
 

@@ -260,6 +260,7 @@
 	"notifyEmails": "Ayrıca birden fazla eposta adresine bildirim gönderebilirsiniz (yakında geliyor)",
 	"seperateEmails": "Birden fazla epostayı virgülle ayırabilirsiniz",
 	"checkFrequency": "Frekansı denetle",
+	"chooseGame": "Oyun seç",
 	"matchMethod": "Eşleşme yöntemi",
 	"expectedValue": "Beklenen değer",
 	"deleteDialogTitle": "Gerçekten bu monitörü silmek istiyor musunuz?",
@@ -437,7 +438,8 @@
 		"http": "",
 		"ping": "",
 		"docker": "",
-		"port": ""
+		"port": "",
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",
