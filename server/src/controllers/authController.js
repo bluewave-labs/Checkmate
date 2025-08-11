@@ -11,6 +11,7 @@ import {
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
 } from "../validation/joi.js";
+import { getAuthCookieOptions } from "../utils/cookieHelpers.js";
 
 const SERVICE_NAME = "authController";
 
@@ -93,6 +94,10 @@ class AuthController extends BaseController {
 			}
 			await registrationBodyValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.registerUser(req.body, req.file);
+
+			// Set httpOnly cookie for secure token storage
+			res.cookie("authToken", token, getAuthCookieOptions());
+
 			res.success({
 				msg: this.stringService.authCreateUser,
 				data: { user, token },
@@ -129,6 +134,9 @@ class AuthController extends BaseController {
 			}
 			await loginValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
+
+			// Set httpOnly cookie for secure token storage
+			res.cookie("authToken", token, getAuthCookieOptions());
 
 			return res.success({
 				msg: this.stringService.authLoginUser,
@@ -299,6 +307,10 @@ class AuthController extends BaseController {
 		async (req, res) => {
 			await newPasswordValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
+
+			// Set httpOnly cookie for secure token storage
+			res.cookie("authToken", token, getAuthCookieOptions());
+
 			return res.success({
 				msg: this.stringService.authResetPassword,
 				data: { user, token },
@@ -306,6 +318,36 @@ class AuthController extends BaseController {
 		},
 		SERVICE_NAME,
 		"resetPassword"
+	);
+
+	/**
+	 * Logs out the current user by clearing authentication cookies.
+	 *
+	 * @async
+	 * @function logoutUser
+	 * @param {Object} req - Express request object
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response confirming logout
+	 * @example
+	 * POST /auth/logout
+	 * // Requires JWT authentication
+	 */
+	logoutUser = this.asyncHandler(
+		async (req, res) => {
+			// Clear the httpOnly authentication cookie
+			res.clearCookie("authToken", {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "strict",
+				path: "/",
+			});
+
+			return res.success({
+				msg: this.stringService.authLogoutUser || "Successfully logged out",
+			});
+		},
+		SERVICE_NAME,
+		"logoutUser"
 	);
 
 	/**

@@ -17,6 +17,7 @@ class AuthRoutes {
 	initRoutes() {
 		this.router.post("/register", upload.single("profileImage"), this.authController.registerUser);
 		this.router.post("/login", this.authController.loginUser);
+		this.router.post("/logout", verifyJWT, this.authController.logoutUser);
 
 		this.router.post("/recovery/request", this.authController.requestRecovery);
 		this.router.post("/recovery/validate", this.authController.validateRecovery);

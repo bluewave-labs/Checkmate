@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import cookieParser from "cookie-parser";
 import { responseHandler } from "./middleware/responseHandler.js";
 import cors from "cors";
 import helmet from "helmet";
@@ -30,6 +31,7 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 		})
 	);
 	app.use(express.json());
+	app.use(cookieParser());
 	app.use(
 		helmet({
 			hsts: false,
