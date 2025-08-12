@@ -101,12 +101,12 @@ const getFormattedPercentage = (value) => {
  * @param {number} props.index - The index of the tick.
  * @returns {JSX.Element|null} The rendered tick component or null for the first tick.
  */
-export const NetworkTick = ({ x, y, payload, index, formatter}) => {
+export const NetworkTick = ({ x, y, payload, index, formatter }) => {
 	const theme = useTheme();
 	if (index === 0) return null;
 
 	if (formatter === undefined) {
-		formatter = (value, space=false) => {
+		formatter = (value, space = false) => {
 			if (typeof value !== "number") return value;
 			// need to add space between value and unit
 			return `${(value / 1024).toFixed(2)}${space ? " " : ""}Kbps`;

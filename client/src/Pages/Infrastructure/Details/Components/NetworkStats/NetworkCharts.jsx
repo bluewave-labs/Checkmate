@@ -15,7 +15,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	const {formatBytesString} = useHardwareUtils();
+	const { formatBytesString } = useHardwareUtils();
 
 	if (!ethernetData?.length) {
 		return <Typography>{t("noNetworkStatsAvailable")}</Typography>;
@@ -31,7 +31,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 			gradientStartColor: theme.palette.info.main,
 			yLabel: t("bytesPerSecond"),
 			xTick: <TzTick dateRange={dateRange} />,
-			yTick: <NetworkTick formatter={formatBytesString}/>,
+			yTick: <NetworkTick formatter={formatBytesString} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.info.main}
