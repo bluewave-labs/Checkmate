@@ -20,6 +20,7 @@ const FallbackBackground = () => {
 					border: "none",
 					borderRadius: theme.spacing(8),
 					width: "100%",
+					transform: "scale(0.6667)",
 				}}
 			/>
 			<Box
