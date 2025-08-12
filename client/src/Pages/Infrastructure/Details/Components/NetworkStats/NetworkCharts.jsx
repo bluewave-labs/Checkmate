@@ -1,9 +1,7 @@
-// NetworkCharts.jsx
 import PropTypes from "prop-types";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import InfraAreaChart from "../../../../../Pages/Infrastructure/Details/Components/AreaChartBoxes/InfraAreaChart";
 
-// Utils
 import {
 	TzTick,
 	InfrastructureTooltip,
@@ -11,43 +9,42 @@ import {
 } from "../../../../../Components/Charts/Utils/chartUtils";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
 
-const getFormattedNetworkMetric = (value) => {
-	if (typeof value !== "number" || isNaN(value)) return "0";
-	if (value >= 1024 ** 3) return `${(value / 1024 ** 3).toFixed(1)} GB/s`;
-	if (value >= 1024 ** 2) return `${(value / 1024 ** 2).toFixed(1)} MB/s`;
-	if (value >= 1024) return `${(value / 1024).toFixed(1)} KB/s`;
-	return `${Math.round(value)} B/s`;
-};
-
-const NetworkCharts = ({ eth0Data, dateRange }) => {
+const NetworkCharts = ({ ethernetData, dateRange }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+
+	const {formatBytesString} = useHardwareUtils();
+
+	if (!ethernetData?.length) {
+		return <Typography>{t("noNetworkStatsAvailable")}</Typography>;
+	}
 
 	const configs = [
 		{
 			type: "network-bytes",
-			data: eth0Data,
+			data: ethernetData,
 			dataKeys: ["bytesPerSec"],
 			heading: t("bytesPerSecond"),
 			strokeColor: theme.palette.info.main,
 			gradientStartColor: theme.palette.info.main,
 			yLabel: t("bytesPerSecond"),
 			xTick: <TzTick dateRange={dateRange} />,
-			yTick: <NetworkTick />,
+			yTick: <NetworkTick formatter={formatBytesString}/>,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.info.main}
 					yKey={"bytesPerSec"}
 					yLabel={t("bytesPerSecond")}
 					dateRange={dateRange}
-					formatter={getFormattedNetworkMetric}
+					formatter={formatBytesString}
 				/>
 			),
 		},
 		{
 			type: "network-packets",
-			data: eth0Data,
+			data: ethernetData,
 			dataKeys: ["packetsPerSec"],
 			heading: t("packetsPerSecond"),
 			strokeColor: theme.palette.success.main,
@@ -66,7 +63,7 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 		},
 		{
 			type: "network-errors",
-			data: eth0Data,
+			data: ethernetData,
 			dataKeys: ["errors"],
 			heading: t("errors"),
 			strokeColor: theme.palette.error.main,
@@ -85,7 +82,7 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 		},
 		{
 			type: "network-drops",
-			data: eth0Data,
+			data: ethernetData,
 			dataKeys: ["drops"],
 			heading: t("drops"),
 			strokeColor: theme.palette.warning.main,
@@ -127,7 +124,7 @@ const NetworkCharts = ({ eth0Data, dateRange }) => {
 };
 
 NetworkCharts.propTypes = {
-	eth0Data: PropTypes.array.isRequired,
+	ethernetData: PropTypes.array.isRequired,
 	dateRange: PropTypes.string.isRequired,
 };
 

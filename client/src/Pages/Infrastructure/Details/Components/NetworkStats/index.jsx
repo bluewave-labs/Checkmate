@@ -3,37 +3,40 @@ import NetworkStatBoxes from "./NetworkStatBoxes";
 import NetworkCharts from "./NetworkCharts";
 import MonitorTimeFrameHeader from "../../../../../Components/MonitorTimeFrameHeader";
 
-const getNetworkInterfaceData = (checks) => {
+const getInterfaceName = (net) => {
 	const interfaceNames = ["eth0", "Ethernet", "en0"];
+	const found = (net || []).find((iface) => interfaceNames.includes(iface.name));
+	return found ? found.name : null;
+};
 
+const getNetworkInterfaceData = (checks, ifaceName) => {
 	return (checks || [])
 		.map((check) => {
-			const networkInterface = (check.net || []).find((iface) =>
-				interfaceNames.includes(iface.name)
+			const networkInterface = (check.net || []).find(
+				(iface) => iface.name === ifaceName
 			);
-
-			if (!networkInterface) {
-				return null;
-			}
-
+			if (!networkInterface) return null;
 			return {
 				_id: check._id,
-				bytesPerSec: networkInterface.avgBytesRecv,
-				packetsPerSec: networkInterface.avgPacketsRecv,
-				errors: networkInterface.avgErrOut ?? 0,
-				drops: networkInterface.avgDropOut ?? 0,
+				bytesPerSec: networkInterface.deltaBytesRecv,
+				packetsPerSec: networkInterface.deltaPacketsRecv,
+				errors: networkInterface.deltaErrOut ?? 0,
+				drops: networkInterface.deltaDropOut ?? 0,
 			};
 		})
 		.filter(Boolean);
 };
 
 const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
-	const eth0Data = getNetworkInterfaceData(checks);
+	const ifaceName = getInterfaceName(net);
+	const ethernetData = getNetworkInterfaceData(checks, ifaceName);
+
 	return (
 		<>
 			<NetworkStatBoxes
 				shouldRender={!isLoading}
 				net={net}
+				ifaceName={ifaceName}
 			/>
 			<MonitorTimeFrameHeader
 				isLoading={isLoading}
@@ -41,7 +44,7 @@ const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
 				setDateRange={setDateRange}
 			/>
 			<NetworkCharts
-				eth0Data={eth0Data}
+				ethernetData={ethernetData}
 				dateRange={dateRange}
 			/>
 		</>

@@ -101,16 +101,17 @@ const getFormattedPercentage = (value) => {
  * @param {number} props.index - The index of the tick.
  * @returns {JSX.Element|null} The rendered tick component or null for the first tick.
  */
-export const NetworkTick = ({ x, y, payload, index }) => {
+export const NetworkTick = ({ x, y, payload, index, formatter}) => {
 	const theme = useTheme();
 	if (index === 0) return null;
 
-	const formatBytes = (bytes) => {
-		if (bytes >= 1_000_000_000) return `${(bytes / 1_000_000_000).toFixed(1)} GB/s`;
-		if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB/s`;
-		if (bytes >= 1_000) return `${(bytes / 1_000).toFixed(1)} KB/s`;
-		return `${bytes} B/s`;
-	};
+	if (formatter === undefined) {
+		formatter = (value, space=false) => {
+			if (typeof value !== "number") return value;
+			// need to add space between value and unit
+			return `${(value / 1024).toFixed(2)}${space ? " " : ""}Kbps`;
+		};
+	}
 
 	return (
 		<Text
@@ -121,7 +122,7 @@ export const NetworkTick = ({ x, y, payload, index }) => {
 			fontSize={11}
 			fontWeight={400}
 		>
-			{formatBytes(payload?.value)}
+			{formatter(payload?.value, true)}
 		</Text>
 	);
 };
@@ -131,6 +132,7 @@ NetworkTick.propTypes = {
 	y: PropTypes.number,
 	payload: PropTypes.object,
 	index: PropTypes.number,
+	formatter: PropTypes.func,
 };
 
 /**

@@ -57,7 +57,7 @@ const useHardwareUtils = () => {
 		if (GB >= 1) {
 			return (
 				<>
-					{Number(GB.toFixed(0))}
+					{Number(GB.toFixed(2))}
 					{space ? " " : ""}
 					<Typography component="span">{t("gb")}</Typography>
 				</>
@@ -65,11 +65,31 @@ const useHardwareUtils = () => {
 		} else {
 			return (
 				<>
-					{Number(MB.toFixed(0))}
+					{Number(MB.toFixed(2))}
 					{space ? " " : ""}
 					<Typography component="span">{t("mb")}</Typography>
 				</>
 			);
+		}
+	};
+
+	const formatBytesString = (bytes, space = false) => {
+		if (
+			bytes === undefined ||
+			bytes === null ||
+			typeof bytes !== "number" ||
+			bytes === 0
+		) {
+			return `0${space ? " " : ""}${t("gb")}`;
+		}
+
+		const GB = bytes / (1024 * 1024 * 1024);
+		const MB = bytes / (1024 * 1024);
+
+		if (GB >= 1) {
+			return `${Number(GB.toFixed(2))}${space ? " " : ""}${t("gb")}`;
+		} else {
+			return `${Number(MB.toFixed(2))}${space ? " " : ""}${t("mb")}`;
 		}
 	};
 
@@ -134,6 +154,7 @@ const useHardwareUtils = () => {
 		decimalToPercentage,
 		buildTemps,
 		getDimensions,
+		formatBytesString,
 	};
 };
 

@@ -1,27 +1,19 @@
-// NetworkStatBoxes.jsx
 import PropTypes from "prop-types";
 import StatusBoxes from "../../../../../Components/StatusBoxes";
 import StatBox from "../../../../../Components/StatBox";
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
 
-function formatBytes(bytes) {
-	if (bytes === 0 || bytes == null) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB", "TB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
-}
-
-// Format numbers with commas
 function formatNumber(num) {
 	return num != null ? num.toLocaleString() : "0";
 }
 
-const NetworkStatBoxes = ({ shouldRender, net }) => {
+const NetworkStatBoxes = ({ shouldRender, net, ifaceName }) => {
 	const { t } = useTranslation();
-	const filtered =
-		net?.filter((iface) => iface.name === "en0" || iface.name === "wlan0") || [];
+	const { formatBytes } = useHardwareUtils();
+
+	const filtered = net?.filter((iface) => iface.name === ifaceName) || [];
 
 	if (!net?.length) {
 		return <Typography>{t("noNetworkStatsAvailable")}</Typography>;
@@ -83,6 +75,7 @@ NetworkStatBoxes.propTypes = {
 			err_out: PropTypes.number,
 		})
 	),
+	ifaceName: PropTypes.string.isRequired,
 };
 
 export default NetworkStatBoxes;

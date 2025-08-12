@@ -395,7 +395,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															"$$netIndex",
 														],
 													},
-													avgBytesSent: {
+													deltaBytesSent: {
 														$subtract: [
 															{
 																$arrayElemAt: [
@@ -417,7 +417,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														],
 													},
-													avgBytesRecv: {
+													deltaBytesRecv: {
 														$subtract: [
 															{
 																$arrayElemAt: [
@@ -439,7 +439,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														],
 													},
-													avgPacketsSent: {
+													deltaPacketsSent: {
 														$subtract: [
 															{
 																$arrayElemAt: [
@@ -461,7 +461,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															},
 														],
 													},
-													avgPacketsRecv: {
+													deltaPacketsRecv: {
 														$subtract: [
 															{
 																$arrayElemAt: [
@@ -480,6 +480,120 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.packets_recv" } },
 																	"$$netIndex",
 																],
+															},
+														],
+													},
+													deltaErrIn: {
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.err_in",
+																		},
+																	},
+																	"$$netIndex",
+																],
+															},
+															{
+																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.err_in" } }, "$$netIndex"],
+															},
+														],
+													},
+													deltaErrOut: {
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.err_out",
+																		},
+																	},
+																	"$$netIndex",
+																],
+															},
+															{
+																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.err_out" } }, "$$netIndex"],
+															},
+														],
+													},
+													deltaDropIn: {
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.drop_in",
+																		},
+																	},
+																	"$$netIndex",
+																],
+															},
+															{
+																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.drop_in" } }, "$$netIndex"],
+															},
+														],
+													},
+													deltaDropOut: {
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.drop_out",
+																		},
+																	},
+																	"$$netIndex",
+																],
+															},
+															{
+																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.drop_out" } }, "$$netIndex"],
+															},
+														],
+													},
+													deltaFifoIn: {
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.fifo_in",
+																		},
+																	},
+																	"$$netIndex",
+																],
+															},
+															{
+																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.fifo_in" } }, "$$netIndex"],
+															},
+														],
+													},
+													deltaFifoOut: {
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.fifo_out",
+																		},
+																	},
+																	"$$netIndex",
+																],
+															},
+															{
+																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.fifo_out" } }, "$$netIndex"],
 															},
 														],
 													},

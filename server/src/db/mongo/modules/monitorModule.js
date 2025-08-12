@@ -343,6 +343,17 @@ class MonitorModule {
 
 			const stats = hardwareStats[0];
 
+			if (stats?.net?.length) {
+				const elapsedSeconds = (new Date(dates.end).getTime() - new Date(dates.start).getTime()) / 1000;
+				stats.net = stats.net.map((iface) => ({
+					...iface,
+					bytesSentPerSec: iface.deltaBytesSent / elapsedSeconds,
+					bytesRecvPerSec: iface.deltaBytesRecv / elapsedSeconds,
+					packetsSentPerSec: iface.deltaPacketsSent / elapsedSeconds,
+					packetsRecvPerSec: iface.deltaPacketsRecv / elapsedSeconds,
+				}));
+			}
+
 			return {
 				...monitor.toObject(),
 				stats,
