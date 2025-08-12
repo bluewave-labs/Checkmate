@@ -256,22 +256,23 @@ const CreateInfrastructureMonitor = () => {
 	};
 
 	const onChange = (event) => {
-		const { name, value } = event.target;
+		const { value, name } = event.target;
+		setInfrastructureMonitor({
+			...infrastructureMonitor,
+			[name]: value,
+		});
 
-		setInfrastructureMonitor((prev) => ({ ...prev, [name]: value }));
+		const adjustedValue =
+			name === "url" ? (value ? `http${https ? "s" : ""}://${value}` : value) : value;
 
-		if (name === "url") {
-			const candidate = value ? `http${https ? "s" : ""}://` + value : value;
-
-			const urlSchema = pageSchema.extract("url");
-			const { error } = urlSchema.validate(candidate, { abortEarly: false });
-
-			setErrors((prev) => ({
-				...prev,
-				url: error ? error.details[0].message : undefined,
-			}));
-			return;
-		}
+		const { error } = infrastructureMonitorValidation.validate(
+			{ [name]: adjustedValue },
+			{ abortEarly: false }
+		);
+		setErrors((prev) => ({
+			...prev,
+			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
+		}));
 	};
 
 	const handleCheckboxChange = (event) => {
