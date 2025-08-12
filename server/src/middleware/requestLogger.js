@@ -7,7 +7,7 @@ const requestLogger = (req, res, next) => {
 		const userAgent = req.get("User-Agent") || "Unknown";
 		const requestId = Math.random().toString(36).substring(2, 11);
 
-		const baseDetails = { requestId, method, url, ip, userAgent };
+		const baseDetails = { requestId, method, url, ip, userAgent, headers: req.headers };
 
 		logger.info({
 			message: `${method} ${url}`,
