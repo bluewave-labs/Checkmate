@@ -19,7 +19,10 @@ const FallbackBackground = () => {
 					zIndex: 1,
 					border: "none",
 					borderRadius: theme.spacing(8),
-					width: "100%",
+					width: "66.67%", // 2/3 of original size
+					maxWidth: "66.67%",
+					display: "block",
+					objectFit: "contain",
 				}}
 			/>
 			<Box
