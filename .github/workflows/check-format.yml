@@ -39,24 +39,3 @@ jobs:
       - name: Check server formatting
         working-directory: server
         run: npm run format-check
-  close-pr-if-needed:
-    if: always()
-    runs-on: ubuntu-latest
-    needs: [format-client, format-server]
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Get PR number
-        id: pr
-        run: echo "PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
-
-      - name: Close PR using GitHub CLI
-        if: |
-          needs.format-client.result == 'failure' || 
-          needs.format-server.result == 'failure'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr close "$PR_NUMBER" --delete-branch --comment "❌ Formatting check failed — PR auto-closed.
-          Please run \`npm run format\` in both `client` and `server` directories and push again."
