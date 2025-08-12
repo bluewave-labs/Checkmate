@@ -326,48 +326,6 @@ class MonitorModule {
 		}
 	};
 
-	processNetworkRates = (checks) => {
-		if (!Array.isArray(checks) || checks.length === 0) return [];
-
-		const sorted = [...checks].sort((a, b) => new Date(a._id) - new Date(b._id));
-		const lastSeen = {};
-
-		for (const check of sorted) {
-			if (!Array.isArray(check.net)) {
-				check.net = [];
-				continue;
-			}
-
-			const newNet = [];
-
-			for (const iface of check.net) {
-				const prev = lastSeen[iface.name];
-				const t1 = new Date(check._id);
-
-				if (prev) {
-					const t0 = new Date(prev._id);
-					const dt = (t1 - t0) / 1000;
-
-					if (dt > 0) {
-						newNet.push({
-							name: iface.name,
-							avgBytesRecv: iface.avgBytesRecv - prev.avgBytesRecv,
-							avgPacketsRecv: iface.avgPacketsRecv - prev.avgPacketsRecv,
-							avgErrOut: iface.avgErrOut - prev.avgErrOut,
-							avgDropOut: iface.avgDropOut,
-						});
-					}
-				}
-
-				lastSeen[iface.name] = { ...iface, _id: check._id };
-			}
-
-			check.net = newNet;
-		}
-
-		return sorted;
-	};
-
 	getHardwareDetailsById = async ({ monitorId, dateRange }) => {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);
@@ -384,10 +342,6 @@ class MonitorModule {
 			const hardwareStats = await this.HardwareCheck.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
 
 			const stats = hardwareStats[0];
-			if (stats && stats.checks) {
-				// Replace net with per-second rates
-				stats.checks = this.processNetworkRates(stats.checks);
-			}
 
 			return {
 				...monitor.toObject(),

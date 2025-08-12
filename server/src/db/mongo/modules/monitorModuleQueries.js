@@ -378,108 +378,110 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 										},
 										net: {
 											$map: {
-												input: { $range: [0, "$$netCount"] },
+												input: {
+													$range: [0, { $size: { $arrayElemAt: ["$net", 0] } }],
+												},
 												as: "netIndex",
 												in: {
 													name: {
 														$arrayElemAt: [
 															{
 																$map: {
-																	input: "$net",
-																	as: "netArray",
-																	in: { $arrayElemAt: ["$$netArray.name", "$$netIndex"] },
+																	input: { $arrayElemAt: ["$net", 0] },
+																	as: "iface",
+																	in: "$$iface.name",
 																},
 															},
-															0,
+															"$$netIndex",
 														],
 													},
 													avgBytesSent: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.bytes_sent", "$$netIndex"],
-																},
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.bytes_sent",
+																		},
+																	},
+																	"$$netIndex",
+																],
 															},
-														},
+															{
+																$arrayElemAt: [
+																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.bytes_sent" } },
+																	"$$netIndex",
+																],
+															},
+														],
 													},
 													avgBytesRecv: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.bytes_recv", "$$netIndex"],
-																},
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.bytes_recv",
+																		},
+																	},
+																	"$$netIndex",
+																],
 															},
-														},
+															{
+																$arrayElemAt: [
+																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.bytes_recv" } },
+																	"$$netIndex",
+																],
+															},
+														],
 													},
 													avgPacketsSent: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.packets_sent", "$$netIndex"],
-																},
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.packets_sent",
+																		},
+																	},
+																	"$$netIndex",
+																],
 															},
-														},
+															{
+																$arrayElemAt: [
+																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.packets_sent" } },
+																	"$$netIndex",
+																],
+															},
+														],
 													},
 													avgPacketsRecv: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.packets_recv", "$$netIndex"],
-																},
+														$subtract: [
+															{
+																$arrayElemAt: [
+																	{
+																		$map: {
+																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																			as: "iface",
+																			in: "$$iface.packets_recv",
+																		},
+																	},
+																	"$$netIndex",
+																],
 															},
-														},
-													},
-													avgErrIn: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.err_in", "$$netIndex"],
-																},
+															{
+																$arrayElemAt: [
+																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.packets_recv" } },
+																	"$$netIndex",
+																],
 															},
-														},
-													},
-													avgErrOut: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.err_out", "$$netIndex"],
-																},
-															},
-														},
-													},
-													avgDropIn: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.drop_in", "$$netIndex"],
-																},
-															},
-														},
-													},
-													avgDropOut: {
-														$avg: {
-															$map: {
-																input: "$net",
-																as: "netArray",
-																in: {
-																	$arrayElemAt: ["$$netArray.drop_out", "$$netIndex"],
-																},
-															},
-														},
+														],
 													},
 												},
 											},

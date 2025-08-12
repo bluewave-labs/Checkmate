@@ -3,24 +3,32 @@ import NetworkStatBoxes from "./NetworkStatBoxes";
 import NetworkCharts from "./NetworkCharts";
 import MonitorTimeFrameHeader from "../../../../../Components/MonitorTimeFrameHeader";
 
-const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
-	const eth0Data = (checks || [])
+const getNetworkInterfaceData = (checks) => {
+	const interfaceNames = ["eth0", "Ethernet", "en0"];
+
+	return (checks || [])
 		.map((check) => {
-			const en0 = (check.net || []).find((iface) => iface.name === "en0");
-			if (!en0) return null;
+			const networkInterface = (check.net || []).find((iface) =>
+				interfaceNames.includes(iface.name)
+			);
+
+			if (!networkInterface) {
+				return null;
+			}
 
 			return {
 				_id: check._id,
-				bytesPerSec: en0.avgBytesRecv,
-				packetsPerSec: en0.avgPacketsRecv,
-				errors: en0.avgErrOut ?? 0,
-				drops: en0.avgDropOut ?? 0,
+				bytesPerSec: networkInterface.avgBytesRecv,
+				packetsPerSec: networkInterface.avgPacketsRecv,
+				errors: networkInterface.avgErrOut ?? 0,
+				drops: networkInterface.avgDropOut ?? 0,
 			};
 		})
 		.filter(Boolean);
+};
 
-	console.log(eth0Data);
-
+const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
+	const eth0Data = getNetworkInterfaceData(checks);
 	return (
 		<>
 			<NetworkStatBoxes
