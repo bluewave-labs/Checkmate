@@ -8,10 +8,10 @@ import AuthPageWrapper from "../components/AuthPageWrapper";
 // Utils
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import useLoginForm from "../hooks/useLoginForm";
-import useValidateLoginForm from "../hooks/useValidateLoginForm";
-import useLoginSubmit from "../hooks/useLoginSubmit";
-import useLoadingSubmit from "../hooks/useLoadingSubmit";
+import useLoginForm from "./hooks/useLoginForm";
+import useValidateLoginForm from "./hooks/useValidateLoginForm";
+import useLoginSubmit from "./hooks/useLoginSubmit";
+import useLoadingSubmit from "./hooks/useLoadingSubmit";
 
 const Login = () => {
 	// Hooks

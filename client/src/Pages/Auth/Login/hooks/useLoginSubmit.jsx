@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
-import { login } from "../../../Features/Auth/authSlice";
+import { login } from "../../../../Features/Auth/authSlice";
 import { useNavigate } from "react-router-dom";
-import { createToast } from "../../../Utils/toastUtils";
+import { createToast } from "../../../../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
 
 const useLoginSubmit = () => {
