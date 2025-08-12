@@ -11,7 +11,7 @@ import { handleErrors } from "./middleware/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
 import { generalApiLimiter } from "./middleware/rateLimiter.js";
 import { sanitizeBody, sanitizeQuery } from "./middleware/sanitization.js";
-
+import { requestLogger } from "./middleware/requestLogger.js";
 export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
 	const allowedOrigin = envSettings.clientHost;
 
@@ -36,6 +36,7 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 
 	app.use(sanitizeBody());
 	app.use(sanitizeQuery());
+	app.use(requestLogger);
 
 	app.use(
 		helmet({
