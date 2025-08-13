@@ -51,41 +51,31 @@ const Logs = () => {
 	];
 	return (
 		<Stack gap={theme.spacing(8)}>
-			<Box
+			<Stack
+				gap={theme.spacing(8)}
 				sx={{
 					position: "sticky",
-					top: 40,
-					left: 10,
+					top: theme.spacing(19),
 					zIndex: 950,
-					backgroundColor: theme.palette.tertiary.main,
-					paddingY: theme.spacing(6),
+					backgroundColor: theme.palette.primary.main,
+					paddingY: theme.spacing(7),
+					paddingX: theme.spacing(7),
 				}}
 			>
 				<Typography variant="h2">{t("logsPage.description")}</Typography>
-			</Box>
-			<Divider color={theme.palette.accent.main} />
-
-			<Stack
-				direction="row"
-				alignItems="center"
-				gap={theme.spacing(4)}
-				mt={theme.spacing(10)}
-				sx={{
-					position: "sticky",
-					top: 80,
-					zIndex: 900,
-					backgroundColor: theme.palette.tertiary.main,
-					paddingY: theme.spacing(1),
-				}}
-			>
-				<Typography>{t("logsPage.logLevelSelect.title")}</Typography>
-				<Select
-					items={LOG_LEVELS}
-					value={logLevel}
-					onChange={(e) => {
-						setLogLevel(e.target.value);
-					}}
-				/>
+				<Divider color={theme.palette.accent.main} />
+				<Stack
+					direction="row"
+					alignItems="center"
+					gap={theme.spacing(4)}
+				>
+					<Typography>{t("logsPage.logLevelSelect.title")}</Typography>
+					<Select
+						items={LOG_LEVELS}
+						value={logLevel}
+						onChange={(e) => setLogLevel(e.target.value)}
+					/>
+				</Stack>
 			</Stack>
 
 			<Box
