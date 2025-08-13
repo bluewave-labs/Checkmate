@@ -263,6 +263,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 										net: {
 											$push: "$net",
 										},
+										updatedAts: {
+											$push: "$updatedAt",
+										},
 									},
 								},
 								{
@@ -378,9 +381,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 										},
 										net: {
 											$map: {
-												input: {
-													$range: [0, { $size: { $arrayElemAt: ["$net", 0] } }],
-												},
+												input: { $range: [0, { $size: { $arrayElemAt: ["$net", 0] } }] },
 												as: "netIndex",
 												in: {
 													name: {
@@ -395,211 +396,368 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 															"$$netIndex",
 														],
 													},
-													deltaBytesSent: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.bytes_sent",
+													bytesSentPerSecond: {
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.bytes_sent" } },
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																				as: "iface",
+																				in: "$$iface.bytes_sent",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: { $arrayElemAt: ["$updatedAts", { $subtract: [{ $size: "$updatedAts" }, 1] }] },
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [
-																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.bytes_sent" } },
-																	"$$netIndex",
-																],
-															},
-														],
+														},
 													},
 													deltaBytesRecv: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.bytes_recv",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.bytes_recv" } },
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																				as: "iface",
+																				in: "$$iface.bytes_recv",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: { $arrayElemAt: ["$updatedAts", { $subtract: [{ $size: "$updatedAts" }, 1] }] },
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [
-																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.bytes_recv" } },
-																	"$$netIndex",
-																],
-															},
-														],
+														},
 													},
 													deltaPacketsSent: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.packets_sent",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.packets_sent" } },
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																				as: "iface",
+																				in: "$$iface.packets_sent",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: { $arrayElemAt: ["$updatedAts", { $subtract: [{ $size: "$updatedAts" }, 1] }] },
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [
-																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.packets_sent" } },
-																	"$$netIndex",
-																],
-															},
-														],
+														},
 													},
 													deltaPacketsRecv: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.packets_recv",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", 0] },
+																				as: "iface",
+																				in: "$$iface.packets_recv",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: {
+																					$arrayElemAt: [
+																						"$net",
+																						{
+																							$subtract: [{ $size: "$net" }, 1],
+																						},
+																					],
+																				},
+																				as: "iface",
+																				in: "$$iface.packets_recv",
+																			},
+																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: {
+																	$arrayElemAt: [
+																		"$updatedAts",
+																		{
+																			$subtract: [{ $size: "$updatedAts" }, 1],
+																		},
+																	],
+																},
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [
-																	{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.packets_recv" } },
-																	"$$netIndex",
-																],
-															},
-														],
+														},
 													},
 													deltaErrIn: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.err_in",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.err_in" } }, "$$netIndex"],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
+																				as: "iface",
+																				in: "$$iface.err_in",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: { $arrayElemAt: ["$updatedAts", { $subtract: [{ $size: "$updatedAts" }, 1] }] },
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.err_in" } }, "$$netIndex"],
-															},
-														],
+														},
 													},
 													deltaErrOut: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.err_out",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", 0] },
+																				as: "iface",
+																				in: "$$iface.err_out",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: {
+																					$arrayElemAt: [
+																						"$net",
+																						{
+																							$subtract: [{ $size: "$net" }, 1],
+																						},
+																					],
+																				},
+																				as: "iface",
+																				in: "$$iface.err_out",
+																			},
+																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: {
+																	$arrayElemAt: [
+																		"$updatedAts",
+																		{
+																			$subtract: [{ $size: "$updatedAts" }, 1],
+																		},
+																	],
+																},
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.err_out" } }, "$$netIndex"],
-															},
-														],
+														},
 													},
 													deltaDropIn: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.drop_in",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", 0] },
+																				as: "iface",
+																				in: "$$iface.drop_in",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: {
+																					$arrayElemAt: [
+																						"$net",
+																						{
+																							$subtract: [{ $size: "$net" }, 1],
+																						},
+																					],
+																				},
+																				as: "iface",
+																				in: "$$iface.drop_in",
+																			},
+																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: {
+																	$arrayElemAt: [
+																		"$updatedAts",
+																		{
+																			$subtract: [{ $size: "$updatedAts" }, 1],
+																		},
+																	],
+																},
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.drop_in" } }, "$$netIndex"],
-															},
-														],
+														},
 													},
 													deltaDropOut: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.drop_out",
+														$let: {
+															vars: {
+																first: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: { $arrayElemAt: ["$net", 0] },
+																				as: "iface",
+																				in: "$$iface.drop_out",
+																			},
 																		},
+																		"$$netIndex",
+																	],
+																},
+																last: {
+																	$arrayElemAt: [
+																		{
+																			$map: {
+																				input: {
+																					$arrayElemAt: [
+																						"$net",
+																						{
+																							$subtract: [{ $size: "$net" }, 1],
+																						},
+																					],
+																				},
+																				as: "iface",
+																				in: "$$iface.drop_out",
+																			},
+																		},
+																		"$$netIndex",
+																	],
+																},
+																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
+																tLast: {
+																	$arrayElemAt: [
+																		"$updatedAts",
+																		{
+																			$subtract: [{ $size: "$updatedAts" }, 1],
+																		},
+																	],
+																},
+															},
+															in: {
+																$cond: [
+																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
+																	{
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
 																	},
-																	"$$netIndex",
+																	0,
 																],
 															},
-															{
-																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.drop_out" } }, "$$netIndex"],
-															},
-														],
-													},
-													deltaFifoIn: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.fifo_in",
-																		},
-																	},
-																	"$$netIndex",
-																],
-															},
-															{
-																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.fifo_in" } }, "$$netIndex"],
-															},
-														],
-													},
-													deltaFifoOut: {
-														$subtract: [
-															{
-																$arrayElemAt: [
-																	{
-																		$map: {
-																			input: { $arrayElemAt: ["$net", { $subtract: [{ $size: "$net" }, 1] }] },
-																			as: "iface",
-																			in: "$$iface.fifo_out",
-																		},
-																	},
-																	"$$netIndex",
-																],
-															},
-															{
-																$arrayElemAt: [{ $map: { input: { $arrayElemAt: ["$net", 0] }, as: "iface", in: "$$iface.fifo_out" } }, "$$netIndex"],
-															},
-														],
+														},
 													},
 												},
 											},
 										},
+										firstUpdatedAt: 1,
+										lastUpdatedAt: 1,
 									},
 								},
 							],
