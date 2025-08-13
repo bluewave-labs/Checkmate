@@ -24,24 +24,20 @@ const Logs = () => {
 
 	const BREADCRUMBS = [{ name: t("logsPage.title"), path: "/logs" }];
 
-	// Height of the header (Breadcrumbs + Tabs)
-	const HEADER_HEIGHT = theme.spacing(25);
-
 	return (
-		<>
+		<Stack gap={theme.spacing(20)}>
+			<Breadcrumbs list={BREADCRUMBS} />
+
 			<Stack
-				gap={theme.spacing(20)}
+				gap={theme.spacing(10)}
 				sx={{
 					position: "sticky",
 					top: 0,
-					left: 0,
-					right: 0,
 					zIndex: 1000,
 					backgroundColor: theme.palette.primary.main,
 					paddingY: theme.spacing(2),
 				}}
 			>
-				<Breadcrumbs list={BREADCRUMBS} />
 				<Tabs
 					value={value}
 					onChange={handleChange}
@@ -52,13 +48,11 @@ const Logs = () => {
 				</Tabs>
 			</Stack>
 
-			{/* Main content below fixed header */}
-			<Stack sx={{ paddingTop: HEADER_HEIGHT }}>
-				{value === 0 && <LogsComponent />}
-				{value === 1 && <Queue />}
-				{value === 2 && <Diagnostics />}
-			</Stack>
-		</>
+			{/* Main content */}
+			{value === 0 && <LogsComponent />}
+			{value === 1 && <Queue />}
+			{value === 2 && <Diagnostics />}
+		</Stack>
 	);
 };
 

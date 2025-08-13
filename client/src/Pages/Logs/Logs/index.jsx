@@ -50,8 +50,17 @@ const Logs = () => {
 		{ _id: "debug", name: t("logsPage.logLevelSelect.values.debug") },
 	];
 	return (
-		<Stack gap={theme.spacing(4)}>
-			<Box>
+		<Stack gap={theme.spacing(8)}>
+			<Box
+				sx={{
+					position: "sticky",
+					top: 40,
+					left: 10,
+					zIndex: 950,
+					backgroundColor: theme.palette.tertiary.main,
+					paddingY: theme.spacing(6),
+				}}
+			>
 				<Typography variant="h2">{t("logsPage.description")}</Typography>
 			</Box>
 			<Divider color={theme.palette.accent.main} />
@@ -61,6 +70,13 @@ const Logs = () => {
 				alignItems="center"
 				gap={theme.spacing(4)}
 				mt={theme.spacing(10)}
+				sx={{
+					position: "sticky",
+					top: 80,
+					zIndex: 900,
+					backgroundColor: theme.palette.tertiary.main,
+					paddingY: theme.spacing(1),
+				}}
 			>
 				<Typography>{t("logsPage.logLevelSelect.title")}</Typography>
 				<Select
