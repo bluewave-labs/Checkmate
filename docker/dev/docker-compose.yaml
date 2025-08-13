@@ -35,11 +35,11 @@ services:
   mongodb:
     image: uptime_mongo:latest
     restart: always
-    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--quiet", "--bind_ip_all"]
     volumes:
       - ./mongo/data:/data/db
     healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
       interval: 5s
       timeout: 30s
       start_period: 0s

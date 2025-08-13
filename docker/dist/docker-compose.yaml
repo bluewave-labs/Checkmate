@@ -18,7 +18,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
       - REDIS_URL=redis://redis:6379
       - CLIENT_HOST=http://localhost
       - JWT_SECRET=my_secret
@@ -29,9 +29,9 @@ services:
     restart: always
     volumes:
       - ./mongo/data:/data/db
-    command: ["mongod", "--quiet", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--quiet", "--bind_ip_all"]
     healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }" | mongosh --port 27017 --quiet
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
       interval: 5s
       timeout: 30s
       start_period: 0s
