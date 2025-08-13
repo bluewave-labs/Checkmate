@@ -10,12 +10,13 @@ import { Box, Button } from "@mui/material";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
-import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
 import { useAcknowledgeChecks } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import { useFetchData } from "../../Hooks/useFetchData";
+import { networkService } from "../../main";
 
 //Constants
 const Incidents = () => {
@@ -39,8 +40,9 @@ const Incidents = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
-	const [summary, isLoadingSummary, networkErrorSummary] = useFetchChecksSummaryByTeamId({
-		updateTrigger,
+	const [summary, isLoadingSummary, networkErrorSummary] = useFetchData({
+		requestFn: () => networkService.getChecksAndSummaryByTeamId(),
+		deps: [updateTrigger],
 	});
 	const { monitorId } = useParams();
 

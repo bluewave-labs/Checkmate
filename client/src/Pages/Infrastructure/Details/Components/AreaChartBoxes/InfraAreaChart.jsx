@@ -4,7 +4,7 @@ import BaseContainer from "../BaseContainer";
 import AreaChart from "../../../../../Components/Charts/AreaChart";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../../../../Hooks/useHardwareUtils";
 const InfraAreaChart = ({ config }) => {
 	const theme = useTheme();
 	const { getDimensions } = useHardwareUtils();

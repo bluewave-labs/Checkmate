@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { ROLES } from "../../../../Utils/roleUtils";
-import { editUserValidation } from "../../../../Validation/validation";
+import { ROLES } from "../Utils/roleUtils";
+import { editUserValidation } from "../Validation/validation";
 import Joi from "joi";
-import { createToast } from "../../../../Utils/toastUtils";
+import { createToast } from "../Utils/toastUtils";
 import { useTranslation } from "react-i18next";
 export const useEditUserForm = (user) => {
 	const [searchInput, setSearchInput] = useState("");
