@@ -19,19 +19,7 @@ services:
     env_file:
       - server.env
     depends_on:
-      - redis
       - mongodb
-  redis:
-    image: uptime_redis:latest
-    restart: always
-    volumes:
-      - ./redis/data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 5s
   mongodb:
     image: uptime_mongo:latest
     restart: always
