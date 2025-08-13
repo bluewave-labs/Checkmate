@@ -23,21 +23,42 @@ const Logs = () => {
 	};
 
 	const BREADCRUMBS = [{ name: t("logsPage.title"), path: "/logs" }];
+
+	// Height of the header (Breadcrumbs + Tabs)
+	const HEADER_HEIGHT = theme.spacing(25);
+
 	return (
-		<Stack gap={theme.spacing(20)}>
-			<Breadcrumbs list={BREADCRUMBS} />
-			<Tabs
-				value={value}
-				onChange={handleChange}
+		<>
+			<Stack
+				gap={theme.spacing(20)}
+				sx={{
+					position: "sticky",
+					top: 0,
+					left: 0,
+					right: 0,
+					zIndex: 1000,
+					backgroundColor: theme.palette.primary.main,
+					paddingY: theme.spacing(2),
+				}}
 			>
-				<Tab label={t("logsPage.tabs.logs")} />
-				<Tab label={t("logsPage.tabs.queue")} />
-				<Tab label={t("logsPage.tabs.diagnostics")} />
-			</Tabs>
-			{value === 0 && <LogsComponent />}
-			{value === 1 && <Queue />}
-			{value === 2 && <Diagnostics />}
-		</Stack>
+				<Breadcrumbs list={BREADCRUMBS} />
+				<Tabs
+					value={value}
+					onChange={handleChange}
+				>
+					<Tab label={t("logsPage.tabs.logs")} />
+					<Tab label={t("logsPage.tabs.queue")} />
+					<Tab label={t("logsPage.tabs.diagnostics")} />
+				</Tabs>
+			</Stack>
+
+			{/* Main content below fixed header */}
+			<Stack sx={{ paddingTop: HEADER_HEIGHT }}>
+				{value === 0 && <LogsComponent />}
+				{value === 1 && <Queue />}
+				{value === 2 && <Diagnostics />}
+			</Stack>
+		</>
 	);
 };
 
