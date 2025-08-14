@@ -50,32 +50,48 @@ const Logs = () => {
 		{ _id: "debug", name: t("logsPage.logLevelSelect.values.debug") },
 	];
 	return (
-		<Stack gap={theme.spacing(8)}>
-			<Stack
-				gap={theme.spacing(8)}
+		<Stack gap={theme.spacing(4)}>
+			<Box
 				sx={{
 					position: "sticky",
-					top: theme.spacing(19),
-					zIndex: 950,
-					backgroundColor: theme.palette.primary.main,
-					paddingY: theme.spacing(7),
-					paddingX: theme.spacing(7),
+					top: theme.spacing(17),
+					backdropFilter: "blur(10px)",
+					paddingY: theme.spacing(5),
+					paddingLeft: theme.spacing(6),
 				}}
 			>
 				<Typography variant="h2">{t("logsPage.description")}</Typography>
-				<Divider color={theme.palette.accent.main} />
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={theme.spacing(4)}
-				>
-					<Typography>{t("logsPage.logLevelSelect.title")}</Typography>
-					<Select
-						items={LOG_LEVELS}
-						value={logLevel}
-						onChange={(e) => setLogLevel(e.target.value)}
-					/>
-				</Stack>
+			</Box>
+			<Divider
+				color={theme.palette.accent.main}
+				sx={{
+					position: "sticky",
+					top: theme.spacing(33),
+					backdropFilter: "blur(10px)",
+				}}
+			/>
+
+			<Stack
+				direction="row"
+				alignItems="center"
+				gap={theme.spacing(4)}
+				mt={theme.spacing(10)}
+				sx={{
+					position: "sticky",
+					top: theme.spacing(34),
+					backdropFilter: "blur(10px)",
+					paddingTop: theme.spacing(4),
+					paddingLeft: theme.spacing(6),
+				}}
+			>
+				<Typography>{t("logsPage.logLevelSelect.title")}</Typography>
+				<Select
+					items={LOG_LEVELS}
+					value={logLevel}
+					onChange={(e) => {
+						setLogLevel(e.target.value);
+					}}
+				/>
 			</Stack>
 
 			<Box

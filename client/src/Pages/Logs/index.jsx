@@ -23,32 +23,22 @@ const Logs = () => {
 	};
 
 	const BREADCRUMBS = [{ name: t("logsPage.title"), path: "/logs" }];
-
 	return (
 		<Stack gap={theme.spacing(20)}>
 			<Breadcrumbs list={BREADCRUMBS} />
-
-			<Stack
-				gap={theme.spacing(10)}
+			<Tabs
+				value={value}
+				onChange={handleChange}
 				sx={{
 					position: "sticky",
-					top: 0,
-					zIndex: 1000,
-					backgroundColor: theme.palette.primary.main,
-					paddingY: theme.spacing(2),
+					top: theme.spacing(0),
+					backdropFilter: "blur(10px)",
 				}}
 			>
-				<Tabs
-					value={value}
-					onChange={handleChange}
-				>
-					<Tab label={t("logsPage.tabs.logs")} />
-					<Tab label={t("logsPage.tabs.queue")} />
-					<Tab label={t("logsPage.tabs.diagnostics")} />
-				</Tabs>
-			</Stack>
-
-			{/* Main content */}
+				<Tab label={t("logsPage.tabs.logs")} />
+				<Tab label={t("logsPage.tabs.queue")} />
+				<Tab label={t("logsPage.tabs.diagnostics")} />
+			</Tabs>
 			{value === 0 && <LogsComponent />}
 			{value === 1 && <Queue />}
 			{value === 2 && <Diagnostics />}
