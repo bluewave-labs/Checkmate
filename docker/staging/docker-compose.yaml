@@ -49,3 +49,14 @@ services:
       start_period: 0s
       start_interval: 1s
       retries: 30
+  capture:
+    image: ghcr.io/bluewave-labs/capture:latest
+    container_name: capture
+    restart: unless-stopped
+    ports:
+      - "59232:59232"
+    environment:
+      - API_SECRET=my_secret
+      - GIN_MODE=release
+    volumes:
+      - /etc/os-release:/etc/os-release:ro
