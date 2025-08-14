@@ -10,7 +10,18 @@ import { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 
-const NotificationConfig = ({ notifications, setMonitor, setNotifications }) => {
+const NotificationConfig = ({
+	notifications,
+	setMonitor,
+	setNotifications,
+	//FieldWrapper's props
+	gap,
+	labelMb,
+	labelFontWeight,
+	labelVariant,
+	labelSx = {},
+	sx = {},
+}) => {
 	// Local state
 	const [notificationsSearch, setNotificationsSearch] = useState("");
 	const [selectedNotifications, setSelectedNotifications] = useState([]);
@@ -65,6 +76,14 @@ const NotificationConfig = ({ notifications, setMonitor, setNotifications }) => 
 				handleInputChange={setNotificationsSearch}
 				handleChange={(value) => {
 					handleSearch(value);
+				}}
+				labelMb={labelMb}
+				labelVariant={labelVariant}
+				labelFontWeight={labelFontWeight}
+				labelSx={labelSx}
+				gap={gap}
+				sx={{
+					...sx,
 				}}
 			/>
 			<Stack

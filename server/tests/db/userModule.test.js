@@ -157,12 +157,7 @@ describe("userModule", function () {
 					select: sinon.stub().resolves(mockUser),
 				}),
 			});
-			const result = await updateUser(
-				req,
-				res,
-				parseBooleanStub,
-				generateAvatarImageStub
-			);
+			const result = await updateUser(req, res, parseBooleanStub, generateAvatarImageStub);
 			expect(result).to.deep.equal(mockUser);
 		});
 
@@ -173,12 +168,7 @@ describe("userModule", function () {
 					select: sinon.stub().resolves(mockUser),
 				}),
 			});
-			const result = await updateUser(
-				req,
-				res,
-				parseBooleanStub,
-				generateAvatarImageStub
-			);
+			const result = await updateUser(req, res, parseBooleanStub, generateAvatarImageStub);
 			expect(result).to.deep.equal(mockUser);
 		});
 

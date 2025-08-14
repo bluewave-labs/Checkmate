@@ -14,7 +14,6 @@ import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed";
 import Uptime from "../Pages/Uptime/Monitors";
 import UptimeDetails from "../Pages/Uptime/Details";
 import UptimeCreate from "../Pages/Uptime/Create";
-import UptimeConfigure from "../Pages/Uptime/Configure";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors";
@@ -42,6 +41,7 @@ import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
 import Account from "../Pages/Account";
+import EditUser from "../Pages/Account/EditUser";
 import Settings from "../Pages/Settings";
 
 import Maintenance from "../Pages/Maintenance";
@@ -80,8 +80,12 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="/uptime/create/:monitorId?"
+					path="/uptime/create"
 					element={<UptimeCreate />}
+				/>
+				<Route
+					path="/uptime/create/:monitorId"
+					element={<UptimeCreate isClone={true} />}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
@@ -89,7 +93,7 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<UptimeConfigure />}
+					element={<UptimeCreate />}
 				/>
 
 				<Route
@@ -186,6 +190,14 @@ const Routes = () => {
 				<Route
 					path="account/team"
 					element={<Account open={"team"} />}
+				/>
+				<Route
+					path="account/team/:userId"
+					element={
+						<RoleProtectedRoute roles={["superadmin"]}>
+							<EditUser />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route

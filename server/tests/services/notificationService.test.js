@@ -43,10 +43,7 @@ describe("NotificationService", function () {
 			await notificationService.sendEmail(networkResponse, address);
 			expect(notificationService.emailService.buildAndSendEmail.calledOnce).to.be.true;
 			expect(
-				notificationService.emailService.buildAndSendEmail.calledWith(
-					"serverIsUpTemplate",
-					{ monitor: "Test Monitor", url: "http://test.com" }
-				)
+				notificationService.emailService.buildAndSendEmail.calledWith("serverIsUpTemplate", { monitor: "Test Monitor", url: "http://test.com" })
 			);
 		});
 
@@ -132,22 +129,14 @@ describe("NotificationService", function () {
 
 		it("should send an email notification with Hardware Template", async function () {
 			emailService.buildAndSendEmail.resolves(true);
-			const res = await notificationService.sendHardwareEmail(
-				networkResponse,
-				address,
-				alerts
-			);
+			const res = await notificationService.sendHardwareEmail(networkResponse, address, alerts);
 			expect(res).to.be.true;
 		});
 
 		it("should return false if no alerts are provided", async function () {
 			alerts = [];
 			emailService.buildAndSendEmail.resolves(true);
-			const res = await notificationService.sendHardwareEmail(
-				networkResponse,
-				address,
-				alerts
-			);
+			const res = await notificationService.sendHardwareEmail(networkResponse, address, alerts);
 			expect(res).to.be.false;
 		});
 	});
@@ -172,9 +161,7 @@ describe("NotificationService", function () {
 		});
 
 		it("should handle status notifications", async function () {
-			db.getNotificationsByMonitorId.resolves([
-				{ type: "email", address: "test@test.com" },
-			]);
+			db.getNotificationsByMonitorId.resolves([{ type: "email", address: "test@test.com" }]);
 			const res = await notificationService.handleStatusNotifications(networkResponse);
 			expect(res).to.be.true;
 		});
@@ -247,15 +234,13 @@ describe("NotificationService", function () {
 		describe("it should return false if no thresholds are set", function () {
 			it("should return false if no thresholds are set", async function () {
 				networkResponse.monitor.thresholds = undefined;
-				const res =
-					await notificationService.handleHardwareNotifications(networkResponse);
+				const res = await notificationService.handleHardwareNotifications(networkResponse);
 				expect(res).to.be.false;
 			});
 
 			it("should return false if metrics are null", async function () {
 				networkResponse.payload.data = null;
-				const res =
-					await notificationService.handleHardwareNotifications(networkResponse);
+				const res = await notificationService.handleHardwareNotifications(networkResponse);
 				expect(res).to.be.false;
 			});
 
@@ -271,8 +256,7 @@ describe("NotificationService", function () {
 						save: sinon.stub().resolves(),
 					},
 				]);
-				const res =
-					await notificationService.handleHardwareNotifications(networkResponse);
+				const res = await notificationService.handleHardwareNotifications(networkResponse);
 				expect(res).to.be.true;
 			});
 
@@ -293,8 +277,7 @@ describe("NotificationService", function () {
 					usage_memory: 0.01,
 					usage_disk: 0.01,
 				};
-				const res =
-					await notificationService.handleHardwareNotifications(networkResponse);
+				const res = await notificationService.handleHardwareNotifications(networkResponse);
 				expect(res).to.be.true;
 			});
 		});

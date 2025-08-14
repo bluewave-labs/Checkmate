@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { MenuItem, Select as MuiSelect, Stack, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import FieldWrapper from "../FieldWrapper";
 
 import "./index.css";
 
@@ -49,9 +50,16 @@ const Select = ({
 	onChange,
 	onBlur,
 	sx,
+	error = false,
 	name = "",
-	labelControlSpacing = 2,
+	labelControlSpacing = 6,
 	maxWidth,
+	//FieldWrapper's props
+	labelMb,
+	labelFontWeight,
+	labelVariant,
+	labelSx = {},
+	fieldWrapperSx = {},
 }) => {
 	const theme = useTheme();
 	const itemStyles = {
@@ -69,26 +77,24 @@ const Select = ({
 	};
 
 	return (
-		<Stack
-			gap={theme.spacing(labelControlSpacing)}
-			className="select-wrapper"
+		<FieldWrapper
+			label={label}
+			labelMb={labelMb}
+			labelVariant={labelVariant}
+			labelFontWeight={labelFontWeight}
+			labelSx={labelSx}
+			gap={labelControlSpacing}
+			sx={{
+				...fieldWrapperSx,
+			}}
 		>
-			{label && (
-				<Typography
-					component="h3"
-					color={theme.palette.primary.contrastTextSecondary}
-					fontWeight={500}
-					fontSize={13}
-				>
-					{label}
-				</Typography>
-			)}
 			<MuiSelect
 				className="select-component"
 				value={value}
 				onChange={onChange}
 				onBlur={onBlur}
 				displayEmpty
+				error={error}
 				name={name}
 				inputProps={{ id: id }}
 				IconComponent={KeyboardArrowDownIcon}
@@ -106,6 +112,13 @@ const Select = ({
 					},
 					"& svg path": {
 						fill: theme.palette.primary.contrastTextTertiary,
+					},
+					"& .MuiSelect-select": {
+						padding: "0",
+						minHeight: "34px",
+						display: "flex",
+						alignItems: "center",
+						lineHeight: 1,
 					},
 					...sx,
 				}}
@@ -151,7 +164,7 @@ const Select = ({
 					</MenuItem>
 				))}
 			</MuiSelect>
-		</Stack>
+		</FieldWrapper>
 	);
 };
 
@@ -161,6 +174,7 @@ Select.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	isHidden: PropTypes.bool,
+	error: PropTypes.bool,
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
 		.isRequired,
 	items: PropTypes.arrayOf(

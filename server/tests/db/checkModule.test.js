@@ -216,11 +216,7 @@ describe("checkModule", function () {
 			const result = await getChecksCount(req);
 
 			expect(result).to.equal(4);
-			expect(checkCountDocumentStub.firstCall.args[0]).to.have.all.keys(
-				"monitorId",
-				"createdAt",
-				"status"
-			);
+			expect(checkCountDocumentStub.firstCall.args[0]).to.have.all.keys("monitorId", "createdAt", "status");
 		});
 	});
 

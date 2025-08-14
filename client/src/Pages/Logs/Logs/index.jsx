@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Select from "../../../Components/Inputs/Select";
 import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
 
 import { useFetchLogs } from "../../../Hooks/logHooks";
 import { useTheme } from "@emotion/react";
@@ -50,13 +51,38 @@ const Logs = () => {
 	];
 	return (
 		<Stack gap={theme.spacing(4)}>
-			<Box>
-				<Typography variant="body">{t("logsPage.description")}</Typography>
+			<Box
+				sx={{
+					position: "sticky",
+					top: theme.spacing(17),
+					backdropFilter: "blur(10px)",
+					paddingY: theme.spacing(5),
+					paddingLeft: theme.spacing(6),
+				}}
+			>
+				<Typography variant="h2">{t("logsPage.description")}</Typography>
 			</Box>
+			<Divider
+				color={theme.palette.accent.main}
+				sx={{
+					position: "sticky",
+					top: theme.spacing(33),
+					backdropFilter: "blur(10px)",
+				}}
+			/>
+
 			<Stack
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(4)}
+				mt={theme.spacing(10)}
+				sx={{
+					position: "sticky",
+					top: theme.spacing(34),
+					backdropFilter: "blur(10px)",
+					paddingTop: theme.spacing(4),
+					paddingLeft: theme.spacing(6),
+				}}
 			>
 				<Typography>{t("logsPage.logLevelSelect.title")}</Typography>
 				<Select

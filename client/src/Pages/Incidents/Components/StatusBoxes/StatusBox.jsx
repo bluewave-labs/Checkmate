@@ -2,18 +2,22 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import Background from "../../../../assets/Images/background-grid.svg?react";
-import MonitorHeartOutlinedIcon from "@mui/icons-material/MonitorHeartOutlined";
-import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import AlertIcon from "../../../../assets/icons/alert-icon.svg?react";
+import CheckIcon from "../../../../assets/icons/check-icon.svg?react";
+import CloseIcon from "../../../../assets/icons/close-icon.svg?react";
+import WarningIcon from "../../../../assets/icons/warning-icon.svg?react";
 
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
 	let sharedStyles = {
 		position: "absolute",
 		right: 8,
-		opacity: 0.5,
-		"& svg path": { stroke: theme.palette.primary.contrastTextTertiary },
+		"& svg": {
+			width: 20,
+			height: 20,
+			opacity: 0.9,
+			"& path": { stroke: theme.palette.primary.contrastTextTertiary, strokeWidth: 1.7 },
+		},
 	};
 
 	let color;
@@ -22,28 +26,28 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<TaskAltOutlinedIcon fontSize="small" />
+				<CheckIcon />
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<CancelOutlinedIcon fontSize="small" />
+				<CloseIcon />
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<WarningAmberRoundedIcon fontSize="small" />
+				<WarningIcon />
 			</Box>
 		);
 	} else {
 		color = theme.palette.accent.main;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<MonitorHeartOutlinedIcon fontSize="small" />
+				<AlertIcon />
 			</Box>
 		);
 	}

@@ -1,5 +1,5 @@
 // Components
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography, Tab } from "@mui/material";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
 import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
@@ -7,6 +7,9 @@ import StatusBoxes from "./Components/StatusBoxes";
 import GaugeBoxes from "./Components/GaugeBoxes";
 import AreaChartBoxes from "./Components/AreaChartBoxes";
 import GenericFallback from "../../../Components/GenericFallback";
+import NetworkStats from "./Components/NetworkStats";
+import CustomTabList from "../../../Components/Tab";
+import TabContext from "@mui/lab/TabContext";
 
 // Utils
 import { useTheme } from "@emotion/react";
@@ -22,11 +25,10 @@ const BREADCRUMBS = [
 	{ name: "details", path: "" },
 ];
 const InfrastructureDetails = () => {
-	// Redux state
-
 	// Local state
 	const [dateRange, setDateRange] = useState("recent");
 	const [trigger, setTrigger] = useState(false);
+	const [tab, setTab] = useState("details");
 
 	// Utils
 	const theme = useTheme();
@@ -87,23 +89,51 @@ const InfrastructureDetails = () => {
 				monitor={monitor}
 				triggerUpdate={triggerUpdate}
 			/>
-			<StatusBoxes
-				shouldRender={!isLoading}
-				monitor={monitor}
-			/>
-			<GaugeBoxes
-				shouldRender={!isLoading}
-				monitor={monitor}
-			/>
-			<MonitorTimeFrameHeader
-				shouldRender={!isLoading}
-				dateRange={dateRange}
-				setDateRange={setDateRange}
-			/>
-			<AreaChartBoxes
-				shouldRender={!isLoading}
-				monitor={monitor}
-			/>
+			<TabContext value={tab}>
+				<CustomTabList
+					value={tab}
+					onChange={(e, v) => setTab(v)}
+				>
+					<Tab
+						label={t("details")}
+						value="details"
+					/>
+					<Tab
+						label={t("network")}
+						value="network"
+					/>
+				</CustomTabList>
+				{tab === "details" && (
+					<>
+						<StatusBoxes
+							shouldRender={!isLoading}
+							monitor={monitor}
+						/>
+						<GaugeBoxes
+							isLoading={isLoading}
+							monitor={monitor}
+						/>
+						<MonitorTimeFrameHeader
+							isLoading={isLoading}
+							dateRange={dateRange}
+							setDateRange={setDateRange}
+						/>
+						<AreaChartBoxes
+							shouldRender={!isLoading}
+							monitor={monitor}
+						/>
+					</>
+				)}
+				{tab === "network" && (
+					<NetworkStats
+						net={monitor?.stats?.aggregateData?.latestCheck?.net || []}
+						isLoading={isLoading}
+						checks={monitor?.stats?.checks}
+						dateRange={dateRange}
+						setDateRange={setDateRange}
+					/>
+				)}
+			</TabContext>
 		</Stack>
 	);
 };

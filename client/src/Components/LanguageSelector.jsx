@@ -6,6 +6,13 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "../Features/UI/uiSlice";
 
+const langMap = {
+	cs: "cz",
+	ja: "jp",
+	uk: "ua",
+	vi: "vn",
+};
+
 const LanguageSelector = () => {
 	const { i18n } = useTranslation();
 	const theme = useTheme();
@@ -23,18 +30,26 @@ const LanguageSelector = () => {
 			value={language}
 			onChange={handleChange}
 			size="small"
-			sx={{ minWidth: 80 }}
+			sx={{
+				minWidth: 80,
+				"& .MuiSelect-select": {
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				},
+				"& .MuiSelect-icon": {
+					alignSelf: "center",
+				},
+			}}
 		>
 			{languages.map((lang) => {
 				let parsedLang = lang === "en" ? "gb" : lang;
 
-				// Fix for Czech
-				if (parsedLang === "cs") {
-					parsedLang = "cz";
-				}
 				if (parsedLang.includes("-")) {
 					parsedLang = parsedLang.split("-")[1].toLowerCase();
 				}
+
+				parsedLang = langMap[parsedLang] || parsedLang;
 
 				const flag = parsedLang ? `fi fi-${parsedLang}` : null;
 
@@ -42,11 +57,17 @@ const LanguageSelector = () => {
 					<MenuItem
 						key={lang}
 						value={lang}
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
 					>
 						<Stack
 							direction="row"
 							spacing={theme.spacing(2)}
 							alignItems="center"
+							justifyContent="center"
 						>
 							<Box
 								component="span"

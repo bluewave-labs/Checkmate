@@ -52,10 +52,7 @@ const mockMonitor = {
 };
 
 describe("HardwareCheckModule", function () {
-	let hardwareCheckSaveStub,
-		hardwareCheckCountDocumentsStub,
-		monitorFindByIdStub,
-		loggerStub;
+	let hardwareCheckSaveStub, hardwareCheckCountDocumentsStub, monitorFindByIdStub, loggerStub;
 
 	beforeEach(function () {
 		loggerStub = sinon.stub(logger, "error");

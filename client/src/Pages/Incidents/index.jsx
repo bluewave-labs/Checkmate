@@ -11,7 +11,7 @@ import { Box, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
 import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
-import { useAckAllChecks } from "../../Hooks/checkHooks";
+import { useAcknowledgeChecks } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
 import NetworkError from "../../Components/GenericFallback/NetworkError";
 import { useTranslation } from "react-i18next";
@@ -34,7 +34,7 @@ const Incidents = () => {
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 
 	//Hooks
-	const [ackAllChecks, ackAllLoading] = useAckAllChecks();
+	const { acknowledge, isLoadingAcknowledge } = useAcknowledgeChecks();
 
 	//Utils
 	const theme = useTheme();
@@ -62,8 +62,9 @@ const Incidents = () => {
 		setMonitorLookup(monitorLookup);
 	}, [monitors]);
 
-	const handleAckAllChecks = () => {
-		ackAllChecks(setUpdateTrigger);
+	const handleAcknowledge = () => {
+		const monitorId = selectedMonitor === "0" ? null : selectedMonitor;
+		acknowledge(setUpdateTrigger, monitorId);
 	};
 
 	if (networkError || networkErrorSummary) {
@@ -81,10 +82,12 @@ const Incidents = () => {
 				<Button
 					variant="contained"
 					color="accent"
-					onClick={handleAckAllChecks}
-					disabled={ackAllLoading}
+					onClick={handleAcknowledge}
+					disabled={isLoadingAcknowledge}
 				>
-					{t("incidentsPageActionResolve")}
+					{selectedMonitor === "0"
+						? t("incidentsPageActionResolveAll")
+						: t("incidentsPageActionResolveMonitor")}
 				</Button>
 			</Box>
 			<StatusBoxes

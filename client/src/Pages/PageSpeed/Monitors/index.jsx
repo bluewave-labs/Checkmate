@@ -1,4 +1,5 @@
 // Components
+import { useState } from "react";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import { Stack, Typography } from "@mui/material";
 import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
@@ -6,12 +7,14 @@ import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 import MonitorGrid from "./Components/MonitorGrid";
 import Fallback from "../../../Components/Fallback";
 import GenericFallback from "../../../Components/GenericFallback";
+import FallbackPageSpeedWarning from "../../../Components/Fallback/FallbackPageSpeedWarning";
 
 // Utils
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
+import { useFetchSettings } from "../../../Hooks/settingsHooks";
 // Constants
 const BREADCRUMBS = [{ name: `pagespeed`, path: "/pagespeed" }];
 const TYPES = ["pagespeed"];
@@ -28,6 +31,13 @@ const PageSpeed = () => {
 		filter: null,
 		field: null,
 		order: null,
+	});
+
+	const [settingsData, setSettingsData] = useState(undefined);
+	const [isSettingsLoading, settingsError] = useFetchSettings({
+		setSettingsData,
+		setIsApiKeySet: () => {},
+		setIsEmailPasswordSet: () => {},
 	});
 
 	if (networkError === true) {
@@ -48,16 +58,16 @@ const PageSpeed = () => {
 	if (!isLoading && monitors?.length === 0) {
 		return (
 			<Fallback
-				title="pagespeed monitor"
-				checks={[
-					"Report on the user experience of a page",
-					"Help analyze webpage speed",
-					"Give suggestions on how the page can be improved",
-				]}
+				type="pageSpeed"
+				title={t("pageSpeed.fallback.title")}
+				checks={t("pageSpeed.fallback.checks", { returnObjects: true })}
 				link="/pagespeed/create"
 				isAdmin={isAdmin}
-				// showPageSpeedWarning={isAdmin && !pagespeedApiKey}
-			/>
+			>
+				{isAdmin && settingsData && !settingsData.pagespeedApiKey && (
+					<FallbackPageSpeedWarning settingsData={settingsData} />
+				)}
+			</Fallback>
 		);
 	}
 

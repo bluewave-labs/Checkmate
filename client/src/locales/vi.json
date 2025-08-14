@@ -1,0 +1,838 @@
+{
+	"submit": "",
+	"title": "",
+	"distributedStatusHeaderText": "",
+	"distributedStatusSubHeaderText": "",
+	"settingsDisabled": "",
+	"settingsSuccessSaved": "",
+	"settingsFailedToSave": "",
+	"settingsStatsCleared": "",
+	"settingsFailedToClearStats": "",
+	"settingsFailedToAddDemoMonitors": "",
+	"settingsMonitorsDeleted": "",
+	"settingsFailedToDeleteMonitors": "",
+	"starPromptTitle": "",
+	"starPromptDescription": "",
+	"https": "",
+	"http": "",
+	"monitor": "",
+	"aboutus": "",
+	"now": "",
+	"delete": "",
+	"configure": "",
+	"responseTime": "",
+	"ms": "",
+	"bar": "",
+	"area": "",
+	"country": "",
+	"city": "",
+	"response": "",
+	"monitorStatusUp": "",
+	"monitorStatusDown": "",
+	"webhookSendSuccess": "",
+	"webhookSendError": "",
+	"webhookUnsupportedPlatform": "",
+	"distributedRightCategoryTitle": "",
+	"distributedStatusServerMonitors": "",
+	"distributedStatusServerMonitorsDescription": "",
+	"distributedUptimeCreateSelectURL": "",
+	"distributedUptimeCreateChecks": "",
+	"distributedUptimeCreateChecksDescription": "",
+	"distributedUptimeCreateIncidentNotification": "",
+	"distributedUptimeCreateIncidentDescription": "",
+	"distributedUptimeCreateAdvancedSettings": "",
+	"distributedUptimeDetailsNoMonitorHistory": "",
+	"distributedUptimeDetailsStatusHeaderUptime": "",
+	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
+	"notifications": {
+		"enableNotifications": "",
+		"testNotification": "",
+		"addOrEditNotifications": "",
+		"slack": {
+			"label": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": "",
+			"webhookRequired": ""
+		},
+		"discord": {
+			"label": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": "",
+			"webhookRequired": ""
+		},
+		"telegram": {
+			"label": "",
+			"description": "",
+			"tokenLabel": "",
+			"tokenPlaceholder": "",
+			"chatIdLabel": "",
+			"chatIdPlaceholder": "",
+			"fieldsRequired": ""
+		},
+		"webhook": {
+			"label": "",
+			"description": "",
+			"urlLabel": "",
+			"urlPlaceholder": "",
+			"urlRequired": ""
+		},
+		"testNotificationDevelop": "",
+		"integrationButton": "",
+		"testSuccess": "",
+		"testFailed": "",
+		"unsupportedType": "",
+		"networkError": "",
+		"fallback": {
+			"title": "",
+			"checks": [""]
+		},
+		"createButton": "",
+		"createTitle": "",
+		"create": {
+			"success": "",
+			"failed": ""
+		},
+		"fetch": {
+			"success": "",
+			"failed": ""
+		},
+		"delete": {
+			"success": "",
+			"failed": ""
+		},
+		"edit": {
+			"success": "",
+			"failed": ""
+		},
+		"test": {
+			"success": "",
+			"failed": ""
+		}
+	},
+	"testLocale": "",
+	"add": "",
+	"monitors": "",
+	"distributedUptimeStatusCreateStatusPage": "",
+	"distributedUptimeStatusCreateStatusPageAccess": "",
+	"distributedUptimeStatusCreateStatusPageReady": "",
+	"distributedUptimeStatusBasicInfoHeader": "",
+	"distributedUptimeStatusBasicInfoDescription": "",
+	"distributedUptimeStatusLogoHeader": "",
+	"distributedUptimeStatusLogoDescription": "",
+	"distributedUptimeStatusLogoUploadButton": "",
+	"distributedUptimeStatusStandardMonitorsHeader": "",
+	"distributedUptimeStatusStandardMonitorsDescription": "",
+	"distributedUptimeStatusCreateYour": "",
+	"distributedUptimeStatusEditYour": "",
+	"distributedUptimeStatusPublishedLabel": "",
+	"distributedUptimeStatusCompanyNameLabel": "",
+	"distributedUptimeStatusPageAddressLabel": "",
+	"distributedUptimeStatus30Days": "",
+	"distributedUptimeStatus60Days": "",
+	"distributedUptimeStatus90Days": "",
+	"distributedUptimeStatusPageNotSetUp": "",
+	"distributedUptimeStatusContactAdmin": "",
+	"distributedUptimeStatusPageNotPublic": "",
+	"distributedUptimeStatusPageDeleteDialog": "",
+	"distributedUptimeStatusPageDeleteConfirm": "",
+	"distributedUptimeStatusPageDeleteDescription": "",
+	"distributedUptimeStatusDevices": "",
+	"distributedUptimeStatusUpt": "",
+	"distributedUptimeStatusUptBurned": "",
+	"distributedUptimeStatusUptLogo": "",
+	"incidentsTableNoIncidents": "",
+	"incidentsTablePaginationLabel": "",
+	"incidentsTableMonitorName": "",
+	"incidentsTableStatus": "",
+	"incidentsTableDateTime": "",
+	"incidentsTableStatusCode": "",
+	"incidentsTableMessage": "",
+	"incidentsOptionsHeader": "",
+	"incidentsOptionsHeaderFilterBy": "",
+	"incidentsOptionsHeaderFilterAll": "",
+	"incidentsOptionsHeaderFilterDown": "",
+	"incidentsOptionsHeaderFilterCannotResolve": "",
+	"incidentsOptionsHeaderShow": "",
+	"incidentsOptionsHeaderLastHour": "",
+	"incidentsOptionsHeaderLastDay": "",
+	"incidentsOptionsHeaderLastWeek": "",
+	"incidentsOptionsPlaceholderAllServers": "",
+	"infrastructureCreateYour": "",
+	"infrastructureCreateGeneralSettingsDescription": "",
+	"infrastructureServerRequirement": "",
+	"infrastructureCustomizeAlerts": "",
+	"infrastructureAlertNotificationDescription": "",
+	"infrastructureCreateMonitor": "",
+	"infrastructureProtocol": "",
+	"infrastructureServerUrlLabel": "",
+	"infrastructureDisplayNameLabel": "",
+	"infrastructureAuthorizationSecretLabel": "",
+	"gb": "",
+	"mb": "",
+	"mem": "",
+	"memoryUsage": "",
+	"cpu": "",
+	"cpuUsage": "",
+	"cpuTemperature": "",
+	"diskUsage": "",
+	"used": "",
+	"total": "",
+	"cores": "",
+	"frequency": "",
+	"status": "",
+	"cpuPhysical": "",
+	"cpuLogical": "",
+	"cpuFrequency": "",
+	"avgCpuTemperature": "",
+	"memory": "",
+	"disk": "",
+	"uptime": "",
+	"os": "",
+	"host": "",
+	"actions": "",
+	"integrations": "",
+	"integrationsPrism": "",
+	"integrationsSlack": "",
+	"integrationsSlackInfo": "",
+	"integrationsDiscord": "",
+	"integrationsDiscordInfo": "",
+	"integrationsZapier": "",
+	"integrationsZapierInfo": "",
+	"commonSave": "",
+	"createYour": "",
+	"createMonitor": "",
+	"pause": "",
+	"resume": "",
+	"editing": "",
+	"url": "",
+	"access": "",
+	"timezone": "",
+	"features": "",
+	"administrator": "",
+	"loginHere": "",
+	"displayName": "",
+	"urlMonitor": "",
+	"portToMonitor": "",
+	"websiteMonitoring": "",
+	"websiteMonitoringDescription": "",
+	"pingMonitoring": "",
+	"pingMonitoringDescription": "",
+	"dockerContainerMonitoring": "",
+	"dockerContainerMonitoringDescription": "",
+	"portMonitoring": "",
+	"portMonitoringDescription": "",
+	"createMaintenanceWindow": "",
+	"createMaintenance": "",
+	"editMaintenance": "",
+	"maintenanceWindowName": "",
+	"friendlyNameInput": "",
+	"friendlyNamePlaceholder": "",
+	"maintenanceRepeat": "",
+	"maintenance": "",
+	"duration": "",
+	"addMonitors": "",
+	"window": "",
+	"cancel": "",
+	"message": "",
+	"low": "",
+	"high": "",
+	"statusCode": "",
+	"date&Time": "",
+	"type": "",
+	"statusPageName": "",
+	"publicURL": "",
+	"repeat": "",
+	"edit": "",
+	"createA": "",
+	"remove": "",
+	"maintenanceWindowDescription": "",
+	"startTime": "",
+	"timeZoneInfo": "",
+	"monitorsToApply": "",
+	"nextWindow": "",
+	"notFoundButton": "",
+	"pageSpeedConfigureSettingsDescription": "",
+	"monitorDisplayName": "",
+	"whenNewIncident": "",
+	"notifySMS": "",
+	"notifyEmails": "",
+	"seperateEmails": "",
+	"checkFrequency": "",
+	"chooseGame": "",
+	"matchMethod": "",
+	"expectedValue": "",
+	"deleteDialogTitle": "",
+	"deleteDialogDescription": "",
+	"pageSpeedMonitor": "",
+	"shown": "",
+	"ago": "",
+	"companyName": "",
+	"pageSpeedDetailsPerformanceReport": "",
+	"pageSpeedDetailsPerformanceReportCalculator": "",
+	"checkingEvery": "",
+	"statusPageCreateSettings": "",
+	"basicInformation": "",
+	"statusPageCreateBasicInfoDescription": "",
+	"statusPageCreateSelectTimeZoneDescription": "",
+	"statusPageCreateAppearanceDescription": "",
+	"statusPageCreateSettingsCheckboxLabel": "",
+	"statusPageCreateBasicInfoStatusPageAddress": "",
+	"statusPageCreateTabsContent": "",
+	"statusPageCreateTabsContentDescription": "",
+	"statusPageCreateTabsContentFeaturesDescription": "",
+	"showCharts": "",
+	"showUptimePercentage": "",
+	"removeLogo": "",
+	"statusPageStatus": "",
+	"statusPageStatusContactAdmin": "",
+	"statusPageStatusNotPublic": "",
+	"statusPageStatusNoPage": "",
+	"statusPageStatusServiceStatus": "",
+	"deleteStatusPage": "",
+	"deleteStatusPageConfirm": "",
+	"deleteStatusPageDescription": "",
+	"uptimeCreate": "",
+	"uptimeCreateJsonPath": "",
+	"uptimeCreateJsonPathQuery": "",
+	"maintenanceTableActionMenuDialogTitle": "",
+	"infrastructureEditYour": "",
+	"infrastructureEditMonitor": "",
+	"infrastructureMonitorCreated": "",
+	"infrastructureMonitorUpdated": "",
+	"errorInvalidTypeId": "",
+	"errorInvalidFieldId": "",
+	"inviteNoTokenFound": "",
+	"pageSpeedWarning": "",
+	"pageSpeedLearnMoreLink": "",
+	"pageSpeedAddApiKey": "",
+	"update": "",
+	"invalidFileFormat": "",
+	"invalidFileSize": "",
+	"ClickUpload": "",
+	"DragandDrop": "",
+	"MaxSize": "",
+	"SupportedFormats": "",
+	"FirstName": "",
+	"LastName": "",
+	"EmailDescriptionText": "",
+	"YourPhoto": "",
+	"PhotoDescriptionText": "",
+	"save": "",
+	"DeleteDescriptionText": "",
+	"DeleteAccountWarning": "",
+	"DeleteWarningTitle": "",
+	"bulkImport": {
+		"title": "",
+		"selectFileTips": "",
+		"selectFileDescription": "",
+		"selectFile": "",
+		"parsingFailed": "",
+		"uploadSuccess": "",
+		"validationFailed": "",
+		"noFileSelected": "",
+		"fallbackPage": ""
+	},
+	"DeleteAccountTitle": "",
+	"DeleteAccountButton": "",
+	"publicLink": "",
+	"maskedPageSpeedKeyPlaceholder": "",
+	"reset": "",
+	"ignoreTLSError": "",
+	"tlsErrorIgnored": "",
+	"ignoreTLSErrorDescription": "",
+	"createNew": "",
+	"greeting": {
+		"prepend": "",
+		"append": "",
+		"overview": ""
+	},
+	"roles": {
+		"superAdmin": "",
+		"admin": "",
+		"teamMember": "",
+		"demoUser": ""
+	},
+	"teamPanel": {
+		"teamMembers": "",
+		"filter": {
+			"all": "",
+			"member": ""
+		},
+		"inviteTeamMember": "",
+		"inviteNewTeamMember": "",
+		"inviteDescription": "",
+		"email": "",
+		"selectRole": "",
+		"inviteLink": "",
+		"cancel": "",
+		"noMembers": "",
+		"getToken": "",
+		"emailToken": "",
+		"table": {
+			"name": "",
+			"email": "",
+			"role": "",
+			"created": ""
+		}
+	},
+	"monitorState": {
+		"paused": "",
+		"resumed": "",
+		"active": ""
+	},
+	"menu": {
+		"uptime": "",
+		"pagespeed": "",
+		"infrastructure": "",
+		"incidents": "",
+		"statusPages": "",
+		"maintenance": "",
+		"integrations": "",
+		"settings": "",
+		"support": "",
+		"discussions": "",
+		"docs": "",
+		"changelog": "",
+		"profile": "",
+		"password": "",
+		"team": "",
+		"logOut": "",
+		"notifications": "",
+		"logs": ""
+	},
+	"settingsEmailUser": "",
+	"state": "",
+	"statusBreadCrumbsStatusPages": "",
+	"statusBreadCrumbsDetails": "",
+	"commonSaving": "",
+	"navControls": "",
+	"incidentsPageTitle": "",
+	"passwordPanel": {
+		"passwordChangedSuccess": "",
+		"passwordInputIncorrect": "",
+		"currentPassword": "",
+		"enterCurrentPassword": "",
+		"newPassword": "",
+		"enterNewPassword": "",
+		"confirmNewPassword": "",
+		"passwordRequirements": "",
+		"saving": ""
+	},
+	"emailSent": "",
+	"failedToSendEmail": "",
+	"settingsTestEmailSuccess": "",
+	"settingsTestEmailFailed": "",
+	"settingsTestEmailFailedWithReason": "",
+	"settingsTestEmailUnknownError": "",
+	"statusMsg": {
+		"paused": "",
+		"up": "",
+		"down": "",
+		"pending": ""
+	},
+	"uptimeGeneralInstructions": {
+		"http": "",
+		"ping": "",
+		"docker": "",
+		"port": "",
+		"game": ""
+	},
+	"common": {
+		"appName": "",
+		"monitoringAgentName": "",
+		"buttons": {
+			"toggleTheme": ""
+		},
+		"toasts": {
+			"networkError": "",
+			"checkConnection": "",
+			"unknownError": ""
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "",
+				"back": ""
+			},
+			"inputs": {
+				"email": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"invalid": ""
+					}
+				},
+				"password": {
+					"label": "",
+					"rules": {
+						"length": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"special": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"number": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"uppercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"lowercase": {
+							"beginning": "",
+							"highlighted": ""
+						},
+						"match": {
+							"beginning": "",
+							"highlighted": ""
+						}
+					},
+					"errors": {
+						"empty": "",
+						"length": "",
+						"uppercase": "",
+						"lowercase": "",
+						"number": "",
+						"special": "",
+						"incorrect": ""
+					}
+				},
+				"passwordConfirm": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"different": ""
+					}
+				},
+				"firstName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				},
+				"lastName": {
+					"label": "",
+					"placeholder": "",
+					"errors": {
+						"empty": "",
+						"length": "",
+						"pattern": ""
+					}
+				}
+			},
+			"errors": {
+				"validation": ""
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": ""
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": ""
+			},
+			"links": {
+				"forgotPassword": "",
+				"register": "",
+				"forgotPasswordLink": "",
+				"registerLink": ""
+			},
+			"toasts": {
+				"success": "",
+				"incorrectPassword": ""
+			},
+			"errors": {
+				"password": {
+					"incorrect": ""
+				}
+			}
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": ""
+			},
+			"description": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"gettingStartedButton": {
+				"superAdmin": "",
+				"user": ""
+			},
+			"termsAndPolicies": "",
+			"links": {
+				"login": ""
+			},
+			"toasts": {
+				"success": ""
+			}
+		},
+		"forgotPassword": {
+			"heading": "",
+			"subheadings": {
+				"stepOne": "",
+				"stepTwo": "",
+				"stepThree": "",
+				"stepFour": ""
+			},
+			"buttons": {
+				"openEmail": "",
+				"resetPassword": ""
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "",
+				"resend": ""
+			},
+			"toasts": {
+				"sent": "",
+				"emailNotFound": "",
+				"redirect": "",
+				"success": "",
+				"error": ""
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "",
+				"stillUnreachable": ""
+			},
+			"alertBox": "",
+			"description": "",
+			"retryButton": {
+				"default": "",
+				"processing": ""
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "",
+		"nameSettings": {
+			"title": "",
+			"description": "",
+			"nameLabel": "",
+			"namePlaceholder": ""
+		},
+		"typeSettings": {
+			"title": "",
+			"description": "",
+			"typeLabel": ""
+		},
+		"emailSettings": {
+			"title": "",
+			"description": "",
+			"emailLabel": "",
+			"emailPlaceholder": ""
+		},
+		"slackSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"pagerdutySettings": {
+			"title": "",
+			"description": "",
+			"integrationKeyLabel": "",
+			"integrationKeyPlaceholder": ""
+		},
+		"discordSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		},
+		"webhookSettings": {
+			"title": "",
+			"description": "",
+			"webhookLabel": "",
+			"webhookPlaceholder": ""
+		}
+	},
+	"notificationConfig": {
+		"title": "",
+		"description": ""
+	},
+	"monitorStatus": {
+		"checkingEvery": "",
+		"withCaptureAgent": "",
+		"up": "",
+		"down": "",
+		"paused": ""
+	},
+	"advancedMatching": "",
+	"sendTestNotifications": "",
+	"testNotificationsDisabled": "",
+	"selectAll": "",
+	"showAdminLoginLink": "",
+	"logsPage": {
+		"title": "",
+		"description": "",
+		"tabs": {
+			"queue": "",
+			"logs": ""
+		},
+		"toast": {
+			"fetchLogsSuccess": ""
+		},
+		"logLevelSelect": {
+			"title": "",
+			"values": {
+				"all": "",
+				"info": "",
+				"warn": "",
+				"error": "",
+				"debug": ""
+			}
+		}
+	},
+	"queuePage": {
+		"title": "",
+		"refreshButton": "",
+		"flushButton": "",
+		"jobTable": {
+			"title": "",
+			"idHeader": "",
+			"urlHeader": "",
+			"typeHeader": "",
+			"activeHeader": "",
+			"lockedAtHeader": "",
+			"runCountHeader": "",
+			"failCountHeader": "",
+			"lastRunHeader": "",
+			"lastFinishedAtHeader": "",
+			"lastRunTookHeader": ""
+		},
+		"metricsTable": {
+			"title": "",
+			"metricHeader": "",
+			"valueHeader": ""
+		},
+		"failedJobTable": {
+			"title": "",
+			"monitorIdHeader": "",
+			"monitorUrlHeader": "",
+			"failCountHeader": "",
+			"failedAtHeader": "",
+			"failReasonHeader": ""
+		}
+	},
+	"export": {
+		"title": "",
+		"success": "",
+		"failed": ""
+	},
+	"monitorActions": {
+		"title": "",
+		"import": "",
+		"export": ""
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "",
+			"labelVersion": "",
+			"title": ""
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "",
+			"description": "",
+			"title": ""
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "",
+			"description": "",
+			"descriptionTransport": "",
+			"labelAddress": "",
+			"labelConnectionHost": "",
+			"labelHost": "",
+			"labelIgnoreTLS": "",
+			"labelPassword": "",
+			"labelPasswordSet": "",
+			"labelPool": "",
+			"labelPort": "",
+			"labelRejectUnauthorized": "",
+			"labelRequireTLS": "",
+			"labelSecure": "",
+			"labelTLSServername": "",
+			"labelUser": "",
+			"linkTransport": "",
+			"placeholderUser": "",
+			"title": ""
+		},
+		"pageSpeedSettings": {
+			"description": "",
+			"labelApiKeySet": "",
+			"labelApiKey": "",
+			"title": ""
+		},
+		"saveButtonLabel": "",
+		"statsSettings": {
+			"clearAllStatsButton": "",
+			"clearAllStatsDescription": "",
+			"clearAllStatsDialogConfirm": "",
+			"clearAllStatsDialogDescription": "",
+			"clearAllStatsDialogTitle": "",
+			"description": "",
+			"labelTTL": "",
+			"labelTTLOptional": "",
+			"title": ""
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "",
+			"description": "",
+			"dialogConfirm": "",
+			"dialogDescription": "",
+			"dialogTitle": "",
+			"title": ""
+		},
+		"timezoneSettings": {
+			"description": "",
+			"label": "",
+			"title": ""
+		},
+		"title": "",
+		"uiSettings": {
+			"description": "",
+			"labelLanguage": "",
+			"labelTheme": "",
+			"title": ""
+		},
+		"urlSettings": {
+			"description": "",
+			"label": "",
+			"selectDisabled": "",
+			"selectEnabled": "",
+			"title": ""
+		}
+	}
+}

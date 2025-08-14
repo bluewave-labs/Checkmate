@@ -4,7 +4,6 @@ import {
 	ListItem,
 	Autocomplete,
 	TextField,
-	Stack,
 	Typography,
 	Checkbox,
 } from "@mui/material";
@@ -12,6 +11,7 @@ import { useTheme } from "@emotion/react";
 import SearchIcon from "../../../assets/icons/search.svg?react";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import FieldWrapper from "../FieldWrapper";
 
 /**
  * Search component using Material UI's Autocomplete.
@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
  * @param {Function} props.handleChange - Function to call when the input changes
  * @param {Function} Prop.onBlur - Function to call when the input is blured
  * @param {Object} props.sx - Additional styles to apply to the component
+ * @param {string} props.unit - Label to identify type of options
  * @returns {JSX.Element} The rendered Search component
  */
 
@@ -31,7 +32,6 @@ const SearchAdornment = () => {
 	const theme = useTheme();
 	return (
 		<Box
-			mr={theme.spacing(4)}
 			height={16}
 			sx={{
 				"& svg": {
@@ -49,7 +49,7 @@ const SearchAdornment = () => {
 	);
 };
 
-//TODO keep search state inside of component
+//TODO keep search state inside of component.
 const Search = ({
 	label,
 	id,
@@ -68,6 +68,14 @@ const Search = ({
 	startAdornment,
 	endAdornment,
 	onBlur,
+	//FieldWrapper's props
+	gap,
+	labelMb,
+	labelFontWeight,
+	labelVariant,
+	labelSx = {},
+	unit = "option",
+	maxWidth = "100%",
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -139,15 +147,17 @@ const Search = ({
 			getOptionLabel={(option) => option[filteredBy]}
 			isOptionEqualToValue={(option, value) => option._id === value._id} // Compare by unique identifier
 			renderInput={(params) => (
-				<Stack>
-					<Typography
-						component="h3"
-						fontSize={"var(--env-var-font-size-medium)"}
-						color={theme.palette.primary.contrastTextSecondary}
-						fontWeight={500}
-					>
-						{label}
-					</Typography>
+				<FieldWrapper
+					label={label}
+					labelMb={labelMb}
+					labelVariant={labelVariant}
+					labelFontWeight={labelFontWeight}
+					labelSx={labelSx}
+					gap={gap}
+					sx={{
+						...sx,
+					}}
+				>
 					<TextField
 						{...params}
 						error={Boolean(error)}
@@ -175,7 +185,7 @@ const Search = ({
 							{error}
 						</Typography>
 					)}
-				</Stack>
+				</FieldWrapper>
 			)}
 			filterOptions={(options, { inputValue }) => {
 				if (inputValue.trim() === "" && multiple && isAdorned) {
@@ -186,7 +196,12 @@ const Search = ({
 				);
 
 				if (filtered.length === 0) {
-					return [{ [filteredBy]: "No monitors found", noOptions: true }];
+					return [
+						{
+							[filteredBy]: t("general.noOptionsFound", { unit: unit }),
+							noOptions: true,
+						},
+					];
 				}
 				return filtered;
 			}}
@@ -267,7 +282,9 @@ const Search = ({
 			}}
 			sx={{
 				/* 	height: 34,*/
-				"&.MuiAutocomplete-root .MuiAutocomplete-input": { p: 0 },
+				"&.MuiAutocomplete-root .MuiAutocomplete-input": {
+					padding: `0 ${theme.spacing(5)}`,
+				},
 				...sx,
 			}}
 		/>
@@ -281,7 +298,7 @@ Search.propTypes = {
 	options: PropTypes.array.isRequired,
 	filteredBy: PropTypes.string.isRequired,
 	secondaryLabel: PropTypes.string,
-	value: PropTypes.array,
+	value: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 	inputValue: PropTypes.string.isRequired,
 	handleInputChange: PropTypes.func.isRequired,
 	handleChange: PropTypes.func,
@@ -292,6 +309,7 @@ Search.propTypes = {
 	startAdornment: PropTypes.object,
 	endAdornment: PropTypes.object,
 	onBlur: PropTypes.func,
+	unit: PropTypes.string,
 };
 
 export default Search;

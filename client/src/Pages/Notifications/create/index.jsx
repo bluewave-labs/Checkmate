@@ -65,12 +65,19 @@ const CreateNotifications = () => {
 
 	const [isOpen, setIsOpen] = useState(false);
 
+	const getNotificationTypeValue = (typeId) => {
+		return NOTIFICATION_TYPES.find((type) => type._id === typeId)?.value || "email";
+	};
+
+	const extractError = (error, field) =>
+		error?.details.find((d) => d.path.includes(field))?.message;
+
 	// handlers
 	const onSubmit = (e) => {
 		e.preventDefault();
 		const form = {
 			...notification,
-			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
+			type: getNotificationTypeValue(notification.type),
 		};
 
 		let error = null;
@@ -84,7 +91,7 @@ const CreateNotifications = () => {
 			});
 			console.log(JSON.stringify(newErrors));
 			console.log(JSON.stringify(form, null, 2));
-			createToast({ body: "Please check the form for errors." });
+			createToast({ body: Object.values(newErrors)[0] });
 			setErrors(newErrors);
 			return;
 		}
@@ -98,22 +105,32 @@ const CreateNotifications = () => {
 
 	const onChange = (e) => {
 		const { name, value } = e.target;
+		let rawNotification = { ...notification, [name]: value };
+		let newNotification = {
+			...rawNotification,
+			type: getNotificationTypeValue(rawNotification.type),
+		};
 
-		const newNotification = { ...notification, [name]: value };
+		const { error } = notificationValidation.validate(newNotification, {
+			abortEarly: false,
+		});
+		let validationError = { ...errors };
 
-		const { error } = notificationValidation.extract(name).validate(value);
-		setErrors((prev) => ({
-			...prev,
-			[name]: error?.message,
-		}));
+		if (name === "type") {
+			validationError["type"] = extractError(error, "type");
+			validationError["address"] = extractError(error, "address");
+		} else {
+			validationError[name] = extractError(error, name);
+		}
 
-		setNotification(newNotification);
+		setNotification(rawNotification);
+		setErrors(validationError);
 	};
 
 	const onTestNotification = () => {
 		const form = {
 			...notification,
-			type: NOTIFICATION_TYPES.find((type) => type._id === notification.type).value,
+			type: getNotificationTypeValue(notification.type),
 		};
 
 		let error = null;
@@ -125,7 +142,7 @@ const CreateNotifications = () => {
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
-			createToast({ body: "Please check the form for errors." });
+			createToast({ body: Object.values(newErrors)[0] });
 			setErrors(newErrors);
 			return;
 		}
@@ -139,7 +156,7 @@ const CreateNotifications = () => {
 		}
 	};
 
-	const type = NOTIFICATION_TYPES.find((type) => type._id === notification.type).value;
+	const type = getNotificationTypeValue(notification.type);
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
@@ -153,7 +170,10 @@ const CreateNotifications = () => {
 			>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
+						<Typography
+							component="h2"
+							variant="h2"
+						>
 							{t("createNotifications.nameSettings.title")}
 						</Typography>
 						<Typography component="p">
@@ -174,7 +194,10 @@ const CreateNotifications = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">
+						<Typography
+							component="h2"
+							variant="h2"
+						>
 							{t("createNotifications.typeSettings.title")}
 						</Typography>
 						<Typography component="p">
@@ -193,7 +216,12 @@ const CreateNotifications = () => {
 				</ConfigBox>
 				<ConfigBox>
 					<Box>
-						<Typography component="h2">{t(TITLE_MAP[type])}</Typography>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t(TITLE_MAP[type])}
+						</Typography>
 						<Typography component="p">{t(DESCRIPTION_MAP[type])}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>

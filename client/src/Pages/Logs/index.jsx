@@ -4,6 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Queue from "./Queue";
 import LogsComponent from "./Logs";
+import Diagnostics from "./Diagnostics";
 
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,7 @@ const Logs = () => {
 	const theme = useTheme();
 
 	// Local state
-	const [value, setValue] = useState(0);
+	const [value, setValue] = useState(2);
 
 	// Handlers
 	const handleChange = (event, newValue) => {
@@ -28,12 +29,20 @@ const Logs = () => {
 			<Tabs
 				value={value}
 				onChange={handleChange}
+				sx={{
+					position: "sticky",
+					top: theme.spacing(0),
+					backdropFilter: "blur(10px)",
+					zIndex: theme.zIndex.appBar,
+				}}
 			>
 				<Tab label={t("logsPage.tabs.logs")} />
 				<Tab label={t("logsPage.tabs.queue")} />
+				<Tab label={t("logsPage.tabs.diagnostics")} />
 			</Tabs>
 			{value === 0 && <LogsComponent />}
 			{value === 1 && <Queue />}
+			{value === 2 && <Diagnostics />}
 		</Stack>
 	);
 };

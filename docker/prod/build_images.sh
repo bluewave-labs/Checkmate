@@ -8,7 +8,6 @@ cd ../../
 declare -A services=(
   ["uptime_client"]="./docker/prod/client.Dockerfile"
   ["uptime_database_mongo"]="./docker/prod/mongoDB.Dockerfile"
-  ["uptime_redis"]="./docker/prod/redis.Dockerfile"
   ["uptime_server"]="./docker/prod/server.Dockerfile"
 )
 

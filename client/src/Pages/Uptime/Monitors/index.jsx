@@ -34,7 +34,7 @@ import {
 } from "../../../Hooks/monitorHooks";
 import { useTranslation } from "react-i18next";
 
-const TYPES = ["http", "ping", "docker", "port"];
+const TYPES = ["http", "ping", "docker", "port", "game"];
 const CreateMonitorButton = ({ shouldRender }) => {
 	// Utils
 	const navigate = useNavigate();
@@ -174,14 +174,9 @@ const UptimeMonitors = () => {
 	) {
 		return (
 			<Fallback
-				vowelStart={true}
-				title="uptime monitor"
-				checks={[
-					"Check if websites or servers are online & responsive",
-					"Alert teams about downtime or performance issues",
-					"Monitor HTTP endpoints, pings, containers & ports",
-					"Track historical uptime and reliability trends",
-				]}
+				type="uptimeMonitor"
+				title={t("uptimeMonitor.fallback.title")}
+				checks={t("uptimeMonitor.fallback.checks", { returnObjects: true })}
 				link="/uptime/create"
 				isAdmin={isAdmin}
 			/>

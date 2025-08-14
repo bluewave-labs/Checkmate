@@ -8,7 +8,6 @@
 	"settingsFailedToSave": "Falha ao salvar as configurações",
 	"settingsStatsCleared": "Estatísticas limpas com sucesso",
 	"settingsFailedToClearStats": "Falha ao limpar estatísticas",
-	"settingsFailedToAddDemoMonitors": "Falha ao adicionar monitores de demonstração",
 	"settingsMonitorsDeleted": "Todos os monitores foram excluídos com sucesso",
 	"settingsFailedToDeleteMonitors": "Falha ao excluir todos os monitores",
 	"starPromptTitle": "Star Checkmate",
@@ -86,7 +85,8 @@
 		"networkError": "Ocorreu um erro de rede",
 		"fallback": {
 			"title": "",
-			"checks": [""]
+			"checks": [""],
+			"actionButton": ""
 		},
 		"createButton": "",
 		"createTitle": "",
@@ -260,6 +260,7 @@
 	"notifyEmails": "Também notificar por e-mail para vários endereços (em breve)",
 	"seperateEmails": "Você pode separar vários e-mails com uma vírgula",
 	"checkFrequency": "Verifique a frequência",
+	"chooseGame": "",
 	"matchMethod": "Método de correspondência",
 	"expectedValue": "Valor esperado",
 	"deleteDialogTitle": "Você realmente deseja excluir este monitor?",
@@ -331,7 +332,9 @@
 		"uploadSuccess": "Monitores criados com sucesso!",
 		"validationFailed": "Falha na validação",
 		"noFileSelected": "Nenhum arquivo selecionado",
-		"fallbackPage": "Importe um arquivo para enviar uma lista de servidores em massa"
+		"fallbackPage": "Importe um arquivo para enviar uma lista de servidores em massa",
+		"invalidFileType": "",
+		"uploadFailed": ""
 	},
 	"DeleteAccountTitle": "Remover conta",
 	"DeleteAccountButton": "Remover conta",
@@ -432,47 +435,48 @@
 		"pending": "Pendente..."
 	},
 	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": ""
+		"http": "Insira a URL ou IP para monitorar (ex. https://exemplo.com.br/ ou 192.168.1.100) e adicione uma descrição que aparecerá na dashboard.",
+		"ping": "Insira o endereço IP ou nome de domínio para ping (ex. 192.168.1.100 ou exemplo.com.br) e adicione uma descrição que aparecerá na dashboard.",
+		"docker": "Insira o Docker Id do seu container. Docker Ids devem ser todos os 64 caracteres. Você pode executar docker inspect <short_id> para descobrir o Id completo.",
+		"port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard.",
+		"game": ""
 	},
 	"common": {
-		"appName": "",
-		"monitoringAgentName": "",
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
 		"buttons": {
-			"toggleTheme": ""
+			"toggleTheme": "Trocar claro e escuro"
 		},
 		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
+			"networkError": "Erro de rede",
+			"checkConnection": "Por favor, verifique a conexão",
+			"unknownError": "Erro desconhecido"
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "",
-				"back": ""
+				"continue": "Continuar",
+				"back": "Voltar"
 			},
 			"inputs": {
 				"email": {
-					"label": "",
-					"placeholder": "",
+					"label": "Email",
+					"placeholder": "joao.silva@dominio.com.br",
 					"errors": {
-						"empty": "",
-						"invalid": ""
+						"empty": "Para continuar, insira seu endereço de email",
+						"invalid": "Por favor, confirme o endereço de email informado"
 					}
 				},
 				"password": {
-					"label": "",
+					"label": "Senha",
 					"rules": {
 						"length": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Deve ter no mínimo",
+							"highlighted": "8 caracteres de comprimento"
 						},
 						"special": {
-							"beginning": "",
+							"beginning": "Deve conter pelo menos",
 							"highlighted": ""
 						},
 						"number": {
@@ -493,9 +497,9 @@
 						}
 					},
 					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
+						"empty": "Por favor, digite sua senha",
+						"length": "A senha deve ter pelo menos 8 caracteres",
+						"uppercase": "A senha deve conter pelo menos 1 letra maiúscula",
 						"lowercase": "",
 						"number": "",
 						"special": "",
@@ -511,50 +515,55 @@
 					}
 				},
 				"firstName": {
-					"label": "",
-					"placeholder": "",
+					"label": "Nome",
+					"placeholder": "João",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Por favor, insira seu nome",
+						"length": "Nome deve ter menos de 50 caracteres",
+						"pattern": "Nome deve conter apenas letras, espaços, apóstrofos ou hífens"
 					}
 				},
 				"lastName": {
-					"label": "",
-					"placeholder": "",
+					"label": "Sobrenome",
+					"placeholder": "Silva",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Por favor, insira seu sobrenome",
+						"length": "Sobrenome deve ter menos de 50 caracteres",
+						"pattern": "Sobrenome deve conter apenas letras, espaços, apóstrofos ou hífens"
 					}
 				}
 			},
 			"errors": {
-				"validation": ""
+				"validation": "Erro de validação de dados."
 			},
 			"fields": {
 				"password": {
 					"errors": {
 						"incorrect": ""
 					}
+				},
+				"role": {
+					"errors": {
+						"min": ""
+					}
 				}
 			}
 		},
 		"login": {
-			"heading": "",
+			"heading": "Entrar",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
+				"stepOne": "Insira seu email",
+				"stepTwo": "Insira sua senha"
 			},
 			"links": {
-				"forgotPassword": "",
-				"register": "",
+				"forgotPassword": "Esqueceu sua senha?",
+				"register": "Não tem uma conta?",
 				"forgotPasswordLink": "",
 				"registerLink": ""
 			},
 			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
+				"success": "Bem-vindo de volta! Você está autenticado.",
+				"incorrectPassword": "Senha incorreta"
 			},
 			"errors": {
 				"password": {
@@ -564,8 +573,8 @@
 		},
 		"registration": {
 			"heading": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Crie um usuário administrador",
+				"user": "Se inscrever"
 			},
 			"subheadings": {
 				"stepOne": "",
@@ -604,11 +613,11 @@
 				"passwordKey": "",
 				"email": "",
 				"lock": "",
-				"passwordConfirm": ""
+				"passwordConfirm": "Ícone de confirmação de senha"
 			},
 			"links": {
-				"login": "",
-				"resend": ""
+				"login": "Voltar para o <a>login</a>",
+				"resend": "Não recebeu o email? <a>Clique para reenviar</a>"
 			},
 			"toasts": {
 				"sent": "",
@@ -675,7 +684,10 @@
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
-		}
+		},
+		"testNotification": "",
+		"dialogDeleteTitle": "",
+		"dialogDeleteConfirm": ""
 	},
 	"notificationConfig": {
 		"title": "",
@@ -690,7 +702,6 @@
 	},
 	"advancedMatching": "",
 	"sendTestNotifications": "",
-	"testNotificationsDisabled": "",
 	"selectAll": "",
 	"showAdminLoginLink": "",
 	"logsPage": {
@@ -698,7 +709,8 @@
 		"description": "",
 		"tabs": {
 			"queue": "",
-			"logs": ""
+			"logs": "",
+			"diagnostics": ""
 		},
 		"toast": {
 			"fetchLogsSuccess": ""
@@ -753,7 +765,10 @@
 	"monitorActions": {
 		"title": "",
 		"import": "",
-		"export": ""
+		"export": "",
+		"deleteSuccess": "",
+		"deleteFailed": "",
+		"details": ""
 	},
 	"settingsPage": {
 		"aboutSettings": {
@@ -785,7 +800,8 @@
 			"labelUser": "",
 			"linkTransport": "",
 			"placeholderUser": "",
-			"title": ""
+			"title": "",
+			"toastEmailRequiredFieldsError": ""
 		},
 		"pageSpeedSettings": {
 			"description": "",
@@ -832,5 +848,124 @@
 			"selectEnabled": "",
 			"title": ""
 		}
-	}
+	},
+	"statusPageCreate": {
+		"buttonSave": ""
+	},
+	"incidentsOptionsHeaderFilterResolved": "",
+	"settingsSave": "",
+	"statusPageCreateAppearanceTitle": "",
+	"confirmPassword": "",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "",
+		"successAddDemoMonitors": ""
+	},
+	"settingsAppearance": "",
+	"settingsDisplayTimezone": "",
+	"settingsGeneralSettings": "",
+	"incidentsOptionsHeaderTotalIncidents": "",
+	"statusPage": {
+		"deleteSuccess": "",
+		"deleteFailed": "",
+		"createSuccess": "",
+		"updateSuccess": "",
+		"generalSettings": "",
+		"contents": "",
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"testNotificationsDisabled": "",
+	"incidentsTableResolvedAt": "",
+	"incidentsTableActionResolve": "",
+	"checkHooks": {
+		"failureResolveOne": "",
+		"failureResolveAll": "",
+		"failureResolveMonitor": ""
+	},
+	"checkFormError": "",
+	"diagnosticsPage": {
+		"diagnosticDescription": "",
+		"statsDescription": "",
+		"gauges": {
+			"heapAllocationTitle": "",
+			"heapAllocationSubtitle": "",
+			"heapUsageTitle": "",
+			"heapUsageSubtitle": "",
+			"heapUtilizationTitle": "",
+			"heapUtilizationSubtitle": "",
+			"instantCpuUsageTitle": "",
+			"instantCpuUsageSubtitle": ""
+		},
+		"stats": {
+			"eventLoopDelayTitle": "",
+			"uptimeTitle": "",
+			"usedHeapSizeTitle": "",
+			"totalHeapSizeTitle": "",
+			"osMemoryLimitTitle": ""
+		}
+	},
+	"pageSpeedLighthouseAPI": "",
+	"time": {
+		"threeMinutes": "",
+		"fiveMinutes": "",
+		"tenMinutes": "",
+		"twentyMinutes": "",
+		"oneHour": "",
+		"oneDay": "",
+		"oneWeek": ""
+	},
+	"general": {
+		"noOptionsFound": ""
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "",
+			"firstName": "",
+			"lastName": "",
+			"role": "",
+			"save": ""
+		},
+		"table": {
+			"actionHeader": "",
+			"roleHeader": ""
+		},
+		"title": "",
+		"toast": {
+			"successUserUpdate": "",
+			"validationErrors": ""
+		}
+	},
+	"incidentsPageActionResolveMonitor": "",
+	"incidentsPageActionResolveAll": ""
 }

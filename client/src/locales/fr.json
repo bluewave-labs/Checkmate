@@ -1,79 +1,78 @@
 {
 	"submit": "Envoyer",
 	"title": "Titre",
-	"distributedStatusHeaderText": "",
-	"distributedStatusSubHeaderText": "",
+	"distributedStatusHeaderText": "Couverture en temps réel, sur des appareils en temps réel",
+	"distributedStatusSubHeaderText": "Alimenté par des millions d'appareils à travers le monde, consultez les performances du système par région, pays ou ville",
 	"settingsDisabled": "Désactivé",
-	"settingsSuccessSaved": "",
-	"settingsFailedToSave": "",
-	"settingsStatsCleared": "",
-	"settingsFailedToClearStats": "",
-	"settingsFailedToAddDemoMonitors": "",
-	"settingsMonitorsDeleted": "",
-	"settingsFailedToDeleteMonitors": "",
-	"starPromptTitle": "",
-	"starPromptDescription": "",
-	"https": "",
-	"http": "",
-	"monitor": "",
+	"settingsSuccessSaved": "Les paramètres ont bien été sauvegardés",
+	"settingsFailedToSave": "Les paramètres n'ont pas pu être sauvegardés",
+	"settingsStatsCleared": "Les statistiques ont été réinitialisées avec succès",
+	"settingsFailedToClearStats": "Les statistiques n'ont pas pu être réinitialisées",
+	"settingsMonitorsDeleted": "Tous les moniteurs ont bien été supprimés",
+	"settingsFailedToDeleteMonitors": "La suppression de tous les moniteurs a échoué",
+	"starPromptTitle": "Ajouter Checkmate aux favoris",
+	"starPromptDescription": "Voir les dernières versions et aider la communauté à grandir sur Github",
+	"https": "HTTPS",
+	"http": "HTTP",
+	"monitor": "Moniteur",
 	"aboutus": "A propos de nous",
-	"now": "",
+	"now": "Maintenant",
 	"delete": "Supprimer",
-	"configure": "",
-	"responseTime": "",
-	"ms": "",
-	"bar": "",
+	"configure": "Configurer",
+	"responseTime": "Temps de réponse",
+	"ms": "ms",
+	"bar": "Graphique",
 	"area": "Zone",
 	"country": "PAYS",
 	"city": "VILLE",
-	"response": "",
-	"monitorStatusUp": "",
-	"monitorStatusDown": "",
-	"webhookSendSuccess": "",
-	"webhookSendError": "",
-	"webhookUnsupportedPlatform": "",
+	"response": "Réponse",
+	"monitorStatusUp": "Moniteur {name} ({url}) est désormais EN LIGNE et répond aux requêtes",
+	"monitorStatusDown": "Moniteur {name} ({url}) est désormais HORS LIGNE et ne répond plus",
+	"webhookSendSuccess": "La notification webhook a bien été envoyée",
+	"webhookSendError": "Une erreur s'est produite lors de l'envoi de la notification webhook sur {platform}",
+	"webhookUnsupportedPlatform": "La plateforme {platform} n'est pas supportée actuellement",
 	"distributedRightCategoryTitle": "Moniteur",
-	"distributedStatusServerMonitors": "",
-	"distributedStatusServerMonitorsDescription": "",
-	"distributedUptimeCreateSelectURL": "",
-	"distributedUptimeCreateChecks": "",
-	"distributedUptimeCreateChecksDescription": "",
+	"distributedStatusServerMonitors": "Monitoring des serveurs",
+	"distributedStatusServerMonitorsDescription": "Statut des moniteurs relatifs aux serveurs",
+	"distributedUptimeCreateSelectURL": "Ici vous pouvez sélectionner l'URL de l'hôte et le type de moniteur",
+	"distributedUptimeCreateChecks": "Vérifications à effectuer",
+	"distributedUptimeCreateChecksDescription": "Vous pourrez ajouter ou supprimer des vérifications après l'ajout de votre site",
 	"distributedUptimeCreateIncidentNotification": "Notifications d'incidents",
-	"distributedUptimeCreateIncidentDescription": "",
+	"distributedUptimeCreateIncidentDescription": "Quand il y a un incident, notifier les utilisateurs",
 	"distributedUptimeCreateAdvancedSettings": "Paramètres avancés",
-	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsStatusHeaderUptime": "",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
+	"distributedUptimeDetailsNoMonitorHistory": "Il n'y a pas encore d'historique de vérification pour ce moniteur",
+	"distributedUptimeDetailsStatusHeaderUptime": "Temps en ligne :",
+	"distributedUptimeDetailsStatusHeaderLastUpdate": "Dernière mise à jour",
 	"notifications": {
-		"enableNotifications": "",
+		"enableNotifications": "Activer les notifications sur {{platform}}",
 		"testNotification": "Notification de test",
 		"addOrEditNotifications": "Ajouter ou éditer des notifications",
 		"slack": {
-			"label": "",
-			"description": "",
+			"label": "Slack",
+			"description": "Pour activer les notifications Slack, créez une application Slack et activez les webhooks entrants. Ensuite, indiquer l'URL du webhook ici.",
 			"webhookLabel": "URL du webhook",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
+			"webhookPlaceholder": "https://hooks.slack.com/services/...",
+			"webhookRequired": "L'URL du webhook Slack est requise"
 		},
 		"discord": {
-			"label": "",
-			"description": "",
+			"label": "Discord",
+			"description": "Pour envoyer des données sur un canal Discord depuis Checkmate, utilisez l'intégration Webhook Discord.",
 			"webhookLabel": "URL du webhook Discord",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
+			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
+			"webhookRequired": "L'URL du webhook Discord est requise"
 		},
 		"telegram": {
-			"label": "",
-			"description": "",
-			"tokenLabel": "",
-			"tokenPlaceholder": "",
+			"label": "Telegram",
+			"description": "Pour activer les notifications Telegram, créez un bot Telegram en utilisant BotFather, le robot officiel pour créer et gérer ses propres robots. Indiquez ensuite votre clé API et l'ID du chat ici.",
+			"tokenLabel": "Token du robot",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
 			"chatIdLabel": "Votre Chat ID",
 			"chatIdPlaceholder": "-1001234567890",
-			"fieldsRequired": ""
+			"fieldsRequired": "Le token Telegram et l'ID du chat sont requis."
 		},
 		"webhook": {
-			"label": "",
-			"description": "",
+			"label": "Webhooks",
+			"description": "Vous pouvez indiquer un webhook personnalisé pour recevoir des notifications lorsqu'un incident se produit.",
 			"urlLabel": "URL du webhook",
 			"urlPlaceholder": "https://votre-serveur.fr/webhook",
 			"urlRequired": "L'URL du webhook est nécessaire"
@@ -82,115 +81,120 @@
 		"integrationButton": "Intégration de notification",
 		"testSuccess": "La notification de test a été envoyée avec succès !",
 		"testFailed": "Échec de l'envoi de la notification de test",
-		"unsupportedType": "",
-		"networkError": "",
+		"unsupportedType": "Type de notification non supporté",
+		"networkError": "Une erreur réseau s'est produite",
 		"fallback": {
-			"title": "",
-			"checks": [""]
+			"title": "canal de notification",
+			"checks": [
+				"Alertez les équipes en cas de temps d'arrêt ou de problèmes de performances",
+				"Informez les ingénieurs lorsque des incidents se produisent",
+				"Tenez les administrateurs informés des changements apportés au système"
+			],
+			"actionButton": ""
 		},
-		"createButton": "",
-		"createTitle": "",
+		"createButton": "Créer un canal de notification",
+		"createTitle": "Canal de notification",
 		"create": {
-			"success": "",
-			"failed": ""
+			"success": "La notification a été créée avec succès",
+			"failed": "Une erreur s'est produite lors de la création de la notification"
 		},
 		"fetch": {
-			"success": "",
-			"failed": ""
+			"success": "Les notifications ont été récupérées avec succès",
+			"failed": "Une erreur s'est produite lors de la récupération des notifications"
 		},
 		"delete": {
-			"success": "",
-			"failed": ""
+			"success": "Notification supprimée avec succès",
+			"failed": "Une erreur s'est produite lors de la suppression de la notification"
 		},
 		"edit": {
-			"success": "",
-			"failed": ""
+			"success": "Notification modifiée avec succès",
+			"failed": "Une erreur s'est produite lors de la modification de la notification"
 		},
 		"test": {
-			"success": "",
-			"failed": ""
+			"success": "Notification de test envoyée avec succès",
+			"failed": "Une erreur s'est produite lors de l'envoi de la notification de test"
 		}
 	},
-	"testLocale": "",
+	"testLocale": "testLocale",
 	"add": "Ajouter",
-	"monitors": "",
+	"monitors": "moniteurs",
 	"distributedUptimeStatusCreateStatusPage": "page de statut",
 	"distributedUptimeStatusCreateStatusPageAccess": "Accès",
-	"distributedUptimeStatusCreateStatusPageReady": "",
-	"distributedUptimeStatusBasicInfoHeader": "",
-	"distributedUptimeStatusBasicInfoDescription": "",
+	"distributedUptimeStatusCreateStatusPageReady": "Si votre page de statut est prête, vous pouvez l'indiquer en \"Publiée\".",
+	"distributedUptimeStatusBasicInfoHeader": "Informations de base",
+	"distributedUptimeStatusBasicInfoDescription": "Définir le nom de la société et le sous domaine sur lequel votre page de statut pointe.",
 	"distributedUptimeStatusLogoHeader": "Logo",
-	"distributedUptimeStatusLogoDescription": "",
+	"distributedUptimeStatusLogoDescription": "Ajoutez un logo pour votre page de statut",
 	"distributedUptimeStatusLogoUploadButton": "Téléverser un logo",
-	"distributedUptimeStatusStandardMonitorsHeader": "",
-	"distributedUptimeStatusStandardMonitorsDescription": "",
-	"distributedUptimeStatusCreateYour": "",
-	"distributedUptimeStatusEditYour": "",
-	"distributedUptimeStatusPublishedLabel": "",
+	"distributedUptimeStatusStandardMonitorsHeader": "Moniteurs standards",
+	"distributedUptimeStatusStandardMonitorsDescription": "Ajouter un moniteur standard à votre page de statut",
+	"distributedUptimeStatusCreateYour": "Créer votre",
+	"distributedUptimeStatusEditYour": "Editer votre",
+	"distributedUptimeStatusPublishedLabel": "Publiée et visible publiquement",
 	"distributedUptimeStatusCompanyNameLabel": "Nom de l'entreprise",
 	"distributedUptimeStatusPageAddressLabel": "Adresse de votre page de statut",
 	"distributedUptimeStatus30Days": "30 jours",
 	"distributedUptimeStatus60Days": "60 jours",
 	"distributedUptimeStatus90Days": "90 jours",
-	"distributedUptimeStatusPageNotSetUp": "",
+	"distributedUptimeStatusPageNotSetUp": "Aucune page de statut n'est mise en place.",
 	"distributedUptimeStatusContactAdmin": "Veuillez contacter votre administrateur",
 	"distributedUptimeStatusPageNotPublic": "Cette page de statut n'est pas publique.",
 	"distributedUptimeStatusPageDeleteDialog": "Voulez-vous supprimer cette page de statut ?",
 	"distributedUptimeStatusPageDeleteConfirm": "Oui, supprimer la page de statut",
 	"distributedUptimeStatusPageDeleteDescription": "Supprimer votre page de statut est irréversible.",
-	"distributedUptimeStatusDevices": "",
-	"distributedUptimeStatusUpt": "",
+	"distributedUptimeStatusDevices": "Équipements",
+	"distributedUptimeStatusUpt": "UPT",
 	"distributedUptimeStatusUptBurned": "",
-	"distributedUptimeStatusUptLogo": "",
-	"incidentsTableNoIncidents": "",
+	"distributedUptimeStatusUptLogo": "Logo Upt",
+	"incidentsTableNoIncidents": "Aucun incident enregistrée",
 	"incidentsTablePaginationLabel": "incidents",
-	"incidentsTableMonitorName": "",
-	"incidentsTableStatus": "",
+	"incidentsTableMonitorName": "Nom du moniteur",
+	"incidentsTableStatus": "Statut",
 	"incidentsTableDateTime": "Date et heure",
-	"incidentsTableStatusCode": "",
+	"incidentsTableStatusCode": "Code de statut",
 	"incidentsTableMessage": "Message",
-	"incidentsOptionsHeader": "",
-	"incidentsOptionsHeaderFilterBy": "",
-	"incidentsOptionsHeaderFilterAll": "",
-	"incidentsOptionsHeaderFilterDown": "",
-	"incidentsOptionsHeaderFilterCannotResolve": "",
-	"incidentsOptionsHeaderShow": "",
+	"incidentsOptionsHeader": "Incidents pour :",
+	"incidentsOptionsHeaderFilterBy": "Filtrer par :",
+	"incidentsOptionsHeaderFilterAll": "Tout",
+	"incidentsOptionsHeaderFilterDown": "Hors ligne",
+	"incidentsOptionsHeaderFilterCannotResolve": "Impossible de résoudre",
+	"incidentsOptionsHeaderShow": "Voir:",
 	"incidentsOptionsHeaderLastHour": "Dernière heure",
 	"incidentsOptionsHeaderLastDay": "Dernier jour",
 	"incidentsOptionsHeaderLastWeek": "Dernière semaine",
-	"incidentsOptionsPlaceholderAllServers": "",
-	"infrastructureCreateYour": "",
-	"infrastructureCreateGeneralSettingsDescription": "",
-	"infrastructureServerRequirement": "",
-	"infrastructureCustomizeAlerts": "",
-	"infrastructureAlertNotificationDescription": "",
-	"infrastructureCreateMonitor": "",
+	"incidentsOptionsPlaceholderAllServers": "Tous les serveurs",
+	"infrastructureCreateYour": "Créer votre",
+	"infrastructureCreateGeneralSettingsDescription": "Ici, vous pouvez sélectionner l'URL de l'hôte, ainsi que le nom familier et le secret d'autorisation pour vous connecter à l'agent sur le serveur.",
+	"infrastructureServerRequirement": "Le serveur que vous surveillez doit exécuter le",
+	"infrastructureCustomizeAlerts": "Personnaliser les alertes",
+	"infrastructureAlertNotificationDescription": "Envoyer une notification aux utilisateurs lorsque le seuil dépasse un pourcentage spécifié.",
+	"infrastructureCreateMonitor": "Créer un moniteur d'infrastructure",
 	"infrastructureProtocol": "Protocole",
 	"infrastructureServerUrlLabel": "URL du serveur",
-	"infrastructureDisplayNameLabel": "",
-	"infrastructureAuthorizationSecretLabel": "",
-	"gb": "",
-	"mb": "",
-	"mem": "",
-	"memoryUsage": "",
+	"infrastructureDisplayNameLabel": "Nom d'affichage",
+	"infrastructureAuthorizationSecretLabel": "Secret d'autorisation",
+	"gb": "GB",
+	"mb": "MB",
+	"mem": "Mém",
+	"memoryUsage": "Utilisation de la mémoire",
 	"cpu": "CPU",
-	"cpuUsage": "",
-	"cpuTemperature": "",
+	"cpuUsage": "Utilisation CPU",
+	"cpuTemperature": "Température CPU",
 	"diskUsage": "Utilisation du disque",
-	"used": "",
-	"total": "",
-	"cores": "",
-	"frequency": "",
-	"status": "",
-	"cpuPhysical": "",
-	"cpuLogical": "",
+	"used": "Utilisé",
+	"total": "Total",
+	"cores": "Coeurs",
+	"frequency": "Fréquence",
+	"status": "Statut",
+	"cpuPhysical": "CPU (Physique)",
+	"cpuLogical": "CPU (Logique)",
 	"cpuFrequency": "Fréquence CPU",
 	"avgCpuTemperature": "Température moyenne du CPU",
-	"memory": "",
+	"memory": "Mémoire",
 	"disk": "Disque",
-	"uptime": "",
-	"os": "",
-	"host": "",
+	"uptime": "Temps en ligne",
+	"os": "OS",
+	"host": "Hôte",
 	"actions": "Actions",
 	"integrations": "Intégrations",
 	"integrationsPrism": "Connecter Prism à votre service préféré.",
@@ -202,211 +206,214 @@
 	"integrationsZapierInfo": "Envoyer tous les incidents à Zapier",
 	"commonSave": "Sauvegarder",
 	"createYour": "Créez votre",
-	"createMonitor": "",
-	"pause": "",
-	"resume": "",
-	"editing": "",
+	"createMonitor": "Ajouter un moniteur",
+	"pause": "Mettre en pause",
+	"resume": "Reprendre",
+	"editing": "Edition...",
 	"url": "URL",
 	"access": "Accès",
 	"timezone": "Fuseau horaire",
-	"features": "",
+	"features": "Fonctionnalités",
 	"administrator": "Administrateur ?",
-	"loginHere": "",
+	"loginHere": "Connexion",
 	"displayName": "Nom d'affichage",
 	"urlMonitor": "URL à suivre",
-	"portToMonitor": "",
-	"websiteMonitoring": "",
-	"websiteMonitoringDescription": "",
-	"pingMonitoring": "",
-	"pingMonitoringDescription": "",
-	"dockerContainerMonitoring": "",
-	"dockerContainerMonitoringDescription": "",
-	"portMonitoring": "",
-	"portMonitoringDescription": "",
-	"createMaintenanceWindow": "",
+	"portToMonitor": "Port du moniteur",
+	"websiteMonitoring": "Monitoring d'un site internet",
+	"websiteMonitoringDescription": "Utiliser HTTP(s) pour vérifier votre site ou votre API.",
+	"pingMonitoring": "Monitoring par ping",
+	"pingMonitoringDescription": "Vérifier si le serveur est disponible ou pas",
+	"dockerContainerMonitoring": "Monitoring d'un container Docker",
+	"dockerContainerMonitoringDescription": "Vérifier si votre container Docker fonctionne ou pas.",
+	"portMonitoring": "Monitoring d'un port",
+	"portMonitoringDescription": "Vérifier si votre port est ouvert ou non.",
+	"createMaintenanceWindow": "Créer une fenêtre de maintenance",
 	"createMaintenance": "Créer une maintenance",
-	"editMaintenance": "",
-	"maintenanceWindowName": "",
-	"friendlyNameInput": "",
-	"friendlyNamePlaceholder": "",
-	"maintenanceRepeat": "",
-	"maintenance": "",
-	"duration": "",
+	"editMaintenance": "Modifier la maintenance",
+	"maintenanceWindowName": "Nom de la fenêtre de maintenance",
+	"friendlyNameInput": "Nom",
+	"friendlyNamePlaceholder": "Maintenance à __ : __ pendant ___ minutes",
+	"maintenanceRepeat": "Répéter la maintenance",
+	"maintenance": "maintenance",
+	"duration": "Durée",
 	"addMonitors": "Ajouter des moniteurs",
-	"window": "",
+	"window": "fenêtre",
 	"cancel": "Annuler",
-	"message": "",
-	"low": "",
-	"high": "",
-	"statusCode": "",
+	"message": "Message",
+	"low": "bas",
+	"high": "haut",
+	"statusCode": "Code de statut",
 	"date&Time": "Date et heure",
-	"type": "",
-	"statusPageName": "",
-	"publicURL": "",
-	"repeat": "",
-	"edit": "",
+	"type": "Type",
+	"statusPageName": "Nom de la page de statut",
+	"publicURL": "URL publique",
+	"repeat": "Répéter",
+	"edit": "Modifier",
 	"createA": "Créer un",
-	"remove": "",
-	"maintenanceWindowDescription": "",
-	"startTime": "",
-	"timeZoneInfo": "",
-	"monitorsToApply": "",
-	"nextWindow": "",
-	"notFoundButton": "",
-	"pageSpeedConfigureSettingsDescription": "",
-	"monitorDisplayName": "",
+	"remove": "Supprimer",
+	"maintenanceWindowDescription": "Vos pings ne seront pas envoyés pendant cette fenêtre de temps.",
+	"startTime": "Date de démarrage",
+	"timeZoneInfo": "Toutes les dates et heures sont dans le fuseau GMT+0",
+	"monitorsToApply": "Moniteurs sur lesquels appliquer la fenêtre de maintenance",
+	"nextWindow": "Prochaine fenêtre de maintenance",
+	"notFoundButton": "Aller au tableau de bord principal",
+	"pageSpeedConfigureSettingsDescription": "Vous pouvez sélectionner l'URL de hôte et le type de moniteur.",
+	"monitorDisplayName": "Nom du moniteur",
 	"whenNewIncident": "Lors d'un nouvel incident,",
-	"notifySMS": "",
-	"notifyEmails": "",
-	"seperateEmails": "",
+	"notifySMS": "Notification par SMS (bientôt)",
+	"notifyEmails": "Envoyer également une notification par email à plusieurs adresses (bientôt).",
+	"seperateEmails": "Vous pouvez ajouter plusieurs adresses emails en les séparant par une virgule",
 	"checkFrequency": "Vérifier la fréquence",
-	"matchMethod": "",
-	"expectedValue": "",
-	"deleteDialogTitle": "",
-	"deleteDialogDescription": "",
-	"pageSpeedMonitor": "",
-	"shown": "",
+	"chooseGame": "",
+	"matchMethod": "Méthode de rapprochement",
+	"expectedValue": "Valeur attendue",
+	"deleteDialogTitle": "Voulez-vous vraiment supprimer ce moniteur ?",
+	"deleteDialogDescription": "Une fois supprimé, le moniteur ne peut pas être récupéré.",
+	"pageSpeedMonitor": "Moniteur PageSpeed",
+	"shown": "Visibles",
 	"ago": "depuis",
-	"companyName": "",
-	"pageSpeedDetailsPerformanceReport": "",
-	"pageSpeedDetailsPerformanceReportCalculator": "",
+	"companyName": "Nom de la société",
+	"pageSpeedDetailsPerformanceReport": "Les valeurs sont estimatives et peuvent varier.",
+	"pageSpeedDetailsPerformanceReportCalculator": "Voir le calculateur",
 	"checkingEvery": "Vérification tous les",
-	"statusPageCreateSettings": "",
-	"basicInformation": "",
-	"statusPageCreateBasicInfoDescription": "",
-	"statusPageCreateSelectTimeZoneDescription": "",
-	"statusPageCreateAppearanceDescription": "",
-	"statusPageCreateSettingsCheckboxLabel": "",
-	"statusPageCreateBasicInfoStatusPageAddress": "",
-	"statusPageCreateTabsContent": "",
-	"statusPageCreateTabsContentDescription": "",
-	"statusPageCreateTabsContentFeaturesDescription": "",
-	"showCharts": "",
-	"showUptimePercentage": "",
-	"removeLogo": "",
-	"statusPageStatus": "",
-	"statusPageStatusContactAdmin": "",
-	"statusPageStatusNotPublic": "",
-	"statusPageStatusNoPage": "",
-	"statusPageStatusServiceStatus": "",
-	"deleteStatusPage": "",
+	"statusPageCreateSettings": "Si votre page de statut est prête, vous pouvez la rendre publique.",
+	"basicInformation": "Informations de base",
+	"statusPageCreateBasicInfoDescription": "Définir le nom de la société et le sous-domaine vers lequel pointe votre page de statut.",
+	"statusPageCreateSelectTimeZoneDescription": "Sélectionnez le fuseau horaire qui sera utilisé pour votre page de statut",
+	"statusPageCreateAppearanceDescription": "Définir le style par défaut de votre page de statut.",
+	"statusPageCreateSettingsCheckboxLabel": "Publiée et visible au public",
+	"statusPageCreateBasicInfoStatusPageAddress": "L'adresse de votre page de statut",
+	"statusPageCreateTabsContent": "Serveurs de votre page de statut",
+	"statusPageCreateTabsContentDescription": "Vous pouvez ajouter autant de moniteurs à votre page de statut que vous le souhaitez. Vous pouvez également les réordonner pour améliorer l'expérience utilisateur.",
+	"statusPageCreateTabsContentFeaturesDescription": "Voir plus de détails sur la page de statut",
+	"showCharts": "Voir les graphiques",
+	"showUptimePercentage": "Voir le pourcentage de temps en ligne",
+	"removeLogo": "Supprimer le logo",
+	"statusPageStatus": "Aucune page de statut publique n'est déployée",
+	"statusPageStatusContactAdmin": "Merci de contacter votre administrateur",
+	"statusPageStatusNotPublic": "Cette page de statut n'est pas piblique",
+	"statusPageStatusNoPage": "Il n'y a aucune page de statut ici",
+	"statusPageStatusServiceStatus": "Statut des services",
+	"deleteStatusPage": "Voulez-vous supprimer cette page de statut ?",
 	"deleteStatusPageConfirm": "Oui, supprimer la page de statut",
-	"deleteStatusPageDescription": "",
-	"uptimeCreate": "",
-	"uptimeCreateJsonPath": "",
-	"uptimeCreateJsonPathQuery": "",
-	"maintenanceTableActionMenuDialogTitle": "",
-	"infrastructureEditYour": "",
-	"infrastructureEditMonitor": "",
-	"infrastructureMonitorCreated": "",
-	"infrastructureMonitorUpdated": "",
-	"errorInvalidTypeId": "",
-	"errorInvalidFieldId": "",
-	"inviteNoTokenFound": "",
-	"pageSpeedWarning": "",
-	"pageSpeedLearnMoreLink": "",
-	"pageSpeedAddApiKey": "",
-	"update": "",
+	"deleteStatusPageDescription": "Une fois supprimée, votre page de statut ne pourra plus être récupérée.",
+	"uptimeCreate": "La valeur attendue est utilisée pour comparer le résultat de la réponse et la correspondance détermine le statut du moniteur.",
+	"uptimeCreateJsonPath": "Cette expression sera évaluée par rapport aux données JSON de la réponse et le résultat sera utilisé pour la comparaison avec la valeur attendue. Voir",
+	"uptimeCreateJsonPathQuery": "pour la documentation sur le langage de requête.",
+	"maintenanceTableActionMenuDialogTitle": "Voulez-vous vraiment supprimer cette fenêtre de maintenance ?",
+	"infrastructureEditYour": "Modifier votre",
+	"infrastructureEditMonitor": "Sauvegarder le moniteur d'infrastructure",
+	"infrastructureMonitorCreated": "Le moniteur d'infrastructure a été créé avec succès !",
+	"infrastructureMonitorUpdated": "Le moniteur d'infrastructure a été modifié avec succès !",
+	"errorInvalidTypeId": "Le type de notification fourni est invalide",
+	"errorInvalidFieldId": "Le champ ID fourni est invalide",
+	"inviteNoTokenFound": "Aucun jeton d'invitation fourni",
+	"pageSpeedWarning": "Attention : vous n'avez pas encore ajouté de clé API Google PageSpeed. Sans celle-ci, le moniteur PageSpeed ne fonctionnera pas.",
+	"pageSpeedLearnMoreLink": "Cliquer ici",
+	"pageSpeedAddApiKey": "pour ajouter votre clé API.",
+	"update": "Mettre à jour",
 	"invalidFileFormat": "Format de fichier non supporté !",
 	"invalidFileSize": "Le fichier est trop volumineux !",
 	"ClickUpload": "Cliquez pour téléverser",
-	"DragandDrop": "",
-	"MaxSize": "",
-	"SupportedFormats": "",
-	"FirstName": "",
-	"LastName": "",
-	"EmailDescriptionText": "",
+	"DragandDrop": "glisser et déposer",
+	"MaxSize": "Taille maximum",
+	"SupportedFormats": "Formats supportés",
+	"FirstName": "Prénom",
+	"LastName": "Nom",
+	"EmailDescriptionText": "Il s'agit de votre adresse email actuelle : elle ne peut pas être changée.",
 	"YourPhoto": "Photo de profil",
-	"PhotoDescriptionText": "",
-	"save": "",
-	"DeleteDescriptionText": "",
-	"DeleteAccountWarning": "",
+	"PhotoDescriptionText": "La photo sera affichée sur votre page de profil.",
+	"save": "Enregistrer",
+	"DeleteDescriptionText": "Cela supprimera le compte et toutes les données associées du serveur. Cette opération est irréversible.",
+	"DeleteAccountWarning": "Supprimer votre compte signifie que vous ne pourrez pas vous reconnecter et que toutes vos données seront supprimés. Ceci est irréversible.",
 	"DeleteWarningTitle": "Vous supprimez vraiment ce compte ?",
 	"bulkImport": {
-		"title": "",
-		"selectFileTips": "",
-		"selectFileDescription": "",
-		"selectFile": "",
-		"parsingFailed": "",
-		"uploadSuccess": "",
+		"title": "Import en masse",
+		"selectFileTips": "Sélectionnez un fichier CSV pour l'upload",
+		"selectFileDescription": "Vous pouvez télécharger notre <template>modèle</template> ou <sample>exemple</sample>.",
+		"selectFile": "Sélectionner un fichier",
+		"parsingFailed": "L'analyse du fichier a rencontré un problème",
+		"uploadSuccess": "Moniteurs créés avec succès !",
 		"validationFailed": "Echec de la validation",
-		"noFileSelected": "",
-		"fallbackPage": ""
+		"noFileSelected": "Aucun fichier sélectionné",
+		"fallbackPage": "Importer un fichier pour ajouter une liste de serveurs en masse",
+		"invalidFileType": "Type de fichier invalide",
+		"uploadFailed": "Le téléchargement a échoué"
 	},
 	"DeleteAccountTitle": "Supprimer le compte",
 	"DeleteAccountButton": "Supprimer le compte",
-	"publicLink": "",
-	"maskedPageSpeedKeyPlaceholder": "",
-	"reset": "",
-	"ignoreTLSError": "",
-	"tlsErrorIgnored": "",
-	"ignoreTLSErrorDescription": "",
+	"publicLink": "Lien public",
+	"maskedPageSpeedKeyPlaceholder": "*************************************",
+	"reset": "Réinitialiser",
+	"ignoreTLSError": "Ignorer les erreurs TLS/SSL",
+	"tlsErrorIgnored": "Erreurs TLS/SSL ignorées",
+	"ignoreTLSErrorDescription": "Ignorer les erreurs TLS/SSL et continuer à vérifier l'accessibilité du site web",
 	"createNew": "Créer un nouveau",
 	"greeting": {
-		"prepend": "",
+		"prepend": "Salut !",
 		"append": "L'après-midi est votre libre, rendons-le épique !",
-		"overview": ""
+		"overview": "Voici un aperçu de vos moniteurs {{type}}."
 	},
 	"roles": {
-		"superAdmin": "",
+		"superAdmin": "Super admin",
 		"admin": "Admin",
-		"teamMember": "",
-		"demoUser": ""
+		"teamMember": "Membre de l'équipe",
+		"demoUser": "Utilisateur de démonstration"
 	},
 	"teamPanel": {
 		"teamMembers": "Membres de l'équipe",
 		"filter": {
 			"all": "Tous",
-			"member": ""
+			"member": "Membre"
 		},
-		"inviteTeamMember": "",
-		"inviteNewTeamMember": "",
-		"inviteDescription": "",
+		"inviteTeamMember": "Inviter un membre de l'équipe",
+		"inviteNewTeamMember": "Inviter un nouveau membre d'équipe",
+		"inviteDescription": "Lorsque vous ajoutez un nouveau membre à l'équipe, il aura accès à tous les moniteurs.",
 		"email": "Email",
-		"selectRole": "",
+		"selectRole": "Sélectionnez un rôle",
 		"inviteLink": "Lien d'invitation",
 		"cancel": "Annuler",
-		"noMembers": "",
-		"getToken": "",
-		"emailToken": "",
+		"noMembers": "Il n'y a aucun membre d'équipe avec ce rôle",
+		"getToken": "Récupérer un token",
+		"emailToken": "Token de l'email",
 		"table": {
-			"name": "",
+			"name": "Nom",
 			"email": "Email",
-			"role": "",
+			"role": "Rôle",
 			"created": "Créée"
 		}
 	},
 	"monitorState": {
-		"paused": "",
-		"resumed": "",
+		"paused": "Pause",
+		"resumed": "Reprendre",
 		"active": "Actif"
 	},
 	"menu": {
-		"uptime": "",
-		"pagespeed": "",
-		"infrastructure": "",
-		"incidents": "",
-		"statusPages": "",
-		"maintenance": "",
+		"uptime": "Temps en ligne",
+		"pagespeed": "Vitesse",
+		"infrastructure": "Infrastructure",
+		"incidents": "Incidents",
+		"statusPages": "Pages de statut",
+		"maintenance": "Maintenance",
 		"integrations": "Intégrations",
-		"settings": "",
-		"support": "",
+		"settings": "Paramètres",
+		"support": "Support",
 		"discussions": "Discussions",
-		"docs": "",
+		"docs": "Documentation",
 		"changelog": "Changelog",
-		"profile": "",
-		"password": "",
-		"team": "",
+		"profile": "Profil",
+		"password": "Mot de passe",
+		"team": "Équipe",
 		"logOut": "Déconnexion",
-		"notifications": "",
-		"logs": ""
+		"notifications": "Notifications",
+		"logs": "Journaux"
 	},
-	"settingsEmailUser": "",
-	"state": "",
-	"statusBreadCrumbsStatusPages": "",
-	"statusBreadCrumbsDetails": "",
+	"settingsEmailUser": "Utilisateur SMTP - Utilisateur pour l'authentification, écrase l'adresse email si spécifiée",
+	"state": "État",
+	"statusBreadCrumbsStatusPages": "Pages de statut",
+	"statusBreadCrumbsDetails": "Détails",
 	"commonSaving": "Sauvegarde...",
-	"navControls": "",
+	"navControls": "Contrôle",
 	"incidentsPageTitle": "Incidents",
 	"passwordPanel": {
 		"passwordChangedSuccess": "Votre mot de passe a été modifié avec succès.",
@@ -419,418 +426,550 @@
 		"passwordRequirements": "Le nouveau mot de passe doit contenir au moins 8 caractères et au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
 		"saving": "Sauvegarde..."
 	},
-	"emailSent": "",
-	"failedToSendEmail": "",
-	"settingsTestEmailSuccess": "",
-	"settingsTestEmailFailed": "",
-	"settingsTestEmailFailedWithReason": "",
+	"emailSent": "Email envoyé avec succès",
+	"failedToSendEmail": "Une erreur s'est produite lors de l'envoi de l'email",
+	"settingsTestEmailSuccess": "Email de test envoyé avec succès",
+	"settingsTestEmailFailed": "Une erreur s'est produite lors de l'envoi de l'email de test",
+	"settingsTestEmailFailedWithReason": "Une erreur s'est produite lors de l'envoi de l'email de test : {{reason}}",
 	"settingsTestEmailUnknownError": "Erreur inconnue",
 	"statusMsg": {
-		"paused": "",
-		"up": "",
-		"down": "",
-		"pending": ""
+		"paused": "Le moniteur est en pause.",
+		"up": "Votre site est en ligne.",
+		"down": "Votre site est hors-ligne.",
+		"pending": "En attente..."
 	},
 	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": ""
+		"http": "Entrez l'URL ou l'IP du moniteur (par exemple https://exemple.fr ou 192.168.1.100) et ajoutez un nom familier qui apparaîtra sur le tableau de bord.",
+		"ping": "Entrez l'adresse IP ou le nom d'hôte à tester (par exemple, 192.168.1.100 ou exemple.fr) et ajoutez un nom familier qui apparaîtra sur le tableau de bord.",
+		"docker": "Entrer l'ID Docker du container. Les identifiants Docker doivent être les 64 caractères de l'ID Docker. Vous pouvez utiliser la commande docker inspect <short_id> pour avoir l'ID complet.",
+		"port": "Entrez l'URL ou l'adresse IP du serveur, le numéro de port et un nom d'affichage familier qui apparaîtra sur le tableau de bord.",
+		"game": ""
 	},
 	"common": {
-		"appName": "",
-		"monitoringAgentName": "",
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
 		"buttons": {
-			"toggleTheme": ""
+			"toggleTheme": "Afficher le mode clair & sombre"
 		},
 		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
+			"networkError": "Erreur de réseau",
+			"checkConnection": "Merci de vérifier votre connexion",
+			"unknownError": "Erreur inconnue"
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "",
-				"back": ""
+				"continue": "Continuer",
+				"back": "Retour"
 			},
 			"inputs": {
 				"email": {
-					"label": "",
-					"placeholder": "",
+					"label": "Email",
+					"placeholder": "jean.dupont@domaine.fr",
 					"errors": {
-						"empty": "",
-						"invalid": ""
+						"empty": "Pour continuer, merci d'indiquer votre adresse email",
+						"invalid": "Merci de vérifier la validité de l'adresse email saisie"
 					}
 				},
 				"password": {
-					"label": "",
+					"label": "Mot de passe",
 					"rules": {
 						"length": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Doit contenir au moins",
+							"highlighted": "Longueur de 8 caractères"
 						},
 						"special": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Doit contenir au moins",
+							"highlighted": "un caractère spécial"
 						},
 						"number": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Doit contenir au moins",
+							"highlighted": "un nombre"
 						},
 						"uppercase": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Doit contenir au moins",
+							"highlighted": "un caractère majuscule"
 						},
 						"lowercase": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Doit contenir au moins",
+							"highlighted": "un caractère miniscule"
 						},
 						"match": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Confirmer le mot de passe et le mot de passe",
+							"highlighted": "doit valoir"
 						}
 					},
 					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
+						"empty": "Merci d'entrer votre mot de passe",
+						"length": "Le mot de passe doit faire 8 caractères minimum",
+						"uppercase": "Le mot de passe doit contenir au minimum une lettre majuscule",
+						"lowercase": "Le mot de passe doit contenir au minimum une lettre minuscule",
+						"number": "Le mot de passe doit contenir au minimum un chiffre",
+						"special": "Le mot de passe doit contenir au minimum un caractère spécial",
+						"incorrect": "Le mot de passe fourni est erroné"
 					}
 				},
 				"passwordConfirm": {
-					"label": "",
-					"placeholder": "",
+					"label": "Confirmer le mot de passe",
+					"placeholder": "Entrez à nouveau le mot de passe pour confirmer",
 					"errors": {
-						"empty": "",
-						"different": ""
+						"empty": "Merci d'entrer votre mot de passe à nouveau pour le confirmer (aide avec la typo)",
+						"different": "Les mots de passe indiqués ne sont pas identiques, l'un d'entre eux est probablement mal écrit"
 					}
 				},
 				"firstName": {
-					"label": "",
-					"placeholder": "",
+					"label": "Prénom",
+					"placeholder": "Jean",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Merci d'entrer votre prénom",
+						"length": "Le prénom doit être inférieur à 50 caractères",
+						"pattern": "Le prénom ne peut contenir que des lettres, des espaces, des apostrophes ou des tirets"
 					}
 				},
 				"lastName": {
-					"label": "",
-					"placeholder": "",
+					"label": "Nom",
+					"placeholder": "Dupont",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Merci d'entrer votre nom",
+						"length": "Le nom doit être inférieur à 50 caractères",
+						"pattern": "Le nom ne peut contenir que des lettres, des espaces, des apostrophes ou des tirets"
 					}
 				}
 			},
 			"errors": {
-				"validation": ""
+				"validation": "Une erreur s'est produite lors de la validation des données."
 			},
 			"fields": {
 				"password": {
 					"errors": {
-						"incorrect": ""
+						"incorrect": "Le mot de passe fourni est erroné"
+					}
+				},
+				"role": {
+					"errors": {
+						"min": ""
 					}
 				}
 			}
 		},
 		"login": {
-			"heading": "",
+			"heading": "Connexion",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
+				"stepOne": "Entrez votre adresse email",
+				"stepTwo": "Entrez votre mot de passe"
 			},
 			"links": {
-				"forgotPassword": "",
-				"register": "",
-				"forgotPasswordLink": "",
-				"registerLink": ""
+				"forgotPassword": "Mot de passe oublié ?",
+				"register": "Pas encore de compte ?",
+				"forgotPasswordLink": "Réinitialiser le mot de passe",
+				"registerLink": "Inscrivez vous ici"
 			},
 			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
+				"success": "Bon retour ! Vous êtes connecté avec succès.",
+				"incorrectPassword": "Mot de passe incorrect"
 			},
 			"errors": {
 				"password": {
-					"incorrect": ""
+					"incorrect": "Le mot de passe fourni est erroné"
 				}
 			}
 		},
 		"registration": {
 			"heading": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Créer un super admin",
+				"user": "Inscription"
 			},
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": ""
+				"stepOne": "Entrez votre informations personnelles",
+				"stepTwo": "Entrez votre adresse email",
+				"stepThree": "Créez votre mot de passe"
 			},
 			"description": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Créer le compte \"SuperAdmin\" pour commencer",
+				"user": "inscription comme utilisateur et demander à l'administrateur principal l'accès aux moniteurs"
 			},
 			"gettingStartedButton": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Créer un compte super admin",
+				"user": "Inscription comme utilisateur normal"
 			},
-			"termsAndPolicies": "",
+			"termsAndPolicies": "En créant un compte, vous comprenez et acceptez les <a1>Conditions d'Utilisation</a1> et la <a2>Politique de Confidentialité</a2>.",
 			"links": {
-				"login": ""
+				"login": "Déjà inscrit ? <a>Connexion</a>"
 			},
 			"toasts": {
-				"success": ""
+				"success": "Bienvenue ! Votre compte a été créé avec succès."
 			}
 		},
 		"forgotPassword": {
-			"heading": "",
+			"heading": "Mot de passe oublié ?",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": "",
-				"stepFour": ""
+				"stepOne": "Pas d'inquiétude, nous allons vous envoyer des informations pour réinitialiser votre mot de passe.",
+				"stepTwo": "Nous avons envoyer un lien de réinitialisation du mot de passe à l'email <email/>",
+				"stepThree": "Votre nouveau mot de passe doit être différent des précédents.",
+				"stepFour": "Votre mot de passe a été réinitialisé avec succès. Cliquez ci-dessous pour vous connecter."
 			},
 			"buttons": {
-				"openEmail": "",
-				"resetPassword": ""
+				"openEmail": "Ouvrir votre application email",
+				"resetPassword": "Réinitialiser le mot de passe"
 			},
 			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
+				"passwordKey": "Icône du mot de passe",
+				"email": "Icône de l'email",
+				"lock": "Icône de verrouillage",
+				"passwordConfirm": "Icône de confirmation du mot de passe"
 			},
 			"links": {
-				"login": "",
-				"resend": ""
+				"login": "Retourner à la page de <a>connexion</a>",
+				"resend": "Vous n'avez pas reçu l'email ? <a>Cliquez ici pour le renvoyer</a>"
 			},
 			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
+				"sent": "Instructions envoyées sur l'adresse email <email/>.",
+				"emailNotFound": "L'email n'a pas été trouvé.",
+				"redirect": "Redirection dans <seconds/>...",
+				"success": "Votre mot de passe",
+				"error": "Une erreur s'est produite lors de la réinitialisation du mot de passe. Réessayez ultérieurement ou contactez le support."
 			}
 		}
 	},
 	"errorPages": {
 		"serverUnreachable": {
 			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
+				"reconnected": "Connexion rétablie avec le serveur.",
+				"stillUnreachable": "Le serveur est toujours inaccessible. Réessayez ultérieurement."
 			},
-			"alertBox": "",
-			"description": "",
+			"alertBox": "Erreur de connexion au serveur",
+			"description": "Nous ne parvenons pas à nous connecter au serveur. Veuillez vérifier votre connexion Internet ou vérifier votre configuration de déploiement si le problème persiste.",
 			"retryButton": {
-				"default": "",
-				"processing": ""
+				"default": "Réessayer la connexion",
+				"processing": "Connexion..."
 			}
 		}
 	},
 	"createNotifications": {
-		"title": "",
+		"title": "Créer un canal de notification",
 		"nameSettings": {
-			"title": "",
-			"description": "",
-			"nameLabel": "",
-			"namePlaceholder": ""
+			"title": "Nom",
+			"description": "Une description pour votre intégration.",
+			"nameLabel": "Nom",
+			"namePlaceholder": "e.g. notifications Slack"
 		},
 		"typeSettings": {
-			"title": "",
-			"description": "",
-			"typeLabel": ""
+			"title": "Type",
+			"description": "Sélectionnez le type de canal de notification que vous souhaitez créer.",
+			"typeLabel": "Type"
 		},
 		"emailSettings": {
-			"title": "",
-			"description": "",
-			"emailLabel": "",
-			"emailPlaceholder": ""
+			"title": "Email",
+			"description": "Adresse email du destinataire",
+			"emailLabel": "Adresse email",
+			"emailPlaceholder": "e.g. jean@exemple.fr"
 		},
 		"slackSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Slack",
+			"description": "Configurez votre webhook Slack ici",
+			"webhookLabel": "URL du webhook Slack",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
 		"pagerdutySettings": {
-			"title": "",
-			"description": "",
-			"integrationKeyLabel": "",
-			"integrationKeyPlaceholder": ""
+			"title": "PagerDuty",
+			"description": "Configurez l'intégration PagerDuty ici",
+			"integrationKeyLabel": "Clé d'intégration",
+			"integrationKeyPlaceholder": "1234567890"
 		},
 		"discordSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Discord",
+			"description": "Configurez votre webhook Discord ici",
+			"webhookLabel": "URL du webhook Discord",
+			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
 		"webhookSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		}
+			"title": "Webhook",
+			"description": "Configurez votre webhook ici",
+			"webhookLabel": "URL du webhook",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"testNotification": "Notification de test",
+		"dialogDeleteTitle": "Voulez-vous vraiment supprimer cette notification ?",
+		"dialogDeleteConfirm": "Supprimer"
 	},
 	"notificationConfig": {
-		"title": "",
-		"description": ""
+		"title": "Notifications",
+		"description": "Sélectionnez les canaux de notification que vous souhaitez utiliser"
 	},
 	"monitorStatus": {
-		"checkingEvery": "",
-		"withCaptureAgent": "",
-		"up": "",
-		"down": "",
-		"paused": ""
+		"checkingEvery": "Vérifier toutes les {{interval}}",
+		"withCaptureAgent": "avec l'agent Capture {{version}}",
+		"up": "en ligne",
+		"down": "hors ligne",
+		"paused": "en pause"
 	},
-	"advancedMatching": "",
-	"sendTestNotifications": "",
-	"testNotificationsDisabled": "",
-	"selectAll": "",
-	"showAdminLoginLink": "",
+	"advancedMatching": "Filtrage avancé",
+	"sendTestNotifications": "Envoyer une notification de test",
+	"selectAll": "Sélectionner tout",
+	"showAdminLoginLink": "Voir le lien \"Administrateur ? Connectez-vous ici\" sur la page de statut",
 	"logsPage": {
-		"title": "",
-		"description": "",
+		"title": "Journaux",
+		"description": "Journaux systèmes - 1000 dernières lignes",
 		"tabs": {
-			"queue": "",
-			"logs": ""
+			"queue": "File d'attente des tâches",
+			"logs": "Journaux des serveurs",
+			"diagnostics": "Diagnostic"
 		},
 		"toast": {
-			"fetchLogsSuccess": ""
+			"fetchLogsSuccess": "Journaux récupérés avec succès"
 		},
 		"logLevelSelect": {
-			"title": "",
+			"title": "Niveau de journalisation",
 			"values": {
-				"all": "",
-				"info": "",
-				"warn": "",
-				"error": "",
-				"debug": ""
+				"all": "Tout",
+				"info": "Info",
+				"warn": "Attention",
+				"error": "Erreur",
+				"debug": "Debug"
 			}
 		}
 	},
 	"queuePage": {
-		"title": "",
-		"refreshButton": "",
-		"flushButton": "",
+		"title": "File d'attente",
+		"refreshButton": "Rafraîchir",
+		"flushButton": "Vider la file d'attente",
 		"jobTable": {
-			"title": "",
-			"idHeader": "",
-			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "",
-			"lockedAtHeader": "",
-			"runCountHeader": "",
-			"failCountHeader": "",
-			"lastRunHeader": "",
-			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": ""
+			"title": "Tâches actuellement dans la file d'attente",
+			"idHeader": "ID du moniteur",
+			"urlHeader": "URL",
+			"typeHeader": "Type",
+			"activeHeader": "Actif",
+			"lockedAtHeader": "Verrouillé le",
+			"runCountHeader": "Nombre de tentatives",
+			"failCountHeader": "Nombre d'échecs",
+			"lastRunHeader": "Dernière tentative le",
+			"lastFinishedAtHeader": "Dernière finalisation à",
+			"lastRunTookHeader": "Dernière exécution effectuée"
 		},
 		"metricsTable": {
-			"title": "",
-			"metricHeader": "",
-			"valueHeader": ""
+			"title": "Métriques des files",
+			"metricHeader": "Métrique",
+			"valueHeader": "Valeur"
 		},
 		"failedJobTable": {
-			"title": "",
-			"monitorIdHeader": "",
-			"monitorUrlHeader": "",
-			"failCountHeader": "",
-			"failedAtHeader": "",
-			"failReasonHeader": ""
+			"title": "Tâches en échec",
+			"monitorIdHeader": "ID du moniteur",
+			"monitorUrlHeader": "URL du moniteur",
+			"failCountHeader": "Nombre de tentatives échouées",
+			"failedAtHeader": "Dernier échec à",
+			"failReasonHeader": "Raison de l'échec"
 		}
 	},
 	"export": {
-		"title": "",
-		"success": "",
-		"failed": ""
+		"title": "Export des moniteurs",
+		"success": "Les moniteurs ont été exportés avec succès !",
+		"failed": "Une erreur s'est produite lors de l'export des moniteurs"
 	},
 	"monitorActions": {
-		"title": "",
-		"import": "",
-		"export": ""
+		"title": "Export/Import",
+		"import": "Importer des moniteurs",
+		"export": "Exporter des moniteurs",
+		"deleteSuccess": "Le moniteur a été supprimé avec succès",
+		"deleteFailed": "Une erreur s'est produite lors de la suppression du moniteur",
+		"details": "Détails"
 	},
 	"settingsPage": {
 		"aboutSettings": {
-			"labelDevelopedBy": "",
-			"labelVersion": "",
-			"title": ""
+			"labelDevelopedBy": "Développé par Bluewave Labs",
+			"labelVersion": "Version",
+			"title": "A propos"
 		},
 		"demoMonitorsSettings": {
-			"buttonAddMonitors": "",
-			"description": "",
-			"title": ""
+			"buttonAddMonitors": "Ajouter un moniteur de démonstration",
+			"description": "Ajouter un moniteur à des fins de démonstration.",
+			"title": "Moniteurs de démonstration"
 		},
 		"emailSettings": {
-			"buttonSendTestEmail": "",
-			"description": "",
-			"descriptionTransport": "",
-			"labelAddress": "",
-			"labelConnectionHost": "",
-			"labelHost": "",
-			"labelIgnoreTLS": "",
-			"labelPassword": "",
-			"labelPasswordSet": "",
-			"labelPool": "",
-			"labelPort": "",
-			"labelRejectUnauthorized": "",
-			"labelRequireTLS": "",
-			"labelSecure": "",
-			"labelTLSServername": "",
-			"labelUser": "",
-			"linkTransport": "",
-			"placeholderUser": "",
-			"title": ""
+			"buttonSendTestEmail": "Envoyer un mail de test",
+			"description": "Configurez les paramètres emails pour le système. Il s'agit du système utilisé pour les notifications & alertes.",
+			"descriptionTransport": "Ceci créé un transport SMTP pour NodeMailer",
+			"labelAddress": "Adresse email - utilisée pour la connexion",
+			"labelConnectionHost": "Hôte SMTP - Nom d'hôte à utiliser dans l'introduction HELO/EHLO",
+			"labelHost": "Hôte SMTP - Nom d'hôte ou IP sur lequel se connecter",
+			"labelIgnoreTLS": "Désactiver STARTTLS : ne pas utiliser TLS même si le serveur le supporte",
+			"labelPassword": "Mot de passe SMTP - Mot de passe requis pour l'authentification",
+			"labelPasswordSet": "Le mot de passe est renseigné. Réinitialisez le pour le changer.",
+			"labelPool": "Activer le pool de connexion SMTP afin de réutiliser les connexions existantes pour améliorer la performance",
+			"labelPort": "Port SMTP - Port auquel se connecter",
+			"labelRejectUnauthorized": "Rejeter les certificats non valides : rejeter les connexions avec des certificats auto-signés ou non fiables",
+			"labelRequireTLS": "Forcer STARTTLS : nécessite la mise à niveau TLS, échouer si ce n'est pas supporté",
+			"labelSecure": "Utiliser le SSL (recommandé) : chiffrer la connexion SSL/TLS",
+			"labelTLSServername": "Nom du serveur TLS - Nom d'hôte facultatif pour la validation TLS lorsque l'hôte est une adresse IP",
+			"labelUser": "Utilisateur SMTP - Nom d'utilisateur pour l'authentification, remplace l'adresse email si spécifié",
+			"linkTransport": "Voir les spécifications ici",
+			"placeholderUser": "Laisser vide si non requis",
+			"title": "Email",
+			"toastEmailRequiredFieldsError": "L'adresse email, l'hôte, le port et le mot de passe sont obligatoires."
 		},
 		"pageSpeedSettings": {
-			"description": "",
-			"labelApiKeySet": "",
-			"labelApiKey": "",
-			"title": ""
+			"description": "Entrez votre clé API Google PageSpeed pour activer la surveillance Google PageSpeed. Cliquez sur Réinitialiser pour mettre à jour la clé.",
+			"labelApiKeySet": "La clé API est générée. Cliquez sur \"Réinitialiser\" pour la modifier.",
+			"labelApiKey": "Clé API PageSpeed",
+			"title": "Clé API Google PageSpeed"
 		},
-		"saveButtonLabel": "",
+		"saveButtonLabel": "Sauvegarder",
 		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
-			"description": "",
-			"labelTTL": "",
-			"labelTTLOptional": "",
-			"title": ""
+			"clearAllStatsButton": "Supprimer toutes les statistiques",
+			"clearAllStatsDescription": "Supprimer toutes les statistiques. Cette action est irréversible.",
+			"clearAllStatsDialogConfirm": "Oui, supprimer toutes les statistiques",
+			"clearAllStatsDialogDescription": "Une fois supprimés, l'historique et les statistiques du moniteur ne peuvent plus être récupérés.",
+			"clearAllStatsDialogTitle": "Voulez-vous supprimer toutes les statistiques ?",
+			"description": "Définissez la durée pendant laquelle vous souhaitez conserver les données historiques. Vous pouvez également effacer toutes les données existantes.",
+			"labelTTL": "Le nombre de jours dont vous souhaitez garder l'historique.",
+			"labelTTLOptional": "0 pour une durée infinie",
+			"title": "Historique du moniteur"
 		},
 		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "",
-			"description": "",
-			"dialogConfirm": "",
-			"dialogDescription": "",
-			"dialogTitle": "",
-			"title": ""
+			"buttonRemoveAllMonitors": "Supprimer tous les moniteurs",
+			"description": "Supprimer toutes les moniteurs du système.",
+			"dialogConfirm": "Oui, supprimer tous les moniteurs",
+			"dialogDescription": "Une fois supprimés, les moniteurs ne peuvent plus être récupérés.",
+			"dialogTitle": "Voulez-vous supprimer tous les moniteurs ?",
+			"title": "Réinitialisation du système"
 		},
 		"timezoneSettings": {
-			"description": "",
-			"label": "",
-			"title": ""
+			"description": "Sélectionnez le fuseau horaire utilisé pour afficher les dates et les heures dans l'application.",
+			"label": "Fuseau horaire d'affichage",
+			"title": "Fuseau horaire d'affichage"
 		},
-		"title": "",
+		"title": "Paramètres",
 		"uiSettings": {
-			"description": "",
-			"labelLanguage": "",
-			"labelTheme": "",
-			"title": ""
+			"description": "Changer entre le mode clair et sombre, ou changer le langage de l'interface utilisateur.",
+			"labelLanguage": "Langage",
+			"labelTheme": "Thème",
+			"title": "Apparence"
 		},
 		"urlSettings": {
-			"description": "",
-			"label": "",
-			"selectDisabled": "",
-			"selectEnabled": "",
-			"title": ""
+			"description": "Affichez l'adresse IP ou l'URL du moniteur sur la page de statut publique. Si cette option est désactivée, seul le nom du moniteur sera affiché afin de protéger les informations sensibles.",
+			"label": "Afficher l'IP/URL sur la page de statut",
+			"selectDisabled": "Désactivé",
+			"selectEnabled": "Activé",
+			"title": "IP/URL du moniteur sur la page de statut"
 		}
-	}
+	},
+	"statusPageCreate": {
+		"buttonSave": "Sauvegarder"
+	},
+	"incidentsOptionsHeaderFilterResolved": "Résolu",
+	"settingsSave": "Sauvegarder",
+	"statusPageCreateAppearanceTitle": "Apparence",
+	"confirmPassword": "Confirmer le mot de passe",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "Une erreur s'est produite lors de l'ajout des moniteurs de démonstration",
+		"successAddDemoMonitors": "Les moniteurs de démonstration ont bien été ajoutés"
+	},
+	"settingsAppearance": "Apparance",
+	"settingsDisplayTimezone": "Fuseau horaire d'affichage",
+	"settingsGeneralSettings": "Paramètres généraux",
+	"incidentsOptionsHeaderTotalIncidents": "Nombre d'incidents",
+	"statusPage": {
+		"deleteSuccess": "La page de statut a été supprimée avec succès",
+		"deleteFailed": "Une erreur s'est produite lors de l'ajout de la page de statut",
+		"createSuccess": "La page de statut a été ajoutée avec succès",
+		"updateSuccess": "La page de statut a été modifiée avec succès",
+		"generalSettings": "Paramètres généraux",
+		"contents": "Contenus",
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"testNotificationsDisabled": "Il n'y aucune notification paramétrée pour ce moniteur. Vous pouvez en ajouter une en cliquant sur le bouton 'Configurer'",
+	"incidentsTableResolvedAt": "Résolu le",
+	"incidentsTableActionResolve": "Résoudre",
+	"checkHooks": {
+		"failureResolveOne": "Une erreur s'est produite lors de la résolution de l'incident.",
+		"failureResolveAll": "Une erreur s'est produite lors de la résolution des incidents.",
+		"failureResolveMonitor": ""
+	},
+	"checkFormError": "Merci de vérifier les erreurs du formulaire",
+	"diagnosticsPage": {
+		"diagnosticDescription": "Diagnostic du système",
+		"statsDescription": "Statistiques du système",
+		"gauges": {
+			"heapAllocationTitle": "Allocation du tas",
+			"heapAllocationSubtitle": "% de mémoire disponible",
+			"heapUsageTitle": "Utilisation du tas",
+			"heapUsageSubtitle": "% de mémoire disponible",
+			"heapUtilizationTitle": "Utilisation du tas",
+			"heapUtilizationSubtitle": "% d'allocation",
+			"instantCpuUsageTitle": "Utilisation instantanée du CPU",
+			"instantCpuUsageSubtitle": "% de CPU utilisé"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "Délai de la boucle d'évènements",
+			"uptimeTitle": "Temps en ligne",
+			"usedHeapSizeTitle": "Taille du tas utilisé",
+			"totalHeapSizeTitle": "Taille total du tas",
+			"osMemoryLimitTitle": "Limite de mémoire de l'OS"
+		}
+	},
+	"pageSpeedLighthouseAPI": "Utilisez l'API Lighthouse PageSpeed pour suivre votre site web",
+	"time": {
+		"threeMinutes": "3 minutes",
+		"fiveMinutes": "5 minutes",
+		"tenMinutes": "10 minutes",
+		"twentyMinutes": "20 minutes",
+		"oneHour": "1 heure",
+		"oneDay": "1 jour",
+		"oneWeek": "1 semaine"
+	},
+	"general": {
+		"noOptionsFound": ""
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "",
+			"firstName": "",
+			"lastName": "",
+			"role": "",
+			"save": ""
+		},
+		"table": {
+			"actionHeader": "",
+			"roleHeader": ""
+		},
+		"title": "",
+		"toast": {
+			"successUserUpdate": "",
+			"validationErrors": ""
+		}
+	},
+	"incidentsPageActionResolveMonitor": "",
+	"incidentsPageActionResolveAll": ""
 }
