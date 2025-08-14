@@ -23,7 +23,7 @@ services:
     volumes:
       - ./mongo/data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      test: ["CMD", "mongo", "--eval", "db.runCommand({ ping: 1 })", "--quiet"]
       interval: 5s
       timeout: 30s
       start_period: 0s
