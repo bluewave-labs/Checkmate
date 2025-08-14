@@ -1,15 +1,21 @@
 import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@emotion/react";
 import NetworkStatBoxes from "./NetworkStatBoxes";
 import NetworkCharts from "./NetworkCharts";
 import MonitorTimeFrameHeader from "../../../../../Components/MonitorTimeFrameHeader";
 
-const getInterfaceName = (net) => {
-	const interfaceNames = ["eth0", "Ethernet", "en0"];
-	const found = (net || []).find((iface) => interfaceNames.includes(iface.name));
-	return found ? found.name : null;
+const getAvailableInterfaces = (net) => {
+	return (net || []).map((iface) => iface.name).filter(Boolean);
 };
 
 const getNetworkInterfaceData = (checks, ifaceName) => {
+	if (!ifaceName) return [];
+
+	// Transform backend data structure for the selected interface
+	// Backend already calculates deltas, we just reshape the data
 	return (checks || [])
 		.map((check) => {
 			const networkInterface = (check.net || []).find(
@@ -28,21 +34,63 @@ const getNetworkInterfaceData = (checks, ifaceName) => {
 };
 
 const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
-	const ifaceName = getInterfaceName(net);
-	const ethernetData = getNetworkInterfaceData(checks, ifaceName);
+	const { t } = useTranslation();
+	const theme = useTheme();
+
+	const availableInterfaces = getAvailableInterfaces(net);
+	const [selectedInterface, setSelectedInterface] = useState("");
+
+	// Set default interface when data loads
+	useEffect(() => {
+		if (availableInterfaces.length > 0 && !selectedInterface) {
+			setSelectedInterface(availableInterfaces[0]);
+		}
+	}, [availableInterfaces, selectedInterface]);
+
+	const ethernetData = getNetworkInterfaceData(checks, selectedInterface);
 
 	return (
 		<>
 			<NetworkStatBoxes
 				shouldRender={!isLoading}
 				net={net}
-				ifaceName={ifaceName}
+				ifaceName={selectedInterface}
 			/>
-			<MonitorTimeFrameHeader
-				isLoading={isLoading}
-				dateRange={dateRange}
-				setDateRange={setDateRange}
-			/>
+			<Box
+				display="flex"
+				justifyContent="space-between"
+				alignItems="flex-end"
+				gap={theme.spacing(4)}
+			>
+				{availableInterfaces.length > 0 && (
+					<FormControl
+						variant="outlined"
+						size="small"
+						sx={{ minWidth: 200 }}
+					>
+						<InputLabel>{t("networkInterface")}</InputLabel>
+						<Select
+							value={selectedInterface}
+							onChange={(e) => setSelectedInterface(e.target.value)}
+							label={t("networkInterface")}
+						>
+							{availableInterfaces.map((interfaceName) => (
+								<MenuItem
+									key={interfaceName}
+									value={interfaceName}
+								>
+									{interfaceName}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				)}
+				<MonitorTimeFrameHeader
+					isLoading={isLoading}
+					dateRange={dateRange}
+					setDateRange={setDateRange}
+				/>
+			</Box>
 			<NetworkCharts
 				ethernetData={ethernetData}
 				dateRange={dateRange}

@@ -109,7 +109,7 @@ export const NetworkTick = ({ x, y, payload, index, formatter }) => {
 		formatter = (value, space = false) => {
 			if (typeof value !== "number") return value;
 			// need to add space between value and unit
-			return `${(value / 1024).toFixed(2)}${space ? " " : ""}Kbps`;
+			return `${(value / 1024).toFixed(1)}${space ? " " : ""}Kbps`;
 		};
 	}
 

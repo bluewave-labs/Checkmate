@@ -15,7 +15,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	const { formatBytesString } = useHardwareUtils();
+	const { formatBytesPerSecondString, formatPacketsPerSecondString } = useHardwareUtils();
 
 	if (!ethernetData?.length) {
 		return <Typography>{t("noNetworkStatsAvailable")}</Typography>;
@@ -26,19 +26,19 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 			type: "network-bytes",
 			data: ethernetData,
 			dataKeys: ["bytesPerSec"],
-			heading: t("bytesPerSecond"),
+			heading: t("dataReceived"),
 			strokeColor: theme.palette.info.main,
 			gradientStartColor: theme.palette.info.main,
-			yLabel: t("bytesPerSecond"),
+			yLabel: t("rate"),
 			xTick: <TzTick dateRange={dateRange} />,
-			yTick: <NetworkTick formatter={formatBytesString} />,
+			yTick: <NetworkTick formatter={formatBytesPerSecondString} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.info.main}
 					yKey={"bytesPerSec"}
-					yLabel={t("bytesPerSecond")}
+					yLabel={t("dataRate") + ": "}
 					dateRange={dateRange}
-					formatter={formatBytesString}
+					formatter={formatBytesPerSecondString}
 				/>
 			),
 		},
@@ -46,18 +46,19 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 			type: "network-packets",
 			data: ethernetData,
 			dataKeys: ["packetsPerSec"],
-			heading: t("packetsPerSecond"),
+			heading: t("packetsReceivedRate"),
 			strokeColor: theme.palette.success.main,
 			gradientStartColor: theme.palette.success.main,
-			yLabel: t("packetsPerSecond"),
+			yLabel: t("rate"),
 			xTick: <TzTick dateRange={dateRange} />,
+			yTick: <NetworkTick formatter={formatPacketsPerSecondString} />,
 			toolTip: (
 				<InfrastructureTooltip
 					dotColor={theme.palette.success.main}
 					yKey={"packetsPerSec"}
-					yLabel={t("packetsPerSecond")}
+					yLabel={t("packetsPerSecond") + ": "}
 					dateRange={dateRange}
-					formatter={(value) => Math.round(value).toLocaleString()}
+					formatter={formatPacketsPerSecondString}
 				/>
 			),
 		},
@@ -65,7 +66,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 			type: "network-errors",
 			data: ethernetData,
 			dataKeys: ["errors"],
-			heading: t("errors"),
+			heading: t("networkErrors"),
 			strokeColor: theme.palette.error.main,
 			gradientStartColor: theme.palette.error.main,
 			yLabel: t("errors"),
@@ -74,7 +75,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 				<InfrastructureTooltip
 					dotColor={theme.palette.error.main}
 					yKey={"errors"}
-					yLabel={t("errors")}
+					yLabel={t("errors") + ": "}
 					dateRange={dateRange}
 					formatter={(value) => Math.round(value).toLocaleString()}
 				/>
@@ -84,7 +85,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 			type: "network-drops",
 			data: ethernetData,
 			dataKeys: ["drops"],
-			heading: t("drops"),
+			heading: t("networkDrops"),
 			strokeColor: theme.palette.warning.main,
 			gradientStartColor: theme.palette.warning.main,
 			yLabel: t("drops"),
@@ -93,7 +94,7 @@ const NetworkCharts = ({ ethernetData, dateRange }) => {
 				<InfrastructureTooltip
 					dotColor={theme.palette.warning.main}
 					yKey={"drops"}
-					yLabel={t("drops")}
+					yLabel={t("drops") + ": "}
 					dateRange={dateRange}
 					formatter={(value) => Math.round(value).toLocaleString()}
 				/>
