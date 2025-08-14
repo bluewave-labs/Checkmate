@@ -262,8 +262,11 @@ const CreateInfrastructureMonitor = () => {
 			[name]: value,
 		});
 
-		const adjustedValue =
-			name === "url" ? (value ? `http${https ? "s" : ""}://${value}` : value) : value;
+		let adjustedValue = value;
+
+		if (name === "url" && value) {
+			adjustedValue = `http${https ? "s" : ""}://${value}`;
+		}
 
 		const { error } = infrastructureMonitorValidation.validate(
 			{ [name]: adjustedValue },
