@@ -79,18 +79,6 @@ jobs:
         run: |
           docker push ghcr.io/bluewave-labs/checkmate-mongo:${{ steps.extract_tag.outputs.version }}
 
-      - name: Build Redis Docker image
-        run: |
-          docker build \
-            -t ghcr.io/bluewave-labs/checkmate-redis:${{ steps.extract_tag.outputs.version }} \
-            -f ./docker/dist/redis.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
-            .
-
-      - name: Push Redis Docker image
-        run: |
-          docker push ghcr.io/bluewave-labs/checkmate-redis:${{ steps.extract_tag.outputs.version }}
-
   docker-build-and-push-server-mono-multiarch:
     runs-on: ubuntu-latest
     steps:
