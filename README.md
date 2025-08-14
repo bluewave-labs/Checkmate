@@ -54,6 +54,12 @@ See installation instructions in [Checkmate documentation portal](https://docs.c
 
 Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
+### Using a Custom CA
+
+If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
+
+For more documentation, see the [docs directory](./docs/).
+
 
 ## Translations
 
