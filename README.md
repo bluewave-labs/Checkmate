@@ -18,7 +18,7 @@
 
 This repository contains both the frontend and the backend of Checkmate, an open-source, self-hosted monitoring tool for tracking server hardware, uptime, response times, and incidents in real-time with beautiful visualizations. Checkmate regularly checks whether a server/website is accessible and performs optimally, providing real-time alerts and reports on the monitored services' availability, downtime, and response time.
 
-Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status.
+Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status. Capture can run on Linux, Windows, Mac, Raspberry Pi, or any device that can run Go.
 
 Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
 
@@ -90,20 +90,22 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
 - Website monitoring
 - Page speed monitoring
-- Infrastructure monitoring (memory, disk usage, CPU performance etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
+- Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
 - Docker monitoring
 - Ping monitoring
 - SSL monitoring
 - Port monitoring
+- Game server monitoring (3.0)
 - Incidents at a glance
 - Status pages
-- E-mail, Webhooks, Discord, Telegram, Slack notifications
+- E-mail, Webhooks, Discord and Slack notifications
 - Scheduled maintenance
 - JSON query monitoring
 - Multi-language support for English, German, Japanese, Portuguese (Brazil), Russian, Turkish, Ukrainian, Vietnamese, Chinese (Traditional, Taiwan)
 
 **Short term roadmap:** 
 
+- Plugins that will help Checkmate get any information from a remote service (e.g database, etc)
 - Better notifications
 - Network monitoring
 - ..and a few more features
@@ -145,7 +147,7 @@ If you would like to sponsor an additional feature, [see this page](https://chec
 
 ## Contributing
 
-We are [Alex](http://github.com/ajhollid) (team lead), [Mohadeseh](http://github.com/mohicody), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) and [Karen](https://github.com/karenvicent) helping individuals and businesses monitor their infra and servers.
+We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) and [Karen](https://github.com/karenvicent) helping individuals and businesses monitor their infra and servers.
 
 We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 7000+ stars and attracted 90+ contributors from around the globe.
 
