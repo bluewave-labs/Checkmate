@@ -75,6 +75,20 @@ class NetworkService {
 	}
 
 	/**
+	 * Fetch the games associated with a monitor
+	 *
+	 * @async
+	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
+	 */
+	async getMonitorGames() {
+		return this.axiosInstance.get(`/monitors/games`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	/**
 	 *
 	 * ************************************
 	 * Create a new monitor
@@ -109,30 +123,6 @@ class NetworkService {
 		const { monitor } = config;
 
 		return this.axiosInstance.post(`/monitors`, monitor);
-	}
-
-	/**
-	 *
-	 * ************************************
-	 * Check the endpoint resolution
-	 * ************************************
-	 *
-	 * @async
-	 * @param {Object} config - The configuration object.
-	 * @param {Object} config.monitorURL - The monitor url to be sent in the request body.
-	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
-	 */
-	async checkEndpointResolution(config) {
-		const { monitorURL } = config;
-		const params = new URLSearchParams();
-
-		if (monitorURL) params.append("monitorURL", monitorURL);
-
-		return this.axiosInstance.get(`/monitors/resolution/url?${params.toString()}`, {
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
 	}
 
 	/**
@@ -393,7 +383,7 @@ class NetworkService {
 	 *
 	 */
 	async updateUser(config) {
-		return this.axiosInstance.put(`/auth/user/${config.userId}`, config.form);
+		return this.axiosInstance.put(`/auth/user`, config.form);
 	}
 
 	/**
@@ -406,8 +396,8 @@ class NetworkService {
 	 * @param {string} config.userId - The ID of the user to be deleted.
 	 *
 	 **/
-	async deleteUser(config) {
-		return this.axiosInstance.delete(`/auth/user/${config.userId}`);
+	async deleteUser() {
+		return this.axiosInstance.delete(`/auth/user`);
 	}
 
 	/**
@@ -631,6 +621,35 @@ class NetworkService {
 		});
 	}
 
+	/**
+	 * ************************************
+	 * Update the status of all checks for a given monitor
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {string} config.monitorId - The ID of the monitor.
+	 * @param {boolean} config.ack - The acknowledgment to update the checks to.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 *
+	 */
+	async updateMonitorChecksStatus(config) {
+		return this.axiosInstance.put(`/checks/monitor/${config.monitorId}`, {
+			ack: config.ack,
+		});
+	}
+
+	/**
+	 * ************************************
+	 * Update the status of all checks for a given team
+	 * ************************************
+	 *
+	 * @async
+	 * @param {Object} config - The configuration object.
+	 * @param {boolean} config.ack - The acknowledgment to update the checks to.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 *
+	 */
 	async updateAllChecksStatus(config) {
 		return this.axiosInstance.put(`/checks/team/`, {
 			ack: config.ack,
@@ -977,7 +996,7 @@ class NetworkService {
 			});
 		}
 
-		return this.axiosInstance.get(`/monitors/summary/team?${params.toString()}`, {
+		return this.axiosInstance.get(`/monitors/team/summary?${params.toString()}`, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -1094,6 +1113,24 @@ class NetworkService {
 
 	async getDiagnostics() {
 		return this.axiosInstance.get(`/diagnostic/system`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async getUserById(config) {
+		const userId = config?.userId;
+		return this.axiosInstance.get(`auth/users/${userId}`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	async editUser(config) {
+		const { userId, user } = config;
+		return this.axiosInstance.put(`auth/users/${userId}`, user, {
 			headers: {
 				"Content-Type": "application/json",
 			},

@@ -99,13 +99,9 @@ const InfrastructureMonitors = () => {
 	if (!isLoading && typeof summary?.totalMonitors === "undefined") {
 		return (
 			<Fallback
-				vowelStart={true}
-				title="infrastructure monitor"
-				checks={[
-					"Track the performance of your servers",
-					"Identify bottlenecks and optimize usage",
-					"Ensure reliability with real-time monitoring",
-				]}
+				type="infrastructureMonitor"
+				title={t("infrastructureMonitor.fallback.title")}
+				checks={t("infrastructureMonitor.fallback.checks", { returnObjects: true })}
 				link="/infrastructure/create"
 				isAdmin={isAdmin}
 			/>

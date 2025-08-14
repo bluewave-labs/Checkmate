@@ -8,7 +8,6 @@
 	"settingsFailedToSave": "Nepodařilo se uložit nastavení",
 	"settingsStatsCleared": "",
 	"settingsFailedToClearStats": "",
-	"settingsFailedToAddDemoMonitors": "",
 	"settingsMonitorsDeleted": "",
 	"settingsFailedToDeleteMonitors": "",
 	"starPromptTitle": "",
@@ -86,7 +85,8 @@
 		"networkError": "",
 		"fallback": {
 			"title": "",
-			"checks": [""]
+			"checks": [""],
+			"actionButton": ""
 		},
 		"createButton": "",
 		"createTitle": "",
@@ -260,6 +260,7 @@
 	"notifyEmails": "",
 	"seperateEmails": "",
 	"checkFrequency": "",
+	"chooseGame": "",
 	"matchMethod": "",
 	"expectedValue": "",
 	"deleteDialogTitle": "",
@@ -331,7 +332,9 @@
 		"uploadSuccess": "",
 		"validationFailed": "",
 		"noFileSelected": "",
-		"fallbackPage": ""
+		"fallbackPage": "",
+		"invalidFileType": "",
+		"uploadFailed": ""
 	},
 	"DeleteAccountTitle": "",
 	"DeleteAccountButton": "",
@@ -435,7 +438,8 @@
 		"http": "",
 		"ping": "",
 		"docker": "",
-		"port": ""
+		"port": "",
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -536,6 +540,11 @@
 				"password": {
 					"errors": {
 						"incorrect": ""
+					}
+				},
+				"role": {
+					"errors": {
+						"min": ""
 					}
 				}
 			}
@@ -675,7 +684,10 @@
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
-		}
+		},
+		"testNotification": "",
+		"dialogDeleteTitle": "",
+		"dialogDeleteConfirm": ""
 	},
 	"notificationConfig": {
 		"title": "",
@@ -690,7 +702,6 @@
 	},
 	"advancedMatching": "",
 	"sendTestNotifications": "",
-	"testNotificationsDisabled": "",
 	"selectAll": "",
 	"showAdminLoginLink": "",
 	"logsPage": {
@@ -698,7 +709,8 @@
 		"description": "",
 		"tabs": {
 			"queue": "",
-			"logs": ""
+			"logs": "",
+			"diagnostics": ""
 		},
 		"toast": {
 			"fetchLogsSuccess": ""
@@ -753,7 +765,10 @@
 	"monitorActions": {
 		"title": "",
 		"import": "",
-		"export": ""
+		"export": "",
+		"deleteSuccess": "",
+		"deleteFailed": "",
+		"details": ""
 	},
 	"settingsPage": {
 		"aboutSettings": {
@@ -785,7 +800,8 @@
 			"labelUser": "",
 			"linkTransport": "",
 			"placeholderUser": "",
-			"title": ""
+			"title": "",
+			"toastEmailRequiredFieldsError": ""
 		},
 		"pageSpeedSettings": {
 			"description": "",
@@ -832,5 +848,124 @@
 			"selectEnabled": "",
 			"title": ""
 		}
-	}
+	},
+	"statusPageCreate": {
+		"buttonSave": ""
+	},
+	"incidentsOptionsHeaderFilterResolved": "",
+	"settingsSave": "",
+	"statusPageCreateAppearanceTitle": "",
+	"confirmPassword": "",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "",
+		"successAddDemoMonitors": ""
+	},
+	"settingsAppearance": "",
+	"settingsDisplayTimezone": "",
+	"settingsGeneralSettings": "",
+	"incidentsOptionsHeaderTotalIncidents": "",
+	"statusPage": {
+		"deleteSuccess": "",
+		"deleteFailed": "",
+		"createSuccess": "",
+		"updateSuccess": "",
+		"generalSettings": "",
+		"contents": "",
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"testNotificationsDisabled": "",
+	"incidentsTableResolvedAt": "",
+	"incidentsTableActionResolve": "",
+	"checkHooks": {
+		"failureResolveOne": "",
+		"failureResolveAll": "",
+		"failureResolveMonitor": ""
+	},
+	"checkFormError": "",
+	"diagnosticsPage": {
+		"diagnosticDescription": "",
+		"statsDescription": "",
+		"gauges": {
+			"heapAllocationTitle": "",
+			"heapAllocationSubtitle": "",
+			"heapUsageTitle": "",
+			"heapUsageSubtitle": "",
+			"heapUtilizationTitle": "",
+			"heapUtilizationSubtitle": "",
+			"instantCpuUsageTitle": "",
+			"instantCpuUsageSubtitle": ""
+		},
+		"stats": {
+			"eventLoopDelayTitle": "",
+			"uptimeTitle": "",
+			"usedHeapSizeTitle": "",
+			"totalHeapSizeTitle": "",
+			"osMemoryLimitTitle": ""
+		}
+	},
+	"pageSpeedLighthouseAPI": "",
+	"time": {
+		"threeMinutes": "",
+		"fiveMinutes": "",
+		"tenMinutes": "",
+		"twentyMinutes": "",
+		"oneHour": "",
+		"oneDay": "",
+		"oneWeek": ""
+	},
+	"general": {
+		"noOptionsFound": ""
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [""],
+			"title": "",
+			"actionButton": ""
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "",
+			"firstName": "",
+			"lastName": "",
+			"role": "",
+			"save": ""
+		},
+		"table": {
+			"actionHeader": "",
+			"roleHeader": ""
+		},
+		"title": "",
+		"toast": {
+			"successUserUpdate": "",
+			"validationErrors": ""
+		}
+	},
+	"incidentsPageActionResolveMonitor": "",
+	"incidentsPageActionResolveAll": ""
 }

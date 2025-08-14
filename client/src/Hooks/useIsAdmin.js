@@ -8,4 +8,10 @@ const useIsAdmin = () => {
 	return isAdmin;
 };
 
-export { useIsAdmin };
+const useIsSuperAdmin = () => {
+	const { user } = useSelector((state) => state.auth);
+	const isSuperAdmin = user?.role?.includes("superadmin");
+	return isSuperAdmin;
+};
+
+export { useIsAdmin, useIsSuperAdmin };

@@ -38,7 +38,3 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 }
-
-.fallback__status > .MuiStack-root {
-	margin-left: var(--env-var-spacing-2);
-}

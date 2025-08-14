@@ -1,5 +1,6 @@
 import joi from "joi";
 import dayjs from "dayjs";
+import { ROLES } from "../Utils/roleUtils";
 
 const THRESHOLD_COMMON_BASE_MSG = "Threshold must be a number.";
 
@@ -183,12 +184,12 @@ const monitorValidation = joi.object({
 		.min(1)
 		.max(65535)
 		.when("type", {
-			is: "port",
-			then: joi.number().messages({
+			is: joi.valid("port", "game"),
+			then: joi.required().messages({
 				"number.base": "Port must be a number.",
 				"number.min": "Port must be at least 1.",
 				"number.max": "Port must be at most 65535.",
-				"any.required": "Port is required for port monitors.",
+				"any.required": "Port is required for port and game monitors.",
 			}),
 			otherwise: joi.optional(),
 		}),
@@ -204,6 +205,14 @@ const monitorValidation = joi.object({
 	expectedValue: joi.string().allow(null, ""),
 	jsonPath: joi.string().allow(null, ""),
 	matchMethod: joi.string().allow(null, ""),
+	gameId: joi.when("type", {
+		is: "game",
+		then: joi.string().required().messages({
+			"string.empty": "Game selection is required for game monitors.",
+			"any.required": "Game selection is required for game monitors.",
+		}),
+		otherwise: joi.string().allow(null, ""),
+	}),
 });
 
 const imageValidation = joi.object({
@@ -301,6 +310,14 @@ const settingsValidation = joi.object({
 	systemEmailIgnoreTLS: joi.boolean(),
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
+	globalThresholds: joi
+		.object({
+			cpu: joi.number().min(1).max(100).allow("").optional(),
+			memory: joi.number().min(1).max(100).allow("").optional(),
+			disk: joi.number().min(1).max(100).allow("").optional(),
+			temperature: joi.number().min(1).max(150).allow("").optional(),
+		})
+		.optional(),
 });
 
 const dayjsValidator = (value, helpers) => {
@@ -440,6 +457,24 @@ const notificationValidation = joi.object({
 	}),
 });
 
+const editUserValidation = joi.object({
+	firstName: nameSchema,
+	lastName: lastnameSchema,
+	role: joi
+		.array()
+		.items(joi.string().valid(...Object.values(ROLES)))
+		.min(1)
+		.messages({
+			"array.min": "auth.common.fields.role.errors.min",
+		}),
+	email: joi
+		.string()
+		.required()
+		.trim()
+		.email({ tlds: { allow: false } })
+		.lowercase(),
+});
+
 export {
 	newOrChangedCredentials,
 	loginCredentials,
@@ -452,4 +487,5 @@ export {
 	statusPageValidation,
 	logoImageValidation,
 	notificationValidation,
+	editUserValidation,
 };

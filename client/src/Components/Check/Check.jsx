@@ -51,9 +51,10 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 				sx={{
 					color:
 						variant === "info"
-							? theme.palette.primary.contrastTextTertiary
+							? theme.palette.primary.contrastTextSecondary
 							: colors[variant],
-					opacity: 0.8,
+					opacity: 0.9,
+					fontWeight: 450,
 				}}
 			>
 				{noHighlightText && <Typography component="span">{noHighlightText}</Typography>}{" "}

@@ -8,7 +8,6 @@ cd ../..
 services=("mono_mongo" "mono_redis" "mono_server")
 dockerfiles=(
   "./docker/dist-mono/mongoDB.Dockerfile"
-  "./docker/dist-mono/redis.Dockerfile"
   "./docker/dist-mono/server.Dockerfile"
 )
 

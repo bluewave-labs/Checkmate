@@ -28,6 +28,8 @@ html {
 
 	--env-var-nav-bar-height: 70px;
 	--env-var-side-bar-width: 250px;
+	--env-var-side-bar-collapsed-width: 64px;
+	--env-var-side-bar-auth-footer-height: 50px;
 
 	--env-var-spacing-1: 12px;
 	--env-var-spacing-1-plus: 16px;

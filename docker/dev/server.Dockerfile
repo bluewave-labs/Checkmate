@@ -10,4 +10,4 @@ COPY ./server/ ./
 
 EXPOSE 52345
 
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]

@@ -1,10 +1,6 @@
 import sinon from "sinon";
 
-import {
-	handleValidationError,
-	handleError,
-	fetchMonitorCertificate,
-} from "../../controllers/controllerUtils.js";
+import { handleValidationError, handleError, fetchMonitorCertificate } from "../../controllers/controllerUtils.js";
 import { expect } from "chai";
 import sslChecker from "ssl-checker";
 import { afterEach } from "node:test";
