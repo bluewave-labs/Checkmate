@@ -33,6 +33,7 @@ const Logs = () => {
 					position: "sticky",
 					top: theme.spacing(0),
 					backdropFilter: "blur(10px)",
+					zIndex: theme.zIndex.appBar,
 				}}
 			>
 				<Tab label={t("logsPage.tabs.logs")} />
