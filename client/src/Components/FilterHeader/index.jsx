@@ -37,12 +37,6 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 				displayEmpty
 				value={controlledValue}
 				onChange={onChange}
-				sx={{
-					"& .MuiSelect-select": {
-						display: "flex",
-						alignItems: "center",
-					},
-				}}
 				renderValue={(selected) => {
 					if (!selected?.length) {
 						return header;
