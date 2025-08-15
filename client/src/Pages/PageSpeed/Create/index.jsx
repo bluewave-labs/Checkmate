@@ -152,9 +152,13 @@ const PageSpeedSetup = () => {
 		});
 
 		const { error } = monitorValidation.validate(
-			{ [name]: value },
+			{ [name]: value, type: monitor.type },
 			{ abortEarly: false }
 		);
+
+		console.log(name);
+		console.log(JSON.stringify(error, null, 2));
+
 		setErrors((prev) => ({
 			...prev,
 			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
