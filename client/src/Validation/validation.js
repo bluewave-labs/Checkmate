@@ -213,6 +213,7 @@ const monitorValidation = joi.object({
 		}),
 		otherwise: joi.string().allow(null, ""),
 	}),
+	notifications: joi.array().optional(),
 });
 
 const imageValidation = joi.object({
