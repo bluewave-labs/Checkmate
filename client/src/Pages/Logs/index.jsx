@@ -15,7 +15,7 @@ const Logs = () => {
 	const theme = useTheme();
 
 	// Local state
-	const [value, setValue] = useState(2);
+	const [value, setValue] = useState(0);
 
 	// Handlers
 	const handleChange = (event, newValue) => {

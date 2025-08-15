@@ -51,34 +51,14 @@ const Logs = () => {
 	];
 	return (
 		<Stack gap={theme.spacing(4)}>
-			<Box
-				sx={{
-					position: "sticky",
-					top: theme.spacing(17),
-					backdropFilter: "blur(10px)",
-					paddingY: theme.spacing(5),
-					paddingLeft: theme.spacing(6),
-				}}
-			>
-				<Typography variant="h2">{t("logsPage.description")}</Typography>
-			</Box>
-			<Divider
-				color={theme.palette.accent.main}
-				sx={{
-					position: "sticky",
-					top: theme.spacing(33),
-					backdropFilter: "blur(10px)",
-				}}
-			/>
 
 			<Stack
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(4)}
-				mt={theme.spacing(10)}
 				sx={{
 					position: "sticky",
-					top: theme.spacing(34),
+					top: theme.spacing(17),
 					backdropFilter: "blur(10px)",
 					paddingTop: theme.spacing(4),
 					paddingLeft: theme.spacing(6),
