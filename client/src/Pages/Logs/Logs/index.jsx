@@ -56,10 +56,9 @@ const Logs = () => {
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(4)}
-				mt={theme.spacing(10)}
 				sx={{
 					position: "sticky",
-					top: theme.spacing(34),
+					top: theme.spacing(17),
 					backdropFilter: "blur(10px)",
 					paddingTop: theme.spacing(4),
 					paddingLeft: theme.spacing(6),
