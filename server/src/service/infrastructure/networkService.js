@@ -1,23 +1,9 @@
-import jmespath from "jmespath";
-import https from "https";
-import { GameDig } from "gamedig";
-
 const SERVICE_NAME = "NetworkService";
-const UPROCK_ENDPOINT = "https://api.uprock.com/checkmate/push";
 
-/**
- * Constructs a new NetworkService instance.
- *
- * @param {Object} axios - The axios instance for HTTP requests.
- * @param {Object} ping - The ping utility for network checks.
- * @param {Object} logger - The logger instance for logging.
- * @param {Object} http - The HTTP utility for network operations.
- * @param {Object} net - The net utility for network operations.
- */
 class NetworkService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor(axios, ping, logger, http, Docker, net, stringService, settingsService) {
+	constructor({ axios, got, https, jmespath, GameDig, ping, logger, http, Docker, net, stringService, settingsService }) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
 		this.TYPE_PAGESPEED = "pagespeed";
@@ -29,6 +15,10 @@ class NetworkService {
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
 		this.axios = axios;
+		this.got = got;
+		this.https = https;
+		this.jmespath = jmespath;
+		this.GameDig = GameDig;
 		this.ping = ping;
 		this.logger = logger;
 		this.http = http;
@@ -38,151 +28,134 @@ class NetworkService {
 		this.settingsService = settingsService;
 	}
 
-	get serviceName() {
-		return NetworkService.SERVICE_NAME;
-	}
-
-	/**
-	 * Times the execution of an asynchronous operation.
-	 *
-	 * @param {Function} operation - The asynchronous operation to be timed.
-	 * @returns {Promise<Object>} An object containing the response, response time, and optionally an error.
-	 * @property {Object|null} response - The response from the operation, or null if an error occurred.
-	 * @property {number} responseTime - The time taken for the operation to complete, in milliseconds.
-	 * @property {Error} [error] - The error object if an error occurred during the operation.
-	 */
+	// Helper functions
 	async timeRequest(operation) {
-		const startTime = Date.now();
+		const start = process.hrtime.bigint();
 		try {
 			const response = await operation();
-			const endTime = Date.now();
-			const responseTime = endTime - startTime;
-			return { response, responseTime };
+			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
+			return { response, responseTime: elapsedMs };
 		} catch (error) {
-			const endTime = Date.now();
-			const responseTime = endTime - startTime;
-			return { response: null, responseTime, error };
+			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
+			return { response: null, responseTime: elapsedMs, error };
 		}
 	}
 
-	/**
-	 * Performs a ping check to a specified host to verify its availability.
-	 * @async
-	 * @param {Object} monitor - The monitor configuration object
-	 * @param {string} monitor.url - The host URL to ping
-	 * @param {string} monitor._id - The unique identifier of the monitor
-	 * @returns {Promise<Object>} A promise that resolves to a ping response object
-	 * @returns {string} pingResponse.monitorId - The ID of the monitor
-	 * @returns {string} pingResponse.type - The type of monitor (always "ping")
-	 * @returns {number} pingResponse.responseTime - The time taken for the ping
-	 * @returns {Object} pingResponse.payload - The raw ping response data
-	 * @returns {boolean} pingResponse.status - Whether the host is alive (true) or not (false)
-	 * @returns {number} pingResponse.code - Status code (200 for success, PING_ERROR for failure)
-	 * @returns {string} pingResponse.message - Success or failure message
-	 * @throws {Error} If there's an error during the ping operation
-	 */
+	// Main entry point
+	async requestStatus(monitor) {
+		const type = monitor?.type || "unknown";
+		switch (type) {
+			case this.TYPE_PING:
+				return await this.requestPing(monitor);
+			case this.TYPE_HTTP:
+				return await this.requestHttp(monitor);
+			case this.TYPE_PAGESPEED:
+				return await this.requestPageSpeed(monitor);
+			case this.TYPE_HARDWARE:
+				return await this.requestHardware(monitor);
+			case this.TYPE_DOCKER:
+				return await this.requestDocker(monitor);
+			case this.TYPE_PORT:
+				return await this.requestPort(monitor);
+			case this.TYPE_GAME:
+				return await this.requestGame(monitor);
+			default:
+				return await this.handleUnsupportedType(type);
+		}
+	}
+
 	async requestPing(monitor) {
 		try {
-			const url = monitor.url;
+			if (!monitor?.url) {
+				throw new Error("Monitor URL is required");
+			}
+
 			const { response, responseTime, error } = await this.timeRequest(() => this.ping.promise.probe(url));
+
+			if (!response) {
+				throw new Error("Ping failed - no result returned");
+			}
 
 			const pingResponse = {
 				monitorId: monitor._id,
 				type: "ping",
+				status: response.alive,
+				code: 200,
 				responseTime,
+				message: "Success",
 				payload: response,
 			};
+
 			if (error) {
 				pingResponse.status = false;
-				pingResponse.code = this.PING_ERROR;
-				pingResponse.message = "No response";
+				pingResponse.code = 200;
+				pingResponse.message = "Ping failed";
 				return pingResponse;
 			}
 
-			pingResponse.code = 200;
-			pingResponse.status = response.alive;
-			pingResponse.message = "Success";
 			return pingResponse;
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestPing";
-			throw error;
+		} catch (err) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestPing";
+			throw err;
 		}
 	}
 
-	/**
-	 * Performs an HTTP GET request to a specified URL with optional validation of response data.
-	 * @async
-	 * @param {Object} monitor - The monitor configuration object
-	 * @param {string} monitor.url - The URL to make the HTTP request to
-	 * @param {string} [monitor.secret] - Optional Bearer token for authentication
-	 * @param {string} monitor._id - The unique identifier of the monitor
-	 * @param {string} monitor.name - The name of the monitor
-	 * @param {string} monitor.teamId - The team ID associated with the monitor
-	 * @param {string} monitor.type - The type of monitor
-	 * @param {boolean} [monitor.ignoreTlsErrors] - Whether to ignore TLS certificate errors
-	 * @param {string} [monitor.jsonPath] - Optional JMESPath expression to extract data from JSON response
-	 * @param {string} [monitor.matchMethod] - Method to match response data ('include', 'regex', or exact match)
-	 * @param {string} [monitor.expectedValue] - Expected value to match against response data
-	 * @returns {Promise<Object>} A promise that resolves to an HTTP response object
-	 * @returns {string} httpResponse.monitorId - The ID of the monitor
-	 * @returns {string} httpResponse.teamId - The team ID
-	 * @returns {string} httpResponse.type - The type of monitor
-	 * @returns {number} httpResponse.responseTime - The time taken for the request
-	 * @returns {Object} httpResponse.payload - The response data
-	 * @returns {boolean} httpResponse.status - Whether the request was successful and matched expected value (if specified)
-	 * @returns {number} httpResponse.code - HTTP status code or NETWORK_ERROR
-	 * @returns {string} httpResponse.message - Success or failure message
-	 * @throws {Error} If there's an error during the HTTP request or data validation
-	 */
 	async requestHttp(monitor) {
+		const { url, secret, _id, name, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
+		const httpResponse = {
+			monitorId: _id,
+			teamId: teamId,
+			type,
+		};
+
 		try {
-			const { url, secret, _id, name, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
-			const config = {};
-
-			secret !== undefined && (config.headers = { Authorization: `Bearer ${secret}` });
-
-			if (ignoreTlsErrors === true) {
-				config.httpsAgent = new https.Agent({
-					rejectUnauthorized: false,
-				});
+			if (!url) {
+				throw new Error("Monitor URL is required");
 			}
-
-			const { response, responseTime, error } = await this.timeRequest(() => this.axios.get(url, config));
-
-			const httpResponse = {
-				monitorId: _id,
-				teamId,
-				type,
-				responseTime,
-				payload: response?.data,
+			const config = {
+				headers: secret ? { Authorization: `Bearer ${secret}` } : undefined,
 			};
 
-			if (error) {
-				const code = error.response?.status || this.NETWORK_ERROR;
-				httpResponse.code = code;
-				httpResponse.status = false;
-				httpResponse.message = this.http.STATUS_CODES[code] || this.stringService.httpNetworkError;
-				return httpResponse;
+			if (ignoreTlsErrors) {
+				config.agent = {
+					https: new this.https.Agent({
+						rejectUnauthorized: false,
+					}),
+				};
 			}
 
-			httpResponse.code = response.status;
+			const response = await this.got(url, config);
+
+			let payload;
+			const contentType = response.headers["content-type"];
+
+			if (contentType && contentType.includes("application/json")) {
+				try {
+					payload = JSON.parse(response.body);
+				} catch {
+					payload = response.body;
+				}
+			} else {
+				payload = response.body;
+			}
+
+			httpResponse.code = response.statusCode;
+			httpResponse.status = response.ok;
+			httpResponse.message = response.statusMessage;
+			httpResponse.responseTime = response.timings.phases.total || 0;
+			httpResponse.payload = payload;
+			httpResponse.timings = response.timings || {};
 
 			if (!expectedValue) {
-				// not configure expected value, return
-				httpResponse.status = true;
-				httpResponse.message = this.http.STATUS_CODES[response.status];
 				return httpResponse;
 			}
-
-			// validate if response data match expected value
-			let result = response?.data;
 
 			this.logger.info({
 				service: this.SERVICE_NAME,
 				method: "requestHttp",
 				message: `Job: [${name}](${_id}) match result with expected value`,
-				details: { expectedValue, result, jsonPath, matchMethod },
+				details: { expectedValue, payload, jsonPath, matchMethod },
 			});
 
 			if (jsonPath) {
@@ -196,106 +169,75 @@ class NetworkService {
 				}
 
 				try {
-					result = jmespath.search(result, jsonPath);
-				} catch (error) {
+					this.jmespath.search(payload, jsonPath);
+				} catch {
 					httpResponse.status = false;
 					httpResponse.message = this.stringService.httpJsonPathError;
 					return httpResponse;
 				}
 			}
-
-			if (result === null || result === undefined) {
+			return httpResponse;
+		} catch (err) {
+			if (err.name === "HTTPError" || err.name === "RequestError") {
+				httpResponse.code = err?.response?.statusCode || this.NETWORK_ERROR;
 				httpResponse.status = false;
-				httpResponse.message = this.stringService.httpEmptyResult;
+				httpResponse.message = err?.response?.statusCode || err.message;
+				httpResponse.responseTime = err?.timings?.phases?.total || 0;
+				httpResponse.payload = null;
+				httpResponse.timings = err?.timings || {};
 				return httpResponse;
 			}
-
-			let match;
-			result = typeof result === "object" ? JSON.stringify(result) : result.toString();
-			if (matchMethod === "include") match = result.includes(expectedValue);
-			else if (matchMethod === "regex") match = new RegExp(expectedValue).test(result);
-			else match = result === expectedValue;
-
-			httpResponse.status = match;
-			httpResponse.message = match ? this.stringService.httpMatchSuccess : this.stringService.httpMatchFail;
-			return httpResponse;
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestHttp";
-			throw error;
+			err.service = this.SERVICE_NAME;
+			err.method = "requestHttp";
+			throw err;
 		}
 	}
 
-	/**
-	 * Checks the performance of a webpage using Google's PageSpeed Insights API.
-	 * @async
-	 * @param {Object} monitor - The monitor configuration object
-	 * @param {string} monitor.url - The URL of the webpage to analyze
-	 * @returns {Promise<Object|undefined>} A promise that resolves to a pagespeed response object or undefined if API key is missing
-	 * @returns {string} response.monitorId - The ID of the monitor
-	 * @returns {string} response.type - The type of monitor
-	 * @returns {number} response.responseTime - The time taken for the analysis
-	 * @returns {boolean} response.status - Whether the analysis was successful
-	 * @returns {number} response.code - HTTP status code from the PageSpeed API
-	 * @returns {string} response.message - Success or failure message
-	 * @returns {Object} response.payload - The PageSpeed analysis results
-	 * @throws {Error} If there's an error during the PageSpeed analysis
-	 */
-	async requestPagespeed(monitor) {
+	async requestPageSpeed(monitor) {
 		try {
 			const url = monitor.url;
-			const updatedMonitor = { ...monitor };
-			let pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
-
+			if (!url) {
+				throw new Error("Monitor URL is required");
+			}
+			let pageSpeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance`;
 			const dbSettings = await this.settingsService.getDBSettings();
 			if (dbSettings?.pagespeedApiKey) {
-				pagespeedUrl += `&key=${dbSettings.pagespeedApiKey}`;
+				pageSpeedUrl += `&key=${dbSettings.pagespeedApiKey}`;
 			} else {
 				this.logger.warn({
-					message: "Pagespeed API key not found, job not executed",
+					message: "PageSpeed API key not found, job not executed",
 					service: this.SERVICE_NAME,
 					method: "requestPagespeed",
 					details: { url },
 				});
-				return;
 			}
-			updatedMonitor.url = pagespeedUrl;
-			return await this.requestHttp(updatedMonitor);
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestPagespeed";
-			throw error;
+			return await this.requestHttp({
+				...monitor,
+				url: pageSpeedUrl,
+			});
+		} catch (err) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestPageSpeed";
+			throw err;
 		}
 	}
 
 	async requestHardware(monitor) {
 		try {
 			return await this.requestHttp(monitor);
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestHardware";
-			throw error;
+		} catch (err) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestHardware";
+			throw err;
 		}
 	}
 
-	/**
-	 * Checks the status of a Docker container by its ID.
-	 * @async
-	 * @param {Object} monitor - The monitor configuration object
-	 * @param {string} monitor.url - The Docker container ID to check
-	 * @param {string} monitor._id - The unique identifier of the monitor
-	 * @param {string} monitor.type - The type of monitor
-	 * @returns {Promise<Object>} A promise that resolves to a docker response object
-	 * @returns {string} dockerResponse.monitorId - The ID of the monitor
-	 * @returns {string} dockerResponse.type - The type of monitor
-	 * @returns {number} dockerResponse.responseTime - The time taken for the container inspection
-	 * @returns {boolean} dockerResponse.status - Whether the container is running (true) or not (false)
-	 * @returns {number} dockerResponse.code - HTTP-like status code (200 for success, NETWORK_ERROR for failure)
-	 * @returns {string} dockerResponse.message - Success or failure message
-	 * @throws {Error} If the container is not found or if there's an error inspecting the container
-	 */
 	async requestDocker(monitor) {
 		try {
+			if (!monitor.url) {
+				throw new Error("Monitor URL is required");
+			}
+
 			const docker = new this.Docker({
 				socketPath: "/var/run/docker.sock",
 				handleError: true, // Enable error handling
@@ -306,14 +248,17 @@ class NetworkService {
 			if (!containerExists) {
 				throw new Error(this.stringService.dockerNotFound);
 			}
-			const container = docker.getContainer(monitor.url);
 
+			const container = docker.getContainer(monitor.url);
 			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
 
 			const dockerResponse = {
 				monitorId: monitor._id,
 				type: monitor.type,
 				responseTime,
+				status: response?.State?.Status === "running" ? true : false,
+				code: 200,
+				message: "Docker container status fetched successfully",
 			};
 
 			if (error) {
@@ -322,34 +267,15 @@ class NetworkService {
 				dockerResponse.message = error.reason || "Failed to fetch Docker container information";
 				return dockerResponse;
 			}
-			dockerResponse.status = response?.State?.Status === "running" ? true : false;
-			dockerResponse.code = 200;
-			dockerResponse.message = "Docker container status fetched successfully";
+
 			return dockerResponse;
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestDocker";
-			throw error;
+		} catch (err) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestDocker";
+			throw err;
 		}
 	}
 
-	/**
-	 * Attempts to establish a TCP connection to a specified host and port.
-	 * @async
-	 * @param {Object} monitor - The monitor configuration object
-	 * @param {string} monitor.url - The host URL to connect to
-	 * @param {number} monitor.port - The port number to connect to
-	 * @param {string} monitor._id - The unique identifier of the monitor
-	 * @param {string} monitor.type - The type of monitor
-	 * @returns {Promise<Object>} A promise that resolves to a port response object
-	 * @returns {string} portResponse.monitorId - The ID of the monitor
-	 * @returns {string} portResponse.type - The type of monitor
-	 * @returns {number} portResponse.responseTime - The time taken for the connection attempt
-	 * @returns {boolean} portResponse.status - Whether the connection was successful
-	 * @returns {number} portResponse.code - HTTP-like status code (200 for success, NETWORK_ERROR for failure)
-	 * @returns {string} portResponse.message - Success or failure message
-	 * @throws {Error} If the connection times out or encounters an error
-	 */
 	async requestPort(monitor) {
 		try {
 			const { url, port } = monitor;
@@ -381,21 +307,21 @@ class NetworkService {
 			});
 
 			const portResponse = {
+				code: 200,
+				status: response.success,
+				message: this.stringService.portSuccess,
 				monitorId: monitor._id,
 				type: monitor.type,
 				responseTime,
 			};
 
 			if (error) {
-				portResponse.status = false;
 				portResponse.code = this.NETWORK_ERROR;
+				portResponse.status = false;
 				portResponse.message = this.stringService.portFail;
 				return portResponse;
 			}
 
-			portResponse.status = response.success;
-			portResponse.code = 200;
-			portResponse.message = this.stringService.portSuccess;
 			return portResponse;
 		} catch (error) {
 			error.service = this.SERVICE_NAME;
@@ -404,19 +330,55 @@ class NetworkService {
 		}
 	}
 
-	/**
-	 * Handles unsupported job types by throwing an error with details.
-	 *
-	 * @param {string} type - The unsupported job type that was provided
-	 * @throws {Error} An error with service name, method name and unsupported type message
-	 */
-	handleUnsupportedType(type) {
+	async requestGame(monitor) {
+		try {
+			const { url, port, gameId } = monitor;
+
+			const gameResponse = {
+				code: 200,
+				status: true,
+				message: "Success",
+				monitorId: monitor._id,
+				type: "game",
+			};
+
+			const state = await this.GameDig.query({
+				type: gameId,
+				host: url,
+				port: port,
+			}).catch((error) => {
+				this.logger.warn({
+					message: error.message,
+					service: this.SERVICE_NAME,
+					method: "requestGame",
+					details: { url, port, gameId },
+				});
+			});
+
+			if (!state) {
+				gameResponse.code = this.NETWORK_ERROR;
+				gameResponse.status = false;
+				gameResponse.message = "No response";
+				return gameResponse;
+			}
+
+			gameResponse.responseTime = state.ping;
+			gameResponse.payload = state;
+			return gameResponse;
+		} catch (error) {
+			error.service = this.SERVICE_NAME;
+			error.method = "requestPing";
+			throw error;
+		}
+	}
+	async handleUnsupportedType(type) {
 		const err = new Error(`Unsupported type: ${type}`);
 		err.service = this.SERVICE_NAME;
 		err.method = "getStatus";
 		throw err;
 	}
 
+	// Other network requests unrelated to monitoring:
 	async requestWebhook(type, url, body) {
 		try {
 			const response = await this.axios.post(url, body, {
@@ -469,93 +431,6 @@ class NetworkService {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestPagerDuty";
 			throw error;
-		}
-	}
-
-	/**
-	 * Requests the status of a game monitor.
-	 *
-	 * @param {Object} monitor - The monitor object to request the status for.
-	 * @returns {Promise<Object>} The response from the game status request.
-	 * @throws {Error} Throws an error if the request fails or if the monitor is not configured correctly.
-	 * @property {string} monitorId - The ID of the monitor.
-	 * @property {string} type - The type of the monitor (should be "game").
-	 * @property {number} responseTime - The time taken for the request.
-	 * @property {Object|null} payload - The game state response or null if the request failed.
-	 * @property {boolean} status - Indicates if the request was successful (true) or not (false).
-	 * @property {number} code - The status code of the request (200 for success, NETWORK_ERROR for failure).
-	 * @property {string} message - A message indicating the result of the request.
-	 */
-	async requestGame(monitor) {
-		try {
-			const { url, port, gameId } = monitor;
-
-			const gameResponse = {
-				code: 200,
-				status: true,
-				message: "Success",
-				monitorId: monitor._id,
-				type: "game",
-			};
-
-			const state = await GameDig.query({
-				type: gameId,
-				host: url,
-				port: port,
-			}).catch((error) => {
-				this.logger.warn({
-					message: error.message,
-					service: this.SERVICE_NAME,
-					method: "requestGame",
-					details: { url, port, gameId },
-				});
-			});
-
-			if (!state) {
-				gameResponse.status = false;
-				gameResponse.code = this.NETWORK_ERROR;
-				gameResponse.message = "No response";
-				return gameResponse;
-			}
-
-			gameResponse.responseTime = state.ping;
-			gameResponse.payload = state;
-			return gameResponse;
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
-			error.method = "requestPing";
-			throw error;
-		}
-	}
-
-	/**
-	 * Gets the status of a job based on its type and returns the appropriate response.
-	 *
-	 * @param {Object} job - The job object containing the data for the status request.
-	 * @param {Object} job.data - The data object within the job.
-	 * @param {string} job.data.type - The type of the job (e.g., "ping", "http", "pagespeed", "hardware").
-	 * @returns {Promise<Object>} The response object from the appropriate request method.
-	 * @throws {Error} Throws an error if the job type is unsupported.
-	 */
-	async getStatus(monitor) {
-		const type = monitor.type ?? "unknown";
-		switch (type) {
-			case this.TYPE_PING:
-				return await this.requestPing(monitor);
-			case this.TYPE_HTTP:
-				return await this.requestHttp(monitor);
-			case this.TYPE_PAGESPEED:
-				return await this.requestPagespeed(monitor);
-			case this.TYPE_HARDWARE:
-				return await this.requestHardware(monitor);
-			case this.TYPE_DOCKER:
-				return await this.requestDocker(monitor);
-			case this.TYPE_PORT:
-				return await this.requestPort(monitor);
-			case this.TYPE_GAME:
-				return await this.requestGame(monitor);
-			default:
-				return this.handleUnsupportedType(type);
 		}
 	}
 }

@@ -19,8 +19,10 @@ import MaintenanceWindowService from "../service/business/maintenanceWindowServi
 import MonitorService from "../service/business/monitorService.js";
 import papaparse from "papaparse";
 import axios from "axios";
+import got from "got";
 import ping from "ping";
 import http from "http";
+import https from "https";
 import Docker from "dockerode";
 import net from "net";
 import fs from "fs";
@@ -32,6 +34,8 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games } from "gamedig";
+import jmespath from "jmespath";
+import { GameDig } from "gamedig";
 
 import { fileURLToPath } from "url";
 import { ObjectId } from "mongodb";
@@ -125,7 +129,20 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 
 	await db.connect();
 
-	const networkService = new NetworkService(axios, ping, logger, http, Docker, net, stringService, settingsService);
+	const networkService = new NetworkService({
+		axios,
+		got,
+		https,
+		jmespath,
+		GameDig,
+		ping,
+		logger,
+		http,
+		Docker,
+		net,
+		stringService,
+		settingsService,
+	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 	const bufferService = new BufferService({ db, logger, envSettings });
 	const statusService = new StatusService({ db, logger, buffer: bufferService });
