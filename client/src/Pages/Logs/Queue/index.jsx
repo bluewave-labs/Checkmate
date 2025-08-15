@@ -39,34 +39,50 @@ const QueueDetails = () => {
 				<JobTable jobs={jobs} />
 				<FailedJobTable metrics={metrics} />
 
-				<ButtonGroup
-					variant="contained"
-					color="accent"
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
 					sx={{
 						position: "sticky",
 						bottom: 0,
+						boxShadow: theme.shape.boxShadow,
 						zIndex: 1000,
+						mt: 3,
 						backgroundColor: theme.palette.primary.main,
-						p: theme.spacing(4),
-						border: `1px solid ${theme.palette.primary.lowContrast}`,
+						display: "flex",
+						justifyContent: "flex-end",
+						pb: theme.spacing(4),
+						pr: theme.spacing(15),
+						pl: theme.spacing(5),
+						pt: theme.spacing(4),
+						border: 1,
+						borderStyle: "solid",
+						borderColor: theme.palette.primary.lowContrast,
 						borderRadius: theme.spacing(2),
 					}}
 				>
+					<ButtonGroup
+						variant="contained"
+						color="accent"
+					>
 					<Button
 						onClick={() => {
 							setTrigger(!trigger);
 						}}
 						loading={isLoading}
+						sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					>
 						{t("queuePage.refreshButton")}
 					</Button>
 					<Button
 						onClick={() => flushQueue(trigger, setTrigger)}
 						loading={isFlushing}
+						sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					>
 						{t("queuePage.flushButton")}
 					</Button>
-				</ButtonGroup>
+					</ButtonGroup>
+				</Stack>
 			</Stack>
 		</Stack>
 	);
