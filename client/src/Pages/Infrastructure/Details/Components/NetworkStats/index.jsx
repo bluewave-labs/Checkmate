@@ -71,7 +71,7 @@ const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
 						onChange={(e) => setSelectedInterface(e.target.value)}
 						items={availableInterfaces.map((interfaceName) => ({
 							_id: interfaceName,
-							name: interfaceName
+							name: interfaceName,
 						}))}
 						sx={{ minWidth: 200 }}
 					/>

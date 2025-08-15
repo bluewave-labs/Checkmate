@@ -409,7 +409,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	$arrayElemAt: [
 																		{
 																			$map: {
-																				input: { $arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }] },
+																				input: {
+																					$arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }],
+																				},
 																				as: "iface",
 																				in: "$$iface.bytes_sent",
 																			},
@@ -418,7 +420,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	],
 																},
 																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
-																tLast: { $arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }] },
+																tLast: {
+																	$arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }],
+																},
 															},
 															in: {
 																$cond: [
@@ -444,7 +448,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	$arrayElemAt: [
 																		{
 																			$map: {
-																				input: { $arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }] },
+																				input: {
+																					$arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }],
+																				},
 																				as: "iface",
 																				in: "$$iface.bytes_recv",
 																			},
@@ -453,7 +459,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	],
 																},
 																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
-																tLast: { $arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }] },
+																tLast: {
+																	$arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }],
+																},
 															},
 															in: {
 																$cond: [
@@ -479,7 +487,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	$arrayElemAt: [
 																		{
 																			$map: {
-																				input: { $arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }] },
+																				input: {
+																					$arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }],
+																				},
 																				as: "iface",
 																				in: "$$iface.packets_sent",
 																			},
@@ -488,7 +498,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	],
 																},
 																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
-																tLast: { $arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }] },
+																tLast: {
+																	$arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }],
+																},
 															},
 															in: {
 																$cond: [
@@ -566,7 +578,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	$arrayElemAt: [
 																		{
 																			$map: {
-																				input: { $arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }] },
+																				input: {
+																					$arrayElemAt: [{ $ifNull: ["$net", []] }, { $subtract: [{ $size: { $ifNull: ["$net", []] } }, 1] }],
+																				},
 																				as: "iface",
 																				in: "$$iface.err_in",
 																			},
@@ -575,7 +589,9 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																	],
 																},
 																tFirst: { $arrayElemAt: ["$updatedAts", 0] },
-																tLast: { $arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }] },
+																tLast: {
+																	$arrayElemAt: [{ $ifNull: ["$updatedAts", []] }, { $subtract: [{ $size: { $ifNull: ["$updatedAts", []] } }, 1] }],
+																},
 															},
 															in: {
 																$cond: [
