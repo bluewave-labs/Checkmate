@@ -156,9 +156,6 @@ const PageSpeedSetup = () => {
 			{ abortEarly: false }
 		);
 
-		console.log(name);
-		console.log(JSON.stringify(error, null, 2));
-
 		setErrors((prev) => ({
 			...prev,
 			...(error ? { [name]: error.details[0].message } : { [name]: undefined }),
