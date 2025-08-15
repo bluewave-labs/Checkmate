@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
+import Select from "../../../../../Components/Inputs/Select";
 import NetworkStatBoxes from "./NetworkStatBoxes";
 import NetworkCharts from "./NetworkCharts";
 import MonitorTimeFrameHeader from "../../../../../Components/MonitorTimeFrameHeader";
@@ -63,27 +64,17 @@ const Network = ({ net, checks, isLoading, dateRange, setDateRange }) => {
 				gap={theme.spacing(4)}
 			>
 				{availableInterfaces.length > 0 && (
-					<FormControl
-						variant="outlined"
-						size="small"
+					<Select
+						name="networkInterface"
+						label={t("networkInterface")}
+						value={selectedInterface}
+						onChange={(e) => setSelectedInterface(e.target.value)}
+						items={availableInterfaces.map((interfaceName) => ({
+							_id: interfaceName,
+							name: interfaceName
+						}))}
 						sx={{ minWidth: 200 }}
-					>
-						<InputLabel>{t("networkInterface")}</InputLabel>
-						<Select
-							value={selectedInterface}
-							onChange={(e) => setSelectedInterface(e.target.value)}
-							label={t("networkInterface")}
-						>
-							{availableInterfaces.map((interfaceName) => (
-								<MenuItem
-									key={interfaceName}
-									value={interfaceName}
-								>
-									{interfaceName}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
+					/>
 				)}
 				<MonitorTimeFrameHeader
 					isLoading={isLoading}
