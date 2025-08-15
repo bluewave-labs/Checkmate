@@ -29,8 +29,6 @@ const QueueDetails = () => {
 
 	return (
 		<Stack gap={theme.spacing(4)}>
-			<Typography variant="h2">{t("queuePage.metricsTable.title")}</Typography>
-			<Divider color={theme.palette.accent.main} />
 			<Stack
 				gap={theme.spacing(20)}
 				mt={theme.spacing(10)}

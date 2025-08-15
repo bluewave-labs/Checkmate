@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 cd ../..
 
 # Define service names and their corresponding Dockerfiles in parallel arrays
-services=("mono_mongo" "mono_redis" "mono_server")
+services=("mono_mongo"  "mono_server")
 dockerfiles=(
   "./docker/dist-mono/mongoDB.Dockerfile"
   "./docker/dist-mono/server.Dockerfile"
