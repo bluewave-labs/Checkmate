@@ -37,6 +37,15 @@ const BaseCheckSchema = mongoose.Schema({
 		type: Number,
 	},
 	/**
+	 * Timings from Got.
+	 *
+	 * @type {Object}
+	 */
+	timings: {
+		type: Object, // Accepts any object
+		default: {},
+	},
+	/**
 	 * HTTP status code received during the check.
 	 *
 	 * @type {Number}
