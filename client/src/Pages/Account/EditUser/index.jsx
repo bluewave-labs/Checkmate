@@ -16,7 +16,6 @@ import { useGetUser, useEditUser } from "../../../Hooks/userHooks";
 import { EDITABLE_ROLES, ROLES } from "../../../Utils/roleUtils";
 import { useEditUserForm, useValidateEditUserForm } from "./hooks/editUser";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 
 const EditUser = () => {
 	const { userId } = useParams();
@@ -48,6 +47,15 @@ const EditUser = () => {
 		handleSearchInput,
 	] = useEditUserForm(user);
 	const [errors, validateForm, validateField] = useValidateEditUserForm();
+
+	if (currentUser?._id && userId === currentUser._id) {
+		return (
+			<Navigate
+				to="/account/profile"
+				replace
+			/>
+		);
+	}
 
 	const onChange = (e) => {
 		const name = e.target.name;
