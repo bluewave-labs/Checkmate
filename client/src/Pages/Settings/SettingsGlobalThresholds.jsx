@@ -31,7 +31,6 @@ const SettingsGlobalThresholds = ({
 		disk: "",
 		temperature: "",
 	});
-	console.log(settingsData);
 	if (!isAdmin) return null;
 
 	// Threshold ranges
@@ -60,14 +59,13 @@ const SettingsGlobalThresholds = ({
 		// Delete template if selected and all thresholds empty
 		if (selectedTemplate && Object.keys(thresholds).length === 0) {
 			delete templates[selectedTemplate];
-			setTemplateValue("");
+			
 		} else if (
 			(newTemplateName || selectedTemplate) &&
 			Object.keys(thresholds).length > 0
 		) {
 			const name = newTemplateName || selectedTemplate;
 			templates[name] = thresholds;
-			setTemplateValue(name);
 			if (newTemplateName) setTextBoxValue("");
 		}
 
@@ -79,6 +77,7 @@ const SettingsGlobalThresholds = ({
 				globalThresholds: templates,
 			},
 		}));
+		setTemplateValue("");
 	};
 
 	const onchangeDropdown = (e) => {
@@ -169,7 +168,7 @@ const SettingsGlobalThresholds = ({
 							value={templateValue}
 							onChange={onchangeDropdown}
 						>
-							<MenuItem value="">{t("Select Template", "Select Template")}</MenuItem>
+							<MenuItem value="">{t("settingsPage.globalThresholds.selectTemplate", "Select Template")}</MenuItem>
 							{templateKeys.map((key) => (
 								<MenuItem
 									key={key}

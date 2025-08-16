@@ -133,38 +133,35 @@ const CreateInfrastructureMonitor = () => {
 	// Populate form fields if editing or on create default
 	useEffect(() => {
 		if (isCreate || !monitor) return;
-			const { thresholds = {} } = monitor;
+		const { thresholds = {} } = monitor;
 
-			setHttps(monitor.url.startsWith("https"));
+		setHttps(monitor.url.startsWith("https"));
 
-			setInfrastructureMonitor({
-				url: monitor.url.replace(/^https?:\/\//, ""),
-				name: monitor.name || "",
-				notifications: monitor.notifications || [],
-				interval: monitor.interval / MS_PER_MINUTE,
-				cpu: thresholds.usage_cpu !== undefined,
-				usage_cpu:
-					thresholds.usage_cpu !== undefined
-						? (thresholds.usage_cpu * 100).toString()
-						: "",
-				memory: thresholds.usage_memory !== undefined,
-				usage_memory:
-					thresholds.usage_memory !== undefined
-						? (thresholds.usage_memory * 100).toString()
-						: "",
-				disk: thresholds.usage_disk !== undefined,
-				usage_disk:
-					thresholds.usage_disk !== undefined
-						? (thresholds.usage_disk * 100).toString()
-						: "",
-				temperature: thresholds.usage_temperature !== undefined,
-				usage_temperature:
-					thresholds.usage_temperature !== undefined
-						? (thresholds.usage_temperature * 100).toString()
-						: "",
-				secret: monitor.secret || "",
-			});
-		
+		setInfrastructureMonitor({
+			url: monitor.url.replace(/^https?:\/\//, ""),
+			name: monitor.name || "",
+			notifications: monitor.notifications || [],
+			interval: monitor.interval / MS_PER_MINUTE,
+			cpu: thresholds.usage_cpu !== undefined,
+			usage_cpu:
+				thresholds.usage_cpu !== undefined ? (thresholds.usage_cpu * 100).toString() : "",
+			memory: thresholds.usage_memory !== undefined,
+			usage_memory:
+				thresholds.usage_memory !== undefined
+					? (thresholds.usage_memory * 100).toString()
+					: "",
+			disk: thresholds.usage_disk !== undefined,
+			usage_disk:
+				thresholds.usage_disk !== undefined
+					? (thresholds.usage_disk * 100).toString()
+					: "",
+			temperature: thresholds.usage_temperature !== undefined,
+			usage_temperature:
+				thresholds.usage_temperature !== undefined
+					? (thresholds.usage_temperature * 100).toString()
+					: "",
+			secret: monitor.secret || "",
+		});
 	}, [isCreate, monitor]);
 
 	// Handlers
@@ -303,7 +300,6 @@ const CreateInfrastructureMonitor = () => {
 		if (!selected) return;
 
 		const thresholds = thresholdTemplatesState[selected] || {};
-		console.log("Applying thresholds:", thresholds);
 
 		setInfrastructureMonitor({
 			...infrastructureMonitor,
@@ -585,13 +581,13 @@ const CreateInfrastructureMonitor = () => {
 						{!globalSettingsLoading && templateKeysState.length > 0 && (
 							<Stack gap={theme.spacing(6)}>
 								<FormControl fullWidth>
-									<InputLabel id="threshold-template-label">{t("Template")}</InputLabel>
+									<InputLabel id="threshold-template-label">{t("InfrastructureSelectTemplate")}</InputLabel>
 									<MuiSelect
 										labelId="threshold-template-label"
 										value={thresholdTemplate || ""}
 										onChange={handleThresholdTemplateChange}
 									>
-										<MenuItem value="">{t("Select Template")}</MenuItem>
+										<MenuItem value="">{t("InfrastructureSelectTemplate")}</MenuItem>
 										{templateKeysState.map((key) => (
 											<MenuItem
 												key={key}
