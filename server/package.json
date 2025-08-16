@@ -28,6 +28,7 @@
 		"express": "^4.19.2",
 		"express-rate-limit": "8.0.1",
 		"gamedig": "^5.3.1",
+		"got": "14.4.7",
 		"handlebars": "^4.7.8",
 		"helmet": "^8.0.0",
 		"ioredis": "^5.4.2",

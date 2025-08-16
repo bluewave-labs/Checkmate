@@ -192,6 +192,7 @@ class StatusService {
 			conn_took,
 			connect_took,
 			tls_took,
+			timings,
 		} = networkResponse;
 
 		const check = {
@@ -200,6 +201,7 @@ class StatusService {
 			status,
 			statusCode: code,
 			responseTime,
+			timings: timings || {},
 			message,
 			first_byte_took,
 			body_read_took,

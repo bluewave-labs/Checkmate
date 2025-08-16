@@ -31,7 +31,8 @@ class SuperSimpleQueueHelper {
 					});
 					return;
 				}
-				const networkResponse = await this.networkService.getStatus(monitor);
+				const networkResponse = await this.networkService.requestStatus(monitor);
+
 				if (!networkResponse) {
 					throw new Error("No network response");
 				}
