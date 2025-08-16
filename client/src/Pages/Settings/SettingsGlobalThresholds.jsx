@@ -78,6 +78,8 @@ const SettingsGlobalThresholds = ({
 			},
 		}));
 		setTemplateValue("");
+		setThresholdValues({ cpu: "", memory: "", disk: "", temperature: "" });
+
 	};
 
 	const onchangeDropdown = (e) => {
