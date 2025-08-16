@@ -59,7 +59,6 @@ const SettingsGlobalThresholds = ({
 		// Delete template if selected and all thresholds empty
 		if (selectedTemplate && Object.keys(thresholds).length === 0) {
 			delete templates[selectedTemplate];
-			
 		} else if (
 			(newTemplateName || selectedTemplate) &&
 			Object.keys(thresholds).length > 0
@@ -79,7 +78,6 @@ const SettingsGlobalThresholds = ({
 		}));
 		setTemplateValue("");
 		setThresholdValues({ cpu: "", memory: "", disk: "", temperature: "" });
-
 	};
 
 	const onchangeDropdown = (e) => {
@@ -170,7 +168,9 @@ const SettingsGlobalThresholds = ({
 							value={templateValue}
 							onChange={onchangeDropdown}
 						>
-							<MenuItem value="">{t("settingsPage.globalThresholds.selectTemplate", "Select Template")}</MenuItem>
+							<MenuItem value="">
+								{t("settingsPage.globalThresholds.selectTemplate", "Select Template")}
+							</MenuItem>
 							{templateKeys.map((key) => (
 								<MenuItem
 									key={key}

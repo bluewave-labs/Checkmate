@@ -313,7 +313,7 @@ const settingsValidation = joi.object({
 	globalThresholds: joi
 		.object()
 		.pattern(
-			joi.string(), 
+			joi.string(),
 			joi
 				.object({
 					cpu: joi.number().min(1).max(100).allow("").optional(),

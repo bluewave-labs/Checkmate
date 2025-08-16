@@ -581,7 +581,9 @@ const CreateInfrastructureMonitor = () => {
 						{!globalSettingsLoading && templateKeysState.length > 0 && (
 							<Stack gap={theme.spacing(6)}>
 								<FormControl fullWidth>
-									<InputLabel id="threshold-template-label">{t("InfrastructureSelectTemplate")}</InputLabel>
+									<InputLabel id="threshold-template-label">
+										{t("InfrastructureSelectTemplate")}
+									</InputLabel>
 									<MuiSelect
 										labelId="threshold-template-label"
 										value={thresholdTemplate || ""}
