@@ -492,6 +492,7 @@
 	"infrastructureCustomizeAlerts": "Customize alerts",
 	"infrastructureDisplayNameLabel": "Display name",
 	"infrastructureEditMonitor": "Save Infrastructure Monitor",
+	"InfrastructureSelectTemplate": "Select Template",
 	"infrastructureEditYour": "Edit your",
 	"infrastructureMonitor": {
 		"fallback": {
@@ -907,8 +908,15 @@
 		"title": "Settings",
 		"globalThresholds": {
 			"title": "Global Thresholds",
-			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring."
+			"selectTemplate": "Select Template",
+			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring.",
+			"templateHeading": "Template Settings",
+			"templateDescription": "Select a template to edit its values, then click Update. To delete, select a template and leave all values empty. To add a new template, enter a name, fill values, and click Update.",
+			"editTemplate": "Edit Template",
+			"newTemplateName": "New Template Name",
+			"UpdateChanges": "Update Changes"
 		},
+
 		"uiSettings": {
 			"description": "Switch between light and dark mode, or change user interface language.",
 			"labelLanguage": "Language",
