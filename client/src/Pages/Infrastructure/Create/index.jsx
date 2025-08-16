@@ -7,12 +7,24 @@ import Link from "../../../Components/Link";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import PulseDot from "../../../Components/Animated/PulseDot";
-import Select from "../../../Components/Inputs/Select";
+import Select from "../../../Components/Inputs/Select"; // custom Select for interval
 import TextInput from "../../../Components/Inputs/TextInput";
-import { Box, Stack, Tooltip, Typography, Button, ButtonGroup } from "@mui/material";
+import {
+	Box,
+	Stack,
+	Tooltip,
+	Typography,
+	Button,
+	ButtonGroup,
+	FormControl,
+	InputLabel,
+	MenuItem,
+} from "@mui/material";
 import { CustomThreshold } from "./Components/CustomThreshold";
 import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
 import { createToast } from "../../../Utils/toastUtils";
+import MuiSelect from "@mui/material/Select";
+
 // Utils
 import NotificationsConfig from "../../../Components/NotificationConfig";
 import { capitalizeFirstLetter } from "../../../Utils/stringUtils";
@@ -62,6 +74,11 @@ const CreateInfrastructureMonitor = () => {
 		usage_temperature: "",
 		secret: "",
 	});
+	const [thresholdTemplate, setThresholdTemplate] = useState("");
+
+	// Local template state (avoid undefined during async fetch)
+	const [thresholdTemplatesState, setThresholdTemplatesState] = useState({}); // object map
+	const [templateKeysState, setTemplateKeysState] = useState([]); // keys array
 
 	// Fetch monitor details if editing
 	const { statusColor, pagespeedStatusMsg, determineState } = useMonitorUtils();
@@ -106,31 +123,16 @@ const CreateInfrastructureMonitor = () => {
 		return errorKey ? errors[errorKey] : null;
 	};
 
-	// Populate form fields if editing
+	// Sync globalSettings into local template state when it arrives
 	useEffect(() => {
-		if (isCreate) {
-			if (globalSettingsLoading) return;
+		const templates = globalSettings?.data?.settings?.globalThresholds || {};
+		setThresholdTemplatesState(templates);
+		setTemplateKeysState(Object.keys(templates));
+	}, [globalSettings]);
 
-			const gt = globalSettings?.data?.settings?.globalThresholds || {};
-
-			setHttps(false);
-
-			setInfrastructureMonitor({
-				url: "",
-				name: "",
-				notifications: [],
-				interval: 0.25,
-				cpu: gt.cpu !== undefined,
-				usage_cpu: gt.cpu !== undefined ? gt.cpu.toString() : "",
-				memory: gt.memory !== undefined,
-				usage_memory: gt.memory !== undefined ? gt.memory.toString() : "",
-				disk: gt.disk !== undefined,
-				usage_disk: gt.disk !== undefined ? gt.disk.toString() : "",
-				temperature: gt.temperature !== undefined,
-				usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
-				secret: "",
-			});
-		} else if (monitor) {
+	// Populate form fields if editing or on create default
+	useEffect(() => {
+		if (isCreate || !monitor) return;
 			const { thresholds = {} } = monitor;
 
 			setHttps(monitor.url.startsWith("https"));
@@ -162,8 +164,8 @@ const CreateInfrastructureMonitor = () => {
 						: "",
 				secret: monitor.secret || "",
 			});
-		}
-	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
+		
+	}, [isCreate, monitor]);
 
 	// Handlers
 	const onSubmit = async (event) => {
@@ -293,6 +295,30 @@ const CreateInfrastructureMonitor = () => {
 		isPausing ||
 		notificationsAreLoading;
 
+	// Template dropdown change: apply template values to infrastructureMonitor
+	const handleThresholdTemplateChange = (e) => {
+		const selected = e?.target?.value || "";
+		setThresholdTemplate(selected);
+
+		if (!selected) return;
+
+		const thresholds = thresholdTemplatesState[selected] || {};
+		console.log("Applying thresholds:", thresholds);
+
+		setInfrastructureMonitor({
+			...infrastructureMonitor,
+			cpu: thresholds.cpu !== undefined,
+			usage_cpu: thresholds.cpu !== undefined ? thresholds.cpu.toString() : "",
+			memory: thresholds.memory !== undefined,
+			usage_memory: thresholds.memory !== undefined ? thresholds.memory.toString() : "",
+			disk: thresholds.disk !== undefined,
+			usage_disk: thresholds.disk !== undefined ? thresholds.disk.toString() : "",
+			temperature: thresholds.temperature !== undefined,
+			usage_temperature:
+				thresholds.temperature !== undefined ? thresholds.temperature.toString() : "",
+		});
+	};
+
 	return (
 		<Box className="create-infrastructure-monitor">
 			<Breadcrumbs list={CRUMBS} />
@@ -304,6 +330,7 @@ const CreateInfrastructureMonitor = () => {
 				gap={theme.spacing(12)}
 				mt={theme.spacing(6)}
 			>
+				{/* ... header UI unchanged ... */}
 				<Stack
 					direction="row"
 					gap={theme.spacing(2)}
@@ -331,9 +358,7 @@ const CreateInfrastructureMonitor = () => {
 								>
 									{t("monitor")}
 								</Typography>
-							) : (
-								<></>
-							)}
+							) : null}
 						</Typography>
 						{!isCreate && (
 							<Stack
@@ -391,6 +416,8 @@ const CreateInfrastructureMonitor = () => {
 							</Stack>
 						)}
 					</Box>
+
+					{/* pause/remove buttons unchanged */}
 					{!isCreate && (
 						<Box
 							alignSelf="flex-end"
@@ -437,7 +464,10 @@ const CreateInfrastructureMonitor = () => {
 						</Box>
 					)}
 				</Stack>
+
+				{/* General settings (unchanged) */}
 				<ConfigBox>
+					{/* ... general settings UI ... */}
 					<Stack>
 						<Typography
 							component="h2"
@@ -518,6 +548,8 @@ const CreateInfrastructureMonitor = () => {
 						/>
 					</Stack>
 				</ConfigBox>
+
+				{/* Notifications (unchanged) */}
 				<ConfigBox>
 					<Box>
 						<Typography
@@ -534,6 +566,8 @@ const CreateInfrastructureMonitor = () => {
 						setNotifications={infrastructureMonitor.notifications}
 					/>
 				</ConfigBox>
+
+				{/* Customize alerts + template dropdown */}
 				<ConfigBox>
 					<Box>
 						<Typography
@@ -546,7 +580,30 @@ const CreateInfrastructureMonitor = () => {
 							{t("infrastructureAlertNotificationDescription")}
 						</Typography>
 					</Box>
+
 					<Stack gap={theme.spacing(6)}>
+						{!globalSettingsLoading && templateKeysState.length > 0 && (
+							<Stack gap={theme.spacing(6)}>
+								<FormControl fullWidth>
+									<InputLabel id="threshold-template-label">{t("Template")}</InputLabel>
+									<MuiSelect
+										labelId="threshold-template-label"
+										value={thresholdTemplate || ""}
+										onChange={handleThresholdTemplateChange}
+									>
+										<MenuItem value="">{t("Select Template")}</MenuItem>
+										{templateKeysState.map((key) => (
+											<MenuItem
+												key={key}
+												value={key}
+											>
+												{key}
+											</MenuItem>
+										))}
+									</MuiSelect>
+								</FormControl>
+							</Stack>
+						)}
 						{METRICS.map((metric) => {
 							return (
 								<CustomThreshold
@@ -577,15 +634,15 @@ const CreateInfrastructureMonitor = () => {
 								className="input-error"
 								color={theme.palette.error.main}
 								mt={theme.spacing(2)}
-								sx={{
-									opacity: 0.8,
-								}}
+								sx={{ opacity: 0.8 }}
 							>
 								{getAlertError(errors)}
 							</Typography>
 						)}
 					</Stack>
 				</ConfigBox>
+
+				{/* Advanced settings (unchanged) */}
 				<ConfigBox>
 					<Box>
 						<Typography
@@ -606,6 +663,8 @@ const CreateInfrastructureMonitor = () => {
 						/>
 					</Stack>
 				</ConfigBox>
+
+				{/* Submit */}
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
@@ -620,6 +679,7 @@ const CreateInfrastructureMonitor = () => {
 					</Button>
 				</Stack>
 			</Stack>
+
 			{!isCreate && (
 				<Dialog
 					open={isOpen}
