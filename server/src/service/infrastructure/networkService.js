@@ -70,7 +70,7 @@ class NetworkService {
 				throw new Error("Monitor URL is required");
 			}
 
-			const { response, responseTime, error } = await this.timeRequest(() => this.ping.promise.probe(url));
+			const { response, responseTime, error } = await this.timeRequest(() => this.ping.promise.probe(monitor.url));
 
 			if (!response) {
 				throw new Error("Ping failed - no result returned");
