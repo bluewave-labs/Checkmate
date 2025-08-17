@@ -330,6 +330,7 @@ class MonitorModule {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);
 			const dates = this.getDateRange(dateRange);
+
 			const formatLookup = {
 				recent: "%Y-%m-%dT%H:%M:00Z",
 				day: "%Y-%m-%dT%H:00:00Z",
@@ -337,13 +338,15 @@ class MonitorModule {
 				month: "%Y-%m-%dT00:00:00Z",
 			};
 			const dateString = formatLookup[dateRange];
+
 			const hardwareStats = await this.HardwareCheck.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
 
-			const monitorStats = {
+			const stats = hardwareStats[0];
+
+			return {
 				...monitor.toObject(),
-				stats: hardwareStats[0],
+				stats,
 			};
-			return monitorStats;
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getHardwareDetailsById";
