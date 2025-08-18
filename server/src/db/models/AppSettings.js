@@ -66,10 +66,17 @@ const AppSettingsSchema = mongoose.Schema(
 			default: 1,
 		},
 		globalThresholds: {
-			cpu: { type: Number },
-			memory: { type: Number },
-			disk: { type: Number },
-			temperature: { type: Number },
+			type: Map,
+			of: new mongoose.Schema(
+				{
+					cpu: { type: Number, min: 1, max: 100 },
+					memory: { type: Number, min: 1, max: 100 },
+					disk: { type: Number, min: 1, max: 100 },
+					temperature: { type: Number, min: 1, max: 150 },
+				},
+				{ _id: false }
+			),
+			default: {},
 		},
 	},
 	{
