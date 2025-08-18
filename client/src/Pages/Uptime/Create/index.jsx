@@ -45,6 +45,20 @@ import {
 } from "../../../Hooks/monitorHooks";
 
 /**
+ * Parses a URL string and returns a URL object.
+ *
+ * @param {string} url - The URL string to parse.
+ * @returns {URL} - The parsed URL object if valid, otherwise an empty string.
+ */
+const parseUrl = (url) => {
+	try {
+		return new URL(url);
+	} catch (error) {
+		return null;
+	}
+};
+
+/**
  * Create page renders monitor creation or configuration views.
  * @component
  */
@@ -285,7 +299,7 @@ const UptimeCreate = ({ isClone = false }) => {
 
 	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
 	const displayInterval = monitor?.interval / MS_PER_MINUTE || 1;
-	const parsedUrl = monitor?.url;
+	const parsedUrl = parseUrl(monitor?.url);
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
