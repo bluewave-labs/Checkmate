@@ -28,6 +28,18 @@ const MonitorSchema = mongoose.Schema(
 			type: Boolean,
 			default: undefined,
 		},
+		statusWindow: {
+			type: [Boolean],
+			default: [],
+		},
+		statusWindowSize: {
+			type: Number,
+			default: 5,
+		},
+		statusWindowThreshold: {
+			type: Number,
+			default: 0.6,
+		},
 		type: {
 			type: String,
 			required: true,
