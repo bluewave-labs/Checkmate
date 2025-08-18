@@ -9,7 +9,7 @@ export const NOTIFICATION_TYPES = [
 export const TITLE_MAP = {
 	email: "createNotifications.emailSettings.title",
 	slack: "createNotifications.slackSettings.title",
-	pager_duty: "createNotifications.pagerDutySettings.title",
+	pager_duty: "createNotifications.pagerdutySettings.title",
 	webhook: "createNotifications.webhookSettings.title",
 	discord: "createNotifications.discordSettings.title",
 };
@@ -17,7 +17,7 @@ export const TITLE_MAP = {
 export const DESCRIPTION_MAP = {
 	email: "createNotifications.emailSettings.description",
 	slack: "createNotifications.slackSettings.description",
-	pager_duty: "createNotifications.pagerDutySettings.description",
+	pager_duty: "createNotifications.pagerdutySettings.description",
 	webhook: "createNotifications.webhookSettings.description",
 	discord: "createNotifications.discordSettings.description",
 };
@@ -25,7 +25,7 @@ export const DESCRIPTION_MAP = {
 export const LABEL_MAP = {
 	email: "createNotifications.emailSettings.emailLabel",
 	slack: "createNotifications.slackSettings.webhookLabel",
-	pager_duty: "createNotifications.pagerDutySettings.integrationKeyLabel",
+	pager_duty: "createNotifications.pagerdutySettings.integrationKeyLabel",
 	webhook: "createNotifications.webhookSettings.webhookLabel",
 	discord: "createNotifications.discordSettings.webhookLabel",
 };
@@ -33,7 +33,7 @@ export const LABEL_MAP = {
 export const PLACEHOLDER_MAP = {
 	email: "createNotifications.emailSettings.emailPlaceholder",
 	slack: "createNotifications.slackSettings.webhookPlaceholder",
-	pager_duty: "createNotifications.pagerDutySettings.integrationKeyPlaceholder",
+	pager_duty: "createNotifications.pagerdutySettings.integrationKeyPlaceholder",
 	webhook: "createNotifications.webhookSettings.webhookPlaceholder",
 	discord: "createNotifications.discordSettings.webhookPlaceholder",
 };

@@ -439,21 +439,35 @@ const notificationValidation = joi.object({
 		}),
 
 	address: joi.when("type", {
-		is: "email",
-		then: joi
-			.string()
-			.email({ tlds: { allow: false } })
-			.required()
-			.messages({
-				"string.empty": "E-mail address cannot be empty",
-				"any.required": "E-mail address is required",
-				"string.email": "Please enter a valid e-mail address",
-			}),
-		otherwise: joi.string().uri().required().messages({
-			"string.empty": "Webhook URL cannot be empty",
-			"any.required": "Webhook URL is required",
-			"string.uri": "Please enter a valid Webhook URL",
-		}),
+		switch: [
+			{
+				is: "email",
+				then: joi
+					.string()
+					.email({ tlds: { allow: false } })
+					.required()
+					.messages({
+						"string.empty": "E-mail address cannot be empty",
+						"any.required": "E-mail address is required",
+						"string.email": "Please enter a valid e-mail address",
+					}),
+			},
+			{
+				is: "pager_duty",
+				then: joi.string().required().messages({
+					"string.empty": "PagerDuty routing key cannot be empty",
+					"any.required": "PagerDuty routing key is required",
+				}),
+			},
+			{
+				is: joi.valid("webhook", "slack", "discord"),
+				then: joi.string().uri().required().messages({
+					"string.empty": "Webhook URL cannot be empty",
+					"any.required": "Webhook URL is required",
+					"string.uri": "Please enter a valid Webhook URL",
+				}),
+			},
+		],
 	}),
 });
 
