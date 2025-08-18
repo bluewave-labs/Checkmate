@@ -615,18 +615,16 @@ const UptimeCreate = ({ isClone = false }) => {
 							component="h2"
 							variant="h2"
 						>
-							Incidents
+							{t("createMonitorPage.incidentConfigTitle")}
 						</Typography>
 						<Typography component="p">
-							{
-								"A sliding window is used to determine when a monitor goes down.  The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value."
-							}
+							{t("createMonitorPage.incidentConfigDescription")}
 						</Typography>
 					</Box>
 					<Stack gap={theme.spacing(20)}>
 						<TextInput
 							name="statusWindowSize"
-							label={"How many checks should be in the sliding window?"}
+							label={t("createMonitorPage.incidentConfigStatusWindowLabel")}
 							type="number"
 							value={monitor.statusWindowSize}
 							onChange={onChange}
@@ -635,9 +633,7 @@ const UptimeCreate = ({ isClone = false }) => {
 						/>
 						<TextInput
 							name="statusWindowThreshold"
-							label={
-								"What percentage of checks in the sliding window fail/succeed before monitor status changes?"
-							}
+							label={t("createMonitorPage.incidentConfigStatusWindowThresholdLabel")}
 							type="number"
 							value={monitor.statusWindowThreshold}
 							onChange={onChange}
