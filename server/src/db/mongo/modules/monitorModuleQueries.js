@@ -14,115 +14,72 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 			},
 		},
 		{
-			$facet: {
-				// For the response time chart, should return checks for date window
-				// Grouped by: {day: hour}, {week: day}, {month: day}
-				uptimePercentage: [
-					{
-						$group: {
-							_id: null,
-							upChecks: {
-								$sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] },
-							},
-							totalChecks: { $sum: 1 },
+			$group: {
+				_id: {
+					bucket: {
+						$dateToString: {
+							format: dateString,
+							date: "$updatedAt",
 						},
 					},
-					{
-						$project: {
-							_id: 0,
-							percentage: {
-								$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+				},
+				totalChecks: { $sum: 1 },
+				upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+				downChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
+				avgResponseTime: { $avg: "$responseTime" },
+			},
+		},
+		{
+			$group: {
+				_id: null,
+				buckets: { $push: "$$ROOT" },
+				totalChecks: { $sum: "$totalChecks" },
+				upChecks: { $sum: "$upChecks" },
+				avgResponseTime: { $avg: "$avgResponseTime" },
+			},
+		},
+		{
+			$project: {
+				_id: 0,
+				uptimePercentage: {
+					$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+				},
+				groupedAvgResponseTime: "$avgResponseTime",
+				groupedChecks: "$buckets",
+				groupedUpChecks: {
+					$map: {
+						input: {
+							$filter: {
+								input: "$buckets",
+								as: "b",
+								cond: { $gt: ["$$b.upChecks", 0] },
 							},
 						},
-					},
-				],
-				groupedAvgResponseTime: [
-					{
-						$group: {
-							_id: null,
-							avgResponseTime: {
-								$avg: "$responseTime",
-							},
+						as: "b",
+						in: {
+							_id: "$$b._id.bucket",
+							totalChecks: "$$b.upChecks",
+							avgResponseTime: "$$b.avgResponseTime",
 						},
 					},
-				],
-				groupedChecks: [
-					{
-						$group: {
-							_id: {
-								$dateToString: {
-									format: dateString,
-									date: "$createdAt",
-								},
-							},
-							avgResponseTime: {
-								$avg: "$responseTime",
-							},
-							totalChecks: {
-								$sum: 1,
+				},
+				groupedDownChecks: {
+					$map: {
+						input: {
+							$filter: {
+								input: "$buckets",
+								as: "b",
+								cond: { $gt: ["$$b.downChecks", 0] },
 							},
 						},
-					},
-					{
-						$sort: {
-							_id: 1,
+						as: "b",
+						in: {
+							_id: "$$b._id.bucket",
+							totalChecks: "$$b.downChecks",
+							avgResponseTime: "$$b.avgResponseTime",
 						},
 					},
-				],
-				// Up checks grouped by: {day: hour}, {week: day}, {month: day}
-				groupedUpChecks: [
-					{
-						$match: {
-							status: true,
-						},
-					},
-					{
-						$group: {
-							_id: {
-								$dateToString: {
-									format: dateString,
-									date: "$createdAt",
-								},
-							},
-							totalChecks: {
-								$sum: 1,
-							},
-							avgResponseTime: {
-								$avg: "$responseTime",
-							},
-						},
-					},
-					{
-						$sort: { _id: 1 },
-					},
-				],
-				// Down checks grouped by: {day: hour}, {week: day}, {month: day} for the date window
-				groupedDownChecks: [
-					{
-						$match: {
-							status: false,
-						},
-					},
-					{
-						$group: {
-							_id: {
-								$dateToString: {
-									format: dateString,
-									date: "$createdAt",
-								},
-							},
-							totalChecks: {
-								$sum: 1,
-							},
-							avgResponseTime: {
-								$avg: "$responseTime",
-							},
-						},
-					},
-					{
-						$sort: { _id: 1 },
-					},
-				],
+				},
 			},
 		},
 		{
@@ -154,10 +111,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 		},
 		{
 			$project: {
-				groupedAvgResponseTime: {
-					$arrayElemAt: ["$groupedAvgResponseTime.avgResponseTime", 0],
-				},
-
+				groupedAvgResponseTime: "$groupedAvgResponseTime",
 				groupedChecks: "$groupedChecks",
 				groupedUpChecks: "$groupedUpChecks",
 				groupedDownChecks: "$groupedDownChecks",
