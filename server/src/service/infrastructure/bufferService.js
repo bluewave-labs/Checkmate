@@ -3,7 +3,7 @@ const SERVICE_NAME = "BufferService";
 class BufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	constructor({ db, logger, envSettings }) {
-		this.BUFFER_TIMEOUT = envSettings.nodeEnv === "development" ? 5000 : 1000 * 60 * 1; // 1 minute
+		this.BUFFER_TIMEOUT = envSettings.nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
 		this.db = db;
 		this.logger = logger;
 		this.SERVICE_NAME = SERVICE_NAME;
