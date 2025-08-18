@@ -117,31 +117,62 @@ class StatusService {
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
 
-			// No change in monitor status, return early
-			if (monitor.status === status)
+			// Update status sliding window
+			monitor.statusWindow.push(status);
+			if (monitor.statusWindow.length > monitor.statusWindowSize) {
+				monitor.statusWindow.shift();
+			}
+
+			if (!monitor.status) {
+				monitor.status = status;
+			}
+
+			let newStatus = monitor.status;
+			let statusChanged = false;
+			const prevStatus = monitor.status;
+
+			// Return early if not enough data points
+			if (monitor.statusWindow.length < monitor.statusWindowSize) {
+				await monitor.save();
 				return {
 					monitor,
 					statusChanged: false,
-					prevStatus: monitor.status,
+					prevStatus,
 					code,
-					timestamp: new Date().getTime(),
+					timestamp: Date.now(),
 				};
+			}
 
-			// Monitor status changed, save prev status and update monitor
-			this.logger.info({
-				service: this.SERVICE_NAME,
-				message: `${monitor.name} went from ${this.getStatusString(monitor.status)} to ${this.getStatusString(status)}`,
-				prevStatus: monitor.status,
-				newStatus: status,
-			});
+			// Check if threshold has been met
+			const failures = monitor.statusWindow.filter((s) => s === false).length;
+			const failureRate = failures / monitor.statusWindow.length;
 
-			const prevStatus = monitor.status;
-			monitor.status = status;
+			// If threshold has been met and the monitor is not already down, mark down:
+			if (failureRate > monitor.statusWindowThreshold && monitor.status !== false) {
+				newStatus = false;
+				statusChanged = true;
+			}
+			// If the failure rate is below the threshold and the monitor is down, recover:
+			else if (failureRate <= monitor.statusWindowThreshold && monitor.status === false) {
+				newStatus = true;
+				statusChanged = true;
+			}
+
+			if (statusChanged) {
+				this.logger.info({
+					service: this.SERVICE_NAME,
+					message: `${monitor.name} went from ${this.getStatusString(prevStatus)} to ${this.getStatusString(newStatus)}`,
+					prevStatus,
+					newStatus,
+				});
+			}
+
+			monitor.status = newStatus;
 			await monitor.save();
 
 			return {
 				monitor,
-				statusChanged: true,
+				statusChanged,
 				prevStatus,
 				code,
 				timestamp: new Date().getTime(),
