@@ -2,6 +2,16 @@ const SERVICE_NAME = "JobQueueHelper";
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
+
+	/**
+	 * @param {{
+	 * 	db: import("../database").Database,
+	 * 	logger: import("../logger").Logger,
+	 * 	networkService: import("../networkService").NetworkService,
+	 * 	statusService: import("../statusService").StatusService,
+	 * 	notificationService: import("../notificationService").NotificationService
+	 * }}
+	 */
 	constructor({ db, logger, networkService, statusService, notificationService }) {
 		this.db = db;
 		this.logger = logger;

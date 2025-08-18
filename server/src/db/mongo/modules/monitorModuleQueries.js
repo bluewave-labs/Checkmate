@@ -5,12 +5,12 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 		{
 			$match: {
 				monitorId: new ObjectId(monitorId),
-				createdAt: { $gte: dates.start, $lte: dates.end },
+				updatedAt: { $gte: dates.start, $lte: dates.end },
 			},
 		},
 		{
 			$sort: {
-				createdAt: 1,
+				updatedAt: 1,
 			},
 		},
 		{
@@ -173,6 +173,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 		{
 			$match: {
 				monitorId: monitor._id,
+				type: "hardware",
 				createdAt: { $gte: dates.start, $lte: dates.end },
 			},
 		},
@@ -225,7 +226,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 					},
 					{
 						$lookup: {
-							from: "hardwarechecks",
+							from: "checks",
 							let: {
 								diskCount: "$diskCount",
 								netCount: "$netCount",
@@ -987,11 +988,6 @@ const buildMonitorsWithChecksByTeamIdPipeline = ({ matchStage, filter, page, row
 	// Add checks
 	if (limit) {
 		let checksCollection = "checks";
-		if (type === "pagespeed") {
-			checksCollection = "pagespeedchecks";
-		} else if (type === "hardware") {
-			checksCollection = "hardwarechecks";
-		}
 		monitorsPipeline.push({
 			$lookup: {
 				from: checksCollection,
@@ -1057,11 +1053,7 @@ const buildFilteredMonitorsByTeamIdPipeline = ({ matchStage, filter, page, rowsP
 	// Add checks
 	if (limit) {
 		let checksCollection = "checks";
-		if (type === "pagespeed") {
-			checksCollection = "pagespeedchecks";
-		} else if (type === "hardware") {
-			checksCollection = "hardwarechecks";
-		}
+
 		pipeline.push({
 			$lookup: {
 				from: checksCollection,
@@ -1175,46 +1167,6 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 								},
 							]
 						: []),
-					...(limit
-						? [
-								{
-									$lookup: {
-										from: "pagespeedchecks",
-										let: { monitorId: "$_id" },
-										pipeline: [
-											{
-												$match: {
-													$expr: { $eq: ["$monitorId", "$$monitorId"] },
-												},
-											},
-											{ $sort: { createdAt: -1 } },
-											...(limit ? [{ $limit: limit }] : []),
-										],
-										as: "pagespeedchecks",
-									},
-								},
-							]
-						: []),
-					...(limit
-						? [
-								{
-									$lookup: {
-										from: "hardwarechecks",
-										let: { monitorId: "$_id" },
-										pipeline: [
-											{
-												$match: {
-													$expr: { $eq: ["$monitorId", "$$monitorId"] },
-												},
-											},
-											{ $sort: { createdAt: -1 } },
-											...(limit ? [{ $limit: limit }] : []),
-										],
-										as: "hardwarechecks",
-									},
-								},
-							]
-						: []),
 
 					{
 						$addFields: {
@@ -1225,14 +1177,6 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 											case: { $in: ["$type", ["http", "ping", "docker", "port", "game"]] },
 											then: "$standardchecks",
 										},
-										{
-											case: { $eq: ["$type", "pagespeed"] },
-											then: "$pagespeedchecks",
-										},
-										{
-											case: { $eq: ["$type", "hardware"] },
-											then: "$hardwarechecks",
-										},
 									],
 									default: [],
 								},
@@ -1242,8 +1186,6 @@ const buildGetMonitorsByTeamIdPipeline = (req) => {
 					{
 						$project: {
 							standardchecks: 0,
-							pagespeedchecks: 0,
-							hardwarechecks: 0,
 						},
 					},
 				],
