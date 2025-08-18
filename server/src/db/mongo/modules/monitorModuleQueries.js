@@ -987,7 +987,7 @@ const buildMonitorsWithChecksByTeamIdPipeline = ({ matchStage, filter, page, row
 
 	// Add checks
 	if (limit) {
-		let checksCollection = "checks";
+		const checksCollection = "checks";
 		monitorsPipeline.push({
 			$lookup: {
 				from: checksCollection,
@@ -1052,7 +1052,7 @@ const buildFilteredMonitorsByTeamIdPipeline = ({ matchStage, filter, page, rowsP
 
 	// Add checks
 	if (limit) {
-		let checksCollection = "checks";
+		const checksCollection = "checks";
 
 		pipeline.push({
 			$lookup: {
