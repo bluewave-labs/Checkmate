@@ -150,6 +150,11 @@ const monitorValidation = joi.object({
 						// can be replaced by a shortest alternative
 						// (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
 						"(?:" +
+						// Single hostname without dots (like localhost)
+						"[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+						"|" +
+						// Domain with dots
+						"(?:" +
 						"(?:" +
 						"[a-z0-9\\u00a1-\\uffff]" +
 						"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
@@ -158,6 +163,7 @@ const monitorValidation = joi.object({
 						")+" +
 						// TLD identifier name, may end with dot
 						"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+						")" +
 						")" +
 						// port number (optional)
 						"(?::\\d{2,5})?" +

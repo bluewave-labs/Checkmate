@@ -1,7 +1,6 @@
 import { useTheme } from "@emotion/react";
 import Box from "@mui/material/Box";
 import Background from "../../assets/Images/background-grid.svg?react";
-import SkeletonDark from "../../assets/Images/create-placeholder-dark.svg?react";
 import OutputAnimation from "../../assets/Animations/output.gif";
 import DarkmodeOutput from "../../assets/Animations/darkmodeOutput.gif";
 import { useSelector } from "react-redux";
@@ -13,7 +12,7 @@ const FallbackBackground = () => {
 			<Box
 				component="img"
 				src={mode === "light" ? OutputAnimation : DarkmodeOutput}
-				Background="transparent"
+				background="transparent"
 				alt="Loading animation"
 				sx={{
 					zIndex: 1,
