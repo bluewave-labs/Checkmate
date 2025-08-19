@@ -8,6 +8,13 @@ html {
 	scroll-behavior: smooth;
 }
 
+html, body {
+	background-color: #181A20;
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+}
+
 :root {
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;

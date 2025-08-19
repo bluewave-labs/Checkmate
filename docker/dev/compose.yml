@@ -1,0 +1,38 @@
+services:
+  client:
+    image: ghcr.io/bluewave-labs/checkmate-client:latest
+    restart: always
+    environment:
+      UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
+      UPTIME_APP_CLIENT_HOST: "http://localhost"
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - server
+  server:
+    image: ghcr.io/bluewave-labs/checkmate-backend:latest
+    restart: always
+    ports:
+      - "52345:52345"
+    depends_on:
+      - mongodb
+    environment:
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
+      - CLIENT_HOST=http://localhost
+      - JWT_SECRET=my_secret
+    # volumes:
+    # - /var/run/docker.sock:/var/run/docker.sock:ro
+  mongodb:
+    image: ghcr.io/bluewave-labs/checkmate-mongo:latest
+    restart: always
+    volumes:
+      - ./mongo/data:/data/db
+    command: ["mongod", "--quiet", "--bind_ip_all"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
