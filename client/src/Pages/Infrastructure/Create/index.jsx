@@ -76,6 +76,22 @@ const CreateInfrastructureMonitor = () => {
 					{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
 				]),
 	];
+	const METRICS = ["cpu", "memory", "disk", "temperature"];
+	const METRIC_PREFIX = "usage_";
+	const MS_PER_MINUTE = 60000;
+
+	const hasAlertError = (errors) => {
+		return Object.keys(errors).filter((k) => k.startsWith(METRIC_PREFIX)).length > 0;
+	};
+
+	const getAlertError = (errors) => {
+		const errorKey = Object.keys(errors).find((key) => key.startsWith(METRIC_PREFIX));
+		return errorKey ? errors[errorKey] : null;
+	};
+
+	const pageSchema = infrastructureMonitorValidation.fork(["url"], (s) =>
+		isCreate ? s.required() : s.optional()
+	);
 	// Populate form fields if editing
 	useEffect(() => {
 		if (isCreate) {
@@ -96,6 +112,35 @@ const CreateInfrastructureMonitor = () => {
 		if (error) {
 			return;
 		}
+		// Build the thresholds for the form
+		const {
+			cpu,
+			usage_cpu,
+			memory,
+			usage_memory,
+			disk,
+			usage_disk,
+			temperature,
+			usage_temperature,
+			...rest
+		} = form;
+
+		const thresholds = {
+			...(cpu ? { usage_cpu: usage_cpu / 100 } : {}),
+			...(memory ? { usage_memory: usage_memory / 100 } : {}),
+			...(disk ? { usage_disk: usage_disk / 100 } : {}),
+			...(temperature ? { usage_temperature: usage_temperature / 100 } : {}),
+		};
+
+		form = {
+			...(isCreate ? {} : { _id: monitorId }),
+			...rest,
+			url: `http${https ? "s" : ""}://` + infrastructureMonitor.url,
+			description: form.name,
+			type: "hardware",
+			notifications: infrastructureMonitor.notifications,
+			thresholds,
+		};
 		submitInfrastructureForm(infrastructureMonitor, form, isCreate, monitorId);
 	};
 
@@ -217,31 +262,30 @@ const CreateInfrastructureMonitor = () => {
 							onChange={onChange}
 							error={errors["url"] ? true : false}
 							helperText={errors["url"]}
-							disabled={!isCreate}
 						/>
-						{isCreate && (
-							<FieldWrapper
-								label={t("infrastructureProtocol")}
-								labelVariant="p"
-							>
-								<ButtonGroup>
-									<Button
-										variant="group"
-										filled={https.toString()}
-										onClick={() => setHttps(true)}
-									>
-										{t("https")}
-									</Button>
-									<Button
-										variant="group"
-										filled={(!https).toString()}
-										onClick={() => setHttps(false)}
-									>
-										{t("http")}
-									</Button>
-								</ButtonGroup>
-							</FieldWrapper>
-						)}
+
+						<FieldWrapper
+							label={t("infrastructureProtocol")}
+							labelVariant="p"
+						>
+							<ButtonGroup>
+								<Button
+									variant="group"
+									filled={https.toString()}
+									onClick={() => setHttps(true)}
+								>
+									{t("https")}
+								</Button>
+								<Button
+									variant="group"
+									filled={(!https).toString()}
+									onClick={() => setHttps(false)}
+								>
+									{t("http")}
+								</Button>
+							</ButtonGroup>
+						</FieldWrapper>
+
 						<TextInput
 							type="text"
 							id="name"
