@@ -12,3 +12,13 @@ dist/docker-compose-test.yaml
 /dist-mono/redis/data/*
 /dist-arm/mongo/data/*
 *.env
+
+# Custom CA certificates and keys (should not be committed)
+dev/certs/*
+!dev/certs/.gitkeep
+
+# Certificate artifacts
+*.key
+*.csr
+*.srl
+*.log

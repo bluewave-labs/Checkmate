@@ -15,7 +15,7 @@ const Logs = () => {
 	const theme = useTheme();
 
 	// Local state
-	const [value, setValue] = useState(2);
+	const [value, setValue] = useState(0);
 
 	// Handlers
 	const handleChange = (event, newValue) => {
@@ -29,6 +29,12 @@ const Logs = () => {
 			<Tabs
 				value={value}
 				onChange={handleChange}
+				sx={{
+					position: "sticky",
+					top: theme.spacing(0),
+					backdropFilter: "blur(10px)",
+					zIndex: theme.zIndex.appBar,
+				}}
 			>
 				<Tab label={t("logsPage.tabs.logs")} />
 				<Tab label={t("logsPage.tabs.queue")} />

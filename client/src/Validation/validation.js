@@ -150,6 +150,11 @@ const monitorValidation = joi.object({
 						// can be replaced by a shortest alternative
 						// (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
 						"(?:" +
+						// Single hostname without dots (like localhost)
+						"[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+						"|" +
+						// Domain with dots
+						"(?:" +
 						"(?:" +
 						"[a-z0-9\\u00a1-\\uffff]" +
 						"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
@@ -158,6 +163,7 @@ const monitorValidation = joi.object({
 						")+" +
 						// TLD identifier name, may end with dot
 						"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+						")" +
 						")" +
 						// port number (optional)
 						"(?::\\d{2,5})?" +
@@ -439,21 +445,35 @@ const notificationValidation = joi.object({
 		}),
 
 	address: joi.when("type", {
-		is: "email",
-		then: joi
-			.string()
-			.email({ tlds: { allow: false } })
-			.required()
-			.messages({
-				"string.empty": "E-mail address cannot be empty",
-				"any.required": "E-mail address is required",
-				"string.email": "Please enter a valid e-mail address",
-			}),
-		otherwise: joi.string().uri().required().messages({
-			"string.empty": "Webhook URL cannot be empty",
-			"any.required": "Webhook URL is required",
-			"string.uri": "Please enter a valid Webhook URL",
-		}),
+		switch: [
+			{
+				is: "email",
+				then: joi
+					.string()
+					.email({ tlds: { allow: false } })
+					.required()
+					.messages({
+						"string.empty": "E-mail address cannot be empty",
+						"any.required": "E-mail address is required",
+						"string.email": "Please enter a valid e-mail address",
+					}),
+			},
+			{
+				is: "pager_duty",
+				then: joi.string().required().messages({
+					"string.empty": "PagerDuty routing key cannot be empty",
+					"any.required": "PagerDuty routing key is required",
+				}),
+			},
+			{
+				is: joi.valid("webhook", "slack", "discord"),
+				then: joi.string().uri().required().messages({
+					"string.empty": "Webhook URL cannot be empty",
+					"any.required": "Webhook URL is required",
+					"string.uri": "Please enter a valid Webhook URL",
+				}),
+			},
+		],
 	}),
 });
 

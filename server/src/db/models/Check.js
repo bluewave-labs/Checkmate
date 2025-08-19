@@ -1,99 +1,176 @@
 import mongoose from "mongoose";
 
-const BaseCheckSchema = mongoose.Schema({
-	/**
-	 * Reference to the associated Monitor document.
-	 *
-	 * @type {mongoose.Schema.Types.ObjectId}
-	 */
-	monitorId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Monitor",
-		immutable: true,
-		index: true,
-	},
-
-	teamId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Team",
-		immutable: true,
-		index: true,
-	},
-	/**
-	 * Status of the check (true for up, false for down).
-	 *
-	 * @type {Boolean}
-	 */
-	status: {
-		type: Boolean,
-		index: true,
-	},
-	/**
-	 * Response time of the check in milliseconds.
-	 *
-	 * @type {Number}
-	 */
-	responseTime: {
-		type: Number,
-	},
-	/**
-	 * HTTP status code received during the check.
-	 *
-	 * @type {Number}
-	 */
-	statusCode: {
-		type: Number,
-		index: true,
-	},
-	/**
-	 * Message or description of the check result.
-	 *
-	 * @type {String}
-	 */
-	message: {
-		type: String,
-	},
-	/**
-	 * Expiry date of the check, auto-calculated to expire after 30 days.
-	 *
-	 * @type {Date}
-	 */
-
-	expiry: {
-		type: Date,
-		default: Date.now,
-		expires: 60 * 60 * 24 * 30, // 30 days
-	},
-	/**
-	 * Acknowledgment of the check.
-	 *
-	 * @type {Boolean}
-	 */
-	ack: {
-		type: Boolean,
-		default: false,
-	},
-	/**
-	 * Resolution date of the check (when the check was resolved).
-	 *
-	 * @type {Date}
-	 */
-	ackAt: {
-		type: Date,
-	},
+const cpuSchema = mongoose.Schema({
+	physical_core: { type: Number, default: 0 },
+	logical_core: { type: Number, default: 0 },
+	frequency: { type: Number, default: 0 },
+	temperature: { type: [Number], default: [] },
+	free_percent: { type: Number, default: 0 },
+	usage_percent: { type: Number, default: 0 },
 });
 
-/**
- * Check Schema for MongoDB collection.
- *
- * Represents a check associated with a monitor, storing information
- * about the status and response of a particular check event.
- */
-const CheckSchema = mongoose.Schema({ ...BaseCheckSchema.obj }, { timestamps: true });
+const memorySchema = mongoose.Schema({
+	total_bytes: { type: Number, default: 0 },
+	available_bytes: { type: Number, default: 0 },
+	used_bytes: { type: Number, default: 0 },
+	usage_percent: { type: Number, default: 0 },
+});
+
+const diskSchema = mongoose.Schema({
+	read_speed_bytes: { type: Number, default: 0 },
+	write_speed_bytes: { type: Number, default: 0 },
+	total_bytes: { type: Number, default: 0 },
+	free_bytes: { type: Number, default: 0 },
+	usage_percent: { type: Number, default: 0 },
+});
+
+const hostSchema = mongoose.Schema({
+	os: { type: String, default: "" },
+	platform: { type: String, default: "" },
+	kernel_version: { type: String, default: "" },
+});
+
+const errorSchema = mongoose.Schema({
+	metric: { type: [String], default: [] },
+	err: { type: String, default: "" },
+});
+
+const captureSchema = mongoose.Schema({
+	version: { type: String, default: "" },
+	mode: { type: String, default: "" },
+});
+
+const networkInterfaceSchema = mongoose.Schema({
+	name: { type: String },
+	bytes_sent: { type: Number, default: 0 },
+	bytes_recv: { type: Number, default: 0 },
+	packets_sent: { type: Number, default: 0 },
+	packets_recv: { type: Number, default: 0 },
+	err_in: { type: Number, default: 0 },
+	err_out: { type: Number, default: 0 },
+	drop_in: { type: Number, default: 0 },
+	drop_out: { type: Number, default: 0 },
+	fifo_in: { type: Number, default: 0 },
+	fifo_out: { type: Number, default: 0 },
+});
+
+const CheckSchema = new mongoose.Schema(
+	{
+		// Common fields
+		monitorId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Monitor",
+			immutable: true,
+			index: true,
+		},
+
+		teamId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Team",
+			immutable: true,
+			index: true,
+		},
+		type: {
+			type: String,
+			enum: ["http", "hardware", "pagespeed", "distributed"],
+			required: true,
+			index: true,
+		},
+
+		status: {
+			type: Boolean,
+			index: true,
+		},
+
+		responseTime: {
+			type: Number,
+		},
+
+		timings: {
+			type: Object,
+			default: {},
+		},
+
+		statusCode: {
+			type: Number,
+			index: true,
+		},
+
+		message: {
+			type: String,
+		},
+
+		expiry: {
+			type: Date,
+			default: Date.now,
+			expires: 60 * 60 * 24 * 30, // 30 days
+		},
+
+		ack: {
+			type: Boolean,
+			default: false,
+		},
+
+		ackAt: {
+			type: Date,
+		},
+
+		// Hardware fields
+		cpu: {
+			type: cpuSchema,
+			default: () => ({}),
+		},
+		memory: {
+			type: memorySchema,
+			default: () => ({}),
+		},
+		disk: {
+			type: [diskSchema],
+			default: () => [],
+		},
+		host: {
+			type: hostSchema,
+			default: () => ({}),
+		},
+
+		errors: {
+			type: [errorSchema],
+			default: () => [],
+		},
+
+		capture: {
+			type: captureSchema,
+			default: () => ({}),
+		},
+
+		net: {
+			type: [networkInterfaceSchema],
+			default: () => [],
+		},
+
+		// PageSpeed fields
+		accessibility: {
+			type: Number,
+		},
+		bestPractices: {
+			type: Number,
+		},
+		seo: {
+			type: Number,
+		},
+		performance: {
+			type: Number,
+		},
+		audits: {
+			type: Object,
+		},
+	},
+	{ timestamps: true }
+);
+
 CheckSchema.index({ updatedAt: 1 });
 CheckSchema.index({ monitorId: 1, updatedAt: 1 });
 CheckSchema.index({ monitorId: 1, updatedAt: -1 });
 CheckSchema.index({ teamId: 1, updatedAt: -1 });
 
 export default mongoose.model("Check", CheckSchema);
-export { BaseCheckSchema };

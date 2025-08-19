@@ -1,17 +1,14 @@
 import MonitorStats from "../../db/models/MonitorStats.js";
-import { safelyParseFloat } from "../../utils/dataUtils.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	/**
-	 * Creates an instance of StatusService.
-	 *
-	 * @param {Object} db - The database instance.
-	 * @param {Object} logger - The logger instance.
-	 */
-	constructor({ db, logger, buffer }) {
+	 * @param {{
+	 *  buffer: import("./bufferService.js").BufferService
+	 * }}
+	 */ constructor({ db, logger, buffer }) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
@@ -24,7 +21,7 @@ class StatusService {
 	async updateRunningStats({ monitor, networkResponse }) {
 		try {
 			const monitorId = monitor._id;
-			const { responseTime, status, upt_burnt } = networkResponse;
+			const { responseTime, status } = networkResponse;
 			// Get stats
 			let stats = await MonitorStats.findOne({ monitorId });
 			if (!stats) {
@@ -36,8 +33,6 @@ class StatusService {
 					totalDownChecks: 0,
 					uptimePercentage: 0,
 					lastCheck: null,
-					timeSInceLastCheck: 0,
-					uptBurnt: 0,
 				});
 			}
 
@@ -82,12 +77,6 @@ class StatusService {
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
 
-			// UPT burned
-			if (typeof upt_burnt !== "undefined" && upt_burnt !== null) {
-				const currentUptBurnt = safelyParseFloat(stats.uptBurnt);
-				const newUptBurnt = safelyParseFloat(upt_burnt);
-				stats.uptBurnt = currentUptBurnt + newUptBurnt;
-			}
 			await stats.save();
 			return true;
 		} catch (error) {
@@ -119,7 +108,8 @@ class StatusService {
 	 * @returns {boolean} returnObject.prevStatus - The previous status of the monitor
 	 */
 	updateStatus = async (networkResponse) => {
-		this.insertCheck(networkResponse);
+		const check = this.buildCheck(networkResponse);
+		await this.insertCheck(check);
 		try {
 			const { monitorId, status, code } = networkResponse;
 			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
@@ -127,31 +117,62 @@ class StatusService {
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
 
-			// No change in monitor status, return early
-			if (monitor.status === status)
+			// Update status sliding window
+			monitor.statusWindow.push(status);
+			if (monitor.statusWindow.length > monitor.statusWindowSize) {
+				monitor.statusWindow.shift();
+			}
+
+			if (!monitor.status) {
+				monitor.status = status;
+			}
+
+			let newStatus = monitor.status;
+			let statusChanged = false;
+			const prevStatus = monitor.status;
+
+			// Return early if not enough data points
+			if (monitor.statusWindow.length < monitor.statusWindowSize) {
+				await monitor.save();
 				return {
 					monitor,
 					statusChanged: false,
-					prevStatus: monitor.status,
+					prevStatus,
 					code,
-					timestamp: new Date().getTime(),
+					timestamp: Date.now(),
 				};
+			}
 
-			// Monitor status changed, save prev status and update monitor
-			this.logger.info({
-				service: this.SERVICE_NAME,
-				message: `${monitor.name} went from ${this.getStatusString(monitor.status)} to ${this.getStatusString(status)}`,
-				prevStatus: monitor.status,
-				newStatus: status,
-			});
+			// Check if threshold has been met
+			const failures = monitor.statusWindow.filter((s) => s === false).length;
+			const failureRate = failures / monitor.statusWindow.length;
 
-			const prevStatus = monitor.status;
-			monitor.status = status;
+			// If threshold has been met and the monitor is not already down, mark down:
+			if (failureRate > monitor.statusWindowThreshold && monitor.status !== false) {
+				newStatus = false;
+				statusChanged = true;
+			}
+			// If the failure rate is below the threshold and the monitor is down, recover:
+			else if (failureRate <= monitor.statusWindowThreshold && monitor.status === false) {
+				newStatus = true;
+				statusChanged = true;
+			}
+
+			if (statusChanged) {
+				this.logger.info({
+					service: this.SERVICE_NAME,
+					message: `${monitor.name} went from ${this.getStatusString(prevStatus)} to ${this.getStatusString(newStatus)}`,
+					prevStatus,
+					newStatus,
+				});
+			}
+
+			monitor.status = newStatus;
 			await monitor.save();
 
 			return {
 				monitor,
-				statusChanged: true,
+				statusChanged,
 				prevStatus,
 				code,
 				timestamp: new Date().getTime(),
@@ -192,14 +213,17 @@ class StatusService {
 			conn_took,
 			connect_took,
 			tls_took,
+			timings,
 		} = networkResponse;
 
 		const check = {
 			monitorId,
 			teamId,
+			type,
 			status,
 			statusCode: code,
 			responseTime,
+			timings: timings || {},
 			message,
 			first_byte_took,
 			body_read_took,
@@ -262,25 +286,24 @@ class StatusService {
 	 * @param {Object} networkResponse.payload - The payload of the response.
 	 * @returns {Promise<void>} A promise that resolves when the check is inserted.
 	 */
-	insertCheck = async (networkResponse) => {
+	insertCheck = async (check) => {
 		try {
-			const check = this.buildCheck(networkResponse);
 			if (typeof check === "undefined") {
 				this.logger.warn({
 					message: "Failed to build check",
 					service: this.SERVICE_NAME,
 					method: "insertCheck",
-					details: networkResponse,
 				});
-				return;
+				return false;
 			}
-			this.buffer.addToBuffer({ check, type: networkResponse.type });
+			this.buffer.addToBuffer({ check });
+			return true;
 		} catch (error) {
 			this.logger.error({
 				message: error.message,
 				service: error.service || this.SERVICE_NAME,
 				method: error.method || "insertCheck",
-				details: error.details || `Error inserting check for monitor: ${networkResponse?.monitorId}`,
+				details: error.details || `Error inserting check for monitor: ${check?.monitorId}`,
 				stack: error.stack,
 			});
 		}

@@ -71,17 +71,6 @@ jobs:
       - name: Push MongoDB Docker image
         run: docker push ghcr.io/bluewave-labs/checkmate:mongo-demo
 
-      - name: Build Redis Docker image
-        run: |
-          docker build \
-            -t ghcr.io/bluewave-labs/checkmate:redis-demo \
-            -f ./docker/prod/redis.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
-            .
-
-      - name: Push Redis Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate:redis-demo
-
   deploy-to-demo:
     needs: docker-build-and-push-server
     runs-on: ubuntu-latest

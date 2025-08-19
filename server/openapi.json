@@ -1,7 +1,7 @@
 {
 	"openapi": "3.1.0",
 	"info": {
-		"title": "Checkmate",
+		"title": "Checkmate API",
 		"summary": "Checkmate OpenAPI Specifications",
 		"description": "Checkmate is an open source monitoring tool used to track the operational status and performance of servers and websites. It regularly checks whether a server/website is accessible and performs optimally, providing real-time alerts and reports on the monitored services' availability, downtime, and response time.",
 		"contact": {
@@ -13,7 +13,7 @@
 			"name": "AGPLv3",
 			"url": "https://github.com/bluewave-labs/checkmate/tree/HEAD/LICENSE"
 		},
-		"version": "1.0"
+		"version": "2.3"
 	},
 	"servers": [
 		{
@@ -22,20 +22,9 @@
 			"variables": {
 				"PORT": {
 					"description": "API Port",
-					"enum": ["5000"],
-					"default": "5000"
+					"enum": ["52345"],
+					"default": "52345"
 				},
-				"API_PATH": {
-					"description": "API Base Path",
-					"enum": ["api/v1"],
-					"default": "api/v1"
-				}
-			}
-		},
-		{
-			"url": "http://localhost/{API_PATH}",
-			"description": "Distribution Local Development Server",
-			"variables": {
 				"API_PATH": {
 					"description": "API Base Path",
 					"enum": ["api/v1"],
@@ -47,11 +36,6 @@
 			"url": "https://checkmate-demo.bluewavelabs.ca/{API_PATH}",
 			"description": "Checkmate Demo Server",
 			"variables": {
-				"PORT": {
-					"description": "API Port",
-					"enum": ["5000"],
-					"default": "5000"
-				},
 				"API_PATH": {
 					"description": "API Base Path",
 					"enum": ["api/v1"],
@@ -63,107 +47,81 @@
 	"tags": [
 		{
 			"name": "auth",
-			"description": "Authentication"
+			"description": "Authentication and user management"
 		},
 		{
 			"name": "invite",
-			"description": "Invite"
+			"description": "Team invitation management"
 		},
 		{
 			"name": "monitors",
-			"description": "Monitors"
+			"description": "Monitor management (uptime, page speed, hardware)"
 		},
 		{
 			"name": "checks",
-			"description": "Checks"
+			"description": "Monitor check results and history"
 		},
 		{
 			"name": "maintenance-window",
-			"description": "Maintenance window"
+			"description": "Scheduled maintenance windows"
 		},
 		{
 			"name": "queue",
-			"description": "Queue"
+			"description": "Job queue management"
 		},
 		{
 			"name": "status-page",
-			"description": "Status Page"
+			"description": "Public status page management"
+		},
+		{
+			"name": "settings",
+			"description": "Application configuration settings"
+		},
+		{
+			"name": "logs",
+			"description": "Application logs and diagnostics"
+		},
+		{
+			"name": "notifications",
+			"description": "Notification integrations (email, slack, discord, etc.)"
+		},
+		{
+			"name": "diagnostic",
+			"description": "System health and performance diagnostics"
 		}
 	],
 	"paths": {
 		"/auth/register": {
 			"post": {
 				"tags": ["auth"],
-				"description": "Register a new user",
+				"summary": "Register new user",
+				"description": "Register a new user account with profile information",
 				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "object",
-								"required": ["firstName", "lastName", "email", "password", "role", "teamId"],
-								"properties": {
-									"firstName": {
-										"type": "string"
-									},
-									"lastName": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string",
-										"format": "email"
-									},
-									"password": {
-										"type": "string",
-										"format": "password"
-									},
-									"profileImage": {
-										"type": "file",
-										"format": "file"
-									},
-									"role": {
-										"type": "array",
-										"enum": [["user"], ["admin"], ["superadmin"], ["Demo"]],
-										"default": ["superadmin"]
-									},
-									"teamId": {
-										"type": "string",
-										"format": "uuid"
-									}
-								}
+								"$ref": "#/components/schemas/RegisterRequest"
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "User registered successfully",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"$ref": "#/components/schemas/AuthResponse"
 								}
 							}
 						}
 					},
 					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/ValidationError"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
 			}
@@ -171,57 +129,37 @@
 		"/auth/login": {
 			"post": {
 				"tags": ["auth"],
-				"description": "Login with credentials",
+				"summary": "User login",
+				"description": "Authenticate user with email and password",
 				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "object",
-								"required": ["email", "password"],
-								"properties": {
-									"email": {
-										"type": "string",
-										"format": "email"
-									},
-									"password": {
-										"type": "string",
-										"format": "password"
-									}
-								}
+								"$ref": "#/components/schemas/LoginRequest"
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Login successful",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"$ref": "#/components/schemas/AuthResponse"
 								}
 							}
 						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/ValidationError"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
 			}
@@ -229,23 +167,13 @@
 		"/auth/refresh": {
 			"post": {
 				"tags": ["auth"],
-				"description": "Generates a new auth token if the refresh token is valid.",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {}
-							}
-						}
-					},
-					"required": false
-				},
+				"summary": "Refresh access token",
+				"description": "Generate new access token using refresh token",
 				"parameters": [
 					{
 						"name": "x-refresh-token",
 						"in": "header",
-						"description": "Refresh token required to generate a new auth token.",
+						"description": "Refresh token",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -254,7 +182,7 @@
 					{
 						"name": "authorization",
 						"in": "header",
-						"description": "Old access token, used to extract payload).",
+						"description": "Bearer token (old access token)",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -263,34 +191,20 @@
 				],
 				"responses": {
 					"200": {
-						"description": "New access token generated.",
+						"description": "Token refreshed successfully",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"$ref": "#/components/schemas/AuthResponse"
 								}
 							}
 						}
 					},
 					"401": {
-						"description": "Unauthorized or invalid refresh token.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
 			}
@@ -298,7 +212,1472 @@
 		"/auth/user/{userId}": {
 			"put": {
 				"tags": ["auth"],
-				"description": "Change user information",
+				"summary": "Update user profile",
+				"description": "Update user information including profile image",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["auth"],
+				"summary": "Delete user account",
+				"description": "Permanently delete user account and associated data",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/users": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Get all users",
+				"description": "Retrieve all users (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"description": "Users retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/User"
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/users/superadmin": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Check superadmin exists",
+				"description": "Check if a superadmin account exists in the system",
+				"responses": {
+					"200": {
+						"description": "Check completed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"type": "object",
+													"properties": {
+														"exists": {
+															"type": "boolean"
+														}
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/auth/recovery/request": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Request password reset",
+				"description": "Send password reset email to user",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["email"],
+								"properties": {
+									"email": {
+										"type": "string",
+										"format": "email",
+										"description": "User email address"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"description": "User not found"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/auth/recovery/validate": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Validate recovery token",
+				"description": "Validate password reset token",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["recoveryToken"],
+								"properties": {
+									"recoveryToken": {
+										"type": "string",
+										"description": "Password reset token"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"400": {
+						"description": "Invalid or expired token"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/auth/recovery/reset": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Reset password",
+				"description": "Reset user password with recovery token",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["recoveryToken", "password"],
+								"properties": {
+									"recoveryToken": {
+										"type": "string",
+										"description": "Password reset token"
+									},
+									"password": {
+										"type": "string",
+										"format": "password",
+										"description": "New password"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"400": {
+						"description": "Invalid token or password requirements not met"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/monitors": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get all monitors",
+				"description": "Retrieve all monitors for the authenticated user",
+				"responses": {
+					"200": {
+						"description": "Monitors retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Monitor"
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Create monitor",
+				"description": "Create a new monitoring endpoint",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMonitorRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Monitor created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/Monitor"
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["monitors"],
+				"summary": "Delete all monitors",
+				"description": "Delete all monitors (superadmin only)",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/team": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get monitors by team",
+				"description": "Get monitors filtered by team with optional parameters",
+				"parameters": [
+					{
+						"name": "status",
+						"in": "query",
+						"description": "Filter by monitor status (up/down)",
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"name": "type",
+						"in": "query",
+						"description": "Filter by monitor type",
+						"schema": {
+							"type": "string",
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"]
+						}
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"description": "Page number for pagination",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"default": 1
+						}
+					},
+					{
+						"name": "rowsPerPage",
+						"in": "query",
+						"description": "Number of monitors per page",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100,
+							"default": 10
+						}
+					},
+					{
+						"name": "filter",
+						"in": "query",
+						"description": "Search filter value",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "field",
+						"in": "query",
+						"description": "Field to filter on",
+						"schema": {
+							"type": "string",
+							"enum": ["name", "url", "description"]
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Team monitors retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"type": "object",
+													"properties": {
+														"monitors": {
+															"type": "array",
+															"items": {
+																"$ref": "#/components/schemas/Monitor"
+															}
+														},
+														"totalCount": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/team/with-checks": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get monitors with recent checks",
+				"description": "Get team monitors with their most recent check results",
+				"parameters": [
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Number of recent checks to include per monitor",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 50,
+							"default": 10
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Monitors with checks retrieved successfully"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/team/summary": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get monitors summary",
+				"description": "Get team monitors with summary statistics",
+				"parameters": [
+					{
+						"name": "type",
+						"in": "query",
+						"description": "Filter by monitor type",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"]
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Monitor summary retrieved successfully"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get monitor by ID",
+				"description": "Retrieve a specific monitor by its ID",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"description": "Monitor ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Monitor retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/Monitor"
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["monitors"],
+				"summary": "Update monitor",
+				"description": "Update an existing monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateMonitorRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["monitors"],
+				"summary": "Delete monitor",
+				"description": "Delete a specific monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/uptime/details/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get uptime details",
+				"description": "Get detailed uptime statistics for a monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Uptime details retrieved successfully"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/hardware/details/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get hardware monitoring details",
+				"description": "Get hardware performance metrics for a monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Hardware details retrieved successfully"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/pause/{monitorId}": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Pause/unpause monitor",
+				"description": "Toggle monitor active status",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/stats/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get monitor statistics",
+				"description": "Get comprehensive statistics for a monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Monitor statistics retrieved successfully"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/certificate/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get SSL certificate info",
+				"description": "Get SSL certificate information for a monitor",
+				"parameters": [
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Certificate information retrieved successfully"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/demo": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Add demo monitors",
+				"description": "Add preconfigured demo monitors for testing",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/export": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Export monitors to CSV",
+				"description": "Export all monitors to CSV format",
+				"responses": {
+					"200": {
+						"description": "CSV file generated successfully",
+						"content": {
+							"text/csv": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/bulk": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Bulk import monitors",
+				"description": "Import monitors from CSV file",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"csvFile": {
+										"type": "string",
+										"format": "binary",
+										"description": "CSV file containing monitor data"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Monitors imported successfully"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/test-email": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Send test email",
+				"description": "Send a test email notification",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/settings": {
+			"get": {
+				"tags": ["settings"],
+				"summary": "Get application settings",
+				"description": "Retrieve current application configuration",
+				"responses": {
+					"200": {
+						"description": "Settings retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/AppSettings"
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["settings"],
+				"summary": "Update application settings",
+				"description": "Update application configuration (admin/superadmin only)",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AppSettings"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/settings/test-email": {
+			"post": {
+				"tags": ["settings"],
+				"summary": "Send test email",
+				"description": "Send test email to verify email configuration",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/notifications": {
+			"get": {
+				"tags": ["notifications"],
+				"summary": "Get team notifications",
+				"description": "Get all notification configurations for the team",
+				"responses": {
+					"200": {
+						"description": "Notifications retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Notification"
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["notifications"],
+				"summary": "Create notification",
+				"description": "Create a new notification integration",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateNotificationRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Notification created successfully"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/notifications/{id}": {
+			"get": {
+				"tags": ["notifications"],
+				"summary": "Get notification by ID",
+				"description": "Retrieve a specific notification configuration",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Notification retrieved successfully"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["notifications"],
+				"summary": "Update notification",
+				"description": "Update an existing notification configuration",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateNotificationRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["notifications"],
+				"summary": "Delete notification",
+				"description": "Delete a notification configuration",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/notifications/test": {
+			"post": {
+				"tags": ["notifications"],
+				"summary": "Test notification",
+				"description": "Send a test notification to verify configuration",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/notifications/test/all": {
+			"post": {
+				"tags": ["notifications"],
+				"summary": "Test all notifications",
+				"description": "Send test notifications to all configured integrations",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/logs": {
+			"get": {
+				"tags": ["logs"],
+				"summary": "Get application logs",
+				"description": "Retrieve application logs (admin/superadmin only)",
+				"parameters": [
+					{
+						"name": "level",
+						"in": "query",
+						"description": "Log level filter",
+						"schema": {
+							"type": "string",
+							"enum": ["error", "warn", "info", "debug"]
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Number of log entries to return",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 1000,
+							"default": 100
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Logs retrieved successfully"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/diagnostic/system": {
+			"get": {
+				"tags": ["diagnostic"],
+				"summary": "Get system diagnostics",
+				"description": "Get system health and performance metrics (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"description": "System diagnostics retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/SystemDiagnostics"
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/user": {
+			"put": {
+				"tags": ["auth"],
+				"summary": "Update current user profile",
+				"description": "Update authenticated user's profile information",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"delete": {
+				"tags": ["auth"],
+				"summary": "Delete current user account",
+				"description": "Delete authenticated user's account and associated data",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/users/{userId}": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Get user by ID",
+				"description": "Get a specific user by ID (superadmin only)",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/User"
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["auth"],
+				"summary": "Update user by ID",
+				"description": "Update a specific user by ID (superadmin only)",
 				"parameters": [
 					{
 						"name": "userId",
@@ -321,85 +1700,19 @@
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
 					},
 					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/ValidationError"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"delete": {
-				"tags": ["auth"],
-				"description": "Delete user",
-				"parameters": [
-					{
-						"name": "userId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -409,97 +1722,63 @@
 				]
 			}
 		},
-		"/auth/users/superadmin": {
-			"get": {
-				"tags": ["auth"],
-				"description": "Checks to see if an admin account exists",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/auth/users": {
-			"get": {
-				"tags": ["auth"],
-				"description": "Get all users",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/auth/recovery/request": {
+		"/invite": {
 			"post": {
-				"tags": ["auth"],
-				"description": "Request a recovery token",
+				"tags": ["invite"],
+				"summary": "Create invite token",
+				"description": "Create a new invitation token",
 				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["email", "role"],
+								"properties": {
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"role": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"enum": ["user", "admin"]
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Invite token created successfully"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/invite/send": {
+			"post": {
+				"tags": ["invite"],
+				"summary": "Send invitation email",
+				"description": "Send invitation email to user",
+				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
@@ -517,199 +1796,13 @@
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/recovery/validate": {
-			"post": {
-				"tags": ["auth"],
-				"description": "Validate recovery token",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["recoveryToken"],
-								"properties": {
-									"recoveryToken": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/recovery/reset": {
-			"post": {
-				"tags": ["auth"],
-				"description": "Password reset",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["recoveryToken", "password"],
-								"properties": {
-									"recoveryToken": {
-										"type": "string"
-									},
-									"password": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/invite": {
-			"post": {
-				"tags": ["invite"],
-				"description": "Request an invitation",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["email", "role"],
-								"properties": {
-									"email": {
-										"type": "string"
-									},
-									"role": {
-										"type": "array"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -722,8 +1815,10 @@
 		"/invite/verify": {
 			"post": {
 				"tags": ["invite"],
-				"description": "Request an invitation",
+				"summary": "Verify invitation token",
+				"description": "Verify an invitation token",
 				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
@@ -740,851 +1835,22 @@
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get all monitors",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"post": {
-				"tags": ["monitors"],
-				"description": "Create a new monitor",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateMonitorBody"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"delete": {
-				"tags": ["monitors"],
-				"description": "Delete all monitors",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/uptime": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get all monitors with uptime stats for 1, 7, 30, and 90 days",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/resolution/url": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Check DNS resolution for a given URL",
-				"parameters": [
-					{
-						"name": "monitorURL",
-						"in": "query",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"example": "https://example.com"
-						},
-						"description": "The URL to check DNS resolution for"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "URL resolved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
 					"400": {
-						"description": "DNS resolution failed",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"description": "Invalid or expired token"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/{monitorId}": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get monitor by id",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"put": {
-				"tags": ["monitors"],
-				"description": "Update monitor by id",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/UpdateMonitorBody"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"delete": {
-				"tags": ["monitors"],
-				"description": "Delete monitor by id",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/stats/{monitorId}": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get monitor stats",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/certificate/{monitorId}": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get monitor certificate",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/team/summary/{teamId}": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get monitors and summary by teamId",
-				"parameters": [
-					{
-						"name": "teamId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "type",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "array",
-							"enum": ["http", "ping", "pagespeed"]
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/team/{teamId}": {
-			"get": {
-				"tags": ["monitors"],
-				"description": "Get monitors by teamId",
-				"parameters": [
-					{
-						"name": "teamId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "status",
-						"description": "Status of monitor, true for up, false for down",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "boolean"
-						}
-					},
-					{
-						"name": "checkOrder",
-						"description": "Order of checks",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string",
-							"enum": ["asc", "desc"]
-						}
-					},
-					{
-						"name": "limit",
-						"description": "Number of checks to return with monitor",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "type",
-						"description": "Type of monitor",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string",
-							"enum": ["http", "ping", "pagespeed"]
-						}
-					},
-					{
-						"name": "page",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "rowsPerPage",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "filter",
-						"description": "Value to filter by",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "field",
-						"description": "Field to filter on",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "order",
-						"description": "Sort order of results",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string",
-							"enum": ["http", "ping", "pagespeed"]
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/pause/{monitorId}": {
-			"post": {
-				"tags": ["monitors"],
-				"description": "Pause monitor",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/monitors/demo": {
-			"post": {
-				"tags": ["monitors"],
-				"description": "Create a demo monitor",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateMonitorBody"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
+				}
 			}
 		},
 		"/checks/{monitorId}": {
 			"get": {
 				"tags": ["checks"],
-				"description": "Get all checks for a monitor",
+				"summary": "Get checks by monitor",
+				"description": "Get all checks for a specific monitor",
 				"parameters": [
 					{
 						"name": "monitorId",
@@ -1597,94 +1863,13 @@
 				],
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"description": "Checks retrieved successfully"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"post": {
-				"tags": ["checks"],
-				"description": "Create a new check",
-				"parameters": [
-					{
-						"name": "monitorId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateCheckBody"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -1695,7 +1880,8 @@
 			},
 			"delete": {
 				"tags": ["checks"],
-				"description": "Delete all checks for a monitor",
+				"summary": "Delete checks by monitor",
+				"description": "Delete all checks for a specific monitor",
 				"parameters": [
 					{
 						"name": "monitorId",
@@ -1708,34 +1894,13 @@
 				],
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -1745,50 +1910,17 @@
 				]
 			}
 		},
-		"/checks/team/{teamId}": {
+		"/checks/team": {
 			"get": {
 				"tags": ["checks"],
-				"description": "Get all checks for a team",
-				"parameters": [
-					{
-						"name": "teamId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
+				"summary": "Get checks by team",
+				"description": "Get all checks for team monitors",
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"description": "Team checks retrieved successfully"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -1799,47 +1931,37 @@
 			},
 			"delete": {
 				"tags": ["checks"],
-				"description": "Delete all checks for a team",
-				"parameters": [
-					{
-						"name": "teamId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
+				"summary": "Delete team checks",
+				"description": "Delete all checks for team (admin/superadmin only)",
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/team/summary": {
+			"get": {
+				"tags": ["checks"],
+				"summary": "Get team checks summary",
+				"description": "Get summary statistics for team checks",
+				"responses": {
+					"200": {
+						"description": "Team checks summary retrieved successfully"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -1852,46 +1974,149 @@
 		"/checks/team/ttl": {
 			"put": {
 				"tags": ["checks"],
-				"description": "Update check TTL",
+				"summary": "Update checks TTL",
+				"description": "Update time-to-live for checks (admin/superadmin only)",
 				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UpdateCheckTTLBody"
+								"type": "object",
+								"required": ["ttl"],
+								"properties": {
+									"ttl": {
+										"type": "integer",
+										"minimum": 1,
+										"description": "Time to live in days"
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
 					},
 					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/ValidationError"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/check/{checkId}": {
+			"put": {
+				"tags": ["checks"],
+				"summary": "Acknowledge check",
+				"description": "Acknowledge a specific check",
+				"parameters": [
+					{
+						"name": "checkId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/maintenance-window": {
+			"post": {
+				"tags": ["maintenance-window"],
+				"summary": "Create maintenance window",
+				"description": "Create a new maintenance window",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["name", "startTime", "endTime"],
+								"properties": {
+									"name": {
+										"type": "string",
+										"maxLength": 100
+									},
+									"description": {
+										"type": "string",
+										"maxLength": 500
+									},
+									"startTime": {
+										"type": "string",
+										"format": "date-time"
+									},
+									"endTime": {
+										"type": "string",
+										"format": "date-time"
+									},
+									"monitors": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
 								}
 							}
 						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Maintenance window created successfully"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/maintenance-window/team": {
+			"get": {
+				"tags": ["maintenance-window"],
+				"summary": "Get team maintenance windows",
+				"description": "Get all maintenance windows for the team",
+				"responses": {
+					"200": {
+						"description": "Maintenance windows retrieved successfully"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -1904,7 +2129,8 @@
 		"/maintenance-window/monitor/{monitorId}": {
 			"get": {
 				"tags": ["maintenance-window"],
-				"description": "Get maintenance window for monitor",
+				"summary": "Get maintenance windows by monitor",
+				"description": "Get all maintenance windows for a specific monitor",
 				"parameters": [
 					{
 						"name": "monitorId",
@@ -1917,34 +2143,46 @@
 				],
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"description": "Monitor maintenance windows retrieved successfully"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/maintenance-window/{id}": {
+			"get": {
+				"tags": ["maintenance-window"],
+				"summary": "Get maintenance window by ID",
+				"description": "Get a specific maintenance window",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Maintenance window retrieved successfully"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -1953,12 +2191,13 @@
 					}
 				]
 			},
-			"post": {
+			"put": {
 				"tags": ["maintenance-window"],
-				"description": "Create maintenance window for monitor",
+				"summary": "Update maintenance window",
+				"description": "Update an existing maintenance window",
 				"parameters": [
 					{
-						"name": "monitorId",
+						"name": "id",
 						"in": "path",
 						"required": true,
 						"schema": {
@@ -1967,44 +2206,51 @@
 					}
 				],
 				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateMaintenanceWindowBody"
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"maxLength": 100
+									},
+									"description": {
+										"type": "string",
+										"maxLength": 500
+									},
+									"startTime": {
+										"type": "string",
+										"format": "date-time"
+									},
+									"endTime": {
+										"type": "string",
+										"format": "date-time"
+									},
+									"monitors": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/ValidationError"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -2012,15 +2258,14 @@
 						"bearerAuth": []
 					}
 				]
-			}
-		},
-		"/maintenance-window/user/{userId}": {
-			"get": {
+			},
+			"delete": {
 				"tags": ["maintenance-window"],
-				"description": "Get maintenance window for user",
+				"summary": "Delete maintenance window",
+				"description": "Delete a specific maintenance window",
 				"parameters": [
 					{
-						"name": "userId",
+						"name": "id",
 						"in": "path",
 						"required": true,
 						"schema": {
@@ -2030,34 +2275,13 @@
 				],
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -2067,40 +2291,183 @@
 				]
 			}
 		},
-		"/queue/jobs": {
+		"/queue/health": {
 			"get": {
 				"tags": ["queue"],
-				"description": "Get all jobs in queue",
+				"summary": "Check queue health",
+				"description": "Check the health status of the job queue (admin/superadmin only)",
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"description": "Queue health status retrieved successfully"
 					},
-					"422": {
-						"description": "Unprocessable Content",
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/all-metrics": {
+			"get": {
+				"tags": ["queue"],
+				"summary": "Get all queue metrics",
+				"description": "Get comprehensive queue metrics (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"description": "All queue metrics retrieved successfully"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/flush": {
+			"post": {
+				"tags": ["queue"],
+				"summary": "Flush queue",
+				"description": "Clear all jobs from the queue (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/games": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get game server list",
+				"description": "Get available game servers for monitoring",
+				"responses": {
+					"200": {
+						"description": "Game servers retrieved successfully",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/SuccessResponse"
+										},
+										{
+											"type": "object",
+											"properties": {
+												"data": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"name": {
+																"type": "string"
+															}
+														}
+													}
+												}
+											}
+										}
+									]
 								}
 							}
 						}
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/status-page": {
+			"get": {
+				"tags": ["status-page"],
+				"summary": "Get status page",
+				"description": "Get default status page information",
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"post": {
+				"tags": ["status-page"],
+				"summary": "Create status page",
+				"description": "Create a new status page with optional logo upload",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"logo": {
+										"type": "string",
+										"format": "binary",
+										"description": "Logo file for the status page"
+									},
+									"title": {
+										"type": "string",
+										"description": "Status page title"
+									},
+									"description": {
+										"type": "string",
+										"description": "Status page description"
+									},
+									"url": {
+										"type": "string",
+										"description": "Custom URL for the status page"
+									}
 								}
 							}
 						}
+					}
+				},
+				"responses": {
+					"201": {
+						"$ref": "#/components/responses/Success"
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -2109,39 +2476,53 @@
 					}
 				]
 			},
-			"post": {
-				"tags": ["queue"],
-				"description": "Create a new job.  Useful for testing scaling workers",
+			"put": {
+				"tags": ["status-page"],
+				"summary": "Update status page",
+				"description": "Update an existing status page with optional logo upload",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"logo": {
+										"type": "string",
+										"format": "binary",
+										"description": "Logo file for the status page"
+									},
+									"title": {
+										"type": "string",
+										"description": "Status page title"
+									},
+									"description": {
+										"type": "string",
+										"description": "Status page description"
+									},
+									"url": {
+										"type": "string",
+										"description": "Custom URL for the status page"
+									}
+								}
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -2151,83 +2532,20 @@
 				]
 			}
 		},
-		"/queue/metrics": {
+		"/status-page/team": {
 			"get": {
-				"tags": ["queue"],
-				"description": "Get queue metrics",
+				"tags": ["status-page"],
+				"summary": "Get status pages by team",
+				"description": "Get all status pages for the authenticated user's team",
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			}
-		},
-		"/queue/obliterate": {
-			"post": {
-				"tags": ["queue"],
-				"description": "Obliterate job queue",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -2240,106 +2558,58 @@
 		"/status-page/{url}": {
 			"get": {
 				"tags": ["status-page"],
-				"description": "Get a status page by URL",
+				"summary": "Get status page by URL",
+				"description": "Get a specific status page by its custom URL",
 				"parameters": [
 					{
 						"name": "url",
 						"in": "path",
 						"required": true,
-						"schema": { "type": "string" }
+						"schema": {
+							"type": "string"
+						},
+						"description": "Custom URL of the status page"
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": { "$ref": "#/components/schemas/SuccessResponse" }
-							}
-						}
-					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
 					"404": {
-						"description": "Not Found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": { "$ref": "#/components/schemas/ErrorResponse" }
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
 			},
-			"post": {
+			"delete": {
 				"tags": ["status-page"],
-				"description": "Create a status page",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateStatusPageBody"
-							}
-						}
+				"summary": "Delete status page",
+				"description": "Delete a status page by its custom URL",
+				"parameters": [
+					{
+						"name": "url",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"description": "Custom URL of the status page (supports wildcards)"
 					}
-				},
+				],
 				"responses": {
 					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/Success"
 					},
-					"422": {
-						"description": "Unprocessable Content",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
-					"400": {
-						"description": "Duplicate URL",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+					"404": {
+						"$ref": "#/components/responses/NotFound"
 					},
 					"500": {
-						"description": "Internal Server Error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				},
 				"security": [
@@ -2355,72 +2625,597 @@
 			"bearerAuth": {
 				"type": "http",
 				"scheme": "bearer",
-				"bearerFormat": "JWT"
+				"bearerFormat": "JWT",
+				"description": "JWT token obtained from login endpoint"
+			}
+		},
+		"responses": {
+			"Success": {
+				"description": "Operation successful",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/SuccessResponse"
+						}
+					}
+				}
+			},
+			"NotFound": {
+				"description": "Resource not found",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ErrorResponse"
+						}
+					}
+				}
+			},
+			"ValidationError": {
+				"description": "Validation failed",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ErrorResponse"
+						}
+					}
+				}
+			},
+			"Unauthorized": {
+				"description": "Authentication required or token invalid",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ErrorResponse"
+						}
+					}
+				}
+			},
+			"Forbidden": {
+				"description": "Insufficient permissions",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ErrorResponse"
+						}
+					}
+				}
+			},
+			"InternalServerError": {
+				"description": "Internal server error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ErrorResponse"
+						}
+					}
+				}
 			}
 		},
 		"schemas": {
-			"ErrorResponse": {
-				"type": "object",
-				"properties": {
-					"success": {
-						"type": "boolean",
-						"default": false
-					},
-					"msg": {
-						"type": "string"
-					}
-				}
-			},
 			"SuccessResponse": {
 				"type": "object",
+				"required": ["success", "msg"],
 				"properties": {
 					"success": {
 						"type": "boolean",
-						"default": true
+						"example": true
 					},
 					"msg": {
-						"type": "string"
+						"type": "string",
+						"example": "Operation completed successfully"
 					},
 					"data": {
-						"type": "object"
+						"type": "object",
+						"description": "Response payload (varies by endpoint)"
 					}
 				}
 			},
-			"UserUpdateRequest": {
+			"ErrorResponse": {
 				"type": "object",
-				"required": ["firstName", "lastName", "email", "password", "role", "teamId"],
+				"required": ["success", "msg"],
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"example": false
+					},
+					"msg": {
+						"type": "string",
+						"example": "An error occurred"
+					},
+					"details": {
+						"type": "object",
+						"description": "Additional error details"
+					}
+				}
+			},
+			"RegisterRequest": {
+				"type": "object",
+				"required": ["firstName", "lastName", "email", "password"],
 				"properties": {
 					"firstName": {
-						"type": "string"
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 50,
+						"example": "John"
 					},
 					"lastName": {
-						"type": "string"
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 50,
+						"example": "Doe"
+					},
+					"email": {
+						"type": "string",
+						"format": "email",
+						"example": "john@example.com"
 					},
 					"password": {
 						"type": "string",
-						"format": "password"
-					},
-					"newPassword": {
-						"type": "string",
-						"format": "password"
+						"minLength": 8,
+						"format": "password",
+						"example": "SecurePass123!"
 					},
 					"profileImage": {
-						"type": "file",
-						"format": "file"
+						"type": "string",
+						"format": "binary",
+						"description": "Optional profile image file"
 					},
 					"role": {
 						"type": "array",
-						"enum": [["user"], ["admin"], ["superadmin"], ["Demo"]],
-						"default": ["superadmin"]
-					},
-					"deleteProfileImage": {
-						"type": "boolean"
+						"items": {
+							"type": "string",
+							"enum": ["user", "admin", "superadmin", "Demo"]
+						},
+						"default": ["user"]
 					}
 				}
 			},
-			"CreateMonitorBody": {
+			"LoginRequest": {
 				"type": "object",
-				"required": ["userId", "teamId", "name", "description", "type", "url"],
+				"required": ["email", "password"],
+				"properties": {
+					"email": {
+						"type": "string",
+						"format": "email",
+						"example": "john@example.com"
+					},
+					"password": {
+						"type": "string",
+						"format": "password",
+						"example": "SecurePass123!"
+					}
+				}
+			},
+			"AuthResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/SuccessResponse"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"data": {
+								"type": "object",
+								"properties": {
+									"token": {
+										"type": "string",
+										"description": "JWT access token"
+									},
+									"user": {
+										"$ref": "#/components/schemas/User"
+									}
+								}
+							}
+						}
+					}
+				]
+			},
+			"UserUpdateRequest": {
+				"type": "object",
+				"properties": {
+					"firstName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 50
+					},
+					"lastName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 50
+					},
+					"password": {
+						"type": "string",
+						"format": "password",
+						"description": "Current password for verification"
+					},
+					"newPassword": {
+						"type": "string",
+						"minLength": 8,
+						"format": "password",
+						"description": "New password (if changing)"
+					},
+					"profileImage": {
+						"type": "string",
+						"format": "binary",
+						"description": "New profile image file"
+					},
+					"deleteProfileImage": {
+						"type": "boolean",
+						"description": "Flag to delete current profile image"
+					}
+				}
+			},
+			"User": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"example": "64f123a456b789012c345def"
+					},
+					"firstName": {
+						"type": "string",
+						"example": "John"
+					},
+					"lastName": {
+						"type": "string",
+						"example": "Doe"
+					},
+					"email": {
+						"type": "string",
+						"format": "email",
+						"example": "john@example.com"
+					},
+					"role": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["user", "admin", "superadmin", "Demo"]
+						}
+					},
+					"profileImage": {
+						"type": "string",
+						"description": "URL or path to profile image"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"CreateMonitorRequest": {
+				"type": "object",
+				"required": ["name", "description", "type", "url", "interval"],
+				"properties": {
+					"name": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 100,
+						"example": "My Website Monitor"
+					},
+					"description": {
+						"type": "string",
+						"maxLength": 500,
+						"example": "Monitors the main website homepage"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"],
+						"example": "http"
+					},
+					"url": {
+						"type": "string",
+						"format": "uri",
+						"example": "https://example.com"
+					},
+					"interval": {
+						"type": "integer",
+						"minimum": 30,
+						"maximum": 3600,
+						"example": 300,
+						"description": "Check interval in seconds"
+					},
+					"isActive": {
+						"type": "boolean",
+						"default": true
+					},
+					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "Array of notification IDs to associate with this monitor"
+					},
+					"httpOptions": {
+						"type": "object",
+						"properties": {
+							"method": {
+								"type": "string",
+								"enum": ["GET", "POST", "PUT", "DELETE", "HEAD"],
+								"default": "GET"
+							},
+							"headers": {
+								"type": "object",
+								"additionalProperties": {
+									"type": "string"
+								}
+							},
+							"body": {
+								"type": "string",
+								"description": "Request body for POST/PUT requests"
+							},
+							"timeout": {
+								"type": "integer",
+								"minimum": 1000,
+								"maximum": 30000,
+								"default": 5000,
+								"description": "Request timeout in milliseconds"
+							}
+						}
+					},
+					"assertions": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string",
+									"enum": ["status-code", "response-time", "body-contains", "header-contains"]
+								},
+								"comparison": {
+									"type": "string",
+									"enum": ["equals", "not-equals", "greater-than", "less-than", "contains", "not-contains"]
+								},
+								"value": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"UpdateMonitorRequest": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 100
+					},
+					"description": {
+						"type": "string",
+						"maxLength": 500
+					},
+					"interval": {
+						"type": "integer",
+						"minimum": 30,
+						"maximum": 3600
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"httpOptions": {
+						"type": "object",
+						"properties": {
+							"method": {
+								"type": "string",
+								"enum": ["GET", "POST", "PUT", "DELETE", "HEAD"]
+							},
+							"headers": {
+								"type": "object",
+								"additionalProperties": {
+									"type": "string"
+								}
+							},
+							"body": {
+								"type": "string"
+							},
+							"timeout": {
+								"type": "integer",
+								"minimum": 1000,
+								"maximum": 30000
+							}
+						}
+					},
+					"assertions": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string",
+									"enum": ["status-code", "response-time", "body-contains", "header-contains"]
+								},
+								"comparison": {
+									"type": "string",
+									"enum": ["equals", "not-equals", "greater-than", "less-than", "contains", "not-contains"]
+								},
+								"value": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"Monitor": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"example": "64f123a456b789012c345def"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string",
+						"example": "My Website Monitor"
+					},
+					"description": {
+						"type": "string",
+						"example": "Monitors the main website homepage"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"]
+					},
+					"url": {
+						"type": "string",
+						"format": "uri",
+						"example": "https://example.com"
+					},
+					"interval": {
+						"type": "integer",
+						"example": 300
+					},
+					"isActive": {
+						"type": "boolean",
+						"example": true
+					},
+					"status": {
+						"type": "boolean",
+						"description": "Current monitor status (up/down)"
+					},
+					"lastChecked": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of last check"
+					},
+					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"httpOptions": {
+						"type": "object",
+						"properties": {
+							"method": {
+								"type": "string"
+							},
+							"headers": {
+								"type": "object"
+							},
+							"body": {
+								"type": "string"
+							},
+							"timeout": {
+								"type": "integer"
+							}
+						}
+					},
+					"assertions": {
+						"type": "array",
+						"items": {
+							"type": "object"
+						}
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"CreateNotificationRequest": {
+				"type": "object",
+				"required": ["type", "name"],
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["email", "webhook", "slack", "discord", "telegram", "zapier"],
+						"example": "email"
+					},
+					"name": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 100,
+						"example": "Admin Email Notifications"
+					},
+					"config": {
+						"type": "object",
+						"description": "Configuration specific to notification type",
+						"oneOf": [
+							{
+								"title": "Email Configuration",
+								"properties": {
+									"to": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"format": "email"
+										}
+									}
+								}
+							},
+							{
+								"title": "Webhook Configuration",
+								"properties": {
+									"url": {
+										"type": "string",
+										"format": "uri"
+									},
+									"headers": {
+										"type": "object",
+										"additionalProperties": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							{
+								"title": "Slack Configuration",
+								"properties": {
+									"webhookUrl": {
+										"type": "string",
+										"format": "uri"
+									},
+									"channel": {
+										"type": "string"
+									}
+								}
+							},
+							{
+								"title": "Discord Configuration",
+								"properties": {
+									"webhookUrl": {
+										"type": "string",
+										"format": "uri"
+									}
+								}
+							}
+						]
+					},
+					"isActive": {
+						"type": "boolean",
+						"default": true
+					}
+				}
+			},
+			"Notification": {
+				"type": "object",
 				"properties": {
 					"_id": {
 						"type": "string"
@@ -2431,122 +3226,153 @@
 					"teamId": {
 						"type": "string"
 					},
+					"type": {
+						"type": "string",
+						"enum": ["email", "webhook", "slack", "discord", "telegram", "zapier"]
+					},
 					"name": {
 						"type": "string"
 					},
-					"description": {
-						"type": "string"
-					},
-					"type": {
-						"type": "string",
-						"enum": ["http", "ping", "pagespeed"]
-					},
-					"url": {
-						"type": "string"
+					"config": {
+						"type": "object",
+						"description": "Type-specific configuration"
 					},
 					"isActive": {
 						"type": "boolean"
 					},
-					"interval": {
-						"type": "integer"
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
 					},
-					"notifications": {
-						"type": "array",
-						"items": {
-							"type": "string"
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"AppSettings": {
+				"type": "object",
+				"properties": {
+					"appName": {
+						"type": "string",
+						"example": "Checkmate"
+					},
+					"appUrl": {
+						"type": "string",
+						"format": "uri",
+						"example": "https://checkmate.example.com"
+					},
+					"logLevel": {
+						"type": "string",
+						"enum": ["error", "warn", "info", "debug"],
+						"default": "info"
+					},
+					"emailConfig": {
+						"type": "object",
+						"properties": {
+							"host": {
+								"type": "string"
+							},
+							"port": {
+								"type": "integer"
+							},
+							"secure": {
+								"type": "boolean"
+							},
+							"user": {
+								"type": "string"
+							},
+							"pass": {
+								"type": "string",
+								"format": "password"
+							},
+							"from": {
+								"type": "string",
+								"format": "email"
+							}
 						}
+					},
+					"webhookRetries": {
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 10,
+						"default": 3
+					},
+					"checksRetention": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 365,
+						"default": 90,
+						"description": "Days to retain check results"
 					}
 				}
 			},
-			"UpdateMonitorBody": {
+			"SystemDiagnostics": {
 				"type": "object",
 				"properties": {
-					"name": {
-						"type": "string"
+					"uptime": {
+						"type": "number",
+						"description": "System uptime in seconds"
 					},
-					"description": {
-						"type": "string"
-					},
-					"interval": {
-						"type": "integer"
-					},
-					"notifications": {
-						"type": "array",
-						"items": {
-							"type": "string"
+					"memory": {
+						"type": "object",
+						"properties": {
+							"total": {
+								"type": "number",
+								"description": "Total memory in bytes"
+							},
+							"used": {
+								"type": "number",
+								"description": "Used memory in bytes"
+							},
+							"free": {
+								"type": "number",
+								"description": "Free memory in bytes"
+							}
 						}
-					}
-				}
-			},
-			"CreateCheckBody": {
-				"type": "object",
-				"required": ["monitorId", "status", "responseTime", "statusCode", "message"],
-				"properties": {
-					"monitorId": {
-						"type": "string"
 					},
-					"status": {
-						"type": "boolean"
+					"cpu": {
+						"type": "object",
+						"properties": {
+							"usage": {
+								"type": "number",
+								"description": "CPU usage percentage"
+							},
+							"cores": {
+								"type": "integer",
+								"description": "Number of CPU cores"
+							}
+						}
 					},
-					"responseTime": {
-						"type": "integer"
+					"database": {
+						"type": "object",
+						"properties": {
+							"status": {
+								"type": "string",
+								"enum": ["connected", "disconnected", "error"]
+							},
+							"responseTime": {
+								"type": "number",
+								"description": "Database response time in milliseconds"
+							}
+						}
 					},
-					"statusCode": {
-						"type": "integer"
-					},
-					"message": {
-						"type": "string"
-					}
-				}
-			},
-			"UpdateCheckTTLBody": {
-				"type": "object",
-				"required": ["ttl"],
-				"properties": {
-					"ttl": {
-						"type": "integer"
-					}
-				}
-			},
-			"CreateMaintenanceWindowBody": {
-				"type": "object",
-				"required": ["userId", "active", "oneTime", "start", "end"],
-				"properties": {
-					"userId": {
-						"type": "string"
-					},
-					"active": {
-						"type": "boolean"
-					},
-					"oneTime": {
-						"type": "boolean"
-					},
-					"start": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"end": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"expiry": {
-						"type": "string",
-						"format": "date-time"
-					}
-				}
-			},
-			"CreateStatusPageBody": {
-				"type": "object",
-				"required": ["companyName", "url", "timezone", "color", "theme", "monitors"],
-				"properties": {
-					"companyName": { "type": "string" },
-					"url": { "type": "string" },
-					"timezone": { "type": "string" },
-					"color": { "type": "string" },
-					"theme": { "type": "string" },
-					"monitors": {
-						"type": "array",
-						"items": { "type": "string" }
+					"queue": {
+						"type": "object",
+						"properties": {
+							"active": {
+								"type": "integer"
+							},
+							"waiting": {
+								"type": "integer"
+							},
+							"completed": {
+								"type": "integer"
+							},
+							"failed": {
+								"type": "integer"
+							}
+						}
 					}
 				}
 			}

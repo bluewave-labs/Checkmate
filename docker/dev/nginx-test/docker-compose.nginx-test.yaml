@@ -1,0 +1,13 @@
+# Dev/Test only: Not required in production
+# Docker Compose configuration for nginx test service
+
+services:
+  nginx-test:
+    image: nginx:alpine
+    ports:
+      - "8443:443"
+    volumes:
+      - ../certs/host-int-cert.pem:/etc/nginx/certs/server.crt:ro
+      - ../certs/host-int-key.pem:/etc/nginx/certs/server.key:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
