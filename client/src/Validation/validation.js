@@ -115,6 +115,16 @@ const monitorValidation = joi.object({
 	_id: joi.string(),
 	userId: joi.string(),
 	teamId: joi.string(),
+	statusWindowSize: joi.number().min(1).max(20).default(5).messages({
+		"number.base": "Status window size must be a number.",
+		"number.min": "Status window size must be at least 1.",
+		"number.max": "Status window size must be at most 20.",
+	}),
+	statusWindowThreshold: joi.number().min(1).max(100).default(60).messages({
+		"number.base": "Incident percentage must be a number.",
+		"number.min": "Incident percentage must be at least 1.",
+		"number.max": "Incident percentage must be at most 100.",
+	}),
 	url: joi.when("type", {
 		is: "docker",
 		then: joi
