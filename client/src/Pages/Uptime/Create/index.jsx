@@ -45,20 +45,6 @@ import {
 } from "../../../Hooks/monitorHooks";
 
 /**
- * Parses a URL string and returns a URL object.
- *
- * @param {string} url - The URL string to parse.
- * @returns {URL} - The parsed URL object if valid, otherwise an empty string.
- */
-const parseUrl = (url) => {
-	try {
-		return new URL(url);
-	} catch (error) {
-		return null;
-	}
-};
-
-/**
  * Create page renders monitor creation or configuration views.
  * @component
  */
@@ -69,6 +55,8 @@ const UptimeCreate = ({ isClone = false }) => {
 	// States
 	const [monitor, setMonitor] = useState({
 		type: "http",
+		statusWindowSize: 5,
+		statusWindowThreshold: 60,
 		matchMethod: "equal",
 		expectedValue: "",
 		jsonPath: "",
@@ -191,7 +179,10 @@ const UptimeCreate = ({ isClone = false }) => {
 						? `http${https ? "s" : ""}://` + monitor.url
 						: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
+				statusWindowSize: monitor.statusWindowSize,
+				statusWindowThreshold: monitor.statusWindowThreshold,
 				type: monitor.type,
+
 				port:
 					monitor.type === "port" || monitor.type === "game" ? monitor.port : undefined,
 				interval: monitor.interval,
@@ -206,6 +197,8 @@ const UptimeCreate = ({ isClone = false }) => {
 				_id: monitor._id,
 				url: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
+				statusWindowSize: monitor.statusWindowSize,
+				statusWindowThreshold: monitor.statusWindowThreshold,
 				type: monitor.type,
 				matchMethod: monitor.matchMethod,
 				expectedValue: monitor.expectedValue,
@@ -299,7 +292,7 @@ const UptimeCreate = ({ isClone = false }) => {
 
 	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
 	const displayInterval = monitor?.interval / MS_PER_MINUTE || 1;
-	const parsedUrl = parseUrl(monitor?.url);
+	const parsedUrl = monitor?.url;
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
@@ -613,6 +606,39 @@ const UptimeCreate = ({ isClone = false }) => {
 							onChange={onChange}
 							error={errors["name"] ? true : false}
 							helperText={errors["name"]}
+						/>
+					</Stack>
+				</ConfigBox>
+				<ConfigBox>
+					<Box>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("createMonitorPage.incidentConfigTitle")}
+						</Typography>
+						<Typography component="p">
+							{t("createMonitorPage.incidentConfigDescription")}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(20)}>
+						<TextInput
+							name="statusWindowSize"
+							label={t("createMonitorPage.incidentConfigStatusWindowLabel")}
+							type="number"
+							value={monitor.statusWindowSize}
+							onChange={onChange}
+							error={errors["statusWindowSize"] ? true : false}
+							helperText={errors["statusWindowSize"]}
+						/>
+						<TextInput
+							name="statusWindowThreshold"
+							label={t("createMonitorPage.incidentConfigStatusWindowThresholdLabel")}
+							type="number"
+							value={monitor.statusWindowThreshold}
+							onChange={onChange}
+							error={errors["statusWindowThreshold"] ? true : false}
+							helperText={errors["statusWindowThreshold"]}
 						/>
 					</Stack>
 				</ConfigBox>

@@ -54,6 +54,7 @@ class SuperSimpleQueue {
 			id: monitorId.toString(),
 			template: "monitor-job",
 			repeat: monitor.interval,
+			active: monitor.isActive,
 			data: monitor.toObject(),
 		});
 	};

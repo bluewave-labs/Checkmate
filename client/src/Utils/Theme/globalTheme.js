@@ -564,6 +564,10 @@ const baseTheme = (palette) => ({
 					"& .MuiSelect-icon": {
 						color: theme.palette.primary.contrastTextSecondary, // Dropdown + color
 					},
+					"& .MuiSelect-select": {
+						display: "flex",
+						alignItems: "center",
+					},
 					"&:hover": {
 						backgroundColor: theme.palette.primary.main, // Background on hover
 					},
