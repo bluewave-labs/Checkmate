@@ -10,71 +10,21 @@ import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { maintenanceWindowValidation } from "../../../Validation/validation";
 import { createToast } from "../../../Utils/toastUtils";
 import MonitorList from "./Components/MonitorList";
-import Checkbox from "../../../Components/Inputs/Checkbox";
+import ConfigSelect from "./Components/ConfigSelect";
+import useMaintenanceData from "./hooks/useMaintenanceData";
+import useMaintenanceActions from "./hooks/useMaintenanceActions";
 
-import dayjs from "dayjs";
-import Select from "../../../Components/Inputs/Select";
 import TextInput from "../../../Components/Inputs/TextInput";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import CalendarIcon from "../../../assets/icons/calendar.svg?react";
 import "./index.css";
 import Search from "../../../Components/Inputs/Search";
-import { networkService } from "../../../main";
 import { logger } from "../../../Utils/Logger";
-import {
-	MS_PER_SECOND,
-	MS_PER_MINUTE,
-	MS_PER_HOUR,
-	MS_PER_DAY,
-	MS_PER_WEEK,
-} from "../../../Utils/timeUtils";
+
 import { useNavigate, useParams } from "react-router-dom";
 import { buildErrors, hasValidationErrors } from "../../../Validation/error";
 import { useTranslation } from "react-i18next";
-
-const getDurationAndUnit = (durationInMs) => {
-	if (durationInMs % MS_PER_DAY === 0) {
-		return {
-			duration: (durationInMs / MS_PER_DAY).toString(),
-			durationUnit: "days",
-		};
-	} else if (durationInMs % MS_PER_HOUR === 0) {
-		return {
-			duration: (durationInMs / MS_PER_HOUR).toString(),
-			durationUnit: "hours",
-		};
-	} else if (durationInMs % MS_PER_MINUTE === 0) {
-		return {
-			duration: (durationInMs / MS_PER_MINUTE).toString(),
-			durationUnit: "minutes",
-		};
-	} else {
-		return {
-			duration: (durationInMs / MS_PER_SECOND).toString(),
-			durationUnit: "seconds",
-		};
-	}
-};
-
-const MS_LOOKUP = {
-	seconds: MS_PER_SECOND,
-	minutes: MS_PER_MINUTE,
-	hours: MS_PER_HOUR,
-	days: MS_PER_DAY,
-	weeks: MS_PER_WEEK,
-};
-
-const REPEAT_LOOKUP = {
-	none: 0,
-	daily: MS_PER_DAY,
-	weekly: MS_PER_DAY * 7,
-};
-
-const REVERSE_REPEAT_LOOKUP = {
-	0: "none",
-	[MS_PER_DAY]: "daily",
-	[MS_PER_WEEK]: "weekly",
-};
+import dayjs from "dayjs";
 
 const repeatConfig = [
 	{ _id: 0, name: "Don't repeat", value: "none" },
@@ -96,24 +46,10 @@ const durationConfig = [
 	},
 ];
 
-const getValueById = (config, id) => {
-	const item = config.find((config) => config._id === id);
-	return item ? (item.value ? item.value : item.name) : null;
-};
-
-const getIdByValue = (config, name) => {
-	const item = config.find((config) => {
-		if (config.value) {
-			return config.value === name;
-		} else {
-			return config.name === name;
-		}
-	});
-	return item ? item._id : null;
-};
-
 const CreateMaintenance = () => {
 	const { maintenanceWindowId } = useParams();
+	const { handleSubmitForm } = useMaintenanceActions();
+	const { fetchMonitorsMaintenance, initializeMaintenanceForEdit } = useMaintenanceData();
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -121,6 +57,7 @@ const CreateMaintenance = () => {
 	const [monitors, setMonitors] = useState([]);
 	const [search, setSearch] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [errors, setErrors] = useState({});
 	const [form, setForm] = useState({
 		repeat: "none",
 		startDate: dayjs(),
@@ -130,43 +67,35 @@ const CreateMaintenance = () => {
 		name: "",
 		monitors: [],
 	});
-	const [errors, setErrors] = useState({});
+	const handleFormChange = (key, value) => {
+		setForm((prev) => ({ ...prev, [key]: value }));
+		const { error } = maintenanceWindowValidation.validate(
+			{ [key]: value },
+			{ abortEarly: false }
+		);
+		setErrors((prev) => {
+			return buildErrors(prev, key, error);
+		});
+	};
 
 	useEffect(() => {
 		const fetchMonitors = async () => {
 			setIsLoading(true);
 			try {
-				const response = await networkService.getMonitorsByTeamId({
-					limit: null,
-					types: ["http", "ping", "pagespeed", "port"],
-				});
-				const monitors = response.data.data.monitors;
-				setMonitors(monitors);
+				const fetchedMonitors = await fetchMonitorsMaintenance();
+				setMonitors(fetchedMonitors);
 
 				if (maintenanceWindowId === undefined) {
 					return;
 				}
-
-				const res = await networkService.getMaintenanceWindowById({
-					maintenanceWindowId: maintenanceWindowId,
-				});
-				const maintenanceWindow = res.data.data;
-				const { name, start, end, repeat, monitorId } = maintenanceWindow;
-				const startTime = dayjs(start);
-				const endTime = dayjs(end);
-				const durationInMs = endTime.diff(startTime, "milliseconds").toString();
-				const { duration, durationUnit } = getDurationAndUnit(durationInMs);
-				const monitor = monitors.find((monitor) => monitor._id === monitorId);
-				setForm({
-					...form,
-					name,
-					repeat: REVERSE_REPEAT_LOOKUP[repeat],
-					startDate: startTime,
-					startTime,
-					duration,
-					durationUnit,
-					monitors: monitor ? [monitor] : [],
-				});
+				const maintenanceWindowInformation = await initializeMaintenanceForEdit(
+					maintenanceWindowId,
+					fetchedMonitors
+				);
+				setForm((prev) => ({
+					...prev,
+					...maintenanceWindowInformation,
+				}));
 			} catch (error) {
 				createToast({ body: "Failed to fetch data" });
 				logger.error("Failed to fetch monitors", error);
@@ -177,90 +106,9 @@ const CreateMaintenance = () => {
 		fetchMonitors();
 	}, [user]);
 
-	const handleSearch = (value) => {
-		setSearch(value);
-	};
-
-	const handleSelectMonitors = (monitors) => {
-		setForm({ ...form, monitors });
-		const { error } = maintenanceWindowValidation.validate(
-			{ monitors },
-			{ abortEarly: false }
-		);
-		setErrors((prev) => {
-			return buildErrors(prev, "monitors", error);
-		});
-	};
-
-	const handleFormChange = (key, value) => {
-		setForm({ ...form, [key]: value });
-		const { error } = maintenanceWindowValidation.validate(
-			{ [key]: value },
-			{ abortEarly: false }
-		);
-		setErrors((prev) => {
-			return buildErrors(prev, key, error);
-		});
-	};
-
-	const handleTimeChange = (key, newTime) => {
-		setForm({ ...form, [key]: newTime });
-		const { error } = maintenanceWindowValidation.validate(
-			{ [key]: newTime },
-			{ abortEarly: false }
-		);
-		setErrors((prev) => {
-			return buildErrors(prev, key, error);
-		});
-	};
-
-	const handleMonitorsChange = (selected) => {
-		setForm((prev) => ({ ...prev, monitors: selected }));
-		const { error } = maintenanceWindowValidation.validate(
-			{ monitors: selected },
-			{ abortEarly: false }
-		);
-		setErrors((prev) => {
-			return buildErrors(prev, "monitors", error);
-		});
-	};
-
 	const handleSubmit = async () => {
 		if (hasValidationErrors(form, maintenanceWindowValidation, setErrors)) return;
-		// Build timestamp for maintenance window from startDate and startTime
-		const start = dayjs(form.startDate)
-			.set("hour", form.startTime.hour())
-			.set("minute", form.startTime.minute());
-		// Build end timestamp for maintenance window
-		const MS_MULTIPLIER = MS_LOOKUP[form.durationUnit];
-		const durationInMs = form.duration * MS_MULTIPLIER;
-		const end = start.add(durationInMs);
-
-		// Get repeat value in milliseconds
-		const repeat = REPEAT_LOOKUP[form.repeat];
-
-		const submit = {
-			monitors: form.monitors.map((monitor) => monitor._id),
-			name: form.name,
-			start: start.toISOString(),
-			end: end.toISOString(),
-			repeat,
-		};
-
-		if (repeat === 0) {
-			submit.expiry = end;
-		}
-
-		const requestConfig = { maintenanceWindow: submit };
-
-		if (maintenanceWindowId !== undefined) {
-			requestConfig.maintenanceWindowId = maintenanceWindowId;
-		}
-		const request =
-			maintenanceWindowId === undefined
-				? networkService.createMaintenanceWindow(requestConfig)
-				: networkService.editMaintenanceWindow(requestConfig);
-
+		const request = handleSubmitForm(maintenanceWindowId, form);
 		try {
 			setIsLoading(true);
 			await request;
@@ -353,18 +201,13 @@ const CreateMaintenance = () => {
 							error={errors["name"] ? true : false}
 							helperText={errors["name"]}
 						/>
-						<Select
+						<ConfigSelect
 							id="repeat"
 							name="maintenance-repeat"
 							label={t("maintenanceRepeat")}
-							value={getIdByValue(repeatConfig, form.repeat)}
-							onChange={(event) => {
-								handleFormChange(
-									"repeat",
-									getValueById(repeatConfig, event.target.value)
-								);
-							}}
-							items={repeatConfig}
+							valueSelect={form.repeat}
+							configSelection={repeatConfig}
+							onChange={(value) => handleFormChange("repeat", value)}
 						/>
 						<Stack>
 							<LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -437,7 +280,7 @@ const CreateMaintenance = () => {
 									}}
 									sx={{}}
 									onChange={(newDate) => {
-										handleTimeChange("startDate", newDate);
+										handleFormChange("startDate", newDate);
 									}}
 									error={errors["startDate"]}
 								/>
@@ -453,7 +296,7 @@ const CreateMaintenance = () => {
 						>
 							{t("startTime")}
 						</Typography>
-						<Typography>{t("timeZoneInfo")}</Typography>
+						<Typography> {t("timeZoneInfo")} </Typography>
 					</Box>
 					<Stack gap={theme.spacing(15)}>
 						<LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -462,7 +305,7 @@ const CreateMaintenance = () => {
 								label={t("startTime")}
 								value={form.startTime}
 								onChange={(newTime) => {
-									handleTimeChange("startTime", newTime);
+									handleFormChange("startTime", newTime);
 								}}
 								slotProps={{
 									nextIconButton: { sx: { ml: theme.spacing(2) } },
@@ -508,16 +351,11 @@ const CreateMaintenance = () => {
 								error={errors["duration"] ? true : false}
 								helperText={errors["duration"]}
 							/>
-							<Select
+							<ConfigSelect
 								id="durationUnit"
-								value={getIdByValue(durationConfig, form.durationUnit)}
-								items={durationConfig}
-								onChange={(event) => {
-									handleFormChange(
-										"durationUnit",
-										getValueById(durationConfig, event.target.value)
-									);
-								}}
+								valueSelect={form.durationUnit}
+								configSelection={durationConfig}
+								onChange={(value) => handleFormChange("durationUnit", value)}
 								error={errors["durationUnit"]}
 							/>
 						</Stack>
@@ -545,7 +383,9 @@ const CreateMaintenance = () => {
 							inputValue={search}
 							value={form.monitors}
 							handleInputChange={setSearch}
-							handleChange={handleMonitorsChange}
+							handleChange={(selected) => {
+								handleFormChange("monitors", selected);
+							}}
 							error={errors["monitors"]}
 						/>
 						<MonitorList
