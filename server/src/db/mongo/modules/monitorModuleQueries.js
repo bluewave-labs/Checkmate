@@ -16,17 +16,30 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 		{
 			$group: {
 				_id: {
-					bucket: {
-						$dateToString: {
-							format: dateString,
-							date: "$updatedAt",
-						},
+					$dateToString: {
+						format: dateString,
+						date: "$createdAt",
 					},
 				},
 				totalChecks: { $sum: 1 },
 				upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
 				downChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
 				avgResponseTime: { $avg: "$responseTime" },
+				avgUpResponseTime: {
+					$avg: {
+						$cond: [{ $eq: ["$status", true] }, "$responseTime", null],
+					},
+				},
+				avgDownResponseTime: {
+					$avg: {
+						$cond: [{ $eq: ["$status", false] }, "$responseTime", null],
+					},
+				},
+			},
+		},
+		{
+			$sort: {
+				_id: 1,
 			},
 		},
 		{
@@ -35,7 +48,25 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 				buckets: { $push: "$$ROOT" },
 				totalChecks: { $sum: "$totalChecks" },
 				upChecks: { $sum: "$upChecks" },
-				avgResponseTime: { $avg: "$avgResponseTime" },
+				downChecks: { $sum: "$downChecks" },
+				overallAvgResponseTime: {
+					$avg: {
+						$map: {
+							input: { $range: [0, { $size: { $ifNull: ["$buckets", []] } }] },
+							as: "i",
+							in: {
+								$let: {
+									vars: {
+										bucket: { $arrayElemAt: ["$buckets", "$$i"] },
+									},
+									in: {
+										$multiply: ["$$bucket.avgResponseTime", "$$bucket.totalChecks"],
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 		{
@@ -44,7 +75,20 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 				uptimePercentage: {
 					$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
 				},
-				groupedAvgResponseTime: "$avgResponseTime",
+				groupedAvgResponseTime: {
+					$divide: [
+						{
+							$reduce: {
+								input: "$buckets",
+								initialValue: 0,
+								in: {
+									$add: ["$$value", { $multiply: ["$$this.avgResponseTime", "$$this.totalChecks"] }],
+								},
+							},
+						},
+						"$totalChecks",
+					],
+				},
 				groupedChecks: "$buckets",
 				groupedUpChecks: {
 					$map: {
@@ -57,9 +101,9 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 						},
 						as: "b",
 						in: {
-							_id: "$$b._id.bucket",
+							_id: "$$b._id",
 							totalChecks: "$$b.upChecks",
-							avgResponseTime: "$$b.avgResponseTime",
+							avgResponseTime: "$$b.avgUpResponseTime",
 						},
 					},
 				},
@@ -74,9 +118,9 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 						},
 						as: "b",
 						in: {
-							_id: "$$b._id.bucket",
+							_id: "$$b._id",
 							totalChecks: "$$b.downChecks",
-							avgResponseTime: "$$b.avgResponseTime",
+							avgResponseTime: "$$b.avgDownResponseTime",
 						},
 					},
 				},
@@ -115,7 +159,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 				groupedChecks: "$groupedChecks",
 				groupedUpChecks: "$groupedUpChecks",
 				groupedDownChecks: "$groupedDownChecks",
-				groupedUptimePercentage: { $arrayElemAt: ["$uptimePercentage.percentage", 0] },
+				groupedUptimePercentage: "$uptimePercentage",
 				monitor: { $arrayElemAt: ["$monitor", 0] },
 			},
 		},
