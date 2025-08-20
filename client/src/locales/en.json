@@ -1,18 +1,4 @@
 {
-	"ClickUpload": "Click to upload",
-	"DeleteAccountButton": "Remove account",
-	"DeleteAccountTitle": "Remove account",
-	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
-	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
-	"DeleteWarningTitle": "Really remove this account?",
-	"DragandDrop": "drag and drop",
-	"EmailDescriptionText": "This is your current email address — it cannot be changed.",
-	"FirstName": "First name",
-	"LastName": "Last name",
-	"MaxSize": "Maximum Size",
-	"PhotoDescriptionText": "This photo will be displayed in your profile page.",
-	"SupportedFormats": "Supported formats",
-	"YourPhoto": "Profile photo",
 	"aboutus": "About Us",
 	"access": "Access",
 	"actions": "Actions",
@@ -202,13 +188,6 @@
 	"avgCpuTemperature": "Average CPU Temperature",
 	"bar": "Bar",
 	"basicInformation": "Basic Information",
-	"bytesPerSecond": "Bytes per second",
-	"bytesReceived": "Bytes Received",
-	"bytesSent": "Bytes Sent",
-	"dataReceived": "Data Received",
-	"dataSent": "Data Sent",
-	"dataRate": "Data Rate",
-	"rate": "Rate",
 	"bulkImport": {
 		"fallbackPage": "Import a file to upload a list of servers in bulk",
 		"invalidFileType": "Invalid file type",
@@ -222,17 +201,21 @@
 		"uploadSuccess": "Monitors created successfully!",
 		"validationFailed": "Validation failed"
 	},
+	"bytesPerSecond": "Bytes per second",
+	"bytesReceived": "Bytes Received",
+	"bytesSent": "Bytes Sent",
 	"cancel": "Cancel",
 	"checkFormError": "Please check the form for errors.",
 	"checkFrequency": "Check frequency",
-	"chooseGame": "Choose game",
 	"checkHooks": {
 		"failureResolveAll": "Failed to resolve all incidents.",
 		"failureResolveMonitor": "Failed to resolve monitor incidents.",
 		"failureResolveOne": "Failed to resolve incident."
 	},
 	"checkingEvery": "Checking every",
+	"chooseGame": "Choose game",
 	"city": "CITY",
+	"ClickUpload": "Click to upload",
 	"common": {
 		"appName": "Checkmate",
 		"buttons": {
@@ -262,6 +245,12 @@
 	"createMaintenance": "Create maintenance",
 	"createMaintenanceWindow": "Create maintenance window",
 	"createMonitor": "Create monitor",
+	"createMonitorPage": {
+		"incidentConfigDescription": "A sliding window is used to determine when a monitor goes down.  The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
+		"incidentConfigStatusWindowLabel": "How many checks should be in the sliding window?",
+		"incidentConfigStatusWindowThresholdLabel": "What percentage of checks in the sliding window fail/succeed before monitor status changes?",
+		"incidentConfigTitle": "Incidents"
+	},
 	"createNew": "Create new",
 	"createNotifications": {
 		"dialogDeleteConfirm": "Delete",
@@ -311,13 +300,22 @@
 		}
 	},
 	"createYour": "Create your",
+	"dataRate": "Data Rate",
+	"dataReceived": "Data Received",
+	"dataSent": "Data Sent",
 	"date&Time": "Date & Time",
 	"delete": "Delete",
+	"DeleteAccountButton": "Remove account",
+	"DeleteAccountTitle": "Remove account",
+	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
+	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
 	"deleteDialogDescription": "Once deleted, this monitor cannot be retrieved.",
 	"deleteDialogTitle": "Do you really want to delete this monitor?",
 	"deleteStatusPage": "Do you want to delete this status page?",
 	"deleteStatusPageConfirm": "Yes, delete status page",
 	"deleteStatusPageDescription": "Once deleted, your status page cannot be retrieved.",
+	"DeleteWarningTitle": "Really remove this account?",
+	"details": "Details",
 	"diagnosticsPage": {
 		"diagnosticDescription": "System diagnostics",
 		"gauges": {
@@ -341,15 +339,6 @@
 	},
 	"disk": "Disk",
 	"diskUsage": "Disk Usage",
-	"drops": "Drops",
-	"errors": "Errors",
-	"errorsIn": "Errors In",
-	"errorsOut": "Errors Out",
-	"networkErrors": "Network Errors",
-	"networkDrops": "Network Drops",
-	"networkInterface": "Network Interface",
-	"selectInterface": "Select Interface",
-	"details": "Details",
 	"displayName": "Display name",
 	"distributedRightCategoryTitle": "Monitor",
 	"distributedStatusHeaderText": "Real-time, real-device coverage",
@@ -395,6 +384,8 @@
 	"distributedUptimeStatusUptLogo": "Upt Logo",
 	"dockerContainerMonitoring": "Docker container monitoring",
 	"dockerContainerMonitoringDescription": "Check whether your Docker container is running or not.",
+	"DragandDrop": "drag and drop",
+	"drops": "Drops",
 	"duration": "Duration",
 	"edit": "Edit",
 	"editing": "Editing...",
@@ -417,6 +408,7 @@
 			"validationErrors": "Validation errors"
 		}
 	},
+	"EmailDescriptionText": "This is your current email address — it cannot be changed.",
 	"emailSent": "Email sent successfully",
 	"errorInvalidFieldId": "Invalid field ID provided",
 	"errorInvalidTypeId": "Invalid notification type provided",
@@ -434,6 +426,9 @@
 			}
 		}
 	},
+	"errors": "Errors",
+	"errorsIn": "Errors In",
+	"errorsOut": "Errors Out",
 	"expectedValue": "Expected value",
 	"export": {
 		"failed": "Failed to export monitors",
@@ -442,9 +437,12 @@
 	},
 	"failedToSendEmail": "Failed to send email",
 	"features": "Features",
+	"FirstName": "First name",
 	"frequency": "Frequency",
 	"friendlyNameInput": "Friendly name",
 	"friendlyNamePlaceholder": "Maintenance at __ : __ for ___ minutes",
+	"gameServerMonitoring": "Game Server Monitoring",
+	"gameServerMonitoringDescription": "Check whether your game server is running or not",
 	"gb": "GB",
 	"general": {
 		"noOptionsFound": "No {{unit}} found"
@@ -520,6 +518,7 @@
 	"invalidFileFormat": "Unsupported file format!",
 	"invalidFileSize": "File size is too large!",
 	"inviteNoTokenFound": "No invite token found",
+	"LastName": "Last name",
 	"loginHere": "Login here",
 	"logsPage": {
 		"description": "System logs - last 1000 lines",
@@ -571,6 +570,7 @@
 		"regexPlaceholder": "^(success|ok)$",
 		"text": "Match Method"
 	},
+	"MaxSize": "Maximum Size",
 	"mb": "MB",
 	"mem": "Mem",
 	"memory": "Memory",
@@ -632,6 +632,11 @@
 			"namePlaceholder": "My Container",
 			"placeholder": "abcd1234"
 		},
+		"game": {
+			"label": "URL to monitor",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
+		},
 		"http": {
 			"label": "URL to monitor",
 			"namePlaceholder": "Google",
@@ -646,16 +651,14 @@
 			"label": "URL to monitor",
 			"namePlaceholder": "Localhost:5173",
 			"placeholder": "localhost"
-		},
-		"game": {
-			"label": "URL to monitor",
-			"namePlaceholder": "localhost:5173",
-			"placeholder": "localhost"
 		}
 	},
 	"ms": "ms",
 	"navControls": "Controls",
 	"network": "Network",
+	"networkDrops": "Network Drops",
+	"networkErrors": "Network Errors",
+	"networkInterface": "Network Interface",
 	"nextWindow": "Next window",
 	"noNetworkStatsAvailable": "No network stats available.",
 	"notFoundButton": "Go to the main dashboard",
@@ -739,6 +742,10 @@
 	"notifySMS": "Notify via SMS (coming soon)",
 	"now": "Now",
 	"os": "OS",
+	"packetsPerSecond": "Packets per second",
+	"packetsReceived": "Packets Received",
+	"packetsReceivedRate": "Packets Received Rate",
+	"packetsSent": "Packets Sent",
 	"pageSpeed": {
 		"fallback": {
 			"actionButton": "Let's create your first PageSpeed monitor!",
@@ -769,17 +776,12 @@
 		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
 		"saving": "Saving..."
 	},
-	"packetsPerSecond": "Packets per second",
-	"packetsReceived": "Packets Received",
-	"packetsReceivedRate": "Packets Received Rate",
-	"packetsSent": "Packets Sent",
 	"pause": "Pause",
+	"PhotoDescriptionText": "This photo will be displayed in your profile page.",
 	"pingMonitoring": "Ping monitoring",
 	"pingMonitoringDescription": "Check whether your server is available or not.",
 	"portMonitoring": "Port monitoring",
 	"portMonitoringDescription": "Check whether your port is open or not.",
-	"gameServerMonitoring": "Game Server Monitoring",
-	"gameServerMonitoringDescription": "Check whether your game server is running or not",
 	"portToMonitor": "Port to monitor",
 	"publicLink": "Public link",
 	"publicURL": "Public URL",
@@ -814,6 +816,7 @@
 		"refreshButton": "Refresh",
 		"title": "Queue"
 	},
+	"rate": "Rate",
 	"remove": "Remove",
 	"removeLogo": "Remove Logo",
 	"repeat": "Repeat",
@@ -829,6 +832,7 @@
 	},
 	"save": "Save",
 	"selectAll": "Select all",
+	"selectInterface": "Select Interface",
 	"sendTestNotifications": "Send test notifications",
 	"seperateEmails": "You can separate multiple emails with a comma",
 	"settingsAppearance": "Appearance",
@@ -873,6 +877,10 @@
 			"title": "Email",
 			"toastEmailRequiredFieldsError": "Email address, host, port and password are required"
 		},
+		"globalThresholds": {
+			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring.",
+			"title": "Global Thresholds"
+		},
 		"pageSpeedSettings": {
 			"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
 			"labelApiKey": "PageSpeed API key",
@@ -905,10 +913,6 @@
 			"title": "Display timezone"
 		},
 		"title": "Settings",
-		"globalThresholds": {
-			"title": "Global Thresholds",
-			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring."
-		},
 		"uiSettings": {
 			"description": "Switch between light and dark mode, or change user interface language.",
 			"labelLanguage": "Language",
@@ -985,6 +989,7 @@
 	"statusPageStatusNotPublic": "This status page is not public.",
 	"statusPageStatusServiceStatus": "Service status",
 	"submit": "Submit",
+	"SupportedFormats": "Supported formats",
 	"teamPanel": {
 		"cancel": "Cancel",
 		"email": "Email",
@@ -1040,10 +1045,10 @@
 	"uptimeCreateJsonPathQuery": "for query language documentation.",
 	"uptimeGeneralInstructions": {
 		"docker": "Enter the Docker ID of your container. Docker IDs must be the full 64 char Docker ID. You can run docker inspect <short_id> to get the full container ID.",
+		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
-		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
+		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
 	},
 	"uptimeMonitor": {
 		"fallback": {
@@ -1066,5 +1071,6 @@
 	"websiteMonitoring": "Website monitoring",
 	"websiteMonitoringDescription": "Use HTTP(s) to monitor your website or API endpoint.",
 	"whenNewIncident": "When there is a new incident,",
-	"window": "window"
+	"window": "window",
+	"YourPhoto": "Profile photo"
 }

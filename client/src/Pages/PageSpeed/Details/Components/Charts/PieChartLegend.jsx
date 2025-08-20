@@ -29,7 +29,7 @@ const PieChartLegend = ({ audits }) => {
 									: theme.palette.tertiary.main;
 
 					// Find the position where the number ends and the unit begins
-					const match = audit.displayValue.match(/(\d+\.?\d*)\s*([a-zA-Z]+)/);
+					const match = audit?.displayValue?.match(/(\d+\.?\d*)\s*([a-zA-Z]+)/);
 					let value;
 					let unit;
 					if (match) {

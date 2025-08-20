@@ -74,7 +74,7 @@ const StarPrompt = ({ repoUrl = "https://github.com/bluewave-labs/checkmate" }) 
 			<Typography
 				variant="body1"
 				sx={{
-					color: theme.palette.text.secondary,
+					color: theme.palette.primary.contrastTextTertiary,
 					fontSize: "0.938rem",
 					lineHeight: 1.5,
 					mb: 1,
