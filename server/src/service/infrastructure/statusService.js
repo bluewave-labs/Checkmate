@@ -152,12 +152,6 @@ class StatusService {
 			const failures = monitor.statusWindow.filter((s) => s === false).length;
 			const failureRate = (failures / monitor.statusWindow.length) * 100;
 
-			console.log({
-				failureRate,
-				status: monitor.status,
-				statusWindow: monitor.statusWindow,
-			});
-
 			// If threshold has been met and the monitor is not already down, mark down:
 			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== false) {
 				newStatus = false;
