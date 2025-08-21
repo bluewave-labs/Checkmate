@@ -260,7 +260,6 @@
 	"notifyEmails": "",
 	"seperateEmails": "",
 	"checkFrequency": "",
-	"chooseGame": "",
 	"matchMethod": "",
 	"expectedValue": "",
 	"deleteDialogTitle": "",
@@ -569,7 +568,8 @@
 				"password": {
 					"incorrect": ""
 				}
-			}
+			},
+			"welcome": ""
 		},
 		"registration": {
 			"heading": {
@@ -595,7 +595,8 @@
 			},
 			"toasts": {
 				"success": ""
-			}
+			},
+			"welcome": ""
 		},
 		"forgotPassword": {
 			"heading": "",
@@ -847,6 +848,10 @@
 			"selectDisabled": "",
 			"selectEnabled": "",
 			"title": ""
+		},
+		"globalThresholds": {
+			"title": "",
+			"description": ""
 		}
 	},
 	"statusPageCreate": {
@@ -915,7 +920,12 @@
 		"twentyMinutes": "",
 		"oneHour": "",
 		"oneDay": "",
-		"oneWeek": ""
+		"oneWeek": "",
+		"fourMinutes": "",
+		"oneMinute": "",
+		"twoMinutes": "",
+		"fifteenSeconds": "",
+		"thirtySeconds": ""
 	},
 	"general": {
 		"noOptionsFound": ""
@@ -967,5 +977,75 @@
 		}
 	},
 	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": ""
+	"incidentsPageActionResolveAll": "",
+	"matchMethodOptions": {
+		"equal": "",
+		"equalPlaceholder": "",
+		"include": "",
+		"includePlaceholder": "",
+		"regex": "",
+		"regexPlaceholder": "",
+		"text": ""
+	},
+	"monitorType": {
+		"docker": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"http": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"ping": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"port": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"game": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		}
+	},
+	"uptimeAdvancedMatching": {
+		"jsonPath": ""
+	},
+	"bytesPerSecond": "",
+	"bytesReceived": "",
+	"bytesSent": "",
+	"chooseGame": "",
+	"createMonitorPage": {
+		"incidentConfigDescription": "",
+		"incidentConfigStatusWindowLabel": "",
+		"incidentConfigStatusWindowThresholdLabel": "",
+		"incidentConfigTitle": ""
+	},
+	"dataRate": "",
+	"dataReceived": "",
+	"dataSent": "",
+	"details": "",
+	"drops": "",
+	"errors": "",
+	"errorsIn": "",
+	"errorsOut": "",
+	"gameServerMonitoring": "",
+	"gameServerMonitoringDescription": "",
+	"network": "",
+	"networkDrops": "",
+	"networkErrors": "",
+	"networkInterface": "",
+	"noNetworkStatsAvailable": "",
+	"packetsPerSecond": "",
+	"packetsReceived": "",
+	"packetsReceivedRate": "",
+	"packetsSent": "",
+	"rate": "",
+	"selectInterface": ""
 }

@@ -3,81 +3,81 @@
 	"title": "名稱",
 	"distributedStatusHeaderText": "實時、真實設備覆蓋",
 	"distributedStatusSubHeaderText": "由全球數百萬個設備提供支持，您可以按全球區域、國家或城市查看系統效能",
-	"settingsDisabled": "",
-	"settingsSuccessSaved": "",
-	"settingsFailedToSave": "",
-	"settingsStatsCleared": "",
-	"settingsFailedToClearStats": "",
-	"settingsMonitorsDeleted": "",
-	"settingsFailedToDeleteMonitors": "",
-	"starPromptTitle": "",
-	"starPromptDescription": "",
-	"https": "",
-	"http": "",
-	"monitor": "",
-	"aboutus": "",
-	"now": "",
-	"delete": "",
-	"configure": "",
-	"responseTime": "",
-	"ms": "",
-	"bar": "",
-	"area": "",
-	"country": "",
-	"city": "",
-	"response": "",
+	"settingsDisabled": "已停用",
+	"settingsSuccessSaved": "設定已成功儲存",
+	"settingsFailedToSave": "無法儲存設定",
+	"settingsStatsCleared": "統計數據已成功清除",
+	"settingsFailedToClearStats": "無法清除統計數據",
+	"settingsMonitorsDeleted": "已成功刪除所有監視器",
+	"settingsFailedToDeleteMonitors": "無法刪除所有監視器",
+	"starPromptTitle": "星標Checkmate",
+	"starPromptDescription": "查看最新版本發布及在 GitHub 上幫助社區成長",
+	"https": "HTTPS",
+	"http": "HTTP",
+	"monitor": "監控",
+	"aboutus": "關於我們",
+	"now": "現在",
+	"delete": "刪除",
+	"configure": "設定",
+	"responseTime": "回應時間",
+	"ms": "毫秒",
+	"bar": "條",
+	"area": "區域",
+	"country": "國家",
+	"city": "城市",
+	"response": "回應",
 	"monitorStatusUp": "",
 	"monitorStatusDown": "",
-	"webhookSendSuccess": "",
+	"webhookSendSuccess": "Webhook 通知發送成功",
 	"webhookSendError": "",
-	"webhookUnsupportedPlatform": "",
-	"distributedRightCategoryTitle": "",
-	"distributedStatusServerMonitors": "",
-	"distributedStatusServerMonitorsDescription": "",
-	"distributedUptimeCreateSelectURL": "",
-	"distributedUptimeCreateChecks": "",
-	"distributedUptimeCreateChecksDescription": "",
-	"distributedUptimeCreateIncidentNotification": "",
-	"distributedUptimeCreateIncidentDescription": "",
-	"distributedUptimeCreateAdvancedSettings": "",
-	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsStatusHeaderUptime": "",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
+	"webhookUnsupportedPlatform": "不支援的平台: {platform}",
+	"distributedRightCategoryTitle": "監控",
+	"distributedStatusServerMonitors": "伺服器監控",
+	"distributedStatusServerMonitorsDescription": "監控相關伺服器狀態",
+	"distributedUptimeCreateSelectURL": "你可以在這裡選擇主機的 URL，同時選擇監視器類型。",
+	"distributedUptimeCreateChecks": "要執行的檢查項目",
+	"distributedUptimeCreateChecksDescription": "你可以在新增網站後，隨時新增或移除檢查項目。",
+	"distributedUptimeCreateIncidentNotification": "事故通知",
+	"distributedUptimeCreateIncidentDescription": "事故發生時，向用戶發送通知。",
+	"distributedUptimeCreateAdvancedSettings": "進階設定",
+	"distributedUptimeDetailsNoMonitorHistory": "此監控尚無檢查記錄。",
+	"distributedUptimeDetailsStatusHeaderUptime": "正常運行時間:",
+	"distributedUptimeDetailsStatusHeaderLastUpdate": "最後更新",
 	"notifications": {
 		"enableNotifications": "",
-		"testNotification": "",
-		"addOrEditNotifications": "",
+		"testNotification": "測試通知",
+		"addOrEditNotifications": "新增或編輯通知",
 		"slack": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
+			"label": "Slack",
+			"description": "要啟用 Slack 通知，請建立一個 Slack 應用程式並啟用傳入 Webhook。完成後，請在此提供 Webhook URL 即可。",
+			"webhookLabel": "Webhook URL",
+			"webhookPlaceholder": "https://hooks.slack.com/services/...",
+			"webhookRequired": "Slack webhook URL is required"
 		},
 		"discord": {
-			"label": "",
+			"label": "Discord",
 			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
+			"webhookLabel": "Discord Webhook URL",
+			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
 			"webhookRequired": ""
 		},
 		"telegram": {
-			"label": "",
-			"description": "",
-			"tokenLabel": "",
-			"tokenPlaceholder": "",
-			"chatIdLabel": "",
-			"chatIdPlaceholder": "",
+			"label": "Telegram",
+			"description": "要啟用 Telegram 通知，請使用 BotFather 用於創建和管理 Telegram 的官方機器來建立一個 Telegram 機器人。接著，取得 API 金鑰和聊天室 ID，並在此處填寫。",
+			"tokenLabel": "你的機器人金鑰",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+			"chatIdLabel": "你的聊天 ID",
+			"chatIdPlaceholder": "-1001234567890",
 			"fieldsRequired": ""
 		},
 		"webhook": {
-			"label": "",
-			"description": "",
-			"urlLabel": "",
-			"urlPlaceholder": "",
+			"label": "Webhooks",
+			"description": "你可以設定自訂 webhook，在事件發生時接收通知。",
+			"urlLabel": "Webhook URL",
+			"urlPlaceholder": "https://your-server.com/webhook",
 			"urlRequired": ""
 		},
-		"testNotificationDevelop": "",
+		"testNotificationDevelop": "測試通知 2",
 		"integrationButton": "",
 		"testSuccess": "",
 		"testFailed": "",
@@ -85,8 +85,12 @@
 		"networkError": "",
 		"fallback": {
 			"title": "",
-			"checks": [""],
-			"actionButton": ""
+			"checks": [
+				"提醒團隊有關停機或性能問題",
+				"讓工程師知道事件發生時的情況",
+				"讓管理員了解系統變更情況"
+			],
+			"actionButton": "讓我們建立您的第一個通知頻道！"
 		},
 		"createButton": "",
 		"createTitle": "",
@@ -111,35 +115,35 @@
 			"failed": ""
 		}
 	},
-	"testLocale": "",
-	"add": "",
+	"testLocale": "測試語言環境",
+	"add": "新增",
 	"monitors": "",
 	"distributedUptimeStatusCreateStatusPage": "",
 	"distributedUptimeStatusCreateStatusPageAccess": "",
 	"distributedUptimeStatusCreateStatusPageReady": "",
-	"distributedUptimeStatusBasicInfoHeader": "",
+	"distributedUptimeStatusBasicInfoHeader": "基本資料",
 	"distributedUptimeStatusBasicInfoDescription": "",
-	"distributedUptimeStatusLogoHeader": "",
+	"distributedUptimeStatusLogoHeader": "標誌",
 	"distributedUptimeStatusLogoDescription": "",
-	"distributedUptimeStatusLogoUploadButton": "",
+	"distributedUptimeStatusLogoUploadButton": "上傳標誌",
 	"distributedUptimeStatusStandardMonitorsHeader": "",
 	"distributedUptimeStatusStandardMonitorsDescription": "",
 	"distributedUptimeStatusCreateYour": "",
 	"distributedUptimeStatusEditYour": "",
 	"distributedUptimeStatusPublishedLabel": "",
-	"distributedUptimeStatusCompanyNameLabel": "",
+	"distributedUptimeStatusCompanyNameLabel": "公司名稱",
 	"distributedUptimeStatusPageAddressLabel": "",
-	"distributedUptimeStatus30Days": "",
-	"distributedUptimeStatus60Days": "",
-	"distributedUptimeStatus90Days": "",
+	"distributedUptimeStatus30Days": "30日",
+	"distributedUptimeStatus60Days": "60日",
+	"distributedUptimeStatus90Days": "90日",
 	"distributedUptimeStatusPageNotSetUp": "",
 	"distributedUptimeStatusContactAdmin": "",
 	"distributedUptimeStatusPageNotPublic": "",
 	"distributedUptimeStatusPageDeleteDialog": "",
 	"distributedUptimeStatusPageDeleteConfirm": "",
 	"distributedUptimeStatusPageDeleteDescription": "",
-	"distributedUptimeStatusDevices": "",
-	"distributedUptimeStatusUpt": "",
+	"distributedUptimeStatusDevices": "設備",
+	"distributedUptimeStatusUpt": "UPT",
 	"distributedUptimeStatusUptBurned": "",
 	"distributedUptimeStatusUptLogo": "",
 	"incidentsTableNoIncidents": "",
@@ -169,53 +173,53 @@
 	"infrastructureServerUrlLabel": "",
 	"infrastructureDisplayNameLabel": "",
 	"infrastructureAuthorizationSecretLabel": "",
-	"gb": "",
-	"mb": "",
-	"mem": "",
+	"gb": "GB",
+	"mb": "MB",
+	"mem": "Mem",
 	"memoryUsage": "",
-	"cpu": "",
-	"cpuUsage": "",
-	"cpuTemperature": "",
+	"cpu": "CPU",
+	"cpuUsage": "CPU 使用量",
+	"cpuTemperature": "CPU 溫度",
 	"diskUsage": "",
 	"used": "",
 	"total": "",
-	"cores": "",
+	"cores": "核",
 	"frequency": "",
 	"status": "",
-	"cpuPhysical": "",
-	"cpuLogical": "",
-	"cpuFrequency": "",
-	"avgCpuTemperature": "",
+	"cpuPhysical": "CPU (實體核心)",
+	"cpuLogical": "CPU (邏輯核心)",
+	"cpuFrequency": "CPU 頻率",
+	"avgCpuTemperature": "平均 CPU 溫度",
 	"memory": "",
 	"disk": "",
 	"uptime": "",
-	"os": "",
+	"os": "OS",
 	"host": "",
-	"actions": "",
+	"actions": "行動",
 	"integrations": "",
 	"integrationsPrism": "",
-	"integrationsSlack": "",
+	"integrationsSlack": "Slack",
 	"integrationsSlackInfo": "",
 	"integrationsDiscord": "",
 	"integrationsDiscordInfo": "",
 	"integrationsZapier": "",
 	"integrationsZapierInfo": "",
-	"commonSave": "",
+	"commonSave": "儲存",
 	"createYour": "",
 	"createMonitor": "",
 	"pause": "",
 	"resume": "",
 	"editing": "",
-	"url": "",
-	"access": "",
-	"timezone": "",
+	"url": "UR:",
+	"access": "存取",
+	"timezone": "時區",
 	"features": "",
-	"administrator": "",
+	"administrator": "系統管理員?",
 	"loginHere": "",
 	"displayName": "",
 	"urlMonitor": "",
 	"portToMonitor": "",
-	"websiteMonitoring": "",
+	"websiteMonitoring": "網站監控",
 	"websiteMonitoringDescription": "",
 	"pingMonitoring": "",
 	"pingMonitoringDescription": "",
@@ -232,15 +236,15 @@
 	"maintenanceRepeat": "",
 	"maintenance": "",
 	"duration": "",
-	"addMonitors": "",
+	"addMonitors": "新增監視器",
 	"window": "",
-	"cancel": "",
+	"cancel": "取消",
 	"message": "",
-	"low": "",
-	"high": "",
+	"low": "低",
+	"high": "高",
 	"statusCode": "",
-	"date&Time": "",
-	"type": "",
+	"date&Time": "日期與時間",
+	"type": "類型",
 	"statusPageName": "",
 	"publicURL": "",
 	"repeat": "",
@@ -259,21 +263,20 @@
 	"notifySMS": "",
 	"notifyEmails": "",
 	"seperateEmails": "",
-	"checkFrequency": "",
-	"chooseGame": "",
+	"checkFrequency": "檢查頻率",
 	"matchMethod": "",
 	"expectedValue": "",
-	"deleteDialogTitle": "",
-	"deleteDialogDescription": "",
+	"deleteDialogTitle": "您確定要刪除此監視器嗎？",
+	"deleteDialogDescription": "一旦刪除，該監視器無法恢復。",
 	"pageSpeedMonitor": "",
 	"shown": "",
 	"ago": "",
-	"companyName": "",
+	"companyName": "公司名稱",
 	"pageSpeedDetailsPerformanceReport": "",
 	"pageSpeedDetailsPerformanceReportCalculator": "",
 	"checkingEvery": "",
 	"statusPageCreateSettings": "",
-	"basicInformation": "",
+	"basicInformation": "基本資料",
 	"statusPageCreateBasicInfoDescription": "",
 	"statusPageCreateSelectTimeZoneDescription": "",
 	"statusPageCreateAppearanceDescription": "",
@@ -307,24 +310,24 @@
 	"pageSpeedWarning": "",
 	"pageSpeedLearnMoreLink": "",
 	"pageSpeedAddApiKey": "",
-	"update": "",
+	"update": "更新",
 	"invalidFileFormat": "",
 	"invalidFileSize": "",
-	"ClickUpload": "",
+	"ClickUpload": "點擊上傳",
 	"DragandDrop": "",
 	"MaxSize": "",
 	"SupportedFormats": "",
 	"FirstName": "",
 	"LastName": "",
 	"EmailDescriptionText": "",
-	"YourPhoto": "",
+	"YourPhoto": "頭像",
 	"PhotoDescriptionText": "",
 	"save": "",
-	"DeleteDescriptionText": "",
-	"DeleteAccountWarning": "",
+	"DeleteDescriptionText": "這將刪除帳號以及所有相關的伺服器資料，此操作不可逆轉。",
+	"DeleteAccountWarning": "刪除您的帳號表示您將無法再次登入，且所有資料都會被移除。此操作不可逆轉。",
 	"DeleteWarningTitle": "",
 	"bulkImport": {
-		"title": "",
+		"title": "批量匯入",
 		"selectFileTips": "",
 		"selectFileDescription": "",
 		"selectFile": "",
@@ -336,8 +339,8 @@
 		"invalidFileType": "",
 		"uploadFailed": ""
 	},
-	"DeleteAccountTitle": "",
-	"DeleteAccountButton": "",
+	"DeleteAccountTitle": "刪除帳戶",
+	"DeleteAccountButton": "刪除帳戶",
 	"publicLink": "",
 	"maskedPageSpeedKeyPlaceholder": "",
 	"reset": "",
@@ -352,14 +355,14 @@
 	},
 	"roles": {
 		"superAdmin": "",
-		"admin": "",
+		"admin": "管理員",
 		"teamMember": "",
-		"demoUser": ""
+		"demoUser": "示範用戶"
 	},
 	"teamPanel": {
 		"teamMembers": "",
 		"filter": {
-			"all": "",
+			"all": "全部",
 			"member": ""
 		},
 		"inviteTeamMember": "",
@@ -368,7 +371,7 @@
 		"email": "",
 		"selectRole": "",
 		"inviteLink": "",
-		"cancel": "",
+		"cancel": "取消",
 		"noMembers": "",
 		"getToken": "",
 		"emailToken": "",
@@ -382,7 +385,7 @@
 	"monitorState": {
 		"paused": "",
 		"resumed": "",
-		"active": ""
+		"active": "啟用中"
 	},
 	"menu": {
 		"uptime": "",
@@ -396,7 +399,7 @@
 		"support": "",
 		"discussions": "",
 		"docs": "",
-		"changelog": "",
+		"changelog": "版本變更記錄",
 		"profile": "",
 		"password": "",
 		"team": "",
@@ -408,17 +411,17 @@
 	"state": "",
 	"statusBreadCrumbsStatusPages": "",
 	"statusBreadCrumbsDetails": "",
-	"commonSaving": "",
+	"commonSaving": "儲存中...",
 	"navControls": "",
 	"incidentsPageTitle": "",
 	"passwordPanel": {
 		"passwordChangedSuccess": "",
 		"passwordInputIncorrect": "",
-		"currentPassword": "",
+		"currentPassword": "當前密碼",
 		"enterCurrentPassword": "",
 		"newPassword": "",
 		"enterNewPassword": "",
-		"confirmNewPassword": "",
+		"confirmNewPassword": "確認新密碼",
 		"passwordRequirements": "",
 		"saving": ""
 	},
@@ -442,22 +445,22 @@
 		"game": ""
 	},
 	"common": {
-		"appName": "",
+		"appName": "Checkmate",
 		"monitoringAgentName": "",
 		"buttons": {
 			"toggleTheme": ""
 		},
 		"toasts": {
 			"networkError": "",
-			"checkConnection": "",
+			"checkConnection": "請檢查您的連線",
 			"unknownError": ""
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "",
-				"back": ""
+				"continue": "繼續",
+				"back": "返回"
 			},
 			"inputs": {
 				"email": {
@@ -472,23 +475,23 @@
 					"label": "",
 					"rules": {
 						"length": {
-							"beginning": "",
+							"beginning": "必須至少",
 							"highlighted": ""
 						},
 						"special": {
-							"beginning": "",
+							"beginning": "必須至少包含",
 							"highlighted": ""
 						},
 						"number": {
-							"beginning": "",
+							"beginning": "必須至少包含",
 							"highlighted": ""
 						},
 						"uppercase": {
-							"beginning": "",
+							"beginning": "必須至少包含",
 							"highlighted": ""
 						},
 						"lowercase": {
-							"beginning": "",
+							"beginning": "必須至少包含",
 							"highlighted": ""
 						},
 						"match": {
@@ -562,14 +565,15 @@
 				"registerLink": ""
 			},
 			"toasts": {
-				"success": "",
+				"success": "歡迎回來！您已成功登入。",
 				"incorrectPassword": ""
 			},
 			"errors": {
 				"password": {
 					"incorrect": ""
 				}
-			}
+			},
+			"welcome": ""
 		},
 		"registration": {
 			"heading": {
@@ -594,8 +598,9 @@
 				"login": ""
 			},
 			"toasts": {
-				"success": ""
-			}
+				"success": "歡迎！您的帳號已成功建立。"
+			},
+			"welcome": ""
 		},
 		"forgotPassword": {
 			"heading": "",
@@ -623,7 +628,7 @@
 				"sent": "",
 				"emailNotFound": "",
 				"redirect": "",
-				"success": "",
+				"success": "您的密碼已成功重設。",
 				"error": ""
 			}
 		}
@@ -634,10 +639,10 @@
 				"reconnected": "",
 				"stillUnreachable": ""
 			},
-			"alertBox": "",
-			"description": "",
+			"alertBox": "伺服器連線錯誤",
+			"description": "我們無法連接到伺服器。請檢查您的網路連線，若問題持續，請確認您的部署設定是否正確。",
 			"retryButton": {
-				"default": "",
+				"default": "重新嘗試連線",
 				"processing": ""
 			}
 		}
@@ -645,42 +650,42 @@
 	"createNotifications": {
 		"title": "",
 		"nameSettings": {
-			"title": "",
-			"description": "",
+			"title": "姓名",
+			"description": "為您的整合設定描述名稱。",
 			"nameLabel": "",
 			"namePlaceholder": ""
 		},
 		"typeSettings": {
-			"title": "",
-			"description": "",
-			"typeLabel": ""
+			"title": "類型",
+			"description": "請選擇您想要建立的通知頻道類型。",
+			"typeLabel": "類型"
 		},
 		"emailSettings": {
-			"title": "",
-			"description": "",
+			"title": "電郵",
+			"description": "目的地電子郵件位址。",
 			"emailLabel": "",
 			"emailPlaceholder": ""
 		},
 		"slackSettings": {
-			"title": "",
-			"description": "",
+			"title": "Slack",
+			"description": "在此配置您的 Slack webhook",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
 		},
 		"pagerdutySettings": {
-			"title": "",
-			"description": "",
+			"title": "PagerDuty",
+			"description": "在此配置您的 PagerDuty 整合",
 			"integrationKeyLabel": "",
 			"integrationKeyPlaceholder": ""
 		},
 		"discordSettings": {
-			"title": "",
-			"description": "",
+			"title": "Discord",
+			"description": "在此配置您的 Discord webhook",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
 		},
 		"webhookSettings": {
-			"title": "",
+			"title": "Webhook",
 			"description": "",
 			"webhookLabel": "",
 			"webhookPlaceholder": ""
@@ -690,8 +695,8 @@
 		"dialogDeleteConfirm": ""
 	},
 	"notificationConfig": {
-		"title": "",
-		"description": ""
+		"title": "通知",
+		"description": "請選擇您想要使用的通知頻道"
 	},
 	"monitorStatus": {
 		"checkingEvery": "",
@@ -700,7 +705,7 @@
 		"down": "",
 		"paused": ""
 	},
-	"advancedMatching": "",
+	"advancedMatching": "進階匹配",
 	"sendTestNotifications": "",
 	"selectAll": "",
 	"showAdminLoginLink": "",
@@ -718,11 +723,11 @@
 		"logLevelSelect": {
 			"title": "",
 			"values": {
-				"all": "",
+				"all": "全部",
 				"info": "",
 				"warn": "",
 				"error": "",
-				"debug": ""
+				"debug": "除錯"
 			}
 		}
 	},
@@ -734,8 +739,8 @@
 			"title": "",
 			"idHeader": "",
 			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "",
+			"typeHeader": "類型",
+			"activeHeader": "啟用中",
 			"lockedAtHeader": "",
 			"runCountHeader": "",
 			"failCountHeader": "",
@@ -774,7 +779,7 @@
 		"aboutSettings": {
 			"labelDevelopedBy": "",
 			"labelVersion": "",
-			"title": ""
+			"title": "關於"
 		},
 		"demoMonitorsSettings": {
 			"buttonAddMonitors": "",
@@ -782,7 +787,7 @@
 			"title": ""
 		},
 		"emailSettings": {
-			"buttonSendTestEmail": "",
+			"buttonSendTestEmail": "發送測試電子郵件",
 			"description": "",
 			"descriptionTransport": "",
 			"labelAddress": "",
@@ -800,25 +805,25 @@
 			"labelUser": "",
 			"linkTransport": "",
 			"placeholderUser": "",
-			"title": "",
+			"title": "電郵",
 			"toastEmailRequiredFieldsError": ""
 		},
 		"pageSpeedSettings": {
 			"description": "",
 			"labelApiKeySet": "",
 			"labelApiKey": "",
-			"title": ""
+			"title": "Google PageSpeed API 金鑰"
 		},
 		"saveButtonLabel": "",
 		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
+			"clearAllStatsButton": "清除所有統計數據",
+			"clearAllStatsDescription": "清除所有統計數據，此操作不可逆轉。",
+			"clearAllStatsDialogConfirm": "是，請清除所有統計數據",
+			"clearAllStatsDialogDescription": "一旦刪除，監控歷史和統計數據將無法復原。",
+			"clearAllStatsDialogTitle": "您是否要清除所有統計數據？",
 			"description": "",
 			"labelTTL": "",
-			"labelTTLOptional": "",
+			"labelTTLOptional": "0 表示無限",
 			"title": ""
 		},
 		"systemResetSettings": {
@@ -827,19 +832,19 @@
 			"dialogConfirm": "",
 			"dialogDescription": "",
 			"dialogTitle": "",
-			"title": ""
+			"title": "系統重設"
 		},
 		"timezoneSettings": {
 			"description": "",
 			"label": "",
-			"title": ""
+			"title": "顯示時區"
 		},
-		"title": "",
+		"title": "設定",
 		"uiSettings": {
 			"description": "",
 			"labelLanguage": "",
 			"labelTheme": "",
-			"title": ""
+			"title": "外觀"
 		},
 		"urlSettings": {
 			"description": "",
@@ -847,15 +852,19 @@
 			"selectDisabled": "",
 			"selectEnabled": "",
 			"title": ""
+		},
+		"globalThresholds": {
+			"title": "",
+			"description": ""
 		}
 	},
 	"statusPageCreate": {
-		"buttonSave": ""
+		"buttonSave": "儲存"
 	},
 	"incidentsOptionsHeaderFilterResolved": "",
 	"settingsSave": "",
 	"statusPageCreateAppearanceTitle": "",
-	"confirmPassword": "",
+	"confirmPassword": "確認密碼",
 	"monitorHooks": {
 		"failureAddDemoMonitors": "",
 		"successAddDemoMonitors": ""
@@ -866,15 +875,15 @@
 	"incidentsOptionsHeaderTotalIncidents": "",
 	"statusPage": {
 		"deleteSuccess": "",
-		"deleteFailed": "",
+		"deleteFailed": "刪除狀態頁面失敗",
 		"createSuccess": "",
 		"updateSuccess": "",
 		"generalSettings": "",
-		"contents": "",
+		"contents": "內容",
 		"fallback": {
 			"checks": [""],
 			"title": "",
-			"actionButton": ""
+			"actionButton": "讓我們建立您的第一個狀態頁面！"
 		}
 	},
 	"testNotificationsDisabled": "",
@@ -909,63 +918,138 @@
 	},
 	"pageSpeedLighthouseAPI": "",
 	"time": {
-		"threeMinutes": "",
-		"fiveMinutes": "",
-		"tenMinutes": "",
-		"twentyMinutes": "",
-		"oneHour": "",
-		"oneDay": "",
-		"oneWeek": ""
+		"threeMinutes": "3分鐘",
+		"fiveMinutes": "5分鐘",
+		"tenMinutes": "10分鐘",
+		"twentyMinutes": "20分鐘",
+		"oneHour": "1小時",
+		"oneDay": "1日",
+		"oneWeek": "1星期",
+		"fourMinutes": "",
+		"oneMinute": "",
+		"twoMinutes": "",
+		"fifteenSeconds": "",
+		"thirtySeconds": ""
 	},
 	"general": {
 		"noOptionsFound": ""
 	},
 	"infrastructureMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": ["追蹤伺服器的效能", "識別瓶頸並優化資源使用", "透過即時監控確保可靠性"],
 			"title": "",
-			"actionButton": ""
+			"actionButton": "讓我們建立您的第一個基礎設施監視器！"
 		}
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": [""],
+			"checks": ["標記您的維護期間", "消除任何誤解", "在維護時段停止發送警報"],
 			"title": "",
-			"actionButton": ""
+			"actionButton": "讓我們建立您的第一個維護時段！"
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
 			"checks": [""],
 			"title": "",
-			"actionButton": ""
+			"actionButton": "讓我們建立您的第一個 PageSpeed 監視器！"
 		}
 	},
 	"uptimeMonitor": {
 		"fallback": {
 			"checks": [""],
 			"title": "",
-			"actionButton": ""
+			"actionButton": "讓我們建立您的第一個正常運行時間監視器！"
 		}
 	},
 	"editUserPage": {
 		"form": {
-			"email": "",
-			"firstName": "",
-			"lastName": "",
-			"role": "",
-			"save": ""
+			"email": "電郵",
+			"firstName": "名",
+			"lastName": "姓",
+			"role": "角色",
+			"save": "儲存"
 		},
 		"table": {
-			"actionHeader": "",
-			"roleHeader": ""
+			"actionHeader": "行動",
+			"roleHeader": "角色"
 		},
-		"title": "",
+		"title": "編輯用戶",
 		"toast": {
 			"successUserUpdate": "",
 			"validationErrors": ""
 		}
 	},
-	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": ""
+	"incidentsPageActionResolveMonitor": "解決監視器事故",
+	"incidentsPageActionResolveAll": "解決所有事故",
+	"matchMethodOptions": {
+		"equal": "",
+		"equalPlaceholder": "",
+		"include": "",
+		"includePlaceholder": "",
+		"regex": "",
+		"regexPlaceholder": "",
+		"text": ""
+	},
+	"monitorType": {
+		"docker": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"http": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"ping": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"port": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"game": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		}
+	},
+	"uptimeAdvancedMatching": {
+		"jsonPath": ""
+	},
+	"bytesPerSecond": "",
+	"bytesReceived": "",
+	"bytesSent": "",
+	"chooseGame": "",
+	"createMonitorPage": {
+		"incidentConfigDescription": "",
+		"incidentConfigStatusWindowLabel": "",
+		"incidentConfigStatusWindowThresholdLabel": "",
+		"incidentConfigTitle": ""
+	},
+	"dataRate": "",
+	"dataReceived": "",
+	"dataSent": "",
+	"details": "",
+	"drops": "",
+	"errors": "",
+	"errorsIn": "",
+	"errorsOut": "",
+	"gameServerMonitoring": "",
+	"gameServerMonitoringDescription": "",
+	"network": "",
+	"networkDrops": "",
+	"networkErrors": "",
+	"networkInterface": "",
+	"noNetworkStatsAvailable": "",
+	"packetsPerSecond": "",
+	"packetsReceived": "",
+	"packetsReceivedRate": "",
+	"packetsSent": "",
+	"rate": "",
+	"selectInterface": ""
 }

@@ -90,7 +90,7 @@
 				"Informez les ingénieurs lorsque des incidents se produisent",
 				"Tenez les administrateurs informés des changements apportés au système"
 			],
-			"actionButton": ""
+			"actionButton": "Créez votre premier canal de notification !"
 		},
 		"createButton": "Créer un canal de notification",
 		"createTitle": "Canal de notification",
@@ -264,7 +264,6 @@
 	"notifyEmails": "Envoyer également une notification par email à plusieurs adresses (bientôt).",
 	"seperateEmails": "Vous pouvez ajouter plusieurs adresses emails en les séparant par une virgule",
 	"checkFrequency": "Vérifier la fréquence",
-	"chooseGame": "",
 	"matchMethod": "Méthode de rapprochement",
 	"expectedValue": "Valeur attendue",
 	"deleteDialogTitle": "Voulez-vous vraiment supprimer ce moniteur ?",
@@ -548,7 +547,7 @@
 				},
 				"role": {
 					"errors": {
-						"min": ""
+						"min": "Au moins un rôle est requis"
 					}
 				}
 			}
@@ -573,7 +572,8 @@
 				"password": {
 					"incorrect": "Le mot de passe fourni est erroné"
 				}
-			}
+			},
+			"welcome": "Bon retour sur Checkmate !"
 		},
 		"registration": {
 			"heading": {
@@ -599,7 +599,8 @@
 			},
 			"toasts": {
 				"success": "Bienvenue ! Votre compte a été créé avec succès."
-			}
+			},
+			"welcome": "Bienvenue sur Checkmate !"
 		},
 		"forgotPassword": {
 			"heading": "Mot de passe oublié ?",
@@ -851,6 +852,10 @@
 			"selectDisabled": "Désactivé",
 			"selectEnabled": "Activé",
 			"title": "IP/URL du moniteur sur la page de statut"
+		},
+		"globalThresholds": {
+			"title": "Seuils globaux",
+			"description": "Configurez des seuils globaux pour le CPU, la mémoire, le disque et la température. Si une valeur est fournie, elle sera automatiquement activée pour la surveillance."
 		}
 	},
 	"statusPageCreate": {
@@ -876,9 +881,13 @@
 		"generalSettings": "Paramètres généraux",
 		"contents": "Contenus",
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Surveillez et affichez l’état de santé de vos services en temps réel",
+				"Suivez plusieurs services et partagez leur statut",
+				"Tenez les utilisateurs informés des pannes et des performances"
+			],
+			"title": "Une page de status est utilisée pour :",
+			"actionButton": "Créer votre première page de status !"
 		}
 	},
 	"testNotificationsDisabled": "Il n'y aucune notification paramétrée pour ce moniteur. Vous pouvez en ajouter une en cliquant sur le bouton 'Configurer'",
@@ -919,57 +928,149 @@
 		"twentyMinutes": "20 minutes",
 		"oneHour": "1 heure",
 		"oneDay": "1 jour",
-		"oneWeek": "1 semaine"
+		"oneWeek": "1 semaine",
+		"fourMinutes": "4 minutes",
+		"oneMinute": "1 minute",
+		"twoMinutes": "2 minutes",
+		"fifteenSeconds": "15 secondes",
+		"thirtySeconds": "30 secondes"
 	},
 	"general": {
-		"noOptionsFound": ""
+		"noOptionsFound": "Aucune {{unit}} trouvée"
 	},
 	"infrastructureMonitor": {
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Suivez les performances de vos serveurs",
+				"Identifiez les points de blocage et optimisez l’utilisation",
+				"Assurez la fiabilité grâce à la surveillance en temps réel"
+			],
+			"title": "Une surveillance d'infrastructure est utilisé pour :",
+			"actionButton": "Créer votre premier moniteur d'infrastructure !"
 		}
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Marquez vos périodes de maintenance",
+				"Éliminez tout malentendu",
+				"Arrêtez d’envoyer des alertes pendant les fenêtres de maintenance"
+			],
+			"title": "Une fenêtre de maintenance est utilisé pour :",
+			"actionButton": "Créer votre première fenêtre de maintenance  !"
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				"Rapport sur l’expérience utilisateur d’une page",
+				"Aider à analyser la vitesse de la page web",
+				"Donner des suggestions sur la façon dont la page peut être améliorée"
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"uptimeMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				"Vérifiez si les sites web ou serveurs sont en ligne et réactifs",
+				"Alertez les équipes en cas de panne ou de problème de performance",
+				"Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports",
+				"Suivez l’historique de la disponibilité et les tendances de fiabilité"
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"editUserPage": {
 		"form": {
-			"email": "",
-			"firstName": "",
-			"lastName": "",
-			"role": "",
-			"save": ""
+			"email": "Email",
+			"firstName": "Prénom",
+			"lastName": "Nom",
+			"role": "Rôles",
+			"save": "Enregistrer"
 		},
 		"table": {
-			"actionHeader": "",
-			"roleHeader": ""
+			"actionHeader": "Action",
+			"roleHeader": "Rôle"
 		},
-		"title": "",
+		"title": "Modifier l'utilisateur",
 		"toast": {
-			"successUserUpdate": "",
+			"successUserUpdate": "L'utilisateur à bien été modifié",
 			"validationErrors": ""
 		}
 	},
-	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": ""
+	"incidentsPageActionResolveMonitor": "Résoudres les incidents de surveillance",
+	"incidentsPageActionResolveAll": "Résoudre tous les incidents",
+	"matchMethodOptions": {
+		"equal": "Égal",
+		"equalPlaceholder": "",
+		"include": "Inclure",
+		"includePlaceholder": "ok",
+		"regex": "Regex",
+		"regexPlaceholder": "",
+		"text": ""
+	},
+	"monitorType": {
+		"docker": {
+			"label": "ID du conteneur",
+			"namePlaceholder": "Mon conteneur",
+			"placeholder": "abcd1234"
+		},
+		"http": {
+			"label": "URL à surveiller",
+			"namePlaceholder": "Google",
+			"placeholder": "google.com"
+		},
+		"ping": {
+			"label": "Adresse IP à surveiller",
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
+		},
+		"port": {
+			"label": "URL à surveiller",
+			"namePlaceholder": "",
+			"placeholder": "localhost"
+		},
+		"game": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		}
+	},
+	"uptimeAdvancedMatching": {
+		"jsonPath": "Chemin JSON"
+	},
+	"bytesPerSecond": "",
+	"bytesReceived": "",
+	"bytesSent": "",
+	"chooseGame": "",
+	"createMonitorPage": {
+		"incidentConfigDescription": "",
+		"incidentConfigStatusWindowLabel": "",
+		"incidentConfigStatusWindowThresholdLabel": "",
+		"incidentConfigTitle": ""
+	},
+	"dataRate": "",
+	"dataReceived": "",
+	"dataSent": "",
+	"details": "",
+	"drops": "",
+	"errors": "",
+	"errorsIn": "",
+	"errorsOut": "",
+	"gameServerMonitoring": "",
+	"gameServerMonitoringDescription": "",
+	"network": "",
+	"networkDrops": "",
+	"networkErrors": "",
+	"networkInterface": "",
+	"noNetworkStatsAvailable": "",
+	"packetsPerSecond": "",
+	"packetsReceived": "",
+	"packetsReceivedRate": "",
+	"packetsSent": "",
+	"rate": "",
+	"selectInterface": ""
 }
