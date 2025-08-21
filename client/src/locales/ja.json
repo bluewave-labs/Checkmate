@@ -264,7 +264,6 @@
 	"notifyEmails": "複数のアドレスにメールでも通知（近日公開）",
 	"seperateEmails": "複数のメールはカンマで区切ることができます",
 	"checkFrequency": "チェック頻度",
-	"chooseGame": "",
 	"matchMethod": "マッチ方法",
 	"expectedValue": "期待値",
 	"deleteDialogTitle": "本当にこのモニターを削除しますか？",
@@ -573,7 +572,8 @@
 				"password": {
 					"incorrect": "入力されたパスワードが記録と一致しません"
 				}
-			}
+			},
+			"welcome": ""
 		},
 		"registration": {
 			"heading": {
@@ -599,7 +599,8 @@
 			},
 			"toasts": {
 				"success": "ようこそ！アカウントが正常に作成されました。"
-			}
+			},
+			"welcome": ""
 		},
 		"forgotPassword": {
 			"heading": "パスワードを忘れましたか？",
@@ -851,6 +852,10 @@
 			"selectDisabled": "無効",
 			"selectEnabled": "有効",
 			"title": "ステータスページのモニターIP/URL"
+		},
+		"globalThresholds": {
+			"title": "",
+			"description": ""
 		}
 	},
 	"statusPageCreate": {
@@ -919,7 +924,12 @@
 		"twentyMinutes": "20分",
 		"oneHour": "1時間",
 		"oneDay": "1日",
-		"oneWeek": "1週間"
+		"oneWeek": "1週間",
+		"fourMinutes": "",
+		"oneMinute": "",
+		"twoMinutes": "",
+		"fifteenSeconds": "",
+		"thirtySeconds": ""
 	},
 	"general": {
 		"noOptionsFound": ""
@@ -971,5 +981,75 @@
 		}
 	},
 	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": ""
+	"incidentsPageActionResolveAll": "",
+	"matchMethodOptions": {
+		"equal": "",
+		"equalPlaceholder": "",
+		"include": "",
+		"includePlaceholder": "",
+		"regex": "",
+		"regexPlaceholder": "",
+		"text": ""
+	},
+	"monitorType": {
+		"docker": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"http": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"ping": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"port": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		},
+		"game": {
+			"label": "",
+			"namePlaceholder": "",
+			"placeholder": ""
+		}
+	},
+	"uptimeAdvancedMatching": {
+		"jsonPath": ""
+	},
+	"bytesPerSecond": "",
+	"bytesReceived": "",
+	"bytesSent": "",
+	"chooseGame": "",
+	"createMonitorPage": {
+		"incidentConfigDescription": "",
+		"incidentConfigStatusWindowLabel": "",
+		"incidentConfigStatusWindowThresholdLabel": "",
+		"incidentConfigTitle": ""
+	},
+	"dataRate": "",
+	"dataReceived": "",
+	"dataSent": "",
+	"details": "",
+	"drops": "",
+	"errors": "",
+	"errorsIn": "",
+	"errorsOut": "",
+	"gameServerMonitoring": "",
+	"gameServerMonitoringDescription": "",
+	"network": "",
+	"networkDrops": "",
+	"networkErrors": "",
+	"networkInterface": "",
+	"noNetworkStatsAvailable": "",
+	"packetsPerSecond": "",
+	"packetsReceived": "",
+	"packetsReceivedRate": "",
+	"packetsSent": "",
+	"rate": "",
+	"selectInterface": ""
 }
