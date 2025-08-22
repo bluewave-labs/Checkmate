@@ -29,7 +29,7 @@ const SettingsURL = ({ HEADING_SX, handleChange, showURL = false }) => {
 				<Select
 					name="showURL"
 					label={t("settingsPage.urlSettings.label")}
-					value={showURL === true} 
+					value={showURL === true}
 					onChange={handleChange}
 					items={[
 						{ _id: true, name: t("settingsPage.urlSettings.selectEnabled") },
