@@ -1,5 +1,13 @@
 import ConfigBox from "../../../../Components/ConfigBox";
-import { Box, Stack, Typography } from "@mui/material";
+import {
+	Box,
+	Stack,
+	Typography,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+} from "@mui/material";
 import { CustomThreshold } from "../Components/CustomThreshold";
 import { capitalizeFirstLetter } from "../../../../Utils/stringUtils";
 import { useTheme } from "@emotion/react";
@@ -10,6 +18,9 @@ const CustomAlertsSection = ({
 	onChange,
 	infrastructureMonitor,
 	handleCheckboxChange,
+	templateKeysState = [],
+	globalSettingsLoading = false,
+	handleThresholdTemplateChange,
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -37,6 +48,32 @@ const CustomAlertsSection = ({
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(6)}>
+				{!globalSettingsLoading && templateKeysState.length > 0 && (
+					<FormControl fullWidth>
+						<InputLabel id="threshold-template-label">
+							{t("InfrastructureSelectTemplate")}
+						</InputLabel>
+						<Select
+							labelId="threshold-template-label"
+							value={infrastructureMonitor.thresholdTemplate || ""}
+							onChange={(e) => {
+								onChange(e);
+								handleThresholdTemplateChange?.(e);
+							}}
+						>
+							<MenuItem value="">{t("InfrastructureSelectTemplate")}</MenuItem>
+							{templateKeysState.map((key) => (
+								<MenuItem
+									key={key}
+									value={key}
+								>
+									{key}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				)}
+
 				{METRICS.map((metric) => {
 					return (
 						<CustomThreshold

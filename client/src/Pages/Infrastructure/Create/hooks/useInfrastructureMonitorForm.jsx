@@ -29,22 +29,46 @@ const useInfrastructureMonitorForm = () => {
 			[event.target.name]: event.target.checked,
 		});
 	};
-	const initializeInfrastructureMonitorForCreate = (globalSettings) => {
-		const gt = globalSettings?.data?.settings?.globalThresholds || {};
+
+	const updateThresholdTemplate = ({
+		selectedValue,
+		thresholdTemplatesState,
+		infrastructureMonitor,
+		setInfrastructureMonitor,
+		setThresholdTemplate,
+	}) => {
+		const selected = selectedValue || "";
+		setThresholdTemplate(selected);
+
+		if (!selected) {
+			setInfrastructureMonitor({
+				...infrastructureMonitor,
+				thresholdTemplate: "",
+				cpu: false,
+				usage_cpu: "",
+				memory: false,
+				usage_memory: "",
+				disk: false,
+				usage_disk: "",
+				temperature: false,
+				usage_temperature: "",
+			});
+			return;
+		}
+
+		const thresholds = thresholdTemplatesState[selected] || {};
 		setInfrastructureMonitor({
-			url: "",
-			name: "",
-			notifications: [],
-			interval: 0.25,
-			cpu: gt.cpu !== undefined,
-			usage_cpu: gt.cpu !== undefined ? gt.cpu.toString() : "",
-			memory: gt.memory !== undefined,
-			usage_memory: gt.memory !== undefined ? gt.memory.toString() : "",
-			disk: gt.disk !== undefined,
-			usage_disk: gt.disk !== undefined ? gt.disk.toString() : "",
-			temperature: gt.temperature !== undefined,
-			usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
-			secret: "",
+			...infrastructureMonitor,
+			thresholdTemplate: selected,
+			cpu: thresholds.cpu !== undefined,
+			usage_cpu: thresholds.cpu !== undefined ? thresholds.cpu.toString() : "",
+			memory: thresholds.memory !== undefined,
+			usage_memory: thresholds.memory !== undefined ? thresholds.memory.toString() : "",
+			disk: thresholds.disk !== undefined,
+			usage_disk: thresholds.disk !== undefined ? thresholds.disk.toString() : "",
+			temperature: thresholds.temperature !== undefined,
+			usage_temperature:
+				thresholds.temperature !== undefined ? thresholds.temperature.toString() : "",
 		});
 	};
 
@@ -82,9 +106,8 @@ const useInfrastructureMonitorForm = () => {
 		setInfrastructureMonitor,
 		onChangeForm,
 		handleCheckboxChange,
-		initializeInfrastructureMonitorForCreate,
+		updateThresholdTemplate,
 		initializeInfrastructureMonitorForUpdate,
 	};
 };
-
 export default useInfrastructureMonitorForm;
