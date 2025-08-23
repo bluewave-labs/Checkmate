@@ -37,6 +37,9 @@ const CreateInfrastructureMonitor = () => {
 	// State
 	const [https, setHttps] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [thresholdTemplate, setThresholdTemplate] = useState("");
+	const [thresholdTemplatesState, setThresholdTemplatesState] = useState({});
+	const [templateKeysState, setTemplateKeysState] = useState([]);
 
 	// Fetch monitor details if editing
 	const [monitor, isLoading] = useFetchHardwareMonitorById({
@@ -52,7 +55,7 @@ const CreateInfrastructureMonitor = () => {
 		setInfrastructureMonitor,
 		onChangeForm,
 		handleCheckboxChange,
-		initializeInfrastructureMonitorForCreate,
+		updateThresholdTemplate,
 		initializeInfrastructureMonitorForUpdate,
 	} = useInfrastructureMonitorForm();
 	const { errors, validateField, validateForm } = useValidateInfrastructureForm();
@@ -76,17 +79,27 @@ const CreateInfrastructureMonitor = () => {
 					{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
 				]),
 	];
+
+	// Sync globalSettings into local template state when it arrives
+	useEffect(() => {
+		// Extract saved global threshold templates.
+		// Filter out legacy fields (like cpu, memory, disk, etc.)
+		// so only valid template objects remain.
+		const templates = globalSettings?.data?.settings?.globalThresholds || {};
+		const safeEntries = Object.entries(templates).filter(
+			([, v]) => v && typeof v === "object" && !Array.isArray(v)
+		);
+		const safeTemplates = Object.fromEntries(safeEntries);
+		setThresholdTemplatesState(safeTemplates);
+		setTemplateKeysState(Object.keys(safeTemplates));
+	}, [globalSettings]);
+
 	// Populate form fields if editing
 	useEffect(() => {
-		if (isCreate) {
-			if (globalSettingsLoading) return;
-			setHttps(false);
-			initializeInfrastructureMonitorForCreate(globalSettings);
-		} else if (monitor) {
-			setHttps(monitor.url.startsWith("https"));
-			initializeInfrastructureMonitorForUpdate(monitor);
-		}
-	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
+		if (isCreate || !monitor) return;
+		setHttps(monitor.url.startsWith("https"));
+		initializeInfrastructureMonitorForUpdate(monitor);
+	}, [isCreate, monitor]);
 
 	// Handlers
 	const onSubmit = async (event) => {
@@ -116,6 +129,18 @@ const CreateInfrastructureMonitor = () => {
 	const handleRemove = async (event) => {
 		event.preventDefault();
 		await deleteMonitor({ monitor, redirect: "/infrastructure" });
+	};
+
+	// Template dropdown change: apply template values to infrastructureMonitor
+	const handleThresholdTemplateChange = (event) => {
+		const selectedValue = event.target.value;
+		updateThresholdTemplate({
+			selectedValue,
+			thresholdTemplatesState,
+			infrastructureMonitor,
+			setInfrastructureMonitor,
+			setThresholdTemplate,
+		});
 	};
 
 	const isBusy =
@@ -286,6 +311,9 @@ const CreateInfrastructureMonitor = () => {
 					onChange={onChange}
 					infrastructureMonitor={infrastructureMonitor}
 					handleCheckboxChange={handleCheckboxChange}
+					templateKeysState={templateKeysState}
+					globalSettingsLoading={globalSettingsLoading}
+					handleThresholdTemplateChange={handleThresholdTemplateChange}
 				/>
 				<ConfigBox>
 					<Box>

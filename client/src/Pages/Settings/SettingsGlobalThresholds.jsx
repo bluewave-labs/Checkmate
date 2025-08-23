@@ -3,10 +3,17 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import ConfigBox from "../../Components/ConfigBox";
 import TextInput from "../../Components/Inputs/TextInput";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import Button from "@mui/material/Button";
+import { createToast } from "../../Utils/toastUtils";
 
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const SettingsGlobalThresholds = ({
 	isAdmin,
@@ -14,38 +21,164 @@ const SettingsGlobalThresholds = ({
 	settingsData,
 	setSettingsData,
 }) => {
-	const { t } = useTranslation(); // For language translation
-	const theme = useTheme(); // MUI theme access
+	const { t } = useTranslation();
+	const theme = useTheme();
 
-	// Handles input change and updates parent state
-	const handleChange = (e, min, max) => {
-		const { name, value } = e.target;
+	const [templateValue, setTemplateValue] = useState(""); // selected template
+	const [textBoxValue, setTextBoxValue] = useState(""); // new template name
+	const [thresholdValues, setThresholdValues] = useState({
+		cpu: "",
+		memory: "",
+		disk: "",
+		temperature: "",
+	});
+	if (!isAdmin) return null;
 
-		const numValue = parseFloat(value);
-		const isValidNumber =
-			value === "" ||
-			(!isNaN(numValue) && isFinite(numValue) && numValue >= min && numValue <= max);
+	// Threshold ranges
+	const ranges = {
+		cpu: { min: 1, max: 100 },
+		memory: { min: 1, max: 100 },
+		disk: { min: 1, max: 100 },
+		temperature: { min: 1, max: 150 },
+	};
 
-		if (isValidNumber) {
-			setSettingsData((prev) => ({
-				...prev,
-				settings: {
-					...prev.settings,
-					globalThresholds: {
-						...prev.settings?.globalThresholds,
-						[name]: value,
-					},
-				},
-			}));
+	const handleUpdate = () => {
+		const hasValidThresholds = Object.values(thresholdValues).some((v) => v !== "");
+		if (!hasValidThresholds && !templateValue) {
+			createToast({
+				body: t(
+					"settingsPage.globalThresholds.toastAtLeastOneThreshold",
+					"At least one threshold value is required"
+				),
+				variant: "error",
+			});
+			return;
+		}
+
+		const newTemplateName = textBoxValue?.trim();
+
+		// Prevent duplicate template names
+		if (
+			newTemplateName &&
+			Object.keys(settingsData?.settings?.globalThresholds || {}).includes(
+				newTemplateName
+			)
+		) {
+			createToast({
+				body: t(
+					"settingsPage.globalThresholds.toastTemplateExists",
+					"Template name already exists"
+				),
+				variant: "error",
+			});
+			return;
+		}
+
+		// Build thresholds object
+		const thresholds = {};
+		let isValid = true;
+		["cpu", "memory", "disk", "temperature"].forEach((key) => {
+			const val = thresholdValues[key];
+			if (val !== "") {
+				const num = Number(val);
+				if (isNaN(num) || num < ranges[key].min || num > ranges[key].max) {
+					isValid = false;
+					return;
+				}
+				thresholds[key] = num;
+			}
+		});
+
+		if (!isValid) {
+			createToast({
+				body: t(
+					"settingsPage.globalThresholds.toastInvalidValues",
+					"Invalid threshold values"
+				),
+				variant: "error",
+			});
+			return;
+		}
+
+		const templates = { ...(settingsData?.settings?.globalThresholds || {}) };
+
+		// Delete template if selected but thresholds empty
+		if (templateValue && Object.keys(thresholds).length === 0) {
+			delete templates[templateValue];
+		} else if ((newTemplateName || templateValue) && Object.keys(thresholds).length > 0) {
+			const name = newTemplateName || templateValue;
+			templates[name] = thresholds;
+			if (newTemplateName) setTextBoxValue("");
+		}
+
+		// Update state
+		setSettingsData((prev) => ({
+			...prev,
+			settings: {
+				...(prev?.settings || {}),
+				globalThresholds: templates,
+			},
+		}));
+
+		// Reset
+		setTemplateValue("");
+		setThresholdValues({ cpu: "", memory: "", disk: "", temperature: "" });
+
+		createToast({
+			body: t(
+				"settingsPage.globalThresholds.toastUpdateSuccess",
+				"Template updated successfully"
+			),
+			variant: "success",
+		});
+	};
+
+	const onchangeDropdown = (e) => {
+		const selected = e.target.value;
+		setTemplateValue(selected);
+
+		if (selected) {
+			setThresholdValues({
+				cpu: settingsData?.settings?.globalThresholds?.[selected]?.cpu || "",
+				memory: settingsData?.settings?.globalThresholds?.[selected]?.memory || "",
+				disk: settingsData?.settings?.globalThresholds?.[selected]?.disk || "",
+				temperature:
+					settingsData?.settings?.globalThresholds?.[selected]?.temperature || "",
+			});
+		} else {
+			setThresholdValues({ cpu: "", memory: "", disk: "", temperature: "" });
 		}
 	};
 
-	// Only render this section for admins
-	if (!isAdmin) return null;
+	// Template keys for dropdown
+	const templateKeys = settingsData?.settings?.globalThresholds
+		? Object.keys(settingsData.settings.globalThresholds)
+		: [];
+
+	// Input change with validation
+	const handleThresholdChange = (name, value) => {
+		const { min, max } = ranges[name];
+		let val = value;
+
+		if (val != "") {
+			val = parseInt(val, 10);
+			if (isNaN(val)) val = "";
+			else if (val < min) val = min;
+			else if (val > max) val = max;
+		}
+
+		setThresholdValues((prev) => ({
+			...prev,
+			[name]: val,
+		}));
+	};
+
+	// Disable update if no template selected and no new template
+	const isUpdateDisabled = !templateValue && !textBoxValue.trim();
 
 	return (
 		<ConfigBox>
-			{/* Header and description */}
+			{/* Header */}
 			<Box>
 				<Typography
 					component="h1"
@@ -61,30 +194,92 @@ const SettingsGlobalThresholds = ({
 				</Typography>
 			</Box>
 
-			{/* Threshold inputs */}
 			<Stack gap={theme.spacing(20)}>
-				{[
-					["CPU Threshold (%)", "cpu", 1, 100],
-					["Memory Threshold (%)", "memory", 1, 100],
-					["Disk Threshold (%)", "disk", 1, 100],
-					["Temperature Threshold (°C)", "temperature", 1, 150],
-				].map(([label, name, min, max]) => (
+				{/* Template Section */}
+				<Stack gap={theme.spacing(10)}>
+					<Box>
+						<Typography
+							component="h1"
+							variant="h2"
+						>
+							{t("settingsPage.globalThresholds.templateHeading", "Template Settings")}
+						</Typography>
+						<Typography sx={HEADING_SX}>
+							{t(
+								"settingsPage.globalThresholds.templateDescription",
+								"Select a template to edit its values, then click Update. To delete, select a template and leave all values empty. To add a new template, enter a name, fill values, and click Update."
+							)}
+						</Typography>
+					</Box>
+
+					<FormControl fullWidth>
+						<InputLabel id="template-select-label">
+							{t("settingsPage.globalThresholds.editTemplate", "Edit Template")}
+						</InputLabel>
+						<Select
+							labelId="template-select-label"
+							value={templateValue}
+							onChange={onchangeDropdown}
+						>
+							<MenuItem value="">
+								{t("settingsPage.globalThresholds.selectTemplate", "Select Template")}
+							</MenuItem>
+							{templateKeys.map((key) => (
+								<MenuItem
+									key={key}
+									value={key}
+								>
+									{key}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+
 					<TextInput
-						key={name}
-						name={name}
-						label={label}
-						placeholder={`${min} - ${max}`}
-						type="number"
-						value={settingsData?.settings?.globalThresholds?.[name] || ""}
-						onChange={(e) => handleChange(e, min, max)}
+						label={t(
+							"settingsPage.globalThresholds.newTemplateName",
+							"New Template Name"
+						)}
+						name="newTemplateName"
+						value={textBoxValue}
+						onChange={(e) => setTextBoxValue(e.target.value)}
 					/>
-				))}
+				</Stack>
+
+				{/* Threshold Inputs */}
+				<Stack gap={theme.spacing(10)}>
+					{[
+						["CPU Threshold (%)", "cpu", 1, 100],
+						["Memory Threshold (%)", "memory", 1, 100],
+						["Disk Threshold (%)", "disk", 1, 100],
+						["Temperature Threshold (°C)", "temperature", 1, 150],
+					].map(([label, name, min, max]) => (
+						<TextInput
+							key={name}
+							name={name}
+							label={label}
+							placeholder={`${min} - ${max}`}
+							type="number"
+							value={thresholdValues[name]}
+							onChange={(e) => handleThresholdChange(name, e.target.value)}
+						/>
+					))}
+				</Stack>
+
+				<Button
+					variant="contained"
+					color="accent"
+					sx={{ px: theme.spacing(4), py: theme.spacing(8), width: "fit-content" }}
+					onClick={handleUpdate}
+					disabled={isUpdateDisabled}
+				>
+					{t("settingsPage.globalThresholds.UpdateChanges", "Update Changes")}
+				</Button>
 			</Stack>
 		</ConfigBox>
 	);
 };
 
-// Prop types
 SettingsGlobalThresholds.propTypes = {
 	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,

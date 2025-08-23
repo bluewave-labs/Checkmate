@@ -115,16 +115,6 @@ const monitorValidation = joi.object({
 	_id: joi.string(),
 	userId: joi.string(),
 	teamId: joi.string(),
-	statusWindowSize: joi.number().min(1).max(20).default(5).messages({
-		"number.base": "Status window size must be a number.",
-		"number.min": "Status window size must be at least 1.",
-		"number.max": "Status window size must be at most 20.",
-	}),
-	statusWindowThreshold: joi.number().min(1).max(100).default(60).messages({
-		"number.base": "Incident percentage must be a number.",
-		"number.min": "Incident percentage must be at least 1.",
-		"number.max": "Incident percentage must be at most 100.",
-	}),
 	url: joi.when("type", {
 		is: "docker",
 		then: joi
@@ -160,11 +150,6 @@ const monitorValidation = joi.object({
 						// can be replaced by a shortest alternative
 						// (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
 						"(?:" +
-						// Single hostname without dots (like localhost)
-						"[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62}" +
-						"|" +
-						// Domain with dots
-						"(?:" +
 						"(?:" +
 						"[a-z0-9\\u00a1-\\uffff]" +
 						"[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
@@ -173,7 +158,6 @@ const monitorValidation = joi.object({
 						")+" +
 						// TLD identifier name, may end with dot
 						"(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
-						")" +
 						")" +
 						// port number (optional)
 						"(?::\\d{2,5})?" +
@@ -327,12 +311,24 @@ const settingsValidation = joi.object({
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
 	globalThresholds: joi
-		.object({
-			cpu: joi.number().min(1).max(100).allow("").optional(),
-			memory: joi.number().min(1).max(100).allow("").optional(),
-			disk: joi.number().min(1).max(100).allow("").optional(),
-			temperature: joi.number().min(1).max(150).allow("").optional(),
-		})
+		.object()
+		.pattern(
+			joi
+				.string()
+				.trim()
+				.min(1)
+				.max(50)
+				.pattern(/^(?!\$)(?!.*\.)[A-Za-z0-9 _-]+$/),
+			joi
+				.object({
+					cpu: joi.number().min(1).max(100).empty("").optional(),
+					memory: joi.number().min(1).max(100).empty("").optional(),
+					disk: joi.number().min(1).max(100).empty("").optional(),
+					temperature: joi.number().min(1).max(150).empty("").optional(),
+				})
+				.unknown(false)
+				.optional()
+		)
 		.optional(),
 });
 
