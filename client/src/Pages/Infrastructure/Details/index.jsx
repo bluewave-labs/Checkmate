@@ -121,6 +121,7 @@ const InfrastructureDetails = () => {
 						<AreaChartBoxes
 							shouldRender={!isLoading}
 							monitor={monitor}
+							dateRange={dateRange}
 						/>
 					</>
 				)}
