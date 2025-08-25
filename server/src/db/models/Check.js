@@ -72,7 +72,7 @@ const CheckSchema = new mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: ["http", "hardware", "pagespeed", "distributed"],
+			enum: ["http", "ping", "pagespeed", "hardware", "docker", "port", "game"],
 			required: true,
 			index: true,
 		},
