@@ -429,7 +429,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																$cond: [
 																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
 																	{
-																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1] }],
 																	},
 																	0,
 																],
@@ -468,7 +468,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																$cond: [
 																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
 																	{
-																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1] }],
 																	},
 																	0,
 																],
@@ -507,7 +507,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																$cond: [
 																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
 																	{
-																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1] }],
 																	},
 																	0,
 																],
@@ -562,7 +562,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																$cond: [
 																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
 																	{
-																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1] }],
 																	},
 																	0,
 																],
@@ -598,7 +598,7 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 																$cond: [
 																	{ $gt: [{ $subtract: ["$$tLast", "$$tFirst"] }, 0] },
 																	{
-																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1000] }],
+																		$divide: [{ $subtract: ["$$last", "$$first"] }, { $divide: [{ $subtract: ["$$tLast", "$$tFirst"] }, 1] }],
 																	},
 																	0,
 																],
