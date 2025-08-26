@@ -1,5 +1,6 @@
 export const tooltipDateFormatLookup = (dateRange) => {
 	const dateFormatLookup = {
+		recent: "ddd. MMMM D, YYYY, hh:mm A",
 		day: "ddd. MMMM D, YYYY, hh:mm A",
 		week: "ddd. MMMM D, YYYY, hh:mm A",
 		month: "ddd. MMMM D, YYYY",

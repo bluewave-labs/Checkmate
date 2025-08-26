@@ -15,9 +15,8 @@ services:
       - mongodb
   mongodb:
     image: mongo:4.4.18
-    container_name: checkmate-mongodb
     restart: always
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--quiet", --bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:

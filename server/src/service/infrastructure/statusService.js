@@ -117,13 +117,18 @@ class StatusService {
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
 
+			// If the status window size has changed, empty
+			while (monitor.statusWindow.length > monitor.statusWindowSize) {
+				monitor.statusWindow.shift();
+			}
+
 			// Update status sliding window
 			monitor.statusWindow.push(status);
 			if (monitor.statusWindow.length > monitor.statusWindowSize) {
 				monitor.statusWindow.shift();
 			}
 
-			if (!monitor.status) {
+			if (monitor.status === undefined || monitor.status === null) {
 				monitor.status = status;
 			}
 
@@ -145,10 +150,10 @@ class StatusService {
 
 			// Check if threshold has been met
 			const failures = monitor.statusWindow.filter((s) => s === false).length;
-			const failureRate = failures / monitor.statusWindow.length;
+			const failureRate = (failures / monitor.statusWindow.length) * 100;
 
 			// If threshold has been met and the monitor is not already down, mark down:
-			if (failureRate > monitor.statusWindowThreshold && monitor.status !== false) {
+			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== false) {
 				newStatus = false;
 				statusChanged = true;
 			}
