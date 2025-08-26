@@ -1,3 +1,5 @@
+import { match } from "assert";
+
 const SERVICE_NAME = "NetworkService";
 
 class NetworkService {
@@ -147,16 +149,24 @@ class NetworkService {
 			httpResponse.payload = payload;
 			httpResponse.timings = response.timings || {};
 
-			if (!expectedValue) {
+			if (!expectedValue && !jsonPath) {
 				return httpResponse;
 			}
 
-			this.logger.info({
-				service: this.SERVICE_NAME,
-				method: "requestHttp",
-				message: `Job: [${name}](${_id}) match result with expected value`,
-				details: { expectedValue, payload, jsonPath, matchMethod },
-			});
+			if (expectedValue) {
+				let ok = false;
+				if (matchMethod === "equal") ok = payload === expectedValue;
+				if (matchMethod === "include") ok = payload.includes(expectedValue);
+				if (matchMethod === "regex") ok = new RegExp(expectedValue).test(payload);
+
+				if (ok === true) {
+					return httpResponse;
+				} else {
+					httpResponse.code = 500;
+					httpResponse.status = false;
+					return httpResponse;
+				}
+			}
 
 			if (jsonPath) {
 				const contentType = response.headers["content-type"];
