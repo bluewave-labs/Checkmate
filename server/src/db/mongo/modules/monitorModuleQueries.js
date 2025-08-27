@@ -5,12 +5,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 		{
 			$match: {
 				monitorId: new ObjectId(monitorId),
-				updatedAt: { $gte: dates.start, $lte: dates.end },
-			},
-		},
-		{
-			$sort: {
-				updatedAt: 1,
+				createdAt: { $gte: dates.start, $lte: dates.end },
 			},
 		},
 		{
