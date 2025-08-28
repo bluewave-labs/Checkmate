@@ -4,7 +4,7 @@ import { Tooltip, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-const PasswordTooltip = ({ feedback, form, children }) => {
+const PasswordTooltip = ({ feedback, form, children, offset = [0, 0] }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const hasPassword = form.password.length > 0;
@@ -73,6 +73,16 @@ const PasswordTooltip = ({ feedback, form, children }) => {
 				</Stack>
 			}
 			slotProps={{
+				popper: {
+					modifiers: [
+						{
+							name: "offset",
+							options: {
+								offset: offset,
+							},
+						},
+					],
+				},
 				tooltip: {
 					sx: {
 						backgroundColor: theme.palette.tertiary.background,
@@ -111,6 +121,7 @@ PasswordTooltip.propTypes = {
 		password: PropTypes.string.isRequired,
 	}),
 	children: PropTypes.node,
+	offset: PropTypes.arrayOf(PropTypes.number),
 };
 
 export default PasswordTooltip;

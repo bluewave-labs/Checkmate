@@ -33,6 +33,7 @@ const useGetInviteToken = () => {
 			}
 
 			setToken(inviteLink);
+			return token;
 		} catch (error) {
 			setError(error);
 		} finally {
