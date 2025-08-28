@@ -11,6 +11,8 @@ import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useStatusPagesFetch } from "./Hooks/useStatusPagesFetch";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 const BREADCRUMBS = [{ name: `Status Pages`, path: "" }];
 
 const StatusPages = () => {
@@ -18,7 +20,17 @@ const StatusPages = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
-	const [isLoading, networkError, statusPages] = useStatusPagesFetch();
+	const location = useLocation();
+	const [isLoading, networkError, statusPages, refetchStatusPages] = useStatusPagesFetch();
+
+	// Refetch data when navigating back from deletion
+	useEffect(() => {
+		// Check if we're returning from a status page operation (creation, editing, or deletion)
+		// This helps ensure the list is up to date when returning from those operations
+		if (location.state?.shouldRefresh || location.key !== location.state?.lastLocationKey) {
+			refetchStatusPages();
+		}
+	}, [location, refetchStatusPages]);
 
 	if (isLoading) {
 		return <SkeletonLayout />;

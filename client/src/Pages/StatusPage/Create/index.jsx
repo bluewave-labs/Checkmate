@@ -136,7 +136,8 @@ const CreateStatusPage = () => {
 		// Start deletion process but don't wait for it
 		deleteStatusPage();
 		// Immediately navigate away to prevent additional fetches for the deleted page
-		navigate("/status");
+		// Pass state to trigger refresh in the status pages list
+		navigate("/status", { state: { shouldRefresh: true } });
 	};
 
 	const handleSubmit = async () => {
