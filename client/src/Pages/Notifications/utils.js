@@ -45,15 +45,15 @@ export const PLACEHOLDER_MAP = {
 
 // ntfy-specific constants
 export const NTFY_AUTH_METHODS = [
-	{ value: "none", label: "None" },
-	{ value: "username_password", label: "Username/Password" },
-	{ value: "bearer_token", label: "Bearer Token" }
+	{ _id: 1, name: "None", value: "none" },
+	{ _id: 2, name: "Username/Password", value: "username_password" },
+	{ _id: 3, name: "Bearer Token", value: "bearer_token" }
 ];
 
 export const NTFY_PRIORITIES = [
-	{ value: 1, label: "Min" },
-	{ value: 2, label: "Low" },
-	{ value: 3, label: "Default" },
-	{ value: 4, label: "High" },
-	{ value: 5, label: "Urgent" }
+	{ _id: 1, name: "Min", value: 1 },
+	{ _id: 2, name: "Low", value: 2 },
+	{ _id: 3, name: "Default", value: 3 },
+	{ _id: 4, name: "High", value: 4 },
+	{ _id: 5, name: "Urgent", value: 5 }
 ];

@@ -60,11 +60,11 @@ const CreateNotifications = () => {
 		address: "",
 		type: NOTIFICATION_TYPES[0]._id,
 		// ntfy-specific fields
-		ntfyAuthMethod: "none",
+		ntfyAuthMethod: NTFY_AUTH_METHODS[0]._id, // "None" option _id
 		ntfyUsername: "",
 		ntfyPassword: "",
 		ntfyBearerToken: "",
-		ntfyPriority: 3,
+		ntfyPriority: NTFY_PRIORITIES[2]._id, // "Default" option _id (3)
 	});
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
@@ -77,6 +77,14 @@ const CreateNotifications = () => {
 		return NOTIFICATION_TYPES.find((type) => type._id === typeId)?.value || "email";
 	};
 
+	const getNtfyAuthMethodValue = (authMethodId) => {
+		return NTFY_AUTH_METHODS.find((method) => method._id === authMethodId)?.value || "none";
+	};
+
+	const getNtfyPriorityValue = (priorityId) => {
+		return NTFY_PRIORITIES.find((priority) => priority._id === priorityId)?.value || 3;
+	};
+
 	const extractError = (error, field) =>
 		error?.details.find((d) => d.path.includes(field))?.message;
 
@@ -86,6 +94,9 @@ const CreateNotifications = () => {
 		const form = {
 			...notification,
 			type: getNotificationTypeValue(notification.type),
+			// Convert ntfy dropdown IDs to actual values
+			ntfyAuthMethod: getNtfyAuthMethodValue(notification.ntfyAuthMethod),
+			ntfyPriority: getNtfyPriorityValue(notification.ntfyPriority),
 		};
 
 		let error = null;
@@ -137,6 +148,9 @@ const CreateNotifications = () => {
 		const form = {
 			...notification,
 			type: getNotificationTypeValue(notification.type),
+			// Convert ntfy dropdown IDs to actual values
+			ntfyAuthMethod: getNtfyAuthMethodValue(notification.ntfyAuthMethod),
+			ntfyPriority: getNtfyPriorityValue(notification.ntfyPriority),
 		};
 
 		let error = null;
@@ -254,7 +268,7 @@ const CreateNotifications = () => {
 									helperText={errors["ntfyAuthMethod"]}
 								/>
 								
-								{notification.ntfyAuthMethod === "username_password" && (
+								{getNtfyAuthMethodValue(notification.ntfyAuthMethod) === "username_password" && (
 									<>
 										<TextInput
 											label={t("createNotifications.ntfySettings.usernameLabel")}
@@ -278,7 +292,7 @@ const CreateNotifications = () => {
 									</>
 								)}
 								
-								{notification.ntfyAuthMethod === "bearer_token" && (
+								{getNtfyAuthMethodValue(notification.ntfyAuthMethod) === "bearer_token" && (
 									<TextInput
 										type="password"
 										label={t("createNotifications.ntfySettings.bearerTokenLabel")}
