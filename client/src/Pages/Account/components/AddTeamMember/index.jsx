@@ -97,7 +97,7 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 			const errorMsg = error.response?.data?.msg || error.message || "unknownError";
 			createToast({
 				type: "error",
-				body: t(`teamPanel.registerToast.${errorMsg}`),
+				body: t(errorMsg),
 			});
 		}
 	};
