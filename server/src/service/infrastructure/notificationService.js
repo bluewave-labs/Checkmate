@@ -44,6 +44,10 @@ class NotificationService {
 
 			return response;
 		}
+		if (type === "ntfy") {
+			const response = await this.networkService.requestNtfy(address, content, subject, notification);
+			return response.status;
+		}
 	};
 
 	async handleNotifications(networkResponse) {
