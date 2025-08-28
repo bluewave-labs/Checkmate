@@ -126,6 +126,9 @@ const CreateNotifications = () => {
 		let newNotification = {
 			...rawNotification,
 			type: getNotificationTypeValue(rawNotification.type),
+			// Convert ntfy dropdown IDs to actual values for validation
+			ntfyAuthMethod: getNtfyAuthMethodValue(rawNotification.ntfyAuthMethod),
+			ntfyPriority: getNtfyPriorityValue(rawNotification.ntfyPriority),
 		};
 
 		const { error } = notificationValidation.validate(newNotification, {
@@ -136,6 +139,12 @@ const CreateNotifications = () => {
 		if (name === "type") {
 			validationError["type"] = extractError(error, "type");
 			validationError["address"] = extractError(error, "address");
+		} else if (name === "ntfyAuthMethod") {
+			// When auth method changes, update all ntfy field errors
+			validationError["ntfyAuthMethod"] = extractError(error, "ntfyAuthMethod");
+			validationError["ntfyUsername"] = extractError(error, "ntfyUsername");
+			validationError["ntfyPassword"] = extractError(error, "ntfyPassword");
+			validationError["ntfyBearerToken"] = extractError(error, "ntfyBearerToken");
 		} else {
 			validationError[name] = extractError(error, name);
 		}
