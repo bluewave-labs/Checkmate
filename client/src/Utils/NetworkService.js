@@ -605,6 +605,19 @@ class NetworkService {
 
 	/**
 	 * ************************************
+	 * Get a single check by its ID
+	 * ************************************
+	 *
+	 * @async
+	 * @param {string} checkId - The ID of the check to retrieve.
+	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
+	 */
+	getCheckById = async (checkId) => {
+		return this.axiosInstance.get(`/checks/details/${checkId}`);
+	};
+
+	/**
+	 * ************************************
 	 * Update the status of a check
 	 * ************************************
 	 *

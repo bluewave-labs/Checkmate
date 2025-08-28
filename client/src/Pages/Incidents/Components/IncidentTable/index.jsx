@@ -16,7 +16,9 @@ import { useTranslation } from "react-i18next";
 import { useFetchChecksTeam } from "../../../../Hooks/checkHooks";
 import { useFetchChecksByMonitor } from "../../../../Hooks/checkHooks";
 import { useResolveIncident } from "../../../../Hooks/checkHooks";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, IconButton, Stack } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const IncidentTable = ({
 	isLoading,
@@ -75,6 +77,7 @@ const IncidentTable = ({
 	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
 
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 
 	//Handlers
 	const handleChangePage = (_, newPage) => {
@@ -87,6 +90,10 @@ const IncidentTable = ({
 
 	const handleResolveIncident = (checkId) => {
 		resolveIncident(checkId, setUpdateTrigger);
+	};
+
+	const handleViewDetails = (checkId) => {
+		navigate(`/incidents/details/${checkId}`);
 	};
 
 	const headers = [
@@ -131,21 +138,33 @@ const IncidentTable = ({
 			id: "action",
 			content: t("actions"),
 			render: (row) => {
-				return row.ack === false ? (
-					<Button
-						variant="contained"
-						color="accent"
-						onClick={() => {
-							handleResolveIncident(row._id);
-						}}
-					>
-						{t("incidentsTableActionResolve")}
-					</Button>
-				) : (
-					<Typography>
-						{t("incidentsTableResolvedAt")}{" "}
-						{formatDateWithTz(row.ackAt, "YYYY-MM-DD HH:mm:ss A", uiTimezone)}
-					</Typography>
+				return (
+					<Stack direction="row" spacing={1} alignItems="center">
+						<IconButton
+							size="small"
+							onClick={() => handleViewDetails(row._id)}
+							title={t("incidentDetails.viewDetails")}
+						>
+							<VisibilityIcon />
+						</IconButton>
+						{row.ack === false ? (
+							<Button
+								variant="contained"
+								color="accent"
+								size="small"
+								onClick={() => {
+									handleResolveIncident(row._id);
+								}}
+							>
+								{t("incidentsTableActionResolve")}
+							</Button>
+						) : (
+							<Typography variant="body2" sx={{ color: "text.secondary" }}>
+								{t("incidentsTableResolvedAt")}{" "}
+								{formatDateWithTz(row.ackAt, "HH:mm:ss", uiTimezone)}
+							</Typography>
+						)}
+					</Stack>
 				);
 			},
 		},

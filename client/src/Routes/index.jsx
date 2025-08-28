@@ -30,6 +30,7 @@ import ServerUnreachable from "../Pages/ServerUnreachable";
 
 // Incidents
 import Incidents from "../Pages/Incidents";
+import IncidentDetails from "../Pages/Incidents/IncidentDetails";
 
 // Status pages
 import CreateStatus from "../Pages/StatusPage/Create";
@@ -131,6 +132,10 @@ const Routes = () => {
 				<Route
 					path="incidents/:monitorId?"
 					element={<Incidents />}
+				/>
+				<Route
+					path="incidents/details/:checkId"
+					element={<IncidentDetails />}
 				/>
 
 				<Route

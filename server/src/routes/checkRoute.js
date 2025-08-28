@@ -18,6 +18,7 @@ class CheckRoutes {
 		this.router.put("/team/ttl", isAllowed(["admin", "superadmin"]), this.checkController.updateChecksTTL);
 		this.router.delete("/team", isAllowed(["admin", "superadmin"]), this.checkController.deleteChecksByTeamId);
 
+		this.router.get("/details/:checkId", this.checkController.getCheckById);
 		this.router.put("/check/:checkId", this.checkController.ackCheck);
 
 		this.router.get("/:monitorId", this.checkController.getChecksByMonitor);

@@ -144,6 +144,19 @@ class CheckService {
 		const newTTL = parseInt(ttl, 10) * SECONDS_PER_DAY;
 		await this.db.checkModule.updateChecksTTL(teamId, newTTL);
 	};
+
+	getCheckById = async ({ checkId, teamId }) => {
+		if (!checkId) {
+			throw this.errorService.createBadRequestError("No check ID in request");
+		}
+
+		if (!teamId) {
+			throw this.errorService.createBadRequestError("No team ID in request");
+		}
+
+		const check = await this.db.checkModule.getCheckById({ checkId, teamId });
+		return check;
+	};
 }
 
 export default CheckService;

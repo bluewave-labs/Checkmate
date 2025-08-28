@@ -355,6 +355,44 @@ class CheckController extends BaseController {
 		SERVICE_NAME,
 		"updateChecksTtl"
 	);
+
+	/**
+	 * Retrieves a specific check by its ID.
+	 *
+	 * @async
+	 * @function getCheckById
+	 * @param {Object} req - Express request object
+	 * @param {Object} req.params - URL parameters
+	 * @param {string} req.params.checkId - ID of the check to retrieve
+	 * @param {Object} req.user - Current authenticated user (from JWT)
+	 * @param {string} req.user.teamId - User's team ID
+	 * @param {Object} res - Express response object
+	 * @returns {Promise<Object>} Success response with check data
+	 * @throws {Error} 404 - Not found if check doesn't exist or user doesn't have access
+	 * @example
+	 * GET /checks/details/507f1f77bcf86cd799439011
+	 * // Requires JWT authentication
+	 * // Returns detailed check information
+	 */
+	getCheckById = this.asyncHandler(
+		async (req, res) => {
+			const { checkId } = req.params;
+			const { teamId } = req.user;
+
+			const check = await this.checkService.getCheckById({ checkId, teamId });
+
+			if (!check) {
+				throw this.errorService.createNotFoundError("Check not found");
+			}
+
+			return res.success({
+				msg: this.stringService.checkGet,
+				data: check,
+			});
+		},
+		SERVICE_NAME,
+		"getCheckById"
+	);
 }
 
 export default CheckController;

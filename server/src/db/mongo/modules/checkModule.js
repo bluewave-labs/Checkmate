@@ -278,6 +278,48 @@ class CheckModule {
 			throw error;
 		}
 	};
+
+	getCheckById = async ({ checkId, teamId }) => {
+		try {
+			// First verify the check exists and belongs to the user's team
+			const check = await this.Check.aggregate([
+				{ $match: { _id: new ObjectId(checkId) } },
+				{
+					$lookup: {
+						from: "monitors",
+						localField: "monitorId",
+						foreignField: "_id",
+						as: "monitor"
+					}
+				},
+				{ $unwind: "$monitor" },
+				{ $match: { "monitor.teamId": new ObjectId(teamId) } },
+				{
+					$project: {
+						_id: 1,
+						monitorId: 1,
+						status: 1,
+						statusCode: 1,
+						message: 1,
+						responseTime: 1,
+						createdAt: 1,
+						updatedAt: 1,
+						ack: 1,
+						ackAt: 1,
+						url: "$monitor.url",
+						monitorName: "$monitor.name",
+						type: "$monitor.type"
+					}
+				}
+			]);
+
+			return check[0] || null;
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "getCheckById";
+			throw error;
+		}
+	};
 }
 
 export default CheckModule;
