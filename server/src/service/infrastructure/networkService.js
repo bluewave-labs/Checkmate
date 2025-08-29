@@ -255,16 +255,42 @@ class NetworkService {
 
 			const containers = await docker.listContainers({ all: true });
 
-			// Find container by ID (original behavior) or by name (new feature)
-			let targetContainer = containers.find((c) => {
-				// Check if monitor.url matches container ID (partial match)
-				if (c.Id.startsWith(monitor.url)) {
-					return true;
+			// Normalize input: strip leading slashes and convert to lowercase for comparison
+			const normalizedInput = monitor.url.replace(/^\/+/, "").toLowerCase();
+
+			// Priority-based matching to avoid ambiguity:
+			// 1. Exact full ID match (64-char)
+			let exactIdMatch = containers.find((c) => c.Id.toLowerCase() === normalizedInput);
+
+			// 2. Exact container name match (case-insensitive)
+			let exactNameMatch = containers.find((c) =>
+				c.Names.some((name) => {
+					const cleanName = name.replace(/^\/+/, "").toLowerCase();
+					return cleanName === normalizedInput;
+				})
+			);
+
+			// 3. Partial ID match (fallback for backwards compatibility)
+			let partialIdMatch = containers.find((c) => c.Id.toLowerCase().startsWith(normalizedInput));
+
+			// Select container based on priority
+			let targetContainer = exactIdMatch || exactNameMatch || partialIdMatch;
+
+			// Log warning if ambiguous matches exist
+			if (targetContainer && this.logger) {
+				const matchTypes = [];
+				if (exactIdMatch) matchTypes.push("exact ID");
+				if (exactNameMatch) matchTypes.push("exact name");
+				if (partialIdMatch && !exactIdMatch) matchTypes.push("partial ID");
+
+				if (matchTypes.length > 1) {
+					this.logger.warn({
+						message: `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`,
+						service: this.SERVICE_NAME,
+						method: "requestDocker",
+					});
 				}
-				// Check if monitor.url matches any container name
-				// Container names are stored as ["/container-name"] in the Names array
-				return c.Names.some((name) => name === `/${monitor.url}` || name === monitor.url);
-			});
+			}
 
 			if (!targetContainer) {
 				throw new Error(this.stringService.dockerNotFound);
