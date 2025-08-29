@@ -10,38 +10,38 @@ describe("InviteService", function () {
 		token: "abc123token",
 		email: "test@example.com",
 		teamId: "team123",
-		role: ["member"]
+		role: ["member"],
 	};
 
 	const mockInvite = {
 		email: "test@example.com",
-		role: ["member"]
+		role: ["member"],
 	};
 
 	beforeEach(function () {
 		mockDb = {
 			inviteModule: {
 				requestInviteToken: sinon.stub(),
-				getInviteToken: sinon.stub()
-			}
+				getInviteToken: sinon.stub(),
+			},
 		};
 
 		mockSettingsService = {
-			getSettings: sinon.stub()
+			getSettings: sinon.stub(),
 		};
 
 		mockEmailService = {
 			buildEmail: sinon.stub(),
-			sendEmail: sinon.stub()
+			sendEmail: sinon.stub(),
 		};
 
 		mockStringService = {
 			inviteIssued: "Invite issued successfully",
-			inviteVerified: "Invite verified successfully"
+			inviteVerified: "Invite verified successfully",
 		};
 
 		mockErrorService = {
-			createServerError: sinon.stub()
+			createServerError: sinon.stub(),
 		};
 
 		inviteService = new InviteService({
@@ -49,7 +49,7 @@ describe("InviteService", function () {
 			settingsService: mockSettingsService,
 			emailService: mockEmailService,
 			stringService: mockStringService,
-			errorService: mockErrorService
+			errorService: mockErrorService,
 		});
 	});
 
@@ -88,7 +88,7 @@ describe("InviteService", function () {
 	describe("sendInviteEmail", function () {
 		const inviteRequest = {
 			email: "test@example.com",
-			role: ["member"]
+			role: ["member"],
 		};
 		const firstName = "John";
 		const clientHost = "https://example.com";
@@ -108,13 +108,9 @@ describe("InviteService", function () {
 			expect(mockSettingsService.getSettings).to.have.been.called;
 			expect(mockEmailService.buildEmail).to.have.been.calledWith("employeeActivationTemplate", {
 				name: firstName,
-				link: `${clientHost}/register/${mockInviteToken.token}`
+				link: `${clientHost}/register/${mockInviteToken.token}`,
 			});
-			expect(mockEmailService.sendEmail).to.have.been.calledWith(
-				inviteRequest.email,
-				"Welcome to Uptime Monitor",
-				emailHtml
-			);
+			expect(mockEmailService.sendEmail).to.have.been.calledWith(inviteRequest.email, "Welcome to Uptime Monitor", emailHtml);
 		});
 
 		it("should handle invite token generation failure", async function () {
@@ -150,9 +146,7 @@ describe("InviteService", function () {
 				await inviteService.sendInviteEmail({ inviteRequest, firstName });
 				expect.fail("Should have thrown an error");
 			} catch (err) {
-				expect(mockErrorService.createServerError).to.have.been.calledWith(
-					"Failed to send invite e-mail... Please verify your settings."
-				);
+				expect(mockErrorService.createServerError).to.have.been.calledWith("Failed to send invite e-mail... Please verify your settings.");
 				expect(err).to.equal(serverError);
 			}
 		});
