@@ -53,9 +53,14 @@ class NotificationService {
 	async handleNotifications(networkResponse) {
 		const { monitor, statusChanged, prevStatus } = networkResponse;
 		const { type } = monitor;
-		if (type !== "hardware" && statusChanged === false) return false;
+		
+		if (type !== "hardware" && statusChanged === false) {
+			return false;
+		}
 		// if prevStatus is undefined, monitor is resuming, we're done
-		if (type !== "hardware" && prevStatus === undefined) return false;
+		if (type !== "hardware" && prevStatus === undefined) {
+			return false;
+		}
 
 		const notificationIDs = networkResponse.monitor?.notifications ?? [];
 		if (notificationIDs.length === 0) return false;
