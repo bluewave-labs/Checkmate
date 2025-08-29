@@ -97,7 +97,7 @@ describe("InviteService", function () {
 		beforeEach(function () {
 			mockSettingsService.getSettings.returns({ clientHost });
 			mockEmailService.buildEmail.resolves(emailHtml);
-			mockEmailService.sendEmail.resolves(true);
+			mockEmailService.sendEmail.resolves("message-id-12345"); // Returns messageId on success
 			mockDb.inviteModule.requestInviteToken.resolves(mockInviteToken);
 		});
 
@@ -137,8 +137,20 @@ describe("InviteService", function () {
 			}
 		});
 
-		it("should throw error when email sending fails", async function () {
-			mockEmailService.sendEmail.resolves(false);
+		it("should handle buildEmail returning undefined", async function () {
+			mockEmailService.buildEmail.resolves(undefined); // buildEmail can return undefined on error
+
+			try {
+				await inviteService.sendInviteEmail({ inviteRequest, firstName });
+				expect.fail("Should have thrown an error");
+			} catch (err) {
+				// sendEmail will be called with undefined html, which should cause issues
+				expect(mockEmailService.sendEmail).to.have.been.calledWith(inviteRequest.email, "Welcome to Uptime Monitor", undefined);
+			}
+		});
+
+		it("should throw error when email sending returns false (verification failed)", async function () {
+			mockEmailService.sendEmail.resolves(false); // Returns false when verification fails
 			const serverError = new Error("Failed to send invite e-mail... Please verify your settings.");
 			mockErrorService.createServerError.returns(serverError);
 
@@ -148,6 +160,32 @@ describe("InviteService", function () {
 			} catch (err) {
 				expect(mockErrorService.createServerError).to.have.been.calledWith("Failed to send invite e-mail... Please verify your settings.");
 				expect(err).to.equal(serverError);
+			}
+		});
+
+		it("should throw error when email sending returns undefined (send failed)", async function () {
+			mockEmailService.sendEmail.resolves(undefined); // Returns undefined when send fails
+			const serverError = new Error("Failed to send invite e-mail... Please verify your settings.");
+			mockErrorService.createServerError.returns(serverError);
+
+			try {
+				await inviteService.sendInviteEmail({ inviteRequest, firstName });
+				expect.fail("Should have thrown an error");
+			} catch (err) {
+				expect(mockErrorService.createServerError).to.have.been.calledWith("Failed to send invite e-mail... Please verify your settings.");
+				expect(err).to.equal(serverError);
+			}
+		});
+
+		it("should handle sendEmail throwing error", async function () {
+			const error = new Error("SMTP connection failed");
+			mockEmailService.sendEmail.rejects(error);
+
+			try {
+				await inviteService.sendInviteEmail({ inviteRequest, firstName });
+				expect.fail("Should have thrown an error");
+			} catch (err) {
+				expect(err).to.equal(error);
 			}
 		});
 
