@@ -451,7 +451,8 @@ const notificationValidation = joi.object({
 		.messages({
 			"string.empty": "Notification type is required",
 			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, slack, discord, pager_duty, or ntfy",
+			"any.only":
+				"Notification type must be email, webhook, slack, discord, pager_duty, or ntfy",
 		}),
 
 	address: joi.when("type", {
@@ -506,7 +507,8 @@ const notificationValidation = joi.object({
 		then: joi.when("ntfyAuthMethod", {
 			is: "username_password",
 			then: joi.string().required().messages({
-				"string.empty": "Username cannot be empty when using username/password authentication",
+				"string.empty":
+					"Username cannot be empty when using username/password authentication",
 				"any.required": "Username is required for username/password authentication",
 			}),
 			otherwise: joi.string().optional().allow(""),
@@ -519,7 +521,8 @@ const notificationValidation = joi.object({
 		then: joi.when("ntfyAuthMethod", {
 			is: "username_password",
 			then: joi.string().required().messages({
-				"string.empty": "Password cannot be empty when using username/password authentication",
+				"string.empty":
+					"Password cannot be empty when using username/password authentication",
 				"any.required": "Password is required for username/password authentication",
 			}),
 			otherwise: joi.string().optional().allow(""),
@@ -532,7 +535,8 @@ const notificationValidation = joi.object({
 		then: joi.when("ntfyAuthMethod", {
 			is: "bearer_token",
 			then: joi.string().required().messages({
-				"string.empty": "Bearer token cannot be empty when using bearer token authentication",
+				"string.empty":
+					"Bearer token cannot be empty when using bearer token authentication",
 				"any.required": "Bearer token is required for bearer token authentication",
 			}),
 			otherwise: joi.string().optional().allow(""),

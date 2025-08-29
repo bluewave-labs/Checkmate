@@ -78,7 +78,9 @@ const CreateNotifications = () => {
 	};
 
 	const getNtfyAuthMethodValue = (authMethodId) => {
-		return NTFY_AUTH_METHODS.find((method) => method._id === authMethodId)?.value || "none";
+		return (
+			NTFY_AUTH_METHODS.find((method) => method._id === authMethodId)?.value || "none"
+		);
 	};
 
 	const getNtfyPriorityValue = (priorityId) => {
@@ -263,7 +265,7 @@ const CreateNotifications = () => {
 							error={Boolean(errors.address)}
 							helperText={errors["address"]}
 						/>
-						
+
 						{/* ntfy-specific fields */}
 						{type === "ntfy" && (
 							<>
@@ -276,13 +278,16 @@ const CreateNotifications = () => {
 									error={Boolean(errors.ntfyAuthMethod)}
 									helperText={errors["ntfyAuthMethod"]}
 								/>
-								
-								{getNtfyAuthMethodValue(notification.ntfyAuthMethod) === "username_password" && (
+
+								{getNtfyAuthMethodValue(notification.ntfyAuthMethod) ===
+									"username_password" && (
 									<>
 										<TextInput
 											label={t("createNotifications.ntfySettings.usernameLabel")}
 											name="ntfyUsername"
-											placeholder={t("createNotifications.ntfySettings.usernamePlaceholder")}
+											placeholder={t(
+												"createNotifications.ntfySettings.usernamePlaceholder"
+											)}
 											value={notification.ntfyUsername}
 											onChange={onChange}
 											error={Boolean(errors.ntfyUsername)}
@@ -292,7 +297,9 @@ const CreateNotifications = () => {
 											type="password"
 											label={t("createNotifications.ntfySettings.passwordLabel")}
 											name="ntfyPassword"
-											placeholder={t("createNotifications.ntfySettings.passwordPlaceholder")}
+											placeholder={t(
+												"createNotifications.ntfySettings.passwordPlaceholder"
+											)}
 											value={notification.ntfyPassword}
 											onChange={onChange}
 											error={Boolean(errors.ntfyPassword)}
@@ -300,20 +307,23 @@ const CreateNotifications = () => {
 										/>
 									</>
 								)}
-								
-								{getNtfyAuthMethodValue(notification.ntfyAuthMethod) === "bearer_token" && (
+
+								{getNtfyAuthMethodValue(notification.ntfyAuthMethod) ===
+									"bearer_token" && (
 									<TextInput
 										type="password"
 										label={t("createNotifications.ntfySettings.bearerTokenLabel")}
 										name="ntfyBearerToken"
-										placeholder={t("createNotifications.ntfySettings.bearerTokenPlaceholder")}
+										placeholder={t(
+											"createNotifications.ntfySettings.bearerTokenPlaceholder"
+										)}
 										value={notification.ntfyBearerToken}
 										onChange={onChange}
 										error={Boolean(errors.ntfyBearerToken)}
 										helperText={errors["ntfyBearerToken"]}
 									/>
 								)}
-								
+
 								<Select
 									items={NTFY_PRIORITIES}
 									label={t("createNotifications.ntfySettings.priorityLabel")}

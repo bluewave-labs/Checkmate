@@ -47,7 +47,7 @@ export const PLACEHOLDER_MAP = {
 export const NTFY_AUTH_METHODS = [
 	{ _id: 1, name: "None", value: "none" },
 	{ _id: 2, name: "Username/Password", value: "username_password" },
-	{ _id: 3, name: "Bearer Token", value: "bearer_token" }
+	{ _id: 3, name: "Bearer Token", value: "bearer_token" },
 ];
 
 export const NTFY_PRIORITIES = [
@@ -55,5 +55,5 @@ export const NTFY_PRIORITIES = [
 	{ _id: 2, name: "Low", value: 2 },
 	{ _id: 3, name: "Default", value: 3 },
 	{ _id: 4, name: "High", value: 4 },
-	{ _id: 5, name: "Urgent", value: 5 }
+	{ _id: 5, name: "Urgent", value: 5 },
 ];
