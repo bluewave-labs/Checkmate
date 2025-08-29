@@ -130,7 +130,9 @@ const monitorValidation = joi.object({
 		then: joi
 			.string()
 			.trim()
-			.regex(/^(\/+)?([a-zA-Z0-9][a-zA-Z0-9_.-]*[a-zA-Z0-9]|[a-zA-Z0-9]+|[a-f0-9]{12,64})$/)
+			.regex(
+				/^(\/+)?([a-zA-Z0-9][a-zA-Z0-9_.-]*[a-zA-Z0-9]|[a-zA-Z0-9]+|[a-f0-9]{12,64})$/
+			)
 			.messages({
 				"string.empty": "This field is required.",
 				"string.pattern.base": "Please enter a valid container name or ID.",
