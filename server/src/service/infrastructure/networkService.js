@@ -254,12 +254,23 @@ class NetworkService {
 			});
 
 			const containers = await docker.listContainers({ all: true });
-			const containerExists = containers.some((c) => c.Id.startsWith(monitor.url));
-			if (!containerExists) {
+
+			// Find container by ID (original behavior) or by name (new feature)
+			let targetContainer = containers.find((c) => {
+				// Check if monitor.url matches container ID (partial match)
+				if (c.Id.startsWith(monitor.url)) {
+					return true;
+				}
+				// Check if monitor.url matches any container name
+				// Container names are stored as ["/container-name"] in the Names array
+				return c.Names.some((name) => name === `/${monitor.url}` || name === monitor.url);
+			});
+
+			if (!targetContainer) {
 				throw new Error(this.stringService.dockerNotFound);
 			}
 
-			const container = docker.getContainer(monitor.url);
+			const container = docker.getContainer(targetContainer.Id);
 			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
 
 			const dockerResponse = {
