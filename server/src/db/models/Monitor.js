@@ -28,6 +28,14 @@ const MonitorSchema = mongoose.Schema(
 			type: Boolean,
 			default: undefined,
 		},
+		alertSentForCurrentIncident: {
+			type: Boolean,
+			default: false,
+		},
+		lastAlertSentAt: {
+			type: Date,
+			default: null,
+		},
 		statusWindow: {
 			type: [Boolean],
 			default: [],

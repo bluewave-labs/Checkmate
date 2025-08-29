@@ -49,9 +49,39 @@ class NotificationService {
 	async handleNotifications(networkResponse) {
 		const { monitor, statusChanged, prevStatus } = networkResponse;
 		const { type } = monitor;
-		if (type !== "hardware" && statusChanged === false) return false;
-		// if prevStatus is undefined, monitor is resuming, we're done
-		if (type !== "hardware" && prevStatus === undefined) return false;
+		
+		// For non-hardware monitors, implement alert suppression
+		if (type !== "hardware") {
+			// Monitor is DOWN
+			if (monitor.status === false) {
+				// If alert already sent for this incident, skip
+				if (monitor.alertSentForCurrentIncident === true) {
+					this.logger.info({
+						service: this.SERVICE_NAME,
+						message: `Skipping notification for ${monitor.name} - alert already sent for this incident`,
+					});
+					return false;
+				}
+				// Send alert and mark as sent
+				// Will continue to send the alert below
+			} 
+			// Monitor is UP
+			else if (monitor.status === true) {
+				// Reset alert flag when monitor comes back up
+				if (monitor.alertSentForCurrentIncident === true) {
+					monitor.alertSentForCurrentIncident = false;
+					await monitor.save();
+					// Send recovery notification if it was previously down
+					if (prevStatus === false) {
+						// Will continue to send the recovery alert below
+					} else {
+						return false; // No need to send alert if it wasn't down
+					}
+				} else if (!statusChanged) {
+					return false; // No status change and no alert to reset
+				}
+			}
+		}
 
 		const notificationIDs = networkResponse.monitor?.notifications ?? [];
 		if (notificationIDs.length === 0) return false;
@@ -76,7 +106,19 @@ class NotificationService {
 		// Status monitors
 		const { subject, html } = await this.notificationUtils.buildStatusEmail(networkResponse);
 		const content = await this.notificationUtils.buildWebhookMessage(networkResponse);
-		const success = this.notifyAll({ notificationIDs, subject, html, content });
+		const success = await this.notifyAll({ notificationIDs, subject, html, content });
+		
+		// Mark alert as sent if monitor is down and notification was successful
+		if (success && monitor.status === false && type !== "hardware") {
+			monitor.alertSentForCurrentIncident = true;
+			monitor.lastAlertSentAt = new Date();
+			await monitor.save();
+			this.logger.info({
+				service: this.SERVICE_NAME,
+				message: `Marked alert as sent for ${monitor.name}`,
+			});
+		}
+		
 		return success;
 	}
 
