@@ -23,10 +23,10 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 	return (
 		<Box
 			position="relative"
-			width={width}
 			height={height}
 			backgroundColor={backgroundColor}
 			sx={{
+				width: width,
 				borderRadius: borderRadius || theme.spacing(1.5),
 			}}
 		>
@@ -36,7 +36,7 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 };
 
 Bar.propTypes = {
-	width: PropTypes.string.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 	height: PropTypes.string.isRequired,
 	backgroundColor: PropTypes.string.isRequired,
 	borderRadius: PropTypes.string,
