@@ -163,6 +163,14 @@ class StatusPageModule {
 					},
 				},
 				{
+					$lookup: {
+						from: "monitorstats",
+						localField: "monitors._id",
+						foreignField: "monitorId",
+						as: "monitors.stats",
+					},
+				},
+				{
 					$addFields: {
 						"monitors.orderIndex": {
 							$indexOfArray: ["$originalMonitors", "$monitors._id"],
@@ -180,6 +188,9 @@ class StatusPageModule {
 									],
 								},
 							},
+						},
+						"monitors.uptimePercentage": {
+							$arrayElemAt: ["$monitors.stats.uptimePercentage", 0],
 						},
 					},
 				},

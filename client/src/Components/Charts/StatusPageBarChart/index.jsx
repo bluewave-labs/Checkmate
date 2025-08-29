@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { formatDateWithTz } from "../../../Utils/timeUtils";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -17,23 +17,27 @@ import PropTypes from "prop-types";
  * @returns {JSX.Element} The Bar component.
  */
 
-const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
-	const theme = useTheme();
+const Bar = forwardRef(
+	({ width, height, backgroundColor, borderRadius, children, ...otherProps }, ref) => {
+		const theme = useTheme();
 
-	return (
-		<Box
-			position="relative"
-			width={width}
-			height={height}
-			backgroundColor={backgroundColor}
-			sx={{
-				borderRadius: borderRadius || theme.spacing(1.5),
-			}}
-		>
-			{children}
-		</Box>
-	);
-};
+		return (
+			<Box
+				ref={ref}
+				position="relative"
+				width={width}
+				height={height}
+				backgroundColor={backgroundColor}
+				sx={{
+					borderRadius: borderRadius || theme.spacing(1.5),
+				}}
+				{...otherProps}
+			>
+				{children}
+			</Box>
+		);
+	}
+);
 
 Bar.propTypes = {
 	width: PropTypes.string.isRequired,
