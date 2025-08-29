@@ -53,7 +53,7 @@ class NotificationService {
 	async handleNotifications(networkResponse) {
 		const { monitor, statusChanged, prevStatus } = networkResponse;
 		const { type } = monitor;
-		
+
 		if (type !== "hardware" && statusChanged === false) {
 			return false;
 		}

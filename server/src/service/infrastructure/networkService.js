@@ -448,15 +448,15 @@ class NetworkService {
 		try {
 			// Build headers
 			const headers = {
-				"Title": title,
-				"Priority": notification.ntfyPriority?.toString() || "3",
-				"Tags": "checkmate,monitoring",
-				"Content-Type": "text/plain"
+				Title: title,
+				Priority: notification.ntfyPriority?.toString() || "3",
+				Tags: "checkmate,monitoring",
+				"Content-Type": "text/plain",
 			};
 
 			// Add authentication headers based on method
 			if (notification.ntfyAuthMethod === "username_password" && notification.ntfyUsername && notification.ntfyPassword) {
-				const auth = Buffer.from(`${notification.ntfyUsername}:${notification.ntfyPassword}`).toString('base64');
+				const auth = Buffer.from(`${notification.ntfyUsername}:${notification.ntfyPassword}`).toString("base64");
 				headers["Authorization"] = `Basic ${auth}`;
 			} else if (notification.ntfyAuthMethod === "bearer_token" && notification.ntfyBearerToken) {
 				headers["Authorization"] = `Bearer ${notification.ntfyBearerToken}`;
@@ -477,7 +477,7 @@ class NetworkService {
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "requestNtfy",
-				url: url
+				url: url,
 			});
 
 			return {
