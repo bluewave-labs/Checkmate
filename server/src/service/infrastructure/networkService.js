@@ -253,6 +253,11 @@ class NetworkService {
 				handleError: true, // Enable error handling
 			});
 
+			const dockerResponse = {
+				monitorId: monitor._id,
+				type: monitor.type,
+			};
+
 			const containers = await docker.listContainers({ all: true });
 
 			// Normalize input: strip leading slashes and convert to lowercase for comparison
@@ -276,37 +281,47 @@ class NetworkService {
 			// Select container based on priority
 			let targetContainer = exactIdMatch || exactNameMatch || partialIdMatch;
 
-			// Log warning if ambiguous matches exist
-			if (targetContainer && this.logger) {
-				const matchTypes = [];
-				if (exactIdMatch) matchTypes.push("exact ID");
-				if (exactNameMatch) matchTypes.push("exact name");
-				if (partialIdMatch && !exactIdMatch) matchTypes.push("partial ID");
+			// Return negative response if no container
+			if (!targetContainer) {
+				this.logger.warn({
+					message: `No container found for "${monitor.url}".`,
+					service: this.SERVICE_NAME,
+					method: "requestDocker",
+					details: { url: monitor.url },
+				});
 
-				if (matchTypes.length > 1) {
-					this.logger.warn({
-						message: `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`,
-						service: this.SERVICE_NAME,
-						method: "requestDocker",
-					});
-				}
+				dockerResponse.code = 404;
+				dockerResponse.status = false;
+				dockerResponse.message = this.stringService.dockerNotFound;
+				return dockerResponse;
 			}
 
-			if (!targetContainer) {
-				throw new Error(this.stringService.dockerNotFound);
+			// Return negative response if ambiguous matches exist
+			const matchTypes = [];
+			if (exactIdMatch) matchTypes.push("exact ID");
+			if (exactNameMatch) matchTypes.push("exact name");
+			if (partialIdMatch && !exactIdMatch) matchTypes.push("partial ID");
+
+			if (matchTypes.length > 1) {
+				this.logger.warn({
+					message: `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`,
+					service: this.SERVICE_NAME,
+					method: "requestDocker",
+					details: { url: monitor.url },
+				});
+				dockerResponse.status = 404;
+				dockerResponse.status = false;
+				dockerResponse.message = `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`;
+				return dockerResponse;
 			}
 
 			const container = docker.getContainer(targetContainer.Id);
 			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
 
-			const dockerResponse = {
-				monitorId: monitor._id,
-				type: monitor.type,
-				responseTime,
-				status: response?.State?.Status === "running" ? true : false,
-				code: 200,
-				message: "Docker container status fetched successfully",
-			};
+			dockerResponse.responseTime = responseTime;
+			dockerResponse.status = response?.State?.Status === "running" ? true : false;
+			dockerResponse.code = 200;
+			dockerResponse.message = "Docker container status fetched successfully";
 
 			if (error) {
 				dockerResponse.status = false;
