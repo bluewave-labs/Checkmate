@@ -38,7 +38,7 @@ const MonitorSchema = mongoose.Schema(
 		},
 		statusWindowThreshold: {
 			type: Number,
-			default: 0.6,
+			default: 60,
 		},
 		type: {
 			type: String,
