@@ -158,7 +158,7 @@ class StatusService {
 				statusChanged = true;
 			}
 			// If the failure rate is below the threshold and the monitor is down, recover:
-			else if (failureRate <= monitor.statusWindowThreshold && monitor.status === false) {
+			else if (failureRate < monitor.statusWindowThreshold && monitor.status === false) {
 				newStatus = true;
 				statusChanged = true;
 			}

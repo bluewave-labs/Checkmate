@@ -7,6 +7,7 @@ import {
 	TableHead,
 	TableRow,
 } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import SkeletonLayout from "./skeleton";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
@@ -41,6 +42,7 @@ const DataTable = ({
 	data = [],
 	config = {
 		emptyView: "No data",
+		tooltipContent: null,
 		onRowClick: () => {},
 	},
 }) => {
@@ -101,24 +103,54 @@ const DataTable = ({
 						data.map((row) => {
 							const key = row.id || row._id || Math.random();
 							return (
-								<TableRow
+								<Tooltip
 									key={key}
-									sx={config?.rowSX ?? {}}
-									onClick={config?.onRowClick ? () => config.onRowClick(row) : null}
+									followCursor
+									enterDelay={500}
+									enterNextDelay={500}
+									title={
+										typeof config.tooltipContent === "function"
+											? config.tooltipContent(row)
+											: config.tooltipContent
+									}
+									slotProps={{
+										tooltip: {
+											sx: {
+												background: "unset",
+											},
+										},
+										popper: {
+											modifiers: [
+												{
+													name: "offset",
+													options: {
+														offset: ({ popper }) => {
+															return [popper.width / 2 + 20, -popper.height / 8];
+														},
+													},
+												},
+											],
+										},
+									}}
 								>
-									{headers.map((header, index) => {
-										return (
-											<TableCell
-												align={index === 0 ? "left" : "center"}
-												key={header.id}
-												onClick={header.onClick ? (e) => header.onClick(e, row) : null}
-												sx={header.getCellSx ? header.getCellSx(row) : {}}
-											>
-												{header.render(row)}
-											</TableCell>
-										);
-									})}
-								</TableRow>
+									<TableRow
+										sx={config?.rowSX ?? {}}
+										onClick={config?.onRowClick ? () => config.onRowClick(row) : null}
+									>
+										{headers.map((header, index) => {
+											return (
+												<TableCell
+													align={index === 0 ? "left" : "center"}
+													key={header.id}
+													onClick={header.onClick ? (e) => header.onClick(e, row) : null}
+													sx={header.getCellSx ? header.getCellSx(row) : {}}
+												>
+													{header.render(row)}
+												</TableCell>
+											);
+										})}
+									</TableRow>
+								</Tooltip>
 							);
 						})
 					)}
