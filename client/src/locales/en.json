@@ -740,6 +740,7 @@
 			"idHeader": "Monitor ID",
 			"urlHeader": "URL",
 			"typeHeader": "Type",
+			"intervalHeader": "Interval",
 			"activeHeader": "Active",
 			"lockedAtHeader": "Locked at",
 			"runCountHeader": "Run count",
