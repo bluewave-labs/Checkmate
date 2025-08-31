@@ -6,6 +6,7 @@ import ControlsHeader from "./Components/ControlsHeader";
 import SkeletonLayout from "./Components/Skeleton";
 import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
+import MaintenanceBanner from "./Components/MaintenanceBanner";
 import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 import TextLink from "../../../Components/TextLink";
 
@@ -141,6 +142,9 @@ const PublicStatus = () => {
 		);
 	}
 
+	// Filter monitors that are in maintenance
+	const monitorsInMaintenance = monitors?.filter(monitor => monitor.isMaintenance) || [];
+
 	return (
 		<Stack
 			gap={theme.spacing(10)}
@@ -152,6 +156,7 @@ const PublicStatus = () => {
 				url={url}
 				isPublic={isPublic}
 			/>
+			<MaintenanceBanner affectedMonitors={monitorsInMaintenance} />
 			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
 			<MonitorsList monitors={monitors} />
