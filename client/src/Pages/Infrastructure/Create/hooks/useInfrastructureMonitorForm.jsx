@@ -3,6 +3,7 @@ const useInfrastructureMonitorForm = () => {
 	const [infrastructureMonitor, setInfrastructureMonitor] = useState({
 		url: "",
 		name: "",
+		group: "",
 		notifications: [],
 		notify_email: false,
 		interval: 0.25,

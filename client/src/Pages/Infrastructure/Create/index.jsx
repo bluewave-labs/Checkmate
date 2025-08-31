@@ -255,6 +255,17 @@ const CreateInfrastructureMonitor = () => {
 						/>
 						<TextInput
 							type="text"
+							id="group"
+							name="group"
+							label={t("group")}
+							placeholder={t("groupPlaceholder")}
+							isOptional={true}
+							value={infrastructureMonitor.group}
+							onChange={onChange}
+							error={errors["group"]}
+						/>
+						<TextInput
+							type="text"
 							id="secret"
 							name="secret"
 							label={t("infrastructureAuthorizationSecretLabel")}

@@ -63,6 +63,7 @@ const UptimeCreate = ({ isClone = false }) => {
 		notifications: [],
 		interval: 60000,
 		ignoreTlsErrors: false,
+		group: "",
 		...(isCreate ? { url: "", name: "" } : { port: undefined }),
 	});
 	const [errors, setErrors] = useState({});
@@ -606,6 +607,17 @@ const UptimeCreate = ({ isClone = false }) => {
 							onChange={onChange}
 							error={errors["name"] ? true : false}
 							helperText={errors["name"]}
+						/>
+						<TextInput
+							name="group"
+							type="text"
+							label={t("group")}
+							isOptional={true}
+							placeholder={t("groupPlaceholder")}
+							value={monitor.group || ""}
+							onChange={onChange}
+							error={errors["group"] ? true : false}
+							helperText={errors["group"]}
 						/>
 					</Stack>
 				</ConfigBox>

@@ -52,6 +52,7 @@ const PageSpeedSetup = () => {
 			? {
 					url: "",
 					name: "",
+					group: "",
 					type: "pagespeed",
 					notifications: [],
 					interval: 180000,
@@ -97,6 +98,7 @@ const PageSpeedSetup = () => {
 			let form = {
 				url: `http${https ? "s" : ""}://` + monitor.url,
 				name: monitor.name === "" ? monitor.url : monitor.name,
+				group: monitor.group,
 				type: monitor.type,
 				interval: monitor.interval,
 			};
@@ -122,6 +124,7 @@ const PageSpeedSetup = () => {
 			const monitorParams = {
 				url: monitor.url,
 				name: monitor.name === "" ? monitor.url : monitor.name,
+				group: monitor.group,
 				type: monitor.type,
 				interval: monitor.interval,
 			};
@@ -380,6 +383,18 @@ const PageSpeedSetup = () => {
 							onChange={handleChange}
 							error={!!errors["name"]}
 							helperText={errors["name"]}
+						/>
+						<TextInput
+							type="text"
+							id="monitor-group"
+							name="group"
+							label={t("group")}
+							isOptional={true}
+							placeholder={t("groupPlaceholder")}
+							value={monitor.group || ""}
+							onChange={handleChange}
+							error={!!errors["group"]}
+							helperText={errors["group"]}
 						/>
 					</Stack>
 				</ConfigBox>
