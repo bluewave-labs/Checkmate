@@ -15,9 +15,6 @@ const useFetchLogs = () => {
 				setIsLoading(true);
 				const response = await networkService.getLogs();
 				setLogs(response.data.data);
-				createToast({
-					body: t("logsPage.toast.fetchLogsSuccess"),
-				});
 			} catch (error) {
 				setError(error);
 				createToast({
