@@ -70,6 +70,14 @@ const MonitorSchema = mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
+		isInMaintenance: {
+			type: Boolean,
+			default: false,
+		},
+		group: {
+			type: String,
+			default: null,
+		},
 		interval: {
 			// in milliseconds
 			type: Number,

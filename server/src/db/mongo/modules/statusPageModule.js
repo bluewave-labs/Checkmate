@@ -223,6 +223,7 @@ class StatusPageModule {
 							url: 1,
 							port: 1,
 							isActive: 1,
+							group: 1,
 							interval: 1,
 							uptimePercentage: 1,
 							notifications: 1,
