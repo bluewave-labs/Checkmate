@@ -175,7 +175,40 @@ class StatusPageModule {
 									$or: [
 										"$$value",
 										{
-											$and: [{ $eq: ["$$this.active", true] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
+											$and: [
+												{ $eq: ["$$this.active", true] },
+												{
+													$or: [
+														// Non-repeating window: simple time check
+														{
+															$and: [{ $eq: ["$$this.repeat", 0] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
+														},
+														// Repeating window: calculate current occurrence
+														{
+															$and: [
+																{ $ne: ["$$this.repeat", 0] },
+																{ $gt: ["$$this.repeat", 0] },
+																{
+																	$let: {
+																		vars: {
+																			timeSinceStart: { $subtract: ["$$NOW", "$$this.start"] },
+																			windowDuration: { $subtract: ["$$this.end", "$$this.start"] },
+																		},
+																		in: {
+																			$and: [
+																				{ $gte: ["$$timeSinceStart", 0] }, // Started
+																				{
+																					$lte: [{ $mod: ["$$timeSinceStart", "$$this.repeat"] }, "$$windowDuration"],
+																				},
+																			],
+																		},
+																	},
+																},
+															],
+														},
+													],
+												},
+											],
 										},
 									],
 								},

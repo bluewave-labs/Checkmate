@@ -6,20 +6,12 @@ const MaintenanceBanner = ({ affectedMonitors }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	// DEMO MODE: Show example banner if no real maintenance data
-	const isDemoMode = !affectedMonitors || affectedMonitors.length === 0;
-	const demoMonitors = [
-		{ name: "Web Server" },
-		{ name: "API Gateway" }
-	];
-	
-	const monitorsToShow = isDemoMode ? demoMonitors : affectedMonitors;
-	const monitorNames = monitorsToShow.map(monitor => monitor.name).join(", ");
-
-	// Show demo banner for testing, remove this condition in production
-	if (!isDemoMode && monitorsToShow.length === 0) {
+	// Only show banner if there are monitors in maintenance
+	if (!affectedMonitors || affectedMonitors.length === 0) {
 		return null;
 	}
+
+	const monitorNames = affectedMonitors.map(monitor => monitor.name).join(", ");
 
 	return (
 		<Alert 
@@ -32,19 +24,11 @@ const MaintenanceBanner = ({ affectedMonitors }) => {
 			}}
 		>
 			<AlertTitle sx={{ fontWeight: 600, mb: theme.spacing(5) }}>
-				🔧 {t("maintenanceInProgress")} {isDemoMode && "(DEMO)"}
+				{t("maintenanceInProgress")}
 			</AlertTitle>
-			<Typography variant="body2" sx={{ mb: theme.spacing(5) }}>
+			<Typography variant="body2">
 				{t("maintenanceAffectedServices")}: <strong>{monitorNames}</strong>
 			</Typography>
-			<Typography variant="body2" color="text.secondary">
-				{t("maintenanceNoAlertsGenerated")}
-			</Typography>
-			{isDemoMode && (
-				<Typography variant="caption" color="text.secondary" sx={{ mt: theme.spacing(5), fontStyle: 'italic' }}>
-					This is a demo banner showing how maintenance notifications appear.
-				</Typography>
-			)}
 		</Alert>
 	);
 };
