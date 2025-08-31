@@ -7,7 +7,7 @@ import { URLSearchParams } from "url";
 const API_TOKEN = process.env.POEDITOR_API;
 const PROJECT_ID = process.env.POEDITOR_PROJECT_ID;
 const LANGUAGES = (
-  process.env.LANGUAGES || "ar,zh-tw,cs,en,fi,fr,de,pt-br,ru,es,tr,ja"
+  process.env.LANGUAGES || "ar,zh-tw,cs,en,fi,fr,de,pt-br,ru,es,tr,ja,zh-cn"
 ).split(",");
 const EXPORT_FORMAT = process.env.EXPORT_FORMAT || "key_value_json";
 
