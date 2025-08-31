@@ -33,10 +33,19 @@ class SuperSimpleQueue {
 			this.scheduler.start();
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
+			this.scheduler.addTemplate("maintenance-job", this.helper.getMaintenanceJob());
+
 			const monitors = await this.db.monitorModule.getAllMonitors();
 			for (const monitor of monitors) {
 				await this.addJob(monitor._id, monitor);
 			}
+
+			// Add periodic maintenance status update job (every 5 minutes)
+			this.scheduler.addJob({
+				id: "maintenance-status-update",
+				template: "maintenance-job",
+				repeat: 300000, // 5 minutes in milliseconds
+			});
 			return true;
 		} catch (error) {
 			this.logger.error({
