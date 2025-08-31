@@ -251,7 +251,7 @@
 	"edit": "Edit",
 	"createA": "Create a",
 	"remove": "Remove",
-	"maintenanceWindowDescription": "Your pings won't be sent during this time frame",
+	"maintenanceWindowDescription": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations.",
 	"startTime": "Start time",
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"monitorsToApply": "Monitors to apply maintenance window to",
