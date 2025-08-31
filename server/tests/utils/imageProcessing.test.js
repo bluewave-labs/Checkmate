@@ -1,53 +1,30 @@
 import { expect } from "chai";
-import sinon from "sinon";
-import sharp from "sharp";
-import { GenerateAvatarImage } from "../../utils/imageProcessing.js";
+import { GenerateAvatarImage } from "../../src/utils/imageProcessing.js";
 
 describe("imageProcessing - GenerateAvatarImage", function () {
-	it("should resize the image to 64x64 and return a base64 string", async function () {
+	it("should return image as base64 string without resizing", async function () {
 		const file = {
-			buffer: Buffer.from("test image buffer"),
+			buffer: Buffer.from("test image data"),
 		};
-
-		// Stub the sharp function
-		const toBufferStub = sinon.stub().resolves(Buffer.from("resized image buffer"));
-		const resizeStub = sinon.stub().returns({ toBuffer: toBufferStub });
-		const sharpStub = sinon.stub(sharp.prototype, "resize").returns({ toBuffer: toBufferStub });
 
 		const result = await GenerateAvatarImage(file);
 
-		// Verify the result
-		const expected = Buffer.from("resized image buffer").toString("base64");
+		// Verify the result matches the original buffer as base64
+		const expected = Buffer.from("test image data").toString("base64");
 		expect(result).to.equal(expected);
-
-		// Verify that the sharp function was called with the correct arguments
-		expect(sharpStub.calledOnceWith({ width: 64, height: 64, fit: "cover" })).to.be.true;
-		expect(toBufferStub.calledOnce).to.be.true;
-
-		// Restore the stubbed functions
-		sharpStub.restore();
+		expect(result).to.equal("dGVzdCBpbWFnZSBkYXRh");
 	});
 
-	it("should throw an error if resizing fails", async function () {
+	it("should handle errors during buffer conversion", async function () {
 		const file = {
-			buffer: Buffer.from("test image buffer"),
+			buffer: null, // Invalid buffer
 		};
-
-		// Stub the sharp function to throw an error
-		const toBufferStub = sinon.stub().rejects(new Error("Resizing failed"));
-		const resizeStub = sinon.stub().returns({ toBuffer: toBufferStub });
-		const sharpStub = sinon.stub(sharp.prototype, "resize").returns({ toBuffer: toBufferStub });
 
 		try {
 			await GenerateAvatarImage(file);
-			// If no error is thrown, fail the test
 			expect.fail("Expected error to be thrown");
 		} catch (error) {
-			// Verify that the error message is correct
-			expect(error.message).to.equal("Resizing failed");
+			expect(error).to.be.an("error");
 		}
-
-		// Restore the stubbed functions
-		sharpStub.restore();
 	});
 });

@@ -44,7 +44,6 @@
 		"nodemailer": "^6.9.14",
 		"papaparse": "^5.5.2",
 		"ping": "0.4.4",
-		"sharp": "0.33.5",
 		"ssl-checker": "2.0.10",
 		"super-simple-scheduler": "1.4.0",
 		"swagger-ui-express": "5.0.1",
