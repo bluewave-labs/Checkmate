@@ -67,7 +67,7 @@ GenericDialog.propTypes = {
 	theme: PropTypes.object.isRequired,
 	children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
 		.isRequired,
-	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.object]),
 };
 
 export { GenericDialog };
