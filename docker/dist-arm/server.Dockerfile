@@ -10,13 +10,21 @@ RUN npm run build
 
 FROM node:20-alpine AS backend
 
+# Install Sharp dependencies for Alpine Linux
+RUN apk add --no-cache \
+    vips-dev \
+    vips-tools \
+    python3 \
+    make \
+    g++
+
 WORKDIR /app/server
 
 COPY server ./
 
 COPY --from=frontend-build /app/client/dist ./public
 
-RUN npm ci
+RUN npm ci --include=optional && npm rebuild sharp
 
 RUN chmod +x ./scripts/inject-vars.sh
 
