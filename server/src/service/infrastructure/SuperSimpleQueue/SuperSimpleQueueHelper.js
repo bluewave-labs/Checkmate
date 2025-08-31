@@ -123,24 +123,6 @@ class SuperSimpleQueueHelper {
 			});
 		}
 	}
-
-	getMaintenanceJob = () => {
-		return async () => {
-			try {
-				// Update maintenance status for all monitors
-				const maintenanceWindowService = this.serviceRegistry.getService("maintenanceWindowService");
-				await maintenanceWindowService.updateAllMonitorsMaintenanceStatus();
-			} catch (error) {
-				this.logger.error({
-					message: "Failed to update maintenance status for all monitors",
-					error: error.message,
-					service: SERVICE_NAME,
-					method: "getMaintenanceJob",
-					stack: error.stack,
-				});
-			}
-		};
-	};
 }
 
 export default SuperSimpleQueueHelper;

@@ -61,56 +61,6 @@ class MaintenanceWindowService {
 		const editedMaintenanceWindow = await this.db.maintenanceWindowModule.editMaintenanceWindowById({ id, body, teamId });
 		return editedMaintenanceWindow;
 	};
-
-	/**
-	 * Updates the isInMaintenance property for all monitors based on their maintenance windows
-	 * This method should be called periodically to keep maintenance status up to date
-	 */
-	updateAllMonitorsMaintenanceStatus = async () => {
-		try {
-			const monitors = await this.db.monitorModule.getAllMonitors();
-			const updatePromises = monitors.map(async (monitor) => {
-				const isInMaintenance = await this.isMonitorInMaintenanceWindow(monitor._id);
-				if (monitor.isInMaintenance !== isInMaintenance) {
-					await this.db.monitorModule.getMonitorByIdAndUpdate(monitor._id, { isInMaintenance });
-				}
-			});
-			await Promise.all(updatePromises);
-		} catch (error) {
-			console.error("Failed to update monitors maintenance status:", error);
-		}
-	};
-
-	/**
-	 * Checks if a monitor is currently in a maintenance window
-	 * Handles both one-time and repeating maintenance windows
-	 */
-	isMonitorInMaintenanceWindow = async (monitorId) => {
-		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId(monitorId);
-
-		return maintenanceWindows.some((window) => {
-			if (!window.active) return false;
-
-			const start = new Date(window.start);
-			const end = new Date(window.end);
-			const now = new Date();
-			const repeatInterval = window.repeat || 0;
-
-			// If start is < now and end > now, we're in maintenance
-			if (start <= now && end >= now) return true;
-
-			// If maintenance window was set in the past with a repeat,
-			// we need to advance start and end to see if we are in range
-			while (start < now && repeatInterval !== 0) {
-				start.setTime(start.getTime() + repeatInterval);
-				end.setTime(end.getTime() + repeatInterval);
-				if (start <= now && end >= now) {
-					return true;
-				}
-			}
-			return false;
-		});
-	};
 }
 
 export default MaintenanceWindowService;
