@@ -1,6 +1,7 @@
 import { Alert, AlertTitle, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 const MaintenanceBanner = ({ affectedMonitors }) => {
 	const theme = useTheme();
@@ -31,6 +32,12 @@ const MaintenanceBanner = ({ affectedMonitors }) => {
 			</Typography>
 		</Alert>
 	);
+};
+
+MaintenanceBanner.propTypes = {
+	affectedMonitors: PropTypes.arrayOf(PropTypes.shape({
+		name: PropTypes.string.isRequired,
+	})),
 };
 
 export default MaintenanceBanner;
