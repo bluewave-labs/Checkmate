@@ -12,16 +12,16 @@ const MaintenanceBanner = ({ affectedMonitors }) => {
 		return null;
 	}
 
-	const monitorNames = affectedMonitors.map(monitor => monitor.name).join(", ");
+	const monitorNames = affectedMonitors.map((monitor) => monitor.name).join(", ");
 
 	return (
-		<Alert 
-			severity="warning" 
-			sx={{ 
+		<Alert
+			severity="warning"
+			sx={{
 				mb: theme.spacing(10),
-				'& .MuiAlert-icon': {
-					fontSize: '1.5rem'
-				}
+				"& .MuiAlert-icon": {
+					fontSize: "1.5rem",
+				},
 			}}
 		>
 			<AlertTitle sx={{ fontWeight: 600, mb: theme.spacing(5) }}>
@@ -35,9 +35,11 @@ const MaintenanceBanner = ({ affectedMonitors }) => {
 };
 
 MaintenanceBanner.propTypes = {
-	affectedMonitors: PropTypes.arrayOf(PropTypes.shape({
-		name: PropTypes.string.isRequired,
-	})),
+	affectedMonitors: PropTypes.arrayOf(
+		PropTypes.shape({
+			name: PropTypes.string.isRequired,
+		})
+	),
 };
 
 export default MaintenanceBanner;

@@ -36,12 +36,12 @@ const PublicStatus = () => {
 	];
 
 	// Setup - Use consistent 800px width for both dashboard and public views
-	let sx = { 
+	let sx = {
 		maxWidth: 800,
-		margin: '0 auto',
-		paddingLeft: theme.spacing(20), 
+		margin: "0 auto",
+		paddingLeft: theme.spacing(20),
 		paddingRight: theme.spacing(20),
-		width: '100%'
+		width: "100%",
 	};
 	let link = undefined;
 	const isPublic = location.pathname.startsWith("/status/uptime/public");
@@ -49,11 +49,11 @@ const PublicStatus = () => {
 	if (isPublic && statusPage && statusPage.showAdminLoginLink === true) {
 		sx = {
 			maxWidth: 800,
-			margin: '0 auto',
+			margin: "0 auto",
 			paddingTop: theme.spacing(20),
 			paddingLeft: theme.spacing(20),
 			paddingRight: theme.spacing(20),
-			width: '100%'
+			width: "100%",
 		};
 		link = <AdminLink />;
 	}
@@ -152,7 +152,8 @@ const PublicStatus = () => {
 	}
 
 	// Filter monitors that are in maintenance
-	const monitorsInMaintenance = monitors?.filter(monitor => monitor.isMaintenance) || [];
+	const monitorsInMaintenance =
+		monitors?.filter((monitor) => monitor.isMaintenance) || [];
 
 	return (
 		<>
