@@ -4,15 +4,6 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 WORKDIR /app
 
-RUN apk add --no-cache \
-    python3 \
-    make g++  \
-    gcc \
-    libc-dev \
-    linux-headers \
-    libusb-dev \
-    eudev-dev
-
 COPY ./client/package*.json ./
 
 RUN npm install
