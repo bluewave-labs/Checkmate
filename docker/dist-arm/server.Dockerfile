@@ -1,22 +1,32 @@
-FROM node:24-slim AS frontend-build
+# ---------------------
+# Frontend build stage
+# ---------------------
+FROM --platform=$BUILDPLATFORM node:24-slim AS frontend-build
 
 WORKDIR /app/client
 
-COPY client/package.json ./
-RUN npm install
+COPY client/package*.json ./
+
+RUN npm ci
 
 COPY client ./
+
+RUN npm rebuild esbuild
+
 RUN npm run build
 
-
-FROM node:24-slim AS backend
+# ---------------------
+# Backend stage
+# ---------------------
+FROM --platform=$BUILDPLATFORM node:24-slim AS backend
 
 WORKDIR /app/server
 
-COPY server/package.json ./
-RUN npm install
+COPY server/package*.json ./
+RUN npm ci
 
 COPY server ./
+
 COPY --from=frontend-build /app/client/dist ./public
 
 RUN chmod +x ./scripts/inject-vars.sh
