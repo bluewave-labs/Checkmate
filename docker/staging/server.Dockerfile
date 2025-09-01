@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 
