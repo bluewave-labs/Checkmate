@@ -16,7 +16,7 @@ COPY server ./
 
 COPY --from=frontend-build /app/client/dist ./public
 
-RUN npm ci
+RUN npm ci --omit=optional
 
 RUN chmod +x ./scripts/inject-vars.sh
 
