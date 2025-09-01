@@ -62,8 +62,5 @@
 	},
 	"optionalDependencies": {
 		"@rollup/rollup-linux-arm64-musl": "4.41.0"
-	},
-	"overrides": {
-		"rollup": "^3.29.4"
 	}
 }
