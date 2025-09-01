@@ -26,7 +26,7 @@ class StatusPageController extends BaseController {
 				teamId,
 			});
 			return res.success({
-				msg: this.stringService.statusPageCreate,
+				msg: this.stringService.get("statusPageCreate"),
 				data: statusPage,
 			});
 		},
@@ -41,10 +41,10 @@ class StatusPageController extends BaseController {
 
 			const statusPage = await this.db.statusPageModule.updateStatusPage(req.body, req.file);
 			if (statusPage === null) {
-				throw this.errorService.createNotFoundError(this.stringService.statusPageNotFound);
+				throw this.errorService.createNotFoundError(this.stringService.get("statusPageNotFound"));
 			}
 			return res.success({
-				msg: this.stringService.statusPageUpdate,
+				msg: this.stringService.get("statusPageUpdate"),
 				data: statusPage,
 			});
 		},
@@ -56,7 +56,7 @@ class StatusPageController extends BaseController {
 		async (req, res) => {
 			const statusPage = await this.db.statusPageModule.getStatusPage();
 			return res.success({
-				msg: this.stringService.statusPageByUrl,
+				msg: this.stringService.get("statusPageByUrl"),
 				data: statusPage,
 			});
 		},
@@ -71,7 +71,7 @@ class StatusPageController extends BaseController {
 
 			const statusPage = await this.db.statusPageModule.getStatusPageByUrl(req.params.url);
 			return res.success({
-				msg: this.stringService.statusPageByUrl,
+				msg: this.stringService.get("statusPageByUrl"),
 				data: statusPage,
 			});
 		},
@@ -85,7 +85,7 @@ class StatusPageController extends BaseController {
 			const statusPages = await this.db.statusPageModule.getStatusPagesByTeamId(teamId);
 
 			return res.success({
-				msg: this.stringService.statusPageByTeamId,
+				msg: this.stringService.get("statusPageByTeamId"),
 				data: statusPages,
 			});
 		},
@@ -97,7 +97,7 @@ class StatusPageController extends BaseController {
 		async (req, res) => {
 			await this.db.statusPageModule.deleteStatusPage(req.params.url);
 			return res.success({
-				msg: this.stringService.statusPageDelete,
+				msg: this.stringService.get("statusPageDelete"),
 			});
 		},
 		SERVICE_NAME,

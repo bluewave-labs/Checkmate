@@ -94,7 +94,7 @@ class AuthController extends BaseController {
 			await registrationBodyValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.registerUser(req.body, req.file);
 			res.success({
-				msg: this.stringService.authCreateUser,
+				msg: this.stringService.get("authCreateUser"),
 				data: { user, token },
 			});
 		},
