@@ -41,6 +41,10 @@ const Avatar = ({ src, small, sx, onClick = () => {} }) => {
 				color: theme.palette.accent.contrastText,
 				backgroundColor: theme.palette.accent.main, // Same BG color as checkmate BG in sidebar
 				display: "inline-flex",
+				// Ensure images scale properly when server no longer resizes to 64x64
+				"& img": {
+					objectFit: "cover",
+				},
 				/* 
 				TODO not sure what this is for*/
 				"&::before": {
