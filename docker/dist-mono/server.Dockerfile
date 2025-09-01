@@ -2,7 +2,7 @@ FROM node:20-slim AS frontend-build
 
 WORKDIR /app/client
 
-COPY client/package*.json ./
+COPY client/package.json ./
 RUN npm install
 
 COPY client ./
