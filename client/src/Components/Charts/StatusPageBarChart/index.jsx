@@ -22,11 +22,11 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 
 	return (
 		<Box
+            width={width}
 			position="relative"
 			height={height}
 			backgroundColor={backgroundColor}
 			sx={{
-				width: width,
 				borderRadius: borderRadius || theme.spacing(1.5),
 			}}
 		>
