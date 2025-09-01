@@ -77,6 +77,7 @@ const UptimeMonitors = () => {
 	const [selectedStatus, setSelectedStatus] = useState(undefined);
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
 	const [toFilterActive, setToFilterActive] = useState(undefined);
+	const [hasInitialized, setHasInitialized] = useState(false);
 
 	// Utils
 	const theme = useTheme();
@@ -152,6 +153,22 @@ const UptimeMonitors = () => {
 		}
 	}, [isSearching]);
 
+	// Track initialization to prevent skeleton flash
+	useEffect(() => {
+		if (
+			!monitorsWithSummaryIsLoading &&
+			!monitorsWithChecksIsLoading &&
+			(monitorsSummary !== undefined || monitorsWithChecks !== undefined)
+		) {
+			setHasInitialized(true);
+		}
+	}, [
+		monitorsWithSummaryIsLoading,
+		monitorsWithChecksIsLoading,
+		monitorsSummary,
+		monitorsWithChecks,
+	]);
+
 	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
 	if (networkError) {
 		return (
@@ -167,11 +184,13 @@ const UptimeMonitors = () => {
 			</GenericFallback>
 		);
 	}
-	if (
-		!isLoading &&
+	// Show empty state when no monitors exist
+	const hasNoMonitors =
+		hasInitialized &&
 		(monitorsSummary?.totalMonitors === 0 ||
-			typeof monitorsSummary?.totalMonitors === "undefined")
-	) {
+			typeof monitorsSummary?.totalMonitors === "undefined");
+
+	if (hasNoMonitors) {
 		return (
 			<Fallback
 				type="uptimeMonitor"
@@ -181,6 +200,11 @@ const UptimeMonitors = () => {
 				isAdmin={isAdmin}
 			/>
 		);
+	}
+
+	// Don't render anything until we've initialized to prevent skeleton flash
+	if (!hasInitialized) {
+		return null;
 	}
 	return (
 		<Stack
