@@ -1,4 +1,4 @@
-FROM node:20-alpine AS frontend-build
+FROM node:20-slim AS frontend-build
 
 WORKDIR /app/client
 
@@ -8,7 +8,7 @@ RUN npm ci
 COPY client ./
 RUN npm run build
 
-FROM node:20-alpine AS backend
+FROM node:20-slim AS backend
 
 WORKDIR /app/server
 
