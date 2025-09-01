@@ -23,6 +23,7 @@ FROM --platform=$BUILDPLATFORM node:24-slim AS backend
 WORKDIR /app/server
 
 COPY server/package*.json ./
+
 RUN npm ci
 
 COPY server ./
