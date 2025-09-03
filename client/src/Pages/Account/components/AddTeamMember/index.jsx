@@ -12,6 +12,7 @@ import useAddTeamMember from "./hooks/useAddTeamMember";
 import usePasswordFeedback from "../../../Auth/hooks/usePasswordFeedback";
 import { PasswordEndAdornment } from "../../../../Components/Inputs/TextInput/Adornments";
 import PropTypes from "prop-types";
+
 const INITIAL_FORM_STATE = {
 	firstName: "",
 	lastName: "",
