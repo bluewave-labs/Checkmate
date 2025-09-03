@@ -7,7 +7,7 @@ on:
       languages:
         description: "Languages to synchronize (comma separated, e.g.: tr,en,es)"
         required: false
-        default: "ar,zh-tw,cs,en,fi,fr,de,pt-br,ru,es,tr,ja"
+        default: "ar,zh-tw,cs,en,fi,fr,de,pt-br,ru,es,tr,ja,zh-cn"
       format:
         description: "Export format (key_value_json or json)"
         required: false

@@ -22,8 +22,8 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 
 	return (
 		<Box
+            width={width}
 			position="relative"
-			width={width}
 			height={height}
 			backgroundColor={backgroundColor}
 			sx={{
@@ -36,7 +36,7 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 };
 
 Bar.propTypes = {
-	width: PropTypes.string.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 	height: PropTypes.string.isRequired,
 	backgroundColor: PropTypes.string.isRequired,
 	borderRadius: PropTypes.string,
