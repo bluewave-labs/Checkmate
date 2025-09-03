@@ -253,23 +253,75 @@ class NetworkService {
 				handleError: true, // Enable error handling
 			});
 
-			const containers = await docker.listContainers({ all: true });
-			const containerExists = containers.some((c) => c.Id.startsWith(monitor.url));
-			if (!containerExists) {
-				throw new Error(this.stringService.dockerNotFound);
-			}
-
-			const container = docker.getContainer(monitor.url);
-			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
-
 			const dockerResponse = {
 				monitorId: monitor._id,
 				type: monitor.type,
-				responseTime,
-				status: response?.State?.Status === "running" ? true : false,
-				code: 200,
-				message: "Docker container status fetched successfully",
 			};
+
+			const containers = await docker.listContainers({ all: true });
+
+			// Normalize input: strip leading slashes and convert to lowercase for comparison
+			const normalizedInput = monitor.url.replace(/^\/+/, "").toLowerCase();
+
+			// Priority-based matching to avoid ambiguity:
+			// 1. Exact full ID match (64-char)
+			let exactIdMatch = containers.find((c) => c.Id.toLowerCase() === normalizedInput);
+
+			// 2. Exact container name match (case-insensitive)
+			let exactNameMatch = containers.find((c) =>
+				c.Names.some((name) => {
+					const cleanName = name.replace(/^\/+/, "").toLowerCase();
+					return cleanName === normalizedInput;
+				})
+			);
+
+			// 3. Partial ID match (fallback for backwards compatibility)
+			let partialIdMatch = containers.find((c) => c.Id.toLowerCase().startsWith(normalizedInput));
+
+			// Select container based on priority
+			let targetContainer = exactIdMatch || exactNameMatch || partialIdMatch;
+
+			// Return negative response if no container
+			if (!targetContainer) {
+				this.logger.warn({
+					message: `No container found for "${monitor.url}".`,
+					service: this.SERVICE_NAME,
+					method: "requestDocker",
+					details: { url: monitor.url },
+				});
+
+				dockerResponse.code = 404;
+				dockerResponse.status = false;
+				dockerResponse.message = this.stringService.dockerNotFound;
+				return dockerResponse;
+			}
+
+			// Return negative response if ambiguous matches exist
+			const matchTypes = [];
+			if (exactIdMatch) matchTypes.push("exact ID");
+			if (exactNameMatch) matchTypes.push("exact name");
+			if (partialIdMatch && !exactIdMatch) matchTypes.push("partial ID");
+
+			if (matchTypes.length > 1) {
+				this.logger.warn({
+					message: `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`,
+					service: this.SERVICE_NAME,
+					method: "requestDocker",
+					details: { url: monitor.url },
+				});
+				dockerResponse.status = 404;
+				dockerResponse.status = false;
+				dockerResponse.message = `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`;
+				return dockerResponse;
+			}
+
+			const container = docker.getContainer(targetContainer.Id);
+			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
+
+			dockerResponse.responseTime = responseTime;
+			dockerResponse.status = response?.State?.Status === "running" ? true : false;
+			dockerResponse.code = 200;
+			dockerResponse.message = "Docker container status fetched successfully";
 
 			if (error) {
 				dockerResponse.status = false;

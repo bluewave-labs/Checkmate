@@ -251,7 +251,7 @@
 	"edit": "Edit",
 	"createA": "Create a",
 	"remove": "Remove",
-	"maintenanceWindowDescription": "Your pings won't be sent during this time frame",
+	"maintenanceWindowDescription": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations.",
 	"startTime": "Start time",
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"monitorsToApply": "Monitors to apply maintenance window to",
@@ -361,6 +361,7 @@
 	},
 	"teamPanel": {
 		"addTeamMember": {
+			"addMemberMenu": "Add Team Member",
 			"title": "Register new team member",
 			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
 			"addButton": "Add Member"
@@ -407,6 +408,11 @@
 							"errors": {
 								"empty": "To continue, please enter an email address",
 								"invalid": "Please recheck validity of entered email address"
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": "Role is required"
 							}
 						}
 					}
@@ -479,7 +485,7 @@
 	"uptimeGeneralInstructions": {
 		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
-		"docker": "Enter the Docker ID of your container. Docker IDs must be the full 64 char Docker ID. You can run docker inspect <short_id> to get the full container ID.",
+		"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
 	},
@@ -779,6 +785,7 @@
 			"idHeader": "Monitor ID",
 			"urlHeader": "URL",
 			"typeHeader": "Type",
+			"intervalHeader": "Interval",
 			"activeHeader": "Active",
 			"lockedAtHeader": "Locked at",
 			"runCountHeader": "Run count",
@@ -1053,9 +1060,9 @@
 	},
 	"monitorType": {
 		"docker": {
-			"label": "Container ID",
+			"label": "Container Name/ID",
 			"namePlaceholder": "My Container",
-			"placeholder": "abcd1234"
+			"placeholder": "my-app or abcd1234"
 		},
 		"http": {
 			"label": "URL to monitor",

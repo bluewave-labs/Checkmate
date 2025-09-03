@@ -27,7 +27,7 @@ const AddMemberMenu = ({ handleInviteOpen, handleIsRegisterOpen }) => {
 				endIcon={<ArrowDropDownIcon sx={{ color: theme.palette.secondary.light }} />}
 				onClick={handleClick}
 			>
-				Add Team Member
+				{t("teamPanel.addTeamMember.addMemberMenu")}
 			</Button>
 			<Menu
 				anchorEl={anchorEl}

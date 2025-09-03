@@ -2,14 +2,13 @@ import { Button, Stack } from "@mui/material";
 import { GenericDialog } from "../../../../Components/Dialog/genericDialog";
 import TextInput from "../../../../Components/Inputs/TextInput";
 import Select from "../../../../Components/Inputs/Select";
-import { newOrChangedCredentials } from "../../../../Validation/validation";
 import { useGetInviteToken } from "../../../../Hooks/inviteHooks";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 import { useState } from "react";
-import { networkService } from "../../../../main";
 import PasswordTooltip from "../../../Auth/components/PasswordTooltip";
+import useAddTeamMember from "./hooks/useAddTeamMember";
 import usePasswordFeedback from "../../../Auth/hooks/usePasswordFeedback";
 import { PasswordEndAdornment } from "../../../../Components/Inputs/TextInput/Adornments";
 import PropTypes from "prop-types";
@@ -26,16 +25,19 @@ const INITIAL_ROLE_STATE = ["user"];
 const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const { errors, setErrors, clearErrors, validateFields, validateForm } =
+		useAddTeamMember();
 	const { feedback, handlePasswordFeedback } = usePasswordFeedback();
-	const [getInviteToken, clearToken] = useGetInviteToken();
+	const [getInviteToken, clearToken, isLoading, error, token, addTeamMember] =
+		useGetInviteToken();
 	const [form, setForm] = useState(INITIAL_FORM_STATE);
 	const [role, setRole] = useState(INITIAL_ROLE_STATE);
-	const [errors, setErrors] = useState({});
+	const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
 	const closeAddMemberModal = () => {
 		handleIsRegisterOpen(false);
 		setForm(INITIAL_FORM_STATE);
 		setRole(INITIAL_ROLE_STATE);
-		setErrors({});
+		clearErrors();
 		clearToken();
 	};
 
@@ -43,17 +45,7 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 		let { name, value } = e.target;
 		if (name === "email") value = value.toLowerCase();
 		const updatedForm = { ...form, [name]: value };
-
-		const { error } = newOrChangedCredentials.validate(
-			{ [name]: value },
-			{ abortEarly: false, context: { password: form.password } }
-		);
-
-		setErrors((prev) => ({
-			...prev,
-			[name]: error?.details?.[0]?.message || "",
-		}));
-
+		validateFields(name, value, updatedForm);
 		setForm(updatedForm);
 
 		if (name === "password" || name === "confirm") {
@@ -63,42 +55,23 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 
 	const onsubmitAddMember = async (event) => {
 		event.preventDefault();
-
-		const { error } = newOrChangedCredentials.validate(form, {
-			abortEarly: false,
-			context: { password: form.password },
-		});
-		if (error) {
-			const formErrors = {};
-			for (const err of error.details) {
-				formErrors[err.path[0]] = err.message;
-			}
-			setErrors(formErrors);
-			return;
-		}
-
-		const token = await getInviteToken({ email: form.email, role: role });
-
-		const toSubmit = {
-			...form,
-			inviteToken: token,
-		};
-		delete toSubmit.confirm;
-
+		if (!validateForm(form, role)) return;
 		try {
-			await networkService.registerUser(toSubmit);
-
+			setIsLoadingSubmit(true);
+			await addTeamMember(form, role);
 			createToast({
 				body: t("teamPanel.registerToast.success"),
 			});
-			closeAddMemberModal();
 			onMemberAdded();
+			closeAddMemberModal();
 		} catch (error) {
 			const errorMsg = error.response?.data?.msg || error.message || "unknownError";
 			createToast({
 				type: "error",
 				body: t(errorMsg),
 			});
+		} finally {
+			setIsLoadingSubmit(false);
 		}
 	};
 	const tErr = (key) => (key ? t([`teamPanel.registerTeamMember.${key}`, key]) : "");
@@ -172,7 +145,6 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 				<PasswordTooltip
 					feedback={feedback}
 					form={form}
-					offset={[0, 45]}
 				>
 					<TextInput
 						type="password"
@@ -214,6 +186,7 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 						variant="contained"
 						color="error"
 						onClick={closeAddMemberModal}
+						disabled={isLoadingSubmit}
 					>
 						{t("teamPanel.cancel")}
 					</Button>
@@ -221,6 +194,7 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 						variant="contained"
 						color="accent"
 						onClick={onsubmitAddMember}
+						disabled={isLoadingSubmit}
 					>
 						{t("teamPanel.addTeamMember.addButton")}
 					</Button>

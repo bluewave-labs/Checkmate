@@ -26,7 +26,7 @@
 		"dayjs": "1.11.13",
 		"flag-icons": "7.3.2",
 		"html2canvas": "^1.4.1",
-		"i18next": "^24.2.2",
+		"i18next": "25.4.2",
 		"joi": "17.13.3",
 		"mui-color-input": "^6.0.0",
 		"react": "18.3.1",
@@ -59,8 +59,5 @@
 		"eslint-plugin-react-refresh": "^0.4.6",
 		"prettier": "^3.3.3",
 		"vite": "6.3.5"
-	},
-	"optionalDependencies": {
-		"@rollup/rollup-linux-arm64-musl": "4.41.0"
 	}
 }

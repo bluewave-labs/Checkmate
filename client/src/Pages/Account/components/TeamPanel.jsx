@@ -67,9 +67,9 @@ const TeamPanel = () => {
 			render: (row) => row.role,
 		},
 	];
-	const [refreshTrigger, setRefreshTrigger] = useState(0);
+	const [refreshTrigger, setRefreshTrigger] = useState(false);
 	const refreshTeamList = () => {
-		setRefreshTrigger((prev) => prev + 1);
+		setRefreshTrigger((prev) => !prev);
 	};
 	useEffect(() => {
 		const fetchTeam = async () => {
