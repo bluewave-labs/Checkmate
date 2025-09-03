@@ -360,6 +360,12 @@
 		"demoUser": "Demo user"
 	},
 	"teamPanel": {
+		"addTeamMember": {
+			"addMemberMenu": "Add Team Member",
+			"title": "Register new team member",
+			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
+			"addButton": "Add Member"
+		},
 		"teamMembers": "Team members",
 		"filter": {
 			"all": "All",
@@ -375,6 +381,45 @@
 		"noMembers": "There are no team members with this role",
 		"getToken": "Get token",
 		"emailToken": "E-mail token",
+		"register": "Register a team member",
+		"registerToast": {
+			"success": "User created, share credentials with the member securely.",
+			"dbUserExists": "User already exists.",
+			"unknownError": "Unknown error occurred."
+		},
+		"registerTeamMember": {
+			"title": "Register team member",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "Please enter a name",
+								"pattern": "Name must contain only letters, spaces, apostrophes, or hyphens"
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "Please enter a surname",
+								"pattern": "Surname must contain only letters, spaces, apostrophes, or hyphens"
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "To continue, please enter an email address",
+								"invalid": "Please recheck validity of entered email address"
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": "Role is required"
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": "Role",
 		"table": {
 			"name": "Name",
 			"email": "Email",

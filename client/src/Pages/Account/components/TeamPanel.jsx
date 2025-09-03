@@ -9,10 +9,12 @@ import { networkService } from "../../../main";
 import { createToast } from "../../../Utils/toastUtils";
 import Select from "../../../Components/Inputs/Select";
 import { GenericDialog } from "../../../Components/Dialog/genericDialog";
+import AddTeamMember from "../components/AddTeamMember";
 import DataTable from "../../../Components/Table";
 import { useGetInviteToken } from "../../../Hooks/inviteHooks";
 import { useNavigate } from "react-router-dom";
 import { useIsSuperAdmin } from "../../../Hooks/useIsAdmin";
+import AddMemberMenu from "./AddMemberMenu";
 /**
  * TeamPanel component manages the organization and team members,
  * providing functionalities like renaming the organization, managing team members,
@@ -65,7 +67,10 @@ const TeamPanel = () => {
 			render: (row) => row.role,
 		},
 	];
-
+	const [refreshTrigger, setRefreshTrigger] = useState(false);
+	const refreshTeamList = () => {
+		setRefreshTrigger((prev) => !prev);
+	};
 	useEffect(() => {
 		const fetchTeam = async () => {
 			try {
@@ -79,7 +84,7 @@ const TeamPanel = () => {
 		};
 
 		fetchTeam();
-	}, []);
+	}, [refreshTrigger]);
 
 	useEffect(() => {
 		const ROLE_MAP = {
@@ -109,6 +114,10 @@ const TeamPanel = () => {
 		setIsDisabled(Object.keys(errors).length !== 0 || toInvite.email === "");
 	}, [errors, toInvite.email]);
 	const [isOpen, setIsOpen] = useState(false);
+	const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+	const handleIsRegisterOpen = (open) => {
+		setIsRegisterOpen(open);
+	};
 
 	const handleChange = (event) => {
 		const { value } = event.target;
@@ -138,7 +147,6 @@ const TeamPanel = () => {
 	const handleGetToken = async () => {
 		await getInviteToken({ email: toInvite.email, role: toInvite.role });
 	};
-
 	const handleInviteMember = async () => {
 		if (!toInvite.email) {
 			setErrors((prev) => ({ ...prev, email: "Email is required." }));
@@ -239,13 +247,16 @@ const TeamPanel = () => {
 							</Button>
 						</ButtonGroup>
 					</Stack>
-					<Button
-						variant="contained"
-						color="accent"
-						onClick={() => setIsOpen(true)}
-					>
-						{t("teamPanel.inviteTeamMember")}
-					</Button>
+
+					<AddTeamMember
+						handleIsRegisterOpen={handleIsRegisterOpen}
+						isRegisterOpen={isRegisterOpen}
+						onMemberAdded={refreshTeamList}
+					/>
+					<AddMemberMenu
+						handleInviteOpen={() => setIsOpen(true)}
+						handleIsRegisterOpen={handleIsRegisterOpen}
+					/>
 				</Stack>
 
 				<DataTable
@@ -264,7 +275,6 @@ const TeamPanel = () => {
 					}}
 				/>
 			</Stack>
-
 			<GenericDialog
 				title={t("teamPanel.inviteNewTeamMember")}
 				description={t("teamPanel.inviteDescription")}
