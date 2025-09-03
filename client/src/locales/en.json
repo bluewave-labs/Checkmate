@@ -361,6 +361,7 @@
 	},
 	"teamPanel": {
 		"addTeamMember": {
+			"addMemberMenu": "Add Team Member",
 			"title": "Register new team member",
 			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
 			"addButton": "Add Member"
@@ -407,6 +408,11 @@
 							"errors": {
 								"empty": "To continue, please enter an email address",
 								"invalid": "Please recheck validity of entered email address"
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": "Role is required"
 							}
 						}
 					}

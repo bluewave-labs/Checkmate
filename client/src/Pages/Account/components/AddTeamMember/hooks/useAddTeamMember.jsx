@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { newOrChangedCredentials } from "../../../../../Validation/validation";
+import { useTranslation } from "react-i18next";
 const useAddTeamMember = () => {
+	const { t } = useTranslation();
 	const [errors, setErrors] = useState({});
 
 	const clearErrors = () => setErrors({});
@@ -29,7 +31,9 @@ const useAddTeamMember = () => {
 			}
 		}
 		if (!role[0] || role.length === 0) {
-			formErrors.role = "Role is required";
+			formErrors.role = t(
+				"teamPanel.registerTeamMember.auth.common.inputs.role.errors.empty"
+			);
 		}
 		if (Object.keys(formErrors).length > 0) {
 			setErrors(formErrors);

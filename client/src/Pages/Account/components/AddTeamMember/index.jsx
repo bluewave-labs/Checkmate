@@ -56,8 +56,8 @@ const AddTeamMember = ({ handleIsRegisterOpen, isRegisterOpen, onMemberAdded }) 
 	const onsubmitAddMember = async (event) => {
 		event.preventDefault();
 		if (!validateForm(form, role)) return;
-		setIsLoadingSubmit(true);
 		try {
+			setIsLoadingSubmit(true);
 			await addTeamMember(form, role);
 			createToast({
 				body: t("teamPanel.registerToast.success"),
