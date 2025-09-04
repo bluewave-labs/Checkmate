@@ -2,7 +2,7 @@ import { useId } from "react";
 import PropTypes from "prop-types";
 import { Modal, Stack, Typography } from "@mui/material";
 
-const GenericDialog = ({ title, description, open, onClose, theme, children }) => {
+const GenericDialog = ({ title, description, open, onClose, theme, children, width }) => {
 	const titleId = useId();
 	const descriptionId = useId();
 	const ariaDescribedBy = description?.length > 0 ? descriptionId : "";
@@ -16,6 +16,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 		>
 			<Stack
 				gap={theme.spacing(2)}
+				width={width}
 				sx={{
 					position: "absolute",
 					top: "50%",
@@ -39,6 +40,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 					fontSize={16}
 					color={theme.palette.primary.contrastText}
 					fontWeight={600}
+					marginBottom={theme.spacing(4)}
 				>
 					{title}
 				</Typography>
@@ -46,6 +48,7 @@ const GenericDialog = ({ title, description, open, onClose, theme, children }) =
 					<Typography
 						id={descriptionId}
 						color={theme.palette.primary.contrastTextTertiary}
+						marginBottom={theme.spacing(4)}
 					>
 						{description}
 					</Typography>
@@ -64,6 +67,7 @@ GenericDialog.propTypes = {
 	theme: PropTypes.object.isRequired,
 	children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
 		.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.object]),
 };
 
 export { GenericDialog };
