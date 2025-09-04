@@ -1,7 +1,7 @@
 # ---------------------
 # Frontend build stage
 # ---------------------
-FROM --platform=$BUILDPLATFORM node:24-slim AS frontend-build
+FROM --platform=$TARGETPLATFORM node:24-slim AS frontend-build
 
 WORKDIR /app/client
 
@@ -18,7 +18,7 @@ RUN npm run build
 # ---------------------
 # Backend stage
 # ---------------------
-FROM --platform=$BUILDPLATFORM node:24-slim AS backend
+FROM --platform=$TARGETPLATFORM node:24-slim AS backend
 
 WORKDIR /app/server
 
