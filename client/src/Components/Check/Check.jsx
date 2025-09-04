@@ -65,7 +65,7 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 };
 
 Check.propTypes = {
-	text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+	text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 	noHighlightText: PropTypes.string,
 	variant: PropTypes.oneOf(["info", "error", "success"]),
 	outlined: PropTypes.bool,

@@ -16,7 +16,7 @@ jobs:
 
       - name: Install client dependencies
         working-directory: client
-        run: npm ci
+        run: npm install
 
       - name: Check client formatting
         working-directory: client
@@ -34,7 +34,7 @@ jobs:
 
       - name: Install server dependencies
         working-directory: server
-        run: npm ci
+        run: npm install
 
       - name: Check server formatting
         working-directory: server
