@@ -4,11 +4,10 @@ import Typography from "@mui/material/Typography";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import Button from "@mui/material/Button";
 import DataTable from "../../Components/Table";
-import Fallback from "../../Components/Fallback";
 import ActionMenu from "./components/ActionMenu";
+import PageStateWrapper from "../../Components/PageStateWrapper";
 
 // Utils
-import { useIsAdmin } from "../../Hooks/useIsAdmin";
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +22,6 @@ const Notifications = () => {
 	const theme = useTheme();
 	const BREADCRUMBS = [{ name: "notifications", path: "/notifications" }];
 	const [updateTrigger, setUpdateTrigger] = useState(false);
-	const isAdmin = useIsAdmin();
 	const [notifications, isLoading, error] = useGetNotificationsByTeamId(updateTrigger);
 	const [deleteNotification, isDeleting, deleteError] = useDeleteNotification();
 	const { t } = useTranslation();
@@ -76,49 +74,47 @@ const Notifications = () => {
 		},
 	];
 
-	if (notifications?.length === 0) {
-		return (
-			<Fallback
-				type="notifications"
-				title={t("notifications.fallback.title")}
-				checks={t("notifications.fallback.checks", { returnObjects: true })}
-				link="/notifications/create"
-				isAdmin={isAdmin}
-			/>
-		);
-	}
-
 	return (
-		<Stack gap={theme.spacing(10)}>
-			<Breadcrumbs list={BREADCRUMBS} />
-			<Stack
-				direction="row"
-				justifyContent="flex-end"
+		<>
+			<PageStateWrapper
+				networkError={error}
+				isLoading={isLoading}
+				items={notifications}
+				type="notifications"
+				fallbackLink="/notifications/create"
 			>
-				<Button
-					variant="contained"
-					color="accent"
-					onClick={() => navigate("/notifications/create")}
-				>
-					{t("notifications.createButton")}
-				</Button>
-			</Stack>
-			<Typography variant="h1">{t("notifications.createTitle")}</Typography>
-			<DataTable
-				config={{
-					onRowClick: (row) => navigate(`/notifications/${row._id}`),
-					rowSX: {
-						cursor: "pointer",
-						"&:hover td": {
-							backgroundColor: theme.palette.tertiary.main,
-							transition: "background-color .3s ease",
-						},
-					},
-				}}
-				headers={headers}
-				data={notifications}
-			/>
-		</Stack>
+				<Stack gap={theme.spacing(10)}>
+					<Breadcrumbs list={BREADCRUMBS} />
+					<Stack
+						direction="row"
+						justifyContent="flex-end"
+					>
+						<Button
+							variant="contained"
+							color="accent"
+							onClick={() => navigate("/notifications/create")}
+						>
+							{t("notifications.createButton")}
+						</Button>
+					</Stack>
+					<Typography variant="h1">{t("notifications.createTitle")}</Typography>
+					<DataTable
+						config={{
+							onRowClick: (row) => navigate(`/notifications/${row._id}`),
+							rowSX: {
+								cursor: "pointer",
+								"&:hover td": {
+									backgroundColor: theme.palette.tertiary.main,
+									transition: "background-color .3s ease",
+								},
+							},
+						}}
+						headers={headers}
+						data={notifications}
+					/>
+				</Stack>
+			</PageStateWrapper>
+		</>
 	);
 };
 

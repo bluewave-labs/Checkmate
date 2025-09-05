@@ -10,16 +10,14 @@ import StatusBoxes from "./Components/StatusBoxes";
 import UptimeDataTable from "./Components/UptimeDataTable";
 import Pagination from "../../../Components/Table/TablePagination";
 import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
-import Fallback from "../../../Components/Fallback";
-import GenericFallback from "../../../Components/GenericFallback";
 import SearchComponent from "./Components/SearchComponent";
 import Filter from "./Components/Filter";
+import PageStateWrapper from "../../../Components/PageStateWrapper";
 
 import MonitorCountHeader from "../../../Components/MonitorCountHeader";
 
 // MUI Components
-import { Stack, Box, Button, Typography } from "@mui/material";
-
+import { Stack, Box, Button } from "@mui/material";
 // Utils
 import { useState, useCallback, useEffect } from "react";
 import { useIsAdmin } from "../../../Hooks/useIsAdmin";
@@ -153,93 +151,75 @@ const UptimeMonitors = () => {
 	}, [isSearching]);
 
 	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
-	if (networkError) {
-		return (
-			<GenericFallback>
-				<Typography
-					variant="h1"
-					marginY={theme.spacing(4)}
-					color={theme.palette.primary.contrastTextTertiary}
-				>
-					{t("common.toasts.networkError")}
-				</Typography>
-				<Typography>{t("common.toasts.checkConnection")}</Typography>
-			</GenericFallback>
-		);
-	}
-	if (
-		!isLoading &&
-		(monitorsSummary?.totalMonitors === 0 ||
-			typeof monitorsSummary?.totalMonitors === "undefined")
-	) {
-		return (
-			<Fallback
-				type="uptimeMonitor"
-				title={t("uptimeMonitor.fallback.title")}
-				checks={t("uptimeMonitor.fallback.checks", { returnObjects: true })}
-				link="/uptime/create"
-				isAdmin={isAdmin}
-			/>
-		);
-	}
-	return (
-		<Stack
-			className="monitors"
-			gap={theme.spacing(10)}
-		>
-			<Breadcrumbs list={BREADCRUMBS} />
-			<CreateMonitorHeader
-				isAdmin={isAdmin}
-				isLoading={isLoading}
-				path="/uptime/create"
-				bulkPath="/uptime/bulk-import"
-			/>
-			<Greeting type="uptime" />
-			<StatusBoxes
-				monitorsSummary={monitorsSummary}
-				shouldRender={!monitorsWithSummaryIsLoading}
-			/>
 
-			<Stack direction={"row"}>
-				<MonitorCountHeader
-					isLoading={monitorsWithSummaryIsLoading}
-					monitorCount={monitorsSummary?.totalMonitors}
-				/>
-				<Filter
-					selectedTypes={selectedTypes}
-					setSelectedTypes={setSelectedTypes}
-					selectedStatus={selectedStatus}
-					setSelectedStatus={setSelectedStatus}
-					selectedState={selectedState}
-					setSelectedState={setSelectedState}
-					setToFilterStatus={setToFilterStatus}
-					setToFilterActive={setToFilterActive}
-					handleReset={handleReset}
-				/>
-				<SearchComponent
-					monitors={monitors}
-					onSearchChange={setSearch}
-					setIsSearching={setIsSearching}
-				/>
-			</Stack>
-			<UptimeDataTable
-				isAdmin={isAdmin}
-				isSearching={isSearching}
-				filteredMonitors={monitorsWithChecks}
-				sort={sort}
-				setSort={setSort}
-				monitorsAreLoading={monitorsWithChecksIsLoading}
-				triggerUpdate={triggerUpdate}
-			/>
-			<Pagination
-				itemCount={monitorsWithChecksCount}
-				paginationLabel="monitors"
-				page={page}
-				rowsPerPage={rowsPerPage}
-				handleChangePage={handleChangePage}
-				handleChangeRowsPerPage={handleChangeRowsPerPage}
-			/>
-		</Stack>
+	return (
+		<>
+			<PageStateWrapper
+				networkError={networkError}
+				isLoading={isLoading}
+				items={monitors}
+				type="uptimeMonitor"
+				fallbackLink="/uptime/create"
+			>
+				<Stack
+					className="monitors"
+					gap={theme.spacing(10)}
+				>
+					<Breadcrumbs list={BREADCRUMBS} />
+					<CreateMonitorHeader
+						isAdmin={isAdmin}
+						isLoading={isLoading}
+						path="/uptime/create"
+						bulkPath="/uptime/bulk-import"
+					/>
+					<Greeting type="uptime" />
+					<StatusBoxes
+						monitorsSummary={monitorsSummary}
+						shouldRender={!monitorsWithSummaryIsLoading}
+					/>
+
+					<Stack direction={"row"}>
+						<MonitorCountHeader
+							isLoading={monitorsWithSummaryIsLoading}
+							monitorCount={monitorsSummary?.totalMonitors}
+						/>
+						<Filter
+							selectedTypes={selectedTypes}
+							setSelectedTypes={setSelectedTypes}
+							selectedStatus={selectedStatus}
+							setSelectedStatus={setSelectedStatus}
+							selectedState={selectedState}
+							setSelectedState={setSelectedState}
+							setToFilterStatus={setToFilterStatus}
+							setToFilterActive={setToFilterActive}
+							handleReset={handleReset}
+						/>
+						<SearchComponent
+							monitors={monitors}
+							onSearchChange={setSearch}
+							setIsSearching={setIsSearching}
+						/>
+					</Stack>
+					<UptimeDataTable
+						isAdmin={isAdmin}
+						isSearching={isSearching}
+						filteredMonitors={monitorsWithChecks}
+						sort={sort}
+						setSort={setSort}
+						monitorsAreLoading={monitorsWithChecksIsLoading}
+						triggerUpdate={triggerUpdate}
+					/>
+					<Pagination
+						itemCount={monitorsWithChecksCount}
+						paginationLabel="monitors"
+						page={page}
+						rowsPerPage={rowsPerPage}
+						handleChangePage={handleChangePage}
+						handleChangeRowsPerPage={handleChangeRowsPerPage}
+					/>
+				</Stack>
+			</PageStateWrapper>
+		</>
 	);
 };
 
