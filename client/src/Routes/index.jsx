@@ -223,7 +223,7 @@ const Routes = () => {
 			<Route
 				exact
 				path="/register/:token"
-				element={<AuthRegister />}
+				element={<AuthRegister superAdminExists={true} />}
 			/>
 
 			<Route

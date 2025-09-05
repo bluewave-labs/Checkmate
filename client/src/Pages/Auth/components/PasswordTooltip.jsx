@@ -93,14 +93,14 @@ const PasswordTooltip = ({ feedback, form, children }) => {
 				},
 			}}
 		>
-			{children}
+			<span style={{ display: "inline-block", width: "100%" }}>{children}</span>
 		</Tooltip>
 	);
 };
 
 PasswordTooltip.propTypes = {
 	feedback: PropTypes.shape({
-		length: PropTypes.string.isRequired,
+		length: PropTypes.string,
 		special: PropTypes.string,
 		number: PropTypes.string,
 		uppercase: PropTypes.string,

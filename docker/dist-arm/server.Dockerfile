@@ -1,30 +1,30 @@
 # ---------------------
 # Frontend build stage
 # ---------------------
-FROM --platform=$BUILDPLATFORM node:24-slim AS frontend-build
+FROM node:24-slim AS frontend-build
 
 WORKDIR /app/client
 
-COPY client/package*.json ./
+COPY client/package.json ./
 
-RUN npm ci
+RUN npm install
+
+RUN npm install esbuild@0.25.5 --build-from-source
 
 COPY client ./
-
-RUN npm rebuild esbuild
 
 RUN npm run build
 
 # ---------------------
 # Backend stage
 # ---------------------
-FROM --platform=$BUILDPLATFORM node:24-slim AS backend
+FROM node:24-slim AS backend
 
 WORKDIR /app/server
 
-COPY server/package*.json ./
+COPY server/package.json ./
 
-RUN npm ci
+RUN npm install
 
 COPY server ./
 

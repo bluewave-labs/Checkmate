@@ -2,6 +2,7 @@ services:
   server:
     image: ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:latest
     restart: always
+    pull_policy: always
     ports:
       - "52345:52345"
     environment:
@@ -16,7 +17,7 @@ services:
   mongodb:
     image: mongo:4.4.18
     restart: always
-    command: ["mongod", "--quiet", --bind_ip_all"]
+    command: ["mongod", "--quiet", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
