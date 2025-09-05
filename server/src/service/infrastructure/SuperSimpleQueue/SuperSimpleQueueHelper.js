@@ -104,7 +104,24 @@ class SuperSimpleQueueHelper {
 			}
 			return acc;
 		}, false);
+
+		// Update monitor's isInMaintenance property
+		await this.updateMonitorMaintenanceStatus(monitorId, maintenanceWindowIsActive);
+
 		return maintenanceWindowIsActive;
+	}
+
+	async updateMonitorMaintenanceStatus(monitorId, isInMaintenance) {
+		try {
+			await this.db.monitorModule.getMonitorByIdAndUpdate(monitorId, { isInMaintenance });
+		} catch (error) {
+			this.logger.error({
+				message: `Failed to update maintenance status for monitor ${monitorId}`,
+				error: error.message,
+				service: SERVICE_NAME,
+				method: "updateMonitorMaintenanceStatus",
+			});
+		}
 	}
 }
 

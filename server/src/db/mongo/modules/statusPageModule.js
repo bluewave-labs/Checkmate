@@ -167,20 +167,6 @@ class StatusPageModule {
 						"monitors.orderIndex": {
 							$indexOfArray: ["$originalMonitors", "$monitors._id"],
 						},
-						"monitors.isMaintenance": {
-							$reduce: {
-								input: "$monitors.maintenanceWindows",
-								initialValue: false,
-								in: {
-									$or: [
-										"$$value",
-										{
-											$and: [{ $eq: ["$$this.active", true] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
-										},
-									],
-								},
-							},
-						},
 					},
 				},
 				{ $match: { "monitors.orderIndex": { $ne: -1 } } },
@@ -234,7 +220,7 @@ class StatusPageModule {
 							diskAlertThreshold: 1,
 							tempAlertThreshold: 1,
 							checks: 1,
-							isMaintenance: 1,
+							isInMaintenance: 1,
 							createdAt: 1,
 							updatedAt: 1,
 						},

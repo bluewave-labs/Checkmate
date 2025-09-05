@@ -6,6 +6,7 @@ import ControlsHeader from "./Components/ControlsHeader";
 import SkeletonLayout from "./Components/Skeleton";
 import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
+import MaintenanceBanner from "./Components/MaintenanceBanner";
 import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 import TextLink from "../../../Components/TextLink";
 
@@ -34,16 +35,25 @@ const PublicStatus = () => {
 		{ name: t("statusBreadCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
 	];
 
-	// Setup
-	let sx = { paddingLeft: theme.spacing(20), paddingRight: theme.spacing(20) };
+	// Setup - Use consistent 800px width for both dashboard and public views
+	let sx = {
+		maxWidth: 800,
+		margin: "0 auto",
+		paddingLeft: theme.spacing(20),
+		paddingRight: theme.spacing(20),
+		width: "100%",
+	};
 	let link = undefined;
 	const isPublic = location.pathname.startsWith("/status/uptime/public");
 	// Public status page
 	if (isPublic && statusPage && statusPage.showAdminLoginLink === true) {
 		sx = {
+			maxWidth: 800,
+			margin: "0 auto",
 			paddingTop: theme.spacing(20),
-			paddingLeft: "20vw",
-			paddingRight: "20vw",
+			paddingLeft: theme.spacing(20),
+			paddingRight: theme.spacing(20),
+			width: "100%",
 		};
 		link = <AdminLink />;
 	}
@@ -141,22 +151,29 @@ const PublicStatus = () => {
 		);
 	}
 
+	// Filter monitors that are in maintenance
+	const monitorsInMaintenance =
+		monitors?.filter((monitor) => monitor.isMaintenance) || [];
+
 	return (
-		<Stack
-			gap={theme.spacing(10)}
-			sx={{ ...sx, position: "relative" }}
-		>
+		<>
 			{!isPublic && <Breadcrumbs list={crumbs} />}
-			<ControlsHeader
-				statusPage={statusPage}
-				url={url}
-				isPublic={isPublic}
-			/>
-			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
-			<StatusBar monitors={monitors} />
-			<MonitorsList monitors={monitors} />
-			{link}
-		</Stack>
+			<Stack
+				gap={theme.spacing(10)}
+				sx={{ ...sx, position: "relative" }}
+			>
+				<ControlsHeader
+					statusPage={statusPage}
+					url={url}
+					isPublic={isPublic}
+				/>
+				<MaintenanceBanner affectedMonitors={monitorsInMaintenance} />
+				<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
+				<StatusBar monitors={monitors} />
+				<MonitorsList monitors={monitors} />
+				{link}
+			</Stack>
+		</>
 	);
 };
 
