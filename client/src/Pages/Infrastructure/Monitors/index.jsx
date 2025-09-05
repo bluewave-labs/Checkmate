@@ -33,6 +33,7 @@ const InfrastructureMonitors = () => {
 	const [toFilterStatus, setToFilterStatus] = useState(undefined);
 	const [search, setSearch] = useState(undefined);
 	const [isSearching, setIsSearching] = useState(false);
+	const [hasInitialized, setHasInitialized] = useState(false);
 
 	// Utils
 	const theme = useTheme();
@@ -81,6 +82,17 @@ const InfrastructureMonitors = () => {
 		updateTrigger,
 	});
 
+	// Track initialization to prevent skeleton flash
+	useEffect(() => {
+		if (!isLoading && (summary !== undefined || monitors !== undefined)) {
+			setHasInitialized(true);
+		}
+	}, [isLoading, summary, monitors]);
+
+	// Show empty state when no monitors exist
+	const hasNoMonitors = hasInitialized && typeof summary?.totalMonitors === "undefined";
+	const isEmpty = hasInitialized && summary?.totalMonitors === 0;
+
 	if (networkError === true) {
 		return (
 			<GenericFallback>
@@ -96,7 +108,7 @@ const InfrastructureMonitors = () => {
 		);
 	}
 
-	if (!isLoading && typeof summary?.totalMonitors === "undefined") {
+	if (hasNoMonitors || isEmpty) {
 		return (
 			<Fallback
 				type="infrastructureMonitor"
@@ -106,6 +118,11 @@ const InfrastructureMonitors = () => {
 				isAdmin={isAdmin}
 			/>
 		);
+	}
+
+	// Don't render anything until we've initialized to prevent skeleton flash
+	if (!hasInitialized) {
+		return null;
 	}
 
 	return (

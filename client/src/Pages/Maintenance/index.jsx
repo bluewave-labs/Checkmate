@@ -64,7 +64,7 @@ const Maintenance = () => {
 			</GenericFallback>
 		);
 	}
-	// Only show the fallback if we've fetched data and there are no maintenance windows
+	// Show empty state when no maintenance windows exist
 	if (isDataFetched && maintenanceWindows.length === 0) {
 		return (
 			<Fallback
@@ -75,6 +75,11 @@ const Maintenance = () => {
 				isAdmin={isAdmin}
 			/>
 		);
+	}
+
+	// Don't render anything until we've fetched data to prevent table flash
+	if (!isDataFetched) {
+		return null;
 	}
 
 	return (

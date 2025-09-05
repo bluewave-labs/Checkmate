@@ -1,5 +1,5 @@
 // Components
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import { Stack, Typography } from "@mui/material";
 import CreateMonitorHeader from "../../../Components/MonitorCreateHeader";
@@ -22,6 +22,7 @@ const PageSpeed = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
+	const [hasInitialized, setHasInitialized] = useState(false);
 
 	const [monitors, monitorsSummary, isLoading, networkError] = useFetchMonitorsByTeamId({
 		limit: 10,
@@ -40,6 +41,17 @@ const PageSpeed = () => {
 		setIsEmailPasswordSet: () => {},
 	});
 
+	// Track initialization to prevent skeleton flash
+	useEffect(() => {
+		if (!isLoading && (monitorsSummary !== undefined || monitors !== undefined)) {
+			setHasInitialized(true);
+		}
+	}, [isLoading, monitorsSummary, monitors]);
+
+	// Show empty state when no monitors exist
+	const hasNoMonitors = hasInitialized && monitors?.length === 0;
+	const isEmpty = hasInitialized && monitorsSummary?.totalMonitors === 0;
+
 	if (networkError === true) {
 		return (
 			<GenericFallback>
@@ -55,7 +67,7 @@ const PageSpeed = () => {
 		);
 	}
 
-	if (!isLoading && monitors?.length === 0) {
+	if (hasNoMonitors || isEmpty) {
 		return (
 			<Fallback
 				type="pageSpeed"
@@ -69,6 +81,11 @@ const PageSpeed = () => {
 				)}
 			</Fallback>
 		);
+	}
+
+	// Don't render anything until we've initialized to prevent skeleton flash
+	if (!hasInitialized) {
+		return null;
 	}
 
 	return (
