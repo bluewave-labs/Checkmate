@@ -22,7 +22,7 @@ const Bar = ({ width, height, backgroundColor, borderRadius, children }) => {
 
 	return (
 		<Box
-            width={width}
+			width={width}
 			position="relative"
 			height={height}
 			backgroundColor={backgroundColor}
