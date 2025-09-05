@@ -47,6 +47,11 @@ const JobTable = ({ jobs = [] }) => {
 			render: (row) => row.monitorUrl,
 		},
 		{
+			id: "interval",
+			content: t("queuePage.jobTable.intervalHeader"),
+			render: (row) => `${row.monitorInterval} ms`,
+		},
+		{
 			id: "type",
 			content: t("queuePage.jobTable.typeHeader"),
 			render: (row) => row.monitorType,

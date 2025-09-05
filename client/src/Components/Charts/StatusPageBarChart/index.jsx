@@ -42,7 +42,7 @@ const Bar = forwardRef(
 Bar.displayName = "Bar";
 
 Bar.propTypes = {
-	width: PropTypes.string.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 	height: PropTypes.string.isRequired,
 	backgroundColor: PropTypes.string.isRequired,
 	borderRadius: PropTypes.string,
