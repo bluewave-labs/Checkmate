@@ -135,9 +135,9 @@ const Greeting = ({ type = "" }) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
-	const { firstName } = useSelector((state) => state.auth.user);
-	const index = useSelector((state) => state.ui.greeting.index);
-	const lastUpdate = useSelector((state) => state.ui.greeting.lastUpdate);
+	const { firstName } = useSelector((state) => state.auth.user || {});
+	const index = useSelector((state) => state.ui.greeting?.index ?? 0);
+	const lastUpdate = useSelector((state) => state.ui.greeting?.lastUpdate ?? null);
 
 	const now = new Date();
 	const hour = now.getHours();
@@ -153,7 +153,8 @@ const Greeting = ({ type = "" }) => {
 
 	let greetingArray =
 		hour < 6 ? early : hour < 12 ? morning : hour < 18 ? afternoon : evening;
-	const { prepend, append, emoji } = greetingArray[index];
+	const safeIndex = index >= 0 && index < greetingArray.length ? index : 0;
+	const { prepend, append, emoji } = greetingArray[safeIndex];
 
 	return (
 		<Box>

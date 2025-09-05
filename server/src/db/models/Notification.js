@@ -16,7 +16,7 @@ const NotificationSchema = mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: ["email", "slack", "discord", "webhook", "pager_duty"],
+			enum: ["email", "slack", "discord", "webhook", "pager_duty", "ntfy"],
 		},
 		notificationName: {
 			type: String,
@@ -27,6 +27,27 @@ const NotificationSchema = mongoose.Schema(
 		},
 		phone: {
 			type: String,
+		},
+		// ntfy-specific fields
+		ntfyAuthMethod: {
+			type: String,
+			enum: ["none", "username_password", "bearer_token"],
+			default: "none",
+		},
+		ntfyUsername: {
+			type: String,
+		},
+		ntfyPassword: {
+			type: String, // Will be encrypted
+		},
+		ntfyBearerToken: {
+			type: String, // Will be encrypted
+		},
+		ntfyPriority: {
+			type: Number,
+			min: 1,
+			max: 5,
+			default: 3,
 		},
 	},
 	{

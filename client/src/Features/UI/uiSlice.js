@@ -54,6 +54,9 @@ const uiSlice = createSlice({
 			state.showURL = action.payload;
 		},
 		setGreeting(state, action) {
+			if (!state.greeting) {
+				state.greeting = { index: 0, lastUpdate: null };
+			}
 			state.greeting.index = action.payload.index;
 			state.greeting.lastUpdate = action.payload.lastUpdate;
 		},

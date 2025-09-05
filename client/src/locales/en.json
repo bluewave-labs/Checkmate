@@ -735,6 +735,20 @@
 			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
+		"ntfySettings": {
+			"title": "ntfy",
+			"description": "Send push notifications via ntfy (self-hosted or ntfy.sh)",
+			"urlLabel": "ntfy Topic URL",
+			"urlPlaceholder": "https://ntfy.sh/my-topic",
+			"authMethodLabel": "Authentication Method",
+			"usernameLabel": "Username",
+			"usernamePlaceholder": "Enter username",
+			"passwordLabel": "Password",
+			"passwordPlaceholder": "Enter password",
+			"bearerTokenLabel": "Bearer Token",
+			"bearerTokenPlaceholder": "Enter bearer token",
+			"priorityLabel": "Priority"
+		},
 		"testNotification": "Test notification",
 		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
 		"dialogDeleteConfirm": "Delete"
