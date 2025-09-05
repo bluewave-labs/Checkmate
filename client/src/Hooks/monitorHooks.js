@@ -363,6 +363,7 @@ const useDeleteMonitor = () => {
 
 const useUpdateMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
+
 	const navigate = useNavigate();
 	const updateMonitor = async ({ monitor, redirect }) => {
 		try {
@@ -378,10 +379,11 @@ const useUpdateMonitor = () => {
 				expectedValue: monitor.expectedValue,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				jsonPath: monitor.jsonPath,
+				url: monitor.url,
 				...((monitor.type === "port" || monitor.type === "game") && {
 					port: monitor.port,
 				}),
-				...(monitor.type == "game" && {
+				...(monitor.type === "game" && {
 					gameId: monitor.gameId,
 				}),
 				...(monitor.type === "hardware" && {
