@@ -39,6 +39,8 @@ const Bar = forwardRef(
 	}
 );
 
+Bar.displayName = "Bar";
+
 Bar.propTypes = {
 	width: PropTypes.string.isRequired,
 	height: PropTypes.string.isRequired,
