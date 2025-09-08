@@ -21,7 +21,7 @@ const Maintenance = () => {
 	const [sort, setSort] = useState({});
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
-	const [isLoading, setIsLoading] = useState(true)
+	const [isLoading, setIsLoading] = useState(true);
 
 	const handleActionMenuDelete = () => {
 		setUpdateTrigger((prev) => !prev);
@@ -37,8 +37,8 @@ const Maintenance = () => {
 					rowsPerPage: rowsPerPage,
 				});
 				const { maintenanceWindows, maintenanceWindowCount } = response.data.data;
-				setMaintenanceWindows(maintenanceWindows ?? []);      
-                setMaintenanceWindowCount(maintenanceWindowCount ?? 0);
+				setMaintenanceWindows(maintenanceWindows ?? []);
+				setMaintenanceWindowCount(maintenanceWindowCount ?? 0);
 			} catch (error) {
 				setNetworkError(true);
 			} finally {
