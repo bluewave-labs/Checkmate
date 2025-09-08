@@ -2,6 +2,7 @@
 import { Stack, Box } from "@mui/material";
 import Host from "../../../../../Components/Host";
 import StatusPageBarChart from "../../../../../Components/Charts/StatusPageBarChart";
+import ResponseTimeChartWrapper from "./ResponseTimeChartWrapper";
 import { StatusLabel } from "../../../../../Components/Label";
 
 //Utils
@@ -12,10 +13,9 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
 const MonitorsList = ({
-	isLoading = false,
-	shouldRender = true,
 	monitors = [],
 	statusPage = {},
+	dateRange = "recent",
 }) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
@@ -58,6 +58,13 @@ const MonitorsList = ({
 								/>
 							</Box>
 						</Stack>
+						{statusPage.showResponseTimeChart === true && (
+							<ResponseTimeChartWrapper
+								monitorId={monitor._id}
+								monitorName={monitor.name}
+								dateRange={dateRange}
+							/>
+						)}
 					</Stack>
 				);
 			})}
@@ -68,6 +75,7 @@ const MonitorsList = ({
 MonitorsList.propTypes = {
 	monitors: PropTypes.array.isRequired,
 	statusPage: PropTypes.object,
+	dateRange: PropTypes.string,
 };
 
 export default MonitorsList;

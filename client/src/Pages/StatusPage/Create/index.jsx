@@ -21,7 +21,7 @@ import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
 //Constants
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
-	["monitors", "showUptimePercentage", "showCharts", "showAdminLoginLink"],
+	["monitors", "showUptimePercentage", "showCharts", "showAdminLoginLink", "showResponseTimeChart"],
 ];
 
 const CreateStatusPage = () => {
@@ -42,6 +42,7 @@ const CreateStatusPage = () => {
 		showCharts: true,
 		showUptimePercentage: true,
 		showAdminLoginLink: false,
+		showResponseTimeChart: false,
 	});
 	const [errors, setErrors] = useState({});
 	const [selectedMonitors, setSelectedMonitors] = useState([]);
@@ -62,7 +63,6 @@ const CreateStatusPage = () => {
 		useStatusPageFetch(isCreate, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
-	console.log(JSON.stringify(form, null, 2));
 	// Handlers
 	const handleFormChange = (e) => {
 		let { type, name, value, checked } = e.target;
@@ -211,6 +211,7 @@ const CreateStatusPage = () => {
 				showCharts: statusPage?.showCharts ?? true,
 				showUptimePercentage: statusPage?.showUptimePercentage ?? true,
 				showAdminLoginLink: statusPage?.showAdminLoginLink ?? false,
+				showResponseTimeChart: statusPage?.showResponseTimeChart ?? false,
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);

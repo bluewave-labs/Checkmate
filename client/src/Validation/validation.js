@@ -305,6 +305,7 @@ const statusPageValidation = joi.object({
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
 	showAdminLoginLink: joi.boolean(),
+	showResponseTimeChart: joi.boolean(),
 });
 
 const settingsValidation = joi.object({
