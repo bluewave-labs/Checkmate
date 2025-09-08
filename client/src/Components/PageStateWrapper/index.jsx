@@ -17,9 +17,9 @@ const PageStateWrapper = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
-	const hasInitialized = !isLoading && items !== undefined;
-	const showEmpty = items == undefined || items.length === 0;
-
+	const isEmpty = items === null || (Array.isArray(items) && items.length === 0);
+	const hasInitialized = items !== undefined && !(isLoading && isEmpty);
+	const showEmpty = !isLoading && isEmpty;
 	if (networkError) {
 		return (
 			<GenericFallback>

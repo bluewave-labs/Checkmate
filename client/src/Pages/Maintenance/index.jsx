@@ -15,13 +15,13 @@ const Maintenance = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const rowsPerPage = useSelector((state) => state?.ui?.maintenance?.rowsPerPage ?? 5);
-	const [maintenanceWindows, setMaintenanceWindows] = useState([]);
+	const [maintenanceWindows, setMaintenanceWindows] = useState(undefined);
 	const [maintenanceWindowCount, setMaintenanceWindowCount] = useState(0);
 	const [page, setPage] = useState(0);
 	const [sort, setSort] = useState({});
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true)
 
 	const handleActionMenuDelete = () => {
 		setUpdateTrigger((prev) => !prev);
@@ -30,14 +30,15 @@ const Maintenance = () => {
 	useEffect(() => {
 		const fetchMaintenanceWindows = async () => {
 			try {
+				setNetworkError(false);
 				setIsLoading(true);
 				const response = await networkService.getMaintenanceWindowsByTeamId({
 					page: page,
 					rowsPerPage: rowsPerPage,
 				});
 				const { maintenanceWindows, maintenanceWindowCount } = response.data.data;
-				setMaintenanceWindows(maintenanceWindows);
-				setMaintenanceWindowCount(maintenanceWindowCount);
+				setMaintenanceWindows(maintenanceWindows ?? []);      
+                setMaintenanceWindowCount(maintenanceWindowCount ?? 0);
 			} catch (error) {
 				setNetworkError(true);
 			} finally {

@@ -34,7 +34,7 @@ const useCreateNotification = () => {
 
 const useGetNotificationsByTeamId = (updateTrigger) => {
 	const [notifications, setNotifications] = useState([]);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const { t } = useTranslation();
 
