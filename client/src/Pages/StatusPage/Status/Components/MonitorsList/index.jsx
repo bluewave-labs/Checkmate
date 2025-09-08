@@ -9,10 +9,11 @@ import { StatusLabel } from "../../../../../Components/Label";
 import { useTheme } from "@mui/material/styles";
 import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
 import PropTypes from "prop-types";
+import { DATE_RANGES } from "../../../../../Utils/statusPageConstants";
 
 import { useSelector } from "react-redux";
 
-const MonitorsList = ({ monitors = [], statusPage = {}, dateRange = "recent" }) => {
+const MonitorsList = ({ monitors = [], statusPage = {}, dateRange = DATE_RANGES.RECENT }) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
 

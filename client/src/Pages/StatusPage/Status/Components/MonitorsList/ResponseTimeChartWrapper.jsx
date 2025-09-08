@@ -3,11 +3,12 @@ import ResponseTimeChart from "../../../../Uptime/Details/Components/Charts/Resp
 import { useMonitorResponseTimeData } from "../../Hooks/useMonitorResponseTimeData";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
+import { DATE_RANGES, CHART_SPACING } from "../../../../../Utils/statusPageConstants";
 
 /**
  * Wrapper component that fetches and displays response time chart for a specific monitor
  */
-const ResponseTimeChartWrapper = ({ monitorId, monitorName, dateRange = "recent" }) => {
+const ResponseTimeChartWrapper = ({ monitorId, monitorName, dateRange = DATE_RANGES.RECENT }) => {
 	const theme = useTheme();
 	const { groupedChecks, isLoading, error } = useMonitorResponseTimeData({
 		monitorId,
@@ -21,7 +22,7 @@ const ResponseTimeChartWrapper = ({ monitorId, monitorName, dateRange = "recent"
 	}
 
 	return (
-		<Box mt={theme.spacing(4)}>
+		<Box mt={theme.spacing(CHART_SPACING.TOP_MARGIN)}>
 			<ResponseTimeChart
 				groupedChecks={groupedChecks}
 				dateRange={dateRange}

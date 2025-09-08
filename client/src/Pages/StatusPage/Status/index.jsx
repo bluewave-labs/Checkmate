@@ -18,6 +18,7 @@ import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { DATE_RANGES } from "../../../Utils/statusPageConstants";
 
 const PublicStatus = () => {
 	const { url } = useParams();
@@ -29,7 +30,7 @@ const PublicStatus = () => {
 	const isAdmin = useIsAdmin();
 
 	// State for response time chart date range
-	const [dateRange, setDateRange] = useState("recent");
+	const [dateRange, setDateRange] = useState(DATE_RANGES.RECENT);
 
 	const [statusPage, monitors, isLoading, networkError] = useStatusPageFetch(false, url);
 

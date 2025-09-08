@@ -18,6 +18,7 @@ import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
+import { STATUS_PAGE_DEFAULTS } from "../../../Utils/statusPageConstants";
 //Constants
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
@@ -45,10 +46,10 @@ const CreateStatusPage = () => {
 		color: "#4169E1",
 		type: "uptime",
 		monitors: [],
-		showCharts: true,
-		showUptimePercentage: true,
-		showAdminLoginLink: false,
-		showResponseTimeChart: false,
+		showCharts: STATUS_PAGE_DEFAULTS.showCharts,
+		showUptimePercentage: STATUS_PAGE_DEFAULTS.showUptimePercentage,
+		showAdminLoginLink: STATUS_PAGE_DEFAULTS.showAdminLoginLink,
+		showResponseTimeChart: STATUS_PAGE_DEFAULTS.showResponseTimeChart,
 	});
 	const [errors, setErrors] = useState({});
 	const [selectedMonitors, setSelectedMonitors] = useState([]);
@@ -214,10 +215,10 @@ const CreateStatusPage = () => {
 				monitors: statusPageMonitors.map((monitor) => monitor._id),
 				color: statusPage?.color,
 				logo: newLogo,
-				showCharts: statusPage?.showCharts ?? true,
-				showUptimePercentage: statusPage?.showUptimePercentage ?? true,
-				showAdminLoginLink: statusPage?.showAdminLoginLink ?? false,
-				showResponseTimeChart: statusPage?.showResponseTimeChart ?? false,
+				showCharts: statusPage?.showCharts ?? STATUS_PAGE_DEFAULTS.showCharts,
+				showUptimePercentage: statusPage?.showUptimePercentage ?? STATUS_PAGE_DEFAULTS.showUptimePercentage,
+				showAdminLoginLink: statusPage?.showAdminLoginLink ?? STATUS_PAGE_DEFAULTS.showAdminLoginLink,
+				showResponseTimeChart: statusPage?.showResponseTimeChart ?? STATUS_PAGE_DEFAULTS.showResponseTimeChart,
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);

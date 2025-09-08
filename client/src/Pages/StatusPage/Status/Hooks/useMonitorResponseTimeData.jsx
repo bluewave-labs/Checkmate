@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { networkService } from "../../../../main";
+import { DATE_RANGES, API_CONFIG } from "../../../../Utils/statusPageConstants";
 
 /**
  * Hook to fetch grouped response time data for a specific monitor
@@ -7,7 +8,7 @@ import { networkService } from "../../../../main";
  */
 const useMonitorResponseTimeData = ({
 	monitorId,
-	dateRange = "recent",
+	dateRange = DATE_RANGES.RECENT,
 	enabled = false,
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +29,7 @@ const useMonitorResponseTimeData = ({
 				const res = await networkService.getUptimeDetailsById({
 					monitorId: monitorId,
 					dateRange: dateRange,
-					normalize: true,
+					normalize: API_CONFIG.NORMALIZE_RESPONSE,
 				});
 
 				const { monitorData } = res?.data?.data ?? {};
