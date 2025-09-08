@@ -5,7 +5,11 @@ import { networkService } from "../../../../main";
  * Hook to fetch grouped response time data for a specific monitor
  * Uses the same API as uptime details page with normalize=true
  */
-const useMonitorResponseTimeData = ({ monitorId, dateRange = "recent", enabled = false }) => {
+const useMonitorResponseTimeData = ({
+	monitorId,
+	dateRange = "recent",
+	enabled = false,
+}) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [groupedChecks, setGroupedChecks] = useState([]);
 	const [error, setError] = useState(null);
@@ -20,13 +24,13 @@ const useMonitorResponseTimeData = ({ monitorId, dateRange = "recent", enabled =
 			try {
 				setIsLoading(true);
 				setError(null);
-				
+
 				const res = await networkService.getUptimeDetailsById({
 					monitorId: monitorId,
 					dateRange: dateRange,
 					normalize: true,
 				});
-				
+
 				const { monitorData } = res?.data?.data ?? {};
 				setGroupedChecks(monitorData?.groupedChecks || []);
 			} catch (error) {

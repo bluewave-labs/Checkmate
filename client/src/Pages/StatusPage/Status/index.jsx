@@ -27,7 +27,7 @@ const PublicStatus = () => {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const isAdmin = useIsAdmin();
-	
+
 	// State for response time chart date range
 	const [dateRange, setDateRange] = useState("recent");
 

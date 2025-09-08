@@ -12,11 +12,7 @@ import PropTypes from "prop-types";
 
 import { useSelector } from "react-redux";
 
-const MonitorsList = ({
-	monitors = [],
-	statusPage = {},
-	dateRange = "recent",
-}) => {
+const MonitorsList = ({ monitors = [], statusPage = {}, dateRange = "recent" }) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
 
