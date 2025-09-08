@@ -5,7 +5,7 @@ import { execSync } from "child_process";
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), "");
-	let version = "3.1.6";
+	let version = "3.1.7";
 
 	return {
 		base: "/",

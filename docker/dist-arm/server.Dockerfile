@@ -3,6 +3,11 @@
 # ---------------------
 FROM node:24-slim AS frontend-build
 
+# Install ping
+RUN apt-get update \
+    && apt-get install -y iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app/client
 
 COPY client/package.json ./
