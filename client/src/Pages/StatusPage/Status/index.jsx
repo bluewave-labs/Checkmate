@@ -154,7 +154,10 @@ const PublicStatus = () => {
 			/>
 			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
-			<MonitorsList monitors={monitors} />
+			<MonitorsList
+				monitors={monitors}
+				statusPage={statusPage}
+			/>
 			{link}
 		</Stack>
 	);
