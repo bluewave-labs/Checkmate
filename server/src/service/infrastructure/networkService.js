@@ -75,6 +75,9 @@ class NetworkService {
 			const { response, responseTime, error } = await this.timeRequest(() => this.ping.promise.probe(monitor.url));
 
 			if (!response) {
+				if (error) {
+					throw error;
+				}
 				throw new Error("Ping failed - no result returned");
 			}
 
