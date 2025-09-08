@@ -8,7 +8,11 @@ import { DATE_RANGES, CHART_SPACING } from "../../../../../Utils/statusPageConst
 /**
  * Wrapper component that fetches and displays response time chart for a specific monitor
  */
-const ResponseTimeChartWrapper = ({ monitorId, monitorName, dateRange = DATE_RANGES.RECENT }) => {
+const ResponseTimeChartWrapper = ({
+	monitorId,
+	monitorName,
+	dateRange = DATE_RANGES.RECENT,
+}) => {
 	const theme = useTheme();
 	const { groupedChecks, isLoading, error } = useMonitorResponseTimeData({
 		monitorId,

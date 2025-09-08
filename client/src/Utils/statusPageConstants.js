@@ -7,7 +7,7 @@
 export const DATE_RANGES = {
 	RECENT: "recent",
 	HOUR: "hour",
-	DAY: "day", 
+	DAY: "day",
 	WEEK: "week",
 	MONTH: "month",
 	ALL: "all",

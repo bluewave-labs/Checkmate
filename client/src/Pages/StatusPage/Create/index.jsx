@@ -216,9 +216,12 @@ const CreateStatusPage = () => {
 				color: statusPage?.color,
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? STATUS_PAGE_DEFAULTS.showCharts,
-				showUptimePercentage: statusPage?.showUptimePercentage ?? STATUS_PAGE_DEFAULTS.showUptimePercentage,
-				showAdminLoginLink: statusPage?.showAdminLoginLink ?? STATUS_PAGE_DEFAULTS.showAdminLoginLink,
-				showResponseTimeChart: statusPage?.showResponseTimeChart ?? STATUS_PAGE_DEFAULTS.showResponseTimeChart,
+				showUptimePercentage:
+					statusPage?.showUptimePercentage ?? STATUS_PAGE_DEFAULTS.showUptimePercentage,
+				showAdminLoginLink:
+					statusPage?.showAdminLoginLink ?? STATUS_PAGE_DEFAULTS.showAdminLoginLink,
+				showResponseTimeChart:
+					statusPage?.showResponseTimeChart ?? STATUS_PAGE_DEFAULTS.showResponseTimeChart,
 			};
 		});
 		setSelectedMonitors(statusPageMonitors);

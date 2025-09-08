@@ -285,7 +285,7 @@
 	"statusPageCreateTabsContent": "Status page servers",
 	"statusPageCreateTabsContentDescription": "You can add any number of servers that you monitor to your status page. You can also reorder them for the best viewing experience.",
 	"statusPageCreateTabsContentFeaturesDescription": "Show more details on the status page",
-	"showCharts": "Show charts",
+	"showCharts": "Show Heartbeat Charts",
 	"showUptimePercentage": "Show uptime percentage",
 	"showResponseTimeChart": "Show Response Time Chart",
 	"removeLogo": "Remove Logo",
