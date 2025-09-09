@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
 	return {
 		base: "/",
 		plugins: [svgr(), react()],
-		optimizeDeps: {﻿￼﻿   Maybe this will be the straw th
+		optimizeDeps: {
 			include: ["@mui/material/Tooltip", "@emotion/styled"],
 		},
 		define: {
