@@ -1,6 +1,7 @@
 services:
   server:
     image: ghcr.io/bluewave-labs/checkmate-backend-mono:latest
+    pull_policy: always
     restart: always
     ports:
       - "52345:52345"
