@@ -5,12 +5,12 @@ import { execSync } from "child_process";
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), "");
-	let version = "3.1.7";
+	let version = "3.1.8";
 
 	return {
 		base: "/",
 		plugins: [svgr(), react()],
-		optimizeDeps: {
+		optimizeDeps: {﻿￼﻿   Maybe this will be the straw th
 			include: ["@mui/material/Tooltip", "@emotion/styled"],
 		},
 		define: {
