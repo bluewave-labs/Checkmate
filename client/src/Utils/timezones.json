@@ -4,9 +4,9 @@
 		"name": "UTC"
 	},
 	{
-     "_id": "Etc/UTC",
-     "name": "Etc/UTC"
-   },
+		"_id": "Etc/UTC",
+		"name": "Etc/UTC"
+	},
 	{
 		"_id": "Africa/Abidjan",
 		"name": "Africa/Abidjan"
