@@ -39,14 +39,13 @@ html {
 	--env-var-spacing-4: 40px;
 	--env-var-spacing-5: 65px;
 
-	--env-var-font-size-small: 0.6875rem; /* 11px / 16 */
-	--env-var-font-size-small-plus: 0.75rem; /* 12px / 16 */
-	--env-var-font-size-medium: 0.8125rem; /* 13px / 16 */
-	--env-var-font-size-medium-plus: 0.875rem; /* 14px / 16 */
+	--env-var-font-size-small: 0.6875rem; /* 11px / 1rem (relative to root font size) */
+	--env-var-font-size-small-plus: 0.75rem; /* 12px / 1rem (relative to root font size) */
+	--env-var-font-size-medium: 0.8125rem; /* 13px / 1rem (relative to root font size) */
+	--env-var-font-size-medium-plus: 0.875rem; /* 14px / 1rem (relative to root font size) */
 	--env-var-font-size-large: 1rem; /* 16px */
-	--env-var-font-size-large-plus: 1.375rem; /* 22px / 16 */
-	--env-var-font-size-xlarge: 1.875rem; /* 30px / 16 */
-
+	--env-var-font-size-large-plus: 1.375rem; /* 22px / 1rem (relative to root font size) */
+	--env-var-font-size-xlarge: 1.875rem; /* 30px / 1rem (relative to root font size) */
 
 	--env-var-img-width-1: 20px;
 	--env-var-img-width-2: 16px;
