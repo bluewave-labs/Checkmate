@@ -24,7 +24,7 @@
 }
 
 .wallet-adapter-modal-title {
-	font-size: var(--env-var-font-size-medium-plus) !important;
+	font-size: var(--font-size-h5) !important;
 }
 
 /* Separator styling */
