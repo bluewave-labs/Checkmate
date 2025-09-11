@@ -3,7 +3,7 @@
 	font-size: var(--env-var-font-size-medium);
 }
 .progress-bar-container p.MuiTypography-root:has(span) {
-	font-size: 12px;
+	font-size: 0.75rem;
 }
 .progress-bar-container p.MuiTypography-root span {
 	padding-left: 2px;

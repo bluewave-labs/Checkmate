@@ -107,6 +107,6 @@
 	.check-email-page h1,
 	.password-confirmed-page h1,
 	.set-new-password-page h1 {
-		font-size: 18px;
+		font-size: 1.125rem;
 	}
 }
