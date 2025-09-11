@@ -216,6 +216,10 @@ class StringService {
 		return this.translationService.getTranslation("monitorDownAlert");
 	}
 
+	get discordNotification() {
+		return this.translationService.getTranslation("discordNotification");
+	}
+
 	getWebhookUnsupportedPlatform(platform) {
 		return this.translationService.getTranslation("webhookUnsupportedPlatform").replace("{platform}", platform);
 	}

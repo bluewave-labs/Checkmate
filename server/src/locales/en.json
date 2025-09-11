@@ -162,5 +162,18 @@
 	"monitorDownAlert": "Downtime Alert: One of your monitors went offline.\n📌 Monitor: {monitorName}\n📅 Time: {time}\n⚠️ Status: DOWN\n📟 Status Code: {code}\n\u200B\n",
 	"sendTestEmail": "Test email sent successfully",
 	"errorForValidEmailAddress": "A valid recipient email address is required.",
-	"testEmailSubject": "Test E-mail from Checkmate"
+	"testEmailSubject": "Test E-mail from Checkmate",
+	"discordNotification": {
+		"monitor": "Monitor",
+		"status": "Status",
+		"statusCode": "Status Code",
+		"time": "Time",
+		"up": "UP",
+		"down": "DOWN",
+		"checkmate": "Checkmate",
+		"url": "URL",
+		"unknown": "Unknown",
+		"uptimeAlert": "Uptime Alert: One of your monitors is back online",
+		"downtimeAlert": "Downtime Alert: One of your monitors went offline"
+	}
 }
