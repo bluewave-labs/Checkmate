@@ -70,7 +70,25 @@ class NotificationUtils {
 				.replace("{time}", formattedTime)
 				.replace("{code}", code || "Unknown");
 		}
-		return messageText;
+		const dn = this.stringService.discordNotification;
+		let discordMessageText = {
+			embeds: [
+				{
+					title: status ? dn.uptimeAlert : dn.downtimeAlert,
+					color: status ? 5763719 : 15548997,
+
+					fields: [
+						{ name: dn.monitor, value: monitor?.name ?? dn.unknown, inline: true },
+						{ name: dn.status, value: status ? dn.up : dn.down, inline: true },
+						{ name: dn.statusCode, value: String(code ?? dn.unknown), inline: true },
+						{ name: dn.time, value: formattedTime, inline: true },
+						{ name: dn.url, value: monitor?.url ?? dn.unknown, inline: false },
+					],
+					footer: { text: dn.checkmate },
+				},
+			],
+		};
+		return [messageText, discordMessageText];
 	};
 
 	buildHardwareAlerts = async (networkResponse) => {
@@ -88,6 +106,36 @@ class NotificationUtils {
 		};
 
 		const alertsToSend = [];
+		const discordEmbeds = [];
+		const formatDiscordAlert = {
+			cpu: () => ({
+				title: "CPU alert",
+				description: `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
+				color: 15548997,
+
+				footer: { text: "Checkmate" },
+			}),
+
+			memory: () => ({
+				title: "Memory alert",
+				description: `Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
+				color: 15548997,
+
+				footer: { text: "Checkmate" },
+			}),
+
+			disk: () => ({
+				title: "Disk alert",
+				description: `Your current disk usage is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
+				color: 15548997,
+				footer: { text: "Checkmate" },
+				fields: (Array.isArray(disk) ? disk : []).map((d, idx) => ({
+					name: `Disk ${idx}`,
+					value: `${(d?.usage_percent * 100).toFixed(0)}%`,
+					inline: true,
+				})),
+			}),
+		};
 		const alertTypes = ["cpu", "memory", "disk"];
 		for (const type of alertTypes) {
 			// Iterate over each alert type to see if any need to be decremented
@@ -108,11 +156,13 @@ class NotificationUtils {
 								.join(", ")} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
 					};
 					alertsToSend.push(formatAlert[type]());
+					discordEmbeds.push(formatDiscordAlert[type]());
 				}
 			}
 		}
 		await monitor.save();
-		return alertsToSend;
+		const discordPayload = discordEmbeds.length ? { embeds: discordEmbeds } : null;
+		return [alertsToSend, discordPayload];
 	};
 
 	buildHardwareEmail = async (networkResponse, alerts) => {
