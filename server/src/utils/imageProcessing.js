@@ -1,21 +1,12 @@
-import sharp from "sharp";
 /**
- * Generates a 64 * 64 pixel image from a given image
+ * Converts image to base64 string without resizing
+ * CSS handles the 64x64 display sizing client-side
  * @param {} file
  */
 const GenerateAvatarImage = async (file) => {
 	try {
-		// Resize to target 64 * 64
-		let resizedImageBuffer = await sharp(file.buffer)
-			.resize({
-				width: 64,
-				height: 64,
-				fit: "cover",
-			})
-			.toBuffer();
-
-		//Get b64 string
-		const base64Image = resizedImageBuffer.toString("base64");
+		// Simply convert to base64 - let CSS handle the 64x64 display
+		const base64Image = file.buffer.toString("base64");
 		return base64Image;
 	} catch (error) {
 		throw error;
