@@ -8,6 +8,7 @@ import StatusBar from "./Components/StatusBar";
 import MonitorsList from "./Components/MonitorsList";
 import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
 import TextLink from "../../../Components/TextLink";
+import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
 
 // Utils
 import { useStatusPageFetch } from "./Hooks/useStatusPageFetch";
@@ -16,6 +17,8 @@ import { useIsAdmin } from "../../../Hooks/useIsAdmin";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { DATE_RANGES } from "../../../Utils/statusPageConstants";
 
 const PublicStatus = () => {
 	const { url } = useParams();
@@ -25,6 +28,9 @@ const PublicStatus = () => {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const isAdmin = useIsAdmin();
+
+	// State for response time chart date range
+	const [dateRange, setDateRange] = useState(DATE_RANGES.RECENT);
 
 	const [statusPage, monitors, isLoading, networkError] = useStatusPageFetch(false, url);
 
@@ -154,9 +160,18 @@ const PublicStatus = () => {
 			/>
 			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
+			{statusPage?.showResponseTimeChart && (
+				<MonitorTimeFrameHeader
+					isLoading={isLoading}
+					hasDateRange={true}
+					dateRange={dateRange}
+					setDateRange={setDateRange}
+				/>
+			)}
 			<MonitorsList
 				monitors={monitors}
 				statusPage={statusPage}
+				dateRange={dateRange}
 			/>
 			{link}
 		</Stack>

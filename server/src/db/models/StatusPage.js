@@ -74,6 +74,10 @@ const StatusPageSchema = mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		showResponseTimeChart: {
+			type: Boolean,
+			default: false,
+		},
 		customCSS: {
 			type: String,
 			default: "",

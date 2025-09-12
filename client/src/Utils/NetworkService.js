@@ -932,6 +932,9 @@ class NetworkService {
 		if (form.showAdminLoginLink !== undefined) {
 			fd.append("showAdminLoginLink", String(form.showAdminLoginLink));
 		}
+		if (form.showResponseTimeChart !== undefined) {
+			fd.append("showResponseTimeChart", String(form.showResponseTimeChart));
+		}
 		form.monitors &&
 			form.monitors.forEach((monitorId) => {
 				fd.append("monitors[]", monitorId);
