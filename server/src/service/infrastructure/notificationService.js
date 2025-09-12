@@ -16,7 +16,7 @@ class NotificationService {
 		return NotificationService.SERVICE_NAME;
 	}
 
-	sendNotification = async ({ notification, subject, content, html, discordContent }) => {
+	sendNotification = async ({ notification, subject, content, html, discordContent = null }) => {
 		const { type, address } = notification;
 
 		if (type === "email") {
@@ -79,7 +79,7 @@ class NotificationService {
 		return success;
 	}
 
-	async notifyAll({ notificationIDs, subject, html, content, discordContent }) {
+	async notifyAll({ notificationIDs, subject, html, content, discordContent = null }) {
 		const notifications = await this.db.notificationModule.getNotificationsByIds(notificationIDs);
 		// Map each notification to a test promise
 		const promises = notifications.map(async (notification) => {

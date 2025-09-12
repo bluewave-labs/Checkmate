@@ -74,7 +74,7 @@ class NotificationUtils {
 		let discordMessageText = {
 			embeds: [
 				{
-					title: status ? "Uptime Alert: One of your monitors is back online" : "Downtime Alert: One of your monitors went offline",
+					title: status ? dn.uptimeAlert : dn.downtimeAlert,
 					color: status ? 5763719 : 15548997,
 
 					fields: [
@@ -129,9 +129,9 @@ class NotificationUtils {
 				description: `Your current disk usage is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
 				color: 15548997,
 				footer: { text: "Checkmate" },
-				fields: disk.map((d, idx) => ({
+				fields: (Array.isArray(disk) ? disk : []).map((d, idx) => ({
 					name: `Disk ${idx}`,
-					value: `${(d.usage_percent * 100).toFixed(0)}%`,
+					value: `${(d?.usage_percent * 100).toFixed(0)}%`,
 					inline: true,
 				})),
 			}),
