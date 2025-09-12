@@ -33,10 +33,9 @@ class CheckService {
 			throw this.errorService.createAuthorizationError();
 		}
 
-		let { type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
+		let { sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
 		const result = await this.db.checkModule.getChecksByMonitor({
 			monitorId,
-			type,
 			sortOrder,
 			dateRange,
 			filter,

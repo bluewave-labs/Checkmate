@@ -1,25 +1,44 @@
-FROM node:20-alpine AS frontend-build
+# ---------------------
+# Frontend build stage
+# ---------------------
+FROM node:24-slim AS frontend-build
+
+
 
 WORKDIR /app/client
 
-COPY client/package*.json ./
-RUN npm ci
+COPY client/package.json ./
+
+RUN npm install
+
+RUN npm install esbuild@0.25.5 --build-from-source
 
 COPY client ./
+
 RUN npm run build
 
-FROM node:20-alpine AS backend
+# ---------------------
+# Backend stage
+# ---------------------
+FROM node:24-slim AS backend
+
+# Install ping
+RUN apt-get update \
+    && apt-get install -y iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/server
+
+COPY server/package.json ./
+
+RUN npm install
 
 COPY server ./
 
 COPY --from=frontend-build /app/client/dist ./public
 
-RUN npm ci
-
 RUN chmod +x ./scripts/inject-vars.sh
 
 EXPOSE 52345
 
-CMD ./scripts/inject-vars.sh && node ./src/index.js
+CMD ["sh", "-c", "./scripts/inject-vars.sh && node ./src/index.js"]

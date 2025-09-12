@@ -1,4 +1,4 @@
-FROM node:20-alpine AS frontend-build
+FROM node:20-slim AS frontend-build
 
 WORKDIR /app/client
 
@@ -8,7 +8,12 @@ RUN npm install
 COPY client ./
 RUN npm run build
 
-FROM node:20-alpine AS app
+FROM node:20-slim AS app
+
+# Install ping
+RUN apt-get update \
+    && apt-get install -y iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/server
 

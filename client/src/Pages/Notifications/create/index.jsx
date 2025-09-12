@@ -89,8 +89,6 @@ const CreateNotifications = () => {
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
-			console.log(JSON.stringify(newErrors));
-			console.log(JSON.stringify(form, null, 2));
 			createToast({ body: Object.values(newErrors)[0] });
 			setErrors(newErrors);
 			return;

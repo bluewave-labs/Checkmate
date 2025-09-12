@@ -11,25 +11,10 @@ import {
 const SERVICE_NAME = "monitorModule";
 
 class MonitorModule {
-	constructor({
-		Monitor,
-		MonitorStats,
-		Check,
-		PageSpeedCheck,
-		HardwareCheck,
-		stringService,
-		fs,
-		path,
-		fileURLToPath,
-		ObjectId,
-		NormalizeData,
-		NormalizeDataUptimeDetails,
-	}) {
+	constructor({ Monitor, MonitorStats, Check, stringService, fs, path, fileURLToPath, ObjectId, NormalizeData, NormalizeDataUptimeDetails }) {
 		this.Monitor = Monitor;
 		this.MonitorStats = MonitorStats;
 		this.Check = Check;
-		this.PageSpeedCheck = PageSpeedCheck;
-		this.HardwareCheck = HardwareCheck;
 		this.stringService = stringService;
 		this.fs = fs;
 		this.path = path;
@@ -37,15 +22,6 @@ class MonitorModule {
 		this.ObjectId = ObjectId;
 		this.NormalizeData = NormalizeData;
 		this.NormalizeDataUptimeDetails = NormalizeDataUptimeDetails;
-
-		this.CHECK_MODEL_LOOKUP = {
-			http: Check,
-			ping: Check,
-			docker: Check,
-			port: Check,
-			pagespeed: PageSpeedCheck,
-			hardware: HardwareCheck,
-		};
 
 		const __filename = fileURLToPath(import.meta.url);
 		const __dirname = path.dirname(__filename);
@@ -146,19 +122,18 @@ class MonitorModule {
 	};
 
 	//Helper
-	getMonitorChecks = async (monitorId, model, dateRange, sortOrder) => {
+	getMonitorChecks = async (monitorId, dateRange, sortOrder) => {
 		const indexSpec = {
 			monitorId: 1,
-			createdAt: sortOrder, // This will be 1 or -1
+			updatedAt: sortOrder, // This will be 1 or -1
 		};
 
 		const [checksAll, checksForDateRange] = await Promise.all([
-			model.find({ monitorId }).sort({ createdAt: sortOrder }).hint(indexSpec).lean(),
-			model
-				.find({
-					monitorId,
-					createdAt: { $gte: dateRange.start, $lte: dateRange.end },
-				})
+			this.Check.find({ monitorId }).sort({ createdAt: sortOrder }).hint(indexSpec).lean(),
+			this.Check.find({
+				monitorId,
+				createdAt: { $gte: dateRange.start, $lte: dateRange.end },
+			})
 				.hint(indexSpec)
 				.lean(),
 		]);
@@ -295,9 +270,8 @@ class MonitorModule {
 			const sort = sortOrder === "asc" ? 1 : -1;
 
 			// Get Checks for monitor in date range requested
-			const model = this.CHECK_MODEL_LOOKUP[monitor.type];
 			const dates = this.getDateRange(dateRange);
-			const { checksAll, checksForDateRange } = await this.getMonitorChecks(monitorId, model, dates, sort);
+			const { checksAll, checksForDateRange } = await this.getMonitorChecks(monitorId, dates, sort);
 
 			// Build monitor stats
 			const monitorStats = {
@@ -330,6 +304,7 @@ class MonitorModule {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);
 			const dates = this.getDateRange(dateRange);
+
 			const formatLookup = {
 				recent: "%Y-%m-%dT%H:%M:00Z",
 				day: "%Y-%m-%dT%H:00:00Z",
@@ -337,13 +312,15 @@ class MonitorModule {
 				month: "%Y-%m-%dT00:00:00Z",
 			};
 			const dateString = formatLookup[dateRange];
-			const hardwareStats = await this.HardwareCheck.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
 
-			const monitorStats = {
+			const hardwareStats = await this.Check.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
+
+			const stats = hardwareStats[0];
+
+			return {
 				...monitor.toObject(),
-				stats: hardwareStats[0],
+				stats,
 			};
-			return monitorStats;
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getHardwareDetailsById";

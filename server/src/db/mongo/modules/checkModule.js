@@ -31,7 +31,7 @@ class CheckModule {
 		}
 	};
 
-	getChecksByMonitor = async ({ monitorId, type, sortOrder, dateRange, filter, ack, page, rowsPerPage, status }) => {
+	getChecksByMonitor = async ({ monitorId, sortOrder, dateRange, filter, ack, page, rowsPerPage, status }) => {
 		try {
 			status = status === "true" ? true : status === "false" ? false : undefined;
 			page = parseInt(page);
@@ -79,19 +79,7 @@ class CheckModule {
 				skip = page * rowsPerPage;
 			}
 
-			const checkModels = {
-				http: this.Check,
-				ping: this.Check,
-				docker: this.Check,
-				port: this.Check,
-				pagespeed: this.PageSpeedCheck,
-				hardware: this.HardwareCheck,
-				game: this.Check,
-			};
-
-			const Model = checkModels[type];
-
-			const checks = await Model.aggregate([
+			const checks = await this.Check.aggregate([
 				{ $match: matchStage },
 				{ $sort: { createdAt: sortOrder } },
 				{
@@ -166,18 +154,6 @@ class CheckModule {
 
 			const aggregatePipeline = [
 				{ $match: matchStage },
-				{
-					$unionWith: {
-						coll: "hardwarechecks",
-						pipeline: [{ $match: matchStage }],
-					},
-				},
-				{
-					$unionWith: {
-						coll: "pagespeedchecks",
-						pipeline: [{ $match: matchStage }],
-					},
-				},
 
 				{ $sort: { createdAt: sortOrder } },
 				{

@@ -7,7 +7,7 @@ class TranslationService {
 		this.logger = logger;
 		this.translations = {};
 		this._language = "en";
-		this.localesDir = path.join(process.cwd(), "src", "locales");
+		this.localesDir = path.join(process.cwd(), "src/locales");
 	}
 
 	get serviceName() {

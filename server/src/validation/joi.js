@@ -155,6 +155,8 @@ const createMonitorBodyValidation = joi.object({
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
+	statusWindowSize: joi.number().min(1).max(20).default(5),
+	statusWindowThreshold: joi.number().min(1).max(100).default(60),
 	url: joi.string().required(),
 	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
@@ -183,6 +185,8 @@ const createMonitorsBodyValidation = joi.array().items(
 
 const editMonitorBodyValidation = joi.object({
 	name: joi.string(),
+	statusWindowSize: joi.number().min(1).max(20).default(5),
+	statusWindowThreshold: joi.number().min(1).max(100).default(60),
 	description: joi.string(),
 	interval: joi.number(),
 	notifications: joi.array().items(joi.string()),
@@ -576,17 +580,31 @@ const createNotificationBodyValidation = joi.object({
 	}),
 
 	address: joi.when("type", {
-		is: "email",
-		then: joi.string().email().required().messages({
-			"string.empty": "E-mail address cannot be empty",
-			"any.required": "E-mail address is required",
-			"string.email": "Please enter a valid e-mail address",
-		}),
-		otherwise: joi.string().uri().required().messages({
-			"string.empty": "Webhook URL cannot be empty",
-			"any.required": "Webhook URL is required",
-			"string.uri": "Please enter a valid Webhook URL",
-		}),
+		switch: [
+			{
+				is: "email",
+				then: joi.string().email().required().messages({
+					"string.empty": "E-mail address cannot be empty",
+					"any.required": "E-mail address is required",
+					"string.email": "Please enter a valid e-mail address",
+				}),
+			},
+			{
+				is: "pager_duty",
+				then: joi.string().required().messages({
+					"string.empty": "PagerDuty integration key cannot be empty",
+					"any.required": "PagerDuty integration key is required",
+				}),
+			},
+			{
+				is: joi.string().valid("webhook", "slack", "discord"),
+				then: joi.string().uri().required().messages({
+					"string.empty": "Webhook URL cannot be empty",
+					"any.required": "Webhook URL is required",
+					"string.uri": "Please enter a valid Webhook URL",
+				}),
+			},
+		],
 	}),
 });
 

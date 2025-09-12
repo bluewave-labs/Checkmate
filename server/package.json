@@ -28,6 +28,7 @@
 		"express": "^4.19.2",
 		"express-rate-limit": "8.0.1",
 		"gamedig": "^5.3.1",
+		"got": "14.4.7",
 		"handlebars": "^4.7.8",
 		"helmet": "^8.0.0",
 		"ioredis": "^5.4.2",
@@ -45,7 +46,7 @@
 		"ping": "0.4.4",
 		"sharp": "0.33.5",
 		"ssl-checker": "2.0.10",
-		"super-simple-scheduler": "1.3.0",
+		"super-simple-scheduler": "1.4.1",
 		"swagger-ui-express": "5.0.1",
 		"winston": "^3.13.0"
 	},

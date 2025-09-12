@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-import HardwareCheck from "./HardwareCheck.js";
-import PageSpeedCheck from "./PageSpeedCheck.js";
 import Check from "./Check.js";
 import MonitorStats from "./MonitorStats.js";
 import StatusPage from "./StatusPage.js";
@@ -29,6 +27,18 @@ const MonitorSchema = mongoose.Schema(
 		status: {
 			type: Boolean,
 			default: undefined,
+		},
+		statusWindow: {
+			type: [Boolean],
+			default: [],
+		},
+		statusWindowSize: {
+			type: Number,
+			default: 5,
+		},
+		statusWindowThreshold: {
+			type: Number,
+			default: 60,
 		},
 		type: {
 			type: String,
@@ -133,13 +143,7 @@ MonitorSchema.pre("findOneAndDelete", async function (next) {
 			throw new Error("Monitor not found");
 		}
 
-		if (doc?.type === "pagespeed") {
-			await PageSpeedCheck.deleteMany({ monitorId: doc._id });
-		} else if (doc?.type === "hardware") {
-			await HardwareCheck.deleteMany({ monitorId: doc._id });
-		} else {
-			await Check.deleteMany({ monitorId: doc._id });
-		}
+		await Check.deleteMany({ monitorId: doc._id });
 
 		// Deal with status pages
 		await StatusPage.updateMany({ monitors: doc?._id }, { $pull: { monitors: doc?._id } });
@@ -156,13 +160,7 @@ MonitorSchema.pre("deleteMany", async function (next) {
 	const monitors = await this.model.find(filter).select(["_id", "type"]).lean();
 
 	for (const monitor of monitors) {
-		if (monitor.type === "pagespeed") {
-			await PageSpeedCheck.deleteMany({ monitorId: monitor._id });
-		} else if (monitor.type === "hardware") {
-			await HardwareCheck.deleteMany({ monitorId: monitor._id });
-		} else {
-			await Check.deleteMany({ monitorId: monitor._id });
-		}
+		await Check.deleteMany({ monitorId: monitor._id });
 		await StatusPage.updateMany({ monitors: monitor._id }, { $pull: { monitors: monitor._id } });
 		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
 	}

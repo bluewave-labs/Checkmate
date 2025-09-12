@@ -7,7 +7,6 @@ cd ../../
 declare -A services=(
   ["bluewaveuptime/uptime_client"]="./docker/dist/client.Dockerfile"
   ["bluewaveuptime/uptime_database_mongo"]="./docker/dist/mongoDB.Dockerfile"
-  ["bluewaveuptime/uptime_redis"]="./docker/dist/redis.Dockerfile"
   ["bluewaveuptime/uptime_server"]="./docker/dist/server.Dockerfile"
 )
 

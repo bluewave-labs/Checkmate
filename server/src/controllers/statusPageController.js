@@ -95,7 +95,7 @@ class StatusPageController extends BaseController {
 
 	deleteStatusPage = this.asyncHandler(
 		async (req, res) => {
-			await this.db.deleteStatusPage(req.params.url);
+			await this.db.statusPageModule.deleteStatusPage(req.params.url);
 			return res.success({
 				msg: this.stringService.statusPageDelete,
 			});

@@ -40,10 +40,6 @@ const MonitorStatsSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
-		uptBurnt: {
-			type: mongoose.Schema.Types.Decimal128,
-			required: false,
-		},
 	},
 	{ timestamps: true }
 );

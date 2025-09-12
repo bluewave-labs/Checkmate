@@ -54,6 +54,7 @@ class SuperSimpleQueue {
 			id: monitorId.toString(),
 			template: "monitor-job",
 			repeat: monitor.interval,
+			active: monitor.isActive,
 			data: monitor.toObject(),
 		});
 	};
@@ -87,7 +88,7 @@ class SuperSimpleQueue {
 	};
 
 	updateJob = async (monitor) => {
-		this.scheduler.updateJob(monitor._id.toString(), monitor.interval);
+		this.scheduler.updateJob(monitor._id.toString(), { repeat: monitor.interval, data: monitor.toObject() });
 	};
 
 	shutdown = async () => {
@@ -140,6 +141,7 @@ class SuperSimpleQueue {
 				monitorId: job.id,
 				monitorUrl: job?.data?.url || null,
 				monitorType: job?.data?.type || null,
+				monitorInterval: job?.data?.interval || null,
 				active: job.active,
 				lockedAt: job.lockedAt,
 				runCount: job.runCount || 0,

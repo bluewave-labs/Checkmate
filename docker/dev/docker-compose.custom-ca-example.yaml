@@ -1,0 +1,30 @@
+# Dev/Test only: Not required in production
+# Example Docker Compose configuration for custom CA trust
+# This file demonstrates how to configure Checkmate to trust custom CAs
+# 
+# Usage: docker-compose -f docker-compose.yaml -f docker-compose.custom-ca-example.yaml up
+
+services:
+  server:
+    image: uptime_server:latest
+    restart: always
+    ports:
+      - "52345:52345"
+    env_file:
+      - server.env
+    environment:
+      # Mount your custom CA certificate
+      NODE_EXTRA_CA_CERTS: /certs/custom-ca.pem
+    volumes:
+      # Mount the certs directory (read-only for security)
+      - ./certs:/certs:ro
+    depends_on:
+      - redis
+      - mongodb
+    # Optional: Add healthcheck to ensure the server starts properly
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:52345/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

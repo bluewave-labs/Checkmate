@@ -11,7 +11,12 @@ import PropTypes from "prop-types";
 
 import { useSelector } from "react-redux";
 
-const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] }) => {
+const MonitorsList = ({
+	isLoading = false,
+	shouldRender = true,
+	monitors = [],
+	statusPage = {},
+}) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
 
@@ -40,10 +45,12 @@ const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] })
 							alignItems="center"
 							gap={theme.spacing(20)}
 						>
-							<Box flex={9}>
-								<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
-							</Box>
-							<Box flex={1}>
+							{statusPage.showCharts !== false && (
+								<Box flex={9}>
+									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
+								</Box>
+							)}
+							<Box flex={statusPage.showCharts !== false ? 1 : 10}>
 								<StatusLabel
 									status={status}
 									text={status}
@@ -60,6 +67,7 @@ const MonitorsList = ({ isLoading = false, shouldRender = true, monitors = [] })
 
 MonitorsList.propTypes = {
 	monitors: PropTypes.array.isRequired,
+	statusPage: PropTypes.object,
 };
 
 export default MonitorsList;

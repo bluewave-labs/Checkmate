@@ -2,12 +2,13 @@ services:
   server:
     image: ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:latest
     restart: always
+    pull_policy: always
     ports:
       - "52345:52345"
     environment:
       - UPTIME_APP_API_BASE_URL=http://localhost:52345/api/v1
       - UPTIME_APP_CLIENT_HOST=http://localhost
-      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db?replicaSet=rs0
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
       - REDIS_URL=redis://redis:6379
       - CLIENT_HOST=http://localhost
       - JWT_SECRET=my_secret
@@ -15,29 +16,16 @@ services:
       - mongodb
   mongodb:
     image: mongo:4.4.18
-    container_name: checkmate-mongodb
     restart: always
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--quiet", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
       - ./mongo/data:/data/db
-
-  mongo-init:
-    image: mongo:4.4.18
-    depends_on:
-      - mongodb
-    entrypoint: >
-      bash -c "
-        echo 'Waiting for MongoDB to be ready...' &&
-        until mongo --host mongodb --eval 'db.adminCommand(\"ping\")' > /dev/null 2>&1; do
-          sleep 2
-        done &&
-        echo 'MongoDB is up. Initiating replica set...' &&
-        mongo --host mongodb --eval '
-          rs.initiate({
-            _id: \"rs0\",
-            members: [{ _id: 0, host: \"mongodb:27017\" }]
-          })
-        ' || echo 'Replica set may already be initialized.'
-      "
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand({ ping: 1 })", "--quiet"]
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
