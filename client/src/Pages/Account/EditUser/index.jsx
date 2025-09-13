@@ -9,17 +9,28 @@ import Button from "@mui/material/Button";
 import RoleTable from "../components/RoleTable";
 
 // Utils
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useGetUser, useEditUser } from "../../../Hooks/userHooks";
 import { EDITABLE_ROLES, ROLES } from "../../../Utils/roleUtils";
 import { useEditUserForm, useValidateEditUserForm } from "./hooks/editUser";
+import { useSelector } from "react-redux";
 
 const EditUser = () => {
 	const { userId } = useParams();
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const currentUser = useSelector((state) => state.auth.user);
+
+	if (currentUser?._id && userId === currentUser._id) {
+		return (
+			<Navigate
+				to="/account/profile"
+				replace
+			/>
+		);
+	}
 	const BREADCRUMBS = [
 		{ name: t("menu.team"), path: "/account/team" },
 		{ name: t("editUserPage.title"), path: "" },
@@ -36,6 +47,15 @@ const EditUser = () => {
 		handleSearchInput,
 	] = useEditUserForm(user);
 	const [errors, validateForm, validateField] = useValidateEditUserForm();
+
+	if (currentUser?._id && userId === currentUser._id) {
+		return (
+			<Navigate
+				to="/account/profile"
+				replace
+			/>
+		);
+	}
 
 	const onChange = (e) => {
 		const name = e.target.name;
