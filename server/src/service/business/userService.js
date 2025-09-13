@@ -83,24 +83,45 @@ class UserService {
 
 	loginUser = async (email, password) => {
 		// Check if user exists
-		const user = await this.db.userModule.getUserByEmail(email);
-		// Compare password
-		const match = await user.comparePassword(password);
-		if (match !== true) {
+		try {
+			const user = await this.db.userModule.getUserByEmail(email);
+
+			// Add null check before password comparison
+			if (!user || !user.comparePassword) {
+				throw this.errorService.createAuthenticationError(this.stringService.authIncorrectPassword);
+			}
+
+			// Compare password
+			const match = await user.comparePassword(password);
+			if (match !== true) {
+				throw this.errorService.createAuthenticationError(this.stringService.authIncorrectPassword);
+			}
+
+			// Remove password from user object.  Should this be abstracted to DB layer?
+			const userWithoutPassword = { ...user._doc };
+			delete userWithoutPassword.password;
+			delete userWithoutPassword.avatarImage;
+
+			// Happy path, return token
+			const appSettings = await this.settingsService.getSettings();
+			const token = this.issueToken(userWithoutPassword, appSettings);
+			// reset avatar image
+			userWithoutPassword.avatarImage = user.avatarImage;
+			return { user: userWithoutPassword, token };
+		} catch (error) {
+			// Log specific errors while returning generic message for security
+			this.logger.error({
+				message: "Login attempt failed",
+				service: SERVICE_NAME,
+				method: "loginUser",
+				error: error.message,
+				stack: error.stack,
+			});
+
+			// If user is not found, throw a generic authentication error for security
+			// Don't reveal whether user exists or password is wrong
 			throw this.errorService.createAuthenticationError(this.stringService.authIncorrectPassword);
 		}
-
-		// Remove password from user object.  Should this be abstracted to DB layer?
-		const userWithoutPassword = { ...user._doc };
-		delete userWithoutPassword.password;
-		delete userWithoutPassword.avatarImage;
-
-		// Happy path, return token
-		const appSettings = await this.settingsService.getSettings();
-		const token = this.issueToken(userWithoutPassword, appSettings);
-		// reset avatar image
-		userWithoutPassword.avatarImage = user.avatarImage;
-		return { user: userWithoutPassword, token };
 	};
 
 	editUser = async (updates, file, currentUser) => {
@@ -111,6 +132,12 @@ class UserService {
 			updates.email = currentUser.email;
 			// Get user
 			const user = await this.db.userModule.getUserByEmail(currentUser.email);
+
+			// Add null check before password comparison
+			if (!user || !user.comparePassword) {
+				throw this.errorService.createAuthorizationError(this.stringService.authIncorrectPassword);
+			}
+
 			// Compare passwords
 			const match = await user.comparePassword(updates?.password);
 			// If not a match, throw a 403
