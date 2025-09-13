@@ -155,9 +155,13 @@ const createMonitorBodyValidation = joi.object({
 	name: joi.string().required(),
 	description: joi.string().required(),
 	type: joi.string().required(),
+	url: joi
+		.string()
+		.trim()
+		.uri({ scheme: ["http", "https"] })
+		.required(),
 	statusWindowSize: joi.number().min(1).max(20).default(5),
 	statusWindowThreshold: joi.number().min(1).max(100).default(60),
-	url: joi.string().required(),
 	ignoreTlsErrors: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
@@ -184,6 +188,10 @@ const createMonitorsBodyValidation = joi.array().items(
 );
 
 const editMonitorBodyValidation = joi.object({
+	url: joi
+		.string()
+		.uri({ scheme: ["http", "https"] })
+		.optional(),
 	name: joi.string(),
 	statusWindowSize: joi.number().min(1).max(20).default(5),
 	statusWindowThreshold: joi.number().min(1).max(100).default(60),
