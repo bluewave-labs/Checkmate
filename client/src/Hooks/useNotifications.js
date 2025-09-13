@@ -3,7 +3,11 @@ import { createToast } from "../Utils/toastUtils";
 import { networkService } from "../main";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { NOTIFICATION_TYPES } from "../Pages/Notifications/utils";
+import {
+	NOTIFICATION_TYPES,
+	NTFY_AUTH_METHODS,
+	NTFY_PRIORITIES,
+} from "../Pages/Notifications/utils";
 
 const useCreateNotification = () => {
 	const navigate = useNavigate();
@@ -103,6 +107,18 @@ const useGetNotificationById = (id, setNotification) => {
 				address: notification?.address,
 				notificationName: notification?.notificationName,
 				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?._id,
+				// ntfy-specific fields
+				ntfyAuthMethod:
+					NTFY_AUTH_METHODS.find(
+						(method) => method.value === notification?.ntfyAuthMethod
+					)?._id || NTFY_AUTH_METHODS[0]._id,
+				ntfyUsername: notification?.ntfyUsername || "",
+				ntfyPassword: notification?.ntfyPassword || "",
+				ntfyBearerToken: notification?.ntfyBearerToken || "",
+				ntfyPriority:
+					NTFY_PRIORITIES.find(
+						(priority) => priority.value === notification?.ntfyPriority
+					)?._id || NTFY_PRIORITIES[2]._id,
 			};
 
 			setNotification(notificationData);

@@ -498,6 +498,52 @@ class NetworkService {
 			throw error;
 		}
 	}
+
+	async requestNtfy(url, message, title, notification) {
+		try {
+			// Build headers
+			const headers = {
+				Title: title,
+				Priority: notification.ntfyPriority?.toString() || "3",
+				Tags: "checkmate,monitoring",
+				"Content-Type": "text/plain",
+			};
+
+			// Add authentication headers based on method
+			if (notification.ntfyAuthMethod === "username_password" && notification.ntfyUsername && notification.ntfyPassword) {
+				const auth = Buffer.from(`${notification.ntfyUsername}:${notification.ntfyPassword}`).toString("base64");
+				headers["Authorization"] = `Basic ${auth}`;
+			} else if (notification.ntfyAuthMethod === "bearer_token" && notification.ntfyBearerToken) {
+				headers["Authorization"] = `Bearer ${notification.ntfyBearerToken}`;
+			}
+
+			// Send the notification
+			const response = await this.axios.post(url, message, { headers });
+
+			return {
+				type: "ntfy",
+				status: true,
+				code: response.status,
+				message: "Successfully sent ntfy notification",
+				payload: response.data,
+			};
+		} catch (error) {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "requestNtfy",
+				url: url,
+			});
+
+			return {
+				type: "ntfy",
+				status: false,
+				code: error.response?.status || this.NETWORK_ERROR,
+				message: `Failed to send ntfy notification: ${error.message}`,
+				payload: error.response?.data,
+			};
+		}
+	}
 }
 
 export default NetworkService;

@@ -448,12 +448,13 @@ const notificationValidation = joi.object({
 
 	type: joi
 		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.valid("email", "webhook", "slack", "discord", "pager_duty", "ntfy")
 		.required()
 		.messages({
 			"string.empty": "Notification type is required",
 			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, or pager_duty",
+			"any.only":
+				"Notification type must be email, webhook, slack, discord, pager_duty, or ntfy",
 		}),
 
 	address: joi.when("type", {
@@ -485,7 +486,73 @@ const notificationValidation = joi.object({
 					"string.uri": "Please enter a valid Webhook URL",
 				}),
 			},
+			{
+				is: "ntfy",
+				then: joi.string().uri().required().messages({
+					"string.empty": "ntfy URL cannot be empty",
+					"any.required": "ntfy URL is required",
+					"string.uri": "Please enter a valid ntfy URL",
+				}),
+			},
 		],
+	}),
+
+	// ntfy-specific fields
+	ntfyAuthMethod: joi.when("type", {
+		is: "ntfy",
+		then: joi.string().valid("none", "username_password", "bearer_token").default("none"),
+		otherwise: joi.forbidden(),
+	}),
+
+	ntfyUsername: joi.when("type", {
+		is: "ntfy",
+		then: joi.when("ntfyAuthMethod", {
+			is: "username_password",
+			then: joi.string().required().messages({
+				"string.empty":
+					"Username cannot be empty when using username/password authentication",
+				"any.required": "Username is required for username/password authentication",
+			}),
+			otherwise: joi.string().optional().allow(""),
+		}),
+		otherwise: joi.forbidden(),
+	}),
+
+	ntfyPassword: joi.when("type", {
+		is: "ntfy",
+		then: joi.when("ntfyAuthMethod", {
+			is: "username_password",
+			then: joi.string().required().messages({
+				"string.empty":
+					"Password cannot be empty when using username/password authentication",
+				"any.required": "Password is required for username/password authentication",
+			}),
+			otherwise: joi.string().optional().allow(""),
+		}),
+		otherwise: joi.forbidden(),
+	}),
+
+	ntfyBearerToken: joi.when("type", {
+		is: "ntfy",
+		then: joi.when("ntfyAuthMethod", {
+			is: "bearer_token",
+			then: joi.string().required().messages({
+				"string.empty":
+					"Bearer token cannot be empty when using bearer token authentication",
+				"any.required": "Bearer token is required for bearer token authentication",
+			}),
+			otherwise: joi.string().optional().allow(""),
+		}),
+		otherwise: joi.forbidden(),
+	}),
+
+	ntfyPriority: joi.when("type", {
+		is: "ntfy",
+		then: joi.number().min(1).max(5).default(3).messages({
+			"number.min": "Priority must be between 1 and 5",
+			"number.max": "Priority must be between 1 and 5",
+		}),
+		otherwise: joi.forbidden(),
 	}),
 });
 
