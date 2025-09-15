@@ -28,11 +28,12 @@ class SuperSimpleQueueHelper {
 		return async (monitor) => {
 			try {
 				const monitorId = monitor._id;
+				const teamId = monitor.teamId;
 				if (!monitorId) {
 					throw new Error("No monitor id");
 				}
 
-				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId);
+				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
 				if (maintenanceWindowActive) {
 					this.logger.info({
 						message: `Monitor ${monitorId} is in maintenance window`,
@@ -77,8 +78,11 @@ class SuperSimpleQueueHelper {
 		};
 	};
 
-	async isInMaintenanceWindow(monitorId) {
-		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId(monitorId);
+	async isInMaintenanceWindow(monitorId, teamId) {
+		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId({
+			monitorId: monitorId.toString(),
+			teamId: teamId.toString(),
+		});
 		// Check for active maintenance window:
 		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc, window) => {
 			if (window.active) {
