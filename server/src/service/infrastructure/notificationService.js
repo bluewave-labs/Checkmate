@@ -16,7 +16,7 @@ class NotificationService {
 		return NotificationService.SERVICE_NAME;
 	}
 
-	sendNotification = async ({ notification, subject, content, html, discordContent = null }) => {
+	sendNotification = async ({ notification, subject, content, html, discordContent = null, webhookBody = null }) => {
 		const { type, address } = notification;
 
 		if (type === "email") {
@@ -30,7 +30,9 @@ class NotificationService {
 		if (type === "discord") {
 			body = !discordContent ? { content } : discordContent;
 		}
-
+		if (type === "webhook") {
+			body = !webhookBody ? { content } : webhookBody;
+		}
 		if (type === "slack" || type === "discord" || type === "webhook") {
 			const response = await this.networkService.requestWebhook(type, address, body);
 			return response.status;
@@ -66,9 +68,9 @@ class NotificationService {
 			if (alerts.length === 0) return false;
 
 			const { subject, html } = await this.notificationUtils.buildHardwareEmail(networkResponse, alerts);
-			const content = await this.notificationUtils.buildHardwareNotificationMessage(alerts);
-
-			const success = await this.notifyAll({ notificationIDs, subject, html, content, discordContent });
+			const content = await this.notificationUtils.buildHardwareNotificationMessage(alerts, monitor);
+			const webhookBody = await this.notificationUtils.buildHardwareWebhookBody(alerts, monitor);
+			const success = await this.notifyAll({ notificationIDs, subject, html, content, discordContent, webhookBody });
 			return success;
 		}
 
@@ -79,12 +81,12 @@ class NotificationService {
 		return success;
 	}
 
-	async notifyAll({ notificationIDs, subject, html, content, discordContent = null }) {
+	async notifyAll({ notificationIDs, subject, html, content, discordContent = null, webhookBody = null }) {
 		const notifications = await this.db.notificationModule.getNotificationsByIds(notificationIDs);
 		// Map each notification to a test promise
 		const promises = notifications.map(async (notification) => {
 			try {
-				await this.sendNotification({ notification, subject, content, html, discordContent });
+				await this.sendNotification({ notification, subject, content, html, discordContent, webhookBody });
 				return true;
 			} catch (err) {
 				return false;

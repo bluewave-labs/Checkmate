@@ -107,12 +107,16 @@ class NotificationUtils {
 
 		const alertsToSend = [];
 		const discordEmbeds = [];
+		const monitorInfoFields = [
+			{ name: "Monitor", value: monitor.name, inline: true },
+			{ name: "URL", value: monitor.url, inline: false },
+		];
 		const formatDiscordAlert = {
 			cpu: () => ({
 				title: "CPU alert",
 				description: `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
 				color: 15548997,
-
+				fields: monitorInfoFields,
 				footer: { text: "Checkmate" },
 			}),
 
@@ -120,7 +124,7 @@ class NotificationUtils {
 				title: "Memory alert",
 				description: `Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
 				color: 15548997,
-
+				fields: monitorInfoFields,
 				footer: { text: "Checkmate" },
 			}),
 
@@ -129,11 +133,14 @@ class NotificationUtils {
 				description: `Your current disk usage is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
 				color: 15548997,
 				footer: { text: "Checkmate" },
-				fields: (Array.isArray(disk) ? disk : []).map((d, idx) => ({
-					name: `Disk ${idx}`,
-					value: `${(d?.usage_percent * 100).toFixed(0)}%`,
-					inline: true,
-				})),
+				fields: [
+					...monitorInfoFields,
+					...(Array.isArray(disk) ? disk : []).map((d, idx) => ({
+						name: `Disk ${idx}`,
+						value: `${(d?.usage_percent * 100).toFixed(0)}%`,
+						inline: true,
+					})),
+				],
 			}),
 		};
 		const alertTypes = ["cpu", "memory", "disk"];
@@ -174,8 +181,15 @@ class NotificationUtils {
 		return { subject, html };
 	};
 
-	buildHardwareNotificationMessage = (alerts) => {
-		return alerts.map((alert) => alert).join("\n");
+	buildHardwareNotificationMessage = (alerts, monitor) => {
+		const alertsHeader = [`Monitor: ${monitor.name}`, `URL: ${monitor.url}`];
+		const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts] : [];
+		return alertText.map((alert) => alert).join("\n");
+	};
+	buildHardwareWebhookBody = (alerts, monitor) => {
+		const content = alerts.map((alert) => alert).join("\n");
+		const body = { text: content, name: monitor.name, url: monitor.url };
+		return body;
 	};
 }
 
