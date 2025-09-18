@@ -165,7 +165,7 @@ class NetworkService {
 				} else {
 					httpResponse.code = 500;
 					httpResponse.status = false;
-					httpResponse.message = this.stringService.httpExpectedValueFail || "Expected value did not match";
+					httpResponse.message = this.stringService.httpExpectedValueFail;
 					return httpResponse;
 				}
 			}
@@ -192,7 +192,7 @@ class NetworkService {
 						} else {
 							httpResponse.status = false;
 							httpResponse.code = 500;
-							httpResponse.message = this.stringService.httpJsonPathFail || "JSONPath did not match expected value";
+							httpResponse.message = this.stringService.httpJsonPathFail;
 							httpResponse.extracted = extracted;
 							return httpResponse;
 						}
@@ -204,7 +204,7 @@ class NetworkService {
 						} else {
 							httpResponse.status = false;
 							httpResponse.code = 500;
-							httpResponse.message = this.stringService.httpJsonPathFail || "JSONPath result was false";
+							httpResponse.message = this.stringService.httpJsonPathFail;
 							httpResponse.extracted = extracted;
 							return httpResponse;
 						}
