@@ -1,0 +1,1122 @@
+{
+	"submit": "ยอมรับ",
+	"title": "หัวข้อ",
+	"distributedStatusHeaderText": "ตรวจสอบแบบเรียลไทม์บนอุปกรณ์จริง",
+	"distributedStatusSubHeaderText": "ระบบทำงานด้วยอุปกรณ์นับล้านทั่วโลก ให้คุณตรวจสอบประสิทธิภาพระบบตามภูมิภาค ประเทศ หรือเมืองได้",
+	"settingsDisabled": "ปิดการใช้งาน",
+	"settingsSuccessSaved": "บันทึกการตั้งค่าเรียบร้อยแล้ว",
+	"settingsFailedToSave": "ไม่สามารถบันทึกการตั้งค่าได้",
+	"settingsStatsCleared": "สถิติถูกล้างเรียบร้อยแล้ว",
+	"settingsFailedToClearStats": "ไม่สามารถล้างสถิติได้",
+	"settingsMonitorsDeleted": "ลบมอนิเตอร์ออกทั้งหมดเรียบร้อยแล้ว",
+	"settingsFailedToDeleteMonitors": "ไม่สามารถลบมอนิเตอร์ออกทั้งหมดได้",
+	"starPromptTitle": "ให้ดาวกับฉัน",
+	"starPromptDescription": "ดูการอัปเดตล่าสุด และมีส่วนร่วมในการขยายชุมชนบน GitHub",
+	"https": "HTTPS",
+	"http": "HTTP",
+	"monitor": "monitor",
+	"aboutus": "เกี่ยวกับฉัน",
+	"now": "ตอนนี้",
+	"delete": "ลบ",
+	"configure": "ตั้งค่า",
+	"responseTime": "ระยะเวลาการตอบสนอง",
+	"ms": "ms",
+	"bar": "Bar",
+	"area": "พื้นที่",
+	"country": "ประเทศ",
+	"city": "จังหวัด",
+	"response": "การตอบสนอง",
+	"monitorStatusUp": "มอนิเตอร์ {name} ({url}) สถานะตอนนี้ออนไลน์และตอบสนองปกติ",
+	"monitorStatusDown": "มอนิเตอร์ {name} ({url}) สถานะตอนนี้ล่มและไม่ตอบสนอง",
+	"webhookSendSuccess": "การแจ้งเตือนผ่าน Webhook ถูกส่งเรียบร้อยแล้ว",
+	"webhookSendError": "ไม่สามารถส่งการแจ้งเตือนผ่าน Webhook ไปที่ {platform} ได้",
+	"webhookUnsupportedPlatform": "ระบบไม่รองรับแพลตฟอร์ม {platform} นี้",
+	"distributedRightCategoryTitle": "มอนิเตอร์",
+	"distributedStatusServerMonitors": "มอนิเตอร์เชิร์ฟเวอร์",
+	"distributedStatusServerMonitorsDescription": "ตรวจสอบสถานะของเซิร์ฟเวอร์ที่เกี่ยวข้อง",
+	"distributedUptimeCreateSelectURL": "คุณสามารถระบุ URL ของโฮสต์และเลือกประเภทของตัวตรวจสอบได้ที่นี่",
+	"distributedUptimeCreateChecks": "รายการตรวจสอบ",
+	"distributedUptimeCreateChecksDescription": "คุณสามารถเพิ่มหรือลบการตรวจสอบได้เสมอหลังจากเพิ่มเว็บไซต์ของคุณแล้ว",
+	"distributedUptimeCreateIncidentNotification": "การแจ้งเตือนปัญหา",
+	"distributedUptimeCreateIncidentDescription": "เมื่อเกิดเหตุการณ์ผิดปกติ ให้แจ้งเตือนผู้ใช้งาน",
+	"distributedUptimeCreateAdvancedSettings": "ตั้งค่าขั้นสูง",
+	"distributedUptimeDetailsNoMonitorHistory": "ยังไม่มีประวัติการตรวจสอบสำหรับมอนิเตอร์นี้",
+	"distributedUptimeDetailsStatusHeaderUptime": "เวลาระบบทำงาน:",
+	"distributedUptimeDetailsStatusHeaderLastUpdate": "แก้ไขล่าสุด",
+	"notifications": {
+		"enableNotifications": "เปิดการแจ้งเตือนของแพลตฟอร์ม {{platform}} นี้",
+		"testNotification": "ทดสอบระบบการแจ้งเตือน",
+		"addOrEditNotifications": "เพิ่มและแก้ไขระบบการแจ้งเตือน",
+		"slack": {
+			"label": "Slack",
+			"description": "เพื่อเปิดใช้งานการแจ้งเตือนผ่าน Slack ให้สร้างแอป Slack และเปิดใช้งาน Incoming Webhooks หลังจากนั้น เพียงใส่ URL ของ Webhook ที่นี่",
+			"webhookLabel": "URL ของ Webhook/เว็บฮุค",
+			"webhookPlaceholder": "https://hooks.slack.com/services/...",
+			"webhookRequired": "ต้องระบุ URL ของ Slack webhook"
+		},
+		"discord": {
+			"label": "Discord",
+			"description": "เพื่อส่งข้อมูลไปยังช่อง Discord ผ่าน Discord notifications โดยใช้ Webhooks ให้เปิดใช้งาน Incoming Webhooks ของ Discord",
+			"webhookLabel": "URL ของ Webhook/เว็บฮุค สำหรับ Discord",
+			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
+			"webhookRequired": "ต้องระบุ URL ของ Discord webhook"
+		},
+		"telegram": {
+			"label": "Telegram",
+			"description": "เพื่อเปิดใช้งานการแจ้งเตือนผ่าน Telegram ให้สร้างบอท Telegram โดยใช้ BotFather ซึ่งเป็นบอททางการสำหรับสร้างและจัดการบอท Telegram จากนั้นนำ API token และ Chat ID มาใส่ที่นี่",
+			"tokenLabel": "Token/โทเคน ของบอท",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+			"chatIdLabel": "Chat ID",
+			"chatIdPlaceholder": "-1001234567890",
+			"fieldsRequired": "ต้องระบุโทเค็นและรหัสแชทของ Telegram"
+		},
+		"webhook": {
+			"label": "Webhooks",
+			"description": "คุณสามารถตั้งค่าเว็บฮุคแบบกำหนดเองเพื่อรับการแจ้งเตือนเมื่อเกิดเหตุการณ์ผิดปกติ",
+			"urlLabel": "URL ของ Webhook",
+			"urlPlaceholder": "https://your-server.com/webhook",
+			"urlRequired": "ต้องระบุ URL ของ Webhook"
+		},
+		"testNotificationDevelop": "ทดสอบการแจ้งเตือน 2",
+		"integrationButton": "การรวมการแจ้งเตือน",
+		"testSuccess": "ส่งการแจ้งเตือนทดสอบเรียบร้อยแล้ว!",
+		"testFailed": "ไม่สามารถส่งการแจ้งเตือนทดสอบได้",
+		"unsupportedType": "การแจ้งเตือนไม่ได้รับการสนับสนุนประเภทนี้",
+		"networkError": "เกิดข้อผิดพลาดของเครือข่าย",
+		"fallback": {
+			"title": "ช่องทางแจ้งเตือนใช้เพื่อ:",
+			"checks": [
+				"แจ้งทีมเกี่ยวกับการหยุดทำงานหรือปัญหาประสิทธิภาพ",
+				"แจ้งวิศวกรเมื่อเกิดเหตุการณ์",
+				"ให้ผู้ดูแลระบบทราบเกี่ยวกับการเปลี่ยนแปลงของระบบ"
+			],
+			"actionButton": "มาสร้างช่องทางการแจ้งเตือนแรกของคุณกันเถอะ!"
+		},
+		"createButton": "สร้างช่องทางแจ้งเตือน",
+		"createTitle": "ช่องทางแจ้งเตือน",
+		"create": {
+			"success": "สร้างช่องทางแจ้งเตือนสำเร็จแล้ว",
+			"failed": "ไม่สามารถสร้างช่องทางแจ้งเตือนได้"
+		},
+		"fetch": {
+			"success": "ดึงข้อมูลการแจ้งเตือนสำเร็จแล้ว",
+			"failed": "ไม่สามารถดึงข้อมูลการแจ้งเตือนได้"
+		},
+		"delete": {
+			"success": "ลบช่องทางแจ้งเตือนสำเร็จแล้ว",
+			"failed": "ไม่สามารถลบช่องทางแจ้งเตือนได้"
+		},
+		"edit": {
+			"success": "ปรับปรุงช่องทางแจ้งเตือนสำเร็จแล้ว",
+			"failed": "ไม่สามารถปรับปรุงการแจ้งเตือนได้"
+		},
+		"test": {
+			"success": "ส่งการแจ้งเตือนทดสอบสำเร็จแล้ว",
+			"failed": "ไม่สามารถส่งการแจ้งเตือนทดสอบได้"
+		}
+	},
+	"testLocale": "testLocale",
+	"add": "เพิ่ม",
+	"monitors": "monitors",
+	"distributedUptimeStatusCreateStatusPage": "หน้าตรวจสอบสถานะระบบ",
+	"distributedUptimeStatusCreateStatusPageAccess": "สิทธิ์เข้าถึง",
+	"distributedUptimeStatusCreateStatusPageReady": "เมื่อหน้าสถานะพร้อม คุณสามารถตั้งค่าเป็นเผยแพร่สู่สาธารณะได้",
+	"distributedUptimeStatusBasicInfoHeader": "ข้อมูลทั่วไป",
+	"distributedUptimeStatusBasicInfoDescription": "ระบุชื่อบริษัทและซับโดเมนสำหรับหน้าสถานะของคุณ",
+	"distributedUptimeStatusLogoHeader": "โลโก้",
+	"distributedUptimeStatusLogoDescription": "อัปโหลดโลโก้ให้ Status Page ของคุณ",
+	"distributedUptimeStatusLogoUploadButton": "อัพโหลดโลโก้",
+	"distributedUptimeStatusStandardMonitorsHeader": "มอนิเตอร์พื้นฐาน",
+	"distributedUptimeStatusStandardMonitorsDescription": "เพิ่มตัวตรวจสอบมาตรฐานไปยัง Status Page ของคุณ",
+	"distributedUptimeStatusCreateYour": "Create your",
+	"distributedUptimeStatusEditYour": "Edit your",
+	"distributedUptimeStatusPublishedLabel": "เผยแพร่และมองเห็นได้ต่อสาธารณะ",
+	"distributedUptimeStatusCompanyNameLabel": "ชื่อบริษัท",
+	"distributedUptimeStatusPageAddressLabel": "ที่อยู่หน้าสถานะของคุณ",
+	"distributedUptimeStatus30Days": "30 วัน",
+	"distributedUptimeStatus60Days": "60 วัน",
+	"distributedUptimeStatus90Days": "90 วัน",
+	"distributedUptimeStatusPageNotSetUp": "หน้าสถานะยังไม่ถูกสร้างขึ้น",
+	"distributedUptimeStatusContactAdmin": "กรุณาติดต่อผู้ดูแลระบบของคุณ เพื่อขอความช่วยเหลือ",
+	"distributedUptimeStatusPageNotPublic": "หน้าสถานะนี้ไม่เปิดเผยต่อสาธารณะ",
+	"distributedUptimeStatusPageDeleteDialog": "คุณต้องการลบหน้าสถานะนี้หรือไม่?",
+	"distributedUptimeStatusPageDeleteConfirm": "ใช่ ฉันต้องการลบหน้าสถานะนี้",
+	"distributedUptimeStatusPageDeleteDescription": "เมื่อถูกลบแล้ว หน้าสถานะของคุณจะไม่สามารถกู้คืนได้",
+	"distributedUptimeStatusDevices": "อุปกรณ์",
+	"distributedUptimeStatusUpt": "UPT",
+	"distributedUptimeStatusUptBurned": "UPT Burned",
+	"distributedUptimeStatusUptLogo": "Upt Logo",
+	"incidentsTableNoIncidents": "ยังไม่มีเหตุการณ์ผิดปกติบันทึกไว้",
+	"incidentsTablePaginationLabel": "เหตุการณ์ผิดปกติ",
+	"incidentsTableMonitorName": "ชื่อมอนิเตอร์",
+	"incidentsTableStatus": "สถานะ",
+	"incidentsTableDateTime": "วันและเวลา",
+	"incidentsTableStatusCode": "รหัสสถานะ",
+	"incidentsTableMessage": "ข้อความ",
+	"incidentsOptionsHeader": "เหตุการณ์ผิดปกติสำหรับ:",
+	"incidentsOptionsHeaderFilterBy": "กรองโดย:",
+	"incidentsOptionsHeaderFilterAll": "ท้ังหมด",
+	"incidentsOptionsHeaderFilterDown": "ล่ม",
+	"incidentsOptionsHeaderFilterCannotResolve": "ไม่แก้ไข/หาสาเหตุไม่ได้",
+	"incidentsOptionsHeaderShow": "แสดง:",
+	"incidentsOptionsHeaderLastHour": "ชั่วโมงที่แล้ว",
+	"incidentsOptionsHeaderLastDay": "วันที่แล้ว",
+	"incidentsOptionsHeaderLastWeek": "สัปดาห์ที่แล้ว",
+	"incidentsOptionsPlaceholderAllServers": "เชิร์ฟเวอร์ทั้งหมด",
+	"infrastructureCreateYour": "สร้าง",
+	"infrastructureCreateGeneralSettingsDescription": "คุณสามารถเลือก URL ของโฮสต์ พร้อมกับชื่อที่เป็นมิตร Friendly Name และรหัสลับการอนุญาตเพื่อเชื่อมต่อกับตัวแทนเซิร์ฟเวอร์ Server Agent",
+	"infrastructureServerRequirement": "เซิร์ฟเวอร์ที่คุณมอนิเตอร์ต้องกำลังทำงานด้วย",
+	"infrastructureCustomizeAlerts": "ปรับแต่งการแจ้งเตือน",
+	"infrastructureAlertNotificationDescription": "ส่งการแจ้งเตือนถึงผู้ใช้เมื่อค่าขีดจำกัดเกินเปอร์เซ็นต์ที่กำหนด",
+	"infrastructureCreateMonitor": "สร้าง Infrastructure Monitor",
+	"infrastructureProtocol": "โปรโตคอล",
+	"infrastructureServerUrlLabel": "URL ของเซิร์ฟเวอร์",
+	"infrastructureDisplayNameLabel": "ชื่อที่แสดง",
+	"infrastructureAuthorizationSecretLabel": "Authorization secret / คีย์ลับสำหรับการยืนยันตัวตน",
+	"gb": "กิกะไบต์ GB",
+	"mb": "เมกะไบต์ MB",
+	"mem": "แรม",
+	"memoryUsage": "การใช้งานแรม",
+	"cpu": "ซีพียู",
+	"cpuUsage": "การใช้งาน CPU",
+	"cpuTemperature": "อุณหภูมิ CPU",
+	"diskUsage": "การใช้งาน Disk",
+	"used": "ใช้งาน",
+	"total": "ทั้งหมด",
+	"cores": "คอร์",
+	"frequency": "ความถี่",
+	"status": "สถานะ",
+	"cpuPhysical": "ซีพียู (คอร์หลัก)",
+	"cpuLogical": "ซีพียู (คอร์เสมือน)",
+	"cpuFrequency": "ความถี่ของ CPU",
+	"avgCpuTemperature": "อุณหภูมิเฉลี่ยของซีพียู",
+	"memory": "แรม",
+	"disk": "ดิส/พื้นที่",
+	"uptime": "",
+	"os": "ระบบปฏิบัติการ",
+	"host": "โฮส",
+	"actions": "จัดการ",
+	"integrations": "การรวมระบบ",
+	"integrationsPrism": "เชื่อมต่อ Prism กับบริการที่คุณชื่นชอบ",
+	"integrationsSlack": "Slack",
+	"integrationsSlackInfo": "เชื่อมต่อกับ Slack และดูเหตุการณ์ผิดปกติในช่องทาง",
+	"integrationsDiscord": "Discord",
+	"integrationsDiscordInfo": "เชื่อมต่อกับ Discord และดูเหตุการณ์ผิดปกติได้โดยตรงในช่องทาง",
+	"integrationsZapier": "Zapier",
+	"integrationsZapierInfo": "ส่งเหตุการณ์ทั้งหมดไปยัง Zapier แล้วสามารถดูได้ทุกที่",
+	"commonSave": "บันทึก",
+	"createYour": "Create your",
+	"createMonitor": "",
+	"pause": "พักชั่วคราว",
+	"resume": "ดำเนินการต่อ",
+	"editing": "กำลังปรับปรุง…",
+	"url": "URL",
+	"access": "การเข้าถึง",
+	"timezone": "เขตเวลา",
+	"features": "ฟีเจอร์",
+	"administrator": "ผู้ดูแลระบบ",
+	"loginHere": "กรุณาเข้าสู่ระบบที่นี่",
+	"displayName": "ชื่อที่แสดง",
+	"urlMonitor": "ลิงก์ที่จะมอนิเตอร์",
+	"portToMonitor": "พอร์ตที่จะมอนิเตอร์",
+	"websiteMonitoring": "เว็บไชต์ที่จะมอนิเตอร์",
+	"websiteMonitoringDescription": "ใช้ HTTP(s) เพื่อตรวจสอบเว็บไซต์หรือ API endpoint ของคุณ",
+	"pingMonitoring": "มอนิเตอร์แบบ Ping",
+	"pingMonitoringDescription": "ตรวจสอบว่าเซิร์ฟเวอร์ของคุณพร้อมใช้งานหรือไม่",
+	"dockerContainerMonitoring": "มอนิเตอร์คอนเทนเนอร์ใน Docker",
+	"dockerContainerMonitoringDescription": "ตรวจสอบว่าคอนเทนเนอร์ Docker ของคุณกำลังทำงานอยู่หรือไม่",
+	"portMonitoring": "มอนิเตอร์แบบ Ping",
+	"portMonitoringDescription": "ตรวจสอบว่าพอร์ตของคุณเปิดอยู่หรือไม่",
+	"createMaintenanceWindow": "สร้างช่วงเวลาบำรุงรักษา",
+	"createMaintenance": "สร้างการบำรุงรักษา",
+	"editMaintenance": "แก้ไขการบำรุงรักษา",
+	"maintenanceWindowName": "ชื่อหน้าบำรุงรักษา",
+	"friendlyNameInput": "ชื่อแสดงผล",
+	"friendlyNamePlaceholder": "Maintenance เริ่มต้นเวลา __ : __ และใช้เวลา ___ นาที",
+	"maintenanceRepeat": "ทำซ้ำการบำรุงรักษา",
+	"maintenance": "การบำรุงรักษา",
+	"duration": "ระยะเวลา",
+	"addMonitors": "เพิ่มมอนิเตอร์",
+	"window": "ช่วงเวลา",
+	"cancel": "ยกเลิก",
+	"message": "ข้อความ",
+	"low": "Low",
+	"high": "High",
+	"statusCode": "รหัสสถานะ",
+	"date&Time": "วันที่และเวลา",
+	"type": "ประเภท",
+	"statusPageName": "ชื่อ Status Page",
+	"publicURL": "URL สาธารณะ",
+	"repeat": "ทำซ้ำ",
+	"edit": "แก้ไข",
+	"createA": "สร้าง A",
+	"remove": "ลบ",
+	"maintenanceWindowDescription": "ช่วงเวลาการบำรุงรักษา การตรวจสอบทั้งหมดของมอนิเตอร์ที่ถูกเลือกจะถูกระงับ ไม่ทำการตรวจสอบเครือข่ายใด ๆ ทำให้ไม่มีการอัปเดตสถานะหรือแจ้งเตือนเกิดขึ้น มอนิเตอร์ของคุณจะคงแสดงสถานะล่าสุดที่ทราบ และหน้าสถานะจะมีสัญลักษณ์บ่งบอกว่ากำลังอยู่ระหว่างการบำรุงรักษา เมื่อเวลาการบำรุงรักษาสิ้นสุด การตรวจสอบจะกลับมาทำงานโดยอัตโนมัติ และหากพบปัญหา การแจ้งเตือนจะถูกส่งออก ช่วงเวลาการบำรุงรักษาจะไม่ถูกนับรวมในการคำนวณความพร้อมใช้งาน",
+	"startTime": "เวลาเริ่มต้น",
+	"timeZoneInfo": "วันที่และเวลาทั้งหมดเป็นเวลาตามโซน GMT+0",
+	"monitorsToApply": "มอนิเตอร์ที่จะใช้ช่วงเวลาการบำรุงรักษา",
+	"nextWindow": "ช่วงเวลาถัดไป",
+	"notFoundButton": "ไปยังหน้าจอแดชบอร์ดหลัก",
+	"pageSpeedConfigureSettingsDescription": "คุณสามารถเลือก URL ของโฮสต์ พร้อมกับประเภทของมอนิเตอร์ได้",
+	"monitorDisplayName": "ชื่อที่แสดงของมอนิเตอร์",
+	"whenNewIncident": "เมื่อเกิดเหตุการณ์ใหม่",
+	"notifySMS": "แจ้งเตือนทางSMS (กำลังจะมา)",
+	"notifyEmails": "แจ้งเตือนทางอีเมลไปยังหลายที่อยู่ด้วย (กำลังจะมา)",
+	"seperateEmails": "คุณสามารถแยกอีเมลหลายอันด้วยเครื่องหมายจุลภาค , ได้",
+	"checkFrequency": "ความถี่ในการตรวจสอบ",
+	"matchMethod": "วิธีการจับคู่",
+	"expectedValue": "ค่าที่คาดหวัง",
+	"deleteDialogTitle": "คุณแน่ใจหรือว่าต้องการลบมอนิเตอร์นี้ไหม",
+	"deleteDialogDescription": "เมื่อลบแล้ว มอนิเตอร์นี้ไม่สามารถกู้คืนได้",
+	"pageSpeedMonitor": "มอนิเตอร์ความเร็วหน้าเว็บ",
+	"shown": "แสดง",
+	"ago": "ที่ผ่านมา",
+	"companyName": "ชื่อบริษัท",
+	"pageSpeedDetailsPerformanceReport": "เป็นค่าโดยประมาณและอาจแตกต่างกันไป",
+	"pageSpeedDetailsPerformanceReportCalculator": "ดูเครื่องคิดเลข",
+	"checkingEvery": "ตรวจสอบทุก",
+	"statusPageCreateSettings": "หากหน้าสถานะของคุณพร้อมแล้ว คุณสามารถทำเครื่องหมายว่าเผยแพร่แล้วได้",
+	"basicInformation": "ข้อมูลพื้นฐาน",
+	"statusPageCreateBasicInfoDescription": "กำหนดชื่อบริษัทและซับโดเมนที่หน้าสถานะของคุณชี้ไป",
+	"statusPageCreateSelectTimeZoneDescription": "เลือกเขตเวลาที่หน้าสถานะของคุณจะแสดง",
+	"statusPageCreateAppearanceDescription": "กําหนดรูปลักษณ์เริ่มต้นของหน้าสถานะสาธารณะของคุณ",
+	"statusPageCreateSettingsCheckboxLabel": "เผยแพร่และเปิดเผยต่อสาธารณะ",
+	"statusPageCreateBasicInfoStatusPageAddress": "ที่อยู่หน้าสถานะของคุณ",
+	"statusPageCreateTabsContent": "หน้าสถานะเซิร์ฟเวอร์",
+	"statusPageCreateTabsContentDescription": "คุณสามารถเพิ่มเซิร์ฟเวอร์ที่คุณตรวจสอบเข้าไปยังหน้าสถานะของคุณได้จำนวนเท่าใดก็ได้ และสามารถจัดลำดับใหม่เพื่อการแสดงผลที่ดีที่สุด",
+	"statusPageCreateTabsContentFeaturesDescription": "แสดงรายละเอียดเพิ่มเติมบนหน้าสถานะ",
+	"showCharts": "แสดงแผนภูมิ",
+	"showUptimePercentage": "แสดงเปอร์เซ็นต์ความพร้อมใช้งาน",
+	"removeLogo": "ลบโลโก้",
+	"statusPageStatus": "ยังไม่ได้ตั้งค่าหน้าสถานะสาธารณะ",
+	"statusPageStatusContactAdmin": "กรุณาติดต่อผู้ดูแลระบบของคุณ",
+	"statusPageStatusNotPublic": "หน้าสถานะนี้ไม่เป็นสาธารณะ",
+	"statusPageStatusNoPage": "ที่นี่ยังไม่มีหน้าสถานะ",
+	"statusPageStatusServiceStatus": "สถานะบริการ",
+	"deleteStatusPage": "คุณต้องการลบหน้าสถานะนี้หรือไม่ไหม?",
+	"deleteStatusPageConfirm": "ใช่ ลบหน้าสถานะ",
+	"deleteStatusPageDescription": "เมื่อลบแล้ว หน้าสถานะของคุณไม่สามารถกู้คืนได้",
+	"uptimeCreate": "ค่าที่คาดหวังถูกใช้เพื่อตรวจสอบผลลัพธ์การตอบกลับ และการจับคู่จะเป็นตัวกำหนดสถานะ",
+	"uptimeCreateJsonPath": "นิพจน์นี้จะถูกประเมินกับข้อมูล JSON ที่ตอบกลับ และผลลัพธ์จะถูกใช้เพื่อตรวจสอบกับค่าที่คาดหวัง ดู",
+	"uptimeCreateJsonPathQuery": "for query language documentation.",
+	"maintenanceTableActionMenuDialogTitle": "คุณแน่ใจหรือว่าต้องการลบช่วงเวลาการบำรุงรักษานี้?",
+	"infrastructureEditYour": "Edit your",
+	"infrastructureEditMonitor": "บันทึก Infrastructure มอนิเตอร์",
+	"infrastructureMonitorCreated": "สร้างมอนิเตอร์ Infrastructure เรียบร้อยแล้ว!",
+	"infrastructureMonitorUpdated": "อัพเดทมอนิเตอร์ Infrastructure เรียบร้อยแล้ว!",
+	"errorInvalidTypeId": "ประเภทการแจ้งเตือนที่ระบุไม่ถูกต้อง",
+	"errorInvalidFieldId": "รหัสฟิลด์ที่ระบุไม่ถูกต้อง",
+	"inviteNoTokenFound": "ไม่พบโทเค็นคำเชิญ",
+	"pageSpeedWarning": "คำเตือน: คุณยังไม่ได้เพิ่มคีย์ Google PageSpeed API หากไม่มีคีย์นี้ มอนิเตอร์ความเร็วหน้าเว็บจะไม่ทำงาน",
+	"pageSpeedLearnMoreLink": "คลิกที่นี่",
+	"pageSpeedAddApiKey": "เพื่อเพิ่มคีย์ API ของคุณ",
+	"update": "อัปเดต",
+	"invalidFileFormat": "รูปแบบไฟล์ไม่รองรับ!",
+	"invalidFileSize": "ขนาดไฟล์ใหญ่เกินไป!",
+	"ClickUpload": "คลิกเพื่ออัปโหลด",
+	"DragandDrop": "ลากและวางเลย",
+	"MaxSize": "ขนาดสูงสุด",
+	"SupportedFormats": "รูปแบบที่รองรับ",
+	"FirstName": "ชื่อจริง",
+	"LastName": "นามสกุล",
+	"EmailDescriptionText": "นี่คือที่อยู่อีเมลปัจจุบันของคุณ — ไม่สามารถแก้ไขได้",
+	"YourPhoto": "รูปโปรไฟล์",
+	"PhotoDescriptionText": "รูปนี้จะแสดงบนหน้าประวัติของคุณ",
+	"save": "บันทึก",
+	"DeleteDescriptionText": "การทำเช่นนี้จะลบบัญชีและข้อมูลทั้งหมดที่เกี่ยวข้องบนเซิร์ฟเวอร์ ไม่สามารถกู้คืนได้",
+	"DeleteAccountWarning": "การลบบัญชีหมายความว่าคุณจะไม่สามารถเข้าสู่ระบบอีก และข้อมูลทั้งหมดของคุณจะถูกลบ ไม่สามารถกู้คืนได้",
+	"DeleteWarningTitle": "คุณแน่ใจหรือว่าต้องการลบบัญชีนี้?",
+	"bulkImport": {
+		"title": "นำเข้าจำนวนมาก",
+		"selectFileTips": "เลือกไฟล์ CSV เพื่อนำเข้า",
+		"selectFileDescription": "คุณสามารถดาวน์โหลด <template>template</template> หรือ <sample>sample</sample> ของเราได้",
+		"selectFile": "เลือกไฟล์",
+		"parsingFailed": "การแยกวิเคราะห์ล้มเหลว",
+		"uploadSuccess": "สร้างมอนิเตอร์เรียบร้อยแล้ว!",
+		"validationFailed": "การตรวจสอบล้มเหลว",
+		"noFileSelected": "ยังไม่ได้เลือกไฟล์",
+		"fallbackPage": "นำเข้าไฟล์เพื่ออัปโหลดรายการเซิร์ฟเวอร์เป็นกลุ่ม",
+		"invalidFileType": "ประเภทไฟล์ไม่ถูกต้อง",
+		"uploadFailed": "อัปโหลดล้มเหลว"
+	},
+	"DeleteAccountTitle": "ลบบัญชี",
+	"DeleteAccountButton": "ลบบัญชี",
+	"publicLink": "ลิงก์สาธารณะ",
+	"maskedPageSpeedKeyPlaceholder": "*************************************",
+	"reset": "รีเช็ต",
+	"ignoreTLSError": "ละเว้นข้อผิดพลาด TLS/SSL",
+	"tlsErrorIgnored": "ละเว้นข้อผิดพลาด TLS/SSL แล้ว",
+	"ignoreTLSErrorDescription": "ละเว้นข้อผิดพลาด TLS/SSL และดำเนินการตรวจสอบความพร้อมใช้งานของเว็บไซต์ต่อ",
+	"createNew": "สร้างใหม่",
+	"greeting": {
+		"prepend": "สวัสดี",
+		"append": "ช่วงบ่ายคือเวลาเล่นของคุณ—มาทำให้สุดยอดกันเถอะ!",
+		"overview": "นี่คือภาพรวมระบบมอนิเตอร์ประเภท {{type}} ของคุณ"
+	},
+	"roles": {
+		"superAdmin": "Super admin",
+		"admin": "แอดมิน",
+		"teamMember": "สมาชิกในทีม",
+		"demoUser": "ผู้ใช้ Demo"
+	},
+	"teamPanel": {
+		"teamMembers": "สมาชิกในทีม",
+		"filter": {
+			"all": "ทั้งหมด",
+			"member": "สมาชิก"
+		},
+		"inviteTeamMember": "เชิญสมาชิกเข้าทีม",
+		"inviteNewTeamMember": "เชิญสมาชิกทีมใหม่",
+		"inviteDescription": "เมื่อคุณเพิ่มสมาชิกทีมใหม่ เขาจะสามารถเข้าถึงมอนิเตอร์ทั้งหมดได้",
+		"email": "อีเมล",
+		"selectRole": "เลือกบทบาท",
+		"inviteLink": "ลิงก์เชิญ",
+		"cancel": "ยกเลิก",
+		"noMembers": "ยังไม่มีสมาชิกทีมในบทบาทนี้",
+		"getToken": "รับโทเค็น",
+		"emailToken": "Token ทางอีเมล",
+		"table": {
+			"name": "ชื่อ",
+			"email": "อีเมล",
+			"role": "บทบาท",
+			"created": "สร้างเมื่อ"
+		},
+		"addTeamMember": {
+			"addMemberMenu": "เพิ่มสมาชิกทีม",
+			"title": "ลงทะเบียนสมาชิกทีมใหม่",
+			"description": "สร้างผู้ใช้ใหม่และแชร์ข้อมูลการเข้าสู่ระบบให้กับพวกเขา วิธีนี้จะทำให้สมาชิกสามารถเข้าถึงตัวตรวจสอบทั้งหมดได้ทันที",
+			"addButton": "เพิ่มสมาชิก"
+		},
+		"register": "ลงทะเบียนสมาชิกทีม",
+		"registerToast": {
+			"success": "สร้างผู้ใช้เรียบร้อยแล้ว กรุณาแชร์ข้อมูลการเข้าสู่ระบบให้สมาชิกอย่างปลอดภัย",
+			"dbUserExists": "ผู้ใช้นี้มีอยู่แล้ว",
+			"unknownError": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ"
+		},
+		"registerTeamMember": {
+			"title": "ลงทะเบียนสมาชิกทีม",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "กรุณากรอกชื่อ",
+								"pattern": "ชื่อต้องมีเฉพาะตัวอักษร เว้นวรรค เครื่องหมายอัญประกาศ หรือขีดกลาง"
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "กรุณากรอกนามสกุล",
+								"pattern": "นามสกุลต้องมีเฉพาะตัวอักษร เว้นวรรค เครื่องหมายอัญประกาศ หรือขีดกลาง"
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "กรุณากรอกอีเมลเพื่อดำเนินการต่อ",
+								"invalid": "กรุณาตรวจสอบความถูกต้องของอีเมลอีกครั้ง"
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": "ต้องระบุบทบาท"
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": "บทบาท"
+	},
+	"monitorState": {
+		"paused": "หยุดชั่วคราว",
+		"resumed": "ดำเนินการต่อ",
+		"active": "ใช้งานอยู่"
+	},
+	"menu": {
+		"uptime": "ความพร้อมใช้งาน",
+		"pagespeed": "ความเร็วหน้าเว็บ",
+		"infrastructure": "โครงสร้างพื้นฐาน",
+		"incidents": "เหตุการณ์",
+		"statusPages": "หน้าสถานะ",
+		"maintenance": "การบำรุงรักษา",
+		"integrations": "การรวมระบบ",
+		"settings": "การตั้งค่า",
+		"support": "การสนับสนุน",
+		"discussions": "การสนทนา",
+		"docs": "เอกสาร",
+		"changelog": "บันทึกการเปลี่ยนแปลง",
+		"profile": "โปรไฟล์",
+		"password": "รหัสผ่าน",
+		"team": "ทีม",
+		"logOut": "ออกจากระบบ",
+		"notifications": "การแจ้งเตือน",
+		"logs": "Logs"
+	},
+	"settingsEmailUser": "อีเมลผู้ใช้ - ชื่อผู้ใช้สำหรับการยืนยันตัวตน จะใช้แทนอีเมลหากระบุไว้",
+	"state": "สถานะ",
+	"statusBreadCrumbsStatusPages": "หน้าสถานะ",
+	"statusBreadCrumbsDetails": "รายละเอียด",
+	"commonSaving": "กำลังบันทึก...",
+	"navControls": "การควบคุม",
+	"incidentsPageTitle": "เหตุการณ์",
+	"passwordPanel": {
+		"passwordChangedSuccess": "รหัสผ่านของคุณถูกเปลี่ยนเรียบร้อยแล้ว",
+		"passwordInputIncorrect": "คุณป้อนรหัสผ่านที่ไม่ถูกต้อง",
+		"currentPassword": "รหัสผ่านปัจจุบัน",
+		"enterCurrentPassword": "กรอกรหัสผ่านปัจจุบันของคุณ",
+		"newPassword": "รหัสผ่านใหม่",
+		"enterNewPassword": "กรอกรหัสผ่านใหม่ของคุณ",
+		"confirmNewPassword": "ยืนยันรหัสผ่านใหม่อีกครั้ง",
+		"passwordRequirements": "รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร และต้องมีตัวอักษรใหญ่ ตัวอักษรเล็ก ตัวเลข และอักขระพิเศษอย่างละอย่าง 1",
+		"saving": "กำลังบันทึก..."
+	},
+	"emailSent": "ส่งอีเมลเรียบร้อยแล้ว",
+	"failedToSendEmail": "ส่งอีเมลล้มเหลว",
+	"settingsTestEmailSuccess": "ส่งอีเมลทดสอบเรียบร้อยแล้ว",
+	"settingsTestEmailFailed": "ส่งอีเมลทดสอบล้มเหลว",
+	"settingsTestEmailFailedWithReason": "ส่งอีเมลทดสอบล้มเหลว: {{reason}}",
+	"settingsTestEmailUnknownError": "ข้อผิดพลาดไม่ทราบสาเหตุ",
+	"statusMsg": {
+		"paused": "การตรวจสอบถูกพักชั่วคราว",
+		"up": "เว็บไซต์ของคุณใช้งานได้",
+		"down": "เว็บไซต์ของคุณล่ม",
+		"pending": "รอดำเนินการ..."
+	},
+	"uptimeGeneralInstructions": {
+		"http": "กรอก URL หรือ IP ที่ต้องการตรวจสอบ (เช่น https://example.com/\n หรือ 192.168.1.100) และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
+		"ping": "กรอกที่อยู่ IP หรือชื่อโฮสต์ที่ต้องการ ping (เช่น 192.168.1.100 หรือ example.com) และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
+		"docker": "กรอกชื่อหรือ ID ของคอนเทนเนอร์ Docker คุณสามารถใช้ชื่อคอนเทนเนอร์ (เช่น my-app) หรือ ID ของคอนเทนเนอร์ (ID เต็ม 64 ตัวอักษร หรือ ID สั้น)",
+		"port": "กรอก URL หรือ IP ของเซิร์ฟเวอร์ หมายเลขพอร์ต และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
+		"game": "กรอกที่อยู่ IP หรือชื่อโฮสต์และหมายเลขพอร์ตเพื่อทำการ ping (เช่น 192.168.1.100 หรือ example.com) และเลือกประเภทเกม"
+	},
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": "สลับโหมดสว่าง & มืด"
+		},
+		"toasts": {
+			"networkError": "ข้อผิดพลาดเครือข่าย",
+			"checkConnection": "กรุณาตรวจสอบการเชื่อมต่อของคุณ",
+			"unknownError": "ข้อผิดพลาดไม่ทราบสาเหตุ"
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "ดำเนินการต่อ",
+				"back": "ย้อนกลับ"
+			},
+			"inputs": {
+				"email": {
+					"label": "อีเมล",
+					"placeholder": "jordan.ellis@domain.com",
+					"errors": {
+						"empty": "เพื่อดำเนินการต่อ กรุณากรอกที่อยู่อีเมลของคุณ",
+						"invalid": "กรุณาตรวจสอบความถูกต้องของอีเมลที่กรอก"
+					}
+				},
+				"password": {
+					"label": "รหัสผ่าน",
+					"rules": {
+						"length": {
+							"beginning": "ต้องมีความยาวอย่างน้อย",
+							"highlighted": "8 ตัวอักษร"
+						},
+						"special": {
+							"beginning": "ต้องมีอย่างน้อย",
+							"highlighted": "อักขระพิเศษ 1 ตัว"
+						},
+						"number": {
+							"beginning": "ต้องมีอย่างน้อย",
+							"highlighted": "ตัวเลข 1 ตัว"
+						},
+						"uppercase": {
+							"beginning": "ต้องมีอย่างน้อย",
+							"highlighted": "ตัวอักษรใหญ่ 1 ตัว"
+						},
+						"lowercase": {
+							"beginning": "ต้องมีอย่างน้อย",
+							"highlighted": "ตัวอักษรเล็ก 1 ตัว"
+						},
+						"match": {
+							"beginning": "รหัสผ่าน",
+							"highlighted": "ต้องตรงกัน"
+						}
+					},
+					"errors": {
+						"empty": "กรุณากรอกรหัสผ่านของคุณ",
+						"length": "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
+						"uppercase": "รหัสผ่านต้องมีตัวอักษรใหญ่อย่างน้อย 1 ตัว",
+						"lowercase": "รหัสผ่านต้องมีตัวอักษรเล็กอย่างน้อย 1 ตัว",
+						"number": "รหัสผ่านต้องมีตัวเลขอย่างน้อย 1 ตัว",
+						"special": "รหัสผ่านต้องมีอักขระพิเศษอย่างน้อย 1 ตัว",
+						"incorrect": "รหัสผ่านที่คุณกรอกไม่ตรงกับข้อมูลของเรา"
+					}
+				},
+				"passwordConfirm": {
+					"label": "ยืนยันรหัสผ่าน",
+					"placeholder": "กรอกรหัสผ่านอีกครั้งเพื่อยืนยัน",
+					"errors": {
+						"empty": "กรุณากรอกรหัสผ่านอีกครั้งเพื่อยืนยัน (ช่วยลดข้อผิดพลาดจากการพิมพ์ผิด)",
+						"different": "รหัสผ่านที่กรอกไม่ตรงกัน อาจมีตัวใดตัวหนึ่งพิมพ์ผิด"
+					}
+				},
+				"firstName": {
+					"label": "ชื่อ",
+					"placeholder": "Brownyroll",
+					"errors": {
+						"empty": "กรุณากรอกชื่อของคุณ",
+						"length": "ชื่อต้องมีความยาวไม่เกิน 50 ตัวอักษร",
+						"pattern": "ชื่อต้องประกอบด้วยตัวอักษร ช่องว่าง เครื่องหมาย ' หรือ - เท่านั้น"
+					}
+				},
+				"lastName": {
+					"label": "นามสกุล",
+					"placeholder": ".",
+					"errors": {
+						"empty": "กรุณากรอกนามสกุลของคุณ",
+						"length": "นามสกุลต้องมีความยาวไม่เกิน 50 ตัวอักษร",
+						"pattern": "นามสกุลต้องประกอบด้วยตัวอักษร ช่องว่าง เครื่องหมาย ' หรือ - เท่านั้น"
+					}
+				}
+			},
+			"errors": {
+				"validation": "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล"
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": "รหัสผ่านที่คุณป้อนไม่ตรงกับข้อมูลของเรา"
+					}
+				},
+				"role": {
+					"errors": {
+						"min": "ต้องมีอย่างน้อยหนึ่งบทบาท"
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "เข้าสู่ระบบเพื่อดำเนินการต่อ",
+			"subheadings": {
+				"stepOne": "กรอกอีเมลของคุณ",
+				"stepTwo": "กรอกรหัสผ่านของคุณ"
+			},
+			"links": {
+				"forgotPassword": "ลืมรหัสผ่าน?",
+				"register": "ยังไม่มีบัญชีใช่ไหม?",
+				"forgotPasswordLink": "รีเซ็ตรหัสผ่าน",
+				"registerLink": "สมัครสมาชิกที่นี่"
+			},
+			"toasts": {
+				"success": "ยินดีต้อนรับกลับ! คุณเข้าสู่ระบบเรียบร้อยแล้ว",
+				"incorrectPassword": "รหัสผ่านไม่ถูกต้อง"
+			},
+			"errors": {
+				"password": {
+					"incorrect": "รหัสผ่านที่คุณป้อนไม่ตรงกับข้อมูลของเรา"
+				}
+			},
+			"welcome": "ยินดีต้อนรับกลับสู่ Checkmate!"
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "สร้าง Super Admin",
+				"user": "สมัครสมาชิก"
+			},
+			"subheadings": {
+				"stepOne": "กรอกรายละเอียดส่วนตัวของคุณ",
+				"stepTwo": "กรอกอีเมลของคุณ",
+				"stepThree": "สร้างรหัสผ่านของคุณ"
+			},
+			"description": {
+				"superAdmin": "สร้างบัญชี Super Admin เพื่อเริ่มต้นใช้งาน",
+				"user": "สมัครสมาชิกผู้ใช้และขอสิทธิ์เข้าถึงมอนิเตอร์จาก Super Admin"
+			},
+			"gettingStartedButton": {
+				"superAdmin": "สร้างบัญชี Super Admin",
+				"user": "สมัครสมาชิกผู้ใช้ทั่วไป"
+			},
+			"termsAndPolicies": "การสร้างบัญชีถือว่าคุณยอมรับ <a1>ข้อกำหนดการให้บริการ</a1> และ <a2>นโยบายความเป็นส่วนตัว</a2> ของเรา",
+			"links": {
+				"login": "มีบัญชีแล้ว? <a>เข้าสู่ระบบ</a>"
+			},
+			"toasts": {
+				"success": "ยินดีต้อนรับ! สร้างบัญชีเรียบร้อยแล้ว"
+			},
+			"welcome": "ยินดีต้อนรับสู่ Checkmate!"
+		},
+		"forgotPassword": {
+			"heading": "ลืมรหัสผ่าน?",
+			"subheadings": {
+				"stepOne": "ไม่ต้องกังวล เราจะส่งคำแนะนำเพื่อรีเซ็ตรหัสผ่านให้คุณ",
+				"stepTwo": "เราได้ส่งลิงก์รีเซ็ตรหัสผ่านไปยัง <email/>",
+				"stepThree": "รหัสผ่านใหม่ต้องแตกต่างจากรหัสผ่านที่ใช้ก่อนหน้านี้",
+				"stepFour": "รีเซ็ตรหัสผ่านเรียบร้อยแล้ว คลิกด้านล่างเพื่อเข้าสู่ระบบทันที"
+			},
+			"buttons": {
+				"openEmail": "เปิดแอปอีเมล",
+				"resetPassword": "รีเซ็ตรหัสผ่าน"
+			},
+			"imageAlts": {
+				"passwordKey": "",
+				"email": "",
+				"lock": "",
+				"passwordConfirm": ""
+			},
+			"links": {
+				"login": "กลับไปที่ <a>เข้าสู่ระบบ</a>",
+				"resend": "ไม่ได้รับอีเมล? <a>คลิกเพื่อส่งอีกครั้ง</a>"
+			},
+			"toasts": {
+				"sent": "คำแนะนำถูกส่งไปยัง <email/>.",
+				"emailNotFound": "ไม่พบอีเมลนี้",
+				"redirect": "กำลังเปลี่ยนหน้าใน <seconds/>...",
+				"success": "รีเซ็ตรหัสผ่านสำเร็จแล้ว",
+				"error": "ไม่สามารถรีเซ็ตรหัสผ่านได้ กรุณาลองอีกครั้งภายหลังหรือติดต่อฝ่ายสนับสนุน"
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว",
+				"stillUnreachable": "เซิร์ฟเวอร์ยังไม่สามารถเข้าถึงได้ กรุณาลองอีกครั้งภายหลัง"
+			},
+			"alertBox": "เกิดข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์",
+			"description": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณหรือยืนยันการตั้งค่า deployment หากปัญหายังคงอยู่",
+			"retryButton": {
+				"default": "ลองเชื่อมต่ออีกครั้ง",
+				"processing": "กำลังเชื่อมต่อ…"
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "สร้างช่องทางแจ้งเตือน",
+		"nameSettings": {
+			"title": "ชื่อ",
+			"description": "ชื่อที่บ่งบอกถึงการตั้งค่าการรวมระบบของคุณ",
+			"nameLabel": "ชื่อ",
+			"namePlaceholder": "เช่น การแจ้งเตือนผ่าน Slack"
+		},
+		"typeSettings": {
+			"title": "ประเภท",
+			"description": "เลือกประเภทของช่องทางแจ้งเตือนที่คุณต้องการสร้าง",
+			"typeLabel": "ประเภท"
+		},
+		"emailSettings": {
+			"title": "อีเมล",
+			"description": "ที่อยู่อีเมลปลายทาง",
+			"emailLabel": "อีเมล",
+			"emailPlaceholder": "e.g. john@example.com"
+		},
+		"slackSettings": {
+			"title": "Slack",
+			"description": "ตั้งค่า Slack webhook ของคุณที่นี่",
+			"webhookLabel": "URL ของ Slack webhook",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
+		},
+		"pagerdutySettings": {
+			"title": "PagerDuty",
+			"description": "ตั้งค่าการรวมระบบ PagerDuty ของคุณที่นี่",
+			"integrationKeyLabel": "คีย์การรวมระบบ",
+			"integrationKeyPlaceholder": "1234567890"
+		},
+		"discordSettings": {
+			"title": "Discord",
+			"description": "ตั้งค่า Discord webhook ของคุณที่นี่",
+			"webhookLabel": "URL ของ Discord Webhook",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"webhookSettings": {
+			"title": "Webhook",
+			"description": "ตั้งค่า webhook ของคุณที่นี่",
+			"webhookLabel": "Webhook URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"testNotification": "ทดสอบการแจ้งเตือน",
+		"dialogDeleteTitle": "คุณแน่ใจหรือไม่ว่าต้องการลบการแจ้งเตือนนี้?",
+		"dialogDeleteConfirm": "ลบ"
+	},
+	"notificationConfig": {
+		"title": "การแจ้งเตือน",
+		"description": "เลือกช่องทางแจ้งเตือนที่คุณต้องการใช้"
+	},
+	"monitorStatus": {
+		"checkingEvery": "ตรวจสอบทุก {{interval}}",
+		"withCaptureAgent": "โดยใช้ Capture agent {{version}}",
+		"up": "ออนไลน์",
+		"down": "ออฟไลน์",
+		"paused": "หยุดชั่วคราว"
+	},
+	"advancedMatching": "การจับคู่ขั้นสูง",
+	"sendTestNotifications": "ส่งการแจ้งเตือนทดสอบ",
+	"selectAll": "Select all",
+	"showAdminLoginLink": "แสดงลิงก์ \"ผู้ดูแลระบบ? เข้าสู่ระบบที่นี่\" บนหน้าสถานะ",
+	"logsPage": {
+		"title": "Logs",
+		"description": "ระบบ Logs 1000 บรรทัดล่าสุด",
+		"tabs": {
+			"queue": "คิวงาน",
+			"logs": "Logs เซิร์ฟเวอร์",
+			"diagnostics": "วินิจฉัย"
+		},
+		"toast": {
+			"fetchLogsSuccess": "ดึง Logs สำเร็จแล้ว"
+		},
+		"logLevelSelect": {
+			"title": "Logs level",
+			"values": {
+				"all": "All",
+				"info": "Info",
+				"warn": "Warn",
+				"error": "Error",
+				"debug": "Debug"
+			}
+		}
+	},
+	"queuePage": {
+		"title": "Queue",
+		"refreshButton": "Refresh",
+		"flushButton": "Flush queue",
+		"jobTable": {
+			"title": "งานที่อยู่ในคิวปัจจุบัน",
+			"idHeader": "รหัสมอนิเตอร์",
+			"urlHeader": "URL",
+			"typeHeader": "Type",
+			"activeHeader": "ใช้งานอยู่",
+			"lockedAtHeader": "ล็อกเมื่อ",
+			"runCountHeader": "จำนวนรัน",
+			"failCountHeader": "จำนวนล้มเหลว",
+			"lastRunHeader": "รันล่าสุดเมื่อ",
+			"lastFinishedAtHeader": "เสร็จสิ้นล่าสุดเมื่อ",
+			"lastRunTookHeader": "รันครั้งล่าสุดใช้เวลา",
+			"intervalHeader": "ช่วงเวลา"
+		},
+		"metricsTable": {
+			"title": "คิวเมตริก",
+			"metricHeader": "เมตริก",
+			"valueHeader": "Value"
+		},
+		"failedJobTable": {
+			"title": "งานที่ล้มเหลว",
+			"monitorIdHeader": "รหัสมอนิเตอร์",
+			"monitorUrlHeader": "URL มอนิเตอร์",
+			"failCountHeader": "จำนวนล้มเหลว",
+			"failedAtHeader": "ล้มเหลวล่าสุดเมื่อ",
+			"failReasonHeader": "สาเหตุที่ล้มเหลว"
+		}
+	},
+	"export": {
+		"title": "ส่งออกมอนิเตอร์",
+		"success": "ส่งออกมอนิเตอร์สำเร็จแล้ว",
+		"failed": "ไม่สามารถส่งออกมอนิเตอร์ได้"
+	},
+	"monitorActions": {
+		"title": "ส่งออก/นำเข้า",
+		"import": "นำเข้ามอนิเตอร์",
+		"export": "ส่งออกมอนิเตอร์",
+		"deleteSuccess": "ลบมอนิเตอร์สำเร็จ",
+		"deleteFailed": "ลบมอนิเตอร์ล้มเหลว",
+		"details": "รายละเอียด"
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "พัฒนาโดย Bluewave Labs",
+			"labelVersion": "เวอร์ชัน",
+			"title": "เกี่ยวกับ"
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "เพิ่มมอนิเตอร์ตัวอย่าง",
+			"description": "เพิ่มมอนิเตอร์ตัวอย่างเพื่อการสาธิต",
+			"title": "มอนิเตอร์สาธิต"
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "ส่งอีเมลทดสอบ",
+			"description": "ตั้งค่าอีเมลสำหรับระบบของคุณ ใช้สำหรับส่งการแจ้งเตือนและเตือนภัย",
+			"descriptionTransport": "สร้าง SMTP transport สำหรับ NodeMailer",
+			"labelAddress": "ที่อยู่อีเมล - ใช้สำหรับการยืนยันตัวตน",
+			"labelConnectionHost": "โฮสต์เชื่อมต่ออีเมล - ชื่อโฮสต์ที่ใช้ในคำทักทาย HELO/EHLO",
+			"labelHost": "โฮสต์อีเมล - ชื่อโฮสต์หรือ IP สำหรับเชื่อมต่อ",
+			"labelIgnoreTLS": "ปิดใช้งาน STARTTLS: ไม่ใช้ TLS แม้เซิร์ฟเวอร์รองรับ",
+			"labelPassword": "รหัสผ่านอีเมล - สำหรับยืนยันตัวตน",
+			"labelPasswordSet": "ตั้งรหัสผ่านเรียบร้อยแล้ว คลิก รีเซ็ต เพื่อเปลี่ยน",
+			"labelPool": "เปิดใช้ connection pooling: ใช้การเชื่อมต่อเดิมซ้ำเพื่อเพิ่มประสิทธิภาพ",
+			"labelPort": "พอร์ตอีเมล - พอร์ตสำหรับเชื่อมต่อ",
+			"labelRejectUnauthorized": "ปฏิเสธใบรับรองไม่ถูกต้อง: ปฏิเสธการเชื่อมต่อที่ใช้ใบรับรอง self-signed หรือไม่เชื่อถือ",
+			"labelRequireTLS": "บังคับ STARTTLS: ต้องการอัปเกรด TLS ล้มเหลวหากไม่รองรับ",
+			"labelSecure": "ใช้ SSL (แนะนำ): เข้ารหัสการเชื่อมต่อด้วย SSL/TLS",
+			"labelTLSServername": "ชื่อเซิร์ฟเวอร์ TLS - ชื่อโฮสต์เสริมสำหรับตรวจสอบ TLS เมื่อโฮสต์เป็น IP",
+			"labelUser": "ผู้ใช้อีเมล - ชื่อผู้ใช้สำหรับยืนยันตัวตน ใช้แทนที่อีเมลถ้ามีการระบุ",
+			"linkTransport": "ดูข้อกำหนดที่นี่",
+			"placeholderUser": "ปล่อยว่างหากไม่จำเป็น",
+			"title": "อีเมล",
+			"toastEmailRequiredFieldsError": "ต้องระบุอีเมล, โฮสต์, พอร์ต และรหัสผ่าน"
+		},
+		"pageSpeedSettings": {
+			"description": "ใส่ Google PageSpeed API Key ของคุณเพื่อเปิดใช้งานการตรวจสอบ PageSpeed ของ Google คลิก รีเซ็ต เพื่ออัปเดต Key",
+			"labelApiKeySet": "ตั้งค่า API key แล้ว คลิก รีเซ็ต เพื่อเปลี่ยน",
+			"labelApiKey": "PageSpeed API key",
+			"title": "Google PageSpeed API key"
+		},
+		"saveButtonLabel": "บันทึก",
+		"statsSettings": {
+			"clearAllStatsButton": "ล้างสถิติทั้งหมด",
+			"clearAllStatsDescription": "ล้างสถิติทั้งหมด การกระทำนี้ไม่สามารถย้อนกลับได้",
+			"clearAllStatsDialogConfirm": "ใช่ ล้างสถิติทั้งหมด",
+			"clearAllStatsDialogDescription": "เมื่อถูกลบแล้ว ประวัติการตรวจสอบและสถิติไม่สามารถกู้คืนได้",
+			"clearAllStatsDialogTitle": "คุณต้องการล้างสถิติทั้งหมดหรือไม่?",
+			"description": "กำหนดระยะเวลาที่ต้องการเก็บข้อมูลประวัติ คุณยังสามารถล้างข้อมูลทั้งหมดที่มีอยู่ได้",
+			"labelTTL": "จำนวนวันที่ต้องการเก็บประวัติการตรวจสอบ",
+			"labelTTLOptional": "0 หมายถึงไม่จำกัด",
+			"title": "ประวัติการตรวจสอบ"
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "ลบมอนิเตอร์ทั้งหมด",
+			"description": "ลบมอนิเตอร์ทั้งหมดออกจากระบบของคุณ",
+			"dialogConfirm": "ใช่ ลบมอนิเตอร์ทั้งหมด",
+			"dialogDescription": "เมื่อถูกลบแล้ว มอนิเตอร์ไม่สามารถกู้คืนได้",
+			"dialogTitle": "คุณต้องการลบมอนิเตอร์ทั้งหมดหรือไม่?",
+			"title": "รีเซ็ตระบบ"
+		},
+		"timezoneSettings": {
+			"description": "เลือกโซนเวลาที่ใช้แสดงวันที่และเวลาในแอปทั้งหมด",
+			"label": "โซนเวลาที่แสดง",
+			"title": "โซนเวลาที่แสดง"
+		},
+		"title": "การตั้งค่า",
+		"uiSettings": {
+			"description": "สลับโหมดสว่าง/มืด หรือเปลี่ยนภาษาอินเทอร์เฟซผู้ใช้",
+			"labelLanguage": "ภาษา",
+			"labelTheme": "โหมดธีม",
+			"title": "รูปลักษณ์"
+		},
+		"urlSettings": {
+			"description": "แสดง IP/URL ของมอนิเตอร์บนหน้าสถานะสาธารณะ หากปิดใช้งาน จะแสดงเฉพาะชื่อมอนิเตอร์เพื่อป้องกันข้อมูลสำคัญ",
+			"label": "แสดง IP/URL บนหน้าสถานะ",
+			"selectDisabled": "ปิดใช้งาน",
+			"selectEnabled": "เปิดใช้งาน",
+			"title": "IP/URL ของมอนิเตอร์บนหน้าสถานะ"
+		},
+		"globalThresholds": {
+			"title": "เกณฑ์การตรวจสอบแบบรวม",
+			"description": "กำหนดค่าเกณฑ์ของ CPU, หน่วยความจำ, ดิสก์ และอุณหภูมิ หากระบุค่าไว้ ระบบจะเปิดใช้งานการตรวจสอบโดยอัตโนมัติ"
+		}
+	},
+	"statusPageCreate": {
+		"buttonSave": "บันทึก"
+	},
+	"incidentsOptionsHeaderFilterResolved": "แก้ไขแล้ว",
+	"settingsSave": "บันทึก",
+	"statusPageCreateAppearanceTitle": "รูปลักษณ์",
+	"confirmPassword": "ยืนยันรหัสผ่าน",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "ไม่สามารถเพิ่มมอนิเตอร์ตัวอย่างได้",
+		"successAddDemoMonitors": "เพิ่มมอนิเตอร์ตัวอย่างสำเร็จ"
+	},
+	"settingsAppearance": "รูปลักษณ์",
+	"settingsDisplayTimezone": "โซนเวลาที่แสดง",
+	"settingsGeneralSettings": "การตั้งค่าทั่วไป",
+	"incidentsOptionsHeaderTotalIncidents": "จำนวนเหตุการณ์ทั้งหมด",
+	"statusPage": {
+		"deleteSuccess": "ลบหน้าสถานะสำเร็จ",
+		"deleteFailed": "ลบหน้าสถานะล้มเหลว",
+		"createSuccess": "สร้างหน้าสถานะสำเร็จ",
+		"updateSuccess": "อัปเดตหน้าสถานะสำเร็จ",
+		"generalSettings": "การตั้งค่าทั่วไป",
+		"contents": "เนื้อหา",
+		"fallback": {
+			"checks": [
+				"ตรวจสอบและแสดงสุขภาพของบริการแบบเรียลไทม์",
+				"ติดตามหลายบริการและแชร์สถานะ",
+				"แจ้งผู้ใช้ให้ทราบเกี่ยวกับการหยุดทำงานและประสิทธิภาพ"
+			],
+			"title": "หน้าสถานะใช้สำหรับ:",
+			"actionButton": "มาสร้างหน้าสถานะแรกกันเถอะ!"
+		}
+	},
+	"testNotificationsDisabled": "ยังไม่มีการตั้งค่าการแจ้งเตือนสำหรับมอนิเตอร์นี้ คุณต้องเพิ่มโดยคลิกปุ่ม 'ตั้งค่า'",
+	"incidentsTableResolvedAt": "แก้ไขเมื่อ",
+	"incidentsTableActionResolve": "แก้ไข",
+	"checkHooks": {
+		"failureResolveOne": "แก้ไขเหตุการณ์ล้มเหลว",
+		"failureResolveAll": "แก้ไขเหตุการณ์ทั้งหมดล้มเหลว",
+		"failureResolveMonitor": "ไม่สามารถแก้ไขเหตุการณ์ของตัวตรวจสอบได้"
+	},
+	"checkFormError": "กรุณาตรวจสอบแบบฟอร์มสำหรับข้อผิดพลาด",
+	"diagnosticsPage": {
+		"diagnosticDescription": "วินิจฉัยระบบ",
+		"statsDescription": "สถิติระบบ",
+		"gauges": {
+			"heapAllocationTitle": "การจัดสรร Heap",
+			"heapAllocationSubtitle": "% ของหน่วยความจำที่ใช้ได้",
+			"heapUsageTitle": "การใช้งาน Heap",
+			"heapUsageSubtitle": "% ของหน่วยความจำที่ใช้ได้",
+			"heapUtilizationTitle": "การใช้งาน Heap",
+			"heapUtilizationSubtitle": "% ของที่จัดสรรแล้ว",
+			"instantCpuUsageTitle": "การใช้งาน CPU ทันที",
+			"instantCpuUsageSubtitle": "% ของเวลา 1 วินาทีที่ CPU ใช้"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "ความล่าช้าวงจร Event Loop",
+			"uptimeTitle": "เวลาทำงาน",
+			"usedHeapSizeTitle": "ขนาดที่ใช้ Heap",
+			"totalHeapSizeTitle": "รวมขนาด Heap",
+			"osMemoryLimitTitle": "ขีดจำกัดหน่วยความจำ OS"
+		}
+	},
+	"pageSpeedLighthouseAPI": "ใช้ Lighthouse PageSpeed API เพื่อตรวจสอบเว็บไซต์ของคุณ",
+	"time": {
+		"threeMinutes": "3 นาที",
+		"fiveMinutes": "5 นาที",
+		"tenMinutes": "10 นาที",
+		"twentyMinutes": "20 นาที",
+		"oneHour": "1 ชั่วโมง",
+		"oneDay": "1 วัน",
+		"oneWeek": "1 สัปดาห์",
+		"fourMinutes": "4 นาที",
+		"oneMinute": "1 นาที",
+		"twoMinutes": "2 นาที",
+		"fifteenSeconds": "15 วินาที",
+		"thirtySeconds": "30 วินาที"
+	},
+	"general": {
+		"noOptionsFound": "ไม่พบ {{unit}}"
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [
+				"ติดตามประสิทธิภาพของเซิร์ฟเวอร์ของคุณ",
+				"ระบุจุดคอขวดและเพิ่มประสิทธิภาพการใช้งาน",
+				"มั่นใจในความเสถียรด้วยการตรวจสอบแบบเรียลไทม์"
+			],
+			"title": "ตัวตรวจสอบโครงสร้างพื้นฐานใช้สำหรับ:",
+			"actionButton": "มาสร้างตัวตรวจสอบโครงสร้างพื้นฐานตัวแรกกันเถอะ!"
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": [
+				"กำหนดช่วงเวลาบำรุงรักษา",
+				"ลดความเข้าใจผิด",
+				"หยุดส่งการแจ้งเตือนในช่วงเวลาบำรุงรักษา"
+			],
+			"title": "ช่วงเวลาบำรุงรักษาใช้สำหรับ:",
+			"actionButton": "มาสร้างช่วงเวลาบำรุงรักษาแรกกันเถอะ!"
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": [
+				"รายงานเกี่ยวกับประสบการณ์ผู้ใช้ของหน้าเว็บ",
+				"ช่วยวิเคราะห์ความเร็วของหน้าเว็บ",
+				"ให้คำแนะนำในการปรับปรุงหน้าเว็บ"
+			],
+			"title": "ตัวตรวจสอบ PageSpeed ใช้สำหรับ:",
+			"actionButton": "มาสร้างตัวตรวจสอบ PageSpeed ตัวแรกกันเถอะ!"
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [
+				"ตรวจสอบว่าเว็บไซต์หรือเซิร์ฟเวอร์ออนไลน์และตอบสนองหรือไม่",
+				"แจ้งทีมเมื่อเกิดปัญหาการหยุดทำงานหรือประสิทธิภาพ",
+				"ตรวจสอบ HTTP endpoints, ping, คอนเทนเนอร์ และพอร์ต",
+				"ติดตามสถิติ uptime และความเสถียรย้อนหลัง"
+			],
+			"title": "ตัวตรวจสอบ Uptime ใช้สำหรับ:",
+			"actionButton": "มาสร้างตัวตรวจสอบ Uptime ตัวแรกกันเถอะ!"
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "อีเมล",
+			"firstName": "ชื่อจริง",
+			"lastName": "นามสกุล",
+			"role": "บทบาท",
+			"save": "บันทึก"
+		},
+		"table": {
+			"actionHeader": "การดำเนินการ",
+			"roleHeader": "บทบาท"
+		},
+		"title": "แก้ไขผู้ใช้",
+		"toast": {
+			"successUserUpdate": "อัปเดตผู้ใช้เรียบร้อยแล้ว",
+			"validationErrors": "ข้อผิดพลาดในการตรวจสอบข้อมูล"
+		}
+	},
+	"incidentsPageActionResolveMonitor": "แก้ไขเหตุการณ์ของตัวตรวจสอบ",
+	"incidentsPageActionResolveAll": "แก้ไขเหตุการณ์ทั้งหมด",
+	"matchMethodOptions": {
+		"equal": "Equal",
+		"equalPlaceholder": "success",
+		"include": "Include",
+		"includePlaceholder": "ok",
+		"regex": "Regex",
+		"regexPlaceholder": "^(success|ok)$",
+		"text": "วิธีการจับคู่"
+	},
+	"monitorType": {
+		"docker": {
+			"label": "ชื่อ/ID คอนเทนเนอร์",
+			"namePlaceholder": "คอนเทนเนอร์ของฉัน",
+			"placeholder": "my-app or abcd1234"
+		},
+		"http": {
+			"label": "URL ที่ต้องการตรวจสอบ",
+			"namePlaceholder": "Google",
+			"placeholder": "google.com"
+		},
+		"ping": {
+			"label": "ที่อยู่ IP ที่ต้องการตรวจสอบ",
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
+		},
+		"port": {
+			"label": "ที่อยู่ IP ที่ต้องการตรวจสอบ",
+			"namePlaceholder": "Localhost:5173",
+			"placeholder": "localhost"
+		},
+		"game": {
+			"label": "URL ที่ต้องการมอนิเตอร์",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
+		}
+	},
+	"uptimeAdvancedMatching": {
+		"jsonPath": "JSON Path"
+	},
+	"bytesPerSecond": "ไบต์ต่อวินาที",
+	"bytesReceived": "ไบต์ที่รับ",
+	"bytesSent": "ไบต์ที่ส่ง",
+	"chooseGame": "เลือกเกม",
+	"createMonitorPage": {
+		"incidentConfigDescription": "การใช้หน้าต่างเลื่อนจะช่วยกำหนดเวลาที่ตัวตรวจสอบล้มเหลว สถานะของตัวตรวจสอบจะเปลี่ยนก็ต่อเมื่อเปอร์เซ็นต์ของการตรวจสอบในหน้าต่างเลื่อนตรงตามค่าที่กำหนด",
+		"incidentConfigStatusWindowLabel": "ต้องมีการตรวจสอบกี่ครั้งในหน้าต่างเลื่อน?",
+		"incidentConfigStatusWindowThresholdLabel": "ต้องการให้กี่เปอร์เซ็นต์ของการตรวจสอบในหน้าต่างเลื่อนล้มเหลว/สำเร็จ ก่อนที่จะเปลี่ยนสถานะของตัวตรวจสอบ?",
+		"incidentConfigTitle": "เหตุการณ์"
+	},
+	"dataRate": "อัตราการส่งข้อมูล",
+	"dataReceived": "ข้อมูลที่รับ",
+	"dataSent": "ข้อมูลที่ส่ง",
+	"details": "รายละเอียด",
+	"drops": "แพ็กเก็ตที่หล่น",
+	"errors": "ข้อผิดพลาด",
+	"errorsIn": "ข้อผิดพลาดขาเข้า",
+	"errorsOut": "ข้อผิดพลาดขาออก",
+	"gameServerMonitoring": "มอนิเตอร์เซิร์ฟเวอร์เกม",
+	"gameServerMonitoringDescription": "ตรวจสอบว่าเซิร์ฟเวอร์เกมของคุณกำลังทำงานอยู่หรือไม่",
+	"network": "เน็ตเวอร์",
+	"networkDrops": "การดรอปของเน็ตเวอร์",
+	"networkErrors": "เน็ตเวอร์ ล้มเหลว",
+	"networkInterface": "เน็ตเวอร์ อินเทอร์เฟซ",
+	"noNetworkStatsAvailable": "ไม่มีสถิติของเน็ตเวอร์",
+	"packetsPerSecond": "แพ็กเก็ตต่อวินาที",
+	"packetsReceived": "แพ็กเก็ตที่รับ",
+	"packetsReceivedRate": "อัตราการรับแพ็กเก็ต",
+	"packetsSent": "แพ็กเก็ตที่ส่ง",
+	"rate": "อัตรา",
+	"selectInterface": "เลือกอินเทอร์เฟซ"
+}

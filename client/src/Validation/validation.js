@@ -437,6 +437,16 @@ const infrastructureMonitorValidation = joi.object({
 		"number.base": "Frequency must be a number.",
 		"any.required": "Frequency is required.",
 	}),
+	statusWindowSize: joi.number().min(1).max(20).messages({
+		"number.base": "Status window size must be a number.",
+		"number.min": "Status window size must be at least 1.",
+		"number.max": "Status window size cannot exceed 20.",
+	}),
+	statusWindowThreshold: joi.number().min(1).max(100).messages({
+		"number.base": "Status window threshold must be a number.",
+		"number.min": "Status window threshold must be at least 1%.",
+		"number.max": "Status window threshold cannot exceed 100%.",
+	}),
 	notifications: joi.array().items(joi.string()),
 });
 
