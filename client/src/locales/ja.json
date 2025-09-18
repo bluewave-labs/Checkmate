@@ -380,7 +380,52 @@
 			"email": "メール",
 			"role": "役割",
 			"created": "作成日"
-		}
+		},
+		"addTeamMember": {
+			"addMemberMenu": "",
+			"title": "",
+			"description": "",
+			"addButton": ""
+		},
+		"register": "",
+		"registerToast": {
+			"success": "",
+			"dbUserExists": "",
+			"unknownError": ""
+		},
+		"registerTeamMember": {
+			"title": "",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "",
+								"invalid": ""
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": ""
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "一時停止",
@@ -746,7 +791,8 @@
 			"failCountHeader": "失敗回数",
 			"lastRunHeader": "最終実行日時",
 			"lastFinishedAtHeader": "最終完了日時",
-			"lastRunTookHeader": "最終実行時間"
+			"lastRunTookHeader": "最終実行時間",
+			"intervalHeader": ""
 		},
 		"metricsTable": {
 			"title": "キューメトリック",
