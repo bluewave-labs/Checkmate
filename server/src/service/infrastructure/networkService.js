@@ -1,5 +1,3 @@
-import { match } from "assert";
-
 const SERVICE_NAME = "NetworkService";
 
 class NetworkService {
@@ -107,7 +105,7 @@ class NetworkService {
 	}
 
 	async requestHttp(monitor) {
-		const { url, secret, _id, name, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
+		const { url, secret, _id, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
 		const httpResponse = {
 			monitorId: _id,
 			teamId: teamId,
@@ -156,33 +154,61 @@ class NetworkService {
 				return httpResponse;
 			}
 
-			if (expectedValue) {
+			if (expectedValue && !jsonPath) {
 				let ok = false;
 				if (matchMethod === "equal") ok = payload === expectedValue;
-				if (matchMethod === "include") ok = payload.includes(expectedValue);
-				if (matchMethod === "regex") ok = new RegExp(expectedValue).test(payload);
+				if (matchMethod === "include" && typeof payload === "string") ok = payload.includes(expectedValue);
+				if (matchMethod === "regex" && typeof payload === "string") ok = new RegExp(expectedValue).test(payload);
 
 				if (ok === true) {
 					return httpResponse;
 				} else {
 					httpResponse.code = 500;
 					httpResponse.status = false;
+					httpResponse.message = this.stringService.httpExpectedValueFail;
 					return httpResponse;
 				}
 			}
 
 			if (jsonPath) {
 				const contentType = response.headers["content-type"];
-
 				const isJson = contentType?.includes("application/json");
 				if (!isJson) {
 					httpResponse.status = false;
 					httpResponse.message = this.stringService.httpNotJson;
 					return httpResponse;
 				}
-
 				try {
-					this.jmespath.search(payload, jsonPath);
+					const extracted = this.jmespath.search(payload, jsonPath);
+					if (expectedValue) {
+						let ok = false;
+						if (matchMethod === "equal") ok = extracted === expectedValue;
+						if (matchMethod === "include" && typeof extracted === "string") ok = extracted.includes(expectedValue);
+						if (matchMethod === "regex" && typeof extracted === "string") ok = new RegExp(expectedValue).test(extracted);
+
+						if (ok) {
+							httpResponse.extracted = extracted;
+							return httpResponse;
+						} else {
+							httpResponse.status = false;
+							httpResponse.code = 500;
+							httpResponse.message = this.stringService.httpJsonPathFail;
+							httpResponse.extracted = extracted;
+							return httpResponse;
+						}
+					} else {
+						const isFalsey = extracted === false || extracted === "false" || extracted === undefined || extracted === null;
+						if (!isFalsey) {
+							httpResponse.extracted = extracted;
+							return httpResponse;
+						} else {
+							httpResponse.status = false;
+							httpResponse.code = 500;
+							httpResponse.message = this.stringService.httpJsonPathFail;
+							httpResponse.extracted = extracted;
+							return httpResponse;
+						}
+					}
 				} catch {
 					httpResponse.status = false;
 					httpResponse.message = this.stringService.httpJsonPathError;
