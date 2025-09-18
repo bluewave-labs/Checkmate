@@ -86,7 +86,7 @@ const CreateInfrastructureMonitor = () => {
 			setHttps(monitor.url.startsWith("https"));
 			initializeInfrastructureMonitorForUpdate(monitor);
 		}
-	}, [isCreate, monitor, globalSettings, globalSettingsLoading]);
+	}, [isCreate, monitor, globalSettings, globalSettingsLoading, initializeInfrastructureMonitorForCreate, initializeInfrastructureMonitorForUpdate]);
 
 	// Handlers
 	const onSubmit = async (event) => {
@@ -280,6 +280,39 @@ const CreateInfrastructureMonitor = () => {
 						setMonitor={setInfrastructureMonitor}
 						setNotifications={infrastructureMonitor.notifications}
 					/>
+				</ConfigBox>
+				<ConfigBox>
+					<Box>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("createMonitorPage.incidentConfigTitle")}
+						</Typography>
+						<Typography component="p">
+							{t("createMonitorPage.incidentConfigDescription")}
+						</Typography>
+					</Box>
+					<Stack gap={theme.spacing(20)}>
+						<TextInput
+							name="statusWindowSize"
+							label={t("createMonitorPage.incidentConfigStatusWindowLabel")}
+							type="number"
+							value={infrastructureMonitor.statusWindowSize}
+							onChange={onChange}
+							error={errors["statusWindowSize"] ? true : false}
+							helperText={errors["statusWindowSize"]}
+						/>
+						<TextInput
+							name="statusWindowThreshold"
+							label={t("createMonitorPage.incidentConfigStatusWindowThresholdLabel")}
+							type="number"
+							value={infrastructureMonitor.statusWindowThreshold}
+							onChange={onChange}
+							error={errors["statusWindowThreshold"] ? true : false}
+							helperText={errors["statusWindowThreshold"]}
+						/>
+					</Stack>
 				</ConfigBox>
 				<CustomAlertsSection
 					errors={errors}
