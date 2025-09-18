@@ -376,7 +376,52 @@
 			"email": "Sähköposti",
 			"role": "Rooli",
 			"created": "Luotu"
-		}
+		},
+		"addTeamMember": {
+			"addMemberMenu": "",
+			"title": "",
+			"description": "",
+			"addButton": ""
+		},
+		"register": "",
+		"registerToast": {
+			"success": "",
+			"dbUserExists": "",
+			"unknownError": ""
+		},
+		"registerTeamMember": {
+			"title": "",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "",
+								"invalid": ""
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": ""
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "Tauota",
@@ -742,7 +787,8 @@
 			"failCountHeader": "",
 			"lastRunHeader": "",
 			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": ""
+			"lastRunTookHeader": "",
+			"intervalHeader": ""
 		},
 		"metricsTable": {
 			"title": "",
