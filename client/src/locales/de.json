@@ -380,7 +380,52 @@
 			"email": "Email",
 			"role": "Rolle",
 			"created": "Angelegt"
-		}
+		},
+		"addTeamMember": {
+			"addMemberMenu": "",
+			"title": "",
+			"description": "",
+			"addButton": ""
+		},
+		"register": "",
+		"registerToast": {
+			"success": "",
+			"dbUserExists": "",
+			"unknownError": ""
+		},
+		"registerTeamMember": {
+			"title": "",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "",
+								"invalid": ""
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": ""
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "Pausiert",
@@ -746,7 +791,8 @@
 			"failCountHeader": "Anzahl Fehler",
 			"lastRunHeader": "Letzter Lauf um",
 			"lastFinishedAtHeader": "Zuletzt abgeschlossen um",
-			"lastRunTookHeader": "Letzter Lauf dauerte"
+			"lastRunTookHeader": "Letzter Lauf dauerte",
+			"intervalHeader": ""
 		},
 		"metricsTable": {
 			"title": "Warteschlangenmetriken",
