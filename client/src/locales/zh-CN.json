@@ -1,0 +1,1114 @@
+{
+	"submit": "提交",
+	"title": "标题",
+	"distributedStatusHeaderText": "实时、真实设备覆盖",
+	"distributedStatusSubHeaderText": "在全球数百万设备的支持下，按全球区域、国家或城市查看系统性能",
+	"settingsDisabled": "禁用",
+	"settingsSuccessSaved": "设置保存成功",
+	"settingsFailedToSave": "保存设置失败",
+	"settingsStatsCleared": "统计数据已成功清除",
+	"settingsFailedToClearStats": "清除统计数据失败",
+	"settingsMonitorsDeleted": "已成功删除所有监视器",
+	"settingsFailedToDeleteMonitors": "删除所有监视器失败",
+	"starPromptTitle": "打星Checkmate",
+	"starPromptDescription": "在 GitHub 上查看最新版本，并帮助社区发展壮大",
+	"https": "HTTPS",
+	"http": "HTTP",
+	"monitor": "监控",
+	"aboutus": "关于我们",
+	"now": "现在",
+	"delete": "删除",
+	"configure": "配置",
+	"responseTime": "响应时间",
+	"ms": "毫秒",
+	"bar": "条",
+	"area": "区域",
+	"country": "国家",
+	"city": "城市",
+	"response": "响应",
+	"monitorStatusUp": "监控目标 {name} ({url}) 现在处于正常状态并正在响应",
+	"monitorStatusDown": "监控目标 {name} ({url}) 已下线且无响应",
+	"webhookSendSuccess": "Webhook通知发送成功",
+	"webhookSendError": "向 {platform} 发送 Webhook 通知时出错",
+	"webhookUnsupportedPlatform": "不支持的平台：{platform}",
+	"distributedRightCategoryTitle": "监控",
+	"distributedStatusServerMonitors": "服务器监控",
+	"distributedStatusServerMonitorsDescription": "监控相关服务器的状态",
+	"distributedUptimeCreateSelectURL": "在这里，您可以选择主机的URL以及监控类型。",
+	"distributedUptimeCreateChecks": "分布式正常运行时间创建检查",
+	"distributedUptimeCreateChecksDescription": "在添加站点之后，您随时可以增加或删除检查项。",
+	"distributedUptimeCreateIncidentNotification": "事件通知",
+	"distributedUptimeCreateIncidentDescription": "当发生事件时，通知用户。",
+	"distributedUptimeCreateAdvancedSettings": "高级设置",
+	"distributedUptimeDetailsNoMonitorHistory": "此监控器尚未有检查历史记录。",
+	"distributedUptimeDetailsStatusHeaderUptime": "运行时间：",
+	"distributedUptimeDetailsStatusHeaderLastUpdate": "最后更新于",
+	"notifications": {
+		"enableNotifications": "启用 {{platform}} 通知",
+		"testNotification": "测试通知",
+		"addOrEditNotifications": "添加或修改通知方式",
+		"slack": {
+			"label": "Slack",
+			"description": "要启用 Slack 通知，请先创建一个 Slack 应用并启用传入的 Webhook。之后，只需在此处提供 Webhook URL 即可。",
+			"webhookLabel": "Webhook 网址",
+			"webhookPlaceholder": "https://hooks.slack.com/services/...",
+			"webhookRequired": "需要 Slack Webhook URL"
+		},
+		"discord": {
+			"label": "Discord",
+			"description": "要通过 Discord 通知将数据从 Checkmate 发送到 Discord 频道，可以使用 Discord 的入站 WebHooks 功能。",
+			"webhookLabel": "Discord 接收网址",
+			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
+			"webhookRequired": "需要 Discord Webhook URL"
+		},
+		"telegram": {
+			"label": "Telegram",
+			"description": "要启用 Telegram 通知，请使用 BotFather创建一个 Telegram 机器人。然后，获取 API 令牌和聊天 ID 并在此处填写。",
+			"tokenLabel": "你的机器人token",
+			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+			"chatIdLabel": "你的Chat ID",
+			"chatIdPlaceholder": "-1001234567890",
+			"fieldsRequired": "需要 Telegram 令牌和聊天 ID"
+		},
+		"webhook": {
+			"label": "Webhooks",
+			"description": "你可以设置自定义的 Webhook，以便在事件发生时接收通知。",
+			"urlLabel": "Webhook URL",
+			"urlPlaceholder": "https://your-server.com/webhook",
+			"urlRequired": "Webhook URL 是必填项"
+		},
+		"testNotificationDevelop": "测试通知 2",
+		"integrationButton": "通知集成",
+		"testSuccess": "测试通知发送成功！",
+		"testFailed": "测试通知发送失败",
+		"unsupportedType": "不支持的通知类型",
+		"networkError": "发生网络错误",
+		"fallback": {
+			"title": "通知通道用于：",
+			"checks": [
+				"提醒团队有关停机时间或性能问题",
+				"让工程师知道事件发生时",
+				"让管理员了解系统更改"
+			],
+			"actionButton": "让我们创建您的第一个通知渠道！"
+		},
+		"createButton": "创建通知渠道",
+		"createTitle": "通知渠道",
+		"create": {
+			"success": "通知创建成功",
+			"failed": "通知创建失败"
+		},
+		"fetch": {
+			"success": "成功获取通知",
+			"failed": "无法获取通知"
+		},
+		"delete": {
+			"success": "通知已成功删除",
+			"failed": "删除通知失败"
+		},
+		"edit": {
+			"success": "通知已成功更新",
+			"failed": "无法更新通知"
+		},
+		"test": {
+			"success": "测试通知发送成功",
+			"failed": "测试通知发送失败"
+		}
+	},
+	"testLocale": "测试区域设置",
+	"add": "添加",
+	"monitors": "监视器",
+	"distributedUptimeStatusCreateStatusPage": "状态页",
+	"distributedUptimeStatusCreateStatusPageAccess": "访问",
+	"distributedUptimeStatusCreateStatusPageReady": "如果状态页面准备就绪，您可以标记为已发布。",
+	"distributedUptimeStatusBasicInfoHeader": "基础信息",
+	"distributedUptimeStatusBasicInfoDescription": "定义公司名称和状态页指向的子域名。",
+	"distributedUptimeStatusLogoHeader": "Logo",
+	"distributedUptimeStatusLogoDescription": "为您的状态页面上传一个 Logo",
+	"distributedUptimeStatusLogoUploadButton": "上传 Logo",
+	"distributedUptimeStatusStandardMonitorsHeader": "标准监视器",
+	"distributedUptimeStatusStandardMonitorsDescription": "将标准监视器附加到您的状态页面。",
+	"distributedUptimeStatusCreateYour": "创建您的",
+	"distributedUptimeStatusEditYour": "编辑您的",
+	"distributedUptimeStatusPublishedLabel": "发布并公开可见",
+	"distributedUptimeStatusCompanyNameLabel": "公司名称",
+	"distributedUptimeStatusPageAddressLabel": "您的状态页面地址",
+	"distributedUptimeStatus30Days": "30 天",
+	"distributedUptimeStatus60Days": "60 天",
+	"distributedUptimeStatus90Days": "90 天",
+	"distributedUptimeStatusPageNotSetUp": "未设置状态页面。",
+	"distributedUptimeStatusContactAdmin": "请联系您的管理员",
+	"distributedUptimeStatusPageNotPublic": "此状态页面不公开。",
+	"distributedUptimeStatusPageDeleteDialog": "你想删除这个状态页吗？",
+	"distributedUptimeStatusPageDeleteConfirm": "确定，删除状态页",
+	"distributedUptimeStatusPageDeleteDescription": "删除后将无法恢复您的状态页面。",
+	"distributedUptimeStatusDevices": "设备",
+	"distributedUptimeStatusUpt": "UPT",
+	"distributedUptimeStatusUptBurned": "分布式正常运行时间状态运行已完成",
+	"distributedUptimeStatusUptLogo": "分布式UptimeStatusUptLogo",
+	"incidentsTableNoIncidents": "无事件记录",
+	"incidentsTablePaginationLabel": "事件",
+	"incidentsTableMonitorName": "监控名称",
+	"incidentsTableStatus": "状态",
+	"incidentsTableDateTime": "日期&时间",
+	"incidentsTableStatusCode": "状态码",
+	"incidentsTableMessage": "信息",
+	"incidentsOptionsHeader": "事件:",
+	"incidentsOptionsHeaderFilterBy": "筛选:",
+	"incidentsOptionsHeaderFilterAll": "全部",
+	"incidentsOptionsHeaderFilterDown": "离线",
+	"incidentsOptionsHeaderFilterCannotResolve": "无法解析",
+	"incidentsOptionsHeaderShow": "显示：",
+	"incidentsOptionsHeaderLastHour": "过去一小时",
+	"incidentsOptionsHeaderLastDay": "过去一天",
+	"incidentsOptionsHeaderLastWeek": "过去一周",
+	"incidentsOptionsPlaceholderAllServers": "所有服务器",
+	"infrastructureCreateYour": "创建你的",
+	"infrastructureCreateGeneralSettingsDescription": "在这里您可以选择主机的 URL，以及连接到服务器代理时使用的友好名称和授权密钥。",
+	"infrastructureServerRequirement": "你正在监控的服务器必须运行在",
+	"infrastructureCustomizeAlerts": "自定义告警",
+	"infrastructureAlertNotificationDescription": "当阈值超过指定百分比时向用户(们)发送通知。",
+	"infrastructureCreateMonitor": "创建基础设施监控",
+	"infrastructureProtocol": "协议",
+	"infrastructureServerUrlLabel": "服务器 URL",
+	"infrastructureDisplayNameLabel": "显示名称",
+	"infrastructureAuthorizationSecretLabel": "授权密钥",
+	"gb": "GB",
+	"mb": "MB",
+	"mem": "内存",
+	"memoryUsage": "内存使用率",
+	"cpu": "CPU",
+	"cpuUsage": "CPU 使用率",
+	"cpuTemperature": "CPU 温度",
+	"diskUsage": "硬盘使用率",
+	"used": "已使用",
+	"total": "总共",
+	"cores": "核心",
+	"frequency": "频率",
+	"status": "状态",
+	"cpuPhysical": "CPU（物理核心）",
+	"cpuLogical": "CPU（逻辑核心）",
+	"cpuFrequency": "CPU 频率",
+	"avgCpuTemperature": "CPU 平均温度",
+	"memory": "内存",
+	"disk": "硬盘",
+	"uptime": "运行时间",
+	"os": "系统",
+	"host": "主机",
+	"actions": "动作",
+	"integrations": "继承",
+	"integrationsPrism": "将 Prism 连接到您喜欢的服务。",
+	"integrationsSlack": "集成Slack",
+	"integrationsSlackInfo": "集成SlackInfo",
+	"integrationsDiscord": "集成Discord",
+	"integrationsDiscordInfo": "集成Discord信息",
+	"integrationsZapier": "集成Zapier",
+	"integrationsZapierInfo": "集成ZapierInfo",
+	"commonSave": "保存",
+	"createYour": "创建你的",
+	"createMonitor": "创建监控",
+	"pause": "暂停",
+	"resume": "恢复",
+	"editing": "编辑中...",
+	"url": "网址",
+	"access": "访问",
+	"timezone": "时区",
+	"features": "特征",
+	"administrator": "管理员？",
+	"loginHere": "点击此处登录",
+	"displayName": "显示名称",
+	"urlMonitor": "监控的 URL",
+	"portToMonitor": "监控端口",
+	"websiteMonitoring": "网站监控",
+	"websiteMonitoringDescription": "使用 HTTP（s）监控您的网站或 API 端点。",
+	"pingMonitoring": "ping监控",
+	"pingMonitoringDescription": "检查您的服务器是否可用。",
+	"dockerContainerMonitoring": "Docker容器监控",
+	"dockerContainerMonitoringDescription": "检查你的 Docker 容器是否正在运行。",
+	"portMonitoring": "端口监控",
+	"portMonitoringDescription": "检查你的端口是否已打开。",
+	"createMaintenanceWindow": "创建维护窗口",
+	"createMaintenance": "创建维护",
+	"editMaintenance": "编辑维护",
+	"maintenanceWindowName": "维护窗口名称",
+	"friendlyNameInput": "友好名称",
+	"friendlyNamePlaceholder": "维护时间于 __:__ ，持续 ___ 分钟",
+	"maintenanceRepeat": "维护重复",
+	"maintenance": "维护",
+	"duration": "期间",
+	"addMonitors": "添加监视器",
+	"window": "窗口",
+	"cancel": "取消",
+	"message": "信息",
+	"low": "低的",
+	"high": "高的",
+	"statusCode": "状态码",
+	"date&Time": "日期&时间",
+	"type": "类型",
+	"statusPageName": "状态页名称",
+	"publicURL": "公共 URL",
+	"repeat": "重复",
+	"edit": "编辑",
+	"createA": "创建A",
+	"remove": "移除",
+	"maintenanceWindowDescription": "在维护时段内，所选监视器的所有监视都将暂停。不会执行任何网络检查，从而阻止触发任何状态更新或通知。您的显示器将冻结在其最后的已知状态，并且状态页面将显示维护指示器。维护时段结束后，监控会自动恢复，如果检测到问题，将触发警报。维护期不计入正常运行时间计算。",
+	"startTime": "开始时间",
+	"timeZoneInfo": "所有日期和时间均为 GMT+0 时区。",
+	"monitorsToApply": "监控器应用",
+	"nextWindow": "下一个窗口",
+	"notFoundButton": "未找到按钮",
+	"pageSpeedConfigureSettingsDescription": "您可以在此处选择主机的 URL 以及监视器类型。",
+	"monitorDisplayName": "监视器显示名称",
+	"whenNewIncident": "当新事件发生时",
+	"notifySMS": "通过短信通知（即将推出）",
+	"notifyEmails": "还通过电子邮件通知多个地址（即将推出）",
+	"seperateEmails": "单独的电子邮件",
+	"checkFrequency": "检查频率",
+	"matchMethod": "match方法",
+	"expectedValue": "预期值",
+	"deleteDialogTitle": "确定要删除此监视器吗?",
+	"deleteDialogDescription": "一旦删除，将无法检索此监视器。",
+	"pageSpeedMonitor": "页面速度监控器",
+	"shown": "显示",
+	"ago": "前",
+	"companyName": "公司名称",
+	"pageSpeedDetailsPerformanceReport": "值是估计值，可能会有所不同。",
+	"pageSpeedDetailsPerformanceReportCalculator": "页面速度详情性能报告计算器",
+	"checkingEvery": "检查每一个",
+	"statusPageCreateSettings": "如果您的状态页面已准备就绪，您可以将其标记为已发布。",
+	"basicInformation": "基础信息",
+	"statusPageCreateBasicInfoDescription": "定义公司名称和状态页面指向的子域。",
+	"statusPageCreateSelectTimeZoneDescription": "选择状态页面的显示时区。",
+	"statusPageCreateAppearanceDescription": "定义公共状态页面的默认外观。",
+	"statusPageCreateSettingsCheckboxLabel": "已发布并向公众可见",
+	"statusPageCreateBasicInfoStatusPageAddress": "您的状态页面地址",
+	"statusPageCreateTabsContent": "状态页服务器",
+	"statusPageCreateTabsContentDescription": "您可以将监视的任意数量的服务器添加到状态页面。您还可以重新排序它们以获得最佳观看体验。",
+	"statusPageCreateTabsContentFeaturesDescription": "在状态页上显示更多详细信息",
+	"showCharts": "显示图表",
+	"showUptimePercentage": "显示正常运行时间百分比",
+	"removeLogo": "移除Logo",
+	"statusPageStatus": "未设置公开状态页面。",
+	"statusPageStatusContactAdmin": "请联系您的管理员",
+	"statusPageStatusNotPublic": "此状态页面不公开。",
+	"statusPageStatusNoPage": "这里没有状态页面。",
+	"statusPageStatusServiceStatus": "服务状态",
+	"deleteStatusPage": "要删除此状态页面吗？",
+	"deleteStatusPageConfirm": "是，删除状态页",
+	"deleteStatusPageDescription": "一旦删除，您的状态页面将无法检索。",
+	"uptimeCreate": "期望值用于与响应结果进行匹配，匹配确定状态。",
+	"uptimeCreateJsonPath": "将根据响应 JSON 数据评估此表达式，并将结果用于与预期值进行匹配。看",
+	"uptimeCreateJsonPathQuery": "查询语言文档。",
+	"maintenanceTableActionMenuDialogTitle": "您真的想删除此维护窗口吗？",
+	"infrastructureEditYour": "编辑您的",
+	"infrastructureEditMonitor": "保存基础架构监视器",
+	"infrastructureMonitorCreated": "基础设施监控创建成功！",
+	"infrastructureMonitorUpdated": "基础设施监控更新成功！",
+	"errorInvalidTypeId": "提供的通知类型无效",
+	"errorInvalidFieldId": "提供的字段 ID 无效",
+	"inviteNoTokenFound": "未找到邀请令牌",
+	"pageSpeedWarning": "警告：您尚未添加 Google PageSpeed API 密钥。没有它，PageSpeed 监视器将无法运行。",
+	"pageSpeedLearnMoreLink": "点击这里",
+	"pageSpeedAddApiKey": "以添加您的 API 密钥。",
+	"update": "更新",
+	"invalidFileFormat": "不支持的文件格式！",
+	"invalidFileSize": "文件太大了！",
+	"ClickUpload": "点击上传",
+	"DragandDrop": "拖放",
+	"MaxSize": "最大尺寸",
+	"SupportedFormats": "支持的格式",
+	"FirstName": "名",
+	"LastName": "姓",
+	"EmailDescriptionText": "这是您当前的电子邮件地址 - 无法更改。",
+	"YourPhoto": "个人资料照片",
+	"PhotoDescriptionText": "这张照片将显示在您的个人资料页面中。",
+	"save": "保存",
+	"DeleteDescriptionText": "这将从服务器中删除帐户和所有关联数据。这是不可逆的。",
+	"DeleteAccountWarning": "删除您的帐户意味着您将无法再次登录，并且您的所有数据都将被删除。这是不可逆的。",
+	"DeleteWarningTitle": "真的删除这个帐户？",
+	"bulkImport": {
+		"title": "批量导入",
+		"selectFileTips": "选择要上传的 CSV 文件",
+		"selectFileDescription": "您可以下载我们的<template>模板</template>或<sample>示例</sample>",
+		"selectFile": "选择文件",
+		"parsingFailed": "解析失败",
+		"uploadSuccess": "监视器创建成功！",
+		"validationFailed": "验证失败",
+		"noFileSelected": "未选择文件",
+		"fallbackPage": "导入文件以批量上传服务器列表",
+		"invalidFileType": "文件类型无效",
+		"uploadFailed": "上传失败"
+	},
+	"DeleteAccountTitle": "删除账户",
+	"DeleteAccountButton": "删除帐户",
+	"publicLink": "公共链接",
+	"maskedPageSpeedKeyPlaceholder": "*************************************",
+	"reset": "重置",
+	"ignoreTLSError": "忽略 TLS/SSL 错误",
+	"tlsErrorIgnored": "已忽略 TLS/SSL 错误",
+	"ignoreTLSErrorDescription": "忽略 TLS/SSL 错误并继续检查网站可用性",
+	"createNew": "新建",
+	"greeting": {
+		"prepend": "你好",
+		"append": "下午时间，尽情发挥！",
+		"overview": "以下是您的 {{type}} 监视器的概述。"
+	},
+	"roles": {
+		"superAdmin": "超级管理员",
+		"admin": "管理",
+		"teamMember": "团队成员",
+		"demoUser": "演示用户"
+	},
+	"teamPanel": {
+		"teamMembers": "团队成员",
+		"filter": {
+			"all": "全部",
+			"member": "成员"
+		},
+		"inviteTeamMember": "邀请新团队成员",
+		"inviteNewTeamMember": "邀请新团队成员",
+		"inviteDescription": "当您添加新的团队成员时，他们将可以访问所有监视器。",
+		"email": "电子邮件",
+		"selectRole": "选择角色",
+		"inviteLink": "邀请链接",
+		"cancel": "取消",
+		"noMembers": "没有具有此角色的团队成员",
+		"getToken": "获取Token",
+		"emailToken": "电子邮件令牌",
+		"table": {
+			"name": "名字",
+			"email": "邮箱",
+			"role": "角色",
+			"created": "创建"
+		},
+		"addTeamMember": {
+			"addMemberMenu": "添加团队成员",
+			"title": "注册新团队成员",
+			"description": "创建一个新用户并与他们共享凭据。此方法使成员能够立即访问所有监视器。",
+			"addButton": "添加成员"
+		},
+		"register": "注册团队成员",
+		"registerToast": {
+			"success": "用户创建，安全地与成员共享凭据。",
+			"dbUserExists": "用户已存在。",
+			"unknownError": "发生未知错误。"
+		},
+		"registerTeamMember": {
+			"title": "注册团队成员",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "请输入姓名",
+								"pattern": "名称只能包含字母、空格、撇号或连字符"
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "请输入姓氏",
+								"pattern": "姓氏只能包含字母、空格、撇号或连字符"
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "要继续，请输入电子邮件地址",
+								"invalid": "请重新检查输入的电子邮件地址的有效性"
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": "角色是必需的"
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": "角色"
+	},
+	"monitorState": {
+		"paused": "暂停",
+		"resumed": "恢复",
+		"active": "已激活"
+	},
+	"menu": {
+		"uptime": "上线时间",
+		"pagespeed": "页面速度",
+		"infrastructure": "基础设施",
+		"incidents": "事件",
+		"statusPages": "状态页",
+		"maintenance": "维护",
+		"integrations": "集成",
+		"settings": "设置",
+		"support": "支持",
+		"discussions": "讨论",
+		"docs": "文档",
+		"changelog": "变更日志",
+		"profile": "用户配置",
+		"password": "密码",
+		"team": "团队",
+		"logOut": "登出",
+		"notifications": "通知",
+		"logs": "日志"
+	},
+	"settingsEmailUser": "电子邮件用户 - 用于身份验证的用户名，如果指定，则覆盖电子邮件地址",
+	"state": "状态",
+	"statusBreadCrumbsStatusPages": "状态页",
+	"statusBreadCrumbsDetails": "详情",
+	"commonSaving": "保存中...",
+	"navControls": "控制",
+	"incidentsPageTitle": "事件页面标题",
+	"passwordPanel": {
+		"passwordChangedSuccess": "您的密码已成功更改。",
+		"passwordInputIncorrect": "您的密码输入错误。",
+		"currentPassword": "当前密码",
+		"enterCurrentPassword": "输入当前密码",
+		"newPassword": "新密码",
+		"enterNewPassword": "输入新密码",
+		"confirmNewPassword": "确认新密码",
+		"passwordRequirements": "新密码必须至少包含 8 个字符，并且必须至少包含一个大写字母、一个小写字母、一个数字和一个特殊字符。",
+		"saving": "保存..."
+	},
+	"emailSent": "电子邮件已发送",
+	"failedToSendEmail": "电子邮件发送失败",
+	"settingsTestEmailSuccess": "设置测试电子邮件成功",
+	"settingsTestEmailFailed": "发送测试电子邮件失败",
+	"settingsTestEmailFailedWithReason": "发送测试电子邮件失败： {{reason}}",
+	"settingsTestEmailUnknownError": "未知错误",
+	"statusMsg": {
+		"paused": "监视已暂停。",
+		"up": "您的网站已上线。",
+		"down": "您的网站已下线。",
+		"pending": "等待中..."
+	},
+	"uptimeGeneralInstructions": {
+		"http": "输入要监控的 URL 或 IP（例如.. https://example.com/ or 192.168.1.100）并添加仪表板上显示的清晰显示名称。",
+		"ping": "输入要 ping 的 IP 地址或主机名（例如.. 192.168.1.100 或 example.com），并添加显示在仪表板上的清晰显示名称。",
+		"docker": "码输入 Docker 容器名称或 ID。您可以使用容器名称（例如.. my-app）或容器 ID（完整的 64 字符 ID 或短 ID）。",
+		"port": "输入服务器的 URL 或 IP、端口号和仪表板上显示的清晰显示名称。",
+		"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。"
+	},
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "捕获",
+		"buttons": {
+			"toggleTheme": "切换主题明&暗"
+		},
+		"toasts": {
+			"networkError": "网络错误",
+			"checkConnection": "请检查你的网络连接",
+			"unknownError": "未知错误"
+		}
+	},
+	"auth": {
+		"common": {
+			"navigation": {
+				"continue": "继续",
+				"back": "返回"
+			},
+			"inputs": {
+				"email": {
+					"label": "电子邮件",
+					"placeholder": "jordan.ellis@domain.com",
+					"errors": {
+						"empty": "要继续，请输入您的电子邮件地址",
+						"invalid": "请重新检查输入的电子邮件地址的有效性"
+					}
+				},
+				"password": {
+					"label": "密码",
+					"rules": {
+						"length": {
+							"beginning": "必须至少",
+							"highlighted": "8 个字符长"
+						},
+						"special": {
+							"beginning": "必须至少包含",
+							"highlighted": "一个特殊字符"
+						},
+						"number": {
+							"beginning": "必须至少包含",
+							"highlighted": "一个数字"
+						},
+						"uppercase": {
+							"beginning": "必须至少包含",
+							"highlighted": "一个大写字母"
+						},
+						"lowercase": {
+							"beginning": "必须至少包含",
+							"highlighted": "一个小写字母"
+						},
+						"match": {
+							"beginning": "密码",
+							"highlighted": "必须匹配"
+						}
+					},
+					"errors": {
+						"empty": "请输入您的密码",
+						"length": "密码长度必须至少为 8 个字符",
+						"uppercase": "密码必须至少包含 1 个大写字母",
+						"lowercase": "密码必须至少包含 1 个小写字母",
+						"number": "密码必须至少包含 1 个数字",
+						"special": "密码必须至少包含 1 个特殊字符",
+						"incorrect": "您提供的密码与我们的记录不符"
+					}
+				},
+				"passwordConfirm": {
+					"label": "确认密码",
+					"placeholder": "重新输入密码以确认",
+					"errors": {
+						"empty": "请再次输入您的密码以进行确认（有助于解决拼写错误）",
+						"different": "输入的密码不匹配，因此其中一个密码可能输入错误"
+					}
+				},
+				"firstName": {
+					"label": "名字",
+					"placeholder": "Jordan",
+					"errors": {
+						"empty": "请输入您的姓名",
+						"length": "姓名必须少于 50 个字符",
+						"pattern": "名称只能包含字母、空格、撇号或连字符"
+					}
+				},
+				"lastName": {
+					"label": "姓",
+					"placeholder": "Ellis",
+					"errors": {
+						"empty": "请输入您的姓氏",
+						"length": "姓氏必须少于 50 个字符",
+						"pattern": "姓氏只能包含字母、空格、撇号或连字符"
+					}
+				}
+			},
+			"errors": {
+				"validation": "验证数据时出错。"
+			},
+			"fields": {
+				"password": {
+					"errors": {
+						"incorrect": "您提供的密码与我们的记录不符"
+					}
+				},
+				"role": {
+					"errors": {
+						"min": "必须至少设置一个角色"
+					}
+				}
+			}
+		},
+		"login": {
+			"heading": "登录以继续",
+			"subheadings": {
+				"stepOne": "输入您的电子邮件",
+				"stepTwo": "输入您的密码"
+			},
+			"links": {
+				"forgotPassword": "忘记密码？",
+				"register": "没有帐户？",
+				"forgotPasswordLink": "重置密码",
+				"registerLink": "注册链接"
+			},
+			"toasts": {
+				"success": "欢迎回来！您已成功登录。",
+				"incorrectPassword": "密码错误"
+			},
+			"errors": {
+				"password": {
+					"incorrect": "您提供的密码与我们的记录不符"
+				}
+			},
+			"welcome": "欢迎回到 Checkmate！"
+		},
+		"registration": {
+			"heading": {
+				"superAdmin": "创建超级管理员",
+				"user": "注册"
+			},
+			"subheadings": {
+				"stepOne": "输入您的个人详细信息",
+				"stepTwo": "输入您的电子邮件",
+				"stepThree": "创建密码"
+			},
+			"description": {
+				"superAdmin": "创建超级用户帐户以开始使用",
+				"user": "注册为用户并请求超级管理员访问您的监视器"
+			},
+			"gettingStartedButton": {
+				"superAdmin": "创建超级管理员帐户",
+				"user": "注册普通用户"
+			},
+			"termsAndPolicies": "创建帐户即表示您同意我们的<a1>服务条款</a1>和<a2>隐私政策 </a2>。",
+			"links": {
+				"login": "已拥有帐号？ <a>登录</a>"
+			},
+			"toasts": {
+				"success": "欢迎！您的账号已成功创建。"
+			},
+			"welcome": "欢迎来到Checkmate！"
+		},
+		"forgotPassword": {
+			"heading": "忘记密码？",
+			"subheadings": {
+				"stepOne": "不用担心，我们会向您发送重置说明。",
+				"stepTwo": "我们已发送密码重置链接到 <email/>",
+				"stepThree": "您的新密码必须与以前使用的密码不同。",
+				"stepFour": "您的密码已成功重置。点击下方登录。"
+			},
+			"buttons": {
+				"openEmail": "打开电子邮件应用",
+				"resetPassword": "重置密码"
+			},
+			"imageAlts": {
+				"passwordKey": "密码图标",
+				"email": "电子邮件图标",
+				"lock": "锁定图标",
+				"passwordConfirm": "密码确认图标"
+			},
+			"links": {
+				"login": "返回到<a>登录</a>",
+				"resend": "没有收到电子邮件？<a> 点击重新发送</a>"
+			},
+			"toasts": {
+				"sent": "指令发送至 <email/>.",
+				"emailNotFound": "未找到电子邮件。",
+				"redirect": "将在<seconds/>秒后重定向...",
+				"success": "您的密码已成功重置。",
+				"error": "无法重置密码。请稍后重试或联系支持人员。"
+			}
+		}
+	},
+	"errorPages": {
+		"serverUnreachable": {
+			"toasts": {
+				"reconnected": "已成功重新连接到服务器。",
+				"stillUnreachable": "服务器仍然无法访问。请稍后重试。"
+			},
+			"alertBox": "服务器连接错误",
+			"description": "我们无法连接到服务器。如果问题仍然存在，请检查您的互联网连接或验证您的部署配置。",
+			"retryButton": {
+				"default": "尝试重连",
+				"processing": "连接中..."
+			}
+		}
+	},
+	"createNotifications": {
+		"title": "创建通知通道",
+		"nameSettings": {
+			"title": "名字",
+			"description": "集成的描述性名称。",
+			"nameLabel": "名字",
+			"namePlaceholder": "例如.. Slack 通知"
+		},
+		"typeSettings": {
+			"title": "类型",
+			"description": "选择要创建的通知通道类型。",
+			"typeLabel": "类型"
+		},
+		"emailSettings": {
+			"title": "邮箱",
+			"description": "目标电子邮件地址。",
+			"emailLabel": "电子邮件地址",
+			"emailPlaceholder": "例如.. john@example.com"
+		},
+		"slackSettings": {
+			"title": "Slack",
+			"description": "在此处配置您的 Slack Webhook",
+			"webhookLabel": "Slack webhook 网址",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
+		},
+		"pagerdutySettings": {
+			"title": "PagerDuty",
+			"description": "在此处配置您的 PagerDuty 集成",
+			"integrationKeyLabel": "集成密钥",
+			"integrationKeyPlaceholder": "1234567890"
+		},
+		"discordSettings": {
+			"title": "Discord",
+			"description": "在此处配置您的 Discord Webhook",
+			"webhookLabel": "Discord Webhook 网址",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"webhookSettings": {
+			"title": "Webhook",
+			"description": "在此处配置 Webhook",
+			"webhookLabel": "Webhook网址",
+			"webhookPlaceholder": "https://your-server.com/webhook"
+		},
+		"testNotification": "测试通知",
+		"dialogDeleteTitle": "你确认要删除此通知吗？",
+		"dialogDeleteConfirm": "删除"
+	},
+	"notificationConfig": {
+		"title": "通知",
+		"description": "选择要使用的通知渠道"
+	},
+	"monitorStatus": {
+		"checkingEvery": "每隔 {{interval}} 检查一次",
+		"withCaptureAgent": "使用 Capture 代理 {{version}}",
+		"up": "在线",
+		"down": "离线",
+		"paused": "暂停"
+	},
+	"advancedMatching": "高级匹配",
+	"sendTestNotifications": "发送测试通知",
+	"selectAll": "全选",
+	"showAdminLoginLink": "显示“管理员？在此处登录“状态页面上的链接",
+	"logsPage": {
+		"title": "日志",
+		"description": "系统日志 - 最后 1000 行",
+		"tabs": {
+			"queue": "作业队列",
+			"logs": "服务器日志",
+			"diagnostics": "诊断"
+		},
+		"toast": {
+			"fetchLogsSuccess": "日志获取成功"
+		},
+		"logLevelSelect": {
+			"title": "日志等级",
+			"values": {
+				"all": "全部",
+				"info": "信息",
+				"warn": "警告",
+				"error": "错误",
+				"debug": "调试"
+			}
+		}
+	},
+	"queuePage": {
+		"title": "队列",
+		"refreshButton": "刷新",
+		"flushButton": "刷新队列",
+		"jobTable": {
+			"title": "当前在队列中的作业",
+			"idHeader": "监视器 ID",
+			"urlHeader": "网址",
+			"typeHeader": "类型",
+			"activeHeader": "有效",
+			"lockedAtHeader": "锁定在",
+			"runCountHeader": "运行计数",
+			"failCountHeader": "失败计数",
+			"lastRunHeader": "上次运行时间",
+			"lastFinishedAtHeader": "最后完成时间",
+			"lastRunTookHeader": "上次运行花费了",
+			"intervalHeader": "间隔"
+		},
+		"metricsTable": {
+			"title": "队列指标",
+			"metricHeader": "度量",
+			"valueHeader": "值"
+		},
+		"failedJobTable": {
+			"title": "失败的作业",
+			"monitorIdHeader": "监视器ID",
+			"monitorUrlHeader": "监控网址",
+			"failCountHeader": "失败计数",
+			"failedAtHeader": "上次失败时于",
+			"failReasonHeader": "失败原因"
+		}
+	},
+	"export": {
+		"title": "导出监视器",
+		"success": "监视器导出成功！",
+		"failed": "导出监视器失败"
+	},
+	"monitorActions": {
+		"title": "导出/导入",
+		"import": "导入监视器",
+		"export": "导出监视器",
+		"deleteSuccess": "监视项删除成功",
+		"deleteFailed": "删除监视项失败",
+		"details": "详情"
+	},
+	"settingsPage": {
+		"aboutSettings": {
+			"labelDevelopedBy": "由 Bluewave Labs 开发",
+			"labelVersion": "版本",
+			"title": "关于"
+		},
+		"demoMonitorsSettings": {
+			"buttonAddMonitors": "添加演示监视器",
+			"description": "添加示例监视器以进行演示。",
+			"title": "示例监视器"
+		},
+		"emailSettings": {
+			"buttonSendTestEmail": "发送测试电子邮件",
+			"description": "配置系统的电子邮件设置。这用于发送通知和警报。",
+			"descriptionTransport": "这将为 NodeMailer 构建 SMTP 传输",
+			"labelAddress": "电子邮件地址 - 用于身份验证",
+			"labelConnectionHost": "电子邮件连接主机 - 要在 HELO/EHLO 问候语中使用的主机名",
+			"labelHost": "电子邮件主机 - 要连接到的主机名或 IP 地址",
+			"labelIgnoreTLS": "禁用 STARTTLS：即使服务器支持 TLS，也不要使用 TLS",
+			"labelPassword": "电子邮件密码 - 身份验证密码",
+			"labelPasswordSet": "已设置密码。单击重置以更改它。",
+			"labelPool": "启用连接池：重用现有连接以提高性能",
+			"labelPort": "电子邮件端口 - 要连接的端口",
+			"labelRejectUnauthorized": "拒绝无效证书：拒绝具有自签名或不受信任的证书的连接",
+			"labelRequireTLS": "强制 STARTTLS：需要 TLS 升级，如果不支持则失败",
+			"labelSecure": "使用 SSL（推荐）：使用 SSL/TLS 加密连接",
+			"labelTLSServername": "TLS 服务器名称 - 当主机是 IP 时，用于 TLS 验证的可选主机名",
+			"labelUser": "电子邮件用户 - 用于身份验证的用户名，如果指定，则覆盖电子邮件地址",
+			"linkTransport": "在此处查看规格",
+			"placeholderUser": "如果不需要，请留空",
+			"title": "电子邮件",
+			"toastEmailRequiredFieldsError": "需要输入电子邮件地址、主机、端口和密码"
+		},
+		"pageSpeedSettings": {
+			"description": "输入您的 Google PageSpeed API 密钥以启用 Google PageSpeed 监控。单击重置以更新密钥。",
+			"labelApiKeySet": "API 密钥已设置。单击重置以更改它。",
+			"labelApiKey": "ageSpeed API 密钥",
+			"title": "Google PageSpeed API 密钥"
+		},
+		"saveButtonLabel": "保存",
+		"statsSettings": {
+			"clearAllStatsButton": "清除所有统计",
+			"clearAllStatsDescription": "清除所有统计数据。这是不可逆转的。",
+			"clearAllStatsDialogConfirm": "是的，清除所有统计数据",
+			"clearAllStatsDialogDescription": "一旦删除，监控历史记录和统计信息将无法检索。",
+			"clearAllStatsDialogTitle": "你想清除所有的统计数据吗？",
+			"description": "定义要保留历史数据的时间。您还可以清除所有现有数据。",
+			"labelTTL": "要保留监控历史记录的天数。",
+			"labelTTLOptional": "0 表示无限",
+			"title": "查看历史记录"
+		},
+		"systemResetSettings": {
+			"buttonRemoveAllMonitors": "移除所有监视项",
+			"description": "从系统中移除所有监视项。",
+			"dialogConfirm": "确定，移除所有监视项",
+			"dialogDescription": "移除后，无法恢复这些监视项。",
+			"dialogTitle": "你想移除所有的监视项吗？",
+			"title": "系统复位"
+		},
+		"timezoneSettings": {
+			"description": "选择用于在整个应用程序中显示日期和时间时区。",
+			"label": "显示时区",
+			"title": "显示时区"
+		},
+		"title": "设置",
+		"uiSettings": {
+			"description": "在亮色和暗色模式之间切换，或更改用户界面语言。",
+			"labelLanguage": "语言",
+			"labelTheme": "主题模式",
+			"title": "外观"
+		},
+		"urlSettings": {
+			"description": "在公共状态页面上显示监控的 IP 地址或 URL。如果禁用，则仅显示监控名称以保护敏感信息。",
+			"label": "在状态页面显示 IP/URL",
+			"selectDisabled": "禁用",
+			"selectEnabled": "启用",
+			"title": "在状态页面上监控 IP/URL"
+		},
+		"globalThresholds": {
+			"title": "全局阈值",
+			"description": "配置 CPU、内存、磁盘和温度阈值。如果提供了阈值，则会自动启用监控。"
+		}
+	},
+	"statusPageCreate": {
+		"buttonSave": "保存"
+	},
+	"incidentsOptionsHeaderFilterResolved": "已解决",
+	"settingsSave": "保存",
+	"statusPageCreateAppearanceTitle": "外观",
+	"confirmPassword": "确认密码",
+	"monitorHooks": {
+		"failureAddDemoMonitors": "未能添加示例监视器",
+		"successAddDemoMonitors": "成功添加示例监视器"
+	},
+	"settingsAppearance": "外观",
+	"settingsDisplayTimezone": "显示时区",
+	"settingsGeneralSettings": "常规设置",
+	"incidentsOptionsHeaderTotalIncidents": "事件总数",
+	"statusPage": {
+		"deleteSuccess": "状态页面已成功删除",
+		"deleteFailed": "删除状态页面失败",
+		"createSuccess": "状态页创建成功",
+		"updateSuccess": "状态页更新成功",
+		"generalSettings": "常规设置",
+		"contents": "内容",
+		"fallback": {
+			"checks": [
+				"实时监控和显示服务的运行状况",
+				"跟踪多个服务并共享其状态",
+				"让用户了解中断和性能"
+			],
+			"title": "状态页用于：",
+			"actionButton": "让我们创建你的第一个状态页！"
+		}
+	},
+	"testNotificationsDisabled": "此监视器没有通知设置。您需要通过单击‘配置’按钮来添加一个",
+	"incidentsTableResolvedAt": "解决于",
+	"incidentsTableActionResolve": "解决",
+	"checkHooks": {
+		"failureResolveOne": "未能解决事件。",
+		"failureResolveAll": "未能解决所有事件。",
+		"failureResolveMonitor": "故障排除监控事件失败。"
+	},
+	"checkFormError": "请检查表单中的错误。",
+	"diagnosticsPage": {
+		"diagnosticDescription": "系统诊断",
+		"statsDescription": "系统统计数据",
+		"gauges": {
+			"heapAllocationTitle": "堆分配",
+			"heapAllocationSubtitle": "% 的可用内存占用率",
+			"heapUsageTitle": "堆使用情况",
+			"heapUsageSubtitle": "% 的可用内存占用率",
+			"heapUtilizationTitle": "堆利用率",
+			"heapUtilizationSubtitle": "% 的分配百分比",
+			"instantCpuUsageTitle": "当前 CPU 使用率",
+			"instantCpuUsageSubtitle": "% 的1秒CPU占用率"
+		},
+		"stats": {
+			"eventLoopDelayTitle": "事件循环延迟",
+			"uptimeTitle": "运行时间",
+			"usedHeapSizeTitle": "已用堆内存大小",
+			"totalHeapSizeTitle": "总堆大小",
+			"osMemoryLimitTitle": "系统内存限制"
+		}
+	},
+	"pageSpeedLighthouseAPI": "使用 Lighthouse PageSpeed API 监控您的网站",
+	"time": {
+		"threeMinutes": "3 分钟",
+		"fiveMinutes": "5 分钟",
+		"tenMinutes": "10 分钟",
+		"twentyMinutes": "20 分钟",
+		"oneHour": "1 小时",
+		"oneDay": "1 天",
+		"oneWeek": "1 周",
+		"fourMinutes": "4 分钟",
+		"oneMinute": "1 分钟",
+		"twoMinutes": "2 分钟",
+		"fifteenSeconds": "15 秒",
+		"thirtySeconds": "30 秒"
+	},
+	"general": {
+		"noOptionsFound": "{{unit}} 未找到"
+	},
+	"infrastructureMonitor": {
+		"fallback": {
+			"checks": [
+				"追踪服务器性能表现",
+				"识别瓶颈并优化资源利用率",
+				"通过实时监控保障系统可靠性"
+			],
+			"title": "基础设施监视器用于：",
+			"actionButton": "让我们创建你的第一个基础设施视器！"
+		}
+	},
+	"maintenanceWindow": {
+		"fallback": {
+			"checks": ["标记维护时段", "消除所有误解", "停止在维护窗口内发送警报"],
+			"title": "维护时段用于：",
+			"actionButton": "让我们创建您的第一个维护时段！"
+		}
+	},
+	"pageSpeed": {
+		"fallback": {
+			"checks": ["报告页面的用户体验", "帮助分析网页速度", "就如何改进页面提出建议"],
+			"title": "PageSpeed 监视器用于：",
+			"actionButton": "让我们创建您的第一个 PageSpeed 监视器！"
+		}
+	},
+	"uptimeMonitor": {
+		"fallback": {
+			"checks": [
+				"检测网站或服务器是否在线及响应正常",
+				"向团队发送停机或性能问题警报",
+				"监控 HTTP 端点、Ping 测试、容器及端口状态",
+				"追踪历史运行时长与可靠性趋势"
+			],
+			"title": "正常运行时间监视器用于：",
+			"actionButton": "让我们创建您的第一个正常运行时间监视器！"
+		}
+	},
+	"editUserPage": {
+		"form": {
+			"email": "电子邮件",
+			"firstName": "名",
+			"lastName": "姓氏",
+			"role": "角色",
+			"save": "保存"
+		},
+		"table": {
+			"actionHeader": "操作",
+			"roleHeader": "角色"
+		},
+		"title": "编辑用户",
+		"toast": {
+			"successUserUpdate": "用户更新成功",
+			"validationErrors": "验证错误"
+		}
+	},
+	"incidentsPageActionResolveMonitor": "解决监控事件",
+	"incidentsPageActionResolveAll": "解决所有事件",
+	"matchMethodOptions": {
+		"equal": "相等",
+		"equalPlaceholder": "成功",
+		"include": "包含",
+		"includePlaceholder": "OK",
+		"regex": "正则表达式",
+		"regexPlaceholder": "^(success|ok)$",
+		"text": "匹配方法"
+	},
+	"monitorType": {
+		"docker": {
+			"label": "容器 ID",
+			"namePlaceholder": "我的容器",
+			"placeholder": "我的应用程序或 abcd1234"
+		},
+		"http": {
+			"label": "要监控的 URL",
+			"namePlaceholder": "Google",
+			"placeholder": "google.com"
+		},
+		"ping": {
+			"label": "要监控的 IP 地址",
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
+		},
+		"port": {
+			"label": "要监控的 URL",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
+		},
+		"game": {
+			"label": "丢包监控网址",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
+		}
+	},
+	"uptimeAdvancedMatching": {
+		"jsonPath": "JSON 路径"
+	},
+	"bytesPerSecond": "每秒字节数",
+	"bytesReceived": "已接收字节数",
+	"bytesSent": "已发送字节数",
+	"chooseGame": "选择游戏",
+	"createMonitorPage": {
+		"incidentConfigDescription": "滑动窗口用于确定监视器何时发生故障。仅当滑动窗口中的检查百分比满足指定值时，监视器的状态才会改变。",
+		"incidentConfigStatusWindowLabel": "在滑动窗口中应包含多少次检测？",
+		"incidentConfigStatusWindowThresholdLabel": "在监视器状态改变之前，滑动窗口中的检查失败/成功的百分比是多少？",
+		"incidentConfigTitle": "事件"
+	},
+	"dataRate": "数据速率",
+	"dataReceived": "已接收数据",
+	"dataSent": "已发送数据",
+	"details": "详情",
+	"drops": "丢包",
+	"errors": "错误",
+	"errorsIn": "错误于",
+	"errorsOut": "错误输出",
+	"gameServerMonitoring": "游戏服务器监视",
+	"gameServerMonitoringDescription": "检查你的游戏服务器是否正在运行",
+	"network": "网络",
+	"networkDrops": "网络丢包",
+	"networkErrors": "网络错误",
+	"networkInterface": "网络接口",
+	"noNetworkStatsAvailable": "没有可用的网络统计数据。",
+	"packetsPerSecond": "每秒数据包数",
+	"packetsReceived": "已接收数据包",
+	"packetsReceivedRate": "数据包接收率",
+	"packetsSent": "已发送数据包",
+	"rate": "速度",
+	"selectInterface": "选择接口"
+}

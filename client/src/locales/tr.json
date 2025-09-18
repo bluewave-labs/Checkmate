@@ -376,7 +376,52 @@
 			"email": "Eposta",
 			"role": "Rol",
 			"created": "Oluşturulma"
-		}
+		},
+		"addTeamMember": {
+			"addMemberMenu": "",
+			"title": "",
+			"description": "",
+			"addButton": ""
+		},
+		"register": "",
+		"registerToast": {
+			"success": "",
+			"dbUserExists": "",
+			"unknownError": ""
+		},
+		"registerTeamMember": {
+			"title": "",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "",
+								"invalid": ""
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": ""
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "Durduruldu",
@@ -742,7 +787,8 @@
 			"failCountHeader": "",
 			"lastRunHeader": "",
 			"lastFinishedAtHeader": "Son tamamlama",
-			"lastRunTookHeader": ""
+			"lastRunTookHeader": "",
+			"intervalHeader": ""
 		},
 		"metricsTable": {
 			"title": "",

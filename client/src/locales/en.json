@@ -360,12 +360,6 @@
 		"demoUser": "Demo user"
 	},
 	"teamPanel": {
-		"addTeamMember": {
-			"addMemberMenu": "Add Team Member",
-			"title": "Register new team member",
-			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
-			"addButton": "Add Member"
-		},
 		"teamMembers": "Team members",
 		"filter": {
 			"all": "All",
@@ -381,6 +375,18 @@
 		"noMembers": "There are no team members with this role",
 		"getToken": "Get token",
 		"emailToken": "E-mail token",
+		"table": {
+			"name": "Name",
+			"email": "Email",
+			"role": "Role",
+			"created": "Created"
+		},
+		"addTeamMember": {
+			"addMemberMenu": "Add Team Member",
+			"title": "Register new team member",
+			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
+			"addButton": "Add Member"
+		},
 		"register": "Register a team member",
 		"registerToast": {
 			"success": "User created, share credentials with the member securely.",
@@ -419,13 +425,7 @@
 				}
 			}
 		},
-		"role": "Role",
-		"table": {
-			"name": "Name",
-			"email": "Email",
-			"role": "Role",
-			"created": "Created"
-		}
+		"role": "Role"
 	},
 	"monitorState": {
 		"paused": "Paused",
@@ -785,14 +785,14 @@
 			"idHeader": "Monitor ID",
 			"urlHeader": "URL",
 			"typeHeader": "Type",
-			"intervalHeader": "Interval",
 			"activeHeader": "Active",
 			"lockedAtHeader": "Locked at",
 			"runCountHeader": "Run count",
 			"failCountHeader": "Fail count",
 			"lastRunHeader": "Last run at",
 			"lastFinishedAtHeader": "Last finished at",
-			"lastRunTookHeader": "Last run took"
+			"lastRunTookHeader": "Last run took",
+			"intervalHeader": "Interval"
 		},
 		"metricsTable": {
 			"title": "Queue metrics",

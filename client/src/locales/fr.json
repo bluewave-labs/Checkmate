@@ -380,7 +380,52 @@
 			"email": "Email",
 			"role": "Rôle",
 			"created": "Créée"
-		}
+		},
+		"addTeamMember": {
+			"addMemberMenu": "",
+			"title": "",
+			"description": "",
+			"addButton": ""
+		},
+		"register": "",
+		"registerToast": {
+			"success": "",
+			"dbUserExists": "",
+			"unknownError": ""
+		},
+		"registerTeamMember": {
+			"title": "",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "",
+								"invalid": ""
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": ""
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "Pause",
@@ -746,7 +791,8 @@
 			"failCountHeader": "Nombre d'échecs",
 			"lastRunHeader": "Dernière tentative le",
 			"lastFinishedAtHeader": "Dernière finalisation à",
-			"lastRunTookHeader": "Dernière exécution effectuée"
+			"lastRunTookHeader": "Dernière exécution effectuée",
+			"intervalHeader": ""
 		},
 		"metricsTable": {
 			"title": "Métriques des files",

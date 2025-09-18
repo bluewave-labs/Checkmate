@@ -376,7 +376,52 @@
 			"email": "Email",
 			"role": "Роль",
 			"created": "Создано"
-		}
+		},
+		"addTeamMember": {
+			"addMemberMenu": "",
+			"title": "",
+			"description": "",
+			"addButton": ""
+		},
+		"register": "",
+		"registerToast": {
+			"success": "",
+			"dbUserExists": "",
+			"unknownError": ""
+		},
+		"registerTeamMember": {
+			"title": "",
+			"auth": {
+				"common": {
+					"inputs": {
+						"firstName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"lastName": {
+							"errors": {
+								"empty": "",
+								"pattern": ""
+							}
+						},
+						"email": {
+							"errors": {
+								"empty": "",
+								"invalid": ""
+							}
+						},
+						"role": {
+							"errors": {
+								"empty": ""
+							}
+						}
+					}
+				}
+			}
+		},
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "Остановлено",
@@ -421,23 +466,23 @@
 		"passwordRequirements": "Новый пароль должен содержать не менее 8 символов и содержать как минимум одну заглавную букву, одну строчную букву, одну цифру и один специальный символ.",
 		"saving": "Сохранение..."
 	},
-	"emailSent": "",
-	"failedToSendEmail": "",
-	"settingsTestEmailSuccess": "",
-	"settingsTestEmailFailed": "",
-	"settingsTestEmailFailedWithReason": "",
+	"emailSent": "Письмо успешно отправлено",
+	"failedToSendEmail": "Не удалось отправить письмо",
+	"settingsTestEmailSuccess": "Тестовое письмо успешно отправлено",
+	"settingsTestEmailFailed": "Не удалось отправить тестовое письмо",
+	"settingsTestEmailFailedWithReason": "Не удалось отправить тестовое письмо: {{reason}}",
 	"settingsTestEmailUnknownError": "Неизвестная ошибка",
 	"statusMsg": {
-		"paused": "",
+		"paused": "Мониторинг приостановлен",
 		"up": "",
 		"down": "",
-		"pending": ""
+		"pending": "Ожидание..."
 	},
 	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": "",
+		"http": "Введите URL-адрес или IP-адрес для мониторинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное имя, которое будет отображаться на панели инструментов.",
+		"ping": "Ведите IP-адрес или имя хоста для пинга (например, 192.168.1.100 или example.com) и добавьте понятное имя, которое будет отображаться на панели инструментов.",
+		"docker": "Введите Docker ID вашего контейнера. Docker ID должен быть полным 64-символьным Docker ID. Вы можете запустить docker inspect <short_id>, чтобы получить полный ID контейнера.",
+		"port": "Введите URL-адрес или IP-адрес сервера, номер порта и понятное имя, которое будет отображаться на панели инструментов.",
 		"game": ""
 	},
 	"common": {
@@ -447,24 +492,24 @@
 			"toggleTheme": ""
 		},
 		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
+			"networkError": "Ошибка сети",
+			"checkConnection": "Пожалуйста, проверьте свое сетевое соединение",
 			"unknownError": "Неизвестная ошибка"
 		}
 	},
 	"auth": {
 		"common": {
 			"navigation": {
-				"continue": "",
+				"continue": "Продолжить",
 				"back": "Назад"
 			},
 			"inputs": {
 				"email": {
-					"label": "",
+					"label": "Электронная почта",
 					"placeholder": "",
 					"errors": {
 						"empty": "Для продолжения введите свой адрес электронной почты",
-						"invalid": ""
+						"invalid": "Пожалуйста, проверьте правильность введённого адреса электронной почты"
 					}
 				},
 				"password": {
@@ -491,49 +536,49 @@
 							"highlighted": "одну прописную букву"
 						},
 						"match": {
-							"beginning": "",
-							"highlighted": ""
+							"beginning": "Пароли",
+							"highlighted": "должны совпадать"
 						}
 					},
 					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
+						"empty": "Пожалуйста, введите пароль",
+						"length": "Пароль должен быть длиной не менее 8 символов",
+						"uppercase": "Пароль должен содержать минимум 1 прописную букву",
+						"lowercase": "Пароль должен содержать минимум 1 строчную букву",
+						"number": "Пароль должен содержать минимум 1 цифру",
+						"special": "Пароль должен содержать минимум 1 спецсимвол",
+						"incorrect": "Предоставленный вами пароль не соответствует нашим записям"
 					}
 				},
 				"passwordConfirm": {
-					"label": "",
-					"placeholder": "",
+					"label": "Подтвердите пароль",
+					"placeholder": "Введите пароль еще раз для подтверждения",
 					"errors": {
-						"empty": "",
-						"different": ""
+						"empty": "Пожалуйста, введите свой пароль еще раз для подтверждения (помогает избежать опечаток)",
+						"different": "Введённые пароли не совпадают, вероятно, один из них напечатан с ошибкой"
 					}
 				},
 				"firstName": {
-					"label": "",
+					"label": "Имя",
 					"placeholder": "",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Пожалуйста, введите свое имя",
+						"length": "Имя должно быть короче 50 символов",
+						"pattern": "Имя должно содержать только буквы, пробелы, апострофы или дефисы"
 					}
 				},
 				"lastName": {
-					"label": "",
+					"label": "Фамилия",
 					"placeholder": "",
 					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+						"empty": "Пожалуйста, введите свою фамилию",
+						"length": "Фамилия должна быть короче 50 символов",
+						"pattern": "Фамилия должна содержать только буквы, пробелы, апострофы или дефисы"
 					}
 				}
 			},
 			"errors": {
-				"validation": ""
+				"validation": "Ошибка при проверке данных."
 			},
 			"fields": {
 				"password": {
@@ -549,20 +594,20 @@
 			}
 		},
 		"login": {
-			"heading": "",
+			"heading": "Войдите, чтобы продолжить",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
+				"stepOne": "Введите свою электронную почту",
+				"stepTwo": "Введите свой пароль"
 			},
 			"links": {
-				"forgotPassword": "",
-				"register": "",
+				"forgotPassword": "Забыли пароль?",
+				"register": "У вас нет учетной записи?",
 				"forgotPasswordLink": "",
 				"registerLink": ""
 			},
 			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
+				"success": "С возвращением! Вы успешно вошли в систему.",
+				"incorrectPassword": "Неверный пароль"
 			},
 			"errors": {
 				"password": {
@@ -573,42 +618,42 @@
 		},
 		"registration": {
 			"heading": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Создать супер-администратора",
+				"user": "Зарегистрироваться"
 			},
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": ""
+				"stepOne": "Введите свои личные данные",
+				"stepTwo": "Введите вашу электронную почту",
+				"stepThree": "Создайте свой пароль"
 			},
 			"description": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Создайте свой аккаунт супер-администратора, чтобы начать",
+				"user": "Зарегистрируйтесь как пользователь и обратитесь к супер-администратору для доступа к вашим мониторам"
 			},
 			"gettingStartedButton": {
-				"superAdmin": "",
-				"user": ""
+				"superAdmin": "Создать учетную запись супер-администратора",
+				"user": "Зарегистрироваться как обычный пользователь"
 			},
-			"termsAndPolicies": "",
+			"termsAndPolicies": "Создавая учетную запись, вы соглашаетесь с нашими <a1>Условиями предоставления услуг</a1> и <a2>Политикой конфиденциальности</a2>.",
 			"links": {
-				"login": ""
+				"login": "Уже есть учетная запись? <a>Войти</a>"
 			},
 			"toasts": {
-				"success": ""
+				"success": "Добро пожаловать! Ваша учетная запись была создана успешно."
 			},
 			"welcome": ""
 		},
 		"forgotPassword": {
-			"heading": "",
+			"heading": "Забыли пароль?",
 			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": "",
-				"stepFour": ""
+				"stepOne": "Не волнуйтесь, мы вышлем вам инструкции для сброса.",
+				"stepTwo": "Мы выслали ссылку для сброса пароля на <email/>",
+				"stepThree": "Ваш новый пароль должен отличаться от ваших предыдущих пароей.",
+				"stepFour": "Ваш пароль был успешно сброшен. Нажмите ниже, чтобы волшебным образом войти в систему."
 			},
 			"buttons": {
 				"openEmail": "",
-				"resetPassword": ""
+				"resetPassword": "Сбросить пароль"
 			},
 			"imageAlts": {
 				"passwordKey": "",
@@ -742,7 +787,8 @@
 			"failCountHeader": "",
 			"lastRunHeader": "",
 			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": ""
+			"lastRunTookHeader": "",
+			"intervalHeader": ""
 		},
 		"metricsTable": {
 			"title": "",
