@@ -86,7 +86,14 @@ const CreateInfrastructureMonitor = () => {
 			setHttps(monitor.url.startsWith("https"));
 			initializeInfrastructureMonitorForUpdate(monitor);
 		}
-	}, [isCreate, monitor, globalSettings, globalSettingsLoading, initializeInfrastructureMonitorForCreate, initializeInfrastructureMonitorForUpdate]);
+	}, [
+		isCreate,
+		monitor,
+		globalSettings,
+		globalSettingsLoading,
+		initializeInfrastructureMonitorForCreate,
+		initializeInfrastructureMonitorForUpdate,
+	]);
 
 	// Handlers
 	const onSubmit = async (event) => {
