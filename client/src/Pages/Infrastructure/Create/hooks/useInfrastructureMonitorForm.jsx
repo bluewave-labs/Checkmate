@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 const useInfrastructureMonitorForm = () => {
 	const [infrastructureMonitor, setInfrastructureMonitor] = useState({
 		url: "",
@@ -6,6 +6,8 @@ const useInfrastructureMonitorForm = () => {
 		notifications: [],
 		notify_email: false,
 		interval: 0.25,
+		statusWindowSize: 5,
+		statusWindowThreshold: 60,
 		cpu: false,
 		usage_cpu: "",
 		memory: false,
@@ -29,9 +31,10 @@ const useInfrastructureMonitorForm = () => {
 			[event.target.name]: event.target.checked,
 		});
 	};
-	const initializeInfrastructureMonitorForCreate = (globalSettings) => {
+	const initializeInfrastructureMonitorForCreate = useCallback((globalSettings) => {
 		const gt = globalSettings?.data?.settings?.globalThresholds || {};
-		setInfrastructureMonitor({
+		setInfrastructureMonitor((prev) => ({
+			...prev,
 			url: "",
 			name: "",
 			notifications: [],
@@ -45,17 +48,20 @@ const useInfrastructureMonitorForm = () => {
 			temperature: gt.temperature !== undefined,
 			usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
 			secret: "",
-		});
-	};
+		}));
+	}, []);
 
-	const initializeInfrastructureMonitorForUpdate = (monitor) => {
+	const initializeInfrastructureMonitorForUpdate = useCallback((monitor) => {
 		const MS_PER_MINUTE = 60000;
 		const { thresholds = {} } = monitor;
-		setInfrastructureMonitor({
+		setInfrastructureMonitor((prev) => ({
+			...prev,
 			url: monitor.url.replace(/^https?:\/\//, ""),
 			name: monitor.name || "",
 			notifications: monitor.notifications || [],
 			interval: monitor.interval / MS_PER_MINUTE,
+			statusWindowSize: monitor.statusWindowSize,
+			statusWindowThreshold: monitor.statusWindowThreshold,
 			cpu: thresholds.usage_cpu !== undefined,
 			usage_cpu:
 				thresholds.usage_cpu !== undefined ? (thresholds.usage_cpu * 100).toString() : "",
@@ -75,8 +81,8 @@ const useInfrastructureMonitorForm = () => {
 					? (thresholds.usage_temperature * 100).toString()
 					: "",
 			secret: monitor.secret || "",
-		});
-	};
+		}));
+	}, []);
 	return {
 		infrastructureMonitor,
 		setInfrastructureMonitor,

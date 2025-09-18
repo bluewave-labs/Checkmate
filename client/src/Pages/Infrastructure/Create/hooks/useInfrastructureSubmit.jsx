@@ -12,6 +12,8 @@ const useInfrastructureSubmit = () => {
 					? infrastructureMonitor.url
 					: infrastructureMonitor.name,
 			interval: infrastructureMonitor.interval * MS_PER_MINUTE,
+			statusWindowSize: infrastructureMonitor.statusWindowSize,
+			statusWindowThreshold: infrastructureMonitor.statusWindowThreshold,
 			cpu: infrastructureMonitor.cpu,
 			...(infrastructureMonitor.cpu
 				? { usage_cpu: infrastructureMonitor.usage_cpu }
