@@ -477,6 +477,7 @@ const createStatusPageBodyValidation = joi.object({
 	showCharts: joi.boolean().optional(),
 	showUptimePercentage: joi.boolean(),
 	showAdminLoginLink: joi.boolean().optional(),
+	showResponseTimeChart: joi.boolean().optional(),
 });
 
 const imageValidation = joi

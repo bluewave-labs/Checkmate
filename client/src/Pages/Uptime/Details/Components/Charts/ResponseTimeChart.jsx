@@ -4,7 +4,7 @@ import ResponseTimeIcon from "../../../../../assets/icons/response-time-icon.svg
 import SkeletonLayout from "./ResponseTimeChartSkeleton";
 import PropTypes from "prop-types";
 
-const ResponseTImeChart = ({ isLoading = false, groupedChecks = [], dateRange }) => {
+const ResponseTimeChart = ({ isLoading = false, groupedChecks = [], dateRange }) => {
 	if (isLoading) {
 		return <SkeletonLayout />;
 	}
@@ -22,10 +22,10 @@ const ResponseTImeChart = ({ isLoading = false, groupedChecks = [], dateRange })
 	);
 };
 
-ResponseTImeChart.propTypes = {
+ResponseTimeChart.propTypes = {
 	isLoading: PropTypes.bool,
 	groupedChecks: PropTypes.array,
 	dateRange: PropTypes.string,
 };
 
-export default ResponseTImeChart;
+export default ResponseTimeChart;
