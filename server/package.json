@@ -6,7 +6,9 @@
 	"type": "module",
 	"scripts": {
 		"test": "c8 mocha",
-		"dev": "nodemon src/index.js",
+		"dev": "nodemon --exec tsx src/index.js",
+		"start": "nodemon ./dist/index.js",
+		"build": "tsc",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",
 		"format": "prettier --write .",
@@ -61,6 +63,7 @@
 		"mocha": "11.1.0",
 		"nodemon": "3.1.9",
 		"prettier": "^3.3.3",
-		"sinon": "19.0.2"
+		"sinon": "19.0.2",
+		"tsx": "4.20.5"
 	}
 }

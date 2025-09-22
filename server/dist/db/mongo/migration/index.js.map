@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/db/mongo/migration/index.js"],"names":[],"mappings":"AAAA,OAAO,EAAE,4BAA4B,EAAE,MAAM,wCAAwC,CAAC;AAEtF,MAAM,aAAa,GAAG,KAAK,IAAI,EAAE;IAChC,MAAM,4BAA4B,EAAE,CAAC;AACtC,CAAC,CAAC;AAEF,OAAO,EAAE,aAAa,EAAE,CAAC"}
