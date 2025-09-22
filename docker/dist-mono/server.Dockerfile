@@ -19,12 +19,15 @@ WORKDIR /app/server
 
 COPY server ./
 
-COPY --from=frontend-build /app/client/dist ./public
 
 RUN npm install
+
+RUN npm run build
+
+COPY --from=frontend-build /app/client/dist ./public
 
 RUN chmod +x ./scripts/inject-vars.sh
 
 EXPOSE 52345
 
-CMD ./scripts/inject-vars.sh && node ./src/index.js
+CMD ./scripts/inject-vars.sh && node ./dist/index.js
