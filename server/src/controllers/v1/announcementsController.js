@@ -1,4 +1,4 @@
-import { createAnnouncementValidation } from "../validation/joi.js";
+import { createAnnouncementValidation } from "../../validation/joi.js";
 import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "announcementController";

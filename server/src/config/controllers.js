@@ -1,19 +1,19 @@
-import { createCommonDependencies } from "../controllers/baseController.js";
+import { createCommonDependencies } from "../controllers/v1/baseController.js";
 
 // Services
 
 // Controllers
-import MonitorController from "../controllers/monitorController.js";
-import AuthController from "../controllers/authController.js";
-import SettingsController from "../controllers/settingsController.js";
-import CheckController from "../controllers/checkController.js";
-import InviteController from "../controllers/inviteController.js";
-import MaintenanceWindowController from "../controllers/maintenanceWindowController.js";
-import QueueController from "../controllers/queueController.js";
-import LogController from "../controllers/logController.js";
-import StatusPageController from "../controllers/statusPageController.js";
-import NotificationController from "../controllers/notificationController.js";
-import DiagnosticController from "../controllers/diagnosticController.js";
+import MonitorController from "../controllers/v1/monitorController.js";
+import AuthController from "../controllers/v1/authController.js";
+import SettingsController from "../controllers/v1/settingsController.js";
+import CheckController from "../controllers/v1/checkController.js";
+import InviteController from "../controllers/v1/inviteController.js";
+import MaintenanceWindowController from "../controllers/v1/maintenanceWindowController.js";
+import QueueController from "../controllers/v1/queueController.js";
+import LogController from "../controllers/v1/logController.js";
+import StatusPageController from "../controllers/v1/statusPageController.js";
+import NotificationController from "../controllers/v1/notificationController.js";
+import DiagnosticController from "../controllers/v1/diagnosticController.js";
 
 export const initializeControllers = (services) => {
 	const controllers = {};

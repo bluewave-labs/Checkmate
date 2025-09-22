@@ -1,4 +1,4 @@
-import { inviteBodyValidation, inviteVerificationBodyValidation } from "../validation/joi.js";
+import { inviteBodyValidation, inviteVerificationBodyValidation } from "../../validation/joi.js";
 import BaseController from "./baseController.js";
 const SERVICE_NAME = "inviteController";
 
