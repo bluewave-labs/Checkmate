@@ -1,17 +1,17 @@
 import { verifyJWT } from "../middleware/verifyJWT.js";
 import { authApiLimiter } from "../middleware/rateLimiter.js";
 
-import AuthRoutes from "../routes/authRoute.js";
-import InviteRoutes from "../routes/inviteRoute.js";
-import MonitorRoutes from "../routes/monitorRoute.js";
-import CheckRoutes from "../routes/checkRoute.js";
-import SettingsRoutes from "../routes/settingsRoute.js";
-import MaintenanceWindowRoutes from "../routes/maintenanceWindowRoute.js";
-import StatusPageRoutes from "../routes/statusPageRoute.js";
-import QueueRoutes from "../routes/queueRoute.js";
-import LogRoutes from "../routes/logRoutes.js";
-import DiagnosticRoutes from "../routes/diagnosticRoute.js";
-import NotificationRoutes from "../routes/notificationRoute.js";
+import AuthRoutes from "../routes/v1/authRoute.js";
+import InviteRoutes from "../routes/v1//inviteRoute.js";
+import MonitorRoutes from "../routes/v1/monitorRoute.js";
+import CheckRoutes from "../routes/v1/checkRoute.js";
+import SettingsRoutes from "../routes/v1/settingsRoute.js";
+import MaintenanceWindowRoutes from "../routes/v1/maintenanceWindowRoute.js";
+import StatusPageRoutes from "../routes/v1/statusPageRoute.js";
+import QueueRoutes from "../routes/v1/queueRoute.js";
+import LogRoutes from "../routes/v1/logRoutes.js";
+import DiagnosticRoutes from "../routes/v1//diagnosticRoute.js";
+import NotificationRoutes from "../routes/v1/notificationRoute.js";
 
 export const setupRoutes = (app, controllers) => {
 	const authRoutes = new AuthRoutes(controllers.authController);

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyJWT } from "../middleware/verifyJWT.js";
-import { isAllowed } from "../middleware/isAllowed.js";
+import { verifyJWT } from "../../middleware/verifyJWT.js";
+import { isAllowed } from "../../middleware/isAllowed.js";
 
 class InviteRoutes {
 	constructor(inviteController) {
