@@ -63,14 +63,10 @@ const MonitorSchema = new Schema<IMonitor>(
 			],
 			default: [],
 		},
-		notificationChannels: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: "NotificationChannel_v2",
-				required: false,
-				default: [],
-			},
-		],
+		notificationChannels: {
+			type: [{ type: Schema.Types.ObjectId, ref: "NotificationChannel_v2" }],
+			default: [],
+		},
 
 		createdBy: { type: Schema.Types.ObjectId, ref: "User_v2", required: true },
 		updatedBy: { type: Schema.Types.ObjectId, ref: "User_v2", required: true },
