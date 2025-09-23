@@ -1,5 +1,8 @@
 import { User, Role } from "../../models/index.js";
+import { Types } from "mongoose";
+
 import { DEFAULT_ROLES } from "../../../service/v2/business/AuthService.js";
+export const MIGRATION_NAME = "0002_migrateUsers";
 async function migrateUsers() {
 	try {
 		// Create roles if they don't exist
@@ -21,20 +24,24 @@ async function migrateUsers() {
 			$or: [{ version: { $exists: false } }, { version: { $lt: 2 } }],
 		});
 		for (const user of users) {
+			const newRoleIds: Types.ObjectId[] = [];
+
 			for (const role of user.role || []) {
 				if (role === "superadmin") {
 					const superAdminRole = roles.find((role) => role.name === "SuperAdmin");
-					user.roles.push(superAdminRole!._id);
+					newRoleIds.push(superAdminRole!._id);
 				}
 				if (role === "admin") {
 					const managerRole = roles.find((role) => role.name === "Manager");
-					user.roles.push(managerRole!._id);
+					newRoleIds.push(managerRole!._id);
 				}
 				if (role === "user") {
 					const memberRole = roles.find((role) => role.name === "Member");
-					user.roles.push(memberRole!._id);
+					newRoleIds.push(memberRole!._id);
 				}
 			}
+			const merged = [...new Set([...user.roles, ...newRoleIds])];
+			user.roles = merged;
 			user.version = 2;
 			await user.save();
 		}
