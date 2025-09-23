@@ -1,4 +1,4 @@
-import { IMonitor, INotificationChannel } from "../../../db/v2/models/index.js";
+import { IMonitor, INotificationChannel } from "../../../../db/v2/models/index.js";
 
 export interface IAlert {
 	name: string;
