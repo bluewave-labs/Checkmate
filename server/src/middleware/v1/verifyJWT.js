@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import ServiceRegistry from "../service/system/serviceRegistry.js";
-import SettingsService from "../service/system/settingsService.js";
-import StringService from "../service/system/stringService.js";
+import ServiceRegistry from "../../service/v1/system/serviceRegistry.js";
+import SettingsService from "../../service/v1/system/settingsService.js";
+import StringService from "../../service/v1/system/stringService.js";
 const SERVICE_NAME = "verifyJWT";
 const TOKEN_PREFIX = "Bearer ";
 

@@ -1,4 +1,4 @@
-import Monitor from "../../models/Monitor.js";
+import Monitor from "../models/Monitor.js";
 async function migrateStatusWindowThreshold() {
 	try {
 		const monitors = await Monitor.find({ statusWindowThreshold: { $lt: 1 } });

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import logger from "../../utils/logger.js";
 import Monitor from "./Monitor.js";
 import Team from "./Team.js";
 import Notification from "./Notification.js";

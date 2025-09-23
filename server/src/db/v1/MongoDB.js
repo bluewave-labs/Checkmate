@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import AppSettings from "../models/AppSettings.js";
+import AppSettings from "./models/AppSettings.js";
 import { runMigrations } from "./migration/index.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";

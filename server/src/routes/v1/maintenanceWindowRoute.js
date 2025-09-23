@@ -1,5 +1,5 @@
 import { Router } from "express";
-import MaintenanceWindow from "../../db/models/MaintenanceWindow.js";
+import MaintenanceWindow from "../../db/v1/models/MaintenanceWindow.js";
 class MaintenanceWindowRoutes {
 	constructor(maintenanceWindowController) {
 		this.router = Router();
