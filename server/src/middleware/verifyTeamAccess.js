@@ -3,8 +3,6 @@ const SERVICE_NAME = "verifyTeamAccess";
 const verifyTeamAccess = (Model, paramName) => {
 	return async (req, res, next) => {
 		try {
-			const user = req.user;
-			console.log(user);
 			const documentId = req.params[paramName];
 			const doc = await Model.findById(documentId);
 

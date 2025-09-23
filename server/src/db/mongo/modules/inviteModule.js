@@ -1,17 +1,17 @@
 const SERVICE_NAME = "inviteModule";
 
 class InviteModule {
-	constructor({ Invite, crypto, stringService }) {
-		this.Invite = Invite;
+	constructor({ InviteToken, crypto, stringService }) {
+		this.InviteToken = InviteToken;
 		this.crypto = crypto;
 		this.stringService = stringService;
 	}
 
 	requestInviteToken = async (userData) => {
 		try {
-			await this.Invite.deleteMany({ email: userData.email });
+			await this.InviteToken.deleteMany({ email: userData.email });
 			userData.token = this.crypto.randomBytes(32).toString("hex");
-			let inviteToken = new this.Invite(userData);
+			let inviteToken = new this.InviteToken(userData);
 			await inviteToken.save();
 			return inviteToken;
 		} catch (error) {
@@ -23,7 +23,7 @@ class InviteModule {
 
 	getInviteToken = async (token) => {
 		try {
-			const invite = await this.Invite.findOne({
+			const invite = await this.InviteToken.findOne({
 				token,
 			});
 			if (invite === null) {
@@ -38,7 +38,7 @@ class InviteModule {
 	};
 	getInviteTokenAndDelete = async (token) => {
 		try {
-			const invite = await this.Invite.findOneAndDelete({
+			const invite = await this.InviteToken.findOneAndDelete({
 				token,
 			});
 			if (invite === null) {

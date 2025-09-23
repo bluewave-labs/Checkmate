@@ -13,8 +13,6 @@ import LogRoutes from "../routes/v1/logRoutes.js";
 import DiagnosticRoutes from "../routes/v1//diagnosticRoute.js";
 import NotificationRoutes from "../routes/v1/notificationRoute.js";
 
-import authV2 from "../routes/v2/auth.js";
-
 export const setupRoutes = (app, controllers) => {
 	const authRoutes = new AuthRoutes(controllers.authController);
 	const monitorRoutes = new MonitorRoutes(controllers.monitorController);
@@ -39,12 +37,4 @@ export const setupRoutes = (app, controllers) => {
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
-
-	// *******************
-	// V2 Routes
-	// *******************
-
-	const v2AuthRoutes = new authV2(controllers.authV2Controller);
-
-	app.use("/api/v2/auth", authApiLimiter, v2AuthRoutes.getRouter());
 };

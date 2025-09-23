@@ -48,8 +48,8 @@ import { ParseBoolean } from "../utils/utils.js";
 // Models
 import Check from "../db/models/Check.js";
 import Monitor from "../db/models/Monitor.js";
-import { User } from "../db/models/auth/User.js";
-import { Invite } from "../db/models/auth/Invite.js";
+import User from "../db/models/User.js";
+import InviteToken from "../db/models/InviteToken.js";
 import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
@@ -68,10 +68,6 @@ import NotificationModule from "../db/mongo/modules/notificationModule.js";
 import RecoveryModule from "../db/mongo/modules/recoveryModule.js";
 import SettingsModule from "../db/mongo/modules/settingsModule.js";
 
-// v2
-import AuthV2Service from "../service/v2/business/AuthService.js";
-import InviteV2Service from "../service/v2/business/InviteService.js";
-
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
 	ServiceRegistry.instance = serviceRegistry;
@@ -83,7 +79,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 
 	// Create DB
 	const checkModule = new CheckModule({ logger, Check, Monitor, User });
-	const inviteModule = new InviteModule({ Invite, crypto, stringService });
+	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
@@ -212,9 +208,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		games,
 	});
 
-	const authV2Service = new AuthV2Service();
-	const inviteV2Service = new InviteV2Service();
-
 	const services = {
 		settingsService,
 		translationService,
@@ -234,8 +227,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		monitorService,
 		errorService,
 		logger,
-		authV2Service,
-		inviteV2Service,
 	};
 
 	Object.values(services).forEach((service) => {

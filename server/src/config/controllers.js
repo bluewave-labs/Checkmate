@@ -15,9 +15,6 @@ import StatusPageController from "../controllers/v1/statusPageController.js";
 import NotificationController from "../controllers/v1/notificationController.js";
 import DiagnosticController from "../controllers/v1/diagnosticController.js";
 
-// V2
-import AuthV2Controller from "../controllers/v2/AuthController.js";
-
 export const initializeControllers = (services) => {
 	const controllers = {};
 	const commonDependencies = createCommonDependencies(services.db, services.errorService, services.logger, services.stringService);
@@ -64,9 +61,6 @@ export const initializeControllers = (services) => {
 	controllers.diagnosticController = new DiagnosticController(commonDependencies, {
 		diagnosticService: services.diagnosticService,
 	});
-
-	// V2
-	controllers.authV2Controller = new AuthV2Controller(services.authV2Service, services.inviteV2Service);
 
 	return controllers;
 };
