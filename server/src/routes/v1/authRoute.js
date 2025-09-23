@@ -1,9 +1,7 @@
 import { Router } from "express";
-import { verifyJWT } from "../middleware/verifyJWT.js";
-import { verifyOwnership } from "../middleware/verifyOwnership.js";
-import { isAllowed } from "../middleware/isAllowed.js";
+import { verifyJWT } from "../../middleware/verifyJWT.js";
+import { isAllowed } from "../../middleware/isAllowed.js";
 import multer from "multer";
-import User from "../db/models/User.js";
 
 const upload = multer();
 

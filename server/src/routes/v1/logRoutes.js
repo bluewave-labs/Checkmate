@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
+import { isAllowed } from "../../middleware/isAllowed.js";
 class LogRoutes {
 	constructor(logController) {
 		this.router = Router();
