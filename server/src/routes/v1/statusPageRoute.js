@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyJWT } from "../../middleware/v1/verifyJWT.js";
+import { verifyJWT } from "../../middleware/verifyJWT.js";
 import multer from "multer";
 const upload = multer();
 

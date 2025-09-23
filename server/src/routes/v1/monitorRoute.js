@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isAllowed } from "../../middleware/v1/isAllowed.js";
+import { isAllowed } from "../../middleware/isAllowed.js";
 import multer from "multer";
 import { fetchMonitorCertificate } from "../../controllers/v1/controllerUtils.js";
 const upload = multer({

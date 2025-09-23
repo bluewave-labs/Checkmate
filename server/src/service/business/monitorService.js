@@ -1,4 +1,4 @@
-import { createMonitorsBodyValidation } from "../../../validation/joi.js";
+import { createMonitorsBodyValidation } from "../../validation/joi.js";
 
 const SERVICE_NAME = "MonitorService";
 class MonitorService {

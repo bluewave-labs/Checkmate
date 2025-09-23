@@ -5,11 +5,11 @@ class SuperSimpleQueueHelper {
 
 	/**
 	 * @param {{
-	 * 	db: import("../database.js").Database,
-	 * 	logger: import("../logger.js").Logger,
-	 * 	networkService: import("../networkService.js").NetworkService,
-	 * 	statusService: import("../statusService.js").StatusService,
-	 * 	notificationService: import("../notificationService.js").NotificationService
+	 * 	db: import("../database").Database,
+	 * 	logger: import("../logger").Logger,
+	 * 	networkService: import("../networkService").NetworkService,
+	 * 	statusService: import("../statusService").StatusService,
+	 * 	notificationService: import("../notificationService").NotificationService
 	 * }}
 	 */
 	constructor({ db, logger, networkService, statusService, notificationService }) {

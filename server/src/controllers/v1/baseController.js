@@ -1,4 +1,4 @@
-import { AppError } from "../../service/v1/infrastructure/errorService.js";
+import { AppError } from "../../service/infrastructure/errorService.js";
 
 export const createCommonDependencies = (db, errorService, logger, stringService) => {
 	return {

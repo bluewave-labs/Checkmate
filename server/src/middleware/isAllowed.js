@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 const TOKEN_PREFIX = "Bearer ";
 const SERVICE_NAME = "allowedRoles";
-import ServiceRegistry from "../../service/v1/system/serviceRegistry.js";
-import StringService from "../../service/v1/system/stringService.js";
-import SettingsService from "../../service/v1/system/settingsService.js";
+import ServiceRegistry from "../service/system/serviceRegistry.js";
+import StringService from "../service/system/stringService.js";
+import SettingsService from "../service/system/settingsService.js";
 
 const isAllowed = (allowedRoles) => {
 	return (req, res, next) => {

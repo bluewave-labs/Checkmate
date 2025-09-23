@@ -1,5 +1,5 @@
-import { verifyJWT } from "../middleware/v1/verifyJWT.js";
-import { authApiLimiter } from "../middleware/v1/rateLimiter.js";
+import { verifyJWT } from "../middleware/verifyJWT.js";
+import { authApiLimiter } from "../middleware/rateLimiter.js";
 
 import AuthRoutes from "../routes/v1/authRoute.js";
 import InviteRoutes from "../routes/v1//inviteRoute.js";

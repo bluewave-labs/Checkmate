@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { isAllowed } from "../../middleware/v1/isAllowed.js";
+import { isAllowed } from "../../middleware/isAllowed.js";
 
 class CheckRoutes {
 	constructor(checkController) {
