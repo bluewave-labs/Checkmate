@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const logger = require("../utils/logger");
+const logger = require("../../utils/logger.js");
 const SERVICE_NAME = "verifyAdmin";
 const TOKEN_PREFIX = "Bearer ";
 import ServiceRegistry from "../service/serviceRegistry.js";
