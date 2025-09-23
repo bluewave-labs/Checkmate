@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAllowed } from "../../middleware/isAllowed.js";
 import multer from "multer";
-import { fetchMonitorCertificate } from "../../controllers/controllerUtils.js";
+import { fetchMonitorCertificate } from "../../controllers/v1/controllerUtils.js";
 const upload = multer({
 	storage: multer.memoryStorage(), // Store file in memory as Buffer
 });

@@ -6,7 +6,7 @@ import {
 	getMaintenanceWindowsByMonitorIdParamValidation,
 	getMaintenanceWindowsByTeamIdQueryValidation,
 	deleteMaintenanceWindowByIdParamValidation,
-} from "../validation/joi.js";
+} from "../../validation/joi.js";
 import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "maintenanceWindowController";

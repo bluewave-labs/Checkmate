@@ -10,7 +10,7 @@ import {
 	editUserByIdParamValidation,
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
-} from "../validation/joi.js";
+} from "../../validation/joi.js";
 
 const SERVICE_NAME = "authController";
 

@@ -1,4 +1,4 @@
-import { createNotificationBodyValidation } from "../validation/joi.js";
+import { createNotificationBodyValidation } from "../../validation/joi.js";
 import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "NotificationController";

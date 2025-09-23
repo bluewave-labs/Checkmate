@@ -1,5 +1,5 @@
-import { updateAppSettingsBodyValidation } from "../validation/joi.js";
-import { sendTestEmailBodyValidation } from "../validation/joi.js";
+import { updateAppSettingsBodyValidation } from "../../validation/joi.js";
+import { sendTestEmailBodyValidation } from "../../validation/joi.js";
 import BaseController from "./baseController.js";
 
 const SERVICE_NAME = "SettingsController";
