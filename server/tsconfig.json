@@ -22,5 +22,5 @@
 		"allowJs": true,
 		"checkJs": false
 	},
-	"exclude": ["node_modules", "dist", "**/*.config.js"]
+	"exclude": ["node_modules", "dist/", "**/*.config.js"]
 }
