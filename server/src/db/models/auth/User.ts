@@ -1,11 +1,47 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import logger from "../../utils/logger.js";
-import Monitor from "./Monitor.js";
-import Team from "./Team.js";
-import Notification from "./Notification.js";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
-const UserSchema = mongoose.Schema(
+import bcrypt from "bcryptjs";
+import logger from "../../../utils/logger.js";
+import Monitor from "../Monitor.js";
+import Team from "../Team.js";
+import Notification from "../Notification.js";
+import { subscribe } from "diagnostics_channel";
+
+export const RoleTypes = ["user", "admin", "superadmin", "demo"] as const;
+export type RoleType = (typeof RoleTypes)[number];
+
+export interface ITokenizedUser {
+	sub: string;
+	roles: string[];
+}
+
+export interface IUser extends Document {
+	// V1
+	_id: Types.ObjectId;
+	firstName: string;
+	lastName: string;
+	email: string;
+	password: string;
+	avatarImage: string;
+	profileImage: {
+		data: Buffer;
+		contentType: string;
+	};
+	isActive: boolean;
+	isVerified: boolean;
+	role?: RoleType[];
+	teamId: Types.ObjectId;
+	checkTTL: number;
+	createdAt: Date;
+	updatedAt: Date;
+	comparePassword: (submittedPassword: string) => Promise<boolean>;
+	// V2
+	roles: Types.ObjectId[];
+	lastLoginAt?: Date;
+	version: number;
+}
+
+const UserSchema = new Schema<IUser>(
 	{
 		firstName: {
 			type: String,
@@ -22,7 +58,7 @@ const UserSchema = mongoose.Schema(
 		},
 		password: {
 			type: String,
-			required: true,
+			required: false,
 		},
 		avatarImage: {
 			type: String,
@@ -41,8 +77,8 @@ const UserSchema = mongoose.Schema(
 		},
 		role: {
 			type: [String],
-			default: "user",
-			enum: ["user", "admin", "superadmin", "demo"],
+			default: ["user"],
+			enum: RoleTypes,
 		},
 		teamId: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -51,6 +87,22 @@ const UserSchema = mongoose.Schema(
 		},
 		checkTTL: {
 			type: Number,
+		},
+
+		// v2
+		roles: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Role",
+				default: [],
+			},
+		],
+		lastLoginAt: {
+			type: Date,
+		},
+		version: {
+			type: Number,
+			default: 1,
 		},
 	},
 	{
@@ -69,7 +121,7 @@ UserSchema.pre("save", function (next) {
 
 UserSchema.pre("findOneAndUpdate", function (next) {
 	const update = this.getUpdate();
-	if ("password" in update) {
+	if (update && "password" in update) {
 		const salt = bcrypt.genSaltSync(10);
 		update.password = bcrypt.hashSync(update.password, salt);
 	}
@@ -92,15 +144,13 @@ UserSchema.pre("findOneAndDelete", async function (next) {
 		}
 		next();
 	} catch (error) {
-		next(error);
+		next(error as Error);
 	}
 });
 
-UserSchema.methods.comparePassword = async function (submittedPassword) {
+UserSchema.methods.comparePassword = async function (submittedPassword: string) {
 	const res = await bcrypt.compare(submittedPassword, this.password);
 	return res;
 };
 
-const User = mongoose.model("User", UserSchema);
-
-export default User;
+export const User = mongoose.model<IUser>("User", UserSchema);
