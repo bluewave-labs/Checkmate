@@ -35,10 +35,12 @@ RUN npm install
 
 COPY server ./
 
-COPY --from=frontend-build /app/client/dist ./public
-
 RUN chmod +x ./scripts/inject-vars.sh
+
+RUN npm run build
+
+COPY --from=frontend-build /app/client/dist ./public
 
 EXPOSE 52345
 
-CMD ["sh", "-c", "./scripts/inject-vars.sh && node ./src/index.js"]
+CMD ["sh", "-c", "./scripts/inject-vars.sh && node ./dist/index.js"]
