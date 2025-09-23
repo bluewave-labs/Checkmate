@@ -3,6 +3,45 @@ import { User, Role, ITokenizedUser } from "../../../db/models/index.js";
 import ApiError from "../../../utils/ApiError.js";
 import { Types } from "mongoose";
 
+export const PERMISSIONS = {
+	users: {
+		all: "users.*",
+		create: "users.create",
+		view: "users.view",
+		update: "users.update",
+		delete: "users.delete",
+	},
+
+	monitors: {
+		all: "monitors.*",
+		create: "monitors.create",
+		view: "monitors.view",
+		update: "monitors.update",
+		delete: "monitors.delete",
+	},
+	notifications: {
+		all: "notifications.*",
+		create: "notifications.create",
+		view: "notifications.view",
+		update: "notifications.update",
+		delete: "notifications.delete",
+	},
+	checks: {
+		all: "checks.*",
+		create: "checks.create",
+		view: "checks.view",
+		update: "checks.update",
+		delete: "checks.delete",
+	},
+	statusPages: {
+		all: "statusPages.*",
+		create: "statusPages.create",
+		view: "statusPages.view",
+		update: "statusPages.update",
+		delete: "statusPages.delete",
+	},
+};
+
 export const DEFAULT_ROLES = [
 	{
 		name: "SuperAdmin",
@@ -13,19 +52,19 @@ export const DEFAULT_ROLES = [
 	{
 		name: "Admin",
 		description: "Admin with full permissions",
-		permissions: ["monitor.*", "users.*"],
+		permissions: [PERMISSIONS.monitors.all, PERMISSIONS.users.all],
 		isSystem: true,
 	},
 	{
 		name: "Manager",
 		description: "Can manage users",
-		permissions: ["users.create", "users.update", "monitors.*"],
+		permissions: [PERMISSIONS.users.create, PERMISSIONS.users.update, PERMISSIONS.monitors.all],
 		isSystem: true,
 	},
 	{
 		name: "Member",
 		description: "Basic team member",
-		permissions: ["users.update", "monitors.create", "monitors.view", "monitors.update"],
+		permissions: [PERMISSIONS.users.update, PERMISSIONS.monitors.create, PERMISSIONS.monitors.view, PERMISSIONS.monitors.update],
 		isSystem: true,
 	},
 ];
@@ -126,7 +165,7 @@ class AuthService implements IAuthService {
 		}
 
 		// Check password
-		const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+		const isPasswordValid = await bcrypt.compare(password, user.password);
 		if (!isPasswordValid) {
 			throw new Error("Invalid email or password");
 		}

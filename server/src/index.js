@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs";
 
 import Logger from "./utils/logger.js";
-import SettingsService from "./service/system/settingsService.js";
+import SettingsService from "./service/v1/system/settingsService.js";
 import AppSettings from "./db/models/AppSettings.js";
 
 const SERVICE_NAME = "Server";

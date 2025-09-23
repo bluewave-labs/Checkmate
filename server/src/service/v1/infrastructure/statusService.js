@@ -1,4 +1,4 @@
-import MonitorStats from "../../db/models/MonitorStats.js";
+import MonitorStats from "../../../db/models/MonitorStats.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {

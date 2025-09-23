@@ -1,0 +1,23 @@
+name: Build Check (Server)
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm install
+
+      - name: Check server formatting
+        working-directory: server
+        run: npm run build
