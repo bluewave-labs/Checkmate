@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isAllowed } from "../../middleware/isAllowed.js";
+import { isAllowed } from "../../middleware/v1/isAllowed.js";
 
 class SettingsRoutes {
 	constructor(settingsController) {
