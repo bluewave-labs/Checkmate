@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { ITokenizedUser, IInvite, Invite } from "../../../db/v2/models/index.js";
 import ApiError from "../../../utils/ApiError.js";
 
+const SERVICE_NAME = "InviteServiceV2";
 export interface IInviteService {
 	create: (tokenizedUser: ITokenizedUser, invite: IInvite) => Promise<{ token: string }>;
 	getAll: () => Promise<IInvite[]>;
@@ -10,6 +11,7 @@ export interface IInviteService {
 }
 
 class InviteService implements IInviteService {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor() {}
 
 	create = async (tokenizedUser: ITokenizedUser, inviteData: IInvite) => {

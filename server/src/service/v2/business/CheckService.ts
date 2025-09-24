@@ -6,12 +6,15 @@ import { StatusResponse } from "../infrastructure/NetworkService.js";
 import type { ICapturePayload, ILighthousePayload } from "../infrastructure/NetworkService.js";
 import mongoose from "mongoose";
 
+const SERVICE_NAME = "CheckServiceV2";
 export interface ICheckService {
 	buildCheck: (statusResponse: StatusResponse, type: MonitorType) => Promise<ICheck>;
 	cleanupOrphanedChecks: () => Promise<boolean>;
 }
 
 class CheckService implements ICheckService {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private isCapturePayload = (payload: any): payload is ICapturePayload => {
 		if (!payload || typeof payload !== "object") return false;
 

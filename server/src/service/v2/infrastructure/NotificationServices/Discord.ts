@@ -2,7 +2,10 @@ import { IMonitor, INotificationChannel } from "../../../../db/v2/models/index.j
 import { IAlert, IMessageService } from "./IMessageService.js";
 import got from "got";
 import ApiError from "../../../../utils/ApiError.js";
+
+const SERVICE_NAME = "DiscordServiceV2";
 class DiscordService implements IMessageService {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor() {}
 
 	private toDiscordEmbeds = (alert: IAlert) => {

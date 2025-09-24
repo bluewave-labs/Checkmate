@@ -1,11 +1,14 @@
 import UserService from "../business/UserService.js";
 import { IMonitor, NotificationChannel } from "../../../db/v2/models/index.js";
 import { EmailService, SlackService, DiscordService, WebhookService } from "./NotificationServices/index.js";
+
+const SERVICE_NAME = "NotificationServiceV2";
 export interface INotificationService {
 	handleNotifications: (monitor: IMonitor) => Promise<void>;
 }
 
 class NotificationService implements INotificationService {
+	static SERVICE_NAME = SERVICE_NAME;
 	private emailService: EmailService;
 	private slackService: SlackService;
 	private discordService: DiscordService;

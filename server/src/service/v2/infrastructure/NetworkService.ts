@@ -1,4 +1,5 @@
 import { Got, HTTPError } from "got";
+import got from "got";
 import ping from "ping";
 import { IMonitor } from "../../../db/v2/models/index.js";
 import { GotTimings } from "../../../db/v2/models/checks/Check.js";
@@ -7,6 +8,8 @@ import type { ISystemInfo, ICaptureInfo, ILighthouseResult } from "../../../db/v
 import { MonitorType, MonitorStatus } from "../../../db/v2/models/monitors/Monitor.js";
 import ApiError from "../../../utils/ApiError.js";
 import { config } from "../../../config/index.js";
+
+const SERVICE_NAME = "NetworkServiceV2";
 export interface INetworkService {
 	requestHttp: (monitor: IMonitor) => Promise<StatusResponse>;
 	requestInfrastructure: (monitor: IMonitor) => Promise<StatusResponse>;
@@ -36,9 +39,10 @@ export interface StatusResponse<TPayload = unknown> {
 }
 
 class NetworkService implements INetworkService {
+	static SERVICE_NAME = SERVICE_NAME;
 	private got: Got;
 	private NETWORK_ERROR: number;
-	constructor(got: Got) {
+	constructor() {
 		this.got = got;
 		this.NETWORK_ERROR = 5000;
 	}
