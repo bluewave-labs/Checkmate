@@ -54,6 +54,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.17.0",
+		"@types/express": "5.0.3",
 		"@types/jsonwebtoken": "9.0.10",
 		"@types/nodemailer": "7.0.1",
 		"@types/ping": "0.4.4",
