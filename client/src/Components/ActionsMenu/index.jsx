@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { createToast } from "../../Utils/toastUtils";
 
 import PropTypes from "prop-types";
-import { usePauseMonitor, useDeleteMonitor } from "../../Hooks/monitorHooks";
+import { usePauseMonitor, useDeleteMonitor } from "../../Hooks/v1/monitorHooks.js";
 
 const ActionsMenu = ({
 	monitor,

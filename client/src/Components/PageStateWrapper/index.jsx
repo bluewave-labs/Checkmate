@@ -3,7 +3,7 @@ import Fallback from "../Fallback";
 import { Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { useIsAdmin } from "../../Hooks/useIsAdmin";
+import { useIsAdmin } from "../../Hooks/v1/useIsAdmin.js";
 import PropTypes from "prop-types";
 const PageStateWrapper = ({
 	networkError,

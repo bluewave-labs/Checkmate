@@ -1,57 +1,57 @@
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import HomeLayout from "../Components/Layouts/HomeLayout";
-import NotFound from "../Pages/NotFound";
+import NotFound from "../Pages/v1/NotFound";
 
 // Auth
-import AuthLogin from "../Pages/Auth/Login";
-import AuthRegister from "../Pages/Auth/Register/";
-import AuthForgotPassword from "../Pages/Auth/ForgotPassword";
-import AuthCheckEmail from "../Pages/Auth/CheckEmail";
-import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
-import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed";
+import AuthLogin from "../Pages/v1/Auth/Login";
+import AuthRegister from "../Pages/v1/Auth/Register/";
+import AuthForgotPassword from "../Pages/v1/Auth/ForgotPassword";
+import AuthCheckEmail from "../Pages/v1/Auth/CheckEmail";
+import AuthSetNewPassword from "../Pages/v1/Auth/SetNewPassword";
+import AuthNewPasswordConfirmed from "../Pages/v1/Auth/NewPasswordConfirmed";
 
 // Uptime
-import Uptime from "../Pages/Uptime/Monitors";
-import UptimeDetails from "../Pages/Uptime/Details";
-import UptimeCreate from "../Pages/Uptime/Create";
+import Uptime from "../Pages/v1/Uptime/Monitors";
+import UptimeDetails from "../Pages/v1/Uptime/Details";
+import UptimeCreate from "../Pages/v1/Uptime/Create";
 
 // PageSpeed
-import PageSpeed from "../Pages/PageSpeed/Monitors";
-import PageSpeedDetails from "../Pages/PageSpeed/Details";
-import PageSpeedCreate from "../Pages/PageSpeed/Create";
+import PageSpeed from "../Pages/v1/PageSpeed/Monitors";
+import PageSpeedDetails from "../Pages/v1/PageSpeed/Details";
+import PageSpeedCreate from "../Pages/v1/PageSpeed/Create";
 
 // Infrastructure
-import Infrastructure from "../Pages/Infrastructure/Monitors";
-import InfrastructureCreate from "../Pages/Infrastructure/Create";
-import InfrastructureDetails from "../Pages/Infrastructure/Details";
+import Infrastructure from "../Pages/v1/Infrastructure/Monitors";
+import InfrastructureCreate from "../Pages/v1/Infrastructure/Create";
+import InfrastructureDetails from "../Pages/v1/Infrastructure/Details";
 
 // Server Status
-import ServerUnreachable from "../Pages/ServerUnreachable";
+import ServerUnreachable from "../Pages/v1/ServerUnreachable.jsx";
 
 // Incidents
-import Incidents from "../Pages/Incidents";
+import Incidents from "../Pages/v1/Incidents";
 
 // Status pages
-import CreateStatus from "../Pages/StatusPage/Create";
-import StatusPages from "../Pages/StatusPage/StatusPages";
-import Status from "../Pages/StatusPage/Status";
+import CreateStatus from "../Pages/v1/StatusPage/Create";
+import StatusPages from "../Pages/v1/StatusPage/StatusPages";
+import Status from "../Pages/v1/StatusPage/Status";
 
-import Notifications from "../Pages/Notifications";
-import CreateNotifications from "../Pages/Notifications/create";
+import Notifications from "../Pages/v1/Notifications";
+import CreateNotifications from "../Pages/v1/Notifications/create";
 
 // Settings
-import Account from "../Pages/Account";
-import EditUser from "../Pages/Account/EditUser";
-import Settings from "../Pages/Settings";
+import Account from "../Pages/v1/Account";
+import EditUser from "../Pages/v1/Account/EditUser";
+import Settings from "../Pages/v1/Settings";
 
-import Maintenance from "../Pages/Maintenance";
+import Maintenance from "../Pages/v1/Maintenance";
 
 import ProtectedRoute from "../Components/ProtectedRoute";
 import RoleProtectedRoute from "../Components/RoleProtectedRoute";
-import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance";
+import CreateNewMaintenanceWindow from "../Pages/v1/Maintenance/CreateMaintenance";
 import withAdminCheck from "../Components/HOC/withAdminCheck";
-import BulkImport from "../Pages/Uptime/BulkImport";
-import Logs from "../Pages/Logs";
+import BulkImport from "../Pages/v1/Uptime/BulkImport";
+import Logs from "../Pages/v1/Logs";
 
 const Routes = () => {
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
