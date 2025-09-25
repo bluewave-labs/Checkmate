@@ -16,6 +16,7 @@
 		"@emotion/react": "^11.13.3",
 		"@emotion/styled": "^11.13.0",
 		"@hello-pangea/dnd": "^18.0.0",
+		"@hookform/resolvers": "5.2.2",
 		"@mui/icons-material": "6.4.11",
 		"@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
 		"@mui/material": "6.4.11",
@@ -31,6 +32,7 @@
 		"mui-color-input": "^6.0.0",
 		"react": "18.3.1",
 		"react-dom": "^18.2.0",
+		"react-hook-form": "7.63.0",
 		"react-i18next": "^15.4.0",
 		"react-icons": "5.5.0",
 		"react-redux": "9.2.0",
@@ -39,7 +41,9 @@
 		"react-toastify": "^10.0.5",
 		"recharts": "2.15.2",
 		"redux-persist": "6.0.0",
-		"vite-plugin-svgr": "^4.2.0"
+		"swr": "2.3.6",
+		"vite-plugin-svgr": "^4.2.0",
+		"zod": "4.1.11"
 	},
 	"unusedDepencies": {
 		"@solana/wallet-adapter-base": "0.9.25",
