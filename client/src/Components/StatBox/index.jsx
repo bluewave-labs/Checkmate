@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import Image from "../Image";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
-import { useMonitorUtils } from "../../Hooks/useMonitorUtils";
+import { useMonitorUtils } from "../../Hooks/v1/useMonitorUtils.js";
 
 /**
  * StatBox Component
