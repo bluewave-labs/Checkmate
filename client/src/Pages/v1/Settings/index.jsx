@@ -16,7 +16,12 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage, setShowURL } from "../../../Features/UI/uiSlice.js";
+import {
+	setTimezone,
+	setMode,
+	setLanguage,
+	setShowURL,
+} from "../../../Features/UI/uiSlice.js";
 import SettingsStats from "./SettingsStats.jsx";
 
 import { useFetchSettings, useSaveSettings } from "../../../Hooks/v1/settingsHooks.js";

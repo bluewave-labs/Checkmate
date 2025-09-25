@@ -7,7 +7,11 @@ import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
 import ImageUpload from "../../../../Components/Inputs/ImageUpload/index.jsx";
 import { newOrChangedCredentials } from "../../../../Validation/validation.js";
 import { useDispatch, useSelector } from "react-redux";
-import { clearAuthState, deleteUser, update } from "../../../../Features/Auth/authSlice.js";
+import {
+	clearAuthState,
+	deleteUser,
+	update,
+} from "../../../../Features/Auth/authSlice.js";
 import { createToast } from "../../../../Utils/toastUtils.jsx";
 import { logger } from "../../../../Utils/Logger.js";
 import { GenericDialog } from "../../../../Components/Dialog/genericDialog.jsx";

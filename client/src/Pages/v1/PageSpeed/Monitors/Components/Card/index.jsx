@@ -7,7 +7,10 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { useSelector } from "react-redux";
-import { formatDateWithTz, formatDurationSplit } from "../../../../../../Utils/timeUtils.js";
+import {
+	formatDateWithTz,
+	formatDurationSplit,
+} from "../../../../../../Utils/timeUtils.js";
 import { useMonitorUtils } from "../../../../../../Hooks/v1/useMonitorUtils.js";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

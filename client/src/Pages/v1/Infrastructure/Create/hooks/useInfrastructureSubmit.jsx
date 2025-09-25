@@ -1,4 +1,7 @@
-import { useCreateMonitor, useUpdateMonitor } from "../../../../../Hooks/v1/monitorHooks.js";
+import {
+	useCreateMonitor,
+	useUpdateMonitor,
+} from "../../../../../Hooks/v1/monitorHooks.js";
 const useInfrastructureSubmit = () => {
 	const [createMonitor, isCreating] = useCreateMonitor();
 	const [updateMonitor, isUpdating] = useUpdateMonitor();
