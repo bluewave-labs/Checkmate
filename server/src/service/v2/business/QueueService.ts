@@ -1,6 +1,9 @@
 import { IJobQueue } from "../infrastructure/JobQueue.js";
 
+const SERVICE_NAME = "QueueServiceV2";
+
 class QueueService {
+	static SERVICE_NAME = SERVICE_NAME;
 	private jobQueue: IJobQueue;
 
 	constructor(jobQueue: IJobQueue) {

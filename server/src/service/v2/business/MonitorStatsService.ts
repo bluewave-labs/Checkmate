@@ -1,10 +1,13 @@
 import { MonitorStats } from "../../../db/v2/models/index.js";
 import { Monitor } from "../../../db/v2/models/index.js";
+
+const SERVICE_NAME = "MonitorStatsServiceV2";
 export interface IMonitorStatsService {
 	cleanupOrphanedMonitorStats: () => Promise<boolean>;
 }
 
 class MonitorStatsService implements IMonitorStatsService {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor() {}
 
 	async cleanupOrphanedMonitorStats() {

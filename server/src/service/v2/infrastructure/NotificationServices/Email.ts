@@ -4,7 +4,10 @@ import nodemailer, { Transporter } from "nodemailer";
 import { config } from "../../../../config/index.js";
 import UserService from "../../business/UserService.js";
 import ApiError from "../../../../utils/ApiError.js";
+
+const SERVICE_NAME = "EmailServiceV2";
 class EmailService implements IMessageService {
+	static SERVICE_NAME = SERVICE_NAME;
 	private transporter: Transporter;
 	private userService: UserService;
 

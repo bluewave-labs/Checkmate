@@ -2,6 +2,7 @@ import { IMonitor, IMonitorStats, MonitorStats } from "../../../db/v2/models/ind
 import { StatusResponse } from "./NetworkService.js";
 import ApiError from "../../../utils/ApiError.js";
 
+const SERVICE_NAME = "StatusServiceV2";
 const MAX_LATEST_CHECKS = 25;
 export interface IStatusService {
 	updateMonitorStatus: (monitor: IMonitor, status: StatusResponse) => Promise<StatusChangeResult>;
@@ -14,6 +15,7 @@ export interface IStatusService {
 export type StatusChangeResult = [updatedMonitor: IMonitor, statusChanged: boolean];
 
 class StatusService implements IStatusService {
+	static SERVICE_NAME = SERVICE_NAME;
 	updateMonitorStatus = async (monitor: IMonitor, statusResponse: StatusResponse): Promise<StatusChangeResult> => {
 		const newStatus = statusResponse.status;
 		monitor.lastCheckedAt = new Date();

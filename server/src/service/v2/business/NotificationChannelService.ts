@@ -1,6 +1,8 @@
 import { ITokenizedUser, INotificationChannel, NotificationChannel, Monitor } from "../../../db/v2/models/index.js";
 import ApiError from "../../../utils/ApiError.js";
 
+const SERVICE_NAME = "NotificationChannelServiceV2";
+
 export interface INotificationChannelService {
 	create: (
 		tokenizedUser: ITokenizedUser,
@@ -15,6 +17,8 @@ export interface INotificationChannelService {
 }
 
 class NotificationChannelService implements INotificationChannelService {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor() {}
 
 	create = async (tokenizedUser: ITokenizedUser, notificationChannelData: INotificationChannel) => {

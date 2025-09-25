@@ -4,6 +4,8 @@ import ApiError from "../../../utils/ApiError.js";
 import { Types } from "mongoose";
 import { IJobQueue } from "../infrastructure/JobQueue.js";
 
+const SERVICE_NAME = "AuthServiceV2";
+
 export const PERMISSIONS = {
 	users: {
 		all: "users.*",
@@ -94,6 +96,8 @@ export interface IAuthService {
 }
 
 class AuthService implements IAuthService {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private jobQueue: IJobQueue;
 	constructor(jobQueue: IJobQueue) {
 		this.jobQueue = jobQueue;

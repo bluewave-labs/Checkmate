@@ -2,6 +2,8 @@ import { IJob } from "super-simple-scheduler/dist/job/job.js";
 import { Monitor, IMonitor } from "../../../db/v2/models/index.js";
 import Scheduler from "super-simple-scheduler";
 import { IJobGenerator } from "./JobGenerator.js";
+
+const SERVICE_NAME = "JobQueueV2";
 export interface IJobMetrics {
 	jobs: number;
 	activeJobs: number;
@@ -36,6 +38,8 @@ export interface IJobQueue {
 }
 
 export default class JobQueue implements IJobQueue {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private scheduler: Scheduler;
 	private static instance: JobQueue | null = null;
 	private jobGenerator: any;

@@ -1,6 +1,8 @@
 import { ITokenizedUser, IMaintenance, Maintenance } from "../../../db/v2/models/index.js";
 import ApiError from "../../../utils/ApiError.js";
 
+const SERVICE_NAME = "MaintenanceServiceV2";
+
 export interface IMaintenanceService {
 	create: (
 		tokenizedUser: ITokenizedUser,
@@ -18,6 +20,7 @@ export interface IMaintenanceService {
 type MaintenanceCache = Map<string, IMaintenance[]>;
 
 class MaintenanceService implements IMaintenanceService {
+	static SERVICE_NAME = SERVICE_NAME;
 	private maintenanceCache: MaintenanceCache;
 	private lastRefresh: number;
 	private CACHE_TTL_MS = 60 * 1000;

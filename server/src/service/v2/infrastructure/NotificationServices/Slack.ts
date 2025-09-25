@@ -2,7 +2,9 @@ import { IMonitor, INotificationChannel } from "../../../../db/v2/models/index.j
 import { IAlert, IMessageService } from "./IMessageService.js";
 import got from "got";
 
+const SERVICE_NAME = "SlackServiceV2";
 class SlackService implements IMessageService {
+	static SERVICE_NAME = SERVICE_NAME;
 	constructor() {}
 
 	private toSlackBlocks = (alert: IAlert) => {
