@@ -231,18 +231,12 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 
 	// V2 Services
-	const jobQueueV2 = new JobQueueV2();
-	const authServiceV2 = new AuthServiceV2(jobQueueV2);
 	const checkServiceV2 = new CheckServiceV2();
 	const inviteServiceV2 = new InviteServiceV2();
 	const maintenanceServiceV2 = new MaintenanceServiceV2();
-	const monitorServiceV2 = new MonitorServiceV2(jobQueueV2);
 	const monitorStatsServiceV2 = new MonitorStatsServiceV2();
 	const notificationChannelServiceV2 = new NotificationChannelServiceV2();
-	const queueServiceV2 = new QueueServiceV2(jobQueueV2);
 	const userServiceV2 = new UserServiceV2();
-
-	// V2 Infra
 	const discordServiceV2 = new DiscordServiceV2();
 	const emailServiceV2 = new EmailServiceV2(userServiceV2);
 	const slackServiceV2 = new SlackServiceV2();
@@ -258,6 +252,10 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		notificationServiceV2,
 		maintenanceServiceV2
 	);
+	const jobQueueV2 = await JobQueueV2.create(jobGeneratorV2);
+	const authServiceV2 = new AuthServiceV2(jobQueueV2);
+	const monitorServiceV2 = new MonitorServiceV2(jobQueueV2);
+	const queueServiceV2 = new QueueServiceV2(jobQueueV2);
 
 	const services = {
 		//v1

@@ -64,11 +64,11 @@ class BufferService {
 			});
 		}
 		this.buffer = [];
-		this.logger.debug({
-			message: `Flushed ${items} items`,
-			service: this.SERVICE_NAME,
-			method: "flushBuffer",
-		});
+		// this.logger.debug({
+		// 	message: `Flushed ${items} items`,
+		// 	service: this.SERVICE_NAME,
+		// 	method: "flushBuffer",
+		// });
 		items = 0;
 	}
 }
