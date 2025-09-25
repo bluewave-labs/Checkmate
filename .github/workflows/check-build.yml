@@ -1,4 +1,4 @@
-name: Build Check ( Server)
+name: Build Check (Client & Server)
 on:
   pull_request:
   workflow_dispatch:
