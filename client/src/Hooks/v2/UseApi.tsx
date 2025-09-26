@@ -34,19 +34,16 @@ export const useGet = <T,>(
 	};
 };
 
-export const usePost = <B = any,>(endpoint: string) => {
+export const usePost = <B = any, R = any>(endpoint: string) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const postFn = async (
-		body: B,
-		config?: AxiosRequestConfig
-	): Promise<ApiResponse | null> => {
+	const postFn = async (body: B, config?: AxiosRequestConfig): Promise<R | null> => {
 		setLoading(true);
 		setError(null);
 
 		try {
-			const res = await post<ApiResponse>(endpoint, body, config);
+			const res = await post<R>(endpoint, body, config);
 			return res.data;
 		} catch (err: any) {
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
