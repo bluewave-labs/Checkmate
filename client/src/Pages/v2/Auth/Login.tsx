@@ -8,28 +8,26 @@ import { TextInput } from "@/Components/Inputs/TextInput/indexV2.tsx";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { usePost } from "@/Hooks/v2/UseApi";
+import type { ApiResponse } from "@/Hooks/v2/UseApi";
+
 const schema = z.object({
 	email: z.email("Invalid email address"),
 	password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
-type LoginData = {
-	username: string;
-	password: string;
-};
 
 const Login = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const { post, loading, error } = usePost<FormData, LoginData>("/auth/login");
+	const { post, loading, error } = usePost<FormData, ApiResponse>("/auth/login");
 
 	const {
 		handleSubmit,
 		control,
 		formState: { errors },
 	} = useForm<FormData>({
-		resolver: zodResolver(schema), // ⬅️ connect Zod
+		resolver: zodResolver(schema),
 		defaultValues: {
 			email: "",
 			password: "",
@@ -39,7 +37,7 @@ const Login = () => {
 	const onSubmit = async (data: FormData) => {
 		const result = await post(data);
 		if (result) {
-			console.log("Login successful:", result);
+			console.log(result.message);
 		} else {
 			console.error("Login failed:", error);
 		}

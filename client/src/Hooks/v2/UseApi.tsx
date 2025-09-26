@@ -4,6 +4,11 @@ import type { SWRConfiguration } from "swr";
 import type { AxiosRequestConfig } from "axios";
 import { get, post } from "@/Utils/ApiClient"; // your axios wrapper
 
+export type ApiResponse = {
+	message: string;
+	data: any;
+};
+
 // Generic fetcher for GET requests
 const fetcher = async <T,>(url: string, config?: AxiosRequestConfig) => {
 	const res = await get<T>(url, config);
@@ -41,7 +46,8 @@ export const usePost = <B = any, R = any>(endpoint: string) => {
 			const res = await post<R>(endpoint, body, config);
 			return res.data;
 		} catch (err: any) {
-			setError(err?.message ?? "Unknown error");
+			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
+			setError(errMsg);
 			return null;
 		} finally {
 			setLoading(false);
