@@ -12,6 +12,27 @@ export const theme = (mode: string, palette: any) =>
 		typography: {
 			fontFamily: fontFamilyPrimary,
 			fontSize: typographyLevels.base,
+			h1: {
+				fontSize: typographyLevels.xl,
+				color: palette.primary.contrastText,
+				fontWeight: 500,
+			},
+			h2: {
+				fontSize: typographyLevels.l,
+				color: palette.primary.contrastTextSecondary,
+				fontWeight: 400,
+			},
+
+			body1: {
+				fontSize: typographyLevels.m,
+				color: palette.primary.contrastTextTertiary,
+				fontWeight: 400,
+			},
+			body2: {
+				fontSize: typographyLevels.s,
+				color: palette.primary.contrastTextTertiary,
+				fontWeight: 400,
+			},
 		},
 
 		components: {

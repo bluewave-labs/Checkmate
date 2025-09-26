@@ -14,15 +14,11 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
-type LoginData = {
-	username: string;
-	password: string;
-};
 
 const Login = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const { post, loading, error } = usePost<FormData, LoginData>("/auth/login");
+	const { post, loading, error } = usePost<FormData>("/auth/login");
 
 	const {
 		handleSubmit,
@@ -39,7 +35,7 @@ const Login = () => {
 	const onSubmit = async (data: FormData) => {
 		const result = await post(data);
 		if (result) {
-			console.log("Login successful:", result);
+			console.log(result.message);
 		} else {
 			console.error("Login failed:", error);
 		}
