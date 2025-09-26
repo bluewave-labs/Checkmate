@@ -1,14 +1,11 @@
 import { useSelector } from "react-redux";
 import { lightTheme, darkTheme } from "@/Utils/Theme/v2/theme";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import { ThemeProvider } from "@emotion/react";
 import HomeLayout from "../Components/Layouts/HomeLayout";
 import NotFound from "../Pages/v1/NotFound";
 // Auth
 import AuthLogin from "../Pages/v1/Auth/Login";
-import AuthLoginV2 from "@/Pages/v2/Auth/Login";
 import AuthRegister from "../Pages/v1/Auth/Register/";
-import AuthRegisterV2 from "@/Pages/v2/Auth/Register";
 import AuthForgotPassword from "../Pages/v1/Auth/ForgotPassword";
 import AuthCheckEmail from "../Pages/v1/Auth/CheckEmail";
 import AuthSetNewPassword from "../Pages/v1/Auth/SetNewPassword";
@@ -57,12 +54,18 @@ import withAdminCheck from "../Components/HOC/withAdminCheck";
 import BulkImport from "../Pages/v1/Uptime/BulkImport";
 import Logs from "../Pages/v1/Logs";
 
+import V2Routes from "@/Routes/v2router";
+
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
-	const v2Theme = mode === "light" ? lightTheme : darkTheme;
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
 	return (
 		<LibRoutes>
+			<Route
+				path="/v2/*"
+				element={<V2Routes mode={mode} />}
+			/>
+
 			<Route
 				path="/"
 				element={
@@ -220,26 +223,10 @@ const Routes = () => {
 				path="/login"
 				element={<AuthLogin />}
 			/>
-			<Route
-				path="/v2/login"
-				element={
-					<ThemeProvider theme={v2Theme}>
-						<AuthLoginV2 />
-					</ThemeProvider>
-				}
-			/>
 
 			<Route
 				path="/register"
 				element={<AdminCheckedRegister />}
-			/>
-			<Route
-				path="/v2/register"
-				element={
-					<ThemeProvider theme={v2Theme}>
-						<AuthRegisterV2 />
-					</ThemeProvider>
-				}
 			/>
 
 			<Route
