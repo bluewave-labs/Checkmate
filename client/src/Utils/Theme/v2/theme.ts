@@ -37,7 +37,7 @@ export const theme = (mode: string, palette: any) =>
 			},
 			MuiTextField: {
 				styleOverrides: {
-					root: ({ theme }) => ({
+					root: () => ({
 						"& .MuiOutlinedInput-root": {
 							height: 34,
 							fontSize: typographyLevels.base,
