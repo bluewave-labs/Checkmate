@@ -8,6 +8,7 @@ import NotFound from "../Pages/v1/NotFound";
 import AuthLogin from "../Pages/v1/Auth/Login";
 import AuthLoginV2 from "@/Pages/v2/Auth/Login";
 import AuthRegister from "../Pages/v1/Auth/Register/";
+import AuthRegisterV2 from "@/Pages/v2/Auth/Register";
 import AuthForgotPassword from "../Pages/v1/Auth/ForgotPassword";
 import AuthCheckEmail from "../Pages/v1/Auth/CheckEmail";
 import AuthSetNewPassword from "../Pages/v1/Auth/SetNewPassword";
@@ -231,6 +232,14 @@ const Routes = () => {
 			<Route
 				path="/register"
 				element={<AdminCheckedRegister />}
+			/>
+			<Route
+				path="/v2/register"
+				element={
+					<ThemeProvider theme={v2Theme}>
+						<AuthRegisterV2 />
+					</ThemeProvider>
+				}
 			/>
 
 			<Route
