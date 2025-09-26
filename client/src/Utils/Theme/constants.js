@@ -100,7 +100,6 @@ const newColors = {
 	blueGray900: "#515151",
 	blueBlueWave: "#1570EF",
 	lightBlueWave: "#CDE2FF",
-	/* I changed green 100 and green 700. Need to change red and warning as well, and refactor the object following the structure */
 	green100: "#67cd78",
 	green200: "#4B9B77",
 	green400: "#079455",

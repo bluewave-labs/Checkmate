@@ -27,7 +27,7 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 		cors({
 			origin: allowedOrigin,
 			methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-			allowedHeaders: "*",
+			allowedHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
 		})
 	);
