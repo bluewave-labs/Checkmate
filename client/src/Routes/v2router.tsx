@@ -22,7 +22,7 @@ const V2Routes = ({ mode = "light" }) => {
 				/>
 				<Route
 					path="/"
-					element={<RootLayout mode={mode} />}
+					element={<RootLayout />}
 				>
 					<Route
 						path="test"
