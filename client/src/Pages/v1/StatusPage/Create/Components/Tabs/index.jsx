@@ -6,7 +6,7 @@ import Content from "./Content.jsx";
 
 // Utils
 import PropTypes from "prop-types";
-import CustomTabList from "../../../../../../Components/Tab/index.jsx";
+import CustomTabList from "@/Components/v1/Tab/index.jsx";
 
 const Tabs = ({
 	isCreate,

@@ -5,10 +5,10 @@ import "./index.css";
 import MaintenanceTable from "./MaintenanceTable/index.jsx";
 import { useSelector } from "react-redux";
 import { networkService } from "../../../main.jsx";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import PageStateWrapper from "../../../Components/PageStateWrapper/index.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
 
 const Maintenance = () => {
 	const theme = useTheme();

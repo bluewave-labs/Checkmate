@@ -1,12 +1,12 @@
 // Components
 import { Stack, Typography } from "@mui/material";
 import { TabPanel } from "@mui/lab";
-import ConfigBox from "../../../../../../Components/ConfigBox/index.jsx";
-import Checkbox from "../../../../../../Components/Inputs/Checkbox/index.jsx";
-import TextInput from "../../../../../../Components/Inputs/TextInput/index.jsx";
-import Search from "../../../../../../Components/Inputs/Search/index.jsx";
-import ImageUpload from "../../../../../../Components/Inputs/ImageUpload/index.jsx";
-import ColorPicker from "../../../../../../Components/Inputs/ColorPicker/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
+import ImageUpload from "@/Components/v1/Inputs/ImageUpload/index.jsx";
+import ColorPicker from "@/Components/v1/Inputs/ColorPicker/index.jsx";
 import Progress from "../Progress/index.jsx";
 
 // Utils

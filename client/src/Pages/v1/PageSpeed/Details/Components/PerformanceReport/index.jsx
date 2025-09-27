@@ -1,4 +1,4 @@
-import ChartBox from "../../../../../../Components/Charts/ChartBox/index.jsx";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import PerformanceIcon from "../../../../../../assets/icons/performance-report.svg?react";
 import PieChart from "../Charts/PieChart.jsx";
 import { Typography } from "@mui/material";

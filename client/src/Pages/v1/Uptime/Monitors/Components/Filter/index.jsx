@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
-import FilterHeader from "../../../../../../Components/FilterHeader/index.jsx";
+import FilterHeader from "@/Components/v1/FilterHeader/index.jsx";
 import { useMemo } from "react";
 import { Box, Button } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";

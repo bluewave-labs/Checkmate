@@ -1,16 +1,16 @@
 //Components
 import Stack from "@mui/material/Stack";
-import DataTable from "../../../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import TableSkeleton from "../../../../../Components/Table/skeleton.jsx";
-import Pagination from "../../../../../Components/Table/TablePagination/index.jsx";
-import { StatusLabel } from "../../../../../Components/Label/index.jsx";
-import { HttpStatusLabel } from "../../../../../Components/HttpStatusLabel/index.jsx";
-import GenericFallback from "../../../../../Components/GenericFallback/index.jsx";
-import NetworkError from "../../../../../Components/GenericFallback/NetworkError.jsx";
+import TableSkeleton from "@/Components/v1/Table/skeleton.jsx";
+import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
+import { HttpStatusLabel } from "@/Components/v1/HttpStatusLabel/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
+import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 
 //Utils
 import { formatDateWithTz } from "../../../../../Utils/timeUtils.js";

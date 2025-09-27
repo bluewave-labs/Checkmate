@@ -1,7 +1,7 @@
 import { Box, Typography, Divider } from "@mui/material";
-import Checkbox from "../../../../../../Components/Inputs/Checkbox/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
 import MetricsIcon from "../../../../../../assets/icons/ruler-icon.svg?react";
-import LegendBox from "../../../../../../Components/Charts/LegendBox/index.jsx";
+import LegendBox from "@/Components/v1/Charts/LegendBox/index.jsx";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 

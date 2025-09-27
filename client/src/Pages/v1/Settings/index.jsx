@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import SettingsTimeZone from "./SettingsTimeZone.jsx";
 import SettingsUI from "./SettingsUI.jsx";
 import SettingsURL from "./SettingsURL.jsx";

@@ -1,7 +1,7 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import PasswordTooltip from "../components/PasswordTooltip.jsx";

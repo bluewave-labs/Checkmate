@@ -1,7 +1,7 @@
 // Components
 import { Stack } from "@mui/material";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
-import GenericFallback from "../../../Components/GenericFallback/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import IncidentTable from "./Components/IncidentTable/index.jsx";
 import OptionsHeader from "./Components/OptionsHeader/index.jsx";
 import StatusBoxes from "./Components/StatusBoxes/index.jsx";
@@ -13,7 +13,7 @@ import { useFetchMonitorsByTeamId } from "../../../Hooks/v1/monitorHooks.js";
 import { useFetchChecksSummaryByTeamId } from "../../../Hooks/v1/checkHooks.js";
 import { useAcknowledgeChecks } from "../../../Hooks/v1/checkHooks.js";
 import { useState, useEffect } from "react";
-import NetworkError from "../../../Components/GenericFallback/NetworkError.jsx";
+import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 

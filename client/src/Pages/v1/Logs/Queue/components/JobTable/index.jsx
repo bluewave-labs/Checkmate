@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import DataTable from "../../../../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 import Typography from "@mui/material/Typography";
 // Utils
 import PropTypes from "prop-types";
@@ -7,7 +7,7 @@ import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { TypeToPathMap } from "../../../../../../Utils/monitorUtils.js";
 import { useTranslation } from "react-i18next";
-import { createHeaderFactory } from "../../../../../../Components/Table/TableUtils.js";
+import { createHeaderFactory } from "@/Components/v1/Table/TableUtils.js";
 
 const JobTable = ({ jobs = [] }) => {
 	const theme = useTheme();

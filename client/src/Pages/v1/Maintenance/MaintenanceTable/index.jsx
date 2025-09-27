@@ -1,14 +1,14 @@
 import PropTypes from "prop-types";
 import { Box } from "@mui/material";
-import DataTable from "../../../../Components/Table/index.jsx";
-import Pagination from "../../../../Components/Table/TablePagination/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import ActionsMenu from "./ActionsMenu/index.jsx";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDurationRounded } from "../../../../Utils/timeUtils.js";
-import { StatusLabel } from "../../../../Components/Label/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { setRowsPerPage } from "../../../../Features/UI/uiSlice.js";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";

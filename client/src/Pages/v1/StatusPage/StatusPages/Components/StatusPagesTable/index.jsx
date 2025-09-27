@@ -1,7 +1,7 @@
-import DataTable from "../../../../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import { StatusLabel } from "../../../../../../Components/Label/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";

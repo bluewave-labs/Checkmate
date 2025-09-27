@@ -1,13 +1,13 @@
 // Components
 import { Typography, Stack } from "@mui/material";
-import GenericFallback from "../../../../Components/GenericFallback/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import AdminLink from "./Components/AdminLink/index.jsx";
 import ControlsHeader from "./Components/ControlsHeader/index.jsx";
 import SkeletonLayout from "./Components/Skeleton/index.jsx";
 import StatusBar from "./Components/StatusBar/index.jsx";
 import MonitorsList from "./Components/MonitorsList/index.jsx";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import TextLink from "../../../../Components/TextLink/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
 
 // Utils
 import { useStatusPageFetch } from "./Hooks/useStatusPageFetch.jsx";

@@ -1,6 +1,6 @@
 // Components
 import { Stack, Typography, Box } from "@mui/material";
-import ChartBox from "../../../../../../Components/Charts/ChartBox/index.jsx";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import UptimeIcon from "../../../../../../assets/icons/uptime-icon.svg?react";
 import IncidentsIcon from "../../../../../../assets/icons/incidents.svg?react";
 import AverageResponseIcon from "../../../../../../assets/icons/average-response-icon.svg?react";

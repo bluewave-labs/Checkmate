@@ -2,9 +2,9 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
-import Search from "../../../../Components/Inputs/Search/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import Button from "@mui/material/Button";
 import RoleTable from "../components/RoleTable/index.jsx";
 

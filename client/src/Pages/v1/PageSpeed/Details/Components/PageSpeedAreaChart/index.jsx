@@ -1,4 +1,4 @@
-import ChartBox from "../../../../../../Components/Charts/ChartBox/index.jsx";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import AreaChart from "../Charts/AreaChart.jsx";
 import AreaChartLegend from "../Charts/AreaChartLegend.jsx";
 import SkeletonLayout from "./skeleton.jsx";

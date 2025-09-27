@@ -2,7 +2,7 @@ import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { useMonitorUtils } from "../../../../../Hooks/v1/useMonitorUtils.js";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import PulseDot from "../../../../../Components/Animated/PulseDot.jsx";
+import PulseDot from "@/Components/v1/Animated/PulseDot.jsx";
 import PropTypes from "prop-types";
 const MonitorStatusHeader = ({ monitor, infrastructureMonitor }) => {
 	const theme = useTheme();

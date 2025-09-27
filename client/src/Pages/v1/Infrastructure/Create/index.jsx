@@ -1,17 +1,17 @@
 //Components
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import ConfigBox from "../../../../Components/ConfigBox/index.jsx";
-import FieldWrapper from "../../../../Components/Inputs/FieldWrapper/index.jsx";
-import Link from "../../../../Components/Link/index.jsx";
-import Select from "../../../../Components/Inputs/Select/index.jsx";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import FieldWrapper from "@/Components/v1/Inputs/FieldWrapper/index.jsx";
+import Link from "@/Components/v1/Link/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
-import { HttpAdornment } from "../../../../Components/Inputs/TextInput/Adornments/index.jsx";
+import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
 import MonitorStatusHeader from "./Components/MonitorStatusHeader.jsx";
 import MonitorActionButtons from "./Components/MonitorActionButtons.jsx";
 import CustomAlertsSection from "./Components/CustomAlertsSection.jsx";
 // Utils
-import NotificationsConfig from "../../../../Components/NotificationConfig/index.jsx";
+import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
 import { useGetNotificationsByTeamId } from "../../../../Hooks/v1/useNotifications.js";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";

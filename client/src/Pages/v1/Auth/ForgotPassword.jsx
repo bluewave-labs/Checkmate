@@ -6,11 +6,11 @@ import { forgotPassword } from "../../../Features/Auth/authSlice.js";
 import { useEffect, useState } from "react";
 import { newOrChangedCredentials } from "../../../Validation/validation.js";
 import { useNavigate } from "react-router-dom";
-import TextInput from "../../../Components/Inputs/TextInput/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Logo from "../../../assets/icons/checkmate-icon.svg?react";
 import Key from "../../../assets/icons/key.svg?react";
 import Background from "../../../assets/Images/background-grid.svg?react";
-import IconBox from "../../../Components/IconBox/index.jsx";
+import IconBox from "@/Components/v1/IconBox/index.jsx";
 import { Trans, useTranslation } from "react-i18next";
 import "./index.css";
 

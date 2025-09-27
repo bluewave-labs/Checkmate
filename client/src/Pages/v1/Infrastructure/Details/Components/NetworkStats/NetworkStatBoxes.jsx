@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-import StatusBoxes from "../../../../../../Components/StatusBoxes/index.jsx";
-import StatBox from "../../../../../../Components/StatBox/index.jsx";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";

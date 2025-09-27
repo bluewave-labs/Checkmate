@@ -1,9 +1,9 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
-import { PasswordEndAdornment } from "../../../../Components/Inputs/TextInput/Adornments/index.jsx";
-import TextLink from "../../../../Components/TextLink/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
 import AuthPageWrapper from "../components/AuthPageWrapper.jsx";
 // Utils
 import { useTheme } from "@mui/material/styles";

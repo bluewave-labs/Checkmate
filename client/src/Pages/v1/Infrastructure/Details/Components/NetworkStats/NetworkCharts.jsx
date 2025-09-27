@@ -6,7 +6,7 @@ import {
 	TzTick,
 	InfrastructureTooltip,
 	NetworkTick,
-} from "../../../../../../Components/Charts/Utils/chartUtils.jsx";
+} from "@/Components/v1/Charts/Utils/chartUtils.jsx";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";

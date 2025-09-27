@@ -1,5 +1,5 @@
 import { Button, Box } from "@mui/material";
-import ProgressUpload from "../../../../../../Components/ProgressBars/index.jsx";
+import ProgressUpload from "@/Components/v1/ProgressBars/index.jsx";
 import ImageIcon from "@mui/icons-material/Image";
 import { useTranslation } from "react-i18next";
 import { formatBytes } from "../../../../../../Utils/fileUtils.js";

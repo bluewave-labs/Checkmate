@@ -6,8 +6,8 @@ import { Box, Stack, Typography, Button, Link } from "@mui/material";
 
 //Components
 import { createToast } from "../../../../Utils/toastUtils.jsx";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import ConfigBox from "../../../../Components/ConfigBox/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import UploadFile from "./Upload.jsx";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

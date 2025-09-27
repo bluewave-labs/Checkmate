@@ -7,7 +7,7 @@ import { createToast } from "../../../../../../Utils/toastUtils.jsx";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import Settings from "../../../../../../assets/icons/settings-bold.svg?react";
 import PropTypes from "prop-types";
-import Dialog from "../../../../../../Components/Dialog/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 import { networkService } from "../../../../../../Utils/NetworkService.js";
 import { usePauseMonitor } from "../../../../../../Hooks/v1/monitorHooks.js";
 import { useTranslation } from "react-i18next";

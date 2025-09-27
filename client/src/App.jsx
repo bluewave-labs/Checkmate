@@ -10,7 +10,7 @@ import { logger } from "./Utils/Logger"; // Import the logger
 import { networkService } from "./main";
 import { Routes } from "./Routes";
 import WalletProvider from "./Components/WalletProvider";
-import AppLayout from "./Components/Layouts/AppLayout";
+import AppLayout from "@/Components/v1/Layouts/AppLayout";
 
 function App() {
 	const mode = useSelector((state) => state.ui.mode);

@@ -1,13 +1,13 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Button from "@mui/material/Button";
-import ConfigBox from "../../../../Components/ConfigBox/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import Box from "@mui/material/Box";
-import Select from "../../../../Components/Inputs/Select/index.jsx";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
-import Dialog from "../../../../Components/Dialog/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 
 // Utils
 import { useState } from "react";

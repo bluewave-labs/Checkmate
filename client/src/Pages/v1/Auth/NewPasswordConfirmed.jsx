@@ -6,7 +6,7 @@ import { clearAuthState } from "../../../Features/Auth/authSlice.js";
 import Background from "../../../assets/Images/background-grid.svg?react";
 import ConfirmIcon from "../../../assets/icons/check-outlined.svg?react";
 import Logo from "../../../assets/icons/checkmate-icon.svg?react";
-import IconBox from "../../../Components/IconBox/index.jsx";
+import IconBox from "@/Components/v1/IconBox/index.jsx";
 import { Trans, useTranslation } from "react-i18next";
 import "./index.css";
 
