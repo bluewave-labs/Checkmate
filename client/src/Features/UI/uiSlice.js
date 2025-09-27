@@ -47,6 +47,10 @@ const uiSlice = createSlice({
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
 		},
+		setCollapsed: (state, action) => {
+			const { collapsed } = action.payload;
+			state.sidebar.collapsed = collapsed;
+		},
 		setMode: (state, action) => {
 			state.mode = action.payload;
 		},
@@ -73,6 +77,7 @@ export default uiSlice.reducer;
 export const {
 	setRowsPerPage,
 	toggleSidebar,
+	setCollapsed,
 	setMode,
 	setShowURL,
 	setGreeting,
