@@ -1,14 +1,14 @@
 // Components
 import { Box } from "@mui/material";
-import DataTable from "../../../../../../Components/Table/index.jsx";
-import Host from "../../../../../../Components/Host/index.jsx";
-import { StatusLabel } from "../../../../../../Components/Label/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import Host from "@/Components/v1/Host/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { Stack } from "@mui/material";
 import { InfrastructureMenu } from "../MonitorsTableMenu/index.jsx";
 import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner/index.jsx";
 // Assets
 import CPUChipIcon from "../../../../../../assets/icons/cpu-chip.svg?react";
-import CustomGauge from "../../../../../../Components/Charts/CustomGauge/index.jsx";
+import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";

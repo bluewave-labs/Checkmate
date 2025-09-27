@@ -2,7 +2,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
-import ConfigBox from "../../../../Components/ConfigBox/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -14,11 +14,11 @@ import ConfigSelect from "./Components/ConfigSelect/index.jsx";
 import useMaintenanceData from "./hooks/useMaintenanceData.jsx";
 import useMaintenanceActions from "./hooks/useMaintenanceActions.jsx";
 
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import CalendarIcon from "../../../../assets/icons/calendar.svg?react";
 import "./index.css";
-import Search from "../../../../Components/Inputs/Search/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import { logger } from "../../../../Utils/Logger.js";
 
 import { useNavigate, useParams } from "react-router-dom";

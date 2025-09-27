@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import ConfigBox from "../../../Components/ConfigBox/index.jsx";
-import TextInput from "../../../Components/Inputs/TextInput/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";

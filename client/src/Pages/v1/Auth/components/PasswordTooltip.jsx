@@ -1,4 +1,4 @@
-import Check from "../../../../Components/Check/Check.jsx";
+import Check from "@/Components/v1/Check/Check.jsx";
 import Stack from "@mui/material/Stack";
 import { Tooltip, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";

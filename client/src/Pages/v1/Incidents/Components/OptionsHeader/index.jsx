@@ -1,6 +1,6 @@
 // Components
 import { Stack, Typography, Button, ButtonGroup } from "@mui/material";
-import Select from "../../../../../Components/Inputs/Select/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
 import PropTypes from "prop-types";
 
 //Utils

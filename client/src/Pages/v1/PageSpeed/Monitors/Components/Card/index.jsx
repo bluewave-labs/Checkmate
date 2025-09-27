@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 // import PageSpeedIcon from "../../../../assets/icons/page-speed.svg?react";
 import PageSpeedIcon from "../../../../../../assets/icons/page-speed.svg?react";
-import { StatusLabel } from "../../../../../../Components/Label/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
@@ -14,7 +14,7 @@ import {
 import { useMonitorUtils } from "../../../../../../Hooks/v1/useMonitorUtils.js";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import IconBox from "../../../../../../Components/IconBox/index.jsx";
+import IconBox from "@/Components/v1/IconBox/index.jsx";
 /**
  * CustomToolTip displays a tooltip with formatted date and score information.
  * @param {Object} props

@@ -1,4 +1,4 @@
-import ConfigBox from "../../../../../Components/ConfigBox/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import { Box, Stack, Typography } from "@mui/material";
 import { CustomThreshold } from "./CustomThreshold/index.jsx";
 import { capitalizeFirstLetter } from "../../../../../Utils/stringUtils.js";

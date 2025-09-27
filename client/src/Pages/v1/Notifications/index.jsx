@@ -1,11 +1,11 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Button from "@mui/material/Button";
-import DataTable from "../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 import ActionMenu from "./components/ActionMenu.jsx";
-import PageStateWrapper from "../../../Components/PageStateWrapper/index.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
 
 // Utils
 import { useState } from "react";

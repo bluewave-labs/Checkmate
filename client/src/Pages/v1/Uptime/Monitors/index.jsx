@@ -4,17 +4,17 @@
 // 2a.List of monitors must have the total number of monitors that match.
 
 // Components
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Greeting from "../../../../Utils/greeting.jsx";
 import StatusBoxes from "./Components/StatusBoxes/index.jsx";
 import UptimeDataTable from "./Components/UptimeDataTable/index.jsx";
-import Pagination from "../../../../Components/Table/TablePagination/index.jsx";
-import CreateMonitorHeader from "../../../../Components/MonitorCreateHeader/index.jsx";
+import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
+import CreateMonitorHeader from "@/Components/v1/MonitorCreateHeader/index.jsx";
 import SearchComponent from "./Components/SearchComponent/index.jsx";
 import Filter from "./Components/Filter/index.jsx";
-import PageStateWrapper from "../../../../Components/PageStateWrapper/index.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
 
-import MonitorCountHeader from "../../../../Components/MonitorCountHeader/index.jsx";
+import MonitorCountHeader from "@/Components/v1/MonitorCountHeader/index.jsx";
 
 // MUI Components
 import { Stack, Box, Button } from "@mui/material";

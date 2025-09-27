@@ -9,16 +9,16 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
-import { HttpAdornment } from "../../../../Components/Inputs/TextInput/Adornments/index.jsx";
-import Radio from "../../../../Components/Inputs/Radio/index.jsx";
-import Select from "../../../../Components/Inputs/Select/index.jsx";
-import ConfigBox from "../../../../Components/ConfigBox/index.jsx";
-import NotificationsConfig from "../../../../Components/NotificationConfig/index.jsx";
-import Checkbox from "../../../../Components/Inputs/Checkbox/index.jsx";
-import Dialog from "../../../../Components/Dialog/index.jsx";
-import PulseDot from "../../../../Components/Animated/PulseDot.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import Radio from "@/Components/v1/Inputs/Radio/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
+import PulseDot from "@/Components/v1/Animated/PulseDot.jsx";
 import SkeletonLayout from "./skeleton.jsx";
 
 // Utils

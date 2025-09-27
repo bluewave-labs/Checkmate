@@ -1,12 +1,12 @@
 // Components
 import { useState } from "react";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import { Stack } from "@mui/material";
-import CreateMonitorHeader from "../../../../Components/MonitorCreateHeader/index.jsx";
-import MonitorCountHeader from "../../../../Components/MonitorCountHeader/index.jsx";
+import CreateMonitorHeader from "@/Components/v1/MonitorCreateHeader/index.jsx";
+import MonitorCountHeader from "@/Components/v1/MonitorCountHeader/index.jsx";
 import MonitorGrid from "./Components/MonitorGrid/index.jsx";
-import PageStateWrapper from "../../../../Components/PageStateWrapper/index.jsx";
-import FallbackPageSpeedWarning from "../../../../Components/Fallback/FallbackPageSpeedWarning.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
+import FallbackPageSpeedWarning from "@/Components/v1/Fallback/FallbackPageSpeedWarning.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";

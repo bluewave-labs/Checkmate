@@ -2,9 +2,9 @@ import { useTheme } from "@emotion/react";
 import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
-import Avatar from "../../../../Components/Avatar/index.jsx";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
-import ImageUpload from "../../../../Components/Inputs/ImageUpload/index.jsx";
+import Avatar from "@/Components/v1/Avatar/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import ImageUpload from "@/Components/v1/Inputs/ImageUpload/index.jsx";
 import { newOrChangedCredentials } from "../../../../Validation/validation.js";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -14,8 +14,8 @@ import {
 } from "../../../../Features/Auth/authSlice.js";
 import { createToast } from "../../../../Utils/toastUtils.jsx";
 import { logger } from "../../../../Utils/Logger.js";
-import { GenericDialog } from "../../../../Components/Dialog/genericDialog.jsx";
-import Dialog from "../../../../Components/Dialog/index.jsx";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 import { useTranslation } from "react-i18next";
 
 /**

@@ -2,8 +2,8 @@
 import { Stack, Typography } from "@mui/material";
 import { TabPanel } from "@mui/lab";
 import MonitorList from "../MonitorList/index.jsx";
-import Search from "../../../../../../Components/Inputs/Search/index.jsx";
-import Checkbox from "../../../../../../Components/Inputs/Checkbox/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
 // Utils
 import { useState } from "react";
 import { useTheme } from "@emotion/react";

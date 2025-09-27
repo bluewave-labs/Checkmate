@@ -9,7 +9,7 @@ import {
 	TzTick,
 	InfrastructureTooltip,
 	TemperatureTooltip,
-} from "../../../../../../Components/Charts/Utils/chartUtils.jsx";
+} from "@/Components/v1/Charts/Utils/chartUtils.jsx";
 import { useTheme } from "@emotion/react";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 import { useTranslation } from "react-i18next";

@@ -1,12 +1,12 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import MonitorTimeFrameHeader from "../../../../Components/MonitorTimeFrameHeader/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorTimeFrameHeader from "@/Components/v1/MonitorTimeFrameHeader/index.jsx";
 import PageSpeedStatusBoxes from "./Components/PageSpeedStatusBoxes/index.jsx";
-import MonitorDetailsControlHeader from "../../../../Components/MonitorDetailsControlHeader/index.jsx";
+import MonitorDetailsControlHeader from "@/Components/v1/MonitorDetailsControlHeader/index.jsx";
 import PageSpeedAreaChart from "./Components/PageSpeedAreaChart/index.jsx";
 import PerformanceReport from "./Components/PerformanceReport/index.jsx";
-import GenericFallback from "../../../../Components/GenericFallback/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "../../../../Hooks/v1/useIsAdmin.js";

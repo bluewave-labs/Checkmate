@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
-import { TextInput } from "@/Components/Inputs/TextInput/indexV2.tsx";
+import { TextInput } from "@/Components/v2/Inputs/TextInput";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { usePost } from "@/Hooks/v2/UseApi";

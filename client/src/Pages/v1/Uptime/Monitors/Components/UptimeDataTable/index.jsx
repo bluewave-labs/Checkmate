@@ -1,15 +1,15 @@
 // Components
 import { Box, Stack } from "@mui/material";
-import DataTable from "../../../../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
-import Host from "../../../../../../Components/Host/index.jsx";
-import { StatusLabel } from "../../../../../../Components/Label/index.jsx";
-import BarChart from "../../../../../../Components/Charts/BarChart/index.jsx";
-import ActionsMenu from "../../../../../../Components/ActionsMenu/index.jsx";
+import Host from "@/Components/v1/Host/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
+import BarChart from "@/Components/v1/Charts/BarChart/index.jsx";
+import ActionsMenu from "@/Components/v1/ActionsMenu/index.jsx";
 
 import LoadingSpinner from "../LoadingSpinner/index.jsx";
-import TableSkeleton from "../../../../../../Components/Table/skeleton.jsx";
+import TableSkeleton from "@/Components/v1/Table/skeleton.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";
