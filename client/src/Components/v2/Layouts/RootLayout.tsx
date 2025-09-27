@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@emotion/react";
+import { useTheme } from "@mui/material/styles";
 
 import { Outlet } from "react-router";
 import Stack from "@mui/material/Stack";
