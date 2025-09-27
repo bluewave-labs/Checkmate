@@ -1,11 +1,11 @@
 // Components
 import { Stack } from "@mui/material";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import MonitorCountHeader from "../../../../Components/MonitorCountHeader/index.jsx";
-import MonitorCreateHeader from "../../../../Components/MonitorCreateHeader/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorCountHeader from "@/Components/v1/MonitorCountHeader/index.jsx";
+import MonitorCreateHeader from "@/Components/v1/MonitorCreateHeader/index.jsx";
 import MonitorsTable from "./Components/MonitorsTable/index.jsx";
-import Pagination from "../../../../Components/Table/TablePagination/index.jsx";
-import PageStateWrapper from "../../../../Components/PageStateWrapper/index.jsx";
+import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
 import Filter from "./Components/Filters/index.jsx";
 import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent/index.jsx";
 // Utils

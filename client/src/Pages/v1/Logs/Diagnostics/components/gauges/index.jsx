@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import CustomGauge from "../../../../../../Components/Charts/CustomGauge/index.jsx";
+import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
 import Typography from "@mui/material/Typography";
 
 // Utils

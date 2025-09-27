@@ -1,5 +1,5 @@
-import StatusBoxes from "../../../../../../Components/StatusBoxes/index.jsx";
-import StatBox from "../../../../../../Components/StatBox/index.jsx";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
 
 import PropTypes from "prop-types";
 import { getHumanReadableDuration } from "../../../../../../Utils/timeUtils.js";

@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import ConfigBox from "../../../Components/ConfigBox/index.jsx";
-import Select from "../../../Components/Inputs/Select/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";

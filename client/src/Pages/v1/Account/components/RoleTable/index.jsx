@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import DataTable from "../../../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
 import { useTranslation } from "react-i18next";

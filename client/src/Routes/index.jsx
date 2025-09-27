@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { lightTheme, darkTheme } from "@/Utils/Theme/v2/theme";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import HomeLayout from "../Components/Layouts/HomeLayout";
+import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
 import NotFound from "../Pages/v1/NotFound";
 // Auth
 import AuthLogin from "../Pages/v1/Auth/Login";
@@ -47,10 +47,10 @@ import Settings from "../Pages/v1/Settings";
 
 import Maintenance from "../Pages/v1/Maintenance";
 
-import ProtectedRoute from "../Components/ProtectedRoute";
-import RoleProtectedRoute from "../Components/RoleProtectedRoute";
+import ProtectedRoute from "../Components/v1/ProtectedRoute";
+import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
 import CreateNewMaintenanceWindow from "../Pages/v1/Maintenance/CreateMaintenance";
-import withAdminCheck from "../Components/HOC/withAdminCheck";
+import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import BulkImport from "../Pages/v1/Uptime/BulkImport";
 import Logs from "../Pages/v1/Logs";
 

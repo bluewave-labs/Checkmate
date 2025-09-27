@@ -1,17 +1,17 @@
 // Components
 import { Box, Stack, Tooltip, Typography, Button, ButtonGroup } from "@mui/material";
-import ConfigBox from "../../../../Components/ConfigBox/index.jsx";
-import Select from "../../../../Components/Inputs/Select/index.jsx";
-import TextInput from "../../../../Components/Inputs/TextInput/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import PulseDot from "../../../../Components/Animated/PulseDot.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import PulseDot from "@/Components/v1/Animated/PulseDot.jsx";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import SkeletonLayout from "./skeleton.jsx";
-import NotificationsConfig from "../../../../Components/NotificationConfig/index.jsx";
-import Dialog from "../../../../Components/Dialog/index.jsx";
-import { HttpAdornment } from "../../../../Components/Inputs/TextInput/Adornments/index.jsx";
-import Radio from "../../../../Components/Inputs/Radio/index.jsx";
+import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
+import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import Radio from "@/Components/v1/Inputs/Radio/index.jsx";
 
 // Utils
 import { useState, useEffect } from "react";

@@ -1,17 +1,17 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import ConfigBox from "../../../Components/ConfigBox/index.jsx";
-import TextInput from "../../../Components/Inputs/TextInput/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { Switch } from "@mui/material";
-import TextLink from "../../../Components/TextLink/index.jsx";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PasswordEndAdornment } from "../../../Components/Inputs/TextInput/Adornments/index.jsx";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
 import { useSendTestEmail } from "../../../Hooks/v1/useSendTestEmail.js";
 import { createToast } from "../../../Utils/toastUtils.jsx";
 

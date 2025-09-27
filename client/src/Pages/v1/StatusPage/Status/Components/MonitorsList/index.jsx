@@ -1,8 +1,8 @@
 // Components
 import { Stack, Box } from "@mui/material";
-import Host from "../../../../../../Components/Host/index.jsx";
-import StatusPageBarChart from "../../../../../../Components/Charts/StatusPageBarChart/index.jsx";
-import { StatusLabel } from "../../../../../../Components/Label/index.jsx";
+import Host from "@/Components/v1/Host/index.jsx";
+import StatusPageBarChart from "@/Components/v1/Charts/StatusPageBarChart/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 
 //Utils
 import { useTheme } from "@mui/material/styles";

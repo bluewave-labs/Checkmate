@@ -1,7 +1,7 @@
 import { Button, Stack } from "@mui/material";
-import { GenericDialog } from "../../../../../Components/Dialog/genericDialog.jsx";
-import TextInput from "../../../../../Components/Inputs/TextInput/index.jsx";
-import Select from "../../../../../Components/Inputs/Select/index.jsx";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
 import { useGetInviteToken } from "../../../../../Hooks/v1/inviteHooks.js";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,7 @@ import { useState } from "react";
 import PasswordTooltip from "../../../Auth/components/PasswordTooltip.jsx";
 import useAddTeamMember from "./hooks/useAddTeamMember.jsx";
 import usePasswordFeedback from "../../../Auth/hooks/usePasswordFeedback.jsx";
-import { PasswordEndAdornment } from "../../../../../Components/Inputs/TextInput/Adornments/index.jsx";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
 import PropTypes from "prop-types";
 
 const INITIAL_FORM_STATE = {

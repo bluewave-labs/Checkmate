@@ -1,9 +1,9 @@
-import ChartBox from "../../../../../../Components/Charts/ChartBox/index.jsx";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import PropTypes from "prop-types";
 import HistoryIcon from "../../../../../../assets/icons/history-icon.svg?react";
-import Table from "../../../../../../Components/Table/index.jsx";
-import TablePagination from "../../../../../../Components/Table/TablePagination/index.jsx";
-import { StatusLabel } from "../../../../../../Components/Label/index.jsx";
+import Table from "@/Components/v1/Table/index.jsx";
+import TablePagination from "@/Components/v1/Table/TablePagination/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "../../../../../../Utils/timeUtils.js";
 import SkeletonLayout from "./skeleton.jsx";

@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import ConfigBox from "../../../../../../Components/ConfigBox/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 

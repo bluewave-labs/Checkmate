@@ -1,14 +1,14 @@
 // Components
 import { Stack, Typography, Tab } from "@mui/material";
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import MonitorDetailsControlHeader from "../../../../Components/MonitorDetailsControlHeader/index.jsx";
-import MonitorTimeFrameHeader from "../../../../Components/MonitorTimeFrameHeader/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorDetailsControlHeader from "@/Components/v1/MonitorDetailsControlHeader/index.jsx";
+import MonitorTimeFrameHeader from "@/Components/v1/MonitorTimeFrameHeader/index.jsx";
 import StatusBoxes from "./Components/StatusBoxes/index.jsx";
 import GaugeBoxes from "./Components/GaugeBoxes/index.jsx";
 import AreaChartBoxes from "./Components/AreaChartBoxes/index.jsx";
-import GenericFallback from "../../../../Components/GenericFallback/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import NetworkStats from "./Components/NetworkStats/index.jsx";
-import CustomTabList from "../../../../Components/Tab/index.jsx";
+import CustomTabList from "@/Components/v1/Tab/index.jsx";
 import TabContext from "@mui/lab/TabContext";
 
 // Utils

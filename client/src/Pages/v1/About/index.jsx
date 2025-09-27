@@ -1,6 +1,6 @@
 import React from "react";
-import AppBar from "../../../Components/Common/AppBar.jsx";
-import Footer from "../../../Components/Common/Footer.jsx";
+import AppBar from "@/Components/v1/Common/AppBar.jsx";
+import Footer from "@/Components/v1/Common/Footer.jsx";
 import { useTranslation } from "react-i18next";
 
 const AboutUs = () => {

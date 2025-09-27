@@ -1,5 +1,5 @@
-import ChartBox from "../../../../../../Components/Charts/ChartBox/index.jsx";
-import MonitorDetailsAreaChart from "../../../../../../Components/Charts/MonitorDetailsAreaChart/index.jsx";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
+import MonitorDetailsAreaChart from "@/Components/v1/Charts/MonitorDetailsAreaChart/index.jsx";
 import ResponseTimeIcon from "../../../../../../assets/icons/response-time-icon.svg?react";
 import SkeletonLayout from "./ResponseTimeChartSkeleton.jsx";
 import PropTypes from "prop-types";

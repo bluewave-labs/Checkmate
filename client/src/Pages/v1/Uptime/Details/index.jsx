@@ -1,12 +1,12 @@
 // Components
-import Breadcrumbs from "../../../../Components/Breadcrumbs/index.jsx";
-import MonitorDetailsControlHeader from "../../../../Components/MonitorDetailsControlHeader/index.jsx";
-import MonitorTimeFrameHeader from "../../../../Components/MonitorTimeFrameHeader/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorDetailsControlHeader from "@/Components/v1/MonitorDetailsControlHeader/index.jsx";
+import MonitorTimeFrameHeader from "@/Components/v1/MonitorTimeFrameHeader/index.jsx";
 import ChartBoxes from "./Components/ChartBoxes/index.jsx";
 import ResponseTimeChart from "./Components/Charts/ResponseTimeChart.jsx";
 import ResponseTable from "./Components/ResponseTable/index.jsx";
 import UptimeStatusBoxes from "./Components/UptimeStatusBoxes/index.jsx";
-import GenericFallback from "../../../../Components/GenericFallback/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 

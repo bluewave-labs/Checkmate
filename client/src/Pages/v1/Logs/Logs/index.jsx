@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import Select from "../../../../Components/Inputs/Select/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 

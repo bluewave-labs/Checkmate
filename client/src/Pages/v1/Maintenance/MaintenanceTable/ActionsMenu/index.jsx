@@ -10,7 +10,7 @@ import { networkService } from "../../../../../main.jsx";
 import { createToast } from "../../../../../Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 
-import Dialog from "../../../../../Components/Dialog/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 
 const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 	maintenanceWindow;

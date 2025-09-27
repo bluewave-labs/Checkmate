@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import DataTable from "../../../../../../Components/Table/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
 
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";

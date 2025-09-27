@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Queue from "./Queue/index.jsx";

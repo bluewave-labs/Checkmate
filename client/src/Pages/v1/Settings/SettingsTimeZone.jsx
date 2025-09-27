@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import ConfigBox from "../../../Components/ConfigBox/index.jsx";
-import Search from "../../../Components/Inputs/Search/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import timezones from "../../../Utils/timezones.json";
 
 // Utils

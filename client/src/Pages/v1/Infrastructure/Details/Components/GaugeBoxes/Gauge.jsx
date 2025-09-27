@@ -1,5 +1,5 @@
 // Components
-import CustomGauge from "../../../../../../Components/Charts/CustomGauge/index.jsx";
+import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
 import BaseContainer from "../BaseContainer/index.jsx";
 import { Stack, Typography, Box } from "@mui/material";
 // Utils

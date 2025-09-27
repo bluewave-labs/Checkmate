@@ -1,7 +1,7 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import StatusBoxes from "../../../../../../Components/StatusBoxes/index.jsx";
-import StatBox from "../../../../../../Components/StatBox/index.jsx";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
 
 //Utils
 import { useMonitorUtils } from "../../../../../../Hooks/v1/useMonitorUtils.js";

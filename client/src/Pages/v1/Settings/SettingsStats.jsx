@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import ConfigBox from "../../../Components/ConfigBox/index.jsx";
-import TextInput from "../../../Components/Inputs/TextInput/index.jsx";
-import Dialog from "../../../Components/Dialog/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";

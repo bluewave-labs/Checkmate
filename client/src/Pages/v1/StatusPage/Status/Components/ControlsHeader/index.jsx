@@ -1,8 +1,8 @@
 // Components
 import { Box, Stack, Typography, Button } from "@mui/material";
-import Image from "../../../../../../Components/Image/index.jsx";
+import Image from "@/Components/v1/Image/index.jsx";
 import SettingsIcon from "../../../../../../assets/icons/settings-bold.svg?react";
-import ThemeSwitch from "../../../../../../Components/ThemeSwitch/index.jsx";
+import ThemeSwitch from "@/Components/v1/ThemeSwitch/index.jsx";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 //Utils
 import { useTheme } from "@mui/material/styles";
