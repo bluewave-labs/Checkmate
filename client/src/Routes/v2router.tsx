@@ -2,11 +2,9 @@ import { Routes, Route } from "react-router";
 import { ThemeProvider } from "@emotion/react";
 import { lightTheme, darkTheme } from "@/Utils/Theme/v2/theme";
 
-// v2 pages
 import AuthLoginV2 from "@/Pages/v2/Auth/Login";
 import AuthRegisterV2 from "@/Pages/v2/Auth/Register";
 import RootLayout from "@/Components/v2/Layouts/RootLayout";
-// import other v2 pages here...
 
 const V2Routes = ({ mode = "light" }) => {
 	const v2Theme = mode === "light" ? lightTheme : darkTheme;
