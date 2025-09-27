@@ -35,7 +35,7 @@ const SideBar = () => {
 	);
 };
 
-const RootLayout = ({ mode = "light" }) => {
+const RootLayout = () => {
 	return (
 		<Stack
 			direction="row"
