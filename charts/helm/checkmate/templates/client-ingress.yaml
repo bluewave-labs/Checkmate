@@ -2,10 +2,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: client-ingress
+  name: checkmate-client-ingress
+  {{- if .Values.client.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    {{- range $key, $value := .Values.client.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
+  ingressClassName: {{ .Values.client.ingress.className }}
   rules:
     - host: {{ .Values.client.ingress.host }}
       http:

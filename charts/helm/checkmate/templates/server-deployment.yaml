@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server
+  name: checkmate-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: server
+      app: checkmate-server
   template:
     metadata:
       labels:
-        app: server
+        app: checkmate-server
     spec:
       containers:
         - name: server

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: mongodb
+  name: checkmate-mongodb
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: checkmate-mongodb
   template:
     metadata:
       labels:
-        app: mongodb
+        app: checkmate-mongodb
     spec:
       containers:
         - name: mongodb
@@ -21,7 +21,12 @@ spec:
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
-      volumes:
-        - name: mongodb-data
-          persistentVolumeClaim:
-            claimName: mongodb-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: checkmate-mongo-persistent-storage
+      spec:
+        storageClassName: "gp3"
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.persistence.mongodbSize }}
