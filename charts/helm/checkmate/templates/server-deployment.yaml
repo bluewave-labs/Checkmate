@@ -22,4 +22,4 @@ spec:
                 name: checkmate-secrets
           env:
           - name: CLIENT_HOST
-            value: {{ .Values.client.ingress.host }}
+            value: "http://{{ .Values.client.ingress.host }}"
