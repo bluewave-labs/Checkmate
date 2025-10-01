@@ -6,8 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"test": "c8 mocha",
-		"dev": "nodemon --exec tsx src/index.js",
-		"start": "nodemon ./dist/index.js",
+		"dev": "tsx watch src/index.js",
+		"start": "node --watch ./dist/index.js",
 		"build": "tsc",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",
@@ -65,7 +65,6 @@
 		"esm": "3.2.25",
 		"globals": "^15.14.0",
 		"mocha": "11.1.0",
-		"nodemon": "3.1.9",
 		"prettier": "^3.3.3",
 		"sinon": "19.0.2",
 		"tsx": "4.20.5",
