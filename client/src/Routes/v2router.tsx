@@ -25,7 +25,11 @@ const V2Routes = ({ mode = "light" }) => {
 					element={<RootLayout />}
 				>
 					<Route
-						path="test"
+						index
+						element={<h1>Uptime</h1>}
+					/>
+					<Route
+						path="uptime"
 						element={<h1>Test Page</h1>}
 					/>
 				</Route>

@@ -3,7 +3,9 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import { useTheme } from "@mui/material/styles";
-
+import { useDispatch } from "react-redux";
+import { setIsAuthenticated } from "@/Features/Auth/v2AuthSlice";
+import { useNavigate } from "react-router";
 import { TextInput } from "@/Components/v2/Inputs/TextInput";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -19,8 +21,10 @@ type FormData = z.infer<typeof schema>;
 
 const Login = () => {
 	const { t } = useTranslation();
+	const dispatch = useDispatch();
 	const theme = useTheme();
 	const { post, loading, error } = usePost<FormData, ApiResponse>("/auth/login");
+	const navigate = useNavigate();
 
 	const {
 		handleSubmit,
@@ -37,9 +41,10 @@ const Login = () => {
 	const onSubmit = async (data: FormData) => {
 		const result = await post(data);
 		if (result) {
-			console.log(result.message);
+			dispatch(setIsAuthenticated({ authenticated: true }));
+			navigate("/v2/uptime");
 		} else {
-			console.error("Login failed:", error);
+			dispatch(setIsAuthenticated({ authenticated: false }));
 		}
 	};
 

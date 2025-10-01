@@ -54,6 +54,7 @@ export const lightPalette = {
 		main: colors.offWhite,
 		contrastText: colors.blueGray800,
 		contrastTextSecondary: colors.blueGray600,
+		contrastTextTertiary: colors.blueGray500,
 		lowContrast: colors.gray250,
 	},
 	secondary: {
@@ -78,6 +79,7 @@ export const darkPalette = {
 		main: colors.offBlack,
 		contrastText: colors.blueGray50,
 		contrastTextSecondary: colors.gray200,
+		contrastTextTertiary: colors.gray500,
 		lowContrast: colors.blueGray600,
 	},
 	secondary: {

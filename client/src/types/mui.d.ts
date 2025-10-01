@@ -12,6 +12,7 @@ declare module "@mui/material/styles" {
 
 	interface PaletteColor {
 		contrastTextSecondary?: string;
+		contrastTextTertiary?: string;
 		lowContrast?: string;
 	}
 }
