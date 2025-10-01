@@ -7,6 +7,7 @@ import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import Button from "@mui/material/Button";
 import RoleTable from "../components/RoleTable/index.jsx";
+import ChangePasswordModal from "../components/ChangePasswordModal";
 
 // Utils
 import { useParams } from "react-router-dom";
@@ -26,7 +27,7 @@ const EditUser = () => {
 	];
 
 	const [user, isLoading, error] = useGetUser(userId);
-	const [editUser, isSaving, saveError] = useEditUser(userId);
+	const [editUser, isSaving, saveError, changePassword] = useEditUser(userId);
 	const [
 		form,
 		setForm,
@@ -104,7 +105,12 @@ const EditUser = () => {
 					roles={form?.role}
 					handleDeleteRole={handleDeleteRole}
 				/>
-				<Box>
+				<Stack
+					direction="row"
+					spacing={theme.spacing(10)}
+					mt={theme.spacing(8)}
+					//justifyContent="flex-end"
+				>
 					<Button
 						type="submit"
 						variant="contained"
@@ -113,7 +119,14 @@ const EditUser = () => {
 					>
 						{t("editUserPage.form.save")}
 					</Button>
-				</Box>
+					<ChangePasswordModal
+						isSaving={isSaving}
+						isLoading={isLoading}
+						userId={userId}
+						changePassword={changePassword}
+						email={user?.email}
+					/>
+				</Stack>
 			</Stack>
 		</Stack>
 	);

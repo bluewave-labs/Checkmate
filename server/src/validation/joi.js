@@ -670,6 +670,10 @@ const editSuperadminUserByIdBodyValidation = joi.object({
 		.required(),
 });
 
+const editUserPasswordByIdBodyValidation = joi.object({
+	newPassword: joi.string().min(8).required().pattern(passwordPattern),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -739,4 +743,5 @@ export {
 	editUserByIdParamValidation,
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
+	editUserPasswordByIdBodyValidation,
 };

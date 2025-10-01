@@ -456,6 +456,29 @@ class AuthController extends BaseController {
 		SERVICE_NAME,
 		"editUserById"
 	);
+	   editUserPasswordById = this.asyncHandler(
+        async (req, res) => {
+            console.log("editUserPasswordById called");
+            const roles = req?.user?.role;
+            if (!roles.includes("superadmin")) {
+                console.log("entro a error editUserPasswordById");
+                throw createError("Unauthorized", 403);
+            }
+
+            const userId = req.params.userId;
+            console.log("userId param:", userId);
+            const updates = { ...req.body };
+            console.log("newPassword body:", req.body);
+            await editUserByIdParamValidation.validateAsync(req.params);
+            console.log("params validated");
+            //await editUserPasswordByIdBodyValidation.validateAsync(req.body);
+            console.log("body validated");
+            await this.userService.setPasswordByUserId( userId, updates );
+              return res.success({ msg: "Password reset successfully" });
+        },
+        SERVICE_NAME, "editUserPasswordById"
+    )
+
 }
 
 export default AuthController;
