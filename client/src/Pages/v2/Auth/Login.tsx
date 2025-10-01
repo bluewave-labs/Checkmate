@@ -23,7 +23,7 @@ const Login = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const { post, loading, error } = usePost<FormData, ApiResponse>("/auth/login");
+	const { post, loading } = usePost<FormData, ApiResponse>("/auth/login");
 	const navigate = useNavigate();
 
 	const {
