@@ -20,3 +20,6 @@ spec:
           envFrom:
             - secretRef:
                 name: checkmate-secrets
+          env:
+          - name: CLIENT_HOST
+            value: {{ .Values.client.ingress.host }}
