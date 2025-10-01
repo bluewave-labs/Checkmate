@@ -1,0 +1,33 @@
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: checkmate-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkmate-redis
+  template:
+    metadata:
+      labels:
+        app: checkmate-redis
+    spec:
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image }}
+          ports:
+            - containerPort: {{ .Values.redis.port }}
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: checkmate-redis-persistent-storage
+      spec:
+        storageClassName: "gp3"
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.persistence.redisSize }}
+{{- end }}
