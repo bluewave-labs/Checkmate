@@ -2,15 +2,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: server-ingress
+  name: checkmate-server-ingress
+  {{- if .Values.server.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://{{ .Values.client.ingress.host }},https://{{ .Values.client.ingress.host }}"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    {{- range $key, $value := .Values.server.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+  {{/*#annotations:
+    #nginx.ingress.kubernetes.io/rewrite-target: /
+    #nginx.ingress.kubernetes.io/enable-cors: "true"
+    #nginx.ingress.kubernetes.io/cors-allow-origin: "http://{{ .Values.client.ingress.host }},https://{{ .Values.client.ingress.host }}"
+    #nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    #nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    #nginx.ingress.kubernetes.io/cors-allow-credentials: "true"*/}}
 spec:
+  ingressClassName: {{ .Values.server.ingress.className }}
   rules:
     - host: {{ .Values.server.ingress.host }}
       http:
@@ -19,7 +26,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: server
+                name: checkmate-server
                 port:
                   number: {{ .Values.server.port }}
 {{- end }}
