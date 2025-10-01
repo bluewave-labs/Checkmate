@@ -54,11 +54,17 @@ export const lightPalette = {
 		main: colors.offWhite,
 		contrastText: colors.blueGray800,
 		contrastTextSecondary: colors.blueGray600,
+		contrastTextTertiary: colors.blueGray500,
+		lowContrast: colors.gray250,
 	},
 	secondary: {
 		main: colors.gray200,
 		light: colors.lightBlueWave,
 		contrastText: colors.blueGray600,
+	},
+	tertiary: {
+		main: colors.gray100,
+		contrastText: colors.blueGray800,
 	},
 };
 
@@ -73,10 +79,16 @@ export const darkPalette = {
 		main: colors.offBlack,
 		contrastText: colors.blueGray50,
 		contrastTextSecondary: colors.gray200,
+		contrastTextTertiary: colors.gray500,
+		lowContrast: colors.blueGray600,
 	},
 	secondary: {
 		main: "#313131",
 		light: colors.lightBlueWave,
 		contrastText: colors.gray200,
+	},
+	tertiary: {
+		main: colors.blueGray800,
+		contrastText: colors.gray100,
 	},
 };

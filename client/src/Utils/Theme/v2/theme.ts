@@ -67,6 +67,9 @@ export const theme = (mode: string, palette: any) =>
 				},
 			},
 		},
+		shape: {
+			borderRadius: 2,
+		},
 	});
 
 export const lightTheme = createTheme(theme("light", lightPalette));
