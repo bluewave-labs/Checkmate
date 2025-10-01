@@ -22,3 +22,11 @@ spec:
               value: "{{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api/v1"
             - name: UPTIME_APP_CLIENT_HOST
               value: "http://{{ .Values.client.ingress.host }}"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+      volumes:
+        - name: config-volume
+          configMap:
+            name: checkmate-server-nginx-cm

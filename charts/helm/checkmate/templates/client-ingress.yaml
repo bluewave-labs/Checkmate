@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: client
+                name: checkmate-client
                 port:
                   number: {{ .Values.client.port }}
 {{- end }}
