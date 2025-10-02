@@ -17,6 +17,9 @@
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
+	"engines": {
+		"node": ">=20"
+	},
 	"dependencies": {
 		"@pulsecron/pulse": "1.6.8",
 		"axios": "^1.7.2",
