@@ -671,7 +671,9 @@ const editSuperadminUserByIdBodyValidation = joi.object({
 });
 
 const editUserPasswordByIdBodyValidation = joi.object({
+	email: joi.string().required(),
 	newPassword: joi.string().min(8).required().pattern(passwordPattern),
+	password: joi.string().min(8).required().pattern(passwordPattern),
 });
 
 export {

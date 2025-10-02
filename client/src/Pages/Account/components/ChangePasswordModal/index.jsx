@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { Button, Stack } from "@mui/material";
-import { GenericDialog } from "../../../../Components/Dialog/genericDialog";
-import TextInput from "../../../../Components/Inputs/TextInput";
-import PasswordTooltip from "../../../Auth/components/PasswordTooltip";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog";
+import TextInput from "@/Components/v1/Inputs/TextInput";
+import PasswordTooltip from "@/Pages/v1/Auth/components/PasswordTooltip";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
-import { PasswordEndAdornment } from "../../../../Components/Inputs/TextInput/Adornments";
-import usePasswordFeedback from "../../../Auth/hooks/usePasswordFeedback";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments";
+import usePasswordFeedback from "@/Pages/v1/Auth/hooks/usePasswordFeedback";
+import PropTypes from "prop-types";
 
-const ChangePasswordModal = ({ isSaving, isLoading, userId, changePassword, email }) => {
+const ChangePasswordModal = ({ isSaving, isLoading, changePassword, email }) => {
 	const INITIAL_FORM_STATE = {
 		password: "",
 		confirm: "",
 	};
-	console.log("email", email);
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const { feedback, handlePasswordFeedback } = usePasswordFeedback();
@@ -30,7 +30,6 @@ const ChangePasswordModal = ({ isSaving, isLoading, userId, changePassword, emai
 	const onChange = (e) => {
 		let { name, value } = e.target;
 		const updatedForm = { ...form, [name]: value };
-		//validateFields(name, value, updatedForm);
 		setForm(updatedForm);
 
 		handlePasswordFeedback(updatedForm, name, value, form, errors, setErrors);
@@ -130,11 +129,19 @@ const ChangePasswordModal = ({ isSaving, isLoading, userId, changePassword, emai
 						onClick={onsubmitChangePassword}
 						disabled={isLoadingSubmit || !isFormValid}
 					>
-						Save
+						{t("save")}
 					</Button>
 				</Stack>
 			</GenericDialog>
 		</>
 	);
 };
+
+ChangePasswordModal.propTypes = {
+	isSaving: PropTypes.bool.isRequired,
+	isLoading: PropTypes.bool.isRequired,
+	changePassword: PropTypes.func.isRequired,
+	email: PropTypes.string.isRequired,
+};
+
 export default ChangePasswordModal;

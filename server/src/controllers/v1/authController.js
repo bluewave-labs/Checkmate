@@ -10,10 +10,12 @@ import {
 	editUserByIdParamValidation,
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
+	editUserPasswordByIdBodyValidation,
 } from "../../validation/joi.js";
+import ErrorService from "../../service/v1/infrastructure/errorService.js";
 
 const SERVICE_NAME = "authController";
-
+const errorService = new ErrorService();
 /**
  * Authentication Controller
  *
@@ -436,7 +438,7 @@ class AuthController extends BaseController {
 		async (req, res) => {
 			const roles = req?.user?.role;
 			if (!roles.includes("superadmin")) {
-				throw createError("Unauthorized", 403);
+				throw errorService.createError("Unauthorized", 403);
 			}
 
 			const userId = req.params.userId;
@@ -456,29 +458,24 @@ class AuthController extends BaseController {
 		SERVICE_NAME,
 		"editUserById"
 	);
-	   editUserPasswordById = this.asyncHandler(
-        async (req, res) => {
-            console.log("editUserPasswordById called");
-            const roles = req?.user?.role;
-            if (!roles.includes("superadmin")) {
-                console.log("entro a error editUserPasswordById");
-                throw createError("Unauthorized", 403);
-            }
+	editUserPasswordById = this.asyncHandler(
+		async (req, res) => {
+			const roles = req?.user?.role;
+			if (!roles.includes("superadmin")) {
+				throw errorService.createError("Unauthorized", 403);
+			}
 
-            const userId = req.params.userId;
-            console.log("userId param:", userId);
-            const updates = { ...req.body };
-            console.log("newPassword body:", req.body);
-            await editUserByIdParamValidation.validateAsync(req.params);
-            console.log("params validated");
-            //await editUserPasswordByIdBodyValidation.validateAsync(req.body);
-            console.log("body validated");
-            await this.userService.setPasswordByUserId( userId, updates );
-              return res.success({ msg: "Password reset successfully" });
-        },
-        SERVICE_NAME, "editUserPasswordById"
-    )
-
+			const userId = req.params.userId;
+			const updates = { ...req.body };
+			console.log("body", req.body);
+			await editUserByIdParamValidation.validateAsync(req.params);
+			await editUserPasswordByIdBodyValidation.validateAsync(req.body);
+			await this.userService.setPasswordByUserId(userId, updates);
+			return res.success({ msg: "Password reset successfully" });
+		},
+		SERVICE_NAME,
+		"editUserPasswordById"
+	);
 }
 
 export default AuthController;
