@@ -33,11 +33,11 @@ class NetworkService {
 		const start = process.hrtime.bigint();
 		try {
 			const response = await operation();
-			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
-			return { response, responseTime: elapsedMs };
+			// const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
+			return { response };
 		} catch (error) {
-			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
-			return { response: null, responseTime: elapsedMs, error };
+			// const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
+			return { response: null, error };
 		}
 	}
 
@@ -70,7 +70,12 @@ class NetworkService {
 				throw new Error("Monitor URL is required");
 			}
 
-			const { response, responseTime, error } = await this.timeRequest(() => this.ping.promise.probe(monitor.url));
+			const rawUrl = monitor.url;
+			const sanitizedHost = rawUrl
+				.replace(/^https?:\/\//, "")
+				.replace(/\/.*$/, "")
+				.replace(/:.*/, "");
+			const { response, error } = await this.timeRequest(() => this.ping.promise.probe(sanitizedHost));
 
 			if (!response) {
 				if (error) {
@@ -84,7 +89,7 @@ class NetworkService {
 				type: "ping",
 				status: response.alive,
 				code: 200,
-				responseTime,
+				responseTime: response.time,
 				message: "Success",
 				payload: response,
 			};
@@ -345,9 +350,9 @@ class NetworkService {
 			}
 
 			const container = docker.getContainer(targetContainer.Id);
-			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
+			const { response, error } = await this.timeRequest(() => container.inspect());
 
-			dockerResponse.responseTime = responseTime;
+			dockerResponse.responseTime = response.time;
 			dockerResponse.status = response?.State?.Status === "running" ? true : false;
 			dockerResponse.code = 200;
 			dockerResponse.message = "Docker container status fetched successfully";
@@ -370,7 +375,7 @@ class NetworkService {
 	async requestPort(monitor) {
 		try {
 			const { url, port } = monitor;
-			const { response, responseTime, error } = await this.timeRequest(async () => {
+			const { response, error } = await this.timeRequest(async () => {
 				return new Promise((resolve, reject) => {
 					const socket = this.net.createConnection(
 						{
@@ -403,7 +408,7 @@ class NetworkService {
 				message: this.stringService.portSuccess,
 				monitorId: monitor._id,
 				type: monitor.type,
-				responseTime,
+				responseTime: response.time,
 			};
 
 			if (error) {
