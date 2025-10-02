@@ -467,7 +467,6 @@ class AuthController extends BaseController {
 
 			const userId = req.params.userId;
 			const updates = { ...req.body };
-			console.log("body", req.body);
 			await editUserByIdParamValidation.validateAsync(req.params);
 			await editUserPasswordByIdBodyValidation.validateAsync(req.body);
 			await this.userService.setPasswordByUserId(userId, updates);

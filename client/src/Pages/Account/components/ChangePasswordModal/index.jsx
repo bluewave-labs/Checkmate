@@ -34,7 +34,11 @@ const ChangePasswordModal = ({ isSaving, isLoading, changePassword, email }) => 
 
 		handlePasswordFeedback(updatedForm, name, value, form, errors, setErrors);
 	};
-	const isFormValid = !errors.password && !errors.confirm;
+	const isFormValid =
+		form.password.length > 1 &&
+		form.confirm.length > 1 &&
+		!errors.password &&
+		!errors.confirm;
 	const onsubmitChangePassword = async (event) => {
 		event.preventDefault();
 		if (!isFormValid) return;
@@ -57,6 +61,7 @@ const ChangePasswordModal = ({ isSaving, isLoading, changePassword, email }) => 
 			setIsLoadingSubmit(false);
 		}
 	};
+
 	return (
 		<>
 			<Button
