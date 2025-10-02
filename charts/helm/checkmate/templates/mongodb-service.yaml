@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb
+  name: checkmate-mongodb
 spec:
   selector:
-    app: mongodb
+    app: checkmate-mongodb
   ports:
     - port: {{ .Values.mongodb.port }}
