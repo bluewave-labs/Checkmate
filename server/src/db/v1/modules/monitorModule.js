@@ -232,7 +232,7 @@ class MonitorModule {
 			const formatLookup = {
 				recent: "%Y-%m-%dT%H:%M:00Z",
 				day: "%Y-%m-%dT%H:00:00Z",
-				week: "%Y-%m-%dT%H:00:00Z",
+				week: "%Y-%m-%dT00:00:00Z",
 				month: "%Y-%m-%dT00:00:00Z",
 			};
 
@@ -308,7 +308,7 @@ class MonitorModule {
 			const formatLookup = {
 				recent: "%Y-%m-%dT%H:%M:00Z",
 				day: "%Y-%m-%dT%H:00:00Z",
-				week: "%Y-%m-%dT%H:00:00Z",
+				week: "%Y-%m-%dT00:00:00Z",
 				month: "%Y-%m-%dT00:00:00Z",
 			};
 			const dateString = formatLookup[dateRange];
