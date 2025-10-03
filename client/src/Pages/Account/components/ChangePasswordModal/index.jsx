@@ -10,7 +10,7 @@ import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornment
 import usePasswordFeedback from "@/Pages/v1/Auth/hooks/usePasswordFeedback";
 import PropTypes from "prop-types";
 
-const ChangePasswordModal = ({ isSaving, isLoading, changePassword, email }) => {
+const ChangePasswordModal = ({ isSaving, isLoading, changePassword }) => {
 	const INITIAL_FORM_STATE = {
 		password: "",
 		confirm: "",
@@ -44,8 +44,6 @@ const ChangePasswordModal = ({ isSaving, isLoading, changePassword, email }) => 
 		if (!isFormValid) return;
 		const newPasswordForm = {
 			password: form.password,
-			newPassword: form.confirm,
-			email: email,
 		};
 		try {
 			setIsLoadingSubmit(true);
@@ -146,7 +144,6 @@ ChangePasswordModal.propTypes = {
 	isSaving: PropTypes.bool.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	changePassword: PropTypes.func.isRequired,
-	email: PropTypes.string.isRequired,
 };
 
 export default ChangePasswordModal;

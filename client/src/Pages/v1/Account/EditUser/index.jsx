@@ -1,6 +1,5 @@
 // Components
 import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
@@ -126,7 +125,6 @@ const EditUser = () => {
 							isSaving={isSaving}
 							isLoading={isLoading}
 							changePassword={changePassword}
-							email={userToEdit?.email}
 						/>
 					)}
 				</Stack>

@@ -12,10 +12,8 @@ import {
 	editSuperadminUserByIdBodyValidation,
 	editUserPasswordByIdBodyValidation,
 } from "../../validation/joi.js";
-import ErrorService from "../../service/v1/infrastructure/errorService.js";
 
 const SERVICE_NAME = "authController";
-const errorService = new ErrorService();
 /**
  * Authentication Controller
  *
@@ -438,7 +436,7 @@ class AuthController extends BaseController {
 		async (req, res) => {
 			const roles = req?.user?.role;
 			if (!roles.includes("superadmin")) {
-				throw errorService.createError("Unauthorized", 403);
+				throw this.errorService.createError("Unauthorized", 403);
 			}
 
 			const userId = req.params.userId;
@@ -462,7 +460,7 @@ class AuthController extends BaseController {
 		async (req, res) => {
 			const roles = req?.user?.role;
 			if (!roles.includes("superadmin")) {
-				throw errorService.createError("Unauthorized", 403);
+				throw this.errorService.createError("Unauthorized", 403);
 			}
 
 			const userId = req.params.userId;
