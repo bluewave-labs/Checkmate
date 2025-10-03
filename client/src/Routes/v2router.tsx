@@ -4,6 +4,7 @@ import { lightTheme, darkTheme } from "@/Utils/Theme/v2/theme";
 
 import AuthLoginV2 from "@/Pages/v2/Auth/Login";
 import AuthRegisterV2 from "@/Pages/v2/Auth/Register";
+import CreateUptimePage from "@/Pages/v2/Uptime/Create";
 import RootLayout from "@/Components/v2/Layouts/RootLayout";
 
 const V2Routes = ({ mode = "light" }) => {
@@ -31,6 +32,10 @@ const V2Routes = ({ mode = "light" }) => {
 					<Route
 						path="uptime"
 						element={<h1>Test Page</h1>}
+					/>
+					<Route
+						path="uptime/create"
+						element={<CreateUptimePage />}
 					/>
 				</Route>
 			</Routes>
