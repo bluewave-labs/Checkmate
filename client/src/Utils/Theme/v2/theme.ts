@@ -66,6 +66,16 @@ export const theme = (mode: string, palette: any) =>
 					}),
 				},
 			},
+			MuiRadio: {
+				styleOverrides: {
+					root: {
+						padding: 0,
+						"& .MuiSvgIcon-root": {
+							fontSize: 16,
+						},
+					},
+				},
+			},
 		},
 		shape: {
 			borderRadius: 2,

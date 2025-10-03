@@ -3,7 +3,6 @@ import { FormControlLabel, Checkbox as MuiCheckbox } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import CheckboxOutline from "../../../../assets/icons/checkbox-outline.svg?react";
 import CheckboxFilled from "../../../../assets/icons/checkbox-filled.svg?react";
-import "./index.css";
 
 /**
  * Checkbox Component

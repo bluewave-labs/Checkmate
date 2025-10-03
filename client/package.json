@@ -27,6 +27,7 @@
 		"dayjs": "1.11.13",
 		"flag-icons": "7.3.2",
 		"html2canvas": "^1.4.1",
+		"human-interval": "2.0.1",
 		"i18next": "25.4.2",
 		"joi": "17.13.3",
 		"mui-color-input": "^6.0.0",
@@ -63,6 +64,7 @@
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
 		"prettier": "^3.3.3",
+		"typescript": "5.9.3",
 		"vite": "6.3.6"
 	}
 }
