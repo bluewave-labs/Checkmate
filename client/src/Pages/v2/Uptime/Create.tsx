@@ -12,7 +12,7 @@ import humanInterval from "human-interval";
 
 import { useTranslation } from "react-i18next";
 import { useForm, Controller, useWatch } from "react-hook-form";
-import { int, z } from "zod";
+import { z } from "zod";
 import { monitorSchema } from "@/Validation/v2/zod";
 import { useTheme } from "@mui/material/styles";
 import { zodResolver } from "@hookform/resolvers/zod";
