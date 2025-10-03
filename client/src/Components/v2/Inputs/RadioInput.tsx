@@ -20,6 +20,10 @@ export const RadioInput: React.FC<RadioInputProps> = ({ ...props }) => {
 					boxShadow: `inset 0 0 0 1px ${theme.palette.primary.contrastText}70`, // Use theme text color for the outline
 				},
 				mt: theme.spacing(0.5),
+				padding: 0,
+				"& .MuiSvgIcon-root": {
+					fontSize: 16,
+				},
 			}}
 		/>
 	);
