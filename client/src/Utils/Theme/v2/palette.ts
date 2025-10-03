@@ -66,6 +66,21 @@ export const lightPalette = {
 		main: colors.gray100,
 		contrastText: colors.blueGray800,
 	},
+	success: {
+		main: colors.green700,
+		contrastText: colors.offWhite,
+		lowContrast: colors.green400,
+	},
+	warning: {
+		main: colors.orange700,
+		contrastText: colors.offWhite,
+		lowContrast: colors.orange100,
+	},
+	error: {
+		main: colors.red700,
+		contrastText: colors.offWhite,
+		lowContrast: colors.red400,
+	},
 };
 
 export const darkPalette = {
@@ -90,5 +105,20 @@ export const darkPalette = {
 	tertiary: {
 		main: colors.blueGray800,
 		contrastText: colors.gray100,
+	},
+	success: {
+		main: colors.green100,
+		contrastText: colors.offBlack,
+		lowContrast: colors.green200,
+	},
+	warning: {
+		main: colors.orange200,
+		contrastText: colors.offBlack,
+		lowContrast: colors.orange600,
+	},
+	error: {
+		main: colors.red100,
+		contrastText: colors.offBlack,
+		lowContrast: colors.red600,
 	},
 };
