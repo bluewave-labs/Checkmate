@@ -56,22 +56,12 @@ export const theme = (mode: string, palette: any) =>
 					}),
 				},
 			},
-			MuiTextField: {
-				styleOverrides: {
-					root: () => ({
-						"& .MuiOutlinedInput-root": {
-							height: 34,
-							fontSize: typographyLevels.base,
-						},
-					}),
-				},
-			},
-			MuiRadio: {
+
+			MuiOutlinedInput: {
 				styleOverrides: {
 					root: {
-						padding: 0,
-						"& .MuiSvgIcon-root": {
-							fontSize: 16,
+						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+							borderColor: palette.accent.main,
 						},
 					},
 				},
