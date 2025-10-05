@@ -29,7 +29,7 @@ spec:
             - name: UPTIME_APP_API_BASE_URL
               value: "{{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api/v1"
             - name: UPTIME_APP_CLIENT_HOST
-              value: "http://{{ .Values.client.ingress.host }}"
+              value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/nginx/conf.d/default.conf

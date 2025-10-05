@@ -34,4 +34,4 @@ spec:
           {{- end }}
           env:
           - name: CLIENT_HOST
-            value: "http://{{ .Values.client.ingress.host }}"
+            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
