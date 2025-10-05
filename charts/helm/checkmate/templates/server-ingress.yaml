@@ -22,7 +22,7 @@ spec:
     - host: {{ .Values.server.ingress.host }}
       http:
         paths:
-          - path: /
+          - path: /api/v1
             pathType: Prefix
             backend:
               service:
