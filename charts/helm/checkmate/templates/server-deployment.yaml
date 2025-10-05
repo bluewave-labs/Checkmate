@@ -12,6 +12,14 @@ spec:
       labels:
         app: checkmate-server
     spec:
+    {{- with .Values.server.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.server.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
       containers:
         - name: server
           image: {{ .Values.server.image }}
@@ -20,6 +28,10 @@ spec:
           envFrom:
             - secretRef:
                 name: checkmate-secrets
+          {{- with .Values.server.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
           env:
           - name: CLIENT_HOST
             value: "http://{{ .Values.client.ingress.host }}"

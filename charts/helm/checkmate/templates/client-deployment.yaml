@@ -12,6 +12,14 @@ spec:
       labels:
         app: checkmate-client
     spec:
+    {{- with .Values.client.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.client.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
       containers:
         - name: client
           image: {{ .Values.client.image }}
@@ -26,6 +34,10 @@ spec:
             - name: config-volume
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: default.conf
+          {{- with .Values.client.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
       volumes:
         - name: config-volume
           configMap:
