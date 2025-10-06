@@ -1,6 +1,8 @@
 import { createTheme } from "@mui/material";
 import { lightPalette, darkPalette, typographyLevels } from "./palette";
 const fontFamilyPrimary = '"Inter" , sans-serif';
+const shadow =
+	"0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03)";
 
 export const theme = (mode: string, palette: any) =>
 	createTheme({
@@ -63,6 +65,24 @@ export const theme = (mode: string, palette: any) =>
 						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor: palette.accent.main,
 						},
+					},
+				},
+			},
+
+			MuiPaper: {
+				styleOverrides: {
+					root: ({ theme }) => {
+						return {
+							marginTop: 4,
+							padding: 0,
+							border: 1,
+							borderStyle: "solid",
+							borderColor: theme.palette.primary.lowContrast,
+							borderRadius: 4,
+							boxShadow: shadow,
+							backgroundColor: theme.palette.primary.main,
+							backgroundImage: "none",
+						};
 					},
 				},
 			},

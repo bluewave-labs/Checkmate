@@ -6,6 +6,66 @@ import { Table } from "@/Components/v2/DesignElements";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { ActionsMenu } from "@/Components/v2/ActionsMenu";
+import type { ActionMenuItem } from "@/Components/v2/ActionsMenu";
+
+const getActions = (t: Function): ActionMenuItem[] => {
+	return [
+		{
+			id: 1,
+			label: "Open site",
+			action: () => {
+				console.log("Open site");
+			},
+			closeMenu: true,
+		},
+		{
+			id: 2,
+			label: "Details",
+			action: () => {
+				console.log("Open details");
+			},
+		},
+		{
+			id: 3,
+			label: "Incidents",
+			action: () => {
+				console.log("Open incidents");
+			},
+		},
+		{
+			id: 4,
+			label: "Configure",
+			action: () => {
+				console.log("Open configure");
+			},
+		},
+		{
+			id: 5,
+			label: "Clone",
+			action: () => {
+				console.log("Open clone");
+			},
+		},
+		{
+			id: 6,
+			label: "Pause",
+			action: () => {
+				console.log("Open pause");
+			},
+			closeMenu: true,
+		},
+		{
+			id: 7,
+			label: "Delete",
+			action: () => {
+				console.log("Open delete");
+			},
+			closeMenu: true,
+		},
+	];
+};
+
 const getHeaders = (t: Function) => {
 	const headers: Header<IMonitor>[] = [
 		{
@@ -38,6 +98,13 @@ const getHeaders = (t: Function) => {
 			content: t("type"),
 			render: (row) => {
 				return row.type;
+			},
+		},
+		{
+			id: "actions",
+			content: t("actions"),
+			render: (row) => {
+				return <ActionsMenu items={getActions(t)} />;
 			},
 		},
 	];
