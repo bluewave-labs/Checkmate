@@ -51,7 +51,7 @@ Ask anything in our [Discord server](https://discord.com/invite/NAb6H3UTjK) — 
 #### Prerequisites
 
 - Node.js (with npm)
-- Docker (for MongoDB and Redis)
+- Docker 
 - Git
 
 #### Step 1: Clone the Repository
@@ -61,7 +61,7 @@ git clone https://github.com/bluewave-labs/Checkmate.git
 cd Checkmate
 ```
 
-#### Step 2: Set Up Docker Containers (MongoDB & Redis)
+#### Step 2: Set Up Docker Containers (MongoDB)
 
 Navigate to the Docker dev directory:
 
@@ -73,12 +73,6 @@ Build the Docker images:
 
 ```bash
 ./build_images.sh
-```
-
-Run Redis container:
-
-```bash
-docker run -d -p 6379:6379 -v $(pwd)/redis/data:/data --name uptime_redis uptime_redis
 ```
 
 Run MongoDB container:
@@ -182,19 +176,19 @@ Open your browser and navigate to:
 Stop containers:
 
 ```bash
-docker stop uptime_redis uptime_database_mongo
+docker stop uptime_database_mongo
 ```
 
 Start containers:
 
 ```bash
-docker start uptime_redis uptime_database_mongo
+docker start uptime_database_mongo
 ```
 
 Remove containers (if needed):
 
 ```bash
-docker rm uptime_redis uptime_database_mongo
+docker rm uptime_database_mongo
 ```
 
 #### Troubleshooting
@@ -204,10 +198,10 @@ docker rm uptime_redis uptime_database_mongo
 - Check if another service is using ports 5173, 52345, 27017, or 6379
 - Stop the conflicting service or change the port in `.env` files
 
-**MongoDB/Redis connection issues:**
+**MongoDB connection issues:**
 
-- Verify containers are running: `docker ps`
-- Check container logs: `docker logs uptime_database_mongo` or `docker logs uptime_redis`
+- Verify container is running: `docker ps`
+- Check container logs: `docker logs uptime_database_mongo` 
 
 **Module not found errors:**
 
