@@ -10,10 +10,10 @@ import {
 	editUserByIdParamValidation,
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
+	editUserPasswordByIdBodyValidation,
 } from "../../validation/joi.js";
 
 const SERVICE_NAME = "authController";
-
 /**
  * Authentication Controller
  *
@@ -436,7 +436,7 @@ class AuthController extends BaseController {
 		async (req, res) => {
 			const roles = req?.user?.role;
 			if (!roles.includes("superadmin")) {
-				throw createError("Unauthorized", 403);
+				throw this.errorService.createError("Unauthorized", 403);
 			}
 
 			const userId = req.params.userId;
@@ -455,6 +455,23 @@ class AuthController extends BaseController {
 		},
 		SERVICE_NAME,
 		"editUserById"
+	);
+	editUserPasswordById = this.asyncHandler(
+		async (req, res) => {
+			const roles = req?.user?.role;
+			if (!roles.includes("superadmin")) {
+				throw this.errorService.createError("Unauthorized", 403);
+			}
+
+			const userId = req.params.userId;
+			await editUserByIdParamValidation.validateAsync(req.params);
+			await editUserPasswordByIdBodyValidation.validateAsync(req.body);
+			const updatedPassword = req.body.password;
+			await this.userService.setPasswordByUserId(userId, updatedPassword);
+			return res.success({ msg: "Password reset successfully" });
+		},
+		SERVICE_NAME,
+		"editUserPasswordById"
 	);
 }
 

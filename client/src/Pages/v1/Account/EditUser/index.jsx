@@ -1,13 +1,12 @@
 // Components
 import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import Button from "@mui/material/Button";
 import RoleTable from "../components/RoleTable/index.jsx";
-
+import ChangePasswordModal from "@/Pages/Account/components/ChangePasswordModal/index.jsx";
 // Utils
 import { useParams } from "react-router-dom";
 import { useTheme } from "@emotion/react";
@@ -15,9 +14,12 @@ import { useTranslation } from "react-i18next";
 import { useGetUser, useEditUser } from "../../../../Hooks/v1/userHooks.js";
 import { EDITABLE_ROLES, ROLES } from "../../../../Utils/roleUtils.js";
 import { useEditUserForm, useValidateEditUserForm } from "./hooks/editUser.js";
+import { useSelector } from "react-redux";
 
 const EditUser = () => {
+	const { user } = useSelector((state) => state.auth);
 	const { userId } = useParams();
+	const isSameUser = user?._id === userId;
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const BREADCRUMBS = [
@@ -25,8 +27,8 @@ const EditUser = () => {
 		{ name: t("editUserPage.title"), path: "" },
 	];
 
-	const [user, isLoading, error] = useGetUser(userId);
-	const [editUser, isSaving, saveError] = useEditUser(userId);
+	const [userToEdit, isLoading, error] = useGetUser(userId);
+	const [editUser, isSaving, saveError, changePassword] = useEditUser(userId);
 	const [
 		form,
 		setForm,
@@ -34,7 +36,7 @@ const EditUser = () => {
 		handleDeleteRole,
 		searchInput,
 		handleSearchInput,
-	] = useEditUserForm(user);
+	] = useEditUserForm(userToEdit);
 	const [errors, validateForm, validateField] = useValidateEditUserForm();
 
 	const onChange = (e) => {
@@ -104,7 +106,12 @@ const EditUser = () => {
 					roles={form?.role}
 					handleDeleteRole={handleDeleteRole}
 				/>
-				<Box>
+				<Stack
+					direction="row"
+					spacing={theme.spacing(10)}
+					mt={theme.spacing(8)}
+					//justifyContent="flex-end"
+				>
 					<Button
 						type="submit"
 						variant="contained"
@@ -113,7 +120,14 @@ const EditUser = () => {
 					>
 						{t("editUserPage.form.save")}
 					</Button>
-				</Box>
+					{!isSameUser && (
+						<ChangePasswordModal
+							isSaving={isSaving}
+							isLoading={isLoading}
+							changePassword={changePassword}
+						/>
+					)}
+				</Stack>
 			</Stack>
 		</Stack>
 	);

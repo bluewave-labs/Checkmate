@@ -7,7 +7,6 @@ export const useGetUser = (userId) => {
 	const [user, setUser] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
-
 	const fetchUser = useCallback(async () => {
 		try {
 			setIsLoading(true);
@@ -54,8 +53,29 @@ export const useEditUser = (userId) => {
 				setIsLoading(false);
 			}
 		},
-		[userId]
+		[userId, t]
 	);
 
-	return [editUser, isLoading, error];
+	const changePassword = useCallback(
+		async (passwordForm) => {
+			try {
+				setIsLoading(true);
+
+				await networkService.changePasswordByAdmin({ userId, passwordForm });
+				createToast({
+					body: t("teamPanel.changeTeamPassword.success"),
+				});
+			} catch (error) {
+				createToast({
+					body: error.message,
+				});
+				setError(error);
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[userId, t]
+	);
+
+	return [editUser, isLoading, error, changePassword];
 };

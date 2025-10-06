@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": "Role"
+		"role": "Role",
+		"changeTeamPassword": {
+			"changePasswordMenu": "Reset Password",
+			"title": "Reset team member password",
+			"description": "Create a new password for this team member. You will need to share the password with them securely.",
+			"success": "Password successfully reset. Make sure to provide the credentials to the member in a secure way."
+		}
 	},
 	"monitorState": {
 		"paused": "Paused",
