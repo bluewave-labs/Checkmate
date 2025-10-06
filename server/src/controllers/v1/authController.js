@@ -464,10 +464,10 @@ class AuthController extends BaseController {
 			}
 
 			const userId = req.params.userId;
-			const updates = { ...req.body };
 			await editUserByIdParamValidation.validateAsync(req.params);
 			await editUserPasswordByIdBodyValidation.validateAsync(req.body);
-			await this.userService.setPasswordByUserId(userId, updates);
+			const updatedPassword = req.body.password;
+			await this.userService.setPasswordByUserId(userId, updatedPassword);
 			return res.success({ msg: "Password reset successfully" });
 		},
 		SERVICE_NAME,

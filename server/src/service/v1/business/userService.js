@@ -212,7 +212,7 @@ class UserService {
 		await this.db.userModule.editUserById(userId, user);
 	};
 	setPasswordByUserId = async (userId, updates) => {
-		const updatedUser = await this.db.userModule.updateUser({ userId: userId, user: updates, file: null });
+		const updatedUser = await this.db.userModule.updateUser({ userId: userId, user: { password: updates }, file: null });
 		return updatedUser;
 	};
 }
