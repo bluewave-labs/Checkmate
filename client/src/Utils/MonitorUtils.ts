@@ -1,4 +1,13 @@
 import type { MonitorStatus } from "@/Types/Monitor";
+import type { PaletteKey } from "./Theme/v2/theme";
+export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
+	const paletteMap: Record<MonitorStatus, PaletteKey> = {
+		up: "success",
+		down: "error",
+		initializing: "warning",
+	};
+	return paletteMap[status];
+};
 
 export const getStatusColor = (status: MonitorStatus, theme: any): string => {
 	const statusColors: Record<MonitorStatus, string> = {

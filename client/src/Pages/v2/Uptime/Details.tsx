@@ -1,17 +1,27 @@
 import { BasePage } from "@/Components/v2/DesignElements";
 import { HeaderControls } from "@/Components/v2/Monitors/HeaderControls";
+import Stack from "@mui/material/Stack";
+import { StatBox } from "@/Components/v2/DesignElements";
 
+import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
 import { useGet, usePatch, type ApiResponse } from "@/Hooks/v2/UseApi";
 import { useState } from "react";
+import { getStatusPalette } from "@/Utils/MonitorUtils";
+import prettyMilliseconds from "pretty-ms";
+
 const UptimeDetailsPage = () => {
 	const { id } = useParams();
+	const theme = useTheme();
 
 	// Local state
 	const [range, setRange] = useState("30m");
 
 	const { response, loading, error, refetch } = useGet<ApiResponse>(
-		`/monitors/${id}?range=${range}`
+		`/monitors/${id}?embedChecks=true&range=${range}`,
+
+		{},
+		{ refreshInterval: 30000 }
 	);
 	const {
 		patch,
@@ -19,10 +29,26 @@ const UptimeDetailsPage = () => {
 		error: postError,
 	} = usePatch<ApiResponse>(`/monitors/${id}/active`);
 
-	const monitor = response?.data || null;
+	const monitor = response?.data?.monitor || null;
 	if (!monitor) {
 		return null;
 	}
+
+	const stats = response?.data?.stats || null;
+
+	const streakDuration = stats?.currentStreakStartedAt
+		? Date.now() - stats?.currentStreakStartedAt
+		: 0;
+
+	const lastChecked = stats?.lastCheckTimestamp
+		? Date.now() - stats?.lastCheckTimestamp
+		: -1;
+
+	const checks = response?.data?.checks || null;
+
+	console.log(response);
+
+	const palette = getStatusPalette(monitor.status);
 
 	return (
 		<BasePage>
@@ -32,6 +58,28 @@ const UptimeDetailsPage = () => {
 				isPatching={isPatching}
 				refetch={refetch}
 			/>
+			<Stack
+				direction="row"
+				gap={theme.spacing(8)}
+			>
+				<StatBox
+					palette={palette}
+					title="Active for"
+					subtitle={prettyMilliseconds(streakDuration, { secondsDecimalDigits: 0 })}
+				/>
+				<StatBox
+					title="Last check"
+					subtitle={
+						lastChecked >= 0
+							? `${prettyMilliseconds(lastChecked, { secondsDecimalDigits: 0 })} ago`
+							: "N/A"
+					}
+				/>
+				<StatBox
+					title="Last response time"
+					subtitle={stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"}
+				/>
+			</Stack>
 		</BasePage>
 	);
 };
