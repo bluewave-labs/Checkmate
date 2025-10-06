@@ -17,7 +17,7 @@ const StatusBoxes = ({ isLoading, summary }) => {
 		>
 			<StatusBox
 				title={t("incidentsOptionsHeaderTotalIncidents")}
-				value={summary?.totalChecks || 0}
+				value={summary?.totalChecks + summary?.cannotResolveChecks || 0}
 			/>
 			<StatusBox
 				title={t("incidentsOptionsHeaderFilterResolved")}
