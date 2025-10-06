@@ -8,8 +8,9 @@ import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { ActionsMenu } from "@/Components/v2/ActionsMenu";
 import type { ActionMenuItem } from "@/Components/v2/ActionsMenu";
+import Typography from "@mui/material/Typography";
 
-const getActions = (t: Function): ActionMenuItem[] => {
+const getActions = (theme: any, t: Function): ActionMenuItem[] => {
 	return [
 		{
 			id: 1,
@@ -57,7 +58,7 @@ const getActions = (t: Function): ActionMenuItem[] => {
 		},
 		{
 			id: 7,
-			label: "Delete",
+			label: <Typography color={theme.palette.error.main}>Remove</Typography>,
 			action: () => {
 				console.log("Open delete");
 			},
@@ -66,7 +67,7 @@ const getActions = (t: Function): ActionMenuItem[] => {
 	];
 };
 
-const getHeaders = (t: Function) => {
+const getHeaders = (theme: any, t: Function) => {
 	const headers: Header<IMonitor>[] = [
 		{
 			id: "name",
@@ -104,7 +105,7 @@ const getHeaders = (t: Function) => {
 			id: "actions",
 			content: t("actions"),
 			render: (row) => {
-				return <ActionsMenu items={getActions(t)} />;
+				return <ActionsMenu items={getActions(theme, t)} />;
 			},
 		},
 	];
@@ -116,7 +117,7 @@ export const MonitorTable = ({ monitors }: { monitors: IMonitor[] }) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-	let headers = getHeaders(t);
+	let headers = getHeaders(theme, t);
 
 	if (isSmall) {
 		headers = headers.filter((h) => h.id !== "histogram");
