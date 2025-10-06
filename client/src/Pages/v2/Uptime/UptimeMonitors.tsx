@@ -18,9 +18,7 @@ const UptimeMonitors = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-	const { response, error, loading, refetch } = useGet<ApiResponse>(
-		"/monitors?embedChecks=true"
-	);
+	const { response, loading } = useGet<ApiResponse>("/monitors?embedChecks=true");
 	const monitors = response?.data ?? ([] as IMonitor[]);
 
 	if (monitors.length === 0 && !loading) {

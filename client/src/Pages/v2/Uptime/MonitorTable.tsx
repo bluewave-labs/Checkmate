@@ -10,7 +10,7 @@ import { ActionsMenu } from "@/Components/v2/ActionsMenu";
 import type { ActionMenuItem } from "@/Components/v2/ActionsMenu";
 import Typography from "@mui/material/Typography";
 
-const getActions = (theme: any, t: Function): ActionMenuItem[] => {
+const getActions = (theme: any): ActionMenuItem[] => {
 	return [
 		{
 			id: 1,
@@ -104,8 +104,8 @@ const getHeaders = (theme: any, t: Function) => {
 		{
 			id: "actions",
 			content: t("actions"),
-			render: (row) => {
-				return <ActionsMenu items={getActions(theme, t)} />;
+			render: () => {
+				return <ActionsMenu items={getActions(theme)} />;
 			},
 		},
 	];

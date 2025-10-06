@@ -6,7 +6,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useTheme } from "@mui/material/styles";
-import { typographyLevels } from "@/Utils/Theme/v2/palette";
 export type Header<T> = {
 	id: number | string;
 	content: React.ReactNode;
