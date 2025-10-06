@@ -10,3 +10,10 @@ export interface GroupedCheck {
 	avgResponseTime: number;
 	count: number;
 }
+
+export interface LatestCheck {
+	status: string;
+	responseTime: number;
+	checkedAt: string;
+	_id: string;
+}
