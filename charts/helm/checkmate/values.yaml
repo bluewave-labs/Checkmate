@@ -1,6 +1,7 @@
 client:
   image: ghcr.io/bluewave-labs/checkmate-client:v3.2.0
   port: 80
+  protocol: http
   ingress:
     enabled: true
     host: change_me

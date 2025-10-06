@@ -12,6 +12,14 @@ spec:
       labels:
         app: checkmate-mongodb
     spec:
+    {{- with .Values.mongodb.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.mongodb.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
       containers:
         - name: mongodb
           image: {{ .Values.mongodb.image }}
@@ -21,6 +29,10 @@ spec:
           volumeMounts:
             - name: checkmate-mongo-persistent-storage
               mountPath: /data/db
+          {{- with .Values.mongodb.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: checkmate-mongo-persistent-storage
