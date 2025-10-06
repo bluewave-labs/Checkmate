@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost } from "@/Hooks/v2/UseApi";
 import type { ApiResponse } from "@/Hooks/v2/UseApi";
 
-const CreateUptimePage = () => {
+const UptimeCreatePage = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
@@ -259,4 +259,4 @@ const CreateUptimePage = () => {
 	);
 };
 
-export default CreateUptimePage;
+export default UptimeCreatePage;

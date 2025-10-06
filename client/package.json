@@ -31,6 +31,7 @@
 		"i18next": "25.4.2",
 		"joi": "17.13.3",
 		"mui-color-input": "^6.0.0",
+		"pretty-ms": "9.3.0",
 		"react": "18.3.1",
 		"react-dom": "^18.2.0",
 		"react-hook-form": "7.63.0",

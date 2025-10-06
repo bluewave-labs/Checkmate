@@ -1,4 +1,5 @@
 import type { Check } from "@/Types/Check";
+export type MonitorStatus = "up" | "down" | "initializing";
 
 export interface IMonitor {
 	checks: Check[];
@@ -9,7 +10,7 @@ export interface IMonitor {
 	latestChecks: Check[];
 	n: number;
 	name: string;
-	status: string;
+	status: MonitorStatus;
 	type: string;
 	updatedAt: string;
 	updatedBy: string;

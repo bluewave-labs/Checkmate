@@ -18,4 +18,10 @@ export const post = <T>(
 	config: AxiosRequestConfig = {}
 ): Promise<AxiosResponse<T>> => api.post<T>(url, data, config);
 
+export const patch = <T>(
+	url: string,
+	data: any,
+	config: AxiosRequestConfig = {}
+): Promise<AxiosResponse<T>> => api.patch<T>(url, data, config);
+
 export default api;

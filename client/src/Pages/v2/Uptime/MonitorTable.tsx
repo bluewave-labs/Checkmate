@@ -1,16 +1,22 @@
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { Table } from "@/Components/v2/DesignElements";
 import { HistogramResponseTime } from "@/Components/v2/Monitors/HistogramResponseTime";
 import type { Header } from "@/Components/v2/DesignElements/Table";
-import type { IMonitor } from "@/Types/Monitor";
-import { Table } from "@/Components/v2/DesignElements";
+import { ActionsMenu } from "@/Components/v2/ActionsMenu";
+
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { ActionsMenu } from "@/Components/v2/ActionsMenu";
-import type { ActionMenuItem } from "@/Components/v2/ActionsMenu";
-import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
 
-const getActions = (theme: any): ActionMenuItem[] => {
+import type { IMonitor } from "@/Types/Monitor";
+import type { ActionMenuItem } from "@/Components/v2/ActionsMenu";
+const getActions = (
+	theme: any,
+	monitor: IMonitor,
+	navigate: Function
+): ActionMenuItem[] => {
 	return [
 		{
 			id: 1,
@@ -24,7 +30,7 @@ const getActions = (theme: any): ActionMenuItem[] => {
 			id: 2,
 			label: "Details",
 			action: () => {
-				console.log("Open details");
+				navigate(`${monitor._id}`);
 			},
 		},
 		{
@@ -67,7 +73,7 @@ const getActions = (theme: any): ActionMenuItem[] => {
 	];
 };
 
-const getHeaders = (theme: any, t: Function) => {
+const getHeaders = (theme: any, t: Function, navigate: Function) => {
 	const headers: Header<IMonitor>[] = [
 		{
 			id: "name",
@@ -104,8 +110,8 @@ const getHeaders = (theme: any, t: Function) => {
 		{
 			id: "actions",
 			content: t("actions"),
-			render: () => {
-				return <ActionsMenu items={getActions(theme)} />;
+			render: (row) => {
+				return <ActionsMenu items={getActions(theme, row, navigate)} />;
 			},
 		},
 	];
@@ -116,8 +122,9 @@ export const MonitorTable = ({ monitors }: { monitors: IMonitor[] }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const navigate = useNavigate();
 
-	let headers = getHeaders(theme, t);
+	let headers = getHeaders(theme, t, navigate);
 
 	if (isSmall) {
 		headers = headers.filter((h) => h.id !== "histogram");

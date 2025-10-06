@@ -2,7 +2,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import type { SWRConfiguration } from "swr";
 import type { AxiosRequestConfig } from "axios";
-import { get, post } from "@/Utils/ApiClient"; // your axios wrapper
+import { get, post, patch } from "@/Utils/ApiClient"; // your axios wrapper
 
 export type ApiResponse = {
 	message: string;
@@ -55,4 +55,27 @@ export const usePost = <B = any, R = any>(endpoint: string) => {
 	};
 
 	return { post: postFn, loading, error };
+};
+
+export const usePatch = <B = any, R = any>(endpoint: string) => {
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const patchFn = async (body: B, config?: AxiosRequestConfig): Promise<R | null> => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const res = await patch<R>(endpoint, body, config);
+			return res.data;
+		} catch (err: any) {
+			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
+			setError(errMsg);
+			return null;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return { patch: patchFn, loading, error };
 };
