@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
 import { MonitorStatus } from "@/Components/v2/Monitors/MonitorStatus";
 import { ButtonGroup, Button } from "@/Components/v2/Inputs";
-import Tooltip from "@mui/material/Tooltip";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";

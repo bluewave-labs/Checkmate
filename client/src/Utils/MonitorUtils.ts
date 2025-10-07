@@ -18,6 +18,16 @@ export const getStatusColor = (status: MonitorStatus, theme: any): string => {
 	return statusColors[status];
 };
 
+export const getResponseTimeColor = (responseTime: number): PaletteKey => {
+	if (responseTime < 200) {
+		return "success";
+	} else if (responseTime < 300) {
+		return "warning";
+	} else {
+		return "error";
+	}
+};
+
 export const formatUrl = (url: string, maxLength: number = 55) => {
 	if (!url) return "";
 

@@ -23,3 +23,31 @@ export const formatDateWithTz = (timestamp: string, format: string, timezone: st
 	const formattedDate = dayjs(timestamp).tz(timezone).format(format);
 	return formattedDate;
 };
+
+export const tickDateFormatLookup = (range: string) => {
+	const tickFormatLookup: Record<string, string> = {
+		"2h": "h:mm A",
+		"24h": "h:mm A",
+		"7d": "MM/D, h:mm A",
+		"30d": "ddd. M/D",
+	};
+	const format = tickFormatLookup[range];
+	if (format === undefined) {
+		return "";
+	}
+	return format;
+};
+
+export const tooltipDateFormatLookup = (range: string) => {
+	const dateFormatLookup: Record<string, string> = {
+		"2h": "ddd. MMMM D, YYYY, hh:mm A",
+		"24h": "ddd. MMMM D, YYYY, hh:mm A",
+		"7d": "ddd. MMMM D, YYYY, hh:mm A",
+		"30d": "ddd. MMMM D, YYYY",
+	};
+	const format = dateFormatLookup[range];
+	if (format === undefined) {
+		return "";
+	}
+	return format;
+};
