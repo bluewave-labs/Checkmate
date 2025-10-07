@@ -22,19 +22,3 @@ declare module "@mui/material/Button" {
 		accent: true;
 	}
 }
-
-declare module "@mui/material/Button" {
-	interface ButtonPropsVariantOverrides {
-		group: true;
-	}
-}
-
-declare module "@mui/material/ButtonGroup" {
-	interface ButtonGroupPropsColorOverrides {
-		accent: true;
-	}
-
-	interface ButtonGroupPropsVariantOverrides {
-		group: true;
-	}
-}
