@@ -13,6 +13,7 @@ import { useState } from "react";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import prettyMilliseconds from "pretty-ms";
 import { ChartResponseTime } from "@/Components/v2/Monitors/ChartResponseTime";
+import { HeaderRange } from "@/Components/v2/Monitors/HeaderRange";
 
 const UptimeDetailsPage = () => {
 	const { id } = useParams();
@@ -73,8 +74,10 @@ const UptimeDetailsPage = () => {
 		: -1;
 
 	const checks = response?.data?.checks || [];
-	const upChecks = upResponse?.data?.checks || [];
-	const downChecks = downResponse?.data?.checks || [];
+	const upChecks = upResponse?.data?.checks ? [...upResponse.data.checks].reverse() : [];
+	const downChecks = downResponse?.data?.checks
+		? [...downResponse.data.checks].reverse()
+		: [];
 
 	// TODO something with these
 
@@ -112,6 +115,10 @@ const UptimeDetailsPage = () => {
 					subtitle={stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"}
 				/>
 			</Stack>
+			<HeaderRange
+				range={range}
+				setRange={setRange}
+			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				gap={theme.spacing(8)}
@@ -119,12 +126,12 @@ const UptimeDetailsPage = () => {
 				<HistogramStatus
 					title="Uptime"
 					status={"up"}
-					checks={upChecks.reverse()}
+					checks={upChecks}
 					range={range}
 				/>
 				<HistogramStatus
 					title="Incidents"
-					checks={downChecks.reverse()}
+					checks={downChecks}
 					status={"down"}
 					range={range}
 				/>
