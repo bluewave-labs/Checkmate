@@ -9,7 +9,6 @@ import { CssBaseline, GlobalStyles } from "@mui/material";
 import { logger } from "./Utils/Logger"; // Import the logger
 import { networkService } from "./main";
 import { Routes } from "./Routes";
-import WalletProvider from "./Components/WalletProvider";
 import AppLayout from "@/Components/v1/Layouts/AppLayout";
 
 function App() {
@@ -24,16 +23,12 @@ function App() {
 	}, []);
 
 	return (
-		/* Extract Themeprovider, baseline and global styles to Styles */
 		<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
-			<WalletProvider>
-				<CssBaseline />
-
-				<AppLayout>
-					<Routes />
-				</AppLayout>
-				<ToastContainer />
-			</WalletProvider>
+			<CssBaseline />
+			<AppLayout>
+				<Routes />
+			</AppLayout>
+			<ToastContainer />
 		</ThemeProvider>
 	);
 }

@@ -47,14 +47,6 @@
 		"vite-plugin-svgr": "^4.2.0",
 		"zod": "4.1.11"
 	},
-	"unusedDepencies": {
-		"@solana/wallet-adapter-base": "0.9.25",
-		"@solana/wallet-adapter-material-ui": "0.16.35",
-		"@solana/wallet-adapter-react": "0.15.37",
-		"@solana/wallet-adapter-react-ui": "0.9.37",
-		"@solana/wallet-adapter-wallets": "0.19.34",
-		"@solana/web3.js": "1.98.0"
-	},
 	"devDependencies": {
 		"@types/node": "24.5.2",
 		"@types/react": "^18.2.66",

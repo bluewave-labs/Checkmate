@@ -4,7 +4,11 @@ import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/v2/DesignElements";
 import { HistogramStatus } from "@/Components/v2/Monitors/HistogramStatus";
 import { ChartAvgResponse } from "@/Components/v2/Monitors/ChartAvgResponse";
+import { ChartResponseTime } from "@/Components/v2/Monitors/ChartResponseTime";
+import { HeaderRange } from "@/Components/v2/Monitors/HeaderRange";
+import { CheckTable } from "@/Pages/v2/Uptime/CheckTable";
 
+import type { IMonitor } from "@/Types/Monitor";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
@@ -12,8 +16,6 @@ import { useGet, usePatch, type ApiResponse } from "@/Hooks/v2/UseApi";
 import { useState } from "react";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import prettyMilliseconds from "pretty-ms";
-import { ChartResponseTime } from "@/Components/v2/Monitors/ChartResponseTime";
-import { HeaderRange } from "@/Components/v2/Monitors/HeaderRange";
 
 const UptimeDetailsPage = () => {
 	const { id } = useParams();
@@ -23,7 +25,7 @@ const UptimeDetailsPage = () => {
 	// Local state
 	const [range, setRange] = useState("2h");
 
-	const { response, loading, error, refetch } = useGet<ApiResponse>(
+	const { response, isValidating, error, refetch } = useGet<ApiResponse>(
 		`/monitors/${id}?embedChecks=true&range=${range}`,
 
 		{},
@@ -32,8 +34,8 @@ const UptimeDetailsPage = () => {
 
 	const {
 		response: upResponse,
+		isValidating: upIsValidating,
 		error: upError,
-		loading: upLoading,
 	} = useGet<ApiResponse>(
 		`/monitors/${id}?embedChecks=true&range=${range}&status=up`,
 		{},
@@ -43,7 +45,7 @@ const UptimeDetailsPage = () => {
 	const {
 		response: downResponse,
 		error: downError,
-		loading: downLoading,
+		isValidating: downIsValidating,
 	} = useGet<ApiResponse>(
 		`/monitors/${id}?embedChecks=true&range=${range}&status=down`,
 		{},
@@ -56,7 +58,8 @@ const UptimeDetailsPage = () => {
 		error: postError,
 	} = usePatch<ApiResponse>(`/monitors/${id}/active`);
 
-	const monitor = response?.data?.monitor || null;
+	const monitor: IMonitor = response?.data?.monitor;
+
 	if (!monitor) {
 		return null;
 	}
@@ -79,11 +82,16 @@ const UptimeDetailsPage = () => {
 		? [...downResponse.data.checks].reverse()
 		: [];
 
-	// TODO something with these
-
-	console.log(loading, error, postError, checks, setRange);
-
 	const palette = getStatusPalette(monitor.status);
+
+	if (error || upError || downError || postError) {
+		console.error("Error fetching monitor data:", {
+			error,
+			upError,
+			downError,
+			postError,
+		});
+	}
 
 	return (
 		<BasePage>
@@ -116,6 +124,7 @@ const UptimeDetailsPage = () => {
 				/>
 			</Stack>
 			<HeaderRange
+				loading={isValidating || upIsValidating || downIsValidating}
 				range={range}
 				setRange={setRange}
 			/>
@@ -144,6 +153,7 @@ const UptimeDetailsPage = () => {
 				checks={checks}
 				range={range}
 			/>
+			<CheckTable monitorId={monitor._id} />
 		</BasePage>
 	);
 };

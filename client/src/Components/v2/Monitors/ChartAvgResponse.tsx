@@ -1,7 +1,6 @@
 import { BaseChart } from "./HistogramStatus";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import AverageResponseIcon from "@/assets/icons/average-response-icon.svg?react";
 import { Cell, RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 
@@ -23,7 +22,10 @@ export const ChartAvgResponse = ({ avg, max }: { avg: number; max: number }) => 
 	};
 
 	return (
-		<BaseChart icon={<AverageResponseIcon />}>
+		<BaseChart
+			icon={<AverageResponseIcon />}
+			title={"Average response time"}
+		>
 			<Stack
 				height="100%"
 				position={"relative"}
@@ -31,7 +33,6 @@ export const ChartAvgResponse = ({ avg, max }: { avg: number; max: number }) => 
 			>
 				<ResponsiveContainer
 					width="100%"
-					minWidth={210}
 					height={155}
 				>
 					<RadialBarChart

@@ -4,7 +4,6 @@ import ResponseTimeIcon from "@/assets/icons/response-time-icon.svg?react";
 import {
 	AreaChart,
 	Area,
-	YAxis,
 	XAxis,
 	Tooltip,
 	CartesianGrid,
@@ -52,6 +51,8 @@ type ResponseTimeToolTipProps = {
 	payload?: any[];
 	label?: string;
 	range: string;
+	theme: any;
+	uiTimezone: string;
 };
 
 const ResponseTimeToolTip: React.FC<ResponseTimeToolTipProps> = ({
@@ -59,13 +60,14 @@ const ResponseTimeToolTip: React.FC<ResponseTimeToolTipProps> = ({
 	payload,
 	label,
 	range,
+	theme,
+	uiTimezone,
 }) => {
 	if (!label) return null;
 	if (!payload) return null;
+	if (!active) return null;
 
-	const theme = useTheme();
 	const format = tooltipDateFormatLookup(range);
-	const uiTimezone = useSelector((state: any) => state.ui.timezone);
 	const responseTime = Math.floor(payload?.[0]?.value || 0);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
@@ -83,6 +85,8 @@ export const ChartResponseTime = ({
 	range: string;
 }) => {
 	const theme = useTheme();
+	const uiTimezone = useSelector((state: any) => state.ui.timezone);
+
 	return (
 		<BaseChart
 			icon={<ResponseTimeIcon />}
@@ -137,6 +141,8 @@ export const ChartResponseTime = ({
 							<ResponseTimeToolTip
 								{...props}
 								range={range}
+								theme={theme}
+								uiTimezone={uiTimezone}
 							/>
 						)}
 					/>

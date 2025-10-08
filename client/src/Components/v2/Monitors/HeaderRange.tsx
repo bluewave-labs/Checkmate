@@ -2,8 +2,7 @@ import Stack from "@mui/material/Stack";
 import { ButtonGroup, Button } from "@/Components/v2/Inputs";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { theme } from "@/Utils/Theme/v2/theme";
-
+import { useMediaQuery } from "@mui/material";
 export const HeaderRange = ({
 	range,
 	setRange,
@@ -14,15 +13,18 @@ export const HeaderRange = ({
 	loading: boolean;
 }) => {
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	return (
 		<Stack
 			gap={theme.spacing(9)}
-			direction="row"
+			direction={isSmall ? "column" : "row"}
 			alignItems={"center"}
 			justifyContent="flex-end"
 		>
 			<Typography variant="body2">{`Showing statistics for past ${range}`}</Typography>
 			<ButtonGroup
+				orientation={isSmall ? "vertical" : "horizontal"}
+				fullWidth={isSmall}
 				variant="contained"
 				color={"primary"}
 			>

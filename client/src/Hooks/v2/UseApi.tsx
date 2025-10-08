@@ -20,7 +20,7 @@ export const useGet = <T,>(
 	axiosConfig?: AxiosRequestConfig,
 	swrConfig?: SWRConfiguration<T, Error>
 ) => {
-	const { data, error, isLoading, mutate } = useSWR<T>(
+	const { data, error, isLoading, isValidating, mutate } = useSWR<T>(
 		url,
 		(url) => fetcher<T>(url, axiosConfig),
 		swrConfig
@@ -29,6 +29,7 @@ export const useGet = <T,>(
 	return {
 		response: data ?? null,
 		loading: isLoading,
+		isValidating,
 		error: error?.message ?? null,
 		refetch: mutate,
 	};

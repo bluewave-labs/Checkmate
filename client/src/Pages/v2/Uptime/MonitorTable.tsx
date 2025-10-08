@@ -4,6 +4,7 @@ import { Table } from "@/Components/v2/DesignElements";
 import { HistogramResponseTime } from "@/Components/v2/Monitors/HistogramResponseTime";
 import type { Header } from "@/Components/v2/DesignElements/Table";
 import { ActionsMenu } from "@/Components/v2/ActionsMenu";
+import { StatusLabel } from "@/Components/v2/DesignElements";
 
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mui/material";
@@ -86,7 +87,7 @@ const getHeaders = (theme: any, t: Function, navigate: Function) => {
 			id: "status",
 			content: t("status"),
 			render: (row) => {
-				return row.status;
+				return <StatusLabel status={row.status} />;
 			},
 		},
 		{

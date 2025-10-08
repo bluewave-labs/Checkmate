@@ -41,6 +41,7 @@ export const HeaderControls = ({
 			>
 				<ButtonGroup
 					orientation={isSmall ? "vertical" : "horizontal"}
+					fullWidth={isSmall}
 					variant="contained"
 					color="secondary"
 				>

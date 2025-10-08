@@ -65,7 +65,6 @@ export const BaseChart: React.FC<BaseChartProps> = ({ children, icon, title }) =
 		<BaseBox
 			sx={{
 				padding: theme.spacing(8),
-				minWidth: 250,
 				display: "flex",
 				flex: 1,
 			}}
