@@ -29,7 +29,7 @@ const UptimeDetailsPage = () => {
 		`/monitors/${id}?embedChecks=true&range=${range}`,
 
 		{},
-		{ refreshInterval: 30000 }
+		{ refreshInterval: 30000, keepPreviousData: true }
 	);
 
 	const {
@@ -39,7 +39,7 @@ const UptimeDetailsPage = () => {
 	} = useGet<ApiResponse>(
 		`/monitors/${id}?embedChecks=true&range=${range}&status=up`,
 		{},
-		{}
+		{ keepPreviousData: true }
 	);
 
 	const {
@@ -49,7 +49,7 @@ const UptimeDetailsPage = () => {
 	} = useGet<ApiResponse>(
 		`/monitors/${id}?embedChecks=true&range=${range}&status=down`,
 		{},
-		{}
+		{ keepPreviousData: true }
 	);
 
 	const { patch, loading: isPatching, error: postError } = usePatch<ApiResponse>();
@@ -78,7 +78,7 @@ const UptimeDetailsPage = () => {
 		? [...downResponse.data.checks].reverse()
 		: [];
 
-	const palette = getStatusPalette(monitor.status);
+	const palette = getStatusPalette(monitor?.status);
 
 	if (error || upError || downError || postError) {
 		console.error("Error fetching monitor data:", {
@@ -149,7 +149,7 @@ const UptimeDetailsPage = () => {
 				checks={checks}
 				range={range}
 			/>
-			<CheckTable monitorId={monitor._id} />
+			<CheckTable monitorId={monitor?._id} />
 		</BasePage>
 	);
 };
