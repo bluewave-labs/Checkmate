@@ -18,8 +18,30 @@ const UptimeMonitors = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-	const { response, loading } = useGet<ApiResponse>("/monitors?embedChecks=true", {});
-	const monitors = response?.data ?? ([] as IMonitor[]);
+	const { response, loading, refetch } = useGet<ApiResponse>(
+		"/monitors?embedChecks=true",
+		{},
+		{ refreshInterval: 30000 }
+	);
+	const monitors: IMonitor[] = response?.data ?? ([] as IMonitor[]);
+
+	const monitorStatuses = monitors.reduce(
+		(acc, monitor) => {
+			if (monitor.status === "up") {
+				acc.up += 1;
+			} else if (monitor.status === "down") {
+				acc.down += 1;
+			} else if (monitor.isActive === false) {
+				acc.paused += 1;
+			}
+			return acc;
+		},
+		{
+			up: 0,
+			down: 0,
+			paused: 0,
+		}
+	);
 
 	if (monitors.length === 0 && !loading) {
 		return "No monitors found";
@@ -35,11 +57,14 @@ const UptimeMonitors = () => {
 				direction={isSmall ? "column" : "row"}
 				gap={theme.spacing(8)}
 			>
-				<UpStatusBox n={1} />
-				<DownStatusBox n={1} />
-				<PausedStatusBox n={1} />
+				<UpStatusBox n={monitorStatuses.up} />
+				<DownStatusBox n={monitorStatuses.down} />
+				<PausedStatusBox n={monitorStatuses.paused} />
 			</Stack>
-			<MonitorTable monitors={monitors} />
+			<MonitorTable
+				monitors={monitors}
+				refetch={refetch}
+			/>
 		</BasePage>
 	);
 };
