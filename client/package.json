@@ -31,6 +31,7 @@
 		"i18next": "25.4.2",
 		"joi": "17.13.3",
 		"mui-color-input": "^6.0.0",
+		"pretty-ms": "9.3.0",
 		"react": "18.3.1",
 		"react-dom": "^18.2.0",
 		"react-hook-form": "7.63.0",
@@ -45,14 +46,6 @@
 		"swr": "2.3.6",
 		"vite-plugin-svgr": "^4.2.0",
 		"zod": "4.1.11"
-	},
-	"unusedDepencies": {
-		"@solana/wallet-adapter-base": "0.9.25",
-		"@solana/wallet-adapter-material-ui": "0.16.35",
-		"@solana/wallet-adapter-react": "0.15.37",
-		"@solana/wallet-adapter-react-ui": "0.9.37",
-		"@solana/wallet-adapter-wallets": "0.19.34",
-		"@solana/web3.js": "1.98.0"
 	},
 	"devDependencies": {
 		"@types/node": "24.5.2",

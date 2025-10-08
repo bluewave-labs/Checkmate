@@ -5,6 +5,7 @@ import { MonitorType } from "../../../db/v2/models/monitors/Monitor.js";
 import { StatusResponse } from "../infrastructure/NetworkService.js";
 import type { ICapturePayload, ILighthousePayload } from "../infrastructure/NetworkService.js";
 import mongoose from "mongoose";
+import { stat } from "fs";
 
 const SERVICE_NAME = "CheckServiceV2";
 export interface ICheckService {
@@ -60,6 +61,7 @@ class CheckService implements ICheckService {
 			monitorId: monitorId,
 			type: statusResponse?.type,
 			status: statusResponse?.status,
+			httpStatusCode: statusResponse?.code,
 			message: statusResponse?.message,
 			responseTime: statusResponse?.responseTime,
 			timings: statusResponse?.timings,
@@ -129,6 +131,16 @@ class CheckService implements ICheckService {
 			console.error("Error cleaning up orphaned Checks:", error);
 			return false;
 		}
+	};
+
+	getChecks = async (monitorId: string, page: number, rowsPerPage: number) => {
+		const count = await Check.countDocuments({ monitorId: new mongoose.Types.ObjectId(monitorId) });
+		const checks = await Check.find({ monitorId: new mongoose.Types.ObjectId(monitorId) })
+			.sort({ createdAt: -1 })
+			.skip(page * rowsPerPage)
+			.limit(rowsPerPage)
+			.exec();
+		return { checks, count };
 	};
 }
 

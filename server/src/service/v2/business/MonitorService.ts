@@ -63,8 +63,8 @@ class MonitorService implements IMonitorService {
 	private getStartDate(range: string): Date {
 		const now = new Date();
 		switch (range) {
-			case "30m":
-				return new Date(now.getTime() - 30 * 60 * 1000);
+			case "2h":
+				return new Date(now.getTime() - 2 * 60 * 60 * 1000);
 			case "24h":
 				return new Date(now.getTime() - 24 * 60 * 60 * 1000);
 			case "7d":
@@ -78,7 +78,7 @@ class MonitorService implements IMonitorService {
 
 	private getDateFormat(range: string): string {
 		switch (range) {
-			case "30m":
+			case "2h":
 				return "%Y-%m-%dT%H:%M:00Z";
 			case "24h":
 			case "7d":

@@ -74,7 +74,7 @@ export const initializeControllers = (services) => {
 	controllers.authControllerV2 = new AuthControllerV2(services.authServiceV2, services.inviteServiceV2);
 	controllers.inviteControllerV2 = new InviteControllerV2(services.inviteServiceV2);
 	controllers.maintenanceControllerV2 = new MaintenanceControllerV2(services.maintenanceServiceV2);
-	controllers.monitorControllerV2 = new MonitorControllerV2(services.monitorServiceV2);
+	controllers.monitorControllerV2 = new MonitorControllerV2(services.monitorServiceV2, services.checkServiceV2);
 	controllers.notificationChannelControllerV2 = new NotificationChannelControllerV2(services.notificationChannelServiceV2);
 	controllers.queueControllerV2 = new QueueControllerV2(services.jobQueueV2);
 

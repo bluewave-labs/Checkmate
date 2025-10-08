@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { BaseBox } from "@/Components/v2/DesignElements";
 import Background from "@/assets/Images/background-grid.svg?react";
 import { useTranslation } from "react-i18next";
 
@@ -11,15 +12,13 @@ type StatusBoxProps = React.PropsWithChildren<{}>;
 export const BGBox: React.FC<StatusBoxProps> = ({ children }) => {
 	const theme = useTheme();
 	return (
-		<Box
-			position="relative"
-			flex={1}
-			border={1}
-			bgcolor={theme.palette.primary.main}
-			borderColor={theme.palette.primary.lowContrast}
-			borderRadius={theme.shape.borderRadius}
-			p={theme.spacing(8)}
-			overflow="hidden"
+		<BaseBox
+			sx={{
+				overflow: "hidden",
+				position: "relative",
+				flex: 1,
+				padding: theme.spacing(8),
+			}}
 		>
 			<Box
 				position="absolute"
@@ -29,7 +28,7 @@ export const BGBox: React.FC<StatusBoxProps> = ({ children }) => {
 				<Background />
 			</Box>
 			{children}
-		</Box>
+		</BaseBox>
 	);
 };
 
