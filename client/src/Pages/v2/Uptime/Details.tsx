@@ -52,11 +52,7 @@ const UptimeDetailsPage = () => {
 		{}
 	);
 
-	const {
-		patch,
-		loading: isPatching,
-		error: postError,
-	} = usePatch<ApiResponse>(`/monitors/${id}/active`);
+	const { patch, loading: isPatching, error: postError } = usePatch<ApiResponse>();
 
 	const monitor: IMonitor = response?.data?.monitor;
 

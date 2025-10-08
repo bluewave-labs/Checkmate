@@ -28,12 +28,16 @@ export type Header<T> = {
 type DataTableProps<T extends { id?: string | number; _id?: string | number }> = {
 	headers: Header<T>[];
 	data: T[];
+	onRowClick?: (row: T) => void;
 };
 
-export function DataTable<T extends { id?: string | number; _id?: string | number }>({
-	headers,
-	data,
-}: DataTableProps<T>) {
+export function DataTable<
+	T extends {
+		id?: string | number;
+		_id?: string | number;
+		onRowClick?: (row: T) => void;
+	},
+>({ headers, data, onRowClick }: DataTableProps<T>) {
 	const theme = useTheme();
 	if (data.length === 0 || headers.length === 0) return <div>No data</div>;
 	return (
@@ -77,7 +81,11 @@ export function DataTable<T extends { id?: string | number; _id?: string | numbe
 						const key = row.id || row._id || Math.random();
 
 						return (
-							<TableRow key={key}>
+							<TableRow
+								key={key}
+								sx={{ cursor: onRowClick ? "pointer" : "default" }}
+								onClick={() => (onRowClick ? onRowClick(row) : null)}
+							>
 								{headers.map((header, index) => {
 									return (
 										<TableCell

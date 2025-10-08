@@ -50,7 +50,7 @@ export const HeaderControls = ({
 					<Button
 						loading={isPatching}
 						onClick={async () => {
-							await patch();
+							await patch(`/monitors/${monitor._id}/active`);
 							refetch();
 						}}
 						startIcon={

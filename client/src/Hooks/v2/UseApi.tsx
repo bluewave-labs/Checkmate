@@ -58,11 +58,15 @@ export const usePost = <B = any, R = any>(endpoint: string) => {
 	return { post: postFn, loading, error };
 };
 
-export const usePatch = <B = any, R = any>(endpoint: string) => {
+export const usePatch = <B = any, R = any>() => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const patchFn = async (body: B, config?: AxiosRequestConfig): Promise<R | null> => {
+	const patchFn = async (
+		endpoint: string,
+		body?: B,
+		config?: AxiosRequestConfig
+	): Promise<R | null> => {
 		setLoading(true);
 		setError(null);
 
