@@ -10,7 +10,7 @@ export const StatusLabel = ({
 	isActive,
 }: {
 	status: MonitorStatus;
-	isActive: boolean;
+	isActive?: boolean;
 }) => {
 	const theme = useTheme();
 	const palette = getStatusPalette(status);

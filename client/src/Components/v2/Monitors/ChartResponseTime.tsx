@@ -19,7 +19,7 @@ import {
 	tooltipDateFormatLookup,
 } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
-import type { Check, GroupedCheck } from "@/Types/Check";
+import type { GroupedCheck } from "@/Types/Check";
 import { useSelector } from "react-redux";
 
 type XTickProps = {
