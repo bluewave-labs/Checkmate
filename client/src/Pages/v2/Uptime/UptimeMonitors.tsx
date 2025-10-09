@@ -1,5 +1,5 @@
 import {
-	BasePage,
+	BasePageWithStates,
 	UpStatusBox,
 	DownStatusBox,
 	PausedStatusBox,
@@ -18,29 +18,56 @@ const UptimeMonitors = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-	const { response, loading } = useGet<ApiResponse>("/monitors?embedChecks=true");
-	const monitors = response?.data ?? ([] as IMonitor[]);
+	const { response, isValidating, error, refetch } = useGet<ApiResponse>(
+		"/monitors?embedChecks=true",
+		{},
+		{ refreshInterval: 30000, keepPreviousData: true }
+	);
+	const monitors: IMonitor[] = response?.data ?? ([] as IMonitor[]);
 
-	if (monitors.length === 0 && !loading) {
-		return "No monitors found";
-	}
+	const monitorStatuses = monitors.reduce(
+		(acc, monitor) => {
+			if (monitor.status === "up") {
+				acc.up += 1;
+			} else if (monitor.status === "down") {
+				acc.down += 1;
+			} else if (monitor.isActive === false) {
+				acc.paused += 1;
+			}
+			return acc;
+		},
+		{
+			up: 0,
+			down: 0,
+			paused: 0,
+		}
+	);
 
 	return (
-		<BasePage>
+		<BasePageWithStates
+			loading={isValidating}
+			error={error}
+			items={monitors}
+			page="uptime"
+			actionLink="create"
+		>
 			<HeaderCreate
-				isLoading={loading}
+				isLoading={isValidating}
 				path="/v2/uptime/create"
 			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				gap={theme.spacing(8)}
 			>
-				<UpStatusBox n={1} />
-				<DownStatusBox n={1} />
-				<PausedStatusBox n={1} />
+				<UpStatusBox n={monitorStatuses.up} />
+				<DownStatusBox n={monitorStatuses.down} />
+				<PausedStatusBox n={monitorStatuses.paused} />
 			</Stack>
-			<MonitorTable monitors={monitors} />
-		</BasePage>
+			<MonitorTable
+				monitors={monitors}
+				refetch={refetch}
+			/>
+		</BasePageWithStates>
 	);
 };
 

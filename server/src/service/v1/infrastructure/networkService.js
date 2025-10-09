@@ -33,11 +33,11 @@ class NetworkService {
 		const start = process.hrtime.bigint();
 		try {
 			const response = await operation();
-			// const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
-			return { response };
+			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
+			return { response, responseTime: elapsedMs };
 		} catch (error) {
-			// const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
-			return { response: null, error };
+			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
+			return { response: null, responseTime: elapsedMs, error };
 		}
 	}
 
@@ -350,9 +350,9 @@ class NetworkService {
 			}
 
 			const container = docker.getContainer(targetContainer.Id);
-			const { response, error } = await this.timeRequest(() => container.inspect());
+			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
 
-			dockerResponse.responseTime = response.time;
+			dockerResponse.responseTime = responseTime;
 			dockerResponse.status = response?.State?.Status === "running" ? true : false;
 			dockerResponse.code = 200;
 			dockerResponse.message = "Docker container status fetched successfully";
@@ -375,7 +375,7 @@ class NetworkService {
 	async requestPort(monitor) {
 		try {
 			const { url, port } = monitor;
-			const { response, error } = await this.timeRequest(async () => {
+			const { response, responseTime, error } = await this.timeRequest(async () => {
 				return new Promise((resolve, reject) => {
 					const socket = this.net.createConnection(
 						{
@@ -408,7 +408,7 @@ class NetworkService {
 				message: this.stringService.portSuccess,
 				monitorId: monitor._id,
 				type: monitor.type,
-				responseTime: response.time,
+				responseTime: responseTime,
 			};
 
 			if (error) {

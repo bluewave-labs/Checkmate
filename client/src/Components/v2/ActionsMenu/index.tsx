@@ -15,11 +15,13 @@ export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
 	const [anchorEl, setAnchorEl] = useState<null | any>(null);
 	const open = Boolean(anchorEl);
 
-	const handleClick = (event: React.MouseEvent<any>) => {
-		setAnchorEl(event.currentTarget);
+	const handleClick = (e: React.MouseEvent<any>) => {
+		e.stopPropagation();
+		setAnchorEl(e.currentTarget);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e: React.MouseEvent<any>) => {
+		e.stopPropagation();
 		setAnchorEl(null);
 	};
 
@@ -36,8 +38,9 @@ export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
 				{items.map((item) => (
 					<MenuItem
 						key={item.id}
-						onClick={() => {
-							if (item.closeMenu) handleClose();
+						onClick={(e: React.MouseEvent<HTMLLIElement>) => {
+							e.stopPropagation();
+							if (item.closeMenu) handleClose(e);
 							item.action();
 						}}
 					>

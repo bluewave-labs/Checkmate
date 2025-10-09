@@ -17,11 +17,13 @@ class MonitorRoutes {
 
 		this.router.get("/", verifyToken, verifyPermission(["monitors.view"]), this.controller.getAll);
 
+		this.router.get("/:id/checks", verifyToken, verifyPermission(["monitors.view"]), this.controller.getChecks);
+
 		this.router.patch("/:id/active", verifyToken, verifyPermission(["monitors.update"]), this.controller.toggleActive);
 
-		this.router.patch("/:id", verifyToken, verifyPermission(["monitors.update"]), this.controller.update);
-
 		this.router.get("/:id", verifyToken, verifyPermission(["monitors.view"]), this.controller.get);
+
+		this.router.patch("/:id", verifyToken, verifyPermission(["monitors.update"]), this.controller.update);
 
 		this.router.delete("/:id", verifyToken, verifyPermission(["monitors.delete"]), this.controller.delete);
 	};

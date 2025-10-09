@@ -5,7 +5,7 @@ import { ConfigBox, BasePage } from "@/Components/v2/DesignElements";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
 import { RadioWithDescription } from "@/Components/v2/Inputs/RadioInput";
-import Button from "@mui/material/Button";
+import { Button } from "@/Components/v2/Inputs";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { Typography } from "@mui/material";
 import humanInterval from "human-interval";
@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost } from "@/Hooks/v2/UseApi";
 import type { ApiResponse } from "@/Hooks/v2/UseApi";
 
-const CreateUptimePage = () => {
+const UptimeCreatePage = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
@@ -44,7 +44,7 @@ const CreateUptimePage = () => {
 		mode: "onChange",
 	});
 	const { response } = useGet<ApiResponse>("/notification-channels");
-	const { post, loading, error } = usePost<SubmitValues, ApiResponse>("/monitors");
+	const { post, loading, error } = usePost<SubmitValues>();
 	const selectedType = useWatch({
 		control,
 		name: "type",
@@ -58,7 +58,7 @@ const CreateUptimePage = () => {
 		let interval = humanInterval(data.interval);
 		if (!interval) interval = 60000;
 		const submitData = { ...data, interval };
-		const result = await post(submitData);
+		const result = await post("/monitors", submitData);
 		if (result) {
 			console.log(result);
 		} else {
@@ -259,4 +259,4 @@ const CreateUptimePage = () => {
 	);
 };
 
-export default CreateUptimePage;
+export default UptimeCreatePage;

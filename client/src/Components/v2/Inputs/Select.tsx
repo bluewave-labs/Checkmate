@@ -2,6 +2,7 @@ import { Typography, Select } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import { forwardRef } from "react";
 import type { SelectProps } from "@mui/material/Select";
+import { useTheme } from "@mui/material/styles";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 type ItemId = string | number;
 interface SelectItem {
@@ -20,11 +21,20 @@ export const SelectInput = forwardRef<HTMLDivElement, CustomSelectProps>(
 		{ items, placeholder, isHidden = false, hasError = false, ...props },
 		ref
 	) {
+		const theme = useTheme();
 		return (
 			<Select
 				sx={{
+					height: "34px",
 					"& .MuiSelect-select": {
 						padding: "0",
+					},
+					"& .MuiOutlinedInput-notchedOutline": {
+						borderRadius: theme.shape.borderRadius,
+						borderColor: theme.palette.primary.lowContrast,
+					},
+					"&:hover .MuiOutlinedInput-notchedOutline": {
+						borderColor: theme.palette.primary.lowContrast,
 					},
 				}}
 				error={hasError}

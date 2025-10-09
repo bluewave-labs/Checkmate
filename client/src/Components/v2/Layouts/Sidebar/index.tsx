@@ -37,6 +37,9 @@ export const SideBar = () => {
 		<Stack
 			component="aside"
 			position="sticky"
+			top={0}
+			minHeight={"100vh"}
+			maxHeight={"100vh"}
 			paddingTop={theme.spacing(6)}
 			paddingBottom={theme.spacing(6)}
 			gap={theme.spacing(6)}
