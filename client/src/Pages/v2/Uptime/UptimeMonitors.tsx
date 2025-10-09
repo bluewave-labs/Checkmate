@@ -1,5 +1,5 @@
 import {
-	BasePage,
+	BasePageWithStates,
 	UpStatusBox,
 	DownStatusBox,
 	PausedStatusBox,
@@ -18,10 +18,10 @@ const UptimeMonitors = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-	const { response, loading, refetch } = useGet<ApiResponse>(
+	const { response, isValidating, error, refetch } = useGet<ApiResponse>(
 		"/monitors?embedChecks=true",
 		{},
-		{ refreshInterval: 30000 }
+		{ refreshInterval: 30000, keepPreviousData: true }
 	);
 	const monitors: IMonitor[] = response?.data ?? ([] as IMonitor[]);
 
@@ -43,14 +43,16 @@ const UptimeMonitors = () => {
 		}
 	);
 
-	if (monitors.length === 0 && !loading) {
-		return "No monitors found";
-	}
-
 	return (
-		<BasePage>
+		<BasePageWithStates
+			loading={isValidating}
+			error={error}
+			items={monitors}
+			page="uptime"
+			actionLink="create"
+		>
 			<HeaderCreate
-				isLoading={loading}
+				isLoading={isValidating}
 				path="/v2/uptime/create"
 			/>
 			<Stack
@@ -65,7 +67,7 @@ const UptimeMonitors = () => {
 				monitors={monitors}
 				refetch={refetch}
 			/>
-		</BasePage>
+		</BasePageWithStates>
 	);
 };
 
