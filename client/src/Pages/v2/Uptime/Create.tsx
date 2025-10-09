@@ -44,7 +44,7 @@ const UptimeCreatePage = () => {
 		mode: "onChange",
 	});
 	const { response } = useGet<ApiResponse>("/notification-channels");
-	const { post, loading, error } = usePost<SubmitValues, ApiResponse>("/monitors");
+	const { post, loading, error } = usePost<SubmitValues>();
 	const selectedType = useWatch({
 		control,
 		name: "type",
@@ -58,7 +58,7 @@ const UptimeCreatePage = () => {
 		let interval = humanInterval(data.interval);
 		if (!interval) interval = 60000;
 		const submitData = { ...data, interval };
-		const result = await post(submitData);
+		const result = await post("/monitors", submitData);
 		if (result) {
 			console.log(result);
 		} else {

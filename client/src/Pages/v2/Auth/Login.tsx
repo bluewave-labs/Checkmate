@@ -1,16 +1,19 @@
+import { AuthBasePage } from "@/Components/v2/Auth";
+import { Button } from "@/Components/v2/Inputs";
+import Stack from "@mui/material/Stack";
+import { TextInput, TextLink } from "@/Components/v2/Inputs";
+
+import type { ApiResponse } from "@/Hooks/v2/UseApi";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTranslation } from "react-i18next";
-import { useForm, Controller } from "react-hook-form";
+import { usePost } from "@/Hooks/v2/UseApi";
+import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
 import { useDispatch } from "react-redux";
 import { setIsAuthenticated } from "@/Features/Auth/v2AuthSlice";
-import { useNavigate } from "react-router";
-import { TextInput } from "@/Components/v2/Inputs/TextInput";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import { usePost } from "@/Hooks/v2/UseApi";
-import type { ApiResponse } from "@/Hooks/v2/UseApi";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
 
 const schema = z.object({
 	email: z.email("Invalid email address"),
@@ -23,7 +26,7 @@ const Login = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const { post, loading } = usePost<FormData, ApiResponse>("/auth/login");
+	const { post, loading } = usePost<FormData, ApiResponse>();
 	const navigate = useNavigate();
 
 	const {
@@ -39,7 +42,7 @@ const Login = () => {
 	});
 
 	const onSubmit = async (data: FormData) => {
-		const result = await post(data);
+		const result = await post("/auth/login", data);
 		if (result) {
 			dispatch(setIsAuthenticated({ authenticated: true }));
 			navigate("/v2/uptime");
@@ -49,68 +52,84 @@ const Login = () => {
 	};
 
 	return (
-		<Stack
-			alignItems={"center"}
-			justifyContent={"center"}
-			minHeight="100vh"
+		<AuthBasePage
+			title={t("auth.login.welcome")}
+			subtitle={t("auth.login.heading")}
 		>
 			<Stack
-				component="form"
-				padding={theme.spacing(8)}
-				gap={theme.spacing(12)}
-				onSubmit={handleSubmit(onSubmit)}
-				maxWidth={400}
-				sx={{
-					width: {
-						sm: "80%",
-						md: "70%",
-						lg: "65%",
-						xl: "65%",
-					},
-				}}
+				width={"100%"}
+				alignItems={"center"}
+				justifyContent={"center"}
+				gap={theme.spacing(8)}
 			>
-				<Controller
-					name="email"
-					control={control}
-					defaultValue=""
-					render={({ field }) => (
-						<TextInput
-							{...field}
-							label={t("auth.common.inputs.email.label")}
-							fullWidth
-							placeholder={t("auth.common.inputs.email.placeholder")}
-							error={!!errors.email}
-							helperText={errors.email ? errors.email.message : ""}
-						/>
-					)}
-				/>
-				<Controller
-					name="password"
-					control={control}
-					defaultValue=""
-					render={({ field }) => (
-						<TextInput
-							{...field}
-							type="password"
-							label={t("auth.common.inputs.password.label")}
-							fullWidth
-							placeholder="••••••••••"
-							error={!!errors.password}
-							helperText={errors.password ? errors.password.message : ""}
-						/>
-					)}
-				/>
-				<Button
-					variant="contained"
-					loading={loading}
-					color="accent"
-					type="submit"
-					sx={{ width: "100%", alignSelf: "center", fontWeight: 700 }}
+				<Stack
+					component="form"
+					padding={theme.spacing(8)}
+					gap={theme.spacing(12)}
+					onSubmit={handleSubmit(onSubmit)}
+					maxWidth={400}
+					sx={{
+						width: {
+							sm: "80%",
+							md: "70%",
+							lg: "65%",
+							xl: "65%",
+						},
+					}}
 				>
-					Login
-				</Button>
+					<Controller
+						name="email"
+						control={control}
+						defaultValue=""
+						render={({ field }) => (
+							<TextInput
+								{...field}
+								label={t("auth.common.inputs.email.label")}
+								fullWidth
+								placeholder={t("auth.common.inputs.email.placeholder")}
+								error={!!errors.email}
+								helperText={errors.email ? errors.email.message : ""}
+							/>
+						)}
+					/>
+					<Controller
+						name="password"
+						control={control}
+						defaultValue=""
+						render={({ field }) => (
+							<TextInput
+								{...field}
+								type="password"
+								label={t("auth.common.inputs.password.label")}
+								fullWidth
+								placeholder="••••••••••"
+								error={!!errors.password}
+								helperText={errors.password ? errors.password.message : ""}
+							/>
+						)}
+					/>
+					<Button
+						variant="contained"
+						loading={loading}
+						color="accent"
+						type="submit"
+						sx={{ width: "100%", alignSelf: "center", fontWeight: 700 }}
+					>
+						Login
+					</Button>
+				</Stack>
+				<TextLink
+					text={t("auth.login.links.forgotPassword")}
+					linkText={t("auth.login.links.forgotPasswordLink")}
+					href="/forgot-password"
+				/>
+				<TextLink
+					text={t("auth.login.links.register")}
+					linkText={t("auth.login.links.registerLink")}
+					href="/register"
+				/>
 			</Stack>
-		</Stack>
+		</AuthBasePage>
 	);
 };
 
