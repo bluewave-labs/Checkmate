@@ -35,11 +35,15 @@ export const useGet = <T,>(
 	};
 };
 
-export const usePost = <B = any, R = any>(endpoint: string) => {
+export const usePost = <B = any, R = any>() => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const postFn = async (body: B, config?: AxiosRequestConfig): Promise<R | null> => {
+	const postFn = async (
+		endpoint: string,
+		body: B,
+		config?: AxiosRequestConfig
+	): Promise<R | null> => {
 		setLoading(true);
 		setError(null);
 
