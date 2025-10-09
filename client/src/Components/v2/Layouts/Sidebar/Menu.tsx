@@ -14,25 +14,25 @@ import ChangeLog from "@/assets/icons/changeLog.svg?react";
 
 export const getMenu = (t: Function) => [
 	{ name: t("menu.uptime"), path: "v2/uptime", icon: <Monitors /> },
-	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
+	// { name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
 
-	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
-	{
-		name: t("menu.notifications"),
-		path: "notifications",
-		icon: <Notifications />,
-	},
-	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
+	// { name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
+	// {
+	// 	name: t("menu.notifications"),
+	// 	path: "notifications",
+	// 	icon: <Notifications />,
+	// },
+	// { name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
-	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
-	{ name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
-	{ name: t("menu.logs"), path: "logs", icon: <Logs /> },
+	// { name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
+	// { name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
+	// { name: t("menu.logs"), path: "logs", icon: <Logs /> },
 
-	{
-		name: t("menu.settings"),
-		icon: <Settings />,
-		path: "settings",
-	},
+	// {
+	// 	name: t("menu.settings"),
+	// 	icon: <Settings />,
+	// 	path: "settings",
+	// },
 ];
 
 export const getBottomMenu = (t: Function) => [

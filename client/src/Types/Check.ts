@@ -27,6 +27,7 @@ export interface Check {
 	status: string;
 	message: string;
 	responseTime: number;
+	normalResponseTime?: number;
 	httpStatusCode: number;
 	ack: boolean;
 	expiry: string;

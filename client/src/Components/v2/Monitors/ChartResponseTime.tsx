@@ -1,6 +1,7 @@
 import { BaseChart } from "./HistogramStatus";
 import { BaseBox } from "../DesignElements";
 import ResponseTimeIcon from "@/assets/icons/response-time-icon.svg?react";
+import { normalizeResponseTimes } from "@/Utils/DataUtils";
 import {
 	AreaChart,
 	Area,
@@ -18,7 +19,7 @@ import {
 	tooltipDateFormatLookup,
 } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
-import type { GroupedCheck } from "@/Types/Check";
+import type { Check, GroupedCheck } from "@/Types/Check";
 import { useSelector } from "react-redux";
 
 type XTickProps = {
@@ -68,7 +69,7 @@ const ResponseTimeToolTip: React.FC<ResponseTimeToolTipProps> = ({
 	if (!active) return null;
 
 	const format = tooltipDateFormatLookup(range);
-	const responseTime = Math.floor(payload?.[0]?.value || 0);
+	const responseTime = Math.floor(payload?.[0]?.payload?.avgResponseTime || 0);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(label, format, uiTimezone)}</Typography>
@@ -86,7 +87,10 @@ export const ChartResponseTime = ({
 }) => {
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: any) => state.ui.timezone);
-
+	const normalized = normalizeResponseTimes<GroupedCheck, "avgResponseTime">(
+		checks,
+		"avgResponseTime"
+	);
 	return (
 		<BaseChart
 			icon={<ResponseTimeIcon />}
@@ -96,7 +100,7 @@ export const ChartResponseTime = ({
 				width="100%"
 				height={300}
 			>
-				<AreaChart data={checks?.slice().reverse()}>
+				<AreaChart data={normalized?.slice().reverse()}>
 					<CartesianGrid
 						stroke={theme.palette.primary.lowContrast}
 						strokeWidth={1}
@@ -148,7 +152,7 @@ export const ChartResponseTime = ({
 					/>
 					<Area
 						type="monotone"
-						dataKey="avgResponseTime"
+						dataKey="normalResponseTime"
 						stroke={theme.palette.accent.main}
 						fill="url(#colorUv)"
 					/>

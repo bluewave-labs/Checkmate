@@ -104,7 +104,12 @@ export const MonitorTable = ({
 				id: "status",
 				content: t("status"),
 				render: (row) => {
-					return <StatusLabel status={row.status} />;
+					return (
+						<StatusLabel
+							status={row.status}
+							isActive={row.isActive}
+						/>
+					);
 				},
 			},
 			{
