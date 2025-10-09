@@ -5,7 +5,13 @@ import type { MonitorStatus } from "@/Types/Monitor";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 
-export const StatusLabel = ({ status }: { status: MonitorStatus }) => {
+export const StatusLabel = ({
+	status,
+	isActive,
+}: {
+	status: MonitorStatus;
+	isActive?: boolean;
+}) => {
 	const theme = useTheme();
 	const palette = getStatusPalette(status);
 	const transformedText = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -29,7 +35,7 @@ export const StatusLabel = ({ status }: { status: MonitorStatus }) => {
 				borderRadius="50%"
 				marginRight="5px"
 			/>
-			{transformedText}
+			{isActive === false ? "Paused" : transformedText}
 		</BaseBox>
 	);
 };

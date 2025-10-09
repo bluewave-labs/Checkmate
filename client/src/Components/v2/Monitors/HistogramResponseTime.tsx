@@ -3,24 +3,20 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { Check } from "@/Types/Check";
 import { HistogramResponseTimeTooltip } from "@/Components/v2/Monitors/HistogramResponseTimeTooltip";
+import { normalizeResponseTimes } from "@/Utils/DataUtils";
 
 export const HistogramResponseTime = ({ checks }: { checks: Check[] }) => {
+	const normalChecks = normalizeResponseTimes(checks, "responseTime");
 	let data = Array<any>();
 
-	data = checks.map((c) => Math.max(c.responseTime, 1));
-
-	const logResponses = data.map((r) => Math.log10(r));
-	const logMin = Math.min(...logResponses);
-	const logMax = Math.max(...logResponses);
-
-	if (!checks) {
+	if (!normalChecks || normalChecks.length === 0) {
 		return null;
 	}
-	if (checks.length !== 25) {
-		const placeholders = Array(25 - checks.length).fill("placeholder");
-		data = [...checks, ...placeholders];
+	if (normalChecks.length !== 25) {
+		const placeholders = Array(25 - normalChecks.length).fill("placeholder");
+		data = [...normalChecks, ...placeholders];
 	} else {
-		data = checks;
+		data = normalChecks;
 	}
 
 	const theme = useTheme();
@@ -38,14 +34,6 @@ export const HistogramResponseTime = ({ checks }: { checks: Check[] }) => {
 			}}
 		>
 			{data.map((check, index) => {
-				const safeResponse = Math.max(check.responseTime, 1);
-				const logValue = Math.log10(safeResponse);
-				const minHeight = 10;
-				const barHeight =
-					logMax === logMin
-						? 100
-						: Math.max(minHeight, ((logValue - logMin) / (logMax - logMin)) * 100);
-
 				if (check === "placeholder") {
 					return (
 						<Box
@@ -78,7 +66,7 @@ export const HistogramResponseTime = ({ checks }: { checks: Check[] }) => {
 									position="absolute"
 									bottom={0}
 									width="100%"
-									height={`${barHeight}%`}
+									height={`${check.normalResponseTime}%`}
 									bgcolor={
 										check.status
 											? theme.palette.success.lowContrast

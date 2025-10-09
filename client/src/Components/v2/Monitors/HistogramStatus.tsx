@@ -9,6 +9,7 @@ import IncidentsIcon from "@/assets/icons/incidents.svg?react";
 import type { GroupedCheck } from "@/Types/Check";
 import type { MonitorStatus } from "@/Types/Monitor";
 
+import { normalizeResponseTimes } from "@/Utils/DataUtils";
 import { useState } from "react";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { useSelector } from "react-redux";
@@ -122,8 +123,9 @@ export const HistogramStatus = ({
 	const theme = useTheme();
 	const [idx, setIdx] = useState<number | null>(null);
 	const dateFormat = range === "1d" || range === "2h" ? "MMM D, h A" : "MMM D";
+	const normalChecks = normalizeResponseTimes(checks, "avgResponseTime");
 
-	if (checks.length === 0) {
+	if (normalChecks.length === 0) {
 		return (
 			<BaseChart
 				icon={icon}
@@ -142,7 +144,7 @@ export const HistogramStatus = ({
 		);
 	}
 
-	const totalChecks = checks.reduce((count, check) => {
+	const totalChecks = normalChecks.reduce((count, check) => {
 		return count + check.count;
 	}, 0);
 
@@ -161,12 +163,12 @@ export const HistogramStatus = ({
 						<Typography>Total checks</Typography>
 						{idx ? (
 							<Stack>
-								<Typography variant="h2">{checks[idx].count}</Typography>
+								<Typography variant="h2">{normalChecks[idx].count}</Typography>
 								<Typography
 									position={"absolute"}
 									top={"100%"}
 								>
-									{formatDateWithTz(checks[idx]._id, dateFormat, uiTimezone)}
+									{formatDateWithTz(normalChecks[idx]._id, dateFormat, uiTimezone)}
 								</Typography>
 							</Stack>
 						) : (
@@ -178,26 +180,26 @@ export const HistogramStatus = ({
 					width="100%"
 					height={155}
 				>
-					<BarChart data={checks}>
+					<BarChart data={normalChecks}>
 						<XAxis
 							stroke={theme.palette.primary.lowContrast}
 							height={15}
 							tick={false}
 							label={
 								<XLabel
-									p1={checks[0]}
-									p2={checks[checks.length - 1]}
+									p1={normalChecks[0]}
+									p2={normalChecks[normalChecks.length - 1]}
 									range={range}
 								/>
 							}
 						/>
 						<Bar
-							dataKey="avgResponseTime"
+							dataKey="normalResponseTime"
 							maxBarSize={7}
 							background={{ fill: "transparent" }}
 						>
-							{checks?.map((groupedCheck, idx) => {
-								const fillColor = getResponseTimeColor(groupedCheck.avgResponseTime);
+							{normalChecks?.map((groupedCheck, idx) => {
+								const fillColor = getResponseTimeColor(groupedCheck.normalResponseTime);
 								return (
 									<Cell
 										onMouseEnter={() => setIdx(idx)}
