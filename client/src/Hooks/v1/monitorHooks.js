@@ -369,6 +369,7 @@ const useUpdateMonitor = () => {
 			setIsLoading(true);
 			const updatedFields = {
 				name: monitor.name,
+				group: monitor.group || undefined,
 				statusWindowSize: monitor.statusWindowSize,
 				statusWindowThreshold: monitor.statusWindowThreshold,
 				description: monitor.description,
