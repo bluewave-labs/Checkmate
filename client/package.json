@@ -10,7 +10,10 @@
 		"lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"format": "prettier --write .",
-		"format-check": "prettier --check ."
+		"format-check": "prettier --check .",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:run": "vitest run"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",
@@ -48,6 +51,9 @@
 		"zod": "4.1.11"
 	},
 	"devDependencies": {
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/react": "^16.3.0",
+		"@testing-library/user-event": "^14.6.1",
 		"@types/node": "24.5.2",
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
@@ -56,8 +62,10 @@
 		"eslint-plugin-react": "^7.34.1",
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
+		"jsdom": "^27.0.0",
 		"prettier": "^3.3.3",
 		"typescript": "5.9.3",
-		"vite": "6.3.6"
+		"vite": "6.3.6",
+		"vitest": "^3.2.4"
 	}
 }

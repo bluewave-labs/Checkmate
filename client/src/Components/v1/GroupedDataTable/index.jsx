@@ -4,6 +4,7 @@ import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 import DataTable from "../Table/index.jsx";
+import ConfigBox from "../ConfigBox/index.jsx";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -21,7 +22,7 @@ const GroupSection = ({
 	monitors,
 	headers,
 	config,
-	defaultExpanded = true
+	defaultExpanded = true,
 }) => {
 	const [expanded, setExpanded] = useState(defaultExpanded);
 	const theme = useTheme();
@@ -57,7 +58,11 @@ const GroupSection = ({
 				}}
 				onClick={toggleExpanded}
 			>
-				<Stack direction="row" alignItems="center" gap={theme.spacing(4)}>
+				<Stack
+					direction="row"
+					alignItems="center"
+					gap={theme.spacing(4)}
+				>
 					<Typography
 						variant="h3"
 						sx={{
@@ -118,12 +123,7 @@ const GroupSection = ({
  * @param {boolean} props.shouldRender - Whether to render the component
  * @returns {JSX.Element} Rendered component
  */
-const GroupedDataTable = ({
-	groupedMonitors,
-	headers,
-	config,
-	shouldRender = true
-}) => {
+const GroupedDataTable = ({ groupedMonitors, headers, config, shouldRender = true }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 

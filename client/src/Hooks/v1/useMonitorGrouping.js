@@ -32,12 +32,12 @@ export const useMonitorGrouping = (monitors = []) => {
 		// Sort groups alphabetically and sort monitors within each group
 		const sortedGrouped = {};
 		Object.keys(grouped)
-			.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+			.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
 			.forEach((groupName) => {
 				sortedGrouped[groupName] = grouped[groupName].sort((a, b) => {
 					const nameA = a.name || a.url || "";
 					const nameB = b.name || b.url || "";
-					return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+					return nameA.localeCompare(nameB, undefined, { sensitivity: "base" });
 				});
 			});
 
@@ -45,7 +45,7 @@ export const useMonitorGrouping = (monitors = []) => {
 		ungrouped.sort((a, b) => {
 			const nameA = a.name || a.url || "";
 			const nameB = b.name || b.url || "";
-			return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+			return nameA.localeCompare(nameB, undefined, { sensitivity: "base" });
 		});
 
 		return { grouped: sortedGrouped, ungrouped };
