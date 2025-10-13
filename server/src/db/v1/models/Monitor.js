@@ -133,9 +133,9 @@ const MonitorSchema = mongoose.Schema(
 			trim: true,
 			maxLength: 50,
 			default: null,
-			set: function(value) {
+			set: function (value) {
 				return value && value.trim() ? value.trim() : null;
-			}
+			},
 		},
 	},
 	{

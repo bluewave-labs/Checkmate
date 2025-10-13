@@ -578,7 +578,7 @@ class MonitorModule {
 		try {
 			const groups = await this.Monitor.distinct("group", {
 				teamId: new this.ObjectId(teamId),
-				group: { $ne: null, $ne: "" }
+				group: { $ne: null, $ne: "" },
 			});
 
 			return groups.filter(Boolean).sort();
