@@ -1,6 +1,7 @@
 // Components
 import { Box } from "@mui/material";
 import DataTable from "@/Components/v1/Table/index.jsx";
+import GroupedDataTable from "@/Components/v1/GroupedDataTable/index.jsx";
 import Host from "@/Components/v1/Host/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { Stack } from "@mui/material";
@@ -13,6 +14,7 @@ import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../../../Hooks/v1/useMonitorUtils.js";
+import { useMonitorGrouping } from "../../../../../../Hooks/v1/useMonitorGrouping.js";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -118,6 +120,7 @@ const MonitorsTable = ({
 			id: monitor._id,
 			name: monitor.name,
 			url: monitor.url,
+			group: monitor.group, // Include group information
 			processor,
 			cpu,
 			mem,
@@ -127,26 +130,39 @@ const MonitorsTable = ({
 		};
 	});
 
+	const { groupedMonitors, hasGroups } = useMonitorGrouping(data);
+
+	const tableConfig = {
+		/* TODO this behavior seems to be repeated. Put it on the root table? */
+		rowSX: {
+			cursor: "pointer",
+			"&:hover td": {
+				backgroundColor: theme.palette.tertiary.main,
+				transition: "background-color .3s ease",
+			},
+		},
+		onRowClick: (row) => openDetails(row.id),
+		emptyView: "No monitors found",
+	};
+
 	return (
 		<Box position="relative">
 			<LoadingSpinner shouldRender={isSearching} />
-			<DataTable
-				shouldRender={!isLoading}
-				headers={headers}
-				data={data}
-				config={{
-					/* TODO this behavior seems to be repeated. Put it on the root table? */
-					rowSX: {
-						cursor: "pointer",
-						"&:hover td": {
-							backgroundColor: theme.palette.tertiary.main,
-							transition: "background-color .3s ease",
-						},
-					},
-					onRowClick: (row) => openDetails(row.id),
-					emptyView: "No monitors found",
-				}}
-			/>
+			{hasGroups ? (
+				<GroupedDataTable
+					shouldRender={!isLoading}
+					groupedMonitors={groupedMonitors}
+					headers={headers}
+					config={tableConfig}
+				/>
+			) : (
+				<DataTable
+					shouldRender={!isLoading}
+					headers={headers}
+					data={data}
+					config={tableConfig}
+				/>
+			)}
 		</Box>
 	);
 };

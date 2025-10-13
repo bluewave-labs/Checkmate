@@ -1,6 +1,7 @@
 // Components
 import { Box, Stack } from "@mui/material";
 import DataTable from "@/Components/v1/Table/index.jsx";
+import GroupedDataTable from "@/Components/v1/GroupedDataTable/index.jsx";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import Host from "@/Components/v1/Host/index.jsx";
@@ -14,6 +15,7 @@ import TableSkeleton from "@/Components/v1/Table/skeleton.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../../../../Hooks/v1/useMonitorUtils.js";
+import { useMonitorGrouping } from "../../../../../../Hooks/v1/useMonitorGrouping.js";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -59,6 +61,7 @@ const UptimeDataTable = ({
 	// Utils
 	const navigate = useNavigate();
 	const { determineState } = useMonitorUtils();
+	const { groupedMonitors, hasGroups } = useMonitorGrouping(filteredMonitors);
 	const theme = useTheme();
 	const { t } = useTranslation();
 
@@ -185,26 +188,36 @@ const UptimeDataTable = ({
 		return <TableSkeleton />;
 	}
 
+	const tableConfig = {
+		rowSX: {
+			cursor: "pointer",
+			"&:hover td": {
+				backgroundColor: theme.palette.tertiary.main,
+				transition: "background-color .3s ease",
+			},
+		},
+		onRowClick: (row) => {
+			navigate(`/uptime/${row._id}`);
+		},
+		emptyView: "No monitors found",
+	};
+
 	return (
 		<Box position="relative">
 			<LoadingSpinner shouldRender={isSearching} />
-			<DataTable
-				headers={headers}
-				data={filteredMonitors}
-				config={{
-					rowSX: {
-						cursor: "pointer",
-						"&:hover td": {
-							backgroundColor: theme.palette.tertiary.main,
-							transition: "background-color .3s ease",
-						},
-					},
-					onRowClick: (row) => {
-						navigate(`/uptime/${row._id}`);
-					},
-					emptyView: "No monitors found",
-				}}
-			/>
+			{hasGroups ? (
+				<GroupedDataTable
+					groupedMonitors={groupedMonitors}
+					headers={headers}
+					config={tableConfig}
+				/>
+			) : (
+				<DataTable
+					headers={headers}
+					data={filteredMonitors}
+					config={tableConfig}
+				/>
+			)}
 		</Box>
 	);
 };

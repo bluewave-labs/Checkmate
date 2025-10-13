@@ -3,6 +3,7 @@ const useInfrastructureMonitorForm = () => {
 	const [infrastructureMonitor, setInfrastructureMonitor] = useState({
 		url: "",
 		name: "",
+		group: "",
 		notifications: [],
 		notify_email: false,
 		interval: 0.25,
@@ -37,6 +38,7 @@ const useInfrastructureMonitorForm = () => {
 			...prev,
 			url: "",
 			name: "",
+			group: "",
 			notifications: [],
 			interval: 0.25,
 			cpu: gt.cpu !== undefined,
@@ -58,6 +60,7 @@ const useInfrastructureMonitorForm = () => {
 			...prev,
 			url: monitor.url.replace(/^https?:\/\//, ""),
 			name: monitor.name || "",
+			group: monitor.group || "",
 			notifications: monitor.notifications || [],
 			interval: monitor.interval / MS_PER_MINUTE,
 			statusWindowSize: monitor.statusWindowSize,

@@ -191,6 +191,7 @@ const UptimeCreate = ({ isClone = false }) => {
 				jsonPath: monitor.jsonPath,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				gameId: monitor.gameId || undefined,
+				group: monitor.group || undefined,
 			};
 		} else {
 			form = {
@@ -210,6 +211,7 @@ const UptimeCreate = ({ isClone = false }) => {
 					monitor.type === "port" || monitor.type === "game" ? monitor.port : undefined,
 				ignoreTlsErrors: monitor.ignoreTlsErrors,
 				gameId: monitor.gameId || undefined,
+				group: monitor.group || undefined,
 			};
 		}
 		if (!useAdvancedMatching) {
@@ -606,6 +608,17 @@ const UptimeCreate = ({ isClone = false }) => {
 							onChange={onChange}
 							error={errors["name"] ? true : false}
 							helperText={errors["name"]}
+						/>
+						<TextInput
+							name="group"
+							type="text"
+							label="Group"
+							isOptional={true}
+							placeholder="e.g., Production, Development, Network"
+							value={monitor.group || ""}
+							onChange={onChange}
+							error={errors["group"] ? true : false}
+							helperText={errors["group"]}
 						/>
 					</Stack>
 				</ConfigBox>

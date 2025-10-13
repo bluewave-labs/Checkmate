@@ -231,6 +231,9 @@ const monitorValidation = joi.object({
 		}),
 		otherwise: joi.string().allow(null, ""),
 	}),
+	group: joi.string().max(50).trim().allow(null, "").optional().messages({
+		"string.max": "Group name must be 50 characters or less.",
+	}),
 });
 
 const imageValidation = joi.object({
@@ -448,6 +451,9 @@ const infrastructureMonitorValidation = joi.object({
 		"number.max": "Status window threshold cannot exceed 100%.",
 	}),
 	notifications: joi.array().items(joi.string()),
+	group: joi.string().max(50).trim().allow(null, "").optional().messages({
+		"string.max": "Group name must be 50 characters or less.",
+	}),
 });
 
 const notificationValidation = joi.object({

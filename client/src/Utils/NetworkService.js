@@ -1030,6 +1030,17 @@ class NetworkService {
 	}
 
 	// ************************************
+	// Fetch groups by TeamID
+	// ************************************
+	async getGroupsByTeamId() {
+		return this.axiosInstance.get(`/monitors/team/groups`, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
+
+	// ************************************
 	// Send test email
 	// ************************************
 	async sendTestEmail(config) {

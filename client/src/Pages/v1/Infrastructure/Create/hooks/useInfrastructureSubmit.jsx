@@ -14,6 +14,7 @@ const useInfrastructureSubmit = () => {
 				infrastructureMonitor.name === ""
 					? infrastructureMonitor.url
 					: infrastructureMonitor.name,
+			group: infrastructureMonitor.group || undefined,
 			interval: infrastructureMonitor.interval * MS_PER_MINUTE,
 			statusWindowSize: infrastructureMonitor.statusWindowSize,
 			statusWindowThreshold: infrastructureMonitor.statusWindowThreshold,
