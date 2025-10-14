@@ -2,7 +2,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import type { SWRConfiguration } from "swr";
 import type { AxiosRequestConfig } from "axios";
-import { get, post, patch } from "@/Utils/ApiClient"; // your axios wrapper
+import { get, post, patch } from "@/Utils/v2/ApiClient"; // your axios wrapper
 
 export type ApiResponse = {
 	message: string;

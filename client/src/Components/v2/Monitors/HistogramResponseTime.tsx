@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { Check } from "@/Types/Check";
 import { HistogramResponseTimeTooltip } from "@/Components/v2/Monitors/HistogramResponseTimeTooltip";
-import { normalizeResponseTimes } from "@/Utils/DataUtils";
+import { normalizeResponseTimes } from "@/Utils/v2/DataUtils";
 
 export const HistogramResponseTime = ({ checks }: { checks: Check[] }) => {
 	const normalChecks = normalizeResponseTimes(checks, "responseTime");

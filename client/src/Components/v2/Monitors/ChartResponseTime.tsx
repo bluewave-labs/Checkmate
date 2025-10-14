@@ -1,7 +1,7 @@
 import { BaseChart } from "./HistogramStatus";
 import { BaseBox } from "../DesignElements";
 import ResponseTimeIcon from "@/assets/icons/response-time-icon.svg?react";
-import { normalizeResponseTimes } from "@/Utils/DataUtils";
+import { normalizeResponseTimes } from "@/Utils/v2/DataUtils";
 import {
 	AreaChart,
 	Area,
@@ -17,7 +17,7 @@ import {
 	formatDateWithTz,
 	tickDateFormatLookup,
 	tooltipDateFormatLookup,
-} from "@/Utils/TimeUtils";
+} from "@/Utils/v2/TimeUtils";
 import { useTheme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/Types/Check";
 import { useSelector } from "react-redux";

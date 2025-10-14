@@ -10,7 +10,7 @@ import type { MonitorStatus } from "@/Types/Monitor";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/v2/UseApi";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz } from "@/Utils/v2/TimeUtils";
 import { useSelector } from "react-redux";
 const getHeaders = (t: Function, uiTimezone: string) => {
 	const headers: Header<Check>[] = [
