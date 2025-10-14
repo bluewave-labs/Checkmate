@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz } from "@/Utils/v2/TimeUtils";
 import { useSelector } from "react-redux";
 import type { LatestCheck } from "@/Types/Check";
 

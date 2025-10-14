@@ -14,7 +14,7 @@ import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
 import { useGet, usePatch, type ApiResponse } from "@/Hooks/v2/UseApi";
 import { useState } from "react";
-import { getStatusPalette } from "@/Utils/MonitorUtils";
+import { getStatusPalette } from "@/Utils/v2/MonitorUtils";
 import prettyMilliseconds from "pretty-ms";
 
 const UptimeDetailsPage = () => {

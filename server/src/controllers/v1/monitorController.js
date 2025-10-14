@@ -452,6 +452,24 @@ class MonitorController extends BaseController {
 		SERVICE_NAME,
 		"getAllGames"
 	);
+
+	getGroupsByTeamId = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const groups = await this.monitorService.getGroupsByTeamId({ teamId });
+
+			return res.success({
+				msg: "OK",
+				data: groups,
+			});
+		},
+		SERVICE_NAME,
+		"getGroupsByTeamId"
+	);
 }
 
 export default MonitorController;

@@ -267,6 +267,11 @@ class MonitorService {
 	getAllGames = () => {
 		return this.games;
 	};
+
+	getGroupsByTeamId = async ({ teamId }) => {
+		const groups = await this.db.monitorModule.getGroupsByTeamId({ teamId });
+		return groups;
+	};
 }
 
 export default MonitorService;
