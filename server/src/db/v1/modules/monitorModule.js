@@ -573,6 +573,21 @@ class MonitorModule {
 			throw error;
 		}
 	};
+
+	getGroupsByTeamId = async ({ teamId }) => {
+		try {
+			const groups = await this.Monitor.distinct("group", {
+				teamId: new this.ObjectId(teamId),
+				group: { $ne: null, $ne: "" },
+			});
+
+			return groups.filter(Boolean).sort();
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "getGroupsByTeamId";
+			throw error;
+		}
+	};
 }
 
 export default MonitorModule;
