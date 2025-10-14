@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import AverageResponseIcon from "@/assets/icons/average-response-icon.svg?react";
 import { Cell, RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 
-import { getResponseTimeColor } from "@/Utils/MonitorUtils";
+import { getResponseTimeColor } from "@/Utils/v2/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 
 export const ChartAvgResponse = ({ avg, max }: { avg: number; max: number }) => {

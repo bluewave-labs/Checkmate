@@ -1,5 +1,5 @@
 import type { MonitorStatus } from "@/Types/Monitor";
-import type { PaletteKey } from "./Theme/v2/theme";
+import type { PaletteKey } from "@/Utils/Theme/v2/theme";
 export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
 	const paletteMap: Record<MonitorStatus, PaletteKey> = {
 		up: "success",

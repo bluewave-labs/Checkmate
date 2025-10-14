@@ -9,12 +9,12 @@ import IncidentsIcon from "@/assets/icons/incidents.svg?react";
 import type { GroupedCheck } from "@/Types/Check";
 import type { MonitorStatus } from "@/Types/Monitor";
 
-import { normalizeResponseTimes } from "@/Utils/DataUtils";
+import { normalizeResponseTimes } from "@/Utils/v2/DataUtils";
 import { useState } from "react";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz } from "@/Utils/v2/TimeUtils";
 import { useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
-import { getResponseTimeColor } from "@/Utils/MonitorUtils";
+import { getResponseTimeColor } from "@/Utils/v2/MonitorUtils";
 
 const XLabel = ({
 	p1,

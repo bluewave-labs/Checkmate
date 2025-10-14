@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import { BaseBox } from "@/Components/v2/DesignElements";
 import type { MonitorStatus } from "@/Types/Monitor";
 
-import { getStatusPalette } from "@/Utils/MonitorUtils";
+import { getStatusPalette } from "@/Utils/v2/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 
 export const StatusLabel = ({

@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { PulseDot } from "@/Components/v2/DesignElements/PulseDot";
 import { Dot } from "@/Components/v2/DesignElements/Dot";
-import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
+import { getStatusColor, formatUrl } from "@/Utils/v2/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import prettyMilliseconds from "pretty-ms";
 import { typographyLevels } from "@/Utils/Theme/v2/palette";
