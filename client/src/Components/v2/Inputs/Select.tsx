@@ -1,81 +1,88 @@
 import { Typography, Select } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import { forwardRef } from "react";
 import type { SelectProps } from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-type ItemId = string | number;
+
+export const SelectInput: React.FC<SelectProps> = ({ ...props }) => {
+	const theme = useTheme();
+	return (
+		<Select
+			{...props}
+			sx={{
+				height: "34px",
+				"& .MuiOutlinedInput-notchedOutline": {
+					borderRadius: theme.shape.borderRadius,
+					borderColor: theme.palette.primary.lowContrast,
+				},
+				"&:hover .MuiOutlinedInput-notchedOutline": {
+					borderColor: theme.palette.primary.lowContrast,
+				},
+			}}
+		/>
+	);
+};
+
+type ItemTypes = string | number;
 interface SelectItem {
-	_id: ItemId;
+	_id: ItemTypes;
 	name: string;
 }
-export type CustomSelectProps = SelectProps<ItemId> & {
+export type CustomSelectProps = SelectProps & {
 	items: SelectItem[];
 	placeholder?: string;
 	isHidden?: boolean;
 	hasError?: boolean;
 };
 
-export const SelectInput = forwardRef<HTMLDivElement, CustomSelectProps>(
-	function SelectInput(
-		{ items, placeholder, isHidden = false, hasError = false, ...props },
-		ref
-	) {
-		const theme = useTheme();
-		return (
-			<Select
-				sx={{
-					height: "34px",
-					"& .MuiSelect-select": {
-						padding: "0",
-					},
-					"& .MuiOutlinedInput-notchedOutline": {
-						borderRadius: theme.shape.borderRadius,
-						borderColor: theme.palette.primary.lowContrast,
-					},
-					"&:hover .MuiOutlinedInput-notchedOutline": {
-						borderColor: theme.palette.primary.lowContrast,
-					},
-				}}
-				error={hasError}
-				ref={ref}
-				IconComponent={KeyboardArrowDownIcon}
-				displayEmpty
-				MenuProps={{ disableScrollLock: true }}
-				renderValue={(selected) => {
-					if (!selected) {
-						return (
-							<Typography
-								noWrap
-								color="text.secondary"
-							>
-								{placeholder ?? ""}
-							</Typography>
-						);
-					}
-					const selectedItem = items.find((item) => item._id === selected);
-					const displayName = selectedItem ? selectedItem.name : placeholder;
+export const SelectFromItems: React.FC<CustomSelectProps> = ({
+	items,
+	placeholder,
+	isHidden = false,
+	hasError = false,
+	...props
+}) => {
+	return (
+		<SelectInput
+			error={hasError}
+			IconComponent={KeyboardArrowDownIcon}
+			displayEmpty
+			MenuProps={{ disableScrollLock: true }}
+			renderValue={(selected) => {
+				if (!selected) {
 					return (
 						<Typography
 							noWrap
-							title={displayName}
+							color="text.secondary"
 						>
-							{displayName}
+							{placeholder ?? ""}
 						</Typography>
 					);
-				}}
-				{...props}
-			>
-				{items.map((item) => (
-					<MenuItem
-						key={item._id}
-						value={item._id}
+				}
+				const selectedItem = items.find((item) => item._id === selected);
+				const displayName = selectedItem ? selectedItem.name : placeholder;
+				return (
+					<Typography
+						noWrap
+						title={displayName}
 					>
-						{item.name}
-					</MenuItem>
-				))}
-			</Select>
-		);
-	}
-);
+						{displayName}
+					</Typography>
+				);
+			}}
+			{...props}
+		>
+			{items.map((item) => (
+				<MenuItem
+					key={item._id}
+					value={item._id}
+				>
+					{item.name}
+				</MenuItem>
+			))}
+		</SelectInput>
+	);
+};
+
 SelectInput.displayName = "SelectInput";
+SelectFromItems.displayName = "SelectFromItems";
