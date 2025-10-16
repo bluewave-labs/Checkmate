@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: checkmate-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkmate-mongodb
+  template:
+    metadata:
+      labels:
+        app: checkmate-mongodb
+    spec:
+    {{- with .Values.mongodb.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.mongodb.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: mongodb
+          image: {{ .Values.mongodb.image }}
+          ports:
+            - containerPort: {{ .Values.mongodb.port }}
+          command: ["mongod", "--quiet", "--bind_ip_all"]
+          volumeMounts:
+            - name: checkmate-mongo-persistent-storage
+              mountPath: /data/db
+          {{- with .Values.mongodb.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: checkmate-mongo-persistent-storage
+      spec:
+        storageClassName: "gp3"
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.persistence.mongodbSize }}

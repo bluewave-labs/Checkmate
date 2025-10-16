@@ -1,22 +1,22 @@
-import ServiceRegistry from "../service/system/serviceRegistry.js";
-import TranslationService from "../service/system/translationService.js";
-import StringService from "../service/system/stringService.js";
-import MongoDB from "../db/mongo/MongoDB.js";
-import NetworkService from "../service/infrastructure/networkService.js";
-import EmailService from "../service/infrastructure/emailService.js";
-import BufferService from "../service/infrastructure/bufferService.js";
-import StatusService from "../service/infrastructure/statusService.js";
-import NotificationUtils from "../service/infrastructure/notificationUtils.js";
-import NotificationService from "../service/infrastructure/notificationService.js";
-import ErrorService from "../service/infrastructure/errorService.js";
-import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
-import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-import UserService from "../service/business/userService.js";
-import CheckService from "../service/business/checkService.js";
-import DiagnosticService from "../service/business/diagnosticService.js";
-import InviteService from "../service/business/inviteService.js";
-import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
-import MonitorService from "../service/business/monitorService.js";
+import ServiceRegistry from "../service/v1/system/serviceRegistry.js";
+import TranslationService from "../service/v1/system/translationService.js";
+import StringService from "../service/v1/system/stringService.js";
+import MongoDB from "../db/v1/MongoDB.js";
+import NetworkService from "../service/v1/infrastructure/networkService.js";
+import EmailService from "../service/v1/infrastructure/emailService.js";
+import BufferService from "../service/v1/infrastructure/bufferService.js";
+import StatusService from "../service/v1/infrastructure/statusService.js";
+import NotificationUtils from "../service/v1/infrastructure/notificationUtils.js";
+import NotificationService from "../service/v1/infrastructure/notificationService.js";
+import ErrorService from "../service/v1/infrastructure/errorService.js";
+import SuperSimpleQueueHelper from "../service/v1/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import SuperSimpleQueue from "../service/v1/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import UserService from "../service/v1/business/userService.js";
+import CheckService from "../service/v1/business/checkService.js";
+import DiagnosticService from "../service/v1/business/diagnosticService.js";
+import InviteService from "../service/v1/business/inviteService.js";
+import MaintenanceWindowService from "../service/v1/business/maintenanceWindowService.js";
+import MonitorService from "../service/v1/business/monitorService.js";
 import papaparse from "papaparse";
 import axios from "axios";
 import got from "got";
@@ -46,27 +46,49 @@ import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
 // Models
-import Check from "../db/models/Check.js";
-import Monitor from "../db/models/Monitor.js";
-import User from "../db/models/User.js";
-import InviteToken from "../db/models/InviteToken.js";
-import StatusPage from "../db/models/StatusPage.js";
-import Team from "../db/models/Team.js";
-import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
-import MonitorStats from "../db/models/MonitorStats.js";
-import Notification from "../db/models/Notification.js";
-import RecoveryToken from "../db/models/RecoveryToken.js";
-import AppSettings from "../db/models/AppSettings.js";
+import Check from "../db/v1/models/Check.js";
+import Monitor from "../db/v1/models/Monitor.js";
+import User from "../db/v1/models/User.js";
+import InviteToken from "../db/v1/models/InviteToken.js";
+import StatusPage from "../db/v1/models/StatusPage.js";
+import Team from "../db/v1/models/Team.js";
+import MaintenanceWindow from "../db/v1/models/MaintenanceWindow.js";
+import MonitorStats from "../db/v1/models/MonitorStats.js";
+import Notification from "../db/v1/models/Notification.js";
+import RecoveryToken from "../db/v1/models/RecoveryToken.js";
+import AppSettings from "../db/v1/models/AppSettings.js";
 
-import InviteModule from "../db/mongo/modules/inviteModule.js";
-import CheckModule from "../db/mongo/modules/checkModule.js";
-import StatusPageModule from "../db/mongo/modules/statusPageModule.js";
-import UserModule from "../db/mongo/modules/userModule.js";
-import MaintenanceWindowModule from "../db/mongo/modules/maintenanceWindowModule.js";
-import MonitorModule from "../db/mongo/modules/monitorModule.js";
-import NotificationModule from "../db/mongo/modules/notificationModule.js";
-import RecoveryModule from "../db/mongo/modules/recoveryModule.js";
-import SettingsModule from "../db/mongo/modules/settingsModule.js";
+import InviteModule from "../db/v1/modules/inviteModule.js";
+import CheckModule from "../db/v1/modules/checkModule.js";
+import StatusPageModule from "../db/v1/modules/statusPageModule.js";
+import UserModule from "../db/v1/modules/userModule.js";
+import MaintenanceWindowModule from "../db/v1/modules/maintenanceWindowModule.js";
+import MonitorModule from "../db/v1/modules/monitorModule.js";
+import NotificationModule from "../db/v1/modules/notificationModule.js";
+import RecoveryModule from "../db/v1/modules/recoveryModule.js";
+import SettingsModule from "../db/v1/modules/settingsModule.js";
+
+// V2 Business
+import AuthServiceV2 from "../service/v2/business/AuthService.js";
+import CheckServiceV2 from "../service/v2/business/CheckService.js";
+import InviteServiceV2 from "../service/v2/business/InviteService.js";
+import MaintenanceServiceV2 from "../service/v2/business/MaintenanceService.js";
+import MonitorServiceV2 from "../service/v2/business/MonitorService.js";
+import MonitorStatsServiceV2 from "../service/v2/business/MonitorStatsService.js";
+import NotificationChannelServiceV2 from "../service/v2/business/NotificationChannelService.js";
+import QueueServiceV2 from "../service/v2/business/QueueService.js";
+import UserServiceV2 from "../service/v2/business/UserService.js";
+
+// V2 Infra
+import DiscordServiceV2 from "../service/v2/infrastructure/NotificationServices/Discord.js";
+import EmailServiceV2 from "../service/v2/infrastructure/NotificationServices/Email.js";
+import SlackServiceV2 from "../service/v2/infrastructure/NotificationServices/Slack.js";
+import WebhookServiceV2 from "../service/v2/infrastructure/NotificationServices/Webhook.js";
+import JobGeneratorV2 from "../service/v2/infrastructure/JobGenerator.js";
+import JobQueueV2 from "../service/v2/infrastructure/JobQueue.js";
+import NetworkServiceV2 from "../service/v2/infrastructure/NetworkService.js";
+import NotificationServiceV2 from "../service/v2/infrastructure/NotificationService.js";
+import StatusServiceV2 from "../service/v2/infrastructure/StatusService.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -208,7 +230,35 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		games,
 	});
 
+	// V2 Services
+	const checkServiceV2 = new CheckServiceV2();
+	const inviteServiceV2 = new InviteServiceV2();
+	const maintenanceServiceV2 = new MaintenanceServiceV2();
+	const monitorStatsServiceV2 = new MonitorStatsServiceV2();
+	const notificationChannelServiceV2 = new NotificationChannelServiceV2();
+	const userServiceV2 = new UserServiceV2();
+	const discordServiceV2 = new DiscordServiceV2();
+	const emailServiceV2 = new EmailServiceV2(userServiceV2);
+	const slackServiceV2 = new SlackServiceV2();
+	const webhookServiceV2 = new WebhookServiceV2();
+	const networkServiceV2 = new NetworkServiceV2();
+	const statusServiceV2 = new StatusServiceV2();
+	const notificationServiceV2 = new NotificationServiceV2(userServiceV2);
+	const jobGeneratorV2 = new JobGeneratorV2(
+		networkServiceV2,
+		checkServiceV2,
+		monitorStatsServiceV2,
+		statusServiceV2,
+		notificationServiceV2,
+		maintenanceServiceV2
+	);
+	const jobQueueV2 = await JobQueueV2.create(jobGeneratorV2);
+	const authServiceV2 = new AuthServiceV2(jobQueueV2);
+	const monitorServiceV2 = new MonitorServiceV2(jobQueueV2);
+	const queueServiceV2 = new QueueServiceV2(jobQueueV2);
+
 	const services = {
+		//v1
 		settingsService,
 		translationService,
 		stringService,
@@ -227,6 +277,25 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		monitorService,
 		errorService,
 		logger,
+		//v2
+		jobQueueV2,
+		authServiceV2,
+		checkServiceV2,
+		inviteServiceV2,
+		maintenanceServiceV2,
+		monitorServiceV2,
+		monitorStatsServiceV2,
+		notificationChannelServiceV2,
+		queueServiceV2,
+		userServiceV2,
+		discordServiceV2,
+		emailServiceV2,
+		slackServiceV2,
+		webhookServiceV2,
+		networkServiceV2,
+		statusServiceV2,
+		notificationServiceV2,
+		jobGeneratorV2,
 	};
 
 	Object.values(services).forEach((service) => {

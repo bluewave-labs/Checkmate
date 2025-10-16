@@ -58,8 +58,8 @@ const baseTheme = (palette) => ({
 					variants: [
 						{
 							props: (props) => props.variant === "contained" && props.color === "accent",
+							backgroundColor: theme.palette.accent.main,
 							style: {
-								backgroundColor: theme.palette.accent.main,
 								color: theme.palette.primary.contrastTextSecondaryDarkBg,
 								letterSpacing: "0.5px",
 								textShadow: "0 0 1px rgba(0, 0, 0, 0.15)",

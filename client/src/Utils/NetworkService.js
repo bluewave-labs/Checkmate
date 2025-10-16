@@ -1136,6 +1136,15 @@ class NetworkService {
 			},
 		});
 	}
+
+	async changePasswordByAdmin(config) {
+		const { userId, passwordForm } = config;
+		return this.axiosInstance.put(`auth/users/${userId}/password`, passwordForm, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }
 
 export default NetworkService;
