@@ -69,6 +69,8 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [https, setHttps] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
 	const [useAdvancedMatching, setUseAdvancedMatching] = useState(false);
+	const [isAdvancedMatchingInitialized, setIsAdvancedMatchingInitialized] =
+		useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [games, setGames] = useState({});
 	const triggerUpdate = () => {
@@ -296,14 +298,18 @@ const UptimeCreate = ({ isClone = false }) => {
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
-		if (!isCreate || isClone) {
-			if (monitor.matchMethod) {
-				setUseAdvancedMatching(true);
-			} else {
-				setUseAdvancedMatching(false);
+		if ((!isCreate || isClone) && monitor._id) {
+			if (!isAdvancedMatchingInitialized) {
+				if (monitor.matchMethod) {
+					setUseAdvancedMatching(true);
+				} else {
+					setUseAdvancedMatching(false);
+				}
+
+				setIsAdvancedMatchingInitialized(true);
 			}
 		}
-	}, [monitor, isCreate]);
+	}, [monitor._id, isCreate, isClone, isAdvancedMatchingInitialized]);
 
 	if (Object.keys(monitor).length === 0) {
 		return <SkeletonLayout />;
