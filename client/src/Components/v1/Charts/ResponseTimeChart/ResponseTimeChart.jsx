@@ -27,7 +27,7 @@ const ResponseTimeChart = ({
 };
 
 ResponseTimeChart.propTypes = {
-	isLoading: PropTypes.bool,
+	monitorIsLoading: PropTypes.bool,
 	groupedChecks: PropTypes.array,
 	dateRange: PropTypes.string,
 };
