@@ -21,7 +21,13 @@ import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete.jsx";
 //Constants
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
-	["monitors", "showUptimePercentage", "showResponseTimeChart","showCharts", "showAdminLoginLink"],
+	[
+		"monitors",
+		"showUptimePercentage",
+		"showResponseTimeChart",
+		"showCharts",
+		"showAdminLoginLink",
+	],
 ];
 
 const CreateStatusPage = () => {

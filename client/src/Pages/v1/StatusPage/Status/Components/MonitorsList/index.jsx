@@ -23,7 +23,6 @@ const MonitorsList = ({
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
 	const [dateRange, setDateRange] = useState("recent");
-	console.log(monitors)
 
 	const { showURL } = useSelector((state) => state.ui);
 
@@ -61,7 +60,7 @@ const MonitorsList = ({
 									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
 								</Box>
 							)}
-							
+
 							<Box flex={statusPage.showCharts !== false ? 1 : 10}>
 								<StatusLabel
 									status={status}

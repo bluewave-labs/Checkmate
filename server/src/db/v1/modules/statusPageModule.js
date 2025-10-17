@@ -97,8 +97,20 @@ class StatusPageModule {
 			}
 
 			if (!preliminaryStatusPage.monitors || preliminaryStatusPage.monitors.length === 0) {
-				const { _id, color, companyName, isPublished, logo, originalMonitors, showCharts, showUptimePercentage, showResponseTimeChart, timezone, showAdminLoginLink, url } =
-					preliminaryStatusPage;
+				const {
+					_id,
+					color,
+					companyName,
+					isPublished,
+					logo,
+					originalMonitors,
+					showCharts,
+					showUptimePercentage,
+					showResponseTimeChart,
+					timezone,
+					showAdminLoginLink,
+					url,
+				} = preliminaryStatusPage;
 				return {
 					statusPage: {
 						_id,
