@@ -3,7 +3,7 @@ import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import MonitorDetailsControlHeader from "@/Components/v1/MonitorDetailsControlHeader/index.jsx";
 import MonitorTimeFrameHeader from "@/Components/v1/MonitorTimeFrameHeader/index.jsx";
 import ChartBoxes from "./Components/ChartBoxes/index.jsx";
-import ResponseTimeChart from "../../../../Components/v1/Charts/ResponseTimeChart/ResponseTimeChart.jsx";
+import ResponseTimeChart from "@/Components/v1/Charts/ResponseTimeChart/ResponseTimeChart.jsx";
 import ResponseTable from "./Components/ResponseTable/index.jsx";
 import UptimeStatusBoxes from "./Components/UptimeStatusBoxes/index.jsx";
 import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
@@ -169,7 +169,7 @@ const UptimeDetails = () => {
 				dateFormat={dateFormat}
 			/>
 			<ResponseTimeChart
-				isLoading={monitorIsLoading}
+				monitorIsLoading={monitorIsLoading}
 				groupedChecks={monitorData?.groupedChecks}
 				dateRange={dateRange}
 			/>

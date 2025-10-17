@@ -22,7 +22,7 @@ const MonitorsList = ({
 }) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
-	const [dateRange, setDateRange] = useState("recent");
+	const dateRange = "recent";
 
 	const { showURL } = useSelector((state) => state.ui);
 
@@ -45,7 +45,7 @@ function MonitorListItem({ monitor, statusPage, showURL, dateRange }) {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
 	const status = determineState(monitor);
-	const [monitorData, monitorStats, monitorIsLoading] = useFetchUptimeMonitorById({
+	const [monitorData, , monitorIsLoading] = useFetchUptimeMonitorById({
 		monitorId: monitor._id,
 		dateRange,
 		trigger: false,
@@ -89,7 +89,7 @@ function MonitorListItem({ monitor, statusPage, showURL, dateRange }) {
 					mt={2}
 				>
 					<ResponseTimeChart
-						isLoading={monitorIsLoading}
+						monitorIsLoading={monitorIsLoading}
 						groupedChecks={monitorData?.groupedChecks}
 						dateRange={dateRange}
 					/>
@@ -98,6 +98,20 @@ function MonitorListItem({ monitor, statusPage, showURL, dateRange }) {
 		</Stack>
 	);
 }
+
+MonitorListItem.propTypes = {
+	monitor: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		url: PropTypes.string,
+		name: PropTypes.string,
+		percentageColor: PropTypes.string,
+		percentage: PropTypes.number,
+		checks: PropTypes.array,
+	}).isRequired,
+	statusPage: PropTypes.object,
+	showURL: PropTypes.bool,
+	dateRange: PropTypes.string.isRequired,
+};
 
 MonitorsList.propTypes = {
 	monitors: PropTypes.array.isRequired,

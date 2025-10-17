@@ -4,8 +4,12 @@ import ResponseTimeIcon from "../../../../assets/icons/response-time-icon.svg?re
 import SkeletonLayout from "./ResponseTimeChartSkeleton.jsx";
 import PropTypes from "prop-types";
 
-const ResponseTimeChart = ({ isLoading = false, groupedChecks = [], dateRange }) => {
-	if (isLoading) {
+const ResponseTimeChart = ({
+	monitorIsLoading = false,
+	groupedChecks = [],
+	dateRange,
+}) => {
+	if (monitorIsLoading) {
 		return <SkeletonLayout />;
 	}
 
