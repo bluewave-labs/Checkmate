@@ -17,6 +17,12 @@ class MonitorRoutes {
 
 		this.router.get("/", verifyToken, verifyPermission(["monitors.view"]), this.controller.getAll);
 
+		this.router.post("/bulk/toggle-active", verifyToken, verifyPermission(["monitors.update"]), this.controller.bulkToggleActive);
+
+		this.router.post("/bulk/delete", verifyToken, verifyPermission(["monitors.delete"]), this.controller.bulkDelete);
+
+		this.router.post("/bulk/notifications", verifyToken, verifyPermission(["monitors.update"]), this.controller.bulkUpdateNotifications);
+
 		this.router.get("/:id/checks", verifyToken, verifyPermission(["monitors.view"]), this.controller.getChecks);
 
 		this.router.patch("/:id/active", verifyToken, verifyPermission(["monitors.update"]), this.controller.toggleActive);

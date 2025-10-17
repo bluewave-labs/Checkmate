@@ -17,6 +17,9 @@ export interface IMonitorService {
 	toggleActive: (monitorId: string, tokenizedUser: ITokenizedUser) => Promise<IMonitor>;
 	update: (tokenizedUser: ITokenizedUser, monitorId: string, updateData: Partial<IMonitor>) => Promise<IMonitor>;
 	delete: (monitorId: string) => Promise<boolean>;
+	bulkToggleActive: (monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) => Promise<{ success: number; failed: number; }>;
+	bulkDelete: (monitorIds: string[]) => Promise<{ success: number; failed: number; }>;
+	bulkUpdateNotifications: (monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) => Promise<{ success: number; failed: number; }>;
 }
 
 class MonitorService implements IMonitorService {
@@ -462,6 +465,100 @@ class MonitorService implements IMonitorService {
 		await monitor.deleteOne();
 		await this.jobQueue.deleteJob(monitor);
 		return true;
+	}
+
+	async bulkToggleActive(monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) {
+		let success = 0;
+		let failed = 0;
+		const pendingStatus: MonitorStatus = "initializing";
+
+		for (const monitorId of monitorIds) {
+			try {
+				const updatedMonitor = await Monitor.findByIdAndUpdate(
+					monitorId,
+					{
+						$set: {
+							isActive,
+							status: pendingStatus,
+							updatedBy: tokenizedUser.sub,
+							updatedAt: new Date(),
+						},
+					},
+					{ new: true }
+				);
+
+				if (updatedMonitor) {
+					await this.jobQueue.updateJob(updatedMonitor);
+					
+					if (updatedMonitor.isActive) {
+						await this.jobQueue.resumeJob(updatedMonitor);
+					} else {
+						await this.jobQueue.pauseJob(updatedMonitor);
+					}
+					success++;
+				} else {
+					failed++;
+				}
+			} catch (error) {
+				failed++;
+			}
+		}
+
+		return { success, failed };
+	}
+
+	async bulkDelete(monitorIds: string[]) {
+		let success = 0;
+		let failed = 0;
+
+		for (const monitorId of monitorIds) {
+			try {
+				const monitor = await Monitor.findById(monitorId);
+				if (monitor) {
+					await monitor.deleteOne();
+					await this.jobQueue.deleteJob(monitor);
+					success++;
+				} else {
+					failed++;
+				}
+			} catch (error) {
+				failed++;
+			}
+		}
+
+		return { success, failed };
+	}
+
+	async bulkUpdateNotifications(monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) {
+		let success = 0;
+		let failed = 0;
+
+		for (const monitorId of monitorIds) {
+			try {
+				const updatedMonitor = await Monitor.findByIdAndUpdate(
+					monitorId,
+					{
+						$set: {
+							notificationChannels,
+							updatedAt: new Date(),
+							updatedBy: tokenizedUser.sub,
+						},
+					},
+					{ new: true, runValidators: true }
+				);
+
+				if (updatedMonitor) {
+					await this.jobQueue.updateJob(updatedMonitor);
+					success++;
+				} else {
+					failed++;
+				}
+			} catch (error) {
+				failed++;
+			}
+		}
+
+		return { success, failed };
 	}
 }
 
