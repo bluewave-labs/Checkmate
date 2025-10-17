@@ -28,67 +28,76 @@ const MonitorsList = ({
 
 	return (
 		<>
-			{monitors?.map((monitor) => {
-				const status = determineState(monitor);
-				const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError] =
-					useFetchUptimeMonitorById({
-						monitorId: monitor._id,
-						dateRange,
-						trigger: false,
-					});
-				return (
-					<Stack
-						key={monitor._id}
-						width="100%"
-						gap={theme.spacing(2)}
-					>
-						<Host
-							key={monitor._id}
-							url={monitor.url}
-							title={monitor.name}
-							percentageColor={monitor.percentageColor}
-							percentage={monitor.percentage}
-							showURL={showURL}
-						/>
-						<Stack
-							direction="row"
-							alignItems="center"
-							gap={theme.spacing(20)}
-						>
-							{statusPage.showCharts !== false && (
-								<Box flex={9}>
-									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
-								</Box>
-							)}
-
-							<Box flex={statusPage.showCharts !== false ? 1 : 10}>
-								<StatusLabel
-									status={status}
-									text={status}
-									customStyles={{ textTransform: "capitalize" }}
-								/>
-							</Box>
-						</Stack>
-						{statusPage.showResponseTimeChart !== false && (
-							<Stack
-								direction="row"
-								alignItems="center"
-								gap={theme.spacing(20)}
-								mt={2}
-							>
-								<ResponseTimeChart
-									isLoading={isLoading}
-									groupedChecks={monitorData?.groupedChecks}
-									dateRange={dateRange}
-								/>
-							</Stack>
-						)}
-					</Stack>
-				);
-			})}
+			{monitors?.map((monitor) => (
+				<MonitorListItem
+					key={monitor._id}
+					monitor={monitor}
+					statusPage={statusPage}
+					showURL={showURL}
+					dateRange={dateRange}
+				/>
+			))}
 		</>
 	);
 };
+
+function MonitorListItem({ monitor, statusPage, showURL, dateRange }) {
+	const theme = useTheme();
+	const { determineState } = useMonitorUtils();
+	const status = determineState(monitor);
+	const [monitorData, monitorStats, monitorIsLoading] = useFetchUptimeMonitorById({
+		monitorId: monitor._id,
+		dateRange,
+		trigger: false,
+	});
+
+	return (
+		<Stack
+			width="100%"
+			gap={theme.spacing(2)}
+		>
+			<Host
+				url={monitor.url}
+				title={monitor.name}
+				percentageColor={monitor.percentageColor}
+				percentage={monitor.percentage}
+				showURL={showURL}
+			/>
+			<Stack
+				direction="row"
+				alignItems="center"
+				gap={theme.spacing(20)}
+			>
+				{statusPage.showCharts !== false && (
+					<Box flex={9}>
+						<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
+					</Box>
+				)}
+				<Box flex={statusPage.showCharts !== false ? 1 : 10}>
+					<StatusLabel
+						status={status}
+						text={status}
+						customStyles={{ textTransform: "capitalize" }}
+					/>
+				</Box>
+			</Stack>
+			{statusPage.showResponseTimeChart !== false && (
+				<Stack
+					direction="row"
+					alignItems="center"
+					gap={theme.spacing(20)}
+					mt={2}
+				>
+					<ResponseTimeChart
+						isLoading={monitorIsLoading}
+						groupedChecks={monitorData?.groupedChecks}
+						dateRange={dateRange}
+					/>
+				</Stack>
+			)}
+		</Stack>
+	);
+}
 
 MonitorsList.propTypes = {
 	monitors: PropTypes.array.isRequired,
