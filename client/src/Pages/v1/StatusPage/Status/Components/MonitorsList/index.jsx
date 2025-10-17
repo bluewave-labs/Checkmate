@@ -11,7 +11,6 @@ import PropTypes from "prop-types";
 
 import { useSelector } from "react-redux";
 import ResponseTimeChart from "@/Components/v1/Charts/ResponseTimeChart/ResponseTimeChart.jsx";
-import { useState } from "react";
 import { useFetchUptimeMonitorById } from "@/Hooks/v1/monitorHooks.js";
 
 const MonitorsList = ({
