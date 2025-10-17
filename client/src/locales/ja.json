@@ -287,6 +287,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "ステータスページでより多くの詳細を表示",
 	"showCharts": "チャートを表示",
 	"showUptimePercentage": "稼働率を表示",
+	"showResponseTimeChart": "応答時間チャートを表示",
 	"removeLogo": "ロゴを削除",
 	"statusPageStatus": "公開ステータスページが設定されていません。",
 	"statusPageStatusContactAdmin": "管理者にお問い合わせください",

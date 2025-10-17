@@ -10,6 +10,9 @@ import { useMonitorUtils } from "../../../../../../Hooks/v1/useMonitorUtils.js";
 import PropTypes from "prop-types";
 
 import { useSelector } from "react-redux";
+import ResponseTimeChart from "@/Components/v1/Charts/ResponseTimeChart/ResponseTimeChart.jsx";
+import { useState } from "react";
+import { useFetchUptimeMonitorById } from "@/Hooks/v1/monitorHooks.js";
 
 const MonitorsList = ({
 	isLoading = false,
@@ -19,6 +22,8 @@ const MonitorsList = ({
 }) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
+	const [dateRange, setDateRange] = useState("recent");
+	console.log(monitors)
 
 	const { showURL } = useSelector((state) => state.ui);
 
@@ -26,6 +31,12 @@ const MonitorsList = ({
 		<>
 			{monitors?.map((monitor) => {
 				const status = determineState(monitor);
+				const [monitorData, monitorStats, monitorIsLoading, monitorNetworkError] =
+					useFetchUptimeMonitorById({
+						monitorId: monitor._id,
+						dateRange,
+						trigger: false,
+					});
 				return (
 					<Stack
 						key={monitor._id}
@@ -50,6 +61,7 @@ const MonitorsList = ({
 									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
 								</Box>
 							)}
+							
 							<Box flex={statusPage.showCharts !== false ? 1 : 10}>
 								<StatusLabel
 									status={status}
@@ -58,6 +70,20 @@ const MonitorsList = ({
 								/>
 							</Box>
 						</Stack>
+						{statusPage.showResponseTimeChart !== false && (
+							<Stack
+								direction="row"
+								alignItems="center"
+								gap={theme.spacing(20)}
+								mt={2}
+							>
+								<ResponseTimeChart
+									isLoading={isLoading}
+									groupedChecks={monitorData?.groupedChecks}
+									dateRange={dateRange}
+								/>
+							</Stack>
+						)}
 					</Stack>
 				);
 			})}

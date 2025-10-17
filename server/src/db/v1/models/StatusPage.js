@@ -70,6 +70,10 @@ const StatusPageSchema = mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
+		showResponseTimeChart: {
+			type: Boolean,
+			default: true,
+		},
 		showAdminLoginLink: {
 			type: Boolean,
 			default: false,

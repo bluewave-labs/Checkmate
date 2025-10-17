@@ -283,6 +283,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Durum sayfasında daha fazla bilgi göster",
 	"showCharts": "Çizelgeleri göster",
 	"showUptimePercentage": "Çalışma süresi yüzdesini göster",
+	"showResponseTimeChart": "Tepki Süresi Tablosunu Göster",
 	"removeLogo": "Logoyu sil",
 	"statusPageStatus": "Herkese açık bir durum sayfası henüz oluşturulmadı.",
 	"statusPageStatusContactAdmin": "Lütfen yöneticinizle iletişime geçin.",

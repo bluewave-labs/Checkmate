@@ -283,6 +283,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "",
 	"showCharts": "Näytä kaaviot",
 	"showUptimePercentage": "",
+	"showResponseTimeChart": "Näytä vasteaikakaavio",
 	"removeLogo": "Poista logo",
 	"statusPageStatus": "",
 	"statusPageStatusContactAdmin": "Ota yhteyttä järjestelmänvalvojaan",

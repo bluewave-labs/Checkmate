@@ -929,6 +929,9 @@ class NetworkService {
 		if (form.showUptimePercentage !== undefined) {
 			fd.append("showUptimePercentage", String(form.showUptimePercentage));
 		}
+		if (form.showResponseTimeChart !== undefined) {
+			fd.append("showResponseTimeChart", String(form.showResponseTimeChart));
+		}
 		if (form.showAdminLoginLink !== undefined) {
 			fd.append("showAdminLoginLink", String(form.showAdminLoginLink));
 		}

@@ -287,6 +287,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "แสดงรายละเอียดเพิ่มเติมบนหน้าสถานะ",
 	"showCharts": "แสดงแผนภูมิ",
 	"showUptimePercentage": "แสดงเปอร์เซ็นต์ความพร้อมใช้งาน",
+	"showResponseTimeChart": "แสดงแผนภูมิเวลาตอบสนอง",
 	"removeLogo": "ลบโลโก้",
 	"statusPageStatus": "ยังไม่ได้ตั้งค่าหน้าสถานะสาธารณะ",
 	"statusPageStatusContactAdmin": "กรุณาติดต่อผู้ดูแลระบบของคุณ",

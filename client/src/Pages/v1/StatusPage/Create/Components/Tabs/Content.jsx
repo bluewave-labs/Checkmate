@@ -91,6 +91,13 @@ const Content = ({
 							onChange={handleFormChange}
 						/>
 						<Checkbox
+							id="showResponseTimeChart"
+							name="showResponseTimeChart"
+							label={t("showResponseTimeChart")}
+							isChecked={form.showResponseTimeChart}
+							onChange={handleFormChange}
+						/>
+						<Checkbox
 							id="showAdminLoginLink"
 							name="showAdminLoginLink"
 							label={t("showAdminLoginLink")}

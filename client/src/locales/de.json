@@ -287,6 +287,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Mehr Details auf der Statusseite anzeigen",
 	"showCharts": "Diagramme anzeigen",
 	"showUptimePercentage": "Verfügbarkeitsprozentsatz anzeigen",
+	"showResponseTimeChart": "Reaktionszeitdiagramm anzeigen",
 	"removeLogo": "Entferne Logo",
 	"statusPageStatus": "Eine öffentliche Statusseite ist nicht eingerichtet.",
 	"statusPageStatusContactAdmin": "Bitte wenden Sie sich an Ihren Administrator",

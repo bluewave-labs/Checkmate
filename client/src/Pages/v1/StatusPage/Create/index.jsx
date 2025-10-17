@@ -21,7 +21,7 @@ import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete.jsx";
 //Constants
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
-	["monitors", "showUptimePercentage", "showCharts", "showAdminLoginLink"],
+	["monitors", "showUptimePercentage", "showResponseTimeChart","showCharts", "showAdminLoginLink"],
 ];
 
 const CreateStatusPage = () => {
@@ -41,6 +41,7 @@ const CreateStatusPage = () => {
 		monitors: [],
 		showCharts: true,
 		showUptimePercentage: true,
+		showResponseTimeChart: true,
 		showAdminLoginLink: false,
 	});
 	const [errors, setErrors] = useState({});
@@ -210,6 +211,7 @@ const CreateStatusPage = () => {
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? true,
 				showUptimePercentage: statusPage?.showUptimePercentage ?? true,
+				showResponseTimeChart: statusPage?.showResponseTimeChart ?? true,
 				showAdminLoginLink: statusPage?.showAdminLoginLink ?? false,
 			};
 		});

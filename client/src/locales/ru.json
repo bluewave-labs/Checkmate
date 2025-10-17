@@ -283,6 +283,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Показать больше подробностей на странице статуса",
 	"showCharts": "Показать графики",
 	"showUptimePercentage": "Показать процент работоспособности",
+	"showResponseTimeChart": "Показать диаграмму времени отклика",
 	"removeLogo": "Удалить логотип",
 	"statusPageStatus": "Публичная страница статуса не создана.",
 	"statusPageStatusContactAdmin": "Пожалуйста, свяжитесь с вашим администратором.",

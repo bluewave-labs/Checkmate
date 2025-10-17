@@ -287,6 +287,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "在状态页上显示更多详细信息",
 	"showCharts": "显示图表",
 	"showUptimePercentage": "显示正常运行时间百分比",
+	"showResponseTimeChart": "显示响应时间图表",
 	"removeLogo": "移除Logo",
 	"statusPageStatus": "未设置公开状态页面。",
 	"statusPageStatusContactAdmin": "请联系您的管理员",

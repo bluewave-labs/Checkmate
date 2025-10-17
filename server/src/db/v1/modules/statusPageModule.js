@@ -97,7 +97,7 @@ class StatusPageModule {
 			}
 
 			if (!preliminaryStatusPage.monitors || preliminaryStatusPage.monitors.length === 0) {
-				const { _id, color, companyName, isPublished, logo, originalMonitors, showCharts, showUptimePercentage, timezone, showAdminLoginLink, url } =
+				const { _id, color, companyName, isPublished, logo, originalMonitors, showCharts, showUptimePercentage, showResponseTimeChart, timezone, showAdminLoginLink, url } =
 					preliminaryStatusPage;
 				return {
 					statusPage: {
@@ -109,6 +109,7 @@ class StatusPageModule {
 						originalMonitors,
 						showCharts,
 						showUptimePercentage,
+						showResponseTimeChart,
 						timezone,
 						showAdminLoginLink,
 						url,
@@ -215,6 +216,7 @@ class StatusPageModule {
 							originalMonitors: 1,
 							showCharts: 1,
 							showUptimePercentage: 1,
+							showResponseTimeChart: 1,
 							timezone: 1,
 							showAdminLoginLink: 1,
 							url: 1,

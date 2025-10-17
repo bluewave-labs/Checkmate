@@ -287,6 +287,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Mostrar mais detalhes na página de status",
 	"showCharts": "Mostrar gráficos",
 	"showUptimePercentage": "Mostrar porcentagem de Uptime",
+	"showResponseTimeChart": "Mostrar gráfico de tempo de resposta",
 	"removeLogo": "Remover logo",
 	"statusPageStatus": "Uma página de status pública não está configurada.",
 	"statusPageStatusContactAdmin": "Entre em contato com seu administrador",

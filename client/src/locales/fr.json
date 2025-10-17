@@ -287,6 +287,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Voir plus de détails sur la page de statut",
 	"showCharts": "Voir les graphiques",
 	"showUptimePercentage": "Voir le pourcentage de temps en ligne",
+	"showResponseTimeChart": "Afficher le graphique des temps de réponse",
 	"removeLogo": "Supprimer le logo",
 	"statusPageStatus": "Aucune page de statut publique n'est déployée",
 	"statusPageStatusContactAdmin": "Merci de contacter votre administrateur",

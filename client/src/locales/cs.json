@@ -283,6 +283,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "",
 	"showCharts": "",
 	"showUptimePercentage": "",
+	"showResponseTimeChart": "",
 	"removeLogo": "",
 	"statusPageStatus": "",
 	"statusPageStatusContactAdmin": "",

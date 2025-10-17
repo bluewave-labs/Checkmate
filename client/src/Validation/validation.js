@@ -303,6 +303,7 @@ const statusPageValidation = joi.object({
 	subMonitors: joi.array().optional(),
 	logo: logoImageValidation,
 	showUptimePercentage: joi.boolean(),
+	showResponseTimeChart: joi.boolean(),
 	showCharts: joi.boolean(),
 	showAdminLoginLink: joi.boolean(),
 });
