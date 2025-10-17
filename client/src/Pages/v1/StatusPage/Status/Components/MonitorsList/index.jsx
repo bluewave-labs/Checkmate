@@ -22,7 +22,6 @@ const MonitorsList = ({
 }) => {
 	const theme = useTheme();
 	const { determineState } = useMonitorUtils();
-	const dateRange = "recent";
 
 	const { showURL } = useSelector((state) => state.ui);
 
@@ -34,7 +33,7 @@ const MonitorsList = ({
 					monitor={monitor}
 					statusPage={statusPage}
 					showURL={showURL}
-					dateRange={dateRange}
+					dateRange="recent"
 				/>
 			))}
 		</>
