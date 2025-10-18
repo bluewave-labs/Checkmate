@@ -1,5 +1,20 @@
 // Components
-import { Box, Stack, Checkbox, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Select as MuiSelect, MenuItem, InputLabel, FormControl, Chip } from "@mui/material";
+import {
+	Box,
+	Stack,
+	Checkbox,
+	Button,
+	Typography,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Select as MuiSelect,
+	MenuItem,
+	InputLabel,
+	FormControl,
+	Chip,
+} from "@mui/material";
 import DataTable from "@/Components/v1/Table/index.jsx";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
@@ -128,7 +143,7 @@ const UptimeDataTable = ({
 				} else {
 					createToast({
 						variant: "warning",
-						body: result.data?.msg || 'Some monitors may not have been paused',
+						body: result.data?.msg || "Some monitors may not have been paused",
 					});
 				}
 				setSelectedMonitors([]);
@@ -138,7 +153,7 @@ const UptimeDataTable = ({
 			console.error("Bulk pause failed:", error);
 			createToast({
 				variant: "error",
-				body: `Failed to pause monitors: ${error.response?.data?.msg || error.message || 'Unknown error'}`,
+				body: `Failed to pause monitors: ${error.response?.data?.msg || error.message || "Unknown error"}`,
 			});
 		} finally {
 			setBulkLoading(false);
@@ -161,7 +176,7 @@ const UptimeDataTable = ({
 				} else {
 					createToast({
 						variant: "warning",
-						body: result.data?.msg || 'Some monitors may not have been resumed',
+						body: result.data?.msg || "Some monitors may not have been resumed",
 					});
 				}
 				setSelectedMonitors([]);
@@ -171,7 +186,7 @@ const UptimeDataTable = ({
 			console.error("Bulk resume failed:", error);
 			createToast({
 				variant: "error",
-				body: `Failed to resume monitors: ${error.response?.data?.msg || error.message || 'Unknown error'}`,
+				body: `Failed to resume monitors: ${error.response?.data?.msg || error.message || "Unknown error"}`,
 			});
 		} finally {
 			setBulkLoading(false);
@@ -179,7 +194,11 @@ const UptimeDataTable = ({
 	};
 
 	const handleBulkDelete = async () => {
-		if (!window.confirm(`Are you sure you want to delete ${selectedMonitors.length} monitor(s)?`)) {
+		if (
+			!window.confirm(
+				`Are you sure you want to delete ${selectedMonitors.length} monitor(s)?`
+			)
+		) {
 			return;
 		}
 		setBulkLoading(true);
@@ -196,7 +215,7 @@ const UptimeDataTable = ({
 				} else {
 					createToast({
 						variant: "warning",
-						body: result.data?.msg || 'Some monitors may not have been deleted',
+						body: result.data?.msg || "Some monitors may not have been deleted",
 					});
 				}
 				setSelectedMonitors([]);
@@ -206,7 +225,7 @@ const UptimeDataTable = ({
 			console.error("Bulk delete failed:", error);
 			createToast({
 				variant: "error",
-				body: `Failed to delete monitors: ${error.response?.data?.msg || error.message || 'Unknown error'}`,
+				body: `Failed to delete monitors: ${error.response?.data?.msg || error.message || "Unknown error"}`,
 			});
 		} finally {
 			setBulkLoading(false);
@@ -229,7 +248,7 @@ const UptimeDataTable = ({
 				} else {
 					createToast({
 						variant: "warning",
-						body: result.data?.msg || 'Some monitors may not have been updated',
+						body: result.data?.msg || "Some monitors may not have been updated",
 					});
 				}
 				setShowBulkNotifications(false);
@@ -241,7 +260,7 @@ const UptimeDataTable = ({
 			console.error("Bulk notification update failed:", error);
 			createToast({
 				variant: "error",
-				body: `Failed to update notifications: ${error.response?.data?.msg || error.message || 'Unknown error'}`,
+				body: `Failed to update notifications: ${error.response?.data?.msg || error.message || "Unknown error"}`,
 			});
 		} finally {
 			setBulkLoading(false);
@@ -264,8 +283,14 @@ const UptimeDataTable = ({
 			id: "select",
 			content: (
 				<Checkbox
-					checked={selectedMonitors.length === filteredMonitors.length && filteredMonitors.length > 0}
-					indeterminate={selectedMonitors.length > 0 && selectedMonitors.length < filteredMonitors.length}
+					checked={
+						selectedMonitors.length === filteredMonitors.length &&
+						filteredMonitors.length > 0
+					}
+					indeterminate={
+						selectedMonitors.length > 0 &&
+						selectedMonitors.length < filteredMonitors.length
+					}
 					onChange={handleSelectAll}
 				/>
 			),
@@ -479,130 +504,165 @@ const UptimeDataTable = ({
 					sx: {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.primary,
-					}
+					},
 				}}
 			>
 				<DialogTitle sx={{ color: theme.palette.text.primary }}>
 					Set Notification Channels
 				</DialogTitle>
 				<DialogContent>
-					<Stack gap={theme.spacing(4)} sx={{ mt: theme.spacing(4) }}>
-						<Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-							Configure notification channels for {selectedMonitors.length} selected monitor(s)
+					<Stack
+						gap={theme.spacing(4)}
+						sx={{ mt: theme.spacing(4) }}
+					>
+						<Typography
+							variant="body2"
+							sx={{ color: theme.palette.text.secondary }}
+						>
+							Configure notification channels for {selectedMonitors.length} selected
+							monitor(s)
 						</Typography>
 						{loadingNotifications ? (
-							<Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+							<Typography
+								variant="body2"
+								sx={{ color: theme.palette.text.secondary }}
+							>
 								Loading notification channels...
 							</Typography>
 						) : notificationOptions.length === 0 ? (
-							<Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontStyle: 'italic' }}>
-								No notification channels configured. Please create notification channels first.
+							<Typography
+								variant="body2"
+								sx={{ color: theme.palette.text.secondary, fontStyle: "italic" }}
+							>
+								No notification channels configured. Please create notification channels
+								first.
 							</Typography>
 						) : (
 							<>
-								<Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
+								<Typography
+									variant="caption"
+									sx={{ color: theme.palette.text.disabled }}
+								>
 									{notificationOptions.length} notification channel(s) available
 								</Typography>
 								<FormControl fullWidth>
-								<InputLabel 
-									id="bulk-notifications-label"
-									sx={{ 
-										color: theme.palette.text.secondary,
-										'&.Mui-focused': {
-											color: theme.palette.primary.main,
-										},
-									}}
-								>
-									Notification Channels
-								</InputLabel>
-								<MuiSelect
-									labelId="bulk-notifications-label"
-									id="bulk-notifications-select"
-									multiple
-									value={selectedNotificationChannels}
-									onChange={(e) => setSelectedNotificationChannels(e.target.value)}
-									label="Notification Channels"
-									MenuProps={{
-										PaperProps: {
-											sx: {
-												backgroundColor: theme.palette.background.paper,
-												color: theme.palette.text.primary,
-												'& .MuiMenuItem-root': {
+									<InputLabel
+										id="bulk-notifications-label"
+										sx={{
+											color: theme.palette.text.secondary,
+											"&.Mui-focused": {
+												color: theme.palette.primary.main,
+											},
+										}}
+									>
+										Notification Channels
+									</InputLabel>
+									<MuiSelect
+										labelId="bulk-notifications-label"
+										id="bulk-notifications-select"
+										multiple
+										value={selectedNotificationChannels}
+										onChange={(e) => setSelectedNotificationChannels(e.target.value)}
+										label="Notification Channels"
+										MenuProps={{
+											PaperProps: {
+												sx: {
+													backgroundColor: theme.palette.background.paper,
 													color: theme.palette.text.primary,
-													'&:hover': {
-														backgroundColor: theme.palette.action.hover,
-													},
-													'&.Mui-selected': {
-														backgroundColor: theme.palette.action.selected,
-														'&:hover': {
+													"& .MuiMenuItem-root": {
+														color: theme.palette.text.primary,
+														"&:hover": {
+															backgroundColor: theme.palette.action.hover,
+														},
+														"&.Mui-selected": {
 															backgroundColor: theme.palette.action.selected,
+															"&:hover": {
+																backgroundColor: theme.palette.action.selected,
+															},
 														},
 													},
 												},
 											},
-										},
-									}}
-									sx={{
-										color: theme.palette.text.primary,
-										'& .MuiOutlinedInput-notchedOutline': {
-											borderColor: theme.palette.divider,
-										},
-										'&:hover .MuiOutlinedInput-notchedOutline': {
-											borderColor: theme.palette.primary.main,
-										},
-										'& .MuiSvgIcon-root': {
-											color: theme.palette.text.secondary,
-										},
-									}}
-									renderValue={(selected) => {
-										if (!selected || selected.length === 0) {
-											return <Typography sx={{ color: theme.palette.text.secondary }}>Select channels...</Typography>;
-										}
-										return (
-											<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-												{selected.map((value) => {
-													const option = notificationOptions.find(opt => opt._id === value);
-													const displayName = option?.notificationName || option?.name || option?.title || option?.label || `Channel ${value.substring(0, 8)}...`;
-													return (
-														<Chip 
-															key={value} 
-															label={displayName}
-															size="small"
-															sx={{ 
-																backgroundColor: theme.palette.primary.main,
-																color: theme.palette.primary.contrastText,
-															}}
-														/>
-													);
-												})}
-											</Box>
-										);
-									}}
-								>
-									{notificationOptions.map((option) => {
-										const displayName = option.notificationName || option.name || option.title || option.label || `Channel ${option._id?.slice(-4)}`;
-										return (
-											<MenuItem 
-												key={option._id} 
-												value={option._id}
-											>
-												<Checkbox 
-													checked={selectedNotificationChannels.indexOf(option._id) > -1}
-													sx={{ 
-														color: theme.palette.text.secondary,
-														'&.Mui-checked': {
-															color: theme.palette.primary.main,
-														},
-													}}
-												/>
-												<Typography sx={{ color: theme.palette.text.primary }}>
-													{displayName}
-												</Typography>
-											</MenuItem>
-										);
-									})}
-								</MuiSelect>
-							</FormControl>
+										}}
+										sx={{
+											color: theme.palette.text.primary,
+											"& .MuiOutlinedInput-notchedOutline": {
+												borderColor: theme.palette.divider,
+											},
+											"&:hover .MuiOutlinedInput-notchedOutline": {
+												borderColor: theme.palette.primary.main,
+											},
+											"& .MuiSvgIcon-root": {
+												color: theme.palette.text.secondary,
+											},
+										}}
+										renderValue={(selected) => {
+											if (!selected || selected.length === 0) {
+												return (
+													<Typography sx={{ color: theme.palette.text.secondary }}>
+														Select channels...
+													</Typography>
+												);
+											}
+											return (
+												<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+													{selected.map((value) => {
+														const option = notificationOptions.find(
+															(opt) => opt._id === value
+														);
+														const displayName =
+															option?.notificationName ||
+															option?.name ||
+															option?.title ||
+															option?.label ||
+															`Channel ${value.substring(0, 8)}...`;
+														return (
+															<Chip
+																key={value}
+																label={displayName}
+																size="small"
+																sx={{
+																	backgroundColor: theme.palette.primary.main,
+																	color: theme.palette.primary.contrastText,
+																}}
+															/>
+														);
+													})}
+												</Box>
+											);
+										}}
+									>
+										{notificationOptions.map((option) => {
+											const displayName =
+												option.notificationName ||
+												option.name ||
+												option.title ||
+												option.label ||
+												`Channel ${option._id?.slice(-4)}`;
+											return (
+												<MenuItem
+													key={option._id}
+													value={option._id}
+												>
+													<Checkbox
+														checked={
+															selectedNotificationChannels.indexOf(option._id) > -1
+														}
+														sx={{
+															color: theme.palette.text.secondary,
+															"&.Mui-checked": {
+																color: theme.palette.primary.main,
+															},
+														}}
+													/>
+													<Typography sx={{ color: theme.palette.text.primary }}>
+														{displayName}
+													</Typography>
+												</MenuItem>
+											);
+										})}
+									</MuiSelect>
+								</FormControl>
 							</>
 						)}
 					</Stack>

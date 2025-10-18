@@ -39,10 +39,14 @@ export const MonitorTable = ({
 	const navigate = useNavigate();
 	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]);
 	const [showBulkNotifications, setShowBulkNotifications] = useState(false);
-	const [selectedNotificationChannels, setSelectedNotificationChannels] = useState<string[]>([]);
+	const [selectedNotificationChannels, setSelectedNotificationChannels] = useState<
+		string[]
+	>([]);
 	const { patch } = usePatch<ApiResponse>();
 	const { post: bulkPost, loading: bulkLoading } = usePost<ApiResponse>();
-	const { response: notificationResponse } = useGet<ApiResponse>("/notification-channels");
+	const { response: notificationResponse } = useGet<ApiResponse>(
+		"/notification-channels"
+	);
 
 	const getActions = (monitor: IMonitor): ActionMenuItem[] => {
 		return [
@@ -149,7 +153,11 @@ export const MonitorTable = ({
 	};
 
 	const handleBulkDelete = async () => {
-		if (!window.confirm(`Are you sure you want to delete ${selectedMonitors.length} monitor(s)?`)) {
+		if (
+			!window.confirm(
+				`Are you sure you want to delete ${selectedMonitors.length} monitor(s)?`
+			)
+		) {
 			return;
 		}
 		try {
@@ -191,7 +199,9 @@ export const MonitorTable = ({
 				content: (
 					<Checkbox
 						checked={selectedMonitors.length === monitors.length && monitors.length > 0}
-						indeterminate={selectedMonitors.length > 0 && selectedMonitors.length < monitors.length}
+						indeterminate={
+							selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
+						}
 						onChange={handleSelectAll}
 					/>
 				),
@@ -329,20 +339,31 @@ export const MonitorTable = ({
 					sx: {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.primary,
-					}
+					},
 				}}
 			>
 				<DialogTitle sx={{ color: theme.palette.text.primary }}>
 					Set Notification Channels
 				</DialogTitle>
 				<DialogContent>
-					<Stack gap={theme.spacing(4)} sx={{ mt: theme.spacing(2) }}>
-						<Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-							Configure notification channels for {selectedMonitors.length} selected monitor(s)
+					<Stack
+						gap={theme.spacing(4)}
+						sx={{ mt: theme.spacing(2) }}
+					>
+						<Typography
+							variant="body2"
+							sx={{ color: theme.palette.text.secondary }}
+						>
+							Configure notification channels for {selectedMonitors.length} selected
+							monitor(s)
 						</Typography>
 						{notificationOptions.length === 0 ? (
-							<Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontStyle: 'italic' }}>
-								No notification channels configured. Please create notification channels first.
+							<Typography
+								variant="body2"
+								sx={{ color: theme.palette.text.secondary, fontStyle: "italic" }}
+							>
+								No notification channels configured. Please create notification channels
+								first.
 							</Typography>
 						) : (
 							<AutoCompleteInput
@@ -356,7 +377,10 @@ export const MonitorTable = ({
 									setSelectedNotificationChannels(newValue.map((o: any) => o._id));
 								}}
 								renderInput={(params: any) => (
-									<TextField {...params} label="Notification Channels" />
+									<TextField
+										{...params}
+										label="Notification Channels"
+									/>
 								)}
 							/>
 						)}

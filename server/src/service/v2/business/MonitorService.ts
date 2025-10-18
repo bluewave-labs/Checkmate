@@ -17,9 +17,13 @@ export interface IMonitorService {
 	toggleActive: (monitorId: string, tokenizedUser: ITokenizedUser) => Promise<IMonitor>;
 	update: (tokenizedUser: ITokenizedUser, monitorId: string, updateData: Partial<IMonitor>) => Promise<IMonitor>;
 	delete: (monitorId: string) => Promise<boolean>;
-	bulkToggleActive: (monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) => Promise<{ success: number; failed: number; }>;
-	bulkDelete: (monitorIds: string[]) => Promise<{ success: number; failed: number; }>;
-	bulkUpdateNotifications: (monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) => Promise<{ success: number; failed: number; }>;
+	bulkToggleActive: (monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) => Promise<{ success: number; failed: number }>;
+	bulkDelete: (monitorIds: string[]) => Promise<{ success: number; failed: number }>;
+	bulkUpdateNotifications: (
+		monitorIds: string[],
+		notificationChannels: any[],
+		tokenizedUser: ITokenizedUser
+	) => Promise<{ success: number; failed: number }>;
 }
 
 class MonitorService implements IMonitorService {
@@ -489,7 +493,7 @@ class MonitorService implements IMonitorService {
 
 				if (updatedMonitor) {
 					await this.jobQueue.updateJob(updatedMonitor);
-					
+
 					if (updatedMonitor.isActive) {
 						await this.jobQueue.resumeJob(updatedMonitor);
 					} else {

@@ -195,7 +195,7 @@ class MonitorController {
 			}
 
 			const { monitorIds, isActive } = req.body;
-			
+
 			if (!Array.isArray(monitorIds) || monitorIds.length === 0) {
 				throw new ApiError("monitorIds must be a non-empty array", 400);
 			}
@@ -205,7 +205,7 @@ class MonitorController {
 			}
 
 			const result = await this.monitorService.bulkToggleActive(monitorIds, isActive, tokenizedUser);
-			
+
 			res.status(200).json({
 				message: `Bulk ${isActive ? "resume" : "pause"} completed`,
 				data: result,
@@ -223,13 +223,13 @@ class MonitorController {
 			}
 
 			const { monitorIds } = req.body;
-			
+
 			if (!Array.isArray(monitorIds) || monitorIds.length === 0) {
 				throw new ApiError("monitorIds must be a non-empty array", 400);
 			}
 
 			const result = await this.monitorService.bulkDelete(monitorIds);
-			
+
 			res.status(200).json({
 				message: "Bulk delete completed",
 				data: result,
@@ -247,7 +247,7 @@ class MonitorController {
 			}
 
 			const { monitorIds, notificationChannels } = req.body;
-			
+
 			if (!Array.isArray(monitorIds) || monitorIds.length === 0) {
 				throw new ApiError("monitorIds must be a non-empty array", 400);
 			}
@@ -256,12 +256,8 @@ class MonitorController {
 				throw new ApiError("notificationChannels must be an array", 400);
 			}
 
-			const result = await this.monitorService.bulkUpdateNotifications(
-				monitorIds, 
-				notificationChannels, 
-				tokenizedUser
-			);
-			
+			const result = await this.monitorService.bulkUpdateNotifications(monitorIds, notificationChannels, tokenizedUser);
+
 			res.status(200).json({
 				message: "Bulk notification update completed",
 				data: result,

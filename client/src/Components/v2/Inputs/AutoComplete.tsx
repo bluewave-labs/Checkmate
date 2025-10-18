@@ -46,7 +46,7 @@ export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({ ...props }
 					sx: {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.primary,
-						'& .MuiAutocomplete-option': {
+						"& .MuiAutocomplete-option": {
 							color: theme.palette.text.primary,
 						},
 					},
