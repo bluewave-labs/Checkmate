@@ -32,11 +32,25 @@ export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({ ...props }
 					<ListItem
 						key={key}
 						{...optionProps}
+						sx={{
+							color: theme.palette.text.primary,
+						}}
 					>
 						<CheckboxInput checked={selected} />
 						{option.name}
 					</ListItem>
 				);
+			}}
+			slotProps={{
+				paper: {
+					sx: {
+						backgroundColor: theme.palette.background.paper,
+						color: theme.palette.text.primary,
+						'& .MuiAutocomplete-option': {
+							color: theme.palette.text.primary,
+						},
+					},
+				},
 			}}
 			sx={{
 				"&.MuiAutocomplete-root .MuiAutocomplete-input": {

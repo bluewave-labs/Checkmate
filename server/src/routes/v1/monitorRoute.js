@@ -47,6 +47,11 @@ class MonitorRoutes {
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
 		this.router.get("/games", this.monitorController.getAllGames);
 
+		// Bulk operations - must come before /:monitorId routes
+		this.router.post("/bulk/toggle-active", isAllowed(["admin", "superadmin"]), this.monitorController.bulkToggleActive);
+		this.router.post("/bulk/delete", isAllowed(["admin", "superadmin"]), this.monitorController.bulkDelete);
+		this.router.post("/bulk/notifications", isAllowed(["admin", "superadmin"]), this.monitorController.bulkUpdateNotifications);
+
 		// Individual monitor CRUD routes
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);
 		this.router.put("/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.editMonitor);

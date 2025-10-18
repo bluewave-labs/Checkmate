@@ -7,6 +7,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
 import { Table } from "@/Components/v2/DesignElements";
 import { HistogramResponseTime } from "@/Components/v2/Monitors/HistogramResponseTime";
 import type { Header } from "@/Components/v2/DesignElements/Table";
@@ -39,11 +40,7 @@ export const MonitorTable = ({
 	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]);
 	const [showBulkNotifications, setShowBulkNotifications] = useState(false);
 	const [selectedNotificationChannels, setSelectedNotificationChannels] = useState<string[]>([]);
-	const {
-		patch,
-		// loading: isPatching,
-		// error: postError,
-	} = usePatch<ApiResponse>();
+	const { patch } = usePatch<ApiResponse>();
 	const { post: bulkPost, loading: bulkLoading } = usePost<ApiResponse>();
 	const { response: notificationResponse } = useGet<ApiResponse>("/notification-channels");
 
@@ -123,12 +120,14 @@ export const MonitorTable = ({
 
 	const handleBulkPause = async () => {
 		try {
-			await bulkPost("/monitors/bulk/toggle-active", {
+			const result = await bulkPost("/monitors/bulk/toggle-active", {
 				monitorIds: selectedMonitors,
 				isActive: false,
 			} as any);
-			setSelectedMonitors([]);
-			refetch();
+			if (result) {
+				setSelectedMonitors([]);
+				setTimeout(() => refetch(), 500);
+			}
 		} catch (error) {
 			console.error("Bulk pause failed:", error);
 		}
@@ -136,12 +135,14 @@ export const MonitorTable = ({
 
 	const handleBulkResume = async () => {
 		try {
-			await bulkPost("/monitors/bulk/toggle-active", {
+			const result = await bulkPost("/monitors/bulk/toggle-active", {
 				monitorIds: selectedMonitors,
 				isActive: true,
 			} as any);
-			setSelectedMonitors([]);
-			refetch();
+			if (result) {
+				setSelectedMonitors([]);
+				setTimeout(() => refetch(), 500);
+			}
 		} catch (error) {
 			console.error("Bulk resume failed:", error);
 		}
@@ -152,11 +153,13 @@ export const MonitorTable = ({
 			return;
 		}
 		try {
-			await bulkPost("/monitors/bulk/delete", {
+			const result = await bulkPost("/monitors/bulk/delete", {
 				monitorIds: selectedMonitors,
 			} as any);
-			setSelectedMonitors([]);
-			refetch();
+			if (result) {
+				setSelectedMonitors([]);
+				setTimeout(() => refetch(), 500);
+			}
 		} catch (error) {
 			console.error("Bulk delete failed:", error);
 		}
@@ -164,14 +167,16 @@ export const MonitorTable = ({
 
 	const handleBulkNotificationSubmit = async () => {
 		try {
-			await bulkPost("/monitors/bulk/notifications", {
+			const result = await bulkPost("/monitors/bulk/notifications", {
 				monitorIds: selectedMonitors,
 				notificationChannels: selectedNotificationChannels,
 			} as any);
-			setShowBulkNotifications(false);
-			setSelectedNotificationChannels([]);
-			setSelectedMonitors([]);
-			refetch();
+			if (result) {
+				setShowBulkNotifications(false);
+				setSelectedNotificationChannels([]);
+				setSelectedMonitors([]);
+				setTimeout(() => refetch(), 500);
+			}
 		} catch (error) {
 			console.error("Bulk notification update failed:", error);
 		}
@@ -320,34 +325,51 @@ export const MonitorTable = ({
 				onClose={() => setShowBulkNotifications(false)}
 				maxWidth="sm"
 				fullWidth
+				PaperProps={{
+					sx: {
+						backgroundColor: theme.palette.background.paper,
+						color: theme.palette.text.primary,
+					}
+				}}
 			>
-				<DialogTitle>Set Notification Channels</DialogTitle>
+				<DialogTitle sx={{ color: theme.palette.text.primary }}>
+					Set Notification Channels
+				</DialogTitle>
 				<DialogContent>
 					<Stack gap={theme.spacing(4)} sx={{ mt: theme.spacing(2) }}>
-						<Typography variant="body2">
+						<Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
 							Configure notification channels for {selectedMonitors.length} selected monitor(s)
 						</Typography>
-						<AutoCompleteInput
-							multiple
-							options={notificationOptions}
-							getOptionLabel={(option: any) => option.name}
-							value={notificationOptions.filter((o: any) =>
-								selectedNotificationChannels.includes(o._id)
-							)}
-							onChange={(_: any, newValue: any[]) => {
-								setSelectedNotificationChannels(newValue.map((o: any) => o._id));
-							}}
-							label="Notification Channels"
-						/>
+						{notificationOptions.length === 0 ? (
+							<Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontStyle: 'italic' }}>
+								No notification channels configured. Please create notification channels first.
+							</Typography>
+						) : (
+							<AutoCompleteInput
+								multiple
+								options={notificationOptions}
+								getOptionLabel={(option: any) => option.name}
+								value={notificationOptions.filter((o: any) =>
+									selectedNotificationChannels.includes(o._id)
+								)}
+								onChange={(_: any, newValue: any[]) => {
+									setSelectedNotificationChannels(newValue.map((o: any) => o._id));
+								}}
+								renderInput={(params: any) => (
+									<TextField {...params} label="Notification Channels" />
+								)}
+							/>
+						)}
 					</Stack>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions sx={{ backgroundColor: theme.palette.background.paper }}>
 					<Button
 						onClick={() => {
 							setShowBulkNotifications(false);
 							setSelectedNotificationChannels([]);
 						}}
 						variant="text"
+						sx={{ color: theme.palette.text.primary }}
 					>
 						Cancel
 					</Button>
@@ -355,7 +377,7 @@ export const MonitorTable = ({
 						onClick={handleBulkNotificationSubmit}
 						variant="contained"
 						color="accent"
-						disabled={bulkLoading}
+						disabled={bulkLoading || notificationOptions.length === 0}
 					>
 						{bulkLoading ? "Updating..." : "Update Notifications"}
 					</Button>

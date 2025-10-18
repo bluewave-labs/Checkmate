@@ -470,6 +470,132 @@ class MonitorController extends BaseController {
 		SERVICE_NAME,
 		"getGroupsByTeamId"
 	);
+
+	bulkToggleActive = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			const { monitorIds, isActive } = req.body;
+
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			if (!Array.isArray(monitorIds) || monitorIds.length === 0) {
+				throw this.errorService.createBadRequestError("monitorIds must be a non-empty array");
+			}
+
+			if (typeof isActive !== "boolean") {
+				throw this.errorService.createBadRequestError("isActive must be a boolean");
+			}
+
+			let success = 0;
+			let failed = 0;
+
+			for (const monitorId of monitorIds) {
+				try {
+					await this.verifyTeamAccess(teamId, monitorId);
+					// Get current monitor state
+					const monitor = await this.db.monitorModule.getMonitorById(monitorId);
+					// Only toggle if current state doesn't match desired state
+					if (monitor.isActive !== isActive) {
+						const updatedMonitor = await this.db.monitorModule.pauseMonitor({ monitorId });
+						await this.jobQueue.updateJob(updatedMonitor);
+					}
+					success++;
+				} catch (error) {
+					console.error(`Failed to toggle monitor ${monitorId}:`, error);
+					failed++;
+				}
+			}
+
+			return res.success({
+				msg: `Bulk ${isActive ? "resume" : "pause"} completed`,
+				data: { success, failed },
+			});
+		},
+		SERVICE_NAME,
+		"bulkToggleActive"
+	);
+
+	bulkDelete = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			const { monitorIds } = req.body;
+
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			if (!Array.isArray(monitorIds) || monitorIds.length === 0) {
+				throw this.errorService.createBadRequestError("monitorIds must be a non-empty array");
+			}
+
+			let success = 0;
+			let failed = 0;
+
+			for (const monitorId of monitorIds) {
+				try {
+					await this.verifyTeamAccess(teamId, monitorId);
+					await this.monitorService.deleteMonitor({ teamId, monitorId });
+					success++;
+				} catch (error) {
+					console.error(`Failed to delete monitor ${monitorId}:`, error);
+					failed++;
+				}
+			}
+
+			return res.success({
+				msg: "Bulk delete completed",
+				data: { success, failed },
+			});
+		},
+		SERVICE_NAME,
+		"bulkDelete"
+	);
+
+	bulkUpdateNotifications = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			const { monitorIds, notificationChannels } = req.body;
+
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			if (!Array.isArray(monitorIds) || monitorIds.length === 0) {
+				throw this.errorService.createBadRequestError("monitorIds must be a non-empty array");
+			}
+
+			if (!Array.isArray(notificationChannels)) {
+				throw this.errorService.createBadRequestError("notificationChannels must be an array");
+			}
+
+			let success = 0;
+			let failed = 0;
+
+			for (const monitorId of monitorIds) {
+				try {
+					await this.verifyTeamAccess(teamId, monitorId);
+					const updatedMonitor = await this.db.monitorModule.editMonitor({
+						monitorId,
+						body: { notifications: notificationChannels },
+					});
+					await this.jobQueue.updateJob(updatedMonitor);
+					success++;
+				} catch (error) {
+					console.error(`Failed to update notifications for monitor ${monitorId}:`, error);
+					failed++;
+				}
+			}
+
+			return res.success({
+				msg: "Bulk notification update completed",
+				data: { success, failed },
+			});
+		},
+		SERVICE_NAME,
+		"bulkUpdateNotifications"
+	);
 }
 
 export default MonitorController;
