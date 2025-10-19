@@ -24,7 +24,7 @@ import SkeletonLayout from "./skeleton.jsx";
 // Utils
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../../Validation/validation.js";
 import { createToast } from "../../../../Utils/toastUtils.jsx";
@@ -69,8 +69,7 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [https, setHttps] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
 	const [useAdvancedMatching, setUseAdvancedMatching] = useState(false);
-	const [isAdvancedMatchingInitialized, setIsAdvancedMatchingInitialized] =
-		useState(false);
+	const isAdvancedMatchingInitialized = useRef(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [games, setGames] = useState({});
 	const triggerUpdate = () => {
@@ -298,18 +297,16 @@ const UptimeCreate = ({ isClone = false }) => {
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
-		if ((!isCreate || isClone) && monitor._id) {
-			if (!isAdvancedMatchingInitialized) {
-				if (monitor.matchMethod) {
-					setUseAdvancedMatching(true);
-				} else {
-					setUseAdvancedMatching(false);
-				}
-
-				setIsAdvancedMatchingInitialized(true);
+		if ((!isCreate || isClone) && monitor._id && !isAdvancedMatchingInitialized) {
+			if (monitor.matchMethod) {
+				setUseAdvancedMatching(true);
+			} else {
+				setUseAdvancedMatching(false);
 			}
+
+			isAdvancedMatchingInitialized.current = true;
 		}
-	}, [monitor._id, isCreate, isClone, isAdvancedMatchingInitialized]);
+	}, [monitor._id, isCreate, isClone]);
 
 	if (Object.keys(monitor).length === 0) {
 		return <SkeletonLayout />;
