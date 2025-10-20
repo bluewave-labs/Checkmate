@@ -9,8 +9,8 @@ import {
 	Chip,
 	Select as MuiSelect,
 } from "@mui/material";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
-import Button from "@mui/material/Button";
 import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
 import Dialog from "@/Components/v1/Dialog/index.jsx";
 import DataTable from "@/Components/v1/Table/index.jsx";
@@ -20,7 +20,6 @@ import Host from "@/Components/v1/Host/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import BarChart from "@/Components/v1/Charts/BarChart/index.jsx";
 import ActionsMenu from "@/Components/v1/ActionsMenu/index.jsx";
-
 import LoadingSpinner from "../LoadingSpinner/index.jsx";
 import TableSkeleton from "@/Components/v1/Table/skeleton.jsx";
 
@@ -33,6 +32,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { networkService } from "../../../../../../Utils/NetworkService.js";
 import { createToast } from "../../../../../../Utils/toastUtils.jsx";
+import { Button } from "@/Components/v2/Inputs/index.js";
 
 /**
  * UptimeDataTable displays a table of uptime monitors with sorting, searching, and action capabilities
@@ -451,7 +451,7 @@ const UptimeDataTable = ({
 							},
 						}}
 					>
-						Pause Selected
+						Pause selected
 					</Button>
 					<Button
 						variant="outlined"
@@ -467,7 +467,7 @@ const UptimeDataTable = ({
 							},
 						}}
 					>
-						Resume Selected
+						Resume selected
 					</Button>
 					<Button
 						variant="outlined"
@@ -483,7 +483,7 @@ const UptimeDataTable = ({
 							},
 						}}
 					>
-						Set Notifications
+						Set notifications
 					</Button>
 					<Button
 						variant="outlined"
@@ -500,7 +500,7 @@ const UptimeDataTable = ({
 							},
 						}}
 					>
-						Delete Selected
+						Delete selected
 					</Button>
 					<Button
 						variant="text"
@@ -513,7 +513,7 @@ const UptimeDataTable = ({
 							},
 						}}
 					>
-						Clear Selection
+						Clear selection
 					</Button>
 				</Box>
 			)}
@@ -538,7 +538,7 @@ const UptimeDataTable = ({
 				/>
 			</Box>
 			<GenericDialog
-				title="Set Notification Channels"
+				title="Set notification channels"
 				description={`Configure notification channels for ${selectedMonitors.length} selected monitor${selectedMonitors.length === 1 ? "" : "s"}`}
 				open={showBulkNotifications}
 				onClose={() => setShowBulkNotifications(false)}
@@ -583,7 +583,7 @@ const UptimeDataTable = ({
 										},
 									}}
 								>
-									Notification Channels
+									Notification channels
 								</InputLabel>
 								<MuiSelect
 									labelId="bulk-notifications-label"
@@ -591,7 +591,7 @@ const UptimeDataTable = ({
 									multiple
 									value={selectedNotificationChannels}
 									onChange={(e) => setSelectedNotificationChannels(e.target.value)}
-									label="Notification Channels"
+									label="Notification channels"
 									MenuProps={{
 										PaperProps: {
 											sx: {
@@ -630,7 +630,7 @@ const UptimeDataTable = ({
 												<Typography
 													sx={{ color: theme.palette.primary.contrastTextTertiary }}
 												>
-													Select channels...
+													Select channels
 												</Typography>
 											);
 										}
@@ -719,7 +719,7 @@ const UptimeDataTable = ({
 								},
 							}}
 						>
-							{bulkLoading ? "Updating..." : "Update Notifications"}
+							{bulkLoading ? "Updating..." : "Update notifications"}
 						</Button>
 					</Stack>
 				</Stack>

@@ -7,7 +7,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import TextField from "@mui/material/TextField";
+import { TextInput } from "@/Components/v2/Inputs";
 import { Table } from "@/Components/v2/DesignElements";
 import { HistogramResponseTime } from "@/Components/v2/Monitors/HistogramResponseTime";
 import type { Header } from "@/Components/v2/DesignElements/Table";
@@ -305,7 +305,7 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						Pause Selected
+						Pause selected
 					</Button>
 					<Button
 						variant="outlined"
@@ -320,7 +320,7 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						Resume Selected
+						Resume selected
 					</Button>
 					<Button
 						variant="outlined"
@@ -335,7 +335,7 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						Set Notifications
+						Set notifications
 					</Button>
 					<Button
 						variant="outlined"
@@ -351,7 +351,7 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						Delete Selected
+						Delete selected
 					</Button>
 					<Button
 						variant="text"
@@ -364,7 +364,7 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						Clear Selection
+						Clear selection
 					</Button>
 				</Box>
 			)}
@@ -390,7 +390,7 @@ export const MonitorTable = ({
 				}}
 			>
 				<DialogTitle sx={{ color: theme.palette.primary.contrastText }}>
-					Set Notification Channels
+					Set notification channels
 				</DialogTitle>
 				<DialogContent>
 					<Stack
@@ -427,9 +427,9 @@ export const MonitorTable = ({
 									setSelectedNotificationChannels(newValue.map((o: any) => o._id));
 								}}
 								renderInput={(params: any) => (
-									<TextField
+									<TextInput
 										{...params}
-										label="Notification Channels"
+										label="Notification channels"
 									/>
 								)}
 							/>
@@ -459,7 +459,7 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						{bulkLoading ? "Updating..." : "Update Notifications"}
+						{bulkLoading ? "Updating..." : "Update notifications"}
 					</Button>
 				</DialogActions>
 			</Dialog>
