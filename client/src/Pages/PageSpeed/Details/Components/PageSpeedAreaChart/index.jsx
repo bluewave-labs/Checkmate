@@ -46,29 +46,31 @@ const processDataWithGaps = (data, interval) => {
 		formattedData.push(entry);
 		last = current;
 	});
-
 	return formattedData;
 };
 
 const createPagination = (data, timeRange) => {
+	console.log(timeRange)
 	if (data.length === 0) return [];
 	const paginatedData = []
 	let currentPage = []
 	let startTime = new Date(data[0].createdAt).getTime()
-	let endTime = startTime + timeRange * 3600000 
+	let timeRangeMs = timeRange * 60 * 60 * 1000
 	data.forEach((entry) => {
 		const entryTime = new Date(entry.createdAt).getTime()
-		if (entryTime <= endTime) {
+		if (entryTime < startTime + timeRangeMs) {
 			currentPage.push(entry)
 		} else {
 			paginatedData.push(currentPage)
-			currentPage = []
-			currentPage.push(entry)
-			startTime = new Date(entry.createdAt).getTime()
-			endTime = startTime + timeRange * 3600000
+			currentPage = [entry]
+			startTime = entryTime
 		}
 	})
-	paginatedData.push(currentPage)
+	
+	if (currentPage.length > 0){
+		paginatedData.push(currentPage)
+	}
+	
 	return paginatedData
 }
 
@@ -77,11 +79,13 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 	const [page, setPage] = useState(0);
 	const [ timeRange, setTimeRange] = useState(2)
 
-	const data = monitor?.checks ? [...monitor.checks].reverse() : [];
-
 	const memoizedData = useMemo(
-		() => processDataWithGaps(data, 3600000),
-		[data[0]]
+		() => {
+			const data = monitor?.checks ? [...monitor.checks].reverse() : [];
+			const interval = monitor?.interval ? monitor.interval : 180000
+			return processDataWithGaps(data, interval)
+		},
+		[monitor?.checks, monitor?.interval]
 	);
 
 	const paginatedData = useMemo(
@@ -125,19 +129,21 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 					data={paginatedData[page]}
 					metrics={metrics}
 				/>
-				<Pagination
-					pageCount={paginatedData.length}
-					page={page}
-					handleChangePage={handleChangePage}
-					rowsPerPage={-1}
-					handleChangeRowsPerPage={() => {}}
-					handleChangeTimeRange={handleChangeTimeRange}
-					timeRange={timeRange}
-					timeRangeLabel={[
-						new Date(paginatedData[page][0].createdAt).getTime(),
-						new Date(paginatedData[page][paginatedData[page].length - 1].createdAt).getTime()
-					]}
-				/>
+				{paginatedData.length > 0 && paginatedData[page].length > 0 && (
+					<Pagination
+						pageCount={paginatedData.length}
+						page={page}
+						handleChangePage={handleChangePage}
+						rowsPerPage={-1}
+						handleChangeRowsPerPage={() => {}}
+						handleChangeTimeRange={handleChangeTimeRange}
+						timeRange={timeRange}
+						timeRangeLabel={[
+							new Date(paginatedData[page][0].createdAt).getTime(),
+							new Date(paginatedData[page][paginatedData[page].length - 1].createdAt).getTime()
+						]}
+					/>
+				)}
 			</ChartBox>
 		</Stack>
 	);

@@ -40,7 +40,7 @@ const PageSpeedDetails = () => {
 		monitorId,
 		sortOrder: "desc",
 		limit: 50,
-		dateRange: "week",
+		dateRange: "day",
 		numToDisplay: null,
 		normalize: null,
 		updateTrigger: trigger,

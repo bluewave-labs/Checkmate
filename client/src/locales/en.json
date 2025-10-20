@@ -1019,7 +1019,8 @@
 			],
 			"title": "A PageSpeed monitor is used to:",
 			"actionButton": "Let's create your first PageSpeed monitor!"
-		}
+		},
+		"timeRangeLabel": "Time range:"
 	},
 	"uptimeMonitor": {
 		"fallback": {
