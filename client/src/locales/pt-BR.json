@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": ""
+		"role": "",
+		"changeTeamPassword": {
+			"changePasswordMenu": "",
+			"title": "",
+			"description": "",
+			"success": ""
+		}
 	},
 	"monitorState": {
 		"paused": "Pausado",
@@ -487,7 +493,8 @@
 		"ping": "Insira o endereço IP ou nome de domínio para ping (ex. 192.168.1.100 ou exemplo.com.br) e adicione uma descrição que aparecerá na dashboard.",
 		"docker": "Insira o Docker Id do seu container. Docker Ids devem ser todos os 64 caracteres. Você pode executar docker inspect <short_id> para descobrir o Id completo.",
 		"port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard.",
-		"game": ""
+		"game": "",
+		"https": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1096,7 +1103,11 @@
 		"incidentConfigDescription": "",
 		"incidentConfigStatusWindowLabel": "",
 		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": ""
+		"incidentConfigTitle": "",
+		"incidentConfigDescriptionV2": "",
+		"incidentConfigStatusCheckNumber": "",
+		"intervalTitle": "",
+		"intervalDescription": ""
 	},
 	"dataRate": "",
 	"dataReceived": "",

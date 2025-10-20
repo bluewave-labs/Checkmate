@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": ""
+		"role": "",
+		"changeTeamPassword": {
+			"changePasswordMenu": "",
+			"title": "",
+			"description": "",
+			"success": ""
+		}
 	},
 	"monitorState": {
 		"paused": "",
@@ -487,7 +493,8 @@
 		"ping": "",
 		"docker": "",
 		"port": "",
-		"game": ""
+		"game": "",
+		"https": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1075,7 +1082,11 @@
 		"incidentConfigDescription": "",
 		"incidentConfigStatusWindowLabel": "",
 		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": ""
+		"incidentConfigTitle": "",
+		"incidentConfigDescriptionV2": "",
+		"incidentConfigStatusCheckNumber": "",
+		"intervalTitle": "",
+		"intervalDescription": ""
 	},
 	"dataRate": "",
 	"dataReceived": "",

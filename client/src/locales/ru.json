@@ -10,7 +10,7 @@
 	"settingsFailedToClearStats": "Не удалось очистить статистику",
 	"settingsMonitorsDeleted": "Успешно удалены все мониторы",
 	"settingsFailedToDeleteMonitors": "Не удалось удалить все мониторы",
-	"starPromptTitle": "",
+	"starPromptTitle": "Запустить Checkmate.",
 	"starPromptDescription": "Ознакомьтесь с последними релизами и помогите развить сообщество на GitHub",
 	"https": "HTTPS",
 	"http": "HTTP",
@@ -84,31 +84,35 @@
 		"unsupportedType": "Неподдерживаемый тип уведомления",
 		"networkError": "Произошла сетевая ошибка",
 		"fallback": {
-			"title": "",
-			"checks": [""],
-			"actionButton": ""
+			"title": "Канал уведомлений используется для:",
+			"checks": [
+				"Дайте знать команде, если сервер ложится или что-то виснет",
+				"Сообщите инженерам, когда появляется какая-то проблема",
+				"Уведомляйте админов, если в системе что-то поменялось"
+			],
+			"actionButton": "Давайте создадим ваш первый канал уведомлений!"
 		},
-		"createButton": "",
-		"createTitle": "",
+		"createButton": "Создать канал уведомлений",
+		"createTitle": "Канал уведомлений",
 		"create": {
-			"success": "",
-			"failed": ""
+			"success": "Уведомление успешно создано",
+			"failed": "Не удалось создать уведомление."
 		},
 		"fetch": {
-			"success": "",
-			"failed": ""
+			"success": "Уведомления успешно получены",
+			"failed": "Не удалось получить уведомления."
 		},
 		"delete": {
-			"success": "",
-			"failed": ""
+			"success": "Уведомление успешно удалено",
+			"failed": "Не удалось удалить уведомление."
 		},
 		"edit": {
-			"success": "",
-			"failed": ""
+			"success": "Уведомление успешно обновлено",
+			"failed": "Не удалось обновить уведомление."
 		},
 		"test": {
-			"success": "",
-			"failed": ""
+			"success": "Тестовое уведомление успешно отправлено",
+			"failed": "Не удалось отправить тестовое уведомление."
 		}
 	},
 	"testLocale": "testLocale",
@@ -332,8 +336,8 @@
 		"validationFailed": "Не удалось выполнить проверку",
 		"noFileSelected": "Файл не выбран",
 		"fallbackPage": "Импортируйте файл для массовой загрузки списка серверов",
-		"invalidFileType": "",
-		"uploadFailed": ""
+		"invalidFileType": "Неверный тип файла",
+		"uploadFailed": "Загрузка не удалась"
 	},
 	"DeleteAccountTitle": "Удалить аккаунт",
 	"DeleteAccountButton": "Удалить аккаунт",
@@ -378,50 +382,56 @@
 			"created": "Создано"
 		},
 		"addTeamMember": {
-			"addMemberMenu": "",
-			"title": "",
-			"description": "",
-			"addButton": ""
+			"addMemberMenu": "Добавить члена команды",
+			"title": "Зарегистрируйте нового члена команды",
+			"description": "Создайте нового пользователя и передайте ему учётные данные. Этот метод даёт участнику мгновенный доступ ко всем мониторам.",
+			"addButton": "Добавить участника"
 		},
-		"register": "",
+		"register": "Зарегистрируйте члена команды",
 		"registerToast": {
-			"success": "",
-			"dbUserExists": "",
-			"unknownError": ""
+			"success": "Созданный пользователем, безопасный обмен учетными данными с участником.",
+			"dbUserExists": "Пользователь уже существует.",
+			"unknownError": "Произошла неизвестная ошибка."
 		},
 		"registerTeamMember": {
-			"title": "",
+			"title": "Зарегистрировать члена команды",
 			"auth": {
 				"common": {
 					"inputs": {
 						"firstName": {
 							"errors": {
-								"empty": "",
-								"pattern": ""
+								"empty": "Пожалуйста, введите имя",
+								"pattern": "Имя должно содержать только буквы, пробелы, апострофы или дефисы."
 							}
 						},
 						"lastName": {
 							"errors": {
-								"empty": "",
-								"pattern": ""
+								"empty": "Пожалуйста, введите фамилию",
+								"pattern": "Фамилия должна содержать только буквы, пробелы, апострофы или дефисы."
 							}
 						},
 						"email": {
 							"errors": {
-								"empty": "",
-								"invalid": ""
+								"empty": "Чтобы продолжить, введите адрес электронной почты.",
+								"invalid": "Пожалуйста, перепроверьте правильность введенного адреса электронной почты."
 							}
 						},
 						"role": {
 							"errors": {
-								"empty": ""
+								"empty": "Требуется роль"
 							}
 						}
 					}
 				}
 			}
 		},
-		"role": ""
+		"role": "Роль",
+		"changeTeamPassword": {
+			"changePasswordMenu": "Сбросить пароль",
+			"title": "Сбросить пароль члена команды",
+			"description": "Создайте новый пароль для этого члена команды. Вам необходимо будет сообщить ему пароль по секретному адресу.",
+			"success": "Пароль успешно сброшен. Убедитесь, что вы предоставили учётные данные участнику безопасным способом."
+		}
 	},
 	"monitorState": {
 		"paused": "Остановлено",
@@ -445,8 +455,8 @@
 		"password": "Пароль",
 		"team": "Команда",
 		"logOut": "Выйти",
-		"notifications": "",
-		"logs": ""
+		"notifications": "Уведомления",
+		"logs": "Логи"
 	},
 	"settingsEmailUser": "Email пользователь",
 	"state": "Состояние",
@@ -474,8 +484,8 @@
 	"settingsTestEmailUnknownError": "Неизвестная ошибка",
 	"statusMsg": {
 		"paused": "Мониторинг приостановлен",
-		"up": "",
-		"down": "",
+		"up": "Ваш сайт запущен.",
+		"down": "Сайт оффлайн.",
 		"pending": "Ожидание..."
 	},
 	"uptimeGeneralInstructions": {
@@ -483,13 +493,14 @@
 		"ping": "Ведите IP-адрес или имя хоста для пинга (например, 192.168.1.100 или example.com) и добавьте понятное имя, которое будет отображаться на панели инструментов.",
 		"docker": "Введите Docker ID вашего контейнера. Docker ID должен быть полным 64-символьным Docker ID. Вы можете запустить docker inspect <short_id>, чтобы получить полный ID контейнера.",
 		"port": "Введите URL-адрес или IP-адрес сервера, номер порта и понятное имя, которое будет отображаться на панели инструментов.",
-		"game": ""
+		"game": "Введите IP-адрес или имя хоста и номер порта для пинга (например, 192.168.1.100 или example.com) и выберите тип игры.",
+		"https": "Введите URL-адрес или IP-адрес для мониторинга (например, https://example.com/ или 192.168.1.100) и добавьте понятное отображаемое имя, которое будет отображаться на панели управления."
 	},
 	"common": {
-		"appName": "",
-		"monitoringAgentName": "",
+		"appName": "Checkmate",
+		"monitoringAgentName": "Захватить",
 		"buttons": {
-			"toggleTheme": ""
+			"toggleTheme": "Переключить тему"
 		},
 		"toasts": {
 			"networkError": "Ошибка сети",
@@ -506,7 +517,7 @@
 			"inputs": {
 				"email": {
 					"label": "Электронная почта",
-					"placeholder": "",
+					"placeholder": "jordan.ellis@domain.com",
 					"errors": {
 						"empty": "Для продолжения введите свой адрес электронной почты",
 						"invalid": "Пожалуйста, проверьте правильность введённого адреса электронной почты"
@@ -560,7 +571,7 @@
 				},
 				"firstName": {
 					"label": "Имя",
-					"placeholder": "",
+					"placeholder": "Jordan",
 					"errors": {
 						"empty": "Пожалуйста, введите свое имя",
 						"length": "Имя должно быть короче 50 символов",
@@ -569,7 +580,7 @@
 				},
 				"lastName": {
 					"label": "Фамилия",
-					"placeholder": "",
+					"placeholder": "Ellis",
 					"errors": {
 						"empty": "Пожалуйста, введите свою фамилию",
 						"length": "Фамилия должна быть короче 50 символов",
@@ -583,12 +594,12 @@
 			"fields": {
 				"password": {
 					"errors": {
-						"incorrect": ""
+						"incorrect": "Введённый вами пароль неверный"
 					}
 				},
 				"role": {
 					"errors": {
-						"min": ""
+						"min": "Требуется хотя бы одна роль"
 					}
 				}
 			}
@@ -602,8 +613,8 @@
 			"links": {
 				"forgotPassword": "Забыли пароль?",
 				"register": "У вас нет учетной записи?",
-				"forgotPasswordLink": "",
-				"registerLink": ""
+				"forgotPasswordLink": "Сбросить пароль",
+				"registerLink": "Зарегистрируйтесь здесь"
 			},
 			"toasts": {
 				"success": "С возвращением! Вы успешно вошли в систему.",
@@ -611,10 +622,10 @@
 			},
 			"errors": {
 				"password": {
-					"incorrect": ""
+					"incorrect": "Предоставленный вами пароль не соответствует нашим записям."
 				}
 			},
-			"welcome": ""
+			"welcome": "Добро пожаловать обратно в Checkmate!"
 		},
 		"registration": {
 			"heading": {
@@ -641,7 +652,7 @@
 			"toasts": {
 				"success": "Добро пожаловать! Ваша учетная запись была создана успешно."
 			},
-			"welcome": ""
+			"welcome": "Добро пожаловать в Checkmate!"
 		},
 		"forgotPassword": {
 			"heading": "Забыли пароль?",
@@ -652,446 +663,471 @@
 				"stepFour": "Ваш пароль был успешно сброшен. Нажмите ниже, чтобы волшебным образом войти в систему."
 			},
 			"buttons": {
-				"openEmail": "",
+				"openEmail": "Открыть Gmail",
 				"resetPassword": "Сбросить пароль"
 			},
 			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
+				"passwordKey": "Password key icon",
+				"email": "Email icon",
+				"lock": "Lock icon",
+				"passwordConfirm": "Password confirm icon"
 			},
 			"links": {
-				"login": "",
-				"resend": ""
+				"login": "Вернуться к <a>Входу</a>",
+				"resend": "Не получили письмо? <a>Нажмите, чтобы отправить повторно</a>"
 			},
 			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
+				"sent": "Инструкция отправлена на <email/>.",
+				"emailNotFound": "Email не найден.",
+				"redirect": "Перенаправление через <seconds/>...",
+				"success": "Ваш пароль успешно сброшен.",
+				"error": "Не удалось сбросить пароль. Повторите попытку позже или обратитесь в службу поддержки."
 			}
 		}
 	},
 	"errorPages": {
 		"serverUnreachable": {
 			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
+				"reconnected": "Успешное повторное подключение к серверу.",
+				"stillUnreachable": "Сервер по-прежнему недоступен. Повторите попытку позже."
 			},
-			"alertBox": "",
-			"description": "",
+			"alertBox": "Ошибка подключения к серверу",
+			"description": "Не удаётся подключиться к серверу. Проверьте подключение к Интернету или конфигурацию развёртывания, если проблема не устранена.",
 			"retryButton": {
-				"default": "",
-				"processing": ""
+				"default": "Повторите попытку подключения",
+				"processing": "Подключение..."
 			}
 		}
 	},
 	"createNotifications": {
-		"title": "",
+		"title": "Создать канал уведомлений",
 		"nameSettings": {
-			"title": "",
-			"description": "",
-			"nameLabel": "",
-			"namePlaceholder": ""
+			"title": "Имя",
+			"description": "Описательное имя для вашей интеграции.",
+			"nameLabel": "Имя",
+			"namePlaceholder": "например, уведомления Slack"
 		},
 		"typeSettings": {
-			"title": "",
-			"description": "",
-			"typeLabel": ""
+			"title": "Тип",
+			"description": "Выберите тип канала уведомлений, который вы хотите создать.",
+			"typeLabel": "Тип"
 		},
 		"emailSettings": {
-			"title": "",
-			"description": "",
-			"emailLabel": "",
-			"emailPlaceholder": ""
+			"title": "Электронная почта",
+			"description": "Адреса электронной почты получателей.",
+			"emailLabel": "Адрес электронной почты",
+			"emailPlaceholder": "например, john@example.com"
 		},
 		"slackSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Slack",
+			"description": "Настройте свой вебхук Slack здесь",
+			"webhookLabel": "Slack вебхук URL",
+			"webhookPlaceholder": "https://hooks.slack.com/services/..."
 		},
 		"pagerdutySettings": {
-			"title": "",
-			"description": "",
-			"integrationKeyLabel": "",
-			"integrationKeyPlaceholder": ""
+			"title": "PagerDuty",
+			"description": "Настройте интеграцию PagerDuty здесь",
+			"integrationKeyLabel": "Интеграционный ключ",
+			"integrationKeyPlaceholder": "1234567890"
 		},
 		"discordSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Discord",
+			"description": "Настройте вебхук Discord здесь",
+			"webhookLabel": "Discord вебхук URL",
+			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
 		"webhookSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
+			"title": "Вебхук",
+			"description": "Настройте свой вебхук здесь",
+			"webhookLabel": "URL-адрес веб-перехватчика",
+			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
-		"testNotification": "",
-		"dialogDeleteTitle": "",
-		"dialogDeleteConfirm": ""
+		"testNotification": "Тестовое уведомление",
+		"dialogDeleteTitle": "Вы уверены, что хотите удалить это уведомление?",
+		"dialogDeleteConfirm": "Удалить"
 	},
 	"notificationConfig": {
-		"title": "",
-		"description": ""
+		"title": "Уведомления",
+		"description": "Выберите каналы уведомлений, которые вы хотите использовать"
 	},
 	"monitorStatus": {
-		"checkingEvery": "",
-		"withCaptureAgent": "",
-		"up": "",
-		"down": "",
-		"paused": ""
+		"checkingEvery": "Проверка каждый {{interval}}",
+		"withCaptureAgent": "с агентом захвата {{version}}",
+		"up": "вверх",
+		"down": "вниз",
+		"paused": "приостановлено"
 	},
-	"advancedMatching": "",
-	"sendTestNotifications": "",
-	"selectAll": "",
-	"showAdminLoginLink": "",
+	"advancedMatching": "Расширенное сопоставление",
+	"sendTestNotifications": "Отправить тестовое уведомление",
+	"selectAll": "Выбрать все",
+	"showAdminLoginLink": "Показывать ссылку «Администратор? Войти здесь» на странице статуса",
 	"logsPage": {
-		"title": "",
-		"description": "",
+		"title": "Логи",
+		"description": "Системные логи - последние 1000 строк",
 		"tabs": {
-			"queue": "",
-			"logs": "",
-			"diagnostics": ""
+			"queue": "Очередь заданий",
+			"logs": "Серверные логи",
+			"diagnostics": "Диагностика"
 		},
 		"toast": {
-			"fetchLogsSuccess": ""
+			"fetchLogsSuccess": "Логи успешно получены"
 		},
 		"logLevelSelect": {
-			"title": "",
+			"title": "Уровень логов",
 			"values": {
-				"all": "",
-				"info": "",
-				"warn": "",
-				"error": "",
-				"debug": ""
+				"all": "Все",
+				"info": "Информация",
+				"warn": "Предупреждение",
+				"error": "Ошибка",
+				"debug": "Дебаг"
 			}
 		}
 	},
 	"queuePage": {
-		"title": "",
-		"refreshButton": "",
-		"flushButton": "",
+		"title": "Очередь",
+		"refreshButton": "Обновить",
+		"flushButton": "Очистить очередь",
 		"jobTable": {
-			"title": "",
-			"idHeader": "",
-			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "",
-			"lockedAtHeader": "",
-			"runCountHeader": "",
-			"failCountHeader": "",
-			"lastRunHeader": "",
-			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": "",
-			"intervalHeader": ""
+			"title": "Задачи в настоящее время в очереди",
+			"idHeader": "ID монитора",
+			"urlHeader": "URL",
+			"typeHeader": "Тип",
+			"activeHeader": "Активный",
+			"lockedAtHeader": "Заблокировано на",
+			"runCountHeader": "Количество запусков",
+			"failCountHeader": "Количество неудач",
+			"lastRunHeader": "Последний запуск в",
+			"lastFinishedAtHeader": "Последний раз закончил в",
+			"lastRunTookHeader": "Последний забег занял",
+			"intervalHeader": "Интервал"
 		},
 		"metricsTable": {
-			"title": "",
-			"metricHeader": "",
-			"valueHeader": ""
+			"title": "Метрики очереди",
+			"metricHeader": "Метрическая",
+			"valueHeader": "Ценить"
 		},
 		"failedJobTable": {
-			"title": "",
-			"monitorIdHeader": "",
-			"monitorUrlHeader": "",
-			"failCountHeader": "",
-			"failedAtHeader": "",
-			"failReasonHeader": ""
+			"title": "Неудачные задачи",
+			"monitorIdHeader": "ID монитора",
+			"monitorUrlHeader": "URL монитора",
+			"failCountHeader": "Количество падений",
+			"failedAtHeader": "Последнее падение в",
+			"failReasonHeader": "Причина падения"
 		}
 	},
 	"export": {
-		"title": "",
-		"success": "",
-		"failed": ""
+		"title": "Экспорт мониторов",
+		"success": "Мониторы успешно экспортированы!",
+		"failed": "Не удалось экспортировать мониторы"
 	},
 	"monitorActions": {
-		"title": "",
-		"import": "",
-		"export": "",
-		"deleteSuccess": "",
-		"deleteFailed": "",
-		"details": ""
+		"title": "Экспорт/Импорт",
+		"import": "Импортные мониторы",
+		"export": "Экспорт мониторов",
+		"deleteSuccess": "Монитор успешно удален",
+		"deleteFailed": "Не удалось удалить монитор",
+		"details": "Подробности"
 	},
 	"settingsPage": {
 		"aboutSettings": {
-			"labelDevelopedBy": "",
-			"labelVersion": "",
-			"title": ""
+			"labelDevelopedBy": "Разработано Bluewave Labs",
+			"labelVersion": "Версия",
+			"title": "Об"
 		},
 		"demoMonitorsSettings": {
-			"buttonAddMonitors": "",
-			"description": "",
-			"title": ""
+			"buttonAddMonitors": "Добавить демо мониторы",
+			"description": "Добавьте образцы мониторов для демонстрации.",
+			"title": "Демо мониторы"
 		},
 		"emailSettings": {
-			"buttonSendTestEmail": "",
-			"description": "",
-			"descriptionTransport": "",
-			"labelAddress": "",
-			"labelConnectionHost": "",
-			"labelHost": "",
-			"labelIgnoreTLS": "",
-			"labelPassword": "",
-			"labelPasswordSet": "",
-			"labelPool": "",
-			"labelPort": "",
-			"labelRejectUnauthorized": "",
-			"labelRequireTLS": "",
-			"labelSecure": "",
-			"labelTLSServername": "",
-			"labelUser": "",
-			"linkTransport": "",
-			"placeholderUser": "",
-			"title": "",
-			"toastEmailRequiredFieldsError": ""
+			"buttonSendTestEmail": "Отправить тестовое письмо",
+			"description": "Настройте параметры электронной почты в вашей системе. Она используется для отправки уведомлений и оповещений.",
+			"descriptionTransport": "Это создает SMTP-транспорт для NodeMailer.",
+			"labelAddress": "Адрес электронной почты — используется для аутентификации.",
+			"labelConnectionHost": "Хост подключения электронной почты — имя хоста для использования в приветствии HELO/EHLO.",
+			"labelHost": "Хост электронной почты — имя хоста или IP-адрес для подключения.",
+			"labelIgnoreTLS": "Отключить STARTTLS: не использовать TLS, даже если сервер его поддерживает.",
+			"labelPassword": "Пароль электронной почты - Пароль для аутентификации",
+			"labelPasswordSet": "Пароль установлен. Нажмите «Сброс», чтобы изменить его.",
+			"labelPool": "Включить пул соединений: повторно использовать существующие соединения для повышения производительности.",
+			"labelPort": "Порт электронной почты — порт для подключения",
+			"labelRejectUnauthorized": "Отклонять недействительные сертификаты: отклонять соединения с самоподписанными или ненадежными сертификатами.",
+			"labelRequireTLS": "Принудительный STARTTLS: требуется обновление TLS, выдается ошибка, если не поддерживается",
+			"labelSecure": "Использовать SSL (рекомендуется): зашифровать соединение с помощью SSL/TLS.",
+			"labelTLSServername": "Имя сервера TLS — необязательное имя хоста для проверки TLS, если хост — это IP-адрес.",
+			"labelUser": "Пользователь электронной почты — имя пользователя для аутентификации, переопределяет адрес электронной почты, если указан",
+			"linkTransport": "Технические характеристики смотрите здесь.",
+			"placeholderUser": "Оставьте пустым, если не требуется",
+			"title": "Электронная почта",
+			"toastEmailRequiredFieldsError": "Требуется адрес электронной почты, хост, порт и пароль"
 		},
 		"pageSpeedSettings": {
-			"description": "",
-			"labelApiKeySet": "",
-			"labelApiKey": "",
-			"title": ""
+			"description": "Введите ключ API Google PageSpeed, чтобы включить мониторинг Google PageSpeed. Нажмите «Сбросить», чтобы обновить ключ.",
+			"labelApiKeySet": "API-ключ установлен. Нажмите «Сброс», чтобы изменить его.",
+			"labelApiKey": "API-ключ PageSpeed",
+			"title": "API-ключ Google PageSpeed"
 		},
-		"saveButtonLabel": "",
+		"saveButtonLabel": "Сохранить",
 		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
-			"description": "",
-			"labelTTL": "",
-			"labelTTLOptional": "",
-			"title": ""
+			"clearAllStatsButton": "Очистить всю статистику",
+			"clearAllStatsDescription": "Очистить всю статистику. Это необратимо.",
+			"clearAllStatsDialogConfirm": "Да, очистить всю статистику",
+			"clearAllStatsDialogDescription": "После удаления история и статистика мониторинга не могут быть восстановлены.",
+			"clearAllStatsDialogTitle": "Вы хотите очистить всю статистику?",
+			"description": "Укажите, как долго вы хотите хранить данные. Вы также можете удалить все существующие данные.",
+			"labelTTL": "Дни, за которые вы хотите посмотреть историю.",
+			"labelTTLOptional": "0 для бесконечности",
+			"title": "История монитора"
 		},
 		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "",
-			"description": "",
-			"dialogConfirm": "",
-			"dialogDescription": "",
-			"dialogTitle": "",
-			"title": ""
+			"buttonRemoveAllMonitors": "Удалить все мониторы",
+			"description": "Удалите все мониторы из вашей системы.",
+			"dialogConfirm": "Да, удалить все мониторы",
+			"dialogDescription": "После удаления, мониторы нельзя будет воостановить.",
+			"dialogTitle": "Вы хотите удалить все мониторы?",
+			"title": "Сброс системы"
 		},
 		"timezoneSettings": {
-			"description": "",
-			"label": "",
-			"title": ""
+			"description": "Выберите часовой пояс, используемый для отображения даты и времени в приложении.",
+			"label": "Отображение часового пояса",
+			"title": "Отображение часового пояса"
 		},
-		"title": "",
+		"title": "Настройки",
 		"uiSettings": {
-			"description": "",
-			"labelLanguage": "",
-			"labelTheme": "",
-			"title": ""
+			"description": "Переключайтесь между светлым и темным режимами или меняйте язык пользовательского интерфейса.",
+			"labelLanguage": "Язык",
+			"labelTheme": "Режим темы",
+			"title": "Появление"
 		},
 		"urlSettings": {
-			"description": "",
-			"label": "",
-			"selectDisabled": "",
-			"selectEnabled": "",
-			"title": ""
+			"description": "Отображение IP-адреса или URL-адреса монитора на общедоступной странице состояния. Если эта опция отключена, для защиты конфиденциальной информации будет отображаться только имя монитора.",
+			"label": "Отображать IP/URL на странице статуса",
+			"selectDisabled": "Выключено",
+			"selectEnabled": "Включено",
+			"title": "Мониторинг IP/URL на странице статуса"
 		},
 		"globalThresholds": {
-			"title": "",
-			"description": ""
+			"title": "Глобальные пороги",
+			"description": "Настройте глобальные пороговые значения для процессора, памяти, диска и температуры. Если значение указано, оно будет автоматически включено для мониторинга."
 		}
 	},
 	"statusPageCreate": {
-		"buttonSave": ""
+		"buttonSave": "Сохранить"
 	},
-	"incidentsOptionsHeaderFilterResolved": "",
-	"settingsSave": "",
-	"statusPageCreateAppearanceTitle": "",
-	"confirmPassword": "",
+	"incidentsOptionsHeaderFilterResolved": "Решено",
+	"settingsSave": "Сохранить",
+	"statusPageCreateAppearanceTitle": "Внешний вид",
+	"confirmPassword": "Подтвердите пароль",
 	"monitorHooks": {
-		"failureAddDemoMonitors": "",
-		"successAddDemoMonitors": ""
+		"failureAddDemoMonitors": "Не удалось добавить демонстрационные мониторы.",
+		"successAddDemoMonitors": "Демонстрационные мониторы успешно добавлены"
 	},
-	"settingsAppearance": "",
-	"settingsDisplayTimezone": "",
-	"settingsGeneralSettings": "",
-	"incidentsOptionsHeaderTotalIncidents": "",
+	"settingsAppearance": "Внешний вид",
+	"settingsDisplayTimezone": "Отображение часового пояса",
+	"settingsGeneralSettings": "Общие настройки",
+	"incidentsOptionsHeaderTotalIncidents": "Всего инцидентов",
 	"statusPage": {
-		"deleteSuccess": "",
-		"deleteFailed": "",
-		"createSuccess": "",
-		"updateSuccess": "",
-		"generalSettings": "",
-		"contents": "",
+		"deleteSuccess": "Страница статуса успешно удалена",
+		"deleteFailed": "Не удалось удалить страницу статуса",
+		"createSuccess": "Страница статуса успешно создана",
+		"updateSuccess": "Страница статуса успешно обновлена",
+		"generalSettings": "Общие настройки",
+		"contents": "Содержание",
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Мониторинг и отображение состояния ваших сервисов в режиме реального времени",
+				"Отслеживайте состояние нескольких сервисов и делитесь их статусом",
+				"Дайте пользователям информацию о сбоях и производительности"
+			],
+			"title": "Страница статуса используется для:",
+			"actionButton": "Давайте создадим вашу первую страницу статуса!"
 		}
 	},
-	"testNotificationsDisabled": "",
-	"incidentsTableResolvedAt": "",
-	"incidentsTableActionResolve": "",
+	"testNotificationsDisabled": "Для этого монитора не настроены уведомления. Вам нужно добавить их, нажав кнопку «Настроить».",
+	"incidentsTableResolvedAt": "Решено в",
+	"incidentsTableActionResolve": "Решено",
 	"checkHooks": {
-		"failureResolveOne": "",
-		"failureResolveAll": "",
-		"failureResolveMonitor": ""
+		"failureResolveOne": "Не удалось разрешить инцидент.",
+		"failureResolveAll": "Не удалось разрешить все инциденты.",
+		"failureResolveMonitor": "Не удалось устранить инциденты с монитором."
 	},
-	"checkFormError": "",
+	"checkFormError": "Пожалуйста, проверьте форму на наличие ошибок.",
 	"diagnosticsPage": {
-		"diagnosticDescription": "",
-		"statsDescription": "",
+		"diagnosticDescription": "Системная диагностика",
+		"statsDescription": "Системная статистика",
 		"gauges": {
-			"heapAllocationTitle": "",
-			"heapAllocationSubtitle": "",
-			"heapUsageTitle": "",
-			"heapUsageSubtitle": "",
-			"heapUtilizationTitle": "",
-			"heapUtilizationSubtitle": "",
-			"instantCpuUsageTitle": "",
-			"instantCpuUsageSubtitle": ""
+			"heapAllocationTitle": "Использовано кучи",
+			"heapAllocationSubtitle": "% доступной памяти",
+			"heapUsageTitle": "Выделено памяти в куче",
+			"heapUsageSubtitle": "% доступно памяти",
+			"heapUtilizationTitle": "Использовано кучи",
+			"heapUtilizationSubtitle": "% от доступного",
+			"instantCpuUsageTitle": "Загруженность CPU",
+			"instantCpuUsageSubtitle": "% загрузка CPU за 1s"
 		},
 		"stats": {
-			"eventLoopDelayTitle": "",
-			"uptimeTitle": "",
-			"usedHeapSizeTitle": "",
-			"totalHeapSizeTitle": "",
-			"osMemoryLimitTitle": ""
+			"eventLoopDelayTitle": "Задержка цикла событий",
+			"uptimeTitle": "Аптайм",
+			"usedHeapSizeTitle": "Размер используемой кучи",
+			"totalHeapSizeTitle": "Общий размер кучи",
+			"osMemoryLimitTitle": "Ограничение памяти ОS"
 		}
 	},
-	"pageSpeedLighthouseAPI": "",
+	"pageSpeedLighthouseAPI": "Используйте API Lighthouse PageSpeed для мониторинга вашего сайта",
 	"time": {
-		"threeMinutes": "",
-		"fiveMinutes": "",
-		"tenMinutes": "",
-		"twentyMinutes": "",
-		"oneHour": "",
-		"oneDay": "",
-		"oneWeek": "",
-		"fourMinutes": "",
-		"oneMinute": "",
-		"twoMinutes": "",
-		"fifteenSeconds": "",
-		"thirtySeconds": ""
+		"threeMinutes": "3 минуты",
+		"fiveMinutes": "5 минут",
+		"tenMinutes": "10 минут",
+		"twentyMinutes": "20 минут",
+		"oneHour": "1 час",
+		"oneDay": "1 день",
+		"oneWeek": "1 неделя",
+		"fourMinutes": "4 минуты",
+		"oneMinute": "1 минута",
+		"twoMinutes": "2 минуты",
+		"fifteenSeconds": "15 секунд",
+		"thirtySeconds": "30 секунд"
 	},
 	"general": {
-		"noOptionsFound": ""
+		"noOptionsFound": "{{unit}} не найдено"
 	},
 	"infrastructureMonitor": {
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Отслеживайте производительность серверов",
+				"Выявляйте узкие места и оптимизируйте использование",
+				"Обеспечивайте надежность с помощью мониторинга в режиме реального времени"
+			],
+			"title": "Монитор инфраструктуры используется для:",
+			"actionButton": "Давайте создадим ваш первый монитор инфраструктуры!"
 		}
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Отметьте периоды технического обслуживания.",
+				"Устраните любые недопонимания.",
+				"Прекратите отправку оповещений в периоды технического обслуживания."
+			],
+			"title": "Период технического обслуживания используется для:",
+			"actionButton": "Давайте создадим ваше первое окно технического обслуживания!"
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Отчет об удобстве использования страницы",
+				"Помощь в анализе скорости загрузки веб-страницы",
+				"Предложение о том, как можно улучшить страницу"
+			],
+			"title": "Монитор PageSpeed используется для:",
+			"actionButton": "Давайте создадим ваш первый монитор PageSpeed!"
 		}
 	},
 	"uptimeMonitor": {
 		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
+			"checks": [
+				"Проверьте, доступны ли веб-сайты или серверы и отвечают ли они",
+				"Оповещайте команды о сбоях или проблемах с производительностью",
+				"Мониторинг конечных точек HTTP, пингов, контейнеров и портов",
+				"Отслеживайте динамику времени безотказной работы и надежности"
+			],
+			"title": "Монитор работоспособности используется для:",
+			"actionButton": "Давайте создадим ваш первый монитор времени безотказной работы!"
 		}
 	},
 	"editUserPage": {
 		"form": {
-			"email": "",
-			"firstName": "",
-			"lastName": "",
-			"role": "",
-			"save": ""
+			"email": "Электронная почта",
+			"firstName": "Имя",
+			"lastName": "Фамилия",
+			"role": "Роли",
+			"save": "Сохранить"
 		},
 		"table": {
-			"actionHeader": "",
-			"roleHeader": ""
+			"actionHeader": "Действие",
+			"roleHeader": "Роль"
 		},
-		"title": "",
+		"title": "Редактировать пользователя",
 		"toast": {
-			"successUserUpdate": "",
-			"validationErrors": ""
+			"successUserUpdate": "Пользователь успешно обновлен",
+			"validationErrors": "Ошибки проверки"
 		}
 	},
-	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": "",
+	"incidentsPageActionResolveMonitor": "Разрешение инцидентов мониторинга",
+	"incidentsPageActionResolveAll": "Решить все инциденты",
 	"matchMethodOptions": {
-		"equal": "",
-		"equalPlaceholder": "",
-		"include": "",
-		"includePlaceholder": "",
-		"regex": "",
-		"regexPlaceholder": "",
-		"text": ""
+		"equal": "Равный",
+		"equalPlaceholder": "успех",
+		"include": "Включить",
+		"includePlaceholder": "хорошо",
+		"regex": "Regex",
+		"regexPlaceholder": "^(success|ok)$",
+		"text": "Метод сопоставления"
 	},
 	"monitorType": {
 		"docker": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "Имя/ID контейнера",
+			"namePlaceholder": "Мой контейнер",
+			"placeholder": "my-app или abcd1234"
 		},
 		"http": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "URL для мониторинга",
+			"namePlaceholder": "Google",
+			"placeholder": "google.com"
 		},
 		"ping": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "IP-адрес для мониторинга",
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
 		},
 		"port": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "URL для мониторинга",
+			"namePlaceholder": "Локальный хост:5173",
+			"placeholder": "локальный хост"
 		},
 		"game": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "URL для мониторинга",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
 		}
 	},
 	"uptimeAdvancedMatching": {
-		"jsonPath": ""
+		"jsonPath": "путь к JSON"
 	},
-	"bytesPerSecond": "",
-	"bytesReceived": "",
-	"bytesSent": "",
-	"chooseGame": "",
+	"bytesPerSecond": "Байты в секунду",
+	"bytesReceived": "Получено байтов",
+	"bytesSent": "Отправлено байтов",
+	"chooseGame": "Выбрать игру",
 	"createMonitorPage": {
-		"incidentConfigDescription": "",
-		"incidentConfigStatusWindowLabel": "",
-		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": ""
+		"incidentConfigDescription": "Мониторинг использует скользящее окно, чтобы понять, когда ресурс недоступен. Статус изменится, если нужный процент проверок покажет сбой.",
+		"incidentConfigStatusWindowLabel": "Сколько проверок должно быть в скользящем окне?",
+		"incidentConfigStatusWindowThresholdLabel": "Какой процент проверок в скользящем окне завершается неудачей/успешностью до изменения статуса монитора?",
+		"incidentConfigTitle": "Инциденты",
+		"incidentConfigDescriptionV2": "Количество последовательных проверок, необходимых для изменения статуса монитора. Максимум 25.",
+		"incidentConfigStatusCheckNumber": "Сколько проверок перед сменой статуса?",
+		"intervalTitle": "Интервал проверки",
+		"intervalDescription": "Как часто следует проверять монитор."
 	},
-	"dataRate": "",
-	"dataReceived": "",
-	"dataSent": "",
-	"details": "",
-	"drops": "",
-	"errors": "",
-	"errorsIn": "",
-	"errorsOut": "",
-	"gameServerMonitoring": "",
-	"gameServerMonitoringDescription": "",
-	"network": "",
-	"networkDrops": "",
-	"networkErrors": "",
-	"networkInterface": "",
-	"noNetworkStatsAvailable": "",
-	"packetsPerSecond": "",
-	"packetsReceived": "",
-	"packetsReceivedRate": "",
-	"packetsSent": "",
-	"rate": "",
-	"selectInterface": ""
+	"dataRate": "Скорость передачи данных",
+	"dataReceived": "Данные получены",
+	"dataSent": "Данные отправлены",
+	"details": "Подробности",
+	"drops": "Падений",
+	"errors": "Ошибки",
+	"errorsIn": "Ошибки в",
+	"errorsOut": "Ошибки вне",
+	"gameServerMonitoring": "Мониторинг игрового сервера",
+	"gameServerMonitoringDescription": "Проверьте, запущен ли ваш игровой сервер.",
+	"network": "Сеть",
+	"networkDrops": "Сетевые падения",
+	"networkErrors": "Ошибки сети",
+	"networkInterface": "Сетевой интерфейс",
+	"noNetworkStatsAvailable": "Статистика сети отсутствует.",
+	"packetsPerSecond": "Пакетов в секунду",
+	"packetsReceived": "Получено пакетов",
+	"packetsReceivedRate": "Скорость получения пакетов",
+	"packetsSent": "Отправлено пакетов",
+	"rate": "коэффициент",
+	"selectInterface": "Выберите интерфейс"
 }
