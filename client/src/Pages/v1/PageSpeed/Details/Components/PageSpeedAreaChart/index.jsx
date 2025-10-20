@@ -1,21 +1,115 @@
+<<<<<<< HEAD:client/src/Pages/v1/PageSpeed/Details/Components/PageSpeedAreaChart/index.jsx
 import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import AreaChart from "../Charts/AreaChart.jsx";
 import AreaChartLegend from "../Charts/AreaChartLegend.jsx";
 import SkeletonLayout from "./skeleton.jsx";
 import ScoreIcon from "../../../../../../assets/icons/monitor-graph-line.svg?react";
+=======
+import ChartBox from "../../../../../Components/Charts/ChartBox";
+import AreaChart from "../Charts/AreaChart";
+import AreaChartLegend from "../Charts/AreaChartLegend";
+import Pagination from "../PageSpeedPagination";
+import SkeletonLayout from "./skeleton";
+import ScoreIcon from "../../../../../assets/icons/monitor-graph-line.svg?react";
+>>>>>>> 748ebb76 (Feat: Add pagination to Pagespeed details):client/src/Pages/PageSpeed/Details/Components/PageSpeedAreaChart/index.jsx
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 
+import { useState, useMemo } from "react";
 import { useTheme } from "@emotion/react";
+
+/**
+ * Processes data to insert gaps with null values based on the interval.
+ * @param {Array} data
+ * @param {number} interval - The interval in milliseconds for gaps.
+ * @returns {Array} The formatted data with gaps.
+ */
+const processDataWithGaps = (data, interval) => {
+	if (data.length === 0) return [];
+	let formattedData = [];
+	let last = new Date(data[0].createdAt).getTime();
+
+	// Helper function to add a null entry
+	const addNullEntry = (timestamp) => {
+		formattedData.push({
+			accessibility: "N/A",
+			bestPractices: "N/A",
+			performance: "N/A",
+			seo: "N/A",
+			createdAt: timestamp,
+		});
+	};
+
+	data.forEach((entry) => {
+		const current = new Date(entry.createdAt).getTime();
+		if (current - last > interval * 2) {
+			// Insert null entries for each interval
+			let temp = last + interval;
+			while (temp < current) {
+				addNullEntry(new Date(temp).toISOString());
+				temp += interval;
+			}
+		}
+
+		formattedData.push(entry);
+		last = current;
+	});
+
+	return formattedData;
+};
+
+const createPagination = (data, timeRange) => {
+	if (data.length === 0) return [];
+	const paginatedData = []
+	let currentPage = []
+	let startTime = new Date(data[0].createdAt).getTime()
+	let endTime = startTime + timeRange * 3600000 
+	data.forEach((entry) => {
+		const entryTime = new Date(entry.createdAt).getTime()
+		if (entryTime <= endTime) {
+			currentPage.push(entry)
+		} else {
+			paginatedData.push(currentPage)
+			currentPage = []
+			currentPage.push(entry)
+			startTime = new Date(entry.createdAt).getTime()
+			endTime = startTime + timeRange * 3600000
+		}
+	})
+	paginatedData.push(currentPage)
+	return paginatedData
+}
 
 const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) => {
 	const theme = useTheme();
+	const [page, setPage] = useState(0);
+	const [ timeRange, setTimeRange] = useState(2)
+
+	const data = monitor?.checks ? [...monitor.checks].reverse() : [];
+
+	const memoizedData = useMemo(
+		() => processDataWithGaps(data, 3600000),
+		[data[0]]
+	);
+
+	const paginatedData = useMemo(
+		() => createPagination(memoizedData, timeRange),
+		[memoizedData,timeRange]
+	);
 
 	if (!shouldRender) {
 		return <SkeletonLayout />;
 	}
 
-	const data = monitor?.checks ? [...monitor.checks].reverse() : [];
+	const handleChangePage = (event, newPage) => {
+		setPage(newPage);
+
+	};
+
+	const handleChangeTimeRange = (event) => {
+		setPage(0)
+		setTimeRange(event.target.value)
+	}
 
 	return (
 		<Stack
@@ -36,9 +130,21 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 				}
 			>
 				<AreaChart
-					data={data}
-					monitor={monitor}
+					data={paginatedData[page]}
 					metrics={metrics}
+				/>
+				<Pagination
+					pageCount={paginatedData.length}
+					page={page}
+					handleChangePage={handleChangePage}
+					rowsPerPage={-1}
+					handleChangeRowsPerPage={() => {}}
+					handleChangeTimeRange={handleChangeTimeRange}
+					timeRange={timeRange}
+					timeRangeLabel={[
+						new Date(paginatedData[page][0].createdAt).getTime(),
+						new Date(paginatedData[page][paginatedData[page].length - 1].createdAt).getTime()
+					]}
 				/>
 			</ChartBox>
 		</Stack>
