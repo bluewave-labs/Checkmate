@@ -155,7 +155,7 @@ export const MonitorTable = ({
 	const handleBulkDelete = async () => {
 		if (
 			!window.confirm(
-				`Are you sure you want to delete ${selectedMonitors.length} monitor(s)?`
+				`Are you sure you want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}?`
 			)
 		) {
 			return;
@@ -197,21 +197,24 @@ export const MonitorTable = ({
 			{
 				id: "select",
 				content: (
-					<Checkbox
-						checked={selectedMonitors.length === monitors.length && monitors.length > 0}
-						indeterminate={
-							selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
-						}
-						onChange={handleSelectAll}
-					/>
+					<div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+						<Checkbox
+							checked={selectedMonitors.length === monitors.length && monitors.length > 0}
+							indeterminate={
+								selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
+							}
+							onChange={handleSelectAll}
+						/>
+					</div>
 				),
 				render: (row) => {
 					return (
-						<Checkbox
-							checked={selectedMonitors.includes(row._id)}
-							onChange={() => handleSelectMonitor(row._id)}
-							onClick={(e: any) => e.stopPropagation()}
-						/>
+						<div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+							<Checkbox
+								checked={selectedMonitors.includes(row._id)}
+								onChange={() => handleSelectMonitor(row._id)}
+							/>
+						</div>
 					);
 				},
 			},
@@ -277,18 +280,26 @@ export const MonitorTable = ({
 						gap: theme.spacing(4),
 						alignItems: "center",
 						padding: theme.spacing(4),
-						backgroundColor: theme.palette.background.paper,
+						backgroundColor: theme.palette.primary.main,
 						borderRadius: 1,
-						border: `1px solid ${theme.palette.divider}`,
+						border: `1px solid ${theme.palette.primary.lowContrast}`,
 					}}
 				>
-					<Typography variant="body2">
-						{selectedMonitors.length} monitor(s) selected
+					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText }}>
+						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? '' : 's'} selected
 					</Typography>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkPause}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Pause Selected
 					</Button>
@@ -296,13 +307,30 @@ export const MonitorTable = ({
 						variant="outlined"
 						size="small"
 						onClick={handleBulkResume}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Resume Selected
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
+						color="primary"
 						onClick={() => setShowBulkNotifications(true)}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Set Notifications
 					</Button>
@@ -311,6 +339,15 @@ export const MonitorTable = ({
 						size="small"
 						color="error"
 						onClick={handleBulkDelete}
+						sx={{
+							color: theme.palette.error.main,
+							borderColor: theme.palette.error.main,
+							"&:hover": {
+								borderColor: theme.palette.error.main,
+								backgroundColor: theme.palette.error.main,
+								color: theme.palette.primary.contrastText,
+							},
+						}}
 					>
 						Delete Selected
 					</Button>
@@ -318,6 +355,12 @@ export const MonitorTable = ({
 						variant="text"
 						size="small"
 						onClick={() => setSelectedMonitors([])}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							"&:hover": {
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Clear Selection
 					</Button>
@@ -337,12 +380,14 @@ export const MonitorTable = ({
 				fullWidth
 				PaperProps={{
 					sx: {
-						backgroundColor: theme.palette.background.paper,
-						color: theme.palette.text.primary,
+						backgroundColor: theme.palette.primary.main,
+						color: theme.palette.primary.contrastText,
+						border: 1,
+						borderColor: theme.palette.primary.lowContrast,
 					},
 				}}
 			>
-				<DialogTitle sx={{ color: theme.palette.text.primary }}>
+				<DialogTitle sx={{ color: theme.palette.primary.contrastText }}>
 					Set Notification Channels
 				</DialogTitle>
 				<DialogContent>
@@ -352,15 +397,15 @@ export const MonitorTable = ({
 					>
 						<Typography
 							variant="body2"
-							sx={{ color: theme.palette.text.secondary }}
+							sx={{ color: theme.palette.primary.contrastTextTertiary }}
 						>
 							Configure notification channels for {selectedMonitors.length} selected
-							monitor(s)
+							monitor{selectedMonitors.length === 1 ? '' : 's'}
 						</Typography>
 						{notificationOptions.length === 0 ? (
 							<Typography
 								variant="body2"
-								sx={{ color: theme.palette.text.secondary, fontStyle: "italic" }}
+								sx={{ color: theme.palette.primary.contrastTextTertiary, fontStyle: "italic" }}
 							>
 								No notification channels configured. Please create notification channels
 								first.
@@ -386,21 +431,21 @@ export const MonitorTable = ({
 						)}
 					</Stack>
 				</DialogContent>
-				<DialogActions sx={{ backgroundColor: theme.palette.background.paper }}>
+				<DialogActions sx={{ backgroundColor: theme.palette.primary.main }}>
 					<Button
 						onClick={() => {
 							setShowBulkNotifications(false);
 							setSelectedNotificationChannels([]);
 						}}
-						variant="text"
-						sx={{ color: theme.palette.text.primary }}
+						variant="contained"
+						color="secondary"
 					>
 						Cancel
 					</Button>
 					<Button
 						onClick={handleBulkNotificationSubmit}
 						variant="contained"
-						color="accent"
+						color="primary"
 						disabled={bulkLoading || notificationOptions.length === 0}
 					>
 						{bulkLoading ? "Updating..." : "Update Notifications"}

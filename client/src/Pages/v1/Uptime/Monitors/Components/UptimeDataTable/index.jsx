@@ -1,20 +1,9 @@
 // Components
-import {
-	Box,
-	Stack,
-	Checkbox,
-	Button,
-	Typography,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	Select as MuiSelect,
-	MenuItem,
-	InputLabel,
-	FormControl,
-	Chip,
-} from "@mui/material";
+import { Box, Stack, Typography, MenuItem, InputLabel, FormControl, Chip, Select as MuiSelect } from "@mui/material";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
+import Button from "@mui/material/Button";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 import DataTable from "@/Components/v1/Table/index.jsx";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
@@ -87,6 +76,7 @@ const UptimeDataTable = ({
 	const [selectedNotificationChannels, setSelectedNotificationChannels] = useState([]);
 	const [bulkLoading, setBulkLoading] = useState(false);
 	const [loadingNotifications, setLoadingNotifications] = useState(false);
+	const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
 	useEffect(() => {
 		const fetchNotificationChannels = async () => {
@@ -138,7 +128,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully paused ${selectedMonitors.length} monitor(s)`,
+						body: `Successfully paused ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
 					});
 				} else {
 					createToast({
@@ -171,7 +161,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully resumed ${selectedMonitors.length} monitor(s)`,
+						body: `Successfully resumed ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
 					});
 				} else {
 					createToast({
@@ -193,14 +183,12 @@ const UptimeDataTable = ({
 		}
 	};
 
-	const handleBulkDelete = async () => {
-		if (
-			!window.confirm(
-				`Are you sure you want to delete ${selectedMonitors.length} monitor(s)?`
-			)
-		) {
-			return;
-		}
+	const handleBulkDelete = () => {
+		setShowDeleteConfirmation(true);
+	};
+
+	const confirmBulkDelete = async () => {
+		setShowDeleteConfirmation(false);
 		setBulkLoading(true);
 		try {
 			const result = await callBulkAPI("/monitors/bulk/delete", {
@@ -210,7 +198,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully deleted ${selectedMonitors.length} monitor(s)`,
+						body: `Successfully deleted ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
 					});
 				} else {
 					createToast({
@@ -243,7 +231,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully updated notifications for ${selectedMonitors.length} monitor(s)`,
+						body: `Successfully updated notifications for ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
 					});
 				} else {
 					createToast({
@@ -282,27 +270,30 @@ const UptimeDataTable = ({
 		{
 			id: "select",
 			content: (
-				<Checkbox
-					checked={
-						selectedMonitors.length === filteredMonitors.length &&
-						filteredMonitors.length > 0
-					}
-					indeterminate={
-						selectedMonitors.length > 0 &&
-						selectedMonitors.length < filteredMonitors.length
-					}
-					onChange={handleSelectAll}
-				/>
+				<div onClick={(e) => e.stopPropagation()}>
+					<Checkbox
+						id="select-all"
+						label=""
+						isChecked={
+							selectedMonitors.length === filteredMonitors.length &&
+							filteredMonitors.length > 0
+						}
+						onChange={handleSelectAll}
+					/>
+				</div>
 			),
 			render: (row) => (
-				<Checkbox
-					checked={selectedMonitors.includes(row._id)}
-					onChange={(e) => {
-						e.stopPropagation();
-						handleSelectMonitor(row._id);
-					}}
-					onClick={(e) => e.stopPropagation()}
-				/>
+				<div onClick={(e) => e.stopPropagation()}>
+					<Checkbox
+						id={`select-${row._id}`}
+						label=""
+						isChecked={selectedMonitors.includes(row._id)}
+						onChange={(e) => {
+							e.stopPropagation();
+							handleSelectMonitor(row._id);
+						}}
+					/>
+				</div>
 			),
 		},
 		{
@@ -424,20 +415,28 @@ const UptimeDataTable = ({
 						gap: theme.spacing(4),
 						alignItems: "center",
 						padding: theme.spacing(4),
-						backgroundColor: theme.palette.background.paper,
+						backgroundColor: theme.palette.primary.main,
 						borderRadius: 1,
-						border: `1px solid ${theme.palette.divider}`,
+						border: `1px solid ${theme.palette.primary.lowContrast}`,
 						flexWrap: "wrap",
 					}}
 				>
-					<Typography variant="body2">
-						{selectedMonitors.length} monitor(s) selected
+					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText }}>
+						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? '' : 's'} selected
 					</Typography>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkPause}
 						disabled={bulkLoading}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Pause Selected
 					</Button>
@@ -446,14 +445,31 @@ const UptimeDataTable = ({
 						size="small"
 						onClick={handleBulkResume}
 						disabled={bulkLoading}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Resume Selected
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
+						color="primary"
 						onClick={() => setShowBulkNotifications(true)}
 						disabled={bulkLoading}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Set Notifications
 					</Button>
@@ -463,6 +479,15 @@ const UptimeDataTable = ({
 						color="error"
 						onClick={handleBulkDelete}
 						disabled={bulkLoading}
+						sx={{
+							color: theme.palette.error.main,
+							borderColor: theme.palette.error.main,
+							"&:hover": {
+								borderColor: theme.palette.error.main,
+								backgroundColor: theme.palette.error.main,
+								color: theme.palette.primary.contrastText,
+							},
+						}}
 					>
 						Delete Selected
 					</Button>
@@ -470,6 +495,12 @@ const UptimeDataTable = ({
 						variant="text"
 						size="small"
 						onClick={() => setSelectedMonitors([])}
+						sx={{
+							color: theme.palette.primary.contrastText,
+							"&:hover": {
+								backgroundColor: theme.palette.tertiary.main,
+							},
+						}}
 					>
 						Clear Selection
 					</Button>
@@ -495,199 +526,191 @@ const UptimeDataTable = ({
 					}}
 				/>
 			</Box>
-			<Dialog
+			<GenericDialog
+				title="Set Notification Channels"
+				description={`Configure notification channels for ${selectedMonitors.length} selected monitor${selectedMonitors.length === 1 ? '' : 's'}`}
 				open={showBulkNotifications}
 				onClose={() => setShowBulkNotifications(false)}
-				maxWidth="sm"
-				fullWidth
-				PaperProps={{
-					sx: {
-						backgroundColor: theme.palette.background.paper,
-						color: theme.palette.text.primary,
-					},
-				}}
+				theme={theme}
+				width={500}
 			>
-				<DialogTitle sx={{ color: theme.palette.text.primary }}>
-					Set Notification Channels
-				</DialogTitle>
-				<DialogContent>
-					<Stack
-						gap={theme.spacing(4)}
-						sx={{ mt: theme.spacing(4) }}
-					>
+				<Stack gap={theme.spacing(4)}>
+					{loadingNotifications ? (
 						<Typography
 							variant="body2"
-							sx={{ color: theme.palette.text.secondary }}
+							sx={{ color: theme.palette.primary.contrastTextTertiary }}
 						>
-							Configure notification channels for {selectedMonitors.length} selected
-							monitor(s)
+							Loading notification channels...
 						</Typography>
-						{loadingNotifications ? (
+					) : notificationOptions.length === 0 ? (
+						<Typography
+							variant="body2"
+							sx={{ color: theme.palette.primary.contrastTextTertiary, fontStyle: "italic" }}
+						>
+							No notification channels configured. Please create notification channels
+							first.
+						</Typography>
+					) : (
+						<>
 							<Typography
-								variant="body2"
-								sx={{ color: theme.palette.text.secondary }}
+								variant="caption"
+								sx={{ color: theme.palette.primary.contrastTextTertiary }}
 							>
-								Loading notification channels...
+								{notificationOptions.length} notification channel{notificationOptions.length === 1 ? '' : 's'} available
 							</Typography>
-						) : notificationOptions.length === 0 ? (
-							<Typography
-								variant="body2"
-								sx={{ color: theme.palette.text.secondary, fontStyle: "italic" }}
-							>
-								No notification channels configured. Please create notification channels
-								first.
-							</Typography>
-						) : (
-							<>
-								<Typography
-									variant="caption"
-									sx={{ color: theme.palette.text.disabled }}
+							<FormControl fullWidth>
+								<InputLabel
+									id="bulk-notifications-label"
+									sx={{
+										color: theme.palette.primary.contrastTextTertiary,
+										"&.Mui-focused": {
+											color: theme.palette.primary.contrastText,
+										},
+									}}
 								>
-									{notificationOptions.length} notification channel(s) available
-								</Typography>
-								<FormControl fullWidth>
-									<InputLabel
-										id="bulk-notifications-label"
-										sx={{
-											color: theme.palette.text.secondary,
-											"&.Mui-focused": {
-												color: theme.palette.primary.main,
-											},
-										}}
-									>
-										Notification Channels
-									</InputLabel>
-									<MuiSelect
-										labelId="bulk-notifications-label"
-										id="bulk-notifications-select"
-										multiple
-										value={selectedNotificationChannels}
-										onChange={(e) => setSelectedNotificationChannels(e.target.value)}
-										label="Notification Channels"
-										MenuProps={{
-											PaperProps: {
-												sx: {
-													backgroundColor: theme.palette.background.paper,
-													color: theme.palette.text.primary,
-													"& .MuiMenuItem-root": {
-														color: theme.palette.text.primary,
+									Notification Channels
+								</InputLabel>
+								<MuiSelect
+									labelId="bulk-notifications-label"
+									id="bulk-notifications-select"
+									multiple
+									value={selectedNotificationChannels}
+									onChange={(e) => setSelectedNotificationChannels(e.target.value)}
+									label="Notification Channels"
+									MenuProps={{
+										PaperProps: {
+											sx: {
+												backgroundColor: theme.palette.primary.main,
+												color: theme.palette.primary.contrastText,
+												"& .MuiMenuItem-root": {
+													color: theme.palette.primary.contrastText,
+													"&:hover": {
+														backgroundColor: theme.palette.tertiary.main,
+													},
+													"&.Mui-selected": {
+														backgroundColor: theme.palette.secondary.main,
 														"&:hover": {
-															backgroundColor: theme.palette.action.hover,
-														},
-														"&.Mui-selected": {
-															backgroundColor: theme.palette.action.selected,
-															"&:hover": {
-																backgroundColor: theme.palette.action.selected,
-															},
+															backgroundColor: theme.palette.secondary.main,
 														},
 													},
 												},
 											},
-										}}
-										sx={{
-											color: theme.palette.text.primary,
-											"& .MuiOutlinedInput-notchedOutline": {
-												borderColor: theme.palette.divider,
-											},
-											"&:hover .MuiOutlinedInput-notchedOutline": {
-												borderColor: theme.palette.primary.main,
-											},
-											"& .MuiSvgIcon-root": {
-												color: theme.palette.text.secondary,
-											},
-										}}
-										renderValue={(selected) => {
-											if (!selected || selected.length === 0) {
-												return (
-													<Typography sx={{ color: theme.palette.text.secondary }}>
-														Select channels...
-													</Typography>
-												);
-											}
+										},
+									}}
+									sx={{
+										color: theme.palette.primary.contrastText,
+										"& fieldset": {
+											borderColor: theme.palette.primary.lowContrast,
+										},
+										"&:hover fieldset": {
+											borderColor: theme.palette.primary.lowContrast,
+										},
+										"& .MuiSvgIcon-root": {
+											color: theme.palette.primary.contrastTextTertiary,
+										},
+									}}
+									renderValue={(selected) => {
+										if (!selected || selected.length === 0) {
 											return (
-												<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-													{selected.map((value) => {
-														const option = notificationOptions.find(
-															(opt) => opt._id === value
-														);
-														const displayName =
-															option?.notificationName ||
-															option?.name ||
-															option?.title ||
-															option?.label ||
-															`Channel ${value.substring(0, 8)}...`;
-														return (
-															<Chip
-																key={value}
-																label={displayName}
-																size="small"
-																sx={{
-																	backgroundColor: theme.palette.primary.main,
-																	color: theme.palette.primary.contrastText,
-																}}
-															/>
-														);
-													})}
-												</Box>
+												<Typography sx={{ color: theme.palette.primary.contrastTextTertiary }}>
+													Select channels...
+												</Typography>
 											);
-										}}
-									>
-										{notificationOptions.map((option) => {
-											const displayName =
-												option.notificationName ||
-												option.name ||
-												option.title ||
-												option.label ||
-												`Channel ${option._id?.slice(-4)}`;
-											return (
-												<MenuItem
-													key={option._id}
-													value={option._id}
-												>
-													<Checkbox
-														checked={
-															selectedNotificationChannels.indexOf(option._id) > -1
-														}
-														sx={{
-															color: theme.palette.text.secondary,
-															"&.Mui-checked": {
-																color: theme.palette.primary.main,
-															},
-														}}
-													/>
-													<Typography sx={{ color: theme.palette.text.primary }}>
-														{displayName}
-													</Typography>
-												</MenuItem>
-											);
-										})}
-									</MuiSelect>
-								</FormControl>
-							</>
-						)}
+										}
+										return (
+											<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+												{selected.map((value) => {
+													const option = notificationOptions.find(
+														(opt) => opt._id === value
+													);
+													const displayName =
+														option?.notificationName ||
+														option?.name ||
+														option?.title ||
+														option?.label ||
+														`Channel ${value.substring(0, 8)}...`;
+													return (
+														<Chip
+															key={value}
+															label={displayName}
+															size="small"
+															sx={{
+																backgroundColor: theme.palette.secondary.main,
+																color: theme.palette.primary.contrastText,
+															}}
+														/>
+													);
+												})}
+											</Box>
+										);
+									}}
+								>
+									{notificationOptions.map((option) => {
+										const displayName =
+											option.notificationName ||
+											option.name ||
+											option.title ||
+											option.label ||
+											`Channel ${option._id?.slice(-4)}`;
+										return (
+											<MenuItem
+												key={option._id}
+												value={option._id}
+											>
+												<Checkbox
+													id={`notification-${option._id}`}
+													label=""
+													isChecked={selectedNotificationChannels.indexOf(option._id) > -1}
+												/>
+												<Typography sx={{ color: theme.palette.primary.contrastText }}>
+													{displayName}
+												</Typography>
+											</MenuItem>
+										);
+									})}
+								</MuiSelect>
+							</FormControl>
+						</>
+					)}
+					<Stack
+						direction="row"
+						gap={theme.spacing(4)}
+						mt={theme.spacing(8)}
+						justifyContent="flex-end"
+					>
+						<Button
+							onClick={() => {
+								setShowBulkNotifications(false);
+								setSelectedNotificationChannels([]);
+							}}
+							variant="contained"
+							color="secondary"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleBulkNotificationSubmit}
+							variant="contained"
+							color="accent"
+							disabled={bulkLoading || notificationOptions.length === 0}
+						>
+							{bulkLoading ? "Updating..." : "Update Notifications"}
+						</Button>
 					</Stack>
-				</DialogContent>
-				<DialogActions sx={{ backgroundColor: theme.palette.background.paper }}>
-					<Button
-						onClick={() => {
-							setShowBulkNotifications(false);
-							setSelectedNotificationChannels([]);
-						}}
-						variant="text"
-						sx={{ color: theme.palette.text.primary }}
-					>
-						Cancel
-					</Button>
-					<Button
-						onClick={handleBulkNotificationSubmit}
-						variant="contained"
-						color="primary"
-						disabled={bulkLoading || notificationOptions.length === 0}
-					>
-						{bulkLoading ? "Updating..." : "Update Notifications"}
-					</Button>
-				</DialogActions>
-			</Dialog>
+				</Stack>
+			</GenericDialog>
+			<Dialog
+				open={showDeleteConfirmation}
+				theme={theme}
+				title={`Do you really want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}?`}
+				description="Once deleted, these monitors cannot be retrieved."
+				onCancel={() => setShowDeleteConfirmation(false)}
+				confirmationButtonLabel="Delete"
+				onConfirm={confirmBulkDelete}
+				isLoading={bulkLoading}
+				modelTitle="modal-delete-bulk-monitors"
+				modelDescription="delete-bulk-monitors-confirmation"
+			/>
 		</Stack>
 	);
 };
