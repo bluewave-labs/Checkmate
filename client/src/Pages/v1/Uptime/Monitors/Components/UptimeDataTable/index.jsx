@@ -415,13 +415,13 @@ const UptimeDataTable = ({
 						gap: theme.spacing(4),
 						alignItems: "center",
 						padding: theme.spacing(4),
-						backgroundColor: theme.palette.primary.main,
-						borderRadius: 1,
+						backgroundColor: theme.palette.secondary.main,
+						borderRadius: theme.shape.borderRadius,
 						border: `1px solid ${theme.palette.primary.lowContrast}`,
 						flexWrap: "wrap",
 					}}
 				>
-					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText }}>
+					<Typography variant="body2" sx={{ color: theme.palette.secondary.contrastText }}>
 						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? '' : 's'} selected
 					</Typography>
 					<Button
@@ -430,11 +430,11 @@ const UptimeDataTable = ({
 						onClick={handleBulkPause}
 						disabled={bulkLoading}
 						sx={{
-							color: theme.palette.primary.contrastText,
-							borderColor: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
+							borderColor: theme.palette.secondary.contrastText,
 							"&:hover": {
-								borderColor: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.tertiary.main,
+								borderColor: theme.palette.secondary.contrastText,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -446,11 +446,11 @@ const UptimeDataTable = ({
 						onClick={handleBulkResume}
 						disabled={bulkLoading}
 						sx={{
-							color: theme.palette.primary.contrastText,
-							borderColor: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
+							borderColor: theme.palette.secondary.contrastText,
 							"&:hover": {
-								borderColor: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.tertiary.main,
+								borderColor: theme.palette.secondary.contrastText,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -459,15 +459,14 @@ const UptimeDataTable = ({
 					<Button
 						variant="outlined"
 						size="small"
-						color="primary"
 						onClick={() => setShowBulkNotifications(true)}
 						disabled={bulkLoading}
 						sx={{
-							color: theme.palette.primary.contrastText,
-							borderColor: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
+							borderColor: theme.palette.secondary.contrastText,
 							"&:hover": {
-								borderColor: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.tertiary.main,
+								borderColor: theme.palette.secondary.contrastText,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -476,7 +475,6 @@ const UptimeDataTable = ({
 					<Button
 						variant="outlined"
 						size="small"
-						color="error"
 						onClick={handleBulkDelete}
 						disabled={bulkLoading}
 						sx={{
@@ -485,7 +483,7 @@ const UptimeDataTable = ({
 							"&:hover": {
 								borderColor: theme.palette.error.main,
 								backgroundColor: theme.palette.error.main,
-								color: theme.palette.primary.contrastText,
+								color: theme.palette.error.contrastText,
 							},
 						}}
 					>
@@ -496,9 +494,9 @@ const UptimeDataTable = ({
 						size="small"
 						onClick={() => setSelectedMonitors([])}
 						sx={{
-							color: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
 							"&:hover": {
-								backgroundColor: theme.palette.tertiary.main,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -691,8 +689,14 @@ const UptimeDataTable = ({
 						<Button
 							onClick={handleBulkNotificationSubmit}
 							variant="contained"
-							color="accent"
 							disabled={bulkLoading || notificationOptions.length === 0}
+							sx={{
+								backgroundColor: theme.palette.accent.main,
+								color: theme.palette.accent.contrastText,
+								"&:hover": {
+									backgroundColor: theme.palette.accent.dark,
+								},
+							}}
 						>
 							{bulkLoading ? "Updating..." : "Update Notifications"}
 						</Button>

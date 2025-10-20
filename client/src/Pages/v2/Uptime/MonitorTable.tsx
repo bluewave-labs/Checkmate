@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Checkbox from "@mui/material/Checkbox";
-import Button from "@mui/material/Button";
+import { Button } from "@/Components/v2/Inputs";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -280,12 +280,12 @@ export const MonitorTable = ({
 						gap: theme.spacing(4),
 						alignItems: "center",
 						padding: theme.spacing(4),
-						backgroundColor: theme.palette.primary.main,
-						borderRadius: 1,
+						backgroundColor: theme.palette.secondary.main,
+						borderRadius: theme.shape.borderRadius,
 						border: `1px solid ${theme.palette.primary.lowContrast}`,
 					}}
 				>
-					<Typography variant="body2" sx={{ color: theme.palette.primary.contrastText }}>
+					<Typography variant="body2" sx={{ color: theme.palette.secondary.contrastText }}>
 						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? '' : 's'} selected
 					</Typography>
 					<Button
@@ -293,11 +293,11 @@ export const MonitorTable = ({
 						size="small"
 						onClick={handleBulkPause}
 						sx={{
-							color: theme.palette.primary.contrastText,
-							borderColor: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
+							borderColor: theme.palette.secondary.contrastText,
 							"&:hover": {
-								borderColor: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.tertiary.main,
+								borderColor: theme.palette.secondary.contrastText,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -308,11 +308,11 @@ export const MonitorTable = ({
 						size="small"
 						onClick={handleBulkResume}
 						sx={{
-							color: theme.palette.primary.contrastText,
-							borderColor: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
+							borderColor: theme.palette.secondary.contrastText,
 							"&:hover": {
-								borderColor: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.tertiary.main,
+								borderColor: theme.palette.secondary.contrastText,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -321,14 +321,13 @@ export const MonitorTable = ({
 					<Button
 						variant="outlined"
 						size="small"
-						color="primary"
 						onClick={() => setShowBulkNotifications(true)}
 						sx={{
-							color: theme.palette.primary.contrastText,
-							borderColor: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
+							borderColor: theme.palette.secondary.contrastText,
 							"&:hover": {
-								borderColor: theme.palette.primary.contrastText,
-								backgroundColor: theme.palette.tertiary.main,
+								borderColor: theme.palette.secondary.contrastText,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -337,7 +336,6 @@ export const MonitorTable = ({
 					<Button
 						variant="outlined"
 						size="small"
-						color="error"
 						onClick={handleBulkDelete}
 						sx={{
 							color: theme.palette.error.main,
@@ -345,7 +343,7 @@ export const MonitorTable = ({
 							"&:hover": {
 								borderColor: theme.palette.error.main,
 								backgroundColor: theme.palette.error.main,
-								color: theme.palette.primary.contrastText,
+								color: theme.palette.error.contrastText,
 							},
 						}}
 					>
@@ -356,9 +354,9 @@ export const MonitorTable = ({
 						size="small"
 						onClick={() => setSelectedMonitors([])}
 						sx={{
-							color: theme.palette.primary.contrastText,
+							color: theme.palette.secondary.contrastText,
 							"&:hover": {
-								backgroundColor: theme.palette.tertiary.main,
+								backgroundColor: theme.palette.primary.main,
 							},
 						}}
 					>
@@ -445,8 +443,14 @@ export const MonitorTable = ({
 					<Button
 						onClick={handleBulkNotificationSubmit}
 						variant="contained"
-						color="primary"
 						disabled={bulkLoading || notificationOptions.length === 0}
+						sx={{
+							backgroundColor: theme.palette.accent.main,
+							color: theme.palette.accent.contrastText,
+							"&:hover": {
+								backgroundColor: theme.palette.accent.dark,
+							},
+						}}
 					>
 						{bulkLoading ? "Updating..." : "Update Notifications"}
 					</Button>
