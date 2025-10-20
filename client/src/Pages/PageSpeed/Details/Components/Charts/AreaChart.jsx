@@ -9,7 +9,7 @@ import {
 	Text,
 } from "recharts";
 import { useTheme } from "@emotion/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { formatDateWithTz } from "../../../../../Utils/timeUtils";
 import { useSelector } from "react-redux";
@@ -122,46 +122,6 @@ CustomToolTip.propTypes = {
 	config: PropTypes.object,
 };
 
-/**
- * Processes data to insert gaps with null values based on the interval.
- * @param {Array} data
- * @param {number} interval - The interval in milliseconds for gaps.
- * @returns {Array} The formatted data with gaps.
- */
-const processDataWithGaps = (data, interval) => {
-	if (data.length === 0) return [];
-	let formattedData = [];
-	let last = new Date(data[0].createdAt).getTime();
-
-	// Helper function to add a null entry
-	const addNullEntry = (timestamp) => {
-		formattedData.push({
-			accessibility: "N/A",
-			bestPractices: "N/A",
-			performance: "N/A",
-			seo: "N/A",
-			createdAt: timestamp,
-		});
-	};
-
-	data.forEach((entry) => {
-		const current = new Date(entry.createdAt).getTime();
-
-		if (current - last > interval * 2) {
-			// Insert null entries for each interval
-			let temp = last + interval;
-			while (temp < current) {
-				addNullEntry(new Date(temp).toISOString());
-				temp += interval;
-			}
-		}
-
-		formattedData.push(entry);
-		last = current;
-	});
-
-	return formattedData;
-};
 
 /**
  * Custom tick component to render ticks on the XAxis.
@@ -211,13 +171,9 @@ CustomTick.propTypes = {
  * @returns {JSX.Element} The area chart component.
  */
 
-const PageSpeedAreaChart = ({ data, monitor, metrics }) => {
+const PageSpeedAreaChart = ({ data, metrics }) => {
 	const theme = useTheme();
 	const [isHovered, setIsHovered] = useState(false);
-	const memoizedData = useMemo(
-		() => processDataWithGaps(data, monitor.interval),
-		[data[0]]
-	);
 
 	const filteredConfig = Object.keys(config).reduce((result, key) => {
 		if (metrics[key]) {
@@ -235,7 +191,7 @@ const PageSpeedAreaChart = ({ data, monitor, metrics }) => {
 			<AreaChart
 				width="100%"
 				height="100%"
-				data={memoizedData}
+				data={data}
 				margin={{ top: 10 }}
 				onMouseMove={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
@@ -323,7 +279,6 @@ PageSpeedAreaChart.propTypes = {
 			seo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 		})
 	).isRequired,
-	monitor: PropTypes.object.isRequired,
 	metrics: PropTypes.object,
 };
 
