@@ -7,7 +7,6 @@ import { useTheme } from "@emotion/react";
 TablePaginationActions.propTypes = {
     count: PropTypes.number.isRequired,
     page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
     onPageChange: PropTypes.func.isRequired,
 };
 
@@ -18,7 +17,6 @@ TablePaginationActions.propTypes = {
  * @param {Object} props
  * @param {number} props.count - Total number of pages.
  * @param {number} props.page - Current page number.
- * @param {number} props.rowsPerPage - Number of rows per page.
  * @param {function} props.onPageChange - Callback function to handle page change.
  *
  * @returns {JSX.Element} Pagination actions component.

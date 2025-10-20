@@ -44,9 +44,9 @@ function PageSpeedPagination ({
 }) {
     const theme = useTheme();
     const { t } = useTranslation();
-    const uiTimzeone = useSelector((state) => state.ui.timezone);
-    const firstDate = formatDateWithTz(timeRangeLabel[0], "h:mm a", uiTimzeone)
-    const lastDate = formatDateWithTz(timeRangeLabel[1], "h:mm a", uiTimzeone)
+    const uiTimezone = useSelector((state) => state.ui.timezone);
+    const firstDate = timeRangeLabel?.[0] ? formatDateWithTz(timeRangeLabel[0], "h:mm a", uiTimezone) : '';
+    const lastDate = timeRangeLabel?.[1] ? formatDateWithTz(timeRangeLabel[1], "h:mm a", uiTimezone) : '';
     const showPaginationButtons = shouldShowPaginationButtons(pageCount);
 
     const TIME_RANGES = [
@@ -83,7 +83,7 @@ function PageSpeedPagination ({
                         component="h1"
                         color={theme.palette.primary.contrastTextSecondary}
                     >
-                        Time range:
+                        {t('pageSpeed.timeRangeLabel')}
                     </Typography>
 
                     <Select
