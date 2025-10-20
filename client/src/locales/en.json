@@ -490,11 +490,11 @@
 	},
 	"uptimeGeneralInstructions": {
 		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-		"https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 		"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
+		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
+		"https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1101,11 +1101,11 @@
 	"chooseGame": "Choose game",
 	"createMonitorPage": {
 		"incidentConfigDescription": "A sliding window is used to determine when a monitor goes down.  The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
-		"incidentConfigDescriptionV2": "Number of consecutive checks needed to change monitor status.  Maximum 25",
 		"incidentConfigStatusWindowLabel": "How many checks should be in the sliding window?",
-		"incidentConfigStatusCheckNumber": "How many checks before status change?",
 		"incidentConfigStatusWindowThresholdLabel": "What percentage of checks in the sliding window fail/succeed before monitor status changes?",
 		"incidentConfigTitle": "Incidents",
+		"incidentConfigDescriptionV2": "Number of consecutive checks needed to change monitor status.  Maximum 25",
+		"incidentConfigStatusCheckNumber": "How many checks before status change?",
 		"intervalTitle": "Check interval",
 		"intervalDescription": "How often the monitor should be checked."
 	},

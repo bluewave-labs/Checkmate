@@ -382,50 +382,56 @@
 			"created": "Angelegt"
 		},
 		"addTeamMember": {
-			"addMemberMenu": "",
-			"title": "",
-			"description": "",
-			"addButton": ""
+			"addMemberMenu": "Teammitglied hinzufügen",
+			"title": "Neues Teammitglied registrieren",
+			"description": "Einen neuen Benutzer anlegen und Zugangsdaten mit ihm teilen. Diese Methode gibt dem Mitglied direkt Zugriff auf alle Überwachungen.",
+			"addButton": "Mitglied hinzufügen"
 		},
-		"register": "",
+		"register": "Teammitglied registrieren",
 		"registerToast": {
-			"success": "",
-			"dbUserExists": "",
-			"unknownError": ""
+			"success": "Benutzer erstellt, Zugangsdaten auf sichere Weise weitergeben.",
+			"dbUserExists": "Der Benutzer existiert bereits.",
+			"unknownError": "Unbekannter Fehler aufgetreten."
 		},
 		"registerTeamMember": {
-			"title": "",
+			"title": "Teammitglied registrieren",
 			"auth": {
 				"common": {
 					"inputs": {
 						"firstName": {
 							"errors": {
-								"empty": "",
-								"pattern": ""
+								"empty": "Bitte einen Namen eingeben",
+								"pattern": "Der Name darf nur Buchstaben, Leerzeichen, Apostrophe oder Bindestriche enthalten"
 							}
 						},
 						"lastName": {
 							"errors": {
-								"empty": "",
-								"pattern": ""
+								"empty": "Bitte einen Vornamen eingeben",
+								"pattern": "Der Vorname darf nur Buchstaben, Leerzeichen, Apostrophe oder Bindestriche enthalten"
 							}
 						},
 						"email": {
 							"errors": {
-								"empty": "",
-								"invalid": ""
+								"empty": "Zum Fortsetzen bitte eine E-Mail-Adresse eingeben",
+								"invalid": "Bitte die Gültigkeit der E-Mail-Adresse erneut prüfen"
 							}
 						},
 						"role": {
 							"errors": {
-								"empty": ""
+								"empty": "Eine Rolle wird benötigt"
 							}
 						}
 					}
 				}
 			}
 		},
-		"role": ""
+		"role": "Rolle",
+		"changeTeamPassword": {
+			"changePasswordMenu": "Passwort zurücksetzen",
+			"title": "Passwort des Teammitgliedes zurücksetzen",
+			"description": "Neues Passwort für dieses Teammitglied erstellen. Es muss auf einem Sicheren weg zur Verfügung gestellt werden.",
+			"success": "Passwort erfolgreich zurückgesetzt. Bitte sicherstellen, dass die Zugangsdaten auf sichere Weise weitergegeben werden."
+		}
 	},
 	"monitorState": {
 		"paused": "Pausiert",
@@ -487,7 +493,8 @@
 		"ping": "Geben Sie die IP-Adresse oder den Hostnamen ein, der angepingt werden soll (z. B. 192.168.1.100 oder example.com), und fügen Sie einen eindeutigen Anzeigenamen hinzu, der auf dem Dashboard angezeigt wird.",
 		"docker": "Geben Sie die Docker-ID Ihres Containers ein. Docker-IDs müssen die vollständige 64-Zeichen-ID sein. Sie können docker inspect <short_id> ausführen, um die vollständige Container-ID abzurufen.",
 		"port": "Geben Sie die URL oder IP des Servers, die Portnummer und einen eindeutigen Anzeigenamen ein, der auf dem Dashboard angezeigt wird.",
-		"game": ""
+		"game": "IP Adresse oder Hostnamen und Port für Ping eingeben (z.B. 192.168.1.100 oder beispiel.de) und Spieletyp auswählen.",
+		"https": "Zu überwachende Adresse oder IP (z.B. https://beispiel.de/ oder 192.168.1.100) eingeben und einen klaren Anzeigenamen, der im Dashboard erscheint."
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -607,7 +614,7 @@
 				"forgotPassword": "Passwort vergessen?",
 				"register": "Noch keinen Account?",
 				"forgotPasswordLink": "Passwort zurücksetzen",
-				"registerLink": "Hier resistrieren"
+				"registerLink": "Hier registrieren"
 			},
 			"toasts": {
 				"success": "Willkommen zurück. Erfolgreich angemeldet.",
@@ -618,7 +625,7 @@
 					"incorrect": "Das Passwort stimmt nicht mit dem gespeicherten überein"
 				}
 			},
-			"welcome": ""
+			"welcome": "Willkommen zurück bei Checkmate!"
 		},
 		"registration": {
 			"heading": {
@@ -645,7 +652,7 @@
 			"toasts": {
 				"success": "Willkommen! Benutzer erfolgreich angelegt"
 			},
-			"welcome": ""
+			"welcome": "Willkommen bei Checkmate!"
 		},
 		"forgotPassword": {
 			"heading": "Passwort vergessen?",
@@ -746,8 +753,8 @@
 	"monitorStatus": {
 		"checkingEvery": "Überprüfung alle {{interval}}",
 		"withCaptureAgent": "mit Capture-Agent {{version}}",
-		"up": "hoch",
-		"down": "runter",
+		"up": "Online",
+		"down": "Offline",
 		"paused": "pausiert"
 	},
 	"advancedMatching": "Erweiterter Abgleich",
@@ -792,7 +799,7 @@
 			"lastRunHeader": "Letzter Lauf um",
 			"lastFinishedAtHeader": "Zuletzt abgeschlossen um",
 			"lastRunTookHeader": "Letzter Lauf dauerte",
-			"intervalHeader": ""
+			"intervalHeader": "Invervall"
 		},
 		"metricsTable": {
 			"title": "Warteschlangenmetriken",
@@ -900,8 +907,8 @@
 			"title": "Überwachen Sie IP/URL auf der Statusseite"
 		},
 		"globalThresholds": {
-			"title": "",
-			"description": ""
+			"title": "Globale Schwellenwerte",
+			"description": "Globale CPU-, Speicher-, Festplatten- und Temperaturschwellenwerte festlegen. Wenn ein Wert angegeben ist, wird er automatisch für die Überwachung genutzt."
 		}
 	},
 	"statusPageCreate": {
@@ -975,11 +982,11 @@
 		"oneHour": "1 Stunde",
 		"oneDay": "1 Tag",
 		"oneWeek": "1 Woche",
-		"fourMinutes": "",
-		"oneMinute": "",
-		"twoMinutes": "",
-		"fifteenSeconds": "",
-		"thirtySeconds": ""
+		"fourMinutes": "4 Minuten",
+		"oneMinute": "Eine Minute",
+		"twoMinutes": "Zwei Minuten",
+		"fifteenSeconds": "15 Sekunden",
+		"thirtySeconds": "30 Sekunden"
 	},
 	"general": {
 		"noOptionsFound": "Keine {{unit}} gefunden"
@@ -1050,73 +1057,77 @@
 	"incidentsPageActionResolveMonitor": "Monitor-Vorfälle beheben",
 	"incidentsPageActionResolveAll": "Alle Vorfälle lösen",
 	"matchMethodOptions": {
-		"equal": "",
-		"equalPlaceholder": "",
-		"include": "",
-		"includePlaceholder": "",
-		"regex": "",
-		"regexPlaceholder": "",
-		"text": ""
+		"equal": "Gleich",
+		"equalPlaceholder": "Erfolg",
+		"include": "Enthält",
+		"includePlaceholder": "OK",
+		"regex": "Regex",
+		"regexPlaceholder": "^(success|ok)$",
+		"text": "Übereinstummungsmethode"
 	},
 	"monitorType": {
 		"docker": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "Container Name/ID",
+			"namePlaceholder": "Mein Container",
+			"placeholder": "Meine-App"
 		},
 		"http": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "Zu überwachende URL",
+			"namePlaceholder": "Google",
+			"placeholder": "google.de"
 		},
 		"ping": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "Zu überwachende IP-Adresse",
+			"namePlaceholder": "Google",
+			"placeholder": "1.1.1.1"
 		},
 		"port": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "Zu überwachende URL",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
 		},
 		"game": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
+			"label": "Zu überwachende URL",
+			"namePlaceholder": "localhost:5173",
+			"placeholder": "localhost"
 		}
 	},
 	"uptimeAdvancedMatching": {
-		"jsonPath": ""
+		"jsonPath": "JSON Pfad"
 	},
-	"bytesPerSecond": "",
-	"bytesReceived": "",
-	"bytesSent": "",
-	"chooseGame": "",
+	"bytesPerSecond": "Bytes pro Sekunde",
+	"bytesReceived": "Empfangene Bytes",
+	"bytesSent": "Gesendete Bytes",
+	"chooseGame": "Spiel auswählen",
 	"createMonitorPage": {
-		"incidentConfigDescription": "",
-		"incidentConfigStatusWindowLabel": "",
-		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": ""
+		"incidentConfigDescription": "Mithilfe eines gleitenden Fensters wird ermittelt, wann ein Monitor ausfällt. Der Status eines Monitors ändert sich nur, wenn der Prozentsatz der Prüfungen im gleitenden Fenster den angegebenen Wert erreicht.",
+		"incidentConfigStatusWindowLabel": "Wie viele Prüfungen sollen im gleitenden Fenster ausgeführt werden?",
+		"incidentConfigStatusWindowThresholdLabel": "Wie viel Prozent der Prüfungen im gleitenden Fenster sollen fehlschlagen/erfolgreich sein, bevor sich der Status ändert?",
+		"incidentConfigTitle": "Vorfälle",
+		"incidentConfigDescriptionV2": "Anzahl der aufeinanderfolgenden Prüfungen, die zum Ändern des Monitorstatus erforderlich sind. Maximal 25",
+		"incidentConfigStatusCheckNumber": "Anzahl der Prüfungen bevor sich er Status ändert",
+		"intervalTitle": "Prüfintervall",
+		"intervalDescription": "Wie oft soll die Überwachung geprüft werden."
 	},
-	"dataRate": "",
-	"dataReceived": "",
-	"dataSent": "",
-	"details": "",
-	"drops": "",
-	"errors": "",
-	"errorsIn": "",
-	"errorsOut": "",
-	"gameServerMonitoring": "",
-	"gameServerMonitoringDescription": "",
-	"network": "",
-	"networkDrops": "",
-	"networkErrors": "",
-	"networkInterface": "",
-	"noNetworkStatsAvailable": "",
-	"packetsPerSecond": "",
-	"packetsReceived": "",
-	"packetsReceivedRate": "",
-	"packetsSent": "",
-	"rate": "",
-	"selectInterface": ""
+	"dataRate": "Datenrate",
+	"dataReceived": "Empfangene Daten",
+	"dataSent": "Gesendete Daten",
+	"details": "Details",
+	"drops": "verloren",
+	"errors": "Fehler",
+	"errorsIn": "Fehler eingehend",
+	"errorsOut": "Fehler ausgehend",
+	"gameServerMonitoring": "Spiele Server Überwachung",
+	"gameServerMonitoringDescription": "Prüfen ob der Spiele-Server läuft oder nicht",
+	"network": "Netzwerk",
+	"networkDrops": "Netzwerkabbrüche",
+	"networkErrors": "Netzwerkfehler",
+	"networkInterface": "Netzwerkschnittstelle",
+	"noNetworkStatsAvailable": "Keine Netzwerkstatistiken verfügbar.",
+	"packetsPerSecond": "Pakete pro Sekunde",
+	"packetsReceived": "Empfangene Pakete",
+	"packetsReceivedRate": "Rate empfangener Pakete",
+	"packetsSent": "Gesendete Pakete",
+	"rate": "Rate",
+	"selectInterface": "Schnittstelle auswählen"
 }
