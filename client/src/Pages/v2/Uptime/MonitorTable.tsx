@@ -155,7 +155,7 @@ export const MonitorTable = ({
 	const handleBulkDelete = async () => {
 		if (
 			!window.confirm(
-				`Are you sure you want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}?`
+				`Are you sure you want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}?`
 			)
 		) {
 			return;
@@ -285,8 +285,12 @@ export const MonitorTable = ({
 						border: `1px solid ${theme.palette.primary.lowContrast}`,
 					}}
 				>
-					<Typography variant="body2" sx={{ color: theme.palette.secondary.contrastText }}>
-						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? '' : 's'} selected
+					<Typography
+						variant="body2"
+						sx={{ color: theme.palette.secondary.contrastText }}
+					>
+						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? "" : "s"}{" "}
+						selected
 					</Typography>
 					<Button
 						variant="outlined"
@@ -398,12 +402,15 @@ export const MonitorTable = ({
 							sx={{ color: theme.palette.primary.contrastTextTertiary }}
 						>
 							Configure notification channels for {selectedMonitors.length} selected
-							monitor{selectedMonitors.length === 1 ? '' : 's'}
+							monitor{selectedMonitors.length === 1 ? "" : "s"}
 						</Typography>
 						{notificationOptions.length === 0 ? (
 							<Typography
 								variant="body2"
-								sx={{ color: theme.palette.primary.contrastTextTertiary, fontStyle: "italic" }}
+								sx={{
+									color: theme.palette.primary.contrastTextTertiary,
+									fontStyle: "italic",
+								}}
 							>
 								No notification channels configured. Please create notification channels
 								first.

@@ -1,5 +1,14 @@
 // Components
-import { Box, Stack, Typography, MenuItem, InputLabel, FormControl, Chip, Select as MuiSelect } from "@mui/material";
+import {
+	Box,
+	Stack,
+	Typography,
+	MenuItem,
+	InputLabel,
+	FormControl,
+	Chip,
+	Select as MuiSelect,
+} from "@mui/material";
 import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
 import Button from "@mui/material/Button";
 import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
@@ -128,7 +137,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully paused ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
+						body: `Successfully paused ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}`,
 					});
 				} else {
 					createToast({
@@ -161,7 +170,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully resumed ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
+						body: `Successfully resumed ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}`,
 					});
 				} else {
 					createToast({
@@ -198,7 +207,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully deleted ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
+						body: `Successfully deleted ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}`,
 					});
 				} else {
 					createToast({
@@ -231,7 +240,7 @@ const UptimeDataTable = ({
 				if (result.data?.success) {
 					createToast({
 						variant: "info",
-						body: `Successfully updated notifications for ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}`,
+						body: `Successfully updated notifications for ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}`,
 					});
 				} else {
 					createToast({
@@ -421,8 +430,12 @@ const UptimeDataTable = ({
 						flexWrap: "wrap",
 					}}
 				>
-					<Typography variant="body2" sx={{ color: theme.palette.secondary.contrastText }}>
-						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? '' : 's'} selected
+					<Typography
+						variant="body2"
+						sx={{ color: theme.palette.secondary.contrastText }}
+					>
+						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? "" : "s"}{" "}
+						selected
 					</Typography>
 					<Button
 						variant="outlined"
@@ -526,7 +539,7 @@ const UptimeDataTable = ({
 			</Box>
 			<GenericDialog
 				title="Set Notification Channels"
-				description={`Configure notification channels for ${selectedMonitors.length} selected monitor${selectedMonitors.length === 1 ? '' : 's'}`}
+				description={`Configure notification channels for ${selectedMonitors.length} selected monitor${selectedMonitors.length === 1 ? "" : "s"}`}
 				open={showBulkNotifications}
 				onClose={() => setShowBulkNotifications(false)}
 				theme={theme}
@@ -543,7 +556,10 @@ const UptimeDataTable = ({
 					) : notificationOptions.length === 0 ? (
 						<Typography
 							variant="body2"
-							sx={{ color: theme.palette.primary.contrastTextTertiary, fontStyle: "italic" }}
+							sx={{
+								color: theme.palette.primary.contrastTextTertiary,
+								fontStyle: "italic",
+							}}
 						>
 							No notification channels configured. Please create notification channels
 							first.
@@ -554,7 +570,8 @@ const UptimeDataTable = ({
 								variant="caption"
 								sx={{ color: theme.palette.primary.contrastTextTertiary }}
 							>
-								{notificationOptions.length} notification channel{notificationOptions.length === 1 ? '' : 's'} available
+								{notificationOptions.length} notification channel
+								{notificationOptions.length === 1 ? "" : "s"} available
 							</Typography>
 							<FormControl fullWidth>
 								<InputLabel
@@ -610,7 +627,9 @@ const UptimeDataTable = ({
 									renderValue={(selected) => {
 										if (!selected || selected.length === 0) {
 											return (
-												<Typography sx={{ color: theme.palette.primary.contrastTextTertiary }}>
+												<Typography
+													sx={{ color: theme.palette.primary.contrastTextTertiary }}
+												>
 													Select channels...
 												</Typography>
 											);
@@ -658,7 +677,9 @@ const UptimeDataTable = ({
 												<Checkbox
 													id={`notification-${option._id}`}
 													label=""
-													isChecked={selectedNotificationChannels.indexOf(option._id) > -1}
+													isChecked={
+														selectedNotificationChannels.indexOf(option._id) > -1
+													}
 												/>
 												<Typography sx={{ color: theme.palette.primary.contrastText }}>
 													{displayName}
@@ -706,7 +727,7 @@ const UptimeDataTable = ({
 			<Dialog
 				open={showDeleteConfirmation}
 				theme={theme}
-				title={`Do you really want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? '' : 's'}?`}
+				title={`Do you really want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}?`}
 				description="Once deleted, these monitors cannot be retrieved."
 				onCancel={() => setShowDeleteConfirmation(false)}
 				confirmationButtonLabel="Delete"
