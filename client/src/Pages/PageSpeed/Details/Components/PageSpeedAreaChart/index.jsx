@@ -50,7 +50,6 @@ const processDataWithGaps = (data, interval) => {
 };
 
 const createPagination = (data, timeRange) => {
-	console.log(timeRange)
 	if (data.length === 0) return [];
 	const paginatedData = []
 	let currentPage = []
@@ -66,7 +65,7 @@ const createPagination = (data, timeRange) => {
 			startTime = entryTime
 		}
 	})
-	
+
 	if (currentPage.length > 0){
 		paginatedData.push(currentPage)
 	}
