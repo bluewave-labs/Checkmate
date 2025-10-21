@@ -272,6 +272,68 @@ class MonitorService {
 		const groups = await this.db.monitorModule.getGroupsByTeamId({ teamId });
 		return groups;
 	};
+
+	bulkToggleActive = async ({ teamId, monitorIds, isActive }) => {
+		await Promise.all(
+			monitorIds.map(async (monitorId) => {
+				try {
+					await this.verifyTeamAccess({ teamId, monitorId });
+					const monitor = await this.getMonitorById({ teamId, monitorId });
+					if (monitor.isActive !== isActive) {
+						const updatedMonitor = await this.pauseMonitor({ teamId, monitorId });
+						await this.jobQueue.updateJob(updatedMonitor);
+					}
+				} catch (error) {
+					this.logger.warn({
+						message: `Failed to toggle monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "bulkToggleActive",
+						stack: error.stack,
+					});
+				}
+			})
+		);
+	};
+
+	bulkDelete = async ({ teamId, monitorIds }) => {
+		await Promise.all(
+			monitorIds.map(async (monitorId) => {
+				try {
+					await this.verifyTeamAccess({ teamId, monitorId });
+					await this.deleteMonitor({ teamId, monitorId });
+				} catch (error) {
+					this.logger.warn({
+						message: `Failed to delete monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "bulkDelete",
+						stack: error.stack,
+					});
+				}
+			})
+		);
+	};
+
+	bulkUpdateNotifications = async ({ teamId, monitorIds, notificationChannels }) => {
+		await Promise.all(
+			monitorIds.map(async (monitorId) => {
+				try {
+					await this.verifyTeamAccess({ teamId, monitorId });
+					await this.editMonitor({
+						teamId,
+						monitorId,
+						body: { notifications: notificationChannels },
+					});
+				} catch (error) {
+					this.logger.warn({
+						message: `Failed to update notifications for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "bulkUpdateNotifications",
+						stack: error.stack,
+					});
+				}
+			})
+		);
+	};
 }
 
 export default MonitorService;

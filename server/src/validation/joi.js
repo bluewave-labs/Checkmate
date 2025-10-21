@@ -211,6 +211,20 @@ const pauseMonitorParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
 
+const bulkToggleActiveBodyValidation = joi.object({
+	monitorIds: joi.array().items(joi.string()).min(1).required(),
+	isActive: joi.boolean().required(),
+});
+
+const bulkDeleteBodyValidation = joi.object({
+	monitorIds: joi.array().items(joi.string()).min(1).required(),
+});
+
+const bulkUpdateNotificationsBodyValidation = joi.object({
+	monitorIds: joi.array().items(joi.string()).min(1).required(),
+	notificationChannels: joi.array().items(joi.string()).required(),
+});
+
 const getMonitorURLByQueryValidation = joi.object({
 	monitorURL: joi.string().uri().required(),
 });
@@ -698,6 +712,9 @@ export {
 	getCertificateParamValidation,
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
+	bulkToggleActiveBodyValidation,
+	bulkDeleteBodyValidation,
+	bulkUpdateNotificationsBodyValidation,
 	getMonitorURLByQueryValidation,
 	editUserBodyValidation,
 	createAlertParamValidation,

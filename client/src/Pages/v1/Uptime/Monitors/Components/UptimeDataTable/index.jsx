@@ -3,13 +3,13 @@ import {
 	Box,
 	Stack,
 	Typography,
+	Button,
 	MenuItem,
 	InputLabel,
 	FormControl,
 	Chip,
 	Select as MuiSelect,
 } from "@mui/material";
-import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
 import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
 import Dialog from "@/Components/v1/Dialog/index.jsx";
@@ -32,7 +32,6 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { networkService } from "../../../../../../Utils/NetworkService.js";
 import { createToast } from "../../../../../../Utils/toastUtils.jsx";
-import { Button } from "@/Components/v2/Inputs/index.js";
 
 /**
  * UptimeDataTable displays a table of uptime monitors with sorting, searching, and action capabilities
@@ -146,7 +145,7 @@ const UptimeDataTable = ({
 					});
 				}
 				setSelectedMonitors([]);
-				setTimeout(() => triggerUpdate(), 500);
+				triggerUpdate();
 			}
 		} catch (error) {
 			console.error("Bulk pause failed:", error);
@@ -179,7 +178,7 @@ const UptimeDataTable = ({
 					});
 				}
 				setSelectedMonitors([]);
-				setTimeout(() => triggerUpdate(), 500);
+				triggerUpdate();
 			}
 		} catch (error) {
 			console.error("Bulk resume failed:", error);
@@ -216,7 +215,7 @@ const UptimeDataTable = ({
 					});
 				}
 				setSelectedMonitors([]);
-				setTimeout(() => triggerUpdate(), 500);
+				triggerUpdate();
 			}
 		} catch (error) {
 			console.error("Bulk delete failed:", error);
@@ -251,7 +250,7 @@ const UptimeDataTable = ({
 				setShowBulkNotifications(false);
 				setSelectedNotificationChannels([]);
 				setSelectedMonitors([]);
-				setTimeout(() => triggerUpdate(), 500);
+				triggerUpdate();
 			}
 		} catch (error) {
 			console.error("Bulk notification update failed:", error);
@@ -288,6 +287,7 @@ const UptimeDataTable = ({
 							filteredMonitors.length > 0
 						}
 						onChange={handleSelectAll}
+						inputProps={{ "aria-label": "Select all monitors" }}
 					/>
 				</div>
 			),
@@ -301,6 +301,7 @@ const UptimeDataTable = ({
 							e.stopPropagation();
 							handleSelectMonitor(row._id);
 						}}
+						inputProps={{ "aria-label": `Select monitor ${row.name}` }}
 					/>
 				</div>
 			),
@@ -434,86 +435,54 @@ const UptimeDataTable = ({
 						variant="body2"
 						sx={{ color: theme.palette.secondary.contrastText }}
 					>
-						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? "" : "s"}{" "}
-						selected
+						{selectedMonitors.length}{" "}
+						{selectedMonitors.length === 1
+							? t("bulkOperations.monitorSelected")
+							: t("bulkOperations.monitorsSelected")}
 					</Typography>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkPause}
 						disabled={bulkLoading}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							borderColor: theme.palette.secondary.contrastText,
-							"&:hover": {
-								borderColor: theme.palette.secondary.contrastText,
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Pause selected
+						{t("bulkOperations.pauseSelected")}
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkResume}
 						disabled={bulkLoading}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							borderColor: theme.palette.secondary.contrastText,
-							"&:hover": {
-								borderColor: theme.palette.secondary.contrastText,
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Resume selected
+						{t("bulkOperations.resumeSelected")}
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={() => setShowBulkNotifications(true)}
 						disabled={bulkLoading}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							borderColor: theme.palette.secondary.contrastText,
-							"&:hover": {
-								borderColor: theme.palette.secondary.contrastText,
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Set notifications
+						{t("bulkOperations.setNotifications")}
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
+						color="error"
 						onClick={handleBulkDelete}
 						disabled={bulkLoading}
-						sx={{
-							color: theme.palette.error.main,
-							borderColor: theme.palette.error.main,
-							"&:hover": {
-								borderColor: theme.palette.error.main,
-								backgroundColor: theme.palette.error.main,
-								color: theme.palette.error.contrastText,
-							},
-						}}
 					>
-						Delete selected
+						{t("bulkOperations.deleteSelected")}
 					</Button>
 					<Button
 						variant="text"
 						size="small"
 						onClick={() => setSelectedMonitors([])}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							"&:hover": {
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Clear selection
+						{t("bulkOperations.clearSelection")}
 					</Button>
 				</Box>
 			)}
@@ -538,8 +507,8 @@ const UptimeDataTable = ({
 				/>
 			</Box>
 			<GenericDialog
-				title="Set notification channels"
-				description={`Configure notification channels for ${selectedMonitors.length} selected monitor${selectedMonitors.length === 1 ? "" : "s"}`}
+				title={t("bulkOperations.setNotificationChannels")}
+				description={`${t("bulkOperations.configureNotificationChannels")} ${selectedMonitors.length} ${selectedMonitors.length === 1 ? t("bulkOperations.selectedMonitor") : t("bulkOperations.selectedMonitors")}`}
 				open={showBulkNotifications}
 				onClose={() => setShowBulkNotifications(false)}
 				theme={theme}
@@ -561,17 +530,18 @@ const UptimeDataTable = ({
 								fontStyle: "italic",
 							}}
 						>
-							No notification channels configured. Please create notification channels
-							first.
+							{t("noNotificationChannels")}
 						</Typography>
 					) : (
 						<>
 							<Typography
 								variant="caption"
-								sx={{ color: theme.palette.primary.contrastTextTertiary }}
+								color={theme.palette.tertiary.contrastText}
 							>
-								{notificationOptions.length} notification channel
-								{notificationOptions.length === 1 ? "" : "s"} available
+								{notificationOptions.length}{" "}
+								{notificationOptions.length === 1
+									? t("bulkOperations.notificationChannelAvailable")
+									: t("bulkOperations.notificationChannelsAvailable")}
 							</Typography>
 							<FormControl fullWidth>
 								<InputLabel
@@ -583,7 +553,7 @@ const UptimeDataTable = ({
 										},
 									}}
 								>
-									Notification channels
+									{t("bulkOperations.notificationChannels")}
 								</InputLabel>
 								<MuiSelect
 									labelId="bulk-notifications-label"
@@ -591,7 +561,7 @@ const UptimeDataTable = ({
 									multiple
 									value={selectedNotificationChannels}
 									onChange={(e) => setSelectedNotificationChannels(e.target.value)}
-									label="Notification channels"
+									label={t("bulkOperations.notificationChannels")}
 									MenuProps={{
 										PaperProps: {
 											sx: {
@@ -630,7 +600,7 @@ const UptimeDataTable = ({
 												<Typography
 													sx={{ color: theme.palette.primary.contrastTextTertiary }}
 												>
-													Select channels
+													{t("bulkOperations.selectChannels")}
 												</Typography>
 											);
 										}
@@ -680,6 +650,9 @@ const UptimeDataTable = ({
 													isChecked={
 														selectedNotificationChannels.indexOf(option._id) > -1
 													}
+													inputProps={{
+														"aria-label": `Select notification channel ${displayName}`,
+													}}
 												/>
 												<Typography sx={{ color: theme.palette.primary.contrastText }}>
 													{displayName}
@@ -705,21 +678,21 @@ const UptimeDataTable = ({
 							variant="contained"
 							color="secondary"
 						>
-							Cancel
+							{t("cancel")}
 						</Button>
 						<Button
 							onClick={handleBulkNotificationSubmit}
 							variant="contained"
-							disabled={bulkLoading || notificationOptions.length === 0}
-							sx={{
-								backgroundColor: theme.palette.accent.main,
-								color: theme.palette.accent.contrastText,
-								"&:hover": {
-									backgroundColor: theme.palette.accent.dark,
-								},
-							}}
+							color="accent"
+							disabled={
+								bulkLoading ||
+								notificationOptions.length === 0 ||
+								selectedNotificationChannels.length === 0
+							}
 						>
-							{bulkLoading ? "Updating..." : "Update notifications"}
+							{bulkLoading
+								? t("bulkOperations.updating")
+								: t("bulkOperations.updateNotifications")}
 						</Button>
 					</Stack>
 				</Stack>
@@ -727,10 +700,10 @@ const UptimeDataTable = ({
 			<Dialog
 				open={showDeleteConfirmation}
 				theme={theme}
-				title={`Do you really want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}?`}
+				title={`${t("bulkOperations.confirmDeleteMonitors")} ${selectedMonitors.length} ${selectedMonitors.length === 1 ? t("bulkOperations.selectedMonitor") : t("bulkOperations.selectedMonitors")}?`}
 				description="Once deleted, these monitors cannot be retrieved."
 				onCancel={() => setShowDeleteConfirmation(false)}
-				confirmationButtonLabel="Delete"
+				confirmationButtonLabel={t("delete")}
 				onConfirm={confirmBulkDelete}
 				isLoading={bulkLoading}
 				modelTitle="modal-delete-bulk-monitors"

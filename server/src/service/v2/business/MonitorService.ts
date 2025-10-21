@@ -17,13 +17,9 @@ export interface IMonitorService {
 	toggleActive: (monitorId: string, tokenizedUser: ITokenizedUser) => Promise<IMonitor>;
 	update: (tokenizedUser: ITokenizedUser, monitorId: string, updateData: Partial<IMonitor>) => Promise<IMonitor>;
 	delete: (monitorId: string) => Promise<boolean>;
-	bulkToggleActive: (monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) => Promise<{ success: number; failed: number }>;
-	bulkDelete: (monitorIds: string[]) => Promise<{ success: number; failed: number }>;
-	bulkUpdateNotifications: (
-		monitorIds: string[],
-		notificationChannels: any[],
-		tokenizedUser: ITokenizedUser
-	) => Promise<{ success: number; failed: number }>;
+	bulkToggleActive: (monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) => Promise<void>;
+	bulkDelete: (monitorIds: string[]) => Promise<void>;
+	bulkUpdateNotifications: (monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) => Promise<void>;
 }
 
 class MonitorService implements IMonitorService {
@@ -472,12 +468,10 @@ class MonitorService implements IMonitorService {
 	}
 
 	async bulkToggleActive(monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) {
-		let success = 0;
-		let failed = 0;
 		const pendingStatus: MonitorStatus = "initializing";
 
-		for (const monitorId of monitorIds) {
-			try {
+		await Promise.all(
+			monitorIds.map(async (monitorId) => {
 				const updatedMonitor = await Monitor.findByIdAndUpdate(
 					monitorId,
 					{
@@ -491,54 +485,37 @@ class MonitorService implements IMonitorService {
 					{ new: true }
 				);
 
-				if (updatedMonitor) {
-					await this.jobQueue.updateJob(updatedMonitor);
-
-					if (updatedMonitor.isActive) {
-						await this.jobQueue.resumeJob(updatedMonitor);
-					} else {
-						await this.jobQueue.pauseJob(updatedMonitor);
-					}
-					success++;
-				} else {
-					failed++;
+				if (!updatedMonitor) {
+					throw new ApiError("Monitor not found", 404);
 				}
-			} catch (error) {
-				failed++;
-			}
-		}
 
-		return { success, failed };
+				await this.jobQueue.updateJob(updatedMonitor);
+
+				if (updatedMonitor.isActive) {
+					await this.jobQueue.resumeJob(updatedMonitor);
+				} else {
+					await this.jobQueue.pauseJob(updatedMonitor);
+				}
+			})
+		);
 	}
 
 	async bulkDelete(monitorIds: string[]) {
-		let success = 0;
-		let failed = 0;
-
-		for (const monitorId of monitorIds) {
-			try {
+		await Promise.all(
+			monitorIds.map(async (monitorId) => {
 				const monitor = await Monitor.findById(monitorId);
-				if (monitor) {
-					await monitor.deleteOne();
-					await this.jobQueue.deleteJob(monitor);
-					success++;
-				} else {
-					failed++;
+				if (!monitor) {
+					throw new ApiError("Monitor not found", 404);
 				}
-			} catch (error) {
-				failed++;
-			}
-		}
-
-		return { success, failed };
+				await monitor.deleteOne();
+				await this.jobQueue.deleteJob(monitor);
+			})
+		);
 	}
 
 	async bulkUpdateNotifications(monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) {
-		let success = 0;
-		let failed = 0;
-
-		for (const monitorId of monitorIds) {
-			try {
+		await Promise.all(
+			monitorIds.map(async (monitorId) => {
 				const updatedMonitor = await Monitor.findByIdAndUpdate(
 					monitorId,
 					{
@@ -551,18 +528,13 @@ class MonitorService implements IMonitorService {
 					{ new: true, runValidators: true }
 				);
 
-				if (updatedMonitor) {
-					await this.jobQueue.updateJob(updatedMonitor);
-					success++;
-				} else {
-					failed++;
+				if (!updatedMonitor) {
+					throw new ApiError("Monitor not found", 404);
 				}
-			} catch (error) {
-				failed++;
-			}
-		}
 
-		return { success, failed };
+				await this.jobQueue.updateJob(updatedMonitor);
+			})
+		);
 	}
 }
 

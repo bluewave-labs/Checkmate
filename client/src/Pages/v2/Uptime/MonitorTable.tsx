@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@/Components/v2/Inputs";
+import { CheckboxInput } from "@/Components/v2/Inputs/Checkbox";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -39,6 +39,7 @@ export const MonitorTable = ({
 	const navigate = useNavigate();
 	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]);
 	const [showBulkNotifications, setShowBulkNotifications] = useState(false);
+	const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 	const [selectedNotificationChannels, setSelectedNotificationChannels] = useState<
 		string[]
 	>([]);
@@ -130,7 +131,7 @@ export const MonitorTable = ({
 			} as any);
 			if (result) {
 				setSelectedMonitors([]);
-				setTimeout(() => refetch(), 500);
+				refetch();
 			}
 		} catch (error) {
 			console.error("Bulk pause failed:", error);
@@ -145,31 +146,30 @@ export const MonitorTable = ({
 			} as any);
 			if (result) {
 				setSelectedMonitors([]);
-				setTimeout(() => refetch(), 500);
+				refetch();
 			}
 		} catch (error) {
 			console.error("Bulk resume failed:", error);
 		}
 	};
 
-	const handleBulkDelete = async () => {
-		if (
-			!window.confirm(
-				`Are you sure you want to delete ${selectedMonitors.length} monitor${selectedMonitors.length === 1 ? "" : "s"}?`
-			)
-		) {
-			return;
-		}
+	const handleBulkDelete = () => {
+		setShowDeleteConfirmation(true);
+	};
+
+	const confirmBulkDelete = async () => {
 		try {
 			const result = await bulkPost("/monitors/bulk/delete", {
 				monitorIds: selectedMonitors,
 			} as any);
 			if (result) {
 				setSelectedMonitors([]);
-				setTimeout(() => refetch(), 500);
+				setShowDeleteConfirmation(false);
+				refetch();
 			}
 		} catch (error) {
 			console.error("Bulk delete failed:", error);
+			setShowDeleteConfirmation(false);
 		}
 	};
 
@@ -183,7 +183,7 @@ export const MonitorTable = ({
 				setShowBulkNotifications(false);
 				setSelectedNotificationChannels([]);
 				setSelectedMonitors([]);
-				setTimeout(() => refetch(), 500);
+				refetch();
 			}
 		} catch (error) {
 			console.error("Bulk notification update failed:", error);
@@ -198,21 +198,23 @@ export const MonitorTable = ({
 				id: "select",
 				content: (
 					<div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-						<Checkbox
+						<CheckboxInput
 							checked={selectedMonitors.length === monitors.length && monitors.length > 0}
 							indeterminate={
 								selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
 							}
 							onChange={handleSelectAll}
+							aria-label="Select all monitors"
 						/>
 					</div>
 				),
 				render: (row) => {
 					return (
 						<div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-							<Checkbox
+							<CheckboxInput
 								checked={selectedMonitors.includes(row._id)}
 								onChange={() => handleSelectMonitor(row._id)}
+								aria-label={`Select monitor ${row.name}`}
 							/>
 						</div>
 					);
@@ -289,82 +291,50 @@ export const MonitorTable = ({
 						variant="body2"
 						sx={{ color: theme.palette.secondary.contrastText }}
 					>
-						{selectedMonitors.length} monitor{selectedMonitors.length === 1 ? "" : "s"}{" "}
-						selected
+						{selectedMonitors.length}{" "}
+						{selectedMonitors.length === 1
+							? t("bulkOperations.monitorSelected")
+							: t("bulkOperations.monitorsSelected")}
 					</Typography>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkPause}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							borderColor: theme.palette.secondary.contrastText,
-							"&:hover": {
-								borderColor: theme.palette.secondary.contrastText,
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Pause selected
+						{t("bulkOperations.pauseSelected")}
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkResume}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							borderColor: theme.palette.secondary.contrastText,
-							"&:hover": {
-								borderColor: theme.palette.secondary.contrastText,
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Resume selected
+						{t("bulkOperations.resumeSelected")}
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={() => setShowBulkNotifications(true)}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							borderColor: theme.palette.secondary.contrastText,
-							"&:hover": {
-								borderColor: theme.palette.secondary.contrastText,
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Set notifications
+						{t("bulkOperations.setNotifications")}
 					</Button>
 					<Button
 						variant="outlined"
 						size="small"
 						onClick={handleBulkDelete}
-						sx={{
-							color: theme.palette.error.main,
-							borderColor: theme.palette.error.main,
-							"&:hover": {
-								borderColor: theme.palette.error.main,
-								backgroundColor: theme.palette.error.main,
-								color: theme.palette.error.contrastText,
-							},
-						}}
+						color="error"
 					>
-						Delete selected
+						{t("bulkOperations.deleteSelected")}
 					</Button>
 					<Button
 						variant="text"
 						size="small"
 						onClick={() => setSelectedMonitors([])}
-						sx={{
-							color: theme.palette.secondary.contrastText,
-							"&:hover": {
-								backgroundColor: theme.palette.primary.main,
-							},
-						}}
+						color="inherit"
 					>
-						Clear selection
+						{t("bulkOperations.clearSelection")}
 					</Button>
 				</Box>
 			)}
@@ -390,7 +360,7 @@ export const MonitorTable = ({
 				}}
 			>
 				<DialogTitle sx={{ color: theme.palette.primary.contrastText }}>
-					Set notification channels
+					{t("bulkOperations.setNotificationChannels")}
 				</DialogTitle>
 				<DialogContent>
 					<Stack
@@ -401,8 +371,11 @@ export const MonitorTable = ({
 							variant="body2"
 							sx={{ color: theme.palette.primary.contrastTextTertiary }}
 						>
-							Configure notification channels for {selectedMonitors.length} selected
-							monitor{selectedMonitors.length === 1 ? "" : "s"}
+							{t("bulkOperations.configureNotificationChannels")}{" "}
+							{selectedMonitors.length}{" "}
+							{selectedMonitors.length === 1
+								? t("bulkOperations.selectedMonitor")
+								: t("bulkOperations.selectedMonitors")}
 						</Typography>
 						{notificationOptions.length === 0 ? (
 							<Typography
@@ -412,8 +385,7 @@ export const MonitorTable = ({
 									fontStyle: "italic",
 								}}
 							>
-								No notification channels configured. Please create notification channels
-								first.
+								{t("bulkOperations.noNotificationChannels")}
 							</Typography>
 						) : (
 							<AutoCompleteInput
@@ -429,7 +401,7 @@ export const MonitorTable = ({
 								renderInput={(params: any) => (
 									<TextInput
 										{...params}
-										label="Notification channels"
+										label={t("bulkOperations.notificationChannels")}
 									/>
 								)}
 							/>
@@ -445,12 +417,16 @@ export const MonitorTable = ({
 						variant="contained"
 						color="secondary"
 					>
-						Cancel
+						{t("cancel")}
 					</Button>
 					<Button
 						onClick={handleBulkNotificationSubmit}
 						variant="contained"
-						disabled={bulkLoading || notificationOptions.length === 0}
+						disabled={
+							bulkLoading ||
+							notificationOptions.length === 0 ||
+							selectedNotificationChannels.length === 0
+						}
 						sx={{
 							backgroundColor: theme.palette.accent.main,
 							color: theme.palette.accent.contrastText,
@@ -459,7 +435,64 @@ export const MonitorTable = ({
 							},
 						}}
 					>
-						{bulkLoading ? "Updating..." : "Update notifications"}
+						{bulkLoading
+							? t("bulkOperations.updating")
+							: t("bulkOperations.updateNotifications")}
+					</Button>
+				</DialogActions>
+			</Dialog>
+			<Dialog
+				open={showDeleteConfirmation}
+				onClose={() => setShowDeleteConfirmation(false)}
+				PaperProps={{
+					sx: {
+						backgroundColor: theme.palette.primary.main,
+						color: theme.palette.primary.contrastText,
+						border: 1,
+						borderColor: theme.palette.primary.lowContrast,
+					},
+				}}
+			>
+				<DialogTitle sx={{ color: theme.palette.primary.contrastText }}>
+					{t("bulkOperations.confirmDeletion")}
+				</DialogTitle>
+				<DialogContent>
+					<Typography sx={{ color: theme.palette.primary.contrastText }}>
+						{t("bulkOperations.confirmDeleteMonitors")} {selectedMonitors.length}{" "}
+						{selectedMonitors.length === 1
+							? t("bulkOperations.selectedMonitor")
+							: t("bulkOperations.selectedMonitors")}
+						?
+					</Typography>
+				</DialogContent>
+				<DialogActions sx={{ backgroundColor: theme.palette.primary.main }}>
+					<Button
+						onClick={() => setShowDeleteConfirmation(false)}
+						variant="outlined"
+						sx={{
+							color: theme.palette.primary.contrastText,
+							borderColor: theme.palette.primary.contrastText,
+							"&:hover": {
+								borderColor: theme.palette.primary.contrastText,
+								backgroundColor: theme.palette.primary.lowContrast,
+							},
+						}}
+					>
+						{t("cancel")}
+					</Button>
+					<Button
+						onClick={confirmBulkDelete}
+						variant="contained"
+						disabled={bulkLoading}
+						sx={{
+							backgroundColor: theme.palette.error.main,
+							color: theme.palette.error.contrastText,
+							"&:hover": {
+								backgroundColor: theme.palette.error.dark,
+							},
+						}}
+					>
+						{bulkLoading ? t("bulkOperations.deleting") : t("delete")}
 					</Button>
 				</DialogActions>
 			</Dialog>
