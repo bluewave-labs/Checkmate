@@ -1145,6 +1145,160 @@
 				]
 			}
 		},
+		"/monitors/bulk/toggle-active": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Bulk pause or resume monitors",
+				"description": "Pause or resume multiple monitors at once",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["monitorIds", "isActive"],
+								"properties": {
+									"monitorIds": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"minItems": 1,
+										"description": "Array of monitor IDs to pause or resume"
+									},
+									"isActive": {
+										"type": "boolean",
+										"description": "Set to false to pause monitors, true to resume them"
+									}
+								},
+								"example": {
+									"monitorIds": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"],
+									"isActive": false
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/bulk/delete": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Bulk delete monitors",
+				"description": "Delete multiple monitors at once",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["monitorIds"],
+								"properties": {
+									"monitorIds": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"minItems": 1,
+										"description": "Array of monitor IDs to delete"
+									}
+								},
+								"example": {
+									"monitorIds": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/monitors/bulk/update-notifications": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Bulk update notification channels",
+				"description": "Update notification channels for multiple monitors at once",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["monitorIds", "notificationChannels"],
+								"properties": {
+									"monitorIds": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"minItems": 1,
+										"description": "Array of monitor IDs to update"
+									},
+									"notificationChannels": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										},
+										"description": "Array of notification channel IDs to set for the monitors"
+									}
+								},
+								"example": {
+									"monitorIds": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"],
+									"notificationChannels": ["507f1f77bcf86cd799439013", "507f1f77bcf86cd799439014"]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
 		"/monitors/test-email": {
 			"post": {
 				"tags": ["monitors"],

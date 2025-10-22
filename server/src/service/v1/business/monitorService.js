@@ -280,8 +280,7 @@ class MonitorService {
 					await this.verifyTeamAccess({ teamId, monitorId });
 					const monitor = await this.getMonitorById({ teamId, monitorId });
 					if (monitor.isActive !== isActive) {
-						const updatedMonitor = await this.pauseMonitor({ teamId, monitorId });
-						await this.jobQueue.updateJob(updatedMonitor);
+						await this.pauseMonitor({ teamId, monitorId });
 					}
 				} catch (error) {
 					this.logger.warn({
