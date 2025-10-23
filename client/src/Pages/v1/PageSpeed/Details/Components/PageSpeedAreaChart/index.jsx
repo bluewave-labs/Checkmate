@@ -1,17 +1,9 @@
-<<<<<<< HEAD:client/src/Pages/v1/PageSpeed/Details/Components/PageSpeedAreaChart/index.jsx
 import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
-import AreaChart from "../Charts/AreaChart.jsx";
-import AreaChartLegend from "../Charts/AreaChartLegend.jsx";
-import SkeletonLayout from "./skeleton.jsx";
-import ScoreIcon from "../../../../../../assets/icons/monitor-graph-line.svg?react";
-=======
-import ChartBox from "../../../../../Components/Charts/ChartBox";
 import AreaChart from "../Charts/AreaChart";
 import AreaChartLegend from "../Charts/AreaChartLegend";
 import Pagination from "../PageSpeedPagination";
 import SkeletonLayout from "./skeleton";
-import ScoreIcon from "../../../../../assets/icons/monitor-graph-line.svg?react";
->>>>>>> 748ebb76 (Feat: Add pagination to Pagespeed details):client/src/Pages/PageSpeed/Details/Components/PageSpeedAreaChart/index.jsx
+import ScoreIcon from "../../../../../../assets/icons/monitor-graph-line.svg?react";
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 
@@ -42,7 +34,7 @@ const processDataWithGaps = (data, interval) => {
 
 	data.forEach((entry) => {
 		const current = new Date(entry.createdAt).getTime();
-		if (current - last > interval * 2) {
+		if (current - last >= interval * 2) {
 			// Insert null entries for each interval
 			let temp = last + interval;
 			while (temp < current) {
@@ -59,45 +51,42 @@ const processDataWithGaps = (data, interval) => {
 
 const createPagination = (data, timeRange) => {
 	if (data.length === 0) return [];
-	const paginatedData = []
-	let currentPage = []
-	let startTime = new Date(data[0].createdAt).getTime()
-	let timeRangeMs = timeRange * 60 * 60 * 1000
+	const paginatedData = [];
+	let currentPage = [];
+	let startTime = new Date(data[0].createdAt).getTime();
+	let timeRangeMs = timeRange * 60 * 60 * 1000;
 	data.forEach((entry) => {
-		const entryTime = new Date(entry.createdAt).getTime()
-		if (entryTime < startTime + timeRangeMs) {
-			currentPage.push(entry)
+		const entryTime = new Date(entry.createdAt).getTime();
+		if (entryTime <= startTime + timeRangeMs) {
+			currentPage.push(entry);
 		} else {
-			paginatedData.push(currentPage)
-			currentPage = [entry]
-			startTime = entryTime
+			paginatedData.push(currentPage);
+			currentPage = [entry];
+			startTime = entryTime;
 		}
-	})
+	});
 
-	if (currentPage.length > 0){
-		paginatedData.push(currentPage)
+	if (currentPage.length > 0) {
+		paginatedData.push(currentPage);
 	}
-	
-	return paginatedData
-}
+
+	return paginatedData;
+};
 
 const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) => {
 	const theme = useTheme();
 	const [page, setPage] = useState(0);
-	const [ timeRange, setTimeRange] = useState(2)
+	const [timeRange, setTimeRange] = useState(2);
 
-	const memoizedData = useMemo(
-		() => {
-			const data = monitor?.checks ? [...monitor.checks].reverse() : [];
-			const interval = monitor?.interval ? monitor.interval : 180000
-			return processDataWithGaps(data, interval)
-		},
-		[monitor?.checks, monitor?.interval]
-	);
+	const memoizedData = useMemo(() => {
+		const data = monitor?.checks ? [...monitor.checks].reverse() : [];
+		const interval = monitor?.interval ? monitor.interval : 180000;
+		return processDataWithGaps(data, interval);
+	}, [monitor?.checks, monitor?.interval]);
 
 	const paginatedData = useMemo(
 		() => createPagination(memoizedData, timeRange),
-		[memoizedData,timeRange]
+		[memoizedData, timeRange]
 	);
 
 	if (!shouldRender) {
@@ -106,13 +95,12 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
-
 	};
 
 	const handleChangeTimeRange = (event) => {
-		setPage(0)
-		setTimeRange(event.target.value)
-	}
+		setPage(0);
+		setTimeRange(event.target.value);
+	};
 
 	return (
 		<Stack
@@ -138,16 +126,16 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 				/>
 				{paginatedData.length > 0 && paginatedData[page].length > 0 && (
 					<Pagination
-						pageCount={paginatedData.length}
 						page={page}
+						pageCount={paginatedData.length}
 						handleChangePage={handleChangePage}
-						rowsPerPage={-1}
-						handleChangeRowsPerPage={() => {}}
 						handleChangeTimeRange={handleChangeTimeRange}
 						timeRange={timeRange}
 						timeRangeLabel={[
 							new Date(paginatedData[page][0].createdAt).getTime(),
-							new Date(paginatedData[page][paginatedData[page].length - 1].createdAt).getTime()
+							new Date(
+								paginatedData[page][paginatedData[page].length - 1].createdAt
+							).getTime(),
 						]}
 					/>
 				)}
