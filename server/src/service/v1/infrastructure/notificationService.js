@@ -1,4 +1,5 @@
 const SERVICE_NAME = "NotificationService";
+import Matrix from "./notificationProviders/matrix.js";
 
 class NotificationService {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -45,6 +46,14 @@ class NotificationService {
 			});
 
 			return response;
+		}
+		if (type === "matrix") {
+			const { friendlyName, homeserverUrl, accessToken, roomId } = notification;
+			const monitorName = subject;
+			const message = content;
+			const matrix = new Matrix({ networkService: this.networkService, logger: this.logger });
+			const success = await matrix.send({ friendlyName, homeserverUrl, accessToken, roomId, message, monitorName });
+			return success;
 		}
 	};
 

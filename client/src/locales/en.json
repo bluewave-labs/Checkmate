@@ -736,6 +736,16 @@
 			"webhookLabel": "Discord Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
+		"matrixSettings": {
+			"title": "Matrix",
+			"description": "Configure your Matrix notification here",
+			"homeserverLabel": "Homeserver URL",
+			"homeserverPlaceholder": "https://matrix.org",
+			"roomIdLabel": "Room ID",
+			"roomIdPlaceholder": "!QMdRCpUIfLwsfjxye6:home.server",
+			"accessTokenLabel": "Access Token",
+			"accessTokenPlaceholder": "Your Matrix access token"
+		},
 		"webhookSettings": {
 			"title": "Webhook",
 			"description": "Configure your webhook here",
