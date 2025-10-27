@@ -16,7 +16,7 @@ const NotificationSchema = mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: ["email", "slack", "discord", "webhook", "pager_duty"],
+			enum: ["email", "slack", "discord", "webhook", "pager_duty", "matrix"],
 		},
 		notificationName: {
 			type: String,
@@ -26,6 +26,16 @@ const NotificationSchema = mongoose.Schema(
 			type: String,
 		},
 		phone: {
+			type: String,
+		},
+		// Matrix-specific fields
+		homeserverUrl: {
+			type: String,
+		},
+		roomId: {
+			type: String,
+		},
+		accessToken: {
 			type: String,
 		},
 	},

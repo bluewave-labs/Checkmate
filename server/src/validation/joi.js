@@ -575,10 +575,10 @@ const createNotificationBodyValidation = joi.object({
 		"any.required": "Notification name is required",
 	}),
 
-	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty").required().messages({
+	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty", "matrix").required().messages({
 		"string.empty": "Notification type is required",
 		"any.required": "Notification type is required",
-		"any.only": "Notification type must be email, webhook, or pager_duty",
+		"any.only": "Notification type must be email, webhook, slack, discord, pager_duty, or matrix",
 	}),
 
 	address: joi.when("type", {
@@ -606,7 +606,39 @@ const createNotificationBodyValidation = joi.object({
 					"string.uri": "Please enter a valid Webhook URL",
 				}),
 			},
+			{
+				is: "matrix",
+				then: joi.string().allow("").optional(),
+			},
 		],
+	}),
+
+	homeserverUrl: joi.when("type", {
+		is: "matrix",
+		then: joi.string().uri().required().messages({
+			"string.empty": "Homeserver URL cannot be empty",
+			"any.required": "Homeserver URL is required",
+			"string.uri": "Please enter a valid Homeserver URL",
+		}),
+		otherwise: joi.string().allow("").optional(),
+	}),
+
+	roomId: joi.when("type", {
+		is: "matrix",
+		then: joi.string().required().messages({
+			"string.empty": "Room ID cannot be empty",
+			"any.required": "Room ID is required",
+		}),
+		otherwise: joi.string().allow("").optional(),
+	}),
+
+	accessToken: joi.when("type", {
+		is: "matrix",
+		then: joi.string().required().messages({
+			"string.empty": "Access Token cannot be empty",
+			"any.required": "Access Token is required",
+		}),
+		otherwise: joi.string().allow("").optional(),
 	}),
 });
 
