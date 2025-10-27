@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { toast, Slide } from "react-toastify";
-import Toast from "../Components/Toast";
+import Toast from "../Components/v1/Toast";
 /**
  * @param {object} props
  * @param {'info' | 'error' | 'warning'} - The variant of the alert (e.g., "info", "error").

@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": "Role"
+		"role": "Role",
+		"changeTeamPassword": {
+			"changePasswordMenu": "Reset Password",
+			"title": "Reset team member password",
+			"description": "Create a new password for this team member. You will need to share the password with them securely.",
+			"success": "Password successfully reset. Make sure to provide the credentials to the member in a secure way."
+		}
 	},
 	"monitorState": {
 		"paused": "Paused",
@@ -487,7 +493,8 @@
 		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 		"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
+		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
+		"https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1096,7 +1103,11 @@
 		"incidentConfigDescription": "A sliding window is used to determine when a monitor goes down.  The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
 		"incidentConfigStatusWindowLabel": "How many checks should be in the sliding window?",
 		"incidentConfigStatusWindowThresholdLabel": "What percentage of checks in the sliding window fail/succeed before monitor status changes?",
-		"incidentConfigTitle": "Incidents"
+		"incidentConfigTitle": "Incidents",
+		"incidentConfigDescriptionV2": "Number of consecutive checks needed to change monitor status.  Maximum 25",
+		"incidentConfigStatusCheckNumber": "How many checks before status change?",
+		"intervalTitle": "Check interval",
+		"intervalDescription": "How often the monitor should be checked."
 	},
 	"dataRate": "Data Rate",
 	"dataReceived": "Data Received",

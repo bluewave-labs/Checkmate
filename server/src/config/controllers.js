@@ -1,24 +1,32 @@
-import { createCommonDependencies } from "../controllers/baseController.js";
+import { createCommonDependencies } from "../controllers/v1/baseController.js";
 
 // Services
 
-// Controllers
-import MonitorController from "../controllers/monitorController.js";
-import AuthController from "../controllers/authController.js";
-import SettingsController from "../controllers/settingsController.js";
-import CheckController from "../controllers/checkController.js";
-import InviteController from "../controllers/inviteController.js";
-import MaintenanceWindowController from "../controllers/maintenanceWindowController.js";
-import QueueController from "../controllers/queueController.js";
-import LogController from "../controllers/logController.js";
-import StatusPageController from "../controllers/statusPageController.js";
-import NotificationController from "../controllers/notificationController.js";
-import DiagnosticController from "../controllers/diagnosticController.js";
+// V1 Controllers
+import MonitorController from "../controllers/v1/monitorController.js";
+import AuthController from "../controllers/v1/authController.js";
+import SettingsController from "../controllers/v1/settingsController.js";
+import CheckController from "../controllers/v1/checkController.js";
+import InviteController from "../controllers/v1/inviteController.js";
+import MaintenanceWindowController from "../controllers/v1/maintenanceWindowController.js";
+import QueueController from "../controllers/v1/queueController.js";
+import LogController from "../controllers/v1/logController.js";
+import StatusPageController from "../controllers/v1/statusPageController.js";
+import NotificationController from "../controllers/v1/notificationController.js";
+import DiagnosticController from "../controllers/v1/diagnosticController.js";
 
+// V2 Controllers
+import AuthControllerV2 from "../controllers/v2/AuthController.js";
+import InviteControllerV2 from "../controllers/v2/InviteController.js";
+import MaintenanceControllerV2 from "../controllers/v2/MaintenanceController.js";
+import MonitorControllerV2 from "../controllers/v2/MonitorController.js";
+import NotificationChannelControllerV2 from "../controllers/v2/NotificationChannelController.js";
+import QueueControllerV2 from "../controllers/v2/QueueController.js";
 export const initializeControllers = (services) => {
 	const controllers = {};
 	const commonDependencies = createCommonDependencies(services.db, services.errorService, services.logger, services.stringService);
 
+	// V1
 	controllers.authController = new AuthController(commonDependencies, {
 		settingsService: services.settingsService,
 		emailService: services.emailService,
@@ -61,6 +69,14 @@ export const initializeControllers = (services) => {
 	controllers.diagnosticController = new DiagnosticController(commonDependencies, {
 		diagnosticService: services.diagnosticService,
 	});
+
+	//V2
+	controllers.authControllerV2 = new AuthControllerV2(services.authServiceV2, services.inviteServiceV2);
+	controllers.inviteControllerV2 = new InviteControllerV2(services.inviteServiceV2);
+	controllers.maintenanceControllerV2 = new MaintenanceControllerV2(services.maintenanceServiceV2);
+	controllers.monitorControllerV2 = new MonitorControllerV2(services.monitorServiceV2, services.checkServiceV2);
+	controllers.notificationChannelControllerV2 = new NotificationChannelControllerV2(services.notificationChannelServiceV2);
+	controllers.queueControllerV2 = new QueueControllerV2(services.jobQueueV2);
 
 	return controllers;
 };
