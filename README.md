@@ -166,7 +166,7 @@ Check out this interactive walkthrough of the `Checkmate` codebase on CodeCanvas
 
 To refine existing dataflow simulation or create new ones, follow the quick tutorial [here](https://docs.code-canvas.com/updating-diagram).
 
-<img width="1916" alt="CodeCanvas Screenshot" src="https://codecanvas-media-public.s3.amazonaws.com/images/codecanvas-readme-screenshot.png" />
+<img width="1399" height="630" alt="image" src="https://github.com/user-attachments/assets/e19dd2f3-b387-4e33-901d-f1c8b10483c6" />
 
 4. Open an issue if you believe you've encountered a bug.
 5. Check for good-first-issue's if you are a newcomer.
