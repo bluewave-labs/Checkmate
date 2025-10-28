@@ -159,6 +159,15 @@ Here's how you can contribute:
 1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
 2. Check [project structure](https://docs.checkmate.so/checkmate-2.1/developers-guide/general-project-structure) and [high level overview](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
 3. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
+
+### How does `Checkmate` work under the hood?
+
+Check out this interactive walkthrough of the `Checkmate` codebase on CodeCanvas [here](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true).
+
+To refine existing dataflow simulation or create new ones, follow the quick tutorial [here](https://docs.code-canvas.com/updating-diagram).
+
+<img width="1916" alt="CodeCanvas Screenshot" src="https://codecanvas-media-public.s3.amazonaws.com/images/codecanvas-readme-screenshot.png" />
+
 4. Open an issue if you believe you've encountered a bug.
 5. Check for good-first-issue's if you are a newcomer.
 6. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
