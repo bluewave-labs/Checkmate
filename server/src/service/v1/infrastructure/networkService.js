@@ -529,6 +529,42 @@ class NetworkService {
 			throw error;
 		}
 	}
+
+	async requestMatrix({ homeserverUrl, accessToken, roomId, message }) {
+		try {
+			const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message?access_token=${accessToken}`;
+			const body = {
+				msgtype: "m.text",
+				body: message,
+				format: "org.matrix.custom.html",
+				formatted_body: message,
+			};
+			const response = await this.axios.post(url, body, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+
+			return {
+				status: true,
+				code: response.status,
+				message: "Successfully sent Matrix notification",
+			};
+		} catch (error) {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "requestMatrix",
+			});
+
+			return {
+				status: false,
+				code: error.response?.status || this.NETWORK_ERROR,
+				message: "Failed to send Matrix notification",
+				payload: error.response?.data,
+			};
+		}
+	}
 }
 
 export default NetworkService;

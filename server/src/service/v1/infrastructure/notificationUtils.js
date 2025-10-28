@@ -74,7 +74,9 @@ class NotificationUtils {
 		let discordMessageText = {
 			embeds: [
 				{
-					title: status ? dn.uptimeAlert : dn.downtimeAlert,
+					title: status
+						? dn.uptimeAlert.replace("{monitorName}", monitor?.name ?? dn.unknown)
+						: dn.downtimeAlert.replace("{monitorName}", monitor?.name ?? dn.unknown),
 					color: status ? 5763719 : 15548997,
 
 					fields: [

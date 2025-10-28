@@ -175,7 +175,7 @@
 		"checkmate": "Checkmate",
 		"url": "URL",
 		"unknown": "Unknown",
-		"uptimeAlert": "Uptime Alert: One of your monitors is back online",
-		"downtimeAlert": "Downtime Alert: One of your monitors went offline"
+		"uptimeAlert": "Uptime Alert: Your monitor {monitorName} is back online",
+		"downtimeAlert": "Downtime Alert: Your monitor {monitorName} went offline"
 	}
 }

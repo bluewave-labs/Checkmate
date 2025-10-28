@@ -223,18 +223,54 @@ const CreateNotifications = () => {
 						<Typography component="p">{t(DESCRIPTION_MAP[type])}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
-						<TextInput
-							label={t(LABEL_MAP[type])}
-							name="address"
-							placeholder={t(PLACEHOLDER_MAP[type])}
-							value={notification.address}
-							onChange={onChange}
-							error={Boolean(errors.address)}
-							helperText={errors["address"]}
-						/>
+						{type === "matrix" ? (
+							<>
+								<TextInput
+									label={t("createNotifications.matrixSettings.homeserverLabel")}
+									name="homeserverUrl"
+									placeholder={t(
+										"createNotifications.matrixSettings.homeserverPlaceholder"
+									)}
+									value={notification.homeserverUrl || ""}
+									onChange={onChange}
+									error={Boolean(errors.homeserverUrl)}
+									helperText={errors["homeserverUrl"]}
+								/>
+								<TextInput
+									label={t("createNotifications.matrixSettings.roomIdLabel")}
+									name="roomId"
+									placeholder={t("createNotifications.matrixSettings.roomIdPlaceholder")}
+									value={notification.roomId || ""}
+									onChange={onChange}
+									error={Boolean(errors.roomId)}
+									helperText={errors["roomId"]}
+								/>
+								<TextInput
+									label={t("createNotifications.matrixSettings.accessTokenLabel")}
+									name="accessToken"
+									type="password"
+									placeholder={t(
+										"createNotifications.matrixSettings.accessTokenPlaceholder"
+									)}
+									value={notification.accessToken || ""}
+									onChange={onChange}
+									error={Boolean(errors.accessToken)}
+									helperText={errors["accessToken"]}
+								/>
+							</>
+						) : (
+							<TextInput
+								label={t(LABEL_MAP[type])}
+								name="address"
+								placeholder={t(PLACEHOLDER_MAP[type])}
+								value={notification.address}
+								onChange={onChange}
+								error={Boolean(errors.address)}
+								helperText={errors["address"]}
+							/>
+						)}
 					</Stack>
-				</ConfigBox>
-
+				</ConfigBox>{" "}
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
