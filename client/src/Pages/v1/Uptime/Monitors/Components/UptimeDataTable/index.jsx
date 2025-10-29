@@ -1,16 +1,7 @@
 // Components
-import {
-	Box,
-	Stack,
-	Typography,
-	Button,
-	MenuItem,
-	InputLabel,
-	FormControl,
-	Chip,
-	Select as MuiSelect,
-} from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
 import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
 import Dialog from "@/Components/v1/Dialog/index.jsx";
 import DataTable from "@/Components/v1/Table/index.jsx";
@@ -82,6 +73,7 @@ const UptimeDataTable = ({
 	const [showBulkNotifications, setShowBulkNotifications] = useState(false);
 	const [notificationOptions, setNotificationOptions] = useState([]);
 	const [selectedNotificationChannels, setSelectedNotificationChannels] = useState([]);
+	const [notificationSearchInput, setNotificationSearchInput] = useState("");
 	const [bulkLoading, setBulkLoading] = useState(false);
 	const [loadingNotifications, setLoadingNotifications] = useState(false);
 	const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -543,127 +535,25 @@ const UptimeDataTable = ({
 									? t("bulkOperations.notificationChannelAvailable")
 									: t("bulkOperations.notificationChannelsAvailable")}
 							</Typography>
-							<FormControl fullWidth>
-								<InputLabel
-									id="bulk-notifications-label"
-									sx={{
-										color: theme.palette.primary.contrastTextTertiary,
-										"&.Mui-focused": {
-											color: theme.palette.primary.contrastText,
-										},
-									}}
-								>
-									{t("bulkOperations.notificationChannels")}
-								</InputLabel>
-								<MuiSelect
-									labelId="bulk-notifications-label"
-									id="bulk-notifications-select"
-									multiple
-									value={selectedNotificationChannels}
-									onChange={(e) => setSelectedNotificationChannels(e.target.value)}
-									label={t("bulkOperations.notificationChannels")}
-									MenuProps={{
-										PaperProps: {
-											sx: {
-												backgroundColor: theme.palette.primary.main,
-												color: theme.palette.primary.contrastText,
-												"& .MuiMenuItem-root": {
-													color: theme.palette.primary.contrastText,
-													"&:hover": {
-														backgroundColor: theme.palette.tertiary.main,
-													},
-													"&.Mui-selected": {
-														backgroundColor: theme.palette.secondary.main,
-														"&:hover": {
-															backgroundColor: theme.palette.secondary.main,
-														},
-													},
-												},
-											},
-										},
-									}}
-									sx={{
-										color: theme.palette.primary.contrastText,
-										"& fieldset": {
-											borderColor: theme.palette.primary.lowContrast,
-										},
-										"&:hover fieldset": {
-											borderColor: theme.palette.primary.lowContrast,
-										},
-										"& .MuiSvgIcon-root": {
-											color: theme.palette.primary.contrastTextTertiary,
-										},
-									}}
-									renderValue={(selected) => {
-										if (!selected || selected.length === 0) {
-											return (
-												<Typography
-													sx={{ color: theme.palette.primary.contrastTextTertiary }}
-												>
-													{t("bulkOperations.selectChannels")}
-												</Typography>
-											);
-										}
-										return (
-											<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-												{selected.map((value) => {
-													const option = notificationOptions.find(
-														(opt) => opt._id === value
-													);
-													const displayName =
-														option?.notificationName ||
-														option?.name ||
-														option?.title ||
-														option?.label ||
-														`Channel ${value.substring(0, 8)}...`;
-													return (
-														<Chip
-															key={value}
-															label={displayName}
-															size="small"
-															sx={{
-																backgroundColor: theme.palette.secondary.main,
-																color: theme.palette.primary.contrastText,
-															}}
-														/>
-													);
-												})}
-											</Box>
-										);
-									}}
-								>
-									{notificationOptions.map((option) => {
-										const displayName =
-											option.notificationName ||
-											option.name ||
-											option.title ||
-											option.label ||
-											`Channel ${option._id?.slice(-4)}`;
-										return (
-											<MenuItem
-												key={option._id}
-												value={option._id}
-											>
-												<Checkbox
-													id={`notification-${option._id}`}
-													label=""
-													isChecked={
-														selectedNotificationChannels.indexOf(option._id) > -1
-													}
-													inputProps={{
-														"aria-label": `Select notification channel ${displayName}`,
-													}}
-												/>
-												<Typography sx={{ color: theme.palette.primary.contrastText }}>
-													{displayName}
-												</Typography>
-											</MenuItem>
-										);
-									})}
-								</MuiSelect>
-							</FormControl>
-						</>
-					)}
+						<Search
+							id="bulk-notifications-search"
+							label={t("bulkOperations.notificationChannels")}
+							multiple={true}
+							options={notificationOptions}
+							filteredBy="notificationName"
+							value={notificationOptions.filter((opt) =>
+								selectedNotificationChannels.includes(opt._id)
+							)}
+							inputValue={notificationSearchInput}
+							handleInputChange={setNotificationSearchInput}
+							handleChange={(newValue) => {
+								setSelectedNotificationChannels(newValue.map((opt) => opt._id));
+							}}
+							unit={t("bulkOperations.notificationChannel")}
+							isAdorned={true}
+						/>
+					</>
+				)}
 					<Stack
 						direction="row"
 						gap={theme.spacing(4)}

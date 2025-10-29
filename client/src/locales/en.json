@@ -227,6 +227,7 @@
 		"selectedMonitors": "selected monitors",
 		"confirmDeletion": "Confirm deletion",
 		"confirmDeleteMonitors": "Are you sure you want to delete",
+		"notificationChannel": "notification channel",
 		"notificationChannels": "Notification channels",
 		"notificationChannelAvailable": "notification channel available",
 		"notificationChannelsAvailable": "notification channels available",
