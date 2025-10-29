@@ -50,14 +50,14 @@ const GetTooltip = (timings, theme, t) => {
 			>
 				{t("responseTimeBreakdown")}
 			</Typography>
-			{timingDetails.map((detail, index) => (
+			{timingDetails.map((detail, index, array) => (
 				<Box
 					key={index}
 					sx={{
 						display: "flex",
 						justifyContent: "space-between",
 						gap: theme.spacing(4),
-						marginBottom: index < timingDetails.length - 1 ? theme.spacing(0.5) : 0,
+						marginBottom: index < array.length - 1 ? theme.spacing(0.5) : 0,
 					}}
 				>
 					<Typography
@@ -69,7 +69,7 @@ const GetTooltip = (timings, theme, t) => {
 					<Typography
 						variant="body2"
 						sx={{
-							fontWeight: detail.label === "Total" ? 600 : 400,
+							fontWeight: index === array.length - 1 ? 600 : 400,
 							color: theme.palette.primary.contrastText,
 						}}
 					>

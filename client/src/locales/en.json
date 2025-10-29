@@ -26,6 +26,7 @@
 	"tlsHandshake": "TLS Handshake",
 	"waitTime": "Wait Time",
 	"timeToFirstByte": "Time to First Byte",
+	"download": "Download",
 	"ms": "ms",
 	"bar": "Bar",
 	"area": "Area",
