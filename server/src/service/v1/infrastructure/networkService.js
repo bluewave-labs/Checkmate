@@ -1,3 +1,4 @@
+import CacheableLookup from "cacheable-lookup";
 const SERVICE_NAME = "NetworkService";
 
 class NetworkService {
@@ -15,7 +16,6 @@ class NetworkService {
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
 		this.axios = axios;
-		this.got = got;
 		this.https = https;
 		this.jmespath = jmespath;
 		this.GameDig = GameDig;
@@ -26,6 +26,16 @@ class NetworkService {
 		this.net = net;
 		this.stringService = stringService;
 		this.settingsService = settingsService;
+
+		const cacheable = new CacheableLookup();
+
+		this.got = got.extend({
+			dnsCache: cacheable,
+			timeout: {
+				request: 30000,
+			},
+			retry: { limit: 1 },
+		});
 	}
 
 	// Helper functions
