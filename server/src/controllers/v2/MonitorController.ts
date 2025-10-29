@@ -215,7 +215,7 @@ class MonitorController {
 
 			const { monitorIds } = req.body;
 
-			await this.monitorService.bulkDelete(monitorIds);
+			await this.monitorService.bulkDelete(monitorIds, tokenizedUser);
 
 			res.status(200).json({
 				message: "Bulk delete completed",

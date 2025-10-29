@@ -18,7 +18,7 @@ export interface IMonitorService {
 	update: (tokenizedUser: ITokenizedUser, monitorId: string, updateData: Partial<IMonitor>) => Promise<IMonitor>;
 	delete: (monitorId: string) => Promise<boolean>;
 	bulkToggleActive: (monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) => Promise<void>;
-	bulkDelete: (monitorIds: string[]) => Promise<void>;
+	bulkDelete: (monitorIds: string[], tokenizedUser: ITokenizedUser) => Promise<void>;
 	bulkUpdateNotifications: (monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) => Promise<void>;
 }
 
@@ -398,14 +398,13 @@ class MonitorService implements IMonitorService {
 	};
 
 	async toggleActive(id: string, tokenizedUser: ITokenizedUser) {
-		const pendingStatus: MonitorStatus = "initializing";
+		// Don't change status - preserve actual operational state (up/down/paused)
 		const updatedMonitor = await Monitor.findOneAndUpdate(
 			{ _id: id },
 			[
 				{
 					$set: {
 						isActive: { $not: "$isActive" },
-						status: pendingStatus,
 						updatedBy: tokenizedUser.sub,
 						updatedAt: new Date(),
 					},
@@ -468,73 +467,118 @@ class MonitorService implements IMonitorService {
 	}
 
 	async bulkToggleActive(monitorIds: string[], isActive: boolean, tokenizedUser: ITokenizedUser) {
-		const pendingStatus: MonitorStatus = "initializing";
+		// Verify ownership/permission for all monitors before modifying any
+		const userMonitors = await Monitor.find({
+			_id: { $in: monitorIds },
+			createdBy: tokenizedUser.sub,
+		});
 
-		await Promise.all(
-			monitorIds.map(async (monitorId) => {
-				const updatedMonitor = await Monitor.findByIdAndUpdate(
-					monitorId,
-					{
-						$set: {
-							isActive,
-							status: pendingStatus,
-							updatedBy: tokenizedUser.sub,
-							updatedAt: new Date(),
-						},
+		if (userMonitors.length !== monitorIds.length) {
+			throw new ApiError("Unauthorized to modify one or more monitors", 403);
+		}
+
+		// Use bulkWrite for better performance
+		const bulkOps = monitorIds.map((monitorId) => ({
+			updateOne: {
+				filter: { _id: monitorId },
+				update: {
+					$set: {
+						isActive,
+						updatedBy: tokenizedUser.sub,
+						updatedAt: new Date(),
 					},
-					{ new: true }
-				);
+				},
+			},
+		}));
 
-				if (!updatedMonitor) {
-					throw new ApiError("Monitor not found", 404);
-				}
+		const result = await Monitor.bulkWrite(bulkOps);
 
-				await this.jobQueue.updateJob(updatedMonitor);
+		if (result.modifiedCount !== monitorIds.length) {
+			throw new ApiError("Some monitors could not be updated", 500);
+		}
 
-				if (updatedMonitor.isActive) {
-					await this.jobQueue.resumeJob(updatedMonitor);
+		// Fetch updated monitors for job queue updates
+		const updatedMonitors = await Monitor.find({ _id: { $in: monitorIds } });
+
+		// Update job queue and pause/resume in parallel
+		await Promise.all(
+			updatedMonitors.map(async (monitor) => {
+				await this.jobQueue.updateJob(monitor);
+
+				if (monitor.isActive) {
+					await this.jobQueue.resumeJob(monitor);
 				} else {
-					await this.jobQueue.pauseJob(updatedMonitor);
+					await this.jobQueue.pauseJob(monitor);
 				}
 			})
 		);
 	}
 
-	async bulkDelete(monitorIds: string[]) {
-		await Promise.all(
-			monitorIds.map(async (monitorId) => {
-				const monitor = await Monitor.findById(monitorId);
-				if (!monitor) {
-					throw new ApiError("Monitor not found", 404);
-				}
-				await monitor.deleteOne();
-				await this.jobQueue.deleteJob(monitor);
-			})
-		);
+	async bulkDelete(monitorIds: string[], tokenizedUser: ITokenizedUser) {
+		// Verify ownership/permission for all monitors before deleting any
+		const userMonitors = await Monitor.find({
+			_id: { $in: monitorIds },
+			createdBy: tokenizedUser.sub,
+		});
+
+		if (userMonitors.length !== monitorIds.length) {
+			throw new ApiError("Unauthorized to delete one or more monitors", 403);
+		}
+
+		// Fetch all monitors before deletion (needed for job queue)
+		const monitorsToDelete = await Monitor.find({ _id: { $in: monitorIds } });
+
+		if (monitorsToDelete.length !== monitorIds.length) {
+			throw new ApiError("Some monitors not found", 404);
+		}
+
+		// Delete all monitors in one operation
+		const deleteResult = await Monitor.deleteMany({ _id: { $in: monitorIds } });
+
+		if (deleteResult.deletedCount !== monitorIds.length) {
+			throw new ApiError("Some monitors could not be deleted", 500);
+		}
+
+		// Remove jobs from queue in parallel
+		await Promise.all(monitorsToDelete.map((monitor) => this.jobQueue.deleteJob(monitor)));
 	}
 
 	async bulkUpdateNotifications(monitorIds: string[], notificationChannels: any[], tokenizedUser: ITokenizedUser) {
-		await Promise.all(
-			monitorIds.map(async (monitorId) => {
-				const updatedMonitor = await Monitor.findByIdAndUpdate(
-					monitorId,
-					{
-						$set: {
-							notificationChannels,
-							updatedAt: new Date(),
-							updatedBy: tokenizedUser.sub,
-						},
+		// Verify ownership/permission for all monitors before modifying any
+		const userMonitors = await Monitor.find({
+			_id: { $in: monitorIds },
+			createdBy: tokenizedUser.sub,
+		});
+
+		if (userMonitors.length !== monitorIds.length) {
+			throw new ApiError("Unauthorized to modify one or more monitors", 403);
+		}
+
+		// Use bulkWrite for better performance
+		const bulkOps = monitorIds.map((monitorId) => ({
+			updateOne: {
+				filter: { _id: monitorId },
+				update: {
+					$set: {
+						notificationChannels,
+						updatedAt: new Date(),
+						updatedBy: tokenizedUser.sub,
 					},
-					{ new: true, runValidators: true }
-				);
+				},
+			},
+		}));
 
-				if (!updatedMonitor) {
-					throw new ApiError("Monitor not found", 404);
-				}
+		const result = await Monitor.bulkWrite(bulkOps);
 
-				await this.jobQueue.updateJob(updatedMonitor);
-			})
-		);
+		if (result.modifiedCount !== monitorIds.length) {
+			throw new ApiError("Some monitors could not be updated", 500);
+		}
+
+		// Fetch updated monitors for job queue updates
+		const updatedMonitors = await Monitor.find({ _id: { $in: monitorIds } });
+
+		// Update job queue in parallel
+		await Promise.all(updatedMonitors.map((monitor) => this.jobQueue.updateJob(monitor)));
 	}
 }
 
