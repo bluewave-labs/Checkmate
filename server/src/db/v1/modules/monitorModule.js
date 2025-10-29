@@ -121,6 +121,21 @@ class MonitorModule {
 		};
 	};
 
+	// Helper
+	offsetDatesByPage = (dates, dateRange, pageOffset) => {
+		const dateOffsets = {
+			recent: 60 * 60 * 2 * pageOffset * 1000,
+			day: 60 * 60 * 24 * pageOffset * 1000,
+			week: 60 * 60 * 24 * 7 * pageOffset * 1000,
+			all: 0,
+		};
+
+		return {
+			start: new Date(dates.start.getTime() - dateOffsets[dateRange]),
+			end: new Date(new Date().getTime() - dateOffsets[dateRange]),
+		};
+	};
+
 	//Helper
 	getMonitorChecks = async (monitorId, dateRange, sortOrder) => {
 		const indexSpec = {
@@ -258,7 +273,7 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorStatsById = async ({ monitorId, sortOrder, dateRange, numToDisplay, normalize }) => {
+	getMonitorStatsById = async ({ monitorId, sortOrder, dateRange, numToDisplay, normalize, pageOffset }) => {
 		try {
 			// Get monitor, if we can't find it, abort with error
 			const monitor = await this.Monitor.findById(monitorId);
@@ -269,9 +284,15 @@ class MonitorModule {
 			// Get query params
 			const sort = sortOrder === "asc" ? 1 : -1;
 
+			let dates = this.getDateRange(dateRange);
+
+			if (pageOffset) {
+				dates = this.offsetDatesByPage(dates, dateRange, pageOffset);
+			}
+
 			// Get Checks for monitor in date range requested
-			const dates = this.getDateRange(dateRange);
 			const { checksAll, checksForDateRange } = await this.getMonitorChecks(monitorId, dates, sort);
+			const checksSkipped = checksAll.filter((check) => check.createdAt > dates.end);
 
 			// Build monitor stats
 			const monitorStats = {
@@ -281,6 +302,7 @@ class MonitorModule {
 				latestResponseTime: this.getLatestResponseTime(checksAll),
 				periodIncidents: this.getIncidents(checksForDateRange),
 				periodTotalChecks: checksForDateRange.length,
+				remainingChecks: checksAll.length - checksForDateRange.length - checksSkipped.length,
 				checks: this.processChecksForDisplay(this.NormalizeData, checksForDateRange, numToDisplay, normalize),
 			};
 
