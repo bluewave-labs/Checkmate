@@ -144,7 +144,7 @@ const getMonitorStatsByIdQueryValidation = joi.object({
 	dateRange: joi.string().valid("hour", "day", "week", "month", "all"),
 	numToDisplay: joi.number(),
 	normalize: joi.boolean(),
-	pageOffset: joi.number().integer(),
+	pageOffset: joi.number().integer().min(0),
 });
 
 const getCertificateParamValidation = joi.object({
