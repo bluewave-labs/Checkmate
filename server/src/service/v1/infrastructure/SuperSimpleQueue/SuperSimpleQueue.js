@@ -35,9 +35,9 @@ class SuperSimpleQueue {
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
 			const monitors = await this.db.monitorModule.getAllMonitors();
 			for (const monitor of monitors) {
-				const randomOffset = Math.floor(Math.random() * monitor.interval);
+				const randomOffset = Math.floor(Math.random() * 100);
 				setTimeout(() => {
-					this.addJob(monitor);
+					this.addJob(monitor._id, monitor);
 				}, randomOffset);
 			}
 
