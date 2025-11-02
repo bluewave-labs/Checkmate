@@ -44,5 +44,9 @@ secrets:
 #  REFRESH_TOKEN_TTL: 99d
 
 persistence:
-  mongodbSize: 5Gi
-  redisSize: 1Gi
+  mongo:
+    size: 5Gi
+    storageClass: change_me
+  redis:
+    size: 1Gi
+    storageClass: change_me

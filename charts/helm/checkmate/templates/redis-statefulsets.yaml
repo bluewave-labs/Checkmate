@@ -25,9 +25,9 @@ spec:
     - metadata:
         name: checkmate-redis-persistent-storage
       spec:
-        storageClassName: "gp3"
+        storageClassName: {{ .Values.persistence.redis.storageClass }}
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{ .Values.persistence.redisSize }}
+            storage: {{ .Values.persistence.redis.size }}
 {{- end }}

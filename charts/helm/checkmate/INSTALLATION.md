@@ -21,6 +21,7 @@ cd checkmate/charts/helm/checkmate
 Edit `values.yaml` to update:
 - `client.ingress.host` and `server.ingress.host` with your domain names
 - `server.protocol` (usually http or https)
+- `persistence.mongo.storageClass` and `persistence.redis.storageClass` with your storageclass
 - Secrets under the `secrets` section (`JWT_SECRET`, email credentials, API keys, etc.) — replace all change_me values
 
 ### 3. Deploy the Helm chart
