@@ -46,7 +46,7 @@ secrets:
 persistence:
   mongo:
     size: 5Gi
-    storageClass: change_me
+    storageClass: ""
   redis:
     size: 1Gi
-    storageClass: change_me
+    storageClass: ""
