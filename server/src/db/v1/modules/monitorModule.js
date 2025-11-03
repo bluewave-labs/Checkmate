@@ -132,8 +132,8 @@ class MonitorModule {
 
 		if (dateRange == "month") {
 			return {
-				start: new Date(dates.start.setMonth(dates.start.getMonth() - pageOffset)),
-				end: new Date(dates.end.setMonth(dates.end.getMonth() - pageOffset)),
+				start: new Date(new Date(dates.start).setMonth(dates.start.getMonth() - pageOffset)),
+				end: new Date(new Date(dates.end).setMonth(dates.end.getMonth() - pageOffset)),
 			};
 		} else {
 			return {
