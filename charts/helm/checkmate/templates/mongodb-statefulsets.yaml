@@ -37,8 +37,8 @@ spec:
     - metadata:
         name: checkmate-mongo-persistent-storage
       spec:
-        storageClassName: "gp3"
+        storageClassName: {{ .Values.persistence.mongo.storageClass | quote }}
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{ .Values.persistence.mongodbSize }}
+            storage: {{ .Values.persistence.mongo.size | default "5Gi" | quote }}

@@ -1,3 +1,4 @@
+import CacheableLookup from "cacheable-lookup";
 const SERVICE_NAME = "NetworkService";
 
 class NetworkService {
@@ -15,7 +16,6 @@ class NetworkService {
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
 		this.axios = axios;
-		this.got = got;
 		this.https = https;
 		this.jmespath = jmespath;
 		this.GameDig = GameDig;
@@ -26,6 +26,16 @@ class NetworkService {
 		this.net = net;
 		this.stringService = stringService;
 		this.settingsService = settingsService;
+
+		const cacheable = new CacheableLookup();
+
+		this.got = got.extend({
+			dnsCache: cacheable,
+			timeout: {
+				request: 30000,
+			},
+			retry: { limit: 1 },
+		});
 	}
 
 	// Helper functions
@@ -527,6 +537,42 @@ class NetworkService {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestPagerDuty";
 			throw error;
+		}
+	}
+
+	async requestMatrix({ homeserverUrl, accessToken, roomId, message }) {
+		try {
+			const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message?access_token=${accessToken}`;
+			const body = {
+				msgtype: "m.text",
+				body: message,
+				format: "org.matrix.custom.html",
+				formatted_body: message,
+			};
+			const response = await this.axios.post(url, body, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+
+			return {
+				status: true,
+				code: response.status,
+				message: "Successfully sent Matrix notification",
+			};
+		} catch (error) {
+			this.logger.warn({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "requestMatrix",
+			});
+
+			return {
+				status: false,
+				code: error.response?.status || this.NETWORK_ERROR,
+				message: "Failed to send Matrix notification",
+				payload: error.response?.data,
+			};
 		}
 	}
 }

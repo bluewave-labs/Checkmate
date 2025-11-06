@@ -381,7 +381,7 @@ class MonitorService implements IMonitorService {
 		// Get monitor stats
 		const monitorStats = await MonitorStats.findOne({
 			monitorId: monitor._id,
-		}).lean();
+		});
 
 		if (!monitorStats) {
 			throw new ApiError("Monitor stats not found", 404);

@@ -25,6 +25,7 @@
 		"axios": "^1.7.2",
 		"bcryptjs": "3.0.2",
 		"bullmq": "5.41.2",
+		"cacheable-lookup": "7.0.0",
 		"compression": "1.8.1",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
@@ -51,7 +52,7 @@
 		"ping": "0.4.4",
 		"sharp": "0.33.5",
 		"ssl-checker": "2.0.10",
-		"super-simple-scheduler": "1.4.1",
+		"super-simple-scheduler": "1.4.5",
 		"swagger-ui-express": "5.0.1",
 		"winston": "^3.13.0"
 	},

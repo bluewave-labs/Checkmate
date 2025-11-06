@@ -458,7 +458,7 @@ const notificationValidation = joi.object({
 
 	type: joi
 		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.valid("email", "webhook", "slack", "discord", "pager_duty", "matrix")
 		.required()
 		.messages({
 			"string.empty": "Notification type is required",
@@ -495,7 +495,39 @@ const notificationValidation = joi.object({
 					"string.uri": "Please enter a valid Webhook URL",
 				}),
 			},
+			{
+				is: "matrix",
+				then: joi.string().allow("").optional(),
+			},
 		],
+	}),
+
+	homeserverUrl: joi.when("type", {
+		is: "matrix",
+		then: joi.string().uri().required().messages({
+			"string.empty": "Homeserver URL cannot be empty",
+			"any.required": "Homeserver URL is required",
+			"string.uri": "Please enter a valid Homeserver URL",
+		}),
+		otherwise: joi.string().allow("").optional(),
+	}),
+
+	roomId: joi.when("type", {
+		is: "matrix",
+		then: joi.string().required().messages({
+			"string.empty": "Room ID cannot be empty",
+			"any.required": "Room ID is required",
+		}),
+		otherwise: joi.string().allow("").optional(),
+	}),
+
+	accessToken: joi.when("type", {
+		is: "matrix",
+		then: joi.string().required().messages({
+			"string.empty": "Access Token cannot be empty",
+			"any.required": "Access Token is required",
+		}),
+		otherwise: joi.string().allow("").optional(),
 	}),
 });
 
