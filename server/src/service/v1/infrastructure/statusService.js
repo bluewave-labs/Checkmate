@@ -1,4 +1,5 @@
 import MonitorStats from "../../../db/v1/models/MonitorStats.js";
+import Check from "../../../db/v1/models/Check.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
@@ -7,11 +8,13 @@ class StatusService {
 	/**
 	 * @param {{
 	 *  buffer: import("./bufferService.js").BufferService
+	 *  incidentService: import("../business/incidentService.js").IncidentService
 	 * }}
-	 */ constructor({ db, logger, buffer }) {
+	 */ constructor({ db, logger, buffer, incidentService }) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
+		this.incidentService = incidentService;
 	}
 
 	get serviceName() {
@@ -170,6 +173,41 @@ class StatusService {
 					prevStatus,
 					newStatus,
 				});
+
+				let savedCheck = check;
+				if (!check._id) {
+					try {
+						const checkModel = new Check(check);
+						savedCheck = await checkModel.save();
+					} catch (checkError) {
+						this.logger.error({
+							service: this.SERVICE_NAME,
+							method: "updateStatus",
+							message: `Failed to save check immediately: ${checkError.message}`,
+							monitorId: monitor._id,
+							stack: checkError.stack,
+						});
+					}
+				}
+
+				try {
+					if (newStatus === false) {
+						await this.incidentService.createIncident(monitor, savedCheck);
+					} else if (prevStatus === false) {
+						await this.incidentService.resolveIncident(monitor, savedCheck);
+					}
+				} catch (incidentError) {
+					this.logger.error({
+						service: this.SERVICE_NAME,
+						method: "updateStatus",
+						message: `Failed to handle incident: ${incidentError.message}`,
+						monitorId: monitor._id,
+						statusChanged,
+						prevStatus,
+						newStatus,
+						stack: incidentError.stack,
+					});
+				}
 			}
 
 			monitor.status = newStatus;

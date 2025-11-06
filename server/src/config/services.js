@@ -17,6 +17,7 @@ import DiagnosticService from "../service/v1/business/diagnosticService.js";
 import InviteService from "../service/v1/business/inviteService.js";
 import MaintenanceWindowService from "../service/v1/business/maintenanceWindowService.js";
 import MonitorService from "../service/v1/business/monitorService.js";
+import IncidentService from "../service/v1/business/incidentService.js";
 import papaparse from "papaparse";
 import axios from "axios";
 import got from "got";
@@ -57,6 +58,7 @@ import MonitorStats from "../db/v1/models/MonitorStats.js";
 import Notification from "../db/v1/models/Notification.js";
 import RecoveryToken from "../db/v1/models/RecoveryToken.js";
 import AppSettings from "../db/v1/models/AppSettings.js";
+import Incident from "../db/v1/models/Incident.js";
 
 import InviteModule from "../db/v1/modules/inviteModule.js";
 import CheckModule from "../db/v1/modules/checkModule.js";
@@ -67,6 +69,7 @@ import MonitorModule from "../db/v1/modules/monitorModule.js";
 import NotificationModule from "../db/v1/modules/notificationModule.js";
 import RecoveryModule from "../db/v1/modules/recoveryModule.js";
 import SettingsModule from "../db/v1/modules/settingsModule.js";
+import IncidentModule from "../db/v1/modules/incidentModule.js";
 
 // V2 Business
 import AuthServiceV2 from "../service/v2/business/AuthService.js";
@@ -120,6 +123,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const notificationModule = new NotificationModule({ Notification, Monitor });
 	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
 	const settingsModule = new SettingsModule({ AppSettings });
+	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
@@ -133,6 +137,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		notificationModule,
 		recoveryModule,
 		settingsModule,
+		incidentModule,
 	});
 
 	await db.connect();
@@ -153,7 +158,17 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 	const bufferService = new BufferService({ db, logger, envSettings });
-	const statusService = new StatusService({ db, logger, buffer: bufferService });
+	
+	const errorService = new ErrorService();
+
+	const incidentService = new IncidentService({
+		db,
+		logger,
+		errorService,
+		stringService,
+	});
+
+	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService });
 
 	const notificationUtils = new NotificationUtils({
 		stringService,
@@ -168,8 +183,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		stringService,
 		notificationUtils,
 	});
-
-	const errorService = new ErrorService();
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,
@@ -275,6 +288,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		inviteService,
 		maintenanceWindowService,
 		monitorService,
+		incidentService,
 		errorService,
 		logger,
 		//v2
