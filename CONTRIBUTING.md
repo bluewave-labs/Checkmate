@@ -66,7 +66,7 @@ cd Checkmate
 Navigate to the Docker dev directory:
 
 ```bash
-cd server/docker/dev
+cd docker/dev
 ```
 
 Build the Docker images:
@@ -78,13 +78,13 @@ Build the Docker images:
 Run MongoDB container:
 
 ```bash
-docker run -d -p 27017:27017 -v $(pwd)/mongo/data:/data/db --name uptime_database_mongo uptime_database_mongo
+docker docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:6.0
 ```
 
 Navigate back to the root directory:
 
 ```bash
-cd ../../..
+cd ../..
 ```
 
 #### Step 3: Set Up the Backend (Server)
@@ -161,7 +161,19 @@ Start the frontend:
 npm run dev
 ```
 
-The client will run at `http://localhost:5173`.
+The client will run at `http://localhost:5173`.  
+
+if there are errors then delete the node_module file and the package-lock.json   
+
+```bash
+rm -rf node_module package-lock.json
+```
+
+then re install 
+
+```bash
+npm install
+```
 
 #### Step 5: Access the Application
 
