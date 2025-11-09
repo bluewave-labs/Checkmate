@@ -58,15 +58,7 @@ jobs:
         id: vars
         run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
-      - name: Build Server Docker image
-        run: |
-          docker build \
-            -t ghcr.io/bluewave-labs/checkmate-backend:latest \
-            -t ghcr.io/bluewave-labs/checkmate-backend:${{ env.VERSION }} \
-            -f ./docker/dist/server.Dockerfile \
-            --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
-            --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
-            .
+Remove `--build-arg VITE_APP_VERSION` from server image builds unless server code actually consumes this variable.
 
       - name: Push Server Docker image
         run: |
