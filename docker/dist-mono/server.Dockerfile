@@ -1,5 +1,7 @@
 FROM node:20-slim AS frontend-build
 
+ARG VITE_APP_VERSION
+
 WORKDIR /app/client
 
 COPY client/package*.json ./
@@ -9,6 +11,8 @@ COPY client ./
 RUN npm run build
 
 FROM node:20-slim AS app
+
+ARG VITE_APP_VERSION
 
 # Install ping
 RUN apt-get update \

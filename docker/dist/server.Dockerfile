@@ -1,5 +1,7 @@
 FROM node:20-slim
 
+ARG VITE_APP_VERSION
+
 # Install ping
 RUN apt-get update \
     && apt-get install -y iputils-ping \

@@ -3,6 +3,7 @@
 # ---------------------
 FROM node:24-slim AS frontend-build
 
+ARG VITE_APP_VERSION
 
 
 WORKDIR /app/client

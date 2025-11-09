@@ -27,6 +27,7 @@ jobs:
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate-client:latest \
+            -t ghcr.io/bluewave-labs/checkmate-client:${{ env.VERSION }} \
             -f ./docker/dist/client.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
@@ -35,6 +36,7 @@ jobs:
       - name: Push Client Docker image
         run: |
           docker push ghcr.io/bluewave-labs/checkmate-client:latest
+          docker push ghcr.io/bluewave-labs/checkmate-client:${{ env.VERSION }}
 
   docker-build-and-push-server:
     needs: docker-build-and-push-client
@@ -42,6 +44,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -50,29 +54,39 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version
+        id: vars
+        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
       - name: Build Server Docker image
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate-backend:latest \
+            -t ghcr.io/bluewave-labs/checkmate-backend:${{ env.VERSION }} \
             -f ./docker/dist/server.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
             .
 
       - name: Push Server Docker image
         run: |
           docker push ghcr.io/bluewave-labs/checkmate-backend:latest
+          docker push ghcr.io/bluewave-labs/checkmate-backend:${{ env.VERSION }}
 
       - name: Build Mongo Docker image
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate-mongo:latest \
+            -t ghcr.io/bluewave-labs/checkmate-mongo:${{ env.VERSION }} \
             -f ./docker/dist/mongoDB.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
+            --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
             .
 
       - name: Push MongoDB Docker image
         run: |
           docker push ghcr.io/bluewave-labs/checkmate-mongo:latest
+          docker push ghcr.io/bluewave-labs/checkmate-mongo:${{ env.VERSION }}
 
   docker-build-and-push-server-mono-multiarch:
     runs-on: ubuntu-latest
@@ -104,6 +118,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:latest
+            ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:${{ env.VERSION }}
           platforms: linux/amd64,linux/arm64
           labels: |
             org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate
@@ -133,10 +148,13 @@ jobs:
         run: |
           docker build \
             -t ghcr.io/bluewave-labs/checkmate-backend-mono:latest \
+            -t ghcr.io/bluewave-labs/checkmate-backend-mono:${{ env.VERSION }} \
             -f ./docker/dist-mono/server.Dockerfile \
             --label org.opencontainers.image.source=https://github.com/bluewave-labs/checkmate \
             --build-arg VITE_APP_VERSION=${{ env.VERSION }} \
             .
 
       - name: Push Server Docker image
-        run: docker push ghcr.io/bluewave-labs/checkmate-backend-mono:latest
+        run: |
+          docker push ghcr.io/bluewave-labs/checkmate-backend-mono:latest
+          docker push ghcr.io/bluewave-labs/checkmate-backend-mono:${{ env.VERSION }}
