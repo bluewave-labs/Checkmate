@@ -37,7 +37,11 @@ class EmailService {
 		return EmailService.SERVICE_NAME;
 	}
 
-	init = async () => {
+	// Initialize template loader and pre-compile frequently used templates.
+	// NOTE: This is intentionally synchronous so that templates are available
+	// immediately after the constructor returns (prevents race conditions
+	// where callers invoke buildEmail before templateLookup is populated).
+	init = () => {
 		/**
 		 * Loads an email template from the filesystem.
 		 *
@@ -48,6 +52,7 @@ class EmailService {
 			try {
 				const templatePath = this.path.join(__dirname, `../../../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
+				// compile returns a function that accepts a context and returns the rendered mjml string
 				return this.compile(templateContent);
 			} catch (error) {
 				this.logger.error({
@@ -56,6 +61,8 @@ class EmailService {
 					method: "loadTemplate",
 					stack: error.stack,
 				});
+				// Return null when template can't be loaded so callers can handle it explicitly
+				return null;
 			}
 		};
 
@@ -83,9 +90,30 @@ class EmailService {
 
 	buildEmail = async (template, context) => {
 		try {
-			const mjml = this.templateLookup[template](context);
-			const html = await this.mjml2html(mjml);
-			return html.html;
+			// Ensure the template exists and is a function. Templates are stored in the lookup
+			// with keys like "hardwareIncidentTemplate" mapping to compiled functions.
+			let tplFn = this.templateLookup[template];
+			if (typeof tplFn !== "function") {
+				// Attempt to lazy-load the template. Templates are named by dropping a trailing
+				// "Template" suffix (eg. hardwareIncidentTemplate -> hardwareIncident.mjml).
+				const baseName = String(template).replace(/Template$/i, "");
+				tplFn = this.loadTemplate(baseName);
+				if (typeof tplFn === "function") {
+					// cache the compiled template for future calls
+					this.templateLookup[template] = tplFn;
+				} else {
+					this.logger.error({
+						message: `Template not found or failed to compile: ${template}`,
+						service: SERVICE_NAME,
+						method: "buildEmail",
+					});
+					throw new Error(`Template not found or failed to compile: ${template}`);
+				}
+			}
+
+			const mjml = tplFn(context);
+			const result = this.mjml2html(mjml);
+			return (result && result.html) || "";
 		} catch (error) {
 			this.logger.error({
 				message: error.message,
@@ -93,6 +121,9 @@ class EmailService {
 				method: "buildEmail",
 				stack: error.stack,
 			});
+			// Re-throw to allow callers to detect templating failures instead of silently
+			// sending empty emails. Callers can catch and handle/log as needed.
+			throw error;
 		}
 	};
 
