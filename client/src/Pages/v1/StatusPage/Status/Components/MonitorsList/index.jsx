@@ -31,7 +31,9 @@ const MonitorsList = ({
 						key={monitor._id}
 						width="100%"
 						gap={theme.spacing(2)}
-						paddingLeft="50px"
+						margin="0 auto"
+						maxWidth="1200px"
+						paddingX={theme.spacing(6)}
 					>
 						<Host
 							key={monitor._id}
