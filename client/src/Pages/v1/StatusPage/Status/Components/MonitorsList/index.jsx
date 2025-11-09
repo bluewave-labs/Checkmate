@@ -33,7 +33,7 @@ const MonitorsList = ({
 						gap={theme.spacing(2)}
 						margin="0 auto"
 						maxWidth="1200px"
-						paddingX={theme.spacing(6)}
+						paddingX={theme.spacing(7)}
 					>
 						<Host
 							key={monitor._id}
@@ -54,7 +54,6 @@ const MonitorsList = ({
 								</Box>
 							)}
 							<Box flex={statusPage.showCharts !== false ? 1 : 10}
-								paddingRight="0px"
 							>
 								<StatusLabel
 									status={status}
