@@ -78,7 +78,7 @@ Build the Docker images:
 Run MongoDB container:
 
 ```bash
-docker docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:6.0
+docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:6.0
 ```
 
 Navigate back to the root directory:
@@ -163,13 +163,13 @@ npm run dev
 
 The client will run at `http://localhost:5173`.  
 
-if there are errors then delete the node_module file and the package-lock.json   
+If you encounter errors during installation, remove the `node_modules` directory and `package-lock.json`:  
 
 ```bash
-rm -rf node_module package-lock.json
+rm -rf node_modules package-lock.json
 ```
 
-then re install 
+Then reinstall the dependencies
 
 ```bash
 npm install
