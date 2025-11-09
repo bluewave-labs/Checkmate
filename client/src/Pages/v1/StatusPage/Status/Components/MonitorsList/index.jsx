@@ -31,6 +31,7 @@ const MonitorsList = ({
 						key={monitor._id}
 						width="100%"
 						gap={theme.spacing(2)}
+						paddingLeft="50px"
 					>
 						<Host
 							key={monitor._id}
@@ -50,7 +51,9 @@ const MonitorsList = ({
 									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
 								</Box>
 							)}
-							<Box flex={statusPage.showCharts !== false ? 1 : 10}>
+							<Box flex={statusPage.showCharts !== false ? 1 : 10}
+								paddingRight="0px"
+							>
 								<StatusLabel
 									status={status}
 									text={status}
