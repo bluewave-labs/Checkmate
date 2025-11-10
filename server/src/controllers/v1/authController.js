@@ -91,6 +91,7 @@ class AuthController extends BaseController {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
+			req.body.password = decodeURIComponent(req.body.password);
 			await registrationBodyValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.registerUser(req.body, req.file);
 			res.success({
@@ -127,6 +128,7 @@ class AuthController extends BaseController {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
+			req.body.password = decodeURIComponent(req.body.password);
 			await loginValidation.validateAsync(req.body);
 			const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
 

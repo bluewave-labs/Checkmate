@@ -12,7 +12,8 @@ const initialState = {
 
 export const register = createAsyncThunk("auth/register", async (form, thunkApi) => {
 	try {
-		const res = await networkService.registerUser(form);
+		const reqObj = { ...form, password: encodeURIComponent(form.password) };
+		const res = await networkService.registerUser(reqObj);
 		return res.data;
 	} catch (error) {
 		if (error.response.data) {
@@ -28,7 +29,8 @@ export const register = createAsyncThunk("auth/register", async (form, thunkApi)
 
 export const login = createAsyncThunk("auth/login", async (form, thunkApi) => {
 	try {
-		const res = await networkService.loginUser(form);
+		const reqObj = { ...form, password: encodeURIComponent(form.password) };
+		const res = await networkService.loginUser(reqObj);
 		return res.data;
 	} catch (error) {
 		if (error.response && error.response.data) {
