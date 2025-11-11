@@ -55,7 +55,7 @@ const MonitorsList = ({
 							<Box
 								flex={statusPage.showCharts !== false ? 1 : 10}
 								display="flex"
-								justifyContent="right"
+								justifyContent="flex-end"
 							>
 								<StatusLabel
 									status={status}
