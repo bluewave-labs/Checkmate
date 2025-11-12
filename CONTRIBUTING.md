@@ -163,18 +163,6 @@ npm run dev
 
 The client will run at `http://localhost:5173`.  
 
-If you encounter errors during installation, remove the `node_modules` directory and `package-lock.json`:  
-
-```bash
-rm -rf node_modules package-lock.json
-```
-
-Then reinstall the dependencies
-
-```bash
-npm install
-```
-
 #### Step 5: Access the Application
 
 Open your browser and navigate to:
