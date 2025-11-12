@@ -34,7 +34,7 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 					{title}
 				</Typography>
 
-				{percentageColor && percentage && (
+				{percentageColor && percentage && status && (
 					<>
 						<Dot />
 						<Typography
