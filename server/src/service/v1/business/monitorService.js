@@ -43,7 +43,7 @@ class MonitorService {
 		return data;
 	};
 
-	getMonitorStatsById = async ({ teamId, monitorId, limit, sortOrder, dateRange, numToDisplay, normalize, pageOffset }) => {
+	getMonitorStatsById = async ({ teamId, monitorId, limit, sortOrder, dateRange, numToDisplay, normalize, page }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitorStats = await this.db.monitorModule.getMonitorStatsById({
 			monitorId,
@@ -52,7 +52,7 @@ class MonitorService {
 			dateRange,
 			numToDisplay,
 			normalize,
-			pageOffset,
+			page,
 		});
 
 		return monitorStats;

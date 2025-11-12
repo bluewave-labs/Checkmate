@@ -82,7 +82,7 @@ class MonitorController extends BaseController {
 			await getMonitorStatsByIdParamValidation.validateAsync(req.params);
 			await getMonitorStatsByIdQueryValidation.validateAsync(req.query);
 
-			let { limit, sortOrder, dateRange, numToDisplay, normalize, pageOffset } = req.query;
+			let { limit, sortOrder, dateRange, numToDisplay, normalize, page } = req.query;
 			const monitorId = req?.params?.monitorId;
 
 			const teamId = req?.user?.teamId;
@@ -98,7 +98,7 @@ class MonitorController extends BaseController {
 				dateRange,
 				numToDisplay,
 				normalize,
-				pageOffset,
+				page,
 			});
 
 			return res.success({

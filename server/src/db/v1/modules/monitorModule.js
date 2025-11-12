@@ -122,18 +122,18 @@ class MonitorModule {
 	};
 
 	// Helper
-	offsetDatesByPage = (dates, dateRange, pageOffset) => {
+	offsetDatesByPage = (dates, dateRange, page) => {
 		const dateOffsets = {
-			recent: 60 * 60 * 2 * pageOffset * 1000,
-			day: 60 * 60 * 24 * pageOffset * 1000,
-			week: 60 * 60 * 24 * 7 * pageOffset * 1000,
+			recent: 60 * 60 * 2 * page * 1000,
+			day: 60 * 60 * 24 * page * 1000,
+			week: 60 * 60 * 24 * 7 * page * 1000,
 			all: 0,
 		};
 
 		if (dateRange == "month") {
 			return {
-				start: new Date(new Date(dates.start).setMonth(dates.start.getMonth() - pageOffset)),
-				end: new Date(new Date(dates.end).setMonth(dates.end.getMonth() - pageOffset)),
+				start: new Date(new Date(dates.start).setMonth(dates.start.getMonth() - page)),
+				end: new Date(new Date(dates.end).setMonth(dates.end.getMonth() - page)),
 			};
 		} else {
 			return {
@@ -280,7 +280,7 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorStatsById = async ({ monitorId, sortOrder, dateRange, numToDisplay, normalize, pageOffset }) => {
+	getMonitorStatsById = async ({ monitorId, sortOrder, dateRange, numToDisplay, normalize, page }) => {
 		try {
 			// Get monitor, if we can't find it, abort with error
 			const monitor = await this.Monitor.findById(monitorId);
@@ -293,8 +293,8 @@ class MonitorModule {
 
 			let dates = this.getDateRange(dateRange);
 
-			if (pageOffset) {
-				dates = this.offsetDatesByPage(dates, dateRange, pageOffset);
+			if (page) {
+				dates = this.offsetDatesByPage(dates, dateRange, page);
 			}
 
 			// Get Checks for monitor in date range requested

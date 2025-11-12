@@ -188,7 +188,7 @@ class NetworkService {
 		if (config.dateRange) params.append("dateRange", config.dateRange);
 		if (config.numToDisplay) params.append("numToDisplay", config.numToDisplay);
 		if (config.normalize) params.append("normalize", config.normalize);
-		if (config.pageOffset) params.append("pageOffset", config.pageOffset);
+		if (config.page) params.append("page", config.page);
 		return this.axiosInstance.get(
 			`/monitors/stats/${config.monitorId}?${params.toString()}`
 		);
