@@ -34,7 +34,7 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 					{title}
 				</Typography>
 
-				{percentageColor && percentage && status && (
+				{percentageColor && percentage && (
 					<>
 						<Dot />
 						<Typography
@@ -46,11 +46,13 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 						>
 							{percentage}%
 						</Typography>
-						<StatusLabel
-							status={status}
-							text={status}
-							customStyles={{ textTransform: "capitalize" }}
-						/>
+						{status && (
+							<StatusLabel
+								status={status}
+								text={status}
+								customStyles={{ textTransform: "capitalize" }}
+							/>
+						)}
 					</>
 				)}
 			</Stack>
