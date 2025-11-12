@@ -29,7 +29,6 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 					variant="h6"
 					sx={{
 						fontWeight: 600,
-						fontSize: "1.1rem",
 					}}
 				>
 					{title}
@@ -42,7 +41,6 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 							variant="h6"
 							sx={{
 								fontWeight: 600,
-								fontSize: "1.1rem",
 								color: percentageColor,
 							}}
 						>
