@@ -30,7 +30,7 @@ const MonitorsList = ({
 					<Stack
 						key={monitor._id}
 						width="100%"
-						gap={theme.spacing(3)}
+						gap={theme.spacing(10)}
 						margin="0 auto"
 						maxWidth="95%"
 					>
@@ -41,6 +41,7 @@ const MonitorsList = ({
 							percentageColor={monitor.percentageColor}
 							percentage={monitor.percentage}
 							showURL={showURL}
+							status={status}
 						/>
 						<Stack
 							direction="row"
@@ -52,17 +53,6 @@ const MonitorsList = ({
 									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
 								</Box>
 							)}
-							<Box
-								flex={statusPage.showCharts !== false ? 1 : 10}
-								display="flex"
-								justifyContent="flex-end"
-							>
-								<StatusLabel
-									status={status}
-									text={status}
-									customStyles={{ textTransform: "capitalize" }}
-								/>
-							</Box>
 						</Stack>
 					</Stack>
 				);
