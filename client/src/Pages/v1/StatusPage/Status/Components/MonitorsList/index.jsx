@@ -53,8 +53,7 @@ const MonitorsList = ({
 									<StatusPageBarChart checks={monitor?.checks?.slice().reverse()} />
 								</Box>
 							)}
-							<Box flex={statusPage.showCharts !== false ? 1 : 10}
-							>
+							<Box flex={statusPage.showCharts !== false ? 1 : 10}>
 								<StatusLabel
 									status={status}
 									text={status}
