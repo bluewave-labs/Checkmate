@@ -1,12 +1,15 @@
-node_modules
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
 .env
-*.log
-*.sh
-!scripts/inject-vars.sh
-.nyc_output
-coverage
-.clinic
-node_modules
-.vscode/*
-public
-dist
+.DS_Store
+/logs/
+
+# TypeScript
+/dist/
+/build/
+*.tsbuildinfo

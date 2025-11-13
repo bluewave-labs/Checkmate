@@ -425,13 +425,7 @@
 				}
 			}
 		},
-		"role": "角色",
-		"changeTeamPassword": {
-			"changePasswordMenu": "",
-			"title": "",
-			"description": "",
-			"success": ""
-		}
+		"role": "角色"
 	},
 	"monitorState": {
 		"paused": "暂停",
@@ -493,8 +487,7 @@
 		"ping": "输入要 ping 的 IP 地址或主机名（例如.. 192.168.1.100 或 example.com），并添加显示在仪表板上的清晰显示名称。",
 		"docker": "码输入 Docker 容器名称或 ID。您可以使用容器名称（例如.. my-app）或容器 ID（完整的 64 字符 ID 或短 ID）。",
 		"port": "输入服务器的 URL 或 IP、端口号和仪表板上显示的清晰显示名称。",
-		"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。",
-		"https": ""
+		"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。"
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1095,11 +1088,7 @@
 		"incidentConfigDescription": "滑动窗口用于确定监视器何时发生故障。仅当滑动窗口中的检查百分比满足指定值时，监视器的状态才会改变。",
 		"incidentConfigStatusWindowLabel": "在滑动窗口中应包含多少次检测？",
 		"incidentConfigStatusWindowThresholdLabel": "在监视器状态改变之前，滑动窗口中的检查失败/成功的百分比是多少？",
-		"incidentConfigTitle": "事件",
-		"incidentConfigDescriptionV2": "",
-		"incidentConfigStatusCheckNumber": "",
-		"intervalTitle": "",
-		"intervalDescription": ""
+		"incidentConfigTitle": "事件"
 	},
 	"dataRate": "数据速率",
 	"dataReceived": "已接收数据",

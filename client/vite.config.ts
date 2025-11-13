@@ -6,22 +6,17 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig(({}) => {
-	let version = "3.2.1";
-
-	return {
-		base: "/",
-		plugins: [svgr(), react()],
-		resolve: {
-			alias: {
-				"@": path.resolve(__dirname, "src"),
-			},
-		},
-		optimizeDeps: {
-			include: ["@mui/material/Tooltip", "@emotion/styled"],
-		},
-		define: {
-			__APP_VERSION__: JSON.stringify(version),
-		},
-	};
+export default defineConfig(() => {
+  return {
+    base: "/",
+    plugins: [svgr(), react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+      },
+    },
+    optimizeDeps: {
+      include: ["@mui/material/Tooltip", "@emotion/styled"],
+    },
+  };
 });

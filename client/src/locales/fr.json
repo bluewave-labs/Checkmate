@@ -425,13 +425,7 @@
 				}
 			}
 		},
-		"role": "",
-		"changeTeamPassword": {
-			"changePasswordMenu": "",
-			"title": "",
-			"description": "",
-			"success": ""
-		}
+		"role": ""
 	},
 	"monitorState": {
 		"paused": "Pause",
@@ -493,8 +487,7 @@
 		"ping": "Entrez l'adresse IP ou le nom d'hôte à tester (par exemple, 192.168.1.100 ou exemple.fr) et ajoutez un nom familier qui apparaîtra sur le tableau de bord.",
 		"docker": "Entrer l'ID Docker du container. Les identifiants Docker doivent être les 64 caractères de l'ID Docker. Vous pouvez utiliser la commande docker inspect <short_id> pour avoir l'ID complet.",
 		"port": "Entrez l'URL ou l'adresse IP du serveur, le numéro de port et un nom d'affichage familier qui apparaîtra sur le tableau de bord.",
-		"game": "",
-		"https": ""
+		"game": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1103,11 +1096,7 @@
 		"incidentConfigDescription": "",
 		"incidentConfigStatusWindowLabel": "",
 		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": "",
-		"incidentConfigDescriptionV2": "",
-		"incidentConfigStatusCheckNumber": "",
-		"intervalTitle": "",
-		"intervalDescription": ""
+		"incidentConfigTitle": ""
 	},
 	"dataRate": "",
 	"dataReceived": "",
