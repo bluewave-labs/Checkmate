@@ -1,3 +1,5 @@
+import got from "got";
+
 import {
   CheckService,
   InviteService,
@@ -38,7 +40,7 @@ export const initServices = async () => {
   const emailService = new EmailService(userService);
   const slackService = new SlackService();
   const webhookService = new WebhookService();
-  const networkService = new NetworkService();
+  const networkService = new NetworkService(got);
   const statusService = new StatusService();
   const notificationService = new NotificationService(userService);
   const incidentService = new IncidentService();
