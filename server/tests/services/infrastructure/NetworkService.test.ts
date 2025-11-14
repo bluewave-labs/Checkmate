@@ -192,3 +192,109 @@ describe("NetworkService.requestHttp", () => {
     expect(result.timings).toEqual({ phases: {} });
   });
 });
+
+// requestInfrastructure block covers success path and every guard/exception branch so all lines execute.
+describe("NetworkService.requestInfrastructure", () => {
+  it("requests infrastructure endpoint with auth header and attaches payload", async () => {
+    const body = { data: { cpu: 10 }, capture: { version: "1" } };
+    const timings = { phases: { total: 456 } } as Response["timings"];
+    const response = {
+      statusCode: 200,
+      statusMessage: "OK",
+      ok: true,
+      timings,
+      body,
+    } as Response<typeof body>;
+    const requestMock = jest.fn().mockResolvedValue(response);
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({
+      type: "infrastructure" as any,
+      url: "https://infra.example.com",
+      secret: "topsecret",
+    });
+
+    const result = await service.requestInfrastructure(monitor);
+
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith("https://infra.example.com", {
+      headers: { Authorization: "Bearer topsecret" },
+      responseType: "json",
+    });
+    expect(result.status).toBe("up");
+    expect(result.code).toBe(200);
+    expect(result.message).toBe("OK");
+    expect(result.responseTime).toBe(456);
+    expect(result.payload).toBe(body);
+  });
+
+  it("throws when monitor is missing a URL", async () => {
+    const requestMock = jest.fn();
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ type: "infrastructure" as any, url: undefined as any });
+
+    await expect(service.requestInfrastructure(monitor)).rejects.toThrow("No URL provided");
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).not.toHaveBeenCalled();
+  });
+
+  it("throws when monitor is missing a secret", async () => {
+    const requestMock = jest.fn();
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ type: "infrastructure" as any, secret: undefined as any });
+
+    await expect(service.requestInfrastructure(monitor)).rejects.toThrow(
+      "No secret provided for infrastructure monitor"
+    );
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).not.toHaveBeenCalled();
+  });
+
+  it("returns fallback response when infrastructure payload missing", async () => {
+    const response = {
+      statusCode: 200,
+      statusMessage: "OK",
+      ok: true,
+      timings: { phases: { total: 111 } } as Response["timings"],
+      body: undefined,
+    } as Response<any>;
+    const requestMock = jest.fn().mockResolvedValue(response);
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({
+      type: "infrastructure" as any,
+      url: "https://infra.example.com",
+      secret: "secret",
+    });
+
+    const result = await service.requestInfrastructure(monitor);
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith("https://infra.example.com", {
+      headers: { Authorization: "Bearer secret" },
+      responseType: "json",
+    });
+    expect(result.status).toBe("down");
+    expect(result.code).toBe(5000);
+    expect(result.message).toBe("No payload received from infrastructure monitor");
+  });
+
+  it("returns fallback response when infrastructure request rejects", async () => {
+    const error = new Error("timeout");
+    const requestMock = jest.fn().mockRejectedValue(error);
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({
+      type: "infrastructure" as any,
+      url: "https://infra.example.com",
+      secret: "secret",
+    });
+
+    const result = await service.requestInfrastructure(monitor);
+
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith("https://infra.example.com", {
+      headers: { Authorization: "Bearer secret" },
+      responseType: "json",
+    });
+    expect(result.status).toBe("down");
+    expect(result.message).toBe("timeout");
+    expect(result.code).toBe(5000);
+  });
+});
