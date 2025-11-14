@@ -1,4 +1,8 @@
-import { IMonitor, INotificationChannel } from "@/db/models/index.js";
+import {
+  IMonitor,
+  INotificationChannel,
+  IIncident,
+} from "@/db/models/index.js";
 import { IAlert, IMessageService } from "./IMessageService.js";
 import ApiError from "@/utils/ApiError.js";
 import got from "got";
@@ -13,7 +17,7 @@ class WebhookService implements IMessageService {
     this.SERVICE_NAME = SERVICE_NAME;
   }
 
-  buildAlert = (monitor: IMonitor) => {
+  buildAlert = (monitor: IMonitor, incident: IIncident) => {
     const name = monitor?.name || "Unnamed monitor";
     const monitorStatus = monitor?.status || "unknown status";
     const url = monitor?.url || "no URL";
@@ -23,6 +27,10 @@ class WebhookService implements IMessageService {
       name,
       url,
       status: monitorStatus,
+      resolved: incident.resolved,
+      resolutionType: incident.resolutionType,
+      resolvedBy: incident.resolvedBy?.toString(),
+      resolutionNote: incident.resolutionNote,
       checkTime,
       alertTime,
     };
@@ -51,6 +59,10 @@ class WebhookService implements IMessageService {
         status: "Test status",
         checkTime: new Date(),
         alertTime: new Date(),
+        resolved: true,
+        resolutionType: "auto",
+        resolvedBy: "system",
+        resolutionNote: "This is a test message",
       },
       channel
     );

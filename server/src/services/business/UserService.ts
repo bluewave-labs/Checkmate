@@ -1,7 +1,6 @@
 import { IUser, IUserProfile, User } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { hashPassword } from "@/utils/JWTUtils.js";
-import { object } from "joi";
 
 const SERVICE_NAME = "UserService";
 export interface IUserService {
