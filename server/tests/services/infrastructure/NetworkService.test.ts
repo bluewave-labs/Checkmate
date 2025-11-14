@@ -455,3 +455,109 @@ describe("NetworkService.requestPing", () => {
     expect(result.status).toBe("up");
   });
 });
+
+describe("NetworkService.requestStatus", () => {
+  it("routes http monitors through requestHttp", async () => {
+    const { service } = createService();
+    const httpSpy = jest.spyOn(service, "requestHttp").mockResolvedValueOnce({
+      monitorId: "1",
+      teamId: "t",
+      type: "http" as any,
+      status: "up",
+      message: "OK",
+      responseTime: 1,
+      timings: { phases: {} } as any,
+    });
+    const monitor = buildMonitor({ type: "http" as any });
+
+    const result = await service.requestStatus(monitor);
+
+    expect(httpSpy).toHaveBeenCalledTimes(1);
+    expect(result.status).toBe("up");
+  });
+
+  it("routes https monitors through requestHttp", async () => {
+    const { service } = createService();
+    const httpSpy = jest.spyOn(service, "requestHttp").mockResolvedValueOnce({
+      monitorId: "2",
+      teamId: "t",
+      type: "https" as any,
+      status: "up",
+      message: "OK",
+      responseTime: 2,
+      timings: { phases: {} } as any,
+    });
+    const monitor = buildMonitor({ type: "https" as any });
+
+    await service.requestStatus(monitor);
+
+    expect(httpSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("routes infrastructure monitors through requestInfrastructure", async () => {
+    const { service } = createService();
+    const infraSpy = jest
+      .spyOn(service, "requestInfrastructure")
+      .mockResolvedValueOnce({
+        monitorId: "3",
+        teamId: "t",
+        type: "infrastructure" as any,
+        status: "up",
+        message: "OK",
+        responseTime: 3,
+        timings: { phases: {} } as any,
+      });
+    const monitor = buildMonitor({ type: "infrastructure" as any });
+
+    await service.requestStatus(monitor);
+
+    expect(infraSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("routes pagespeed monitors through requestPagespeed", async () => {
+    const { service } = createService();
+    const pageSpy = jest
+      .spyOn(service, "requestPagespeed")
+      .mockResolvedValueOnce({
+        monitorId: "4",
+        teamId: "t",
+        type: "pagespeed" as any,
+        status: "up",
+        message: "OK",
+        responseTime: 4,
+        timings: { phases: {} } as any,
+      });
+    const monitor = buildMonitor({ type: "pagespeed" as any });
+
+    await service.requestStatus(monitor);
+
+    expect(pageSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("routes ping monitors through requestPing", async () => {
+    const { service } = createService();
+    const pingSpy = jest
+      .spyOn(service, "requestPing")
+      .mockResolvedValueOnce({
+        monitorId: "5",
+        teamId: "t",
+        type: "ping" as any,
+        status: "down",
+        message: "Timeout",
+        responseTime: 0,
+        timings: { phases: {} } as any,
+      });
+    const monitor = buildMonitor({ type: "ping" as any });
+
+    await service.requestStatus(monitor);
+
+    expect(pingSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws for unsupported monitor types", async () => {
+    const { service } = createService();
+    const monitor = buildMonitor({ type: "websocket" as any });
+
+    await expect(service.requestStatus(monitor)).rejects.toThrow("Not implemented");
+  });
+});
