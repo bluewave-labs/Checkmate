@@ -78,13 +78,15 @@ const invokeBuildStatusResponse = <T>(
   response: Response<T> | null,
   error: any | null
 ) =>
-  (service as unknown as {
-    buildStatusResponse: (
-      monitor: IMonitor,
-      response: Response<T> | null,
-      error: any | null
-    ) => StatusResponse<T>;
-  }).buildStatusResponse(monitor, response, error);
+  (
+    service as unknown as {
+      buildStatusResponse: (
+        monitor: IMonitor,
+        response: Response<T> | null,
+        error: any | null
+      ) => StatusResponse<T>;
+    }
+  ).buildStatusResponse(monitor, response, error);
 
 beforeEach(() => {
   const gotModule = getGotModule();
@@ -141,6 +143,22 @@ describe("NetworkService.buildStatusResponse", () => {
     expect(result.timings).toEqual({ phases: {} });
   });
 
+  it("returns default error payload for generic failures without message", () => {
+    const { service } = createService();
+    const monitor = buildMonitor();
+    const error = new Error("timeout");
+    error.message = "";
+
+    const result = invokeBuildStatusResponse(service, monitor, null, error);
+
+    expect(result.monitorId).toBe(monitor._id.toString());
+    expect(result.status).toBe("down");
+    expect(result.code).toBe(5000);
+    expect(result.message).toBe("Network error");
+    expect(result.responseTime).toBe(0);
+    expect(result.timings).toEqual({ phases: {} });
+  });
+
   it("honors HTTPError metadata", () => {
     const { service, gotModule } = createService();
     const { HTTPError } = gotModule;
@@ -190,7 +208,9 @@ describe("NetworkService.requestHttp", () => {
     const { service, extendMock } = createService(requestMock);
     const monitor = buildMonitor({ url: undefined as unknown as string });
 
-    await expect(service.requestHttp(monitor)).rejects.toThrow("No URL provided");
+    await expect(service.requestHttp(monitor)).rejects.toThrow(
+      "No URL provided"
+    );
     expect(extendMock).toHaveBeenCalledTimes(1);
     expect(requestMock).not.toHaveBeenCalled();
   });
@@ -250,9 +270,14 @@ describe("NetworkService.requestInfrastructure", () => {
   it("throws when monitor is missing a URL", async () => {
     const requestMock = jest.fn();
     const { service, extendMock } = createService(requestMock);
-    const monitor = buildMonitor({ type: "infrastructure" as any, url: undefined as any });
+    const monitor = buildMonitor({
+      type: "infrastructure" as any,
+      url: undefined as any,
+    });
 
-    await expect(service.requestInfrastructure(monitor)).rejects.toThrow("No URL provided");
+    await expect(service.requestInfrastructure(monitor)).rejects.toThrow(
+      "No URL provided"
+    );
     expect(extendMock).toHaveBeenCalledTimes(1);
     expect(requestMock).not.toHaveBeenCalled();
   });
@@ -260,7 +285,10 @@ describe("NetworkService.requestInfrastructure", () => {
   it("throws when monitor is missing a secret", async () => {
     const requestMock = jest.fn();
     const { service, extendMock } = createService(requestMock);
-    const monitor = buildMonitor({ type: "infrastructure" as any, secret: undefined as any });
+    const monitor = buildMonitor({
+      type: "infrastructure" as any,
+      secret: undefined as any,
+    });
 
     await expect(service.requestInfrastructure(monitor)).rejects.toThrow(
       "No secret provided for infrastructure monitor"
@@ -293,7 +321,9 @@ describe("NetworkService.requestInfrastructure", () => {
     });
     expect(result.status).toBe("down");
     expect(result.code).toBe(5000);
-    expect(result.message).toBe("No payload received from infrastructure monitor");
+    expect(result.message).toBe(
+      "No payload received from infrastructure monitor"
+    );
   });
 
   it("returns fallback response when infrastructure request rejects", async () => {
@@ -368,9 +398,14 @@ describe("NetworkService.requestPagespeed", () => {
   it("throws when monitor lacks URL", async () => {
     const requestMock = jest.fn();
     const { service, extendMock } = createService(requestMock);
-    const monitor = buildMonitor({ type: "pagespeed" as any, url: undefined as any });
+    const monitor = buildMonitor({
+      type: "pagespeed" as any,
+      url: undefined as any,
+    });
 
-    await expect(service.requestPagespeed(monitor)).rejects.toThrow("No URL provided");
+    await expect(service.requestPagespeed(monitor)).rejects.toThrow(
+      "No URL provided"
+    );
     expect(extendMock).toHaveBeenCalledTimes(1);
     expect(requestMock).not.toHaveBeenCalled();
   });
@@ -383,7 +418,10 @@ describe("NetworkService.requestPagespeed", () => {
       .mockRejectedValueOnce(error)
       .mockResolvedValueOnce({ body: payload });
     const { service, extendMock } = createService(requestMock);
-    const monitor = buildMonitor({ type: "pagespeed" as any, url: "https://s" });
+    const monitor = buildMonitor({
+      type: "pagespeed" as any,
+      url: "https://s",
+    });
 
     const result = await service.requestPagespeed(monitor);
 
@@ -406,7 +444,10 @@ describe("NetworkService.requestPagespeed", () => {
       .mockResolvedValueOnce(primaryResponse)
       .mockResolvedValueOnce({ body: undefined });
     const { service, extendMock } = createService(requestMock);
-    const monitor = buildMonitor({ type: "pagespeed" as any, url: "https://site.example.com" });
+    const monitor = buildMonitor({
+      type: "pagespeed" as any,
+      url: "https://site.example.com",
+    });
 
     await expect(service.requestPagespeed(monitor)).rejects.toThrow(
       "No payload received from pagespeed monitor"
@@ -420,7 +461,10 @@ describe("NetworkService.requestPagespeed", () => {
 
 describe("NetworkService.requestPing", () => {
   it("maps successful ping with string time", async () => {
-    (ping.promise.probe as jest.Mock).mockResolvedValue({ alive: true, time: "12.5" });
+    (ping.promise.probe as jest.Mock).mockResolvedValue({
+      alive: true,
+      time: "12.5",
+    });
     const { service } = createService();
     const monitor = buildMonitor({ type: "ping" as any, url: "8.8.8.8" });
 
@@ -433,7 +477,10 @@ describe("NetworkService.requestPing", () => {
   });
 
   it("maps failure ping with invalid time to zero", async () => {
-    (ping.promise.probe as jest.Mock).mockResolvedValue({ alive: false, time: "NaN" });
+    (ping.promise.probe as jest.Mock).mockResolvedValue({
+      alive: false,
+      time: "NaN",
+    });
     const { service } = createService();
     const monitor = buildMonitor({ type: "ping" as any, url: "1.1.1.1" });
 
@@ -445,7 +492,10 @@ describe("NetworkService.requestPing", () => {
   });
 
   it("handles numeric ping times", async () => {
-    (ping.promise.probe as jest.Mock).mockResolvedValue({ alive: true, time: 18 });
+    (ping.promise.probe as jest.Mock).mockResolvedValue({
+      alive: true,
+      time: 18,
+    });
     const { service } = createService();
     const monitor = buildMonitor({ type: "ping" as any, url: "9.9.9.9" });
 
@@ -536,17 +586,15 @@ describe("NetworkService.requestStatus", () => {
 
   it("routes ping monitors through requestPing", async () => {
     const { service } = createService();
-    const pingSpy = jest
-      .spyOn(service, "requestPing")
-      .mockResolvedValueOnce({
-        monitorId: "5",
-        teamId: "t",
-        type: "ping" as any,
-        status: "down",
-        message: "Timeout",
-        responseTime: 0,
-        timings: { phases: {} } as any,
-      });
+    const pingSpy = jest.spyOn(service, "requestPing").mockResolvedValueOnce({
+      monitorId: "5",
+      teamId: "t",
+      type: "ping" as any,
+      status: "down",
+      message: "Timeout",
+      responseTime: 0,
+      timings: { phases: {} } as any,
+    });
     const monitor = buildMonitor({ type: "ping" as any });
 
     await service.requestStatus(monitor);
@@ -558,6 +606,8 @@ describe("NetworkService.requestStatus", () => {
     const { service } = createService();
     const monitor = buildMonitor({ type: "websocket" as any });
 
-    await expect(service.requestStatus(monitor)).rejects.toThrow("Not implemented");
+    await expect(service.requestStatus(monitor)).rejects.toThrow(
+      "Not implemented"
+    );
   });
 });
