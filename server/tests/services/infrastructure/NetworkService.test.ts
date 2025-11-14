@@ -4,6 +4,13 @@ import type { StatusResponse } from "@/services/infrastructure/NetworkService.js
 import type { Response } from "got";
 import type { Got } from "got";
 import { Types } from "mongoose";
+import ApiError from "@/utils/ApiError.js";
+import ping from "ping";
+
+jest.mock("@/config/index.js", () => ({
+  config: { PAGESPEED_API_KEY: "test-key" },
+}));
+const configModule = jest.requireMock("@/config/index.js");
 
 jest.mock("got", () => {
   const extend = jest.fn();
@@ -28,6 +35,10 @@ jest.mock("got", () => {
 jest.mock("cacheable-lookup", () => ({
   __esModule: true,
   default: class CacheableLookup {},
+}));
+
+jest.mock("ping", () => ({
+  promise: { probe: jest.fn() },
 }));
 
 const getGotModule = () => jest.requireMock("got");
@@ -78,6 +89,15 @@ const invokeBuildStatusResponse = <T>(
 beforeEach(() => {
   const gotModule = getGotModule();
   (gotModule.default.extend as jest.Mock).mockReset();
+  (ping.promise.probe as jest.Mock).mockReset();
+  configModule.config.PAGESPEED_API_KEY = "test-key";
+});
+
+beforeEach(() => {
+  const gotModule = getGotModule();
+  (gotModule.default.extend as jest.Mock).mockReset();
+  (ping.promise.probe as jest.Mock).mockReset();
+  configModule.config.PAGESPEED_API_KEY = "test-key";
 });
 
 describe("NetworkService.buildStatusResponse", () => {
@@ -296,5 +316,142 @@ describe("NetworkService.requestInfrastructure", () => {
     expect(result.status).toBe("down");
     expect(result.message).toBe("timeout");
     expect(result.code).toBe(5000);
+  });
+});
+describe("NetworkService.requestPagespeed", () => {
+  const pagespeedUrl =
+    "https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://site.example.com&category=seo&category=accessibility&category=best-practices&category=performance&key=test-key";
+
+  it("requests pagespeed URL and attaches payload", async () => {
+    const primaryResponse = {
+      statusCode: 200,
+      statusMessage: "OK",
+      ok: true,
+      timings: { phases: { total: 222 } },
+    } as Response;
+    const payload = { lighthouseResult: { score: 0.9 } };
+    const secondaryResponse = { body: payload } as Response<typeof payload>;
+    const requestMock = jest
+      .fn()
+      .mockResolvedValueOnce(primaryResponse)
+      .mockResolvedValueOnce(secondaryResponse);
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({
+      type: "pagespeed" as any,
+      url: "https://site.example.com",
+    });
+
+    const result = await service.requestPagespeed(monitor);
+
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenNthCalledWith(1, "https://site.example.com");
+    expect(requestMock).toHaveBeenNthCalledWith(2, pagespeedUrl, {
+      responseType: "json",
+    });
+    expect(result.status).toBe("up");
+    expect(result.payload).toBe(payload);
+  });
+
+  it("throws when pagespeed API key missing", async () => {
+    configModule.config.PAGESPEED_API_KEY = "";
+    const requestMock = jest.fn();
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ type: "pagespeed" as any });
+
+    await expect(service.requestPagespeed(monitor)).rejects.toThrow(
+      "No API key provided for pagespeed monitor"
+    );
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).not.toHaveBeenCalled();
+  });
+
+  it("throws when monitor lacks URL", async () => {
+    const requestMock = jest.fn();
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ type: "pagespeed" as any, url: undefined as any });
+
+    await expect(service.requestPagespeed(monitor)).rejects.toThrow("No URL provided");
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).not.toHaveBeenCalled();
+  });
+
+  it("returns fallback response when initial request fails", async () => {
+    const error = new Error("timeout");
+    const payload = { lighthouseResult: { score: 0.8 } };
+    const requestMock = jest
+      .fn()
+      .mockRejectedValueOnce(error)
+      .mockResolvedValueOnce({ body: payload });
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ type: "pagespeed" as any, url: "https://s" });
+
+    const result = await service.requestPagespeed(monitor);
+
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenNthCalledWith(1, "https://s");
+    expect(result.status).toBe("down");
+    expect(result.message).toBe("timeout");
+    expect(result.payload).toBe(payload);
+  });
+
+  it("throws ApiError when pagespeed payload missing", async () => {
+    const primaryResponse = {
+      statusCode: 200,
+      statusMessage: "OK",
+      ok: true,
+      timings: { phases: { total: 111 } },
+    } as Response;
+    const requestMock = jest
+      .fn()
+      .mockResolvedValueOnce(primaryResponse)
+      .mockResolvedValueOnce({ body: undefined });
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ type: "pagespeed" as any, url: "https://site.example.com" });
+
+    await expect(service.requestPagespeed(monitor)).rejects.toThrow(
+      "No payload received from pagespeed monitor"
+    );
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenNthCalledWith(2, pagespeedUrl, {
+      responseType: "json",
+    });
+  });
+});
+
+describe("NetworkService.requestPing", () => {
+  it("maps successful ping with string time", async () => {
+    (ping.promise.probe as jest.Mock).mockResolvedValue({ alive: true, time: "12.5" });
+    const { service } = createService();
+    const monitor = buildMonitor({ type: "ping" as any, url: "8.8.8.8" });
+
+    const result = await service.requestPing(monitor);
+
+    expect(ping.promise.probe).toHaveBeenCalledWith("8.8.8.8");
+    expect(result.status).toBe("up");
+    expect(result.responseTime).toBeCloseTo(12.5);
+    expect(result.timings?.phases).toEqual({});
+  });
+
+  it("maps failure ping with invalid time to zero", async () => {
+    (ping.promise.probe as jest.Mock).mockResolvedValue({ alive: false, time: "NaN" });
+    const { service } = createService();
+    const monitor = buildMonitor({ type: "ping" as any, url: "1.1.1.1" });
+
+    const result = await service.requestPing(monitor);
+
+    expect(result.status).toBe("down");
+    expect(result.responseTime).toBe(0);
+    expect(result.message).toBe("Ping successful");
+  });
+
+  it("handles numeric ping times", async () => {
+    (ping.promise.probe as jest.Mock).mockResolvedValue({ alive: true, time: 18 });
+    const { service } = createService();
+    const monitor = buildMonitor({ type: "ping" as any, url: "9.9.9.9" });
+
+    const result = await service.requestPing(monitor);
+
+    expect(result.responseTime).toBe(18);
+    expect(result.status).toBe("up");
   });
 });
