@@ -15,7 +15,6 @@ import {
   ProfileController,
   IncidentsController,
 } from "@/controllers/index.js";
-import { UserService } from "@/services/index.js";
 
 export const initControllers = (services: any) => {
   const controllers: Record<string, any> = {};
