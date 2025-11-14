@@ -33,7 +33,7 @@ const createApp = async () => {
   });
 
   const port = 52345;
-  app.listen(port, () => {
+  app.listen(port, "0.0.0.0", () => {
     indexLogger.info(`Server is running on http://localhost:${port}`);
     indexLogger.error(new ApiError("Test error logging", 500));
   });
