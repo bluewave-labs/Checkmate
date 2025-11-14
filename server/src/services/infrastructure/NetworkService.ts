@@ -1,5 +1,4 @@
 import { Got, HTTPError } from "got";
-import got from "got";
 import ping from "ping";
 import { IMonitor } from "@/db/models/index.js";
 import { GotTimings } from "@/db/models/checks/Check.js";
@@ -48,15 +47,15 @@ export interface StatusResponse<TPayload = unknown> {
 
 class NetworkService implements INetworkService {
   public SERVICE_NAME = SERVICE_NAME;
-  private got: Got;
+  private client: Got;
   private NETWORK_ERROR: number;
-  constructor() {
+  constructor(got: Got) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.NETWORK_ERROR = 5000;
 
     const cacheable = new CacheableLookup();
 
-    this.got = got.extend({
+    this.client = got.extend({
       dnsCache: cacheable,
       timeout: {
         request: 30000,
@@ -112,7 +111,7 @@ class NetworkService implements INetworkService {
       }
 
       try {
-        const response: Response = await this.got(url);
+        const response: Response = await this.client(url);
         return this.buildStatusResponse(monitor, response, null);
       } catch (error) {
         return this.buildStatusResponse(monitor, null, error);
@@ -134,10 +133,13 @@ class NetworkService implements INetworkService {
 
     let statusResponse: StatusResponse<ICapturePayload>;
     try {
-      const response: Response<ICapturePayload> | null = await this.got(url, {
-        headers: { Authorization: `Bearer ${secret}` },
-        responseType: "json",
-      });
+      const response: Response<ICapturePayload> | null = await this.client(
+        url,
+        {
+          headers: { Authorization: `Bearer ${secret}` },
+          responseType: "json",
+        }
+      );
 
       statusResponse = this.buildStatusResponse(monitor, response, null);
       if (!response?.body) {
@@ -167,7 +169,7 @@ class NetworkService implements INetworkService {
     let statusResponse: StatusResponse<ILighthousePayload>;
 
     try {
-      const response: Response = await this.got(url);
+      const response: Response = await this.client(url);
       statusResponse = this.buildStatusResponse(
         monitor,
         response,
@@ -178,9 +180,12 @@ class NetworkService implements INetworkService {
     }
 
     const pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance&key=${apiKey}`;
-    const pagespeedResponse = await this.got<ILighthousePayload>(pagespeedUrl, {
-      responseType: "json",
-    });
+    const pagespeedResponse = await this.client<ILighthousePayload>(
+      pagespeedUrl,
+      {
+        responseType: "json",
+      }
+    );
     const payload = pagespeedResponse.body;
     if (payload) {
       statusResponse.payload = payload;
