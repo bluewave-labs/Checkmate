@@ -2,3 +2,4 @@
 .vscode
 .VSCodeCounter
 AGENTS.md
+*.sh

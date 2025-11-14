@@ -107,6 +107,7 @@ export const IncidentTable = ({
         render: (row) => {
           return row.resolved ? null : (
             <Button
+              loading={isPatching}
               onClick={async (e) => {
                 e.stopPropagation();
                 await patch(`/incidents/${row._id}/resolve`, {

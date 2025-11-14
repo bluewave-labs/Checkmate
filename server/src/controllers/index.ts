@@ -12,4 +12,4 @@ export { default as StatusPageController } from "./StatusPageController.js";
 export { default as DiagnosticController } from "./DiagnosticController.js";
 export { default as RecoveryController } from "./RecoveryController.js";
 export { default as ProfileController } from "./ProfileController.js";
-export { default as IncidentsController } from "./IncidentController.js";
+export { default as IncidentsController } from "./IncidentsController.js";
