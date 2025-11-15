@@ -8,6 +8,7 @@ import GaugeBoxes from "./Components/GaugeBoxes/index.jsx";
 import AreaChartBoxes from "./Components/AreaChartBoxes/index.jsx";
 import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import NetworkStats from "./Components/NetworkStats/index.jsx";
+import DockerContainersTable from "./Components/DockerContainersTable/index.jsx";
 import CustomTabList from "@/Components/v1/Tab/index.jsx";
 import TabContext from "@mui/lab/TabContext";
 
@@ -98,12 +99,25 @@ const InfrastructureDetails = () => {
 						label={t("details")}
 						value="details"
 					/>
-					<Tab
-						label={t("network")}
-						value="network"
-					/>
+					{monitor?.type !== "docker" && (
+						<Tab
+							label={t("network")}
+							value="network"
+						/>
+					)}
 				</CustomTabList>
-				{tab === "details" && (
+				{tab === "details" && monitor?.type === "docker" && (
+					<>
+						<StatusBoxes
+							shouldRender={!isLoading}
+							monitor={monitor}
+						/>
+						<DockerContainersTable
+							containers={monitor?.stats?.aggregateData?.latestCheck?.docker || []}
+						/>
+					</>
+				)}
+				{tab === "details" && monitor?.type !== "docker" && (
 					<>
 						<StatusBoxes
 							shouldRender={!isLoading}
@@ -125,7 +139,7 @@ const InfrastructureDetails = () => {
 						/>
 					</>
 				)}
-				{tab === "network" && (
+				{tab === "network" && monitor?.type !== "docker" && (
 					<NetworkStats
 						net={monitor?.stats?.aggregateData?.latestCheck?.net || []}
 						isLoading={isLoading}

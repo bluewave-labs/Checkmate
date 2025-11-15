@@ -63,7 +63,7 @@ const CreateInfrastructureMonitor = () => {
 	const { buildForm, submitInfrastructureForm, isCreating, isUpdating } =
 		useInfrastructureSubmit();
 
-	const FREQUENCIES = [
+	const ALL_FREQUENCIES = [
 		{ _id: 0.25, name: t("time.fifteenSeconds") },
 		{ _id: 0.5, name: t("time.thirtySeconds") },
 		{ _id: 1, name: t("time.oneMinute") },
@@ -71,6 +71,12 @@ const CreateInfrastructureMonitor = () => {
 		{ _id: 5, name: t("time.fiveMinutes") },
 		{ _id: 10, name: t("time.tenMinutes") },
 	];
+
+	// Docker monitors require minimum 30 second interval
+	const FREQUENCIES =
+		monitorType === "docker"
+			? ALL_FREQUENCIES.filter((f) => f._id >= 0.5)
+			: ALL_FREQUENCIES;
 	const CRUMBS = [
 		{ name: "Infrastructure monitors", path: "/infrastructure" },
 		...(isCreate
@@ -102,12 +108,12 @@ const CreateInfrastructureMonitor = () => {
 	// Handlers
 	const onSubmit = async (event) => {
 		event.preventDefault();
-		const form = buildForm(infrastructureMonitor, https);
+		const form = buildForm(infrastructureMonitor, https, monitorType);
 		const error = validateForm(form);
 		if (error) {
 			return;
 		}
-		submitInfrastructureForm(infrastructureMonitor, form, isCreate, monitorId);
+		submitInfrastructureForm(infrastructureMonitor, form, isCreate, monitorId, monitorType);
 	};
 
 	const triggerUpdate = () => {
@@ -204,15 +210,25 @@ const CreateInfrastructureMonitor = () => {
 							{t("settingsGeneralSettings")}
 						</Typography>
 						<Typography component="p">
-							{t("infrastructureCreateGeneralSettingsDescription")}
+							{monitorType === "docker"
+								? "Configure your Capture server to monitor Docker containers."
+								: t("infrastructureCreateGeneralSettingsDescription")}
 						</Typography>
 						<Typography component="p">
-							{t("infrastructureServerRequirement")}{" "}
-							<Link
-								level="primary"
-								url="https://github.com/bluewave-labs/checkmate-agent"
-								label={t("common.monitoringAgentName")}
-							/>
+							{monitorType === "docker" ? (
+								<>
+									Capture server endpoint: <code>/api/v1/metrics/docker</code>
+								</>
+							) : (
+								<>
+									{t("infrastructureServerRequirement")}{" "}
+									<Link
+										level="primary"
+										url="https://github.com/bluewave-labs/checkmate-agent"
+										label={t("common.monitoringAgentName")}
+									/>
+								</>
+							)}
 						</Typography>
 					</Stack>
 					<Stack gap={theme.spacing(8)}>
@@ -221,8 +237,16 @@ const CreateInfrastructureMonitor = () => {
 							id="url"
 							name="url"
 							startAdornment={<HttpAdornment https={https} />}
-							placeholder={"localhost:59232/api/v1/metrics"}
-							label={t("infrastructureServerUrlLabel")}
+							placeholder={
+								monitorType === "docker"
+									? "192.168.1.100:59232"
+									: "localhost:59232/api/v1/metrics"
+							}
+							label={
+								monitorType === "docker"
+									? "Capture Server URL"
+									: t("infrastructureServerUrlLabel")
+							}
 							https={https}
 							value={infrastructureMonitor.url}
 							onChange={onChange}
@@ -268,7 +292,12 @@ const CreateInfrastructureMonitor = () => {
 							type="text"
 							id="secret"
 							name="secret"
-							label={t("infrastructureAuthorizationSecretLabel")}
+							label={
+								monitorType === "docker"
+									? "Capture API Secret"
+									: t("infrastructureAuthorizationSecretLabel")
+							}
+							placeholder={monitorType === "docker" ? "Bearer token for Capture API" : ""}
 							value={infrastructureMonitor.secret}
 							onChange={onChange}
 							error={errors["secret"] ? true : false}
@@ -325,12 +354,14 @@ const CreateInfrastructureMonitor = () => {
 						/>
 					</Stack>
 				</ConfigBox>
-				<CustomAlertsSection
-					errors={errors}
-					onChange={onChange}
-					infrastructureMonitor={infrastructureMonitor}
-					handleCheckboxChange={handleCheckboxChange}
-				/>
+				{monitorType === "hardware" && (
+					<CustomAlertsSection
+						errors={errors}
+						onChange={onChange}
+						infrastructureMonitor={infrastructureMonitor}
+						handleCheckboxChange={handleCheckboxChange}
+					/>
+				)}
 				<ConfigBox>
 					<Box>
 						<Typography
