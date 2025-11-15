@@ -55,7 +55,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 					</Typography>
 					<Typography
 						variant="caption"
-						color="textSecondary"
+						color={theme.palette.primary.contrastTextTertiary}
 					>
 						{row.container_id ? row.container_id.substring(0, 12) : "N/A"}
 					</Typography>
@@ -79,13 +79,13 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 				<Box>
 					<Typography
 						variant="body2"
-						color={row.health?.healthy ? "success.main" : "error.main"}
+						color={row.health?.healthy ? theme.palette.success.main : theme.palette.error.main}
 					>
 						{row.health?.healthy ? "Healthy" : "Unhealthy"}
 					</Typography>
 					<Typography
 						variant="caption"
-						color="textSecondary"
+						color={theme.palette.primary.contrastTextTertiary}
 					>
 						{row.health?.source === "container_health_check" ? "HEALTHCHECK" : "State-based"}
 					</Typography>
@@ -126,7 +126,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 					) : (
 						<Typography
 							variant="caption"
-							color="textSecondary"
+							color={theme.palette.primary.contrastTextTertiary}
 						>
 							None
 						</Typography>
@@ -157,14 +157,15 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 				sx={{
 					padding: theme.spacing(12),
 					textAlign: "center",
-					border: `1px solid ${theme.palette.divider}`,
+					border: dockerClientError
+						? `2px solid ${theme.palette.error.main}`
+						: `1px solid ${theme.palette.divider}`,
 					borderRadius: theme.spacing(2),
-					backgroundColor: dockerClientError ? theme.palette.error.lighter : undefined,
 				}}
 			>
 				<Typography
 					variant="body1"
-					color={dockerClientError ? "error.main" : "textSecondary"}
+					color={dockerClientError ? theme.palette.error.main : theme.palette.primary.contrastTextTertiary}
 					fontWeight={600}
 					mb={errorDetails ? theme.spacing(2) : 0}
 				>
@@ -173,7 +174,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 				{errorDetails && (
 					<Typography
 						variant="body2"
-						color="textSecondary"
+						color={theme.palette.primary.contrastTextSecondary}
 					>
 						{errorDetails}
 					</Typography>
@@ -181,7 +182,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 				{captureVersion && (
 					<Typography
 						variant="caption"
-						color="textSecondary"
+						color={theme.palette.primary.contrastTextTertiary}
 						sx={{ display: "block", marginTop: theme.spacing(4) }}
 					>
 						Capture version: {captureVersion}
@@ -203,7 +204,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 				{errors && errors.length > 0 && (
 					<Typography
 						variant="caption"
-						color="warning.main"
+						color={theme.palette.warning.main}
 						sx={{ display: "block", marginTop: theme.spacing(1) }}
 					>
 						⚠ {errors.length} error(s) encountered while fetching container data
@@ -212,7 +213,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 				{captureVersion && (
 					<Typography
 						variant="caption"
-						color="textSecondary"
+						color={theme.palette.primary.contrastTextTertiary}
 						sx={{ display: "block", marginTop: theme.spacing(1) }}
 					>
 						Capture version: {captureVersion}
