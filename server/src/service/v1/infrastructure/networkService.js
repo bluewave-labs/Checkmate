@@ -286,7 +286,7 @@ class NetworkService {
 		}
 	}
 
-	async requestDocker(monitor) {
+	async requestLocalDocker(monitor) {
 		try {
 			if (!monitor.url) {
 				throw new Error("Monitor URL is required");
@@ -330,7 +330,7 @@ class NetworkService {
 				this.logger.warn({
 					message: `No container found for "${monitor.url}".`,
 					service: this.SERVICE_NAME,
-					method: "requestDocker",
+					method: "requestLocalDocker",
 					details: { url: monitor.url },
 				});
 
@@ -350,7 +350,7 @@ class NetworkService {
 				this.logger.warn({
 					message: `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`,
 					service: this.SERVICE_NAME,
-					method: "requestDocker",
+					method: "requestLocalDocker",
 					details: { url: monitor.url },
 				});
 				dockerResponse.status = 404;
@@ -375,6 +375,112 @@ class NetworkService {
 			}
 
 			return dockerResponse;
+		} catch (err) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestLocalDocker";
+			throw err;
+		}
+	}
+
+	async requestCaptureDocker(monitor) {
+		try {
+			if (!monitor.url) {
+				throw new Error("Monitor URL is required");
+			}
+
+			const dockerResponse = {
+				monitorId: monitor._id,
+				teamId: monitor.teamId,
+				type: monitor.type,
+			};
+
+			// Build Capture API URL
+			const captureUrl = new URL(monitor.url);
+			const apiUrl = `${captureUrl.protocol}//${captureUrl.host}/api/v1/metrics/docker`;
+
+			// Make request to Capture API
+			const { response, responseTime, error } = await this.timeRequest(async () => {
+				return await this.got(apiUrl, {
+					headers: {
+						Authorization: `Bearer ${monitor.secret || ""}`,
+					},
+					timeout: { request: 10000 },
+					responseType: "json",
+				});
+			});
+
+			dockerResponse.responseTime = responseTime;
+
+			// Handle errors
+			if (error) {
+				const statusCode = error.response?.statusCode || this.NETWORK_ERROR;
+				dockerResponse.status = false;
+				dockerResponse.code = statusCode;
+
+				if (statusCode === 401) {
+					dockerResponse.message = "Invalid API secret for Capture server";
+				} else if (statusCode === 404) {
+					dockerResponse.message = "Docker monitoring not available (Capture version too old or endpoint not found)";
+				} else if (statusCode === 500) {
+					dockerResponse.message = "Docker daemon unavailable on Capture server";
+				} else {
+					dockerResponse.message = error.message || "Failed to fetch Docker metrics from Capture";
+				}
+
+				return dockerResponse;
+			}
+
+			// Parse response
+			const payload = response.body || response;
+			const { data, capture, errors } = payload;
+
+			// Check for errors array
+			if (errors && errors.length > 0) {
+				// Check if it's a critical error (docker.client)
+				const dockerClientError = errors.find((e) => e.metric && e.metric.includes("docker.client"));
+				if (dockerClientError) {
+					dockerResponse.status = false;
+					dockerResponse.code = 500;
+					dockerResponse.message = dockerClientError.err || "Docker daemon unavailable";
+					return dockerResponse;
+				}
+			}
+
+			// Check if we have container data
+			if (!data || !Array.isArray(data) || data.length === 0) {
+				dockerResponse.status = false;
+				dockerResponse.code = 404;
+				dockerResponse.message = "No containers found on Capture server";
+				dockerResponse.payload = { data: [], capture, errors: errors || [] };
+				return dockerResponse;
+			}
+
+			// Successful response - store all containers
+			dockerResponse.status = true;
+			dockerResponse.code = 200;
+			dockerResponse.message = `Found ${data.length} container(s) on Capture server`;
+			dockerResponse.payload = { data, capture, errors: errors || [] };
+
+			return dockerResponse;
+		} catch (err) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestCaptureDocker";
+			throw err;
+		}
+	}
+
+	async requestDocker(monitor) {
+		try {
+			if (!monitor.url) {
+				throw new Error("Monitor URL is required");
+			}
+
+			// Check if URL is HTTP/HTTPS (Capture API) or container name/ID (local)
+			if (monitor.url.startsWith("http://") || monitor.url.startsWith("https://")) {
+				return await this.requestCaptureDocker(monitor);
+			} else {
+				return await this.requestLocalDocker(monitor);
+			}
 		} catch (err) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestDocker";

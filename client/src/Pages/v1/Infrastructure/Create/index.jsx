@@ -13,7 +13,7 @@ import CustomAlertsSection from "./Components/CustomAlertsSection.jsx";
 // Utils
 import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
 import { useGetNotificationsByTeamId } from "../../../../Hooks/v1/useNotifications.js";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
@@ -29,10 +29,14 @@ import useInfrastructureSubmit from "./hooks/useInfrastructureSubmit.jsx";
 
 const CreateInfrastructureMonitor = () => {
 	const { monitorId } = useParams();
+	const [searchParams] = useSearchParams();
 	const isCreate = typeof monitorId === "undefined";
 
 	const theme = useTheme();
 	const { t } = useTranslation();
+
+	// Get monitor type from query params (default to hardware for backwards compatibility)
+	const monitorType = searchParams.get("type") || "hardware";
 
 	// State
 	const [https, setHttps] = useState(false);

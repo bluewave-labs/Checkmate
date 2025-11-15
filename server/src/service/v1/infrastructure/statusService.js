@@ -275,6 +275,13 @@ class StatusService {
 			check.capture = payload?.capture ?? {};
 			check.net = net ?? {};
 		}
+
+		if (type === "docker") {
+			const { data, capture, errors } = payload ?? {};
+			check.docker = data ?? [];
+			check.errors = errors ?? [];
+			check.capture = capture ?? {};
+		}
 		return check;
 	};
 
