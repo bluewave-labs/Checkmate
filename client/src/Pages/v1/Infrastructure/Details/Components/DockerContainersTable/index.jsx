@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
+import PropTypes from "prop-types";
 import DataTable from "@/Components/v1/Table/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 
@@ -116,7 +117,7 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 					{row.exposed_ports && row.exposed_ports.length > 0 ? (
 						row.exposed_ports.map((port, idx) => (
 							<Typography
-								key={idx}
+								key={`${port.port}-${port.protocol}-${idx}`}
 								variant="caption"
 								sx={{ display: "block" }}
 							>
@@ -229,6 +230,38 @@ const DockerContainersTable = ({ containers = [], errors = [], captureVersion })
 			/>
 		</Stack>
 	);
+};
+
+DockerContainersTable.propTypes = {
+	containers: PropTypes.arrayOf(
+		PropTypes.shape({
+			container_id: PropTypes.string,
+			container_name: PropTypes.string,
+			status: PropTypes.string,
+			health: PropTypes.shape({
+				healthy: PropTypes.bool,
+				source: PropTypes.string,
+				message: PropTypes.string,
+			}),
+			running: PropTypes.bool,
+			base_image: PropTypes.string,
+			exposed_ports: PropTypes.arrayOf(
+				PropTypes.shape({
+					port: PropTypes.string,
+					protocol: PropTypes.string,
+				})
+			),
+			started_at: PropTypes.number,
+			finished_at: PropTypes.number,
+		})
+	),
+	errors: PropTypes.arrayOf(
+		PropTypes.shape({
+			metric: PropTypes.arrayOf(PropTypes.string),
+			err: PropTypes.string,
+		})
+	),
+	captureVersion: PropTypes.string,
 };
 
 export default DockerContainersTable;
