@@ -115,7 +115,7 @@ const InfrastructureMonitors = () => {
 							isLoading={isLoading}
 							items={monitors}
 							type="infrastructureMonitor"
-							fallbackLink="/infrastructure/create"
+							fallbackLink="/infrastructure/create?type=hardware"
 						>
 							<Stack gap={theme.spacing(10)}>
 								<Stack direction={"row"}>
@@ -161,7 +161,7 @@ const InfrastructureMonitors = () => {
 							isLoading={isLoading}
 							items={monitors}
 							type="infrastructureMonitor"
-							fallbackLink="/infrastructure/create"
+							fallbackLink="/infrastructure/create?type=docker"
 						>
 							<Stack gap={theme.spacing(10)}>
 								<Stack direction={"row"}>

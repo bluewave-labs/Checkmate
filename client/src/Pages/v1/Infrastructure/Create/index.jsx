@@ -35,9 +35,6 @@ const CreateInfrastructureMonitor = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	// Get monitor type from query params (default to hardware for backwards compatibility)
-	const monitorType = searchParams.get("type") || "hardware";
-
 	// State
 	const [https, setHttps] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -47,6 +44,11 @@ const CreateInfrastructureMonitor = () => {
 		monitorId,
 		updateTrigger,
 	});
+
+	// Determine monitor type: from query params when creating, from monitor object when editing
+	const monitorType = isCreate
+		? (searchParams.get("type") || "hardware")
+		: (monitor?.type || "hardware");
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
 	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
 	const [notifications, notificationsAreLoading] = useGetNotificationsByTeamId();
@@ -91,7 +93,8 @@ const CreateInfrastructureMonitor = () => {
 		if (isCreate) {
 			if (globalSettingsLoading) return;
 			setHttps(false);
-			initializeInfrastructureMonitorForCreate(globalSettings);
+			const typeFromQuery = searchParams.get("type") || "hardware";
+			initializeInfrastructureMonitorForCreate(globalSettings, typeFromQuery);
 		} else if (monitor) {
 			setHttps(monitor.url.startsWith("https"));
 			initializeInfrastructureMonitorForUpdate(monitor);
@@ -101,6 +104,7 @@ const CreateInfrastructureMonitor = () => {
 		monitor,
 		globalSettings,
 		globalSettingsLoading,
+		searchParams,
 		initializeInfrastructureMonitorForCreate,
 		initializeInfrastructureMonitorForUpdate,
 	]);

@@ -114,6 +114,8 @@ const InfrastructureDetails = () => {
 						/>
 						<DockerContainersTable
 							containers={monitor?.stats?.aggregateData?.latestCheck?.docker || []}
+							errors={monitor?.stats?.aggregateData?.latestCheck?.errors || []}
+							captureVersion={monitor?.stats?.aggregateData?.latestCheck?.capture?.version}
 						/>
 					</>
 				)}

@@ -31,14 +31,17 @@ const useInfrastructureMonitorForm = () => {
 			[event.target.name]: event.target.checked,
 		});
 	};
-	const initializeInfrastructureMonitorForCreate = useCallback((globalSettings) => {
+	const initializeInfrastructureMonitorForCreate = useCallback((globalSettings, monitorType = "hardware") => {
 		const gt = globalSettings?.data?.settings?.globalThresholds || {};
+		// Docker monitors default to 30 seconds (0.5 minutes), hardware to 15 seconds (0.25 minutes)
+		const defaultInterval = monitorType === "docker" ? 0.5 : 0.25;
+
 		setInfrastructureMonitor((prev) => ({
 			...prev,
 			url: "",
 			name: "",
 			notifications: [],
-			interval: 0.25,
+			interval: defaultInterval,
 			cpu: gt.cpu !== undefined,
 			usage_cpu: gt.cpu !== undefined ? gt.cpu.toString() : "",
 			memory: gt.memory !== undefined,

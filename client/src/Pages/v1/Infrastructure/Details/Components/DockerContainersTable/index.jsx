@@ -3,7 +3,7 @@ import { useTheme } from "@emotion/react";
 import DataTable from "@/Components/v1/Table/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 
-const DockerContainersTable = ({ containers = [] }) => {
+const DockerContainersTable = ({ containers = [], errors = [], captureVersion }) => {
 	const theme = useTheme();
 
 	// Helper to format uptime
@@ -136,7 +136,22 @@ const DockerContainersTable = ({ containers = [] }) => {
 		},
 	];
 
+	// Check if there are critical errors (Docker daemon down)
+	const dockerClientError = errors.find((e) => e.metric && e.metric.includes("docker.client"));
+
 	if (!containers || containers.length === 0) {
+		// Determine the message based on error type
+		let message = "No containers found";
+		let errorDetails = null;
+
+		if (dockerClientError) {
+			message = "Docker daemon unavailable";
+			errorDetails = dockerClientError.err;
+		} else if (errors && errors.length > 0) {
+			message = "Partial data available";
+			errorDetails = "Some containers could not be inspected";
+		}
+
 		return (
 			<Box
 				sx={{
@@ -144,26 +159,66 @@ const DockerContainersTable = ({ containers = [] }) => {
 					textAlign: "center",
 					border: `1px solid ${theme.palette.divider}`,
 					borderRadius: theme.spacing(2),
+					backgroundColor: dockerClientError ? theme.palette.error.lighter : undefined,
 				}}
 			>
 				<Typography
 					variant="body1"
-					color="textSecondary"
+					color={dockerClientError ? "error.main" : "textSecondary"}
+					fontWeight={600}
+					mb={errorDetails ? theme.spacing(2) : 0}
 				>
-					No containers found
+					{message}
 				</Typography>
+				{errorDetails && (
+					<Typography
+						variant="body2"
+						color="textSecondary"
+					>
+						{errorDetails}
+					</Typography>
+				)}
+				{captureVersion && (
+					<Typography
+						variant="caption"
+						color="textSecondary"
+						sx={{ display: "block", marginTop: theme.spacing(4) }}
+					>
+						Capture version: {captureVersion}
+					</Typography>
+				)}
 			</Box>
 		);
 	}
 
 	return (
 		<Stack gap={theme.spacing(4)}>
-			<Typography
-				variant="h3"
-				fontWeight={600}
-			>
-				Docker Containers ({containers.length})
-			</Typography>
+			<Box>
+				<Typography
+					variant="h3"
+					fontWeight={600}
+				>
+					Docker Containers ({containers.length})
+				</Typography>
+				{errors && errors.length > 0 && (
+					<Typography
+						variant="caption"
+						color="warning.main"
+						sx={{ display: "block", marginTop: theme.spacing(1) }}
+					>
+						⚠ {errors.length} error(s) encountered while fetching container data
+					</Typography>
+				)}
+				{captureVersion && (
+					<Typography
+						variant="caption"
+						color="textSecondary"
+						sx={{ display: "block", marginTop: theme.spacing(1) }}
+					>
+						Capture version: {captureVersion}
+					</Typography>
+				)}
+			</Box>
 			<DataTable
 				headers={headers}
 				data={containers}
