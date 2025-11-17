@@ -199,7 +199,7 @@ class EmailService {
 		// Validate required fields
 		if (!to || !subject) {
 			this.logger.error({
-				message: `Invalid email parameters: to='${to}', subject='${subject}'`,
+				message: "Invalid email parameters: missing 'to' or 'subject'",
 				service: SERVICE_NAME,
 				method: "sendEmail",
 			});
@@ -242,7 +242,7 @@ class EmailService {
 		const fromAddress = systemEmailAddress || systemEmailUser;
 		if (!fromAddress || !fromAddress.includes('@')) {
 			this.logger.error({
-				message: `Invalid from email address: ${fromAddress}`,
+				message: "Invalid from email address",
 				service: SERVICE_NAME,
 				method: "sendEmail",
 			});
@@ -262,6 +262,14 @@ class EmailService {
 			connectionTimeout: 5000,
 		};
 
+		// Add top-level TLS options (must be outside tls object)
+		if (systemEmailIgnoreTLS !== undefined) {
+			emailConfig.ignoreTLS = systemEmailIgnoreTLS;
+		}
+		if (systemEmailRequireTLS !== undefined) {
+			emailConfig.requireTLS = systemEmailRequireTLS;
+		}
+
 		// Conditionally add TLS settings only if secure is enabled
 		if (systemEmailSecure) {
 			const tlsSettings = {};
@@ -269,12 +277,6 @@ class EmailService {
 			// Only add TLS settings that are explicitly configured
 			if (systemEmailRejectUnauthorized !== undefined) {
 				tlsSettings.rejectUnauthorized = systemEmailRejectUnauthorized;
-			}
-			if (systemEmailIgnoreTLS !== undefined) {
-				tlsSettings.ignoreTLS = systemEmailIgnoreTLS;
-			}
-			if (systemEmailRequireTLS !== undefined) {
-				tlsSettings.requireTLS = systemEmailRequireTLS;
 			}
 			if (systemEmailTLSServername !== undefined && systemEmailTLSServername !== null && systemEmailTLSServername !== '') {
 				tlsSettings.servername = systemEmailTLSServername;
