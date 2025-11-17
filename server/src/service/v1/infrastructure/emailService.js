@@ -208,14 +208,14 @@ class EmailService {
 
 		// Validate HTML content
 		if (!html || html.trim() === "") {
-			this.logger.error({
-				message: "Cannot send email: HTML content is empty",
+			this.logger.warn({
+				message: "Email HTML content is empty, using fallback text",
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				to: to,
 				subject: subject,
 			});
-			return false;
+			html = "<p>Email content unavailable</p>";
 		}
 
 		let config;
