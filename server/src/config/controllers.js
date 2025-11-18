@@ -14,6 +14,7 @@ import LogController from "../controllers/v1/logController.js";
 import StatusPageController from "../controllers/v1/statusPageController.js";
 import NotificationController from "../controllers/v1/notificationController.js";
 import DiagnosticController from "../controllers/v1/diagnosticController.js";
+import IncidentController from "../controllers/v1/incidentController.js";
 
 // V2 Controllers
 import AuthControllerV2 from "../controllers/v2/AuthController.js";
@@ -68,6 +69,10 @@ export const initializeControllers = (services) => {
 	});
 	controllers.diagnosticController = new DiagnosticController(commonDependencies, {
 		diagnosticService: services.diagnosticService,
+	});
+
+	controllers.incidentController = new IncidentController(commonDependencies, {
+		incidentService: services.incidentService,
 	});
 
 	//V2

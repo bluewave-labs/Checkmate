@@ -42,7 +42,7 @@ class IncidentModule {
 
 	getActiveIncidentByMonitor = async (monitorId) => {
 		try {
-			return await this.Incident.findOne({ monitorId: new ObjectId(monitorId), status: "active" });
+			return await this.Incident.findOne({ monitorId: new ObjectId(monitorId), status: true });
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getActiveIncidentByMonitor";
@@ -50,11 +50,51 @@ class IncidentModule {
 		}
 	};
 
+	getActiveIncidentsByMonitors = async (monitorIds) => {
+		try {
+			if (!monitorIds || monitorIds.length === 0) {
+				return new Map();
+			}
+
+			const objectIds = monitorIds.map((id) => new ObjectId(id));
+			const incidents = await this.Incident.find({
+				monitorId: { $in: objectIds },
+				status: true,
+			});
+
+			const map = new Map();
+			incidents.forEach((incident) => {
+				const monitorIdStr = incident.monitorId.toString();
+				map.set(monitorIdStr, incident);
+			});
+
+			return map;
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "getActiveIncidentsByMonitors";
+			throw error;
+		}
+	};
+
+	getLastManuallyResolvedIncident = async (monitorId) => {
+		try {
+			return await this.Incident.findOne({
+				monitorId: new ObjectId(monitorId),
+				status: false,
+				resolutionType: "manual",
+			})
+				.sort({ endTime: -1 })
+				.limit(1);
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "getLastManuallyResolvedIncident";
+			throw error;
+		}
+	};
+
 	getIncidentById = async (incidentId) => {
 		try {
-			return await this.Incident.findById(incidentId)
-				.populate("monitorId", "name type url")
-				.populate("resolvedBy", "name email");
+			return await this.Incident.findById(incidentId).populate("monitorId", "name type url").populate("resolvedBy", "name email");
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getIncidentById";
@@ -65,17 +105,13 @@ class IncidentModule {
 	resolveIncident = async (incidentId, { resolutionType = "automatic", resolvedBy = null, comment = null, endTime = new Date() } = {}) => {
 		try {
 			const update = {
-				status: "resolved",
+				status: false,
 				endTime,
 				resolutionType,
 				resolvedBy,
 				...(comment !== null && { comment }),
 			};
-			const incident = await this.Incident.findOneAndUpdate(
-				{ _id: new ObjectId(incidentId) },
-				{ $set: update },
-				{ new: true }
-			);
+			const incident = await this.Incident.findOneAndUpdate({ _id: new ObjectId(incidentId) }, { $set: update }, { new: true });
 
 			if (!incident) {
 				throw new Error("Incident not found");
@@ -109,14 +145,44 @@ class IncidentModule {
 		}
 	};
 
-	getIncidentsByTeam = async ({ teamId, sortOrder, dateRange, filter, page, rowsPerPage, status, monitorId, resolutionType }) => {
+	addChecksToIncidentsBatch = async (operations) => {
 		try {
-			page = parseInt(page);
-			rowsPerPage = parseInt(rowsPerPage);
+			if (!operations || operations.length === 0) {
+				return;
+			}
+
+			const bulkOps = operations.map((op) => ({
+				updateOne: {
+					filter: { _id: new ObjectId(op.incidentId) },
+					update: { $addToSet: { checks: new ObjectId(op.checkId) } },
+				},
+			}));
+
+			await this.Incident.bulkWrite(bulkOps, { ordered: false });
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "addChecksToIncidentsBatch";
+			throw error;
+		}
+	};
+
+	getIncidentsByTeam = async ({ teamId, sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType }) => {
+		try {
+			page = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
+			rowsPerPage = Number.isFinite(parseInt(rowsPerPage)) ? parseInt(rowsPerPage) : 20;
+
+			let statusBoolean = undefined;
+			if (status !== undefined && status !== null) {
+				if (typeof status === "string") {
+					statusBoolean = status === "true";
+				} else if (typeof status === "boolean") {
+					statusBoolean = status;
+				}
+			}
 
 			const matchStage = {
 				teamId: new ObjectId(teamId),
-				...(status && { status }),
+				...(statusBoolean !== undefined && { status: statusBoolean }),
 				...(monitorId && { monitorId: new ObjectId(monitorId) }),
 				...(resolutionType && { resolutionType }),
 				...(dateRangeLookup[dateRange] && {
@@ -126,27 +192,9 @@ class IncidentModule {
 				}),
 			};
 
-			if (filter !== undefined) {
-				switch (filter) {
-					case "all":
-						break;
-					case "active":
-						matchStage.status = "active";
-						break;
-					case "resolved":
-						matchStage.status = "resolved";
-						break;
-					default:
-						break;
-				}
-			}
-
 			sortOrder = sortOrder === "asc" ? 1 : -1;
 
-			let skip = 0;
-			if (page && rowsPerPage) {
-				skip = page * rowsPerPage;
-			}
+			const skip = page * rowsPerPage;
 
 			const incidents = await this.Incident.aggregate([
 				{ $match: matchStage },
@@ -212,10 +260,10 @@ class IncidentModule {
 
 			summary.forEach((item) => {
 				result.total += item.count;
-				if (item._id === "active") {
+				if (item._id === true) {
 					result.active = item.count;
 				}
-				if (item._id === "resolved") {
+				if (item._id === false) {
 					result.resolved = item.count;
 				}
 				result.manual += item.manualResolutions;
@@ -255,4 +303,3 @@ class IncidentModule {
 }
 
 export default IncidentModule;
-

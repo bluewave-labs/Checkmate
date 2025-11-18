@@ -98,6 +98,63 @@ class StatusService {
 		if (status === false) return "down";
 		return "unknown";
 	};
+
+	/**
+	 * Saves check if needed and adds to incident buffer
+	 * Removes check from checks buffer if it was saved immediately
+	 *
+	 * @param {Object} check - The check object
+	 * @param {Object} monitor - The monitor object
+	 * @param {string} action - The incident action ("create" or "resolve")
+	 * @param {string} errorContext - Context for error messages
+	 * @returns {Promise<void>}
+	 */
+	handleIncidentForCheck = async (check, monitor, action, errorContext = "incident handling") => {
+		try {
+			let savedCheck = check;
+
+			if (!check._id) {
+				try {
+					const checkModel = new Check(check);
+					savedCheck = await checkModel.save();
+
+					this.buffer.removeCheckFromBuffer(check);
+				} catch (checkError) {
+					this.logger.error({
+						service: this.SERVICE_NAME,
+						method: "handleIncidentForCheck",
+						message: `Failed to save check immediately for ${errorContext}: ${checkError.message}`,
+						monitorId: monitor._id,
+						stack: checkError.stack,
+					});
+					savedCheck = null;
+				}
+			}
+
+			if (savedCheck && savedCheck._id) {
+				try {
+					this.buffer.addIncidentToBuffer({ monitor, check: savedCheck, action });
+				} catch (incidentError) {
+					this.logger.error({
+						service: this.SERVICE_NAME,
+						method: "handleIncidentForCheck",
+						message: `Failed to add incident to buffer for ${errorContext}: ${incidentError.message}`,
+						monitorId: monitor._id,
+						action,
+						stack: incidentError.stack,
+					});
+				}
+			}
+		} catch (error) {
+			this.logger.error({
+				service: this.SERVICE_NAME,
+				method: "handleIncidentForCheck",
+				message: `Error in ${errorContext}: ${error.message}`,
+				monitorId: monitor?._id,
+				stack: error.stack,
+			});
+		}
+	};
 	/**
 	 * Updates the status of a monitor based on the network response.
 	 *
@@ -174,38 +231,58 @@ class StatusService {
 					newStatus,
 				});
 
-				let savedCheck = check;
-				if (!check._id) {
-					try {
-						const checkModel = new Check(check);
-						savedCheck = await checkModel.save();
-					} catch (checkError) {
-						this.logger.error({
-							service: this.SERVICE_NAME,
-							method: "updateStatus",
-							message: `Failed to save check immediately: ${checkError.message}`,
-							monitorId: monitor._id,
-							stack: checkError.stack,
-						});
-					}
+				if (newStatus === false) {
+					await this.handleIncidentForCheck(check, monitor, "create", "status change to down");
+				} else if (prevStatus === false) {
+					await this.handleIncidentForCheck(check, monitor, "resolve", "status change to up");
 				}
+			}
 
+			if (monitor.status === false && !statusChanged) {
 				try {
-					if (newStatus === false) {
-						await this.incidentService.createIncident(monitor, savedCheck);
-					} else if (prevStatus === false) {
-						await this.incidentService.resolveIncident(monitor, savedCheck);
+					const lastManuallyResolvedIncident = await this.db.incidentModule.getLastManuallyResolvedIncident(monitor._id);
+
+					let calculatedFailureRate = failureRate;
+
+					if (lastManuallyResolvedIncident && lastManuallyResolvedIncident.endTime) {
+						try {
+							const checksAfterResolution = await Check.find({
+								monitorId: monitor._id,
+								createdAt: { $gt: lastManuallyResolvedIncident.endTime },
+							})
+								.sort({ createdAt: 1 })
+								.limit(monitor.statusWindowSize)
+								.select("status")
+								.lean();
+
+							if (checksAfterResolution.length > 0) {
+								const checksStatuses = checksAfterResolution.map((c) => c.status);
+								const failuresAfterResolution = checksStatuses.filter((s) => s === false).length;
+								calculatedFailureRate = (failuresAfterResolution / monitor.statusWindow.length) * 100;
+							} else {
+								calculatedFailureRate = 0;
+							}
+						} catch (checkQueryError) {
+							this.logger.error({
+								service: this.SERVICE_NAME,
+								method: "updateStatus",
+								message: `Failed to query checks after manual resolution: ${checkQueryError.message}`,
+								monitorId: monitor._id,
+								stack: checkQueryError.stack,
+							});
+						}
 					}
-				} catch (incidentError) {
+
+					if (calculatedFailureRate >= monitor.statusWindowThreshold) {
+						await this.handleIncidentForCheck(check, monitor, "create", "threshold check without status change");
+					}
+				} catch (error) {
 					this.logger.error({
 						service: this.SERVICE_NAME,
 						method: "updateStatus",
-						message: `Failed to handle incident: ${incidentError.message}`,
+						message: `Error handling threshold check without status change: ${error.message}`,
 						monitorId: monitor._id,
-						statusChanged,
-						prevStatus,
-						newStatus,
-						stack: incidentError.stack,
+						stack: error.stack,
 					});
 				}
 			}

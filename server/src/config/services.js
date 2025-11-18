@@ -157,8 +157,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		settingsService,
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
-	const bufferService = new BufferService({ db, logger, envSettings });
-	
 	const errorService = new ErrorService();
 
 	const incidentService = new IncidentService({
@@ -167,6 +165,8 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		errorService,
 		stringService,
 	});
+
+	const bufferService = new BufferService({ db, logger, envSettings, incidentService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService });
 

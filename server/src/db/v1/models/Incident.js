@@ -1,63 +1,67 @@
 import mongoose from "mongoose";
 
-const IncidentSchema = mongoose.Schema({
-    monitorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Monitor",
-        required: true,
-        immutable: true,
-        index: true
-    },
-    teamId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Team",
-        required: true,
-        immutable: true,
-        index: true
-    },
-    startTime: {
-        type: Date,
-        required: true,
-        immutable: true
-    },
-    endTime: {
-        type: Date,
-        default: null
-    },
-    status: {
-        type: String,
-        enum: ["active", "resolved"],
-        default: "active",
-        index: true
-    },
-    message: {
-        type: String,
-        default: null
-    },
-    statusCode: {
-        type: Number,
-        index: true,
-        default: null
-    },
-    resolutionType: {
-        type: String,
-        enum: ["automatic", "manual"],
-        default: null
-    },
-    resolvedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        default: null
-    },
-    comment: {
-        type: String,
-        default: null
-    },
-    checks: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Check"
-    }]
-}, { timestamps: true });
+const IncidentSchema = mongoose.Schema(
+	{
+		monitorId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Monitor",
+			required: true,
+			immutable: true,
+			index: true,
+		},
+		teamId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Team",
+			required: true,
+			immutable: true,
+			index: true,
+		},
+		startTime: {
+			type: Date,
+			required: true,
+			immutable: true,
+		},
+		endTime: {
+			type: Date,
+			default: null,
+		},
+		status: {
+			type: Boolean,
+			default: true,
+			index: true,
+		},
+		message: {
+			type: String,
+			default: null,
+		},
+		statusCode: {
+			type: Number,
+			index: true,
+			default: null,
+		},
+		resolutionType: {
+			type: String,
+			enum: ["automatic", "manual"],
+			default: null,
+		},
+		resolvedBy: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			default: null,
+		},
+		comment: {
+			type: String,
+			default: null,
+		},
+		checks: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Check",
+			},
+		],
+	},
+	{ timestamps: true }
+);
 
 IncidentSchema.index({ monitorId: 1, status: 1 });
 IncidentSchema.index({ teamId: 1, status: 1 });
