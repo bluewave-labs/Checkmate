@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import ApiError from "@/utils/ApiError.js";
-import { TeamMembership } from "@/db/models/index.js";
-import type { IRole } from "@/db/models/index.js";
+import { PERMISSIONS } from "@/services/business/AuthService.js";
 export const hasPermission = (
   permissions: string[],
   requiredPermissions: string[]
 ) => {
+  if (requiredPermissions.includes(PERMISSIONS.master)) {
+    return permissions.includes(PERMISSIONS.master);
+  }
+
   if (permissions.includes("*")) return true;
 
   const matches = (requiredPermission: string, userPermission: string) => {

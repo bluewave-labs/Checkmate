@@ -3,7 +3,9 @@ import { DiagnosticController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
+import { FeatureFlags } from "@/utils/FeatureFlags.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
+
 class DiagnosticRoutes {
   private router;
   private controller;
@@ -18,14 +20,14 @@ class DiagnosticRoutes {
       "/logs",
       verifyToken,
       addUserContext,
-      verifyOrgPermission([PERMISSIONS.diagnostic.read]),
+      verifyOrgPermission([PERMISSIONS.master]),
       this.controller.getLogs
     );
     this.router.get(
       "/jobs",
       verifyToken,
       addUserContext,
-      verifyOrgPermission([PERMISSIONS.diagnostic.read]),
+      verifyOrgPermission([PERMISSIONS.master]),
       this.controller.getJobs
     );
   };

@@ -22,10 +22,12 @@ export const SideBar = () => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const sideBarOpen = useAppSelector((state) => state.ui.sidebarOpen);
+  const user = useAppSelector((state) => state.auth.user);
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const menu = getMenu(t);
+  const menu = getMenu(t, user);
   const bottomMenu = getBottomMenu(t);
   const dispatch = useAppDispatch();
   useEffect(() => {

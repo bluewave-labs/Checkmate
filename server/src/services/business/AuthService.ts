@@ -24,13 +24,13 @@ import { hashPassword } from "@/utils/JWTUtils.js";
 const SERVICE_NAME = "AuthService";
 
 export const PERMISSIONS = {
+  master: "master",
   users: {
     all: "users.*",
     write: "users.write",
     read: "users.read",
     delete: "users.delete",
   },
-
   monitors: {
     all: "monitors.*",
     write: "monitors.write",

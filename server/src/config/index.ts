@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
+import type { DeploymentMode } from "@/utils/FeatureFlags.js";
 
 export interface IEnvConfig {
   NODE_ENV: string;
+  DEPLOYMENT_MODE: DeploymentMode;
   LOG_LEVEL: string;
   ORIGIN: string;
   JWT_SECRET: string;
@@ -17,6 +19,8 @@ dotenv.config();
 
 export const config: IEnvConfig = {
   NODE_ENV: process.env.NODE_ENV || "development",
+  DEPLOYMENT_MODE: (process.env.DEPLOYMENT_MODE ||
+    "self_hosted") as DeploymentMode,
   LOG_LEVEL: process.env.LOG_LEVEL || "info",
   ORIGIN: process.env.ORIGIN || "http://localhost:5173",
   JWT_SECRET: process.env.JWT_SECRET || "your_jwt_secret",

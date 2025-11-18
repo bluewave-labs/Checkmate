@@ -10,35 +10,63 @@ import {
   LifeBuoy,
   MessageSquare,
   FileText,
-  ScrollText
+  ScrollText,
 } from "lucide-react";
+import type { IUser } from "@/types/user";
 
-export const getMenu = (t: Function) => [
-  { name: t("menu.uptime"), path: "uptime", icon: <Monitor size={20} strokeWidth={1.5} /> },
-  { name: t("menu.pagespeed"), path: "pagespeed", icon: <Gauge size={20} strokeWidth={1.5} /> },
+export const getMenu = (t: Function, user: IUser) => {
+  const userOrgPermissions = user?.org?.permissions || [];
+  const hasDiagnostics = userOrgPermissions.includes("master");
 
-  {
-    name: t("menu.infrastructure"),
-    path: "infrastructure",
-    icon: <Server size={20} strokeWidth={1.5} />,
-  },
-  {
-    name: t("menu.notifications"),
-    path: "notification-channels",
-    icon: <Bell size={20} strokeWidth={1.5} />,
-  },
-  { name: t("menu.incidents"), path: "incidents", icon: <AlertTriangle size={20} strokeWidth={1.5} /> },
+  return [
+    {
+      name: t("menu.uptime"),
+      path: "uptime",
+      icon: <Monitor size={20} strokeWidth={1.5} />,
+    },
+    {
+      name: t("menu.pagespeed"),
+      path: "pagespeed",
+      icon: <Gauge size={20} strokeWidth={1.5} />,
+    },
 
-  { name: t("menu.statusPages"), path: "status-pages", icon: <LayoutList size={20} strokeWidth={1.5} /> },
-  { name: t("menu.maintenance"), path: "maintenance", icon: <Wrench size={20} strokeWidth={1.5} /> },
-  { name: t("menu.diagnostics"), path: "diagnostics", icon: <Activity size={20} strokeWidth={1.5} /> },
+    {
+      name: t("menu.infrastructure"),
+      path: "infrastructure",
+      icon: <Server size={20} strokeWidth={1.5} />,
+    },
+    {
+      name: t("menu.notifications"),
+      path: "notification-channels",
+      icon: <Bell size={20} strokeWidth={1.5} />,
+    },
+    {
+      name: t("menu.incidents"),
+      path: "incidents",
+      icon: <AlertTriangle size={20} strokeWidth={1.5} />,
+    },
 
-  // {
-  // 	name: t("menu.settings"),
-  // 	icon: <Settings />,
-  // 	path: "settings",
-  // },
-];
+    {
+      name: t("menu.statusPages"),
+      path: "status-pages",
+      icon: <LayoutList size={20} strokeWidth={1.5} />,
+    },
+    {
+      name: t("menu.maintenance"),
+      path: "maintenance",
+      icon: <Wrench size={20} strokeWidth={1.5} />,
+    },
+    ...(hasDiagnostics
+      ? [
+          {
+            name: t("menu.diagnostics"),
+            path: "diagnostics",
+            icon: <Activity size={20} strokeWidth={1.5} />,
+          },
+        ]
+      : []),
+  ];
+};
 
 export const getBottomMenu = (t: Function) => [
   {
