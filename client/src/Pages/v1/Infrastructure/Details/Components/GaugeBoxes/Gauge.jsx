@@ -6,7 +6,7 @@ import { Stack, Typography, Box } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
-const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => {
+const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo, metricThree, valueThree }) => {
 	const theme = useTheme();
 
 	const valueStyle = {
@@ -18,6 +18,8 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 		pr: theme.spacing(2),
 		textAlign: "right",
 	};
+
+	const isThirdMetric = metricThree !== undefined && valueThree !== undefined;
 
 	return (
 		<BaseContainer>
@@ -69,6 +71,15 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 					>
 						<Typography>{metricTwo}</Typography>
 						<Typography sx={valueStyle}>{valueTwo}</Typography>
+					</Stack>
+					<Stack
+						justifyContent={"space-between"}
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+					>
+						<Typography>{metricThree}</Typography>
+						<Typography sx={valueStyle}>{valueThree}</Typography>
 					</Stack>
 				</Box>
 			</Stack>
