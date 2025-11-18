@@ -18,6 +18,7 @@ const memorySchema = mongoose.Schema({
 
 const diskSchema = mongoose.Schema({
 	device: { type: String, default: "" },
+	mountpoint: { type: String, default: "" },
 	read_speed_bytes: { type: Number, default: 0 },
 	write_speed_bytes: { type: Number, default: 0 },
 	total_bytes: { type: Number, default: 0 },
