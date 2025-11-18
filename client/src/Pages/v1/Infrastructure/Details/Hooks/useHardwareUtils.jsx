@@ -128,6 +128,14 @@ const useHardwareUtils = () => {
 		);
 	};
 
+	const formatMountpoint = (mountpoint) => {
+		return (
+			<>
+				{String(mountpoint)}
+			</>
+		)
+	}
+
 	/**
 	 * Converts a decimal value to a percentage
 	 *
@@ -187,6 +195,7 @@ const useHardwareUtils = () => {
 	return {
 		formatBytes,
 		formatDeviceName,
+		formatMountpoint,
 		decimalToPercentage,
 		buildTemps,
 		getDimensions,
