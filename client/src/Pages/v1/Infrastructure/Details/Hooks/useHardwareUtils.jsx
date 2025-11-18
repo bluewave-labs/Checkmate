@@ -120,6 +120,14 @@ const useHardwareUtils = () => {
 		}
 	};
 
+	const formatDeviceName = (device) => {
+		return (
+			<>
+				{String(device)}
+			</>
+		);
+	};
+
 	/**
 	 * Converts a decimal value to a percentage
 	 *
@@ -178,6 +186,7 @@ const useHardwareUtils = () => {
 
 	return {
 		formatBytes,
+		formatDeviceName,
 		decimalToPercentage,
 		buildTemps,
 		getDimensions,
