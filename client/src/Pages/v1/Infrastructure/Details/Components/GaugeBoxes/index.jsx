@@ -80,6 +80,8 @@ const Gauges = ({ isLoading = false, monitor }) => {
 						valueTwo={gauge.valueTwo}
 						metricThree={gauge.metricThree}
 						valueThree={gauge.valueThree}
+						metricFour={gauge.metricFour}
+						valueFour={gauge.valueFour}
 					/>
 				);
 			})}
