@@ -58,7 +58,7 @@ const Gauges = ({ isLoading = false, monitor }) => {
 			metricThree: t("device"),
 			valueThree: formatDeviceName(disk.device),
 			metricFour: t("mountpoint"),
-			valueFour: formatMountPoint(disk.mountpoint),
+			valueFour: formatMountpoint(disk.mountpoint),
 		})),
 	];
 
