@@ -5,7 +5,7 @@ import {
   PausedStatusBox,
   InfoBox,
 } from "@/components/design-elements";
-import { HeaderCreate } from "@/components/monitors";
+import { HeaderCreate, HeaderFilter } from "@/components/monitors";
 import Stack from "@mui/material/Stack";
 import { Dialog } from "@/components/inputs";
 import { MonitorTable } from "@/pages/uptime/MonitorTable";
@@ -14,7 +14,14 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
-import type { IMonitor, IMonitorWithStats } from "@/types/monitor";
+import {
+  type IMonitor,
+  type IMonitorWithStats,
+  type MonitorStatus,
+  type UptimeMonitorType,
+  UptimeMonitorTypes,
+  MonitorStatuses,
+} from "@/types/monitor";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
@@ -29,12 +36,45 @@ const UptimeMonitors = () => {
   const isDialogOpen = Boolean(selectedMonitor);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedTypes, setSelectedTypes] = useState<UptimeMonitorType[]>([
+    "http",
+    "https",
+    "ping",
+  ]);
+  const [selectedStatuses, setSelectedStatuses] = useState<MonitorStatus[]>([
+    "up",
+    "down",
+    "paused",
+    "initializing",
+  ]);
 
   const { deleteFn } = useDelete();
+
+  const typeFilter =
+    selectedTypes.length > 0 ? selectedTypes : UptimeMonitorTypes;
+  const typeQuery = typeFilter
+    .map((type: UptimeMonitorType) => `type=${encodeURIComponent(type)}`)
+    .join("&");
+
+  const statusFilter =
+    selectedStatuses.length > 0 ? selectedStatuses : MonitorStatuses;
+  const statusQuery = statusFilter
+    .map((status) => `status=${encodeURIComponent(status)}`)
+    .join("&");
+
+  const requestParams = [
+    "embedChecks=true",
+    typeQuery,
+    statusQuery,
+    `page=${page}`,
+    `rowsPerPage=${rowsPerPage}`,
+  ].filter(Boolean);
+  const monitorRequestUrl = `/monitors?${requestParams.join("&")}`;
+
   const { response, loading, isValidating, error, refetch } = useGet<
     ApiResponse<IMonitorWithStats>
   >(
-    `/monitors?embedChecks=true&type=http&type=https&type=ping&page=${page}&rowsPerPage=${rowsPerPage}`,
+    monitorRequestUrl,
     {},
     {
       refreshInterval: GLOBAL_REFRESH,
@@ -62,11 +102,21 @@ const UptimeMonitors = () => {
     setSelectedMonitor(null);
   };
 
+  const hasActiveFilters =
+    selectedTypes.length > 0 || selectedStatuses.length > 0;
+  const showFallback = monitors.length === 0 && !hasActiveFilters;
+
+  const monitorItems = showFallback
+    ? []
+    : monitors.length > 0
+      ? monitors
+      : [{}];
+
   return (
     <MonitorBasePageWithStates
       loading={isValidating}
       error={error}
-      items={monitors}
+      items={monitorItems}
       page="uptime"
       actionLink="/uptime/create"
     >
@@ -80,6 +130,12 @@ const UptimeMonitors = () => {
         <DownStatusBox n={downCount} />
         <PausedStatusBox n={pausedCount} />
       </Stack>
+      <HeaderFilter
+        selectedTypes={selectedTypes}
+        selectedStatuses={selectedStatuses}
+        onTypesChange={setSelectedTypes}
+        onStatusesChange={setSelectedStatuses}
+      />
       <MonitorTable
         monitors={monitors}
         refetch={refetch}

@@ -128,6 +128,13 @@ export const monitorAllEmbedChecksQuerySchema = z.object({
       if (!val) return [];
       return Array.isArray(val) ? val : [val];
     }),
+  status: z
+    .union([z.string().optional(), z.string().optional().array()])
+    .optional()
+    .transform((val) => {
+      if (!val) return [];
+      return Array.isArray(val) ? val : [val];
+    }),
   page: z
     .string()
     .optional()

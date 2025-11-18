@@ -10,7 +10,11 @@ interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
   required?: boolean;
 }
 
-export const SelectInput = <T,>({ fieldLabel, required, ...props }: SelectInputProps<T>) => {
+export const SelectInput = <T,>({
+  fieldLabel,
+  required,
+  ...props
+}: SelectInputProps<T>) => {
   const theme = useTheme();
 
   const select = (

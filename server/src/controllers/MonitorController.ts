@@ -79,12 +79,14 @@ class MonitorController {
         const page = req.validatedQuery.page || 0;
         const rowsPerPage = req.validatedQuery.rowsPerPage || 10;
         const type = req.validatedQuery.type;
+        const status = req.validatedQuery.status;
 
         result = await this.monitorService.getAllEmbedChecks(
           teamId,
           page,
           rowsPerPage,
-          type
+          type,
+          status
         );
       } else {
         result = await this.monitorService.getAll(teamId);

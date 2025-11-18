@@ -6,6 +6,58 @@ import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
 import { MonitorWithChecksResponse } from "@/types/index.js";
 import { MonitorStatus, MonitorType } from "@/db/models/monitors/Monitor.js";
 
+const buildStatusCriteria = (
+  statuses: MonitorStatus[]
+): Record<string, unknown> => {
+  if (!Array.isArray(statuses) || statuses.length === 0) {
+    return {};
+  }
+
+  const uniqueStatuses = Array.from(new Set(statuses)) as MonitorStatus[];
+  const includesPaused = uniqueStatuses.includes("paused");
+  const activeStatuses = uniqueStatuses.filter((status) => status !== "paused");
+
+  if (includesPaused && activeStatuses.length > 0) {
+    return {
+      $or: [
+        { status: { $in: activeStatuses }, isActive: true },
+        { isActive: false },
+      ],
+    };
+  }
+
+  if (includesPaused) {
+    return { isActive: false };
+  }
+
+  return {
+    status: { $in: uniqueStatuses },
+    isActive: true,
+  };
+};
+
+const buildMatchConditions = (
+  teamIdValue: mongoose.Types.ObjectId | string,
+  types: MonitorType[],
+  statusCriteria: Record<string, unknown>
+): Record<string, unknown> => {
+  const conditions: Record<string, unknown> = { teamId: teamIdValue };
+
+  if (Array.isArray(types) && types.length > 0) {
+    conditions.type = { $in: types };
+  }
+
+  if (statusCriteria && Object.keys(statusCriteria).length > 0) {
+    if ("$or" in statusCriteria) {
+      conditions.$or = (statusCriteria as { $or: unknown }).$or;
+    } else {
+      Object.assign(conditions, statusCriteria);
+    }
+  }
+
+  return conditions;
+};
+
 const SERVICE_NAME = "MonitorService";
 
 export interface IMonitorService {
@@ -20,7 +72,8 @@ export interface IMonitorService {
     teamId: string,
     page: number,
     limit: number,
-    type: MonitorType[]
+    type: MonitorType[],
+    status: MonitorStatus[]
   ) => Promise<{
     count: number;
     upCount: number;
@@ -88,14 +141,20 @@ class MonitorService implements IMonitorService {
     teamId: string,
     page: number,
     rowsPerPage: number,
-    type: MonitorType[] = []
+    type: MonitorType[] = [],
+    status: MonitorStatus[] = []
   ) => {
+    const teamObjectId = new mongoose.Types.ObjectId(teamId);
+    const statusCriteria = buildStatusCriteria(status);
+    const matchConditions = buildMatchConditions(
+      teamObjectId,
+      type,
+      statusCriteria
+    );
+
     const countResult = await Monitor.aggregate([
       {
-        $match: {
-          teamId: new mongoose.Types.ObjectId(teamId),
-          type: { $in: type },
-        },
+        $match: matchConditions,
       },
       {
         $group: {
@@ -118,11 +177,13 @@ class MonitorService implements IMonitorService {
     };
 
     const skip = page * rowsPerPage;
-    let find = {};
-    if (type.length > 0) find = { type: { $in: type } };
-    find = { ...find, teamId };
+    const findConditions = buildMatchConditions(
+      teamObjectId,
+      type,
+      statusCriteria
+    );
 
-    const monitors = await Monitor.find(find)
+    const monitors = await Monitor.find(findConditions)
       .lean()
       .skip(skip)
       .limit(rowsPerPage);

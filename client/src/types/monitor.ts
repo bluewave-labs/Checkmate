@@ -1,7 +1,26 @@
 import type { GroupedCheck, ICheck } from "@/types/check";
 import type { IMonitorStats } from "./monitorStats";
 
-export type MonitorStatus = "up" | "down" | "initializing";
+export const MonitorTypes = [
+  "http",
+  "https",
+  "ping",
+  "infrastructure",
+  "pagespeed",
+] as const;
+export type MonitorType = (typeof MonitorTypes)[number];
+
+export const UptimeMonitorTypes = ["http", "https", "ping"] as const;
+export type UptimeMonitorType = (typeof UptimeMonitorTypes)[number];
+
+export const MonitorStatuses = [
+  "up",
+  "down",
+  "paused",
+  "initializing",
+] as const;
+
+export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export interface IMonitor {
   checks: ICheck[];

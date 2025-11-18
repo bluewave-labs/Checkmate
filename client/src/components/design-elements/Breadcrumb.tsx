@@ -1,6 +1,6 @@
 import MuiBreadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { ChevronRight, Home } from "lucide-react";
 
