@@ -69,14 +69,14 @@ export const HeaderControls = ({
               refetch();
             }}
             startIcon={
-              monitor?.isActive ? (
+              monitor.status === "paused" ? (
                 <Pause size={20} strokeWidth={1.5} />
               ) : (
                 <Play size={20} strokeWidth={1.5} />
               )
             }
           >
-            {monitor?.isActive ? t("pause") : t("resume")}
+            {monitor?.status === "paused" ? t("resume") : t("pause")}
           </Button>
           <Button
             startIcon={<Settings size={20} strokeWidth={1.5} />}

@@ -6,6 +6,7 @@ export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
   const paletteMap: Record<MonitorStatus, PaletteKey> = {
     up: "success",
     down: "error",
+    paused: "warning",
     initializing: "warning",
   };
   return paletteMap[status];

@@ -59,7 +59,7 @@ export const DiagnosticsQueueTab = () => {
         id: "active",
         content: t("diagnosticsPage.tableHeaderActive"),
         render: (row) => {
-          return row?.data?.isActive ? "true" : "false";
+          return row?.active === true ? "true" : "false";
         },
       },
 

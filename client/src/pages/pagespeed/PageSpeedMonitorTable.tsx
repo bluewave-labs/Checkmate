@@ -99,7 +99,7 @@ export const PageSpeedMonitorTable = ({
       // },
       {
         id: 6,
-        label: monitor.isActive ? "Pause" : "Resume",
+        label: monitor.status === "paused" ? "Resume" : "Pause",
         action: async () => {
           await patch(`/monitors/${monitor._id}/active`);
           refetch();
@@ -130,7 +130,7 @@ export const PageSpeedMonitorTable = ({
         id: "status",
         content: t("status"),
         render: (row) => {
-          return <StatusLabel status={row.status} isActive={row.isActive} />;
+          return <StatusLabel status={row.status} />;
         },
       },
       {

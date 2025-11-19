@@ -98,7 +98,7 @@ export const InfraMonitorsTable = ({
       // },
       {
         id: 6,
-        label: monitor.isActive ? "Pause" : "Resume",
+        label: monitor.status === "paused" ? "Resume" : "Pause",
         action: async () => {
           await patch(`/monitors/${monitor._id}/active`);
           refetch();
@@ -129,7 +129,7 @@ export const InfraMonitorsTable = ({
         id: "status",
         content: t("status"),
         render: (row) => {
-          return <StatusLabel status={row.status} isActive={row.isActive} />;
+          return <StatusLabel status={row.status} />;
         },
       },
       {
@@ -154,11 +154,11 @@ export const InfraMonitorsTable = ({
         id: "disk",
         content: t("disk"),
         render: (row) => {
-          const totalDiskUsage = row.latestChecks?.[0]?.system?.disk.reduce(
+          const totalDiskUsage = row.latestChecks?.[0]?.system?.disk?.reduce(
             (acc, disk) => acc + disk.usage_percent,
             0
           );
-          const diskCount = row.latestChecks?.[0]?.system?.disk.length || 1;
+          const diskCount = row.latestChecks?.[0]?.system?.disk?.length || 1;
           const diskUsage = ((totalDiskUsage || 0) / diskCount) * 100;
           return <Gauge progress={diskUsage} />;
         },

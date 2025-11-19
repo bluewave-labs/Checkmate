@@ -27,7 +27,6 @@ export interface IMonitor {
   createdAt: string;
   createdBy: string;
   interval: number;
-  isActive: boolean;
   latestChecks: ICheck[];
   n: number;
   name: string;

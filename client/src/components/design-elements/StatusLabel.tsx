@@ -8,13 +8,7 @@ import { useTheme } from "@mui/material/styles";
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
 export type ValueType = (typeof ValueTypes)[number];
 
-export const StatusLabel = ({
-  status,
-  isActive,
-}: {
-  status: MonitorStatus;
-  isActive?: boolean;
-}) => {
+export const StatusLabel = ({ status }: { status: MonitorStatus }) => {
   const theme = useTheme();
   const palette = getStatusPalette(status);
   const transformedText =
@@ -42,7 +36,7 @@ export const StatusLabel = ({
         borderRadius="50%"
         marginRight="5px"
       />
-      {isActive === false ? "Paused" : transformedText}
+      {transformedText}
     </BaseBox>
   );
 };
