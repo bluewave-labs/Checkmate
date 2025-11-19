@@ -212,8 +212,8 @@ class EmailService {
 				message: "Email HTML content is empty, using fallback text",
 				service: SERVICE_NAME,
 				method: "sendEmail",
-				to: this.redactEmail(to),
-				subject: this.redactSubject(subject),
+				to: to,
+				subject: subject,
 			});
 			html = "<p>Email content unavailable</p>";
 		}
