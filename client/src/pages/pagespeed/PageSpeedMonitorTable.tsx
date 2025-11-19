@@ -76,7 +76,7 @@ export const PageSpeedMonitorTable = ({
       setSortOrder(newOrder);
     } else {
       setSortField(field);
-      setSortOrder("desc");
+      setSortOrder("asc");
     }
     refetch();
   };

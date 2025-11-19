@@ -74,7 +74,7 @@ export const MonitorTable = ({
       setSortOrder(newOrder);
     } else {
       setSortField(field);
-      setSortOrder("desc");
+      setSortOrder("asc");
     }
     refetch();
   };
@@ -139,13 +139,15 @@ export const MonitorTable = ({
 
   const getHeaders = () => {
     const renderSortIcon = (isActive: boolean) => (
-      <ArrowUp
-        size={16}
-        style={{
-          visibility: isActive ? "visible" : "hidden",
-          transform: sortOrder === "asc" ? "none" : "rotate(180deg)",
-        }}
-      />
+      <Box width={16} display="inline-flex" justifyContent="center">
+        {isActive ? (
+          sortOrder === "asc" ? (
+            <ArrowUp size={16} />
+          ) : (
+            <ArrowDown size={16} />
+          )
+        ) : null}
+      </Box>
     );
     const headers: Header<IMonitor>[] = [
       {

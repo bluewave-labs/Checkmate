@@ -75,7 +75,7 @@ export const InfraMonitorsTable = ({
       setSortOrder(newOrder);
     } else {
       setSortField(field);
-      setSortOrder("desc");
+      setSortOrder("asc");
     }
     refetch();
   };
