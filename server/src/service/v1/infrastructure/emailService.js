@@ -78,7 +78,7 @@ class EmailService {
 				}
 
 				if (!templateContent) {
-					throw new Error(`Template file not found in any of: ${possiblePaths.map(p => p.replace(__dirname, '.')).join(', ')}`);
+					throw new Error(`Template file not found in any of: ${possiblePaths.map((p) => p.replace(__dirname, ".")).join(", ")}`);
 				}
 
 				this.logger.debug({
@@ -143,7 +143,7 @@ class EmailService {
 				});
 				throw new Error(`Template '${template}' not found`);
 			}
-			if (typeof this.templateLookup[template] !== 'function') {
+			if (typeof this.templateLookup[template] !== "function") {
 				this.logger.error({
 					message: `Template '${template}' is not a function. Type: ${typeof this.templateLookup[template]}`,
 					service: SERVICE_NAME,
@@ -212,8 +212,8 @@ class EmailService {
 				message: "Email HTML content is empty, using fallback text",
 				service: SERVICE_NAME,
 				method: "sendEmail",
-				to: to,
-				subject: subject,
+				to: this.redactEmail(to),
+				subject: this.redactSubject(subject),
 			});
 			html = "<p>Email content unavailable</p>";
 		}
@@ -240,7 +240,7 @@ class EmailService {
 
 		// Validate from address
 		const fromAddress = systemEmailAddress || systemEmailUser;
-		if (!fromAddress || !fromAddress.includes('@')) {
+		if (!fromAddress || !fromAddress.includes("@")) {
 			this.logger.error({
 				message: "Invalid from email address",
 				service: SERVICE_NAME,
@@ -262,23 +262,24 @@ class EmailService {
 			connectionTimeout: 5000,
 		};
 
-		// Add top-level TLS options (must be outside tls object)
-		if (systemEmailIgnoreTLS !== undefined) {
-			emailConfig.ignoreTLS = systemEmailIgnoreTLS;
-		}
-		if (systemEmailRequireTLS !== undefined) {
-			emailConfig.requireTLS = systemEmailRequireTLS;
-		}
-
 		// Conditionally add TLS settings only if secure is enabled
 		if (systemEmailSecure) {
+			// Add top-level TLS options
+			if (systemEmailIgnoreTLS !== undefined) {
+				emailConfig.ignoreTLS = systemEmailIgnoreTLS;
+			}
+			if (systemEmailRequireTLS !== undefined) {
+				emailConfig.requireTLS = systemEmailRequireTLS;
+			}
+
 			const tlsSettings = {};
 
 			// Only add TLS settings that are explicitly configured
+			// (rejectUnauthorized and servername go INSIDE the tls object)
 			if (systemEmailRejectUnauthorized !== undefined) {
 				tlsSettings.rejectUnauthorized = systemEmailRejectUnauthorized;
 			}
-			if (systemEmailTLSServername !== undefined && systemEmailTLSServername !== null && systemEmailTLSServername !== '') {
+			if (systemEmailTLSServername !== undefined && systemEmailTLSServername !== null && systemEmailTLSServername !== "") {
 				tlsSettings.servername = systemEmailTLSServername;
 			}
 
