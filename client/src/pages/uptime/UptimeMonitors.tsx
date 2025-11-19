@@ -34,6 +34,8 @@ const UptimeMonitors = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedMonitor, setSelectedMonitor] = useState<IMonitor | null>(null);
   const isDialogOpen = Boolean(selectedMonitor);
+  const [sortField, setSortField] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedTypes, setSelectedTypes] = useState<UptimeMonitorType[]>([
@@ -66,6 +68,8 @@ const UptimeMonitors = () => {
     "embedChecks=true",
     typeQuery,
     statusQuery,
+    `sortField=${sortField}`,
+    `sortOrder=${sortOrder}`,
     `page=${page}`,
     `rowsPerPage=${rowsPerPage}`,
   ].filter(Boolean);
@@ -140,6 +144,10 @@ const UptimeMonitors = () => {
         monitors={monitors}
         refetch={refetch}
         setSelectedMonitor={setSelectedMonitor}
+        sortField={sortField}
+        setSortField={setSortField}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
         count={count}
         page={page}
         setPage={setPage}

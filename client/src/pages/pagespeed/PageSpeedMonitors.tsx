@@ -27,13 +27,26 @@ const PageSpeedMonitorsPage = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedMonitor, setSelectedMonitor] = useState<IMonitor | null>(null);
   const isDialogOpen = Boolean(selectedMonitor);
+  const [sortField, setSortField] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { deleteFn } = useDelete();
+  const requestParams = [
+    "embedChecks=true",
+    "type=pagespeed",
+    `sortField=${sortField}`,
+    `sortOrder=${sortOrder}`,
+    `page=${page}`,
+    `rowsPerPage=${rowsPerPage}`,
+  ];
+
+  const monitorRequestUrl = `/monitors?${requestParams.join("&")}`;
+
   const { response, loading, isValidating, error, refetch } = useGet<
     ApiResponse<IMonitorWithStats>
   >(
-    `/monitors?embedChecks=true&type=pagespeed&page=${page}&rowsPerPage=${rowsPerPage}`,
+    monitorRequestUrl,
     {},
     {
       refreshInterval: GLOBAL_REFRESH,
@@ -82,6 +95,10 @@ const PageSpeedMonitorsPage = () => {
         monitors={monitors}
         refetch={refetch}
         setSelectedMonitor={setSelectedMonitor}
+        sortField={sortField}
+        setSortField={setSortField}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
         count={count}
         page={page}
         setPage={setPage}

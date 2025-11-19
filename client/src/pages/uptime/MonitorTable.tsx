@@ -5,6 +5,7 @@ import { Table, Pagination, StatusLabel } from "@/components/design-elements";
 import { HistogramResponseTime } from "@/components/monitors";
 import type { Header } from "@/components/design-elements/Table";
 import { ActionsMenu } from "@/components/actions-menu";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -18,6 +19,10 @@ export const MonitorTable = ({
   monitors,
   refetch,
   setSelectedMonitor,
+  sortField,
+  setSortField,
+  sortOrder,
+  setSortOrder,
   count,
   page,
   setPage,
@@ -27,6 +32,10 @@ export const MonitorTable = ({
   monitors: IMonitor[];
   refetch: Function;
   setSelectedMonitor: Function;
+  sortField: string;
+  setSortField: (field: string) => void;
+  sortOrder: "asc" | "desc";
+  setSortOrder: (order: "asc" | "desc") => void;
   count: number;
   page: number;
   setPage: (page: number) => void;
@@ -55,6 +64,19 @@ export const MonitorTable = ({
     const value = Number(e.target.value);
     setPage(0);
     setRowsPerPage(value);
+  };
+
+  const handleSort = (e: any, field: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (sortField === field) {
+      const newOrder = sortOrder === "asc" ? "desc" : "asc";
+      setSortOrder(newOrder);
+    } else {
+      setSortField(field);
+      setSortOrder("desc");
+    }
+    refetch();
   };
 
   const getActions = (monitor: IMonitor): ActionMenuItem[] => {
@@ -116,17 +138,50 @@ export const MonitorTable = ({
   };
 
   const getHeaders = () => {
+    const renderSortIcon = (isActive: boolean) => (
+      <ArrowUp
+        size={16}
+        style={{
+          visibility: isActive ? "visible" : "hidden",
+          transform: sortOrder === "asc" ? "none" : "rotate(180deg)",
+        }}
+      />
+    );
     const headers: Header<IMonitor>[] = [
       {
         id: "name",
-        content: t("host"),
+        content: (
+          <Stack
+            gap={theme.spacing(4)}
+            direction={"row"}
+            alignItems={"center"}
+            onClick={(e) => handleSort(e, "name")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("name")}
+            {renderSortIcon(sortField === "name")}
+          </Stack>
+        ),
+
         render: (row) => {
-          return row.name;
+          return row?.name;
         },
       },
       {
         id: "status",
-        content: t("status"),
+        content: (
+          <Stack
+            gap={theme.spacing(4)}
+            direction={"row"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            onClick={(e) => handleSort(e, "status")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("status")}
+            {renderSortIcon(sortField === "status")}
+          </Stack>
+        ),
         render: (row) => {
           return <StatusLabel status={row.status} />;
         },
@@ -144,7 +199,19 @@ export const MonitorTable = ({
       },
       {
         id: "type",
-        content: t("type"),
+        content: (
+          <Stack
+            gap={theme.spacing(4)}
+            direction={"row"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            onClick={(e) => handleSort(e, "type")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("type")}
+            {renderSortIcon(sortField === "type")}
+          </Stack>
+        ),
         render: (row) => {
           return row.type;
         },

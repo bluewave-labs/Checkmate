@@ -18,6 +18,8 @@ export interface IMonitorService {
   getAll: (teamId: string) => Promise<IMonitor[]>;
   getAllEmbedChecks: (
     teamId: string,
+    sortField: string,
+    sortOrder: string,
     page: number,
     limit: number,
     type: MonitorType[],
@@ -87,6 +89,8 @@ class MonitorService implements IMonitorService {
 
   getAllEmbedChecks = async (
     teamId: string,
+    sortField: string,
+    sortOrder: string,
     page: number,
     rowsPerPage: number,
     type: MonitorType[] = [],
@@ -134,7 +138,7 @@ class MonitorService implements IMonitorService {
 
     const monitors = await Monitor.find(matchConditions)
       .lean()
-      .sort({ name: 1 })
+      .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
       .skip(skip)
       .limit(rowsPerPage);
 
@@ -157,7 +161,11 @@ class MonitorService implements IMonitorService {
             latestChecks: { $push: "$$ROOT" },
           },
         },
-        { $project: { latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] } } },
+        {
+          $project: {
+            latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
+          },
+        },
       ]);
 
       const checksMap = new Map(
@@ -336,7 +344,14 @@ class MonitorService implements IMonitorService {
           temperature: {
             $map: {
               input: {
-                $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$tempsArrays", 0] }, []] } }],
+                $range: [
+                  0,
+                  {
+                    $size: {
+                      $ifNull: [{ $arrayElemAt: ["$tempsArrays", 0] }, []],
+                    },
+                  },
+                ],
               },
               as: "idx",
               in: {
@@ -362,7 +377,14 @@ class MonitorService implements IMonitorService {
         disk: {
           $map: {
             input: {
-              $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$disksArray", 0] }, []] } }],
+              $range: [
+                0,
+                {
+                  $size: {
+                    $ifNull: [{ $arrayElemAt: ["$disksArray", 0] }, []],
+                  },
+                },
+              ],
             },
             as: "idx",
             in: {
@@ -406,7 +428,12 @@ class MonitorService implements IMonitorService {
         net: {
           $map: {
             input: {
-              $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$netsArray", 0] }, []] } }],
+              $range: [
+                0,
+                {
+                  $size: { $ifNull: [{ $arrayElemAt: ["$netsArray", 0] }, []] },
+                },
+              ],
             },
             as: "idx",
             in: {

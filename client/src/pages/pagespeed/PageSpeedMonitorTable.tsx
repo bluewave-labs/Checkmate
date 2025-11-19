@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Table, Pagination, StatusLabel } from "@/components/design-elements";
 import { HistogramPageSpeed } from "@/components/monitors";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Header } from "@/components/design-elements/Table";
 import { ActionsMenu } from "@/components/actions-menu";
 
@@ -19,6 +20,10 @@ export const PageSpeedMonitorTable = ({
   monitors,
   refetch,
   setSelectedMonitor,
+  sortField,
+  setSortField,
+  sortOrder,
+  setSortOrder,
   count,
   page,
   setPage,
@@ -28,6 +33,10 @@ export const PageSpeedMonitorTable = ({
   monitors: IMonitor[];
   refetch: Function;
   setSelectedMonitor: Function;
+  sortField: string;
+  setSortField: (field: string) => void;
+  sortOrder: "asc" | "desc";
+  setSortOrder: (order: "asc" | "desc") => void;
   count: number;
   page: number;
   setPage: (page: number) => void;
@@ -57,6 +66,19 @@ export const PageSpeedMonitorTable = ({
     const value = Number(e.target.value);
     setPage(0);
     setRowsPerPage(value);
+  };
+
+  const handleSort = (e: any, field: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (sortField === field) {
+      const newOrder = sortOrder === "asc" ? "desc" : "asc";
+      setSortOrder(newOrder);
+    } else {
+      setSortField(field);
+      setSortOrder("desc");
+    }
+    refetch();
   };
 
   const getActions = (monitor: IMonitor): ActionMenuItem[] => {
@@ -118,17 +140,52 @@ export const PageSpeedMonitorTable = ({
   };
 
   const getHeaders = () => {
+    const renderSortIcon = (isActive: boolean) => (
+      <Box width={16} display="inline-flex" justifyContent="center">
+        {isActive ? (
+          sortOrder === "asc" ? (
+            <ArrowUp size={16} />
+          ) : (
+            <ArrowDown size={16} />
+          )
+        ) : null}
+      </Box>
+    );
+
     const headers: Header<IMonitor>[] = [
       {
         id: "name",
-        content: t("host"),
+        content: (
+          <Stack
+            gap={theme.spacing(4)}
+            direction={"row"}
+            alignItems={"center"}
+            onClick={(e) => handleSort(e, "name")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("host")}
+            {renderSortIcon(sortField === "name")}
+          </Stack>
+        ),
         render: (row) => {
           return row.name;
         },
       },
       {
         id: "status",
-        content: t("status"),
+        content: (
+          <Stack
+            gap={theme.spacing(4)}
+            direction={"row"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            onClick={(e) => handleSort(e, "status")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("status")}
+            {renderSortIcon(sortField === "status")}
+          </Stack>
+        ),
         render: (row) => {
           return <StatusLabel status={row.status} />;
         },

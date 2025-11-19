@@ -4,6 +4,7 @@ import { Table, Pagination, StatusLabel } from "@/components/design-elements";
 import type { Header } from "@/components/design-elements/Table";
 import { ActionsMenu } from "@/components/actions-menu";
 import { Gauge } from "@/components/design-elements";
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -18,6 +19,10 @@ export const InfraMonitorsTable = ({
   monitors,
   refetch,
   setSelectedMonitor,
+  sortField,
+  setSortField,
+  sortOrder,
+  setSortOrder,
   count,
   page,
   setPage,
@@ -27,6 +32,10 @@ export const InfraMonitorsTable = ({
   monitors: IMonitor[];
   refetch: Function;
   setSelectedMonitor: Function;
+  sortField: string;
+  setSortField: (field: string) => void;
+  sortOrder: "asc" | "desc";
+  setSortOrder: (order: "asc" | "desc") => void;
   count: number;
   page: number;
   setPage: (page: number) => void;
@@ -56,6 +65,19 @@ export const InfraMonitorsTable = ({
     const value = Number(e.target.value);
     setPage(0);
     setRowsPerPage(value);
+  };
+
+  const handleSort = (e: any, field: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (sortField === field) {
+      const newOrder = sortOrder === "asc" ? "desc" : "asc";
+      setSortOrder(newOrder);
+    } else {
+      setSortField(field);
+      setSortOrder("desc");
+    }
+    refetch();
   };
 
   const getActions = (monitor: IMonitor): ActionMenuItem[] => {
@@ -117,17 +139,50 @@ export const InfraMonitorsTable = ({
   };
 
   const getHeaders = () => {
+    const renderSortIcon = (isActive: boolean) => (
+      <Box width={16} display="inline-flex" justifyContent="center">
+        {isActive ? (
+          sortOrder === "asc" ? (
+            <ArrowUp size={16} />
+          ) : (
+            <ArrowDown size={16} />
+          )
+        ) : null}
+      </Box>
+    );
     const headers: Header<IMonitor>[] = [
       {
         id: "name",
-        content: t("host"),
+        content: (
+          <Typography
+            display="inline-flex"
+            alignItems="center"
+            gap={theme.spacing(4)}
+            onClick={(e) => handleSort(e, "name")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("host")}
+            {renderSortIcon(sortField === "name")}
+          </Typography>
+        ),
         render: (row) => {
           return row.name;
         },
       },
       {
         id: "status",
-        content: t("status"),
+        content: (
+          <Typography
+            display="inline-flex"
+            alignItems="center"
+            gap={theme.spacing(4)}
+            onClick={(e) => handleSort(e, "status")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("status")}
+            {renderSortIcon(sortField === "status")}
+          </Typography>
+        ),
         render: (row) => {
           return <StatusLabel status={row.status} />;
         },
