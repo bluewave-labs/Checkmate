@@ -283,12 +283,28 @@ const SettingsEmail = ({
 										},
 										name: systemEmailConnectionHost || "localhost",
 										pool: systemEmailPool,
-										tls: {
-											rejectUnauthorized: systemEmailRejectUnauthorized,
-											ignoreTLS: systemEmailIgnoreTLS,
-											requireTLS: systemEmailRequireTLS,
-											servername: systemEmailTLSServername,
-										},
+										...(systemEmailSecure !== undefined &&
+											systemEmailIgnoreTLS !== undefined && {
+												ignoreTLS: systemEmailIgnoreTLS,
+											}),
+										...(systemEmailSecure !== undefined &&
+											systemEmailRequireTLS !== undefined && {
+												requireTLS: systemEmailRequireTLS,
+											}),
+										...(systemEmailSecure &&
+											(systemEmailRejectUnauthorized !== undefined ||
+												(systemEmailTLSServername &&
+													systemEmailTLSServername !== "")) && {
+												tls: {
+													...(systemEmailRejectUnauthorized !== undefined && {
+														rejectUnauthorized: systemEmailRejectUnauthorized,
+													}),
+													...(systemEmailTLSServername &&
+														systemEmailTLSServername !== "" && {
+															servername: systemEmailTLSServername,
+														}),
+												},
+											}),
 									},
 									null,
 									2
