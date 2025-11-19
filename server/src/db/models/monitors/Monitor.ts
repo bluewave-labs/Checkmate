@@ -26,7 +26,6 @@ export interface IMonitor extends Document {
   secret?: string;
   type: MonitorType;
   interval: number; // in ms
-  isActive: boolean;
   status: MonitorStatus;
   n: number; // Number of consecutive successes required to change status
   lastCheckedAt?: Date;
@@ -55,7 +54,6 @@ const MonitorSchema = new Schema<IMonitor>(
       enum: MonitorTypes,
     },
     interval: { type: Number, required: true, default: 60000 },
-    isActive: { type: Boolean, required: true, default: true },
     status: {
       type: String,
       required: true,
@@ -123,11 +121,9 @@ MonitorSchema.pre(
   }
 );
 
-MonitorSchema.index({ isActive: 1 });
 MonitorSchema.index({ status: 1 });
 MonitorSchema.index({ type: 1 });
 MonitorSchema.index({ lastCheckedAt: 1 });
-MonitorSchema.index({ isActive: 1, status: 1 });
 MonitorSchema.index({ createdBy: 1 });
 MonitorSchema.index({ updatedBy: 1 });
 

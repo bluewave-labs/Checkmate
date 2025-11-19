@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import ApiError from "@/utils/ApiError.js";
-import { MonitorType } from "@/db/models/monitors/Monitor.js";
 import {
   MonitorService,
   CheckService,
@@ -11,7 +10,7 @@ export interface IMonitorController {
   create(req: Request, res: Response, next: NextFunction): Promise<void>;
   getAll(req: Request, res: Response, next: NextFunction): Promise<void>;
   getChecks(req: Request, res: Response, next: NextFunction): Promise<void>;
-  toggleActive(req: Request, res: Response, next: NextFunction): Promise<void>;
+  togglePause(req: Request, res: Response, next: NextFunction): Promise<void>;
   get(req: Request, res: Response, next: NextFunction): Promise<void>;
   update(req: Request, res: Response, next: NextFunction): Promise<void>;
   delete(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -140,7 +139,7 @@ class MonitorController {
     }
   };
 
-  toggleActive = async (req: Request, res: Response, next: NextFunction) => {
+  togglePause = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userContext = req.user;
       if (!userContext) {
@@ -156,13 +155,13 @@ class MonitorController {
         throw new ApiError("Monitor ID is required", 400);
       }
 
-      const monitor = await this.monitorService.toggleActive(
+      const monitor = await this.monitorService.togglePause(
         userContext.sub,
         teamId,
         monitorId
       );
 
-      const paused = monitor.isActive ? "resumed" : "paused";
+      const paused = monitor.status === "paused" ? "paused" : "resumed";
 
       res.status(200).json({
         message: `Monitor ${paused} successfully`,

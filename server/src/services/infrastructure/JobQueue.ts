@@ -111,7 +111,7 @@ export default class JobQueue implements IJobQueue {
         id: monitor._id.toString(),
         template: "monitor-job",
         repeat: monitor.interval,
-        active: monitor.isActive,
+        active: monitor.status !== "paused",
         data: monitor,
       });
     } catch (error) {

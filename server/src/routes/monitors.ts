@@ -66,7 +66,7 @@ class MonitorRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.monitors.write]),
-      this.controller.toggleActive
+      this.controller.togglePause
     );
 
     this.router.get(

@@ -36,7 +36,7 @@ export interface IMonitorService {
     range: string,
     status?: string
   ) => Promise<MonitorWithChecksResponse>;
-  toggleActive: (
+  togglePause: (
     userId: string,
     teamId: string,
     monitorId: string
@@ -103,23 +103,7 @@ class MonitorService implements IMonitorService {
     }
 
     if (Array.isArray(status) && status.length > 0) {
-      const uniqueStatuses = Array.from(new Set(status)) as MonitorStatus[];
-      const includesPaused = uniqueStatuses.includes("paused");
-      const activeStatuses = uniqueStatuses.filter(
-        (currentStatus) => currentStatus !== "paused"
-      );
-
-      if (includesPaused && activeStatuses.length > 0) {
-        matchConditions.$or = [
-          { status: { $in: activeStatuses }, isActive: true },
-          { isActive: false },
-        ];
-      } else if (includesPaused) {
-        matchConditions.isActive = false;
-      } else {
-        matchConditions.status = { $in: uniqueStatuses };
-        matchConditions.isActive = true;
-      }
+      matchConditions.status = { $in: status };
     }
 
     const countResult = await Monitor.aggregate([
@@ -133,7 +117,7 @@ class MonitorService implements IMonitorService {
           upCount: { $sum: { $cond: [{ $eq: ["$status", "up"] }, 1, 0] } },
           downCount: { $sum: { $cond: [{ $eq: ["$status", "down"] }, 1, 0] } },
           pausedCount: {
-            $sum: { $cond: [{ $eq: ["$isActive", false] }, 1, 0] },
+            $sum: { $cond: [{ $eq: ["$status", "paused"] }, 1, 0] },
           },
         },
       },
@@ -150,6 +134,7 @@ class MonitorService implements IMonitorService {
 
     const monitors = await Monitor.find(matchConditions)
       .lean()
+      .sort({ name: 1 })
       .skip(skip)
       .limit(rowsPerPage);
 
@@ -172,7 +157,7 @@ class MonitorService implements IMonitorService {
             latestChecks: { $push: "$$ROOT" },
           },
         },
-        { $project: { latestChecks: { $slice: ["$latestChecks", 25] } } },
+        { $project: { latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] } } },
       ]);
 
       const checksMap = new Map(
@@ -351,13 +336,13 @@ class MonitorService implements IMonitorService {
           temperature: {
             $map: {
               input: {
-                $range: [0, { $size: { $arrayElemAt: ["$tempsArrays", 0] } }],
+                $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$tempsArrays", 0] }, []] } }],
               },
               as: "idx",
               in: {
                 $avg: {
                   $map: {
-                    input: "$tempsArrays",
+                    input: { $ifNull: ["$tempsArrays", []] },
                     as: "arr",
                     in: { $arrayElemAt: ["$$arr", "$$idx"] },
                   },
@@ -377,7 +362,7 @@ class MonitorService implements IMonitorService {
         disk: {
           $map: {
             input: {
-              $range: [0, { $size: { $arrayElemAt: ["$disksArray", 0] } }],
+              $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$disksArray", 0] }, []] } }],
             },
             as: "idx",
             in: {
@@ -385,7 +370,7 @@ class MonitorService implements IMonitorService {
                 vars: {
                   diskGroup: {
                     $map: {
-                      input: "$disksArray",
+                      input: { $ifNull: ["$disksArray", []] },
                       as: "diskArr",
                       in: { $arrayElemAt: ["$$diskArr", "$$idx"] },
                     },
@@ -421,7 +406,7 @@ class MonitorService implements IMonitorService {
         net: {
           $map: {
             input: {
-              $range: [0, { $size: { $arrayElemAt: ["$netsArray", 0] } }],
+              $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$netsArray", 0] }, []] } }],
             },
             as: "idx",
             in: {
@@ -429,7 +414,7 @@ class MonitorService implements IMonitorService {
                 vars: {
                   netGroup: {
                     $map: {
-                      input: "$netsArray",
+                      input: { $ifNull: ["$netsArray", []] },
                       as: "netArr",
                       in: { $arrayElemAt: ["$$netArr", "$$idx"] },
                     },
@@ -540,15 +525,19 @@ class MonitorService implements IMonitorService {
     };
   };
 
-  async toggleActive(userId: string, teamId: string, id: string) {
-    const pendingStatus: MonitorStatus = "initializing";
+  async togglePause(userId: string, teamId: string, id: string) {
     const updatedMonitor = await Monitor.findOneAndUpdate(
       { _id: id, teamId },
       [
         {
           $set: {
-            isActive: { $not: "$isActive" },
-            status: pendingStatus,
+            status: {
+              $cond: {
+                if: { $eq: ["$status", "paused"] },
+                then: "initializing",
+                else: "paused",
+              },
+            },
             updatedBy: userId,
             updatedAt: new Date(),
           },
@@ -563,7 +552,7 @@ class MonitorService implements IMonitorService {
 
     await this.jobQueue.updateJob(updatedMonitor);
 
-    if (updatedMonitor?.isActive) {
+    if (updatedMonitor?.status !== "paused") {
       await this.jobQueue.resumeJob(updatedMonitor);
     } else {
       await this.jobQueue.pauseJob(updatedMonitor);
@@ -581,7 +570,6 @@ class MonitorService implements IMonitorService {
       "name",
       "secret",
       "interval",
-      "isActive",
       "n",
       "notificationChannels",
     ];
