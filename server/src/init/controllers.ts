@@ -14,6 +14,7 @@ import {
   RecoveryController,
   ProfileController,
   IncidentsController,
+  SettingsController,
 } from "@/controllers/index.js";
 
 export const initControllers = (services: any) => {
@@ -63,6 +64,10 @@ export const initControllers = (services: any) => {
     services.incidentService,
     services.notificationService,
     services.monitorService
+  );
+
+  controllers.settingsController = new SettingsController(
+    services.settingsService
   );
 
   return controllers;

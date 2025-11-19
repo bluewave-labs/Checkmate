@@ -56,3 +56,6 @@ export type { IRecoveryToken } from "./recovery/RecoveryToken.js";
 
 export { Incident, ResolutionTypes } from "./incidents/Incident.js";
 export type { IIncident, ResolutionType } from "./incidents/Incident.js";
+
+export { SystemSettings } from "./system/SystemSettings.js";
+export type { ISystemSettings } from "./system/SystemSettings.js";

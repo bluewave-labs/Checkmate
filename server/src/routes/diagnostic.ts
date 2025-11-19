@@ -3,7 +3,6 @@ import { DiagnosticController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
-import { FeatureFlags } from "@/utils/FeatureFlags.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 
 class DiagnosticRoutes {

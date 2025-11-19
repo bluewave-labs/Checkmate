@@ -15,3 +15,4 @@ export { default as DiagnosticRoutes } from "./diagnostic.js";
 export { default as RecoveryRoutes } from "./recovery.js";
 export { default as ProfileRoutes } from "./profile.js";
 export { default as IncidentsRoutes } from "./incidents.js";
+export { default as SettingsRoutes } from "./settings.js";

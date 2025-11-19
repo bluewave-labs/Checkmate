@@ -27,6 +27,7 @@ import {
   DiagnosticService,
   RecoveryService,
   IncidentService,
+  SettingsService,
 } from "@/services/index.js";
 
 export const initServices = async () => {
@@ -63,6 +64,8 @@ export const initServices = async () => {
   const statusPageService = new StatusPageService();
   const diagnosticService = new DiagnosticService(jobQueue);
   const recoveryService = new RecoveryService();
+  const settingsService = new SettingsService();
+
   const services = {
     checkService,
     inviteService,
@@ -89,6 +92,7 @@ export const initServices = async () => {
     diagnosticService,
     recoveryService,
     incidentService,
+    settingsService,
   };
 
   Object.values(services).forEach((service) => {

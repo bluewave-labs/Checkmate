@@ -532,3 +532,46 @@ export const getIncidentsQuerySchema = z.object({
 export const patchIncidentsBodySchema = z.object({
   resolutionNote: z.string().max(200).optional(),
 });
+
+export const systemSettingsSchema = z
+  .object({
+    systemEmailHost: z.string().trim().min(1).max(255).optional(),
+    systemEmailPort: z
+      .union([z.number().int(), z.string().regex(/^\d+$/)])
+      .optional()
+      .transform((val) => (typeof val === "string" ? Number(val) : val))
+      .refine(
+        (val) =>
+          val === undefined ||
+          (Number.isInteger(val) && val > 0 && val < 65536),
+        {
+          message: "Port must be between 1 and 65535",
+        }
+      ),
+    systemEmailAddress: z.email().optional(),
+    systemEmailPassword: z.string().optional(),
+    systemEmailUser: z.string().trim().max(255).optional(),
+    systemEmailConnectionHost: z.string().trim().max(255).optional(),
+    systemEmailTLSServername: z.string().trim().max(255).optional(),
+    systemEmailSecure: z
+      .union([z.boolean(), z.string()])
+      .optional()
+      .transform((val) => (typeof val === "string" ? val === "true" : val)),
+    systemEmailPool: z
+      .union([z.boolean(), z.string()])
+      .optional()
+      .transform((val) => (typeof val === "string" ? val === "true" : val)),
+    systemEmailIgnoreTLS: z
+      .union([z.boolean(), z.string()])
+      .optional()
+      .transform((val) => (typeof val === "string" ? val === "true" : val)),
+    systemEmailRequireTLS: z
+      .union([z.boolean(), z.string()])
+      .optional()
+      .transform((val) => (typeof val === "string" ? val === "true" : val)),
+    systemEmailRejectUnauthorized: z
+      .union([z.boolean(), z.string()])
+      .optional()
+      .transform((val) => (typeof val === "string" ? val === "true" : val)),
+  })
+  .strip();
