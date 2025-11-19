@@ -2,6 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import Dot from "../Dot/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 /**
  * Host component.
  * This subcomponent receives a params object and displays the host details.
@@ -14,7 +15,7 @@ import Dot from "../Dot/index.jsx";
  * @param {number} params.percentage - The percentage to display.
  * @returns {React.ElementType} Returns a div element with the host details.
  */
-const Host = ({ url, title, percentageColor, percentage, showURL }) => {
+const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 	const theme = useTheme();
 	return (
 		<Stack>
@@ -22,21 +23,36 @@ const Host = ({ url, title, percentageColor, percentage, showURL }) => {
 				direction="row"
 				position="relative"
 				alignItems="center"
-				gap={theme.spacing(4)}
+				gap={theme.spacing(5)}
 			>
-				{title}
+				<Typography
+					variant="h6"
+					sx={{
+						fontWeight: 600,
+					}}
+				>
+					{title}
+				</Typography>
+
 				{percentageColor && percentage && (
 					<>
 						<Dot />
 						<Typography
-							component="span"
+							variant="h6"
 							sx={{
+								fontWeight: 600,
 								color: percentageColor,
-								fontWeight: 500,
 							}}
 						>
 							{percentage}%
 						</Typography>
+						{status && (
+							<StatusLabel
+								status={status}
+								text={status}
+								customStyles={{ textTransform: "capitalize" }}
+							/>
+						)}
 					</>
 				)}
 			</Stack>
@@ -51,6 +67,7 @@ Host.propTypes = {
 	percentage: PropTypes.string,
 	url: PropTypes.string,
 	showURL: PropTypes.bool,
+	status: PropTypes.string,
 };
 
 export default Host;
