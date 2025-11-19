@@ -67,7 +67,8 @@ export const initControllers = (services: any) => {
   );
 
   controllers.settingsController = new SettingsController(
-    services.settingsService
+    services.settingsService,
+    services.notificationService
   );
 
   return controllers;

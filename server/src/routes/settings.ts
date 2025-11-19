@@ -34,6 +34,14 @@ class SettingsRoutes {
       validateBody(systemSettingsSchema),
       this.controller.update
     );
+    this.router.post(
+      "/test-transport",
+      verifyToken,
+      addUserContext,
+      verifyTeamPermission([PERMISSIONS.master]),
+      validateBody(systemSettingsSchema),
+      this.controller.testTransport
+    );
   };
 
   getRouter() {

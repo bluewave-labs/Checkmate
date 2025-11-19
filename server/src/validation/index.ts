@@ -537,24 +537,45 @@ export const patchIncidentsBodySchema = z.object({
 
 export const systemSettingsSchema = z
   .object({
-    systemEmailHost: z.string().trim().min(1).max(255).optional(),
-    systemEmailPort: z
-      .union([z.number().int(), z.string().regex(/^\d+$/)])
-      .optional()
-      .transform((val) => (typeof val === "string" ? Number(val) : val))
-      .refine(
-        (val) =>
-          val === undefined ||
-          (Number.isInteger(val) && val > 0 && val < 65536),
-        {
-          message: "Port must be between 1 and 65535",
-        }
-      ),
-    systemEmailAddress: z.email().optional(),
-    systemEmailPassword: z.string().optional(),
-    systemEmailUser: z.string().trim().max(255).optional(),
-    systemEmailConnectionHost: z.string().trim().max(255).optional(),
-    systemEmailTLSServername: z.string().trim().max(255).optional(),
+    systemEmailHost: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z.string().trim().min(1).max(255).optional()
+    ),
+    systemEmailPort: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z
+        .union([z.number().int(), z.string().regex(/^\d+$/)])
+        .transform((port) => (typeof port === "string" ? Number(port) : port))
+        .refine(
+          (port) =>
+            port === undefined ||
+            (Number.isInteger(port) && port > 0 && port < 65536),
+          {
+            message: "Port must be between 1 and 65535",
+          }
+        )
+        .optional()
+    ),
+    systemEmailAddress: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z.string().email().optional()
+    ),
+    systemEmailPassword: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z.string().trim().max(255).optional()
+    ),
+    systemEmailUser: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z.string().trim().max(255).optional()
+    ),
+    systemEmailConnectionHost: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z.string().trim().max(255).optional()
+    ),
+    systemEmailTLSServername: z.preprocess(
+      (val) => (val === "" || val === null ? undefined : val),
+      z.string().trim().max(255).optional()
+    ),
     systemEmailSecure: z
       .union([z.boolean(), z.string()])
       .optional()

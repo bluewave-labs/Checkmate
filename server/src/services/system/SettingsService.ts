@@ -15,11 +15,17 @@ class SettingsService implements ISettingsService {
   }
 
   get = async (): Promise<ISystemSettings> => {
-    let settings = await SystemSettings.findById("global");
+    let settings = await SystemSettings.findById("global").select(
+      "-_id -__v -createdAt -updatedAt"
+    );
 
     if (!settings) {
-      settings = await SystemSettings.create({ _id: "global" });
+      await SystemSettings.create({ _id: "global" });
     }
+
+    settings = await SystemSettings.findById("global").select(
+      "-_id -__v -createdAt -updatedAt"
+    );
 
     if (!settings) {
       throw new ApiError("Unable to load system settings", 500);

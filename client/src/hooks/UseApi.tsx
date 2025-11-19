@@ -70,7 +70,7 @@ export const usePost = <B = any, R = any>() => {
   const currentTeamId = useAppSelector((state) => state.auth.selectedTeamId);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { toastError } = useToast();
+  const { toastError, toastSuccess } = useToast();
 
   const postFn = async (
     endpoint: string,
@@ -88,10 +88,13 @@ export const usePost = <B = any, R = any>() => {
           "x-team-id": currentTeamId,
         },
       });
+      toastSuccess(res.data?.message || "Operation successful");
+
       return res.data;
     } catch (err: any) {
       const errMsg =
-        err?.response?.data?.msg || err.message || "An error occurred";
+        err?.response?.data?.message || err.message || "An error occurred";
+      console.error(err);
       toastError(errMsg);
       setError(errMsg);
       return null;
@@ -128,8 +131,9 @@ export const usePatch = <B = any, R = any>() => {
       toastSuccess(res.data?.message || "Operation successful");
       return res.data;
     } catch (err: any) {
+      console.error(err);
       const errMsg =
-        err?.response?.data?.msg || err.message || "An error occurred";
+        err?.response?.data?.message || err.message || "An error occurred";
       toastError(errMsg);
       setError(errMsg);
       return null;
@@ -165,8 +169,9 @@ export const useDelete = <R = any,>() => {
       toastSuccess(res.data?.message || "Operation successful");
       return res.data;
     } catch (err: any) {
+      console.error(err);
       const errMsg =
-        err?.response?.data?.msg || err.message || "An error occurred";
+        err?.response?.data?.message || err.message || "An error occurred";
       toastError(errMsg);
       setError(errMsg);
       return null;

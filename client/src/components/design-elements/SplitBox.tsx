@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -46,21 +45,25 @@ export const SplitBox = ({
 export const ConfigBox = ({
   title,
   subtitle,
+  leftContent,
   rightContent,
 }: {
   title: string;
   subtitle: string;
+  leftContent?: React.ReactNode;
   rightContent: React.ReactNode;
 }) => {
+  const theme = useTheme();
   return (
     <SplitBox
       left={
-        <Fragment>
+        <Stack spacing={theme.spacing(4)}>
           <Typography textTransform={"capitalize"} component="h2" variant="h2">
             {title}
           </Typography>
           <Typography component="p">{subtitle}</Typography>
-        </Fragment>
+          {leftContent}
+        </Stack>
       }
       right={rightContent}
     />

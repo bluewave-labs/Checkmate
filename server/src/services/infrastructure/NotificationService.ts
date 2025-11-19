@@ -14,6 +14,7 @@ import {
 } from "./NotificationServices/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
+import type { IEmailTransport } from "./NotificationServices/Email.js";
 
 const SERVICE_NAME = "NotificationService";
 const logger = getChildLogger(SERVICE_NAME);
@@ -36,6 +37,7 @@ export interface INotificationService {
   testNotificationChannel: (
     notificationChannel: INotificationChannel
   ) => Promise<Boolean>;
+  testTransport: (transport: IEmailTransport) => Promise<boolean>;
 }
 
 class NotificationService implements INotificationService {
@@ -180,6 +182,10 @@ class NotificationService implements INotificationService {
       return true;
     }
     return false;
+  };
+
+  testEmailTransport = async (transport: IEmailTransport) => {
+    return this.emailService.testTransport(transport);
   };
 }
 

@@ -8,8 +8,24 @@ import nodemailer, { Transporter } from "nodemailer";
 import { config } from "@/config/index.js";
 import UserService from "../../business/UserService.js";
 import ApiError from "@/utils/ApiError.js";
-
+import { getChildLogger } from "@/logger/Logger.js";
 const SERVICE_NAME = "EmailService";
+const logger = getChildLogger(SERVICE_NAME);
+
+export interface IEmailTransport {
+  systemEmailHost?: string;
+  systemEmailPort?: number;
+  systemEmailAddress?: string;
+  systemEmailPassword?: string;
+  systemEmailUser?: string;
+  systemEmailConnectionHost?: string;
+  systemEmailTLSServername?: string;
+  systemEmailSecure: boolean;
+  systemEmailPool: boolean;
+  systemEmailIgnoreTLS: boolean;
+  systemEmailRequireTLS: boolean;
+  systemEmailRejectUnauthorized: boolean;
+}
 
 export interface IEmailService extends IMessageService {
   sendGeneric: (
@@ -17,6 +33,7 @@ export interface IEmailService extends IMessageService {
     subject: string,
     content: string
   ) => Promise<boolean>;
+  testTransport: (transport: IEmailTransport) => Promise<boolean>;
 }
 
 class EmailService implements IEmailService {
@@ -106,6 +123,51 @@ class EmailService implements IEmailService {
       return true;
     } catch (error) {
       throw error;
+    }
+  };
+
+  testTransport = async (transport: IEmailTransport) => {
+    const host = (transport.systemEmailHost ?? "").trim();
+    const baseOptions = {
+      port: Number(transport.systemEmailPort),
+      secure: transport.systemEmailSecure,
+      auth: {
+        user: transport.systemEmailUser || transport.systemEmailAddress,
+        pass: transport.systemEmailPassword,
+      },
+      name: transport.systemEmailConnectionHost || undefined,
+      connectionTimeout: 5000,
+      tls: {
+        rejectUnauthorized: transport.systemEmailRejectUnauthorized,
+        ignoreTLS: transport.systemEmailIgnoreTLS,
+        requireTLS: transport.systemEmailRequireTLS,
+        servername: transport.systemEmailTLSServername,
+      },
+    };
+
+    const transportOptions = transport.systemEmailPool
+      ? {
+          ...baseOptions,
+          pool: true,
+          host,
+        }
+      : {
+          ...baseOptions,
+          host: host || undefined,
+        };
+
+    const testTransport = nodemailer.createTransport(transportOptions);
+    try {
+      await testTransport.sendMail({
+        from: `"Checkmate Test" <${transport.systemEmailAddress}>`,
+        to: transport.systemEmailUser || transport.systemEmailAddress,
+        subject: "SMTP transport test",
+        text: "This is a transport verification message.",
+      });
+      return true;
+    } catch (error: any) {
+      logger.error(error);
+      throw new ApiError(`Email transport test failed`, 400);
     }
   };
 }
