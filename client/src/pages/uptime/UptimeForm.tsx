@@ -202,7 +202,9 @@ export const UptimeForm = ({
               <TextInput
                 {...field}
                 type="number"
-                fieldLabel={t("createMonitorPage.incidentConfigStatusCheckNumber")}
+                fieldLabel={t(
+                  "createMonitorPage.incidentConfigStatusCheckNumber"
+                )}
                 fullWidth
                 error={!!errors.n}
                 helperText={errors.n ? errors.n.message : ""}
@@ -227,7 +229,7 @@ export const UptimeForm = ({
               render={({ field }) => (
                 <AutoComplete
                   multiple
-                  fieldLabel={`You have ${notificationOptions.length} available notification ${notificationOptions.length === 1 ? 'channel' : 'channels'}`}
+                  fieldLabel={`You have ${notificationOptions.length} available notification ${notificationOptions.length === 1 ? "channel" : "channels"}`}
                   options={notificationOptions}
                   getOptionLabel={(option) => option.name}
                   value={notificationOptions.filter((o: any) =>

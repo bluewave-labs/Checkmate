@@ -9,14 +9,18 @@ export const useInitForm = ({
 }) => {
   return useMemo(() => {
     const defaults: z.infer<typeof systemSettingsSchema> = {
-      systemEmailHost: initialData?.systemEmailHost || "",
-      systemEmailPort: initialData?.systemEmailPort ?? undefined,
-      systemEmailAddress: initialData?.systemEmailAddress || "",
-      systemEmailPassword: initialData?.systemEmailPassword || "",
-      systemEmailUser: initialData?.systemEmailUser || "",
+      systemEmailHost: initialData?.systemEmailHost ?? "",
+      systemEmailPort:
+        initialData?.systemEmailPort !== undefined &&
+        initialData?.systemEmailPort !== null
+          ? String(initialData.systemEmailPort)
+          : "",
+      systemEmailAddress: initialData?.systemEmailAddress ?? "",
+      systemEmailPassword: initialData?.systemEmailPassword ?? "",
+      systemEmailUser: initialData?.systemEmailUser ?? "",
       systemEmailConnectionHost:
-        initialData?.systemEmailConnectionHost || "localhost",
-      systemEmailTLSServername: initialData?.systemEmailTLSServername || "",
+        initialData?.systemEmailConnectionHost ?? "localhost",
+      systemEmailTLSServername: initialData?.systemEmailTLSServername ?? "",
       systemEmailSecure: initialData?.systemEmailSecure ?? false,
       systemEmailPool: initialData?.systemEmailPool ?? false,
       systemEmailIgnoreTLS: initialData?.systemEmailIgnoreTLS ?? false,

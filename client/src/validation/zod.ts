@@ -83,7 +83,8 @@ const durationSchemaInfra = z
 
 const optionalString = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess(
-    (val) => (val === "" || val === null ? undefined : val),
+    (val) =>
+      val === "" || val === null || val === undefined ? undefined : val,
     schema.optional()
   );
 

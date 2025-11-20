@@ -40,8 +40,7 @@ const SettingsPage = () => {
   const initialSettings = useMemo(() => settings, [settings]);
 
   const onSubmit = async (data: Partial<FormValues>) => {
-    const res = await patch("/settings", data);
-    console.log(res?.data);
+    const res = await patch("/settings/email", data);
   };
 
   const onTest = async (data: Partial<FormValues>) => {

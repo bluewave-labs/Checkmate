@@ -64,6 +64,7 @@ export const NotificationChannelsForm = ({
     const isValid = await trigger();
     if (isValid) {
       const res = await post("/notification-channels/test", getValues());
+
       if (res) {
         toastSuccess("Success");
       }
@@ -130,12 +131,12 @@ export const NotificationChannelsForm = ({
           type === "email"
             ? "Configure the email address where notifications will be sent"
             : type === "webhook"
-            ? "Configure the webhook URL endpoint where notifications will be sent"
-            : type === "slack"
-            ? "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks"
-            : type === "discord"
-            ? "Configure your Discord webhook URL. Create one in Discord: Server Settings → Integrations → Webhooks → New Webhook"
-            : "Configure notification channel settings"
+              ? "Configure the webhook URL endpoint where notifications will be sent"
+              : type === "slack"
+                ? "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks"
+                : type === "discord"
+                  ? "Configure your Discord webhook URL. Create one in Discord: Server Settings → Integrations → Webhooks → New Webhook"
+                  : "Configure notification channel settings"
         }
         rightContent={
           type === "email" ? (
