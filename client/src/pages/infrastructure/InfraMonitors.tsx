@@ -31,7 +31,7 @@ const PageSpeedMonitorsPage = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { deleteFn } = useDelete();
+  const { deleteFn, loading: isDeleting } = useDelete();
   const requestParams = [
     "embedChecks=true",
     "type=infrastructure",
@@ -111,6 +111,7 @@ const PageSpeedMonitorsPage = () => {
         content={t("deleteDialogDescription")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </MonitorBasePageWithStates>
   );

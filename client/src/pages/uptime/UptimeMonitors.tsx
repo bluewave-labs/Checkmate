@@ -38,19 +38,10 @@ const UptimeMonitors = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedTypes, setSelectedTypes] = useState<UptimeMonitorType[]>([
-    "http",
-    "https",
-    "ping",
-  ]);
-  const [selectedStatuses, setSelectedStatuses] = useState<MonitorStatus[]>([
-    "up",
-    "down",
-    "paused",
-    "initializing",
-  ]);
+  const [selectedTypes, setSelectedTypes] = useState<UptimeMonitorType[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<MonitorStatus[]>([]);
 
-  const { deleteFn } = useDelete();
+  const { deleteFn, loading: isDeleting } = useDelete();
 
   const typeFilter =
     selectedTypes.length > 0 ? selectedTypes : UptimeMonitorTypes;
@@ -160,6 +151,7 @@ const UptimeMonitors = () => {
         content={t("deleteDialogDescription")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </MonitorBasePageWithStates>
   );

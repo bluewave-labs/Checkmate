@@ -14,6 +14,7 @@ export const DialogInput = ({
   onCancel,
   confirmColor = "accent",
   cancelColor = "error",
+  loading = false,
 }: {
   open: boolean;
   title?: string;
@@ -22,6 +23,7 @@ export const DialogInput = ({
   onCancel?(item: any): any;
   confirmColor?: "error" | "accent";
   cancelColor?: "error" | "accent";
+  loading?: boolean;
 }) => {
   return (
     <Dialog open={open}>
@@ -30,10 +32,20 @@ export const DialogInput = ({
         <DialogContentText>{content}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color={cancelColor} onClick={onCancel}>
+        <Button
+          loading={loading}
+          variant="contained"
+          color={cancelColor}
+          onClick={onCancel}
+        >
           Cancel
         </Button>
-        <Button variant="contained" color={confirmColor} onClick={onConfirm}>
+        <Button
+          loading={loading}
+          variant="contained"
+          color={confirmColor}
+          onClick={onConfirm}
+        >
           Confirm
         </Button>
       </DialogActions>
