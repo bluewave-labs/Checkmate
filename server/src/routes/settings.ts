@@ -27,12 +27,12 @@ class SettingsRoutes {
     );
 
     this.router.patch(
-      "/",
+      "/email",
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.master]),
       validateBody(systemSettingsSchema),
-      this.controller.update
+      this.controller.updateEmailSettings
     );
     this.router.post(
       "/test-transport",

@@ -8,7 +8,9 @@ import nodemailer, { Transporter } from "nodemailer";
 import { config } from "@/config/index.js";
 import UserService from "../../business/UserService.js";
 import ApiError from "@/utils/ApiError.js";
+import { SettingsService } from "@/services/index.js";
 import { getChildLogger } from "@/logger/Logger.js";
+import { transport } from "winston";
 const SERVICE_NAME = "EmailService";
 const logger = getChildLogger(SERVICE_NAME);
 
@@ -34,17 +36,74 @@ export interface IEmailService extends IMessageService {
     content: string
   ) => Promise<boolean>;
   testTransport: (transport: IEmailTransport) => Promise<boolean>;
+  rebuildTransport: (transport: IEmailTransport) => Promise<boolean>;
 }
 
 class EmailService implements IEmailService {
   public SERVICE_NAME = SERVICE_NAME;
-  private transporter: Transporter;
+  private transporter: Transporter | null;
   private userService: UserService;
+  private settingsService: SettingsService;
+  private from: string | null;
 
-  constructor(userService: UserService) {
+  constructor(userService: UserService, settingsService: SettingsService) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.userService = userService;
-    this.transporter = nodemailer.createTransport({
+    this.settingsService = settingsService;
+    this.transporter = null;
+    this.from = null;
+  }
+
+  private hasEnvConfig = () => {
+    return (
+      config.SMTP_HOST !== "not_set" ||
+      config.SMTP_PORT !== -1 ||
+      config.SMTP_USER !== "not_set" ||
+      config.SMTP_PASS !== "not_set"
+    );
+  };
+
+  private buildSystemSettingsTransport = async (transport: IEmailTransport) => {
+    const host = (transport.systemEmailHost ?? "").trim();
+    const port =
+      transport.systemEmailPort !== undefined &&
+      transport.systemEmailPort !== null
+        ? Number(transport.systemEmailPort)
+        : undefined;
+    const baseOptions = {
+      port,
+      secure: transport.systemEmailSecure,
+      auth: {
+        user: transport.systemEmailUser || transport.systemEmailAddress,
+        pass: transport.systemEmailPassword,
+      },
+      name: transport.systemEmailConnectionHost || undefined,
+      connectionTimeout: 5000,
+      tls: {
+        rejectUnauthorized: transport.systemEmailRejectUnauthorized,
+        ignoreTLS: transport.systemEmailIgnoreTLS,
+        requireTLS: transport.systemEmailRequireTLS,
+        servername: transport.systemEmailTLSServername,
+      },
+    };
+
+    const transportOptions = transport.systemEmailPool
+      ? {
+          ...baseOptions,
+          pool: true,
+          host,
+        }
+      : {
+          ...baseOptions,
+          host: host || undefined,
+        };
+    this.from = transport.systemEmailAddress || null;
+    return nodemailer.createTransport(transportOptions);
+  };
+
+  private buildEnvTransport = () => {
+    this.from = config.SMTP_USER || null;
+    return nodemailer.createTransport({
       host: config.SMTP_HOST,
       port: config.SMTP_PORT,
       secure: config.SMTP_PORT === 465,
@@ -53,7 +112,16 @@ class EmailService implements IEmailService {
         pass: config.SMTP_PASS,
       },
     });
-  }
+  };
+
+  private buildTransport = async () => {
+    if (this.hasEnvConfig()) {
+      return this.buildEnvTransport();
+    } else {
+      const systemSettings = await this.settingsService.get();
+      return this.buildSystemSettingsTransport(systemSettings);
+    }
+  };
 
   buildAlert = (monitor: IMonitor, incident: IIncident) => {
     const name = monitor?.name || "Unnamed monitor";
@@ -83,20 +151,26 @@ class EmailService implements IEmailService {
         throw new ApiError("No user emails found", 500);
       }
 
-      await this.transporter.sendMail({
-        from: `"Checkmate" <${config.SMTP_USER}>`,
+      if (this.transporter === null) {
+        this.transporter = await this.buildTransport();
+      }
+
+      const res = await this.transporter.sendMail({
+        from: `"Checkmate" <${this.from}>`,
         to: emails,
         subject: "Monitor Alert",
         text: JSON.stringify(alert, null, 2),
       });
+
       return true;
     } catch (error) {
+      logger.error(error);
       return false;
     }
   };
 
   testMessage = async (channel: INotificationChannel) => {
-    return this.sendMessage(
+    return await this.sendMessage(
       {
         name: "This is a test",
         url: "Test URL",
@@ -114,8 +188,12 @@ class EmailService implements IEmailService {
 
   sendGeneric = async (to: string, subject: string, content: string) => {
     try {
+      if (this.transporter === null) {
+        this.transporter = await this.buildTransport();
+      }
+
       await this.transporter.sendMail({
-        from: `"Checkmate" <${config.SMTP_USER}>`,
+        from: `"Checkmate" <${this.from}>`,
         to: to,
         subject: subject,
         text: content,
@@ -127,36 +205,13 @@ class EmailService implements IEmailService {
   };
 
   testTransport = async (transport: IEmailTransport) => {
-    const host = (transport.systemEmailHost ?? "").trim();
-    const baseOptions = {
-      port: Number(transport.systemEmailPort),
-      secure: transport.systemEmailSecure,
-      auth: {
-        user: transport.systemEmailUser || transport.systemEmailAddress,
-        pass: transport.systemEmailPassword,
-      },
-      name: transport.systemEmailConnectionHost || undefined,
-      connectionTimeout: 5000,
-      tls: {
-        rejectUnauthorized: transport.systemEmailRejectUnauthorized,
-        ignoreTLS: transport.systemEmailIgnoreTLS,
-        requireTLS: transport.systemEmailRequireTLS,
-        servername: transport.systemEmailTLSServername,
-      },
-    };
-
-    const transportOptions = transport.systemEmailPool
-      ? {
-          ...baseOptions,
-          pool: true,
-          host,
-        }
-      : {
-          ...baseOptions,
-          host: host || undefined,
-        };
-
-    const testTransport = nodemailer.createTransport(transportOptions);
+    if (this.hasEnvConfig()) {
+      throw new ApiError(
+        "Cannot test transport when environment SMTP settings are set",
+        400
+      );
+    }
+    const testTransport = await this.buildSystemSettingsTransport(transport);
     try {
       await testTransport.sendMail({
         from: `"Checkmate Test" <${transport.systemEmailAddress}>`,
@@ -169,6 +224,12 @@ class EmailService implements IEmailService {
       logger.error(error);
       throw new ApiError(`Email transport test failed`, 400);
     }
+  };
+
+  rebuildTransport = async (transport: IEmailTransport) => {
+    this.transporter = await this.buildSystemSettingsTransport(transport);
+    this.from = transport.systemEmailAddress || null;
+    return true;
   };
 }
 

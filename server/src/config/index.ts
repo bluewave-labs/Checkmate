@@ -26,8 +26,8 @@ export const config: IEnvConfig = {
   JWT_SECRET: process.env.JWT_SECRET || "your_jwt_secret",
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   PAGESPEED_API_KEY: process.env.PAGESPEED_API_KEY || "",
-  SMTP_HOST: process.env.SMTP_HOST || "smtp.example.com",
-  SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587,
-  SMTP_USER: process.env.SMTP_USER || "user@example.com",
-  SMTP_PASS: process.env.SMTP_PASS || "your_smtp_password",
+  SMTP_HOST: process.env.SMTP_HOST || "not_set",
+  SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : -1,
+  SMTP_USER: process.env.SMTP_USER || "not_set",
+  SMTP_PASS: process.env.SMTP_PASS || "not_set",
 };

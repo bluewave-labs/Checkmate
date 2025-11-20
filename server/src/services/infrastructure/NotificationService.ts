@@ -12,6 +12,7 @@ import {
   DiscordService,
   WebhookService,
 } from "./NotificationServices/index.js";
+import SettingsService from "@/services/system/SettingsService.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import type { IEmailTransport } from "./NotificationServices/Email.js";
@@ -37,7 +38,7 @@ export interface INotificationService {
   testNotificationChannel: (
     notificationChannel: INotificationChannel
   ) => Promise<Boolean>;
-  testTransport: (transport: IEmailTransport) => Promise<boolean>;
+  testEmailTransport: (transport: IEmailTransport) => Promise<boolean>;
 }
 
 class NotificationService implements INotificationService {
@@ -48,10 +49,10 @@ class NotificationService implements INotificationService {
   private webhookService: WebhookService;
   private userService: UserService;
 
-  constructor(userService: UserService) {
+  constructor(userService: UserService, settingsService: SettingsService) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.userService = userService;
-    this.emailService = new EmailService(userService);
+    this.emailService = new EmailService(userService, settingsService);
     this.slackService = new SlackService();
     this.discordService = new DiscordService();
     this.webhookService = new WebhookService();
@@ -111,6 +112,7 @@ class NotificationService implements INotificationService {
       case "email":
         const sentEmail = await this.emailService.testMessage(channel);
         results.push({
+          channelId: channel._id,
           channelName: channel.name,
           channelType: channel.type,
           channelUrl: channel.config?.emailAddress || "N/A",
@@ -120,6 +122,7 @@ class NotificationService implements INotificationService {
       case "slack":
         const sentSlack = await this.slackService.testMessage(channel);
         results.push({
+          channelId: channel._id,
           channelName: channel.name,
           channelType: channel.type,
           channelUrl: channel.config?.url || "N/A",
@@ -129,6 +132,7 @@ class NotificationService implements INotificationService {
       case "discord":
         const sentDiscord = await this.discordService.testMessage(channel);
         results.push({
+          channelId: channel._id,
           channelName: channel.name,
           channelType: channel.type,
           channelUrl: channel.config?.url || "N/A",
@@ -138,6 +142,7 @@ class NotificationService implements INotificationService {
       case "webhook":
         const sentWebhook = await this.webhookService.testMessage(channel);
         results.push({
+          channelId: channel._id,
           channelName: channel.name,
           channelType: channel.type,
           channelUrl: channel.config?.url || "N/A",
@@ -179,7 +184,7 @@ class NotificationService implements INotificationService {
     const result: any[] = [];
     await this.testNotification(notificationChannel, result);
     if (result.length > 0) {
-      return true;
+      return result.find((r) => r._id === notificationChannel._id)?.sent;
     }
     return false;
   };

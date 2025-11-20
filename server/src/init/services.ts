@@ -38,12 +38,17 @@ export const initServices = async () => {
   const notificationChannelService = new NotificationChannelService();
   const userService = new UserService();
   const discordService = new DiscordService();
-  const emailService = new EmailService(userService);
   const slackService = new SlackService();
   const webhookService = new WebhookService();
   const networkService = new NetworkService(got);
   const statusService = new StatusService();
-  const notificationService = new NotificationService(userService);
+  const settingsService = new SettingsService();
+  const emailService = new EmailService(userService, settingsService);
+  settingsService.setEmailService(emailService);
+  const notificationService = new NotificationService(
+    userService,
+    settingsService
+  );
   const incidentService = new IncidentService();
   const jobGenerator = new JobGenerator(
     networkService,
@@ -64,8 +69,6 @@ export const initServices = async () => {
   const statusPageService = new StatusPageService();
   const diagnosticService = new DiagnosticService(jobQueue);
   const recoveryService = new RecoveryService();
-  const settingsService = new SettingsService();
-
   const services = {
     checkService,
     inviteService,
