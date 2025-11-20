@@ -10,8 +10,8 @@ import {
   monitorIdChecksQuerySchema,
   monitorPatchSchema,
   monitorAllEmbedChecksQuerySchema,
+  monitorImportSchema,
 } from "@/validation/index.js";
-import { verify } from "node:crypto";
 
 class MonitorRoutes {
   private router;
@@ -39,6 +39,22 @@ class MonitorRoutes {
       verifyTeamPermission([PERMISSIONS.monitors.read]),
       validateQuery(monitorAllEmbedChecksQuerySchema),
       this.controller.getAll
+    );
+
+    this.router.get(
+      "/export",
+      verifyToken,
+      addUserContext,
+      verifyTeamPermission([PERMISSIONS.monitors.read]),
+      this.controller.export
+    );
+    this.router.post(
+      "/import",
+      verifyToken,
+      addUserContext,
+      validateBody(monitorImportSchema),
+      verifyTeamPermission([PERMISSIONS.monitors.write]),
+      this.controller.import
     );
 
     this.router.get(

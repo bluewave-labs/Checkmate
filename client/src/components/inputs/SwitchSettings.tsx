@@ -42,6 +42,11 @@ export const SettingsSwitch = () => {
     orgPermissions.includes("invite.write") ||
     orgPermissions.includes("*");
 
+  const hasMonitorRead =
+    orgPermissions.includes("monitors.*") ||
+    orgPermissions.includes("monitors.read") ||
+    orgPermissions.includes("*");
+
   return (
     <>
       <Tooltip title="Settings" placement="top">
@@ -69,6 +74,11 @@ export const SettingsSwitch = () => {
           horizontal: "right",
         }}
       >
+        {hasMonitorRead && (
+          <MenuItem onClick={() => handleClick("export")}>
+            <Typography>Import | Export</Typography>
+          </MenuItem>
+        )}
         <MenuItem onClick={() => handleClick("profile")}>
           <Typography>Profile</Typography>
         </MenuItem>

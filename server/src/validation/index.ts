@@ -1,6 +1,7 @@
 import {
   ChannelTypes,
   MonitorStatuses,
+  MonitorTypes,
   ResolutionTypes,
 } from "@/db/models/index.js";
 import { z } from "zod";
@@ -81,6 +82,25 @@ export const monitorSchema = z
       });
     }
   });
+
+export const monitorImportSchema = z.object({
+  monitors: z
+    .array(
+      z
+        .object({
+          name: z.string().trim().min(1, "Monitor name is required"),
+          url: z.string().trim().regex(urlRegex, "Invalid URL"),
+          secret: z.string().trim().optional(),
+          type: z.enum(MonitorTypes),
+          interval: z.number().min(1, "Interval must be greater than 0"),
+          n: z.number().min(1, "n must be at least 1"),
+        })
+        .strict()
+    )
+    .min(1, { message: "Provide at least one monitor" }),
+});
+
+export type MonitorImportPayload = z.infer<typeof monitorImportSchema>;
 
 export const monitorPatchSchema = monitorSchema
   .omit({

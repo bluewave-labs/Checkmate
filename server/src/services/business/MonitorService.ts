@@ -6,6 +6,14 @@ import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
 import { MonitorWithChecksResponse } from "@/types/index.js";
 import { MonitorStatus, MonitorType } from "@/db/models/monitors/Monitor.js";
 
+export interface IImportedMonitor {
+  name: string;
+  type: MonitorType;
+  interval: number;
+  url: string;
+  n: number;
+}
+
 const SERVICE_NAME = "MonitorService";
 
 export interface IMonitorService {
@@ -50,6 +58,13 @@ export interface IMonitorService {
     updateData: Partial<IMonitor>
   ) => Promise<IMonitor>;
   delete: (teamId: string, monitorId: string) => Promise<boolean>;
+  export: (teamId: string) => Promise<Array<Record<string, unknown>>>;
+  import: (
+    orgId: string,
+    teamId: string,
+    userId: string,
+    data: { monitors: Array<IImportedMonitor> }
+  ) => Promise<{ imported: number; errors: number }>;
 }
 
 class MonitorService implements IMonitorService {
@@ -639,6 +654,43 @@ class MonitorService implements IMonitorService {
     await monitor.deleteOne();
     return true;
   }
+
+  export = async (teamId: string) => {
+    return Monitor.find({ teamId })
+      .select("name url type interval n secret -_id")
+      .lean();
+  };
+
+  import = async (
+    orgId: string,
+    teamId: string,
+    userId: string,
+    data: { monitors: Array<IImportedMonitor> }
+  ) => {
+    let result = [];
+    try {
+      result = await Monitor.insertMany(
+        data?.monitors.map((monitor) => ({
+          ...monitor,
+          orgId: new mongoose.Types.ObjectId(orgId),
+          teamId: new mongoose.Types.ObjectId(teamId),
+          createdBy: new mongoose.Types.ObjectId(userId),
+          updatedBy: new mongoose.Types.ObjectId(userId),
+        }))
+      );
+
+      for (const monitor of result) {
+        await this.jobQueue.addJob(monitor);
+      }
+    } catch (error) {
+      console.error("Import error:", error);
+    }
+
+    return {
+      imported: result.length,
+      errors: data?.monitors?.length - result.length,
+    };
+  };
 }
 
 export default MonitorService;

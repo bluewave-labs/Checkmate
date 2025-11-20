@@ -45,6 +45,8 @@ import ResetPage from "@/pages/recovery/Reset";
 
 import ProfilePage from "@/pages/profile/Profile";
 
+import ExportPage from "@/pages/export/Export";
+
 import RootLayout from "@/components/layouts/RootLayout";
 import { ProtectedRoute } from "@/components/protected-route";
 
@@ -132,6 +134,7 @@ const Router = () => {
         <Route path="diagnostics" element={<DiagnosticPage />} />
 
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="export" element={<ExportPage />} />
       </Route>
     </Routes>
   );

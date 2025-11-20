@@ -19,6 +19,8 @@ export interface IMonitorController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
+  export(req: Request, res: Response, next: NextFunction): Promise<void>;
+  import(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 class MonitorController {
   private monitorService: MonitorService;
@@ -311,6 +313,62 @@ class MonitorController {
         message: "Notification test sent successfully",
         data: results,
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  export = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userContext = req.user;
+      if (!userContext) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const teamId = userContext.currentTeamId;
+      if (!teamId) {
+        throw new ApiError("No team ID", 400);
+      }
+
+      const monitors = await this.monitorService.export(teamId);
+      res.status(200).json({
+        message: "Monitors exported successfully",
+        data: monitors,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  import = async (req: Request, res: Response, next: NextFunction) => {
+    const userContext = req.user;
+    if (!userContext) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const teamId = userContext.currentTeamId;
+    if (!teamId) {
+      throw new ApiError("No team ID", 400);
+    }
+
+    const orgId = userContext.orgId;
+    if (!orgId) {
+      throw new ApiError("No organization ID", 400);
+    }
+
+    const result = await this.monitorService.import(
+      orgId,
+      teamId,
+      userContext.sub,
+      req.body
+    );
+
+    res.status(200).json({
+      message: `Import request received.  ${result.imported} successfully inserted, ${result.errors} failed`,
+      data: result,
+    });
+
+    try {
     } catch (error) {
       next(error);
     }

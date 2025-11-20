@@ -291,29 +291,33 @@ export const SettingsForm = ({
                 </Stack>
               )}
             />
+            <Stack
+              gap={theme.spacing(4)}
+              direction="row"
+              justifyContent="flex-end"
+            >
+              <Button
+                loading={loading}
+                variant="contained"
+                color="accent"
+                onClick={() => {
+                  onTest(formValues);
+                }}
+              >
+                Test transport config
+              </Button>
+              <Button
+                loading={loading}
+                type="submit"
+                variant="contained"
+                color="accent"
+              >
+                Save e-mail settings
+              </Button>
+            </Stack>
           </Stack>
         }
       />
-      <Stack gap={theme.spacing(4)} direction="row" justifyContent="flex-end">
-        <Button
-          loading={loading}
-          variant="contained"
-          color="accent"
-          onClick={() => {
-            onTest(formValues);
-          }}
-        >
-          Test transport config
-        </Button>
-        <Button
-          loading={loading}
-          type="submit"
-          variant="contained"
-          color="accent"
-        >
-          {t("settingsSave")}
-        </Button>
-      </Stack>
     </Stack>
   );
 };

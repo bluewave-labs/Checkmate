@@ -182,3 +182,41 @@ export const useDelete = <R = any,>() => {
 
   return { deleteFn, loading, error };
 };
+
+export const useGetOnDemand = <R = any>() => {
+  const currentTeamId = useAppSelector((state) => state.auth.selectedTeamId);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toastError } = useToast();
+
+  const getFn = async (
+    endpoint: string,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<R> | null> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await get<ApiResponse<R>>(endpoint, {
+        ...config,
+        headers: {
+          ...config?.headers,
+          "x-team-id": currentTeamId,
+        },
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.error(err);
+      const errMsg =
+        err?.response?.data?.message || err.message || "An error occurred";
+      toastError(errMsg);
+      setError(errMsg);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { get: getFn, loading, error };
+};

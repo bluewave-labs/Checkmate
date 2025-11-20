@@ -6,7 +6,7 @@ export type {
   ILighthouseResult,
 } from "./checks/Check.js";
 
-export { Monitor, MonitorStatuses } from "./monitors/Monitor.js";
+export { Monitor, MonitorStatuses, MonitorTypes } from "./monitors/Monitor.js";
 export type { IMonitor } from "./monitors/Monitor.js";
 
 export { MonitorStats } from "./monitors/MonitorStats.js";

@@ -96,9 +96,12 @@ class StatusService implements IStatusService {
     statusResponse: StatusResponse,
     statusChanged: boolean
   ) => {
-    const stats = await MonitorStats.findOne({ monitorId: monitor._id });
+    let stats = await MonitorStats.findOne({ monitorId: monitor._id });
     if (!stats) {
-      throw new ApiError("MonitorStats not found", 500);
+      stats = await MonitorStats.create({
+        monitorId: monitor._id,
+        currentStreakStartedAt: Date.now(),
+      });
     }
 
     // Update check counts
