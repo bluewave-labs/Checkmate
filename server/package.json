@@ -29,6 +29,7 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
+    "swagger-ui-express": "5.0.1",
     "bcryptjs": "3.0.2",
     "cacheable-lookup": "7.0.0",
     "cookie-parser": "1.4.7",

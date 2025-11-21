@@ -43,7 +43,7 @@ const RegisterInvite = () => {
 
     if (!result) {
       dispatch(setAuthenticated(false));
-      navigate("/login");
+      // navigate("/login");
       return;
     }
 
@@ -51,7 +51,7 @@ const RegisterInvite = () => {
 
     if (!user) {
       dispatch(setAuthenticated(false));
-      navigate("/login");
+      // navigate("/login");
       return;
     }
 

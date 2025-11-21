@@ -1,0 +1,407 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Checkmate API",
+    "version": "1.0.0",
+    "description": "OpenAPI specification for the Checkmate server endpoints (v1)."
+  },
+  "servers": [
+    { "url": "http://localhost:52345/api/v1", "description": "Local dev" }
+  ],
+  "security": [ { "cookieAuth": [] } ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token",
+        "description": "HTTP-only auth cookie named 'token'. Send automatically by browser on same-origin requests."
+      }
+    },
+    "schemas": {
+      "Login": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "Register": {
+        "type": "object",
+        "required": ["email", "firstName", "lastName", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "RegisterWithInvite": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "password": { "type": "string", "minLength": 6 },
+          "confirmPassword": { "type": "string", "minLength": 6 }
+        }
+      },
+      "MonitorCreate": {
+        "type": "object",
+        "required": ["type", "url", "name", "n", "interval"],
+        "properties": {
+          "type": { "type": "string", "example": "http" },
+          "url": { "type": "string", "format": "uri" },
+          "name": { "type": "string" },
+          "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+          "n": { "type": "integer", "minimum": 1, "maximum": 25 },
+          "notificationChannels": { "type": "array", "items": { "type": "string" } },
+          "secret": { "type": "string" },
+          "interval": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "MonitorPatch": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "MonitorImport": {
+        "type": "object",
+        "required": ["monitors"],
+        "properties": {
+          "monitors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "url", "type", "interval", "n"],
+              "properties": {
+                "name": { "type": "string" },
+                "url": { "type": "string" },
+                "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                "secret": { "type": "string" },
+                "type": { "type": "string", "example": "http" },
+                "interval": { "type": "integer", "minimum": 1 },
+                "n": { "type": "integer", "minimum": 1 }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "NotificationChannel": {
+        "type": "object",
+        "required": ["name", "type", "config"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string", "enum": ["email", "slack", "discord", "webhook"] },
+          "config": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string" },
+              "emailAddress": { "type": "string", "format": "email" }
+            }
+          }
+        }
+      },
+      "StatusPage": {
+        "type": "object",
+        "required": ["name", "url", "isPublished"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string" },
+          "description": { "type": "string" },
+          "isPublished": { "type": "boolean" },
+          "monitors": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "ProfilePatch": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "password": { "type": "string", "minLength": 6 },
+          "confirmPassword": { "type": "string", "minLength": 6 }
+        }
+      },
+      "SystemSettings": {
+        "type": "object",
+        "properties": {
+          "systemEmailHost": { "type": "string" },
+          "systemEmailPort": { "type": "integer" },
+          "systemEmailAddress": { "type": "string", "format": "email" },
+          "systemEmailPassword": { "type": "string" },
+          "systemEmailUser": { "type": "string" },
+          "systemEmailConnectionHost": { "type": "string" },
+          "systemEmailTLSServername": { "type": "string" },
+          "systemEmailSecure": { "type": "boolean" },
+          "systemEmailPool": { "type": "boolean" },
+          "systemEmailIgnoreTLS": { "type": "boolean" },
+          "systemEmailRequireTLS": { "type": "boolean" },
+          "systemEmailRejectUnauthorized": { "type": "boolean" }
+        }
+      },
+      "RecoveryRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": { "email": { "type": "string", "format": "email" } }
+      },
+      "ResetPassword": {
+        "type": "object",
+        "required": ["token", "password"],
+        "properties": {
+          "token": { "type": "string" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Register" } } } },
+        "responses": { "200": { "description": "Registered" } },
+        "security": []
+      }
+    },
+    "/auth/register/invite/{token}": {
+      "post": {
+        "parameters": [ { "name": "token", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterWithInvite" } } } },
+        "responses": { "200": { "description": "Registered via invite" } },
+        "security": []
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Login" } } } },
+        "responses": { "200": { "description": "Logged in" } },
+        "security": []
+      }
+    },
+    "/auth/logout": { "post": { "responses": { "200": { "description": "Logged out" } } } },
+    "/auth/me": { "get": { "responses": { "200": { "description": "Current user" } } } },
+    "/auth/cleanup": { "post": { "responses": { "200": { "description": "Cleanup executed" } } } },
+    "/auth/cleanup-monitors": { "post": { "responses": { "200": { "description": "Monitor cleanup executed" } } } },
+
+    "/monitors": {
+      "get": {
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "rowsPerPage", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } },
+          { "name": "sortField", "in": "query", "schema": { "type": "string" } },
+          { "name": "sortOrder", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"] } },
+          { "name": "type", "in": "query", "schema": { "type": "array", "items": { "type": "string" } }, "style": "form", "explode": true },
+          { "name": "status", "in": "query", "schema": { "type": "array", "items": { "type": "string" } }, "style": "form", "explode": true }
+        ],
+        "responses": { "200": { "description": "List monitors" } }
+      },
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MonitorCreate" } } } },
+        "responses": { "200": { "description": "Created monitor" } }
+      }
+    },
+    "/monitors/export": { "get": { "responses": { "200": { "description": "Export monitors (JSON)" } } } },
+    "/monitors/import": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MonitorImport" } } } },
+        "responses": { "200": { "description": "Import summary" } }
+      }
+    },
+    "/monitors/{id}": {
+      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Monitor" } } },
+      "patch": {
+        "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MonitorPatch" } } } },
+        "responses": { "200": { "description": "Updated" } }
+      },
+      "delete": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/monitors/{id}/checks": {
+      "get": {
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "required": true, "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "rowsPerPage", "in": "query", "required": true, "schema": { "type": "integer", "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": { "200": { "description": "Monitor checks" } }
+      }
+    },
+    "/monitors/{id}/notifications/test": {
+      "post": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Test sent" } } }
+    },
+    "/monitors/{id}/active": {
+      "patch": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Toggled" } } }
+    },
+
+    "/notification-channels": {
+      "get": { "responses": { "200": { "description": "List channels" } } },
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NotificationChannel" } } } },
+        "responses": { "200": { "description": "Created" } }
+      }
+    },
+    "/notification-channels/{id}": {
+      "get": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Channel" } } },
+      "patch": {
+        "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NotificationChannel" } } } },
+        "responses": { "200": { "description": "Updated" } }
+      },
+      "delete": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/notification-channels/{id}/active": {
+      "patch": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Toggled" } } }
+    },
+    "/notification-channels/test": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NotificationChannel" } } } },
+        "responses": { "200": { "description": "Test queued" } }
+      }
+    },
+
+    "/status-pages": {
+      "get": { "responses": { "200": { "description": "List" } } },
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatusPage" } } } },
+        "responses": { "200": { "description": "Created" } }
+      }
+    },
+    "/status-pages/{id}": {
+      "get": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Status page" } } },
+      "patch": {
+        "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatusPage" } } } },
+        "responses": { "200": { "description": "Updated" } }
+      },
+      "delete": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/status-pages/public/{url}": {
+      "get": {
+        "parameters": [ { "in": "path", "name": "url", "required": true, "schema": { "type": "string" } } ],
+        "responses": { "200": { "description": "Public status page" } },
+        "security": []
+      }
+    },
+
+    "/checks": {
+      "get": {
+        "parameters": [
+          { "name": "status", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "monitorId", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "required": true, "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "rowsPerPage", "in": "query", "required": true, "schema": { "type": "integer", "minimum": 1, "maximum": 100 } },
+          { "name": "range", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Checks list" } }
+      }
+    },
+
+    "/incidents": {
+      "get": {
+        "parameters": [
+          { "name": "resolutionType", "in": "query", "schema": { "type": "string" } },
+          { "name": "resolved", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "rowsPerPage", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": { "200": { "description": "Incidents list" } }
+      }
+    },
+    "/incidents/{id}/resolve": {
+      "patch": {
+        "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } } },
+        "responses": { "200": { "description": "Resolved" } }
+      }
+    },
+
+    "/invite": {
+      "get": { "responses": { "200": { "description": "Invites list" } } },
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["email", "teamId", "teamRoleId"], "properties": { "email": { "type": "string", "format": "email" }, "teamId": { "type": "string" }, "teamRoleId": { "type": "string" }, "orgRoleId": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Invite created" } }
+      }
+    },
+    "/invite/{id}": {
+      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Invite" } } },
+      "delete": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    },
+
+    "/maintenance": {
+      "get": { "responses": { "200": { "description": "List windows" } } },
+      "post": { "responses": { "200": { "description": "Created" } } }
+    },
+    "/maintenance/{id}": {
+      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Window" } } },
+      "patch": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    },
+    "/maintenance/{id}/active": { "patch": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Toggled" } } } },
+
+    "/profile": {
+      "get": { "responses": { "200": { "description": "Profile" } } },
+      "patch": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProfilePatch" } } } },
+        "responses": { "200": { "description": "Updated" } }
+      }
+    },
+
+    "/queue/jobs": { "get": { "responses": { "200": { "description": "Jobs" } } } },
+    "/queue/metrics": { "get": { "responses": { "200": { "description": "Metrics" } } } },
+    "/queue/flush": { "post": { "responses": { "200": { "description": "Flushed" } } } },
+
+    "/recovery": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RecoveryRequest" } } } },
+        "responses": { "200": { "description": "Recovery email sent" } },
+        "security": []
+      }
+    },
+    "/recovery/reset": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ResetPassword" } } } },
+        "responses": { "200": { "description": "Password reset" } },
+        "security": []
+      }
+    },
+
+    "/roles": { "get": { "responses": { "200": { "description": "Roles" } } } },
+    "/roles/team/{id}": { "get": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Team roles" } } } },
+    "/roles/{id}": { "get": { "parameters": [ { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Role" } } } },
+
+    "/settings": { "get": { "responses": { "200": { "description": "System settings" } } } },
+    "/settings/email": {
+      "patch": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SystemSettings" } } } },
+        "responses": { "200": { "description": "Updated" } }
+      }
+    },
+    "/settings/test-transport": {
+      "post": {
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SystemSettings" } } } },
+        "responses": { "200": { "description": "Transport test result" } }
+      }
+    },
+
+    "/teams": {
+      "get": { "responses": { "200": { "description": "Org teams" } } },
+      "post": { "responses": { "200": { "description": "Created" } } }
+    },
+    "/teams/joined": { "get": { "responses": { "200": { "description": "Joined teams" } } } },
+    "/teams/{id}": {
+      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Team" } } },
+      "patch": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    },
+
+    "/team-members": {
+      "get": { "responses": { "200": { "description": "Team members" } } },
+      "post": { "responses": { "200": { "description": "Created" } } }
+    },
+    "/team-members/{id}": {
+      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Member" } } },
+      "patch": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Updated" } } },
+      "delete": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
+    }
+  }
+}

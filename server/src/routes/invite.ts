@@ -33,7 +33,7 @@ class InviteRoutes {
       this.controller.getAll
     );
 
-    this.router.get("/:id", verifyToken, this.controller.get);
+    this.router.get("/:id", this.controller.get);
 
     this.router.delete(
       "/:id",

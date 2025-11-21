@@ -55,6 +55,7 @@ const Router = () => {
     <Routes>
       <Route path="login" element={<AuthLogin />} />
       <Route path="register/:id" element={<AuthRegisterInvite />} />
+      <Route path="register/invite/:token" element={<AuthRegisterInvite />} />
       <Route path="register" element={<AuthRegister />} />
       <Route path="status-pages/public/:url/" element={<StatusPublicPage />} />
       <Route path="recovery/:id" element={<ResetPage />} />

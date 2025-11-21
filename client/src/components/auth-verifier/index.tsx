@@ -16,7 +16,8 @@ export const AuthVerifier = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const isAuthRoute =
     ["/login", "/register"].includes(location.pathname) ||
-    location.pathname.startsWith("/recovery");
+    location.pathname.startsWith("/recovery") ||
+    location.pathname.startsWith("/register/");
   const isPublicRoute = location.pathname.startsWith("/status-pages/public");
 
   const [isVerifying, setIsVerifying] = useState(true);

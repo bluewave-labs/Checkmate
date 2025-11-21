@@ -9,6 +9,9 @@ import { config } from "@/config/index.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import ApiError from "./utils/ApiError.js";
 const indexLogger = getChildLogger("index");
+import swaggerUi from "swagger-ui-express";
+import fs from "node:fs";
+import path from "node:path";
 
 const createApp = async () => {
   await connectDatabase();
@@ -26,6 +29,16 @@ const createApp = async () => {
     })
   );
   const routes = initRoutes(controllers, app);
+  // Swagger UI at /api-docs
+  try {
+    // Load OpenAPI doc from project root within server folder
+    const openapiPath = path.resolve(process.cwd(), "openapi.json");
+    const openapiJson = JSON.parse(fs.readFileSync(openapiPath, "utf-8"));
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiJson));
+    indexLogger.info("Swagger UI available at /api-docs");
+  } catch (e) {
+    indexLogger.error("Failed to load OpenAPI document for Swagger UI", e);
+  }
   app.use("/api/v1/health", verifyToken, addUserContext, (req, res) => {
     res.json({
       status: "OK",
