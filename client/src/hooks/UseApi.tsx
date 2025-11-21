@@ -21,7 +21,7 @@ const fetcher = async <T,>(url: string, config?: AxiosRequestConfig) => {
   return res.data;
 };
 export const useGet = <T,>(
-  url: string,
+  url: string | null,
   axiosConfig?: AxiosRequestConfig,
   swrConfig?: SWRConfiguration<T, Error>,
   extraConfig?: IExtraConfig
@@ -183,7 +183,7 @@ export const useDelete = <R = any,>() => {
   return { deleteFn, loading, error };
 };
 
-export const useGetOnDemand = <R = any>() => {
+export const useGetOnDemand = <R = any,>() => {
   const currentTeamId = useAppSelector((state) => state.auth.selectedTeamId);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

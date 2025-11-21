@@ -20,6 +20,11 @@ import { systemSettingsSchema } from "@/validation/zod";
 const SettingsPage = () => {
   type FormValues = z.infer<typeof systemSettingsSchema>;
 
+  const user = useAppSelector((state) => state.auth.user);
+
+  const orgPermissions = user?.org?.permissions || [];
+  const hasMaster = orgPermissions.includes("master");
+
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const timezone = useAppSelector((state) => state.ui.timezone);
@@ -35,7 +40,9 @@ const SettingsPage = () => {
   const { post, loading: posting } = usePost<Partial<FormValues>, any>();
   const { patch, loading: patching } = usePatch<Partial<FormValues>, any>();
 
-  const { response, loading } = useGet<ApiResponse<any>>("/settings");
+  const { response, loading } = useGet<ApiResponse<any>>(
+    hasMaster ? "/settings" : null
+  );
   const settings = response?.data || {};
   const initialSettings = useMemo(() => settings, [settings]);
 
@@ -84,12 +91,14 @@ const SettingsPage = () => {
           </Stack>
         }
       />
-      <SettingsForm
-        onSubmit={onSubmit}
-        onTest={onTest}
-        initialData={initialSettings}
-        loading={posting || loading || patching}
-      />
+      {hasMaster && (
+        <SettingsForm
+          onSubmit={onSubmit}
+          onTest={onTest}
+          initialData={initialSettings}
+          loading={posting || loading || patching}
+        />
+      )}
     </BasePage>
   );
 };
