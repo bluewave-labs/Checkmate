@@ -442,6 +442,24 @@ class MonitorController extends BaseController {
 		"exportMonitorsToCSV"
 	);
 
+	exportMonitorsToJSON = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const json = await this.monitorService.exportMonitorsToJSON({ teamId });
+
+			return res.success({
+				msg: "OK",
+				data: json,
+			});
+		},
+		SERVICE_NAME,
+		"exportMonitorsToJSON"
+	);
+
 	getAllGames = this.asyncHandler(
 		async (req, res) => {
 			return res.success({
