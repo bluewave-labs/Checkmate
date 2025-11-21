@@ -250,7 +250,7 @@ class NetworkService implements INetworkService {
 
         socket.on("connect", () => {
           socket.destroy();
-          const duration = performance.now() - start;
+          const duration = Math.round(performance.now() - start);
           resolve({
             status: "up",
             responseTime: duration,
@@ -260,7 +260,7 @@ class NetworkService implements INetworkService {
 
         socket.on("error", (err) => {
           socket.destroy();
-          const duration = performance.now() - start;
+          const duration = Math.round(performance.now() - start);
           resolve({
             status: "down",
             responseTime: duration,
@@ -270,7 +270,7 @@ class NetworkService implements INetworkService {
 
         socket.on("timeout", () => {
           socket.destroy();
-          const duration = performance.now() - start;
+          const duration = Math.round(performance.now() - start);
           resolve({
             status: "down",
             responseTime: duration,
