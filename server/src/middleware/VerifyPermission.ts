@@ -32,12 +32,12 @@ const verifyTeamPermission = (resourceActions: string[]) => {
     const tokenizedUser = req.user;
 
     if (!tokenizedUser) {
-      throw new ApiError("No user", 400);
+      return next(new ApiError("No user", 400));
     }
 
     const userId = tokenizedUser.sub;
     if (!userId) {
-      throw new ApiError("No user ID", 400);
+      return next(new ApiError("No user ID", 400));
     }
 
     const orgPermissions = tokenizedUser.roles?.orgRole?.permissions || [];
@@ -47,7 +47,7 @@ const verifyTeamPermission = (resourceActions: string[]) => {
 
     const allowed = hasPermission(allPermissions, resourceActions);
     if (!allowed) {
-      throw new ApiError("Insufficient permissions", 403);
+      return next(new ApiError("Insufficient permissions", 403));
     }
     next();
   };
@@ -58,13 +58,13 @@ const verifyOrgPermission = (resourceActions: string[]) => {
     const userContext = req.user;
 
     if (!userContext) {
-      throw new ApiError("No user", 400);
+      return next(new ApiError("No user", 400));
     }
 
     const orgPermissions = userContext.roles?.orgRole?.permissions || [];
     const allowed = hasPermission(orgPermissions, resourceActions);
     if (!allowed) {
-      throw new ApiError("Insufficient permissions", 403);
+      return next(new ApiError("Insufficient permissions", 403));
     }
     next();
   };
