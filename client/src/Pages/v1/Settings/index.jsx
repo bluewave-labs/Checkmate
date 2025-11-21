@@ -9,6 +9,7 @@ import SettingsDemoMonitors from "./SettingsDemoMonitors.jsx";
 import SettingsAbout from "./SettingsAbout.jsx";
 import SettingsEmail from "./SettingsEmail.jsx";
 import SettingsGlobalThresholds from "./SettingsGlobalThresholds.jsx";
+import SettingsExport from "./SettingsExport.jsx";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "../../../Validation/validation.js";
@@ -30,6 +31,7 @@ import {
 	useAddDemoMonitors,
 	useDeleteAllMonitors,
 	useDeleteMonitorStats,
+	useFetchJson,
 } from "../../../Hooks/v1/monitorHooks.js";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
@@ -66,6 +68,7 @@ const Settings = () => {
 	});
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
 	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
+	const [fetchJson, isFetchingJson] = useFetchJson();
 
 	// Setup
 	const isAdmin = useIsAdmin();
@@ -125,6 +128,27 @@ const Settings = () => {
 
 		if (name === "deleteMonitors") {
 			await deleteAllMonitors();
+			return;
+		}
+
+		if (name === "export") {
+			const json = await fetchJson();
+			if (!json || json.length === 0) {
+				return;
+			}
+
+			const blob = new Blob([JSON.stringify(json, null, 2)], {
+				type: "application/json",
+			});
+			const url = URL.createObjectURL(blob);
+
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = "monitors.json";
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(url);
 			return;
 		}
 
@@ -224,6 +248,12 @@ const Settings = () => {
 				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
 
+			<SettingsExport
+				isAdmin={isAdmin}
+				HEADER_SX={HEADING_SX}
+				handleChange={handleChange}
+				isLoading={isSettingsLoading || isSaving || isFetchingJson}
+			/>
 			<SettingsAbout />
 			<Stack
 				direction="row"
