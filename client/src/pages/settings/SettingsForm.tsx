@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { useInitForm } from "@/hooks/forms/UseInitSettingsForm";
 import { useEffect } from "react";
-import { useAppSelector } from "@/hooks/AppHooks";
 
 type FormValues = z.infer<typeof systemSettingsSchema>;
 
