@@ -23,6 +23,7 @@ export const SideBar = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const sideBarOpen = useAppSelector((state) => state.ui.sidebarOpen);
   const user = useAppSelector((state) => state.auth.user);
+  if (!user) return null;
 
   const { t } = useTranslation();
   const navigate = useNavigate();

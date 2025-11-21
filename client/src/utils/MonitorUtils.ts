@@ -25,6 +25,7 @@ export const getStatusColor = (status: MonitorStatus, theme: any): string => {
   const statusColors: Record<MonitorStatus, string> = {
     up: theme.palette.success.lowContrast,
     down: theme.palette.error.lowContrast,
+    paused: theme.palette.warning.lowContrast,
     initializing: theme.palette.warning.lowContrast,
   };
   return statusColors[status];

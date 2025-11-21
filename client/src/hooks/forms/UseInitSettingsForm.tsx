@@ -10,6 +10,7 @@ export const useInitForm = ({
   return useMemo(() => {
     const defaults: z.infer<typeof systemSettingsSchema> = {
       systemEmailHost: initialData?.systemEmailHost ?? "",
+      // @ts-ignore
       systemEmailPort:
         initialData?.systemEmailPort !== undefined &&
         initialData?.systemEmailPort !== null
