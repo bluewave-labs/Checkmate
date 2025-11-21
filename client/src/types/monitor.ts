@@ -4,13 +4,14 @@ import type { IMonitorStats } from "./monitorStats";
 export const MonitorTypes = [
   "http",
   "https",
+  "port",
   "ping",
   "infrastructure",
   "pagespeed",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export const UptimeMonitorTypes = ["http", "https", "ping"] as const;
+export const UptimeMonitorTypes = ["http", "https", "port", "ping"] as const;
 export type UptimeMonitorType = (typeof UptimeMonitorTypes)[number];
 
 export const MonitorStatuses = [

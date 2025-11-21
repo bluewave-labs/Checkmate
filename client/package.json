@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "i18n:display": "i18n-unused display-unused > test.log",
-    "dev": "vite --mode development",
+    "dev": "vite --host 127.0.0.1 --mode development",
     "build": "tsc -b && vite build --mode production",
     "lint": "eslint .",
     "preview": "vite preview"

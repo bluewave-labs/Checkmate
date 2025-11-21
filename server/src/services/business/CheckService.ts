@@ -188,6 +188,8 @@ class CheckService implements ICheckService {
 
       case "ping":
         return this.buildBaseCheck(statusResponse);
+      case "port":
+        return this.buildBaseCheck(statusResponse);
       default:
         throw new Error(`Unsupported monitor type: ${type}`);
     }

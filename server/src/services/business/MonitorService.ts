@@ -657,7 +657,7 @@ class MonitorService implements IMonitorService {
 
   export = async (teamId: string) => {
     return Monitor.find({ teamId })
-      .select("name url type interval n secret -_id")
+      .select("name url port type interval n secret -_id")
       .lean();
   };
 

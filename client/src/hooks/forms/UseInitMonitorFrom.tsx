@@ -20,6 +20,7 @@ export const useInitForm = ({
     const defaults: z.infer<typeof monitorSchema> = {
       type: initialData?.type || "https",
       url: initialData?.url || "",
+      port: initialData?.port || 80,
       n: initialData?.n || 3,
       notificationChannels: initialData?.notificationChannels || [],
       name: initialData?.name || "",

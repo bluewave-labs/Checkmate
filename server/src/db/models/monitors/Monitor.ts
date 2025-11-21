@@ -4,6 +4,7 @@ import { Check, MonitorStats } from "@/db/models/index.js";
 export const MonitorTypes = [
   "http",
   "https",
+  "port",
   "ping",
   "infrastructure",
   "pagespeed",
@@ -17,12 +18,14 @@ export const MonitorStatuses = [
   "initializing",
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
+
 export interface IMonitor extends Document {
   _id: Types.ObjectId;
   orgId: Types.ObjectId;
   teamId: Types.ObjectId;
   name: string;
   url: string;
+  port?: number;
   secret?: string;
   type: MonitorType;
   interval: number; // in ms
@@ -47,6 +50,7 @@ const MonitorSchema = new Schema<IMonitor>(
     teamId: { type: Schema.Types.ObjectId, ref: "Team", required: true },
     name: { type: String, required: true, trim: true, maxlength: 100 },
     url: { type: String, required: true, trim: true },
+    port: { type: Number, required: false },
     secret: { type: String, required: false },
     type: {
       type: String,

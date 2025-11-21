@@ -133,6 +133,11 @@ export const UptimeForm = ({
                       }
                     />
                     <RadioWithDescription
+                      value="port"
+                      label={"Port"}
+                      description={"Check whether your port is open or not."}
+                    />
+                    <RadioWithDescription
                       value="ping"
                       label={t("pingMonitoring")}
                       description={t("pingMonitoringDescription")}
@@ -174,6 +179,22 @@ export const UptimeForm = ({
                 />
               )}
             />
+            {selectedType === "port" && (
+              <Controller
+                name="port"
+                control={control}
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    type="number"
+                    fieldLabel={"Port"}
+                    fullWidth
+                    error={!!errors.port}
+                    helperText={errors.port ? errors.port.message : ""}
+                  />
+                )}
+              />
+            )}
             <Controller
               name="name"
               control={control}

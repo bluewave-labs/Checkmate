@@ -52,6 +52,7 @@ export const monitorSchema = z
     type: z.string().min(1, "You must select an option"),
     url: z.string().min(1, "URL is required").regex(urlRegex, "Invalid URL"),
     name: z.string().min(1, "Display name is required"),
+    port: z.coerce.number().optional(),
     n: z
       .number({ message: "Number required" })
       .min(1, "Minimum value is 1")
@@ -81,6 +82,30 @@ export const monitorSchema = z
         message: `Secret is required for infrastructure monitors`,
       });
     }
+
+    if (data.type === "port") {
+      if (!data.port) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Port is required for port monitoring",
+          path: ["port"],
+        });
+      }
+      if (isNaN(Number(data.port))) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Port must be a number",
+          path: ["port"],
+        });
+      }
+      if (Number(data.port) < 1 || Number(data.port) > 65535) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Port must be between 1 and 65535",
+          path: ["port"],
+        });
+      }
+    }
   });
 
 export const monitorImportSchema = z.object({
@@ -90,6 +115,7 @@ export const monitorImportSchema = z.object({
         .object({
           name: z.string().trim().min(1, "Monitor name is required"),
           url: z.string().trim().regex(urlRegex, "Invalid URL"),
+          port: z.number().min(1).max(65535).optional(),
           secret: z.string().trim().optional(),
           type: z.enum(MonitorTypes),
           interval: z.number().min(1, "Interval must be greater than 0"),

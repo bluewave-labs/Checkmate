@@ -1,5 +1,6 @@
 import { Got, HTTPError } from "got";
 import ping from "ping";
+import net from "net";
 import { IMonitor } from "@/db/models/index.js";
 import { GotTimings } from "@/db/models/checks/Check.js";
 import type { Response } from "got";
@@ -12,16 +13,16 @@ import { MonitorType, MonitorStatus } from "@/db/models/monitors/Monitor.js";
 import ApiError from "@/utils/ApiError.js";
 import { config } from "@/config/index.js";
 import CacheableLookup from "cacheable-lookup";
-import http from "http";
-import https from "https";
-
+import { getChildLogger } from "@/logger/Logger.js";
 const SERVICE_NAME = "NetworkService";
+const logger = getChildLogger(SERVICE_NAME);
 export interface INetworkService {
   requestHttp: (monitor: IMonitor) => Promise<StatusResponse>;
   requestInfrastructure: (monitor: IMonitor) => Promise<StatusResponse>;
   requestStatus: (monitor: IMonitor) => Promise<StatusResponse>;
   requestPagespeed: (monitor: IMonitor) => Promise<StatusResponse>;
   requestPing: (monitor: IMonitor) => Promise<StatusResponse>;
+  requestPort: (monitor: IMonitor) => Promise<StatusResponse>;
 }
 
 export interface ICapturePayload {
@@ -216,6 +217,78 @@ class NetworkService implements INetworkService {
     };
   };
 
+  requestPort = async (monitor: IMonitor) => {
+    const response = {
+      monitorId: monitor._id.toString(),
+      teamId: monitor.teamId.toString(),
+      type: monitor.type,
+      status: "down" as MonitorStatus,
+      message: "Port check failed",
+      responseTime: 0,
+      timings: { phases: {} } as GotTimings,
+    };
+
+    try {
+      const host = monitor.url;
+      const port = monitor.port;
+      if (!port) {
+        throw new Error("No port provided for port monitor");
+      }
+
+      const { status, responseTime, message } = await new Promise<{
+        status: MonitorStatus;
+        responseTime: number;
+        message: string;
+      }>((resolve) => {
+        const start = performance.now();
+        const socket = net.createConnection({
+          host,
+          port,
+        });
+
+        socket.setTimeout(5000);
+
+        socket.on("connect", () => {
+          socket.destroy();
+          const duration = performance.now() - start;
+          resolve({
+            status: "up",
+            responseTime: duration,
+            message: "Port is open",
+          });
+        });
+
+        socket.on("error", (err) => {
+          socket.destroy();
+          const duration = performance.now() - start;
+          resolve({
+            status: "down",
+            responseTime: duration,
+            message: err.message,
+          });
+        });
+
+        socket.on("timeout", () => {
+          socket.destroy();
+          const duration = performance.now() - start;
+          resolve({
+            status: "down",
+            responseTime: duration,
+            message: "Port check timed out",
+          });
+        });
+      });
+
+      response.status = status;
+      response.responseTime = responseTime;
+      response.message = message;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      return response;
+    }
+  };
+
   requestStatus = async (monitor: IMonitor) => {
     switch (monitor?.type) {
       case "http":
@@ -228,6 +301,8 @@ class NetworkService implements INetworkService {
         return await this.requestPagespeed(monitor); // uses GOT
       case "ping":
         return await this.requestPing(monitor); // uses PING
+      case "port":
+        return await this.requestPort(monitor);
       default:
         throw new Error("Not implemented");
     }
