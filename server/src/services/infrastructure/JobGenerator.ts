@@ -98,6 +98,7 @@ class JobGenerator implements IJobGenerator {
       try {
         await this.checkService.cleanupOrphanedChecks();
         await this.monitorStatsService.cleanupOrphanedMonitorStats();
+        await this.incidentService.cleanupOrphanedIncidents();
       } catch (error) {
         throw error;
       }

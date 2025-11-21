@@ -37,7 +37,7 @@ export const IncidentTable = ({
         id: "name",
         content: t("incidentsTableMonitorName"),
         render: (row) => {
-          return row.monitorId.name || "N/A";
+          return row.monitorId?.name || "N/A";
         },
       },
       {
@@ -70,7 +70,7 @@ export const IncidentTable = ({
         render: (row) => {
           return (
             <Typography textTransform={"capitalize"} color="textPrimary">
-              {row.monitorId.status}
+              {row.monitorId?.status}
             </Typography>
           );
         },

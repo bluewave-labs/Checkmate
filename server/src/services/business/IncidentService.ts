@@ -1,4 +1,10 @@
-import { IIncident, Incident, IMonitor, ICheck } from "@/db/models/index.js";
+import {
+  IIncident,
+  Incident,
+  IMonitor,
+  Monitor,
+  ICheck,
+} from "@/db/models/index.js";
 import type { ResolutionType } from "@/db/models/index.js";
 import mongoose from "mongoose";
 import { getChildLogger } from "@/logger/Logger.js";
@@ -39,10 +45,11 @@ export interface IIncidentService {
     teamId: mongoose.Types.ObjectId,
     incidentId: mongoose.Types.ObjectId
   ) => Promise<boolean>;
+  cleanupOrphanedIncidents: () => Promise<boolean>;
 }
 
 const SERVICE_NAME = "IncidentService";
-
+const logger = getChildLogger(SERVICE_NAME);
 class IncidentService implements IIncidentService {
   public SERVICE_NAME: string;
   constructor() {
@@ -199,6 +206,20 @@ class IncidentService implements IIncidentService {
     });
     return result.deletedCount === 1;
   };
+
+  async cleanupOrphanedIncidents() {
+    try {
+      const monitorIds = await Monitor.find().distinct("_id");
+      const result = await Incident.deleteMany({
+        monitorId: { $nin: monitorIds },
+      });
+      logger.info(`Deleted ${result.deletedCount} orphaned Incidents.`);
+      return true;
+    } catch (error) {
+      logger.error("Error cleaning up orphaned Incidents:", error);
+      return false;
+    }
+  }
 }
 
 export default IncidentService;
