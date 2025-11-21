@@ -21,6 +21,7 @@
     "@types/jsonwebtoken": "9.0.10",
     "@types/node": "24.7.1",
     "@types/nodemailer": "7.0.2",
+    "@types/swagger-ui-express": "4.1.8",
     "jest": "^29.7.0",
     "nodemon": "3.1.10",
     "ts-jest": "^29.2.5",
@@ -29,7 +30,6 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "swagger-ui-express": "5.0.1",
     "bcryptjs": "3.0.2",
     "cacheable-lookup": "7.0.0",
     "cookie-parser": "1.4.7",
@@ -42,6 +42,7 @@
     "nodemailer": "7.0.9",
     "ping": "1.0.0",
     "super-simple-scheduler": "1.4.6",
+    "swagger-ui-express": "5.0.1",
     "winston": "3.18.3",
     "zod": "4.1.12"
   }
