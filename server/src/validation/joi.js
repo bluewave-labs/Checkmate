@@ -18,7 +18,7 @@ const roleValidatior = (role) => (value, helpers) => {
 //****************************************
 
 const passwordPattern =
-	/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/])[A-Za-z0-9!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/]+$/;
+	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_\-+=\\[\]{};:'~,./|])(?!.*[<>`"])[A-Za-z\d!@#$%^&*_\-+=\\[\]{};:'~,./|]+$/;
 
 const loginValidation = joi.object({
 	email: joi.string().email().required().lowercase(),
