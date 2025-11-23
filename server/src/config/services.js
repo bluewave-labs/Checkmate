@@ -158,6 +158,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const notificationUtils = new NotificationUtils({
 		stringService,
 		emailService,
+		settingsService,
 	});
 
 	const notificationService = new NotificationService({

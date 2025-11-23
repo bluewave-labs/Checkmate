@@ -3,9 +3,10 @@ const SERVICE_NAME = "NotificationUtils";
 class NotificationUtils {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ stringService, emailService }) {
+	constructor({ stringService, emailService, settingsService }) {
 		this.stringService = stringService;
 		this.emailService = emailService;
+		this.settingsService = settingsService;
 	}
 
 	get serviceName() {
@@ -99,6 +100,8 @@ class NotificationUtils {
 		const metrics = networkResponse?.payload?.data;
 		const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
 
+		const { clientHost } = this.settingsService.getSettings();
+
 		const alerts = {
 			cpu: cpuThreshold !== -1 && cpuUsage > cpuThreshold ? true : false,
 			memory: memoryThreshold !== -1 && memoryUsage > memoryThreshold ? true : false,
@@ -140,6 +143,10 @@ class NotificationUtils {
 						value: `${(d?.usage_percent * 100).toFixed(0)}%`,
 						inline: true,
 					})),
+					{
+						name: `Go to incident`,
+						value: `${clientHost}/infrastructure/${monitor._id}`,
+					},
 				],
 			}),
 		};
@@ -182,8 +189,10 @@ class NotificationUtils {
 	};
 
 	buildHardwareNotificationMessage = (alerts, monitor) => {
+		const { clientHost } = this.settingsService.getSettings();
 		const alertsHeader = [`Monitor: ${monitor.name}`, `URL: ${monitor.url}`];
-		const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts] : [];
+		const alertFooter = [`Go to incident: ${clientHost}/infrastructure/${monitor._id}`];
+		const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts, ...alertFooter] : [];
 		return alertText.map((alert) => alert).join("\n");
 	};
 	buildHardwareWebhookBody = (alerts, monitor) => {
