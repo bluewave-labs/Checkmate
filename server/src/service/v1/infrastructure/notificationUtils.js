@@ -114,12 +114,13 @@ class NotificationUtils {
 			{ name: "Monitor", value: monitor.name, inline: true },
 			{ name: "URL", value: monitor.url, inline: false },
 		];
+		const goToIncidentField = { name: `Go to incident`, value: `${clientHost}/infrastructure/${monitor._id}` };
 		const formatDiscordAlert = {
 			cpu: () => ({
 				title: "CPU alert",
 				description: `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
 				color: 15548997,
-				fields: monitorInfoFields,
+				fields: [...monitorInfoFields, goToIncidentField],
 				footer: { text: "Checkmate" },
 			}),
 
@@ -127,7 +128,7 @@ class NotificationUtils {
 				title: "Memory alert",
 				description: `Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
 				color: 15548997,
-				fields: monitorInfoFields,
+				fields: [...monitorInfoFields, goToIncidentField],
 				footer: { text: "Checkmate" },
 			}),
 
@@ -143,10 +144,7 @@ class NotificationUtils {
 						value: `${(d?.usage_percent * 100).toFixed(0)}%`,
 						inline: true,
 					})),
-					{
-						name: `Go to incident`,
-						value: `${clientHost}/infrastructure/${monitor._id}`,
-					},
+					goToIncidentField,
 				],
 			}),
 		};
