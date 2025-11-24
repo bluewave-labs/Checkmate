@@ -127,7 +127,7 @@ class MonitorService implements IMonitorService {
 
     const countResult = await Monitor.aggregate([
       {
-        $match: matchConditions,
+        $match: { teamId: teamObjectId },
       },
       {
         $group: {

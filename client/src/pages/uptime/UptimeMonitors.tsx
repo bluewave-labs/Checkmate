@@ -139,7 +139,7 @@ const UptimeMonitors = () => {
         setSortField={setSortField}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
-        count={count}
+        count={monitors?.length || 0}
         page={page}
         setPage={setPage}
         rowsPerPage={rowsPerPage}
