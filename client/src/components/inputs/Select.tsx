@@ -1,4 +1,5 @@
 import Select from "@mui/material/Select";
+import React from "react";
 import { useTheme } from "@mui/material/styles";
 import type { SelectProps } from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
@@ -42,10 +43,21 @@ export const SelectInput = <T,>({
       const capitalized = items.map(
         (item) => item.charAt(0).toUpperCase() + item.slice(1)
       );
-      return <Typography>{capitalized.join(" | ")}</Typography> as any;
+      return (<Typography>{capitalized.join(" | ")}</Typography>) as any;
     }
 
-    return selected as any;
+    const nodes = React.Children.toArray(props.children as React.ReactNode);
+    for (const node of nodes) {
+      if (!React.isValidElement(node)) continue;
+      const el = node as React.ReactElement<{
+        value?: unknown;
+        children?: React.ReactNode;
+      }>;
+      if (el.props?.value === selected) {
+        return (el.props.children ?? selected) as React.ReactNode;
+      }
+    }
+    return selected as React.ReactNode;
   };
 
   const select = (
