@@ -660,6 +660,7 @@
     "checkingEvery": "Checking every {{interval}}",
     "down": "down",
     "paused": "paused",
+    "initializing": "initializing",
     "up": "up",
     "withCaptureAgent": "with Capture agent {{version}}"
   },

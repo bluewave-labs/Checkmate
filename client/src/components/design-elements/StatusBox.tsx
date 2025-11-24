@@ -91,3 +91,15 @@ export const PausedStatusBox = ({ n }: { n: number }) => {
     />
   );
 };
+
+export const InitializingStatusBox = ({ n }: { n: number }) => {
+  const theme = useTheme();
+  const { t } = useTranslation();
+  return (
+    <StatusBox
+      label={t("monitorStatus.initializing")}
+      n={n}
+      color={theme.palette.warning.lowContrast}
+    />
+  );
+};

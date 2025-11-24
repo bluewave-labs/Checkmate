@@ -25,6 +25,7 @@ import {
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
+import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 
 const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
 
@@ -124,6 +125,9 @@ const UptimeMonitors = () => {
         <UpStatusBox n={upCount} />
         <DownStatusBox n={downCount} />
         <PausedStatusBox n={pausedCount} />
+        <InitializingStatusBox
+          n={count - (upCount + downCount + pausedCount)}
+        />
       </Stack>
       <HeaderFilter
         selectedTypes={selectedTypes}

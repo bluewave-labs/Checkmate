@@ -18,6 +18,7 @@ import type { IMonitor, IMonitorWithStats } from "@/types/monitor";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
+import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 
 const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
 
@@ -90,6 +91,9 @@ const PageSpeedMonitorsPage = () => {
         <UpStatusBox n={upCount} />
         <DownStatusBox n={downCount} />
         <PausedStatusBox n={pausedCount} />
+        <InitializingStatusBox
+          n={count - (upCount + downCount + pausedCount)}
+        />
       </Stack>
       <InfraMonitorsTable
         monitors={monitors}
