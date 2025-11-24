@@ -18,6 +18,7 @@ const getHeaders = (t: Function, uiTimezone: string) => {
       id: "status",
       content: t("status"),
       render: (row) => {
+        console.log(row);
         return <StatusLabel status={row.status as MonitorStatus} />;
       },
     },
@@ -30,6 +31,13 @@ const getHeaders = (t: Function, uiTimezone: string) => {
           "ddd, MMMM D, YYYY, HH:mm A",
           uiTimezone
         );
+      },
+    },
+    {
+      id: "message",
+      content: t("message"),
+      render: (row) => {
+        return row.message || "N/A";
       },
     },
     {
