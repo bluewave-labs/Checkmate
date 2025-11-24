@@ -30,6 +30,30 @@ jest.mock("cacheable-lookup", () => ({
 jest.mock("ping", () => ({
     promise: { probe: jest.fn() },
 }));
+// Mock net for requestPort tests
+jest.mock("net", () => {
+    const listeners = new Map();
+    const socket = {
+        setTimeout: jest.fn(),
+        on: jest.fn((event, cb) => {
+            listeners.set(event, cb);
+            return socket;
+        }),
+        destroy: jest.fn(),
+        __emit: (event, arg) => {
+            const cb = listeners.get(event);
+            if (cb) cb(arg);
+        },
+    };
+    return {
+        __esModule: true,
+        default: {
+            createConnection: jest.fn(() => socket),
+            __socket: socket,
+        },
+    };
+});
+const getNetModule = () => jest.requireMock("net").default;
 const getGotModule = () => jest.requireMock("got");
 const buildMonitor = (overrides = {}) => ({
     _id: new Types.ObjectId(),
@@ -133,6 +157,28 @@ describe("NetworkService.buildStatusResponse", () => {
         expect(result.message).toBe("Bad Gateway");
         expect(result.responseTime).toBe(987);
         expect(result.timings).toBe(timings);
+    });
+    it("handles HTTPError without timings/statusCode", () => {
+        const { service, gotModule } = createService();
+        const { HTTPError } = gotModule;
+        const monitor = buildMonitor();
+        const httpError = new HTTPError("Boom", {});
+        const result = invokeBuildStatusResponse(service, monitor, null, httpError);
+        expect(result.status).toBe("down");
+        expect(result.code).toBe(5000);
+        expect(result.message).toBe("Boom");
+        expect(result.responseTime).toBe(0);
+        // When no timings exist on HTTPError, we do not attach timings.
+        expect(result.timings).toBeUndefined();
+    });
+    it("defaults timings when missing on successful response", () => {
+        const { service } = createService();
+        const monitor = buildMonitor();
+        const response = { statusCode: 200, ok: true };
+        const result = invokeBuildStatusResponse(service, monitor, response, null);
+        expect(result.status).toBe("up");
+        expect(result.timings).toEqual({ phases: {} });
+        expect(result.responseTime).toBe(0);
     });
 });
 describe("NetworkService.requestHttp", () => {
@@ -367,6 +413,25 @@ describe("NetworkService.requestPagespeed", () => {
             responseType: "json",
         });
     });
+    it("returns down status when primary response is not ok but still attaches payload", async () => {
+        const primaryResponse = {
+            statusCode: 500,
+            statusMessage: "Server Error",
+            ok: false,
+        };
+        const payload = { lighthouseResult: { score: 0.7 } };
+        const secondaryResponse = { body: payload };
+        const requestMock = jest
+            .fn()
+            .mockResolvedValueOnce(primaryResponse)
+            .mockResolvedValueOnce(secondaryResponse);
+        const { service } = createService(requestMock);
+        const monitor = buildMonitor({ type: "pagespeed", url: "https://x" });
+        const result = await service.requestPagespeed(monitor);
+        expect(result.status).toBe("down");
+        expect(result.code).toBe(500);
+        expect(result.payload).toBe(payload);
+    });
 });
 describe("NetworkService.requestPing", () => {
     it("maps successful ping with string time", async () => {
@@ -404,6 +469,51 @@ describe("NetworkService.requestPing", () => {
         const result = await service.requestPing(monitor);
         expect(result.responseTime).toBe(18);
         expect(result.status).toBe("up");
+    });
+});
+
+describe("NetworkService.requestPort", () => {
+    it("returns default response when port missing", async () => {
+        const { service } = createService();
+        const monitor = buildMonitor({ type: "port", url: "localhost", port: undefined });
+        const result = await service.requestPort(monitor);
+        expect(result.status).toBe("down");
+        expect(result.message).toBe("Port check failed");
+        expect(result.responseTime).toBe(0);
+    });
+    it("resolves up on connect event", async () => {
+        const { service } = createService();
+        const netModule = getNetModule();
+        const monitor = buildMonitor({ type: "port", url: "localhost", port: 80 });
+        const promise = service.requestPort(monitor);
+        // Emit connect
+        netModule.__socket.__emit("connect");
+        const result = await promise;
+        expect(result.status).toBe("up");
+        expect(result.message).toBe("Port is open");
+        expect(result.responseTime).toBeGreaterThanOrEqual(0);
+    });
+    it("resolves down on error event", async () => {
+        const { service } = createService();
+        const netModule = getNetModule();
+        const monitor = buildMonitor({ type: "port", url: "localhost", port: 81 });
+        const promise = service.requestPort(monitor);
+        netModule.__socket.__emit("error", new Error("ECONNREFUSED"));
+        const result = await promise;
+        expect(result.status).toBe("down");
+        expect(result.message).toBe("ECONNREFUSED");
+        expect(result.responseTime).toBeGreaterThanOrEqual(0);
+    });
+    it("resolves down on timeout event", async () => {
+        const { service } = createService();
+        const netModule = getNetModule();
+        const monitor = buildMonitor({ type: "port", url: "localhost", port: 82 });
+        const promise = service.requestPort(monitor);
+        netModule.__socket.__emit("timeout");
+        const result = await promise;
+        expect(result.status).toBe("down");
+        expect(result.message).toBe("Port check timed out");
+        expect(result.responseTime).toBeGreaterThanOrEqual(0);
     });
 });
 describe("NetworkService.requestStatus", () => {

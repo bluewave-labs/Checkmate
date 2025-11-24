@@ -21,7 +21,15 @@ const config = {
 	collectCoverageFrom: ["src/**/*.{ts,js}", "!src/**/*.d.ts"],
 	coverageDirectory: "coverage",
 	coverageReporters: ["text", "lcov"],
-	coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/src/index.ts"]
+	coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/src/index.ts"],
+	coverageThreshold: {
+		global: {
+			branches: 80,
+			functions: 90,
+			lines: 90,
+			statements: 90,
+		},
+	},
 };
 
 export default config;

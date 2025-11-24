@@ -184,7 +184,7 @@ class NotificationService implements INotificationService {
     const result: any[] = [];
     await this.testNotification(notificationChannel, result);
     if (result.length > 0) {
-      return result.find((r) => r._id === notificationChannel._id)?.sent;
+      return Boolean(result[0]?.sent);
     }
     return false;
   };
