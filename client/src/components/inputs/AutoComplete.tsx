@@ -52,8 +52,10 @@ export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
         const { key, ...optionProps } = props;
         return (
           <ListItem key={key} {...optionProps}>
-            {multiple && <Checkbox checked={selected} />}
-            {option.name}
+            <Stack direction={"row"} gap={theme.spacing(2)}>
+              {multiple && <Checkbox checked={selected} />}
+              {option.name}
+            </Stack>
           </ListItem>
         );
       }}
