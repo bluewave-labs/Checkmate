@@ -18,7 +18,6 @@ const getHeaders = (t: Function, uiTimezone: string) => {
       id: "status",
       content: t("status"),
       render: (row) => {
-        console.log(row);
         return <StatusLabel status={row.status as MonitorStatus} />;
       },
     },

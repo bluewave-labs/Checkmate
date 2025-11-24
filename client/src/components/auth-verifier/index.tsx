@@ -11,9 +11,10 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/AppHooks";
 import type { ReactNode } from "react";
 import { get } from "@/utils/ApiClient";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 export const AuthVerifier = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isAuthRoute =
     ["/login", "/register"].includes(location.pathname) ||
     location.pathname.startsWith("/recovery") ||
@@ -35,6 +36,11 @@ export const AuthVerifier = ({ children }: { children: ReactNode }) => {
         const user: IUser = res.data.data;
         dispatch(setAuthenticated(true));
         dispatch(setUser(user));
+
+        if (user.teams.length === 0) {
+          navigate("/no-team");
+          return;
+        }
 
         if (
           !selectedTeamId ||

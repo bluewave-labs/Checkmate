@@ -35,9 +35,11 @@ const TeamMemberConfig = () => {
   };
 
   const handleConfirm = async () => {
-    await deleteFn(`/team-members/${id}`);
-    mutate("/teams/joined");
-    navigate(-1);
+    const res = await deleteFn(`/team-members/${memberId}`);
+    if (res) {
+      mutate("/teams/joined");
+      navigate(-1);
+    }
     setDialogOpen(false);
   };
 

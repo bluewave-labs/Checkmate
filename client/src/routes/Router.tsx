@@ -47,6 +47,9 @@ import ProfilePage from "@/pages/profile/Profile";
 
 import ExportPage from "@/pages/export/Export";
 
+import NoTeam from "@/pages/errors/NoTeam";
+import NotFound from "@/pages/errors/NotFound";
+
 import RootLayout from "@/components/layouts/RootLayout";
 import { ProtectedRoute } from "@/components/protected-route";
 
@@ -137,6 +140,8 @@ const Router = () => {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="export" element={<ExportPage />} />
       </Route>
+      <Route path="no-team" element={<NoTeam />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
