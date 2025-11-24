@@ -5,8 +5,9 @@
 		"outDir": "./dist",
 		"module": "esnext",
 		"moduleResolution": "nodenext",
-		"types": ["jest", "node"]
+		"types": ["jest", "node"],
+		"allowJs": true
 	},
-	"include": ["tests/**/*.ts", "src/**/*.ts"],
+	"include": ["tests/**/*.ts", "tests/**/*.js", "src/**/*.ts"],
 	"exclude": ["dist", "node_modules"]
 }

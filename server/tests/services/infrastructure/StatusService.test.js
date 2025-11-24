@@ -151,24 +151,42 @@ describe("StatusService.updateMonitorStatus", () => {
     });
 });
 describe("StatusService.updateMonitorStats", () => {
-    const service = new StatusService();
-    let findOneSpy;
-    beforeEach(() => {
-        findOneSpy = jest.spyOn(MonitorStats, "findOne");
-        jest.useFakeTimers();
+  const service = new StatusService();
+  let findOneSpy;
+  let createSpy;
+  beforeEach(() => {
+    findOneSpy = jest.spyOn(MonitorStats, "findOne");
+    createSpy = jest.spyOn(MonitorStats, "create");
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+  it("creates MonitorStats when missing and returns saved stats", async () => {
+    const now = new Date("2024-02-01T00:00:00Z");
+    jest.setSystemTime(now);
+    findOneSpy.mockResolvedValue(null);
+    const { monitor } = buildMonitor({});
+    const statusResponse = buildStatusResponse({ status: "up", responseTime: 123 });
+    const stats = buildStats({ totalChecks: 0, totalUpChecks: 0, totalDownChecks: 0 });
+    const saveMock = stats.save;
+    createSpy.mockResolvedValue(stats);
+
+    const result = await service.updateMonitorStats(monitor, statusResponse, false);
+
+    expect(findOneSpy).toHaveBeenCalledWith({ monitorId: monitor._id });
+    expect(createSpy).toHaveBeenCalledWith({
+      monitorId: monitor._id,
+      currentStreakStartedAt: expect.any(Number),
     });
-    afterEach(() => {
-        jest.useRealTimers();
-        jest.restoreAllMocks();
-    });
-    it("throws ApiError when monitor stats are missing", async () => {
-        findOneSpy.mockResolvedValue(null);
-        const { monitor } = buildMonitor({});
-        const statusResponse = buildStatusResponse({ status: "up" });
-        await expect(service.updateMonitorStats(monitor, statusResponse, false)).rejects.toBeInstanceOf(ApiError);
-        await expect(service.updateMonitorStats(monitor, statusResponse, false)).rejects.toMatchObject({ message: "MonitorStats not found", status: 500 });
-        expect(findOneSpy).toHaveBeenCalledWith({ monitorId: monitor._id });
-    });
+    expect(saveMock).toHaveBeenCalledTimes(1);
+    expect(result).toBe(stats);
+    expect(stats.totalChecks).toBe(1);
+    expect(stats.totalUpChecks).toBe(1);
+    expect(stats.lastResponseTime).toBe(123);
+    expect(stats.lastCheckTimestamp).toBe(now.getTime());
+  });
     it("increments counters and preserves streak when status unchanged", async () => {
         const now = new Date("2024-02-01T12:00:00Z");
         jest.setSystemTime(now);
