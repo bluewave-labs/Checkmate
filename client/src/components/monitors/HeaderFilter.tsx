@@ -11,6 +11,7 @@ import {
   type UptimeMonitorType,
   type MonitorStatus,
 } from "@/types/monitor";
+import { ThemeContext } from "@emotion/react";
 
 type HeaderFilterProps = {
   selectedTypes: UptimeMonitorType[];
@@ -53,8 +54,10 @@ export const HeaderFilter = ({
       >
         {UptimeMonitorTypes.map((type) => (
           <MenuItem key={type} value={type}>
-            <Checkbox checked={selectedTypes.includes(type)} />
-            <Typography textTransform={"capitalize"}>{type}</Typography>
+            <Stack direction={"row"} gap={theme.spacing(2)}>
+              <Checkbox checked={selectedTypes.includes(type)} />
+              <Typography textTransform={"capitalize"}>{type}</Typography>
+            </Stack>
           </MenuItem>
         ))}
       </Select>
@@ -67,8 +70,10 @@ export const HeaderFilter = ({
       >
         {MonitorStatuses.map((status) => (
           <MenuItem key={status} value={status}>
-            <Checkbox checked={selectedStatuses.includes(status)} />
-            <Typography textTransform={"capitalize"}>{status}</Typography>
+            <Stack direction={"row"} gap={theme.spacing(2)}>
+              <Checkbox checked={selectedStatuses.includes(status)} />
+              <Typography textTransform={"capitalize"}>{status}</Typography>
+            </Stack>
           </MenuItem>
         ))}
       </Select>

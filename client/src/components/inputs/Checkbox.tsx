@@ -8,7 +8,10 @@ type CheckboxInputProps = CheckboxProps & {
   label?: string;
 };
 export const CheckboxInput = forwardRef<HTMLInputElement, CheckboxInputProps>(
-  function CheckboxInput({ sx, ...props }: CheckboxInputProps, ref: React.Ref<HTMLInputElement>) {
+  function CheckboxInput(
+    { sx, ...props }: CheckboxInputProps,
+    ref: React.Ref<HTMLInputElement>
+  ) {
     const theme = useTheme();
     return (
       <Checkbox
@@ -35,9 +38,7 @@ export const CheckboxInput = forwardRef<HTMLInputElement, CheckboxInputProps>(
             stroke: "currentColor",
             fill: "none",
           },
-          "&.Mui-checked svg rect": {
-            fill: theme.palette.accent.main,
-          },
+
           ...sx,
         }}
       />
