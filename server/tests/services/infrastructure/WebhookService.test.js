@@ -40,5 +40,27 @@ describe("WebhookService", () => {
     const alert = service.buildAlert(buildMonitor(), buildIncident());
     await expect(service.sendMessage(alert, channel)).rejects.toBeInstanceOf(ApiError);
   });
-});
 
+  it("returns false when webhook post fails", async () => {
+    const getGot = () => jest.requireMock("got").default;
+    getGot().post.mockRejectedValue(new Error("net"));
+    const service = new WebhookService();
+    const channel = buildChannel();
+    const alert = service.buildAlert(buildMonitor(), buildIncident());
+    const ok = await service.sendMessage(alert, channel);
+    expect(ok).toBe(false);
+  });
+
+  it("sends alert fields in JSON body", async () => {
+    const getGot = () => jest.requireMock("got").default;
+    getGot().post.mockResolvedValue({});
+    const service = new WebhookService();
+    const channel = buildChannel();
+    const alert = service.buildAlert(buildMonitor(), buildIncident());
+    await service.sendMessage(alert, channel);
+    const body = getGot().post.mock.calls[0][1].json;
+    expect(body.name).toBe(alert.name);
+    expect(body.status).toBe(alert.status);
+    expect(body.url).toBe(alert.url);
+  });
+});

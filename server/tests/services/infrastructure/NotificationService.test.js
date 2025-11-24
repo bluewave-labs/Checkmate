@@ -165,6 +165,24 @@ describe("NotificationService.testNotificationChannels", () => {
     expect(byType.discord).toBe(true);
     expect(byType.webhook).toBe(true);
   });
+
+  it("uses 'N/A' for missing channel URLs/emails in results", async () => {
+    const service = createService();
+    const monitor = buildMonitor({ notificationChannels: ["c1", "c2"] });
+    jest.spyOn(Monitor, "findOne").mockResolvedValue(monitor);
+    const channels = [
+      buildChannel({ _id: "c1", type: "slack", config: {} }),
+      buildChannel({ _id: "c2", type: "email", config: {} }),
+    ];
+    jest.spyOn(NotificationChannel, "find").mockReturnValue({ lean: () => channels });
+    jest.spyOn(service["slackService"], "testMessage").mockResolvedValue(true);
+    jest.spyOn(service["emailService"], "testMessage").mockResolvedValue(true);
+
+    const results = await service.testNotificationChannels("m1", "t1");
+    const byType = Object.fromEntries(results.map((r) => [r.channelType, r.channelUrl]));
+    expect(byType.slack).toBe("N/A");
+    expect(byType.email).toBe("N/A");
+  });
 });
 
 describe("NotificationService.handleNotifications", () => {
@@ -226,5 +244,30 @@ describe("NotificationService.handleNotifications", () => {
     expect(slackSpy).toHaveBeenCalled();
     expect(discordSpy).toHaveBeenCalled();
     expect(webhookSpy).toHaveBeenCalled();
+  });
+
+  it("handles unknown channel types without throwing", async () => {
+    const service = createService();
+    const monitor = buildMonitor({ notificationChannels: ["cx"] });
+    jest
+      .spyOn(NotificationChannel, "find")
+      .mockResolvedValue([{ _id: "cx", type: "unknown", name: "u", config: {} }]);
+
+    await expect(
+      service.handleNotifications(monitor, { _id: "i1", monitorId: "m1" })
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe("NotificationService unknown channel branch", () => {
+  it("testNotificationChannel returns false for unknown type", async () => {
+    const service = createService();
+    const sent = await service.testNotificationChannel({
+      _id: "c-unknown",
+      type: "unknown",
+      name: "u",
+      config: {},
+    });
+    expect(sent).toBe(false);
   });
 });

@@ -10,6 +10,7 @@ import {
   IOrgMembership,
 } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
+import { invalidateCachesForUser } from "@/middleware/AddUserContext.js";
 
 const SERVICE_NAME = "TeamMemberService";
 export interface ITeamMemberService {
@@ -117,11 +118,21 @@ class TeamMemberService implements ITeamMemberService {
       throw new ApiError("Role not found", 404);
     }
 
-    const teamMembership = await TeamMembership.findOneAndUpdate(
+    const updated = await TeamMembership.findOneAndUpdate(
       { orgId: orgId, _id: teamMembershipId },
       { roleId: roleId },
       { new: true }
-    )
+    );
+
+    if (!updated) {
+      throw new ApiError("Team membership not found", 404);
+    }
+    invalidateCachesForUser(updated.userId.toString());
+
+    const teamMembership = await TeamMembership.findOne({
+      orgId: orgId,
+      _id: teamMembershipId,
+    })
       .populate<IUser>("userId", "firstName lastName email")
       .populate<IRole>("roleId", "name scope permissions");
 
@@ -140,6 +151,7 @@ class TeamMemberService implements ITeamMemberService {
     if (!tm) {
       throw new ApiError("Team member not found", 404);
     }
+    invalidateCachesForUser(tm.userId.toString());
     await TeamMembership.findOneAndDelete({ _id: teamMemberId, orgId: orgId });
     return true;
   };

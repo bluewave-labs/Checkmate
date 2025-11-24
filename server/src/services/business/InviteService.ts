@@ -69,6 +69,16 @@ class InviteService implements IInviteService {
         throw new ApiError("User is already a team member", 409);
       }
 
+      // Check if inivite already exists
+      const existingInvite = await Invite.findOne({
+        email,
+        teamId,
+      });
+
+      if (existingInvite) {
+        throw new ApiError("An invite already exists for this email", 409);
+      }
+
       const token = crypto.randomBytes(32).toString("hex");
       const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 

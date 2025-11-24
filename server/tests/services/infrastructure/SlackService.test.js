@@ -39,4 +39,25 @@ describe("SlackService", () => {
     const alert = service.buildAlert(buildMonitor(), buildIncident());
     await expect(service.sendMessage(alert, channel)).rejects.toThrow("Webhook URL not configured");
   });
+
+  it("returns false when webhook post fails", async () => {
+    const service = new SlackService();
+    getGot().post.mockRejectedValue(new Error("net"));
+    const channel = buildChannel();
+    const alert = service.buildAlert(buildMonitor(), buildIncident());
+    const ok = await service.sendMessage(alert, channel);
+    expect(ok).toBe(false);
+  });
+
+  it("includes resolution fields and timestamps in payload", async () => {
+    const service = new SlackService();
+    getGot().post.mockResolvedValue({});
+    const channel = buildChannel();
+    const incident = buildIncident({ resolved: true, resolutionType: "auto", resolutionNote: "n" });
+    const alert = service.buildAlert(buildMonitor(), incident);
+    await service.sendMessage(alert, channel);
+    const payload = getGot().post.mock.calls[0][1].json;
+    expect(payload.blocks.some((b) => JSON.stringify(b).includes("Resolution Type"))).toBe(true);
+    expect(payload.blocks.some((b) => JSON.stringify(b).includes("Checked at"))).toBe(true);
+  });
 });

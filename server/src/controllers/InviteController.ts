@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from "express";
-import InviteService from "@/services/business/InviteService.js";
 import ApiError from "@/utils/ApiError.js";
+import { EmailService, InviteService } from "@/services/index.js";
+import { config } from "@/config/index.js";
 
 class InviteController {
+  private emailService: EmailService;
   private inviteService: InviteService;
-  constructor(inviteService: InviteService) {
+  constructor(inviteService: InviteService, emailService: EmailService) {
     this.inviteService = inviteService;
+    this.emailService = emailService;
   }
 
   create = async (req: Request, res: Response, next: NextFunction) => {
@@ -36,6 +39,14 @@ class InviteController {
         teamId,
         teamRoleId
       );
+
+      try {
+        this.emailService.sendGeneric(email, "You're invited!", {
+          text: `You have been invited to join Checkmate. Use this link to accept the invite: ${config.ORIGIN}/register/${invite}`,
+        });
+      } catch (error) {
+        console.error("Failed to send invite email:", error);
+      }
       res.status(201).json({ message: "OK", data: invite });
     } catch (error: any) {
       next(error);

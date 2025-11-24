@@ -24,7 +24,10 @@ export const initControllers = (services: any) => {
     services.authService,
     services.inviteService
   );
-  controllers.inviteController = new InviteController(services.inviteService);
+  controllers.inviteController = new InviteController(
+    services.inviteService,
+    services.emailService
+  );
   controllers.maintenanceController = new MaintenanceController(
     services.maintenanceService
   );

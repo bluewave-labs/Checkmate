@@ -49,11 +49,9 @@ class RecoveryController implements IRecoveryController {
           const recoveryToken = await this.recoveryService.create(user._id);
           // Don't wait for email to be sent
           this.emailService
-            .sendGeneric(
-              user.email,
-              "Password Recovery",
-              `Your recovery link is: ${config.ORIGIN}/recovery/${recoveryToken}`
-            )
+            .sendGeneric(user.email, "Password Recovery", {
+              text: `Your recovery link is: ${config.ORIGIN}/recovery/${recoveryToken}`,
+            })
             .catch((error) => {
               logger.error(error);
             });

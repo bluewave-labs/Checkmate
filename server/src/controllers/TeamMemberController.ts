@@ -143,12 +143,14 @@ class TeamMemberController implements ITeamMemberController {
       }
 
       const teamMemberId = req.params.id;
-      if (!req.params.id) {
+      if (!teamMemberId) {
         throw new ApiError("No team member ID", 400);
       }
 
-      const deleted = await this.teamMemberService.delete(orgId, req.params.id);
+      console.log(teamMemberId);
 
+      const deleted = await this.teamMemberService.delete(orgId, teamMemberId);
+      invalidateCachesForUser(teamMemberId);
       if (!deleted) {
         throw new ApiError("Failed to delete team member", 500);
       }

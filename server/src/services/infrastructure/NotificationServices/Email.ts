@@ -33,7 +33,7 @@ export interface IEmailService extends IMessageService {
   sendGeneric: (
     to: string,
     subject: string,
-    content: string
+    content: { text?: string; html?: string }
   ) => Promise<boolean>;
   testTransport: (transport: IEmailTransport) => Promise<boolean>;
   rebuildTransport: (transport: IEmailTransport) => Promise<boolean>;
@@ -186,7 +186,11 @@ class EmailService implements IEmailService {
     );
   };
 
-  sendGeneric = async (to: string, subject: string, content: string) => {
+  sendGeneric = async (
+    to: string,
+    subject: string,
+    content: { text?: string; html?: string }
+  ) => {
     try {
       if (this.transporter === null) {
         this.transporter = await this.buildTransport();
@@ -196,7 +200,8 @@ class EmailService implements IEmailService {
         from: `"Checkmate" <${this.from}>`,
         to: to,
         subject: subject,
-        text: content,
+        text: content.text,
+        html: content.html,
       });
       return true;
     } catch (error) {

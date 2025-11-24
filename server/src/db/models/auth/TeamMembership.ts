@@ -24,27 +24,6 @@ teamMembershipSchema.post<ITeamMembership>("save", async function (doc) {
   invalidateCachesForUser(doc.userId.toString());
 });
 
-teamMembershipSchema.post<ITeamMembership>(
-  "deleteOne",
-  { document: true, query: false },
-  async function (doc) {
-    invalidateCachesForUser(doc.userId.toString());
-  }
-);
-
-teamMembershipSchema.post("findOneAndDelete", function (doc: ITeamMembership) {
-  if (!doc) return;
-  invalidateCachesForUser(doc.userId.toString());
-});
-
-teamMembershipSchema.post(
-  "findOneAndUpdate",
-  async function (doc: ITeamMembership) {
-    if (!doc) return;
-    invalidateCachesForUser(doc.userId.toString());
-  }
-);
-
 export const TeamMembership = mongoose.model<ITeamMembership>(
   "TeamMembership",
   teamMembershipSchema
