@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Table, Pagination, StatusLabel } from "@/components/design-elements";
 import { HeatmapResponseTime } from "@/components/common/HeatmapResponseTime";
+import { HistogramResponseTime } from "@/components/common/HistogramResponseTime";
 import type { Header } from "@/components/design-elements/Table";
 import { ActionsMenu } from "@/components/actions-menu";
 import { ArrowDown, ArrowUp } from "lucide-react";

@@ -5,9 +5,10 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { SettingsForm } from "@/pages/settings/SettingsForm";
 
+import type { ChartType } from "@/features/uiSlice";
 import { useTheme } from "@mui/material/styles";
 import { useEffect, useMemo, useState } from "react";
-import { setTimezone, setMode } from "@/features/uiSlice";
+import { setTimezone, setMode, setChartType } from "@/features/uiSlice";
 import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
 import timezones from "@/utils/timezones.json";
 import type { ITimeZone } from "@/types/timezone";
@@ -16,6 +17,7 @@ import { useGet, usePatch, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { z } from "zod";
 import { systemSettingsSchema } from "@/validation/zod";
+import DummyChart from "./DummyChart";
 
 const SettingsPage = () => {
   type FormValues = z.infer<typeof systemSettingsSchema>;
@@ -29,6 +31,7 @@ const SettingsPage = () => {
   const dispatch = useAppDispatch();
   const timezone = useAppSelector((state) => state.ui.timezone);
   const mode = useAppSelector((state) => state.ui.mode);
+  const chartType = useAppSelector((state) => state.ui.chartType);
   const [selectedTimezone, setSelectedTimezone] = useState<ITimeZone | null>(
     null
   );
@@ -84,10 +87,35 @@ const SettingsPage = () => {
                 <MenuItem value="dark">Dark</MenuItem>
               </Select>
             </Stack>
+
             <Stack spacing={theme.spacing(2)}>
               <Typography>Language</Typography>
               <LanguageSelector />
             </Stack>
+          </Stack>
+        }
+      />
+      <ConfigBox
+        title="Chart settings"
+        subtitle="Choose what type of Uptime chart you want to see on the dashboard and status page"
+        leftContent={<DummyChart type={chartType} />}
+        rightContent={
+          <Stack spacing={theme.spacing(2)}>
+            <Typography>Chart Type</Typography>
+            <Select
+              value={chartType}
+              onChange={(e: SelectChangeEvent<string>) => {
+                dispatch(setChartType(e.target.value as ChartType));
+              }}
+            >
+              <MenuItem value="heatmap">Heatmap</MenuItem>
+              <MenuItem value="histogram">Histogram</MenuItem>
+            </Select>
+            <Typography>
+              {chartType === "heatmap"
+                ? "Heatmap: colored line indicates status"
+                : "Bar chart: color denotes status (up/down). height denotes response time"}
+            </Typography>
           </Stack>
         }
       />

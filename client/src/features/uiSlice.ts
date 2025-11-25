@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
+export type ChartType = "heatmap" | "histogram";
+
 interface UiState {
   language: string;
   mode: string;
   sidebarOpen: boolean;
   timezone: string;
+  chartType: ChartType;
 }
 
 const initialState: UiState = {
@@ -13,6 +16,7 @@ const initialState: UiState = {
   mode: "dark",
   sidebarOpen: true,
   timezone: "America/Vancouver",
+  chartType: "heatmap",
 };
 
 export const uiSlice = createSlice({
@@ -28,12 +32,20 @@ export const uiSlice = createSlice({
     setTimezone: (state, action: PayloadAction<string>) => {
       state.timezone = action.payload;
     },
+    setChartType: (state, action: PayloadAction<ChartType>) => {
+      state.chartType = action.payload;
+    },
     setSidebarOpen: (state, action: PayloadAction<boolean>) => {
       state.sidebarOpen = action.payload;
     },
   },
 });
 
-export const { setLanguage, setMode, setSidebarOpen, setTimezone } =
-  uiSlice.actions;
+export const {
+  setLanguage,
+  setMode,
+  setSidebarOpen,
+  setTimezone,
+  setChartType,
+} = uiSlice.actions;
 export default uiSlice.reducer;
