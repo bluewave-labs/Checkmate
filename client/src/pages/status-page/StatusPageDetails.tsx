@@ -10,6 +10,7 @@ import type { ApiResponse } from "@/hooks/UseApi";
 import { useParams } from "react-router";
 import type { IStatusPageWithMonitors } from "@/types/status-page";
 import { NameHeader } from "@/components/status-pages/NameHeader";
+
 const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
 const StatusPages = () => {
   const theme = useTheme();

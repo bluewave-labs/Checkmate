@@ -7,7 +7,7 @@ import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 
 interface HistogramResponseTimeProps {
   checks: ICheck[];
-  height?: number | string;
+  height?: ResponsiveStyleValue<number | string>;
   gap?: ResponsiveStyleValue<number | string>;
 }
 

@@ -8,6 +8,7 @@ import type { Header } from "@/components/design-elements/Table";
 import { ActionsMenu } from "@/components/actions-menu";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
+import { useAppSelector } from "@/hooks/AppHooks";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -139,6 +140,9 @@ export const MonitorTable = ({
   };
 
   const getHeaders = () => {
+    const chartType = useAppSelector(
+      (state) => state?.ui?.chartType || "heatmap"
+    );
     const renderSortIcon = (isActive: boolean) => (
       <Box width={16} display="inline-flex" justifyContent="center">
         {isActive ? (
@@ -193,7 +197,11 @@ export const MonitorTable = ({
         id: "histogram",
         content: t("responseTime"),
         render: (row) => {
-          return <HeatmapResponseTime checks={row.latestChecks} />;
+          if (chartType === "histogram") {
+            return <HistogramResponseTime checks={row.latestChecks} />;
+          } else {
+            return <HeatmapResponseTime checks={row.latestChecks} />;
+          }
         },
       },
       {
