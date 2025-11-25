@@ -24,6 +24,7 @@ export const StatusPageRow = ({ monitor }: { monitor: IMonitor }) => {
       </Grid>
       <Grid size={12} marginTop={theme.spacing(2)}>
         <HeatmapResponseTime
+          gap={{ xs: theme.spacing(0.5), md: theme.spacing(2) }}
           checks={monitor?.latestChecks}
           availabilityCellSx={{
             borderRadius: {

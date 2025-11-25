@@ -1,21 +1,29 @@
 import Box from "@mui/material/Box";
+// Using strip + square; icons removed
 import { useTheme } from "@mui/material/styles";
 import type { ICheck } from "@/types/check";
 import { getResponseColor } from "@/utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 import type { SxProps } from "@mui/material/styles";
+import type { ResponsiveStyleValue } from "@mui/system";
 interface HeatmapResponseTimeProps {
   checks: ICheck[];
+  gap?: ResponsiveStyleValue<number | string>;
   availabilityCellSx?: SxProps;
   responseCellSx?: SxProps;
 }
 
 export const HeatmapResponseTime = ({
   checks,
+  gap,
   availabilityCellSx,
   responseCellSx,
 }: HeatmapResponseTimeProps) => {
   const theme = useTheme();
+
+  if (!gap) {
+    gap = theme.spacing(0.5);
+  }
 
   if (!checks || checks.length === 0) return null;
   let data = Array<any>();
@@ -38,7 +46,7 @@ export const HeatmapResponseTime = ({
           width: "100%",
           display: "grid",
           gridTemplateColumns: "repeat(25, 1fr)",
-          gap: theme.spacing(0.5),
+          gap: gap,
           alignItems: "stretch",
         }}
       >
