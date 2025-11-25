@@ -65,6 +65,12 @@ export const HeatmapResponseTime = ({
                   mid: theme.palette.warning.lowContrast,
                   end: theme.palette.error.lowContrast,
                 });
+          const statusBorder =
+            check.status === "placeholder"
+              ? theme.palette.primary.lowContrast
+              : check.status === "up"
+                ? theme.palette.success.main
+                : theme.palette.error.main;
 
           return (
             <HeatmapResponseTimeTooltip key={`${check}-${index}`} check={check}>
@@ -81,15 +87,10 @@ export const HeatmapResponseTime = ({
                     gap: theme.spacing(2),
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: "100%",
-                      aspectRatio: "10",
-                      bgcolor: statusBg,
-                      borderRadius: theme.spacing(0.5),
-                      ...availabilityCellSx,
-                    }}
-                  />
+                  <Box sx={{ position: "relative", width: "100%", aspectRatio: "10" }}>
+                    <Box sx={{ position: "absolute", inset: 0, bgcolor: statusBg, borderRadius: theme.spacing(0.5), ...availabilityCellSx }} />
+                    <Box sx={{ position: "absolute", inset: 0, pointerEvents: "none", borderRadius: theme.spacing(0.5), boxShadow: `inset 0 0 0 2px ${statusBorder}` }} />
+                  </Box>
                   <Box
                     sx={{
                       width: "100%",
