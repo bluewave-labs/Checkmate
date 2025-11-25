@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Table, Pagination, StatusLabel } from "@/components/design-elements";
-import { HistogramResponseTime } from "@/components/monitors";
+import { HeatmapResponseTime } from "@/components/common/HeatmapResponseTime";
 import type { Header } from "@/components/design-elements/Table";
 import { ActionsMenu } from "@/components/actions-menu";
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -192,11 +192,7 @@ export const MonitorTable = ({
         id: "histogram",
         content: t("responseTime"),
         render: (row) => {
-          return (
-            <Stack alignItems={{ xs: "flex-start", md: "center" }}>
-              <HistogramResponseTime checks={row.latestChecks} />
-            </Stack>
-          );
+          return <HeatmapResponseTime checks={row.latestChecks} />;
         },
       },
       {

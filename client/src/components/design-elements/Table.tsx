@@ -51,7 +51,7 @@ export function DataTable<
     id?: string | number;
     _id?: string | number;
     onRowClick?: (row: T) => void;
-  }
+  },
 >({
   headers,
   data,

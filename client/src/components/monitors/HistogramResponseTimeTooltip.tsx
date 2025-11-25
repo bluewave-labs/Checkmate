@@ -47,6 +47,9 @@ export const HistogramResponseTimeTooltip: React.FC<{
           {check?.responseTime && (
             <Typography>Response Time: {check.responseTime} ms</Typography>
           )}
+          <Typography color="error" textTransform={"capitalize"}>
+            Status: {check?.status}
+          </Typography>
         </Stack>
       }
     >

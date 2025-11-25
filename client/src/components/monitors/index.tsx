@@ -4,7 +4,6 @@ export { ChartAvgResponse } from "./ChartAvgResponse";
 export { HeaderRange } from "../common/HeaderRange";
 export { HeaderControls } from "./HeaderControls";
 export { ChartResponseTime } from "./ChartResponseTime";
-export { HistogramResponseTime } from "./HistogramResponseTime";
 export { HistogramPageSpeed } from "./HistogramPageSpeed";
 export { HistogramInfrastructure } from "./HistogramInfrastructure";
 
