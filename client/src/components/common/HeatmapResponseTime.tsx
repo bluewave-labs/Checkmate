@@ -2,13 +2,19 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { ICheck } from "@/types/check";
 import { getResponseColor } from "@/utils/DataUtils";
-import { HistogramResponseTimeTooltip } from "@/components/monitors/HistogramResponseTimeTooltip";
-
+import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
+import type { SxProps } from "@mui/material/styles";
 interface HeatmapResponseTimeProps {
   checks: ICheck[];
+  availabilityCellSx?: SxProps;
+  responseCellSx?: SxProps;
 }
 
-export const HeatmapResponseTime = ({ checks }: HeatmapResponseTimeProps) => {
+export const HeatmapResponseTime = ({
+  checks,
+  availabilityCellSx,
+  responseCellSx,
+}: HeatmapResponseTimeProps) => {
   const theme = useTheme();
 
   if (!checks || checks.length === 0) return null;
@@ -53,35 +59,41 @@ export const HeatmapResponseTime = ({ checks }: HeatmapResponseTimeProps) => {
                 });
 
           return (
-            <HistogramResponseTimeTooltip
-              key={`${check}-${index}`}
-              check={check}
-            >
+            <HeatmapResponseTimeTooltip key={`${check}-${index}`} check={check}>
               <Box
                 sx={{
                   display: "grid",
                   gridTemplateRows: "auto auto",
-                  gap: theme.spacing(0.5),
                 }}
               >
                 <Box
                   sx={{
-                    width: "100%",
-                    height: theme.spacing(0.75),
-                    borderRadius: theme.spacing(0.5),
-                    bgcolor: statusBg,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: theme.spacing(2),
                   }}
-                />
-                <Box
-                  sx={{
-                    width: "100%",
-                    aspectRatio: "1 / 1",
-                    borderRadius: theme.spacing(0.5),
-                    bgcolor: respBg,
-                  }}
-                />
+                >
+                  <Box
+                    sx={{
+                      width: "100%",
+                      aspectRatio: "10",
+                      bgcolor: statusBg,
+                      borderRadius: theme.spacing(0.5),
+                      ...availabilityCellSx,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      width: "100%",
+                      aspectRatio: "1 / 1",
+                      bgcolor: respBg,
+                      borderRadius: theme.spacing(0.5),
+                      ...responseCellSx,
+                    }}
+                  />
+                </Box>
               </Box>
-            </HistogramResponseTimeTooltip>
+            </HeatmapResponseTimeTooltip>
           );
         })}
       </Box>

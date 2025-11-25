@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import { BaseBox } from "@/components/design-elements";
 import type { MonitorStatus } from "@/types/monitor";
+import type { SxProps } from "@mui/material/styles";
 
 import { getStatusPalette, getValuePalette } from "@/utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
@@ -8,7 +9,13 @@ import { useTheme } from "@mui/material/styles";
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
 export type ValueType = (typeof ValueTypes)[number];
 
-export const StatusLabel = ({ status }: { status: MonitorStatus }) => {
+export const StatusLabel = ({
+  status,
+  sx,
+}: {
+  status: MonitorStatus;
+  sx?: SxProps;
+}) => {
   const theme = useTheme();
   const palette = getStatusPalette(status);
   const transformedText =
@@ -27,6 +34,7 @@ export const StatusLabel = ({ status }: { status: MonitorStatus }) => {
           theme.palette.mode === "dark"
             ? "rgba(255, 255, 255, 0.08)"
             : "rgba(0, 0, 0, 0.08)",
+        ...sx,
       }}
     >
       <Box

@@ -6,12 +6,17 @@ import { useAppSelector } from "@/hooks/AppHooks";
 import type { LatestCheck } from "@/types/check";
 import { useTheme } from "@mui/material/styles";
 
-export const HistogramResponseTimeTooltip: React.FC<{
+export const HeatmapResponseTimeTooltip: React.FC<{
   children: React.ReactElement;
   check: LatestCheck;
 }> = ({ children, check }) => {
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
   const theme = useTheme();
+
+  const getColor = (status: string) => {
+    if (status === "up") return theme.palette.success.lowContrast;
+    if (status === "down") return theme.palette.error.lowContrast;
+  };
 
   if (check.status === "placeholder") {
     return children;
@@ -47,8 +52,12 @@ export const HistogramResponseTimeTooltip: React.FC<{
           {check?.responseTime && (
             <Typography>Response Time: {check.responseTime} ms</Typography>
           )}
-          <Typography color="error" textTransform={"capitalize"}>
-            Status: {check?.status}
+
+          <Typography textTransform={"capitalize"}>
+            Status:{" "}
+            <span style={{ color: getColor(check?.status) }}>
+              {check?.status}
+            </span>
           </Typography>
         </Stack>
       }
