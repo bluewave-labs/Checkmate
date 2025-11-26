@@ -66,7 +66,7 @@ const SkeletonCard: React.FC<SkeletonCardProps> = ({
   };
 
   return (
-    <Box sx={{ position: "relative", mt: 20 }}>
+    <Box position={"relative"} mt={20} mb={20}>
       {showHalo && (
         <Box
           sx={{
