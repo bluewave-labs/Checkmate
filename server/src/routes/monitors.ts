@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { MonitorController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
-import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
+import {
+  verifyOrgPermission,
+  verifyTeamPermission,
+} from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 import { validateBody, validateQuery } from "@/middleware/validation.js";
@@ -108,6 +111,13 @@ class MonitorRoutes {
       addUserContext,
       verifyTeamPermission([PERMISSIONS.monitors.delete]),
       this.controller.delete
+    );
+    this.router.delete(
+      "/",
+      verifyToken,
+      addUserContext,
+      verifyOrgPermission([PERMISSIONS.monitors.delete]),
+      this.controller.deleteAllInOrg
     );
   };
 

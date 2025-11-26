@@ -59,6 +59,7 @@ export interface IMonitorService {
     updateData: Partial<IMonitor>
   ) => Promise<IMonitor>;
   delete: (teamId: string, monitorId: string) => Promise<boolean>;
+  deleteAllInOrg: (orgId: string) => Promise<boolean>;
   export: (teamId: string) => Promise<Array<Record<string, unknown>>>;
   import: (
     orgId: string,
@@ -663,6 +664,15 @@ class MonitorService implements IMonitorService {
     }
     await monitor.deleteOne();
     return true;
+  }
+
+  async deleteAllInOrg(orgId: string) {
+    const montiors = await Monitor.find({ orgId });
+    for (const monitor of montiors) {
+      await this.jobQueue.deleteJob(monitor);
+    }
+    const deleted = await Monitor.deleteMany({ orgId });
+    return deleted.acknowledged;
   }
 
   export = async (teamId: string) => {

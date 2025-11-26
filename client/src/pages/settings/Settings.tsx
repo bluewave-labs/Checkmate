@@ -1,23 +1,31 @@
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import { BasePage, ConfigBox } from "@/components/design-elements";
-import { AutoComplete, Select, LanguageSelector } from "@/components/inputs";
-import { RadioWithDescription } from "@/components/inputs/RadioInput";
+import {
+  AutoComplete,
+  Select,
+  LanguageSelector,
+  Button,
+  RadioWithDescription,
+  Dialog,
+} from "@/components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { SettingsForm } from "@/pages/settings/SettingsForm";
+import DummyChart from "@/pages/settings/DummyChart";
 
 import { useTheme } from "@mui/material/styles";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { setTimezone, setMode, setChartType } from "@/features/uiSlice";
 import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
 import timezones from "@/utils/timezones.json";
 import type { ITimeZone } from "@/types/timezone";
 import type { SelectChangeEvent } from "@mui/material/Select";
-import { useGet, usePatch, usePost } from "@/hooks/UseApi";
+import { useGet, usePatch, usePost, useDelete } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { z } from "zod";
 import { systemSettingsSchema } from "@/validation/zod";
-import DummyChart from "./DummyChart";
 
 const SettingsPage = () => {
   type FormValues = z.infer<typeof systemSettingsSchema>;
@@ -26,8 +34,13 @@ const SettingsPage = () => {
 
   const orgPermissions = user?.org?.permissions || [];
   const hasMaster = orgPermissions.includes("master");
+  const hasDelete =
+    orgPermissions.includes("monitors.*") ||
+    orgPermissions.includes("monitors.delete") ||
+    hasMaster;
 
   const theme = useTheme();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const timezone = useAppSelector((state) => state.ui.timezone);
   const mode = useAppSelector((state) => state.ui.mode);
@@ -42,6 +55,7 @@ const SettingsPage = () => {
 
   const { post, loading: posting } = usePost<Partial<FormValues>, any>();
   const { patch, loading: patching } = usePatch<Partial<FormValues>, any>();
+  const { deleteFn, loading: isDeleting } = useDelete();
 
   const { response, loading } = useGet<ApiResponse<any>>(
     hasMaster ? "/settings" : null
@@ -56,6 +70,15 @@ const SettingsPage = () => {
   const onTest = async (data: Partial<FormValues>) => {
     await post("/settings/test-transport", data);
   };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleOpen = () => setIsDialogOpen(true);
+  const handleCancel = () => setIsDialogOpen(false);
+  const handleConfirm = async () => {
+    await deleteFn("/monitors");
+    setIsDialogOpen(false);
+  };
+
   return (
     <BasePage>
       <ConfigBox
@@ -123,6 +146,28 @@ const SettingsPage = () => {
           </Stack>
         }
       />
+      {hasDelete && (
+        <ConfigBox
+          title="Monitors"
+          subtitle="Monitor related settings"
+          rightContent={
+            <Stack gap={theme.spacing(4)}>
+              <Stack gap={theme.spacing(4)}>
+                <Box>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleOpen}
+                  >
+                    Remove all monitors
+                  </Button>
+                </Box>
+              </Stack>
+            </Stack>
+          }
+        />
+      )}
+
       {hasMaster && (
         <SettingsForm
           onSubmit={onSubmit}
@@ -131,6 +176,17 @@ const SettingsPage = () => {
           loading={posting || loading || patching}
         />
       )}
+      <Dialog
+        open={isDialogOpen}
+        title={t("settings.removeAllMonitors.title", "Delete all monitors?")}
+        content={t(
+          "settings.removeAllMonitors.description",
+          "This action cannot be undone. Are you sure you want to remove all monitors?"
+        )}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        loading={isDeleting}
+      />
     </BasePage>
   );
 };

@@ -37,6 +37,8 @@ export const HistogramResponseTime = ({
     data = normalized;
   }
 
+  console.log(data);
+
   const chartHeight = typeof height === "number" ? `${height}px` : height;
   const gridGap = gap ?? theme.spacing(0.5);
 
@@ -85,7 +87,9 @@ export const HistogramResponseTime = ({
           );
 
           return isPlaceholder ? (
-            <Box key={index}>{bar}</Box>
+            <Box key={index} sx={{ height: "100%" }}>
+              {bar}
+            </Box>
           ) : (
             <HeatmapResponseTimeTooltip key={index} check={check}>
               {bar}

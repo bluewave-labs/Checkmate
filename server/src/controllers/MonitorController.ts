@@ -15,6 +15,11 @@ export interface IMonitorController {
   togglePause(req: Request, res: Response, next: NextFunction): Promise<void>;
   update(req: Request, res: Response, next: NextFunction): Promise<void>;
   delete(req: Request, res: Response, next: NextFunction): Promise<void>;
+  deleteAllInOrg(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
   testNotifications(
     req: Request,
     res: Response,
@@ -281,6 +286,28 @@ class MonitorController {
 
       res.status(200).json({
         message: "Monitor deleted successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteAllInOrg = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const tokenizedUser = req.user;
+      if (!tokenizedUser) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const orgId = tokenizedUser.orgId;
+      if (!orgId) {
+        throw new ApiError("No organization ID", 400);
+      }
+
+      await this.monitorService.deleteAllInOrg(orgId);
+
+      res.status(200).json({
+        message: "All monitors in organization deleted successfully",
       });
     } catch (error) {
       next(error);
