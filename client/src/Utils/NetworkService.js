@@ -1145,6 +1145,10 @@ class NetworkService {
 			},
 		});
 	}
+
+	async fetchJson() {
+		return this.axiosInstance.get("/monitors/export/json");
+	}
 }
 
 export default NetworkService;

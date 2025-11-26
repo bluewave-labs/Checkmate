@@ -538,6 +538,23 @@ const useExportMonitors = () => {
 	return [exportMonitors, isLoading];
 };
 
+const useFetchJson = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const fetchJson = async () => {
+		try {
+			setIsLoading(true);
+			const res = await networkService.fetchJson();
+			createToast({ body: "JSON fetched successfully" });
+			return res?.data?.data ?? [];
+		} catch (error) {
+			createToast({ body: "Failed to create monitor." });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	return [fetchJson, isLoading];
+};
+
 export {
 	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
@@ -557,4 +574,5 @@ export {
 	useCreateBulkMonitors,
 	useExportMonitors,
 	useFetchMonitorGames,
+	useFetchJson,
 };
