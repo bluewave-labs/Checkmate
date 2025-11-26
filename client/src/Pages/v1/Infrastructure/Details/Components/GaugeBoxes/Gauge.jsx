@@ -102,6 +102,10 @@ Gauge.propTypes = {
 	valueOne: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 	metricTwo: PropTypes.string,
 	valueTwo: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricThree: PropTypes.string,
+	valueThree: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricFour: PropTypes.string,
+	valueFour: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
 
 export default Gauge;
