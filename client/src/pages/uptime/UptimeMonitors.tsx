@@ -41,6 +41,7 @@ const UptimeMonitors = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedTypes, setSelectedTypes] = useState<UptimeMonitorType[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<MonitorStatus[]>([]);
+  const [searchString, setSearchString] = useState<string>("");
 
   const { deleteFn, loading: isDeleting } = useDelete();
 
@@ -60,6 +61,7 @@ const UptimeMonitors = () => {
     "embedChecks=true",
     typeQuery,
     statusQuery,
+    `search=${searchString}`,
     `sortField=${sortField}`,
     `sortOrder=${sortOrder}`,
     `page=${page}`,
@@ -99,7 +101,9 @@ const UptimeMonitors = () => {
   };
 
   const hasActiveFilters =
-    selectedTypes.length > 0 || selectedStatuses.length > 0;
+    selectedTypes.length > 0 ||
+    selectedStatuses.length > 0 ||
+    searchString.trim() !== "";
   const showFallback = monitors.length === 0 && !hasActiveFilters;
 
   const monitorItems = showFallback
@@ -134,6 +138,8 @@ const UptimeMonitors = () => {
         selectedStatuses={selectedStatuses}
         onTypesChange={setSelectedTypes}
         onStatusesChange={setSelectedStatuses}
+        searchString={searchString}
+        onSearchStringChange={setSearchString}
       />
       <MonitorTable
         monitors={monitors}

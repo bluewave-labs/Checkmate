@@ -78,6 +78,7 @@ class MonitorController {
 
       let result;
       if (req.validatedQuery.embedChecks === true) {
+        const search = req.validatedQuery.search || "";
         const sortField = req.validatedQuery.sortField || "name";
         const sortOrder = req.validatedQuery.sortOrder || "desc";
         const page = req.validatedQuery.page || 0;
@@ -87,6 +88,7 @@ class MonitorController {
 
         result = await this.monitorService.getAllEmbedChecks(
           teamId,
+          search,
           sortField,
           sortOrder,
           page,

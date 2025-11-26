@@ -181,6 +181,7 @@ export const monitorAllEmbedChecksQuerySchema = z.object({
       if (!val) return [];
       return Array.isArray(val) ? val : [val];
     }),
+  search: z.string().optional(),
   sortField: z.string().optional(),
   sortOrder: z.string().optional(),
   page: z

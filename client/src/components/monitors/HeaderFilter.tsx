@@ -1,8 +1,10 @@
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import { Select, Checkbox } from "@/components/inputs";
+import { Select, Checkbox, TextInput } from "@/components/inputs";
 
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import {
@@ -17,6 +19,8 @@ type HeaderFilterProps = {
   selectedStatuses: MonitorStatus[];
   onTypesChange: (types: UptimeMonitorType[]) => void;
   onStatusesChange: (statuses: MonitorStatus[]) => void;
+  searchString: string;
+  onSearchStringChange?: (value: string) => void;
 };
 
 const coerceValue = <T extends string>(value: string | string[]): T[] => {
@@ -31,8 +35,24 @@ export const HeaderFilter = ({
   selectedStatuses,
   onTypesChange,
   onStatusesChange,
+  searchString,
+  onSearchStringChange,
 }: HeaderFilterProps) => {
   const theme = useTheme();
+  const [localSearch, setLocalSearch] = useState<string>(searchString);
+
+  useEffect(() => {
+    setLocalSearch(searchString);
+  }, [searchString]);
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      if (localSearch !== searchString) {
+        onSearchStringChange?.(localSearch);
+      }
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [localSearch, onSearchStringChange, searchString]);
 
   const handleTypeChange = (event: SelectChangeEvent<UptimeMonitorType[]>) => {
     onTypesChange(coerceValue<UptimeMonitorType>(event.target.value));
@@ -76,6 +96,14 @@ export const HeaderFilter = ({
           </MenuItem>
         ))}
       </Select>
+      <Box flex={1} display={{ xs: "none", md: "inherit" }} />
+      <TextInput
+        fieldLabel="Search"
+        value={localSearch}
+        onChange={(event) => {
+          setLocalSearch(event.target.value);
+        }}
+      />
     </Stack>
   );
 };

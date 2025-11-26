@@ -26,6 +26,7 @@ export interface IMonitorService {
   getAll: (teamId: string) => Promise<IMonitor[]>;
   getAllEmbedChecks: (
     teamId: string,
+    search: string,
     sortField: string,
     sortOrder: string,
     page: number,
@@ -104,6 +105,7 @@ class MonitorService implements IMonitorService {
 
   getAllEmbedChecks = async (
     teamId: string,
+    search: string,
     sortField: string,
     sortOrder: string,
     page: number,
@@ -116,6 +118,14 @@ class MonitorService implements IMonitorService {
     const matchConditions: Record<string, unknown> = {
       teamId: teamObjectId,
     };
+
+    if (search && search.trim() !== "") {
+      const term = search.trim();
+      (matchConditions as any).$or = [
+        { name: { $regex: term, $options: "i" } },
+        { url: { $regex: term, $options: "i" } },
+      ];
+    }
 
     if (Array.isArray(type) && type.length > 0) {
       matchConditions.type = { $in: type };
