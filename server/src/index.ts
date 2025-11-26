@@ -49,6 +49,9 @@ const createApp = async () => {
   app.listen(port, "0.0.0.0", () => {
     indexLogger.info(`Server is running on http://localhost:${port}`);
     indexLogger.error(new ApiError("Test error logging", 500));
+    indexLogger.warn("test", {
+      testKey: "testValue",
+    });
   });
 };
 

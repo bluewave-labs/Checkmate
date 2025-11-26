@@ -69,39 +69,64 @@ class NotificationService implements INotificationService {
       _id: { $in: notificationIds },
     });
 
-    for (const channel of notificationChannels) {
-      // Implement sending logic based on channel.type and channel.config
-      let service;
-      switch (channel.type) {
-        case "email":
-          await this.emailService.sendMessage(
-            this.emailService.buildAlert(monitor, incident),
-            channel
-          );
-          break;
-        case "slack":
-          await this.slackService.sendMessage(
-            this.slackService.buildAlert(monitor, incident),
-            channel
-          );
-          break;
-        case "discord":
-          await this.discordService.sendMessage(
-            this.discordService.buildAlert(monitor, incident),
-            channel
-          );
-          break;
-        case "webhook":
-          await this.webhookService.sendMessage(
-            this.webhookService.buildAlert(monitor, incident),
-            channel
-          );
-          break;
-        default:
-          logger.warn(`Unknown notification channel type: ${channel.type}`);
-      }
+    const tasks = notificationChannels.map((channel) =>
+      this.sendForChannel(channel, monitor, incident)
+    );
+
+    const results = await Promise.allSettled(tasks);
+
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    const failed = results.filter((r) => r.status === "rejected");
+
+    if (failed.length > 0) {
+      logger.warn(
+        `Notification send completed with ${succeeded} success, ${failed.length} failure(s)`
+      );
+      failed.forEach((r) => {
+        logger.debug(
+          "Notification send failure",
+          (r as PromiseRejectedResult).reason
+        );
+      });
     }
+
     return;
+  };
+
+  private sendForChannel = async (
+    channel: INotificationChannel,
+    monitor: IMonitor,
+    incident: IIncident
+  ): Promise<void> => {
+    switch (channel.type) {
+      case "email":
+        await this.emailService.sendMessage(
+          this.emailService.buildAlert(monitor, incident),
+          channel
+        );
+        return;
+      case "slack":
+        await this.slackService.sendMessage(
+          this.slackService.buildAlert(monitor, incident),
+          channel
+        );
+        return;
+      case "discord":
+        await this.discordService.sendMessage(
+          this.discordService.buildAlert(monitor, incident),
+          channel
+        );
+        return;
+      case "webhook":
+        await this.webhookService.sendMessage(
+          this.webhookService.buildAlert(monitor, incident),
+          channel
+        );
+        return;
+      default:
+        logger.warn(`Unknown notification channel type: ${channel.type}`);
+        return;
+    }
   };
 
   private testNotification = async (

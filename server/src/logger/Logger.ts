@@ -11,6 +11,9 @@ const buildLogMsg = (info: winston.Logform.TransformableInfo) => {
   const message = info.message;
   const service = info.service;
   const stack = info.stack || "";
+  const { ...meta } = info;
+  const metaString =
+    Object.keys(meta).length > 0 ? ` | meta: ${JSON.stringify(meta)}` : "";
   return `[${timestamp}]${
     service ? ` [${service}]` : ""
   } ${level}: ${message} ${stack}`;
