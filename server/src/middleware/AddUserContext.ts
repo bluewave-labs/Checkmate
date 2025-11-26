@@ -122,6 +122,10 @@ export const addUserContext = async (
     const orgId = req.user.orgId;
     const currentTeamId = req.headers["x-team-id"] as string;
 
+    if (!currentTeamId || String(currentTeamId).trim().length === 0) {
+      throw new ApiError("X-Team-Id header required", 400);
+    }
+
     // Get user team IDs
     const teamIds = await getTeamIds(sub);
 

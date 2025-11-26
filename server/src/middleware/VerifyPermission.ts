@@ -32,12 +32,12 @@ const verifyTeamPermission = (resourceActions: string[]) => {
     const tokenizedUser = req.user;
 
     if (!tokenizedUser) {
-      return next(new ApiError("No user", 400));
+      return next(new ApiError("User not authenticated", 401));
     }
 
     const userId = tokenizedUser.sub;
     if (!userId) {
-      return next(new ApiError("No user ID", 400));
+      return next(new ApiError("User not authenticated", 401));
     }
 
     const orgPermissions = tokenizedUser.roles?.orgRole?.permissions || [];
@@ -58,7 +58,7 @@ const verifyOrgPermission = (resourceActions: string[]) => {
     const userContext = req.user;
 
     if (!userContext) {
-      return next(new ApiError("No user", 400));
+      return next(new ApiError("User not authenticated", 401));
     }
 
     const orgPermissions = userContext.roles?.orgRole?.permissions || [];

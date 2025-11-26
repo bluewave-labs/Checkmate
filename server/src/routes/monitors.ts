@@ -52,8 +52,8 @@ class MonitorRoutes {
       "/import",
       verifyToken,
       addUserContext,
-      validateBody(monitorImportSchema),
       verifyTeamPermission([PERMISSIONS.monitors.write]),
+      validateBody(monitorImportSchema),
       this.controller.import
     );
 

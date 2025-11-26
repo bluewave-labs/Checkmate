@@ -1,5 +1,3 @@
-import RoleRoutes from "./roles.js";
-
 export { default as AuthRoutes } from "./auth.js";
 export { default as InviteRoutes } from "./invite.js";
 export { default as MaintenanceRoutes } from "./maintenance.js";

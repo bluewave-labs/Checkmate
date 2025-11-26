@@ -73,8 +73,8 @@ class NotificationChannelRoutes {
       "/test",
       verifyToken,
       addUserContext,
-      validateBody(notificationChannelSchema),
       verifyTeamPermission([PERMISSIONS.notifications.write]),
+      validateBody(notificationChannelSchema),
       this.controller.test
     );
   };

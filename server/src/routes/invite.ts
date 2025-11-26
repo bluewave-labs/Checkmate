@@ -20,8 +20,8 @@ class InviteRoutes {
       "/",
       verifyToken,
       addUserContext,
-      validateBody(inviteSchema),
       verifyOrgPermission([PERMISSIONS.invite.write]),
+      validateBody(inviteSchema),
       this.controller.create
     );
 
