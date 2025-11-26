@@ -789,7 +789,7 @@
   "packetsSent": "Packets Sent",
   "pageSpeedMonitor": {
     "fallback": {
-      "actionButton": "Let's create your first PageSpeed monitor!",
+      "actionButton": "Create a PageSpeed monitor!",
       "checks": [
         "Report on the user experience of a page",
         "Help analyze webpage speed",

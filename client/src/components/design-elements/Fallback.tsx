@@ -8,8 +8,9 @@ import { Button } from "@/components/inputs";
 import { useNavigate } from "react-router";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import type { BoxProps } from "@mui/material";
-interface BaseFallbackProps extends BoxProps {
+import type { StackProps } from "@mui/material/Stack";
+
+interface BaseFallbackProps extends StackProps {
   children: React.ReactNode;
 }
 
@@ -21,7 +22,8 @@ export const BaseFallback: React.FC<BaseFallbackProps> = ({
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Box
+    <Stack
+      alignItems={"center"}
       margin={isSmall ? "inherit" : "auto"}
       marginTop={isSmall ? "33%" : "10%"}
       width={{
@@ -30,51 +32,26 @@ export const BaseFallback: React.FC<BaseFallbackProps> = ({
         lg: "50%",
         xl: "40%",
       }}
-      padding={theme.spacing(16)}
+      padding={{ xs: theme.spacing(4), md: theme.spacing(16) }}
       bgcolor={theme.palette.primary.main}
-      position="relative"
       border={1}
       borderColor={theme.palette.primary.lowContrast}
       borderRadius={theme.shape.borderRadius}
-      overflow="hidden"
       sx={{
         borderStyle: "dashed",
       }}
       {...props}
     >
-      <Box sx={{ marginTop: "100px" }}>
-        <Stack
-          alignItems="center"
-          gap={theme.spacing(20)}
-          sx={{
-            width: "fit-content",
-            margin: "auto",
-            marginTop: 0,
-          }}
-        >
-          <Box
-            sx={{
-              zIndex: 1,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            <SkeletonCard showHalo={true} />
-          </Box>
-
-          <Stack
-            gap={theme.spacing(4)}
-            alignItems="center"
-            maxWidth={"300px"}
-            zIndex={1}
-          >
-            {children}
-          </Stack>
-        </Stack>
+      <Box
+        mt={theme.spacing(32)}
+        mb={theme.spacing(8)}
+        width={"80%"}
+        maxWidth={216}
+      >
+        <SkeletonCard showHalo={true} />
       </Box>
-    </Box>
+      {children}
+    </Stack>
   );
 };
 

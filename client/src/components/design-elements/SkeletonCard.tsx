@@ -12,7 +12,7 @@ interface SkeletonCardProps {
  * Default size is 60% of original design
  */
 const SkeletonCard: React.FC<SkeletonCardProps> = ({
-  width = 216,
+  width = "100%",
   showHalo = true,
 }) => {
   const theme = useTheme();

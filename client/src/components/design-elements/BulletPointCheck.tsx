@@ -19,12 +19,7 @@ export const BulletPointCheck = ({
   };
 
   return (
-    <Stack
-      direction="row"
-      className="check"
-      gap={theme.spacing(6)}
-      alignItems="center"
-    >
+    <Stack direction="row" gap={theme.spacing(6)} alignItems="center">
       <Check
         size={16}
         strokeWidth={1.5}
@@ -42,7 +37,6 @@ export const BulletPointCheck = ({
         fontWeight={450}
         sx={{
           opacity: 0.9,
-          whiteSpace: 'nowrap',
         }}
       >
         {text}
