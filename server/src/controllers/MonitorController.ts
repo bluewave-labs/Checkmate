@@ -310,8 +310,17 @@ class MonitorController {
         monitorId,
         teamId
       );
+
+      const msg = results
+        .map(
+          (r) =>
+            `${r.channelName} (${r.channelType}): ${
+              r.sent ? "Success" : "Failed"
+            }`
+        )
+        .join("\n");
       return res.status(200).json({
-        message: "Notification test sent successfully",
+        message: msg,
         data: results,
       });
     } catch (error) {

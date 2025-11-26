@@ -2,7 +2,14 @@ import { toast, type ToastOptions } from "react-toastify";
 export const useToast = () => {
   const showToast = (message: string, options?: ToastOptions) => {
     toast.dismiss();
-    toast(message, options);
+    const baseStyle: React.CSSProperties = {
+      whiteSpace: "pre-line",
+      wordBreak: "break-word",
+    };
+    toast(message, {
+      ...options,
+      style: { ...baseStyle, ...(options?.style || {}) },
+    });
   };
 
   const toastSuccess = (msg: string, opts?: ToastOptions) =>
