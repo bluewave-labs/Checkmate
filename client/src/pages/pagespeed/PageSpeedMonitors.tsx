@@ -77,7 +77,7 @@ const PageSpeedMonitorsPage = () => {
   return (
     <MonitorBasePageWithStates
       loading={isValidating}
-      error={true}
+      error={error}
       items={monitors}
       page="pageSpeed"
       actionLink="/pagespeed/create"

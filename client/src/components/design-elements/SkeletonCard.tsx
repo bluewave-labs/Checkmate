@@ -12,7 +12,7 @@ interface SkeletonCardProps {
  * Default size is 60% of original design
  */
 const SkeletonCard: React.FC<SkeletonCardProps> = ({
-  width = "100%",
+  width = 216,
   showHalo = true,
 }) => {
   const theme = useTheme();
@@ -66,7 +66,7 @@ const SkeletonCard: React.FC<SkeletonCardProps> = ({
   };
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative", mt: 20 }}>
       {showHalo && (
         <Box
           sx={{

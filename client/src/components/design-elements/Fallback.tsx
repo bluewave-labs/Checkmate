@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import SkeletonCard from "@/components/design-elements/SkeletonCard";
 import Typography from "@mui/material/Typography";
@@ -32,7 +31,7 @@ export const BaseFallback: React.FC<BaseFallbackProps> = ({
         lg: "50%",
         xl: "40%",
       }}
-      padding={{ xs: theme.spacing(4), md: theme.spacing(16) }}
+      padding={{ xs: theme.spacing(8), md: theme.spacing(16) }}
       bgcolor={theme.palette.primary.main}
       border={1}
       borderColor={theme.palette.primary.lowContrast}
@@ -42,14 +41,7 @@ export const BaseFallback: React.FC<BaseFallbackProps> = ({
       }}
       {...props}
     >
-      <Box
-        mt={theme.spacing(32)}
-        mb={theme.spacing(8)}
-        width={"80%"}
-        maxWidth={216}
-      >
-        <SkeletonCard showHalo={true} />
-      </Box>
+      <SkeletonCard showHalo={true} />
       {children}
     </Stack>
   );
