@@ -2,9 +2,8 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { ICheck } from "@/types/check";
-import { HistogramResponseTimeTooltip } from "@/components/monitors/HistogramResponseTimeTooltip";
 import { normalizeResponseTimes } from "@/utils/DataUtils";
-
+import { HeatmapResponseTimeTooltip } from "../common/HeatmapResponseTimeTooltip";
 const BAR_HEIGHT = "50px";
 
 export const HistogramStatusPage = ({ checks }: { checks: ICheck[] }) => {
@@ -36,7 +35,7 @@ export const HistogramStatusPage = ({ checks }: { checks: ICheck[] }) => {
     >
       {data.map((check, index) => {
         return (
-          <HistogramResponseTimeTooltip key={`${check}-${index}`} check={check}>
+          <HeatmapResponseTimeTooltip key={`${check}-${index}`} check={check}>
             <Box
               position="relative"
               width={{
@@ -64,7 +63,7 @@ export const HistogramStatusPage = ({ checks }: { checks: ICheck[] }) => {
                 }}
               />
             </Box>
-          </HistogramResponseTimeTooltip>
+          </HeatmapResponseTimeTooltip>
         );
       })}
     </Stack>

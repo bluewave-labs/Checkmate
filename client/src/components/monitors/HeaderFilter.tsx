@@ -11,7 +11,6 @@ import {
   type UptimeMonitorType,
   type MonitorStatus,
 } from "@/types/monitor";
-import { ThemeContext } from "@emotion/react";
 
 type HeaderFilterProps = {
   selectedTypes: UptimeMonitorType[];

@@ -6,7 +6,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { SettingsForm } from "@/pages/settings/SettingsForm";
 
-import type { ChartType } from "@/features/uiSlice";
 import { useTheme } from "@mui/material/styles";
 import { useEffect, useMemo, useState } from "react";
 import { setTimezone, setMode, setChartType } from "@/features/uiSlice";

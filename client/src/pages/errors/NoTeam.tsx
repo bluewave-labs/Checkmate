@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { usePost } from "@/hooks/UseApi";
+import { logout } from "@/features/authSlice";
 
 const NoTeam = () => {
   const dispatch = useAppDispatch();
