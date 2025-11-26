@@ -73,21 +73,14 @@ class NotificationService implements INotificationService {
       this.sendForChannel(channel, monitor, incident)
     );
 
-    const results = await Promise.allSettled(tasks);
+    const outcomes = await Promise.all(tasks);
+    const succeeded = outcomes.filter(Boolean).length;
+    const failed = outcomes.length - succeeded;
 
-    const succeeded = results.filter((r) => r.status === "fulfilled").length;
-    const failed = results.filter((r) => r.status === "rejected");
-
-    if (failed.length > 0) {
+    if (failed > 0) {
       logger.warn(
-        `Notification send completed with ${succeeded} success, ${failed.length} failure(s)`
+        `Notification send completed with ${succeeded} success, ${failed} failure(s)`
       );
-      failed.forEach((r) => {
-        logger.debug(
-          "Notification send failure",
-          (r as PromiseRejectedResult).reason
-        );
-      });
     }
 
     return;
@@ -97,35 +90,45 @@ class NotificationService implements INotificationService {
     channel: INotificationChannel,
     monitor: IMonitor,
     incident: IIncident
-  ): Promise<void> => {
-    switch (channel.type) {
-      case "email":
-        await this.emailService.sendMessage(
-          this.emailService.buildAlert(monitor, incident),
-          channel
-        );
-        return;
-      case "slack":
-        await this.slackService.sendMessage(
-          this.slackService.buildAlert(monitor, incident),
-          channel
-        );
-        return;
-      case "discord":
-        await this.discordService.sendMessage(
-          this.discordService.buildAlert(monitor, incident),
-          channel
-        );
-        return;
-      case "webhook":
-        await this.webhookService.sendMessage(
-          this.webhookService.buildAlert(monitor, incident),
-          channel
-        );
-        return;
-      default:
-        logger.warn(`Unknown notification channel type: ${channel.type}`);
-        return;
+  ): Promise<boolean> => {
+    try {
+      switch (channel.type) {
+        case "email": {
+          const sent = await this.emailService.sendMessage(
+            this.emailService.buildAlert(monitor, incident),
+            channel
+          );
+          return Boolean(sent);
+        }
+        case "slack": {
+          const sent = await this.slackService.sendMessage(
+            this.slackService.buildAlert(monitor, incident),
+            channel
+          );
+          return Boolean(sent);
+        }
+        case "discord": {
+          const sent = await this.discordService.sendMessage(
+            this.discordService.buildAlert(monitor, incident),
+            channel
+          );
+          return Boolean(sent);
+        }
+        case "webhook": {
+          const sent = await this.webhookService.sendMessage(
+            this.webhookService.buildAlert(monitor, incident),
+            channel
+          );
+          return Boolean(sent);
+        }
+        default: {
+          logger.warn(`Unknown notification channel type: ${channel.type}`);
+          return false;
+        }
+      }
+    } catch (error) {
+      logger.debug("Notification send failure", error);
+      return false;
     }
   };
 
@@ -195,10 +198,20 @@ class NotificationService implements INotificationService {
       _id: { $in: notificationIds },
     }).lean();
 
-    const results: any[] = [];
+    if (notificationChannels.length === 0) {
+      return [];
+    }
 
-    for (const channel of notificationChannels) {
-      await this.testNotification(channel, results);
+    const results: any[] = [];
+    await Promise.all(
+      notificationChannels.map((ch) => this.testNotification(ch, results))
+    );
+    const succeeded = results.filter((r) => r.sent).length;
+    const failed = results.length - succeeded;
+    if (failed > 0) {
+      logger.warn(
+        `Notification channel test completed with ${succeeded} success, ${failed} failure(s)`
+      );
     }
     return results;
   };
