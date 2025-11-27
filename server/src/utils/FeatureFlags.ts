@@ -11,8 +11,11 @@ const FeatureFlags = {
   mode: CURRENT_MODE,
   isSaaS,
   isSelfHosted,
-  getDiagnosticPermission(): string {
-    return isSaaS() ? PERMISSIONS.master : PERMISSIONS.diagnostic.read;
+  getDiagnosticPermission(): string[] {
+    return isSaaS() ? [PERMISSIONS.master] : [PERMISSIONS.diagnostic.read];
+  },
+  getSetRetentionPermission(): string[] {
+    return isSaaS() ? [PERMISSIONS.master] : [PERMISSIONS.checks.write];
   },
 };
 

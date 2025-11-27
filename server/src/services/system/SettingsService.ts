@@ -1,4 +1,5 @@
 import { ISystemSettings, SystemSettings } from "@/db/models/index.js";
+import mongoose from "mongoose";
 import ApiError from "@/utils/ApiError.js";
 import { EmailService } from "@/services/index.js";
 const SERVICE_NAME = "SettingsService";
@@ -7,6 +8,7 @@ export interface ISettingsService {
   updateEmailSettings: (
     settings: Partial<ISystemSettings>
   ) => Promise<ISystemSettings>;
+  updateRetentionPolicy: (retentionDays: number) => Promise<number>;
 }
 
 class SettingsService implements ISettingsService {
@@ -92,6 +94,59 @@ class SettingsService implements ISettingsService {
     this.emailService.rebuildTransport(settings);
 
     return settings;
+  };
+
+  updateRetentionPolicy = async (retentionDays: number) => {
+    const settings = await SystemSettings.findOneAndUpdate(
+      { _id: "global" },
+      { $set: { checksRetentionDays: retentionDays } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+
+    if (!settings) {
+      throw new ApiError("Unable to update system settings", 500);
+    }
+
+    const db = mongoose.connection.db;
+    if (!db) {
+      throw new ApiError("Database not initialized", 500);
+    }
+
+    const seconds = Math.floor(retentionDays * 24 * 60 * 60);
+
+    const cmdResult = await db.command({
+      collMod: "checks",
+      expireAfterSeconds: seconds,
+    });
+
+    if (!cmdResult || (cmdResult as any).ok !== 1) {
+      throw new ApiError("Failed to apply TTL to checks collection", 500);
+    }
+
+    const list = (await db.command({
+      listCollections: 1,
+      filter: { name: "checks" },
+    })) as unknown as {
+      cursor?: {
+        firstBatch?: Array<{
+          options?: { expireAfterSeconds?: number | string };
+        }>;
+      };
+      ok?: 1 | 0;
+    };
+    const expireOption =
+      list?.cursor?.firstBatch?.[0]?.options?.expireAfterSeconds;
+    const appliedSeconds =
+      typeof expireOption === "number" ? expireOption : Number(expireOption);
+
+    if (!appliedSeconds || appliedSeconds !== seconds) {
+      throw new ApiError(
+        "TTL verification failed: expireAfterSeconds not applied",
+        500
+      );
+    }
+
+    return retentionDays;
   };
 }
 

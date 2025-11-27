@@ -9,6 +9,11 @@ export interface ISettingsController {
     res: Response,
     next: NextFunction
   ) => void;
+  updateRetentionPolicy: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void;
   testTransport: (req: Request, res: Response, next: NextFunction) => void;
 }
 
@@ -47,6 +52,23 @@ class SettingsController implements ISettingsController {
       res.status(200).json({
         message: "Email settings updated successfully",
         data: updatedSettings,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateRetentionPolicy = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const retentionDays = req.body.checksRetentionDays;
+      const updatedRetentionPolicy =
+        await this.settingsService.updateRetentionPolicy(retentionDays);
+      res.status(200).json({
+        message: `Retention policy set to ${updatedRetentionPolicy} days`,
       });
     } catch (error) {
       next(error);

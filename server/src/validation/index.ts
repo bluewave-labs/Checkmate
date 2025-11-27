@@ -646,3 +646,10 @@ export const systemSettingsSchema = z
       .transform((val) => (typeof val === "string" ? val === "true" : val)),
   })
   .strip();
+
+export const updateRetentionPolicySchema = z.object({
+  checksRetentionDays: z
+    .number()
+    .min(1, "Retention days must be at least 1")
+    .max(365, "Retention days cannot exceed 365 days"),
+});

@@ -5,8 +5,12 @@ import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 import { validateBody } from "@/middleware/validation.js";
-import { systemSettingsSchema } from "@/validation/index.js";
+import {
+  systemSettingsSchema,
+  updateRetentionPolicySchema,
+} from "@/validation/index.js";
 import { verify } from "node:crypto";
+import { FeatureFlags } from "@/utils/FeatureFlags.js";
 
 class SettingsRoutes {
   private router;
@@ -33,6 +37,14 @@ class SettingsRoutes {
       verifyTeamPermission([PERMISSIONS.master]),
       validateBody(systemSettingsSchema),
       this.controller.updateEmailSettings
+    );
+    this.router.patch(
+      "/retention",
+      verifyToken,
+      addUserContext,
+      verifyTeamPermission(FeatureFlags.getSetRetentionPermission()),
+      validateBody(updateRetentionPolicySchema),
+      this.controller.updateRetentionPolicy
     );
     this.router.post(
       "/test-transport",
