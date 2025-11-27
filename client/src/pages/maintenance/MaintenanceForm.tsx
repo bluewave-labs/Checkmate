@@ -52,8 +52,7 @@ export const MaintenanceForm = ({
   }, [initialData, reset, defaults]);
 
   const onError = (errors: any) => {
-    console.log(errors);
-    console.log(getValues());
+    console.error(errors);
   };
 
   return (

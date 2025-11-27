@@ -25,6 +25,7 @@ export const useInitForm = ({
       notificationChannels: initialData?.notificationChannels || [],
       name: initialData?.name || "",
       interval: humanInterval,
+      rejectUnauthorized: initialData?.rejectUnauthorized ?? true,
     };
     return { defaults };
   }, [initialData]);

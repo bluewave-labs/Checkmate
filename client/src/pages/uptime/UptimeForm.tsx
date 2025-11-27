@@ -4,6 +4,7 @@ import {
   Button,
   AutoComplete,
   RadioWithDescription,
+  Switch,
 } from "@/components/inputs";
 import { ConfigBox, BasePage } from "@/components/design-elements";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -310,6 +311,24 @@ export const UptimeForm = ({
                 error={!!errors.interval}
                 helperText={errors.interval ? errors.interval.message : ""}
               />
+            )}
+          />
+        }
+      />
+      <ConfigBox
+        title={t("createMonitorPage.rejectUnauthorizedTitle")}
+        subtitle={t("createMonitorPage.rejectUnauthorizedDescription")}
+        rightContent={
+          <Controller
+            name="rejectUnauthorized"
+            control={control}
+            render={({ field }) => (
+              <Stack direction="row" alignItems={"center"}>
+                <Switch {...field} checked={field.value} />
+                <Typography>
+                  {field.value ? "Enabled (recommended)" : "Disabled"}
+                </Typography>
+              </Stack>
             )}
           />
         }

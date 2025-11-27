@@ -29,6 +29,7 @@ export interface IMonitor extends Document {
   secret?: string;
   type: MonitorType;
   interval: number; // in ms
+  rejectUnauthorized: boolean;
   status: MonitorStatus;
   n: number; // Number of consecutive successes required to change status
   lastCheckedAt?: Date;
@@ -58,6 +59,7 @@ const MonitorSchema = new Schema<IMonitor>(
       enum: MonitorTypes,
     },
     interval: { type: Number, required: true, default: 60000 },
+    rejectUnauthorized: { type: Boolean, required: true, default: true },
     status: {
       type: String,
       required: true,

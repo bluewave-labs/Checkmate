@@ -60,6 +60,7 @@ export const monitorSchema = z
     notificationChannels: z.array(z.string()).optional().default([]),
     secret: z.string().optional(),
     interval: z.number({ message: "Interval required" }),
+    rejectUnauthorized: z.boolean().default(true),
   })
   .superRefine((data, ctx) => {
     const minIntervals: Record<string, number> = {

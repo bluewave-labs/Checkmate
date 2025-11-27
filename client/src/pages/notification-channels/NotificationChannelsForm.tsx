@@ -56,8 +56,7 @@ export const NotificationChannelsForm = ({
   const type = watch("type");
 
   const onError = (errors: any) => {
-    console.log(errors);
-    console.log(getValues());
+    console.error(errors);
   };
 
   const handleTest = async () => {

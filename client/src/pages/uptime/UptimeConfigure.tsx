@@ -38,6 +38,7 @@ const UptimeConfigurePage = () => {
       n: data.n,
       notificationChannels: data.notificationChannels,
       interval,
+      rejectUnauthorized: data.rejectUnauthorized,
     };
     const result = await patch(`/monitors/${id}`, submitData);
     if (result) {

@@ -17,7 +17,6 @@ const MaintenanceCreatePage = () => {
     useGet<ApiResponse<IMonitor[]>>("/monitors");
 
   const monitors = response?.data || [];
-  console.log(monitors);
 
   const onSubmit = async (data: FormValues) => {
     const res = await post("/maintenance", data);

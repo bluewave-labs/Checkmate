@@ -265,8 +265,10 @@
     "incidentConfigStatusWindowLabel": "How many checks should be in the sliding window?",
     "incidentConfigStatusWindowThresholdLabel": "What percentage of checks in the sliding window fail/succeed before monitor status changes?",
     "incidentConfigTitle": "Incidents",
+    "intervalTitle": "Check interval",
     "intervalDescription": "How often do you want to check this service?",
-    "intervalTitle": "Check interval"
+    "rejectUnauthorizedTitle": "Reject unauthorized",
+    "rejectUnauthorizedDescription": "Disable to allow self-signed SSL certificates"
   },
   "createNew": "Create new",
   "createNotifications": {

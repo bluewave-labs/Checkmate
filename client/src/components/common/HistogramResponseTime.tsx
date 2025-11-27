@@ -37,8 +37,6 @@ export const HistogramResponseTime = ({
     data = normalized;
   }
 
-  console.log(data);
-
   const chartHeight = typeof height === "number" ? `${height}px` : height;
   const gridGap = gap ?? theme.spacing(0.5);
 

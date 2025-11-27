@@ -623,6 +623,7 @@ class MonitorService implements IMonitorService {
       "name",
       "secret",
       "interval",
+      "rejectUnauthorized",
       "n",
       "notificationChannels",
     ];

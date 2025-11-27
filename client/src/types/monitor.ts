@@ -28,6 +28,7 @@ export interface IMonitor {
   createdAt: string;
   createdBy: string;
   interval: number;
+  rejectUnauthorized: boolean;
   latestChecks: ICheck[];
   n: number;
   name: string;

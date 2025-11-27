@@ -119,7 +119,9 @@ class NetworkService implements INetworkService {
 
       let certificateExpiry: Date | null = null;
       try {
-        const req: any = this.client(url);
+        const req: any = this.client(url, {
+          https: { rejectUnauthorized: monitor.rejectUnauthorized },
+        });
         req.on("request", (nodeReq: ClientRequest) => {
           nodeReq.on("socket", (socket: TLSSocket) => {
             const capture = () => {

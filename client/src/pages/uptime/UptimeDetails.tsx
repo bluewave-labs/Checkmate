@@ -69,7 +69,6 @@ const UptimeDetailsPage = () => {
   }
 
   const stats = response?.data?.stats || null;
-  console.log(stats);
   const avgResponseTime = stats?.avgResponseTime || 0;
   const maxResponseTime = stats?.maxResponseTime || 0;
 

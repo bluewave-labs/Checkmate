@@ -100,6 +100,7 @@ export const monitorSchema = z
     notificationChannels: z.array(z.string()).optional().default([]),
     name: z.string().min(1, "Display name is required"),
     interval: durationSchema,
+    rejectUnauthorized: z.boolean().default(true),
   })
   .superRefine((data, ctx) => {
     if (data.type === "port") {

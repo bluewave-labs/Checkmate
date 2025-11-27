@@ -38,7 +38,6 @@ const PageSpeedConfigurePage = () => {
       notificationChannels: data.notificationChannels,
       interval,
     };
-    console.log(submitData);
     const result = await patch(`/monitors/${id}`, submitData);
     if (result) {
       navigate(`/pagespeed/${id}`);

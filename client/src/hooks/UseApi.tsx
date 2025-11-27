@@ -46,7 +46,7 @@ export const useGet = <T,>(
     // Config
     {
       onError: (err) => {
-        console.log(err);
+        console.error(err);
         toastError(
           err?.response?.data?.message ||
             err.message ||

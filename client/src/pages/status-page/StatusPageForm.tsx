@@ -55,7 +55,7 @@ export const StatusPageForm = ({
   }, [initialData, reset, defaults]);
 
   const onError = (errors: any) => {
-    console.log(errors);
+    console.error(errors);
   };
 
   const monitors = useWatch({
