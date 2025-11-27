@@ -71,9 +71,23 @@ class NetworkService implements INetworkService {
   private buildStatusResponse = <T>(
     monitor: IMonitor,
     response: Response<T> | null,
-    certificateExpiry: Date | null,
-    error: any | null
+    certificateExpiryOrError?: Date | null | any,
+    maybeError?: any | null
   ): StatusResponse<T> => {
+    // Support both call styles:
+    // - buildStatusResponse(monitor, response, error)
+    // - buildStatusResponse(monitor, response, certificateExpiry, error)
+    let certificateExpiry: Date | null = null;
+    let error: any | null = null;
+    if (
+      certificateExpiryOrError instanceof Date ||
+      certificateExpiryOrError === null
+    ) {
+      certificateExpiry = certificateExpiryOrError ?? null;
+      error = maybeError ?? null;
+    } else if (typeof certificateExpiryOrError !== "undefined") {
+      error = certificateExpiryOrError;
+    }
     if (error) {
       const statusResponse: StatusResponse<T> = {
         monitorId: monitor._id.toString(),
@@ -81,14 +95,14 @@ class NetworkService implements INetworkService {
         type: monitor.type,
         status: "down" as MonitorStatus,
         code: this.NETWORK_ERROR,
-        message: error.message || "Network error",
+        message: (error && error.message) || "Network error",
         responseTime: 0,
         timings: { phases: {} } as GotTimings,
         certificateExpiry,
       };
       if (error instanceof HTTPError) {
         statusResponse.code = error?.response?.statusCode || this.NETWORK_ERROR;
-        statusResponse.message = error.message || "HTTP error";
+        statusResponse.message = (error && error.message) || "HTTP error";
         statusResponse.responseTime = error.timings?.phases?.total || 0;
         statusResponse.timings = error.timings;
       }
@@ -119,9 +133,14 @@ class NetworkService implements INetworkService {
 
       let certificateExpiry: Date | null = null;
       try {
-        const req: any = this.client(url, {
-          https: { rejectUnauthorized: monitor.rejectUnauthorized },
-        });
+        const isHttps = url.startsWith("https://");
+        const haveRejectFlag =
+          isHttps && typeof (monitor as any).rejectUnauthorized !== "undefined";
+        const req: any = haveRejectFlag
+          ? this.client(url, {
+              https: { rejectUnauthorized: (monitor as any).rejectUnauthorized },
+            })
+          : this.client(url);
         req.on("request", (nodeReq: ClientRequest) => {
           nodeReq.on("socket", (socket: TLSSocket) => {
             const capture = () => {

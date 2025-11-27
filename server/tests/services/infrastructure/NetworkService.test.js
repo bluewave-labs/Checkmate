@@ -77,7 +77,19 @@ const createService = (clientMock) => {
     const gotModule = getGotModule();
     const extendMock = gotModule.default.extend;
     const requestMock = clientMock ?? jest.fn();
-    extendMock.mockReturnValue(requestMock);
+    // Return a function that produces a promise-like with an `.on` method
+    extendMock.mockImplementation(() => {
+        return (...args) => {
+            const p = requestMock(...args);
+            // ensure we always have a thenable
+            const promise = p && typeof p.then === "function" ? p : Promise.resolve(p);
+            // preserve custom `.on` from the mock if provided; otherwise add a no-op
+            if (typeof (promise).on !== "function") {
+                (promise).on = jest.fn(() => promise);
+            }
+            return promise;
+        };
+    });
     const service = new NetworkService(gotModule.default);
     return { service, requestMock, extendMock, gotModule };
 };
@@ -210,7 +222,7 @@ describe("NetworkService.requestHttp", () => {
         expect(extendMock).toHaveBeenCalledTimes(1);
         expect(requestMock).not.toHaveBeenCalled();
     });
-    it("returns fallback response when request throws", async () => {
+  it("returns fallback response when request throws", async () => {
         const error = new Error("connection reset");
         const requestMock = jest.fn().mockRejectedValue(error);
         const { service, extendMock } = createService(requestMock);
@@ -223,7 +235,157 @@ describe("NetworkService.requestHttp", () => {
         expect(result.message).toBe("connection reset");
         expect(result.responseTime).toBe(0);
         expect(result.timings).toEqual({ phases: {} });
+  });
+
+  it("captures certificate expiry from reused TLS socket (immediate capture)", async () => {
+    const timings = { phases: { total: 50 } };
+    const response = { statusCode: 200, statusMessage: "OK", ok: true, timings };
+    const validTo = "2030-01-01T00:00:00Z";
+
+    const fakeSocket = {
+      getPeerCertificate: jest.fn(() => ({ valid_to: validTo })),
+      once: jest.fn((event, cb) => {
+        if (event === "secureConnect") {
+          // No-op to simulate reused socket (secureConnect not fired)
+        }
+      }),
+    };
+
+    const fakeNodeReq = {
+      on: jest.fn((event, cb) => {
+        if (event === "socket") cb(fakeSocket);
+        return fakeNodeReq;
+      }),
+    };
+
+    const requestMock = jest.fn((..._args) => {
+      const p = Promise.resolve(response);
+      p.on = jest.fn((event, cb) => {
+        if (event === "request") cb(fakeNodeReq);
+        return p;
+      });
+      return p;
     });
+
+    const { service, extendMock } = createService(requestMock);
+    const monitor = buildMonitor({ url: "https://api.example.com" });
+    const result = await service.requestHttp(monitor);
+    expect(extendMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith("https://api.example.com");
+    expect(result.status).toBe("up");
+    expect(result.certificateExpiry?.toISOString()).toBe(new Date(validTo).toISOString());
+  });
+
+  it("captures certificate expiry after secureConnect (fresh TLS handshake)", async () => {
+    const timings = { phases: { total: 50 } };
+    const response = { statusCode: 200, statusMessage: "OK", ok: true, timings };
+    const validTo = "2031-02-03T04:05:06Z";
+
+    let secureCb;
+    // First call returns empty object (before handshake); after secureConnect returns populated cert
+    const getPeerCertificate = jest
+      .fn()
+      .mockImplementationOnce(() => ({}))
+      .mockImplementation(() => ({ valid_to: validTo }));
+
+    const fakeSocket = {
+      getPeerCertificate,
+      once: jest.fn((event, cb) => {
+        if (event === "secureConnect") {
+          secureCb = cb;
+          // simulate handshake completion
+          cb();
+        }
+      }),
+    };
+
+    const fakeNodeReq = {
+      on: jest.fn((event, cb) => {
+        if (event === "socket") cb(fakeSocket);
+        return fakeNodeReq;
+      }),
+    };
+
+    const requestMock = jest.fn((..._args) => {
+      const p = Promise.resolve(response);
+      p.on = jest.fn((event, cb) => {
+        if (event === "request") cb(fakeNodeReq);
+        return p;
+      });
+      return p;
+    });
+
+    const { service } = createService(requestMock);
+    const monitor = buildMonitor({ url: "https://secure.example.com" });
+    const result = await service.requestHttp(monitor);
+    expect(result.status).toBe("up");
+    expect(result.certificateExpiry?.toISOString()).toBe(new Date(validTo).toISOString());
+    expect(getPeerCertificate).toHaveBeenCalled();
+  });
+
+  it("skips TLS options for http and leaves certificateExpiry null", async () => {
+    const timings = { phases: { total: 33 } };
+    const response = { statusCode: 200, statusMessage: "OK", ok: true, timings };
+
+    const fakeSocket = {
+      getPeerCertificate: jest.fn(() => undefined),
+      once: jest.fn(() => {}),
+    };
+    const fakeNodeReq = {
+      on: jest.fn((event, cb) => {
+        if (event === "socket") cb(fakeSocket);
+        return fakeNodeReq;
+      }),
+    };
+    const requestMock = jest.fn((..._args) => {
+      const p = Promise.resolve(response);
+      p.on = jest.fn((event, cb) => {
+        if (event === "request") cb(fakeNodeReq);
+        return p;
+      });
+      return p;
+    });
+    const { service } = createService(requestMock);
+    const monitor = buildMonitor({ url: "http://api.example.com" });
+    const result = await service.requestHttp(monitor);
+    expect(requestMock).toHaveBeenCalledWith("http://api.example.com");
+    expect(result.status).toBe("up");
+    expect(result.certificateExpiry).toBeNull();
+  });
+
+  it("passes https rejectUnauthorized=false per call when set on monitor", async () => {
+    const timings = { phases: { total: 40 } };
+    const response = { statusCode: 200, statusMessage: "OK", ok: true, timings };
+    const validTo = "2032-01-01T00:00:00Z";
+
+    const fakeSocket = {
+      getPeerCertificate: jest.fn(() => ({ valid_to: validTo })),
+      once: jest.fn(() => {}),
+    };
+    const fakeNodeReq = {
+      on: jest.fn((event, cb) => {
+        if (event === "socket") cb(fakeSocket);
+        return fakeNodeReq;
+      }),
+    };
+    const requestMock = jest.fn((..._args) => {
+      const p = Promise.resolve(response);
+      p.on = jest.fn((event, cb) => {
+        if (event === "request") cb(fakeNodeReq);
+        return p;
+      });
+      return p;
+    });
+
+    const { service } = createService(requestMock);
+    const monitor = buildMonitor({ url: "https://secure.example.com", rejectUnauthorized: false });
+    const result = await service.requestHttp(monitor);
+    expect(requestMock).toHaveBeenCalledWith("https://secure.example.com", {
+      https: { rejectUnauthorized: false },
+    });
+    expect(result.status).toBe("up");
+    expect(result.certificateExpiry?.toISOString()).toBe(new Date(validTo).toISOString());
+  });
 });
 // requestInfrastructure block covers success path and every guard/exception branch so all lines execute.
 describe("NetworkService.requestInfrastructure", () => {
@@ -597,9 +759,26 @@ describe("NetworkService.requestStatus", () => {
         await service.requestStatus(monitor);
         expect(pingSpy).toHaveBeenCalledTimes(1);
     });
-    it("throws for unsupported monitor types", async () => {
-        const { service } = createService();
-        const monitor = buildMonitor({ type: "websocket" });
-        await expect(service.requestStatus(monitor)).rejects.toThrow("Not implemented");
+  it("throws for unsupported monitor types", async () => {
+    const { service } = createService();
+    const monitor = buildMonitor({ type: "websocket" });
+    await expect(service.requestStatus(monitor)).rejects.toThrow("Not implemented");
+  });
+
+  it("routes port monitors through requestPort", async () => {
+    const { service } = createService();
+    const portSpy = jest.spyOn(service, "requestPort").mockResolvedValueOnce({
+      monitorId: "6",
+      teamId: "t",
+      type: "port",
+      status: "up",
+      message: "Port is open",
+      responseTime: 10,
+      timings: { phases: {} },
     });
+    const monitor = buildMonitor({ type: "port", url: "localhost", port: 80 });
+    const result = await service.requestStatus(monitor);
+    expect(portSpy).toHaveBeenCalledTimes(1);
+    expect(result.status).toBe("up");
+  });
 });
