@@ -296,11 +296,6 @@ const CheckSchema = new Schema<ICheck>(
     errorMessage: { type: String, trim: true },
     ackAt: { type: Date },
     ackBy: { type: Schema.Types.ObjectId, ref: "User" },
-    expiry: {
-      type: Date,
-      default: Date.now,
-      expires: 60 * 60 * 24 * 30,
-    },
   },
   {
     timestamps: true,
@@ -309,6 +304,7 @@ const CheckSchema = new Schema<ICheck>(
       metaField: "metadata",
       granularity: "seconds",
     },
+    expireAfterSeconds: 60 * 60 * 24 * 30 * 3, // 3 months
   }
 );
 
