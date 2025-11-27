@@ -17,6 +17,7 @@ export interface IMonitorStats extends mongoose.Document {
   currentStreakStartedAt: number;
   createdAt: Date;
   updatedAt: Date;
+  certificateExpiry?: Date | null;
 }
 
 const MonitorStatsSchema = new Schema<IMonitorStats>(
@@ -70,6 +71,7 @@ const MonitorStatsSchema = new Schema<IMonitorStats>(
       enum: MonitorStatuses,
     },
     currentStreakStartedAt: { type: Number, required: false },
+    certificateExpiry: { type: Date, required: false },
   },
   { timestamps: true }
 );

@@ -9,6 +9,8 @@ import type {
   ICaptureInfo,
   ILighthouseResult,
 } from "@/db/models/index.js";
+import type { TLSSocket, DetailedPeerCertificate } from "node:tls";
+import type { ClientRequest } from "node:http";
 import { MonitorType, MonitorStatus } from "@/db/models/monitors/Monitor.js";
 import ApiError from "@/utils/ApiError.js";
 import { config } from "@/config/index.js";
@@ -44,6 +46,7 @@ export interface StatusResponse<TPayload = unknown> {
   responseTime: number;
   timings?: GotTimings;
   payload?: TPayload;
+  certificateExpiry?: Date | null;
 }
 
 class NetworkService implements INetworkService {
@@ -68,6 +71,7 @@ class NetworkService implements INetworkService {
   private buildStatusResponse = <T>(
     monitor: IMonitor,
     response: Response<T> | null,
+    certificateExpiry: Date | null,
     error: any | null
   ): StatusResponse<T> => {
     if (error) {
@@ -80,6 +84,7 @@ class NetworkService implements INetworkService {
         message: error.message || "Network error",
         responseTime: 0,
         timings: { phases: {} } as GotTimings,
+        certificateExpiry,
       };
       if (error instanceof HTTPError) {
         statusResponse.code = error?.response?.statusCode || this.NETWORK_ERROR;
@@ -99,6 +104,7 @@ class NetworkService implements INetworkService {
       message: response?.statusMessage || "",
       responseTime: response?.timings?.phases?.total || 0,
       timings: response?.timings || ({ phases: {} } as GotTimings),
+      certificateExpiry,
     };
 
     return statusResponse;
@@ -111,11 +117,35 @@ class NetworkService implements INetworkService {
         throw new Error("No URL provided");
       }
 
+      let certificateExpiry: Date | null = null;
       try {
-        const response: Response = await this.client(url);
-        return this.buildStatusResponse(monitor, response, null);
+        const req: any = this.client(url);
+        req.on("request", (nodeReq: ClientRequest) => {
+          nodeReq.on("socket", (socket: TLSSocket) => {
+            const capture = () => {
+              const cert = socket.getPeerCertificate(true);
+              if (cert && cert.valid_to) {
+                certificateExpiry = new Date(cert.valid_to);
+              }
+            };
+            capture();
+            socket.once("secureConnect", capture);
+          });
+        });
+        const response: Response = await req;
+        return this.buildStatusResponse(
+          monitor,
+          response,
+          certificateExpiry,
+          null
+        );
       } catch (error) {
-        return this.buildStatusResponse(monitor, null, error);
+        return this.buildStatusResponse(
+          monitor,
+          null,
+          certificateExpiry,
+          error
+        );
       }
     } catch (error) {
       throw error;
@@ -142,7 +172,7 @@ class NetworkService implements INetworkService {
         }
       );
 
-      statusResponse = this.buildStatusResponse(monitor, response, null);
+      statusResponse = this.buildStatusResponse(monitor, response, null, null);
       if (!response?.body) {
         throw new ApiError(
           "No payload received from infrastructure monitor",
@@ -152,7 +182,7 @@ class NetworkService implements INetworkService {
       statusResponse.payload = response?.body;
       return statusResponse;
     } catch (error) {
-      statusResponse = this.buildStatusResponse(monitor, null, error);
+      statusResponse = this.buildStatusResponse(monitor, null, null, error);
     }
     return statusResponse;
   };
@@ -174,10 +204,11 @@ class NetworkService implements INetworkService {
       statusResponse = this.buildStatusResponse(
         monitor,
         response,
+        null,
         null
       ) as StatusResponse<ILighthousePayload>;
     } catch (error) {
-      statusResponse = this.buildStatusResponse(monitor, null, error);
+      statusResponse = this.buildStatusResponse(monitor, null, null, error);
     }
 
     const pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance&key=${apiKey}`;

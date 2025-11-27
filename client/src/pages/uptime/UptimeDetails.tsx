@@ -69,6 +69,7 @@ const UptimeDetailsPage = () => {
   }
 
   const stats = response?.data?.stats || null;
+  console.log(stats);
   const avgResponseTime = stats?.avgResponseTime || 0;
   const maxResponseTime = stats?.maxResponseTime || 0;
 
@@ -130,6 +131,14 @@ const UptimeDetailsPage = () => {
           title="Last response time"
           subtitle={
             stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"
+          }
+        />
+        <StatBox
+          title="Certificate Expiry"
+          subtitle={
+            stats?.certificateExpiry
+              ? new Date(stats.certificateExpiry).toLocaleString()
+              : "N/A"
           }
         />
       </Stack>

@@ -14,6 +14,7 @@ export interface IMonitorStats {
   currentStreak: number;
   currentStreakStatus: MonitorStatus;
   currentStreakStartedAt: number;
+  certificateExpiry?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -136,6 +136,7 @@ class StatusService implements IStatusService {
       stats.maxResponseTime,
       statusResponse.responseTime
     );
+    stats.certificateExpiry = statusResponse.certificateExpiry || null;
 
     return await stats.save();
   };
