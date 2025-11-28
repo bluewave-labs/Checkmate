@@ -449,36 +449,43 @@ const getStatusPageQueryValidation = joi.object({
 });
 
 const createStatusPageBodyValidation = joi.object({
-	type: joi.string().valid("uptime").required(),
-	companyName: joi.string().required(),
-	url: joi
-		.string()
-		.pattern(/^[a-zA-Z0-9_-]+$/) // Only allow alphanumeric, underscore, and hyphen
-		.required()
-		.messages({
-			"string.pattern.base": "URL can only contain letters, numbers, underscores, and hyphens",
-		}),
-	timezone: joi.string().optional(),
-	color: joi.string().optional(),
-	monitors: joi
-		.array()
-		.items(joi.string().pattern(/^[0-9a-fA-F]{24}$/))
-		.required()
-		.messages({
-			"string.pattern.base": "Must be a valid monitor ID",
-			"array.base": "Monitors must be an array",
-			"array.empty": "At least one monitor is required",
-			"any.required": "Monitors are required",
-		}),
-	subMonitors: joi
-		.array()
-		.items(joi.string().pattern(/^[0-9a-fA-F]{24}$/))
-		.optional(),
-	deleteSubmonitors: joi.boolean().optional(),
-	isPublished: joi.boolean(),
-	showCharts: joi.boolean().optional(),
-	showUptimePercentage: joi.boolean(),
-	showAdminLoginLink: joi.boolean().optional(),
+    type: joi.string().valid("uptime").required(),
+    companyName: joi.string().required(),
+    url: joi
+        .string()
+        .pattern(/^[a-zA-Z0-9_-]+$/)
+        .required()
+        .messages({
+            "string.pattern.base": "URL can only contain letters, numbers, underscores, and hyphens",
+        }),
+    timezone: joi.string().optional(),
+    color: joi.string().optional(),
+    monitors: joi
+        .array()
+        .items(joi.string().pattern(/^[0-9a-fA-F]{24}$/))
+        .required()
+        .messages({
+            "string.pattern.base": "Must be a valid monitor ID",
+            "array.base": "Monitors must be an array",
+            "array.empty": "At least one monitor is required",
+            "any.required": "Monitors are required",
+        }),
+    subMonitors: joi
+        .array()
+        .items(joi.string().pattern(/^[0-9a-fA-F]{24}$/))
+        .optional(),
+    deleteSubmonitors: joi.boolean().optional(),
+    isPublished: joi.boolean(),
+    showCharts: joi.boolean().optional(),
+    showUptimePercentage: joi.boolean(),
+    showAdminLoginLink: joi.boolean().optional(),
+
+    // --- ADD THESE 4 LINES ---
+    customCSS: joi.string().allow("").optional(),
+    customJavaScript: joi.string().allow("").optional(),
+    headerHTML: joi.string().allow("").optional(),
+    footerHTML: joi.string().allow("").optional(),
+    // -------------------------
 });
 
 const imageValidation = joi

@@ -78,6 +78,18 @@ const StatusPageSchema = mongoose.Schema(
 			type: String,
 			default: "",
 		},
+		customJavaScript: {
+            type: String,
+            default: "",
+        },
+        headerHTML: {
+            type: String,
+            default: "",
+        },
+        footerHTML: {
+            type: String,
+            default: "",
+        },
 	},
 	{ timestamps: true }
 );

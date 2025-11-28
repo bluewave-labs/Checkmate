@@ -16,151 +16,204 @@ import { useIsAdmin } from "../../../../Hooks/v1/useIsAdmin.js";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+// --- CHANGE 1: Import useEffect ---
+import { useEffect } from "react"; 
 
 const PublicStatus = () => {
-	const { url } = useParams();
+    const { url } = useParams();
 
-	// Utils
-	const theme = useTheme();
-	const { t } = useTranslation();
-	const location = useLocation();
-	const isAdmin = useIsAdmin();
+    // Utils
+    const theme = useTheme();
+    const { t } = useTranslation();
+    const location = useLocation();
+    const isAdmin = useIsAdmin();
 
-	const [statusPage, monitors, isLoading, networkError] = useStatusPageFetch(false, url);
+    const [statusPage, monitors, isLoading, networkError] = useStatusPageFetch(false, url);
 
-	// Breadcrumbs
-	const crumbs = [
-		{ name: t("statusBreadCrumbsStatusPages"), path: "/status" },
-		{ name: t("statusBreadCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
-	];
+    // --- CHANGE 2: Inject Custom CSS and JS ---
+    useEffect(() => {
+        if (!statusPage) return;
 
-	// Setup
-	let sx = { paddingLeft: theme.spacing(20), paddingRight: theme.spacing(20) };
-	let link = undefined;
-	const isPublic = location.pathname.startsWith("/status/uptime/public");
-	// Public status page
-	if (isPublic && statusPage && statusPage.showAdminLoginLink === true) {
-		sx = {
-			paddingTop: theme.spacing(20),
-			paddingLeft: "20vw",
-			paddingRight: "20vw",
-		};
-		link = <AdminLink />;
-	}
+        // Inject Custom CSS
+        if (statusPage.customCSS) {
+            const style = document.createElement('style');
+            style.id = 'custom-status-css';
+            style.innerHTML = statusPage.customCSS;
+            document.head.appendChild(style);
+        }
 
-	// Loading
-	if (isLoading) {
-		return <SkeletonLayout />;
-	}
+        // Inject Custom JS
+        if (statusPage.customJavaScript) {
+            try {
+                const script = document.createElement('script');
+                script.id = 'custom-status-js';
+                // Wrap in IIFE to avoid global scope pollution
+                script.text = `(function() { ${statusPage.customJavaScript} })();`;
+                document.body.appendChild(script);
+            } catch (e) {
+                console.error("Custom JS execution failed:", e);
+            }
+        }
 
-	if (monitors?.length === 0) {
-		return (
-			<GenericFallback>
-				<Typography
-					variant="h1"
-					marginY={theme.spacing(4)}
-					color={theme.palette.primary.contrastTextTertiary}
-				>
-					{"Theres nothing here yet"}
-				</Typography>
-				{isAdmin && (
-					<TextLink
-						linkText={"Add a monitor to get started"}
-						href={`/status/uptime/configure/${url}`}
-					/>
-				)}
-			</GenericFallback>
-		);
-	}
+        // Cleanup on unmount
+        return () => {
+            const css = document.getElementById('custom-status-css');
+            const js = document.getElementById('custom-status-js');
+            if (css) css.remove();
+            if (js) js.remove();
+        };
+    }, [statusPage]);
+    // ------------------------------------------
 
-	// Error fetching data
-	if (networkError === true) {
-		return (
-			<GenericFallback>
-				<Typography
-					variant="h1"
-					marginY={theme.spacing(4)}
-					color={theme.palette.primary.contrastTextTertiary}
-				>
-					{t("common.toasts.networkError")}
-				</Typography>
-				<Typography>{t("common.toasts.checkConnection")}</Typography>
-			</GenericFallback>
-		);
-	}
+    // Breadcrumbs
+    const crumbs = [
+        { name: t("statusBreadCrumbsStatusPages"), path: "/status" },
+        { name: t("statusBreadCrumbsDetails"), path: `/status/uptime/${statusPage?.url}` },
+    ];
 
-	// Public status page fallback
-	if (!isLoading && typeof statusPage === "undefined" && isPublic) {
-		return (
-			<Stack sx={sx}>
-				<GenericFallback>
-					<Typography
-						variant="h1"
-						marginY={theme.spacing(4)}
-						color={theme.palette.primary.contrastTextTertiary}
-					>
-						{t("statusPageStatus")}
-					</Typography>
-					<Typography>{t("statusPageStatusContactAdmin")}</Typography>
-				</GenericFallback>
-			</Stack>
-		);
-	}
+    // Setup
+    let sx = { paddingLeft: theme.spacing(20), paddingRight: theme.spacing(20) };
+    let link = undefined;
+    const isPublic = location.pathname.startsWith("/status/uptime/public");
+    
+    // Public status page
+    if (isPublic && statusPage && statusPage.showAdminLoginLink === true) {
+        sx = {
+            paddingTop: theme.spacing(20),
+            paddingLeft: "20vw",
+            paddingRight: "20vw",
+        };
+        link = <AdminLink />;
+    }
 
-	// Finished loading, but status page is not public
-	if (!isLoading && isPublic && statusPage.isPublished === false) {
-		return (
-			<Stack sx={sx}>
-				<GenericFallback>
-					<Typography
-						variant="h1"
-						marginY={theme.spacing(4)}
-						color={theme.palette.primary.contrastTextTertiary}
-					>
-						{t("statusPageStatusNotPublic")}
-					</Typography>
-					<Typography>{t("statusPageStatusContactAdmin")}</Typography>
-				</GenericFallback>
-			</Stack>
-		);
-	}
+    // Loading
+    if (isLoading) {
+        return <SkeletonLayout />;
+    }
 
-	// Status page doesn't exist
-	if (!isLoading && typeof statusPage === "undefined") {
-		return (
-			<GenericFallback>
-				<Typography
-					variant="h1"
-					marginY={theme.spacing(4)}
-					color={theme.palette.primary.contrastTextTertiary}
-				>
-					{t("statusPageStatusNoPage")}
-				</Typography>
-				<Typography>{t("statusPageStatusContactAdmin")}</Typography>
-			</GenericFallback>
-		);
-	}
+    if (monitors?.length === 0) {
+        return (
+            <GenericFallback>
+                <Typography
+                    variant="h1"
+                    marginY={theme.spacing(4)}
+                    color={theme.palette.primary.contrastTextTertiary}
+                >
+                    {"Theres nothing here yet"}
+                </Typography>
+                {isAdmin && (
+                    <TextLink
+                        linkText={"Add a monitor to get started"}
+                        href={`/status/uptime/configure/${url}`}
+                    />
+                )}
+            </GenericFallback>
+        );
+    }
 
-	return (
-		<Stack
-			gap={theme.spacing(10)}
-			sx={{ ...sx, position: "relative" }}
-		>
-			{!isPublic && <Breadcrumbs list={crumbs} />}
-			<ControlsHeader
-				statusPage={statusPage}
-				url={url}
-				isPublic={isPublic}
-			/>
-			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
-			<StatusBar monitors={monitors} />
-			<MonitorsList
-				monitors={monitors}
-				statusPage={statusPage}
-			/>
-			{link}
-		</Stack>
-	);
+    // Error fetching data
+    if (networkError === true) {
+        return (
+            <GenericFallback>
+                <Typography
+                    variant="h1"
+                    marginY={theme.spacing(4)}
+                    color={theme.palette.primary.contrastTextTertiary}
+                >
+                    {t("common.toasts.networkError")}
+                </Typography>
+                <Typography>{t("common.toasts.checkConnection")}</Typography>
+            </GenericFallback>
+        );
+    }
+
+    // Public status page fallback
+    if (!isLoading && typeof statusPage === "undefined" && isPublic) {
+        return (
+            <Stack sx={sx}>
+                <GenericFallback>
+                    <Typography
+                        variant="h1"
+                        marginY={theme.spacing(4)}
+                        color={theme.palette.primary.contrastTextTertiary}
+                    >
+                        {t("statusPageStatus")}
+                    </Typography>
+                    <Typography>{t("statusPageStatusContactAdmin")}</Typography>
+                </GenericFallback>
+            </Stack>
+        );
+    }
+
+    // Finished loading, but status page is not public
+    if (!isLoading && isPublic && statusPage.isPublished === false) {
+        return (
+            <Stack sx={sx}>
+                <GenericFallback>
+                    <Typography
+                        variant="h1"
+                        marginY={theme.spacing(4)}
+                        color={theme.palette.primary.contrastTextTertiary}
+                    >
+                        {t("statusPageStatusNotPublic")}
+                    </Typography>
+                    <Typography>{t("statusPageStatusContactAdmin")}</Typography>
+                </GenericFallback>
+            </Stack>
+        );
+    }
+
+    // Status page doesn't exist
+    if (!isLoading && typeof statusPage === "undefined") {
+        return (
+            <GenericFallback>
+                <Typography
+                    variant="h1"
+                    marginY={theme.spacing(4)}
+                    color={theme.palette.primary.contrastTextTertiary}
+                >
+                    {t("statusPageStatusNoPage")}
+                </Typography>
+                <Typography>{t("statusPageStatusContactAdmin")}</Typography>
+            </GenericFallback>
+        );
+    }
+
+    return (
+        <Stack
+            gap={theme.spacing(10)}
+            sx={{ ...sx, position: "relative" }}
+        >
+            {!isPublic && <Breadcrumbs list={crumbs} />}
+            
+            {/* --- CHANGE 3: Custom Header Logic --- */}
+            {statusPage?.headerHTML ? (
+                 <div dangerouslySetInnerHTML={{ __html: statusPage.headerHTML }} />
+            ) : (
+                <ControlsHeader
+                    statusPage={statusPage}
+                    url={url}
+                    isPublic={isPublic}
+                />
+            )}
+            {/* ------------------------------------- */}
+
+            <Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
+            <StatusBar monitors={monitors} />
+            <MonitorsList
+                monitors={monitors}
+                statusPage={statusPage}
+            />
+            
+            {link}
+
+            {/* --- CHANGE 4: Custom Footer Logic --- */}
+            {statusPage?.footerHTML && (
+                 <div dangerouslySetInnerHTML={{ __html: statusPage.footerHTML }} />
+            )}
+            {/* ------------------------------------- */}
+        </Stack>
+    );
 };
 
 export default PublicStatus;

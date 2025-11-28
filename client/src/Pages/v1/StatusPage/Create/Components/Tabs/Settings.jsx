@@ -8,6 +8,7 @@ import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import ImageUpload from "@/Components/v1/Inputs/ImageUpload/index.jsx";
 import ColorPicker from "@/Components/v1/Inputs/ColorPicker/index.jsx";
 import Progress from "../Progress/index.jsx";
+import TextField from "@mui/material/TextField";
 
 // Utils
 import { useTheme } from "@emotion/react";
@@ -165,6 +166,116 @@ const TabSettings = ({
 							name="color"
 							value={form.color}
 							onChange={handleFormChange}
+						/>
+					</Stack>
+				</ConfigBox>
+				{/* --- CUSTOM CSS SECTION --- */}
+				<ConfigBox>
+					<Stack gap={theme.spacing(6)}>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("customCSS")}
+						</Typography>
+						<Typography component="p">
+							{t("statusPageCreateCustomCSSDescription")}
+						</Typography>
+					</Stack>
+					<Stack gap={theme.spacing(6)}>
+						<TextField
+							name="customCSS" // <--- CRITICAL: Needed for saving
+							label={t("customCSS")}
+							multiline
+							rows={4}
+							value={form.customCSS || ""}
+							onChange={handleFormChange}
+							fullWidth
+							margin="normal"
+							placeholder={t("statusPageCreateCustomCSSPlaceholder")}
+						/>
+					</Stack>
+				</ConfigBox>
+
+				{/* --- CUSTOM HEADER HTML SECTION --- */}
+				<ConfigBox>
+					<Stack gap={theme.spacing(6)}>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("customHeaderHTML")}
+						</Typography>
+						<Typography component="p">
+							{t("statusPageCreateCustomHeaderHTMLDescription")}
+						</Typography>
+					</Stack>
+					<Stack gap={theme.spacing(6)}>
+						<TextField
+							name="headerHTML" // <--- CRITICAL
+							label={t("customHeaderHTML")}
+							multiline
+							rows={3}
+							value={form.headerHTML || ""}
+							onChange={handleFormChange}
+							fullWidth
+							margin="normal"
+							placeholder={t("statusPageCreateCustomHeaderHTMLPlaceholder")}
+						/>
+					</Stack>
+				</ConfigBox>
+
+				{/* --- CUSTOM FOOTER HTML SECTION --- */}
+				<ConfigBox>
+					<Stack gap={theme.spacing(6)}>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("customFooterHTML")}
+						</Typography>
+						<Typography component="p">
+							{t("statusPageCreateCustomFooterHTMLDescription")}
+						</Typography>
+					</Stack>
+					<Stack gap={theme.spacing(6)}>
+						<TextField
+							name="footerHTML" // <--- CRITICAL
+							label={t("customFooterHTML")}
+							multiline
+							rows={3}
+							value={form.footerHTML || ""}
+							onChange={handleFormChange}
+							fullWidth
+							margin="normal"
+						/>
+					</Stack>
+				</ConfigBox>
+
+				{/* --- CUSTOM JAVASCRIPT SECTION --- */}
+				<ConfigBox>
+					<Stack gap={theme.spacing(6)}>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("customJavaScript")}
+						</Typography>
+						<Typography component="p">
+							{t("statusPageCreateCustomJavaScriptDescription")}
+						</Typography>
+					</Stack>
+					<Stack gap={theme.spacing(6)}>
+						<TextField
+							name="customJavaScript" // <--- CRITICAL
+							label={t("customJavaScript")}
+							multiline
+							rows={4}
+							value={form.customJavaScript || ""}
+							onChange={handleFormChange}
+							fullWidth
+							margin="normal"
+							helperText={t("statusPageCreateCustomJavaScriptWarning")}
 						/>
 					</Stack>
 				</ConfigBox>
