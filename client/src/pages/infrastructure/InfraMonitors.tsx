@@ -5,7 +5,7 @@ import {
   PausedStatusBox,
   InfoBox,
 } from "@/components/design-elements";
-import { HeaderCreate } from "@/components/monitors";
+import { HeaderCreate } from "@/components/common";
 import Stack from "@mui/material/Stack";
 import { Dialog } from "@/components/inputs";
 import { InfraMonitorsTable } from "./InfraMonitorsTable";
@@ -86,7 +86,12 @@ const PageSpeedMonitorsPage = () => {
         title="Server Health Monitoring"
         description="Keep track of your servers' vital statistics including CPU usage, memory, disk space, and network performance. Receive alerts when resources run low."
       />
-      <HeaderCreate isLoading={loading} path="/infrastructure/create" />
+      <HeaderCreate
+        isLoading={loading}
+        path="/infrastructure/create"
+        entitlement="monitorsMax"
+        entitlementCount={count}
+      />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <UpStatusBox n={upCount} />
         <DownStatusBox n={downCount} />

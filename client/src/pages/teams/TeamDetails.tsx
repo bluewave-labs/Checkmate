@@ -2,7 +2,7 @@ import { BasePage } from "@/components/design-elements";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { Table } from "@/components/design-elements";
-import { HeaderCreate } from "@/components/teams/HeaderCreate";
+import { HeaderCreate } from "@/components/common";
 import type { Header } from "@/components/design-elements/Table";
 
 import { useNavigate } from "react-router";
@@ -77,6 +77,8 @@ const TeamDetailsPage = () => {
         label="Add new team member"
         path={`/teams/${id}/member/create`}
         isLoading={false}
+        entitlement={null}
+        entitlementCount={teamMembers?.length || 0}
       />
       <Typography variant="h2" marginTop={theme.spacing(4)}>
         Team Members

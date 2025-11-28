@@ -5,8 +5,8 @@ import {
   PausedStatusBox,
   InfoBox,
 } from "@/components/design-elements";
-import { HeaderCreate } from "@/components/monitors";
 import Stack from "@mui/material/Stack";
+import { HeaderCreate } from "@/components/common";
 import { Dialog } from "@/components/inputs";
 import { PageSpeedMonitorTable } from "./PageSpeedMonitorTable";
 
@@ -86,7 +86,12 @@ const PageSpeedMonitorsPage = () => {
         title="Website Performance Tracking"
         description="Measure how fast your websites load and identify performance bottlenecks. Track Core Web Vitals and get actionable insights to improve user experience."
       />
-      <HeaderCreate isLoading={loading} path="/pagespeed/create" />
+      <HeaderCreate
+        isLoading={loading}
+        path="/pagespeed/create"
+        entitlement="monitorsMax"
+        entitlementCount={count}
+      />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <UpStatusBox n={upCount} />
         <DownStatusBox n={downCount} />

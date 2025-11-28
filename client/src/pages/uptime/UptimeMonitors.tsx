@@ -5,7 +5,8 @@ import {
   PausedStatusBox,
   InfoBox,
 } from "@/components/design-elements";
-import { HeaderCreate, HeaderFilter } from "@/components/monitors";
+import { HeaderFilter } from "@/components/monitors";
+import { HeaderCreate } from "@/components/common";
 import Stack from "@mui/material/Stack";
 import { Dialog } from "@/components/inputs";
 import { MonitorTable } from "@/pages/uptime/MonitorTable";
@@ -124,7 +125,12 @@ const UptimeMonitors = () => {
         title="Website & API Uptime Monitoring"
         description="Monitor your websites and APIs to ensure they're always accessible. Get instant alerts when your services go down and track uptime history over time."
       />
-      <HeaderCreate isLoading={loading} path="/uptime/create" />
+      <HeaderCreate
+        isLoading={loading}
+        path="/uptime/create"
+        entitlement="monitorsMax"
+        entitlementCount={count}
+      />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <UpStatusBox n={upCount} />
         <DownStatusBox n={downCount} />

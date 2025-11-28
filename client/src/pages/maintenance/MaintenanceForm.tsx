@@ -39,7 +39,6 @@ export const MaintenanceForm = ({
     handleSubmit,
     control,
     reset,
-    getValues,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(maintenanceSchema),

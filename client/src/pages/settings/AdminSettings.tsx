@@ -1,26 +1,10 @@
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import { BasePage, ConfigBox } from "@/components/design-elements";
-import {
-  AutoComplete,
-  Select,
-  LanguageSelector,
-  Button,
-  RadioWithDescription,
-  Dialog,
-} from "@/components/inputs";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
-import { SettingsForm } from "@/pages/settings/SettingsForm";
-import DummyChart from "@/pages/settings/DummyChart";
+import { BasePage } from "@/components/design-elements";
 
-import { useTheme } from "@mui/material/styles";
-import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { setTimezone, setMode, setChartType } from "@/features/uiSlice";
-import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
-import timezones from "@/utils/timezones.json";
-import type { ITimeZone } from "@/types/timezone";
+import { SettingsForm } from "@/pages/settings/SettingsForm";
+
+import { useMemo } from "react";
+import {} from "react-i18next";
+import { useAppSelector } from "@/hooks/AppHooks";
 import { useGet, usePatch, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { z } from "zod";
@@ -33,20 +17,6 @@ const AdminSettingsPage = () => {
 
   const orgPermissions = user?.org?.permissions || [];
   const hasMaster = orgPermissions.includes("master");
-
-  const theme = useTheme();
-  const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const timezone = useAppSelector((state) => state.ui.timezone);
-  const mode = useAppSelector((state) => state.ui.mode);
-  const chartType = useAppSelector((state) => state.ui.chartType);
-  const [selectedTimezone, setSelectedTimezone] = useState<ITimeZone | null>(
-    null
-  );
-  useEffect(() => {
-    const tz = timezones.find((tz) => tz._id === timezone);
-    setSelectedTimezone(tz || null);
-  }, [timezone]);
 
   const { post, loading: posting } = usePost<Partial<FormValues>, any>();
   const { patch, loading: patching } = usePatch<Partial<FormValues>, any>();

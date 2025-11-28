@@ -58,7 +58,6 @@ const Login = () => {
       navigate("/login");
       return;
     }
-
     dispatch(setAuthenticated(true));
     dispatch(setUser(user));
     dispatch(setSelectedTeamId(user.teams[0]?.id || null));

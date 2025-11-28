@@ -1,4 +1,4 @@
-import { HeaderCreate } from "@/components/notification-channels/HeaderCreate";
+import { HeaderCreate } from "@/components/common";
 import Typography from "@mui/material/Typography";
 import { BasePageWithStates, InfoBox } from "@/components/design-elements";
 import { Table } from "@/components/design-elements";
@@ -124,6 +124,8 @@ const StatusPages = () => {
         label={"Create a new Status Page"}
         isLoading={isValidating || deleting}
         path="/status-pages/create"
+        entitlement="statusPagesMax"
+        entitlementCount={statusPages.length}
       />
       <Table
         headers={headers}

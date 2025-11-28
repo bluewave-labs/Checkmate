@@ -144,6 +144,7 @@ export const monitorSchemaPageSpeed = z.object({
   notificationChannels: z.array(z.string()).optional().default([]),
   name: z.string().min(1, "Display name is required"),
   interval: durationSchemaPageSpeed,
+  rejectUnauthorized: z.boolean().default(true),
 });
 export const monitorSchemaInfra = z.object({
   type: z.string().min(1, "You must select an option"),
@@ -156,6 +157,7 @@ export const monitorSchemaInfra = z.object({
   notificationChannels: z.array(z.string()).optional().default([]),
   name: z.string().min(1, "Display name is required"),
   interval: durationSchemaInfra,
+  rejectUnauthorized: z.boolean().default(true),
 });
 
 export const teamSchema = z.object({

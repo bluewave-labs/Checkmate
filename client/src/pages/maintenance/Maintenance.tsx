@@ -1,4 +1,4 @@
-import { HeaderCreate } from "@/components/notification-channels/HeaderCreate";
+import { HeaderCreate } from "@/components/common";
 import { BasePageWithStates, InfoBox } from "@/components/design-elements";
 import { ActionsMenu } from "@/components/actions-menu";
 import { Table } from "@/components/design-elements";
@@ -134,6 +134,8 @@ const MaintenancePage = () => {
         label={"Create a new maintenance window"}
         isLoading={isValidating || isPausing || isDeleting}
         path="/maintenance/create"
+        entitlement={null}
+        entitlementCount={maintenance.length}
       />
       <Table
         headers={headers}

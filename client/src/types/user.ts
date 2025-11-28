@@ -1,3 +1,5 @@
+import type { Entitlements } from "./entitlements";
+
 export interface IUser {
   id: string;
   email: string;
@@ -12,6 +14,7 @@ export interface IUser {
     name: string;
     permissions: string;
   }[];
+  entitlements: Entitlements;
 }
 export interface IMongoUser {
   _id: string;

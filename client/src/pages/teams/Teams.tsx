@@ -1,6 +1,6 @@
 import { BasePage, InfoBox } from "@/components/design-elements";
 import { Table } from "@/components/design-elements";
-import { HeaderCreate } from "@/components/teams/HeaderCreate";
+import { HeaderCreate } from "@/components/common";
 import { ActionsMenu } from "@/components/actions-menu";
 import { Dialog } from "@/components/inputs";
 
@@ -93,6 +93,8 @@ const TeamsPage = () => {
         label="Create new team"
         isLoading={loading}
         path="/teams/create"
+        entitlement="teamsMax"
+        entitlementCount={teams.length}
       />
       <Table
         headers={headers}

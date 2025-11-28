@@ -1,4 +1,4 @@
-import { HeaderCreate } from "@/components/notification-channels/HeaderCreate";
+import { HeaderCreate } from "@/components/common";
 import Typography from "@mui/material/Typography";
 import { BasePageWithStates, InfoBox } from "@/components/design-elements";
 import { Table } from "@/components/design-elements";
@@ -140,6 +140,8 @@ const NotificationChannelsPage = () => {
         label={"Create a new notification channel"}
         isLoading={isValidating || pausing || deleting}
         path="/notification-channels/create"
+        entitlement={"notificationChannelsMax"}
+        entitlementCount={notificationChannels.length}
       />
       <Table
         headers={headers}

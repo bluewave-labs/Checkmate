@@ -50,7 +50,7 @@ const ExportPage = () => {
       try {
         const text = await file.text();
         const json = JSON.parse(text);
-        const res = await post("/monitors/import", { monitors: json });
+        await post("/monitors/import", { monitors: json });
       } catch (error) {
         console.error("Failed to parse JSON", error);
       } finally {

@@ -1,4 +1,3 @@
-export { HeaderCreate } from "./HeaderCreate";
 export { HistogramStatus } from "./HistogramStatus";
 export { ChartAvgResponse } from "./ChartAvgResponse";
 export { HeaderRange } from "../common/HeaderRange";
