@@ -125,6 +125,10 @@ const MonitorSchema = mongoose.Schema(
 				return this.alertThreshold;
 			},
 		},
+		selectedDisks: {
+			type: [String],
+			default: [],
+		},
 		gameId: {
 			type: String,
 		},

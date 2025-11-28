@@ -17,6 +17,7 @@ const useInfrastructureMonitorForm = () => {
 		temperature: false,
 		usage_temperature: "",
 		secret: "",
+		selectedDisks: [],
 	});
 
 	const onChangeForm = (name, value) => {
@@ -48,6 +49,7 @@ const useInfrastructureMonitorForm = () => {
 			temperature: gt.temperature !== undefined,
 			usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
 			secret: "",
+			selectedDisks: [],
 		}));
 	}, []);
 
@@ -81,6 +83,7 @@ const useInfrastructureMonitorForm = () => {
 					? (thresholds.usage_temperature * 100).toString()
 					: "",
 			secret: monitor.secret || "",
+			selectedDisks: monitor.selectedDisks || [],
 		}));
 	}, []);
 	return {
