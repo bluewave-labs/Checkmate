@@ -291,6 +291,10 @@ export const systemSettingsSchema = z.object({
   systemEmailIgnoreTLS: z.boolean().optional(),
   systemEmailRequireTLS: z.boolean().optional(),
   systemEmailRejectUnauthorized: z.boolean().optional(),
+  checksRetentionDays: z.coerce
+    .number({ message: "Number required" })
+    .min(1, "Retention days must be at least 1")
+    .max(365, "Retention days cannot exceed 365 days"),
 });
 
 const statusPageUrlRegex = /^[A-Za-z0-9]+$/;

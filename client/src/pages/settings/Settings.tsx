@@ -11,25 +11,19 @@ import {
 } from "@/components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import { SettingsForm } from "@/pages/settings/SettingsForm";
 import DummyChart from "@/pages/settings/DummyChart";
 
 import { useTheme } from "@mui/material/styles";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { setTimezone, setMode, setChartType } from "@/features/uiSlice";
 import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
 import timezones from "@/utils/timezones.json";
 import type { ITimeZone } from "@/types/timezone";
 import type { SelectChangeEvent } from "@mui/material/Select";
-import { useGet, usePatch, usePost, useDelete } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
-import { z } from "zod";
-import { systemSettingsSchema } from "@/validation/zod";
+import { useDelete } from "@/hooks/UseApi";
 
 const SettingsPage = () => {
-  type FormValues = z.infer<typeof systemSettingsSchema>;
-
   const user = useAppSelector((state) => state.auth.user);
 
   const orgPermissions = user?.org?.permissions || [];
@@ -53,23 +47,8 @@ const SettingsPage = () => {
     setSelectedTimezone(tz || null);
   }, [timezone]);
 
-  const { post, loading: posting } = usePost<Partial<FormValues>, any>();
-  const { patch, loading: patching } = usePatch<Partial<FormValues>, any>();
   const { deleteFn, loading: isDeleting } = useDelete();
 
-  const { response, loading } = useGet<ApiResponse<any>>(
-    hasMaster ? "/settings" : null
-  );
-  const settings = response?.data || {};
-  const initialSettings = useMemo(() => settings, [settings]);
-
-  const onSubmit = async (data: Partial<FormValues>) => {
-    await patch("/settings/email", data);
-  };
-
-  const onTest = async (data: Partial<FormValues>) => {
-    await post("/settings/test-transport", data);
-  };
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleOpen = () => setIsDialogOpen(true);
@@ -152,30 +131,19 @@ const SettingsPage = () => {
           subtitle="Monitor related settings"
           rightContent={
             <Stack gap={theme.spacing(4)}>
-              <Stack gap={theme.spacing(4)}>
-                <Box>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={handleOpen}
-                  >
-                    Remove all monitors
-                  </Button>
-                </Box>
-              </Stack>
+              <Box>
+                <Button variant="contained" color="error" onClick={handleOpen}>
+                  Remove all monitors
+                </Button>
+              </Box>
+              <Typography>
+                Removes all monitors from your organization.
+              </Typography>
             </Stack>
           }
         />
       )}
 
-      {hasMaster && (
-        <SettingsForm
-          onSubmit={onSubmit}
-          onTest={onTest}
-          initialData={initialSettings}
-          loading={posting || loading || patching}
-        />
-      )}
       <Dialog
         open={isDialogOpen}
         title={t("settings.removeAllMonitors.title", "Delete all monitors?")}

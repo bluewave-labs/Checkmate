@@ -7,6 +7,7 @@ import UptimeCreatePage from "@/pages/uptime/UptimeCreate";
 import UptimeDetailsPage from "@/pages/uptime/UptimeDetails";
 import UptimeConfigurePage from "@/pages/uptime/UptimeConfigure";
 import SettingsPage from "@/pages/settings/Settings";
+import AdminSettingsPage from "@/pages/settings/AdminSettings";
 import TeamsPage from "@/pages/teams/Teams";
 import TeamsCreatePage from "@/pages/teams/TeamsCreate";
 import TeamsConfigPage from "@/pages/teams/TeamsConfig";
@@ -78,6 +79,7 @@ const Router = () => {
         <Route path="uptime/:id" element={<UptimeDetailsPage />} />
         <Route path="uptime" element={<UptimeMonitorsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="settings/admin" element={<AdminSettingsPage />} />
         <Route path="teams/create" element={<TeamsCreatePage />} />
         <Route
           path="teams/:id/member/:memberId/configure"

@@ -47,6 +47,8 @@ export const SettingsSwitch = () => {
     orgPermissions.includes("monitors.read") ||
     orgPermissions.includes("*");
 
+  const hasMaster = orgPermissions.includes("master");
+
   return (
     <>
       <Tooltip title="Settings" placement="top">
@@ -85,6 +87,11 @@ export const SettingsSwitch = () => {
         <MenuItem onClick={() => handleClick("settings")}>
           <Typography>General settings</Typography>
         </MenuItem>
+        {hasMaster && (
+          <MenuItem onClick={() => handleClick("settings/admin")}>
+            <Typography>Admin settings</Typography>
+          </MenuItem>
+        )}
         {hasTeamEdit && (
           <MenuItem onClick={() => handleClick("teams")}>
             <Typography>Teams</Typography>

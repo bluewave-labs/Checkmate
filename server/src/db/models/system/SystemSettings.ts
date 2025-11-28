@@ -13,7 +13,7 @@ export interface ISystemSettings extends Document {
   systemEmailIgnoreTLS: boolean;
   systemEmailRequireTLS: boolean;
   systemEmailRejectUnauthorized: boolean;
-  dataRetentionDays: number;
+  checksRetentionDays: number;
 }
 
 const SystemSettingsSchema = new Schema<ISystemSettings>(
@@ -31,7 +31,7 @@ const SystemSettingsSchema = new Schema<ISystemSettings>(
     systemEmailIgnoreTLS: { type: Boolean, default: false },
     systemEmailRequireTLS: { type: Boolean, default: false },
     systemEmailRejectUnauthorized: { type: Boolean, default: true },
-    dataRetentionDays: { type: Number, default: 90 },
+    checksRetentionDays: { type: Number, default: 90 },
   },
   {
     timestamps: true,

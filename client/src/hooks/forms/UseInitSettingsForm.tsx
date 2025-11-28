@@ -28,6 +28,7 @@ export const useInitForm = ({
       systemEmailRequireTLS: initialData?.systemEmailRequireTLS ?? false,
       systemEmailRejectUnauthorized:
         initialData?.systemEmailRejectUnauthorized ?? true,
+      checksRetentionDays: initialData?.checksRetentionDays ?? 90,
     };
     return { defaults };
   }, [initialData]);
