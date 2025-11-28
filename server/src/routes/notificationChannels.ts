@@ -1,15 +1,17 @@
+import { NotificationChannel } from "@/db/models/index.js";
 import { Router } from "express";
 import { NotificationChannelController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
-import { validateBody, validateQuery } from "@/middleware/validation.js";
+import { validateBody } from "@/middleware/validation.js";
+import { enforceMax } from "@/middleware/VerifyEntitlements.js";
 import {
   notificationChannelSchema,
   notificationPatchSchema,
 } from "@/validation/index.js";
-
+import type { Request } from "express";
 class NotificationChannelRoutes {
   private router;
   private controller;
@@ -25,6 +27,9 @@ class NotificationChannelRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.notifications.write]),
+      enforceMax("notificationChannelsMax", async (req: Request) =>
+        NotificationChannel.countDocuments({ orgId: req?.user?.orgId })
+      ),
       validateBody(notificationChannelSchema),
       this.controller.create
     );

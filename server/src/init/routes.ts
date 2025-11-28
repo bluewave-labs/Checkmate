@@ -16,6 +16,7 @@ import {
   ProfileRoutes,
   IncidentsRoutes,
   SettingsRoutes,
+  MeRoutes,
 } from "@/routes/index.js";
 import { errorHandler } from "@/middleware/ErrorHandler.js";
 export const initRoutes = (controllers: any, app: Express) => {
@@ -46,6 +47,7 @@ export const initRoutes = (controllers: any, app: Express) => {
   const profileRoutes = new ProfileRoutes(controllers.profileController);
   const incidentsRoutes = new IncidentsRoutes(controllers.incidentsController);
   const settingsRoutes = new SettingsRoutes(controllers.settingsController);
+  const meRoutes = new MeRoutes();
 
   app.use("/api/v1/auth", authRoutes.getRouter());
   app.use("/api/v1/invite", inviteRoutes.getRouter());
@@ -66,5 +68,6 @@ export const initRoutes = (controllers: any, app: Express) => {
   app.use("/api/v1/profile", profileRoutes.getRouter());
   app.use("/api/v1/incidents", incidentsRoutes.getRouter());
   app.use("/api/v1/settings", settingsRoutes.getRouter());
+  app.use("/api/v1/me", meRoutes.getRouter());
   app.use(errorHandler);
 };

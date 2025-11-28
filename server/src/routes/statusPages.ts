@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { StatusPage } from "@/db/models/index.js";
 import { StatusPageController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
@@ -6,6 +7,7 @@ import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 import { validateBody } from "@/middleware/validation.js";
 import { statusPageSchema } from "@/validation/index.js";
+import { enforceMax } from "@/middleware/VerifyEntitlements.js";
 
 class StatusPageRoutes {
   private router;
@@ -22,7 +24,11 @@ class StatusPageRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.statusPages.write]),
+      enforceMax("statusPageMax", async (req) =>
+        StatusPage.countDocuments({ orgId: req?.user?.orgId })
+      ),
       validateBody(statusPageSchema),
+
       this.controller.create
     );
 

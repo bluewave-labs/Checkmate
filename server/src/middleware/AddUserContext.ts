@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { OrgMembership, TeamMembership, IRole } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
-
+import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
+import type { Entitlements } from "@/types/entitlements.js";
+import { getChildLogger } from "@/logger/Logger.js";
+const logger = getChildLogger("AddUserContext");
 interface IRolesObj {
   orgRole?: IRole;
   teamRole: IRole;
@@ -144,6 +147,11 @@ export const addUserContext = async (
       teamRole,
     };
     req.user.currentTeamId = currentTeamId;
+
+    // Attach entitlements for the org
+    const provider = EntitlementsFactory.create();
+    const entitlements: Entitlements = await provider.getForOrg(orgId);
+    req.entitlements = entitlements;
 
     return next();
   } catch (error) {

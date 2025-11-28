@@ -9,6 +9,11 @@ import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 import { validateBody, validateQuery } from "@/middleware/validation.js";
 import {
+  enforceMax,
+  enforceMinInterval,
+} from "@/middleware/VerifyEntitlements.js";
+import { Monitor } from "@/db/models/index.js";
+import {
   monitorSchema,
   monitorIdChecksQuerySchema,
   monitorPatchSchema,
@@ -31,7 +36,11 @@ class MonitorRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.monitors.write]),
+      enforceMax("monitorsMax", async (req) =>
+        Monitor.countDocuments({ orgId: req?.user?.orgId })
+      ),
       validateBody(monitorSchema),
+      enforceMinInterval("checksIntervalMsMin", (req) => req.body.interval),
       this.controller.create
     );
 

@@ -1,9 +1,11 @@
+import { Team } from "@/db/models/index.js";
 import { Router } from "express";
 
 import { TeamController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
+import { enforceMax } from "@/middleware/VerifyEntitlements.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 
 class TeamRoutes {
@@ -21,6 +23,9 @@ class TeamRoutes {
       verifyToken,
       addUserContext,
       verifyOrgPermission([PERMISSIONS.teams.write]),
+      enforceMax("teamsMax", async (req) =>
+        Team.countDocuments({ orgId: req?.user?.orgId })
+      ),
       this.controller.create
     );
 
