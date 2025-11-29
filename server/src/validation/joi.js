@@ -481,10 +481,10 @@ const createStatusPageBodyValidation = joi.object({
     showAdminLoginLink: joi.boolean().optional(),
 
     // --- ADD THESE 4 LINES ---
-    customCSS: joi.string().allow("").optional(),
-    customJavaScript: joi.string().allow("").optional(),
-    headerHTML: joi.string().allow("").optional(),
-    footerHTML: joi.string().allow("").optional(),
+customCSS: joi.string().allow("").max(10000).optional(),
+customJavaScript: joi.string().allow("").max(5000).optional(),
+headerHTML: joi.string().allow("").max(5000).optional(),
+footerHTML: joi.string().allow("").max(5000).optional(),
     // -------------------------
 });
 
