@@ -7,6 +7,13 @@ client:
     host: change_me
     className: nginx
     annotations: {}
+    # Example annotations for cert-manager:
+    # annotations:
+    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    tls:
+      enabled: false
+      secretName: checkmate-client-tls
+      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 server:
   image: ghcr.io/bluewave-labs/checkmate-backend:v3.2.0
@@ -17,6 +24,13 @@ server:
     host: change_me
     className: nginx
     annotations: {}
+    # Example annotations for cert-manager:
+    # annotations:
+    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    tls:
+      enabled: false
+      secretName: checkmate-server-tls
+      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 redis:
   enabled: false

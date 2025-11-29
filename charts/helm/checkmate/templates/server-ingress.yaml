@@ -18,6 +18,12 @@ metadata:
     #nginx.ingress.kubernetes.io/cors-allow-credentials: "true"*/}}
 spec:
   ingressClassName: {{ .Values.server.ingress.className }}
+  {{- if .Values.server.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.server.ingress.host }}
+      secretName: {{ .Values.server.ingress.tls.secretName }}
+  {{- end }}
   rules:
     - host: {{ .Values.server.ingress.host }}
       http:
