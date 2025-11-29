@@ -20,6 +20,7 @@ import { Types } from "mongoose";
 import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "../infrastructure/JobQueue.js";
 import { hashPassword } from "@/utils/JWTUtils.js";
+import { Plans } from "@/types/entitlements.js";
 
 const SERVICE_NAME = "AuthService";
 
@@ -206,6 +207,7 @@ class AuthService implements IAuthService {
         permissions: orgRoles?.permissions || [],
       },
       teams: returnableTeams,
+      entitlements: org.entitlements,
     };
 
     return returnableUser;
@@ -237,6 +239,8 @@ class AuthService implements IAuthService {
       const org = await Org.create({
         name: `${user.firstName}'s Org`,
         ownerId: user._id,
+        planKey: "free",
+        entitlements: Plans["free"],
       });
       created.org = org._id;
 
@@ -339,6 +343,7 @@ class AuthService implements IAuthService {
           permissions: roles[0]?.permissions || [],
         },
         teams: [returnableTeam],
+        entitlements: org.entitlements,
       };
 
       return { tokenizedUser, returnableUser };
@@ -474,6 +479,7 @@ class AuthService implements IAuthService {
           permissions: orgPermissions,
         },
         teams: returnableTeams,
+        entitlements: org.entitlements,
       };
 
       return {
@@ -522,10 +528,22 @@ class AuthService implements IAuthService {
     }
 
     // Find org and roles
-    const org = await Org.findById(orgMembership.orgId).lean();
+    let org = await Org.findById(orgMembership.orgId).lean();
 
     if (!org) {
       throw new ApiError("Organization not found");
+    }
+
+    // Update org entitlements
+    const planKey = org.entitlements.plan;
+    org = await Org.findOneAndUpdate(
+      { _id: org._id },
+      { $set: { entitlements: Plans[planKey] } },
+      { new: true }
+    );
+
+    if (!org) {
+      throw new ApiError("Organization entitlement error");
     }
 
     const orgRoles = await Role.findById(orgMembership.roleId).lean();
@@ -567,6 +585,7 @@ class AuthService implements IAuthService {
         permissions: orgRoles?.permissions || [],
       },
       teams: returnableTeams,
+      entitlements: org.entitlements,
     };
 
     return {

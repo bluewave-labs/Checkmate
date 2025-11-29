@@ -395,17 +395,27 @@ class MonitorController {
       throw new ApiError("No organization ID", 400);
     }
 
-    const result = await this.monitorService.import(
+    const entitlements = req.entitlements;
+    if (!entitlements) {
+      throw new ApiError("Entitlements not found", 500);
+    }
+
+    const result: any = await this.monitorService.import(
       orgId,
       teamId,
       userContext.sub,
+      entitlements,
       req.body
     );
+    const defaultMessageMap: Record<string, string> = {
+      OK: `Imported ${result.imported} monitors`,
+      PARTIAL: `Imported ${result.imported} monitors, ${result.errors} skipped`,
+      NO_CAPACITY: `No capacity available. ${result.attempted} skipped`,
+      UNEXPECTED: `Import failed unexpectedly`,
+    };
 
-    res.status(200).json({
-      message: `Import request received.  ${result.imported} successfully inserted, ${result.errors} failed`,
-      data: result,
-    });
+    const message = result?.message || defaultMessageMap[result?.code] || "Import completed";
+    res.status(result?.status ?? 200).json({ message, data: result });
 
     try {
     } catch (error) {

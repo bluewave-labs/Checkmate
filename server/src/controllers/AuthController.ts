@@ -3,7 +3,6 @@ import { encode, decode } from "@/utils/JWTUtils.js";
 import AuthService from "@/services/business/AuthService.js";
 import ApiError from "@/utils/ApiError.js";
 import InviteService from "@/services/business/InviteService.js";
-import { registerSchema } from "@/validation/index.js";
 class AuthController {
   private authService: AuthService;
   private inviteService: InviteService;

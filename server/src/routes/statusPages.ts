@@ -24,7 +24,7 @@ class StatusPageRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.statusPages.write]),
-      enforceMax("statusPageMax", async (req) =>
+      enforceMax("statusPagesMax", async (req) =>
         StatusPage.countDocuments({ orgId: req?.user?.orgId })
       ),
       validateBody(statusPageSchema),

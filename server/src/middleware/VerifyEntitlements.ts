@@ -11,7 +11,7 @@ type NumberKeys<T> = {
 }[keyof T];
 
 const getEntitlements = (req: Request): Entitlements | undefined => {
-  return (req as any).entitlements as Entitlements | undefined;
+  return req.entitlements;
 };
 
 export const requireFeature = (flag: BooleanKeys<Entitlements>) => {

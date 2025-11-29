@@ -11,6 +11,7 @@ import { validateBody, validateQuery } from "@/middleware/validation.js";
 import {
   enforceMax,
   enforceMinInterval,
+  requireFeature,
 } from "@/middleware/VerifyEntitlements.js";
 import { Monitor } from "@/db/models/index.js";
 import {
@@ -86,6 +87,7 @@ class MonitorRoutes {
         PERMISSIONS.monitors.read,
         PERMISSIONS.notifications.read,
       ]),
+      requireFeature("notificationsEnabled"),
       this.controller.testNotifications
     );
 
@@ -111,6 +113,8 @@ class MonitorRoutes {
       addUserContext,
       verifyTeamPermission([PERMISSIONS.monitors.write]),
       validateBody(monitorPatchSchema),
+      enforceMinInterval("checksIntervalMsMin", (req) => req.body.interval),
+
       this.controller.update
     );
 

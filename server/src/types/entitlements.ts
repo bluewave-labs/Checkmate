@@ -4,7 +4,7 @@ export interface Entitlements {
   plan: PlanKey;
   monitorsMax: number;
   notificationChannelsMax: number;
-  statusPageMax: number;
+  statusPagesMax: number;
   checksIntervalMsMin: number;
   teamsMax: number;
   notificationsEnabled: boolean;
@@ -14,9 +14,9 @@ export interface Entitlements {
 export const Plans: Record<PlanKey, Entitlements> = {
   free: {
     plan: "free",
-    monitorsMax: 5,
+    monitorsMax: 3,
     notificationChannelsMax: 2,
-    statusPageMax: 2,
+    statusPagesMax: 2,
     checksIntervalMsMin: 60_000,
     teamsMax: 2,
     notificationsEnabled: true,
@@ -26,7 +26,7 @@ export const Plans: Record<PlanKey, Entitlements> = {
     plan: "pro",
     monitorsMax: 50,
     notificationChannelsMax: 5,
-    statusPageMax: 5,
+    statusPagesMax: 5,
     checksIntervalMsMin: 30_000,
     teamsMax: 5,
     notificationsEnabled: true,
@@ -36,7 +36,7 @@ export const Plans: Record<PlanKey, Entitlements> = {
     plan: "business",
     monitorsMax: 200,
     notificationChannelsMax: 20,
-    statusPageMax: 20,
+    statusPagesMax: 20,
     checksIntervalMsMin: 15_000,
     teamsMax: 10,
     notificationsEnabled: true,
@@ -46,7 +46,7 @@ export const Plans: Record<PlanKey, Entitlements> = {
     plan: "enterprise",
     monitorsMax: 5000,
     notificationChannelsMax: 100,
-    statusPageMax: 100,
+    statusPagesMax: 100,
     checksIntervalMsMin: 10_000,
     teamsMax: 20,
     notificationsEnabled: true,
@@ -56,7 +56,7 @@ export const Plans: Record<PlanKey, Entitlements> = {
     plan: "unlimited",
     monitorsMax: Number.MAX_SAFE_INTEGER,
     notificationChannelsMax: Number.MAX_SAFE_INTEGER,
-    statusPageMax: Number.MAX_SAFE_INTEGER,
+    statusPagesMax: Number.MAX_SAFE_INTEGER,
     checksIntervalMsMin: 1000,
     teamsMax: Number.MAX_SAFE_INTEGER,
     notificationsEnabled: true,

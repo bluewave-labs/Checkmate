@@ -5,6 +5,7 @@ import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
 import { MonitorWithChecksResponse } from "@/types/index.js";
 import { MonitorStatus, MonitorType } from "@/db/models/monitors/Monitor.js";
+import { Entitlements } from "@/types/entitlements.js";
 
 export interface IImportedMonitor {
   name: string;
@@ -65,6 +66,7 @@ export interface IMonitorService {
     orgId: string,
     teamId: string,
     userId: string,
+    entitlements: Entitlements,
     data: { monitors: Array<IImportedMonitor> }
   ) => Promise<{ imported: number; errors: number }>;
 }
@@ -686,12 +688,35 @@ class MonitorService implements IMonitorService {
     orgId: string,
     teamId: string,
     userId: string,
+    entitlements: Entitlements,
     data: { monitors: Array<IImportedMonitor> }
   ) => {
-    let result = [];
+    const attempted = Array.isArray(data?.monitors) ? data.monitors.length : 0;
+    let result: IMonitor[] = [];
+    let canImport = 0;
     try {
+      // Get current count
+      const monitorCount = await Monitor.countDocuments({ orgId });
+
+      // Check limits, return NO_CAPACITY if at limit
+      if (monitorCount >= entitlements.monitorsMax) {
+        return {
+          ok: true,
+          status: 200,
+          code: "NO_CAPACITY",
+          attempted,
+          eligible: 0,
+          imported: 0,
+          errors: attempted,
+        } as any;
+      }
+
+      // Proceed with import
+      canImport = entitlements.monitorsMax - monitorCount;
+      const importableMonitors = data?.monitors.slice(0, canImport);
+
       result = await Monitor.insertMany(
-        data?.monitors.map((monitor) => ({
+        importableMonitors.map((monitor) => ({
           ...monitor,
           orgId: new mongoose.Types.ObjectId(orgId),
           teamId: new mongoose.Types.ObjectId(teamId),
@@ -703,14 +728,32 @@ class MonitorService implements IMonitorService {
       for (const monitor of result) {
         await this.jobQueue.addJob(monitor);
       }
-    } catch (error) {
-      console.error("Import error:", error);
+    } catch (error: any) {
+      return {
+        ok: false,
+        status: 500,
+        code: "UNEXPECTED",
+        attempted,
+        eligible: canImport,
+        imported: result.length,
+        errors: Math.max(0, attempted - result.length),
+        message: error.message,
+      } as any;
     }
 
+    const imported = result.length;
+    const errors = Math.max(0, attempted - imported);
+    const code = imported === attempted ? "OK" : "PARTIAL";
+    const status = imported === attempted ? 200 : 207;
     return {
-      imported: result.length,
-      errors: data?.monitors?.length - result.length,
-    };
+      ok: true,
+      status,
+      code,
+      attempted,
+      eligible: canImport,
+      imported,
+      errors,
+    } as any;
   };
 }
 

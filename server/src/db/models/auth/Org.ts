@@ -1,3 +1,4 @@
+import { PlanKey } from "@/types/entitlements.js";
 import mongoose, { Schema, Document, Types } from "mongoose";
 export type SubscriptionStatus =
   | "active"
@@ -25,10 +26,11 @@ export interface IOrg extends Document {
   cancelAtPeriodEnd?: boolean;
 
   // Cached entitlements
-  entitlements?: {
+  entitlements: {
+    plan: PlanKey;
     monitorsMax: number;
     notificationChannelsMax: number;
-    statusPageMax: number;
+    statusPagesMax: number;
     checksIntervalMsMin: number;
     teamsMax: number;
     notificationsEnabled: boolean;
@@ -62,9 +64,10 @@ const orgSchema = new Schema<IOrg>(
     trialEnd: { type: Date },
     cancelAtPeriodEnd: { type: Boolean },
     entitlements: {
+      plan: { type: String },
       monitorsMax: { type: Number },
       notificationChannelsMax: { type: Number },
-      statusPageMax: { type: Number },
+      statusPagesMax: { type: Number },
       checksIntervalMsMin: { type: Number },
       teamsMax: { type: Number },
       notificationsEnabled: { type: Boolean },

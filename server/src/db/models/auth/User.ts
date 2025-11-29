@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 import { IRole, ITeam } from "@/db/models/index.js";
+import { Entitlements } from "@/types/entitlements.js";
 
 export interface ITokenizedUser {
   sub: string;
@@ -17,6 +18,7 @@ export interface IUserContext {
     orgRole?: IRole;
     teamRole: IRole;
   };
+  entitlements: Entitlements;
 }
 
 export interface IUserReturnable {
@@ -33,6 +35,7 @@ export interface IUserReturnable {
     name: string;
     permissions: string[];
   }[];
+  entitlements: Entitlements;
 }
 
 export interface IUser extends Document {

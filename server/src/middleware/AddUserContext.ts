@@ -152,7 +152,6 @@ export const addUserContext = async (
     const provider = EntitlementsFactory.create();
     const entitlements: Entitlements = await provider.getForOrg(orgId);
     req.entitlements = entitlements;
-
     return next();
   } catch (error) {
     next(error);

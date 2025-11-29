@@ -6,7 +6,7 @@ import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/services/business/AuthService.js";
 import { validateBody } from "@/middleware/validation.js";
-import { enforceMax } from "@/middleware/VerifyEntitlements.js";
+import { enforceMax, requireFeature } from "@/middleware/VerifyEntitlements.js";
 import {
   notificationChannelSchema,
   notificationPatchSchema,
@@ -27,6 +27,7 @@ class NotificationChannelRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.notifications.write]),
+      requireFeature("notificationsEnabled"),
       enforceMax("notificationChannelsMax", async (req: Request) =>
         NotificationChannel.countDocuments({ orgId: req?.user?.orgId })
       ),
@@ -47,6 +48,7 @@ class NotificationChannelRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.notifications.write]),
+      requireFeature("notificationsEnabled"),
       this.controller.toggleActive
     );
 
@@ -55,6 +57,7 @@ class NotificationChannelRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.notifications.update]),
+      requireFeature("notificationsEnabled"),
       validateBody(notificationPatchSchema),
       this.controller.update
     );
@@ -79,6 +82,7 @@ class NotificationChannelRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.notifications.write]),
+      requireFeature("notificationsEnabled"),
       validateBody(notificationChannelSchema),
       this.controller.test
     );
