@@ -269,6 +269,8 @@ const TabSettings = ({
 						<TextField
 							name="customJavaScript" // <--- CRITICAL
 							label={t("customJavaScript")}
+							color="warning" 
+    						helperText="⚠️ DANGER: Scripts added here will execute for all visitors. Only add code from trusted sources (e.g., Google Analytics)."
 							multiline
 							rows={4}
 							value={form.customJavaScript || ""}

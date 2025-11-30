@@ -25,6 +25,7 @@
 		"@reduxjs/toolkit": "2.7.0",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
+		"dompurify": "^3.3.0",
 		"flag-icons": "7.3.2",
 		"html2canvas": "^1.4.1",
 		"human-interval": "2.0.1",
@@ -58,6 +59,6 @@
 		"eslint-plugin-react-refresh": "^0.4.6",
 		"prettier": "^3.3.3",
 		"typescript": "5.9.3",
-		"vite": "6.3.6"
+		"vite": "^6.4.1"
 	}
 }

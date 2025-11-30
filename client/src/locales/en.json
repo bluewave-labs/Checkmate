@@ -1,7 +1,7 @@
 {
 	"customCSS": "Custom CSS",
 	"statusPageCreateCustomCSSDescription": "Override the default styling with your own CSS.",
-	"statusPageCreateCustomCSSPlaceholder": ".body { background: #000; }",
+	"statusPageCreateCustomCSSPlaceholder": "body { background: #000; }",
 	"customHeaderHTML": "Custom Header HTML",
 	"statusPageCreateCustomHeaderHTMLDescription": "Replace the default header with your own HTML code.",
 	"statusPageCreateCustomHeaderHTMLPlaceholder": "<div>My Custom Header</div>",

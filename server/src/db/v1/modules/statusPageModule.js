@@ -97,8 +97,24 @@ class StatusPageModule {
 			}
 
 			if (!preliminaryStatusPage.monitors || preliminaryStatusPage.monitors.length === 0) {
-				const { _id, color, companyName, isPublished, logo, originalMonitors, showCharts, showUptimePercentage, timezone, showAdminLoginLink, url } =
-					preliminaryStatusPage;
+				const {
+					_id,
+					color,
+					companyName,
+					isPublished,
+					logo,
+					originalMonitors,
+					showCharts,
+					showUptimePercentage,
+					timezone,
+					showAdminLoginLink,
+					url,
+					customCSS,
+					customJavaScript,
+					headerHTML,
+					footerHTML,
+				} = preliminaryStatusPage;
+
 				return {
 					statusPage: {
 						_id,
@@ -112,6 +128,10 @@ class StatusPageModule {
 						timezone,
 						showAdminLoginLink,
 						url,
+						customCSS,
+						customJavaScript,
+						headerHTML,
+						footerHTML,
 					},
 					monitors: [],
 				};
@@ -218,6 +238,10 @@ class StatusPageModule {
 							timezone: 1,
 							showAdminLoginLink: 1,
 							url: 1,
+							customCSS: 1,
+							customJavaScript: 1,
+							headerHTML: 1,
+							footerHTML: 1,
 						},
 						monitors: {
 							_id: 1,
