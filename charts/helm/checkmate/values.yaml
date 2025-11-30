@@ -12,7 +12,7 @@ client:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      secretName: checkmate-client-tls
+      # secretName: checkmate-client-tls  # Uncomment and set if using TLS with cert-manager
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 server:
@@ -29,7 +29,7 @@ server:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      secretName: checkmate-server-tls
+      # secretName: checkmate-server-tls  # Uncomment and set if using TLS with cert-manager
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 redis:
