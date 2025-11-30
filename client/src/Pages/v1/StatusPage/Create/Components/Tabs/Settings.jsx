@@ -277,7 +277,6 @@ const TabSettings = ({
 							onChange={handleFormChange}
 							fullWidth
 							margin="normal"
-							helperText={t("statusPageCreateCustomJavaScriptWarning")}
 						/>
 					</Stack>
 				</ConfigBox>

@@ -81,6 +81,7 @@ const StatusPageSchema = mongoose.Schema(
 		customJavaScript: {
 			type: String,
 			default: "",
+			maxLength: 5000,
 		},
 		headerHTML: {
 			type: String,

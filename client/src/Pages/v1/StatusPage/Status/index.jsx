@@ -8,6 +8,7 @@ import StatusBar from "./Components/StatusBar/index.jsx";
 import MonitorsList from "./Components/MonitorsList/index.jsx";
 import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import TextLink from "@/Components/v1/TextLink/index.jsx";
+import DOMPurify from "dompurify";
 
 // Utils
 import { useStatusPageFetch } from "./Hooks/useStatusPageFetch.jsx";
@@ -199,38 +200,46 @@ const PublicStatus = () => {
 
 	return (
 		<Stack
-			gap={theme.spacing(10)}
-			sx={{ ...sx, position: "relative" }}
-		>
-			{!isPublic && <Breadcrumbs list={crumbs} />}
+            gap={theme.spacing(10)}
+            sx={{ ...sx, position: "relative" }}
+        >
+            {!isPublic && <Breadcrumbs list={crumbs} />}
 
-			{/* --- CHANGE 3: Custom Header Logic --- */}
-			{statusPage?.headerHTML ? (
-				<div dangerouslySetInnerHTML={{ __html: statusPage.headerHTML }} />
-			) : (
-				<ControlsHeader
-					statusPage={statusPage}
-					url={url}
-					isPublic={isPublic}
-				/>
-			)}
-			{/* ------------------------------------- */}
+            {/* --- CHANGE 3: Custom Header Logic (SANITIZED) --- */}
+            {statusPage?.headerHTML ? (
+                <div 
+                    dangerouslySetInnerHTML={{ 
+                        __html: DOMPurify.sanitize(statusPage.headerHTML) 
+                    }} 
+                />
+            ) : (
+                <ControlsHeader
+                    statusPage={statusPage}
+                    url={url}
+                    isPublic={isPublic}
+                />
+            )}
+            {/* ------------------------------------- */}
 
-			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
-			<StatusBar monitors={monitors} />
-			<MonitorsList
-				monitors={monitors}
-				statusPage={statusPage}
-			/>
+            <Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
+            <StatusBar monitors={monitors} />
+            <MonitorsList
+                monitors={monitors}
+                statusPage={statusPage}
+            />
 
-			{link}
+            {link}
 
-			{/* --- CHANGE 4: Custom Footer Logic --- */}
-			{statusPage?.footerHTML && (
-				<div dangerouslySetInnerHTML={{ __html: statusPage.footerHTML }} />
-			)}
-			{/* ------------------------------------- */}
-		</Stack>
+            {/* --- CHANGE 4: Custom Footer Logic (SANITIZED) --- */}
+            {statusPage?.footerHTML && (
+                <div 
+                    dangerouslySetInnerHTML={{ 
+                        __html: DOMPurify.sanitize(statusPage.footerHTML) 
+                    }} 
+                />
+            )}
+            {/* ------------------------------------- */}
+        </Stack>
 	);
 };
 
