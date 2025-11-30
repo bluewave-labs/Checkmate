@@ -15,6 +15,24 @@ export interface IImportedMonitor {
   n: number;
 }
 
+export enum MonitorImportCode {
+  OK = "OK",
+  PARTIAL = "PARTIAL",
+  NO_CAPACITY = "NO_CAPACITY",
+  UNEXPECTED = "UNEXPECTED",
+}
+
+export interface MonitorImportResult {
+  ok: boolean;
+  status: number;
+  code: MonitorImportCode;
+  attempted: number;
+  eligible: number;
+  imported: number;
+  errors: number;
+  message?: string;
+}
+
 const SERVICE_NAME = "MonitorService";
 
 export interface IMonitorService {
@@ -68,7 +86,7 @@ export interface IMonitorService {
     userId: string,
     entitlements: Entitlements,
     data: { monitors: Array<IImportedMonitor> }
-  ) => Promise<{ imported: number; errors: number }>;
+  ) => Promise<MonitorImportResult>;
 }
 
 class MonitorService implements IMonitorService {
@@ -691,7 +709,7 @@ class MonitorService implements IMonitorService {
     entitlements: Entitlements,
     data: { monitors: Array<IImportedMonitor> }
   ) => {
-    const attempted = Array.isArray(data?.monitors) ? data.monitors.length : 0;
+    const attempted = data.monitors.length ?? 0;
     let result: IMonitor[] = [];
     let canImport = 0;
     try {
@@ -703,12 +721,12 @@ class MonitorService implements IMonitorService {
         return {
           ok: true,
           status: 200,
-          code: "NO_CAPACITY",
           attempted,
+          code: MonitorImportCode.NO_CAPACITY,
           eligible: 0,
           imported: 0,
           errors: attempted,
-        } as any;
+        };
       }
 
       // Proceed with import
@@ -732,18 +750,19 @@ class MonitorService implements IMonitorService {
       return {
         ok: false,
         status: 500,
-        code: "UNEXPECTED",
+        code: MonitorImportCode.UNEXPECTED,
         attempted,
         eligible: canImport,
         imported: result.length,
         errors: Math.max(0, attempted - result.length),
         message: error.message,
-      } as any;
+      };
     }
 
     const imported = result.length;
     const errors = Math.max(0, attempted - imported);
-    const code = imported === attempted ? "OK" : "PARTIAL";
+    const code =
+      imported === attempted ? MonitorImportCode.OK : MonitorImportCode.PARTIAL;
     const status = imported === attempted ? 200 : 207;
     return {
       ok: true,
@@ -753,7 +772,7 @@ class MonitorService implements IMonitorService {
       eligible: canImport,
       imported,
       errors,
-    } as any;
+    };
   };
 }
 

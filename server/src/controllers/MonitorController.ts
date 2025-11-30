@@ -400,7 +400,7 @@ class MonitorController {
       throw new ApiError("Entitlements not found", 500);
     }
 
-    const result: any = await this.monitorService.import(
+    const result = await this.monitorService.import(
       orgId,
       teamId,
       userContext.sub,
@@ -414,7 +414,8 @@ class MonitorController {
       UNEXPECTED: `Import failed unexpectedly`,
     };
 
-    const message = result?.message || defaultMessageMap[result?.code] || "Import completed";
+    const message =
+      result?.message || defaultMessageMap[result?.code] || "Import completed";
     res.status(result?.status ?? 200).json({ message, data: result });
 
     try {

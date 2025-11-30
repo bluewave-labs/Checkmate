@@ -15,6 +15,7 @@ import {
   ProfileController,
   IncidentsController,
   SettingsController,
+  StripeController,
 } from "@/controllers/index.js";
 
 export const initControllers = (services: any) => {
@@ -73,6 +74,8 @@ export const initControllers = (services: any) => {
     services.settingsService,
     services.notificationService
   );
+
+  controllers.stripeController = new StripeController();
 
   return controllers;
 };

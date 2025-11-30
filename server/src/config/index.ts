@@ -13,6 +13,7 @@ export interface IEnvConfig {
   SMTP_PORT: number;
   SMTP_USER: string;
   SMTP_PASS: string;
+  STRIPE_SECRET: string;
 }
 
 dotenv.config();
@@ -30,4 +31,5 @@ export const config: IEnvConfig = {
   SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : -1,
   SMTP_USER: process.env.SMTP_USER || "not_set",
   SMTP_PASS: process.env.SMTP_PASS || "not_set",
+  STRIPE_SECRET: process.env.STRIPE_SECRET || "not_set",
 };

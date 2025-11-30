@@ -66,6 +66,9 @@ class MonitorRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.monitors.write]),
+      enforceMax("monitorsMax", async (req) =>
+        Monitor.countDocuments({ orgId: req?.user?.orgId })
+      ),
       validateBody(monitorImportSchema),
       this.controller.import
     );
