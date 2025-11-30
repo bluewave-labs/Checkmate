@@ -10,6 +10,31 @@ PS: **We work closely with contributors on our [Discord channel](https://discord
 
 ---
 
+
+## 🚀 Quick Setup Checklist
+
+Before you dive in, make sure you have these installed:
+
+```bash
+# Check Node.js (v16+ required)
+node --version
+
+# Check npm
+npm --version
+
+# Check Docker
+docker --version
+
+# Check Git
+git --version
+```
+
+**New to contributing?** Start here:
+1. Pick a [`good-first-issue`](https://github.com/bluewave-labs/checkmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+2. Comment that you'd like to work on it
+3. Follow the [setup guide](#set-up-checkmate-locally) below
+4. Join our [Discord](https://discord.com/invite/NAb6H3UTjK) if you get stuck
+
 ## Table of contents
 
 - [How do I...?](#how-do-i)
