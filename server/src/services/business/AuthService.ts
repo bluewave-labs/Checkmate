@@ -125,6 +125,7 @@ class AuthService implements IAuthService {
       lastName: user.lastName,
       org: {
         name: org.name,
+        planKey: org.planKey,
         permissions: orgRoles?.permissions || [],
       },
       teams: returnableTeams,
@@ -261,6 +262,7 @@ class AuthService implements IAuthService {
         lastName: user.lastName,
         org: {
           name: org.name,
+          planKey: org.planKey,
           permissions: roles[0]?.permissions || [],
         },
         teams: [returnableTeam],
@@ -397,6 +399,7 @@ class AuthService implements IAuthService {
         lastName: user.lastName,
         org: {
           name: org.name,
+          planKey: org.planKey,
           permissions: orgPermissions,
         },
         teams: returnableTeams,
@@ -503,6 +506,7 @@ class AuthService implements IAuthService {
       lastName: user.lastName,
       org: {
         name: org.name,
+        planKey: org.planKey,
         permissions: orgRoles?.permissions || [],
       },
       teams: returnableTeams,

@@ -47,6 +47,9 @@ export const SettingsSwitch = () => {
     orgPermissions.includes("monitors.read") ||
     orgPermissions.includes("*");
 
+  const hasBilling =
+    orgPermissions.includes("billing.*") || orgPermissions.includes("*");
+
   const hasMaster = orgPermissions.includes("master");
 
   return (
@@ -100,6 +103,11 @@ export const SettingsSwitch = () => {
         {hasInvite && (
           <MenuItem onClick={() => handleClick("invite")}>
             <Typography>Invite</Typography>
+          </MenuItem>
+        )}
+        {hasBilling && (
+          <MenuItem onClick={() => handleClick("billing")}>
+            <Typography>Billing</Typography>
           </MenuItem>
         )}
       </Menu>

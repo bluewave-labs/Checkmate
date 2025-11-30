@@ -28,6 +28,7 @@ export interface IUserReturnable {
   lastName: string;
   org: {
     name: string;
+    planKey: string;
     permissions: string[];
   };
   teams: {

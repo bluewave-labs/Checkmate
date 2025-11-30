@@ -7,6 +7,7 @@ export interface IUser {
   lastName: string;
   org: {
     name: string;
+    planKey: string;
     permissions: string[];
   };
   teams: {

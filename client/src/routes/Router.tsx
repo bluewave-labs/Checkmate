@@ -53,6 +53,7 @@ import NotFound from "@/pages/errors/NotFound";
 
 import RootLayout from "@/components/layouts/RootLayout";
 import { ProtectedRoute } from "@/components/protected-route";
+import BillingPage from "@/pages/billing/Billing";
 
 const Router = () => {
   return (
@@ -141,6 +142,7 @@ const Router = () => {
 
         <Route path="profile" element={<ProfilePage />} />
         <Route path="export" element={<ExportPage />} />
+        <Route path="billing" element={<BillingPage />} />
       </Route>
       <Route path="no-team" element={<NoTeam />} />
       <Route path="*" element={<NotFound />} />
