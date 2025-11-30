@@ -4,7 +4,7 @@ import { StatusPageController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 import { validateBody } from "@/middleware/validation.js";
 import { statusPageSchema } from "@/validation/index.js";
 import { enforceMax } from "@/middleware/VerifyEntitlements.js";

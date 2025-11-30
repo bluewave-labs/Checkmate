@@ -5,7 +5,7 @@ import { verifyToken } from "@/middleware/VerifyToken.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { validateQuery } from "@/middleware/validation.js";
 import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 import { checksStatusIdQuerySchema } from "@/validation/index.js";
 
 class CheckRoutes {

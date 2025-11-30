@@ -3,7 +3,7 @@ import { InviteController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 import { validateBody } from "@/middleware/validation.js";
 import { inviteSchema } from "@/validation/index.js";
 class InviteRoutes {

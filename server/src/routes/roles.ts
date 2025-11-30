@@ -4,7 +4,7 @@ import { RoleController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 
 class RoleRoutes {
   private controller: RoleController;

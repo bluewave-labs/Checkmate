@@ -4,7 +4,7 @@ import { NotificationChannelController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 import { validateBody } from "@/middleware/validation.js";
 import { enforceMax, requireFeature } from "@/middleware/VerifyEntitlements.js";
 import {

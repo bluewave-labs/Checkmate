@@ -1,5 +1,5 @@
 import { config } from "@/config/index.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 export type DeploymentMode = "saas" | "self_hosted";
 
 const CURRENT_MODE = config.DEPLOYMENT_MODE;

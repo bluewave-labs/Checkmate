@@ -11,7 +11,7 @@ import {
 } from "@/db/models/index.js";
 import type { IJobQueue } from "../infrastructure/JobQueue.js";
 import ApiError from "@/utils/ApiError.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 
 const SERVICE_NAME = "TeamService";
 export interface ITeamService {

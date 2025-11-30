@@ -21,88 +21,9 @@ import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "../infrastructure/JobQueue.js";
 import { hashPassword } from "@/utils/JWTUtils.js";
 import { Plans } from "@/types/entitlements.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 
 const SERVICE_NAME = "AuthService";
-
-export const PERMISSIONS = {
-  master: "master",
-  users: {
-    all: "users.*",
-    write: "users.write",
-    read: "users.read",
-    delete: "users.delete",
-  },
-  monitors: {
-    all: "monitors.*",
-    write: "monitors.write",
-    read: "monitors.read",
-    update: "monitors.update",
-    delete: "monitors.delete",
-  },
-  notifications: {
-    all: "notifications.*",
-    write: "notifications.write",
-    read: "notifications.read",
-    update: "notifications.update",
-    delete: "notifications.delete",
-  },
-  maintenance: {
-    all: "maintenance.*",
-    write: "maintenance.write",
-    read: "maintenance.read",
-    update: "maintenance.update",
-    delete: "maintenance.delete",
-  },
-  invite: {
-    all: "invite.*",
-    write: "invite.write",
-    read: "invite.read",
-    delete: "invite.delete",
-  },
-  checks: {
-    all: "checks.*",
-    write: "checks.write",
-    read: "checks.read",
-    update: "checks.update",
-    delete: "checks.delete",
-  },
-  statusPages: {
-    all: "statusPages.*",
-    write: "statusPages.write",
-    read: "statusPages.read",
-    update: "statusPages.update",
-    delete: "statusPages.delete",
-  },
-  teams: {
-    all: "teams.*",
-    write: "teams.write",
-    read: "teams.read",
-    update: "teams.update",
-    delete: "teams.delete",
-  },
-  roles: {
-    all: "roles.*",
-    write: "roles.write",
-    read: "roles.read",
-    update: "roles.update",
-    delete: "roles.delete",
-  },
-
-  diagnostic: {
-    all: "diagnostic.*",
-    write: "diagnostic.write",
-    read: "diagnostic.read",
-    update: "diagnostic.update",
-    delete: "diagnostic.delete",
-  },
-  incidents: {
-    all: "incidents.*",
-    write: "incidents.write",
-    read: "incidents.read",
-    update: "incidents.update",
-    delete: "incidents.delete",
-  },
-};
 
 export type RegisterData = {
   firstName: string;

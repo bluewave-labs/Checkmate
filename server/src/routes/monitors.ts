@@ -6,7 +6,7 @@ import {
   verifyTeamPermission,
 } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
-import { PERMISSIONS } from "@/services/business/AuthService.js";
+import { PERMISSIONS } from "@/types/permissions.js";
 import { validateBody, validateQuery } from "@/middleware/validation.js";
 import {
   enforceMax,
