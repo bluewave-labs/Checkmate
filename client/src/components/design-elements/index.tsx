@@ -29,3 +29,4 @@ export { Tabs } from "./Tabs";
 export { Breadcrumb } from "./Breadcrumb";
 export { InfoBox } from "./InfoBox";
 export { Tooltip, TooltipWithInfo } from "./Tooltip";
+export { PlanCard } from "./PlanCard";

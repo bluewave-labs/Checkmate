@@ -9,6 +9,8 @@ import { useAppSelector } from "@/hooks/AppHooks";
 import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
+const DEPLOYMENT_MODE = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
+const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
 export const SettingsSwitch = () => {
   const navigate = useNavigate();
@@ -105,7 +107,7 @@ export const SettingsSwitch = () => {
             <Typography>Invite</Typography>
           </MenuItem>
         )}
-        {hasBilling && (
+        {hasBilling && IS_SAAS && (
           <MenuItem onClick={() => handleClick("billing")}>
             <Typography>Billing</Typography>
           </MenuItem>

@@ -23,5 +23,6 @@ export { default as JobGenerator } from "@/services/infrastructure/JobGenerator.
 
 export { default as ServiceRegistry } from "@/services/system/ServiceRegistry.js";
 export { default as SettingsService } from "@/services/system/SettingsService.js";
+export { default as BillingService } from "@/services/system/BillingService.js";
 
 export * from "@/services/infrastructure/NotificationServices/index.js";

@@ -1,13 +1,11 @@
-import Box from "@mui/material/Box";
+import Box, { type BoxProps } from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import type { SxProps } from "@mui/material/styles";
 
-type BaseBoxProps = React.PropsWithChildren<{ sx?: SxProps }>;
-
-export const BaseBox: React.FC<BaseBoxProps> = ({ children, sx }) => {
+export const BaseBox = ({ sx, ...rest }: BoxProps) => {
   const theme = useTheme();
   return (
     <Box
+      {...rest}
       sx={{
         backgroundColor: theme.palette.primary.main,
         border: 1,
@@ -16,8 +14,6 @@ export const BaseBox: React.FC<BaseBoxProps> = ({ children, sx }) => {
         borderRadius: theme.shape.borderRadius,
         ...sx,
       }}
-    >
-      {children}
-    </Box>
+    />
   );
 };

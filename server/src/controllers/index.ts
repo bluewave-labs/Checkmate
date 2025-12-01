@@ -14,4 +14,5 @@ export { default as RecoveryController } from "./RecoveryController.js";
 export { default as ProfileController } from "./ProfileController.js";
 export { default as IncidentsController } from "./IncidentsController.js";
 export { default as SettingsController } from "./SettingsController.js";
+export { default as BillingController } from "./BillingController.js";
 export { default as StripeController } from "./StripeController.js";

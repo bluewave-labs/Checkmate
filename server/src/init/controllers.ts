@@ -16,6 +16,7 @@ import {
   IncidentsController,
   SettingsController,
   StripeController,
+  BillingController,
 } from "@/controllers/index.js";
 
 export const initControllers = (services: any) => {
@@ -76,6 +77,9 @@ export const initControllers = (services: any) => {
   );
 
   controllers.stripeController = new StripeController();
+  controllers.billingController = new BillingController(
+    services.billingService
+  );
 
   return controllers;
 };

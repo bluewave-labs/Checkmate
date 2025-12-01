@@ -1,7 +1,7 @@
-export type EntitlemenstKey = keyof Entitlements;
+export type PlanKey = "free" | "pro" | "business" | "enterprise" | "unlimited";
 
 export interface Entitlements {
-  plan: string;
+  plan: PlanKey;
   monitorsMax: number;
   notificationChannelsMax: number;
   statusPagesMax: number;

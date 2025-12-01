@@ -17,9 +17,9 @@ import {
   IncidentsRoutes,
   SettingsRoutes,
   MeRoutes,
+  BillingRoutes,
 } from "@/routes/index.js";
 import StripeRoutes from "@/routes/stripe.js";
-import StripeController from "@/controllers/StripeController.js";
 import { errorHandler } from "@/middleware/ErrorHandler.js";
 export const initRoutes = (controllers: any, app: Express) => {
   const authRoutes = new AuthRoutes(controllers.authController);
@@ -51,6 +51,7 @@ export const initRoutes = (controllers: any, app: Express) => {
   const settingsRoutes = new SettingsRoutes(controllers.settingsController);
   const meRoutes = new MeRoutes();
   const stripeRoutes = new StripeRoutes(controllers.stripeController);
+  const billingRoutes = new BillingRoutes(controllers.billingController);
 
   app.use("/api/v1/auth", authRoutes.getRouter());
   app.use("/api/v1/invite", inviteRoutes.getRouter());
@@ -72,7 +73,7 @@ export const initRoutes = (controllers: any, app: Express) => {
   app.use("/api/v1/incidents", incidentsRoutes.getRouter());
   app.use("/api/v1/settings", settingsRoutes.getRouter());
   app.use("/api/v1/me", meRoutes.getRouter());
-  // Stripe webhook uses raw body; mounted separately in index.ts
   app.use("/api/v1/stripe", stripeRoutes.getRouter());
+  app.use("/api/v1/billing", billingRoutes.getRouter());
   app.use(errorHandler);
 };
