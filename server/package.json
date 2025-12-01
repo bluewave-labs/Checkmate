@@ -41,6 +41,7 @@
     "mongoose": "8.19.1",
     "nodemailer": "7.0.9",
     "ping": "1.0.0",
+    "stripe": "^20.0.0",
     "super-simple-scheduler": "1.4.6",
     "swagger-ui-express": "5.0.1",
     "winston": "3.18.3",

@@ -20,10 +20,10 @@ const BillingPage = () => {
   const selectedPlan = user?.entitlements?.plan || null;
 
   const handlePlanClick = async (planKey: PlanKey) => {
-    const result = await post("/billing/subscribe", { plan: planKey });
+    const result = await post("/billing/subscribe", { planKey });
     const redirectUrl = result?.data?.redirectUrl;
     if (redirectUrl) {
-      window.location.href = redirectUrl;
+      window.location = redirectUrl;
     }
   };
 

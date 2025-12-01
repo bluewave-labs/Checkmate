@@ -61,6 +61,8 @@ const verifyOrgPermission = (resourceActions: string[]) => {
       return next(new ApiError("User not authenticated", 401));
     }
 
+    console.log(req.user);
+
     const orgPermissions = userContext.roles?.orgRole?.permissions || [];
     const allowed = hasPermission(orgPermissions, resourceActions);
     if (!allowed) {

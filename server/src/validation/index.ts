@@ -6,6 +6,7 @@ import {
 } from "@/db/models/index.js";
 import { z } from "zod";
 import mongoose from "mongoose";
+import { PlanKeys, type PlanKey } from "@/types/entitlements.js";
 
 export const registerSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -125,6 +126,10 @@ export const monitorImportSchema = z.object({
         .strict()
     )
     .min(1, { message: "Provide at least one monitor" }),
+});
+
+export const subscribePlanSchema = z.object({
+  planKey: z.enum(PlanKeys).optional(),
 });
 
 export type MonitorImportPayload = z.infer<typeof monitorImportSchema>;

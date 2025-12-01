@@ -51,9 +51,11 @@ import ExportPage from "@/pages/export/Export";
 import NoTeam from "@/pages/errors/NoTeam";
 import NotFound from "@/pages/errors/NotFound";
 
+import BillingPage from "@/pages/billing/Billing";
+import BillingSuccessPage from "@/pages/billing/Success";
+
 import RootLayout from "@/components/layouts/RootLayout";
 import { ProtectedRoute } from "@/components/protected-route";
-import BillingPage from "@/pages/billing/Billing";
 
 const Router = () => {
   return (
@@ -143,6 +145,7 @@ const Router = () => {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="export" element={<ExportPage />} />
         <Route path="billing" element={<BillingPage />} />
+        <Route path="billing/success" element={<BillingSuccessPage />} />
       </Route>
       <Route path="no-team" element={<NoTeam />} />
       <Route path="*" element={<NotFound />} />

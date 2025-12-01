@@ -1,4 +1,12 @@
-export type PlanKey = "free" | "pro" | "business" | "enterprise" | "unlimited";
+export const PlanKeys = [
+  "free",
+  "pro",
+  "business",
+  "enterprise",
+  "unlimited",
+] as const;
+
+export type PlanKey = (typeof PlanKeys)[number];
 
 export interface Entitlements {
   plan: PlanKey;

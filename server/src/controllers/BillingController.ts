@@ -1,7 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import BillingService, {
-  type IBillingService,
-} from "@/services/system/BillingService.js";
+import { type IBillingService } from "@/services/system/BillingService.js";
+import { Plans, type PlanKey } from "@/types/entitlements.js";
+import ApiError from "@/utils/ApiError.js";
+import { config } from "@/config/index.js";
+import { Org } from "@/db/models/index.js";
 
 export interface IBillingController {
   listPlans: (req: Request, res: Response, next: NextFunction) => Promise<void>;
@@ -29,10 +31,24 @@ class BillingController implements IBillingController {
 
   subscribePlan = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.json({
-        message: "OK",
-        data: { redirectUrl: "https://www.google.com" },
+      const user = req.user;
+      if (!user) throw new ApiError("Unauthorized", 401);
+
+      const orgId = req.user?.orgId;
+      if (!orgId) throw new ApiError("Organization not found", 404);
+
+      const planKey: PlanKey | undefined = req.body.planKey;
+      const redirectUrl = await this.billingService.subscribePlan(
+        user.email,
+        orgId,
+        planKey!
+      );
+
+      res.status(200).json({
+        message: "Subscription initiation successful",
+        data: { redirectUrl },
       });
+      return;
     } catch (error) {
       next(error);
     }
