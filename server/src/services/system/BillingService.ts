@@ -34,6 +34,56 @@ class BillingService implements IBillingService {
     return order.map((key) => Plans[key]);
   };
 
+  private buildSuccessUrl = (planKey: PlanKey) =>
+    `${config.ORIGIN}/billing/success?plan=${planKey}`;
+
+  private updateExistingSubscription = async (
+    customerId: string,
+    subscriptionId: string,
+    successUrl: string
+  ): Promise<string> => {
+    const session = await this.stripeClient.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: successUrl,
+      flow_data: {
+        type: "subscription_update",
+        subscription_update: {
+          subscription: subscriptionId,
+        },
+      },
+    });
+    return session.url as string;
+  };
+
+  private createNewSubscription = async (
+    orgId: string,
+    customerId: string,
+    priceId: string,
+    successUrl: string,
+    cancelUrl: string
+  ): Promise<string> => {
+    const session = await this.stripeClient.checkout.sessions.create({
+      billing_address_collection: "auto",
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: "subscription",
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer: customerId,
+      client_reference_id: orgId,
+      subscription_data: { metadata: { orgId } },
+      metadata: { orgId },
+    });
+    if (!session.url) {
+      throw new ApiError("Failed to create checkout session", 500);
+    }
+    return session.url;
+  };
+
   subscribePlan = async (email: string, orgId: string, planKey: PlanKey) => {
     if (!planKey) {
       throw new ApiError("planKey is required", 400);
@@ -45,6 +95,8 @@ class BillingService implements IBillingService {
 
     const org = await Org.findById(orgId);
     if (!org) throw new ApiError("Organization not found", 404);
+
+    // If the org does not have a Stripe customer ID, create one
     if (!org.billingCustomerId) {
       const customer = await this.stripeClient.customers.create({
         email,
@@ -54,6 +106,7 @@ class BillingService implements IBillingService {
       await org.save();
     }
 
+    // Look up price for the selected plan
     const prices = await this.stripeClient.prices.list({
       lookup_keys: [planKey],
       expand: ["data.product"],
@@ -65,48 +118,29 @@ class BillingService implements IBillingService {
     }
 
     let redirectUrl: string;
-    const successUrl = `${config.ORIGIN}/billing/success?plan=${planKey}`;
+    const successUrl = this.buildSuccessUrl(planKey);
     const cancelUrl = `${config.ORIGIN}/billing/`;
 
     const subscriptionId = org.subscriptionId;
 
     // Updating an existing subscription
     if (subscriptionId) {
-      const session = await this.stripeClient.billingPortal.sessions.create({
-        customer: String(org.billingCustomerId),
-        return_url: successUrl,
-        flow_data: {
-          type: "subscription_update",
-          subscription_update: {
-            subscription: subscriptionId,
-          },
-        },
-      });
-      redirectUrl = session.url;
+      redirectUrl = await this.updateExistingSubscription(
+        String(org.billingCustomerId),
+        subscriptionId,
+        successUrl
+      );
     }
 
     // Creating a new subscription
     else {
-      const session = await this.stripeClient.checkout.sessions.create({
-        billing_address_collection: "auto",
-        line_items: [
-          {
-            price,
-            quantity: 1,
-          },
-        ],
-        mode: "subscription",
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        customer: String(org.billingCustomerId),
-        client_reference_id: String(org._id),
-        subscription_data: { metadata: { orgId: String(org._id) } },
-        metadata: { orgId: String(org._id) },
-      });
-      if (!session.url) {
-        throw new ApiError("Failed to create checkout session", 500);
-      }
-      redirectUrl = session.url;
+      redirectUrl = await this.createNewSubscription(
+        String(org._id),
+        String(org.billingCustomerId),
+        price,
+        successUrl,
+        cancelUrl
+      );
     }
 
     return redirectUrl;

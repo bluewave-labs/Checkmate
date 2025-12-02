@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
 import { StripeService } from "@/services/index.js";
-import { config } from "@/config/index.js";
 
 export interface IStripeController {
   webhook: (req: Request, res: Response, next: NextFunction) => Promise<void>;
@@ -12,18 +11,40 @@ class StripeController implements IStripeController {
   constructor(stripeService: StripeService) {
     this.stripeService = stripeService;
   }
-  webhook = async (req: Request, res: Response, next: NextFunction) => {
+  webhook = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
-      let event = req.body;
+      const event = req.body;
       const signature = req.headers["stripe-signature"];
       if (!signature || Array.isArray(signature)) {
-        throw new Error("Stripe signature is missing or invalid");
+        res
+          .status(400)
+          .json({ message: "Stripe signature is missing or invalid" });
+        return;
       }
 
-      const result = await this.stripeService.webhook(event, signature);
+      await this.stripeService.webhook(event, signature);
       res.status(200).send({ received: true });
-    } catch (error) {
-      throw error;
+      return;
+    } catch (error: any) {
+      const msg = String(error?.message ?? "");
+      const isSignatureIssue =
+        msg.includes(
+          "Webhook payload must be provided as a string or a Buffer"
+        ) ||
+        msg.includes("No signatures found matching the expected signature") ||
+        msg.includes("Stripe signature is missing or invalid") ||
+        msg.includes("Error while decoding the event") ||
+        msg.includes("Invalid payload");
+
+      if (isSignatureIssue) {
+        res.status(400).json({ message: "Invalid Stripe webhook signature" });
+        return;
+      }
+      next(error);
     }
   };
 }

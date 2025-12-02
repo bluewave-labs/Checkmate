@@ -7,8 +7,10 @@ import {
   NotificationChannel,
 } from "@/db/models/index.js";
 import { PlanKey, Plans } from "@/types/entitlements.js";
+import { getChildLogger } from "@/logger/Logger.js";
 
 const SERVICE_NAME = "StripeService";
+const logger = getChildLogger(SERVICE_NAME);
 
 interface IStripeService {
   webhook: (
@@ -118,34 +120,46 @@ class StripeService implements IStripeService {
   };
 
   webhook = async (event: string | Buffer, signature: string) => {
+    logger.debug("Processing Stripe webhook event");
     const whSecret = config.STRIPE_WEBHOOK_SECRET;
     if (!whSecret || whSecret === "not_set") {
       throw new Error("Stripe webhook secret is not set");
     }
 
-    const stripeEvent = this.stripe.webhooks.constructEvent(
-      event,
-      signature,
-      whSecret
-    );
+    let stripeEvent: Stripe.Event | null = null;
+
+    try {
+      stripeEvent = this.stripe.webhooks.constructEvent(
+        event,
+        signature,
+        whSecret
+      );
+    } catch (err: any) {
+      logger.error(err);
+    }
+
+    if (!stripeEvent) {
+      return null;
+    }
 
     let subscription: Stripe.Subscription | null;
-    let status: Stripe.Subscription.Status;
+    logger.debug(`Received Stripe webhook event: ${stripeEvent.type}`);
+    let status: string;
     switch (stripeEvent.type) {
       case "customer.subscription.deleted":
         subscription = stripeEvent.data.object;
         status = subscription.status;
-        this.handleCancel(subscription);
+        await this.handleCancel(subscription);
         break;
       case "customer.subscription.created":
         subscription = stripeEvent.data.object;
         status = subscription.status;
-        this.handleSubscription(subscription);
+        await this.handleSubscription(subscription);
         break;
       case "customer.subscription.updated":
         subscription = stripeEvent.data.object;
         status = subscription.status;
-        this.handleSubscription(subscription);
+        await this.handleSubscription(subscription);
         break;
 
       case "checkout.session.completed":
@@ -155,13 +169,11 @@ class StripeService implements IStripeService {
 
       case "invoice.payment_succeeded":
         subscription = null;
-        console.log("Invoice payment succeeded.");
         break;
 
       default:
         // Unexpected event type
         subscription = null;
-        console.log(`Unhandled event type ${stripeEvent.type}.`);
     }
     return subscription;
   };
