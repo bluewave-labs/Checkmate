@@ -28,6 +28,7 @@ import {
   RecoveryService,
   IncidentService,
   SettingsService,
+  StripeService,
   BillingService,
 } from "@/services/index.js";
 
@@ -44,6 +45,7 @@ export const initServices = async () => {
   const networkService = new NetworkService(got);
   const statusService = new StatusService();
   const settingsService = new SettingsService();
+  const stripeService = new StripeService();
   const billingService = new BillingService();
   const emailService = new EmailService(userService, settingsService);
   settingsService.setEmailService(emailService);
@@ -99,6 +101,7 @@ export const initServices = async () => {
     incidentService,
     settingsService,
     billingService,
+    stripeService,
   };
 
   Object.values(services).forEach((service) => {

@@ -123,12 +123,14 @@ export const EmptyMonitorFallback = ({
   bullets,
   actionButtonText,
   actionLink,
+  monitorLimitReached,
 }: {
   page: string;
   title: string;
   bullets: any;
   actionButtonText: string;
   actionLink: string;
+  monitorLimitReached: boolean;
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -158,8 +160,9 @@ export const EmptyMonitorFallback = ({
             variant="contained"
             color="accent"
             onClick={() => navigate(actionLink)}
+            disabled={monitorLimitReached}
           >
-            {actionButtonText}
+            {monitorLimitReached ? "Monitor limit reached" : actionButtonText}
           </Button>
         </Stack>
       </Stack>

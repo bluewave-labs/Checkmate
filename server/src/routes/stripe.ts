@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, raw } from "express";
 import StripeController from "@/controllers/StripeController.js";
 
 // Note: webhook route must be mounted with express.raw at app/init level.
@@ -12,7 +12,11 @@ class StripeRoutes {
   }
 
   initRoutes = () => {
-    this.router.post("/webhook", this.controller.webhook);
+    this.router.post(
+      "/webhook",
+      raw({ type: "application/json" }),
+      this.controller.webhook
+    );
   };
 
   getRouter() {
@@ -21,4 +25,3 @@ class StripeRoutes {
 }
 
 export default StripeRoutes;
-

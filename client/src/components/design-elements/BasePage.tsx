@@ -32,7 +32,6 @@ interface BasePageWithStatesProps extends StackProps {
   error: any;
   items: any[];
   bullets: string[] | unknown;
-
   page: string;
   actionButtonText: string;
   actionLink: string;
@@ -83,6 +82,7 @@ interface MonitorBasePageWithStatesProps extends StackProps {
   loading: boolean;
   error: any;
   items: any[];
+  monitorLimitReached: boolean;
   page: string;
   actionLink?: string;
   children: React.ReactNode;
@@ -100,6 +100,7 @@ export const MonitorBasePageWithStates: React.FC<
   loading,
   error,
   items,
+  monitorLimitReached,
   page,
   actionLink,
   children,
@@ -130,6 +131,7 @@ export const MonitorBasePageWithStates: React.FC<
         bullets={t(`${page}Monitor.fallback.checks`, { returnObjects: true })}
         actionButtonText={t(`${page}Monitor.fallback.actionButton`)}
         actionLink={actionLink || ""}
+        monitorLimitReached={monitorLimitReached}
       />
     );
   }

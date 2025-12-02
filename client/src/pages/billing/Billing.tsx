@@ -1,6 +1,8 @@
 import { BasePage, InfoBox, PlanCard } from "@/components/design-elements";
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
+import { Button } from "@/components/inputs";
 
 import { useAppSelector } from "@/hooks/AppHooks";
 import { useGet, usePost } from "@/hooks/UseApi";
@@ -21,6 +23,14 @@ const BillingPage = () => {
 
   const handlePlanClick = async (planKey: PlanKey) => {
     const result = await post("/billing/subscribe", { planKey });
+    const redirectUrl = result?.data?.redirectUrl;
+    if (redirectUrl) {
+      window.location = redirectUrl;
+    }
+  };
+
+  const handleCancel = async () => {
+    const result = await post("/billing/cancel", {});
     const redirectUrl = result?.data?.redirectUrl;
     if (redirectUrl) {
       window.location = redirectUrl;
@@ -48,6 +58,18 @@ const BillingPage = () => {
           </Grid>
         ))}
       </Grid>
+      {selectedPlan !== "free" && (
+        <Box>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleCancel}
+            loading={isPosting}
+          >
+            Cancel subscription
+          </Button>
+        </Box>
+      )}
     </BasePage>
   );
 };

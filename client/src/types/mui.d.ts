@@ -23,3 +23,9 @@ declare module "@mui/material/Button" {
     accent: true;
   }
 }
+
+declare module "@mui/material/CircularProgress" {
+  interface CircularProgressPropsColorOverrides {
+    accent: true;
+  }
+}

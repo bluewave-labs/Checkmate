@@ -18,12 +18,11 @@ export interface IOrg extends Document {
   // Billing
   billingCustomerId?: string;
   subscriptionId?: string;
+  priceId: string;
   priceIds?: string[];
   subscriptionStatus?: SubscriptionStatus;
   currentPeriodStart?: Date;
   currentPeriodEnd?: Date;
-  trialEnd?: Date;
-  cancelAtPeriodEnd?: boolean;
 
   // Cached entitlements
   entitlements: {
@@ -61,8 +60,6 @@ const orgSchema = new Schema<IOrg>(
     },
     currentPeriodStart: { type: Date },
     currentPeriodEnd: { type: Date },
-    trialEnd: { type: Date },
-    cancelAtPeriodEnd: { type: Boolean },
     entitlements: {
       plan: { type: String },
       monitorsMax: { type: Number },

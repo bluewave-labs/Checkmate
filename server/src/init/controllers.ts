@@ -76,7 +76,7 @@ export const initControllers = (services: any) => {
     services.notificationService
   );
 
-  controllers.stripeController = new StripeController();
+  controllers.stripeController = new StripeController(services.stripeService);
   controllers.billingController = new BillingController(
     services.billingService
   );

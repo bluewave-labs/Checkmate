@@ -15,6 +15,8 @@ export interface IBillingService {
     orgId: string,
     planKey: PlanKey
   ): Promise<string>;
+  cancelSubscription(orgId: string): Promise<string>;
+  confirmPlan(orgId: string, expectedPlanKey: PlanKey): Promise<boolean>;
 }
 
 const SERVICE_NAME = "BillingService";
@@ -27,10 +29,10 @@ class BillingService implements IBillingService {
     this.SERVICE_NAME = SERVICE_NAME;
     this.stripeClient = new Stripe(config.STRIPE_SECRET);
   }
-  async listPlans(): Promise<Entitlements[]> {
+  listPlans = async () => {
     const order: PlanKey[] = ["free", "pro", "business", "enterprise"];
     return order.map((key) => Plans[key]);
-  }
+  };
 
   subscribePlan = async (email: string, orgId: string, planKey: PlanKey) => {
     if (!planKey) {
@@ -41,7 +43,6 @@ class BillingService implements IBillingService {
       throw new ApiError("Invalid planKey", 400);
     }
 
-    // Ensure billing customer exists for this org
     const org = await Org.findById(orgId);
     if (!org) throw new ApiError("Organization not found", 404);
     if (!org.billingCustomerId) {
@@ -63,28 +64,110 @@ class BillingService implements IBillingService {
       throw new ApiError("Price not found for the selected plan", 404);
     }
 
+    let redirectUrl: string;
     const successUrl = `${config.ORIGIN}/billing/success?plan=${planKey}`;
     const cancelUrl = `${config.ORIGIN}/billing/`;
-    const session = await this.stripeClient.checkout.sessions.create({
-      billing_address_collection: "auto",
-      line_items: [
-        {
-          price,
-          quantity: 1,
+
+    const subscriptionId = org.subscriptionId;
+
+    // Updating an existing subscription
+    if (subscriptionId) {
+      const session = await this.stripeClient.billingPortal.sessions.create({
+        customer: String(org.billingCustomerId),
+        return_url: successUrl,
+        flow_data: {
+          type: "subscription_update",
+          subscription_update: {
+            subscription: subscriptionId,
+          },
         },
-      ],
-      mode: "subscription",
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      customer: String(org.billingCustomerId),
-      client_reference_id: String(org._id),
-      subscription_data: { metadata: { orgId: String(org._id) } },
-      metadata: { orgId: String(org._id) },
-    });
-    if (session.url === null) {
-      throw new ApiError("Failed to create checkout session", 500);
+      });
+      redirectUrl = session.url;
     }
-    return session.url;
+
+    // Creating a new subscription
+    else {
+      const session = await this.stripeClient.checkout.sessions.create({
+        billing_address_collection: "auto",
+        line_items: [
+          {
+            price,
+            quantity: 1,
+          },
+        ],
+        mode: "subscription",
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        customer: String(org.billingCustomerId),
+        client_reference_id: String(org._id),
+        subscription_data: { metadata: { orgId: String(org._id) } },
+        metadata: { orgId: String(org._id) },
+      });
+      if (!session.url) {
+        throw new ApiError("Failed to create checkout session", 500);
+      }
+      redirectUrl = session.url;
+    }
+
+    return redirectUrl;
+  };
+
+  cancelSubscription = async (orgId: string): Promise<string> => {
+    const successUrl = `${config.ORIGIN}/billing/success?plan=free`;
+
+    const org = await Org.findById(orgId);
+    if (!org) throw new ApiError("Organization not found", 404);
+
+    const subscriptionId = org.subscriptionId;
+    if (!subscriptionId) {
+      throw new ApiError("No active subscription found", 400);
+    }
+
+    const session = await this.stripeClient.billingPortal.sessions.create({
+      customer: String(org.billingCustomerId),
+      return_url: successUrl,
+      flow_data: {
+        type: "subscription_cancel",
+        subscription_cancel: {
+          subscription: subscriptionId,
+        },
+      },
+    });
+
+    const redirect = session.url;
+    if (!redirect) {
+      throw new ApiError("Failed to create billing portal session", 500);
+    }
+
+    return redirect;
+  };
+
+  confirmPlan = async (orgId: string, expectedPlanKey: PlanKey) => {
+    const org = await Org.findOne({ _id: orgId });
+    if (!org) throw new ApiError("Organization not found", 404);
+
+    if (!org.subscriptionId) {
+      return expectedPlanKey === "free";
+    }
+
+    const sub = await this.stripeClient.subscriptions.retrieve(
+      org.subscriptionId
+    );
+    const activePlan = sub.items.data[0]?.price.lookup_key;
+
+    if (activePlan === org.planKey) {
+      return true;
+    }
+
+    if (activePlan === expectedPlanKey) {
+      return true;
+    }
+
+    if (activePlan !== expectedPlanKey) {
+      return false;
+    }
+
+    return true;
   };
 }
 

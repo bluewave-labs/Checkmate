@@ -14,6 +14,7 @@ export interface IEnvConfig {
   SMTP_USER: string;
   SMTP_PASS: string;
   STRIPE_SECRET: string;
+  STRIPE_WEBHOOK_SECRET: string;
 }
 
 dotenv.config();
@@ -32,4 +33,5 @@ export const config: IEnvConfig = {
   SMTP_USER: process.env.SMTP_USER || "not_set",
   SMTP_PASS: process.env.SMTP_PASS || "not_set",
   STRIPE_SECRET: process.env.STRIPE_SECRET || "not_set",
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "not_set",
 };

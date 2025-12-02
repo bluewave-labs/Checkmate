@@ -1,46 +1,27 @@
 import type { Request, Response, NextFunction } from "express";
+import { StripeService } from "@/services/index.js";
+import { config } from "@/config/index.js";
 
 export interface IStripeController {
   webhook: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
 
 class StripeController implements IStripeController {
+  private stripeService: StripeService;
+
+  constructor(stripeService: StripeService) {
+    this.stripeService = stripeService;
+  }
   webhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const sig = req.headers["stripe-signature"] as string | undefined;
-      const raw = req.body as unknown; // Buffer when express.raw is used
-
-      let event: any = undefined;
-      if (Buffer.isBuffer(raw)) {
-        const json = raw.toString("utf8");
-        try {
-          event = JSON.parse(json);
-        } catch (_e) {
-          res.status(401).json({ message: "Unauthorized" });
-        }
-      } else if (typeof raw === "string") {
-        try {
-          event = JSON.parse(raw);
-        } catch (_e) {
-          res.status(400).json({ message: "Invalid JSON payload" });
-        }
-      } else if (raw && typeof raw === "object") {
-        event = raw;
+      let event = req.body;
+      const signature = req.headers["stripe-signature"];
+      if (!signature || Array.isArray(signature)) {
+        throw new Error("Stripe signature is missing or invalid");
       }
 
-      // Basic routing by event type (no-ops for now)
-      const type = event?.type;
-      switch (type) {
-        case "checkout.session.completed":
-        case "customer.subscription.updated":
-        case "customer.subscription.deleted":
-        case "invoice.payment_succeeded":
-        case "invoice.payment_failed":
-        default:
-          break;
-      }
-
-      res.status(200);
+      const result = await this.stripeService.webhook(event, signature);
+      res.status(200).send({ received: true });
     } catch (error) {
       throw error;
     }

@@ -12,6 +12,11 @@ export interface IBillingController {
     res: Response,
     next: NextFunction
   ) => Promise<void>;
+  confirmPlan: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<void>;
 }
 
 class BillingController implements IBillingController {
@@ -38,6 +43,7 @@ class BillingController implements IBillingController {
       if (!orgId) throw new ApiError("Organization not found", 404);
 
       const planKey: PlanKey | undefined = req.body.planKey;
+
       const redirectUrl = await this.billingService.subscribePlan(
         user.email,
         orgId,
@@ -47,6 +53,44 @@ class BillingController implements IBillingController {
       res.status(200).json({
         message: "Subscription initiation successful",
         data: { redirectUrl },
+      });
+      return;
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  cancelPlan = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orgId = req.user?.orgId;
+      if (!orgId) throw new ApiError("Organization not found", 404);
+
+      const redirectUrl = await this.billingService.cancelSubscription(orgId);
+
+      res.status(200).json({
+        message: "Subscription cancellation successful",
+        data: { redirectUrl },
+      });
+      return;
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  confirmPlan = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orgId = req.user?.orgId;
+      if (!orgId) throw new ApiError("Organization not found", 404);
+
+      const expectedPlanKey = req.query.plan as PlanKey;
+      const success = await this.billingService.confirmPlan(
+        orgId,
+        expectedPlanKey
+      );
+
+      res.status(200).json({
+        message: "Plan confirmation endpoint hit",
+        data: { success },
       });
       return;
     } catch (error) {

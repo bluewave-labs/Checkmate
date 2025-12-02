@@ -10,6 +10,7 @@ import { HeaderCreate } from "@/components/common";
 import Stack from "@mui/material/Stack";
 import { Dialog } from "@/components/inputs";
 import { MonitorTable } from "@/pages/uptime/MonitorTable";
+import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -26,12 +27,13 @@ import {
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
-import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
+import { useAppSelector } from "@/hooks/AppHooks";
 
 const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
 
 const UptimeMonitors = () => {
   const theme = useTheme();
+  const { user } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedMonitor, setSelectedMonitor] = useState<IMonitor | null>(null);
@@ -91,6 +93,8 @@ const UptimeMonitors = () => {
   const downCount = response?.data?.downCount || 0;
   const pausedCount = response?.data?.pausedCount || 0;
 
+  const monitorLimitReached = count >= (user?.entitlements?.monitorsMax || 0);
+
   const handleConfirm = async () => {
     await deleteFn(`/monitors/${selectedMonitor?._id}`);
     setSelectedMonitor(null);
@@ -120,6 +124,7 @@ const UptimeMonitors = () => {
       items={monitorItems}
       page="uptime"
       actionLink="/uptime/create"
+      monitorLimitReached={monitorLimitReached}
     >
       <InfoBox
         title="Website & API Uptime Monitoring"

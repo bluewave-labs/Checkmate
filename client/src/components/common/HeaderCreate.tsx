@@ -7,7 +7,12 @@ import Tooltip from "@mui/material/Tooltip";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import { useMemo } from "react";
-import type { EntitlemenstKey } from "@/types/entitlements";
+type EntitlementsKey =
+  | "monitorsMax"
+  | "notificationChannelsMax"
+  | "statusPagesMax"
+  | "checksIntervalMsMin"
+  | "teamsMax";
 export const HeaderCreate = ({
   label,
   isLoading,
@@ -18,7 +23,7 @@ export const HeaderCreate = ({
   label?: string;
   isLoading: boolean;
   path: string;
-  entitlement: EntitlemenstKey | null;
+  entitlement: EntitlementsKey | null;
   entitlementCount: number;
 }) => {
   const theme = useTheme();
@@ -29,7 +34,7 @@ export const HeaderCreate = ({
     if (!entitlement) return false;
     if (!ent || typeof ent[entitlement] !== "number") return false;
     return entitlementCount < ent[entitlement] ? false : true;
-  }, [ent, entitlementCount]);
+  }, [ent, entitlement, entitlementCount]);
   return (
     <Stack
       direction="row"

@@ -26,6 +26,18 @@ class BillingRoutes {
       validateBody(subscribePlanSchema),
       this.controller.subscribePlan
     );
+    this.router.post(
+      "/cancel",
+      verifyToken,
+      addUserContext,
+      this.controller.cancelPlan
+    );
+    this.router.get(
+      "/confirm",
+      verifyToken,
+      addUserContext,
+      this.controller.confirmPlan
+    );
   };
 
   getRouter() {

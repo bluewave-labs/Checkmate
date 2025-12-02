@@ -19,12 +19,14 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
 import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
+import { useAppSelector } from "@/hooks/AppHooks";
 
 const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
 
 const PageSpeedMonitorsPage = () => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { user } = useAppSelector((state) => state.auth);
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedMonitor, setSelectedMonitor] = useState<IMonitor | null>(null);
   const isDialogOpen = Boolean(selectedMonitor);
@@ -64,6 +66,8 @@ const PageSpeedMonitorsPage = () => {
   const downCount = response?.data?.downCount || 0;
   const pausedCount = response?.data?.pausedCount || 0;
 
+  const monitorLimitReached = count >= (user?.entitlements?.monitorsMax || 0);
+
   const handleConfirm = async () => {
     await deleteFn(`/monitors/${selectedMonitor?._id}`);
     setSelectedMonitor(null);
@@ -79,6 +83,7 @@ const PageSpeedMonitorsPage = () => {
       loading={isValidating}
       error={error}
       items={monitors}
+      monitorLimitReached={monitorLimitReached}
       page="infrastructure"
       actionLink="/infrastructure/create"
     >
