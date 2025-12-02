@@ -12,6 +12,9 @@ import { Tooltip } from "@/components/design-elements";
 const DEPLOYMENT_MODE = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
 const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
+console.log("Deployment mode:", DEPLOYMENT_MODE);
+console.log("Is SaaS:", IS_SAAS);
+
 export const SettingsSwitch = () => {
   const navigate = useNavigate();
   const theme = useTheme();
