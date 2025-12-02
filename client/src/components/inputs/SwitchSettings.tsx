@@ -65,12 +65,6 @@ export const SettingsSwitch = () => {
 
   const hasMaster = perms.includes("master");
 
-  console.log(JSON.stringify(user, null, 2));
-  console.log("Deplyoment mode:", DEPLOYMENT_MODE);
-  console.log("isSaas:", IS_SAAS);
-  console.log("orgPermissions at render", orgPermissions);
-  console.log("showBilling", showBilling);
-
   return (
     <>
       <Tooltip title="Settings" placement="top">
