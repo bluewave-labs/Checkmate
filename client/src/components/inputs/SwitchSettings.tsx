@@ -12,9 +12,6 @@ import { Tooltip } from "@/components/design-elements";
 const DEPLOYMENT_MODE = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
 const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
-console.log("Deployment mode:", DEPLOYMENT_MODE);
-console.log("Is SaaS:", IS_SAAS);
-
 export const SettingsSwitch = () => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -56,6 +53,11 @@ export const SettingsSwitch = () => {
     orgPermissions.includes("billing.*") || orgPermissions.includes("*");
 
   const hasMaster = orgPermissions.includes("master");
+
+  console.log(JSON.stringify(user, null, 2));
+  console.log("Deplyoment mode:", DEPLOYMENT_MODE);
+  console.log("isSaas:", IS_SAAS);
+  console.log("hasBilling", hasBilling);
 
   return (
     <>

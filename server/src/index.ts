@@ -18,13 +18,6 @@ const createApp = async () => {
   const services = await initServices();
   const controllers = initControllers(services);
   const app = express();
-  // Stripe webhook requires raw body for signature verification; mount it first
-  app.post(
-    "/api/v1/stripe/webhook",
-    express.raw({ type: "application/json" }) as any,
-    // Defer to router handler registered later; this preserves raw body
-    (req, res, next) => next()
-  );
   app.use(express.json());
   app.use(cookieParser());
   app.use(
