@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 
 import { useNavigate } from "react-router";
 import { useAppSelector } from "@/hooks/AppHooks";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
 const DEPLOYMENT_MODE = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
@@ -34,30 +34,42 @@ export const SettingsSwitch = () => {
   const user = useAppSelector((state) => state.auth.user);
 
   const orgPermissions = user?.org?.permissions || [];
+  // Normalize and memoize permissions for robust checks
+  const perms = useMemo(
+    () => orgPermissions.map((p) => (p ?? "").toString().trim().toLowerCase()),
+    [orgPermissions]
+  );
   const hasTeamEdit =
-    orgPermissions.includes("teams.*") ||
-    orgPermissions.includes("teams.write") ||
-    orgPermissions.includes("*");
+    perms.includes("teams.*") ||
+    perms.includes("teams.write") ||
+    perms.includes("*");
 
   const hasInvite =
-    orgPermissions.includes("invite.*") ||
-    orgPermissions.includes("invite.write") ||
-    orgPermissions.includes("*");
+    perms.includes("invite.*") ||
+    perms.includes("invite.write") ||
+    perms.includes("*");
 
   const hasMonitorRead =
-    orgPermissions.includes("monitors.*") ||
-    orgPermissions.includes("monitors.read") ||
-    orgPermissions.includes("*");
+    perms.includes("monitors.*") ||
+    perms.includes("monitors.read") ||
+    perms.includes("*");
 
-  const hasBilling =
-    orgPermissions.includes("billing.*") || orgPermissions.includes("*");
+  const showBilling = useMemo(
+    () =>
+      IS_SAAS &&
+      (perms.includes("*") ||
+        perms.includes("billing.*") ||
+        perms.includes("billing.all")),
+    [perms]
+  );
 
-  const hasMaster = orgPermissions.includes("master");
+  const hasMaster = perms.includes("master");
 
   console.log(JSON.stringify(user, null, 2));
   console.log("Deplyoment mode:", DEPLOYMENT_MODE);
   console.log("isSaas:", IS_SAAS);
-  console.log("hasBilling", hasBilling);
+  console.log("orgPermissions at render", orgPermissions);
+  console.log("showBilling", showBilling);
 
   return (
     <>
@@ -86,6 +98,11 @@ export const SettingsSwitch = () => {
           horizontal: "right",
         }}
       >
+        {showBilling && (
+          <MenuItem onClick={() => handleClick("billing")}>
+            <Typography>Billing</Typography>
+          </MenuItem>
+        )}
         {hasMonitorRead && (
           <MenuItem onClick={() => handleClick("export")}>
             <Typography>Import | Export</Typography>
@@ -110,11 +127,6 @@ export const SettingsSwitch = () => {
         {hasInvite && (
           <MenuItem onClick={() => handleClick("invite")}>
             <Typography>Invite</Typography>
-          </MenuItem>
-        )}
-        {hasBilling && IS_SAAS && (
-          <MenuItem onClick={() => handleClick("billing")}>
-            <Typography>Billing</Typography>
           </MenuItem>
         )}
       </Menu>
