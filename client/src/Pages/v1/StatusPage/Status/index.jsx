@@ -43,12 +43,14 @@ const PublicStatus = () => {
             
             // SECURITY FIX: Remove dangerous CSS patterns (url, import, expression)
             const safeCSS = statusPage.customCSS
-                .replace(/url\s*\(/gi, '')      // Block external data/images
-                .replace(/@import/gi, '')       // Block external stylesheets
-                .replace(/expression\s*\(/gi, '') // Block IE scripts
-                .replace(/behavior:/gi, '');    // Block IE behaviors
+                .replace(/url\s*\(/gi, 'blocked(')           // Block url(...)
+                .replace(/@import/gi, '/* blocked */')       // Block @import
+                .replace(/expression\s*\(/gi, 'blocked(')    // Block IE expression(...)
+                .replace(/behavior\s*:/gi, 'blocked:')       // Block behavior:
+                .replace(/-moz-binding\s*:/gi, 'blocked:')   // Block Firefox XBL
+                .replace(/javascript\s*:/gi, 'blocked:');    // Block javascript: protocols
 
-            styleElement.textContent = safeCSS; // Use textContent instead of innerHTML for extra safety
+            styleElement.textContent = safeCSS;
             document.head.appendChild(styleElement);
         }
 
