@@ -2,6 +2,7 @@ export type PlanKey = "free" | "pro" | "business" | "enterprise" | "unlimited";
 
 export interface Entitlements {
   plan: PlanKey;
+  price?: number;
   monitorsMax: number;
   notificationChannelsMax: number;
   statusPagesMax: number;

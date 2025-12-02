@@ -1,9 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { type IBillingService } from "@/services/system/BillingService.js";
-import { Plans, type PlanKey } from "@/types/entitlements.js";
+import { type PlanKey } from "@/types/entitlements.js";
 import ApiError from "@/utils/ApiError.js";
-import { config } from "@/config/index.js";
-import { Org } from "@/db/models/index.js";
 
 export interface IBillingController {
   listPlans: (req: Request, res: Response, next: NextFunction) => Promise<void>;

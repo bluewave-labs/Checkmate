@@ -17,6 +17,7 @@ export interface Entitlements {
   teamsMax: number;
   notificationsEnabled: boolean;
   retentionDays: number;
+  price?: number;
 }
 
 export const Plans: Record<PlanKey, Entitlements> = {
@@ -24,15 +25,15 @@ export const Plans: Record<PlanKey, Entitlements> = {
     plan: "free",
     monitorsMax: 3,
     notificationChannelsMax: 2,
-    statusPagesMax: 2,
+    statusPagesMax: 1,
     checksIntervalMsMin: 60_000,
-    teamsMax: 2,
+    teamsMax: 1,
     notificationsEnabled: true,
     retentionDays: 30,
   },
   pro: {
     plan: "pro",
-    monitorsMax: 50,
+    monitorsMax: 25,
     notificationChannelsMax: 5,
     statusPagesMax: 5,
     checksIntervalMsMin: 30_000,
@@ -42,8 +43,8 @@ export const Plans: Record<PlanKey, Entitlements> = {
   },
   business: {
     plan: "business",
-    monitorsMax: 200,
-    notificationChannelsMax: 20,
+    monitorsMax: 50,
+    notificationChannelsMax: 10,
     statusPagesMax: 20,
     checksIntervalMsMin: 15_000,
     teamsMax: 10,
@@ -52,8 +53,8 @@ export const Plans: Record<PlanKey, Entitlements> = {
   },
   enterprise: {
     plan: "enterprise",
-    monitorsMax: 5000,
-    notificationChannelsMax: 100,
+    monitorsMax: 100,
+    notificationChannelsMax: 20,
     statusPagesMax: 100,
     checksIntervalMsMin: 10_000,
     teamsMax: 20,

@@ -30,11 +30,13 @@ export const HeaderCreate = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const ent = useSelector((s: RootState) => s.auth.user?.entitlements);
+
   const limitReached = useMemo(() => {
     if (!entitlement) return false;
     if (!ent || typeof ent[entitlement] !== "number") return false;
     return entitlementCount < ent[entitlement] ? false : true;
   }, [ent, entitlement, entitlementCount]);
+
   return (
     <Stack
       direction="row"

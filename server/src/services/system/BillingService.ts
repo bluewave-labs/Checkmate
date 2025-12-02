@@ -31,7 +31,17 @@ class BillingService implements IBillingService {
   }
   listPlans = async () => {
     const order: PlanKey[] = ["free", "pro", "business", "enterprise"];
-    return order.map((key) => Plans[key]);
+    const prices = await this.stripeClient.prices.list({});
+
+    const plans = order.map((key) => {
+      const plan = Plans[key];
+      plan.price =
+        prices.data.find((p) => p.lookup_key === key)?.unit_amount || 0;
+      return plan;
+    });
+
+    console.log("Available plans:", plans);
+    return plans;
   };
 
   private buildSuccessUrl = (planKey: PlanKey) =>
