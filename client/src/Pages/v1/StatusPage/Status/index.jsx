@@ -40,7 +40,15 @@ const PublicStatus = () => {
         if (statusPage.customCSS) {
             styleElement = document.createElement("style");
             styleElement.id = "custom-status-css";
-            styleElement.innerHTML = statusPage.customCSS;
+            
+            // SECURITY FIX: Remove dangerous CSS patterns (url, import, expression)
+            const safeCSS = statusPage.customCSS
+                .replace(/url\s*\(/gi, '')      // Block external data/images
+                .replace(/@import/gi, '')       // Block external stylesheets
+                .replace(/expression\s*\(/gi, '') // Block IE scripts
+                .replace(/behavior:/gi, '');    // Block IE behaviors
+
+            styleElement.textContent = safeCSS; // Use textContent instead of innerHTML for extra safety
             document.head.appendChild(styleElement);
         }
 

@@ -1,5 +1,5 @@
 // Components
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography, Checkbox as MuiCheckbox, FormControlLabel } from "@mui/material";
 import { TabPanel } from "@mui/lab";
 import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
@@ -15,7 +15,7 @@ import { useTheme } from "@emotion/react";
 import timezones from "../../../../../../Utils/timezones.json";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 
 const TabSettings = ({
 	isCreate,
@@ -31,6 +31,7 @@ const TabSettings = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [rawInput, setRawInput] = useState("");
+	const [riskAccepted, setRiskAccepted] = useState(false);
 
 	const selectedTimezone = useMemo(
 		() => timezones.find((tz) => tz._id === form.timezone) ?? null,
@@ -49,6 +50,12 @@ const TabSettings = ({
 		},
 		[handleFormChange]
 	);
+
+	useEffect(() => {
+		if (form.customJavaScript && form.customJavaScript.length > 0) {
+			setRiskAccepted(true);
+		}
+	}, [form.customJavaScript]);
 
 	return (
 		<TabPanel value={tabValue}>
@@ -254,29 +261,40 @@ const TabSettings = ({
 
 				{/* --- CUSTOM JAVASCRIPT SECTION --- */}
 				<ConfigBox>
-					<Stack gap={theme.spacing(6)}>
-						<Typography
-							component="h2"
-							variant="h2"
-						>
-							{t("customJavaScript")}
-						</Typography>
-						<Typography component="p">
-							{t("statusPageCreateCustomJavaScriptDescription")}
-						</Typography>
-					</Stack>
-					<Stack gap={theme.spacing(6)}>
+					<Stack gap={2}>
+						<Typography variant="h6">{t("customJavaScript")}</Typography>
+
+						<FormControlLabel
+							control={
+								<MuiCheckbox
+									checked={riskAccepted}
+									onChange={(e) => setRiskAccepted(e.target.checked)}
+									color="error"
+								/>
+							}
+							label={
+								<Typography
+									variant="body2"
+									color="error"
+									sx={{ fontWeight: "bold" }}
+								>
+									{t("Security Risk Warning") ||
+										"I understand that adding custom JavaScript poses a security risk and I accept responsibility."}
+								</Typography>
+							}
+						/>
+
 						<TextField
-							name="customJavaScript" // <--- CRITICAL
+							name="customJavaScript"
 							label={t("customJavaScript")}
-							color="warning" 
-    						helperText="⚠️ DANGER: Scripts added here will execute for all visitors. Only add code from trusted sources (e.g., Google Analytics)."
 							multiline
 							rows={4}
 							value={form.customJavaScript || ""}
 							onChange={handleFormChange}
+							disabled={!riskAccepted} // <--- LOCKED UNTIL CHECKED
 							fullWidth
-							margin="normal"
+							helperText={t("statusPageCreateCustomJavaScriptWarning")}
+							placeholder="console.log('Loaded');"
 						/>
 					</Stack>
 				</ConfigBox>
