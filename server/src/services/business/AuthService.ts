@@ -22,6 +22,8 @@ import { IJobQueue } from "../infrastructure/JobQueue.js";
 import { hashPassword } from "@/utils/JWTUtils.js";
 import { Plans } from "@/types/entitlements.js";
 import { PERMISSIONS } from "@/types/permissions.js";
+import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
+import type { Entitlements } from "@/types/entitlements.js";
 
 const SERVICE_NAME = "AuthService";
 
@@ -255,6 +257,11 @@ class AuthService implements IAuthService {
         permissions: roles[2]?.permissions || [],
       };
 
+      const provider = EntitlementsFactory.create();
+      const entitlements: Entitlements = await provider.getForOrg(
+        org._id.toString()
+      );
+
       const returnableUser: IUserReturnable = {
         id: user._id.toString(),
         email: user.email,
@@ -266,7 +273,7 @@ class AuthService implements IAuthService {
           permissions: roles[0]?.permissions || [],
         },
         teams: [returnableTeam],
-        entitlements: org.entitlements,
+        entitlements,
       };
 
       return { tokenizedUser, returnableUser };
@@ -392,6 +399,10 @@ class AuthService implements IAuthService {
       const orgRole = await Role.findById(orgMembership.roleId);
       const orgPermissions = orgRole?.permissions || [];
 
+      const provider = EntitlementsFactory.create();
+      const entitlements: Entitlements = await provider.getForOrg(
+        org._id.toString()
+      );
       const returnableUser: IUserReturnable = {
         id: user._id.toString(),
         email: user.email,
@@ -403,7 +414,7 @@ class AuthService implements IAuthService {
           permissions: orgPermissions,
         },
         teams: returnableTeams,
-        entitlements: org.entitlements,
+        entitlements,
       };
 
       return {
@@ -499,6 +510,11 @@ class AuthService implements IAuthService {
       orgId: orgMembership.orgId.toString(),
     };
 
+    const provider = EntitlementsFactory.create();
+    const entitlements: Entitlements = await provider.getForOrg(
+      org._id.toString()
+    );
+
     const returnableUser: IUserReturnable = {
       id: user._id.toString(),
       email: user.email,
@@ -510,7 +526,7 @@ class AuthService implements IAuthService {
         permissions: orgRoles?.permissions || [],
       },
       teams: returnableTeams,
-      entitlements: org.entitlements,
+      entitlements,
     };
 
     return {

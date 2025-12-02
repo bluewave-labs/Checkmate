@@ -20,8 +20,9 @@ import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
 import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 import { useAppSelector } from "@/hooks/AppHooks";
+import { config } from "@/config/index";
 
-const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
+const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const PageSpeedMonitorsPage = () => {
   const theme = useTheme();

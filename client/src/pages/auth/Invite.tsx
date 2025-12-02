@@ -14,7 +14,8 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
-const host = import.meta.env.VITE_APP_HOST;
+import { config } from "@/config/index";
+const HOST = config.HOST;
 
 type FormValues = z.infer<typeof inviteSchema>;
 
@@ -202,7 +203,7 @@ const Invite = () => {
       {token && (
         <Stack>
           <Typography variant="h2">Invite link:</Typography>
-          <Typography>{`${host}/register/${token}`}</Typography>
+          <Typography>{`${HOST}/register/${token}`}</Typography>
         </Stack>
       )}
       <Box flex={1}>

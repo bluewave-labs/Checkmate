@@ -17,7 +17,9 @@ import { useGet, usePatch, type ApiResponse } from "@/hooks/UseApi";
 import { useState } from "react";
 import { getStatusPalette } from "@/utils/MonitorUtils";
 import prettyMilliseconds from "pretty-ms";
-const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
+import { config } from "@/config/index";
+
+const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const UptimeDetailsPage = () => {
   const { id } = useParams();

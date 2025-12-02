@@ -14,8 +14,9 @@ import type { IMonitor, IMonitorWithMonitorStats } from "@/types/monitor";
 import { getStatusPalette } from "@/utils/MonitorUtils";
 import prettyMilliseconds from "pretty-ms";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { config } from "@/config/index";
 
-const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
+const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 const PageSpeedDetailsPage = () => {
   const theme = useTheme();
   const { id } = useParams();

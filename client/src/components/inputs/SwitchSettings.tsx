@@ -9,7 +9,8 @@ import { useAppSelector } from "@/hooks/AppHooks";
 import { useMemo, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
-const DEPLOYMENT_MODE = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
+import { config } from "@/config/index";
+const DEPLOYMENT_MODE = config.DEPLOYMENT_MODE;
 const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
 export const SettingsSwitch = () => {

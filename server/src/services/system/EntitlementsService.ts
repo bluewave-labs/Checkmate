@@ -1,5 +1,7 @@
 import { Entitlements, Plans } from "@/types/entitlements.js";
 import { Org } from "@/db/models/index.js";
+import { DeploymentMode } from "@/utils/FeatureFlags.js";
+import { config } from "@/config/index.js";
 
 export interface IEntitlementsProvider {
   getForOrg(orgId: string): Promise<Entitlements>;
@@ -31,8 +33,8 @@ export class SelfHostedEntitlementsProvider implements IEntitlementsProvider {
 
 export class EntitlementsFactory {
   static create(): IEntitlementsProvider {
-    const mode = (process.env.DEPLOYMENT_MODE || "saas").toLowerCase();
-    if (mode === "self") return new SelfHostedEntitlementsProvider();
+    const mode: DeploymentMode = config.DEPLOYMENT_MODE || "self_hosted";
+    if (mode === "self_hosted") return new SelfHostedEntitlementsProvider();
     return new SaaSEntitlementsProvider();
   }
 }

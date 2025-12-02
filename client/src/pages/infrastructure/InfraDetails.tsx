@@ -21,8 +21,8 @@ import {
   getOsAndPlatform,
 } from "@/pages/infrastructure/InfraUtils";
 import { InfraDetailsGauges } from "./InfraDetailsGauges";
-
-const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
+import { config } from "@/config/index";
+const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const InfraDetailsPage = () => {
   const theme = useTheme();

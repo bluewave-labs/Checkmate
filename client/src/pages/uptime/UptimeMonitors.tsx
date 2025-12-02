@@ -28,8 +28,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
 import { useAppSelector } from "@/hooks/AppHooks";
+import { config } from "@/config/index";
 
-const GLOBAL_REFRESH = import.meta.env.VITE_APP_GLOBAL_REFRESH;
+const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const UptimeMonitors = () => {
   const theme = useTheme();

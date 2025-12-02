@@ -1,32 +1,34 @@
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { ExternalLink } from "lucide-react";
+import Link from "@mui/material/Link";
+import { config } from "@/config/index";
 
 import type { IStatusPageWithMonitors } from "@/types/status-page";
-import { useTheme } from "@mui/material/styles";
-const HOST = import.meta.env.VITE_APP_HOST;
+const HOST = config.HOST;
 
 export const NameHeader = ({
   statusPage,
 }: {
   statusPage: IStatusPageWithMonitors;
 }) => {
-  const theme = useTheme();
   return (
-    <Stack direction={"row"} alignItems={"flex-end"} spacing={theme.spacing(4)}>
+    <Stack direction={"row"} alignItems={"flex-end"} spacing={4}>
       <Typography variant="h1">{statusPage?.name}</Typography>
       {statusPage?.isPublished && (
-        <Stack
-          component={"a"}
-          href={`${HOST}/status-pages/public/${statusPage?.url}`}
+        <Link
+          href={`${HOST ?? ""}/status-pages/public/${statusPage?.url}`}
           target="_blank"
           rel="noopener noreferrer"
-          direction={"row"}
-          sx={{ textDecoration: "none", color: "inherit" }}
+          underline="none"
+          color="inherit"
+          sx={{ display: "inline-flex" }}
         >
-          <Typography>Public link</Typography>
-          <ExternalLink size={16} strokeWidth={1.5} />
-        </Stack>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography>Public link</Typography>
+            <ExternalLink size={16} strokeWidth={1.5} />
+          </Stack>
+        </Link>
       )}
     </Stack>
   );
