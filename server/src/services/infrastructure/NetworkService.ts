@@ -65,6 +65,7 @@ class NetworkService implements INetworkService {
         request: 30000,
       },
       retry: { limit: 1 },
+      http2: false,
     });
   }
 
@@ -138,19 +139,29 @@ class NetworkService implements INetworkService {
           isHttps && typeof (monitor as any).rejectUnauthorized !== "undefined";
         const req: any = haveRejectFlag
           ? this.client(url, {
-              https: { rejectUnauthorized: (monitor as any).rejectUnauthorized },
+              https: {
+                rejectUnauthorized: (monitor as any).rejectUnauthorized,
+              },
             })
           : this.client(url);
         req.on("request", (nodeReq: ClientRequest) => {
-          nodeReq.on("socket", (socket: TLSSocket) => {
+          nodeReq.on("socket", (socket: any) => {
             const capture = () => {
-              const cert = socket.getPeerCertificate(true);
-              if (cert && cert.valid_to) {
-                certificateExpiry = new Date(cert.valid_to);
+              try {
+                if (typeof socket.getPeerCertificate === "function") {
+                  const cert = socket.getPeerCertificate(true);
+                  if (cert && cert.valid_to) {
+                    certificateExpiry = new Date(cert.valid_to);
+                  }
+                }
+              } catch (_) {
+                // Non-TLS or unsupported socket; ignore
               }
             };
             capture();
-            socket.once("secureConnect", capture);
+            if (typeof socket.once === "function") {
+              socket.once("secureConnect", capture);
+            }
           });
         });
         const response: Response = await req;
