@@ -87,6 +87,8 @@ You can also enable TLS during installation using Helm's `--set` flags:
 
 ```bash
 helm install checkmate ./charts/helm/checkmate \
+  --set client.protocol=https \
+  --set server.protocol=https \
   --set client.ingress.annotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
   --set client.ingress.tls.enabled=true \
   --set client.ingress.tls.secretName=checkmate-client-tls \

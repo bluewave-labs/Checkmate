@@ -12,7 +12,7 @@ client:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      # secretName: checkmate-client-tls  # Uncomment and set if using TLS with cert-manager
+      # secretName: {{ .Release.Name }}-client-tls  # Optional; defaults to <release>-client-tls if omitted
       # Note: when enabling TLS, also set client.protocol: https and add
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
@@ -31,7 +31,7 @@ server:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      # secretName: checkmate-server-tls  # Uncomment and set if using TLS with cert-manager
+      # secretName: {{ .Release.Name }}-server-tls  # Optional; defaults to <release>-server-tls if omitted
       # Note: when enabling TLS, also set server.protocol: https and add
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation

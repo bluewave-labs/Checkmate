@@ -45,11 +45,4 @@
   {{- fail "server.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
 {{- end }}
 
-{{/* Secret name must be set when TLS is enabled (Ingress requires it) */}}
-{{- if and .Values.client.ingress.tls.enabled (not .Values.client.ingress.tls.secretName) }}
-  {{- fail "client.ingress.tls.enabled is true but client.ingress.tls.secretName is empty. Set a secretName for cert-manager to manage." }}
-{{- end }}
-
-{{- if and .Values.server.ingress.tls.enabled (not .Values.server.ingress.tls.secretName) }}
-  {{- fail "server.ingress.tls.enabled is true but server.ingress.tls.secretName is empty. Set a secretName for cert-manager to manage." }}
-{{- end }}
+{{/* Secret name can be omitted; we default to <release>-client|server-tls in templates */}}

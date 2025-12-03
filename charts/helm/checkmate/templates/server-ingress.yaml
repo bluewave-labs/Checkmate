@@ -22,7 +22,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.server.ingress.host }}
-      secretName: {{ .Values.server.ingress.tls.secretName }}
+      secretName: {{ default (printf "%s-server-tls" .Release.Name) .Values.server.ingress.tls.secretName }}
   {{- end }}
   rules:
     - host: {{ .Values.server.ingress.host }}
