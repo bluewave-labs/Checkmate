@@ -53,10 +53,11 @@ If you have [cert-manager](https://cert-manager.io/) installed in your cluster, 
 
 ### Configuration
 
-Edit `values.yaml` to enable TLS:
+Edit `values.yaml` to enable TLS (and update protocols to https):
 
 ```yaml
 client:
+  protocol: https
   ingress:
     enabled: true
     host: checkmate.example.com
@@ -68,6 +69,7 @@ client:
       secretName: checkmate-client-tls
 
 server:
+  protocol: https
   ingress:
     enabled: true
     host: checkmate.example.com
