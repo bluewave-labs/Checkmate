@@ -88,7 +88,7 @@ export const PlanCard = ({
   ];
   return (
     <BaseBox
-      padding={theme.spacing(8)}
+      padding={6}
       sx={
         selected
           ? {
@@ -99,7 +99,7 @@ export const PlanCard = ({
       }
       onClick={selected ? undefined : () => onClick?.(plan.plan)}
     >
-      <Stack spacing={theme.spacing(3)}>
+      <Stack spacing={3}>
         <Stack
           direction="row"
           alignItems="center"
@@ -114,13 +114,13 @@ export const PlanCard = ({
         <Typography variant="h4" fontWeight={700}>
           {priceLabel}
         </Typography>
-        <Stack spacing={theme.spacing(2)}>
+        <Stack spacing={2}>
           {featureItems.map((item) => (
             <Stack
               key={item.label}
               direction="row"
               alignItems="center"
-              gap={theme.spacing(2)}
+              gap={2}
             >
               <Check size={16} color={checkColor} />
               {item.tooltip ? (
