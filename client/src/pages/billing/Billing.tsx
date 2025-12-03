@@ -67,13 +67,18 @@ const BillingPage = () => {
         title="Choose a plan!"
         description="Choose a plan that fits your needs and start enjoying our services."
       />
-      <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} columns={{ xs: 1, sm: 2, md: 4 }}>
+      <Grid
+        container
+        spacing={{ xs: 2, sm: 3, md: 4 }}
+        columns={{ xs: 1, sm: 2, md: 4 }}
+      >
         {plans.map((plan) => (
           <Grid key={plan.plan} size={1}>
             <PlanCard
               plan={plan}
               currentPlan={selectedPlan}
               onClick={handlePlanClick}
+              loading={isPosting}
             />
           </Grid>
         ))}
