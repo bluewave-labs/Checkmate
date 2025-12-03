@@ -278,8 +278,7 @@ const TabSettings = ({
 									color="error"
 									sx={{ fontWeight: "bold" }}
 								>
-									{t("Security Risk Warning") ||
-										"I understand that adding custom JavaScript poses a security risk and I accept responsibility."}
+									{t("securityRiskWarning", { defaultValue: "I understand that adding custom JavaScript poses a security risk and I accept responsibility." })}
 								</Typography>
 							}
 						/>
