@@ -126,7 +126,16 @@ export const PlanCard = ({
           </Typography>
           <Stack direction="row" alignItems="center" spacing={1}>
             {plan.plan === "pro" && (
-              <Chip size="small" label="Most popular" sx={{ bgcolor: theme.palette.accent.main, color: theme.palette.getContrastText(theme.palette.accent.main) }} />
+              <Chip
+                size="small"
+                label="Most popular"
+                sx={{
+                  bgcolor: theme.palette.accent.main,
+                  color: theme.palette.getContrastText(
+                    theme.palette.accent.main
+                  ),
+                }}
+              />
             )}
             <Icon size={18} />
           </Stack>
@@ -141,12 +150,12 @@ export const PlanCard = ({
               <Check size={16} color={checkColor} />
               {item.tooltip ? (
                 <Tooltip title={item.tooltip} arrow placement="right">
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="body1" color="text.secondary" fontSize={18}>
                     {item.label}: {item.value}
                   </Typography>
                 </Tooltip>
               ) : (
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" color="text.secondary" fontSize={18}>
                   {item.label}: {item.value}
                 </Typography>
               )}
