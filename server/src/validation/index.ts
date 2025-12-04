@@ -62,6 +62,14 @@ export const monitorSchema = z
     secret: z.string().optional(),
     interval: z.number({ message: "Interval required" }),
     rejectUnauthorized: z.boolean().default(true),
+    thresholds: z
+      .object({
+        cpu: z.number().min(0).max(100).optional(),
+        memory: z.number().min(0).max(100).optional(),
+        disk: z.number().min(0).max(100).optional(),
+        temperature: z.number().min(0).max(150).optional(),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
     const minIntervals: Record<string, number> = {

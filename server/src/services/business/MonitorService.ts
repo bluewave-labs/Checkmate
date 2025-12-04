@@ -646,6 +646,7 @@ class MonitorService implements IMonitorService {
       "rejectUnauthorized",
       "n",
       "notificationChannels",
+      "thresholds",
     ];
     const safeUpdate: Partial<IMonitor> = {};
 

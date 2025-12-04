@@ -19,6 +19,13 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
+export interface IMonitorThresholds {
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  temperature?: number;
+}
+
 export interface IMonitor extends Document {
   _id: Types.ObjectId;
   orgId: Types.ObjectId;
@@ -32,6 +39,7 @@ export interface IMonitor extends Document {
   rejectUnauthorized: boolean;
   status: MonitorStatus;
   n: number; // Number of consecutive successes required to change status
+  thresholds?: IMonitorThresholds;
   lastCheckedAt?: Date;
   latestChecks: {
     status: MonitorStatus;
@@ -44,6 +52,16 @@ export interface IMonitor extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const ThresholdsSchema = new Schema<IMonitorThresholds>(
+  {
+    cpu: { type: Number, min: 0, max: 100 },
+    memory: { type: Number, min: 0, max: 100 },
+    disk: { type: Number, min: 0, max: 100 },
+    temperature: { type: Number, min: -50, max: 150 },
+  },
+  { _id: false }
+);
 
 const MonitorSchema = new Schema<IMonitor>(
   {
@@ -67,6 +85,7 @@ const MonitorSchema = new Schema<IMonitor>(
       enum: MonitorStatuses,
     },
     n: { type: Number, required: true, default: 1 },
+    thresholds: { type: ThresholdsSchema, required: false, default: undefined },
     lastCheckedAt: { type: Date },
     latestChecks: {
       type: [
