@@ -1,4 +1,4 @@
-import { IMonitor } from "@/db/models/index.js";
+import { IMonitor, ICheck, Incident } from "@/db/models/index.js";
 import { INetworkService } from "./NetworkService.js";
 import { ICheckService } from "../business/CheckService.js";
 import { IMonitorStatsService } from "../business/MonitorStatsService.js";
@@ -45,6 +45,110 @@ class JobGenerator implements IJobGenerator {
     this.maintenanceService = maintenanceService;
   }
 
+  private evaluateThresholds = async (
+    monitor: IMonitor,
+    check: ICheck
+  ) => {
+    try {
+      // Only for infrastructure monitors and only when service is up
+      if (monitor.type !== "infrastructure" || monitor.status !== "up") return;
+      if (!monitor.thresholds) return;
+      if (!check?.system) return;
+
+      const { thresholds: t } = monitor;
+      const breaches: string[] = [];
+
+      const cpu = check.system?.cpu?.usage_percent;
+      if (
+        typeof t?.cpu === "number" &&
+        typeof cpu === "number" &&
+        cpu > t.cpu
+      ) {
+        breaches.push(`cpu ${cpu}% > ${t.cpu}%`);
+      }
+
+      const mem = check.system?.memory?.usage_percent;
+      if (
+        typeof t?.memory === "number" &&
+        typeof mem === "number" &&
+        mem > t.memory
+      ) {
+        breaches.push(`memory ${mem}% > ${t.memory}%`);
+      }
+
+      const diskUsages: number[] = Array.isArray(check.system?.disk)
+        ? check.system.disk
+            .map((d) => d?.usage_percent)
+            .filter((n): n is number => typeof n === "number")
+        : [];
+      const maxDisk = diskUsages.length ? Math.max(...diskUsages) : undefined;
+      if (
+        typeof t?.disk === "number" &&
+        typeof maxDisk === "number" &&
+        maxDisk > t.disk
+      ) {
+        breaches.push(`disk ${maxDisk}% > ${t.disk}%`);
+      }
+
+      const temps: number[] = Array.isArray(check.system?.cpu?.temperature)
+        ? check.system.cpu.temperature.filter(
+            (n): n is number => typeof n === "number"
+          )
+        : [];
+      const maxTemp = temps.length ? Math.max(...temps) : undefined;
+      if (
+        typeof t?.temperature === "number" &&
+        typeof maxTemp === "number" &&
+        maxTemp > t.temperature
+      ) {
+        breaches.push(`temperature ${maxTemp}C > ${t.temperature}C`);
+      }
+
+      // If any breach → ensure one open incident exists; else resolve if one exists
+      const hasBreach = breaches.length > 0;
+      const existingOpen = await Incident.findOne({
+        monitorId: monitor._id,
+        teamId: monitor.teamId,
+        resolved: false,
+      });
+
+      if (hasBreach && !existingOpen) {
+        const incident = await this.incidentService.create(
+          monitor.teamId,
+          monitor._id,
+          check._id
+        );
+        // annotate with threshold note best-effort
+        try {
+          if (breaches.length) {
+            await Incident.updateOne(
+              { _id: incident._id },
+              {
+                $set: {
+                  resolutionNote: `threshold breach: ${breaches.join(", ")}`,
+                },
+              }
+            );
+          }
+        } catch {}
+        this.notificationService
+          .handleNotifications(monitor, incident)
+          .catch(() => {});
+      }
+
+      if (!hasBreach && existingOpen) {
+        await this.incidentService.resolve(
+          monitor.teamId.toString(),
+          existingOpen._id.toString(),
+          "auto",
+          check
+        );
+      }
+    } catch {
+      // best-effort; do not throw from evaluator
+    }
+  };
+
   generateJob = () => {
     return async (monitor: IMonitor) => {
       try {
@@ -87,6 +191,9 @@ class JobGenerator implements IJobGenerator {
           status,
           statusChanged
         );
+
+        // Evaluate thresholds after saving the check and updating stats
+        await this.evaluateThresholds(updatedMonitor, check);
       } catch (error) {
         throw error;
       }
