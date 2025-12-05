@@ -9,11 +9,17 @@ import type { ResolutionType } from "@/db/models/index.js";
 import mongoose from "mongoose";
 import { getChildLogger } from "@/logger/Logger.js";
 import ApiError from "@/utils/ApiError.js";
+import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
 
 export interface IIncidentService {
   handleStatusChange: (
     updatedMonitor: IMonitor,
     lastCheck: ICheck
+  ) => Promise<IIncident | null>;
+  handleThresholdBreach: (
+    updatedMonitor: IMonitor,
+    lastCheck: ICheck,
+    evalResult: ThresholdEvaluationResult
   ) => Promise<IIncident | null>;
   create: (
     teamId: mongoose.Types.ObjectId,
@@ -99,6 +105,64 @@ class IncidentService implements IIncidentService {
       );
       return resolvedIncident;
     }
+    return null;
+  };
+
+  handleThresholdBreach = async (
+    updatedMonitor: IMonitor,
+    lastCheck: ICheck,
+    evalResult: ThresholdEvaluationResult
+  ) => {
+    const existing = await Incident.findOne({
+      monitorId: updatedMonitor._id,
+      teamId: updatedMonitor.teamId,
+      resolved: false,
+    });
+
+    if (evalResult.hasBreach) {
+      if (!existing) {
+        const incident = await this.create(
+          updatedMonitor.teamId,
+          updatedMonitor._id,
+          lastCheck._id
+        );
+        if (evalResult.notes.length) {
+          await Incident.updateOne(
+            { _id: incident._id },
+            {
+              $set: {
+                resolutionNote: `threshold breach: ${evalResult.notes.join(
+                  ", "
+                )}`,
+              },
+            }
+          );
+        }
+        return incident;
+      }
+      if (evalResult.notes.length) {
+        await Incident.updateOne(
+          { _id: existing._id },
+          {
+            $set: {
+              resolutionNote: `threshold breach: ${evalResult.notes.join(
+                ", "
+              )}`,
+            },
+          }
+        );
+      }
+      return existing;
+    } else if (existing) {
+      const resolved = await this.resolve(
+        updatedMonitor.teamId.toString(),
+        existing._id.toString(),
+        "auto",
+        lastCheck
+      );
+      return resolved;
+    }
+
     return null;
   };
 

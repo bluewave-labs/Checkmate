@@ -1,6 +1,34 @@
-import { IMonitor, IMonitorStats, MonitorStats } from "@/db/models/index.js";
+import {
+  IMonitor,
+  IMonitorStats,
+  MonitorStats,
+  ICheck,
+} from "@/db/models/index.js";
 import { StatusResponse } from "./NetworkService.js";
-import ApiError from "@/utils/ApiError.js";
+
+const emptyMetrics = (): ThresholdEvaluationResult["metrics"] => ({
+  cpu: { breached: false },
+  memory: { breached: false },
+  disk: { breached: false },
+  temperature: { breached: false },
+});
+
+export interface ThresholdMetricEvaluation {
+  value?: number;
+  threshold?: number;
+  breached: boolean;
+}
+
+export interface ThresholdEvaluationResult {
+  hasBreach: boolean;
+  notes: string[];
+  metrics: {
+    cpu: ThresholdMetricEvaluation;
+    memory: ThresholdMetricEvaluation;
+    disk: ThresholdMetricEvaluation;
+    temperature: ThresholdMetricEvaluation;
+  };
+}
 
 const SERVICE_NAME = "StatusService";
 const MAX_LATEST_CHECKS = 25;
@@ -20,6 +48,10 @@ export interface IStatusService {
     status: StatusResponse,
     statusChanged: boolean
   ) => Promise<IMonitorStats | null>;
+  evaluateThresholds: (
+    monitor: IMonitor,
+    check: ICheck
+  ) => Promise<ThresholdEvaluationResult>;
 }
 
 export type StatusChangeResult = [
@@ -141,6 +173,92 @@ class StatusService implements IStatusService {
     }
 
     return await stats.save();
+  };
+
+  evaluateThresholds = async (
+    monitor: IMonitor,
+    check: ICheck
+  ): Promise<ThresholdEvaluationResult> => {
+    try {
+      if (monitor.type !== "infrastructure" || monitor.status !== "up")
+        return { hasBreach: false, notes: [], metrics: emptyMetrics() };
+      if (!monitor.thresholds)
+        return { hasBreach: false, notes: [], metrics: emptyMetrics() };
+      if (!check.system)
+        return { hasBreach: false, notes: [], metrics: emptyMetrics() };
+
+      const t = monitor.thresholds;
+      const breaches: string[] = [];
+      const metrics: ThresholdEvaluationResult["metrics"] = emptyMetrics();
+
+      const cpu = check.system.cpu?.usage_percent;
+      metrics.cpu = {
+        value: typeof cpu === "number" ? cpu : undefined,
+        threshold: typeof t.cpu === "number" ? t.cpu : undefined,
+        breached:
+          typeof t.cpu === "number" && typeof cpu === "number" && cpu > t.cpu,
+      };
+      if (
+        metrics.cpu.breached &&
+        metrics.cpu.value !== undefined &&
+        metrics.cpu.threshold !== undefined
+      ) {
+        breaches.push(`cpu ${metrics.cpu.value}% > ${metrics.cpu.threshold}%`);
+      }
+
+      const mem = check.system.memory?.usage_percent;
+      metrics.memory = {
+        value: typeof mem === "number" ? mem : undefined,
+        threshold: typeof t.memory === "number" ? t.memory : undefined,
+        breached:
+          typeof t.memory === "number" &&
+          typeof mem === "number" &&
+          mem > t.memory,
+      };
+      if (
+        metrics.memory.breached &&
+        metrics.memory.value !== undefined &&
+        metrics.memory.threshold !== undefined
+      ) {
+        breaches.push(
+          `memory ${metrics.memory.value}% > ${metrics.memory.threshold}%`
+        );
+      }
+
+      const diskUsages: number[] = Array.isArray(check.system.disk)
+        ? check.system.disk
+            .map((d) => d?.usage_percent)
+            .filter((n): n is number => typeof n === "number")
+        : [];
+      const maxDisk = diskUsages.length ? Math.max(...diskUsages) : undefined;
+      if (
+        typeof t.disk === "number" &&
+        typeof maxDisk === "number" &&
+        maxDisk > t.disk
+      ) {
+        breaches.push(`disk ${maxDisk}% > ${t.disk}%`);
+      }
+
+      const temps: number[] = Array.isArray(check.system.cpu?.temperature)
+        ? check.system.cpu.temperature.filter(
+            (n): n is number => typeof n === "number"
+          )
+        : [];
+      const maxTemp = temps.length ? Math.max(...temps) : undefined;
+      if (
+        typeof t.temperature === "number" &&
+        typeof maxTemp === "number" &&
+        maxTemp > t.temperature
+      ) {
+        breaches.push(`temperature ${maxTemp}C > ${t.temperature}C`);
+      }
+
+      const hasBreach = breaches.length > 0;
+      return { hasBreach, notes: breaches, metrics };
+    } catch {
+      // best-effort; do not throw from evaluator
+      return { hasBreach: false, notes: [], metrics: emptyMetrics() };
+    }
   };
 }
 

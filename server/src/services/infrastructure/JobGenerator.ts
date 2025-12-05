@@ -1,4 +1,4 @@
-import { IMonitor, ICheck, Incident } from "@/db/models/index.js";
+import { IMonitor, ICheck } from "@/db/models/index.js";
 import { INetworkService } from "./NetworkService.js";
 import { ICheckService } from "../business/CheckService.js";
 import { IMonitorStatsService } from "../business/MonitorStatsService.js";
@@ -45,110 +45,6 @@ class JobGenerator implements IJobGenerator {
     this.maintenanceService = maintenanceService;
   }
 
-  private evaluateThresholds = async (
-    monitor: IMonitor,
-    check: ICheck
-  ) => {
-    try {
-      // Only for infrastructure monitors and only when service is up
-      if (monitor.type !== "infrastructure" || monitor.status !== "up") return;
-      if (!monitor.thresholds) return;
-      if (!check?.system) return;
-
-      const { thresholds: t } = monitor;
-      const breaches: string[] = [];
-
-      const cpu = check.system?.cpu?.usage_percent;
-      if (
-        typeof t?.cpu === "number" &&
-        typeof cpu === "number" &&
-        cpu > t.cpu
-      ) {
-        breaches.push(`cpu ${cpu}% > ${t.cpu}%`);
-      }
-
-      const mem = check.system?.memory?.usage_percent;
-      if (
-        typeof t?.memory === "number" &&
-        typeof mem === "number" &&
-        mem > t.memory
-      ) {
-        breaches.push(`memory ${mem}% > ${t.memory}%`);
-      }
-
-      const diskUsages: number[] = Array.isArray(check.system?.disk)
-        ? check.system.disk
-            .map((d) => d?.usage_percent)
-            .filter((n): n is number => typeof n === "number")
-        : [];
-      const maxDisk = diskUsages.length ? Math.max(...diskUsages) : undefined;
-      if (
-        typeof t?.disk === "number" &&
-        typeof maxDisk === "number" &&
-        maxDisk > t.disk
-      ) {
-        breaches.push(`disk ${maxDisk}% > ${t.disk}%`);
-      }
-
-      const temps: number[] = Array.isArray(check.system?.cpu?.temperature)
-        ? check.system.cpu.temperature.filter(
-            (n): n is number => typeof n === "number"
-          )
-        : [];
-      const maxTemp = temps.length ? Math.max(...temps) : undefined;
-      if (
-        typeof t?.temperature === "number" &&
-        typeof maxTemp === "number" &&
-        maxTemp > t.temperature
-      ) {
-        breaches.push(`temperature ${maxTemp}C > ${t.temperature}C`);
-      }
-
-      // If any breach → ensure one open incident exists; else resolve if one exists
-      const hasBreach = breaches.length > 0;
-      const existingOpen = await Incident.findOne({
-        monitorId: monitor._id,
-        teamId: monitor.teamId,
-        resolved: false,
-      });
-
-      if (hasBreach && !existingOpen) {
-        const incident = await this.incidentService.create(
-          monitor.teamId,
-          monitor._id,
-          check._id
-        );
-        // annotate with threshold note best-effort
-        try {
-          if (breaches.length) {
-            await Incident.updateOne(
-              { _id: incident._id },
-              {
-                $set: {
-                  resolutionNote: `threshold breach: ${breaches.join(", ")}`,
-                },
-              }
-            );
-          }
-        } catch {}
-        this.notificationService
-          .handleNotifications(monitor, incident)
-          .catch(() => {});
-      }
-
-      if (!hasBreach && existingOpen) {
-        await this.incidentService.resolve(
-          monitor.teamId.toString(),
-          existingOpen._id.toString(),
-          "auto",
-          check
-        );
-      }
-    } catch {
-      // best-effort; do not throw from evaluator
-    }
-  };
-
   generateJob = () => {
     return async (monitor: IMonitor) => {
       try {
@@ -157,7 +53,7 @@ class JobGenerator implements IJobGenerator {
           throw new ApiError("No monitorID for creating job", 400);
         }
 
-        // Check for active maintenance window, if found, skip the check
+        // Step 1.  Check for active maintenance window, if found, skip the check
         const isInMaintenance = await this.maintenanceService.isInMaintenance(
           monitorId
         );
@@ -165,12 +61,18 @@ class JobGenerator implements IJobGenerator {
           return;
         }
 
+        // Setp 2. Request monitor status
         const status = await this.networkService.requestStatus(monitor);
+
+        // Step 3. Build check
         const check = await this.checkService.buildCheck(status, monitor.type);
         await check.save();
+
+        // Step 4. Update monitor's status
         const [updatedMonitor, statusChanged] =
           await this.statusService.updateMonitorStatus(monitor, status);
 
+        // Step 5.  Handle status change
         if (statusChanged) {
           const incident = await this.incidentService.handleStatusChange(
             updatedMonitor,
@@ -186,14 +88,35 @@ class JobGenerator implements IJobGenerator {
               });
           }
         }
+
+        // Step 6.  Update aggregate monitor stats
         await this.statusService.updateMonitorStats(
           updatedMonitor,
           status,
           statusChanged
         );
 
-        // Evaluate thresholds after saving the check and updating stats
-        await this.evaluateThresholds(updatedMonitor, check);
+        // Step 7. Evaluate thresholds for Infrastrucutre monitors
+        if (updatedMonitor.type === "infrastructure") {
+          const evalResult = await this.statusService.evaluateThresholds(
+            updatedMonitor,
+            check
+          );
+
+          const incident = await this.incidentService.handleThresholdBreach(
+            updatedMonitor,
+            check,
+            evalResult
+          );
+
+          if (incident) {
+            this.notificationService
+              .handleNotifications(updatedMonitor, incident)
+              .catch((error) => {
+                logger.warn(error);
+              });
+          }
+        }
       } catch (error) {
         throw error;
       }
