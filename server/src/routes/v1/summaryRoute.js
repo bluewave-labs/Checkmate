@@ -1,5 +1,6 @@
 import express from "express";
 import Monitor from "../../db/v1/models/Monitor.js";
+import Incident from "../../db/v1/models/Incident.js";
 
 const router = express.Router();
 
@@ -7,9 +8,7 @@ router.get("/api/v1/summary", async (req, res) => {
   try {
     const uptime = await Monitor.countDocuments({ status: true, type: { $ne: "hardware" } });
     const infrastructure = await Monitor.countDocuments({ status: true, type: "hardware" });
-
-    // TEMP : incident doesn't exist yet, we return 0
-    const incidents = 0;
+    const incidents = await Incident.countDocuments({ endTime : null });
 
     res.json({ uptime, infrastructure, incidents });
   } catch (error) {
