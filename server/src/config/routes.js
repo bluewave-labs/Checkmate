@@ -12,7 +12,10 @@ import QueueRoutes from "../routes/v1/queueRoute.js";
 import LogRoutes from "../routes/v1/logRoutes.js";
 import DiagnosticRoutes from "../routes/v1//diagnosticRoute.js";
 import NotificationRoutes from "../routes/v1/notificationRoute.js";
-import SummaryRoute from "../routes/v1/summaryRoute.js";
+import SummaryRoutes from "../routes/v1/summaryRoute.js";
+
+
+import IncidentRoutes from "../routes/v1/incidentRoute.js";
 
 //V2
 import AuthRoutesV2 from "../routes/v2/auth.js";
@@ -35,6 +38,7 @@ export const setupRoutes = (app, controllers) => {
 	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController);
 	const notificationRoutes = new NotificationRoutes(controllers.notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController);
+	const incidentRoutes = new IncidentRoutes(controllers.incidentController);
 
 	app.use("/api/v1/auth", authApiLimiter, authRoutes.getRouter());
 	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
@@ -47,7 +51,12 @@ export const setupRoutes = (app, controllers) => {
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
-	app.use(SummaryRoute);
+	app.use(SummaryRoutes); //used for Homepage widget
+	
+
+
+	app.use("/api/v1/incidents", verifyJWT, incidentRoutes.getRouter());
+
 
 	// V2
 	const authRoutesV2 = new AuthRoutesV2(controllers.authControllerV2);
