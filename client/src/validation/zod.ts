@@ -158,6 +158,65 @@ export const monitorSchemaInfra = z.object({
   name: z.string().min(1, "Display name is required"),
   interval: durationSchemaInfra,
   rejectUnauthorized: z.boolean().default(true),
+  thresholds: z.object({
+    // Accept both strings and numbers from the form. Enforce required and ranges with clear messages.
+    cpu: z.preprocess(
+      (val) => (typeof val === "number" ? String(val) : val),
+      z
+        .string()
+        .trim()
+        .min(1, { message: "CPU threshold is required" })
+        .refine((v) => /^-?\d+(\.\d+)?$/.test(v), {
+          message: "CPU must be a number",
+        })
+        .transform((v) => Number(v))
+        .refine((v) => v >= 0 && v <= 100, {
+          message: "CPU must be between 0 and 100",
+        })
+    ),
+    memory: z.preprocess(
+      (val) => (typeof val === "number" ? String(val) : val),
+      z
+        .string()
+        .trim()
+        .min(1, { message: "Memory threshold is required" })
+        .refine((v) => /^-?\d+(\.\d+)?$/.test(v), {
+          message: "Memory must be a number",
+        })
+        .transform((v) => Number(v))
+        .refine((v) => v >= 0 && v <= 100, {
+          message: "Memory must be between 0 and 100",
+        })
+    ),
+    disk: z.preprocess(
+      (val) => (typeof val === "number" ? String(val) : val),
+      z
+        .string()
+        .trim()
+        .min(1, { message: "Disk threshold is required" })
+        .refine((v) => /^-?\d+(\.\d+)?$/.test(v), {
+          message: "Disk must be a number",
+        })
+        .transform((v) => Number(v))
+        .refine((v) => v >= 0 && v <= 100, {
+          message: "Disk must be between 0 and 100",
+        })
+    ),
+    temperature: z.preprocess(
+      (val) => (typeof val === "number" ? String(val) : val),
+      z
+        .string()
+        .trim()
+        .min(1, { message: "Temperature threshold is required" })
+        .refine((v) => /^-?\d+(\.\d+)?$/.test(v), {
+          message: "Temperature must be a number",
+        })
+        .transform((v) => Number(v))
+        .refine((v) => v >= -50 && v <= 150, {
+          message: "Temperature must be between -50 and 150",
+        })
+    ),
+  }),
 });
 
 export const teamSchema = z.object({

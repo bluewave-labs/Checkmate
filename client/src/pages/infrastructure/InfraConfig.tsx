@@ -37,8 +37,12 @@ const InfraConfigurePage = () => {
       secret: data.secret,
       name: data.name,
       notificationChannels: data.notificationChannels,
+      thresholds: data.thresholds,
       interval,
     };
+
+    console.log(JSON.stringify(submitData, null, 2));
+
     const result = await patch(`/monitors/${id}`, submitData);
     if (result) {
       navigate(`/infrastructure/${id}`);

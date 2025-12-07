@@ -1,7 +1,6 @@
 import { BasePage, InfoBox, PlanCard } from "@/components/design-elements";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
 import { Button } from "@/components/inputs";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/AppHooks";
@@ -27,7 +26,6 @@ const BillingPage = () => {
   const { post, loading: isPosting } = usePost();
   const plans = response?.data ?? [];
 
-  const theme = useTheme();
   const selectedPlan = user?.entitlements?.plan || null;
   const dispatch = useAppDispatch();
   const selectedTeamId = useAppSelector((s) => s.auth.selectedTeamId);

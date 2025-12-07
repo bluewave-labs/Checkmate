@@ -190,7 +190,9 @@ export const InfraForm = ({
               <TextInput
                 {...field}
                 type="number"
-                fieldLabel={t("createMonitorPage.incidentConfigStatusCheckNumber")}
+                fieldLabel={t(
+                  "createMonitorPage.incidentConfigStatusCheckNumber"
+                )}
                 fullWidth
                 error={!!errors.n}
                 helperText={errors.n ? errors.n.message : ""}
@@ -201,6 +203,70 @@ export const InfraForm = ({
               />
             )}
           />
+        }
+      />
+      <ConfigBox
+        title={t("Threshold Alerts")}
+        subtitle={t("Set percentage thresholds to trigger incidents.")}
+        rightContent={
+          <Stack gap={theme.spacing(4)}>
+            <Controller
+              name="thresholds.cpu"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  {...field}
+                  type="number"
+                  fieldLabel={t("CPU %")}
+                  fullWidth
+                  error={!!errors.thresholds?.cpu}
+                  helperText={errors.thresholds?.cpu?.message ?? ""}
+                />
+              )}
+            />
+            <Controller
+              name="thresholds.memory"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  {...field}
+                  type="number"
+                  fieldLabel={t("Memory %")}
+                  fullWidth
+                  error={!!errors.thresholds?.memory}
+                  helperText={errors.thresholds?.memory?.message ?? ""}
+                />
+              )}
+            />
+            <Controller
+              name="thresholds.disk"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  {...field}
+                  type="number"
+                  fieldLabel={t("Disk %")}
+                  fullWidth
+                  error={!!errors.thresholds?.disk}
+                  helperText={errors.thresholds?.disk?.message ?? ""}
+                />
+              )}
+            />
+            <Controller
+              name="thresholds.temperature"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  {...field}
+                  type="number"
+                  fieldLabel={t("Temperature °C")}
+                  fullWidth
+                  error={!!errors.thresholds?.temperature}
+                  helperText={errors.thresholds?.temperature?.message ?? ""}
+                />
+              )}
+            />
+          </Stack>
         }
       />
       <ConfigBox

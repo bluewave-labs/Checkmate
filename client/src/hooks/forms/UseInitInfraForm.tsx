@@ -17,7 +17,8 @@ export const useInitForm = ({
       }
     }
 
-    const defaults: z.infer<typeof monitorSchemaInfra> = {
+    type InfraValues = z.infer<typeof monitorSchemaInfra>;
+    const defaults: InfraValues = {
       type: "infrastructure",
       url: initialData?.url || "",
       secret: initialData?.secret || "",
@@ -26,6 +27,12 @@ export const useInitForm = ({
       name: initialData?.name || "",
       interval: humanInterval,
       rejectUnauthorized: true,
+      thresholds: initialData?.thresholds ?? {
+        cpu: 100,
+        memory: 100,
+        disk: 100,
+        temperature: 100,
+      },
     };
     return { defaults };
   }, [initialData]);

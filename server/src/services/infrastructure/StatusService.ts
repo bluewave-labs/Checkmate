@@ -191,12 +191,17 @@ class StatusService implements IStatusService {
       const breaches: string[] = [];
       const metrics: ThresholdEvaluationResult["metrics"] = emptyMetrics();
 
-      const cpu = check.system.cpu?.usage_percent;
+      // usage values in check.system are 0..1 decimals; thresholds are 0..100
+      const cpuRaw = check.system.cpu?.usage_percent;
+      const cpuPct = typeof cpuRaw === "number" ? cpuRaw * 100 : undefined;
+      const cpuThreshold = typeof t.cpu === "number" ? t.cpu : undefined;
       metrics.cpu = {
-        value: typeof cpu === "number" ? cpu : undefined,
-        threshold: typeof t.cpu === "number" ? t.cpu : undefined,
+        value: cpuPct,
+        threshold: cpuThreshold,
         breached:
-          typeof t.cpu === "number" && typeof cpu === "number" && cpu > t.cpu,
+          cpuPct !== undefined &&
+          cpuThreshold !== undefined &&
+          cpuPct > cpuThreshold,
       };
       if (
         metrics.cpu.breached &&
@@ -206,14 +211,16 @@ class StatusService implements IStatusService {
         breaches.push(`cpu ${metrics.cpu.value}% > ${metrics.cpu.threshold}%`);
       }
 
-      const mem = check.system.memory?.usage_percent;
+      const memRaw = check.system.memory?.usage_percent;
+      const memPct = typeof memRaw === "number" ? memRaw * 100 : undefined;
+      const memThreshold = typeof t.memory === "number" ? t.memory : undefined;
       metrics.memory = {
-        value: typeof mem === "number" ? mem : undefined,
-        threshold: typeof t.memory === "number" ? t.memory : undefined,
+        value: memPct,
+        threshold: memThreshold,
         breached:
-          typeof t.memory === "number" &&
-          typeof mem === "number" &&
-          mem > t.memory,
+          memPct !== undefined &&
+          memThreshold !== undefined &&
+          memPct > memThreshold,
       };
       if (
         metrics.memory.breached &&
@@ -225,18 +232,32 @@ class StatusService implements IStatusService {
         );
       }
 
-      const diskUsages: number[] = Array.isArray(check.system.disk)
+      const diskUsagesRaw: number[] = Array.isArray(check.system.disk)
         ? check.system.disk
             .map((d) => d?.usage_percent)
             .filter((n): n is number => typeof n === "number")
         : [];
-      const maxDisk = diskUsages.length ? Math.max(...diskUsages) : undefined;
+      const diskUsagesPct = diskUsagesRaw.map((n) => n * 100);
+      const maxDiskPct = diskUsagesPct.length
+        ? Math.max(...diskUsagesPct)
+        : undefined;
+      const diskThreshold = typeof t.disk === "number" ? t.disk : undefined;
+      metrics.disk = {
+        value: maxDiskPct,
+        threshold: diskThreshold,
+        breached:
+          maxDiskPct !== undefined &&
+          diskThreshold !== undefined &&
+          maxDiskPct > diskThreshold,
+      };
       if (
-        typeof t.disk === "number" &&
-        typeof maxDisk === "number" &&
-        maxDisk > t.disk
+        metrics.disk.breached &&
+        metrics.disk.value !== undefined &&
+        metrics.disk.threshold !== undefined
       ) {
-        breaches.push(`disk ${maxDisk}% > ${t.disk}%`);
+        breaches.push(
+          `disk ${metrics.disk.value}% > ${metrics.disk.threshold}%`
+        );
       }
 
       const temps: number[] = Array.isArray(check.system.cpu?.temperature)
@@ -244,6 +265,7 @@ class StatusService implements IStatusService {
             (n): n is number => typeof n === "number"
           )
         : [];
+
       const maxTemp = temps.length ? Math.max(...temps) : undefined;
       if (
         typeof t.temperature === "number" &&
@@ -254,9 +276,9 @@ class StatusService implements IStatusService {
       }
 
       const hasBreach = breaches.length > 0;
+
       return { hasBreach, notes: breaches, metrics };
     } catch {
-      // best-effort; do not throw from evaluator
       return { hasBreach: false, notes: [], metrics: emptyMetrics() };
     }
   };

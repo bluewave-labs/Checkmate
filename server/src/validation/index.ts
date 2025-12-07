@@ -67,7 +67,7 @@ export const monitorSchema = z
         cpu: z.number().min(0).max(100).optional(),
         memory: z.number().min(0).max(100).optional(),
         disk: z.number().min(0).max(100).optional(),
-        temperature: z.number().min(0).max(150).optional(),
+        temperature: z.number().min(-50).max(150).optional(),
       })
       .optional(),
   })
