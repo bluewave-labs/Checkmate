@@ -10,6 +10,7 @@ const logger = getChildLogger("IncidentController");
 
 export interface IIncidentsController {
   getIncidents: (req: Request, res: Response, next: NextFunction) => void;
+  getIncidentById: (req: Request, res: Response, next: NextFunction) => void;
   resolveIncident: (req: Request, res: Response, next: NextFunction) => void;
 }
 
@@ -53,6 +54,34 @@ class IncidentsController implements IIncidentsController {
       );
 
       res.status(200).json({ message: "OK", data: incidents });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getIncidentById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userContext = req.user;
+      if (!userContext) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const teamId = userContext.currentTeamId;
+      if (!teamId) {
+        throw new ApiError("No team ID", 400);
+      }
+
+      const { id } = req.params;
+      if (!id) {
+        throw new ApiError("No incident ID", 400);
+      }
+
+      const incident = await this.incidentService.get(teamId, id);
+      if (!incident) {
+        throw new ApiError("Incident not found", 404);
+      }
+
+      res.status(200).json({ message: "OK", data: incident });
     } catch (error) {
       next(error);
     }

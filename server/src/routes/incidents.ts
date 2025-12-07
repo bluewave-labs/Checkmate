@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { ChecksController, IncidentsController } from "@/controllers/index.js";
+import { IncidentsController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { validateQuery, validateBody } from "@/middleware/validation.js";
@@ -8,6 +8,7 @@ import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
 import { PERMISSIONS } from "@/types/permissions.js";
 import {
   getIncidentsQuerySchema,
+  getIncidentQuerySchema,
   patchIncidentsBodySchema,
 } from "@/validation/index.js";
 
@@ -28,6 +29,13 @@ class IncidentsRoutes {
       verifyOrgPermission([PERMISSIONS.incidents.read]),
       validateQuery(getIncidentsQuerySchema),
       this.controller.getIncidents
+    );
+    this.router.get(
+      "/:id",
+      verifyToken,
+      addUserContext,
+      verifyOrgPermission([PERMISSIONS.incidents.read]),
+      this.controller.getIncidentById
     );
 
     this.router.patch(

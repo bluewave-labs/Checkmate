@@ -19,6 +19,7 @@ import NotificationChannelsPage from "@/pages/notification-channels/Notification
 import NotificationChannelsCreatePage from "@/pages/notification-channels/NotificationChannelsCreate";
 import NotificationChannelsConfigPage from "@/pages/notification-channels/NotificationChannelsConfig";
 import IncidentsPage from "@/pages/incidents/IncidentsPage";
+import IncidentDetailsPage from "@/pages/incidents/IncidentDetails";
 import PageSpeedMonitorsPage from "@/pages/pagespeed/PageSpeedMonitors";
 import PageSpeedDetailsPage from "@/pages/pagespeed/PageSpeedDetails";
 import PageSpeedConfigurePage from "@/pages/pagespeed/PageSpeedConfig";
@@ -110,7 +111,7 @@ const Router = () => {
           element={<NotificationChannelsPage />}
         />
         <Route path="incidents" element={<IncidentsPage />} />
-        <Route path="incidents/:id" element={<IncidentsPage />} />
+        <Route path="incidents/:id" element={<IncidentDetailsPage />} />
         <Route path="pagespeed/create" element={<PageSpeedCreatePage />} />
         <Route
           path="pagespeed/:id/configure"

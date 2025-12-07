@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 import type { IIncident } from "@/types/incident";
+import { useNavigate } from "react-router";
 
 export const IncidentTable = ({
   incidents,
@@ -30,6 +31,7 @@ export const IncidentTable = ({
   const { patch, loading: isPatching } = usePatch();
   const { t } = useTranslation();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
+  const navigate = useNavigate();
 
   const getHeaders = (t: Function, uiTimezone: string) => {
     const headers: Header<IIncident>[] = [
@@ -150,7 +152,7 @@ export const IncidentTable = ({
         headers={headers}
         data={incidents}
         onRowClick={(row) => {
-          alert(JSON.stringify(row, null, 2));
+          navigate(`/incidents/${row._id}`);
         }}
       />
       <Pagination

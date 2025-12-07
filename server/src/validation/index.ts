@@ -517,6 +517,12 @@ export const profileSchema = z
     }
   );
 
+export const getIncidentQuerySchema = z.object({
+  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid MongoDB ObjectId",
+  }),
+});
+
 export const getIncidentsQuerySchema = z.object({
   resolutionType: z.enum(ResolutionTypes).optional(),
   resolved: z

@@ -26,10 +26,7 @@ export interface IIncidentService {
     monitorId: mongoose.Types.ObjectId,
     startCheckId: mongoose.Types.ObjectId
   ) => Promise<IIncident>;
-  get: (
-    teamId: mongoose.Types.ObjectId,
-    incidentId: mongoose.Types.ObjectId
-  ) => Promise<IIncident | null>;
+  get: (teamId: string, incidentId: string) => Promise<IIncident | null>;
   getAll: (
     teamId: string,
     monitorId: string,
@@ -191,10 +188,7 @@ class IncidentService implements IIncidentService {
     return incident;
   };
 
-  get = async (
-    teamId: mongoose.Types.ObjectId,
-    incidentId: mongoose.Types.ObjectId
-  ) => {
+  get = async (teamId: string, incidentId: string) => {
     const incident = await Incident.findOne({
       _id: new mongoose.Types.ObjectId(incidentId),
       teamId: new mongoose.Types.ObjectId(teamId),
