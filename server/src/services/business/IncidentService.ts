@@ -4,12 +4,18 @@ import {
   IMonitor,
   Monitor,
   ICheck,
+  IUser,
 } from "@/db/models/index.js";
 import type { ResolutionType } from "@/db/models/index.js";
 import mongoose from "mongoose";
 import { getChildLogger } from "@/logger/Logger.js";
 import ApiError from "@/utils/ApiError.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
+
+type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
+  monitorId: IMonitor;
+  resolvedBy?: IUser | null;
+};
 
 export interface IIncidentService {
   handleStatusChange: (
@@ -48,6 +54,7 @@ export interface IIncidentService {
     teamId: mongoose.Types.ObjectId,
     incidentId: mongoose.Types.ObjectId
   ) => Promise<boolean>;
+  export: (teamId: string) => Promise<Array<Record<string, unknown>>>;
   cleanupOrphanedIncidents: () => Promise<boolean>;
 }
 
@@ -265,6 +272,25 @@ class IncidentService implements IIncidentService {
       teamId: new mongoose.Types.ObjectId(teamId),
     });
     return result.deletedCount === 1;
+  };
+
+  export = async (teamId: string) => {
+    const incidents = await Incident.find({
+      teamId,
+    })
+      .populate("monitorId")
+      .populate("resolvedBy")
+      .lean<IncidentPopulated[]>();
+
+    return incidents.map((incident) => ({
+      monitor: incident.monitorId?.name ?? "",
+      monitorId: incident.monitorId?._id?.toString?.() ?? "",
+      resolved: incident.resolved,
+      resolutionType: incident.resolutionType ?? "Unresolved",
+      startedAt: incident.startedAt,
+      endedAt: incident.endedAt ?? "Ongoing",
+      resolvedBy: incident.resolvedBy ? incident.resolvedBy.email ?? "" : "",
+    }));
   };
 
   async cleanupOrphanedIncidents() {

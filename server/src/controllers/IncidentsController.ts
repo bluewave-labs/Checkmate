@@ -12,6 +12,7 @@ export interface IIncidentsController {
   getIncidents: (req: Request, res: Response, next: NextFunction) => void;
   getIncidentById: (req: Request, res: Response, next: NextFunction) => void;
   resolveIncident: (req: Request, res: Response, next: NextFunction) => void;
+  exportIncidents: (req: Request, res: Response, next: NextFunction) => void;
 }
 
 class IncidentsController implements IIncidentsController {
@@ -132,6 +133,26 @@ class IncidentsController implements IIncidentsController {
       return res
         .status(200)
         .json({ message: "Incident resolved", data: resolved });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  exportIncidents = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userContext = req.user;
+      if (!userContext) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const teamId = userContext.currentTeamId;
+      if (!teamId) {
+        throw new ApiError("No team ID", 400);
+      }
+
+      const incidents = await this.incidentService.export(teamId);
+
+      return res.status(200).json({ message: "OK", data: incidents });
     } catch (error) {
       next(error);
     }

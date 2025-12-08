@@ -4,7 +4,10 @@ import { IncidentsController } from "@/controllers/index.js";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { validateQuery, validateBody } from "@/middleware/validation.js";
-import { verifyOrgPermission } from "@/middleware/VerifyPermission.js";
+import {
+  verifyOrgPermission,
+  verifyTeamPermission,
+} from "@/middleware/VerifyPermission.js";
 import { PERMISSIONS } from "@/types/permissions.js";
 import {
   getIncidentsQuerySchema,
@@ -30,6 +33,14 @@ class IncidentsRoutes {
       validateQuery(getIncidentsQuerySchema),
       this.controller.getIncidents
     );
+    this.router.get(
+      "/export",
+      verifyToken,
+      addUserContext,
+      verifyTeamPermission([PERMISSIONS.incidents.read]),
+      this.controller.exportIncidents
+    );
+
     this.router.get(
       "/:id",
       verifyToken,

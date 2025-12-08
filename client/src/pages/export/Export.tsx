@@ -14,20 +14,19 @@ const ExportPage = () => {
   const { get, loading } = useGetOnDemand();
   const { post, loading: isPosting } = usePost();
 
-  const handleExport = async () => {
-    const res = await get("/monitors/export");
-    if (!res?.data) {
-      return;
-    }
+  const exportJson = async (endpoint: string, filename: string) => {
+    const res = await get(endpoint);
+    const data = (res as any)?.data ?? (res as any);
+    if (!data) return;
 
-    const blob = new Blob([JSON.stringify(res.data, null, 2)], {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "monitors.json";
+    link.download = `${filename}-${Date.now()}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -63,6 +62,8 @@ const ExportPage = () => {
     input.click();
   };
 
+  // Removed wrapper handlers; call exportJson directly from onClick
+
   return (
     <BasePage>
       <ConfigBox
@@ -76,7 +77,7 @@ const ExportPage = () => {
                 loading={loading}
                 variant="contained"
                 color="primary"
-                onClick={handleExport}
+                onClick={() => exportJson("/monitors/export", "monitors")}
               >
                 Export to JSON
               </Button>
@@ -141,6 +142,26 @@ const ExportPage = () => {
                 accept="application/json"
                 style={{ display: "none" }}
               />
+            </Box>
+          </Stack>
+        }
+      />
+
+      <ConfigBox
+        title="Export incidents"
+        subtitle="Export current team's incidents as JSON"
+        rightContent={
+          <Stack gap={theme.spacing(4)}>
+            <Typography>Click here to export your incidents to JSON</Typography>
+            <Box>
+              <Button
+                loading={loading}
+                variant="contained"
+                color="primary"
+                onClick={() => exportJson("/incidents/export", "incidents")}
+              >
+                Export to JSON
+              </Button>
             </Box>
           </Stack>
         }
