@@ -54,8 +54,44 @@ export const theme = (mode: string, palette: any) =>
       MuiButtonBase: {
         defaultProps: {
           disableRipple: true,
+          disableTouchRipple: true,
         },
       },
+      MuiButton: {
+        defaultProps: {
+          disableRipple: true,
+          disableTouchRipple: true,
+          disableFocusRipple: true,
+        },
+      },
+      MuiIconButton: {
+        defaultProps: {
+          disableRipple: true,
+          disableTouchRipple: true,
+          disableFocusRipple: true,
+        },
+      },
+      MuiListItemButton: {
+        defaultProps: {
+          disableRipple: true,
+          disableTouchRipple: true,
+        },
+      },
+      MuiTab: {
+        defaultProps: {
+          disableRipple: true,
+          disableTouchRipple: true,
+          disableFocusRipple: true,
+        },
+      },
+      MuiToggleButton: {
+        defaultProps: {
+          disableRipple: true,
+          disableTouchRipple: true,
+          disableFocusRipple: true,
+        },
+      },
+
       MuiFormLabel: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -103,9 +139,6 @@ export const theme = (mode: string, palette: any) =>
             };
           },
         },
-      },
-      MuiButton: {
-        styleOverrides: {},
       },
     },
     shape: {
