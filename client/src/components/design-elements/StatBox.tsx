@@ -28,7 +28,7 @@ export const GradientBox: React.FC<GradientBox> = ({
       sx={{
         padding: `${theme.spacing(4)} ${theme.spacing(8)}`,
         width: isSmall
-          ? `calc(50% - (1 * ${theme.spacing(8)} / 2))`
+          ? `100%`
           : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
 
         background: bg,
@@ -46,6 +46,7 @@ type StatBoxProps = React.PropsWithChildren<{
   palette?: PaletteKey;
   sx?: SxProps;
   tooltip?: string;
+  onClick?: () => void;
 }>;
 
 export const StatBox: React.FC<StatBoxProps> = ({
@@ -55,13 +56,22 @@ export const StatBox: React.FC<StatBoxProps> = ({
   children,
   sx,
   tooltip,
+  onClick,
 }) => {
   const theme = useTheme();
   const textColor = palette ? theme.palette[palette].contrastText : "inherit";
 
   return (
-    <GradientBox palette={palette} sx={sx}>
-      <Stack>
+    <GradientBox
+      palette={palette}
+      sx={{
+        ...(sx as object),
+        ...(onClick
+          ? { cursor: "pointer", '&:hover': { opacity: 0.95 } }
+          : {}),
+      }}
+    >
+      <Stack onClick={onClick}>
         <Box
           sx={{ display: "flex", alignItems: "center", gap: theme.spacing(2) }}
         >

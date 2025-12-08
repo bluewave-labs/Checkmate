@@ -21,7 +21,7 @@ const IncidentsPage = () => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [range, setRange] = useState("2h");
+  const [range, setRange] = useState("all");
   const [resolved, setResolved] = useState<boolean | null>(false);
 
   const { response, isValidating, refetch } = useGet<
@@ -38,7 +38,7 @@ const IncidentsPage = () => {
   );
 
   const incidents = response?.data?.incidents
-    ? [...response.data.incidents].reverse()
+    ? [...response.data.incidents]
     : [];
   const count = response?.data?.count || 0;
 
@@ -103,7 +103,12 @@ const IncidentsPage = () => {
             <MenuItem value={"unresolved"}>Unresolved</MenuItem>
           </Select>
         </Stack>
-        <HeaderRange range={range} setRange={setRange} loading={isValidating} />
+        <HeaderRange
+          range={range}
+          setRange={setRange}
+          loading={isValidating}
+          all={true}
+        />
       </Stack>
       <IncidentTable
         incidents={incidents}

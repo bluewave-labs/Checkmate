@@ -1,7 +1,20 @@
 import type { MonitorStatus } from "@/types/monitor";
-import type { IMonitor } from "@/types/monitor";
+import type { IMonitor, MonitorType } from "@/types/monitor";
 import type { PaletteKey } from "@/theme/theme";
 import type { ValueType } from "@/components/design-elements/StatusLabel";
+
+export const getMonitorPath = (type: MonitorType): string => {
+  const pathMap: Record<MonitorType, string> = {
+    http: "uptime",
+    https: "uptime",
+    port: "uptime",
+    ping: "uptime",
+    infrastructure: "infrastructure",
+    pagespeed: "pagespeed",
+  };
+  return pathMap[type];
+};
+
 export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
   const paletteMap: Record<MonitorStatus, PaletteKey> = {
     up: "success",

@@ -1,19 +1,23 @@
 import { BasePage, StatBox } from "@/components/design-elements";
+import ResolutionCard from "@/components/design-elements/ResolutionCard";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import type { IIncident } from "@/types/incident";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 import prettyMilliseconds from "pretty-ms";
+import { getMonitorPath } from "@/utils/MonitorUtils";
+import type { MonitorType } from "@/types/monitor";
 
 const IncidentDetailsPage = () => {
   const theme = useTheme();
   const { id } = useParams<{ id: string }>();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
+  const navigate = useNavigate();
 
   const { response } = useGet<ApiResponse<IIncident>>(`/incidents/${id}`);
   const incident = response?.data || null;
@@ -39,6 +43,12 @@ const IncidentDetailsPage = () => {
           <StatBox
             title="Monitor"
             subtitle={incident.monitorId?.name || "N/A"}
+            onClick={() => {
+              const type = incident.monitorId.type as MonitorType;
+              const path = getMonitorPath(type);
+              const id = (incident.monitorId as any)?._id;
+              if (id) navigate(`/${path}/${id}`);
+            }}
           />
           <StatBox
             title="Start"
@@ -62,56 +72,26 @@ const IncidentDetailsPage = () => {
           />
         </Stack>
 
-        <Stack spacing={theme.spacing(4)}>
-          <Typography variant="h6" color="textPrimary">
-            Resolution
-          </Typography>
-          <Stack
-            direction={"column"}
-            spacing={theme.spacing(4)}
-            sx={{
-              p: theme.spacing(4),
-              borderRadius: 2,
-              bgcolor: incident.resolved
-                ? (theme.palette.success.lowContrast as any)
-                : (theme.palette.error.lowContrast as any),
-            }}
-          >
-            <Typography variant="body2" color="textPrimary">
-              Status: {incident.resolved ? "Resolved" : "Unresolved"}
-            </Typography>
-            {incident.resolved && (
-              <>
-                <Typography variant="body2" color="textPrimary">
-                  Type: {incident.resolutionType || "N/A"}
-                </Typography>
-                <Typography variant="body2" color="textPrimary">
-                  By: {incident.resolvedBy?.email || "N/A"}
-                </Typography>
-              </>
-            )}
-            <Typography variant="body2" color="textPrimary">
-              {incident.resolved && incident.endedAt
-                ? `Resolved at: ${formatDateWithTz(
-                    incident.endedAt,
-                    "ddd, MMMM D, YYYY, HH:mm A",
-                    uiTimezone
-                  )}`
-                : `Ongoing since: ${formatDateWithTz(
-                    incident.startedAt,
-                    "ddd, MMMM D, YYYY, HH:mm A",
-                    uiTimezone
-                  )}`}
-            </Typography>
-          </Stack>
-          <Typography variant="body2" color="textSecondary">
-            Duration:{" "}
-            {prettyMilliseconds(duration, { secondsDecimalDigits: 0 })}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            Note: {incident.resolutionNote || "N/A"}
-          </Typography>
-        </Stack>
+        <ResolutionCard
+          resolved={incident.resolved}
+          type={incident.resolutionType}
+          by={incident.resolvedBy?.email}
+          note={incident.resolutionNote}
+          timestampLabel={
+            incident.resolved && incident.endedAt
+              ? `Resolved at: ${formatDateWithTz(
+                  incident.endedAt,
+                  "ddd, MMMM D, YYYY, HH:mm A",
+                  uiTimezone
+                )}`
+              : `Ongoing since: ${formatDateWithTz(
+                  incident.startedAt,
+                  "ddd, MMMM D, YYYY, HH:mm A",
+                  uiTimezone
+                )}`
+          }
+          durationLabel={`Duration: ${prettyMilliseconds(duration, { secondsDecimalDigits: 0 })}`}
+        />
       </Stack>
     </BasePage>
   );

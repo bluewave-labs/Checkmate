@@ -7,10 +7,12 @@ export const HeaderRange = ({
   range,
   setRange,
   loading,
+  all = false,
 }: {
   range: string;
   setRange: Function;
   loading: boolean;
+  all?: boolean;
 }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -26,34 +28,23 @@ export const HeaderRange = ({
         orientation={isSmall ? "vertical" : "horizontal"}
         fullWidth={isSmall}
         variant="contained"
-        color={"primary"}
+        color="secondary"
       >
-        <Button
-          color={range === "2h" ? "secondary" : "primary"}
-          onClick={() => setRange("2h")}
-          loading={loading}
-        >
+        {all && (
+          <Button onClick={() => setRange("all")} loading={loading}>
+            All
+          </Button>
+        )}
+        <Button onClick={() => setRange("2h")} loading={loading}>
           Recent
         </Button>
-        <Button
-          color={range === "24h" ? "secondary" : "primary"}
-          onClick={() => setRange("24h")}
-          loading={loading}
-        >
+        <Button onClick={() => setRange("24h")} loading={loading}>
           Day
         </Button>
-        <Button
-          color={range === "7d" ? "secondary" : "primary"}
-          onClick={() => setRange("7d")}
-          loading={loading}
-        >
+        <Button onClick={() => setRange("7d")} loading={loading}>
           7 days
         </Button>
-        <Button
-          color={range === "30d" ? "secondary" : "primary"}
-          onClick={() => setRange("30d")}
-          loading={loading}
-        >
+        <Button onClick={() => setRange("30d")} loading={loading}>
           30 days
         </Button>
       </ButtonGroup>

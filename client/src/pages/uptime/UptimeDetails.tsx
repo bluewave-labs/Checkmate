@@ -110,7 +110,7 @@ const UptimeDetailsPage = () => {
         refetch={refetch}
         path="/uptime"
       />
-      <Stack direction="row" gap={theme.spacing(8)}>
+      <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <StatBox
           palette={palette}
           title="Active for"

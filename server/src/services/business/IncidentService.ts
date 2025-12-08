@@ -62,6 +62,8 @@ class IncidentService implements IIncidentService {
   private getStartDate(range: string): Date {
     const now = new Date();
     switch (range) {
+      case "all":
+        return new Date(0);
       case "2h":
         return new Date(now.getTime() - 2 * 60 * 60 * 1000);
       case "24h":
