@@ -1,4 +1,4 @@
-import { Table, Pagination, ValueLabel } from "@/components/design-elements";
+import { Table, Pagination, ValueLabel, StatusLabel } from "@/components/design-elements";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Button } from "@/components/inputs";
@@ -70,10 +70,11 @@ export const IncidentTable = ({
         id: "status",
         content: "Current monitor status",
         render: (row) => {
-          return (
-            <Typography textTransform={"capitalize"} color="textPrimary">
-              {row.monitorId?.status}
-            </Typography>
+          const status = row.monitorId?.status;
+          return status ? (
+            <StatusLabel status={status} />
+          ) : (
+            <Typography color="textSecondary">N/A</Typography>
           );
         },
       },
