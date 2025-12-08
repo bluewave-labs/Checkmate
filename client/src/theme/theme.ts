@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material";
-import { lightPalette, darkPalette, typographyLevels } from "./palette";
+// import { lightPalette, darkPalette, typographyLevels } from "./palette";
+import { lightPalette, darkPalette, typographyLevels } from "./new_palette";
 
 import type { Theme } from "@mui/material/styles";
 
@@ -9,7 +10,7 @@ export type PaletteKey = {
     : never;
 }[keyof Theme["palette"]];
 
-const fontFamilyPrimary = 'system-ui, sans-serif';
+const fontFamilyPrimary = "system-ui, sans-serif";
 const shadow =
   "0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03)";
 
