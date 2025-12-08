@@ -12,7 +12,10 @@ import { HistogramPageSpeedScoresTooltip } from "./HistogramPageSpeedScoresToolt
 import { useTheme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/types/check";
 import type { Palette } from "@mui/material/styles";
-type PaletteColorKey = Extract<keyof Palette, "primary" | "secondary" | "success" | "warning">;
+type PaletteColorKey = Extract<
+  keyof Palette,
+  "primary" | "error" | "success" | "warning"
+>;
 
 export interface ConfigItem {
   id: string;
@@ -24,7 +27,7 @@ const config: Record<string, ConfigItem> = {
   seo: {
     id: "seo",
     text: "SEO",
-    palette: "secondary",
+    palette: "primary",
   },
   performance: {
     id: "performance",
@@ -39,7 +42,7 @@ const config: Record<string, ConfigItem> = {
   accessibility: {
     id: "accessibility",
     text: "accessibility",
-    palette: "secondary",
+    palette: "error",
   },
 };
 
@@ -50,7 +53,10 @@ export const HistogramPageSpeedScores = ({
 }) => {
   const theme = useTheme();
   return (
-    <BaseChart icon={<TrendingUp size={20} strokeWidth={1.5} />} title="Score history">
+    <BaseChart
+      icon={<TrendingUp size={20} strokeWidth={1.5} />}
+      title="Score history"
+    >
       <ResponsiveContainer width="100%" minWidth={25} height={215}>
         <AreaChart data={checks}>
           <CartesianGrid

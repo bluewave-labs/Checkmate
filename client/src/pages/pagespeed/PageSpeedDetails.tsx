@@ -36,7 +36,6 @@ const PageSpeedDetailsPage = () => {
   const monitor = response?.data?.monitor;
   const stats = response?.data?.stats;
   const checks = response?.data?.checks || [];
-  console.log(checks);
 
   const streakDuration = stats?.currentStreakStartedAt
     ? Date.now() - stats?.currentStreakStartedAt
