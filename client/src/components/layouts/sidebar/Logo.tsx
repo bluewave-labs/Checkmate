@@ -30,7 +30,7 @@ export const Logo = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
         alignItems={"center"}
         bgcolor={theme.palette.primary.main}
         borderRadius={theme.shape.borderRadius}
-        color={theme.palette.getContrastText(theme.palette.primary.main)}
+        color={theme.palette.primary.contrastText}
         fontSize={18}
       >
         C
@@ -45,12 +45,7 @@ export const Logo = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
         }}
       >
         {" "}
-        <Typography
-          lineHeight={1}
-          mt={theme.spacing(2)}
-          color={theme.palette.primary.contrastText}
-          variant="h2"
-        >
+        <Typography lineHeight={1} mt={theme.spacing(2)} variant="h2">
           {t("common.appName")}
         </Typography>
       </Box>
