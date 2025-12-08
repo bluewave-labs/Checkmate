@@ -96,7 +96,7 @@ export function DataTable<
                 return (
                   <Grid container key={header.id}>
                     <Grid size={3} display={"flex"} alignItems={"center"}>
-                      <Typography color={theme.palette.text.primary}>
+                      <Typography component="div" color={theme.palette.text.primary}>
                         {header.content}
                       </Typography>
                     </Grid>

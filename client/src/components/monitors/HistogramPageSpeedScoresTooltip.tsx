@@ -24,7 +24,7 @@ export const HistogramPageSpeedScoresTooltip = ({
     return (
       <Box
         sx={{
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: theme.palette.background.paper,
           border: 1,
           borderColor: theme.palette.divider,
           borderRadius: theme.shape.borderRadius,
