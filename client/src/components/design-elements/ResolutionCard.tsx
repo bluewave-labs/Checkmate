@@ -26,7 +26,14 @@ export const ResolutionCard = ({
 
   return (
     <BaseBox sx={{ width: "100%", maxWidth: 420 }}>
-      <Box sx={{ bgcolor: bg, p: 6 }}>
+      <Box
+        sx={{
+          bgcolor: bg,
+          p: 6,
+          borderTopLeftRadius: theme.shape.borderRadius,
+          borderTopRightRadius: theme.shape.borderRadius,
+        }}
+      >
         <Typography variant="h6" color="textPrimary">
           Resolution
         </Typography>

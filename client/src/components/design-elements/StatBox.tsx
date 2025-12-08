@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
+import { lighten, darken } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { PaletteKey } from "@/theme/theme";
 import { BaseBox, TooltipWithInfo } from "@/components/design-elements";
@@ -19,16 +20,19 @@ export const GradientBox: React.FC<GradientBox> = ({
 }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const isLight = theme.palette.mode === "light";
+  const paper = theme.palette.background.paper;
+  const paperStart = lighten(paper, isLight ? 0.06 : 0.08);
+  const paperEnd = paper;
   const bg = palette
     ? `linear-gradient(135deg, ${theme.palette[palette].light} 0%, ${theme.palette[palette].main} 100%)`
-    : theme.palette.background.paper;
+    : `linear-gradient(135deg, ${paperStart} 0%, ${paperEnd} 100%)`;
 
   return (
     <BaseBox
       sx={{
         padding: `${theme.spacing(4)} ${theme.spacing(8)}`,
         width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
-
         background: bg,
         ...sx,
       }}
