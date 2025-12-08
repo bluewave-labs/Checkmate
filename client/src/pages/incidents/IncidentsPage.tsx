@@ -6,7 +6,7 @@ import { IncidentTable } from "@/pages/incidents/IncidentTable";
 import { HeaderRange } from "@/components/common/HeaderRange";
 
 import { useTheme } from "@mui/material/styles";
-import { useParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
@@ -17,7 +17,7 @@ import type { IMonitor } from "@/types/monitor";
 const IncidentsPage = () => {
   const theme = useTheme();
   const [selectedMonitorId, setSelectedMonitorId] = useState<string>("all");
-  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -51,10 +51,11 @@ const IncidentsPage = () => {
   const monitors: IMonitor[] = monitorResponse?.data || [];
 
   useEffect(() => {
-    if (id) {
-      setSelectedMonitorId(id);
+    const monitorId = searchParams.get("monitorId");
+    if (monitorId) {
+      setSelectedMonitorId(monitorId);
     }
-  }, [id]);
+  }, [searchParams]);
 
   return (
     <BasePage>

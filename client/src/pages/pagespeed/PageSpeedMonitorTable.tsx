@@ -102,7 +102,7 @@ export const PageSpeedMonitorTable = ({
         id: 3,
         label: "Incidents",
         action: () => {
-          navigate(`/incidents/${monitor._id}`);
+          navigate(`/incidents?monitorId=${monitor._id}`);
         },
       },
       {

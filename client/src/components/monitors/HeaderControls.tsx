@@ -57,7 +57,7 @@ export const HeaderControls = ({
           <Button
             startIcon={<Bug size={20} strokeWidth={1.5} />}
             onClick={() => {
-              navigate(`/incidents/${monitor._id}`);
+              navigate(`/incidents?monitorId=${monitor._id}`);
             }}
           >
             {t("menu.incidents")}
