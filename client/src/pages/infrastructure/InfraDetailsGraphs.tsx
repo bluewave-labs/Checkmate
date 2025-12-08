@@ -11,8 +11,8 @@ const getChartConfigs = (theme: any, checks: IInfraCheck[]) => {
     {
       type: "memory",
       dataKeys: ["memory.usage_percent"],
-      strokeColor: theme.palette.accent.main,
-      gradientStartColor: theme.palette.accent.main,
+      strokeColor: theme.palette.primary.main,
+      gradientStartColor: theme.palette.primary.main,
       yDomain: [0, 1],
       idx: null,
     },

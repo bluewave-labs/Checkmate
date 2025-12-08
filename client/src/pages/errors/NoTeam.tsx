@@ -42,7 +42,7 @@ const NoTeam = () => {
         <Box>
           <Button
             variant="contained"
-            color="accent"
+            color="primary"
             onClick={async () => {
               await post("/auth/logout", {});
               navigate("/login");

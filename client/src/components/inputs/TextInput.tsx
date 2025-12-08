@@ -26,10 +26,10 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             fontSize: typographyLevels.base,
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: theme.palette.primary.lowContrast,
+            borderColor: theme.palette.divider,
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: theme.palette.primary.lowContrast,
+            borderColor: theme.palette.divider,
           },
           "& .MuiFormHelperText-root": {
             marginLeft: 0,

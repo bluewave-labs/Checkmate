@@ -85,7 +85,7 @@ export function DataTable<
               sx={{
                 borderStyle: "solid",
                 borderWidth: 1,
-                borderColor: theme.palette.primary.lowContrast,
+                borderColor: theme.palette.divider,
                 borderRadius: theme.shape.borderRadius,
                 padding: theme.spacing(4),
                 cursor: onRowClick ? "pointer" : "default",
@@ -126,20 +126,23 @@ export function DataTable<
             {
               paddingLeft: theme.spacing(8),
             },
+          "& .MuiTableCell-root": {
+            borderBottom: `1px solid ${theme.palette.divider}`,
+          },
           "& .MuiTableHead-root .MuiTableRow-root": {
             height: "28px",
           },
           "& :is(th)": {
-            backgroundColor: theme.palette.tertiary.main,
-            color: theme.palette.secondary.contrastText,
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.secondary,
             fontWeight: 500,
             textTransform: "uppercase",
             padding: `${theme.spacing(2)} ${theme.spacing(8)}`,
             fontSize: theme.typography.fontSize,
           },
           "& :is(td)": {
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastTextSecondary,
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.secondary,
             padding: `${theme.spacing(7)} ${theme.spacing(8)}`,
             fontSize: theme.typography.fontSize,
           },
@@ -346,7 +349,7 @@ export const Pagination: React.FC<TablePaginationProps> = ({ ...props }) => {
         },
         "& .MuiSelect-select": {
           border: 1,
-          borderColor: theme.palette.primary.lowContrast,
+          borderColor: theme.palette.divider,
           borderRadius: theme.shape.borderRadius,
         },
       }}
@@ -363,7 +366,7 @@ const EmptyView = () => {
         p: theme.spacing(4),
         borderWidth: 1,
         borderStyle: "solid",
-        borderColor: theme.palette.primary.lowContrast,
+        borderColor: theme.palette.divider,
         borderRadius: theme.shape.borderRadius,
       }}
     >

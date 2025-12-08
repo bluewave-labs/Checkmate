@@ -20,16 +20,14 @@ export const GradientBox: React.FC<GradientBox> = ({
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const bg = palette
-    ? `linear-gradient(to bottom right, ${theme.palette[palette].main} 30%, ${theme.palette[palette].lowContrast} 70%)`
-    : `linear-gradient(340deg, ${theme.palette.tertiary.main} 10%, ${theme.palette.primary.main} 45%)`;
+    ? `linear-gradient(135deg, ${theme.palette[palette].light} 0%, ${theme.palette[palette].main} 100%)`
+    : theme.palette.background.paper;
 
   return (
     <BaseBox
       sx={{
         padding: `${theme.spacing(4)} ${theme.spacing(8)}`,
-        width: isSmall
-          ? `100%`
-          : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
+        width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
 
         background: bg,
         ...sx,
@@ -66,9 +64,7 @@ export const StatBox: React.FC<StatBoxProps> = ({
       palette={palette}
       sx={{
         ...(sx as object),
-        ...(onClick
-          ? { cursor: "pointer", '&:hover': { opacity: 0.95 } }
-          : {}),
+        ...(onClick ? { cursor: "pointer", "&:hover": { opacity: 0.95 } } : {}),
       }}
     >
       <Stack onClick={onClick}>

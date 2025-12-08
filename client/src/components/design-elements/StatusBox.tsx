@@ -41,11 +41,7 @@ const StatusBox = ({
   return (
     <BGBox>
       <Stack spacing={theme.spacing(4)}>
-        <Typography
-          variant={"h2"}
-          textTransform="uppercase"
-          color={theme.palette.primary.contrastTextTertiary}
-        >
+        <Typography variant={"h2"} textTransform="uppercase" color={theme.palette.text.secondary}>
           {label}
         </Typography>
         <Typography variant="h1" color={color}>
@@ -59,47 +55,23 @@ const StatusBox = ({
 export const UpStatusBox = ({ n }: { n: number }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  return (
-    <StatusBox
-      label={t("monitorStatus.up")}
-      n={n}
-      color={theme.palette.success.lowContrast}
-    />
-  );
+  return <StatusBox label={t("monitorStatus.up")} n={n} color={theme.palette.success.light} />;
 };
 
 export const DownStatusBox = ({ n }: { n: number }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  return (
-    <StatusBox
-      label={t("monitorStatus.down")}
-      n={n}
-      color={theme.palette.error.lowContrast}
-    />
-  );
+  return <StatusBox label={t("monitorStatus.down")} n={n} color={theme.palette.error.light} />;
 };
 
 export const PausedStatusBox = ({ n }: { n: number }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  return (
-    <StatusBox
-      label={t("monitorStatus.paused")}
-      n={n}
-      color={theme.palette.warning.lowContrast}
-    />
-  );
+  return <StatusBox label={t("monitorStatus.paused")} n={n} color={theme.palette.warning.light} />;
 };
 
 export const InitializingStatusBox = ({ n }: { n: number }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  return (
-    <StatusBox
-      label={t("monitorStatus.initializing")}
-      n={n}
-      color={theme.palette.warning.lowContrast}
-    />
-  );
+  return <StatusBox label={t("monitorStatus.initializing")} n={n} color={theme.palette.warning.light} />;
 };

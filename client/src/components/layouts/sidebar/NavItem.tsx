@@ -23,13 +23,15 @@ export const NavItem = ({
 }) => {
   const theme = useTheme();
   const iconStroke = selected
-    ? theme.palette.accent.main
-    : theme.palette.primary.contrastTextTertiary;
+    ? theme.palette.primary.main
+    : theme.palette.text.secondary;
 
-  const buttonBgColor = selected ? theme.palette.secondary.main : "transparent";
+  const buttonBgColor = selected
+    ? theme.palette.action.selected
+    : "transparent";
   const buttonBgHoverColor = selected
-    ? theme.palette.secondary.main
-    : theme.palette.tertiary.main;
+    ? theme.palette.action.selected
+    : theme.palette.action.hover;
   const fontWeight = selected ? 600 : 400;
   return (
     <Tooltip
@@ -52,16 +54,12 @@ export const NavItem = ({
       <ListItemButton
         sx={{
           backgroundColor: buttonBgColor,
-          backgroundImage: selected
-            ? `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`
-            : "none",
+          backgroundImage: "none",
           border: 1,
-          borderColor: selected ? theme.palette.primary.veryLowContrast : "transparent",
+          borderColor: "transparent",
           "&:hover": {
             backgroundColor: buttonBgHoverColor,
-            backgroundImage: selected
-              ? `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`
-              : "none",
+            backgroundImage: "none",
           },
           height: 32,
           gap: theme.spacing(4),
@@ -80,13 +78,15 @@ export const NavItem = ({
               opacity: 0.81,
               transition: "stroke 0.2s ease",
             },
-            "& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
-              stroke: iconStroke,
-            },
-            ".MuiListItemButton-root:hover &": {
-              "& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
-                stroke: theme.palette.accent.main,
+            "& svg path, & svg line, & svg polyline, & svg rect, & svg circle":
+              {
+                stroke: iconStroke,
               },
+            ".MuiListItemButton-root:hover &": {
+              "& svg path, & svg line, & svg polyline, & svg rect, & svg circle":
+                {
+                  stroke: theme.palette.primary.main,
+                },
             },
           }}
         >

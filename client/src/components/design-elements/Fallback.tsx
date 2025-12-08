@@ -32,9 +32,9 @@ export const BaseFallback: React.FC<BaseFallbackProps> = ({
         xl: "40%",
       }}
       padding={{ xs: theme.spacing(8), md: theme.spacing(16) }}
-      bgcolor={theme.palette.primary.main}
+      bgcolor={theme.palette.background.paper}
       border={1}
-      borderColor={theme.palette.primary.lowContrast}
+      borderColor={theme.palette.divider}
       borderRadius={theme.shape.borderRadius}
       sx={{
         borderStyle: "dashed",
@@ -60,7 +60,7 @@ export const ErrorFallback = ({
       <Typography
         variant="h1"
         marginY={theme.spacing(4)}
-        color={theme.palette.primary.contrastTextTertiary}
+        color={theme.palette.text.secondary}
       >
         {title}
       </Typography>
@@ -106,7 +106,7 @@ export const EmptyFallback = ({
         <Stack>
           <Button
             variant="contained"
-            color="accent"
+            color="primary"
             onClick={() => navigate(actionLink)}
           >
             {actionButtonText}
@@ -158,7 +158,7 @@ export const EmptyMonitorFallback = ({
         <Stack>
           <Button
             variant="contained"
-            color="accent"
+            color="primary"
             onClick={() => navigate(actionLink)}
             disabled={monitorLimitReached}
           >

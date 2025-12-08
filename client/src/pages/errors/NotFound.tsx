@@ -27,7 +27,7 @@ const NotFound = ({ title = DefaultValue.title, desc = DefaultValue.desc }) => {
         <Typography variant="body1">{desc}</Typography>
         <Button
           variant="contained"
-          color="accent"
+          color="primary"
           sx={{ mt: theme.spacing(10) }}
           onClick={() => navigate("/")}
         >

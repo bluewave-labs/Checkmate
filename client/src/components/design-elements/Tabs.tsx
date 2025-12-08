@@ -9,9 +9,9 @@ export const Tabs = (props: CustomTabsProps) => {
     <MuiTabs
       sx={{
         minHeight: 34,
-        borderBottom: `1px solid ${theme.palette.primary.lowContrast}`,
+        borderBottom: `1px solid ${theme.palette.divider}`,
         "& .MuiTabs-indicator": {
-          backgroundColor: theme.palette.accent.main,
+        backgroundColor: theme.palette.primary.main,
           height: 2,
           bottom: 0,
         },

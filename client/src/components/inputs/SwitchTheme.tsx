@@ -30,7 +30,7 @@ export const ThemeSwitch = () => {
           },
           "&:hover svg path, &:hover svg line, &:hover svg polyline, &:hover svg rect, &:hover svg circle":
             {
-              stroke: theme.palette.accent.main,
+              stroke: theme.palette.primary.main,
             },
         }}
       >

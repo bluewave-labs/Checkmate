@@ -83,10 +83,10 @@ export const SelectInput = <T,>({
         },
         "& .MuiOutlinedInput-notchedOutline": {
           borderRadius: theme.shape.borderRadius,
-          borderColor: theme.palette.primary.lowContrast,
+          borderColor: theme.palette.divider,
         },
         "&:hover .MuiOutlinedInput-notchedOutline": {
-          borderColor: theme.palette.primary.lowContrast,
+          borderColor: theme.palette.divider,
         },
         ...props.sx,
       }}

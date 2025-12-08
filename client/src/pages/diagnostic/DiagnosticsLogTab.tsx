@@ -27,7 +27,7 @@ export const DiagnosticsLogTab = () => {
     info: theme.palette.success.main,
     warn: theme.palette.warning.main,
     error: theme.palette.error.main,
-    debug: theme.palette.accent.main,
+    debug: theme.palette.primary.main,
   };
 
   const headers: Header<ILogEntry>[] = [

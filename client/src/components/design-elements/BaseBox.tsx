@@ -7,10 +7,10 @@ export const BaseBox = ({ sx, ...rest }: BoxProps) => {
     <Box
       {...rest}
       sx={{
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: theme.palette.background.paper,
         border: 1,
         borderStyle: "solid",
-        borderColor: theme.palette.primary.lowContrast,
+        borderColor: theme.palette.divider,
         borderRadius: theme.shape.borderRadius,
         ...sx,
       }}

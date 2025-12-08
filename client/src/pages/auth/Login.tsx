@@ -130,7 +130,7 @@ const Login = () => {
           <Button
             variant="contained"
             loading={loading}
-            color="accent"
+            color="primary"
             type="submit"
             sx={{ width: "100%", alignSelf: "center", fontWeight: 700 }}
           >

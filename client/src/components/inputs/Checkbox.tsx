@@ -26,9 +26,9 @@ export const CheckboxInput = forwardRef<HTMLInputElement, CheckboxInputProps>(
         checkedIcon={<SquareCheck size={16} strokeWidth={1.5} />}
         sx={{
           padding: 0,
-          color: theme.palette.primary.contrastTextTertiary,
+          color: theme.palette.text.secondary,
           "&.Mui-checked": {
-            color: theme.palette.accent.main,
+            color: theme.palette.primary.main,
           },
           "&:hover": { backgroundColor: "transparent" },
           "& svg": {

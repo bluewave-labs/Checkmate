@@ -19,7 +19,7 @@ export const HistogramPageSpeedTooltip = ({
       sx={{
         backgroundColor: theme.palette.secondary.main,
         border: 1,
-        borderColor: theme.palette.primary.lowContrast,
+        borderColor: theme.palette.divider,
         borderRadius: theme.shape.borderRadius,
         p: theme.spacing(4),
       }}

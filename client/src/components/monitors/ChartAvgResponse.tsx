@@ -41,7 +41,7 @@ export const ChartAvgResponse = ({
           >
             <RadialBar
               dataKey="value"
-              background={{ fill: theme.palette[palette].lowContrast }}
+              background={{ fill: theme.palette[palette].light }}
             >
               <Cell visibility={"hidden"} />
               <Cell fill={theme.palette[palette].main} />

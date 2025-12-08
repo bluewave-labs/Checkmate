@@ -210,7 +210,7 @@ const Invite = () => {
         <Button
           loading={loading}
           variant="contained"
-          color="accent"
+          color="primary"
           type="submit"
         >
           Send Invite

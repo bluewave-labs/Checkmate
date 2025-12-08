@@ -51,7 +51,7 @@ const SkeletonCard: React.FC<SkeletonCardProps> = ({
     height: 34,
     borderRadius: theme.shape.borderRadius,
     background: theme.palette.secondary.main,
-    border: `1px solid ${theme.palette.primary.lowContrast}`,
+    border: `1px solid ${theme.palette.divider}`,
     animation: "pulse 1.6s ease-in-out infinite",
     ...pulseAnimation,
   };
@@ -60,7 +60,7 @@ const SkeletonCard: React.FC<SkeletonCardProps> = ({
     height: 7,
     borderRadius: theme.shape.borderRadius,
     background: theme.palette.secondary.main,
-    border: `1px solid ${theme.palette.primary.lowContrast}`,
+    border: `1px solid ${theme.palette.divider}`,
     animation: "pulse 1.6s ease-in-out infinite",
     ...pulseAnimation,
   };

@@ -338,7 +338,7 @@ export const UptimeForm = ({
           loading={loading}
           type="submit"
           variant="contained"
-          color="accent"
+          color="primary"
         >
           {t("settingsSave")}
         </Button>

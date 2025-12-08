@@ -21,7 +21,7 @@ export const TextLink = ({
   return (
     <Stack direction="row" gap={theme.spacing(4)}>
       <Typography>{text}</Typography>
-      <Link color="accent" to={href} component={RouterLink} target={target}>
+      <Link color="primary" to={href} component={RouterLink} target={target}>
         {linkText}
       </Link>
     </Stack>

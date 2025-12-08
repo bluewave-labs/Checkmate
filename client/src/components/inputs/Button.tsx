@@ -18,9 +18,6 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
         boxShadow: "none",
         "&:hover": {
           boxShadow: "none",
-          backgroundColor: props.color === "primary"
-            ? theme.palette.tertiary.main
-            : undefined,
         },
         ...sx,
       }}

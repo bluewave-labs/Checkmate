@@ -49,7 +49,7 @@ export const Breadcrumb = ({
         fontSize: "14px",
         marginBottom: theme.spacing(6),
         "& .MuiBreadcrumbs-separator": {
-          color: theme.palette.primary.contrastTextTertiary,
+          color: theme.palette.text.secondary,
         },
       }}
     >
@@ -60,16 +60,16 @@ export const Breadcrumb = ({
           alignItems: "center",
           gap: theme.spacing(2),
           textDecoration: "none",
-          color: theme.palette.primary.contrastTextTertiary,
+          color: theme.palette.text.secondary,
         }}
       >
         <Home size={16} strokeWidth={1.5} />
         <Typography
           sx={{
             fontSize: "14px",
-            color: theme.palette.primary.contrastTextTertiary,
+            color: theme.palette.text.secondary,
             "&:hover": {
-              color: theme.palette.accent.main,
+              color: theme.palette.primary.main,
             },
           }}
         >
@@ -94,7 +94,7 @@ export const Breadcrumb = ({
             sx={{
               fontSize: "14px",
               fontWeight: 600,
-              color: theme.palette.accent.main,
+              color: theme.palette.primary.main,
             }}
           >
             {displayName}
@@ -110,9 +110,9 @@ export const Breadcrumb = ({
             <Typography
               sx={{
                 fontSize: "14px",
-                color: theme.palette.primary.contrastTextTertiary,
+                color: theme.palette.text.secondary,
                 "&:hover": {
-                  color: theme.palette.accent.main,
+                  color: theme.palette.primary.main,
                 },
               }}
             >

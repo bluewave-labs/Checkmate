@@ -22,7 +22,7 @@ export const SwitchComponent = forwardRef<HTMLInputElement, SwitchProps>(
               "&.Mui-checked": {
                 color: "#E0E0E0",
                 "& + .MuiSwitch-track": {
-                  backgroundColor: theme.palette.accent.main,
+                  backgroundColor: theme.palette.primary.main,
                   opacity: 1,
                   border: 0,
                 },

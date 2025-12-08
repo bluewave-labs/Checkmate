@@ -24,7 +24,7 @@ const MetricBox = ({
       sx={{
         border: 1,
         borderStyle: "solid",
-        borderColor: theme.palette.primary.lowContrast,
+        borderColor: theme.palette.divider,
         borderRadius: theme.shape.borderRadius,
       }}
     >
@@ -37,7 +37,7 @@ const MetricBox = ({
       </Stack>
       <Box
         width={4}
-        bgcolor={theme.palette[palette].lowContrast}
+        bgcolor={theme.palette[palette].light}
         sx={{
           borderTopRightRadius: theme.shape.borderRadius,
           borderBottomRightRadius: theme.shape.borderRadius,

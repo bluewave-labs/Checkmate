@@ -1,6 +1,5 @@
 import { createTheme } from "@mui/material";
-// import { lightPalette, darkPalette, typographyLevels } from "./palette";
-import { lightPalette, darkPalette, typographyLevels } from "./new_palette";
+import { lightPalette, darkPalette, typographyLevels } from "./palette";
 
 import type { Theme } from "@mui/material/styles";
 
@@ -35,23 +34,18 @@ export const theme = (mode: string, palette: any) =>
       fontSize: typographyLevels.base,
       h1: {
         fontSize: typographyLevels.xl,
-        color: palette.primary.contrastText,
         fontWeight: 500,
       },
       h2: {
         fontSize: typographyLevels.l,
-        color: palette.primary.contrastTextSecondary,
         fontWeight: 400,
       },
-
       body1: {
         fontSize: typographyLevels.m,
-        color: palette.primary.contrastTextTertiary,
         fontWeight: 400,
       },
       body2: {
         fontSize: typographyLevels.s,
-        color: palette.primary.contrastTextTertiary,
         fontWeight: 400,
       },
     },
@@ -87,7 +81,7 @@ export const theme = (mode: string, palette: any) =>
         styleOverrides: {
           root: {
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: palette.accent.main,
+              borderColor: palette.primary.main,
             },
           },
         },
@@ -101,10 +95,10 @@ export const theme = (mode: string, palette: any) =>
               padding: 0,
               border: 1,
               borderStyle: "solid",
-              borderColor: theme.palette.primary.lowContrast,
+              borderColor: theme.palette.divider,
               borderRadius: 4,
               boxShadow: shadow,
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor: theme.palette.background.paper,
               backgroundImage: "none",
             };
           },

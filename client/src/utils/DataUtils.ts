@@ -41,7 +41,7 @@ export const normalizeResponseTimes = <
 };
 
 // Interpolate color between three theme colors over 0-100 range.
-// 0-50 => start (success.lowContrast), 50-75 => mid (warning.lowContrast), 75-100 => end (error.lowContrast)
+// 0-50 => start (success.light), 50-75 => mid (warning.light), 75-100 => end (error.light)
 export const getResponseColor = (
   ms: number,
   colors: {

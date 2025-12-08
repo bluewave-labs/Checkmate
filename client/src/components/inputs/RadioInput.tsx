@@ -17,11 +17,11 @@ export const RadioInput: React.FC<RadioInputProps> = ({ ...props }) => {
       sx={{
         padding: 0,
         mt: theme.spacing(0.5),
-        color: theme.palette.primary.contrastTextTertiary,
+        color: theme.palette.text.secondary,
         "&.Mui-checked": {
-          color: theme.palette.accent.main,
+          color: theme.palette.primary.main,
           "& svg circle": {
-            fill: theme.palette.accent.main,
+            fill: theme.palette.primary.main,
           },
         },
         "& .MuiSvgIcon-root": {
@@ -51,7 +51,7 @@ export const RadioWithDescription: React.FC<
           <Typography component="p">{label}</Typography>
           <Typography
             component="h6"
-            color={theme.palette.primary.contrastTextSecondary}
+            color={theme.palette.text.secondary}
           >
             {description}
           </Typography>
@@ -64,7 +64,7 @@ export const RadioWithDescription: React.FC<
         borderRadius: theme.shape.borderRadius,
 
         "&:hover": {
-          backgroundColor: theme.palette.tertiary.main,
+          backgroundColor: theme.palette.background.paper,
         },
         "& .MuiButtonBase-root": {
           p: 0,

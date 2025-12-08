@@ -32,7 +32,7 @@ export const MonitorStatus = ({ monitor }: { monitor: IMonitor }) => {
       <Stack direction="row" alignItems={"center"} gap={theme.spacing(4)}>
         <PulseDot color={getStatusColor(monitor.status, theme)} />
         <Typography
-          color={theme.palette.primary.contrastTextSecondary}
+          color={theme.palette.text.secondary}
           fontSize={typographyLevels.l}
           fontWeight={"bolder"}
           fontFamily={"monospace"}

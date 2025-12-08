@@ -41,12 +41,12 @@ export const BaseChart: React.FC<BaseChartProps> = ({
                 justifyContent: "center",
                 width: 34,
                 height: 34,
-                backgroundColor: theme.palette.primary.veryLowContrast,
+                backgroundColor: theme.palette.action.hover,
                 "& svg": {
                   width: 20,
                   height: 20,
                   "& path": {
-                    stroke: theme.palette.primary.contrastTextTertiary,
+                    stroke: theme.palette.text.secondary,
                   },
                 },
               }}

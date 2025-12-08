@@ -28,9 +28,9 @@ export const Logo = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
         display={"flex"}
         justifyContent={"center"}
         alignItems={"center"}
-        bgcolor={theme.palette.accent.main}
+        bgcolor={theme.palette.primary.main}
         borderRadius={theme.shape.borderRadius}
-        color={theme.palette.accent.contrastText}
+        color={theme.palette.getContrastText(theme.palette.primary.main)}
         fontSize={18}
       >
         C

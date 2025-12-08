@@ -12,13 +12,13 @@ export const CollapseButton = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
     <ArrowLeft
       height={theme.spacing(8)}
       width={theme.spacing(8)}
-      color={theme.palette.primary.contrastTextSecondary}
+      color={theme.palette.text.secondary}
     />
   ) : (
     <ArrowRight
       height={theme.spacing(8)}
       width={theme.spacing(8)}
-      color={theme.palette.primary.contrastTextSecondary}
+      color={theme.palette.text.secondary}
     />
   );
 
@@ -30,14 +30,14 @@ export const CollapseButton = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
         top: 60,
         right: 0,
         transform: `translate(50%, 0)`,
-        backgroundColor: theme.palette.tertiary.main,
-        border: `1px solid ${theme.palette.primary.lowContrast}`,
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
         p: theme.spacing(2.5),
 
         "&:focus": { outline: "none" },
         "&:hover": {
-          backgroundColor: theme.palette.primary.lowContrast,
-          borderColor: theme.palette.primary.lowContrast,
+          backgroundColor: theme.palette.action.hover,
+          borderColor: theme.palette.divider,
         },
       }}
       onClick={() => {

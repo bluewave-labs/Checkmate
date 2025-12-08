@@ -20,8 +20,8 @@ const getChartConfigs = (
     {
       type: "Bytes received",
       dataKeys: [`net[${idx}].bytes_recv`],
-      strokeColor: theme.palette.accent.main,
-      gradientStartColor: theme.palette.accent.main,
+      strokeColor: theme.palette.primary.main,
+      gradientStartColor: theme.palette.primary.main,
       yDomain: [0, 1],
       idx: null,
     },

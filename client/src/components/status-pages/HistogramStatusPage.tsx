@@ -42,7 +42,7 @@ export const HistogramStatusPage = ({ checks }: { checks: ICheck[] }) => {
                 xs: theme.spacing(2),
                 sm: theme.spacing(6),
               }}
-              bgcolor={theme.palette.primary.lowContrast}
+              bgcolor={theme.palette.action.hover}
               sx={{
                 borderRadius: theme.spacing(1.5),
               }}
@@ -54,8 +54,8 @@ export const HistogramStatusPage = ({ checks }: { checks: ICheck[] }) => {
                 height={`${check.normalResponseTime}%`}
                 bgcolor={
                   check.status === "up"
-                    ? theme.palette.success.lowContrast
-                    : theme.palette.error.lowContrast
+                    ? theme.palette.success.light
+                    : theme.palette.error.light
                 }
                 sx={{
                   borderRadius: theme.spacing(1.5),

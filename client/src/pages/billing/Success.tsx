@@ -43,13 +43,13 @@ const BillingSuccessPage = () => {
         >
           <Typography variant="h1">Finishing subscription update...</Typography>
           <Stack direction="row" alignItems={"center"} gap={theme.spacing(10)}>
-            <CircularProgress color="accent" size={28} />
+            <CircularProgress color="primary" size={28} />
             <Stack>
               <Typography variant="h2">
                 {plan ? (
                   <>
                     {"Selected plan: "}
-                    <span style={{ color: theme.palette.accent.main }}>
+                    <span style={{ color: theme.palette.primary.main }}>
                       {plan.charAt(0).toUpperCase() + plan.slice(1)}
                     </span>
                   </>
@@ -70,13 +70,13 @@ const BillingSuccessPage = () => {
                 nothing will change.
               </Typography>
               <Button
-                color="accent"
+                color="primary"
                 variant="outlined"
                 onClick={() => refetch?.()}
               >
                 Try again
               </Button>
-              <Button color="accent" variant="contained" href="/billing">
+              <Button color="primary" variant="contained" href="/billing">
                 Back to billing
               </Button>
             </Stack>

@@ -21,7 +21,7 @@ export const FieldLabel: React.FC<FieldLabelProps> = ({
       sx={{
         fontSize: "14px",
         fontWeight: 500,
-        color: theme.palette.primary.contrastTextSecondary,
+        color: theme.palette.text.secondary,
         marginBottom: theme.spacing(2),
         display: "block",
       }}

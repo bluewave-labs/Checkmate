@@ -37,13 +37,7 @@ export const StatusLabel = ({
         ...sx,
       }}
     >
-      <Box
-        width={7}
-        height={7}
-        bgcolor={theme.palette[palette].lowContrast}
-        borderRadius="50%"
-        marginRight="5px"
-      />
+      <Box width={7} height={7} bgcolor={theme.palette[palette].light} borderRadius="50%" marginRight="5px" />
       {transformedText}
     </BaseBox>
   );
@@ -76,13 +70,7 @@ export const ValueLabel = ({
             : "rgba(0, 0, 0, 0.08)",
       }}
     >
-      <Box
-        width={7}
-        height={7}
-        bgcolor={theme.palette[palette].lowContrast}
-        borderRadius="50%"
-        marginRight="5px"
-      />
+      <Box width={7} height={7} bgcolor={theme.palette[palette].light} borderRadius="50%" marginRight="5px" />
       {transformedText}
     </BaseBox>
   );

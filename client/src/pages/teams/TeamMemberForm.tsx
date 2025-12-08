@@ -137,7 +137,7 @@ export const TeamMemberForm = ({
           loading={loading}
           type="submit"
           variant="contained"
-          color="accent"
+          color="primary"
         >
           {t("settingsSave")}
         </Button>

@@ -75,7 +75,7 @@ const ExportPage = () => {
               <Button
                 loading={loading}
                 variant="contained"
-                color="accent"
+                color="primary"
                 onClick={handleExport}
               >
                 Export to JSON
@@ -130,7 +130,7 @@ const ExportPage = () => {
               <Button
                 loading={isPosting}
                 variant="contained"
-                color="accent"
+                color="primary"
                 onClick={handleImport}
               >
                 Import from JSON

@@ -45,7 +45,7 @@ export const SideBar = () => {
       paddingTop={theme.spacing(6)}
       paddingBottom={theme.spacing(6)}
       gap={theme.spacing(6)}
-      borderRight={`1px solid ${theme.palette.primary.lowContrast}`}
+      borderRight={`1px solid ${theme.palette.divider}`}
       width={sideBarOpen ? EXPANDED_WIDTH : COLLAPSED_WIDTH}
       sx={{
         transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
@@ -103,7 +103,7 @@ export const SideBar = () => {
         })}
       </List>
       <Divider
-        sx={{ mt: "auto", borderColor: theme.palette.primary.lowContrast }}
+        sx={{ mt: "auto", borderColor: theme.palette.divider }}
       />
       <BottomControls />
     </Stack>

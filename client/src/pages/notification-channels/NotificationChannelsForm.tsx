@@ -213,7 +213,7 @@ export const NotificationChannelsForm = ({
       >
         <Button
           variant="contained"
-          color="accent"
+          color="primary"
           onClick={handleTest}
           loading={isPosting || loading}
         >
@@ -223,7 +223,7 @@ export const NotificationChannelsForm = ({
           loading={isPosting || loading}
           type="submit"
           variant="contained"
-          color="accent"
+          color="primary"
         >
           {t("settingsSave")}
         </Button>

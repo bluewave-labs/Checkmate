@@ -12,10 +12,7 @@ import { HistogramPageSpeedScoresTooltip } from "./HistogramPageSpeedScoresToolt
 import { useTheme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/types/check";
 import type { Palette } from "@mui/material/styles";
-type PaletteColorKey = Extract<
-  keyof Palette,
-  "primary" | "secondary" | "success" | "warning" | "accent"
->;
+type PaletteColorKey = Extract<keyof Palette, "primary" | "secondary" | "success" | "warning">;
 
 export interface ConfigItem {
   id: string;
@@ -42,7 +39,7 @@ const config: Record<string, ConfigItem> = {
   accessibility: {
     id: "accessibility",
     text: "accessibility",
-    palette: "accent",
+    palette: "secondary",
   },
 };
 
@@ -57,20 +54,20 @@ export const HistogramPageSpeedScores = ({
       <ResponsiveContainer width="100%" minWidth={25} height={215}>
         <AreaChart data={checks}>
           <CartesianGrid
-            stroke={theme.palette.primary.lowContrast}
+            stroke={theme.palette.divider}
             strokeWidth={1}
             strokeOpacity={1}
             fill="transparent"
             vertical={false}
           />
           <Tooltip
-            cursor={{ stroke: theme.palette.primary.lowContrast }}
+            cursor={{ stroke: theme.palette.divider }}
             content={<HistogramPageSpeedScoresTooltip config={config} />}
           />
           <defs>
             {Object.values(config).map(({ id, palette }) => {
               const startColor = theme.palette[palette].main;
-              const endColor = theme.palette[palette].lowContrast;
+              const endColor = theme.palette[palette].light;
 
               return (
                 <linearGradient id={id} x1="0" y1="0" x2="0" y2="1" key={id}>

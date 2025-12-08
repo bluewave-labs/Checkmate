@@ -32,7 +32,7 @@ export const PulseDot = ({ color }: { color: string }) => {
 						width: "7px",
 						height: "7px",
 						borderRadius: "50%",
-						backgroundColor: theme.palette.accent.contrastText,
+            backgroundColor: theme.palette.getContrastText(theme.palette.primary.main),
 						top: "50%",
 						left: "50%",
 						transform: "translate(-50%, -50%)",

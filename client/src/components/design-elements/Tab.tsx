@@ -18,13 +18,13 @@ export const Tab = (props: CustomTabProps) => {
         paddingBottom: 0,
         minWidth: "auto",
         alignItems: "flex-start",
-        color: theme.palette.primary.contrastTextTertiary,
+        color: theme.palette.text.secondary,
         "&.Mui-selected": {
-          color: theme.palette.accent.main,
+        color: theme.palette.primary.main,
           fontWeight: 600,
         },
         "&:hover": {
-          color: theme.palette.primary.contrastTextSecondary,
+        color: theme.palette.text.secondary,
         },
         "& .MuiTab-iconWrapper": {
           marginRight: theme.spacing(2),

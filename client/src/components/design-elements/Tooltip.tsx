@@ -51,7 +51,7 @@ export const TooltipWithInfo: React.FC<TooltipWithInfoProps> = ({
 }) => {
   const theme = useTheme();
 
-  const defaultColor = theme.palette.primary.contrastTextTertiary;
+  const defaultColor = theme.palette.text.secondary;
 
   return (
     <Tooltip {...props}>

@@ -29,17 +29,17 @@ export const DateTimePicker = forwardRef<HTMLDivElement, CustomDateTimePickerPro
             "& .MuiPickersOutlinedInput-root ": {
               height: 34,
               borderRadius: theme.shape.borderRadius,
-              borderColor: theme.palette.primary.lowContrast,
+              borderColor: theme.palette.divider,
             },
             "& .MuiPickersOutlinedInput-notchedOutline": {
-              borderColor: theme.palette.primary.lowContrast,
+              borderColor: theme.palette.divider,
             },
             "&:hover .MuiPickersOutlinedInput-notchedOutline": {
-              borderColor: theme.palette.primary.lowContrast,
+              borderColor: theme.palette.divider,
             },
             "& .MuiPickersInputBase-root.MuiPickersOutlinedInput-root.Mui-focused:not(.Mui-error) .MuiPickersOutlinedInput-notchedOutline":
               {
-                borderColor: theme.palette.accent.main,
+              borderColor: theme.palette.primary.main,
               },
             "& .MuiFormHelperText-root": {
               marginLeft: 0,

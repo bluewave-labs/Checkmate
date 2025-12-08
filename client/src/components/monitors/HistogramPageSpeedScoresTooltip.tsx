@@ -26,7 +26,7 @@ export const HistogramPageSpeedScoresTooltip = ({
         sx={{
           backgroundColor: theme.palette.primary.main,
           border: 1,
-          borderColor: theme.palette.primary.lowContrast,
+          borderColor: theme.palette.divider,
           borderRadius: theme.shape.borderRadius,
           py: theme.spacing(2),
           px: theme.spacing(4),
@@ -34,7 +34,7 @@ export const HistogramPageSpeedScoresTooltip = ({
       >
         <Typography
           sx={{
-            color: theme.palette.primary.contrastTextTertiary,
+            color: theme.palette.text.secondary,
             fontSize: 12,
             fontWeight: 500,
           }}

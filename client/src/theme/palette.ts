@@ -47,85 +47,65 @@ export const colors = {
 };
 
 export const lightPalette = {
-  accent: {
-    main: colors.blueBlueWave,
-    light: lighten(colors.blueBlueWave, 0.2),
-    dark: darken(colors.blueBlueWave, 0.2),
-    contrastText: colors.offWhite,
-  },
   primary: {
-    main: colors.offWhite,
-    contrastText: colors.blueGray800,
-    contrastTextSecondary: colors.blueGray600,
-    contrastTextTertiary: colors.blueGray500,
-    lowContrast: colors.gray250,
-    veryLowContrast: lighten(colors.gray250, 0.5),
+    main: colors.blueBlueWave,
+    light: lighten(colors.blueBlueWave, 0.4),
+    dark: darken(colors.blueBlueWave, 0.2),
   },
   secondary: {
     main: colors.gray200,
     light: colors.lightBlueWave,
     dark: lighten(colors.gray200, 0.1),
-    contrastText: colors.blueGray600,
   },
-  tertiary: {
-    main: colors.gray100,
-    contrastText: colors.blueGray800,
-  },
+  // Tertiary is a custom helper palette
   success: {
     main: colors.green700,
     contrastText: colors.offWhite,
-    lowContrast: colors.green400,
+    light: lighten(colors.green700, 0.35),
+    dark: darken(colors.green700, 0.2),
   },
   warning: {
     main: colors.orange700,
     contrastText: colors.offWhite,
-    lowContrast: colors.orange100,
+    light: lighten(colors.orange700, 0.4),
+    dark: darken(colors.orange700, 0.2),
   },
   error: {
     main: colors.red700,
     contrastText: colors.offWhite,
-    lowContrast: colors.red400,
+    light: lighten(colors.red700, 0.35),
+    dark: darken(colors.red700, 0.2),
   },
 };
 
 export const darkPalette = {
-  accent: {
-    main: colors.blueBlueWave,
-    light: lighten(colors.blueBlueWave, 0.2),
-    dark: darken(colors.blueBlueWave, 0.2),
-    contrastText: colors.offWhite,
-  },
   primary: {
-    main: colors.offBlack,
-    contrastText: colors.blueGray50,
-    contrastTextSecondary: colors.gray200,
-    contrastTextTertiary: colors.gray500,
-    lowContrast: colors.blueGray600,
-    veryLowContrast: darken(colors.blueGray600, 0.5),
+    main: colors.blueBlueWave,
+    light: lighten(colors.blueBlueWave, 0.4),
+    dark: darken(colors.blueBlueWave, 0.2),
   },
   secondary: {
     main: colors.gray700,
     light: colors.lightBlueWave,
     dark: lighten(colors.gray700, 0.1),
-    contrastText: colors.gray200,
   },
-  tertiary: {
-    main: colors.blueGray800,
-    contrastText: colors.gray100,
-  },
+  // Tertiary is a custom helper palette
   success: {
     main: colors.green100,
     contrastText: colors.offBlack,
-    lowContrast: colors.green200,
+    light: lighten(colors.green100, 0.25),
+    dark: darken(colors.green100, 0.15),
   },
   warning: {
     main: colors.orange200,
     contrastText: colors.offBlack,
-    lowContrast: colors.orange600,
+    light: lighten(colors.orange200, 0.25),
+    dark: darken(colors.orange200, 0.15),
   },
   error: {
     main: colors.red100,
     contrastText: colors.offBlack,
-    lowContrast: colors.red600,
+    light: lighten(colors.red100, 0.25),
+    dark: darken(colors.red100, 0.15),
   },
 };

@@ -57,8 +57,8 @@ export const HistogramResponseTime = ({
           const heightPct = `${Math.max(0, Math.min(100, (check as any).normalResponseTime ?? 0))}%`;
           const barColor =
             check.status === "up"
-              ? theme.palette.success.lowContrast
-              : theme.palette.error.lowContrast;
+              ? theme.palette.success.light
+              : theme.palette.error.light;
           const bar = (
             <Box
               sx={{
@@ -66,7 +66,7 @@ export const HistogramResponseTime = ({
                 width: "100%",
                 height: "100%",
                 borderRadius: theme.spacing(1),
-                bgcolor: theme.palette.primary.lowContrast,
+                bgcolor: theme.palette.action.hover,
                 overflow: "hidden",
               }}
             >

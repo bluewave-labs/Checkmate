@@ -12,7 +12,7 @@ export const DialogInput = ({
   content,
   onConfirm,
   onCancel,
-  confirmColor = "accent",
+  confirmColor = "primary",
   cancelColor = "error",
   loading = false,
 }: {
@@ -21,8 +21,8 @@ export const DialogInput = ({
   content?: string;
   onConfirm?(item: any): any;
   onCancel?(item: any): any;
-  confirmColor?: "error" | "accent";
-  cancelColor?: "error" | "accent";
+  confirmColor?: "error" | "primary";
+  cancelColor?: "error" | "primary";
   loading?: boolean;
 }) => {
   return (

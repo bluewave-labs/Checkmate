@@ -52,7 +52,7 @@ export const HeaderCreate = ({
           <Button
             loading={isLoading}
             variant="contained"
-            color="accent"
+            color="primary"
             disabled={limitReached}
             onClick={() => navigate(path)}
           >

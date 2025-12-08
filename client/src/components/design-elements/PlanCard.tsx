@@ -34,7 +34,7 @@ export const PlanCard = ({
       ? theme.palette.success.main
       : plan.plan === "free"
         ? theme.palette.text.secondary
-        : theme.palette.accent.main;
+        : theme.palette.primary.main;
   const Icon = (() => {
     switch (plan.plan) {
       case "free":
@@ -98,7 +98,7 @@ export const PlanCard = ({
         flexDirection: "column",
         height: "100%",
         border: selected ? 2 : 1,
-        borderColor: selected ? theme.palette.accent.main : "divider",
+        borderColor: selected ? theme.palette.primary.main : "divider",
         transition:
           "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
         ...(selected
@@ -130,9 +130,9 @@ export const PlanCard = ({
                 size="small"
                 label="Most popular"
                 sx={{
-                  bgcolor: theme.palette.accent.main,
+                  bgcolor: theme.palette.primary.main,
                   color: theme.palette.getContrastText(
-                    theme.palette.accent.main
+                    theme.palette.primary.main
                   ),
                 }}
               />
@@ -171,7 +171,7 @@ export const PlanCard = ({
           <Button
             loading={loading}
             variant="contained"
-            color="accent"
+            color="primary"
             onClick={(e) => {
               e.stopPropagation();
               onClick?.(plan.plan);

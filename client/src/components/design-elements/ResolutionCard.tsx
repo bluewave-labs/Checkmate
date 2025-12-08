@@ -22,9 +22,7 @@ export const ResolutionCard = ({
   durationLabel,
 }: ResolutionCardProps) => {
   const theme = useTheme();
-  const bg = resolved
-    ? theme.palette.success.lowContrast
-    : theme.palette.error.lowContrast;
+  const bg = resolved ? theme.palette.success.light : theme.palette.error.light;
 
   return (
     <BaseBox sx={{ width: "100%", maxWidth: 420 }}>

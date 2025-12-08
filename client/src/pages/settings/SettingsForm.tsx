@@ -309,7 +309,7 @@ export const SettingsForm = ({
                 <Button
                   loading={loading}
                   variant="contained"
-                  color="accent"
+                  color="primary"
                   onClick={() => {
                     onTest(formValues);
                   }}
@@ -320,7 +320,7 @@ export const SettingsForm = ({
                   loading={loading}
                   type="submit"
                   variant="contained"
-                  color="accent"
+                  color="primary"
                 >
                   Save e-mail settings
                 </Button>
@@ -364,7 +364,7 @@ export const SettingsForm = ({
               >
                 <Button
                   variant="contained"
-                  color="accent"
+                  color="primary"
                   type="submit"
                   loading={loading}
                 >

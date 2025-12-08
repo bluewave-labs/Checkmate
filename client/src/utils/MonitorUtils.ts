@@ -36,10 +36,10 @@ export const getValuePalette = (value: ValueType): PaletteKey => {
 
 export const getStatusColor = (status: MonitorStatus, theme: any): string => {
   const statusColors: Record<MonitorStatus, string> = {
-    up: theme.palette.success.lowContrast,
-    down: theme.palette.error.lowContrast,
-    paused: theme.palette.warning.lowContrast,
-    initializing: theme.palette.warning.lowContrast,
+    up: theme.palette.success.light,
+    down: theme.palette.error.light,
+    paused: theme.palette.warning.light,
+    initializing: theme.palette.warning.light,
   };
   return statusColors[status];
 };
@@ -58,9 +58,9 @@ export const getInfraGaugeColor = (val: number, theme: any) => {
   if (val < 50) {
     return theme.palette.success.main;
   } else if (val < 80) {
-    return theme.palette.warning.lowContrast;
+    return theme.palette.warning.light;
   } else {
-    return theme.palette.error.lowContrast;
+    return theme.palette.error.light;
   }
 };
 

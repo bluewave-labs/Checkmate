@@ -15,16 +15,16 @@ export const SplitBox = ({
   return (
     <Stack
       direction={isSmall ? "column" : "row"}
-      bgcolor={theme.palette.primary.main}
+      bgcolor={theme.palette.background.paper}
       border={1}
-      borderColor={theme.palette.primary.lowContrast}
+      borderColor={theme.palette.divider}
       borderRadius={theme.spacing(2)}
     >
       <Box
         padding={theme.spacing(15)}
         borderRight={isSmall ? 0 : 1}
         borderBottom={isSmall ? 1 : 0}
-        borderColor={theme.palette.primary.lowContrast}
+        borderColor={theme.palette.divider}
         flex={0.7}
         sx={{
           background:

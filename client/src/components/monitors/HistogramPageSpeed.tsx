@@ -68,14 +68,14 @@ export const HistogramPageSpeed = ({
           style={{ cursor: "pointer" }}
         >
           <CartesianGrid
-            stroke={theme.palette.primary.lowContrast}
+            stroke={theme.palette.divider}
             strokeWidth={1}
             strokeOpacity={1}
             fill="transparent"
             vertical={false}
           />
           <Tooltip
-            cursor={{ stroke: theme.palette.primary.lowContrast }}
+            cursor={{ stroke: theme.palette.divider }}
             content={<HistogramPageSpeedTooltip />}
           />
           <defs>

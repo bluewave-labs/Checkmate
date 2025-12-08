@@ -38,7 +38,7 @@ export const XTick: React.FC<XTickProps> = ({ x, y, payload, range }) => {
       x={x}
       y={y + 10}
       textAnchor="middle"
-      fill={theme.palette.primary.contrastTextTertiary}
+      fill={theme.palette.text.secondary}
       fontSize={11}
       fontWeight={400}
     >
@@ -98,7 +98,7 @@ export const ChartResponseTime = ({
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={normalized?.slice().reverse()}>
           <CartesianGrid
-            stroke={theme.palette.primary.lowContrast}
+            stroke={theme.palette.divider}
             strokeWidth={1}
             strokeOpacity={1}
             fill="transparent"
@@ -108,12 +108,12 @@ export const ChartResponseTime = ({
             <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
               <stop
                 offset="0%"
-                stopColor={theme.palette.accent.main}
+                stopColor={theme.palette.primary.main}
                 stopOpacity={0.8}
               />
               <stop
                 offset="100%"
-                stopColor={theme.palette.accent.light}
+                stopColor={theme.palette.primary.light}
                 stopOpacity={0}
               />
             </linearGradient>
@@ -138,7 +138,7 @@ export const ChartResponseTime = ({
           <Area
             type="monotone"
             dataKey="normalResponseTime"
-            stroke={theme.palette.accent.main}
+            stroke={theme.palette.primary.main}
             fill="url(#colorUv)"
           />
         </AreaChart>

@@ -61,7 +61,7 @@ export const Gauge = ({
       position={"relative"}
       width={radius}
       height={radius}
-      bgcolor={theme.palette.primary.main}
+      bgcolor={theme.palette.background.paper}
       borderRadius={"50%"}
     >
       <svg

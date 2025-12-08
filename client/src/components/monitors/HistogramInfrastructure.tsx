@@ -145,7 +145,7 @@ export const HistogramInfrastructure = ({
           <YAxis domain={title === "temp" ? tempYDomain : yDomain} />
 
           <CartesianGrid
-            stroke={theme.palette.primary.lowContrast}
+            stroke={theme.palette.divider}
             strokeWidth={1}
             strokeOpacity={1}
             fill="transparent"

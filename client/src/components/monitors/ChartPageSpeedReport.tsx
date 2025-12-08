@@ -61,7 +61,7 @@ export const ChartPageSpeedReport = ({ latestCheck }: { latestCheck: any }) => {
     {
       value: 100,
       fill: alpha(
-        theme.palette[pageSpeedPalette].lowContrast || "#ffffff",
+        theme.palette[pageSpeedPalette].light || "#ffffff",
         0.6
       ),
       stroke: "none",

@@ -14,8 +14,8 @@ export const HeatmapResponseTimeTooltip: React.FC<{
   const theme = useTheme();
 
   const getColor = (status: string) => {
-    if (status === "up") return theme.palette.success.lowContrast;
-    if (status === "down") return theme.palette.error.lowContrast;
+    if (status === "up") return theme.palette.success.light;
+    if (status === "down") return theme.palette.error.light;
   };
 
   if (check.status === "placeholder") {
@@ -37,7 +37,7 @@ export const HeatmapResponseTimeTooltip: React.FC<{
           sx={{
             backgroundColor: theme.palette.secondary.main,
             border: 1,
-            borderColor: theme.palette.primary.lowContrast,
+            borderColor: theme.palette.divider,
             borderRadius: theme.shape.borderRadius,
             p: theme.spacing(4),
           }}

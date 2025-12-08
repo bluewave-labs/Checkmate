@@ -16,7 +16,7 @@ export const StatusHeader = ({
   return (
     <Stack
       width={"100%"}
-      bgcolor={theme.palette[headerConfig.paletteKey].lowContrast}
+      bgcolor={theme.palette[headerConfig.paletteKey].light}
       borderRadius={theme.shape.borderRadius}
       padding={theme.spacing(4)}
     >

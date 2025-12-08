@@ -119,7 +119,7 @@ export const IncidentTable = ({
                 refetch();
               }}
               variant="contained"
-              color="accent"
+              color="primary"
             >
               Resolve
             </Button>

@@ -15,7 +15,7 @@ export const BulletPointCheck = ({
   const colors: Record<string, string | undefined> = {
     success: theme.palette.success.main,
     error: theme.palette.error.main,
-    info: theme.palette.primary.contrastTextSecondary,
+    info: theme.palette.text.secondary,
   };
 
   return (
@@ -29,11 +29,7 @@ export const BulletPointCheck = ({
       />
       <Typography
         component="span"
-        color={
-          variant === "info"
-            ? theme.palette.primary.contrastTextSecondary
-            : colors[variant]
-        }
+        color={variant === "info" ? theme.palette.text.secondary : colors[variant]}
         fontWeight={450}
         sx={{
           opacity: 0.9,

@@ -53,24 +53,20 @@ export const HeatmapResponseTime = ({
         {data.map((check, index) => {
           const statusBg =
             check.status === "placeholder"
-              ? theme.palette.primary.lowContrast
+              ? theme.palette.action.hover
               : check.status === "up"
-                ? theme.palette.success.lowContrast
-                : theme.palette.error.lowContrast;
+                ? theme.palette.success.light
+                : theme.palette.error.light;
           const respBg =
             check.status === "placeholder"
-              ? theme.palette.primary.lowContrast
+              ? theme.palette.action.hover
               : getResponseColor(check.responseTime, {
-                  start: theme.palette.success.lowContrast,
-                  mid: theme.palette.warning.lowContrast,
-                  end: theme.palette.error.lowContrast,
+                  start: theme.palette.success.main,
+                  mid: theme.palette.warning.main,
+                  end: theme.palette.error.main,
                 });
           const statusBorder =
-            check.status === "placeholder"
-              ? theme.palette.primary.lowContrast
-              : check.status === "up"
-                ? theme.palette.success.main
-                : theme.palette.error.main;
+            check.status === "placeholder" ? theme.palette.divider : check.status === "up" ? theme.palette.success.main : theme.palette.error.main;
 
           return (
             <HeatmapResponseTimeTooltip key={`${check}-${index}`} check={check}>

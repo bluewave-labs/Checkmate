@@ -34,7 +34,7 @@ const XLabel = ({
         dy={-3}
         textAnchor="start"
         fontSize={11}
-        fill={theme.palette.primary.contrastTextTertiary}
+        fill={theme.palette.text.secondary}
       >
         {formatDateWithTz(p1._id, dateFormat, uiTimezone)}
       </text>
@@ -44,7 +44,7 @@ const XLabel = ({
         dy={-3}
         textAnchor="end"
         fontSize={11}
-        fill={theme.palette.primary.contrastTextTertiary}
+        fill={theme.palette.text.secondary}
       >
         {formatDateWithTz(p2._id, dateFormat, uiTimezone)}
       </text>
@@ -118,7 +118,7 @@ export const HistogramStatus = ({
         <ResponsiveContainer width="100%" height={155}>
           <BarChart data={normalChecks}>
             <XAxis
-              stroke={theme.palette.primary.lowContrast}
+              stroke={theme.palette.divider}
               height={15}
               tick={false}
               label={
