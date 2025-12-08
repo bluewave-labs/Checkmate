@@ -24,7 +24,7 @@ const IncidentsPage = () => {
   const [range, setRange] = useState("all");
   const [resolved, setResolved] = useState<boolean | null>(false);
 
-  const { response, isValidating, refetch } = useGet<
+  const { response, loading, refetch } = useGet<
     ApiResponse<{ count: number; incidents: IIncident[] }>
   >(
     `/incidents?page=${page}&rowsPerPage=${rowsPerPage}&range=${range}${
@@ -107,7 +107,7 @@ const IncidentsPage = () => {
         <HeaderRange
           range={range}
           setRange={setRange}
-          loading={isValidating}
+          loading={loading}
           all={true}
         />
       </Stack>

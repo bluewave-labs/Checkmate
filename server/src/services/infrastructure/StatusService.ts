@@ -256,7 +256,7 @@ class StatusService implements IStatusService {
         metrics.disk.threshold !== undefined
       ) {
         breaches.push(
-          `disk ${metrics.disk.value}% > ${metrics.disk.threshold}%`
+          `disk ${metrics.disk.value.toFixed(2)}% > ${metrics.disk.threshold}%`
         );
       }
 

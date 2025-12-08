@@ -23,7 +23,9 @@ export const HeaderRange = ({
       alignItems={"center"}
       justifyContent="flex-end"
     >
-      <Typography variant="body2">{`Showing statistics for past ${range}`}</Typography>
+      <Typography variant="body2">
+        {range === "all" ? "Showing all" : `Showing past ${range}`}
+      </Typography>
       <ButtonGroup
         orientation={isSmall ? "vertical" : "horizontal"}
         fullWidth={isSmall}
@@ -31,20 +33,40 @@ export const HeaderRange = ({
         color="secondary"
       >
         {all && (
-          <Button onClick={() => setRange("all")} loading={loading}>
+          <Button
+            variant={range === "all" ? "contained" : "outlined"}
+            onClick={() => setRange("all")}
+            loading={loading}
+          >
             All
           </Button>
         )}
-        <Button onClick={() => setRange("2h")} loading={loading}>
+        <Button
+          variant={range === "2h" ? "contained" : "outlined"}
+          onClick={() => setRange("2h")}
+          loading={loading}
+        >
           Recent
         </Button>
-        <Button onClick={() => setRange("24h")} loading={loading}>
+        <Button
+          variant={range === "24h" ? "contained" : "outlined"}
+          onClick={() => setRange("24h")}
+          loading={loading}
+        >
           Day
         </Button>
-        <Button onClick={() => setRange("7d")} loading={loading}>
+        <Button
+          variant={range === "7d" ? "contained" : "outlined"}
+          onClick={() => setRange("7d")}
+          loading={loading}
+        >
           7 days
         </Button>
-        <Button onClick={() => setRange("30d")} loading={loading}>
+        <Button
+          variant={range === "30d" ? "contained" : "outlined"}
+          onClick={() => setRange("30d")}
+          loading={loading}
+        >
           30 days
         </Button>
       </ButtonGroup>
