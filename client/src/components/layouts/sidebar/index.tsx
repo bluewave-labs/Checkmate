@@ -38,8 +38,9 @@ export const SideBar = () => {
   return (
     <Stack
       component="aside"
-      position="sticky"
+      position={isSmall ? "fixed" : "sticky"}
       top={0}
+      left={0}
       minHeight={"100vh"}
       maxHeight={"100vh"}
       paddingTop={theme.spacing(6)}
@@ -49,6 +50,8 @@ export const SideBar = () => {
       width={sideBarOpen ? EXPANDED_WIDTH : COLLAPSED_WIDTH}
       sx={{
         transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
+        zIndex: isSmall ? (t) => t.zIndex.drawer : "auto",
+        backgroundColor: theme.palette.background.paper,
       }}
     >
       <CollapseButton sidebarOpen={sideBarOpen} />
@@ -102,9 +105,7 @@ export const SideBar = () => {
           );
         })}
       </List>
-      <Divider
-        sx={{ mt: "auto", borderColor: theme.palette.divider }}
-      />
+      <Divider sx={{ mt: "auto", borderColor: theme.palette.divider }} />
       <BottomControls />
     </Stack>
   );
