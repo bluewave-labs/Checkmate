@@ -29,7 +29,7 @@ const StatusPages = () => {
 
   const statusPages = response?.data || [];
 
-  const { deleteFn, loading: deleting } = useDelete<any>();
+  const { deleteFn, loading: isDeleting } = useDelete<any>();
 
   const getActions = (statusPage: IStatusPage): ActionMenuItem[] => {
     return [
@@ -122,7 +122,7 @@ const StatusPages = () => {
       />
       <HeaderCreate
         label={"Create a new Status Page"}
-        isLoading={isValidating || deleting}
+        isLoading={isValidating || isDeleting}
         path="/status-pages/create"
         entitlement="statusPagesMax"
         entitlementCount={statusPages.length}
@@ -141,6 +141,7 @@ const StatusPages = () => {
         open={open}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </BasePageWithStates>
   );

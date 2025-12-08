@@ -20,7 +20,7 @@ const TeamsPage = () => {
   const isDialogOpen = Boolean(selectedTeam);
   const { t } = useTranslation();
   const { response, loading, refetch } = useGet<ApiResponse<any>>("/teams");
-  const { deleteFn } = useDelete();
+  const { deleteFn, loading: isDeleting } = useDelete();
   const teams = response?.data || [];
 
   const handleConfirm = async () => {
@@ -109,6 +109,7 @@ const TeamsPage = () => {
         content={t("deleteDialogDescription")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </BasePage>
   );

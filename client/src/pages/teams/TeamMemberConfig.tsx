@@ -13,7 +13,7 @@ import { mutate } from "swr";
 
 const TeamMemberConfig = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const { deleteFn, loading: deleting } = useDelete();
+  const { deleteFn, loading: isDeleting } = useDelete();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { id, memberId } = useParams();
@@ -65,7 +65,7 @@ const TeamMemberConfig = () => {
             variant="contained"
             color="error"
             onClick={() => setDialogOpen(true)}
-            disabled={deleting}
+            disabled={isDeleting}
           >
             {t("delete")}
           </Button>
@@ -78,6 +78,7 @@ const TeamMemberConfig = () => {
         content={"Delete team member"}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </>
   );

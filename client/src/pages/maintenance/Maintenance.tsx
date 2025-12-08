@@ -151,6 +151,7 @@ const MaintenancePage = () => {
         open={open}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </BasePageWithStates>
   );

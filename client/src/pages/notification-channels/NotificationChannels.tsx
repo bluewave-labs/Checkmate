@@ -28,7 +28,7 @@ const NotificationChannelsPage = () => {
   >("/notification-channels", {}, {});
 
   const { patch, loading: pausing } = usePatch<{}, INotificationChannel>();
-  const { deleteFn, loading: deleting } =
+  const { deleteFn, loading: isDeleting } =
     useDelete<ApiResponse<INotificationChannel>>();
 
   const notificationChannels = response?.data || [];
@@ -138,7 +138,7 @@ const NotificationChannelsPage = () => {
       />
       <HeaderCreate
         label={"Create a new notification channel"}
-        isLoading={isValidating || pausing || deleting}
+        isLoading={isValidating || pausing || isDeleting}
         path="/notification-channels/create"
         entitlement={"notificationChannelsMax"}
         entitlementCount={notificationChannels.length}
@@ -157,6 +157,7 @@ const NotificationChannelsPage = () => {
         open={open}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
+        loading={isDeleting}
       />
     </BasePageWithStates>
   );
