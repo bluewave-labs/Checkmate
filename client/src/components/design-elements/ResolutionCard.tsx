@@ -27,7 +27,7 @@ export const ResolutionCard = ({
     : theme.palette.error.lowContrast;
 
   return (
-    <BaseBox sx={{ maxWidth: 560 }}>
+    <BaseBox sx={{ width: "100%", maxWidth: 420 }}>
       <Box sx={{ bgcolor: bg, p: 6 }}>
         <Typography variant="h6" color="textPrimary">
           Resolution
