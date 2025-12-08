@@ -1,10 +1,6 @@
 import { Outlet } from "react-router";
 import Stack from "@mui/material/Stack";
-import {
-  SideBar,
-  COLLAPSED_WIDTH,
-  EXPANDED_WIDTH,
-} from "@/components/layouts/sidebar";
+import { SideBar, COLLAPSED_WIDTH } from "@/components/layouts/sidebar";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 const RootLayout = () => {

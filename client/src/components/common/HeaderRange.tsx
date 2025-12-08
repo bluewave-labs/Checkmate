@@ -36,6 +36,14 @@ export const HeaderRange = ({
             variant="contained"
             onClick={() => setRange("all")}
             loading={loading}
+            sx={
+              range === "all"
+                ? {
+                    backgroundColor: theme.palette.secondary.dark,
+                    color: theme.palette.secondary.contrastText,
+                  }
+                : undefined
+            }
           >
             All
           </Button>
@@ -44,6 +52,14 @@ export const HeaderRange = ({
           variant="contained"
           onClick={() => setRange("2h")}
           loading={loading}
+          sx={
+            range === "2h"
+              ? {
+                  backgroundColor: theme.palette.secondary.dark,
+                  color: theme.palette.secondary.contrastText,
+                }
+              : undefined
+          }
         >
           Recent
         </Button>
@@ -51,6 +67,14 @@ export const HeaderRange = ({
           variant="contained"
           onClick={() => setRange("24h")}
           loading={loading}
+          sx={
+            range === "24h"
+              ? {
+                  backgroundColor: theme.palette.secondary.dark,
+                  color: theme.palette.secondary.contrastText,
+                }
+              : undefined
+          }
         >
           Day
         </Button>
@@ -58,6 +82,14 @@ export const HeaderRange = ({
           variant="contained"
           onClick={() => setRange("7d")}
           loading={loading}
+          sx={
+            range === "7d"
+              ? {
+                  backgroundColor: theme.palette.secondary.dark,
+                  color: theme.palette.secondary.contrastText,
+                }
+              : undefined
+          }
         >
           7 days
         </Button>
@@ -65,6 +97,14 @@ export const HeaderRange = ({
           variant="contained"
           onClick={() => setRange("30d")}
           loading={loading}
+          sx={
+            range === "30d"
+              ? {
+                  backgroundColor: theme.palette.secondary.dark,
+                  color: theme.palette.secondary.contrastText,
+                }
+              : undefined
+          }
         >
           30 days
         </Button>
