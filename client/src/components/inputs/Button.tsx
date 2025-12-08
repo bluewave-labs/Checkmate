@@ -4,6 +4,16 @@ import { useTheme } from "@mui/material/styles";
 
 export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
   const theme = useTheme();
+  const outlinedSx =
+    props.variant === "outlined"
+      ? {
+          color: theme.palette.text.primary,
+          borderColor: theme.palette.divider,
+          "&:hover": {
+            borderColor: theme.palette.text.secondary,
+          },
+        }
+      : {};
   return (
     <Button
       {...props}
@@ -19,6 +29,7 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
         "&:hover": {
           boxShadow: "none",
         },
+        ...outlinedSx,
         ...sx,
       }}
     />

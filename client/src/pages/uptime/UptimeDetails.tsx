@@ -29,7 +29,7 @@ const UptimeDetailsPage = () => {
   // Local state
   const [range, setRange] = useState("2h");
 
-  const { response, isValidating, error, refetch } = useGet<
+  const { response, loading, error, refetch } = useGet<
     ApiResponse<IMonitorWithMonitorStats>
   >(
     `/monitors/${id}?embedChecks=true&range=${range}`,
@@ -40,7 +40,7 @@ const UptimeDetailsPage = () => {
 
   const {
     response: upResponse,
-    isValidating: upIsValidating,
+    loading: upIsLoading,
     error: upError,
   } = useGet<ApiResponse<IMonitorWithMonitorStats>>(
     `/monitors/${id}?embedChecks=true&range=${range}&status=up`,
@@ -51,7 +51,7 @@ const UptimeDetailsPage = () => {
   const {
     response: downResponse,
     error: downError,
-    isValidating: downIsValidating,
+    loading: downIsLoading,
   } = useGet<ApiResponse<IMonitorWithMonitorStats>>(
     `/monitors/${id}?embedChecks=true&range=${range}&status=down`,
     {},
@@ -144,7 +144,7 @@ const UptimeDetailsPage = () => {
         />
       </Stack>
       <HeaderRange
-        loading={isValidating || upIsValidating || downIsValidating}
+        loading={loading || upIsLoading || downIsLoading}
         range={range}
         setRange={setRange}
       />

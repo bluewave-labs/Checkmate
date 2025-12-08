@@ -104,6 +104,9 @@ export const theme = (mode: string, palette: any) =>
           },
         },
       },
+      MuiButton: {
+        styleOverrides: {},
+      },
     },
     shape: {
       borderRadius: 2,

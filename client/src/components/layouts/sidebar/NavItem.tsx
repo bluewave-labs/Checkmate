@@ -102,7 +102,6 @@ export const NavItem = ({
         >
           <Typography
             variant="body1"
-            color={theme.palette.primary.contrastText}
             sx={{
               fontWeight: fontWeight,
               opacity: 0.9,

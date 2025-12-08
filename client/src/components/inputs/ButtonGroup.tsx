@@ -65,9 +65,6 @@ export const ButtonGroupInput: React.FC<ButtonGroupProps> = ({
         sx={{
           boxShadow: "none",
           width: "100%",
-          "& .MuiButtonGroup-grouped": {
-            borderColor: theme.palette.divider,
-          },
           ...sx,
         }}
       >

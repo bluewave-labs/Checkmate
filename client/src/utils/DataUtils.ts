@@ -59,20 +59,46 @@ export const getResponseColor = (
   if (!safe.mid) safe.mid = "#ff9800"; // fallback orange
   if (!safe.end) safe.end = "#f44336"; // fallback red
 
+  const toHex = (c: number) => c.toString(16).padStart(2, "0");
+  const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)));
+  const rgbToHex = (r: number, g: number, b: number) => `#${toHex(clamp(r))}${toHex(clamp(g))}${toHex(clamp(b))}`;
+
+  const normalizeToHex = (value: string) => {
+    const v = value.trim();
+    if (v.startsWith("#")) {
+      const h = v.slice(1);
+      const full =
+        h.length === 3
+          ? h.split("").map((c) => c + c).join("")
+          : h.substring(0, 6);
+      return `#${full.toLowerCase()}`;
+    }
+    const m = v
+      .replace(/\s+/g, "")
+      .match(/^rgba?\((\d{1,3}),(\d{1,3}),(\d{1,3})(?:,(0|0?\.\d+|1))?\)$/i);
+    if (m) {
+      const r = parseInt(m[1], 10);
+      const g = parseInt(m[2], 10);
+      const b = parseInt(m[3], 10);
+      return rgbToHex(r, g, b);
+    }
+    // Fallback neutral
+    return "#7f7f7f";
+  };
+
   const parseHex = (hex: string) => {
     const h = hex.replace("#", "");
     const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
     const n = parseInt(full, 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
   };
-  const toHex = (c: number) => c.toString(16).padStart(2, "0");
   const mix = (a: number, b: number, t: number) => Math.round(a + (b - a) * t);
 
   const v = Math.max(0, ms);
   if (v <= 300) {
     const t = v / 300; // 0..1 from start->mid
-    const s = parseHex(safe.start);
-    const m = parseHex(safe.mid);
+    const s = parseHex(normalizeToHex(safe.start));
+    const m = parseHex(normalizeToHex(safe.mid));
     const r = mix(s.r, m.r, t);
     const g = mix(s.g, m.g, t);
     const b = mix(s.b, m.b, t);
@@ -80,12 +106,12 @@ export const getResponseColor = (
   }
   if (v <= 600) {
     const t = (v - 300) / 300; // 0..1 from mid->end
-    const m = parseHex(safe.mid);
-    const e = parseHex(safe.end);
+    const m = parseHex(normalizeToHex(safe.mid));
+    const e = parseHex(normalizeToHex(safe.end));
     const r = mix(m.r, e.r, t);
     const g = mix(m.g, e.g, t);
     const b = mix(m.b, e.b, t);
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
-  return safe.end;
+  return normalizeToHex(safe.end);
 };

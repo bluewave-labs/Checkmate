@@ -29,12 +29,11 @@ export const HeaderRange = ({
       <ButtonGroup
         orientation={isSmall ? "vertical" : "horizontal"}
         fullWidth={isSmall}
-        variant="contained"
         color="secondary"
       >
         {all && (
           <Button
-            variant={range === "all" ? "contained" : "outlined"}
+            variant="contained"
             onClick={() => setRange("all")}
             loading={loading}
           >
@@ -42,28 +41,28 @@ export const HeaderRange = ({
           </Button>
         )}
         <Button
-          variant={range === "2h" ? "contained" : "outlined"}
+          variant="contained"
           onClick={() => setRange("2h")}
           loading={loading}
         >
           Recent
         </Button>
         <Button
-          variant={range === "24h" ? "contained" : "outlined"}
+          variant="contained"
           onClick={() => setRange("24h")}
           loading={loading}
         >
           Day
         </Button>
         <Button
-          variant={range === "7d" ? "contained" : "outlined"}
+          variant="contained"
           onClick={() => setRange("7d")}
           loading={loading}
         >
           7 days
         </Button>
         <Button
-          variant={range === "30d" ? "contained" : "outlined"}
+          variant="contained"
           onClick={() => setRange("30d")}
           loading={loading}
         >

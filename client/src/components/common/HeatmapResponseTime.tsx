@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-// Using strip + square; icons removed
 import { useTheme } from "@mui/material/styles";
 import type { ICheck } from "@/types/check";
 import { getResponseColor } from "@/utils/DataUtils";
@@ -20,7 +19,6 @@ export const HeatmapResponseTime = ({
   responseCellSx,
 }: HeatmapResponseTimeProps) => {
   const theme = useTheme();
-
   if (!gap) {
     gap = theme.spacing(0.5);
   }
@@ -66,7 +64,11 @@ export const HeatmapResponseTime = ({
                   end: theme.palette.error.main,
                 });
           const statusBorder =
-            check.status === "placeholder" ? theme.palette.divider : check.status === "up" ? theme.palette.success.main : theme.palette.error.main;
+            check.status === "placeholder"
+              ? theme.palette.divider
+              : check.status === "up"
+                ? theme.palette.success.main
+                : theme.palette.error.main;
 
           return (
             <HeatmapResponseTimeTooltip key={`${check}-${index}`} check={check}>
@@ -83,9 +85,31 @@ export const HeatmapResponseTime = ({
                     gap: theme.spacing(2),
                   }}
                 >
-                  <Box sx={{ position: "relative", width: "100%", aspectRatio: "10" }}>
-                    <Box sx={{ position: "absolute", inset: 0, bgcolor: statusBg, borderRadius: theme.spacing(0.5), ...availabilityCellSx }} />
-                    <Box sx={{ position: "absolute", inset: 0, pointerEvents: "none", borderRadius: theme.spacing(0.5), boxShadow: `inset 0 0 0 2px ${statusBorder}` }} />
+                  <Box
+                    sx={{
+                      position: "relative",
+                      width: "100%",
+                      aspectRatio: "10",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        inset: 0,
+                        bgcolor: statusBg,
+                        borderRadius: theme.spacing(0.5),
+                        ...availabilityCellSx,
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        inset: 0,
+                        pointerEvents: "none",
+                        borderRadius: theme.spacing(0.5),
+                        boxShadow: `inset 0 0 0 2px ${statusBorder}`,
+                      }}
+                    />
                   </Box>
                   <Box
                     sx={{
