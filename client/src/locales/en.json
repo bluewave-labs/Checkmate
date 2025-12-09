@@ -535,7 +535,7 @@
   "infrastructureEditYour": "Edit your",
   "infrastructureMonitor": {
     "fallback": {
-      "actionButton": "Let's create your first infrastructure monitor!",
+      "actionButton": "Create a monitor!",
       "checks": [
         "Track the performance of your servers",
         "Identify bottlenecks and optimize usage",
@@ -590,7 +590,7 @@
   "maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
   "maintenanceWindow": {
     "fallback": {
-      "actionButton": "Let's create your first maintenance window!",
+      "actionButton": "Create a maintenance window!",
       "checks": [
         "Mark your maintenance periods",
         "Eliminate any misunderstandings",
@@ -734,7 +734,7 @@
     },
     "enableNotifications": "Enable {{platform}} notifications",
     "fallback": {
-      "actionButton": "Let's create your first notification channel!",
+      "actionButton": "Create a notification channel!",
       "checks": [
         "Alert teams about downtime or performance issues",
         "Let engineers know when incidents happen",
@@ -791,7 +791,7 @@
   "packetsSent": "Packets Sent",
   "pageSpeedMonitor": {
     "fallback": {
-      "actionButton": "Create a PageSpeed monitor!",
+      "actionButton": "Create a monitor!",
       "checks": [
         "Report on the user experience of a page",
         "Help analyze webpage speed",
@@ -1001,7 +1001,7 @@
     "deleteFailed": "Failed to delete status page",
     "deleteSuccess": "Status page deleted successfully",
     "fallback": {
-      "actionButton": "Let's create your first status page!",
+      "actionButton": "Create a status page!",
       "checks": [
         "Monitor and display the health of your services in real time",
         "Track multiple services and share their status",
@@ -1160,7 +1160,7 @@
   },
   "uptimeMonitor": {
     "fallback": {
-      "actionButton": "Let's create your first uptime monitor!",
+      "actionButton": "Create a monitor!",
       "checks": [
         "Check if websites or servers are online & responsive",
         "Alert teams about downtime or performance issues",
