@@ -129,7 +129,7 @@ const NotificationChannelsPage = () => {
       loading={isValidating}
       error={error}
       items={notificationChannels}
-      actionButtonText="Create a new notification channel"
+      actionButtonText="Create a channel"
       actionLink="/notification-channels/create"
     >
       <InfoBox

@@ -243,7 +243,7 @@
   "cpuUsage": "CPU usage",
   "createA": "Create a",
   "createMaintenance": "Create maintenance",
-  "createMaintenanceWindow": "Create maintenance window",
+  "createMaintenanceWindow": "Create window",
   "createMaintenanceWindowPage": {
     "generalSettingsTitle": "General settings",
     "generalSettingsDescription": "General maintenance window settings",

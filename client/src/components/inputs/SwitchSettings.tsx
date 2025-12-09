@@ -66,11 +66,6 @@ export const SettingsSwitch = () => {
     [perms]
   );
 
-  console.log("ENV VAR: ", ENV_VAR);
-  console.log("DEPLOYMENT_MODE: ", DEPLOYMENT_MODE);
-  console.log("Show billing: ", showBilling);
-  console.log(JSON.stringify(perms, null, 2));
-  console.log("IS_SAAS: ", IS_SAAS);
 
   const hasMaster = perms.includes("master");
 

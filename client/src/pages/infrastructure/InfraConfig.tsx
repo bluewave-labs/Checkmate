@@ -41,7 +41,6 @@ const InfraConfigurePage = () => {
       interval,
     };
 
-    console.log(JSON.stringify(submitData, null, 2));
 
     const result = await patch(`/monitors/${id}`, submitData);
     if (result) {

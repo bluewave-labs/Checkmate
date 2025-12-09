@@ -116,7 +116,7 @@ export const PageSpeedMonitorTable = ({
       //   id: 5,
       //   label: "Clone",
       //   action: () => {
-      //     console.log("Open clone");
+      
       //   },
       // },
       {

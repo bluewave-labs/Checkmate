@@ -2,28 +2,29 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router";
+import { setSidebarOpen } from "@/features/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/AppHooks";
 import { useTranslation } from "react-i18next";
 
 export const Logo = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const isOpen = useAppSelector((state) => state.ui.sidebarOpen);
 
   return (
     <Stack
-      pt={theme.spacing(6)}
-      pb={theme.spacing(12)}
-      pl={theme.spacing(11)}
+      pb={theme.spacing(6)}
       direction="row"
       alignItems="center"
       gap={theme.spacing(4)}
-      onClick={() => navigate("/")}
+      onClick={() => {
+        dispatch(setSidebarOpen(!isOpen));
+      }}
       sx={{ cursor: "pointer" }}
     >
       <Typography
-        pl={theme.spacing("1px")}
-        minWidth={theme.spacing(16)}
+        minWidth={39}
         minHeight={theme.spacing(16)}
         display={"flex"}
         justifyContent={"center"}

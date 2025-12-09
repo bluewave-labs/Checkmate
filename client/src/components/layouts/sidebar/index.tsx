@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
 
-import { CollapseButton } from "@/components/layouts/sidebar/CollapseButton";
+// CollapseButton removed; toggling now handled via Logo click
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -54,9 +55,8 @@ export const SideBar = () => {
         backgroundColor: theme.palette.background.paper,
       }}
     >
-      <CollapseButton sidebarOpen={sideBarOpen} />
+      {/* Sidebar collapse handled by Logo click */}
 
-      <Logo sidebarOpen={sideBarOpen} />
       <List
         component="nav"
         disablePadding
@@ -65,6 +65,7 @@ export const SideBar = () => {
           height: "100%",
         }}
       >
+        <Logo sidebarOpen={sideBarOpen} />
         {menu.map((item) => {
           const selected = location.pathname.startsWith(`/${item.path}`);
           return (

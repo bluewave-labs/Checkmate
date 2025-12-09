@@ -11,10 +11,10 @@ const RootLayout = () => {
       <SideBar />
       <Stack
         flex={1}
-        padding={12}
+        padding={6}
         overflow={"hidden"}
         sx={{
-          pl: `${(isSmall ? COLLAPSED_WIDTH : 0) + 24}px`,
+          pl: `${(isSmall ? COLLAPSED_WIDTH : 0) + 12}px`,
           backgroundColor:
             theme.palette.mode === "dark"
               ? "rgba(255, 255, 255, 0.01)"
