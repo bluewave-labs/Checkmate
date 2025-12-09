@@ -95,12 +95,15 @@ export function DataTable<
               {headers.map((header) => {
                 return (
                   <Grid container key={header.id}>
-                    <Grid size={3} display={"flex"} alignItems={"center"}>
-                      <Typography component="div" color={theme.palette.text.primary}>
+                    <Grid size={5} display={"flex"} alignItems={"center"}>
+                      <Typography
+                        component="div"
+                        color={theme.palette.text.primary}
+                      >
                         {header.content}
                       </Typography>
                     </Grid>
-                    <Grid size={9} display="flex" alignItems={"center"}>
+                    <Grid size={7} display="flex" alignItems={"center"}>
                       {header.render(row)}{" "}
                     </Grid>
                   </Grid>
