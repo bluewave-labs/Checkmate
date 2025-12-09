@@ -5,6 +5,7 @@ import {
   Server,
   AlertTriangle,
   LayoutList,
+  ListChecks,
   Wrench,
   Activity,
   LifeBuoy,
@@ -44,6 +45,11 @@ export const getMenu = (t: Function, user: IUser) => {
       name: t("menu.incidents"),
       path: "incidents",
       icon: <AlertTriangle size={20} strokeWidth={1.5} />,
+    },
+    {
+      name: t("menu.checks"),
+      path: "checks",
+      icon: <ListChecks size={20} strokeWidth={1.5} />,
     },
 
     {

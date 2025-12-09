@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { Select, Checkbox, TextInput } from "@/components/inputs";
+import { LoadingSpinner } from "@/components/design-elements";
 
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
@@ -21,6 +22,7 @@ type HeaderFilterProps = {
   onStatusesChange: (statuses: MonitorStatus[]) => void;
   searchString: string;
   onSearchStringChange?: (value: string) => void;
+  loading?: boolean;
 };
 
 const coerceValue = <T extends string>(value: string | string[]): T[] => {
@@ -37,6 +39,7 @@ export const HeaderFilter = ({
   onStatusesChange,
   searchString,
   onSearchStringChange,
+  loading = false,
 }: HeaderFilterProps) => {
   const theme = useTheme();
   const [localSearch, setLocalSearch] = useState<string>(searchString);
@@ -65,7 +68,6 @@ export const HeaderFilter = ({
   return (
     <Stack spacing={theme.spacing(4)} direction={{ xs: "column", sm: "row" }}>
       <Select
-        fieldLabel="Monitor type"
         placeholder="Monitor type"
         multiple
         value={selectedTypes}
@@ -81,7 +83,6 @@ export const HeaderFilter = ({
         ))}
       </Select>
       <Select
-        fieldLabel="Monitor status"
         placeholder="Monitor status"
         multiple
         value={selectedStatuses}
@@ -96,9 +97,10 @@ export const HeaderFilter = ({
           </MenuItem>
         ))}
       </Select>
+      <LoadingSpinner show={loading} sx={{ alignSelf: "center" }} />
       <Box flex={1} display={{ xs: "none", md: "inherit" }} />
       <TextInput
-        fieldLabel="Search"
+        placeholder="Search monitors"
         value={localSearch}
         onChange={(event) => {
           setLocalSearch(event.target.value);

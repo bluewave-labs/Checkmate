@@ -635,7 +635,8 @@
     "statusPages": "Status pages",
     "support": "Support",
     "team": "Team",
-    "uptime": "Uptime"
+    "uptime": "Uptime",
+    "checks": "Checks"
   },
   "message": "Message",
   "monitor": "monitor",

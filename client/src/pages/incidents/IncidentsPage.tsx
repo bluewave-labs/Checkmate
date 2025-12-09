@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import { Select } from "@/components/inputs";
+import { LoadingSpinner } from "@/components/design-elements";
 import { BasePage, InfoBox } from "@/components/design-elements";
 import { IncidentTable } from "@/pages/incidents/IncidentTable";
 import { HeaderRange } from "@/components/common/HeaderRange";
@@ -24,9 +25,12 @@ const IncidentsPage = () => {
   const [range, setRange] = useState("all");
   const [resolved, setResolved] = useState<boolean | null>(false);
 
-  const { response, loading, refetch } = useGet<
-    ApiResponse<{ count: number; incidents: IIncident[] }>
-  >(
+  const {
+    response,
+    loading: incidentsLoading,
+    isValidating: incidentsValidating,
+    refetch,
+  } = useGet<ApiResponse<{ count: number; incidents: IIncident[] }>>(
     `/incidents?page=${page}&rowsPerPage=${rowsPerPage}&range=${range}${
       selectedMonitorId && selectedMonitorId !== "all"
         ? `&monitorId=${selectedMonitorId}`
@@ -42,7 +46,11 @@ const IncidentsPage = () => {
     : [];
   const count = response?.data?.count || 0;
 
-  const { response: monitorResponse } = useGet<ApiResponse<IMonitor[]>>(
+  const {
+    response: monitorResponse,
+    loading: monitorsLoading,
+    isValidating: monitorsValidating,
+  } = useGet<ApiResponse<IMonitor[]>>(
     `/monitors`,
     {},
     { keepPreviousData: true }
@@ -103,11 +111,15 @@ const IncidentsPage = () => {
             <MenuItem value={"resolved"}>Resolved</MenuItem>
             <MenuItem value={"unresolved"}>Unresolved</MenuItem>
           </Select>
+          <LoadingSpinner
+            show={incidentsValidating || monitorsValidating}
+            sx={{ alignSelf: "center" }}
+          />
         </Stack>
         <HeaderRange
           range={range}
           setRange={setRange}
-          loading={loading}
+          loading={incidentsLoading || monitorsLoading}
           all={true}
         />
       </Stack>

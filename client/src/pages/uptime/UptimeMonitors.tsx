@@ -4,6 +4,7 @@ import {
   DownStatusBox,
   PausedStatusBox,
   InfoBox,
+  LoadingSpinner,
 } from "@/components/design-elements";
 import { HeaderFilter } from "@/components/monitors";
 import { HeaderCreate } from "@/components/common";
@@ -137,6 +138,7 @@ const UptimeMonitors = () => {
         entitlement="monitorsMax"
         entitlementCount={count}
       />
+      
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <UpStatusBox n={upCount} />
         <DownStatusBox n={downCount} />
@@ -152,6 +154,7 @@ const UptimeMonitors = () => {
         onStatusesChange={setSelectedStatuses}
         searchString={searchString}
         onSearchStringChange={setSearchString}
+        loading={isValidating}
       />
       <MonitorTable
         monitors={monitors}
