@@ -12,6 +12,7 @@ import QueueRoutes from "../routes/v1/queueRoute.js";
 import LogRoutes from "../routes/v1/logRoutes.js";
 import DiagnosticRoutes from "../routes/v1//diagnosticRoute.js";
 import NotificationRoutes from "../routes/v1/notificationRoute.js";
+import SummaryRoutes from "../routes/v1/summaryRoute.js"; //for Homepage widget
 
 import IncidentRoutes from "../routes/v1/incidentRoute.js";
 
@@ -42,4 +43,5 @@ export const setupRoutes = (app, controllers) => {
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
 	app.use("/api/v1/incidents", verifyJWT, incidentRoutes.getRouter());
+	app.use(SummaryRoutes); //used for Homepage widget
 };
