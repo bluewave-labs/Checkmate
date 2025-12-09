@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
 import { config } from "@/config/index";
+const ENV_VAR = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
 const DEPLOYMENT_MODE = config.DEPLOYMENT_MODE;
 const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
@@ -32,12 +33,13 @@ export const SettingsSwitch = () => {
     handleClose();
   };
 
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state: any) => state.auth.user);
 
   const orgPermissions = user?.org?.permissions || [];
   // Normalize and memoize permissions for robust checks
   const perms = useMemo(
-    () => orgPermissions.map((p) => (p ?? "").toString().trim().toLowerCase()),
+    () =>
+      orgPermissions.map((p: any) => (p ?? "").toString().trim().toLowerCase()),
     [orgPermissions]
   );
   const hasTeamEdit =
@@ -64,6 +66,8 @@ export const SettingsSwitch = () => {
     [perms]
   );
 
+  console.log("ENV VAR: ", ENV_VAR);
+  console.log("DEPLOYMENT_MODE: ", DEPLOYMENT_MODE);
   console.log("Show billing: ", showBilling);
   console.log(JSON.stringify(perms, null, 2));
   console.log("IS_SAAS: ", IS_SAAS);

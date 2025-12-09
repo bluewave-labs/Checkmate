@@ -39,7 +39,7 @@ export const ChecksTable = ({
     const headers: Header<CheckWithMonitor>[] = [
       {
         id: "monitorName",
-        content: "Monitor name",
+        content: t("incidentsTableMonitorName"),
         render: (row) => {
           return row.metadata?.monitorId?.name || "N/A";
         },
@@ -102,13 +102,7 @@ export const ChecksTable = ({
 
   return (
     <Box>
-      <Table
-        headers={headers}
-        data={checks}
-        onRowClick={(row) => {
-          alert("not yet");
-        }}
-      />
+      <Table headers={headers} data={checks} />
       <Pagination
         component="div"
         count={count}

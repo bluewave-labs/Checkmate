@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import { lighten, darken } from "@mui/material/styles";
+import { lighten } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { PaletteKey } from "@/theme/theme";
 import { BaseBox, TooltipWithInfo } from "@/components/design-elements";
