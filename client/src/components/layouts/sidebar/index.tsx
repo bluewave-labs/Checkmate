@@ -5,8 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
 
-// CollapseButton removed; toggling now handled via Logo click
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";

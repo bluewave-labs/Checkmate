@@ -10,7 +10,6 @@ import { useMemo, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
 import { config } from "@/config/index";
-const ENV_VAR = import.meta.env.VITE_APP_DEPLOYMENT_MODE;
 const DEPLOYMENT_MODE = config.DEPLOYMENT_MODE;
 const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
@@ -65,7 +64,6 @@ export const SettingsSwitch = () => {
         perms.includes("billing.all")),
     [perms]
   );
-
 
   const hasMaster = perms.includes("master");
 
