@@ -15,8 +15,12 @@ const rawMode = import.meta.env.VITE_APP_DEPLOYMENT_MODE as
   | DeploymentMode
   | string
   | undefined;
+const normalizedMode =
+  typeof rawMode === "string" ? (rawMode as string).trim().toLowerCase() : undefined;
 const DEPLOYMENT_MODE: DeploymentMode =
-  rawMode === "saas" || rawMode === "self_hosted" ? (rawMode as DeploymentMode) : "self_hosted";
+  normalizedMode === "saas" || normalizedMode === "self_hosted"
+    ? (normalizedMode as DeploymentMode)
+    : "self_hosted";
 
 export const config: IEnvConfig = {
   HOST: import.meta.env.VITE_APP_HOST || "http://localhost:5173",
