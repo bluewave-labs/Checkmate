@@ -1,11 +1,3 @@
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-EXPOSE 52345
-CMD ["node", "dist/index.js"]
 # syntax=docker/dockerfile:1.6
 
 ARG NODE_VERSION=20
@@ -24,7 +16,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-## Runtime image
+## Runtime image (target platform)
 FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-alpine
 ENV NODE_ENV=production
 WORKDIR /app
