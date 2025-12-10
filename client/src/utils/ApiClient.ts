@@ -1,10 +1,11 @@
 import axios from "axios";
 import type { AxiosError } from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
-const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+import { config } from "@/config";
+const BASE_URL = config.API_BASE_URL;
 
 const api = axios.create({
-  baseURL: BASE_URL || "http://localhost:55555/api/v2",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
