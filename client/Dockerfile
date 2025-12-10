@@ -1,5 +1,8 @@
+# syntax=docker/dockerfile:1.6
+ARG NODE_VERSION=20
+
 # Build
-FROM node:20-slim AS build
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-slim AS build
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 WORKDIR /app
 COPY package*.json ./
@@ -8,7 +11,8 @@ COPY . .
 RUN npm run build
 
 # Run stage
-FROM nginx:1.27.1-alpine
+ARG TARGETPLATFORM
+FROM --platform=$TARGETPLATFORM nginx:1.27.1-alpine
 
 # Environment variables
 COPY --from=build /app/env.sh /docker-entrypoint.d/env.sh
