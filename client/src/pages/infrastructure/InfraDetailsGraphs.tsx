@@ -1,14 +1,16 @@
 import Grid from "@mui/material/Grid";
 import { HistogramInfrastructure } from "@/components/monitors";
 
+import { useTranslation } from "react-i18next";
 import type { IInfraCheck } from "@/types/check";
 import { useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-const getChartConfigs = (theme: any, checks: IInfraCheck[]) => {
+const getChartConfigs = (theme: any, checks: IInfraCheck[], t: any) => {
   return [
     {
+      title: t("common.charts.infrastructure.memory.title"),
       type: "memory",
       dataKeys: ["memory.usage_percent"],
       strokeColor: theme.palette.primary.main,
@@ -17,6 +19,7 @@ const getChartConfigs = (theme: any, checks: IInfraCheck[]) => {
       idx: null,
     },
     {
+      title: t("common.charts.infrastructure.cpu.title"),
       type: "cpu",
       dataKeys: ["cpu.used_percent"],
       strokeColor: theme.palette.success.main,
@@ -25,6 +28,7 @@ const getChartConfigs = (theme: any, checks: IInfraCheck[]) => {
       idx: null,
     },
     {
+      title: t("common.charts.infrastructure.temp.title"),
       type: "temp",
       dataKeys: ["avg_temp"],
       strokeColor: theme.palette.error.main,
@@ -33,6 +37,7 @@ const getChartConfigs = (theme: any, checks: IInfraCheck[]) => {
       idx: null,
     },
     ...(checks[0]?.disk?.map((_, idx) => ({
+      title: t("common.charts.infrastructure.disk.title", { idx }),
       type: "disk",
       dataKeys: [`disk[${idx}].usage_percent`],
       strokeColor: theme.palette.warning.main,
@@ -52,9 +57,10 @@ export const InfraDetailsGraphs = ({
 }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const { t } = useTranslation();
   const chartConfigs = useMemo(
-    () => getChartConfigs(theme, checks),
-    [theme, checks]
+    () => getChartConfigs(theme, checks, t),
+    [theme, checks, t]
   );
   return (
     <Grid container spacing={theme.spacing(8)}>
@@ -66,7 +72,8 @@ export const InfraDetailsGraphs = ({
           >
             <HistogramInfrastructure
               range={range}
-              title={config.type}
+              title={config.title}
+              type={config.type}
               idx={config.idx}
               key={`${config.type}-${config.idx ?? ""}`}
               checks={checks}

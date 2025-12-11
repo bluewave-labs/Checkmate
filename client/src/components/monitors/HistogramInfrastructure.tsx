@@ -87,6 +87,7 @@ const createGradient = ({
 export const HistogramInfrastructure = ({
   range,
   title,
+  type,
   idx,
   checks,
   xKey,
@@ -101,6 +102,7 @@ export const HistogramInfrastructure = ({
 }: {
   range: string;
   title: string;
+  type: string;
   idx: number | null;
   checks: IInfraCheck[];
   xKey: string;
@@ -118,7 +120,7 @@ export const HistogramInfrastructure = ({
 
   let avgTemps: { _id: string; avg_temp: number | null }[] = [];
   let tempYDomain: number[] = [];
-  if (title === "temp") {
+  if (type === "temp") {
     avgTemps = checks.map((check) => {
       const temps = check.cpu.temperature || [];
       if (temps.length === 0) return { ...check, avg_temp: null };
@@ -135,14 +137,14 @@ export const HistogramInfrastructure = ({
   }
 
   return (
-    <BaseChart icon={null} title={idx !== null ? title + ` ${idx}` : title}>
+    <BaseChart icon={null} title={title}>
       <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={title === "temp" ? avgTemps : checks}>
+        <AreaChart data={type === "temp" ? avgTemps : checks}>
           <XAxis
             dataKey={xKey}
             tick={(props) => <XTick {...props} range={range} />}
           />
-          <YAxis domain={title === "temp" ? tempYDomain : yDomain} />
+          <YAxis domain={type === "temp" ? tempYDomain : yDomain} />
 
           <CartesianGrid
             stroke={theme.palette.divider}

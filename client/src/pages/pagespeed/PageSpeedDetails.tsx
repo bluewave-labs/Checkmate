@@ -5,6 +5,7 @@ import { HistogramPageSpeedScores } from "@/components/monitors/HistogramPageSpe
 import { ChartPageSpeedReport } from "@/components/monitors/ChartPageSpeedReport";
 import { ChartPageSpeedReportLegend } from "@/components/monitors/ChartPageSpeedReportLegend";
 
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { useTheme } from "@mui/material/styles";
@@ -18,6 +19,7 @@ import { config } from "@/config/index";
 
 const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 const PageSpeedDetailsPage = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { id } = useParams();
   const [range, setRange] = useState("2h");
@@ -62,13 +64,13 @@ const PageSpeedDetailsPage = () => {
       <Stack direction="row" gap={theme.spacing(8)}>
         <StatBox
           palette={palette}
-          title="Active for"
+          title={t("monitors.common.stats.activeFor")}
           subtitle={prettyMilliseconds(streakDuration, {
             secondsDecimalDigits: 0,
           })}
         />
         <StatBox
-          title="Last check"
+          title={t("monitors.common.stats.lastCheck")}
           subtitle={
             lastChecked >= 0
               ? `${prettyMilliseconds(lastChecked, {
@@ -78,7 +80,7 @@ const PageSpeedDetailsPage = () => {
           }
         />
         <StatBox
-          title="Last response time"
+          title={t("monitors.common.stats.lastResponseTime")}
           subtitle={
             stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"
           }

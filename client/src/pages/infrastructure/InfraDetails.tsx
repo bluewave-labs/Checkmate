@@ -5,6 +5,7 @@ import prettyMilliseconds from "pretty-ms";
 import { getStatusPalette } from "@/utils/MonitorUtils";
 import { InfraDetailsGraphs } from "@/pages/infrastructure/InfraDetailsGraphs";
 
+import { useTranslation } from "react-i18next";
 import { useGet, usePatch } from "@/hooks/UseApi";
 import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
@@ -25,6 +26,7 @@ import { config } from "@/config/index";
 const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const InfraDetailsPage = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { id } = useParams();
   const [range, setRange] = useState("2h");
@@ -68,13 +70,13 @@ const InfraDetailsPage = () => {
       <Stack direction="row" gap={theme.spacing(8)} flexWrap={"wrap"}>
         <StatBox
           palette={palette}
-          title="Active for"
+          title={t("monitors.common.stats.activeFor")}
           subtitle={prettyMilliseconds(streakDuration, {
             secondsDecimalDigits: 0,
           })}
         />
         <StatBox
-          title="Last check"
+          title={t("monitors.common.stats.lastCheck")}
           subtitle={
             lastChecked >= 0
               ? `${prettyMilliseconds(lastChecked, {
@@ -84,35 +86,40 @@ const InfraDetailsPage = () => {
           }
         />
         <StatBox
-          title="Last response time"
+          title={t("monitors.common.stats.lastResponseTime")}
           subtitle={
             stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"
           }
         />
         <StatBox
-          title="CPU (physical)"
+          title={t("monitors.common.stats.cpuPhysical")}
           subtitle={getCores(checks[0]?.cpu?.physical_core)}
         />
         <StatBox
-          title="CPU (logical)"
+          title={t("monitors.common.stats.cpuLogical")}
           subtitle={getCores(checks[0]?.cpu?.logical_core)}
         />
         <StatBox
-          title="CPU frequency"
+          title={t("monitors.common.stats.cpuFrequency")}
           subtitle={getFrequency(checks[0]?.cpu?.current_frequency)}
         />
         <StatBox
-          title="Avg CPU temp"
+          title={t("monitors.common.stats.cpuTemperature")}
           subtitle={getAvgTemp(checks[0]?.cpu?.temperature)}
         />
         <StatBox
-          title="Memory"
+          title={t("monitors.common.stats.memory")}
           subtitle={getGbs(checks[0]?.memory?.total_bytes)}
         />
-        <StatBox title="Disk" subtitle={getDiskTotalGbs(checks[0]?.disk)} />
-        <StatBox title="OS" subtitle={getOsAndPlatform(checks[0]?.host)} />
+        <StatBox
+          title={t("monitors.common.stats.disk")}
+          subtitle={getDiskTotalGbs(checks[0]?.disk)}
+        />
+        <StatBox
+          title={t("monitors.common.stats.os")}
+          subtitle={getOsAndPlatform(checks[0]?.host)}
+        />
       </Stack>
-      {/* <Typography variant="h1">Infrastructure overview</Typography> */}
 
       <InfraDetailsGauges checks={checks} />
       <HeaderRange loading={isValidating} range={range} setRange={setRange} />

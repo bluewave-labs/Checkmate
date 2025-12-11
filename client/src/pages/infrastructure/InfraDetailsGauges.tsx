@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/components/monitors/Chart";
 import { Gauge } from "@/components/design-elements";
 
+import { useTranslation } from "react-i18next";
 import { getGbs, getFrequency } from "./InfraUtils";
 import type { IInfraCheck } from "@/types/check";
 import { useTheme } from "@mui/material/styles";
@@ -42,6 +43,7 @@ const InfraDetailGauge = ({
 };
 
 export const InfraDetailsGauges = ({ checks }: { checks: IInfraCheck[] }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   return (
@@ -51,30 +53,31 @@ export const InfraDetailsGauges = ({ checks }: { checks: IInfraCheck[] }) => {
       alignItems={"center"}
     >
       <InfraDetailGauge
-        title="Memory Usage"
+        title={t("monitors.infrastructure.gauges.memory.title")}
         progress={(checks[0]?.memory.usage_percent || 0) * 100}
-        upperLabel="Used"
+        upperLabel={t("monitors.infrastructure.gauges.memory.upperLabel")}
         upperValue={getGbs(checks[0]?.memory.used_bytes)}
-        lowerLabel="Free"
+        lowerLabel={t("monitors.infrastructure.gauges.memory.lowerLabel")}
         lowerValue={getGbs(checks[0]?.memory.total_bytes)}
       />
       <InfraDetailGauge
-        title="CPU Usage"
+        title={t("monitors.infrastructure.gauges.cpu.title")}
         progress={(checks[0]?.cpu.usage_percent || 0) * 100}
-        upperLabel="Current frequency"
+        upperLabel={t("monitors.infrastructure.gauges.cpu.upperLabel")}
         upperValue={getFrequency(checks[0]?.cpu.current_frequency)}
-        lowerLabel="Max Frequency"
+        lowerLabel={t("monitors.infrastructure.gauges.cpu.lowerLabel")}
         lowerValue={getFrequency(checks[0]?.cpu.frequency)}
       />
       {checks[0]?.disk?.map((disk, idx) => {
         return (
           <InfraDetailGauge
             key={disk.device + idx}
-            title={`Disk ${idx} usage`}
+            // title={`Disk ${idx} usage`}
+            title={t("monitors.infrastructure.gauges.disk.title", { idx })}
             progress={(disk.usage_percent || 0) * 100}
-            upperLabel="Used"
+            upperLabel={t("monitors.infrastructure.gauges.disk.upperLabel")}
             upperValue={getGbs(disk.used_bytes)}
-            lowerLabel="Free"
+            lowerLabel={t("monitors.infrastructure.gauges.disk.lowerLabel")}
             lowerValue={getGbs(disk.total_bytes)}
           />
         );

@@ -39,6 +39,29 @@
         "title": "Average Response Time",
         "lowLabel": "Low",
         "highLabel": "High"
+      },
+      "pageSpeed": {
+        "weight": "Weight",
+        "title": "Average PageSpeed score",
+        "fcp": "First Contentful Paint (FCP)",
+        "si": "Speed Index (SI)",
+        "lcp": "Largest Contentful Paint (LCP)",
+        "tbt": "Total Blocking Time (TBT)",
+        "cls": "Cumulative Layout Shift (CLS)"
+      },
+      "infrastructure": {
+        "memory": {
+          "title": "Memory"
+        },
+        "cpu": {
+          "title": "CPU"
+        },
+        "temp": {
+          "title": "Temp"
+        },
+        "disk": {
+          "title": "Disk {{idx}}"
+        }
       }
     }
   },
@@ -69,7 +92,14 @@
         "activeFor": "Active for",
         "lastCheck": "Last checked",
         "lastResponseTime": "Last response time",
-        "certificate": "Certificate expiry"
+        "certificate": "Certificate expiry",
+        "cpuPhysical": "CPU (physical)",
+        "cpuLogical": "CPU (logical)",
+        "cpuFrequency": "CPU frequency",
+        "cpuTemperature": "Avg CPU temp",
+        "memory": "Memory",
+        "disk": "Disk",
+        "os": "OS"
       },
       "table": {
         "headers": {
@@ -220,6 +250,23 @@
           "optionMemoryUsage": "Memory usage (%)",
           "optionDiskUsage": "Disk usage (%)",
           "optionTemperature": "Temperature (°C)"
+        }
+      },
+      "gauges": {
+        "memory": {
+          "title": "Memory usage",
+          "upperLabel": "Used",
+          "lowerLabel": "Free"
+        },
+        "cpu": {
+          "title": "CPU usage",
+          "upperLabel": "Current frequency",
+          "lowerLabel": "Max frequency"
+        },
+        "disk": {
+          "title": "Disk {{idx}} usage",
+          "upperLabel": "Used",
+          "lowerLabel": "Free"
         }
       }
     }

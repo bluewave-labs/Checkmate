@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import { useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
+import { useTranslation } from "react-i18next";
 
 const CenterLabel = ({ viewBox, value }: any) => {
   const { cx, cy } = viewBox;
@@ -21,15 +22,16 @@ const CenterLabel = ({ viewBox, value }: any) => {
 };
 
 export const ChartPageSpeedReport = ({ latestCheck }: { latestCheck: any }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [hoverTitle, setHoverTitle] = useState<string | null>(null);
 
   const LABELS: Record<string, string> = {
-    FCP: "First Contentful Paint",
-    SI: "Speed Index",
-    LCP: "Largest Contentful Paint",
-    TBT: "Total Blocking Time",
-    CLS: "Cumulative Layout Shift",
+    FCP: t("common.charts.pageSpeed.fcp"),
+    SI: t("common.charts.pageSpeed.si"),
+    LCP: t("common.charts.pageSpeed.lcp"),
+    TBT: t("common.charts.pageSpeed.tbt"),
+    CLS: t("common.charts.pageSpeed.cls"),
   };
   const metrics = [
     { key: "fcp", color: alpha("#1DE9B6", 0.6), weight: 0.1 },
@@ -80,7 +82,7 @@ export const ChartPageSpeedReport = ({ latestCheck }: { latestCheck: any }) => {
   return (
     <BaseChart
       icon={<FileText size={20} strokeWidth={1.5} />}
-      title="Average PageSpeed score"
+      title={t("common.charts.pageSpeed.title")}
     >
       <Tooltip
         open={Boolean(hoverTitle)}
