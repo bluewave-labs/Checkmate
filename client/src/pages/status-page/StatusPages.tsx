@@ -1,95 +1,30 @@
 import { HeaderCreate } from "@/components/common";
-import Typography from "@mui/material/Typography";
 import { BasePageWithStates, InfoBox } from "@/components/design-elements";
-import { Table } from "@/components/design-elements";
-import { ActionsMenu } from "@/components/actions-menu";
 import { Dialog } from "@/components/inputs";
+import { StatusPageTable } from "@/pages/status-page/StatusPageTable";
 
 import { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router";
-import type { ActionMenuItem } from "@/components/actions-menu";
-import type { Header } from "@/components/design-elements/Table";
 import type { IStatusPage } from "@/types/status-page";
 import { useGet, useDelete } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useTranslation } from "react-i18next";
 
 const StatusPages = () => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const theme = useTheme();
   const [selectedStatusPage, setSelectedStatusPage] =
     useState<IStatusPage | null>(null);
   const open = Boolean(selectedStatusPage);
 
   const { response, isValidating, error, refetch } = useGet<
-    ApiResponse<IStatusPage[]>
-  >("/status-pages", {}, {});
+    ApiResponse<{ statusPages: IStatusPage[]; count: number }>
+  >(`/status-pages?page=${page}&rowsPerPage=${rowsPerPage}`, {}, {});
 
-  const statusPages = response?.data || [];
+  const statusPages = response?.data?.statusPages || [];
+  const count = response?.data?.count || 0;
 
   const { deleteFn, loading: isDeleting } = useDelete<any>();
-
-  const getActions = (statusPage: IStatusPage): ActionMenuItem[] => {
-    return [
-      {
-        id: 1,
-        label: "Configure",
-        action: () => {
-          navigate(`/status-pages/${statusPage._id}/configure`);
-        },
-        closeMenu: true,
-      },
-      {
-        id: 7,
-        label: <Typography color={theme.palette.error.main}>Remove</Typography>,
-        action: async () => {
-          setSelectedStatusPage(statusPage);
-        },
-        closeMenu: true,
-      },
-    ];
-  };
-
-  const getHeaders = () => {
-    const headers: Header<IStatusPage>[] = [
-      {
-        id: "name",
-        content: "Name",
-        render: (row) => {
-          return <Typography>{row?.name}</Typography>;
-        },
-      },
-      {
-        id: "published",
-        content: "Published",
-        render: (row) => {
-          const published = row.isPublished ? "Yes" : "No";
-          return <Typography>{published}</Typography>;
-        },
-      },
-      {
-        id: "url",
-        content: "Public URL",
-        render: (row) => {
-          return (
-            <Typography textTransform={"capitalize"}>{row?.url}</Typography>
-          );
-        },
-      },
-      {
-        id: "actions",
-        content: t("actions"),
-        render: (row) => {
-          return <ActionsMenu items={getActions(row)} />;
-        },
-      },
-    ];
-    return headers;
-  };
-
-  const headers = getHeaders();
 
   const handleConfirm = async () => {
     if (!selectedStatusPage) return;
@@ -127,12 +62,14 @@ const StatusPages = () => {
         entitlement="statusPagesMax"
         entitlementCount={statusPages.length}
       />
-      <Table
-        headers={headers}
-        data={statusPages}
-        onRowClick={(row) => {
-          navigate(`/status-pages/${row._id}`);
-        }}
+      <StatusPageTable
+        statusPages={statusPages}
+        setSelectedStatusPage={setSelectedStatusPage}
+        page={page}
+        setPage={setPage}
+        rowsPerPage={rowsPerPage}
+        setRowsPerPage={setRowsPerPage}
+        count={count}
       />
 
       <Dialog

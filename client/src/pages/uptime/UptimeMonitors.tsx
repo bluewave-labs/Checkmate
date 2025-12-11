@@ -9,7 +9,7 @@ import { HeaderFilter } from "@/components/monitors";
 import { HeaderCreate } from "@/components/common";
 import Stack from "@mui/material/Stack";
 import { Dialog } from "@/components/inputs";
-import { MonitorTable } from "@/pages/uptime/MonitorTable";
+import { MonitorTable } from "@/pages/uptime/UptimeMonitorsTable";
 import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 
 import { useTranslation } from "react-i18next";

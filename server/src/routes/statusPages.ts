@@ -5,8 +5,8 @@ import { verifyToken } from "@/middleware/VerifyToken.js";
 import { verifyTeamPermission } from "@/middleware/VerifyPermission.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
 import { PERMISSIONS } from "@/types/permissions.js";
-import { validateBody } from "@/middleware/validation.js";
-import { statusPageSchema } from "@/validation/index.js";
+import { validateBody, validateQuery } from "@/middleware/validation.js";
+import { statusPageSchema, statusPageQuerySchema } from "@/validation/index.js";
 import { enforceMax } from "@/middleware/VerifyEntitlements.js";
 
 class StatusPageRoutes {
@@ -37,6 +37,7 @@ class StatusPageRoutes {
       verifyToken,
       addUserContext,
       verifyTeamPermission([PERMISSIONS.statusPages.read]),
+      validateQuery(statusPageQuerySchema),
       this.controller.getAll
     );
 

@@ -35,7 +35,14 @@ class StatusPageController {
         throw new ApiError("No team ID", 400);
       }
 
-      const statusPages = await this.statusPageService.getAll(teamId);
+      const page = req.validatedQuery.page || 0;
+      const rowsPerPage = req.validatedQuery.rowsPerPage || 10;
+
+      const statusPages = await this.statusPageService.getAll(
+        teamId,
+        page,
+        rowsPerPage
+      );
       res.status(200).json({
         message: "OK",
         data: statusPages,

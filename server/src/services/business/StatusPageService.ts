@@ -7,6 +7,7 @@ import {
   Monitor,
 } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
+import { count } from "node:console";
 
 const SERVICE_NAME = "StatusPageService";
 
@@ -15,7 +16,11 @@ export interface IStatusPageService {
     tokenizedUser: IUserContext,
     statusPage: IStatusPage
   ) => Promise<IStatusPage>;
-  getAll: (teamId: string) => Promise<IStatusPage[]>;
+  getAll: (
+    teamId: string,
+    page: number,
+    rowsPerPage: number
+  ) => Promise<{ statusPages: IStatusPage[]; count: number }>;
   get: (teamId: string, id: string) => Promise<IStatusPage>;
   getPublic: (url: string) => Promise<IStatusPage>;
   update: (
@@ -81,8 +86,13 @@ class StatusPageService implements IStatusPageService {
     return statusPage;
   };
 
-  getAll = async (teamId: string) => {
-    return StatusPage.find({ teamId });
+  getAll = async (teamId: string, page: number, rowsPerPage: number) => {
+    const count = await StatusPage.countDocuments({ teamId });
+    const statusPages = await StatusPage.find({ teamId })
+      .skip(page * rowsPerPage)
+      .limit(rowsPerPage);
+
+    return { statusPages, count };
   };
 
   update = async (
