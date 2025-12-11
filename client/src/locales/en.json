@@ -6,9 +6,12 @@
       "delete": "Delete",
       "confirm": "Confirm",
       "cancel": "Cancel",
+      "test": "Test",
       "save": "Save",
       "pause": "Pause",
       "resume": "Resume",
+      "enable": "Enable",
+      "disable": "Disable",
       "configure": "Configure",
       "createNew": "Create new",
       "toggleTheme": "Toggle theme",
@@ -19,7 +22,9 @@
         "day": "Day",
         "week": "7 days",
         "month": "30 days"
-      }
+      },
+      "yes": "Yes",
+      "no": "No"
     },
     "dialog": {
       "delete": {
@@ -104,6 +109,7 @@
       "table": {
         "headers": {
           "name": "Name",
+          "active": "Active",
           "type": "Type",
           "status": "Status",
           "statusCode": "Status code",
@@ -271,7 +277,58 @@
       }
     }
   },
-  "notifications": {},
+  "notificationChannels": {
+    "infoBox": {
+      "title": "Notification Channels",
+      "description": "Configure where you want to receive notifications when monitors detect issues. Connect email, Slack, Discord, webhooks, and other channels to stay informed."
+    },
+    "fallback": {
+      "actionButton": "Create a channel",
+      "checks": [
+        "Alert teams about downtime or performance issues",
+        "Let engineers know when incidents happen",
+        "Keep administrators informed of system changes"
+      ],
+      "title": "Notification channles are used toto:"
+    },
+    "form": {
+      "name": {
+        "title": "Channel name",
+        "description": "A descriptive name for the notification channel",
+        "optionName": "Channel name",
+        "placeholder": "e.g. Production Alerts"
+      },
+      "type": {
+        "title": "Channel type",
+        "description": "Select the type of notification channel to create.",
+        "optionType": "Type"
+      },
+      "email": {
+        "title": "Email configuration",
+        "description": "Configure the email address where notifications will be sent",
+        "option": "Destination email address",
+        "placeholder": "e.g. john@example.com"
+      },
+      "slack": {
+        "title": "Slack configuration",
+        "description": "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
+        "option": "Webhook URL",
+        "placeholder": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+      },
+      "discord": {
+        "title": "Discord configuration",
+        "description": "Configure your Discord webhook URL. Create one in Discord: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
+        "option": "Webhook URL",
+        "placeholder": "https://discord.com/api/webhooks/YOUR/WEBHOOK/URL"
+      },
+      "webhook": {
+        "title": "Webhook configuration",
+        "description": "Configure the webhook URL endpoint where notifications will be sent",
+        "option": "Webhook URL",
+        "placeholder": "https://your-server.com/webhook"
+      }
+    }
+  },
   "incidents": {},
   "checks": {},
   "statusPages": {}

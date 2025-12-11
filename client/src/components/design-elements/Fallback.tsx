@@ -96,12 +96,13 @@ export const EmptyFallback = ({
             width: "100%",
           }}
         >
-          {bullets?.map((bullet: string) => (
-            <BulletPointCheck
-              text={bullet}
-              key={`${bullet}-${Math.random()}`}
-            />
-          ))}
+          {Array.isArray(bullets) &&
+            bullets?.map((bullet: string) => (
+              <BulletPointCheck
+                text={bullet}
+                key={`${bullet}-${Math.random()}`}
+              />
+            ))}
         </Stack>
         <Stack>
           <Button

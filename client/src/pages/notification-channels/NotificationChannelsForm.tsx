@@ -73,8 +73,8 @@ export const NotificationChannelsForm = ({
   return (
     <BasePage component={"form"} onSubmit={handleSubmit(onSubmit, onError)}>
       <ConfigBox
-        title={t("createNotifications.nameSettings.title")}
-        subtitle={t("createNotifications.nameSettings.description")}
+        title={t("notificationChannels.form.name.title")}
+        subtitle={t("notificationChannels.form.name.description")}
         rightContent={
           <Controller
             name="name"
@@ -83,8 +83,8 @@ export const NotificationChannelsForm = ({
               <TextInput
                 {...field}
                 type="text"
-                fieldLabel={t("createNotifications.nameSettings.nameLabel")}
-                placeholder="e.g. Production Alerts"
+                fieldLabel={t("notificationChannels.form.name.optionName")}
+                placeholder={t("notificationChannels.form.name.placeholder")}
                 fullWidth
                 error={!!errors.name}
                 helperText={errors.name ? errors.name.message : ""}
@@ -94,8 +94,8 @@ export const NotificationChannelsForm = ({
         }
       />
       <ConfigBox
-        title={t("createNotifications.typeSettings.title")}
-        subtitle={t("createNotifications.typeSettings.description")}
+        title={t("notificationChannels.form.type.title")}
+        subtitle={t("notificationChannels.form.type.description")}
         rightContent={
           <Controller
             name="type"
@@ -105,7 +105,7 @@ export const NotificationChannelsForm = ({
               return (
                 <Select
                   value={field.value}
-                  fieldLabel={t("createNotifications.typeSettings.title")}
+                  fieldLabel={t("notificationChannels.form.type.optionType")}
                   error={!!errors.type}
                   onChange={field.onChange}
                 >
@@ -125,18 +125,8 @@ export const NotificationChannelsForm = ({
         }
       />
       <ConfigBox
-        title={type ? `${type} configuration` : "Config"}
-        subtitle={
-          type === "email"
-            ? "Configure the email address where notifications will be sent"
-            : type === "webhook"
-              ? "Configure the webhook URL endpoint where notifications will be sent"
-              : type === "slack"
-                ? "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks"
-                : type === "discord"
-                  ? "Configure your Discord webhook URL. Create one in Discord: Server Settings → Integrations → Webhooks → New Webhook"
-                  : "Configure notification channel settings"
-        }
+        title={t(`notificationChannels.form.${type}.title`)}
+        subtitle={t(`notificationChannels.form.${type}.description`)}
         rightContent={
           type === "email" ? (
             <Controller
@@ -148,10 +138,10 @@ export const NotificationChannelsForm = ({
                   <TextInput
                     {...field}
                     type="text"
-                    fieldLabel={t(
-                      "createNotifications.emailSettings.description"
+                    fieldLabel={t(`notificationChannels.form.${type}.option`)}
+                    placeholder={t(
+                      `notificationChannels.form.${type}.placeholder`
                     )}
-                    placeholder="e.g. john@example.com"
                     fullWidth
                     error={!!errors.config?.emailAddress}
                     helperText={
@@ -169,31 +159,14 @@ export const NotificationChannelsForm = ({
               control={control}
               defaultValue={defaults.config.url}
               render={({ field }) => {
-                const getPlaceholder = () => {
-                  switch (type) {
-                    case "slack":
-                      return "https://hooks.slack.com/services/YOUR/WEBHOOK/URL";
-                    case "discord":
-                      return "https://discord.com/api/webhooks/YOUR/WEBHOOK/URL";
-                    case "webhook":
-                      return "https://your-server.com/webhook";
-                    default:
-                      return "https://example.com/webhook";
-                  }
-                };
-
                 return (
                   <TextInput
                     {...field}
                     type="text"
-                    fieldLabel={
-                      type
-                        ? `${
-                            type.charAt(0).toUpperCase() + type.slice(1)
-                          } webhook URL`
-                        : "URL"
-                    }
-                    placeholder={getPlaceholder()}
+                    fieldLabel={t(`notificationChannels.form.${type}.option`)}
+                    placeholder={t(
+                      `notificationChannels.form.${type}.placeholder`
+                    )}
                     fullWidth
                     error={!!errors.config?.url}
                     helperText={
@@ -217,7 +190,7 @@ export const NotificationChannelsForm = ({
           onClick={handleTest}
           loading={isPosting || loading}
         >
-          Test
+          {t("common.buttons.test")}
         </Button>
         <Button
           loading={isPosting || loading}
@@ -225,7 +198,7 @@ export const NotificationChannelsForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
       </Stack>
     </BasePage>

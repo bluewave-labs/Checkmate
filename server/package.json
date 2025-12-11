@@ -39,7 +39,7 @@
     "got": "14.5.0",
     "jsonwebtoken": "9.0.2",
     "mongoose": "8.19.1",
-    "nodemailer": "7.0.9",
+    "nodemailer": "^7.0.11",
     "ping": "1.0.0",
     "stripe": "^20.0.0",
     "super-simple-scheduler": "1.4.6",

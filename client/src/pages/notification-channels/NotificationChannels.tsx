@@ -50,7 +50,7 @@ const NotificationChannelsPage = () => {
     return [
       {
         id: 1,
-        label: "Configure",
+        label: t("monitors.common.actions.configure"),
         action: () => {
           navigate(`/notification-channels/${channel._id}/configure`);
         },
@@ -58,7 +58,9 @@ const NotificationChannelsPage = () => {
       },
       {
         id: 2,
-        label: channel.isActive ? "Disable" : "Enable",
+        label: channel.isActive
+          ? t("common.buttons.disable")
+          : t("common.buttons.enable"),
         action: async () => {
           const res = await patch(
             `/notification-channels/${channel._id}/active`,
@@ -72,7 +74,11 @@ const NotificationChannelsPage = () => {
       },
       {
         id: 7,
-        label: <Typography color={theme.palette.error.main}>Remove</Typography>,
+        label: (
+          <Typography color={theme.palette.error.main}>
+            {t("common.buttons.delete")}
+          </Typography>
+        ),
         action: async () => {
           setSelectedChannel(channel);
         },
@@ -85,16 +91,18 @@ const NotificationChannelsPage = () => {
     const headers: Header<INotificationChannel>[] = [
       {
         id: "name",
-        content: "Name",
+        content: t("monitors.common.table.headers.name"),
         render: (row) => {
           return <Typography>{row?.name}</Typography>;
         },
       },
       {
         id: "active",
-        content: "Active",
+        content: t("monitors.common.table.headers.active"),
         render: (row) => {
-          const active = row.isActive ? "Yes" : "No";
+          const active = row.isActive
+            ? t("common.buttons.yes")
+            : t("common.buttons.no");
           return <Typography>{active}</Typography>;
         },
       },
@@ -109,7 +117,7 @@ const NotificationChannelsPage = () => {
       },
       {
         id: "actions",
-        content: t("actions"),
+        content: t("monitors.common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },
@@ -122,19 +130,21 @@ const NotificationChannelsPage = () => {
 
   return (
     <BasePageWithStates
-      page="Notification Channels"
+      page={t("notificationChannels.fallback.title")}
       bullets={
-        t("notifications.fallback.checks", { returnObjects: true }) as string[]
+        t("notificationChannels.fallback.checks", {
+          returnObjects: true,
+        }) as string[]
       }
       loading={isValidating}
       error={error}
       items={notificationChannels}
-      actionButtonText="Create a channel"
+      actionButtonText={t("notificationChannels.fallback.actionButton")}
       actionLink="/notification-channels/create"
     >
       <InfoBox
-        title="Alert Destinations"
-        description="Configure where you want to receive alerts when monitors detect issues. Connect email, Slack, Discord, webhooks, and other channels to stay informed."
+        title={t("notificationChannels.infoBox.title")}
+        description={t("notificationChannels.infoBox.description")}
       />
       <HeaderCreate
         label={"Create a new notification channel"}
@@ -152,8 +162,8 @@ const NotificationChannelsPage = () => {
       />
 
       <Dialog
-        title={t("createNotifications.dialogDeleteTitle")}
-        content={t("createNotifications.dialogDeleteContent")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         open={open}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
