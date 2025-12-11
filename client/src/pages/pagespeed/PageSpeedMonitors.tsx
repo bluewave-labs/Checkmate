@@ -21,6 +21,7 @@ import { useDelete } from "@/hooks/UseApi";
 import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { config } from "@/config/index";
+import { useLimitReached } from "@/hooks/UsePlanEntitlements";
 
 const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
@@ -68,7 +69,7 @@ const PageSpeedMonitorsPage = () => {
   const downCount = response?.data?.downCount || 0;
   const pausedCount = response?.data?.pausedCount || 0;
 
-  const monitorLimitReached = count >= (user?.entitlements?.monitorsMax || 0);
+  const monitorLimitReached = useLimitReached("monitorsMax", count);
 
   const handleConfirm = async () => {
     await deleteFn(`/monitors/${selectedMonitor?._id}`);

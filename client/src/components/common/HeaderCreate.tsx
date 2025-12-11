@@ -4,15 +4,10 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import Tooltip from "@mui/material/Tooltip";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store";
-import { useMemo } from "react";
-type EntitlementsKey =
-  | "monitorsMax"
-  | "notificationChannelsMax"
-  | "statusPagesMax"
-  | "checksIntervalMsMin"
-  | "teamsMax";
+import {
+  useLimitReached,
+  type PlanEntitlementKey,
+} from "@/hooks/UsePlanEntitlements";
 export const HeaderCreate = ({
   label,
   isLoading,
@@ -23,19 +18,13 @@ export const HeaderCreate = ({
   label?: string;
   isLoading: boolean;
   path: string;
-  entitlement: EntitlementsKey | null;
+  entitlement: PlanEntitlementKey | null;
   entitlementCount: number;
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const ent = useSelector((s: RootState) => s.auth.user?.entitlements);
-
-  const limitReached = useMemo(() => {
-    if (!entitlement) return false;
-    if (!ent || typeof ent[entitlement] !== "number") return false;
-    return entitlementCount < ent[entitlement] ? false : true;
-  }, [ent, entitlement, entitlementCount]);
+  const limitReached = useLimitReached(entitlement, entitlementCount);
 
   return (
     <Stack
