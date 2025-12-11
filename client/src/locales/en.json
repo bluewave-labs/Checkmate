@@ -1,7 +1,20 @@
 {
-  "common": {},
+  "common": {
+    "appName": "Checkmate"
+  },
   "menu": {
-    "uptime": "Uptime"
+    "uptime": "Uptime",
+    "pagespeed": "PageSpeed",
+    "infrastructure": "Infrastructure",
+    "notifications": "Notifications",
+    "incidents": "Incidents",
+    "checks": "Checks",
+    "statusPages": "Status Pages",
+    "maintenance": "Maintenance",
+    "support": "Support",
+    "discussions": "Discussions",
+    "docs": "Documentation",
+    "changelog": "Changelog"
   },
 
   "monitors": {

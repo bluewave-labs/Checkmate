@@ -148,12 +148,13 @@ export const EmptyMonitorFallback = ({
             width: "100%",
           }}
         >
-          {bullets?.map((bullet: string, index: number) => (
-            <BulletPointCheck
-              text={bullet}
-              key={`${(page + "Monitors").trim().split(" ")[0]}-${index}`}
-            />
-          ))}
+          {Array.isArray(bullets) &&
+            bullets?.map((bullet: string, index: number) => (
+              <BulletPointCheck
+                text={bullet}
+                key={`${(page + "Monitors").trim().split(" ")[0]}-${index}`}
+              />
+            ))}
         </Stack>
         <Stack>
           <Button
