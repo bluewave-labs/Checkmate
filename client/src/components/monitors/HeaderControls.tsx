@@ -51,7 +51,7 @@ export const HeaderControls = ({
                 await post(`/monitors/${monitor._id}/notifications/test`, {});
               }}
             >
-              {t("sendTestNotifications")}
+              {t("common.buttons.testNotification")}
             </Button>
           )}
           <Button
@@ -60,7 +60,7 @@ export const HeaderControls = ({
               navigate(`/incidents?monitorId=${monitor._id}`);
             }}
           >
-            {t("menu.incidents")}
+            {t("common.buttons.incidents")}
           </Button>
           <Button
             loading={isPatching || isPosting}
@@ -76,7 +76,9 @@ export const HeaderControls = ({
               )
             }
           >
-            {monitor?.status === "paused" ? t("resume") : t("pause")}
+            {monitor?.status === "paused"
+              ? t("common.buttons.resume")
+              : t("common.buttons.pause")}
           </Button>
           <Button
             startIcon={<Settings size={20} strokeWidth={1.5} />}
@@ -84,7 +86,7 @@ export const HeaderControls = ({
               navigate(`${path}/${monitor._id}/configure`);
             }}
           >
-            {t("configure")}
+            {t("common.buttons.configure")}
           </Button>
         </ButtonGroup>
       </Stack>

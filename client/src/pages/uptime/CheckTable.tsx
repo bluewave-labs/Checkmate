@@ -16,14 +16,14 @@ const getHeaders = (t: Function, uiTimezone: string) => {
   const headers: Header<ICheck>[] = [
     {
       id: "status",
-      content: t("status"),
+      content: t("monitors.common.table.headers.status"),
       render: (row) => {
         return <StatusLabel status={row.status as MonitorStatus} />;
       },
     },
     {
       id: "date",
-      content: t("date&Time"),
+      content: t("monitors.common.table.headers.dateTime"),
       render: (row) => {
         return formatDateWithTz(
           row.createdAt,
@@ -34,14 +34,14 @@ const getHeaders = (t: Function, uiTimezone: string) => {
     },
     {
       id: "message",
-      content: t("message"),
+      content: t("monitors.common.table.headers.message"),
       render: (row) => {
         return row.message || "N/A";
       },
     },
     {
       id: "statusCode",
-      content: t("statusCode"),
+      content: t("monitors.common.table.headers.statusCode"),
       render: (row) => {
         return row.httpStatusCode || "N/A";
       },

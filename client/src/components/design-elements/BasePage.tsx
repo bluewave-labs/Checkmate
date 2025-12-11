@@ -127,9 +127,9 @@ export const MonitorBasePageWithStates: React.FC<
     return (
       <EmptyMonitorFallback
         page={page}
-        title={t(`${page}Monitor.fallback.title`)}
-        bullets={t(`${page}Monitor.fallback.checks`, { returnObjects: true })}
-        actionButtonText={t(`${page}Monitor.fallback.actionButton`)}
+        title={t(`monitors.${page}.fallback.title`)}
+        bullets={t(`monitors.${page}.fallback.checks`, { returnObjects: true })}
+        actionButtonText={t(`monitors.${page}.fallback.actionButton`)}
         actionLink={actionLink || ""}
         monitorLimitReached={monitorLimitReached}
       />

@@ -84,7 +84,7 @@ export const InfraMonitorsTable = ({
     return [
       {
         id: 1,
-        label: "Open site",
+        label: t("monitors.common.actions.openSite"),
         action: () => {
           window.open(monitor.url, "_blank", "noreferrer");
         },
@@ -92,21 +92,21 @@ export const InfraMonitorsTable = ({
       },
       {
         id: 2,
-        label: "Details",
+        label: t("monitors.common.actions.details"),
         action: () => {
           navigate(`${monitor._id}`);
         },
       },
       {
         id: 3,
-        label: "Incidents",
+        label: t("monitors.common.actions.incidents"),
         action: () => {
           navigate(`/incidents?monitorId=${monitor._id}`);
         },
       },
       {
         id: 4,
-        label: "Configure",
+        label: t("monitors.common.actions.configure"),
         action: () => {
           navigate(`/infrastructure/${monitor._id}/configure`);
         },
@@ -115,12 +115,15 @@ export const InfraMonitorsTable = ({
       //   id: 5,
       //   label: "Clone",
       //   action: () => {
-      
+
       //   },
       // },
       {
         id: 6,
-        label: monitor.status === "paused" ? "Resume" : "Pause",
+        label:
+          monitor.status === "paused"
+            ? t("common.buttons.resume")
+            : t("common.buttons.pause"),
         action: async () => {
           await patch(`/monitors/${monitor._id}/active`);
           refetch();
@@ -129,7 +132,11 @@ export const InfraMonitorsTable = ({
       },
       {
         id: 7,
-        label: <Typography color={theme.palette.error.main}>Remove</Typography>,
+        label: (
+          <Typography color={theme.palette.error.main}>
+            {t("common.buttons.delete")}
+          </Typography>
+        ),
         action: () => {
           setSelectedMonitor(monitor);
         },
@@ -161,7 +168,7 @@ export const InfraMonitorsTable = ({
             onClick={(e) => handleSort(e, "name")}
             sx={{ cursor: "pointer" }}
           >
-            {t("host")}
+            {t("monitors.common.table.headers.name")}
             {renderSortIcon(sortField === "name")}
           </Typography>
         ),
@@ -179,7 +186,7 @@ export const InfraMonitorsTable = ({
             onClick={(e) => handleSort(e, "status")}
             sx={{ cursor: "pointer" }}
           >
-            {t("status")}
+            {t("monitors.common.table.headers.status")}
             {renderSortIcon(sortField === "status")}
           </Typography>
         ),
@@ -189,7 +196,7 @@ export const InfraMonitorsTable = ({
       },
       {
         id: "cpu",
-        content: t("cpu"),
+        content: t("monitors.common.table.headers.cpu"),
         render: (row) => {
           const cpuUsage =
             (row.latestChecks?.[0]?.system?.cpu?.usage_percent || 0) * 100;
@@ -198,7 +205,7 @@ export const InfraMonitorsTable = ({
       },
       {
         id: "memory",
-        content: t("memory"),
+        content: t("monitors.common.table.headers.memory"),
         render: (row) => {
           const memoryUsage =
             (row.latestChecks?.[0]?.system?.memory?.usage_percent || 0) * 100;
@@ -207,7 +214,7 @@ export const InfraMonitorsTable = ({
       },
       {
         id: "disk",
-        content: t("disk"),
+        content: t("monitors.common.table.headers.disk"),
         render: (row) => {
           const totalDiskUsage = row.latestChecks?.[0]?.system?.disk?.reduce(
             (acc, disk) => acc + disk.usage_percent,
@@ -221,7 +228,7 @@ export const InfraMonitorsTable = ({
 
       {
         id: "actions",
-        content: t("actions"),
+        content: t("monitors.common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },

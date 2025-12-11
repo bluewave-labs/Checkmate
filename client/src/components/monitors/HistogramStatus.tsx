@@ -7,6 +7,7 @@ import { TrendingUp, AlertTriangle } from "lucide-react";
 import type { GroupedCheck } from "@/types/check";
 import type { MonitorStatus } from "@/types/monitor";
 
+import { useTranslation } from "react-i18next";
 import { normalizeResponseTimes } from "@/utils/DataUtils";
 import { useState } from "react";
 import { formatDateWithTz } from "@/utils/TimeUtils";
@@ -63,9 +64,15 @@ export const HistogramStatus = ({
   range: string;
   title: string;
 }) => {
+  const { t } = useTranslation();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
 
-  const icon = status === "up" ? <TrendingUp size={20} strokeWidth={1.5} /> : <AlertTriangle size={20} strokeWidth={1.5} />;
+  const icon =
+    status === "up" ? (
+      <TrendingUp size={20} strokeWidth={1.5} />
+    ) : (
+      <AlertTriangle size={20} strokeWidth={1.5} />
+    );
   const theme = useTheme();
   const [idx, setIdx] = useState<number | null>(null);
   const dateFormat = range === "1d" || range === "2h" ? "MMM D, h A" : "MMM D";
@@ -76,7 +83,9 @@ export const HistogramStatus = ({
       <BaseChart icon={icon} title={title}>
         <Stack height={"100%"} alignItems={"center"} justifyContent={"center"}>
           <Typography variant="h2">
-            {status === "up" ? "No checks yet" : "Great, no downtime yet!"}
+            {status === "up"
+              ? t("common.charts.uptime.emptyUp")
+              : t("common.charts.uptime.emptyDown")}
           </Typography>
         </Stack>
       </BaseChart>

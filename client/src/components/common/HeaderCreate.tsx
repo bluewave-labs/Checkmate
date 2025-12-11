@@ -47,7 +47,7 @@ export const HeaderCreate = ({
           >
             {limitReached
               ? "Your plan's limit has been reached"
-              : label || t("createNew")}
+              : label || t("common.buttons.createNew")}
           </Button>
         </span>
       </Tooltip>

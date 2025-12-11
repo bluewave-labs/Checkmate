@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import { Gauge } from "lucide-react";
 import { Cell, RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 
+import { useTranslation } from "react-i18next";
 import { getResponseTimeColor } from "@/utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 
@@ -14,6 +15,7 @@ export const ChartAvgResponse = ({
   avg: number;
   max: number;
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const chartData = [
     { name: "max", value: max - avg, color: "transparent" },
@@ -28,7 +30,10 @@ export const ChartAvgResponse = ({
   };
 
   return (
-    <BaseChart icon={<Gauge size={20} strokeWidth={1.5} />} title={"Average response time"}>
+    <BaseChart
+      icon={<Gauge size={20} strokeWidth={1.5} />}
+      title={t("common.charts.avgResponseTime.title")}
+    >
       <Stack height="100%" position={"relative"} justifyContent={"flex-end"}>
         <ResponsiveContainer width="100%" height={155}>
           <RadialBarChart
@@ -49,8 +54,12 @@ export const ChartAvgResponse = ({
           </RadialBarChart>
         </ResponsiveContainer>
         <Stack direction={"row"} justifyContent={"space-between"}>
-          <Typography variant="body2">Low</Typography>
-          <Typography variant="body2">High</Typography>
+          <Typography variant="body2">
+            {t("common.charts.avgResponseTime.lowLabel")}
+          </Typography>
+          <Typography variant="body2">
+            {t("common.charts.avgResponseTime.highLabel")}
+          </Typography>
         </Stack>
         <Stack
           position="absolute"

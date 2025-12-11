@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import { Select, Checkbox, TextInput } from "@/components/inputs";
 import { LoadingSpinner } from "@/components/design-elements";
 
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import type { SelectChangeEvent } from "@mui/material/Select";
@@ -42,6 +43,7 @@ export const HeaderFilter = ({
   loading = false,
 }: HeaderFilterProps) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const [localSearch, setLocalSearch] = useState<string>(searchString);
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export const HeaderFilter = ({
   return (
     <Stack spacing={theme.spacing(4)} direction={{ xs: "column", sm: "row" }}>
       <Select
-        placeholder="Monitor type"
+        placeholder={t("monitors.uptime.filters.type.placeholder")}
         multiple
         value={selectedTypes}
         onChange={handleTypeChange}
@@ -83,7 +85,7 @@ export const HeaderFilter = ({
         ))}
       </Select>
       <Select
-        placeholder="Monitor status"
+        placeholder={t("monitors.uptime.filters.status.placeholder")}
         multiple
         value={selectedStatuses}
         onChange={handleStatusChange}
@@ -100,7 +102,7 @@ export const HeaderFilter = ({
       <LoadingSpinner show={loading} sx={{ alignSelf: "center" }} />
       <Box flex={1} display={{ xs: "none", md: "inherit" }} />
       <TextInput
-        placeholder="Search monitors"
+        placeholder={t("monitors.uptime.filters.search.placeholder")}
         value={localSearch}
         onChange={(event) => {
           setLocalSearch(event.target.value);

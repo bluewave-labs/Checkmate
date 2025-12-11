@@ -100,8 +100,8 @@ export const InfraForm = ({
   return (
     <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
       <ConfigBox
-        title={t("settingsGeneralSettings")}
-        subtitle={t(`pageSpeedConfigureSettingsDescription`)}
+        title={t("monitors.common.form.general.title")}
+        subtitle={t(`monitors.infrastructure.form.general.description`)}
         rightContent={
           <Stack gap={theme.spacing(8)}>
             <RadioGroup
@@ -113,12 +113,12 @@ export const InfraForm = ({
             >
               <RadioWithDescription
                 value="https"
-                label="HTTPS"
+                label={t("monitors.common.form.optionHttps")}
                 description=""
               />
               <RadioWithDescription
                 value="http"
-                label={"HTTP"}
+                label={t("monitors.common.form.optionHttp")}
                 description={""}
               />
             </RadioGroup>
@@ -140,7 +140,7 @@ export const InfraForm = ({
                     }, 0);
                   }}
                   type="text"
-                  fieldLabel={t("url")}
+                  fieldLabel={t("monitors.common.form.optionUrl")}
                   fullWidth
                   error={!!errors.url}
                   helperText={errors.url ? errors.url.message : ""}
@@ -155,7 +155,7 @@ export const InfraForm = ({
                 <TextInput
                   {...field}
                   type="text"
-                  fieldLabel={t("displayName")}
+                  fieldLabel={t("monitors.common.form.optionDisplayName")}
                   fullWidth
                   error={!!errors.name}
                   helperText={errors.name ? errors.name.message : ""}
@@ -169,7 +169,9 @@ export const InfraForm = ({
                 <TextInput
                   {...field}
                   type="text"
-                  fieldLabel={t("infrastructureAuthorizationSecretLabel")}
+                  fieldLabel={t(
+                    "monitors.infrastructure.form.general.optionSecret"
+                  )}
                   fullWidth
                   error={!!errors.secret}
                   helperText={errors.secret ? errors.secret.message : ""}
@@ -180,8 +182,8 @@ export const InfraForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.incidentConfigTitle")}
-        subtitle={t("createMonitorPage.incidentConfigDescriptionV2")}
+        title={t("monitors.common.form.incidents.title")}
+        subtitle={t("monitors.common.form.incidents.description")}
         rightContent={
           <Controller
             name="n"
@@ -191,7 +193,7 @@ export const InfraForm = ({
                 {...field}
                 type="number"
                 fieldLabel={t(
-                  "createMonitorPage.incidentConfigStatusCheckNumber"
+                  "monitors.common.form.incidents.optionIncidentCount"
                 )}
                 fullWidth
                 error={!!errors.n}
@@ -206,8 +208,8 @@ export const InfraForm = ({
         }
       />
       <ConfigBox
-        title={t("Threshold Alerts")}
-        subtitle={t("Set percentage thresholds to trigger incidents.")}
+        title={t("monitors.infrastructure.form.thresholds.title")}
+        subtitle={t("monitors.infrastructure.form.thresholds.description")}
         rightContent={
           <Stack gap={theme.spacing(4)}>
             <Controller
@@ -217,7 +219,9 @@ export const InfraForm = ({
                 <TextInput
                   {...field}
                   type="number"
-                  fieldLabel={t("CPU %")}
+                  fieldLabel={t(
+                    "monitors.infrastructure.form.thresholds.optionCpuUsage"
+                  )}
                   fullWidth
                   error={!!errors.thresholds?.cpu}
                   helperText={errors.thresholds?.cpu?.message ?? ""}
@@ -231,7 +235,9 @@ export const InfraForm = ({
                 <TextInput
                   {...field}
                   type="number"
-                  fieldLabel={t("Memory %")}
+                  fieldLabel={t(
+                    "monitors.infrastructure.form.thresholds.optionMemoryUsage"
+                  )}
                   fullWidth
                   error={!!errors.thresholds?.memory}
                   helperText={errors.thresholds?.memory?.message ?? ""}
@@ -245,7 +251,9 @@ export const InfraForm = ({
                 <TextInput
                   {...field}
                   type="number"
-                  fieldLabel={t("Disk %")}
+                  fieldLabel={t(
+                    "monitors.infrastructure.form.thresholds.optionDiskUsage"
+                  )}
                   fullWidth
                   error={!!errors.thresholds?.disk}
                   helperText={errors.thresholds?.disk?.message ?? ""}
@@ -259,7 +267,9 @@ export const InfraForm = ({
                 <TextInput
                   {...field}
                   type="number"
-                  fieldLabel={t("Temperature °C")}
+                  fieldLabel={t(
+                    "monitors.infrastructure.form.thresholds.optionTemperature"
+                  )}
                   fullWidth
                   error={!!errors.thresholds?.temperature}
                   helperText={errors.thresholds?.temperature?.message ?? ""}
@@ -270,8 +280,8 @@ export const InfraForm = ({
         }
       />
       <ConfigBox
-        title={t("notificationConfig.title")}
-        subtitle={t("notificationConfig.description")}
+        title={t("monitors.common.form.notifications.title")}
+        subtitle={t("monitors.common.form.notifications.description")}
         rightContent={
           <Stack>
             <Controller
@@ -325,8 +335,8 @@ export const InfraForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.intervalTitle")}
-        subtitle="How often to check the URL"
+        title={t("monitors.common.form.interval.title")}
+        subtitle={t("monitors.common.form.interval.description")}
         rightContent={
           <Controller
             name="interval"
@@ -335,7 +345,7 @@ export const InfraForm = ({
               <TextInput
                 {...field}
                 type="text"
-                fieldLabel={t("createMonitorPage.intervalDescription")}
+                fieldLabel={t("monitors.common.form.interval.optionInterval")}
                 fullWidth
                 error={!!errors.interval}
                 helperText={errors.interval ? errors.interval.message : ""}
@@ -351,7 +361,7 @@ export const InfraForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
       </Stack>
     </BasePage>

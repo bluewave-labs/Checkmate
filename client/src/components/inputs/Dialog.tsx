@@ -5,6 +5,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@/components/inputs";
 import { typographyLevels } from "@/theme/palette";
+import { useTranslation } from "react-i18next";
 
 export const DialogInput = ({
   open,
@@ -25,6 +26,7 @@ export const DialogInput = ({
   cancelColor?: "error" | "primary";
   loading?: boolean;
 }) => {
+  const { t } = useTranslation();
   return (
     <Dialog open={open}>
       <DialogTitle sx={{ fontSize: typographyLevels.l }}>{title}</DialogTitle>
@@ -38,7 +40,7 @@ export const DialogInput = ({
           color={cancelColor}
           onClick={onCancel}
         >
-          Cancel
+          {t("common.buttons.cancel")}
         </Button>
         <Button
           loading={loading}
@@ -46,7 +48,7 @@ export const DialogInput = ({
           color={confirmColor}
           onClick={onConfirm}
         >
-          Confirm
+          {t("common.buttons.confirm")}
         </Button>
       </DialogActions>
     </Dialog>

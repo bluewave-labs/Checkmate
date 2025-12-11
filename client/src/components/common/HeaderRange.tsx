@@ -3,6 +3,7 @@ import { ButtonGroup, Button } from "@/components/inputs";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTranslation } from "react-i18next";
 export const HeaderRange = ({
   range,
   setRange,
@@ -14,6 +15,7 @@ export const HeaderRange = ({
   loading: boolean;
   all?: boolean;
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   return (
@@ -45,7 +47,7 @@ export const HeaderRange = ({
                 : undefined
             }
           >
-            All
+            {t("common.buttons.range.all")}
           </Button>
         )}
         <Button
@@ -61,7 +63,7 @@ export const HeaderRange = ({
               : undefined
           }
         >
-          Recent
+          {t("common.buttons.range.recent")}
         </Button>
         <Button
           variant="contained"
@@ -76,7 +78,7 @@ export const HeaderRange = ({
               : undefined
           }
         >
-          Day
+          {t("common.buttons.range.day")}
         </Button>
         <Button
           variant="contained"
@@ -91,7 +93,7 @@ export const HeaderRange = ({
               : undefined
           }
         >
-          7 days
+          {t("common.buttons.range.week")}
         </Button>
         <Button
           variant="contained"
@@ -106,7 +108,7 @@ export const HeaderRange = ({
               : undefined
           }
         >
-          30 days
+          {t("common.buttons.range.month")}
         </Button>
       </ButtonGroup>
     </Stack>

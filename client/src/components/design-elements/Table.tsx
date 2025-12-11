@@ -22,6 +22,7 @@ import {
 import TablePagination from "@mui/material/TablePagination";
 import type { TablePaginationProps } from "@mui/material/TablePagination";
 
+import { useTranslation } from "react-i18next";
 import { useState, Fragment } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -362,6 +363,7 @@ export const Pagination: React.FC<TablePaginationProps> = ({ ...props }) => {
 
 const EmptyView = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
   return (
     <Stack
       alignItems={"center"}
@@ -373,7 +375,7 @@ const EmptyView = () => {
         borderRadius: theme.shape.borderRadius,
       }}
     >
-      <Typography>No data</Typography>
+      <Typography>{t("monitors.common.table.empty")}</Typography>
     </Stack>
   );
 };

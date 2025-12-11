@@ -100,8 +100,8 @@ export const PageSpeedForm = ({
   return (
     <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
       <ConfigBox
-        title={t("settingsGeneralSettings")}
-        subtitle={t(`pageSpeedConfigureSettingsDescription`)}
+        title={t("monitors.common.form.general.title")}
+        subtitle={t("monitors.pageSpeed.form.general.description")}
         rightContent={
           <Stack gap={theme.spacing(8)}>
             <RadioGroup
@@ -113,12 +113,12 @@ export const PageSpeedForm = ({
             >
               <RadioWithDescription
                 value="https"
-                label="HTTPS"
+                label={t("monitors.common.form.optionHttps")}
                 description=""
               />
               <RadioWithDescription
                 value="http"
-                label={"HTTP"}
+                label={t("monitors.common.form.optionHttp")}
                 description={""}
               />
             </RadioGroup>
@@ -140,7 +140,7 @@ export const PageSpeedForm = ({
                     }, 0);
                   }}
                   type="text"
-                  fieldLabel={t("url")}
+                  fieldLabel={t("monitors.common.form.optionUrl")}
                   fullWidth
                   error={!!errors.url}
                   helperText={errors.url ? errors.url.message : ""}
@@ -155,7 +155,7 @@ export const PageSpeedForm = ({
                 <TextInput
                   {...field}
                   type="text"
-                  fieldLabel={t("displayName")}
+                  fieldLabel={t("monitors.common.form.optionDisplayName")}
                   fullWidth
                   error={!!errors.name}
                   helperText={errors.name ? errors.name.message : ""}
@@ -166,8 +166,8 @@ export const PageSpeedForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.incidentConfigTitle")}
-        subtitle={t("createMonitorPage.incidentConfigDescriptionV2")}
+        title={t("monitors.common.form.incidents.title")}
+        subtitle={t("monitors.common.form.incidents.description")}
         rightContent={
           <Controller
             name="n"
@@ -176,7 +176,9 @@ export const PageSpeedForm = ({
               <TextInput
                 {...field}
                 type="number"
-                fieldLabel={t("createMonitorPage.incidentConfigStatusCheckNumber")}
+                fieldLabel={t(
+                  "monitors.common.form.incidents.optionIncidentCount"
+                )}
                 fullWidth
                 error={!!errors.n}
                 helperText={errors.n ? errors.n.message : ""}
@@ -190,8 +192,8 @@ export const PageSpeedForm = ({
         }
       />
       <ConfigBox
-        title={t("notificationConfig.title")}
-        subtitle={t("notificationConfig.description")}
+        title={t("monitors.common.form.notifications.title")}
+        subtitle={t("monitors.common.form.notifications.description")}
         rightContent={
           <Stack>
             <Controller
@@ -245,8 +247,8 @@ export const PageSpeedForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.intervalTitle")}
-        subtitle="How often to check the URL"
+        title={t("monitors.common.form.interval.title")}
+        subtitle={t("monitors.common.form.interval.description")}
         rightContent={
           <Controller
             name="interval"
@@ -255,7 +257,7 @@ export const PageSpeedForm = ({
               <TextInput
                 {...field}
                 type="text"
-                fieldLabel={t("createMonitorPage.intervalDescription")}
+                fieldLabel={t("monitors.common.form.interval.optionInterval")}
                 fullWidth
                 error={!!errors.interval}
                 helperText={errors.interval ? errors.interval.message : ""}
@@ -271,7 +273,7 @@ export const PageSpeedForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
       </Stack>
     </BasePage>

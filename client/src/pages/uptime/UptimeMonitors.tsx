@@ -27,7 +27,6 @@ import {
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
-import { useAppSelector } from "@/hooks/AppHooks";
 import { config } from "@/config/index";
 import { useLimitReached } from "@/hooks/UsePlanEntitlements";
 
@@ -35,7 +34,6 @@ const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const UptimeMonitors = () => {
   const theme = useTheme();
-  const { user } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedMonitor, setSelectedMonitor] = useState<IMonitor | null>(null);
@@ -129,8 +127,8 @@ const UptimeMonitors = () => {
       monitorLimitReached={monitorLimitReached}
     >
       <InfoBox
-        title="Website & API Uptime Monitoring"
-        description="Monitor your websites and APIs to ensure they're always accessible. Get instant alerts when your services go down and track uptime history over time."
+        title={t("monitors.uptime.infoBox.title")}
+        description={t("monitors.uptime.infoBox.description")}
       />
       <HeaderCreate
         isLoading={loading}
@@ -172,8 +170,8 @@ const UptimeMonitors = () => {
       />
       <Dialog
         open={isDialogOpen}
-        title={t("deleteDialogTitle")}
-        content={t("deleteDialogDescription")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         loading={isDeleting}

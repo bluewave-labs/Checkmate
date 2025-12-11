@@ -19,7 +19,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
 import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
-import { useAppSelector } from "@/hooks/AppHooks";
 import { config } from "@/config/index";
 import { useLimitReached } from "@/hooks/UsePlanEntitlements";
 
@@ -27,7 +26,6 @@ const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const PageSpeedMonitorsPage = () => {
   const theme = useTheme();
-  const { user } = useAppSelector((state) => state.auth);
 
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -91,8 +89,8 @@ const PageSpeedMonitorsPage = () => {
       monitorLimitReached={monitorLimitReached}
     >
       <InfoBox
-        title="Website Performance Tracking"
-        description="Measure how fast your websites load and identify performance bottlenecks. Track Core Web Vitals and get actionable insights to improve user experience."
+        title={t("monitors.pageSpeed.infoBox.title")}
+        description={t("monitors.pageSpeed.infoBox.description")}
       />
       <HeaderCreate
         isLoading={loading}
@@ -124,8 +122,8 @@ const PageSpeedMonitorsPage = () => {
       />
       <Dialog
         open={isDialogOpen}
-        title={t("deleteDialogTitle")}
-        content={t("deleteDialogDescription")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         loading={isDeleting}

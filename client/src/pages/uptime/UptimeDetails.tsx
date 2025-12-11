@@ -9,6 +9,7 @@ import {
 import Stack from "@mui/material/Stack";
 import { CheckTable } from "@/pages/uptime/CheckTable";
 
+import { useTranslation } from "react-i18next";
 import type { IMonitor, IMonitorWithMonitorStats } from "@/types/monitor";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -25,7 +26,7 @@ const UptimeDetailsPage = () => {
   const { id } = useParams();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-
+  const { t } = useTranslation();
   // Local state
   const [range, setRange] = useState("2h");
 
@@ -113,13 +114,13 @@ const UptimeDetailsPage = () => {
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <StatBox
           palette={palette}
-          title="Active for"
+          title={t("monitors.common.stats.activeFor")}
           subtitle={prettyMilliseconds(streakDuration, {
             secondsDecimalDigits: 0,
           })}
         />
         <StatBox
-          title="Last check"
+          title={t("monitors.common.stats.lastCheck")}
           subtitle={
             lastChecked >= 0
               ? `${prettyMilliseconds(lastChecked, {
@@ -129,13 +130,13 @@ const UptimeDetailsPage = () => {
           }
         />
         <StatBox
-          title="Last response time"
+          title={t("monitors.common.stats.lastResponseTime")}
           subtitle={
             stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"
           }
         />
         <StatBox
-          title="Certificate Expiry"
+          title={t("monitors.common.stats.certificate")}
           subtitle={
             stats?.certificateExpiry
               ? new Date(stats.certificateExpiry).toLocaleString()
@@ -150,13 +151,13 @@ const UptimeDetailsPage = () => {
       />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <HistogramStatus
-          title="Uptime"
+          title={t("common.charts.uptime.upTitle")}
           status={"up"}
           checks={upChecks}
           range={range}
         />
         <HistogramStatus
-          title="Incidents"
+          title={t("common.charts.uptime.downTitle")}
           checks={downChecks}
           status={"down"}
           range={range}

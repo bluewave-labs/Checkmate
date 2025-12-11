@@ -90,8 +90,8 @@ const PageSpeedMonitorsPage = () => {
       actionLink="/infrastructure/create"
     >
       <InfoBox
-        title="Server Health Monitoring"
-        description="Keep track of your servers' vital statistics including CPU usage, memory, disk space, and network performance. Receive alerts when resources run low."
+        title={t("monitors.infrastructure.infoBox.title")}
+        description={t("monitors.infrastructure.infoBox.description")}
       />
       <HeaderCreate
         isLoading={loading}
@@ -123,8 +123,8 @@ const PageSpeedMonitorsPage = () => {
       />
       <Dialog
         open={isDialogOpen}
-        title={t("deleteDialogTitle")}
-        content={t("deleteDialogDescription")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         loading={isDeleting}

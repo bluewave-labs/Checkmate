@@ -16,6 +16,7 @@ import { usePatch } from "@/hooks/UseApi";
 
 import type { IMonitor } from "@/types/monitor";
 import type { ActionMenuItem } from "@/components/actions-menu";
+import type { ChartType } from "@/features/uiSlice";
 
 export const MonitorTable = ({
   monitors,
@@ -47,6 +48,9 @@ export const MonitorTable = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+  const chartType = useAppSelector(
+    (state) => state?.ui?.chartType || "heatmap"
+  );
   const {
     patch,
     // loading: isPatching,
@@ -85,7 +89,7 @@ export const MonitorTable = ({
     return [
       {
         id: 1,
-        label: "Open site",
+        label: t("monitors.common.actions.openSite"),
         action: () => {
           window.open(monitor.url, "_blank", "noreferrer");
         },
@@ -93,21 +97,21 @@ export const MonitorTable = ({
       },
       {
         id: 2,
-        label: "Details",
+        label: t("monitors.common.actions.details"),
         action: () => {
           navigate(`${monitor._id}`);
         },
       },
       {
         id: 3,
-        label: "Incidents",
+        label: t("monitors.common.actions.incidents"),
         action: () => {
           navigate(`/incidents?monitorId=${monitor._id}`);
         },
       },
       {
         id: 4,
-        label: "Configure",
+        label: t("monitors.common.actions.configure"),
         action: () => {
           navigate(`/uptime/${monitor._id}/configure`);
         },
@@ -116,12 +120,15 @@ export const MonitorTable = ({
       //   id: 5,
       //   label: "Clone",
       //   action: () => {
-      
+
       //   },
       // },
       {
         id: 6,
-        label: monitor.status === "paused" ? "Resume" : "Pause",
+        label:
+          monitor.status === "paused"
+            ? t("common.buttons.resume")
+            : t("common.buttons.pause"),
         action: async () => {
           await patch(`/monitors/${monitor._id}/active`);
           refetch();
@@ -130,7 +137,11 @@ export const MonitorTable = ({
       },
       {
         id: 7,
-        label: <Typography color={theme.palette.error.main}>Remove</Typography>,
+        label: (
+          <Typography color={theme.palette.error.main}>
+            {t("common.buttons.delete")}
+          </Typography>
+        ),
         action: () => {
           setSelectedMonitor(monitor);
         },
@@ -139,10 +150,7 @@ export const MonitorTable = ({
     ];
   };
 
-  const getHeaders = () => {
-    const chartType = useAppSelector(
-      (state) => state?.ui?.chartType || "heatmap"
-    );
+  const getHeaders = (chartType: ChartType) => {
     const renderSortIcon = (isActive: boolean) => (
       <Box width={16} display="inline-flex" justifyContent="center">
         {isActive ? (
@@ -165,7 +173,7 @@ export const MonitorTable = ({
             onClick={(e) => handleSort(e, "name")}
             sx={{ cursor: "pointer" }}
           >
-            {t("name")}
+            {t("monitors.common.table.headers.name")}
             {renderSortIcon(sortField === "name")}
           </Stack>
         ),
@@ -185,7 +193,7 @@ export const MonitorTable = ({
             onClick={(e) => handleSort(e, "status")}
             sx={{ cursor: "pointer" }}
           >
-            {t("status")}
+            {t("monitors.common.table.headers.status")}
             {renderSortIcon(sortField === "status")}
           </Stack>
         ),
@@ -195,7 +203,7 @@ export const MonitorTable = ({
       },
       {
         id: "histogram",
-        content: t("responseTime"),
+        content: t("monitors.common.table.headers.responseTime"),
         render: (row) => {
           if (chartType === "histogram") {
             return <HistogramResponseTime checks={row.latestChecks} />;
@@ -215,7 +223,7 @@ export const MonitorTable = ({
             onClick={(e) => handleSort(e, "type")}
             sx={{ cursor: "pointer" }}
           >
-            {t("type")}
+            {t("monitors.common.table.headers.type")}
             {renderSortIcon(sortField === "type")}
           </Stack>
         ),
@@ -225,7 +233,7 @@ export const MonitorTable = ({
       },
       {
         id: "actions",
-        content: t("actions"),
+        content: t("monitors.common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },
@@ -234,7 +242,7 @@ export const MonitorTable = ({
     return headers;
   };
 
-  const headers = getHeaders();
+  const headers = getHeaders(chartType);
 
   return (
     <Box>

@@ -111,8 +111,8 @@ export const UptimeForm = ({
     <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
       {mode === "create" && (
         <ConfigBox
-          title={t("distributedUptimeCreateChecks")}
-          subtitle={t("distributedUptimeCreateChecksDescription")}
+          title={t("monitors.uptime.form.type.title")}
+          subtitle={t("monitors.uptime.form.type.description")}
           rightContent={
             <Controller
               name="type"
@@ -122,26 +122,31 @@ export const UptimeForm = ({
                   <RadioGroup {...field} sx={{ gap: theme.spacing(6) }}>
                     <RadioWithDescription
                       value="https"
-                      label="HTTPS"
-                      description="Use HTTPS to monitor your website or API endpoint.
-"
+                      label={t("monitors.common.form.optionHttps")}
+                      description={t(
+                        "monitors.uptime.form.type.optionHttpsDescription"
+                      )}
                     />
                     <RadioWithDescription
                       value="http"
-                      label={"HTTP"}
-                      description={
-                        "Use HTTP to monitor your website or API endpoint."
-                      }
+                      label={t("monitors.common.form.optionHttp")}
+                      description={t(
+                        "monitors.uptime.form.type.optionHttpDescription"
+                      )}
                     />
                     <RadioWithDescription
                       value="port"
-                      label={"Port"}
-                      description={"Check whether your port is open or not."}
+                      label={t("monitors.uptime.form.type.optionPort")}
+                      description={t(
+                        "monitors.uptime.form.type.optionPortDescription"
+                      )}
                     />
                     <RadioWithDescription
                       value="ping"
-                      label={t("pingMonitoring")}
-                      description={t("pingMonitoringDescription")}
+                      label={t("monitors.uptime.form.type.optionPing")}
+                      description={t(
+                        "monitors.uptime.form.type.optionPingDescription"
+                      )}
                     />
                   </RadioGroup>
                 </FormControl>
@@ -151,8 +156,8 @@ export const UptimeForm = ({
         />
       )}
       <ConfigBox
-        title={t("settingsGeneralSettings")}
-        subtitle={t(`uptimeGeneralInstructions.${selectedType}`)}
+        title={t("monitors.common.form.general.title")}
+        subtitle={t(`monitors.uptime.form.general.description.${selectedType}`)}
         rightContent={
           <Stack gap={theme.spacing(8)}>
             <Controller
@@ -173,7 +178,7 @@ export const UptimeForm = ({
                     }, 0);
                   }}
                   type="text"
-                  fieldLabel={t("url")}
+                  fieldLabel={t("monitors.common.form.optionUrl")}
                   fullWidth
                   error={!!errors.url}
                   helperText={errors.url ? errors.url.message : ""}
@@ -188,7 +193,7 @@ export const UptimeForm = ({
                   <TextInput
                     {...field}
                     type="number"
-                    fieldLabel={"Port"}
+                    fieldLabel={t("monitors.uptime.form.general.optionPort")}
                     fullWidth
                     error={!!errors.port}
                     helperText={errors.port ? errors.port.message : ""}
@@ -203,7 +208,7 @@ export const UptimeForm = ({
                 <TextInput
                   {...field}
                   type="text"
-                  fieldLabel={t("displayName")}
+                  fieldLabel={t("monitors.common.form.optionDisplayName")}
                   fullWidth
                   error={!!errors.name}
                   helperText={errors.name ? errors.name.message : ""}
@@ -214,8 +219,8 @@ export const UptimeForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.incidentConfigTitle")}
-        subtitle={t("createMonitorPage.incidentConfigDescriptionV2")}
+        title={t("monitors.common.form.incidents.title")}
+        subtitle={t("monitors.common.form.incidents.description")}
         rightContent={
           <Controller
             name="n"
@@ -225,7 +230,7 @@ export const UptimeForm = ({
                 {...field}
                 type="number"
                 fieldLabel={t(
-                  "createMonitorPage.incidentConfigStatusCheckNumber"
+                  "monitors.common.form.incidents.optionIncidentCount"
                 )}
                 fullWidth
                 error={!!errors.n}
@@ -240,8 +245,8 @@ export const UptimeForm = ({
         }
       />
       <ConfigBox
-        title={t("notificationConfig.title")}
-        subtitle={t("notificationConfig.description")}
+        title={t("monitors.common.form.notifications.title")}
+        subtitle={t("monitors.common.form.notifications.description")}
         rightContent={
           <Stack>
             <Controller
@@ -251,7 +256,12 @@ export const UptimeForm = ({
               render={({ field }) => (
                 <AutoComplete
                   multiple
-                  fieldLabel={`You have ${notificationOptions.length} available notification ${notificationOptions.length === 1 ? "channel" : "channels"}`}
+                  fieldLabel={t(
+                    "monitors.common.form.notifications.optionNotificationChannels",
+                    {
+                      count: notificationOptions.length,
+                    }
+                  )}
                   options={notificationOptions}
                   getOptionLabel={(option) => option.name}
                   value={notificationOptions.filter((o: any) =>
@@ -296,8 +306,8 @@ export const UptimeForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.intervalTitle")}
-        subtitle="How often to check the URL"
+        title={t("monitors.common.form.interval.title")}
+        subtitle={t("monitors.common.form.interval.description")}
         rightContent={
           <Controller
             name="interval"
@@ -306,7 +316,7 @@ export const UptimeForm = ({
               <TextInput
                 {...field}
                 type="text"
-                fieldLabel={t("createMonitorPage.intervalDescription")}
+                fieldLabel={t("monitors.common.form.interval.optionInterval")}
                 fullWidth
                 error={!!errors.interval}
                 helperText={errors.interval ? errors.interval.message : ""}
@@ -316,8 +326,8 @@ export const UptimeForm = ({
         }
       />
       <ConfigBox
-        title={t("createMonitorPage.rejectUnauthorizedTitle")}
-        subtitle={t("createMonitorPage.rejectUnauthorizedDescription")}
+        title={t("monitors.uptime.form.rejectUnauthorized.title")}
+        subtitle={t("monitors.uptime.form.rejectUnauthorized.description")}
         rightContent={
           <Controller
             name="rejectUnauthorized"
@@ -326,7 +336,11 @@ export const UptimeForm = ({
               <Stack direction="row" alignItems={"center"}>
                 <Switch {...field} checked={field.value} />
                 <Typography>
-                  {field.value ? "Enabled (recommended)" : "Disabled"}
+                  {field.value
+                    ? t("monitors.uptime.form.rejectUnauthorized.optionEnabled")
+                    : t(
+                        "monitors.uptime.form.rejectUnauthorized.optionDisabled"
+                      )}
                 </Typography>
               </Stack>
             )}
@@ -340,7 +354,7 @@ export const UptimeForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
       </Stack>
     </BasePage>

@@ -85,7 +85,7 @@ export const PageSpeedMonitorTable = ({
     return [
       {
         id: 1,
-        label: "Open site",
+        label: t("monitors.common.actions.openSite"),
         action: () => {
           window.open(monitor.url, "_blank", "noreferrer");
         },
@@ -93,21 +93,21 @@ export const PageSpeedMonitorTable = ({
       },
       {
         id: 2,
-        label: "Details",
+        label: t("monitors.common.actions.details"),
         action: () => {
           navigate(`${monitor._id}`);
         },
       },
       {
         id: 3,
-        label: "Incidents",
+        label: t("monitors.common.actions.incidents"),
         action: () => {
           navigate(`/incidents?monitorId=${monitor._id}`);
         },
       },
       {
         id: 4,
-        label: "Configure",
+        label: t("monitors.common.actions.configure"),
         action: () => {
           navigate(`/pagespeed/${monitor._id}/configure`);
         },
@@ -116,12 +116,15 @@ export const PageSpeedMonitorTable = ({
       //   id: 5,
       //   label: "Clone",
       //   action: () => {
-      
+
       //   },
       // },
       {
         id: 6,
-        label: monitor.status === "paused" ? "Resume" : "Pause",
+        label:
+          monitor.status === "paused"
+            ? t("common.buttons.resume")
+            : t("common.buttons.pause"),
         action: async () => {
           await patch(`/monitors/${monitor._id}/active`);
           refetch();
@@ -130,7 +133,11 @@ export const PageSpeedMonitorTable = ({
       },
       {
         id: 7,
-        label: <Typography color={theme.palette.error.main}>Remove</Typography>,
+        label: (
+          <Typography color={theme.palette.error.main}>
+            {t("common.buttons.delete")}
+          </Typography>
+        ),
         action: () => {
           setSelectedMonitor(monitor);
         },
@@ -163,7 +170,7 @@ export const PageSpeedMonitorTable = ({
             onClick={(e) => handleSort(e, "name")}
             sx={{ cursor: "pointer" }}
           >
-            {t("host")}
+            {t("monitors.common.table.headers.name")}
             {renderSortIcon(sortField === "name")}
           </Stack>
         ),
@@ -182,7 +189,7 @@ export const PageSpeedMonitorTable = ({
             onClick={(e) => handleSort(e, "status")}
             sx={{ cursor: "pointer" }}
           >
-            {t("status")}
+            {t("monitors.common.table.headers.status")}
             {renderSortIcon(sortField === "status")}
           </Stack>
         ),
@@ -192,7 +199,7 @@ export const PageSpeedMonitorTable = ({
       },
       {
         id: "histogram",
-        content: "PageSpeed score",
+        content: t("monitors.common.table.headers.pageSpeedScore"),
         render: (row) => {
           return (
             <Stack alignItems={"center"}>
@@ -207,7 +214,7 @@ export const PageSpeedMonitorTable = ({
 
       {
         id: "actions",
-        content: t("actions"),
+        content: t("monitors.common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },
