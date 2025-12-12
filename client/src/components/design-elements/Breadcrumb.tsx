@@ -3,29 +3,14 @@ import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { ChevronRight, Home } from "lucide-react";
-
-const pathNameMap: Record<string, string> = {
-  uptime: "Uptime Monitors",
-  pagespeed: "PageSpeed Monitors",
-  infrastructure: "Infrastructure Monitors",
-  diagnostics: "Diagnostics",
-  incidents: "Incidents",
-  maintenance: "Maintenance",
-  "notification-channels": "Notification Channels",
-  "status-pages": "Status Pages",
-  teams: "Teams",
-  settings: "Settings",
-  create: "Create",
-  configure: "Configure",
-  invite: "Invite",
-  "team-members": "Team Members",
-};
+import { useTranslation } from "react-i18next";
 
 export const Breadcrumb = ({
   breadcrumbOverride,
 }: {
   breadcrumbOverride?: string[];
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const location = useLocation();
 
@@ -81,7 +66,8 @@ export const Breadcrumb = ({
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
 
         let displayName =
-          pathNameMap[value] || value.charAt(0).toUpperCase() + value.slice(1);
+          t(`common.breadcrumbs.${value}`) ||
+          value.charAt(0).toUpperCase() + value.slice(1);
 
         // Paths that are IDs should be detail pages
         if (value.length === 24 || value.match(/^[a-f0-9-]{36}$/)) {

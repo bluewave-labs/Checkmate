@@ -34,7 +34,7 @@ export const HeaderCreate = ({
       gap={theme.spacing(6)}
     >
       <Tooltip
-        title={limitReached ? "Upgrade your plan to create more teams" : ""}
+        title={limitReached ? t("common.tooltips.limitReached") : ""}
         disableHoverListener={!limitReached}
       >
         <span>
@@ -46,7 +46,7 @@ export const HeaderCreate = ({
             onClick={() => navigate(path)}
           >
             {limitReached
-              ? "Your plan's limit has been reached"
+              ? t("common.buttons.limitReached")
               : label || t("common.buttons.createNew")}
           </Button>
         </span>

@@ -3,6 +3,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Button } from "@/components/inputs";
 
+import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/hooks/AppHooks";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
@@ -12,6 +13,7 @@ import type { IUser } from "@/types/user";
 import { setSelectedTeamId, setUser } from "@/features/authSlice";
 
 const BillingPage = () => {
+  const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const { response } = useGet<ApiResponse<Entitlements[]>>(
     "/billing/plans",
@@ -62,8 +64,8 @@ const BillingPage = () => {
   return (
     <BasePage>
       <InfoBox
-        title="Choose a plan!"
-        description="Choose a plan that fits your needs and start enjoying our services."
+        title={t("billing.infoBox.title")}
+        description={t("billing.infoBox.description")}
       />
       <Grid container spacing={10} columns={{ xs: 1, sm: 2, md: 4 }}>
         {plans.map((plan) => (
@@ -85,7 +87,7 @@ const BillingPage = () => {
             onClick={handleCancel}
             loading={isPosting}
           >
-            Cancel subscription
+            {t("buttons.cancelSubscription")}
           </Button>
         </Box>
       )}

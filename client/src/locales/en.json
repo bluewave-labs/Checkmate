@@ -1,144 +1,58 @@
 {
-  "common": {
-    "appName": "Checkmate",
-    "toasts": {
-      "recoveryEmailSent": "If the email exists, a recovery link has been sent",
-      "passwordResetSuccessful": "Password reset successful!"
-    },
-    "table": {
-      "headers": {
-        "name": "Name",
-        "status": "Status",
-        "actions": "Actions",
-        "type": "Type",
-        "monitor": "Monitor",
-        "active": "Active"
+  "adminSettings": {
+    "form": {
+      "email": {
+        "description": "Configure the email settings for your system. This is used to send notifications and alerts.",
+        "descriptionTransport": "This builds an SMTP transport for NodeMailer",
+        "linkTransport": "See specifications here",
+        "optionAddress": "Email address - Used for authentication",
+        "optionConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
+        "optionHost": "Email host - Hostname or IP address to connect to",
+        "optionIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
+        "optionPassword": "Email password - Password for authentication",
+        "optionPool": "Enable connection pooling: Reuse existing connections to improve performance",
+        "optionPort": "Email port - Port to connect to",
+        "optionRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
+        "optionRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
+        "optionSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
+        "optionTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
+        "optionUser": "Email user - Username for authentication, overrides email address if specified",
+        "title": "Email"
       },
-      "empty": "No data"
-    },
-    "tooltips": {
-      "teams": "Teams",
-      "toggleTheme": "Toggle theme",
-      "logout": "Logout",
-      "settings": "Settings"
-    },
-    "buttons": {
-      "acceptInvitation": "Accept invitation",
-      "register": "Register",
-      "submitNewPassword": "Submit new password",
-      "requestRecovery": "Request recovery email",
-      "sendInvite": "Send invite",
-      "testTransport": "Test Transport config",
-      "saveEmailSettings": "Save Email Settings",
-      "saveRetentionSettings": "Save Retention Settings",
-      "incidents": "Incidents",
-      "delete": "Delete",
-      "confirm": "Confirm",
-      "cancel": "Cancel",
-      "test": "Test",
-      "save": "Save",
-      "pause": "Pause",
-      "resume": "Resume",
-      "enable": "Enable",
-      "disable": "Disable",
-      "configure": "Configure",
-      "createNew": "Create new",
-      "testNotification": "Send test notification",
-      "updateProfile": "Update profile",
-      "removeAllMonitors": "Remove all monitors",
-      "resolve": "Resolve",
-      "exportJson": "Export to JSON",
-      "importJson": "Import from JSON",
-      "range": {
-        "all": "All",
-        "recent": "Recent",
-        "day": "Day",
-        "week": "7 days",
-        "month": "30 days"
-      },
-      "yes": "Yes",
-      "no": "No"
-    },
-    "dialog": {
-      "delete": {
-        "title": "Are you sure you want to delete this?",
-        "description": "This action cannot be undone."
-      }
-    },
-    "charts": {
-      "uptime": {
-        "upTitle": "Uptime",
-        "downTitle": "Downtime",
-        "detail": "Total checks",
-        "emptyUp": "No checks yet",
-        "emptyDown": "Great, no downtime!"
-      },
-      "avgResponseTime": {
-        "title": "Average Response Time",
-        "lowLabel": "Low",
-        "highLabel": "High"
-      },
-      "pageSpeed": {
-        "weight": "Weight",
-        "title": "Average PageSpeed score",
-        "fcp": "First Contentful Paint (FCP)",
-        "si": "Speed Index (SI)",
-        "lcp": "Largest Contentful Paint (LCP)",
-        "tbt": "Total Blocking Time (TBT)",
-        "cls": "Cumulative Layout Shift (CLS)"
-      },
-      "infrastructure": {
-        "memory": {
-          "title": "Memory"
-        },
-        "cpu": {
-          "title": "CPU"
-        },
-        "temp": {
-          "title": "Temp"
-        },
-        "disk": {
-          "title": "Disk {{idx}}"
-        }
+      "retention": {
+        "description": "Set data retention policy.  This affects all organizations and teams",
+        "optionRetentionDays": "Days to retain data",
+        "title": "Global data retention settings"
       }
     }
   },
-
-  "menu": {
-    "uptime": "Uptime",
-    "pagespeed": "PageSpeed",
-    "infrastructure": "Infrastructure",
-    "notifications": "Notifications",
-    "incidents": "Incidents",
-    "checks": "Checks",
-    "statusPages": "Status Pages",
-    "maintenance": "Maintenance",
-    "diagnostics": "Diagnostics",
-    "support": "Support",
-    "discussions": "Discussions",
-    "docs": "Documentation",
-    "changelog": "Changelog"
-  },
   "auth": {
-    "register": {
-      "header": {
-        "title": "Welcome to Checkmate!",
-        "description": "Create an account to get started"
+    "common": {
+      "form": {
+        "optionConfirmPassword": "Confirm Password",
+        "optionConfirmPasswordPlaceholder": "Re-enter password to confirm",
+        "optionEmail": "Email",
+        "optionEmailPlaceholder": "test@test.com",
+        "optionFirstName": "First Name",
+        "optionFirstNamePlaceholder": "Your first Name",
+        "optionLastName": "Last Name",
+        "optionLastNamePlaceholder": "Your last Name",
+        "optionPassword": "Password"
       }
     },
     "login": {
       "header": {
-        "title": "Welcome back to Checkmate",
-        "description": "Log in to continue"
+        "description": "Log in to continue",
+        "title": "Welcome back to Checkmate"
       },
       "links": {
         "forgotPassword": {
-          "text": "Forgot password?",
-          "linkText": "Reset password"
+          "linkText": "Reset password",
+          "text": "Forgot password?"
         },
         "register": {
-          "text": "Don't have an account?",
-          "linkText": "Register"
+          "linkText": "Register",
+          "text": "Don't have an account?"
         }
       }
     },
@@ -147,180 +61,366 @@
         "title": "Enter your email to recover your account"
       }
     },
+    "register": {
+      "header": {
+        "description": "Create an account to get started",
+        "title": "Welcome to Checkmate!"
+      }
+    },
     "reset": {
       "header": {
         "title": "Set a new password"
       }
+    }
+  },
+  "billing": {
+    "infoBox": {
+      "description": "Choose a plan that fits your needs and start enjoying our services.",
+      "title": "Choose a plan!"
     },
-    "common": {
-      "form": {
-        "optionEmail": "Email",
-        "optionEmailPlaceholder": "test@test.com",
-        "optionFirstName": "First Name",
-        "optionFirstNamePlaceholder": "Your first Name",
-        "optionLastName": "Last Name",
-        "optionLastNamePlaceholder": "Your last Name",
-        "optionPassword": "Password",
-        "optionConfirmPassword": "Confirm Password",
-        "optionConfirmPasswordPlaceholder": "Re-enter password to confirm"
+    "plans": {
+      "features": {
+        "interval": {
+          "title": "Min check interval",
+          "toolTip": "Minimum check frequency allowed for this plan."
+        },
+        "monitors": {
+          "title": "Monitors",
+          "toolTip": "Maximum number of monitors allowed."
+        },
+        "notificationChannels": {
+          "title": "Notification channels",
+          "toolTip": "Maximum notification channels (email, Slack, etc)"
+        },
+        "retention": {
+          "title": "Data retention",
+          "toolTip": "Oldest checks are automatically removed after retention."
+        },
+        "statusPages": {
+          "title": "Status pages",
+          "toolTip": "Maximum public status pages you can create."
+        },
+        "teams": {
+          "title": "Teams",
+          "toolTip": "Maximum number of teams in your org."
+        }
+      },
+      "mostPopular": "Most popular"
+    }
+  },
+  "checks": {
+    "table": {
+      "headers": {
+        "dateTime": "Date & Time",
+        "message": "Message",
+        "statusCode": "Status code"
       }
     }
   },
-
+  "common": {
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "uptime": "Uptime Monitors",
+      "pagespeed": "PageSpeed Monitors",
+      "infrastructure": "Infrastructure Monitors",
+      "diagnostics": "Diagnostics",
+      "incidents": "Incidents",
+      "maintenance": "Maintenance",
+      "notification-channels": "Notification Channels",
+      "status-pages": "Status Pages",
+      "teams": "Teams",
+      "settings": "Settings",
+      "create": "Create",
+      "configure": "Configure",
+      "invite": "Invite",
+      "team-members": "Team Members",
+      "checks": "Checks"
+    },
+    "buttons": {
+      "acceptInvitation": "Accept invitation",
+      "cancel": "Cancel",
+      "cancelSubscription": "Cancel subscription",
+      "configure": "Configure",
+      "confirm": "Confirm",
+      "createNew": "Create new",
+      "delete": "Delete",
+      "disable": "Disable",
+      "enable": "Enable",
+      "exportJson": "Export to JSON",
+      "importJson": "Import from JSON",
+      "incidents": "Incidents",
+      "limitReached": "Your plan's limit has been reached",
+      "no": "No",
+      "pause": "Pause",
+      "range": {
+        "all": "All",
+        "day": "Day",
+        "month": "30 days",
+        "recent": "Recent",
+        "week": "7 days"
+      },
+      "register": "Register",
+      "removeAllMonitors": "Remove all monitors",
+      "requestRecovery": "Request recovery email",
+      "resolve": "Resolve",
+      "resume": "Resume",
+      "save": "Save",
+      "saveEmailSettings": "Save Email Settings",
+      "saveRetentionSettings": "Save Retention Settings",
+      "sendInvite": "Send invite",
+      "submitNewPassword": "Submit new password",
+      "test": "Test",
+      "testNotification": "Send test notification",
+      "testTransport": "Test Transport config",
+      "updateProfile": "Update profile",
+      "yes": "Yes"
+    },
+    "charts": {
+      "avgResponseTime": {
+        "highLabel": "High",
+        "lowLabel": "Low",
+        "title": "Average Response Time"
+      },
+      "infrastructure": {
+        "cpu": {
+          "title": "CPU"
+        },
+        "disk": {
+          "title": "Disk {{idx}}"
+        },
+        "memory": {
+          "title": "Memory"
+        },
+        "temp": {
+          "title": "Temp"
+        }
+      },
+      "pageSpeed": {
+        "cls": "Cumulative Layout Shift (CLS)",
+        "fcp": "First Contentful Paint (FCP)",
+        "lcp": "Largest Contentful Paint (LCP)",
+        "si": "Speed Index (SI)",
+        "tbt": "Total Blocking Time (TBT)",
+        "title": "Average PageSpeed score",
+        "weight": "Weight"
+      },
+      "uptime": {
+        "detail": "Total checks",
+        "downTitle": "Downtime",
+        "emptyDown": "Great, no downtime!",
+        "emptyUp": "No checks yet",
+        "upTitle": "Uptime"
+      }
+    },
+    "dialog": {
+      "delete": {
+        "description": "This action cannot be undone.",
+        "title": "Are you sure you want to delete this?"
+      }
+    },
+    "table": {
+      "empty": "No data",
+      "headers": {
+        "actions": "Actions",
+        "active": "Active",
+        "monitor": "Monitor",
+        "name": "Name",
+        "status": "Status",
+        "type": "Type"
+      }
+    },
+    "toasts": {
+      "passwordResetSuccessful": "Password reset successful!",
+      "recoveryEmailSent": "If the email exists, a recovery link has been sent"
+    },
+    "tooltips": {
+      "limitReached": "Upgrade your plan to create more",
+      "logout": "Logout",
+      "settings": "Settings",
+      "teams": "Teams",
+      "toggleTheme": "Toggle theme"
+    }
+  },
+  "export": {
+    "form": {
+      "exportIncidents": {
+        "description": "Export current team's incidents as JSON",
+        "optionExport": "Click here to export your incidents to JSON",
+        "title": "Export incidents"
+      },
+      "exportMonitors": {
+        "description": "This will only export the basic monitor settings, not the check history, incidents history, or notifications",
+        "optionExport": "Click here to export your monitors to JSON",
+        "title": "Export current team's monitors"
+      },
+      "importMonitors": {
+        "description": "Import monitors from a JSON file. Sample:",
+        "optionImport": "Click here to import your monitors from JSON",
+        "title": "Import monitors"
+      }
+    }
+  },
+  "incidents": {
+    "details": {
+      "resolutionCard": {
+        "note": "Note",
+        "ongoingSince": "Ongoing since",
+        "resolutionStatus": "Resolution status",
+        "resolutionType": "Resolution type",
+        "resolvedAt": "Resolved at",
+        "resolvedBy": "Resolved by",
+        "title": "Resolution"
+      }
+    },
+    "table": {
+      "headers": {
+        "end": "Incident end",
+        "monitorStatus": "Current monitor status",
+        "resolutionType": "Resolution type",
+        "resolved": "Resolved",
+        "resolvedBy": "Resolved by",
+        "start": "Incident start"
+      }
+    },
+    "title": "Incident details"
+  },
+  "invite": {
+    "form": {
+      "inviteLink": {
+        "title": "Invite link"
+      },
+      "optional": {
+        "description": "You can also assign an organization role",
+        "optionOrganizationRole": "Organization role",
+        "title": "Optional"
+      },
+      "required": {
+        "description": "These fields are required",
+        "optionPermissions": "Permissions",
+        "optionTeam": "Team",
+        "optionTeamRole": "Team role",
+        "title": "Required"
+      }
+    }
+  },
+  "maintenanceWindow": {
+    "fallback": {
+      "actionButton": "Create a window!",
+      "checks": [
+        "Mark your maintenance periods",
+        "Eliminate any misunderstandings",
+        "Stop sending alerts in maintenance windows"
+      ],
+      "title": "A maintenance window is used to:"
+    },
+    "form": {
+      "general": {
+        "description": "General maintenance window settings",
+        "optionName": "Name",
+        "optionNamePlaceholder": "My maintenance window",
+        "optionRepeat": "Repeat period",
+        "title": "General"
+      },
+      "infoBox": {
+        "description": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations.",
+        "title": "About Maintenance Windows"
+      },
+      "monitors": {
+        "description": "Select the monitors to include in the maintenance window",
+        "optionMonitors": "Monitors",
+        "optionMonitorsPlaceholder": "Type to search",
+        "optionMonitorsSelected": "selected",
+        "title": "Monitors"
+      },
+      "time": {
+        "description": "Set the start time and end time of the maintenance window",
+        "optionEnd": "End time",
+        "optionStart": "Start time",
+        "title": "Start & end times"
+      }
+    },
+    "infoBox": {
+      "description": "Plan maintenance windows to temporarily pause monitoring checks. During maintenance, your monitors won't run checks or send notifications, preventing false alerts during planned downtime.",
+      "title": "Scheduled Maintenance Periods"
+    },
+    "table": {
+      "headers": {
+        "repeat": "Repeat"
+      }
+    }
+  },
+  "menu": {
+    "changelog": "Changelog",
+    "checks": "Checks",
+    "diagnostics": "Diagnostics",
+    "discussions": "Discussions",
+    "docs": "Documentation",
+    "incidents": "Incidents",
+    "infrastructure": "Infrastructure",
+    "maintenance": "Maintenance",
+    "notifications": "Notifications",
+    "pagespeed": "PageSpeed",
+    "statusPages": "Status Pages",
+    "support": "Support",
+    "uptime": "Uptime"
+  },
   "monitors": {
     "common": {
-      "status": {
-        "down": "down",
-        "paused": "paused",
-        "initializing": "initializing",
-        "up": "up"
-      },
-      "stats": {
-        "monitor": "Monitor",
-        "start": "Start",
-        "end": "End",
-        "activeFor": "Active for",
-        "lastCheck": "Last checked",
-        "lastResponseTime": "Last response time",
-        "certificate": "Certificate expiry",
-        "cpuPhysical": "CPU (physical)",
-        "cpuLogical": "CPU (logical)",
-        "cpuFrequency": "CPU frequency",
-        "cpuTemperature": "Avg CPU temp",
-        "memory": "Memory",
-        "disk": "Disk",
-        "os": "OS",
-        "ongoing": "Ongoing"
-      },
-
       "actions": {
-        "openSite": "Open site",
+        "configure": "Configure",
         "details": "Details",
         "incidents": "Incidents",
-        "configure": "Configure"
+        "openSite": "Open site"
       },
       "form": {
         "general": {
           "title": "General settings"
         },
         "incidents": {
-          "title": "Incidents",
           "description": "Number of consecutive checks needed to change monitor status.  Maximum 25",
-          "optionIncidentCount": "How many checks before status change?"
-        },
-        "notifications": {
-          "title": "Notifications",
-          "description": "Select the notifications channels you want to use",
-          "optionNotificationChannels": "Choose a notification channel ({{count}} available)"
+          "optionIncidentCount": "How many checks before status change?",
+          "title": "Incidents"
         },
         "interval": {
-          "title": "Check interval",
           "description": "How often should we check the monitor?",
-          "optionInterval": "Check interval"
+          "optionInterval": "Check interval",
+          "title": "Check interval"
         },
+        "notifications": {
+          "description": "Select the notifications channels you want to use",
+          "optionNotificationChannels": "Choose a notification channel ({{count}} available)",
+          "title": "Notifications"
+        },
+        "optionDisplayName": "Display name",
         "optionHttp": "HTTP",
         "optionHttps": "HTTPS",
-        "optionUrl": "URL",
-        "optionDisplayName": "Display name"
-      }
-    },
-    "uptime": {
-      "infoBox": {
-        "title": "Website & API Uptime Monitoring",
-        "description": "Monitor your websites and APIs to ensure they're always accessible. Get instant alerts when your services go down and track uptime history over time."
+        "optionUrl": "URL"
       },
-      "table": {
-        "headers": {
-          "responseTime": "Response time"
-        }
+      "stats": {
+        "activeFor": "Active for",
+        "certificate": "Certificate expiry",
+        "cpuFrequency": "CPU frequency",
+        "cpuLogical": "CPU (logical)",
+        "cpuPhysical": "CPU (physical)",
+        "cpuTemperature": "Avg CPU temp",
+        "disk": "Disk",
+        "end": "End",
+        "lastCheck": "Last checked",
+        "lastResponseTime": "Last response time",
+        "memory": "Memory",
+        "monitor": "Monitor",
+        "ongoing": "Ongoing",
+        "os": "OS",
+        "start": "Start"
       },
-      "fallback": {
-        "title": "An uptime monitor is used to:",
-        "actionButton": "Create a monitor!",
-        "checks": [
-          "Check if websites or servers are online & responsive",
-          "Alert teams about downtime or performance issues",
-          "Monitor HTTP endpoints, pings, containers & ports",
-          "Track historical uptime and reliability trends"
-        ]
-      },
-      "form": {
-        "type": {
-          "title": "Type of check",
-          "description": "Select the type of uptime monitor to create.",
-          "optionHttpsDescription": "Use HTTPS to monitor your website or API endpoint.",
-          "optionHttpDescription": "Use HTTP to monitor your website or API endpoint.",
-          "optionPing": "Ping",
-          "optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
-          "optionPort": "Port",
-          "optionPortDescription": "Monitor if a specific port on a server is open."
-        },
-        "general": {
-          "description": {
-            "https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-            "http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-            "ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
-            "port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
-          },
-          "optionPort": "Port"
-        },
-
-        "rejectUnauthorized": {
-          "title": "Reject unauthorized",
-          "description": "Disable to allow self-signed SSL certificates",
-          "optionEnabled": "Enabled (recommended)",
-          "optionDisabled": "Disabled"
-        }
-      },
-      "filters": {
-        "type": {
-          "placeholder": "Monitor type"
-        },
-        "status": {
-          "placeholder": "Monitor status"
-        },
-        "search": {
-          "placeholder": "Search monitors..."
-        }
-      }
-    },
-    "pageSpeed": {
-      "infoBox": {
-        "title": "Website Performance Tracking",
-        "description": "Measure how fast your websites load and identify performance bottlenecks. Track Core Web Vitals and get actionable insights to improve user experience."
-      },
-      "table": {
-        "headers": {
-          "pageSpeedScore": "PageSpeed Score"
-        }
-      },
-      "fallback": {
-        "title": "A PageSpeed monitor is used to:",
-        "actionButton": "Create a monitor!",
-        "checks": [
-          "Report on the user experience of a page",
-          "Help analyze webpage speed",
-          "Give suggestions on how the page can be improved"
-        ]
-      },
-      "form": {
-        "general": {
-          "description": "Enter the URL of the website you want to carry out PageSpeed tests on"
-        }
+      "status": {
+        "down": "down",
+        "initializing": "initializing",
+        "paused": "paused",
+        "up": "up"
       }
     },
     "infrastructure": {
-      "infoBox": {
-        "title": "Infrastructure Monitoring",
-        "description": "Keep track of your servers' vital statistics including CPU usage, memory, disk space, and network performance. Receive alerts when resources run low."
-      },
-      "table": {
-        "headers": {
-          "cpu": "CPU",
-          "memory": "Memory",
-          "disk": "Disk"
-        }
-      },
       "fallback": {
         "actionButton": "Create a monitor!",
         "checks": [
@@ -336,38 +436,129 @@
           "optionSecret": "Authorization secret"
         },
         "thresholds": {
-          "title": "Thresholds for alerts",
           "description": "Set percentage thresholds to trigger incidents",
           "optionCpuUsage": "CPU usage (%)",
-          "optionMemoryUsage": "Memory usage (%)",
           "optionDiskUsage": "Disk usage (%)",
-          "optionTemperature": "Temperature (°C)"
+          "optionMemoryUsage": "Memory usage (%)",
+          "optionTemperature": "Temperature (°C)",
+          "title": "Thresholds for alerts"
         }
       },
       "gauges": {
-        "memory": {
-          "title": "Memory usage",
-          "upperLabel": "Used",
-          "lowerLabel": "Free"
-        },
         "cpu": {
+          "lowerLabel": "Max frequency",
           "title": "CPU usage",
-          "upperLabel": "Current frequency",
-          "lowerLabel": "Max frequency"
+          "upperLabel": "Current frequency"
         },
         "disk": {
+          "lowerLabel": "Free",
           "title": "Disk {{idx}} usage",
-          "upperLabel": "Used",
-          "lowerLabel": "Free"
+          "upperLabel": "Used"
+        },
+        "memory": {
+          "lowerLabel": "Free",
+          "title": "Memory usage",
+          "upperLabel": "Used"
+        }
+      },
+      "infoBox": {
+        "description": "Keep track of your servers' vital statistics including CPU usage, memory, disk space, and network performance. Receive alerts when resources run low.",
+        "title": "Infrastructure Monitoring"
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "Disk",
+          "memory": "Memory"
+        }
+      }
+    },
+    "pageSpeed": {
+      "fallback": {
+        "actionButton": "Create a monitor!",
+        "checks": [
+          "Report on the user experience of a page",
+          "Help analyze webpage speed",
+          "Give suggestions on how the page can be improved"
+        ],
+        "title": "A PageSpeed monitor is used to:"
+      },
+      "form": {
+        "general": {
+          "description": "Enter the URL of the website you want to carry out PageSpeed tests on"
+        }
+      },
+      "infoBox": {
+        "description": "Measure how fast your websites load and identify performance bottlenecks. Track Core Web Vitals and get actionable insights to improve user experience.",
+        "title": "Website Performance Tracking"
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "PageSpeed Score"
+        }
+      }
+    },
+    "uptime": {
+      "fallback": {
+        "actionButton": "Create a monitor!",
+        "checks": [
+          "Check if websites or servers are online & responsive",
+          "Alert teams about downtime or performance issues",
+          "Monitor HTTP endpoints, pings, containers & ports",
+          "Track historical uptime and reliability trends"
+        ],
+        "title": "An uptime monitor is used to:"
+      },
+      "filters": {
+        "search": {
+          "placeholder": "Search monitors..."
+        },
+        "status": {
+          "placeholder": "Monitor status"
+        },
+        "type": {
+          "placeholder": "Monitor type"
+        }
+      },
+      "form": {
+        "general": {
+          "description": {
+            "http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+            "https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+            "ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
+            "port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
+          },
+          "optionPort": "Port"
+        },
+        "rejectUnauthorized": {
+          "description": "Disable to allow self-signed SSL certificates",
+          "optionDisabled": "Disabled",
+          "optionEnabled": "Enabled (recommended)",
+          "title": "Reject unauthorized"
+        },
+        "type": {
+          "description": "Select the type of uptime monitor to create.",
+          "optionHttpDescription": "Use HTTP to monitor your website or API endpoint.",
+          "optionHttpsDescription": "Use HTTPS to monitor your website or API endpoint.",
+          "optionPing": "Ping",
+          "optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
+          "optionPort": "Port",
+          "optionPortDescription": "Monitor if a specific port on a server is open.",
+          "title": "Type of check"
+        }
+      },
+      "infoBox": {
+        "description": "Monitor your websites and APIs to ensure they're always accessible. Get instant alerts when your services go down and track uptime history over time.",
+        "title": "Website & API Uptime Monitoring"
+      },
+      "table": {
+        "headers": {
+          "responseTime": "Response time"
         }
       }
     }
   },
   "notificationChannels": {
-    "infoBox": {
-      "title": "Notification Channels",
-      "description": "Configure where you want to receive notifications when monitors detect issues. Connect email, Slack, Discord, webhooks, and other channels to stay informed."
-    },
     "fallback": {
       "actionButton": "Create a channel",
       "checks": [
@@ -378,81 +569,89 @@
       "title": "Notification channles are used toto:"
     },
     "form": {
-      "name": {
-        "title": "Channel name",
-        "description": "A descriptive name for the notification channel",
-        "optionName": "Channel name",
-        "placeholder": "e.g. Production Alerts"
-      },
-      "type": {
-        "title": "Channel type",
-        "description": "Select the type of notification channel to create.",
-        "optionType": "Type"
-      },
-      "email": {
-        "title": "Email configuration",
-        "description": "Configure the email address where notifications will be sent",
-        "option": "Destination email address",
-        "placeholder": "e.g. john@example.com"
-      },
-      "slack": {
-        "title": "Slack configuration",
-        "description": "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
-        "option": "Webhook URL",
-        "placeholder": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
-      },
       "discord": {
-        "title": "Discord configuration",
         "description": "Configure your Discord webhook URL. Create one in Discord: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
         "option": "Webhook URL",
-        "placeholder": "https://discord.com/api/webhooks/YOUR/WEBHOOK/URL"
+        "placeholder": "https://discord.com/api/webhooks/YOUR/WEBHOOK/URL",
+        "title": "Discord configuration"
+      },
+      "email": {
+        "description": "Configure the email address where notifications will be sent",
+        "option": "Destination email address",
+        "placeholder": "e.g. john@example.com",
+        "title": "Email configuration"
+      },
+      "name": {
+        "description": "A descriptive name for the notification channel",
+        "optionName": "Channel name",
+        "placeholder": "e.g. Production Alerts",
+        "title": "Channel name"
+      },
+      "slack": {
+        "description": "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
+        "option": "Webhook URL",
+        "placeholder": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+        "title": "Slack configuration"
+      },
+      "type": {
+        "description": "Select the type of notification channel to create.",
+        "optionType": "Type",
+        "title": "Channel type"
       },
       "webhook": {
-        "title": "Webhook configuration",
         "description": "Configure the webhook URL endpoint where notifications will be sent",
         "option": "Webhook URL",
-        "placeholder": "https://your-server.com/webhook"
-      }
-    }
-  },
-  "incidents": {
-    "title": "Incident details",
-    "details": {
-      "resolutionCard": {
-        "title": "Resolution",
-        "resolutionStatus": "Resolution status",
-        "resolutionType": "Resolution type",
-        "resolvedBy": "Resolved by",
-        "note": "Note",
-        "resolvedAt": "Resolved at",
-        "ongoingSince": "Ongoing since"
+        "placeholder": "https://your-server.com/webhook",
+        "title": "Webhook configuration"
       }
     },
-    "table": {
-      "headers": {
-        "start": "Incident start",
-        "end": "Incident end",
-        "monitorStatus": "Current monitor status",
-        "resolved": "Resolved",
-        "resolutionType": "Resolution type",
-        "resolvedBy": "Resolved by"
-      }
+    "infoBox": {
+      "description": "Configure where you want to receive notifications when monitors detect issues. Connect email, Slack, Discord, webhooks, and other channels to stay informed.",
+      "title": "Notification Channels"
     }
   },
-  "checks": {
-    "table": {
-      "headers": {
-        "statusCode": "Status code",
-        "message": "Message",
-        "dateTime": "Date & Time"
+  "profile": {
+    "infoBox": {
+      "description": "You can set your name and password here",
+      "title": "View and edit your profile"
+    }
+  },
+  "settings": {
+    "form": {
+      "chart": {
+        "description": "Choose what type of Uptime chart you want to see on the dashboard and status page",
+        "descriptionChartTypeHeatmap": "Compact tiles; color shows response speed, top strip shows availability.",
+        "descriptionChartTypeHistogram": "One bar per check; height shows response time, color shows status.",
+        "optionChartType": "Chart Type",
+        "title": "Chart settings",
+        "valueChartTypeHeatmap": "Heatmap",
+        "valueChartTypeHistogram": "Histogram"
+      },
+      "monitors": {
+        "description": "Monitor related settings",
+        "descriptionRemoveAllMonitors": "Remove all monitors from your organization",
+        "title": "Monitors"
+      },
+      "ui": {
+        "description": "Configure time zone, UI mode, and language preferences",
+        "optionLanguage": "Language",
+        "optionTimezone": "Time zone",
+        "optionUIMode": "UI Mode",
+        "title": "UI Settings",
+        "valueUIModeDark": "Dark",
+        "valueUIModeLight": "Light"
       }
     }
   },
   "statusPage": {
-    "table": {
-      "headers": {
-        "published": "Published",
-        "publicUrl": "Public url"
+    "details": {
+      "nameHeader": {
+        "publicLink": "Public link"
+      },
+      "statusHeader": {
+        "allDown": "All systems down",
+        "allUp": "All systems operational",
+        "anyDown": "Partial system outage"
       }
     },
     "fallback": {
@@ -465,222 +664,74 @@
       "title": "A status page is used to:"
     },
     "form": {
+      "access": {
+        "description": "Choose whether your status page is published and available to the public",
+        "optionPublished": "Published",
+        "title": "Access"
+      },
       "basic": {
-        "title": "Basic information",
         "description": "Add a name and description",
+        "optionDescription": "Description",
         "optionName": "Name",
-        "optionDescription": "Description"
+        "title": "Basic information"
+      },
+      "monitors": {
+        "description": "Select the monitors to include on your status page",
+        "optionMonitors": "Monitors",
+        "title": "Monitors"
       },
       "url": {
-        "title": "URL",
         "description": "URL for your status page",
-        "optionUrl": "URL"
-      },
-      "access": {
-        "title": "Access",
-        "description": "Choose whether your status page is published and available to the public",
-        "optionPublished": "Published"
-      },
-      "monitors": {
-        "title": "Monitors",
-        "description": "Select the monitors to include on your status page",
-        "optionMonitors": "Monitors"
-      }
-    },
-    "details": {
-      "nameHeader": {
-        "publicLink": "Public link"
-      },
-      "statusHeader": {
-        "allUp": "All systems operational",
-        "allDown": "All systems down",
-        "anyDown": "Partial system outage"
-      }
-    }
-  },
-  "maintenanceWindow": {
-    "infoBox": {
-      "title": "Scheduled Maintenance Periods",
-      "description": "Plan maintenance windows to temporarily pause monitoring checks. During maintenance, your monitors won't run checks or send notifications, preventing false alerts during planned downtime."
-    },
-    "form": {
-      "infoBox": {
-        "title": "About Maintenance Windows",
-        "description": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations."
-      },
-      "general": {
-        "title": "General",
-        "description": "General maintenance window settings",
-        "optionName": "Name",
-        "optionNamePlaceholder": "My maintenance window",
-        "optionRepeat": "Repeat period"
-      },
-      "time": {
-        "title": "Start & end times",
-        "description": "Set the start time and end time of the maintenance window",
-        "optionStart": "Start time",
-        "optionEnd": "End time"
-      },
-      "monitors": {
-        "title": "Monitors",
-        "description": "Select the monitors to include in the maintenance window",
-        "optionMonitors": "Monitors",
-        "optionMonitorsSelected": "selected",
-        "optionMonitorsPlaceholder": "Type to search"
+        "optionUrl": "URL",
+        "title": "URL"
       }
     },
     "table": {
       "headers": {
-        "repeat": "Repeat"
-      }
-    },
-    "fallback": {
-      "actionButton": "Create a window!",
-      "checks": [
-        "Mark your maintenance periods",
-        "Eliminate any misunderstandings",
-        "Stop sending alerts in maintenance windows"
-      ],
-      "title": "A maintenance window is used to:"
-    }
-  },
-  "export": {
-    "form": {
-      "exportMonitors": {
-        "title": "Export current team's monitors",
-        "description": "This will only export the basic monitor settings, not the check history, incidents history, or notifications",
-        "optionExport": "Click here to export your monitors to JSON"
-      },
-      "importMonitors": {
-        "title": "Import monitors",
-        "description": "Import monitors from a JSON file. Sample:",
-        "optionImport": "Click here to import your monitors from JSON"
-      },
-      "exportIncidents": {
-        "title": "Export incidents",
-        "description": "Export current team's incidents as JSON",
-        "optionExport": "Click here to export your incidents to JSON"
-      }
-    }
-  },
-  "profile": {
-    "infoBox": {
-      "title": "View and edit your profile",
-      "description": "You can set your name and password here"
-    }
-  },
-  "settings": {
-    "form": {
-      "ui": {
-        "title": "UI Settings",
-        "description": "Configure time zone, UI mode, and language preferences",
-        "optionTimezone": "Time zone",
-        "optionUIMode": "UI Mode",
-        "valueUIModeLight": "Light",
-        "valueUIModeDark": "Dark",
-        "optionLanguage": "Language"
-      },
-      "chart": {
-        "title": "Chart settings",
-        "description": "Choose what type of Uptime chart you want to see on the dashboard and status page",
-        "optionChartType": "Chart Type",
-        "valueChartTypeHeatmap": "Heatmap",
-        "descriptionChartTypeHeatmap": "Compact tiles; color shows response speed, top strip shows availability.",
-        "valueChartTypeHistogram": "Histogram",
-        "descriptionChartTypeHistogram": "One bar per check; height shows response time, color shows status."
-      },
-      "monitors": {
-        "title": "Monitors",
-        "description": "Monitor related settings",
-        "descriptionRemoveAllMonitors": "Remove all monitors from your organization"
-      }
-    }
-  },
-  "adminSettings": {
-    "form": {
-      "email": {
-        "title": "Email",
-        "description": "Configure the email settings for your system. This is used to send notifications and alerts.",
-        "descriptionTransport": "This builds an SMTP transport for NodeMailer",
-        "linkTransport": "See specifications here",
-        "optionHost": "Email host - Hostname or IP address to connect to",
-        "optionPort": "Email port - Port to connect to",
-        "optionUser": "Email user - Username for authentication, overrides email address if specified",
-        "optionAddress": "Email address - Used for authentication",
-        "optionPassword": "Email password - Password for authentication",
-        "optionTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
-        "optionConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
-        "optionSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
-        "optionPool": "Enable connection pooling: Reuse existing connections to improve performance",
-        "optionIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
-        "optionRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
-        "optionRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates"
-      },
-      "retention": {
-        "title": "Global data retention settings",
-        "description": "Set data retention policy.  This affects all organizations and teams",
-        "optionRetentionDays": "Days to retain data"
-      }
-    }
-  },
-  "teams": {
-    "infoBox": {
-      "title": "Team Collaboration",
-      "description": "Organize your monitoring workspace by creating teams. Control who can view and manage monitors, set up role-based permissions, and collaborate effectively."
-    },
-    "table": {
-      "headers": {
-        "teamDescription": "Team description"
-      }
-    },
-    "details": {
-      "infoHeader": {
-        "name": "Name",
-        "description": "Description"
-      },
-      "table": {
-        "title": "Team members",
-        "headers": {
-          "role": "Role",
-          "permissions": "Permissions"
-        }
+        "publicUrl": "Public url",
+        "published": "Published"
       }
     }
   },
   "teamMember": {
-    "breadcrumbOverrideConfigTeams": "Teams",
     "breadcrumbOverrideConfigTeamMember": "Configure team member",
+    "breadcrumbOverrideConfigTeams": "Teams",
     "breadcrumbOverrideCreateTeamMember": "Create team member",
     "form": {
-      "teamMember": {
-        "title": "Team member",
-        "description": "Team member selection",
-        "optionTeamMember": "Team member"
-      },
       "role": {
-        "title": "Role",
         "description": "Choose your role for this new team. You will be the first member",
+        "optionIncludedPermissions": "Included permissions",
         "optionRole": "Role",
-        "optionIncludedPermissions": "Included permissions"
+        "title": "Role"
+      },
+      "teamMember": {
+        "description": "Team member selection",
+        "optionTeamMember": "Team member",
+        "title": "Team member"
       }
     }
   },
-  "invite": {
-    "form": {
-      "required": {
-        "title": "Required",
-        "description": "These fields are required",
-        "optionTeam": "Team",
-        "optionTeamRole": "Team role",
-        "optionPermissions": "Permissions"
+  "teams": {
+    "details": {
+      "infoHeader": {
+        "description": "Description",
+        "name": "Name"
       },
-      "optional": {
-        "title": "Optional",
-        "description": "You can also assign an organization role",
-        "optionOrganizationRole": "Organization role"
-      },
-      "inviteLink": {
-        "title": "Invite link"
+      "table": {
+        "headers": {
+          "permissions": "Permissions",
+          "role": "Role"
+        },
+        "title": "Team members"
+      }
+    },
+    "infoBox": {
+      "description": "Organize your monitoring workspace by creating teams. Control who can view and manage monitors, set up role-based permissions, and collaborate effectively.",
+      "title": "Team Collaboration"
+    },
+    "table": {
+      "headers": {
+        "teamDescription": "Team description"
       }
     }
   }

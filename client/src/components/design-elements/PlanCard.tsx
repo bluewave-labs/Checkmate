@@ -15,6 +15,7 @@ import Tooltip from "@mui/material/Tooltip";
 
 import { useTheme } from "@mui/material/styles";
 import type { Entitlements, PlanKey } from "@/types/entitlements";
+import { useTranslation } from "react-i18next";
 
 export const PlanCard = ({
   plan,
@@ -27,6 +28,7 @@ export const PlanCard = ({
   onClick?: (planKey: PlanKey) => void;
   loading?: boolean;
 }) => {
+  const { t } = useTranslation();
   const selected = plan.plan === currentPlan;
   const theme = useTheme();
   const checkColor =
@@ -60,34 +62,34 @@ export const PlanCard = ({
   })();
   const featureItems = [
     {
-      label: "Monitors",
+      label: t("billing.plans.features.monitors.title"),
       value: plan.monitorsMax,
-      tooltip: "Maximum number of monitors allowed.",
+      tooltip: t("billing.plans.features.monitors.toolTip"),
     },
     {
-      label: "Status pages",
+      label: t("billing.plans.features.statusPages.title"),
       value: plan.statusPagesMax,
-      tooltip: "Maximum public status pages you can create.",
+      tooltip: t("billing.plans.features.statusPages.toolTip"),
     },
     {
-      label: "Notification channels",
+      label: t("billing.plans.features.notificationChannels.title"),
       value: plan.notificationChannelsMax,
-      tooltip: "Maximum alerting channels (email, Slack, etc.).",
+      tooltip: t("billing.plans.features.notificationChannels.toolTip"),
     },
     {
-      label: "Teams",
+      label: t("billing.plans.features.teams.title"),
       value: plan.teamsMax,
-      tooltip: "Maximum number of teams in your org.",
+      tooltip: t("billing.plans.features.teams.toolTip"),
     },
     {
-      label: "Retention",
+      label: t("billing.plans.features.retention.title"),
       value: `${plan.retentionDays} days`,
-      tooltip: "Oldest checks are automatically removed after retention.",
+      tooltip: t("billing.plans.features.retention.toolTip"),
     },
     {
-      label: "Min interval",
+      label: t("billing.plans.features.interval.title"),
       value: `${Math.round(plan.checksIntervalMsMin / 1000)}s`,
-      tooltip: "Minimum check frequency allowed for this plan.",
+      tooltip: t("billing.plans.features.interval.toolTip"),
     },
   ];
   return (
@@ -128,7 +130,7 @@ export const PlanCard = ({
             {plan.plan === "pro" && (
               <Chip
                 size="small"
-                label="Most popular"
+                label={t("billing.plans.mostPopular")}
                 sx={{
                   bgcolor: theme.palette.primary.main,
                   color: theme.palette.getContrastText(
@@ -150,12 +152,20 @@ export const PlanCard = ({
               <Check size={16} color={checkColor} />
               {item.tooltip ? (
                 <Tooltip title={item.tooltip} arrow placement="right">
-                  <Typography variant="body1" color="text.secondary" fontSize={18}>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    fontSize={18}
+                  >
                     {item.label}: {item.value}
                   </Typography>
                 </Tooltip>
               ) : (
-                <Typography variant="body1" color="text.secondary" fontSize={18}>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  fontSize={18}
+                >
                   {item.label}: {item.value}
                 </Typography>
               )}
