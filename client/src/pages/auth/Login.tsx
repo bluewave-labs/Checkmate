@@ -72,8 +72,8 @@ const Login = () => {
 
   return (
     <AuthBasePage
-      title={t("auth.login.welcome")}
-      subtitle={t("auth.login.heading")}
+      title={t("auth.login.header.title")}
+      subtitle={t("auth.login.header.description")}
     >
       <Stack
         width={"100%"}
@@ -103,9 +103,9 @@ const Login = () => {
             render={({ field }) => (
               <TextInput
                 {...field}
-                fieldLabel={t("auth.common.inputs.email.label")}
+                fieldLabel={t("auth.common.form.optionEmail")}
                 fullWidth
-                placeholder={t("auth.common.inputs.email.placeholder")}
+                placeholder={t("auth.common.form.optionEmailPlaceholder")}
                 error={!!errors.email}
                 helperText={errors.email ? errors.email.message : ""}
               />
@@ -119,7 +119,7 @@ const Login = () => {
               <TextInput
                 {...field}
                 type="password"
-                fieldLabel={t("auth.common.inputs.password.label")}
+                fieldLabel={t("auth.common.form.optionPassword")}
                 fullWidth
                 placeholder="••••••••••"
                 error={!!errors.password}
@@ -138,13 +138,13 @@ const Login = () => {
           </Button>
         </Stack>
         <TextLink
-          text={t("auth.login.links.forgotPassword")}
-          linkText={t("auth.login.links.forgotPasswordLink")}
+          text={t("auth.login.links.forgotPassword.text")}
+          linkText={t("auth.login.links.forgotPassword.linkText")}
           href="/recovery"
         />
         <TextLink
-          text={t("auth.login.links.register")}
-          linkText={t("auth.login.links.registerLink")}
+          text={t("auth.login.links.register.text")}
+          linkText={t("auth.login.links.register.linkText")}
           href="/register"
         />
       </Stack>

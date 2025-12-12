@@ -1,5 +1,6 @@
 import { AuthBasePage } from "@/components/auth";
 
+import { useTranslation } from "react-i18next";
 import { RecoveryForm } from "./RecoveryForm";
 import { recoverySchema } from "@/validation/zod";
 import { z } from "zod";
@@ -9,16 +10,17 @@ import { useToast } from "@/hooks/UseToast";
 type FormData = z.infer<typeof recoverySchema>;
 
 const Recovery = () => {
+  const { t } = useTranslation();
   const { post, loading } = usePost<FormData>();
   const { showToast } = useToast();
 
   const onSubmit = async (data: FormData) => {
     await post("/recovery", data);
-    showToast("If the email exists, a recovery link has been sent");
+    showToast(t("common.toasts.recoveryEmailSent"));
   };
 
   return (
-    <AuthBasePage title="Enter your email to recover your account">
+    <AuthBasePage title={t("auth.recovery.header.title")}>
       <RecoveryForm onSubmit={onSubmit} loading={loading} />
     </AuthBasePage>
   );

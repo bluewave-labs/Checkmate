@@ -3,6 +3,7 @@ import { Table } from "@/components/design-elements";
 import { HeaderCreate } from "@/components/common";
 import { ActionsMenu } from "@/components/actions-menu";
 import { Dialog } from "@/components/inputs";
+import Typography from "@mui/material/Typography";
 
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -13,8 +14,10 @@ import { useGet, useDelete } from "@/hooks/UseApi";
 import type { ITeam } from "@/types/team";
 import { useState } from "react";
 import { mutate } from "swr";
+import { useTheme } from "@mui/material/styles";
 
 const TeamsPage = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
   const isDialogOpen = Boolean(selectedTeam);
@@ -37,7 +40,7 @@ const TeamsPage = () => {
     return [
       {
         id: 1,
-        label: "Configure",
+        label: t("monitors.common.actions.configure"),
         action: () => {
           navigate(`/teams/${team._id}/configure`);
         },
@@ -45,7 +48,11 @@ const TeamsPage = () => {
       },
       {
         id: 2,
-        label: "Delete",
+        label: (
+          <Typography color={theme.palette.error.main}>
+            {t("common.buttons.delete")}
+          </Typography>
+        ),
         action: () => {
           setSelectedTeam(team);
         },
@@ -58,21 +65,21 @@ const TeamsPage = () => {
     const headers: Header<ITeam>[] = [
       {
         id: "name",
-        content: "Team name",
+        content: t("common.table.headers.name"),
         render: (row) => {
           return row.name;
         },
       },
       {
         id: "description",
-        content: "Team description",
+        content: t("teams.table.headers.teamDescription"),
         render: (row) => {
           return row.description;
         },
       },
       {
         id: "actions",
-        content: "Team description",
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },
@@ -86,8 +93,8 @@ const TeamsPage = () => {
   return (
     <BasePage>
       <InfoBox
-        title="Team Collaboration"
-        description="Organize your monitoring workspace by creating teams. Control who can view and manage monitors, set up role-based permissions, and collaborate effectively."
+        title={t("teams.infoBox.title")}
+        description={t("teams.infoBox.description")}
       />
       <HeaderCreate
         label="Create new team"
@@ -105,8 +112,8 @@ const TeamsPage = () => {
       />
       <Dialog
         open={isDialogOpen}
-        title={t("deleteDialogTitle")}
-        content={t("deleteDialogDescription")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         loading={isDeleting}

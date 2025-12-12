@@ -71,8 +71,8 @@ const Invite = () => {
   return (
     <BasePage component="form" onSubmit={handleSubmit(onSubmit)}>
       <ConfigBox
-        title="Required"
-        subtitle="These fields are required"
+        title={t("invite.form.required.title")}
+        subtitle={t("invite.form.required.description")}
         rightContent={
           <Stack gap={theme.spacing(4)} maxWidth={400}>
             <Controller
@@ -82,9 +82,9 @@ const Invite = () => {
               render={({ field }) => (
                 <TextInput
                   {...field}
-                  fieldLabel={t("auth.common.inputs.email.label")}
+                  fieldLabel={t("auth.common.form.optionEmail")}
                   fullWidth
-                  placeholder={t("auth.common.inputs.email.placeholder")}
+                  placeholder={t("auth.common.form.optionEmailPlaceholder")}
                   error={!!errors.email}
                   helperText={errors.email ? errors.email.message : ""}
                 />
@@ -98,7 +98,7 @@ const Invite = () => {
                   <Stack gap={theme.spacing(8)}>
                     <Select
                       value={field.value}
-                      fieldLabel="Team"
+                      fieldLabel={t("invite.form.required.optionTeam")}
                       error={!!errors.teamId}
                       onChange={field.onChange}
                     >
@@ -125,7 +125,7 @@ const Invite = () => {
                   <Stack gap={theme.spacing(8)}>
                     <Select
                       value={field.value}
-                      fieldLabel="Team role"
+                      fieldLabel={t("invite.form.required.optionTeamRole")}
                       error={!!errors.teamRoleId}
                       onChange={field.onChange}
                     >
@@ -139,7 +139,8 @@ const Invite = () => {
                     </Select>
                     <Stack>
                       <Typography mb={theme.spacing(4)}>
-                        {currentRole && `Permissions:`}
+                        {currentRole &&
+                          `${t("invite.form.required.optionPermissions")}:`}
                       </Typography>
                       {currentRole?.permissions?.map((perm: string) => (
                         <Typography variant="body2" key={perm}>
@@ -156,8 +157,8 @@ const Invite = () => {
       />
 
       <ConfigBox
-        title="Optional"
-        subtitle="You can also assign an organization role"
+        title={t("invite.form.optional.title")}
+        subtitle={t("invite.form.optional.description")}
         rightContent={
           <Stack gap={theme.spacing(4)} maxWidth={400}>
             <Controller
@@ -171,7 +172,9 @@ const Invite = () => {
                   <Stack gap={theme.spacing(8)}>
                     <Select
                       value={field.value}
-                      fieldLabel="Organization role"
+                      fieldLabel={t(
+                        "invite.form.optional.optionOrganizationRole"
+                      )}
                       error={!!errors.orgRoleId}
                       onChange={field.onChange}
                     >
@@ -202,7 +205,7 @@ const Invite = () => {
       />
       {token && (
         <Stack>
-          <Typography variant="h2">Invite link:</Typography>
+          <Typography variant="h2">{`${t("invite.form.inviteLink.title")}:`}</Typography>
           <Typography>{`${HOST}/register/${token}`}</Typography>
         </Stack>
       )}
@@ -213,7 +216,7 @@ const Invite = () => {
           color="primary"
           type="submit"
         >
-          Send Invite
+          {t("common.buttons.sendInvite")}
         </Button>
       </Box>
     </BasePage>

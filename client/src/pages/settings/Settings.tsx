@@ -61,12 +61,12 @@ const SettingsPage = () => {
   return (
     <BasePage>
       <ConfigBox
-        title="UI Settings"
-        subtitle="Configure time zone, UI mode, and language preferences"
+        title={t("settings.form.ui.title")}
+        subtitle={t("settings.form.ui.description")}
         rightContent={
           <Stack spacing={theme.spacing(10)}>
             <Stack spacing={theme.spacing(2)}>
-              <Typography>Time zone</Typography>
+              <Typography>{t("settings.form.ui.optionTimezone")}</Typography>
 
               <AutoComplete
                 value={selectedTimezone}
@@ -78,47 +78,55 @@ const SettingsPage = () => {
               />
             </Stack>
             <Stack spacing={theme.spacing(2)}>
-              <Typography>UI Mode</Typography>
+              <Typography>{t("settings.form.ui.optionUIMode")}</Typography>
               <Select
                 value={mode}
                 onChange={(e: SelectChangeEvent<string>) => {
                   dispatch(setMode(e.target.value));
                 }}
               >
-                <MenuItem value="light">Light</MenuItem>
-                <MenuItem value="dark">Dark</MenuItem>
+                <MenuItem value="light">
+                  {t("settings.form.ui.valueUIModeLight")}
+                </MenuItem>
+                <MenuItem value="dark">
+                  {t("settings.form.ui.valueUIModeDark")}
+                </MenuItem>
               </Select>
             </Stack>
 
             <Stack spacing={theme.spacing(2)}>
-              <Typography>Language</Typography>
+              <Typography>{t("settings.form.ui.optionLanguage")}</Typography>
               <LanguageSelector />
             </Stack>
           </Stack>
         }
       />
       <ConfigBox
-        title="Chart settings"
-        subtitle="Choose what type of Uptime chart you want to see on the dashboard and status page"
+        title={t("settings.form.chart.title")}
+        subtitle={t("settings.form.chart.description")}
         leftContent={<DummyChart type={chartType} />}
         rightContent={
           <Stack gap={theme.spacing(4)}>
-            <Typography>Chart Type</Typography>
+            <Typography>{t("settings.form.chart.optionChartType")}</Typography>
             <Stack gap={theme.spacing(4)}>
               <RadioWithDescription
                 checked={chartType === "heatmap"}
                 onChange={() => dispatch(setChartType("heatmap"))}
                 value="heatmap"
-                label="Heatmap"
-                description="Compact tiles; color shows response speed, top strip shows availability."
+                label={t("settings.form.chart.valueChartTypeHeatmap")}
+                description={t(
+                  "settings.form.chart.descriptionChartTypeHeatmap"
+                )}
                 name="chart-type"
               />
               <RadioWithDescription
                 checked={chartType === "histogram"}
                 onChange={() => dispatch(setChartType("histogram"))}
                 value="histogram"
-                label="Histogram"
-                description="One bar per check; height shows response time, color shows status."
+                label={t("settings.form.chart.valueChartTypeHistogram")}
+                description={t(
+                  "settings.form.chart.descriptionChartTypeHistogram"
+                )}
                 name="chart-type"
               />
             </Stack>
@@ -127,17 +135,17 @@ const SettingsPage = () => {
       />
       {hasDelete && (
         <ConfigBox
-          title="Monitors"
-          subtitle="Monitor related settings"
+          title={t("settings.form.monitors.title")}
+          subtitle={t("settings.form.monitors.description")}
           rightContent={
             <Stack gap={theme.spacing(4)}>
               <Box>
                 <Button variant="contained" color="error" onClick={handleOpen}>
-                  Remove all monitors
+                  {t("common.buttons.removeAllMonitors")}
                 </Button>
               </Box>
               <Typography>
-                Removes all monitors from your organization.
+                {t("settings.form.monitors.descriptionRemoveAllMonitors")}
               </Typography>
             </Stack>
           }

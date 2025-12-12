@@ -7,9 +7,11 @@ import type { ApiResponse } from "@/hooks/UseApi";
 import { useGet, usePatch } from "@/hooks/UseApi";
 import { z } from "zod";
 import { profileSchema } from "@/validation/zod";
+import { useTranslation } from "react-i18next";
 type FormValues = z.infer<typeof profileSchema>;
 
 const Profile = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<Partial<IUser> | null>(null);
   const { response, loading } = useGet<ApiResponse<any>>(`/profile`, {}, {});
   useEffect(() => {
@@ -32,8 +34,8 @@ const Profile = () => {
   return (
     <BasePage>
       <InfoBox
-        title="View and edit your profile"
-        description="You can set your name and password here"
+        title={t("profile.infoBox.title")}
+        description={t("profile.infoBox.description")}
       />
       <ProfileForm
         user={user}

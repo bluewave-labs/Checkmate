@@ -6,10 +6,11 @@ import { Typography } from "@mui/material";
 import { useGetOnDemand, usePost } from "@/hooks/UseApi";
 import { useTheme } from "@mui/material/styles";
 import { useRef } from "react";
-
+import { useTranslation } from "react-i18next";
 const ExportPage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const { get, loading } = useGetOnDemand();
   const { post, loading: isPosting } = usePost();
@@ -67,11 +68,13 @@ const ExportPage = () => {
   return (
     <BasePage>
       <ConfigBox
-        title="Export current team's monitors"
-        subtitle="This will only export the basic monitor settings, not the check history, incidents history, or notifications"
+        title={t("export.form.exportMonitors.title")}
+        subtitle={t("export.form.exportMonitors.description")}
         rightContent={
           <Stack gap={theme.spacing(4)}>
-            <Typography>Click here to export your monitors to JSON</Typography>
+            <Typography>
+              {t("export.form.exportMonitors.optionExport")}
+            </Typography>
             <Box>
               <Button
                 loading={loading}
@@ -79,15 +82,15 @@ const ExportPage = () => {
                 color="primary"
                 onClick={() => exportJson("/monitors/export", "monitors")}
               >
-                Export to JSON
+                {t("common.buttons.exportJson")}
               </Button>
             </Box>
           </Stack>
         }
       />
       <ConfigBox
-        title="Import monitors"
-        subtitle="Import monitors from a JSON file. Sample:"
+        title={t("export.form.importMonitors.title")}
+        subtitle={t("export.form.importMonitors.description")}
         leftContent={
           <Box
             component={"pre"}
@@ -125,7 +128,7 @@ const ExportPage = () => {
         rightContent={
           <Stack gap={theme.spacing(4)}>
             <Typography>
-              Click here to import your monitors from JSON
+              {t("export.form.importMonitors.optionImport")}
             </Typography>
             <Box>
               <Button
@@ -134,7 +137,7 @@ const ExportPage = () => {
                 color="primary"
                 onClick={handleImport}
               >
-                Import from JSON
+                {t("common.buttons.importJson")}
               </Button>
               <input
                 ref={fileInputRef}
@@ -148,11 +151,13 @@ const ExportPage = () => {
       />
 
       <ConfigBox
-        title="Export incidents"
-        subtitle="Export current team's incidents as JSON"
+        title={t("export.form.exportIncidents.title")}
+        subtitle={t("export.form.exportIncidents.description")}
         rightContent={
           <Stack gap={theme.spacing(4)}>
-            <Typography>Click here to export your incidents to JSON</Typography>
+            <Typography>
+              {t("export.form.exportIncidents.optionExport")}
+            </Typography>
             <Box>
               <Button
                 loading={loading}
@@ -160,7 +165,7 @@ const ExportPage = () => {
                 color="primary"
                 onClick={() => exportJson("/incidents/export", "incidents")}
               >
-                Export to JSON
+                {t("common.buttons.exportJson")}
               </Button>
             </Box>
           </Stack>

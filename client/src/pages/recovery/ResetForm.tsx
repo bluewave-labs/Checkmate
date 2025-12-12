@@ -69,7 +69,7 @@ export const ResetForm = ({
           <TextInput
             {...field}
             type="password"
-            fieldLabel={t("auth.common.inputs.password.label")}
+            fieldLabel={t("auth.common.form.optionPassword")}
             fullWidth
             placeholder="••••••••••"
             error={!!errors.password}
@@ -85,9 +85,9 @@ export const ResetForm = ({
           <TextInput
             {...field}
             type="password"
-            fieldLabel={t("auth.common.inputs.passwordConfirm.label")}
+            fieldLabel={t("auth.common.form.optionConfirmPassword")}
             fullWidth
-            placeholder={t("auth.common.inputs.passwordConfirm.placeholder")}
+            placeholder={t("auth.common.form.optionConfirmPasswordPlaceholder")}
             error={!!errors.confirmPassword}
             helperText={
               errors.confirmPassword ? errors.confirmPassword.message : ""
@@ -102,7 +102,7 @@ export const ResetForm = ({
         type="submit"
         sx={{ width: "100%", alignSelf: "center", fontWeight: 700 }}
       >
-        Submit new password
+        {t("common.buttons.submitNewPassword")}
       </Button>
     </Stack>
   );

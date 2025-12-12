@@ -4,8 +4,10 @@ import { useParams } from "react-router";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { mutate } from "swr";
 const TeamMemberCreate = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const { response } = useGet<ApiResponse<any>>("/team-members?type=org");
@@ -34,7 +36,11 @@ const TeamMemberCreate = () => {
       roles={roles}
       onSubmit={onSubmit}
       loading={false}
-      breadcrumbOverride={["teams", id || "", "create team member"]}
+      breadcrumbOverride={[
+        t("teamMember.breadcrumbOverrideConfigTeams"),
+        id || "",
+        t("teamMember.breadcrumbOverrideCreateTeamMember"),
+      ]}
     />
   );
 };

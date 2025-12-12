@@ -88,9 +88,9 @@ export const RegisterForm = ({
           <TextInput
             disabled={mode === "invite"}
             {...field}
-            fieldLabel={t("auth.common.inputs.email.label")}
+            fieldLabel={t("auth.common.form.optionEmail")}
             fullWidth
-            placeholder={t("auth.common.inputs.email.placeholder")}
+            placeholder={t("auth.common.form.optionEmailPlaceholder")}
             error={!!errors.email}
             helperText={errors.email ? errors.email.message : ""}
           />
@@ -104,9 +104,9 @@ export const RegisterForm = ({
         render={({ field }) => (
           <TextInput
             {...field}
-            fieldLabel={t("auth.common.inputs.firstName.label")}
+            fieldLabel={t("auth.common.form.optionFirstName")}
             fullWidth
-            placeholder={t("auth.common.inputs.firstName.placeholder")}
+            placeholder={t("auth.common.form.optionFirstNamePlaceholder")}
             error={!!errors.firstName}
             helperText={errors.firstName ? errors.firstName.message : ""}
           />
@@ -120,9 +120,9 @@ export const RegisterForm = ({
         render={({ field }) => (
           <TextInput
             {...field}
-            fieldLabel={t("auth.common.inputs.lastName.label")}
+            fieldLabel={t("auth.common.form.optionLastName")}
             fullWidth
-            placeholder={t("auth.common.inputs.lastName.placeholder")}
+            placeholder={t("auth.common.form.optionLastNamePlaceholder")}
             error={!!errors.lastName}
             helperText={errors.lastName ? errors.lastName.message : ""}
           />
@@ -136,7 +136,7 @@ export const RegisterForm = ({
           <TextInput
             {...field}
             type="password"
-            fieldLabel={t("auth.common.inputs.password.label")}
+            fieldLabel={t("auth.common.form.optionPassword")}
             fullWidth
             placeholder="••••••••••"
             error={!!errors.password}
@@ -152,9 +152,9 @@ export const RegisterForm = ({
           <TextInput
             {...field}
             type="password"
-            fieldLabel={t("auth.common.inputs.passwordConfirm.label")}
+            fieldLabel={t("auth.common.form.optionConfirmPassword")}
             fullWidth
-            placeholder={t("auth.common.inputs.passwordConfirm.placeholder")}
+            placeholder={t("auth.common.form.optionConfirmPasswordPlaceholder")}
             error={!!errors.confirmPassword}
             helperText={
               errors.confirmPassword ? errors.confirmPassword.message : ""
@@ -169,7 +169,9 @@ export const RegisterForm = ({
         type="submit"
         sx={{ width: "100%", alignSelf: "center", fontWeight: 700 }}
       >
-        {mode === "invite" ? "Accept invitation" : "Register"}
+        {mode === "invite"
+          ? t("common.buttons.acceptInvitation")
+          : t("common.buttons.register")}
       </Button>
       {error && <Typography color="error">{error}</Typography>}
     </Stack>

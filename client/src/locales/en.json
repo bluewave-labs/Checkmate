@@ -1,6 +1,10 @@
 {
   "common": {
     "appName": "Checkmate",
+    "toasts": {
+      "recoveryEmailSent": "If the email exists, a recovery link has been sent",
+      "passwordResetSuccessful": "Password reset successful!"
+    },
     "table": {
       "headers": {
         "name": "Name",
@@ -19,6 +23,14 @@
       "settings": "Settings"
     },
     "buttons": {
+      "acceptInvitation": "Accept invitation",
+      "register": "Register",
+      "submitNewPassword": "Submit new password",
+      "requestRecovery": "Request recovery email",
+      "sendInvite": "Send invite",
+      "testTransport": "Test Transport config",
+      "saveEmailSettings": "Save Email Settings",
+      "saveRetentionSettings": "Save Retention Settings",
       "incidents": "Incidents",
       "delete": "Delete",
       "confirm": "Confirm",
@@ -32,7 +44,11 @@
       "configure": "Configure",
       "createNew": "Create new",
       "testNotification": "Send test notification",
+      "updateProfile": "Update profile",
+      "removeAllMonitors": "Remove all monitors",
       "resolve": "Resolve",
+      "exportJson": "Export to JSON",
+      "importJson": "Import from JSON",
       "range": {
         "all": "All",
         "recent": "Recent",
@@ -87,6 +103,7 @@
       }
     }
   },
+
   "menu": {
     "uptime": "Uptime",
     "pagespeed": "PageSpeed",
@@ -96,10 +113,58 @@
     "checks": "Checks",
     "statusPages": "Status Pages",
     "maintenance": "Maintenance",
+    "diagnostics": "Diagnostics",
     "support": "Support",
     "discussions": "Discussions",
     "docs": "Documentation",
     "changelog": "Changelog"
+  },
+  "auth": {
+    "register": {
+      "header": {
+        "title": "Welcome to Checkmate!",
+        "description": "Create an account to get started"
+      }
+    },
+    "login": {
+      "header": {
+        "title": "Welcome back to Checkmate",
+        "description": "Log in to continue"
+      },
+      "links": {
+        "forgotPassword": {
+          "text": "Forgot password?",
+          "linkText": "Reset password"
+        },
+        "register": {
+          "text": "Don't have an account?",
+          "linkText": "Register"
+        }
+      }
+    },
+    "recovery": {
+      "header": {
+        "title": "Enter your email to recover your account"
+      }
+    },
+    "reset": {
+      "header": {
+        "title": "Set a new password"
+      }
+    },
+    "common": {
+      "form": {
+        "optionEmail": "Email",
+        "optionEmailPlaceholder": "test@test.com",
+        "optionFirstName": "First Name",
+        "optionFirstNamePlaceholder": "Your first Name",
+        "optionLastName": "Last Name",
+        "optionLastNamePlaceholder": "Your last Name",
+        "optionPassword": "Password",
+        "optionConfirmPassword": "Confirm Password",
+        "optionConfirmPasswordPlaceholder": "Re-enter password to confirm"
+      }
+    }
   },
 
   "monitors": {
@@ -477,6 +542,146 @@
         "Stop sending alerts in maintenance windows"
       ],
       "title": "A maintenance window is used to:"
+    }
+  },
+  "export": {
+    "form": {
+      "exportMonitors": {
+        "title": "Export current team's monitors",
+        "description": "This will only export the basic monitor settings, not the check history, incidents history, or notifications",
+        "optionExport": "Click here to export your monitors to JSON"
+      },
+      "importMonitors": {
+        "title": "Import monitors",
+        "description": "Import monitors from a JSON file. Sample:",
+        "optionImport": "Click here to import your monitors from JSON"
+      },
+      "exportIncidents": {
+        "title": "Export incidents",
+        "description": "Export current team's incidents as JSON",
+        "optionExport": "Click here to export your incidents to JSON"
+      }
+    }
+  },
+  "profile": {
+    "infoBox": {
+      "title": "View and edit your profile",
+      "description": "You can set your name and password here"
+    }
+  },
+  "settings": {
+    "form": {
+      "ui": {
+        "title": "UI Settings",
+        "description": "Configure time zone, UI mode, and language preferences",
+        "optionTimezone": "Time zone",
+        "optionUIMode": "UI Mode",
+        "valueUIModeLight": "Light",
+        "valueUIModeDark": "Dark",
+        "optionLanguage": "Language"
+      },
+      "chart": {
+        "title": "Chart settings",
+        "description": "Choose what type of Uptime chart you want to see on the dashboard and status page",
+        "optionChartType": "Chart Type",
+        "valueChartTypeHeatmap": "Heatmap",
+        "descriptionChartTypeHeatmap": "Compact tiles; color shows response speed, top strip shows availability.",
+        "valueChartTypeHistogram": "Histogram",
+        "descriptionChartTypeHistogram": "One bar per check; height shows response time, color shows status."
+      },
+      "monitors": {
+        "title": "Monitors",
+        "description": "Monitor related settings",
+        "descriptionRemoveAllMonitors": "Remove all monitors from your organization"
+      }
+    }
+  },
+  "adminSettings": {
+    "form": {
+      "email": {
+        "title": "Email",
+        "description": "Configure the email settings for your system. This is used to send notifications and alerts.",
+        "descriptionTransport": "This builds an SMTP transport for NodeMailer",
+        "linkTransport": "See specifications here",
+        "optionHost": "Email host - Hostname or IP address to connect to",
+        "optionPort": "Email port - Port to connect to",
+        "optionUser": "Email user - Username for authentication, overrides email address if specified",
+        "optionAddress": "Email address - Used for authentication",
+        "optionPassword": "Email password - Password for authentication",
+        "optionTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
+        "optionConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
+        "optionSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
+        "optionPool": "Enable connection pooling: Reuse existing connections to improve performance",
+        "optionIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
+        "optionRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
+        "optionRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates"
+      },
+      "retention": {
+        "title": "Global data retention settings",
+        "description": "Set data retention policy.  This affects all organizations and teams",
+        "optionRetentionDays": "Days to retain data"
+      }
+    }
+  },
+  "teams": {
+    "infoBox": {
+      "title": "Team Collaboration",
+      "description": "Organize your monitoring workspace by creating teams. Control who can view and manage monitors, set up role-based permissions, and collaborate effectively."
+    },
+    "table": {
+      "headers": {
+        "teamDescription": "Team description"
+      }
+    },
+    "details": {
+      "infoHeader": {
+        "name": "Name",
+        "description": "Description"
+      },
+      "table": {
+        "title": "Team members",
+        "headers": {
+          "role": "Role",
+          "permissions": "Permissions"
+        }
+      }
+    }
+  },
+  "teamMember": {
+    "breadcrumbOverrideConfigTeams": "Teams",
+    "breadcrumbOverrideConfigTeamMember": "Configure team member",
+    "breadcrumbOverrideCreateTeamMember": "Create team member",
+    "form": {
+      "teamMember": {
+        "title": "Team member",
+        "description": "Team member selection",
+        "optionTeamMember": "Team member"
+      },
+      "role": {
+        "title": "Role",
+        "description": "Choose your role for this new team. You will be the first member",
+        "optionRole": "Role",
+        "optionIncludedPermissions": "Included permissions"
+      }
+    }
+  },
+  "invite": {
+    "form": {
+      "required": {
+        "title": "Required",
+        "description": "These fields are required",
+        "optionTeam": "Team",
+        "optionTeamRole": "Team role",
+        "optionPermissions": "Permissions"
+      },
+      "optional": {
+        "title": "Optional",
+        "description": "You can also assign an organization role",
+        "optionOrganizationRole": "Organization role"
+      },
+      "inviteLink": {
+        "title": "Invite link"
+      }
     }
   }
 }

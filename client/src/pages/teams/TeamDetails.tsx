@@ -5,6 +5,7 @@ import { Table } from "@/components/design-elements";
 import { HeaderCreate } from "@/components/common";
 import type { Header } from "@/components/design-elements/Table";
 
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
@@ -13,6 +14,7 @@ import type { ApiResponse } from "@/hooks/UseApi";
 import type { ITeamMember } from "@/types/team-member";
 
 const TeamDetailsPage = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -29,7 +31,7 @@ const TeamDetailsPage = () => {
     const headers: Header<ITeamMember>[] = [
       {
         id: "name",
-        content: "Name",
+        content: t("common.table.headers.name"),
         render: (row) => {
           return row?.userId?.firstName + " " + row?.userId?.lastName;
         },
@@ -37,14 +39,14 @@ const TeamDetailsPage = () => {
 
       {
         id: "role",
-        content: "Role",
+        content: t("teams.details.table.headers.role"),
         render: (row) => {
           return row?.roleId?.name;
         },
       },
       {
         id: "permissions",
-        content: "Permissions",
+        content: t("teams.details.table.headers.permissions"),
         render: (row) => {
           return (
             <Stack>
@@ -65,11 +67,15 @@ const TeamDetailsPage = () => {
     <BasePage>
       <Stack>
         <Stack alignItems="baseline" direction="row" gap={theme.spacing(2)}>
-          <Typography variant="h2">{"Name:"} </Typography>
+          <Typography variant="h2">
+            {`${t("teams.details.infoHeader.name")}:`}{" "}
+          </Typography>
           <Typography>{team?.name}</Typography>
         </Stack>
         <Stack alignItems="baseline" direction="row" gap={theme.spacing(2)}>
-          <Typography variant="h2">{"Description:"} </Typography>
+          <Typography variant="h2">
+            {`${t("teams.details.infoHeader.description")}:`}{" "}
+          </Typography>
           <Typography>{team?.description}</Typography>
         </Stack>
       </Stack>
@@ -81,7 +87,7 @@ const TeamDetailsPage = () => {
         entitlementCount={teamMembers?.length || 0}
       />
       <Typography variant="h2" marginTop={theme.spacing(4)}>
-        Team Members
+        {t("teams.details.table.title")}
       </Typography>
       <Table
         headers={headers}

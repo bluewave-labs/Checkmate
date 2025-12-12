@@ -67,8 +67,8 @@ const RegisterInvite = () => {
 
   return (
     <AuthBasePage
-      title={t("auth.registration.welcome")}
-      subtitle={t("auth.registration.heading.user")}
+      title={t("auth.register.header.title")}
+      subtitle={t("auth.register.header.description")}
     >
       <Stack alignItems={"center"} width={"100%"}>
         <RegisterForm

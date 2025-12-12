@@ -61,8 +61,8 @@ export const TeamMemberForm = ({
       breadcrumbOverride={breadcrumbOverride}
     >
       <ConfigBox
-        title="Team member"
-        subtitle="Team member selection"
+        title={t("teamMember.form.teamMember.title")}
+        subtitle={t("teamMember.form.teamMember.description")}
         rightContent={
           <Controller
             name="userId"
@@ -73,7 +73,9 @@ export const TeamMemberForm = ({
                   <Select
                     disabled={mode !== "create"}
                     value={field.value}
-                    fieldLabel="Team member"
+                    fieldLabel={t(
+                      "teamMember.form.teamMember.optionTeamMember"
+                    )}
                     error={!!errors.userId}
                     onChange={field.onChange}
                   >
@@ -92,8 +94,8 @@ export const TeamMemberForm = ({
         }
       />
       <ConfigBox
-        title="Role"
-        subtitle="Choose your role for this new team.  You will be the first member"
+        title={t("teamMember.form.role.title")}
+        subtitle={t("teamMember.form.role.description")}
         rightContent={
           <Controller
             name="roleId"
@@ -106,7 +108,7 @@ export const TeamMemberForm = ({
                 <Stack gap={theme.spacing(8)}>
                   <Select
                     value={field.value}
-                    fieldLabel="Role"
+                    fieldLabel={t("teamMember.form.role.optionRole")}
                     error={!!errors.roleId}
                     onChange={field.onChange}
                   >
@@ -120,7 +122,7 @@ export const TeamMemberForm = ({
                   </Select>
                   <Stack>
                     <Typography variant={"h2"} mb={theme.spacing(4)}>
-                      Included permissions:
+                      {`${t("teamMember.form.role.optionIncludedPermissions")}:`}
                     </Typography>
                     {selectedRole?.permissions?.map((perm: string) => (
                       <Typography key={perm}>- {perm}</Typography>
@@ -139,7 +141,7 @@ export const TeamMemberForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
         {deleteButton}
       </Stack>

@@ -67,15 +67,19 @@ const TeamMemberConfig = () => {
             onClick={() => setDialogOpen(true)}
             disabled={isDeleting}
           >
-            {t("delete")}
+            {t("common.buttons.delete")}
           </Button>
         }
-        breadcrumbOverride={["teams", id || "", "configure team member"]}
+        breadcrumbOverride={[
+          t("teamMember.breadcrumbOverrideConfigTeams"),
+          id || "",
+          t("teamMember.breadcrumbOverrideConfigTeamMember"),
+        ]}
       />
       <Dialog
         open={dialogOpen}
-        title={"Are you sure?"}
-        content={"Delete team member"}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         loading={isDeleting}

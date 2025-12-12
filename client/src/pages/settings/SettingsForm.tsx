@@ -57,13 +57,13 @@ export const SettingsForm = ({
         onSubmit={handleSubmit(onSubmitEmail)}
       >
         <ConfigBox
-          title={t("settingsPage.emailSettings.title")}
-          subtitle={t("settingsPage.emailSettings.description")}
+          title={t("adminSettings.form.email.title")}
+          subtitle={t("adminSettings.form.email.description")}
           leftContent={
             <Stack>
               <TextLink
-                text={t("settingsPage.emailSettings.descriptionTransport")}
-                linkText={t("settingsPage.emailSettings.linkTransport")}
+                text={t("adminSettings.form.email.descriptionTransport")}
+                linkText={t("adminSettings.form.email.linkTransport")}
                 href="https://nodemailer.com/smtp"
                 target="_blank"
               />
@@ -114,7 +114,7 @@ export const SettingsForm = ({
                   <TextInput
                     {...field}
                     type="text"
-                    fieldLabel={t("settingsPage.emailSettings.labelHost")}
+                    fieldLabel={t("adminSettings.form.email.optionHost")}
                     fullWidth
                     error={!!errors.systemEmailHost}
                     helperText={
@@ -132,7 +132,7 @@ export const SettingsForm = ({
                   <TextInput
                     {...field}
                     type="number"
-                    fieldLabel={t("settingsPage.emailSettings.labelPort")}
+                    fieldLabel={t("adminSettings.form.email.optionPort")}
                     fullWidth
                     error={!!errors.systemEmailPort}
                     helperText={
@@ -150,7 +150,7 @@ export const SettingsForm = ({
                   <TextInput
                     {...field}
                     type="text"
-                    fieldLabel={t("settingsPage.emailSettings.labelUser")}
+                    fieldLabel={t("adminSettings.form.email.optionUser")}
                     fullWidth
                     error={!!errors.systemEmailUser}
                     helperText={
@@ -168,7 +168,7 @@ export const SettingsForm = ({
                   <TextInput
                     {...field}
                     type="text"
-                    fieldLabel={t("settingsPage.emailSettings.labelAddress")}
+                    fieldLabel={t("adminSettings.form.email.optionAddress")}
                     fullWidth
                     error={!!errors.systemEmailAddress}
                     helperText={
@@ -186,7 +186,7 @@ export const SettingsForm = ({
                   <TextInput
                     {...field}
                     type="password"
-                    fieldLabel={t("settingsPage.emailSettings.labelPassword")}
+                    fieldLabel={t("adminSettings.form.email.optionPassword")}
                     fullWidth
                     error={!!errors.systemEmailPassword}
                     helperText={
@@ -205,7 +205,7 @@ export const SettingsForm = ({
                     {...field}
                     type="text"
                     fieldLabel={t(
-                      "settingsPage.emailSettings.labelTLSServername"
+                      "adminSettings.form.email.optionTLSServername"
                     )}
                     fullWidth
                     error={!!errors.systemEmailTLSServername}
@@ -225,7 +225,7 @@ export const SettingsForm = ({
                     {...field}
                     type="text"
                     fieldLabel={t(
-                      "settingsPage.emailSettings.labelConnectionHost"
+                      "adminSettings.form.email.optionConnectionHost"
                     )}
                     fullWidth
                     error={!!errors.systemEmailConnectionHost}
@@ -244,7 +244,7 @@ export const SettingsForm = ({
                   <Stack direction="row" alignItems={"center"}>
                     <Switch {...field} checked={field.value} />
                     <Typography>
-                      {t("settingsPage.emailSettings.labelSecure")}
+                      {t("adminSettings.form.email.optionSecure")}
                     </Typography>
                   </Stack>
                 )}
@@ -257,7 +257,7 @@ export const SettingsForm = ({
                     <Switch {...field} checked={field.value} />
 
                     <Typography>
-                      {t("settingsPage.emailSettings.labelPool")}
+                      {t("adminSettings.form.email.optionPool")}
                     </Typography>
                   </Stack>
                 )}
@@ -270,7 +270,7 @@ export const SettingsForm = ({
                     <Switch {...field} checked={field.value} />
 
                     <Typography>
-                      {t("settingsPage.emailSettings.labelIgnoreTLS")}
+                      {t("adminSettings.form.email.optionIgnoreTLS")}
                     </Typography>
                   </Stack>
                 )}
@@ -283,7 +283,7 @@ export const SettingsForm = ({
                     <Switch {...field} checked={field.value} />
 
                     <Typography>
-                      {t("settingsPage.emailSettings.labelRequireTLS")}
+                      {t("adminSettings.form.email.optionRequireTLS")}
                     </Typography>
                   </Stack>
                 )}
@@ -296,7 +296,7 @@ export const SettingsForm = ({
                     <Switch {...field} checked={field.value} />
 
                     <Typography>
-                      {t("settingsPage.emailSettings.labelRejectUnauthorized")}
+                      {t("adminSettings.form.email.optionRejectUnauthorized")}
                     </Typography>
                   </Stack>
                 )}
@@ -314,7 +314,7 @@ export const SettingsForm = ({
                     onTest(formValues);
                   }}
                 >
-                  Test transport config
+                  {t("common.buttons.testTransport")}
                 </Button>
                 <Button
                   loading={loading}
@@ -322,7 +322,7 @@ export const SettingsForm = ({
                   variant="contained"
                   color="primary"
                 >
-                  Save e-mail settings
+                  {t("common.buttons.saveEmailSettings")}
                 </Button>
               </Stack>
             </Stack>
@@ -335,8 +335,8 @@ export const SettingsForm = ({
         spacing={theme.spacing(10)}
       >
         <ConfigBox
-          title="Global Data retention"
-          subtitle="Set data retention policy.  This affects all organizations and teams"
+          title={t("adminSettings.form.retention.title")}
+          subtitle={t("adminSettings.form.retention.description")}
           rightContent={
             <Stack spacing={theme.spacing(10)}>
               <Controller
@@ -346,7 +346,9 @@ export const SettingsForm = ({
                   <TextInput
                     {...field}
                     type="number"
-                    fieldLabel="Retention days"
+                    fieldLabel={t(
+                      "adminSettings.form.retention.optionRetentionDays"
+                    )}
                     fullWidth
                     error={!!errors.checksRetentionDays}
                     helperText={

@@ -1,5 +1,6 @@
 import { AuthBasePage } from "@/components/auth";
 
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { ResetForm } from "@/pages/recovery/ResetForm";
 import { resetSchema } from "@/validation/zod";
@@ -18,6 +19,7 @@ import {
 type FormData = z.infer<typeof resetSchema>;
 
 const Reset = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { post, loading } = usePost<{ password: string; token: string }>();
@@ -37,7 +39,7 @@ const Reset = () => {
       return;
     }
 
-    toastSuccess("Password reset successful!");
+    toastSuccess(t("common.toasts.passwordResetSuccessful"));
     dispatch(setAuthenticated(true));
     dispatch(setUser(user));
     dispatch(setSelectedTeamId(user.teams[0]?.id || null));
@@ -45,7 +47,7 @@ const Reset = () => {
   };
 
   return (
-    <AuthBasePage title="Set a new password">
+    <AuthBasePage title={t("auth.reset.header.title")}>
       <ResetForm onSubmit={onSubmit} loading={loading} />
     </AuthBasePage>
   );

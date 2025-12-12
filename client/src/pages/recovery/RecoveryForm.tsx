@@ -66,9 +66,9 @@ export const RecoveryForm = ({
         render={({ field }) => (
           <TextInput
             {...field}
-            fieldLabel={t("auth.common.inputs.email.label")}
+            fieldLabel={t("auth.common.form.optionEmail")}
             fullWidth
-            placeholder={t("auth.common.inputs.email.placeholder")}
+            placeholder={t("auth.common.form.optionEmailPlaceholder")}
             error={!!errors.email}
             helperText={errors.email ? errors.email.message : ""}
           />
@@ -82,7 +82,7 @@ export const RecoveryForm = ({
         type="submit"
         sx={{ width: "100%", alignSelf: "center", fontWeight: 700 }}
       >
-        Request recovery email
+        {t("common.buttons.requestRecovery")}
       </Button>
     </Stack>
   );
