@@ -40,7 +40,6 @@ class BillingService implements IBillingService {
       return plan;
     });
 
-    console.log("Available plans:", plans);
     return plans;
   };
 
