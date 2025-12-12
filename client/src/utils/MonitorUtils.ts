@@ -84,7 +84,8 @@ export interface IStatusPageHeaderConfig {
   message: string;
 }
 export const getStatusPageHeaderConfig = (
-  monitors: IMonitor[]
+  monitors: IMonitor[],
+  t: any
 ): IStatusPageHeaderConfig => {
   if (!monitors || monitors.length === 0) {
     return { paletteKey: "error", message: "No monitors available" };
@@ -95,9 +96,22 @@ export const getStatusPageHeaderConfig = (
   const allDown = monitors.every((monitor) => monitor.status === "down");
 
   if (allUp)
-    return { paletteKey: "success", message: "All systems operational" };
-  if (allDown) return { paletteKey: "error", message: "All systems down" };
+    return {
+      paletteKey: "success",
+      message: t("statusPage.details.statusHeader.allUp"),
+    };
+  if (allDown)
+    return {
+      paletteKey: "error",
+      message: t("statusPage.details.statusHeader.allDown"),
+    };
   if (anyDown)
-    return { paletteKey: "warning", message: "Partial system outage" };
-  return { paletteKey: "warning", message: "Partial system outage" };
+    return {
+      paletteKey: "warning",
+      message: t("statusPage.details.statusHeader.anyDown"),
+    };
+  return {
+    paletteKey: "warning",
+    message: t("statusPage.details.statusHeader.anyDown"),
+  };
 };

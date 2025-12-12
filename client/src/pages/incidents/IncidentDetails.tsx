@@ -2,6 +2,7 @@ import { BasePage, StatBox } from "@/components/design-elements";
 import ResolutionCard from "@/components/design-elements/ResolutionCard";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router";
 import { useGet } from "@/hooks/UseApi";
@@ -12,9 +13,11 @@ import { useAppSelector } from "@/hooks/AppHooks";
 import prettyMilliseconds from "pretty-ms";
 import { getMonitorPath } from "@/utils/MonitorUtils";
 import type { MonitorType } from "@/types/monitor";
+import { useTranslation } from "react-i18next";
 
 const IncidentDetailsPage = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
   const navigate = useNavigate();
@@ -36,12 +39,12 @@ const IncidentDetailsPage = () => {
     <BasePage>
       <Stack spacing={theme.spacing(8)}>
         <Typography variant="h4" color="textPrimary">
-          Incident Details
+          {t("incidents.title")}
         </Typography>
 
         <Stack direction={{ xs: "column", md: "row" }} gap={theme.spacing(8)}>
           <StatBox
-            title="Monitor"
+            title={t("monitors.common.stats.monitor")}
             subtitle={incident.monitorId?.name || "N/A"}
             onClick={() => {
               const type = incident.monitorId.type as MonitorType;
@@ -51,7 +54,7 @@ const IncidentDetailsPage = () => {
             }}
           />
           <StatBox
-            title="Start"
+            title={t("monitors.common.stats.start")}
             subtitle={formatDateWithTz(
               incident.startedAt,
               "ddd, MMMM D, YYYY, HH:mm A",
@@ -59,7 +62,7 @@ const IncidentDetailsPage = () => {
             )}
           />
           <StatBox
-            title="End"
+            title={t("monitors.common.stats.end")}
             subtitle={
               incident.endedAt
                 ? formatDateWithTz(
@@ -67,7 +70,7 @@ const IncidentDetailsPage = () => {
                     "ddd, MMMM D, YYYY, HH:mm A",
                     uiTimezone
                   )
-                : "Ongoing"
+                : t("monitors.common.stats.ongoing")
             }
           />
         </Stack>
@@ -79,12 +82,12 @@ const IncidentDetailsPage = () => {
           note={incident.resolutionNote}
           timestampLabel={
             incident.resolved && incident.endedAt
-              ? `Resolved at: ${formatDateWithTz(
+              ? `${t("incidents.details.resolutionCard.resolvedAt")}: ${formatDateWithTz(
                   incident.endedAt,
                   "ddd, MMMM D, YYYY, HH:mm A",
                   uiTimezone
                 )}`
-              : `Ongoing since: ${formatDateWithTz(
+              : `${t("incidents.details.resolutionCard.ongoingSince")}: ${formatDateWithTz(
                   incident.startedAt,
                   "ddd, MMMM D, YYYY, HH:mm A",
                   uiTimezone

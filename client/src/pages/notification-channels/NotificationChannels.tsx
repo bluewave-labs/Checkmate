@@ -91,14 +91,14 @@ const NotificationChannelsPage = () => {
     const headers: Header<INotificationChannel>[] = [
       {
         id: "name",
-        content: t("monitors.common.table.headers.name"),
+        content: t("common.table.headers.name"),
         render: (row) => {
           return <Typography>{row?.name}</Typography>;
         },
       },
       {
         id: "active",
-        content: t("monitors.common.table.headers.active"),
+        content: t("common.table.headers.active"),
         render: (row) => {
           const active = row.isActive
             ? t("common.buttons.yes")
@@ -108,7 +108,7 @@ const NotificationChannelsPage = () => {
       },
       {
         id: "type",
-        content: "Type",
+        content: t("common.table.headers.type"),
         render: (row) => {
           return (
             <Typography textTransform={"capitalize"}>{row?.type}</Typography>
@@ -117,7 +117,7 @@ const NotificationChannelsPage = () => {
       },
       {
         id: "actions",
-        content: t("monitors.common.table.headers.actions"),
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },

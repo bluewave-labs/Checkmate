@@ -73,8 +73,8 @@ const StatusPages = () => {
       />
 
       <Dialog
-        title={t("createStatusPage.dialogDeleteTitle")}
-        content={t("createStatusPage.dialogDeleteContent")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         open={open}
         onConfirm={handleConfirm}
         onCancel={handleCancel}

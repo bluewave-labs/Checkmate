@@ -168,7 +168,7 @@ export const InfraMonitorsTable = ({
             onClick={(e) => handleSort(e, "name")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.name")}
+            {t("common.table.headers.name")}
             {renderSortIcon(sortField === "name")}
           </Typography>
         ),
@@ -186,7 +186,7 @@ export const InfraMonitorsTable = ({
             onClick={(e) => handleSort(e, "status")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.status")}
+            {t("common.table.headers.status")}
             {renderSortIcon(sortField === "status")}
           </Typography>
         ),
@@ -196,7 +196,7 @@ export const InfraMonitorsTable = ({
       },
       {
         id: "cpu",
-        content: t("monitors.common.table.headers.cpu"),
+        content: t("monitors.infrastructure.table.headers.cpu"),
         render: (row) => {
           const cpuUsage =
             (row.latestChecks?.[0]?.system?.cpu?.usage_percent || 0) * 100;
@@ -205,7 +205,7 @@ export const InfraMonitorsTable = ({
       },
       {
         id: "memory",
-        content: t("monitors.common.table.headers.memory"),
+        content: t("monitors.infrastructure.table.headers.memory"),
         render: (row) => {
           const memoryUsage =
             (row.latestChecks?.[0]?.system?.memory?.usage_percent || 0) * 100;
@@ -214,7 +214,7 @@ export const InfraMonitorsTable = ({
       },
       {
         id: "disk",
-        content: t("monitors.common.table.headers.disk"),
+        content: t("monitors.infrastructure.table.headers.disk"),
         render: (row) => {
           const totalDiskUsage = row.latestChecks?.[0]?.system?.disk?.reduce(
             (acc, disk) => acc + disk.usage_percent,
@@ -228,7 +228,7 @@ export const InfraMonitorsTable = ({
 
       {
         id: "actions",
-        content: t("monitors.common.table.headers.actions"),
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },

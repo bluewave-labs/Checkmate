@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
 import { config } from "@/config/index";
+import { useTranslation } from "react-i18next";
 const DEPLOYMENT_MODE = config.DEPLOYMENT_MODE;
 const IS_SAAS = DEPLOYMENT_MODE === "saas";
 
@@ -18,6 +19,7 @@ export const SettingsSwitch = () => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation();
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,7 +71,7 @@ export const SettingsSwitch = () => {
 
   return (
     <>
-      <Tooltip title="Settings" placement="top">
+      <Tooltip title={t("common.tooltips.settings")} placement="top">
         <IconButton
           onClick={handleOpen}
           sx={{

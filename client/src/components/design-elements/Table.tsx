@@ -375,7 +375,7 @@ const EmptyView = () => {
         borderRadius: theme.shape.borderRadius,
       }}
     >
-      <Typography>{t("monitors.common.table.empty")}</Typography>
+      <Typography>{t("common.table.empty")}</Typography>
     </Stack>
   );
 };

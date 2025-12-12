@@ -13,8 +13,10 @@ import { useNavigate } from "react-router";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 
 export const TeamSwitch = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -49,7 +51,7 @@ export const TeamSwitch = () => {
 
   return (
     <>
-      <Tooltip title="Teams" placement="top">
+      <Tooltip title={t("common.tooltips.teams")} placement="top">
         <IconButton
           onClick={handleOpen}
           sx={{

@@ -17,7 +17,7 @@ export const ThemeSwitch = () => {
   };
 
   return (
-    <Tooltip title={t("common.buttons.toggleTheme")} placement="top">
+    <Tooltip title={t("common.tooltips.toggleTheme")} placement="top">
       <IconButton
         id="theme-toggle"
         onClick={handleChange}

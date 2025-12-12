@@ -72,14 +72,14 @@ export const StatusPageTable = ({
     const headers: Header<IStatusPage>[] = [
       {
         id: "name",
-        content: "Name",
+        content: t("common.table.headers.name"),
         render: (row) => {
           return <Typography>{row?.name}</Typography>;
         },
       },
       {
         id: "published",
-        content: "Published",
+        content: t("statusPage.table.headers.published"),
         render: (row) => {
           const published = row.isPublished ? "Yes" : "No";
           return <Typography>{published}</Typography>;
@@ -87,7 +87,7 @@ export const StatusPageTable = ({
       },
       {
         id: "url",
-        content: "Public URL",
+        content: t("statusPage.table.headers.publicUrl"),
         render: (row) => {
           return (
             <Typography textTransform={"capitalize"}>{row?.url}</Typography>
@@ -96,7 +96,7 @@ export const StatusPageTable = ({
       },
       {
         id: "actions",
-        content: t("actions"),
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },

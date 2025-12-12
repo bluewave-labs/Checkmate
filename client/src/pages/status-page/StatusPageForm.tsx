@@ -66,8 +66,8 @@ export const StatusPageForm = ({
   return (
     <BasePage component={"form"} onSubmit={handleSubmit(onSubmit, onError)}>
       <ConfigBox
-        title={t("createStatusPage.basicConfigTitle")}
-        subtitle={t("createStatusPage.basicConfigDescription")}
+        title={t("statusPage.form.basic.title")}
+        subtitle={t("statusPage.form.basic.description")}
         rightContent={
           <Stack gap={theme.spacing(8)}>
             <Controller
@@ -77,7 +77,7 @@ export const StatusPageForm = ({
                 <TextInput
                   {...field}
                   type="text"
-                  fieldLabel={t("createStatusPage.nameConfigLabel")}
+                  fieldLabel={t("statusPage.form.basic.optionName")}
                   fullWidth
                   error={!!errors.name}
                   helperText={errors.name ? errors.name.message : ""}
@@ -91,7 +91,7 @@ export const StatusPageForm = ({
                 <TextInput
                   {...field}
                   type="text"
-                  fieldLabel={t("createStatusPage.descriptionConfigLabel")}
+                  fieldLabel={t("statusPage.form.basic.optionDescription")}
                   fullWidth
                   error={!!errors.description}
                   helperText={
@@ -104,8 +104,8 @@ export const StatusPageForm = ({
         }
       />
       <ConfigBox
-        title={t("createStatusPage.urlConfigTitle")}
-        subtitle={t("createStatusPage.urlConfigDescription")}
+        title={t("statusPage.form.url.title")}
+        subtitle={t("statusPage.form.url.description")}
         rightContent={
           <Controller
             name="url"
@@ -114,7 +114,7 @@ export const StatusPageForm = ({
               <TextInput
                 {...field}
                 type="text"
-                fieldLabel={t("createStatusPage.urlConfigTitle")}
+                fieldLabel={t("statusPage.form.url.optionUrl")}
                 fullWidth
                 error={!!errors.url}
                 helperText={errors.url ? errors.url.message : ""}
@@ -124,15 +124,15 @@ export const StatusPageForm = ({
         }
       />
       <ConfigBox
-        title={t("createStatusPage.accessConfigTitle")}
-        subtitle={t("createStatusPage.accessConfigDescription")}
+        title={t("statusPage.form.access.title")}
+        subtitle={t("statusPage.form.access.description")}
         rightContent={
           <Controller
             name="isPublished"
             control={control}
             render={({ field }) => (
               <FormControlLabel
-                label={t("createStatusPage.publishedConfigLabel")}
+                label={t("statusPage.form.access.optionPublished")}
                 control={
                   <Checkbox
                     {...field}
@@ -146,8 +146,8 @@ export const StatusPageForm = ({
         }
       />
       <ConfigBox
-        title={t("createMaintenanceWindowPage.monitorsTitle")}
-        subtitle={t("createMaintenanceWindowPage.monitorsDescription")}
+        title={t("statusPage.form.monitors.title")}
+        subtitle={t("statusPage.form.monitors.description")}
         rightContent={
           <Stack>
             <Controller
@@ -205,7 +205,7 @@ export const StatusPageForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
       </Stack>
     </BasePage>

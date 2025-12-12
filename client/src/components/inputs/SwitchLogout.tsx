@@ -6,8 +6,10 @@ import { usePost } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
 import { Tooltip } from "@/components/design-elements";
+import { useTranslation } from "react-i18next";
 
 export const LogoutSwitch = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { post } = usePost();
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export const LogoutSwitch = () => {
   };
 
   return (
-    <Tooltip title="Logout" placement="top">
+    <Tooltip title={t("common.tooltips.logout")} placement="top">
       <IconButton
         onClick={handleClick}
         sx={{
@@ -29,7 +31,7 @@ export const LogoutSwitch = () => {
           },
           "&:hover svg path, &:hover svg line, &:hover svg polyline, &:hover svg rect, &:hover svg circle":
             {
-            stroke: theme.palette.primary.main,
+              stroke: theme.palette.primary.main,
             },
         }}
       >

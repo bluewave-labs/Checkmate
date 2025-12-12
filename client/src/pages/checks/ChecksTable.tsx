@@ -39,7 +39,7 @@ export const ChecksTable = ({
     const headers: Header<CheckWithMonitor>[] = [
       {
         id: "monitorName",
-        content: t("incidentsTableMonitorName"),
+        content: t("common.table.headers.monitor"),
         render: (row) => {
           return row.metadata?.monitorId?.name || "N/A";
         },
@@ -53,7 +53,7 @@ export const ChecksTable = ({
       },
       {
         id: "date",
-        content: "Date and time",
+        content: t("checks.table.headers.dateTime"),
         render: (row) => {
           return formatDateWithTz(
             row.createdAt,
@@ -64,7 +64,7 @@ export const ChecksTable = ({
       },
       {
         id: "statusCode",
-        content: "Status code",
+        content: t("checks.table.headers.statusCode"),
         render: (row) => {
           const code = row.httpStatusCode;
           const value =
@@ -74,7 +74,7 @@ export const ChecksTable = ({
       },
       {
         id: "message",
-        content: "Message",
+        content: t("checks.table.headers.message"),
         render: (row) => {
           return row.message || "N/A";
         },

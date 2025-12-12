@@ -1,6 +1,23 @@
 {
   "common": {
     "appName": "Checkmate",
+    "table": {
+      "headers": {
+        "name": "Name",
+        "status": "Status",
+        "actions": "Actions",
+        "type": "Type",
+        "monitor": "Monitor",
+        "active": "Active"
+      },
+      "empty": "No data"
+    },
+    "tooltips": {
+      "teams": "Teams",
+      "toggleTheme": "Toggle theme",
+      "logout": "Logout",
+      "settings": "Settings"
+    },
     "buttons": {
       "incidents": "Incidents",
       "delete": "Delete",
@@ -14,8 +31,8 @@
       "disable": "Disable",
       "configure": "Configure",
       "createNew": "Create new",
-      "toggleTheme": "Toggle theme",
       "testNotification": "Send test notification",
+      "resolve": "Resolve",
       "range": {
         "all": "All",
         "recent": "Recent",
@@ -94,6 +111,9 @@
         "up": "up"
       },
       "stats": {
+        "monitor": "Monitor",
+        "start": "Start",
+        "end": "End",
         "activeFor": "Active for",
         "lastCheck": "Last checked",
         "lastResponseTime": "Last response time",
@@ -104,26 +124,10 @@
         "cpuTemperature": "Avg CPU temp",
         "memory": "Memory",
         "disk": "Disk",
-        "os": "OS"
+        "os": "OS",
+        "ongoing": "Ongoing"
       },
-      "table": {
-        "headers": {
-          "name": "Name",
-          "active": "Active",
-          "type": "Type",
-          "status": "Status",
-          "statusCode": "Status code",
-          "message": "Message",
-          "dateTime": "Date & Time",
-          "responseTime": "Response time",
-          "pageSpeedScore": "PageSpeed Score",
-          "actions": "Actions",
-          "cpu": "CPU",
-          "memory": "Memory",
-          "disk": "Disk"
-        },
-        "empty": "No data"
-      },
+
       "actions": {
         "openSite": "Open site",
         "details": "Details",
@@ -159,6 +163,11 @@
       "infoBox": {
         "title": "Website & API Uptime Monitoring",
         "description": "Monitor your websites and APIs to ensure they're always accessible. Get instant alerts when your services go down and track uptime history over time."
+      },
+      "table": {
+        "headers": {
+          "responseTime": "Response time"
+        }
       },
       "fallback": {
         "title": "An uptime monitor is used to:",
@@ -215,6 +224,11 @@
         "title": "Website Performance Tracking",
         "description": "Measure how fast your websites load and identify performance bottlenecks. Track Core Web Vitals and get actionable insights to improve user experience."
       },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "PageSpeed Score"
+        }
+      },
       "fallback": {
         "title": "A PageSpeed monitor is used to:",
         "actionButton": "Create a monitor!",
@@ -234,6 +248,13 @@
       "infoBox": {
         "title": "Infrastructure Monitoring",
         "description": "Keep track of your servers' vital statistics including CPU usage, memory, disk space, and network performance. Receive alerts when resources run low."
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "memory": "Memory",
+          "disk": "Disk"
+        }
       },
       "fallback": {
         "actionButton": "Create a monitor!",
@@ -329,7 +350,133 @@
       }
     }
   },
-  "incidents": {},
-  "checks": {},
-  "statusPages": {}
+  "incidents": {
+    "title": "Incident details",
+    "details": {
+      "resolutionCard": {
+        "title": "Resolution",
+        "resolutionStatus": "Resolution status",
+        "resolutionType": "Resolution type",
+        "resolvedBy": "Resolved by",
+        "note": "Note",
+        "resolvedAt": "Resolved at",
+        "ongoingSince": "Ongoing since"
+      }
+    },
+    "table": {
+      "headers": {
+        "start": "Incident start",
+        "end": "Incident end",
+        "monitorStatus": "Current monitor status",
+        "resolved": "Resolved",
+        "resolutionType": "Resolution type",
+        "resolvedBy": "Resolved by"
+      }
+    }
+  },
+  "checks": {
+    "table": {
+      "headers": {
+        "statusCode": "Status code",
+        "message": "Message",
+        "dateTime": "Date & Time"
+      }
+    }
+  },
+  "statusPage": {
+    "table": {
+      "headers": {
+        "published": "Published",
+        "publicUrl": "Public url"
+      }
+    },
+    "fallback": {
+      "actionButton": "Create a status page!",
+      "checks": [
+        "Monitor and display the health of your services in real time",
+        "Track multiple services and share their status",
+        "Keep users informed about outages and performance"
+      ],
+      "title": "A status page is used to:"
+    },
+    "form": {
+      "basic": {
+        "title": "Basic information",
+        "description": "Add a name and description",
+        "optionName": "Name",
+        "optionDescription": "Description"
+      },
+      "url": {
+        "title": "URL",
+        "description": "URL for your status page",
+        "optionUrl": "URL"
+      },
+      "access": {
+        "title": "Access",
+        "description": "Choose whether your status page is published and available to the public",
+        "optionPublished": "Published"
+      },
+      "monitors": {
+        "title": "Monitors",
+        "description": "Select the monitors to include on your status page",
+        "optionMonitors": "Monitors"
+      }
+    },
+    "details": {
+      "nameHeader": {
+        "publicLink": "Public link"
+      },
+      "statusHeader": {
+        "allUp": "All systems operational",
+        "allDown": "All systems down",
+        "anyDown": "Partial system outage"
+      }
+    }
+  },
+  "maintenanceWindow": {
+    "infoBox": {
+      "title": "Scheduled Maintenance Periods",
+      "description": "Plan maintenance windows to temporarily pause monitoring checks. During maintenance, your monitors won't run checks or send notifications, preventing false alerts during planned downtime."
+    },
+    "form": {
+      "infoBox": {
+        "title": "About Maintenance Windows",
+        "description": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations."
+      },
+      "general": {
+        "title": "General",
+        "description": "General maintenance window settings",
+        "optionName": "Name",
+        "optionNamePlaceholder": "My maintenance window",
+        "optionRepeat": "Repeat period"
+      },
+      "time": {
+        "title": "Start & end times",
+        "description": "Set the start time and end time of the maintenance window",
+        "optionStart": "Start time",
+        "optionEnd": "End time"
+      },
+      "monitors": {
+        "title": "Monitors",
+        "description": "Select the monitors to include in the maintenance window",
+        "optionMonitors": "Monitors",
+        "optionMonitorsSelected": "selected",
+        "optionMonitorsPlaceholder": "Type to search"
+      }
+    },
+    "table": {
+      "headers": {
+        "repeat": "Repeat"
+      }
+    },
+    "fallback": {
+      "actionButton": "Create a window!",
+      "checks": [
+        "Mark your maintenance periods",
+        "Eliminate any misunderstandings",
+        "Stop sending alerts in maintenance windows"
+      ],
+      "title": "A maintenance window is used to:"
+    }
+  }
 }

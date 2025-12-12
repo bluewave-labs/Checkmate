@@ -82,14 +82,14 @@ const MaintenancePage = () => {
     const headers: Header<IMaintenance>[] = [
       {
         id: "name",
-        content: "Name",
+        content: t("common.table.headers.name"),
         render: (row) => {
           return <Typography>{row?.name}</Typography>;
         },
       },
       {
         id: "active",
-        content: "Active",
+        content: t("common.table.headers.active"),
         render: (row) => {
           const active = row.isActive ? "Yes" : "No";
           return <Typography>{active}</Typography>;
@@ -97,7 +97,7 @@ const MaintenancePage = () => {
       },
       {
         id: "repeat",
-        content: "Repeat",
+        content: t("maintenanceWindow.table.headers.repeat"),
         render: (row) => {
           const active = row.repeat ? row.repeat : "No";
           return <Typography textTransform={"capitalize"}>{active}</Typography>;
@@ -105,7 +105,7 @@ const MaintenancePage = () => {
       },
       {
         id: "actions",
-        content: t("actions"),
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },
@@ -124,11 +124,11 @@ const MaintenancePage = () => {
       items={maintenance}
       bullets={t("maintenanceWindow.fallback.checks", { returnObjects: true })}
       actionLink="/maintenance/create"
-      actionButtonText={t("createMaintenanceWindow")}
+      actionButtonText={t("maintenanceWindow.fallback.actionButton")}
     >
       <InfoBox
-        title="Scheduled Maintenance Periods"
-        description="Plan maintenance windows to temporarily pause monitoring checks. During maintenance, your monitors won't run checks or send notifications, preventing false alerts during planned downtime."
+        title={t("maintenanceWindow.infoBox.title")}
+        description={t("maintenanceWindow.infoBox.description")}
       />
       <HeaderCreate
         label={"Create a new maintenance window"}
@@ -146,8 +146,8 @@ const MaintenancePage = () => {
       />
 
       <Dialog
-        title={t("createNotifications.dialogDeleteTitle")}
-        content={t("createNotifications.dialogDeleteContent")}
+        title={t("common.dialog.delete.title")}
+        content={t("common.dialog.delete.description")}
         open={open}
         onConfirm={handleConfirm}
         onCancel={handleCancel}

@@ -1,4 +1,9 @@
-import { Table, Pagination, ValueLabel, StatusLabel } from "@/components/design-elements";
+import {
+  Table,
+  Pagination,
+  ValueLabel,
+  StatusLabel,
+} from "@/components/design-elements";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Button } from "@/components/inputs";
@@ -37,14 +42,14 @@ export const IncidentTable = ({
     const headers: Header<IIncident>[] = [
       {
         id: "name",
-        content: t("incidentsTableMonitorName"),
+        content: t("common.table.headers.monitor"),
         render: (row) => {
           return row.monitorId?.name || "N/A";
         },
       },
       {
         id: "start",
-        content: "Incident start",
+        content: t("incidents.table.headers.start"),
         render: (row) => {
           return formatDateWithTz(
             row.startedAt,
@@ -55,7 +60,7 @@ export const IncidentTable = ({
       },
       {
         id: "end",
-        content: "Incident end",
+        content: t("incidents.table.headers.end"),
         render: (row) => {
           return row.endedAt
             ? formatDateWithTz(
@@ -68,7 +73,7 @@ export const IncidentTable = ({
       },
       {
         id: "status",
-        content: "Current monitor status",
+        content: t("incidents.table.headers.monitorStatus"),
         render: (row) => {
           const status = row.monitorId?.status;
           return status ? (
@@ -80,7 +85,7 @@ export const IncidentTable = ({
       },
       {
         id: "resolved",
-        content: "Resolved",
+        content: t("incidents.table.headers.resolved"),
         render: (row) => {
           return (
             <ValueLabel
@@ -92,21 +97,21 @@ export const IncidentTable = ({
       },
       {
         id: "resolutionType",
-        content: "Resolution type",
+        content: t("incidents.table.headers.resolutionType"),
         render: (row) => {
           return row.resolutionType || "N/A";
         },
       },
       {
         id: "resolvedBy",
-        content: "Resolved by",
+        content: t("incidents.table.headers.resolvedBy"),
         render: (row) => {
           return row.resolvedBy?.email || "N/A";
         },
       },
       {
         id: "actions",
-        content: "Actions",
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return row.resolved ? null : (
             <Button
@@ -121,7 +126,7 @@ export const IncidentTable = ({
               variant="contained"
               color="primary"
             >
-              Resolve
+              {t("common.buttons.resolve")}
             </Button>
           );
         },

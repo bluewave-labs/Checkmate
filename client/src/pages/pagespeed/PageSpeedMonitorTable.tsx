@@ -170,7 +170,7 @@ export const PageSpeedMonitorTable = ({
             onClick={(e) => handleSort(e, "name")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.name")}
+            {t("common.table.headers.name")}
             {renderSortIcon(sortField === "name")}
           </Stack>
         ),
@@ -189,7 +189,7 @@ export const PageSpeedMonitorTable = ({
             onClick={(e) => handleSort(e, "status")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.status")}
+            {t("common.table.headers.status")}
             {renderSortIcon(sortField === "status")}
           </Stack>
         ),
@@ -199,7 +199,7 @@ export const PageSpeedMonitorTable = ({
       },
       {
         id: "histogram",
-        content: t("monitors.common.table.headers.pageSpeedScore"),
+        content: t("monitors.pageSpeed.table.headers.pageSpeedScore"),
         render: (row) => {
           return (
             <Stack alignItems={"center"}>
@@ -214,7 +214,7 @@ export const PageSpeedMonitorTable = ({
 
       {
         id: "actions",
-        content: t("monitors.common.table.headers.actions"),
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },

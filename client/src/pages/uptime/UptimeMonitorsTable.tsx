@@ -173,7 +173,7 @@ export const MonitorTable = ({
             onClick={(e) => handleSort(e, "name")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.name")}
+            {t("common.table.headers.name")}
             {renderSortIcon(sortField === "name")}
           </Stack>
         ),
@@ -193,7 +193,7 @@ export const MonitorTable = ({
             onClick={(e) => handleSort(e, "status")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.status")}
+            {t("common.table.headers.status")}
             {renderSortIcon(sortField === "status")}
           </Stack>
         ),
@@ -203,7 +203,7 @@ export const MonitorTable = ({
       },
       {
         id: "histogram",
-        content: t("monitors.common.table.headers.responseTime"),
+        content: t("monitors.uptime.table.headers.responseTime"),
         render: (row) => {
           if (chartType === "histogram") {
             return <HistogramResponseTime checks={row.latestChecks} />;
@@ -223,7 +223,7 @@ export const MonitorTable = ({
             onClick={(e) => handleSort(e, "type")}
             sx={{ cursor: "pointer" }}
           >
-            {t("monitors.common.table.headers.type")}
+            {t("common.table.headers.type")}
             {renderSortIcon(sortField === "type")}
           </Stack>
         ),
@@ -233,7 +233,7 @@ export const MonitorTable = ({
       },
       {
         id: "actions",
-        content: t("monitors.common.table.headers.actions"),
+        content: t("common.table.headers.actions"),
         render: (row) => {
           return <ActionsMenu items={getActions(row)} />;
         },

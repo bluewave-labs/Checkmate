@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import { BaseBox } from "@/components/design-elements";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-
+import { useTranslation } from "react-i18next";
 export interface ResolutionCardProps {
   resolved: boolean;
   type?: string;
@@ -21,6 +21,7 @@ export const ResolutionCard = ({
   timestampLabel,
   durationLabel,
 }: ResolutionCardProps) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const bg = resolved ? theme.palette.success.light : theme.palette.error.light;
 
@@ -35,12 +36,12 @@ export const ResolutionCard = ({
         }}
       >
         <Typography variant="h6" color="textPrimary">
-          Resolution
+          {t("incidents.details.resolutionCard.title")}
         </Typography>
       </Box>
       <Stack spacing={3} padding={6}>
         <Typography variant="body2" color="textPrimary">
-          Status:{" "}
+          {t("incidents.details.resolutionCard.resolutionStatus")}:{" "}
           <span style={{ color: bg }}>
             {resolved ? "resolved" : "unresolved"}
           </span>
@@ -48,10 +49,11 @@ export const ResolutionCard = ({
         {resolved && (
           <>
             <Typography variant="body2" color="textPrimary">
-              Resolution type: {type || "N/A"}
+              {t("incidents.details.resolutionCard.resolutionType")}:{" "}
+              {type || "N/A"}
             </Typography>
             <Typography variant="body2" color="textPrimary">
-              Resolved by: {by || "N/A"}
+              {t("incidents.details.resolutionCard.resolvedBy")}: {by || "N/A"}
             </Typography>
           </>
         )}
@@ -64,7 +66,7 @@ export const ResolutionCard = ({
           </Typography>
         )}
         <Typography variant="body2" color="textSecondary">
-          Note: {note || "N/A"}
+          {t("incidents.details.resolutionCard.note")}: {note || "N/A"}
         </Typography>
       </Stack>
     </BaseBox>
