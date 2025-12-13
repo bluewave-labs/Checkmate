@@ -1,5 +1,6 @@
 import { useAppSelector } from "@/hooks/AppHooks";
 import { Navigate } from "react-router";
+import NotFound from "@/pages/errors/NotFound";
 
 export const ProtectedRoute: React.FC<React.PropsWithChildren> = ({
   children,
@@ -16,6 +17,27 @@ export const ProtectedRoute: React.FC<React.PropsWithChildren> = ({
 
   if (!isAuthenticated) {
     return null;
+  }
+
+  return <>{children}</>;
+};
+
+export const MasterRoute: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const user = useAppSelector((state) => state.auth.user);
+
+  if (user?.teams.length === 0) {
+    return <Navigate to="/no-team" replace />;
+  }
+
+  const perms: string[] = (user?.org?.permissions || []).map((p: any) =>
+    (p ?? "").toString().trim().toLowerCase()
+  );
+  const hasMaster = perms.includes("master");
+
+  if (!hasMaster) {
+    return <NotFound />;
   }
 
   return <>{children}</>;

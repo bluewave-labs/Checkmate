@@ -1,5 +1,11 @@
-import { Box, Typography, Paper, Stack, Divider } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import { useGet } from "@/hooks/UseApi";
+import { StatBox } from "@/components/design-elements";
+import { config as clientConfig } from "@/config";
 
 type EnvConfig = {
   NODE_ENV: string;
@@ -18,26 +24,24 @@ type EnvConfig = {
 };
 
 export default function DiagnosticsConfigTab() {
+  const theme = useTheme();
   const { response, loading, error } = useGet<{
     message: string;
     data: EnvConfig;
-  }>("/diagnostic/env");
+  }>("/diagnostic/env", {}, { refreshInterval: clientConfig.GLOBAL_REFRESH });
 
   const data = response?.data;
+  const clientEntries = Object.entries(clientConfig as Record<string, any>);
+
+  if (!data && !loading && !error) return null;
+
+  const totalKeys = data ? Object.keys(data).length : 0;
 
   return (
-    <Box p={2}>
-      <Typography variant="h6" gutterBottom>
-        Environment Configuration
-      </Typography>
-      {loading && <Typography variant="body2">Loading…</Typography>}
-      {error && (
-        <Typography color="error" variant="body2">
-          {error}
-        </Typography>
-      )}
+    <Stack spacing={theme.spacing(8)}>
       {data && (
-        <Paper variant="outlined">
+        <Stack spacing={theme.spacing(3)}>
+          <Typography variant="h1">Server environment</Typography>
           <Stack divider={<Divider />}>
             {Object.entries(data).map(([key, value]) => (
               <Box key={key} px={2} py={1.5} display="flex" gap={2}>
@@ -50,8 +54,24 @@ export default function DiagnosticsConfigTab() {
               </Box>
             ))}
           </Stack>
-        </Paper>
+        </Stack>
       )}
-    </Box>
+
+      <Stack spacing={theme.spacing(3)}>
+        <Typography variant="h1">Client runtime config</Typography>
+        <Stack divider={<Divider />}>
+          {clientEntries.map(([key, value]) => (
+            <Box key={key} px={2} py={1.5} display="flex" gap={2}>
+              <Typography sx={{ minWidth: 220 }} color="text.secondary">
+                {key}
+              </Typography>
+              <Typography sx={{ wordBreak: "break-all" }}>
+                {String(value)}
+              </Typography>
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }

@@ -57,7 +57,7 @@ import BillingPage from "@/pages/billing/Billing";
 import BillingSuccessPage from "@/pages/billing/Success";
 
 import RootLayout from "@/components/layouts/RootLayout";
-import { ProtectedRoute } from "@/components/protected-route";
+import { ProtectedRoute, MasterRoute } from "@/components/protected-route";
 
 const Router = () => {
   return (
@@ -84,7 +84,14 @@ const Router = () => {
         <Route path="uptime/:id" element={<UptimeDetailsPage />} />
         <Route path="uptime" element={<UptimeMonitorsPage />} />
         <Route path="settings" element={<SettingsPage />} />
-        <Route path="settings/admin" element={<AdminSettingsPage />} />
+        <Route
+          path="settings/admin"
+          element={
+            <MasterRoute>
+              <AdminSettingsPage />
+            </MasterRoute>
+          }
+        />
         <Route path="teams/create" element={<TeamsCreatePage />} />
         <Route
           path="teams/:id/member/:memberId/configure"
@@ -143,7 +150,14 @@ const Router = () => {
           element={<StatusConfigPage />}
         />
 
-        <Route path="diagnostics" element={<DiagnosticPage />} />
+        <Route
+          path="diagnostics"
+          element={
+            <MasterRoute>
+              <DiagnosticPage />
+            </MasterRoute>
+          }
+        />
 
         <Route path="profile" element={<ProfilePage />} />
         <Route path="export" element={<ExportPage />} />
