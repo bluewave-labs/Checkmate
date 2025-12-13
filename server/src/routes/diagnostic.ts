@@ -29,6 +29,14 @@ class DiagnosticRoutes {
       verifyOrgPermission([PERMISSIONS.master]),
       this.controller.getJobs
     );
+
+    this.router.get(
+      "/env",
+      verifyToken,
+      addUserContext,
+      verifyOrgPermission([PERMISSIONS.master]),
+      this.controller.getEnv
+    );
   };
 
   getRouter() {

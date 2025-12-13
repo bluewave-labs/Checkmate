@@ -162,6 +162,7 @@ export const InfraMonitorsTable = ({
         id: "name",
         content: (
           <Typography
+            component="div"
             display="inline-flex"
             alignItems="center"
             gap={theme.spacing(4)}
@@ -180,6 +181,7 @@ export const InfraMonitorsTable = ({
         id: "status",
         content: (
           <Typography
+            component="div"
             display="inline-flex"
             alignItems="center"
             gap={theme.spacing(4)}
