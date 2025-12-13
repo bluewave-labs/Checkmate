@@ -1,7 +1,8 @@
 import { BasePage, Tab, Tabs, InfoBox } from "@/components/design-elements";
 import { DiagnosticsLogTab } from "@/pages/diagnostic/DiagnosticsLogTab";
 import { DiagnosticsQueueTab } from "@/pages/diagnostic/DiagnosticsQueueTab";
-import { FileText, ListTodo } from "lucide-react";
+import DiagnosticsConfigTab from "@/pages/diagnostic/DiagnosticsConfigTab";
+import { FileText, ListTodo, Settings } from "lucide-react";
 import { useState } from "react";
 
 const DiagnosticPage = () => {
@@ -28,9 +29,15 @@ const DiagnosticPage = () => {
           value="jobs"
           icon={<ListTodo size={18} strokeWidth={1.5} />}
         />
+        <Tab
+          label="Config"
+          value="config"
+          icon={<Settings size={18} strokeWidth={1.5} />}
+        />
       </Tabs>
       {tabValue === "logs" && <DiagnosticsLogTab />}
       {tabValue === "jobs" && <DiagnosticsQueueTab />}
+      {tabValue === "config" && <DiagnosticsConfigTab />}
     </BasePage>
   );
 };
