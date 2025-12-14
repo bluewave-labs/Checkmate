@@ -19,6 +19,21 @@ class MeRoutes {
         return res.json({ entitlements });
       }
     );
+
+    this.router.get("/permissions", verifyToken, addUserContext, (req, res) => {
+      const orgPerms = req.user?.roles?.orgRole?.permissions || [];
+      const teamPerms = req.user?.roles?.teamRole?.permissions || [];
+      const currentTeamId = req.user?.currentTeamId;
+      return res.json({
+        message: "OK",
+        data: {
+          org: orgPerms,
+          team: Array.isArray(teamPerms)
+            ? teamPerms.map((p: string) => ({ teamId: currentTeamId, permission: p }))
+            : [],
+        },
+      });
+    });
   };
 
   getRouter() {
