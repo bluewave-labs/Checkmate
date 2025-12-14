@@ -36,6 +36,8 @@ const createApp = async () => {
     })
   );
   const routes = initRoutes(controllers, app);
+  // expose services for route-level access (e.g., in me routes)
+  app.set("services", services);
   // Swagger UI at /api-docs
   try {
     // Load OpenAPI doc from project root within server folder

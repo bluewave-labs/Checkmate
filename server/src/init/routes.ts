@@ -49,7 +49,7 @@ export const initRoutes = (controllers: any, app: Express) => {
   const profileRoutes = new ProfileRoutes(controllers.profileController);
   const incidentsRoutes = new IncidentsRoutes(controllers.incidentsController);
   const settingsRoutes = new SettingsRoutes(controllers.settingsController);
-  const meRoutes = new MeRoutes();
+  const meRoutes = new MeRoutes(controllers.meController);
   const stripeRoutes = new StripeRoutes(controllers.stripeController);
   const billingRoutes = new BillingRoutes(controllers.billingController);
 

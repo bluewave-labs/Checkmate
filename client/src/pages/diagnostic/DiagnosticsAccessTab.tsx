@@ -2,12 +2,12 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
-import Box from "@mui/material/Box";
-import { StatBox, Table } from "@/components/design-elements";
+import { Table } from "@/components/design-elements";
 import type { Header } from "@/components/design-elements/Table";
 import { useGet } from "@/hooks/UseApi";
 import { useAppSelector } from "@/hooks/AppHooks";
 import type { Entitlements } from "@/types/entitlements";
+import { config } from "@/config/index";
 
 type PermissionsResponse = {
   message: string;
@@ -32,18 +32,18 @@ export default function DiagnosticsAccessTab() {
   const { response: permsRes } = useGet<PermissionsResponse>(
     "/me/permissions",
     {},
-    { refreshInterval: 10000 }
+    { refreshInterval: config.GLOBAL_REFRESH }
   );
-  const { response: entsRes } = useGet<{ entitlements: Entitlements }>(
+  const { response: entsRes } = useGet<{ message: string; data: Entitlements }>(
     "/me/entitlements",
     {},
-    { refreshInterval: 30000 }
+    { refreshInterval: config.GLOBAL_REFRESH }
   );
 
   const orgPerms = permsRes?.data?.org || [];
   const teamPerms = permsRes?.data?.team || [];
 
-  const entitlementsObj = entsRes?.entitlements as Entitlements | undefined;
+  const entitlementsObj = entsRes?.data as Entitlements | undefined;
   const entitlements: EntitlementRow[] = entitlementsObj
     ? (Object.entries(entitlementsObj) as [keyof Entitlements, any][]).map(
         ([key, value]) => ({ id: String(key), key: String(key), value })

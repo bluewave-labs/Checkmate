@@ -1,39 +1,32 @@
 import { Router } from "express";
 import { verifyToken } from "@/middleware/VerifyToken.js";
 import { addUserContext } from "@/middleware/AddUserContext.js";
+import { MeController } from "@/controllers/index.js";
 
 class MeRoutes {
   private router;
-  constructor() {
+  private controller: MeController;
+  constructor(meController: MeController) {
     this.router = Router();
+    this.controller = meController;
     this.initRoutes();
   }
 
   initRoutes = () => {
+    this.router.get("/", verifyToken, this.controller.me);
     this.router.get(
       "/entitlements",
       verifyToken,
       addUserContext,
-      (req, res) => {
-        const entitlements = req.entitlements || {};
-        return res.json({ entitlements });
-      }
+      this.controller.getEntitlements
     );
 
-    this.router.get("/permissions", verifyToken, addUserContext, (req, res) => {
-      const orgPerms = req.user?.roles?.orgRole?.permissions || [];
-      const teamPerms = req.user?.roles?.teamRole?.permissions || [];
-      const currentTeamId = req.user?.currentTeamId;
-      return res.json({
-        message: "OK",
-        data: {
-          org: orgPerms,
-          team: Array.isArray(teamPerms)
-            ? teamPerms.map((p: string) => ({ teamId: currentTeamId, permission: p }))
-            : [],
-        },
-      });
-    });
+    this.router.get(
+      "/permissions",
+      verifyToken,
+      addUserContext,
+      this.controller.getPermissions
+    );
   };
 
   getRouter() {

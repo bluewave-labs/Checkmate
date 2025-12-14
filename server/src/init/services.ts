@@ -32,6 +32,7 @@ import {
   BillingService,
 } from "@/services/index.js";
 import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
+import { MeService } from "@/services/index.js";
 
 export const initServices = async () => {
   const checkService = new CheckService();
@@ -67,6 +68,7 @@ export const initServices = async () => {
   const jobQueue = await JobQueue.create(jobGenerator);
   const entitlementsProvider = EntitlementsFactory.create();
   const authService = new AuthService(jobQueue, entitlementsProvider);
+  const meService = new MeService(entitlementsProvider);
   const monitorService = new MonitorService(jobQueue);
   const queueService = new QueueService(jobQueue);
   const teamService = new TeamService(jobQueue);
@@ -92,6 +94,7 @@ export const initServices = async () => {
     jobGenerator,
     jobQueue,
     authService,
+    meService,
     monitorService,
     queueService,
     teamService,

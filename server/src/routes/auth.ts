@@ -35,7 +35,7 @@ class AuthRoutes {
       this.controller.login
     );
     this.router.post("/logout", this.controller.logout);
-    this.router.get("/me", verifyToken, this.controller.me);
+    // this.router.get("/me", verifyToken, this.controller.me);
     this.router.post("/cleanup", this.controller.cleanup);
     this.router.post("/cleanup-monitors", this.controller.cleanMonitors);
   };

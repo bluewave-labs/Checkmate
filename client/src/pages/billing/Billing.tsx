@@ -21,7 +21,7 @@ const BillingPage = () => {
     {}
   );
   const { response: meResponse } = useGet<ApiResponse<IUser>>(
-    "/auth/me",
+    "/me",
     {},
     { refreshInterval: 10000 }
   );

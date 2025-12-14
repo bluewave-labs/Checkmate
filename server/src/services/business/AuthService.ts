@@ -42,7 +42,6 @@ export type LoginData = {
 export type AuthResult = Partial<ITokenizedUser>;
 
 export interface IAuthService {
-  me(userId: string): Promise<IUserReturnable>;
   register(signupData: RegisterData): Promise<{
     tokenizedUser: ITokenizedUser;
     returnableUser: IUserReturnable;
@@ -69,79 +68,14 @@ class AuthService implements IAuthService {
   public SERVICE_NAME: string;
   private jobQueue: IJobQueue;
   private entitlementsProvider: IEntitlementsProvider;
-  constructor(jobQueue: IJobQueue, entitlementsProvider: IEntitlementsProvider) {
+  constructor(
+    jobQueue: IJobQueue,
+    entitlementsProvider: IEntitlementsProvider
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
     this.entitlementsProvider = entitlementsProvider;
   }
-
-  me = async (userId: string) => {
-    // Need to get teamIds
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new ApiError("User not found", 404);
-    }
-
-    // Find OrgMembership
-    const orgMembership = await OrgMembership.findOne({
-      userId: user._id,
-    }).lean();
-    if (!orgMembership) {
-      throw new ApiError("User is not part of any organization");
-    }
-
-    // Find org and roles
-    const org = await Org.findById(orgMembership.orgId).lean();
-
-    if (!org) {
-      throw new ApiError("Organization not found");
-    }
-
-    const orgRoles = await Role.findById(orgMembership.roleId).lean();
-
-    // Get teams
-    const teamMembershipWithRoles = await TeamMembership.find({
-      userId: user._id,
-    })
-      .populate<{ roleId: IRole }>("roleId")
-      .lean();
-
-    const teamIds = teamMembershipWithRoles.map((tm) => tm.teamId.toString());
-
-    const teams = await this.getTeams(teamIds);
-    const teamMap = new Map(teams.map((t) => [t._id.toString(), t]));
-    const returnableTeams = teamMembershipWithRoles.map((tm) => {
-      const team = teamMap.get(tm.teamId.toString());
-      if (!team) {
-        throw new ApiError("Team not found for membership");
-      }
-      return {
-        id: team._id.toString(),
-        name: team.name,
-        permissions: tm.roleId?.permissions ?? [],
-      };
-    });
-
-    const entitlements: Entitlements = await this.entitlementsProvider.getForOrg(
-      org._id.toString()
-    );
-
-    const returnableUser: IUserReturnable = {
-      id: user._id.toString(),
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      org: {
-        name: org.name,
-        planKey: org.planKey,
-        permissions: orgRoles?.permissions || [],
-      },
-      teams: returnableTeams,
-      entitlements,
-    };
-
-    return returnableUser;
-  };
 
   async register(signupData: RegisterData) {
     const passwordHash = await hashPassword(signupData.password);
@@ -263,10 +197,8 @@ class AuthService implements IAuthService {
         permissions: roles[2]?.permissions || [],
       };
 
-      const provider = EntitlementsFactory.create();
-      const entitlements: Entitlements = await provider.getForOrg(
-        org._id.toString()
-      );
+      const entitlements: Entitlements =
+        await this.entitlementsProvider.getForOrg(org._id.toString());
 
       const returnableUser: IUserReturnable = {
         id: user._id.toString(),
@@ -405,10 +337,8 @@ class AuthService implements IAuthService {
       const orgRole = await Role.findById(orgMembership.roleId);
       const orgPermissions = orgRole?.permissions || [];
 
-      const provider = EntitlementsFactory.create();
-      const entitlements: Entitlements = await provider.getForOrg(
-        org._id.toString()
-      );
+      const entitlements: Entitlements =
+        await this.entitlementsProvider.getForOrg(org._id.toString());
       const returnableUser: IUserReturnable = {
         id: user._id.toString(),
         email: user.email,
@@ -516,9 +446,8 @@ class AuthService implements IAuthService {
       orgId: orgMembership.orgId.toString(),
     };
 
-    const entitlements: Entitlements = await this.entitlementsProvider.getForOrg(
-      org._id.toString()
-    );
+    const entitlements: Entitlements =
+      await this.entitlementsProvider.getForOrg(org._id.toString());
 
     const returnableUser: IUserReturnable = {
       id: user._id.toString(),

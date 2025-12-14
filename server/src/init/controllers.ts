@@ -18,6 +18,7 @@ import {
   StripeController,
   BillingController,
 } from "@/controllers/index.js";
+import MeController from "@/controllers/MeController.js";
 
 export const initControllers = (services: any) => {
   const controllers: Record<string, any> = {};
@@ -80,6 +81,7 @@ export const initControllers = (services: any) => {
   controllers.billingController = new BillingController(
     services.billingService
   );
+  controllers.meController = new MeController(services.meService);
 
   return controllers;
 };
