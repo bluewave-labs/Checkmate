@@ -712,6 +712,20 @@
     }
   },
   "teams": {
+    "form": {
+      "basic": {
+        "title": "Basic information",
+        "description": "Set team name and description",
+        "optionName": "Team name",
+        "optionDescription": "Team description"
+      },
+      "role": {
+        "title": "Role",
+        "description": "Choose your role for this new team.  You will be the first member",
+        "optionRole": "Role",
+        "optionIncludedPermissions": "Included permissions"
+      }
+    },
     "details": {
       "infoHeader": {
         "description": "Description",

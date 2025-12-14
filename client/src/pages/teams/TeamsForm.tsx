@@ -56,8 +56,8 @@ export const TeamsForm = ({
   return (
     <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
       <ConfigBox
-        title={t("createTeamsPage.basicInfoTitle")}
-        subtitle={t("createTeamsPage.basicInfoSubtitle")}
+        title={t("teams.form.basic.title")}
+        subtitle={t("teams.form.basic.description")}
         rightContent={
           <Stack gap={theme.spacing(8)}>
             <Controller
@@ -66,7 +66,7 @@ export const TeamsForm = ({
               render={({ field }) => (
                 <TextInput
                   {...field}
-                  fieldLabel={t("createTeamsPage.basicInfoName")}
+                  fieldLabel={t("teams.form.basic.optionName")}
                   required
                   type="text"
                   fullWidth
@@ -81,7 +81,7 @@ export const TeamsForm = ({
               render={({ field }) => (
                 <TextInput
                   {...field}
-                  fieldLabel={t("createTeamsPage.basicInfoDescription")}
+                  fieldLabel={t("teams.form.basic.optionDescription")}
                   type="text"
                   fullWidth
                   error={!!errors.description}
@@ -96,8 +96,8 @@ export const TeamsForm = ({
       />
       {mode === "create" && (
         <ConfigBox
-          title="Role"
-          subtitle="Choose your role for this new team.  You will be the first member"
+          title={t("teams.form.role.title")}
+          subtitle={t("teams.form.role.description")}
           rightContent={
             <Controller
               name="roleId"
@@ -111,7 +111,7 @@ export const TeamsForm = ({
                   <Stack gap={theme.spacing(8)}>
                     <Select
                       value={field.value}
-                      fieldLabel="Role"
+                      fieldLabel={t("teams.form.role.optionRole")}
                       required
                       error={!!errors.roleId}
                       onChange={field.onChange}
@@ -126,7 +126,7 @@ export const TeamsForm = ({
                     </Select>
                     <Stack>
                       <Typography variant={"h2"} mb={theme.spacing(4)}>
-                        Included permissions:
+                        {t("teams.form.role.optionIncludedPermissions")}
                       </Typography>
                       {selectedRole?.permissions?.map((perm: string) => (
                         <Typography key={perm}>- {perm}</Typography>
@@ -146,7 +146,7 @@ export const TeamsForm = ({
           variant="contained"
           color="primary"
         >
-          {t("settingsSave")}
+          {t("common.buttons.save")}
         </Button>
       </Stack>
     </BasePage>
