@@ -22,8 +22,8 @@ import { IJobQueue } from "../infrastructure/JobQueue.js";
 import { hashPassword } from "@/utils/JWTUtils.js";
 import { Plans } from "@/types/entitlements.js";
 import { PERMISSIONS } from "@/types/permissions.js";
-import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
 import type { Entitlements } from "@/types/entitlements.js";
+import type { IEntitlementsProvider } from "@/services/system/EntitlementsService.js";
 
 const SERVICE_NAME = "AuthService";
 
@@ -68,9 +68,11 @@ export interface IAuthService {
 class AuthService implements IAuthService {
   public SERVICE_NAME: string;
   private jobQueue: IJobQueue;
-  constructor(jobQueue: IJobQueue) {
+  private entitlementsProvider: IEntitlementsProvider;
+  constructor(jobQueue: IJobQueue, entitlementsProvider: IEntitlementsProvider) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
+    this.entitlementsProvider = entitlementsProvider;
   }
 
   me = async (userId: string) => {
@@ -120,6 +122,10 @@ class AuthService implements IAuthService {
       };
     });
 
+    const entitlements: Entitlements = await this.entitlementsProvider.getForOrg(
+      org._id.toString()
+    );
+
     const returnableUser: IUserReturnable = {
       id: user._id.toString(),
       email: user.email,
@@ -131,7 +137,7 @@ class AuthService implements IAuthService {
         permissions: orgRoles?.permissions || [],
       },
       teams: returnableTeams,
-      entitlements: org.entitlements,
+      entitlements,
     };
 
     return returnableUser;
@@ -510,8 +516,7 @@ class AuthService implements IAuthService {
       orgId: orgMembership.orgId.toString(),
     };
 
-    const provider = EntitlementsFactory.create();
-    const entitlements: Entitlements = await provider.getForOrg(
+    const entitlements: Entitlements = await this.entitlementsProvider.getForOrg(
       org._id.toString()
     );
 

@@ -31,6 +31,7 @@ import {
   StripeService,
   BillingService,
 } from "@/services/index.js";
+import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
 
 export const initServices = async () => {
   const checkService = new CheckService();
@@ -64,7 +65,8 @@ export const initServices = async () => {
     maintenanceService
   );
   const jobQueue = await JobQueue.create(jobGenerator);
-  const authService = new AuthService(jobQueue);
+  const entitlementsProvider = EntitlementsFactory.create();
+  const authService = new AuthService(jobQueue, entitlementsProvider);
   const monitorService = new MonitorService(jobQueue);
   const queueService = new QueueService(jobQueue);
   const teamService = new TeamService(jobQueue);
