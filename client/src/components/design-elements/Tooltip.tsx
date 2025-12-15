@@ -6,10 +6,7 @@ import type { TooltipProps } from "@mui/material/Tooltip";
 
 type StyledTooltipProps = TooltipProps;
 
-export const Tooltip: React.FC<StyledTooltipProps> = ({
-  placement = "top",
-  ...props
-}) => {
+export const Tooltip = ({ placement = "top", ...props }: StyledTooltipProps) => {
   const theme = useTheme();
 
   return (
@@ -44,11 +41,11 @@ export interface TooltipWithInfoProps
   iconColor?: string;
 }
 
-export const TooltipWithInfo: React.FC<TooltipWithInfoProps> = ({
+export const TooltipWithInfo = ({
   iconSize = 14,
   iconColor,
   ...props
-}) => {
+}: TooltipWithInfoProps) => {
   const theme = useTheme();
 
   const defaultColor = theme.palette.text.secondary;

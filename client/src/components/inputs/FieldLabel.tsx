@@ -7,11 +7,11 @@ interface FieldLabelProps {
   htmlFor?: string;
 }
 
-export const FieldLabel: React.FC<FieldLabelProps> = ({
+export const FieldLabel = ({
   children,
   required = false,
   htmlFor,
-}) => {
+}: FieldLabelProps) => {
   const theme = useTheme();
 
   return (

@@ -8,7 +8,7 @@ interface InfoBoxProps {
   description: string;
 }
 
-export const InfoBox: React.FC<InfoBoxProps> = ({ title, description }) => {
+export const InfoBox = ({ title, description }: InfoBoxProps) => {
   const theme = useTheme();
 
   return (

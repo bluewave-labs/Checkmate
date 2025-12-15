@@ -13,11 +13,7 @@ type GradientBox = React.PropsWithChildren<{
   sx?: SxProps;
 }>;
 
-export const GradientBox: React.FC<GradientBox> = ({
-  children,
-  palette,
-  sx,
-}) => {
+export const GradientBox = ({ children, palette, sx }: GradientBox) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const isLight = theme.palette.mode === "light";
@@ -51,7 +47,7 @@ type StatBoxProps = React.PropsWithChildren<{
   onClick?: () => void;
 }>;
 
-export const StatBox: React.FC<StatBoxProps> = ({
+export const StatBox = ({
   title,
   subtitle,
   palette,
@@ -59,7 +55,7 @@ export const StatBox: React.FC<StatBoxProps> = ({
   sx,
   tooltip,
   onClick,
-}) => {
+}: StatBoxProps) => {
   const theme = useTheme();
   const textColor = palette ? theme.palette[palette].contrastText : "inherit";
 

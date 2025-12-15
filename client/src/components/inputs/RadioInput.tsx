@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 
 interface RadioInputProps extends RadioProps {}
 
-export const RadioInput: React.FC<RadioInputProps> = ({ ...props }) => {
+export const RadioInput = ({ ...props }: RadioInputProps) => {
   const theme = useTheme();
   return (
     <Radio
@@ -39,9 +39,11 @@ export const RadioInput: React.FC<RadioInputProps> = ({ ...props }) => {
   );
 };
 
-export const RadioWithDescription: React.FC<
-  RadioInputProps & { label: string; description: string }
-> = ({ label, description, ...props }) => {
+export const RadioWithDescription = ({
+  label,
+  description,
+  ...props
+}: RadioInputProps & { label: string; description: string }) => {
   const theme = useTheme();
   return (
     <FormControlLabel

@@ -88,7 +88,7 @@ export const HistogramInfrastructure = ({
   range,
   title,
   type,
-  idx,
+  idx: _idx,
   checks,
   xKey,
   yDomain,
@@ -156,7 +156,7 @@ export const HistogramInfrastructure = ({
           {dataKeys?.map((dataKey, index) => {
             const gradientId = `gradient-${uniqueId}-${index}`;
             return (
-              <Fragment key={dataKey}>
+              <Fragment key={`${dataKey}-${index}`}>
                 {gradient === true &&
                   createGradient({
                     id: gradientId,

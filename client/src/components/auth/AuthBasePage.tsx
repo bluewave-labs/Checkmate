@@ -13,12 +13,12 @@ interface AuthBasePageProps extends StackProps {
   children: React.ReactNode;
 }
 
-export const AuthBasePage: React.FC<AuthBasePageProps> = ({
+export const AuthBasePage = ({
   children,
   title,
   subtitle,
   ...props
-}) => {
+}: AuthBasePageProps) => {
   const theme = useTheme();
   return (
     <Stack gap={theme.spacing(10)} minHeight="100vh" {...props}>

@@ -6,10 +6,13 @@ import { useAppSelector } from "@/hooks/AppHooks";
 import type { LatestCheck } from "@/types/check";
 import { useTheme } from "@mui/material/styles";
 
-export const HeatmapResponseTimeTooltip: React.FC<{
+export const HeatmapResponseTimeTooltip = ({
+  children,
+  check,
+}: {
   children: React.ReactElement;
   check: LatestCheck;
-}> = ({ children, check }) => {
+}) => {
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
   const theme = useTheme();
 

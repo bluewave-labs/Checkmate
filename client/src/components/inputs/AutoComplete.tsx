@@ -21,12 +21,12 @@ type AutoCompleteInputProps = Omit<
   required?: boolean;
 };
 
-export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
+export const AutoCompleteInput = ({
   fieldLabel,
   required,
   renderInput,
   ...props
-}) => {
+}: AutoCompleteInputProps) => {
   const theme = useTheme();
   const multiple = props.multiple;
 

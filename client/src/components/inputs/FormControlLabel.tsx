@@ -1,9 +1,7 @@
 import MuiFormControlLabel from "@mui/material/FormControlLabel";
 import type { FormControlLabelProps } from "@mui/material/FormControlLabel";
 
-export const FormControlLabel: React.FC<FormControlLabelProps> = ({
-  ...props
-}) => {
+export const FormControlLabel = ({ ...props }: FormControlLabelProps) => {
   return (
     <MuiFormControlLabel
       {...props}

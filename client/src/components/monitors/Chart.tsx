@@ -12,13 +12,13 @@ type BaseChartProps = React.PropsWithChildren<{
   maxWidth?: number | string;
 }>;
 
-export const BaseChart: React.FC<BaseChartProps> = ({
+export const BaseChart = ({
   children,
   icon,
   title,
   width = "100%",
   maxWidth = "100%",
-}) => {
+}: BaseChartProps) => {
   const theme = useTheme();
 
   return (

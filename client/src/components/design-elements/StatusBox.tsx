@@ -9,7 +9,7 @@ import { useTheme } from "@mui/material/styles";
 
 type StatusBoxProps = React.PropsWithChildren<{ children: React.ReactNode }>;
 
-export const BGBox: React.FC<StatusBoxProps> = ({ children }) => {
+export const BGBox = ({ children }: StatusBoxProps) => {
   const theme = useTheme();
   return (
     <BaseBox

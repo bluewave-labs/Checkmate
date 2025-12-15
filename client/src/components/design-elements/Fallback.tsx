@@ -13,10 +13,7 @@ interface BaseFallbackProps extends StackProps {
   children: React.ReactNode;
 }
 
-export const BaseFallback: React.FC<BaseFallbackProps> = ({
-  children,
-  ...props
-}) => {
+export const BaseFallback = ({ children, ...props }: BaseFallbackProps) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 

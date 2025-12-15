@@ -29,7 +29,7 @@ type XTickProps = {
   range: string;
 };
 
-export const XTick: React.FC<XTickProps> = ({ x, y, payload, range }) => {
+export const XTick = ({ x, y, payload, range }: XTickProps) => {
   const format = tickDateFormatLookup(range);
   const theme = useTheme();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
@@ -56,14 +56,14 @@ type ResponseTimeToolTipProps = {
   uiTimezone: string;
 };
 
-const ResponseTimeToolTip: React.FC<ResponseTimeToolTipProps> = ({
+const ResponseTimeToolTip = ({
   active,
   payload,
   label,
   range,
   theme,
   uiTimezone,
-}) => {
+}: ResponseTimeToolTipProps) => {
   if (!label) return null;
   if (!payload) return null;
   if (!active) return null;

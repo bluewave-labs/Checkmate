@@ -9,12 +9,12 @@ interface FormFieldProps {
   htmlFor?: string;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({
+export const FormField = ({
   label,
   required = false,
   children,
   htmlFor,
-}) => {
+}: FormFieldProps) => {
   const theme = useTheme();
 
   return (

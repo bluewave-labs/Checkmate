@@ -1,8 +1,7 @@
-import React from "react";
 import { Box, Stack, useTheme } from "@mui/material";
 
 interface SkeletonCardProps {
-  width?: number | string;
+  width?: number | string | { xs?: number | string; md?: number | string };
   showHalo?: boolean;
 }
 
@@ -11,10 +10,10 @@ interface SkeletonCardProps {
  * Shows an animated stacked card design with pulsing skeleton elements
  * Default size is 60% of original design
  */
-const SkeletonCard: React.FC<SkeletonCardProps> = ({
+const SkeletonCard = ({
   width = { xs: 130, md: 216 },
   showHalo = true,
-}) => {
+}: SkeletonCardProps) => {
   const theme = useTheme();
   const pulseAnimation = {
     "@keyframes pulse": {

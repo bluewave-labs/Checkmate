@@ -9,7 +9,6 @@ import { Tooltip } from "@/components/design-elements";
 import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/hooks/AppHooks";
 import { setSelectedTeamId } from "@/features/authSlice";
-import { useNavigate } from "react-router";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useTheme } from "@mui/material/styles";
@@ -17,7 +16,6 @@ import { useTranslation } from "react-i18next";
 
 export const TeamSwitch = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

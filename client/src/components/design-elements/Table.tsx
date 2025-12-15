@@ -322,7 +322,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export const Pagination: React.FC<TablePaginationProps> = ({ ...props }) => {
+export const Pagination = ({ ...props }: TablePaginationProps) => {
   const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
   const theme = useTheme();
   return (

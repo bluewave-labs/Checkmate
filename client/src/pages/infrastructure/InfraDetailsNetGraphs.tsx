@@ -104,6 +104,7 @@ export const InfraDetailsNetGraphs = ({
               <HistogramInfrastructure
                 range={range}
                 title={config.type}
+                type={"net"}
                 idx={config.idx}
                 key={`${config.type}-${config.idx ?? ""}`}
                 checks={checks}

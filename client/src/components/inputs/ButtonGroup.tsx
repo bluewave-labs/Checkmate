@@ -6,12 +6,12 @@ import MenuItem from "@mui/material/MenuItem";
 import type { ButtonGroupProps } from "@mui/material/ButtonGroup";
 import { ChevronDown } from "lucide-react";
 
-export const ButtonGroupInput: React.FC<ButtonGroupProps> = ({
+export const ButtonGroupInput = ({
   orientation,
   children,
   sx,
   ...props
-}) => {
+}: ButtonGroupProps) => {
   const isVertical = orientation === "vertical";
 
   if (!isVertical) {
