@@ -10,14 +10,11 @@ interface BasePageProps extends StackProps {
   breadcrumbOverride?: string[];
 }
 
-export const BasePage: React.FC<BasePageProps> = ({
+export const BasePage = ({
   children,
   breadcrumbOverride,
   ...props
-}: {
-  children: React.ReactNode;
-  breadcrumbOverride?: string[];
-}) => {
+}: BasePageProps) => {
   const theme = useTheme();
   return (
     <Stack spacing={theme.spacing(10)} {...props}>
@@ -38,7 +35,7 @@ interface BasePageWithStatesProps extends StackProps {
   children: React.ReactNode;
 }
 
-export const BasePageWithStates: React.FC<BasePageWithStatesProps> = ({
+export const BasePageWithStates = ({
   loading,
   error,
   items,
@@ -94,9 +91,7 @@ const isEmpty = (items: any[]) => {
   return false;
 };
 
-export const MonitorBasePageWithStates: React.FC<
-  MonitorBasePageWithStatesProps
-> = ({
+export const MonitorBasePageWithStates = ({
   loading,
   error,
   items,

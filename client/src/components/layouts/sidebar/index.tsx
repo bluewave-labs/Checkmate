@@ -53,8 +53,6 @@ export const SideBar = () => {
         backgroundColor: theme.palette.background.paper,
       }}
     >
-      {/* Sidebar collapse handled by Logo click */}
-
       <List
         component="nav"
         disablePadding
@@ -72,7 +70,12 @@ export const SideBar = () => {
               item={item}
               sidebarOpen={sideBarOpen}
               selected={selected}
-              onClick={() => navigate(`/${item.path}`)}
+              onClick={() => {
+                navigate(`/${item.path}`);
+                if (isSmall) {
+                  dispatch(setSidebarOpen(false));
+                }
+              }}
             />
           );
         })}
@@ -98,6 +101,9 @@ export const SideBar = () => {
                   window.open(item.url, "_blank", "noreferrer");
                 } else {
                   navigate(`/${item.path}`);
+                }
+                if (isSmall) {
+                  dispatch(setSidebarOpen(false));
                 }
               }}
             />
