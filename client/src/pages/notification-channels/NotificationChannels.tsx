@@ -14,6 +14,7 @@ import type { INotificationChannel } from "@/types/notification-channel";
 import { useGet, usePatch, useDelete } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useTranslation } from "react-i18next";
+import { config } from "@/config/index";
 
 const NotificationChannelsPage = () => {
   const { t } = useTranslation();
@@ -25,7 +26,16 @@ const NotificationChannelsPage = () => {
 
   const { response, isValidating, error, refetch } = useGet<
     ApiResponse<INotificationChannel[]>
-  >("/notification-channels", {}, {});
+  >(
+    "/notification-channels",
+    {},
+    {
+      refreshInterval: config.GLOBAL_REFRESH,
+      keepPreviousData: true,
+      dedupingInterval: 0,
+    },
+    { useTeamIdAsKey: true }
+  );
 
   const { patch, loading: pausing } = usePatch<{}, INotificationChannel>();
   const { deleteFn, loading: isDeleting } =

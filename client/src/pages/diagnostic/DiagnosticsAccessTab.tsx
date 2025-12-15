@@ -32,12 +32,14 @@ export default function DiagnosticsAccessTab() {
   const { response: permsRes } = useGet<PermissionsResponse>(
     "/me/permissions",
     {},
-    { refreshInterval: config.GLOBAL_REFRESH }
+    { refreshInterval: config.GLOBAL_REFRESH },
+    { useTeamIdAsKey: true }
   );
   const { response: entsRes } = useGet<{ message: string; data: Entitlements }>(
     "/me/entitlements",
     {},
-    { refreshInterval: config.GLOBAL_REFRESH }
+    { refreshInterval: config.GLOBAL_REFRESH },
+    { useTeamIdAsKey: true }
   );
 
   const orgPerms = permsRes?.data?.org || [];

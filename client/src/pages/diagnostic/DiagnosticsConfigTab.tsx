@@ -4,7 +4,6 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { useGet } from "@/hooks/UseApi";
-import { StatBox } from "@/components/design-elements";
 import { config as clientConfig } from "@/config";
 
 type EnvConfig = {
@@ -34,8 +33,6 @@ export default function DiagnosticsConfigTab() {
   const clientEntries = Object.entries(clientConfig as Record<string, any>);
 
   if (!data && !loading && !error) return null;
-
-  const totalKeys = data ? Object.keys(data).length : 0;
 
   return (
     <Stack spacing={theme.spacing(8)}>
