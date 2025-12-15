@@ -270,7 +270,10 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   };
 
   return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }} className="table-pagination-actions">
+    <Box
+      sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
+      className="table-pagination-actions"
+    >
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -328,9 +331,18 @@ export const Pagination: React.FC<TablePaginationProps> = ({ ...props }) => {
       rowsPerPageOptions={[5, 10, 25]}
       {...props}
       sx={{
-        "& .MuiTablePagination-toolbar": {
-          display: isSmall ? "grid" : "flex",
-        },
+        "& .MuiTablePagination-toolbar": isSmall
+          ? {
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gridAutoRows: "auto",
+              rowGap: theme.spacing(1),
+              alignItems: "center",
+              justifyItems: "center",
+              paddingLeft: 0,
+              paddingRight: 0,
+            }
+          : { display: "flex", alignItems: "center" },
         "& .MuiTablePagination-selectLabel": {
           gridColumn: "1",
           gridRow: "1",
@@ -341,16 +353,12 @@ export const Pagination: React.FC<TablePaginationProps> = ({ ...props }) => {
           gridRow: "1",
           justifySelf: "center",
         },
-        "& .MuiTablePagination-displayedRows": {
-          gridColumn: "2",
-          gridRow: "2",
-          justifySelf: "center	",
-        },
-        "& .table-pagination-actions": {
-          gridColumn: "1",
-          gridRow: "2",
-          justifySelf: "center",
-        },
+        "& .MuiTablePagination-displayedRows": isSmall
+          ? { gridColumn: "1 / span 2", gridRow: "2", justifySelf: "center" }
+          : {},
+        "& .table-pagination-actions": isSmall
+          ? { gridColumn: "1 / span 2", gridRow: "3", justifySelf: "center" }
+          : {},
         "& .MuiSelect-select": {
           border: 1,
           borderColor: theme.palette.divider,
