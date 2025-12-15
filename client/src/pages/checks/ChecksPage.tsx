@@ -13,6 +13,7 @@ import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import type { IMonitor } from "@/types/monitor";
 import type { ICheck } from "@/types/check";
+import { config } from "@/config/index";
 
 const ChecksPage = () => {
   const theme = useTheme();
@@ -42,7 +43,11 @@ const ChecksPage = () => {
       selectedMonitorId !== "all" ? `&monitorId=${selectedMonitorId}` : ""
     }`,
     {},
-    { keepPreviousData: true },
+    {
+      keepPreviousData: true,
+      refreshInterval: config.GLOBAL_REFRESH,
+      dedupingInterval: 0,
+    },
     { useTeamIdAsKey: true }
   );
 

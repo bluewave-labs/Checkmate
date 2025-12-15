@@ -19,7 +19,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 import { useDelete } from "@/hooks/UseApi";
 import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
-import { useAppSelector } from "@/hooks/AppHooks";
 import { config } from "@/config/index";
 import { useLimitReached } from "@/hooks/UsePlanEntitlements";
 
@@ -28,7 +27,6 @@ const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 const PageSpeedMonitorsPage = () => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { user } = useAppSelector((state) => state.auth);
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedMonitor, setSelectedMonitor] = useState<IMonitor | null>(null);
   const isDialogOpen = Boolean(selectedMonitor);

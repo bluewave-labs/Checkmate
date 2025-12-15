@@ -14,6 +14,7 @@ import type { ApiResponse } from "@/hooks/UseApi";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type { IIncident } from "@/types/incident";
 import type { IMonitor } from "@/types/monitor";
+import { config } from "@/config/index";
 
 const IncidentsPage = () => {
   const theme = useTheme();
@@ -37,7 +38,11 @@ const IncidentsPage = () => {
         : ""
     }${resolved !== null ? `&resolved=${resolved}` : ""}`,
     {},
-    { keepPreviousData: true },
+    {
+      keepPreviousData: true,
+      refreshInterval: config.GLOBAL_REFRESH,
+      dedupingInterval: 0,
+    },
     { useTeamIdAsKey: true }
   );
 

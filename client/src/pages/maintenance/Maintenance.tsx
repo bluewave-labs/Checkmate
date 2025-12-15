@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import type { ApiResponse } from "@/hooks/UseApi";
 import type { IMaintenance } from "@/types/maintenance";
 import type { ActionMenuItem } from "@/components/actions-menu";
+import { config } from "@/config/index";
 
 const MaintenancePage = () => {
   const theme = useTheme();
@@ -26,7 +27,14 @@ const MaintenancePage = () => {
   const { response, isValidating, refetch } = useGet<ApiResponse<any>>(
     "/maintenance",
     {},
-    {}
+    {
+      refreshInterval: config.GLOBAL_REFRESH,
+      keepPreviousData: true,
+      dedupingInterval: 0,
+    },
+    {
+      useTeamIdAsKey: true,
+    }
   );
   const { deleteFn, loading: isDeleting } = useDelete<any>();
 

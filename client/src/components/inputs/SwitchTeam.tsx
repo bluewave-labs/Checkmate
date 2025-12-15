@@ -37,7 +37,7 @@ export const TeamSwitch = () => {
 
   const handleMenu = (teamId: string) => {
     dispatch(setSelectedTeamId(teamId));
-    navigate("/");
+    // navigate("/");
     handleClose();
   };
 

@@ -8,6 +8,9 @@ import type { IStatusPage } from "@/types/status-page";
 import { useGet, useDelete } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useTranslation } from "react-i18next";
+import { config } from "@/config/index";
+
+const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
 const StatusPages = () => {
   const [page, setPage] = useState(0);
@@ -19,7 +22,18 @@ const StatusPages = () => {
 
   const { response, isValidating, error, refetch } = useGet<
     ApiResponse<{ statusPages: IStatusPage[]; count: number }>
-  >(`/status-pages?page=${page}&rowsPerPage=${rowsPerPage}`, {}, {});
+  >(
+    `/status-pages?page=${page}&rowsPerPage=${rowsPerPage}`,
+    {},
+    {
+      refreshInterval: GLOBAL_REFRESH,
+      keepPreviousData: true,
+      dedupingInterval: 0,
+    },
+    {
+      useTeamIdAsKey: true,
+    }
+  );
 
   const statusPages = response?.data?.statusPages || [];
   const count = response?.data?.count || 0;
