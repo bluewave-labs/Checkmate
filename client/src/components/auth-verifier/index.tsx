@@ -1,5 +1,4 @@
 import { useAppDispatch } from "@/hooks/AppHooks";
-import type { ApiResponse } from "@/hooks/UseApi";
 import type { IUser } from "@/types/user";
 import {
   setAuthenticated,
@@ -10,7 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/AppHooks";
 import type { ReactNode } from "react";
-import { get } from "@/utils/ApiClient";
+import { useGetOnDemand } from "@/hooks/UseApi";
 import { useLocation, useNavigate } from "react-router-dom";
 export const AuthVerifier = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
@@ -24,6 +23,7 @@ export const AuthVerifier = ({ children }: { children: ReactNode }) => {
   const [isVerifying, setIsVerifying] = useState(true);
   const dispatch = useAppDispatch();
   const selectedTeamId = useAppSelector((state) => state.auth.selectedTeamId);
+  const { get: getOnDemand } = useGetOnDemand<IUser>();
 
   useEffect(() => {
     if (isAuthRoute || isPublicRoute) {
@@ -32,8 +32,8 @@ export const AuthVerifier = ({ children }: { children: ReactNode }) => {
     }
     const verify = async () => {
       try {
-        const res = await get<ApiResponse<IUser>>("/me");
-        const user: IUser = res.data.data;
+        const res = await getOnDemand("/me");
+        const user: IUser = res?.data as IUser;
         dispatch(setAuthenticated(true));
         dispatch(setUser(user));
 

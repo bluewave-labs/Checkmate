@@ -4,11 +4,15 @@ import { useParams } from "react-router";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
 import { mutate } from "swr";
+import { useGetOnDemand } from "@/hooks/UseApi";
+import type { IUser } from "@/types/user";
+import { useAppDispatch } from "@/hooks/AppHooks";
+import { setUser } from "@/features/authSlice";
 const TeamMemberCreate = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { get: getOnDemand } = useGetOnDemand<IUser>();
   const { id } = useParams();
   const { response } = useGet<ApiResponse<any>>("/team-members?type=org");
   const { response: rolesResponse } =
@@ -21,6 +25,10 @@ const TeamMemberCreate = () => {
     const res = await post("/team-members", { ...data });
     if (res) {
       mutate("/teams/joined");
+      const me = await getOnDemand("/me");
+      if (me?.data) {
+        dispatch(setUser(me.data));
+      }
       navigate(-1);
     }
   };
@@ -36,11 +44,7 @@ const TeamMemberCreate = () => {
       roles={roles}
       onSubmit={onSubmit}
       loading={false}
-      breadcrumbOverride={[
-        t("teamMember.breadcrumbOverrideConfigTeams"),
-        id || "",
-        t("teamMember.breadcrumbOverrideCreateTeamMember"),
-      ]}
+      breadcrumbOverride={["teams", id || "", "create"]}
     />
   );
 };

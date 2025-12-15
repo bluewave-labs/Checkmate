@@ -694,9 +694,6 @@
     }
   },
   "teamMember": {
-    "breadcrumbOverrideConfigTeamMember": "Configure team member",
-    "breadcrumbOverrideConfigTeams": "Teams",
-    "breadcrumbOverrideCreateTeamMember": "Create team member",
     "form": {
       "role": {
         "description": "Choose your role for this new team. You will be the first member",

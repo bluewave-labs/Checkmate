@@ -3,13 +3,16 @@ import { Button } from "@/components/inputs";
 import { Dialog } from "@/components/inputs";
 
 import { useState } from "react";
-import { useGet, usePatch } from "@/hooks/UseApi";
+import { useGet, usePatch, useGetOnDemand } from "@/hooks/UseApi";
 import { useParams } from "react-router";
 import type { ApiResponse } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";
 import { useDelete } from "@/hooks/UseApi";
 import { useTranslation } from "react-i18next";
 import { mutate } from "swr";
+import type { IUser } from "@/types/user";
+import { useAppDispatch } from "@/hooks/AppHooks";
+import { setUser } from "@/features/authSlice";
 
 const TeamMemberConfig = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -18,6 +21,8 @@ const TeamMemberConfig = () => {
   const { t } = useTranslation();
   const { id, memberId } = useParams();
   const { patch, loading } = usePatch();
+  const { get: getOnDemand } = useGetOnDemand<IUser>();
+  const dispatch = useAppDispatch();
   const { response } = useGet<ApiResponse<any>>("/team-members");
   const { response: rolesResponse } =
     useGet<ApiResponse<any>>("/roles?type=team");
@@ -30,6 +35,10 @@ const TeamMemberConfig = () => {
     const roleId = data.roleId;
     const res = await patch(`/team-members/${memberId}`, { roleId });
     if (res) {
+      const me = await getOnDemand("/me");
+      if (me?.data) {
+        dispatch(setUser(me.data));
+      }
       navigate(-1);
     }
   };
@@ -38,6 +47,10 @@ const TeamMemberConfig = () => {
     const res = await deleteFn(`/team-members/${memberId}`);
     if (res) {
       mutate("/teams/joined");
+      const me = await getOnDemand("/me");
+      if (me?.data) {
+        dispatch(setUser(me.data));
+      }
       navigate(-1);
     }
     setDialogOpen(false);
@@ -70,11 +83,7 @@ const TeamMemberConfig = () => {
             {t("common.buttons.delete")}
           </Button>
         }
-        breadcrumbOverride={[
-          t("teamMember.breadcrumbOverrideConfigTeams"),
-          id || "",
-          t("teamMember.breadcrumbOverrideConfigTeamMember"),
-        ]}
+        breadcrumbOverride={["team-members", id || "", "configure"]}
       />
       <Dialog
         open={dialogOpen}

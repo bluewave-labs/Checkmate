@@ -15,6 +15,10 @@ import type { ITeam } from "@/types/team";
 import { useState } from "react";
 import { mutate } from "swr";
 import { useTheme } from "@mui/material/styles";
+import { useGetOnDemand } from "@/hooks/UseApi";
+import type { IUser } from "@/types/user";
+import { useAppDispatch } from "@/hooks/AppHooks";
+import { setUser } from "@/features/authSlice";
 
 const TeamsPage = () => {
   const theme = useTheme();
@@ -24,6 +28,8 @@ const TeamsPage = () => {
   const { t } = useTranslation();
   const { response, loading, refetch } = useGet<ApiResponse<any>>("/teams");
   const { deleteFn, loading: isDeleting } = useDelete();
+  const { get: getOnDemand } = useGetOnDemand<IUser>();
+  const dispatch = useAppDispatch();
   const teams = response?.data || [];
 
   const handleConfirm = async () => {
@@ -31,6 +37,10 @@ const TeamsPage = () => {
     setSelectedTeam(null);
     refetch();
     mutate("/teams/joined");
+    const me = await getOnDemand("/me");
+    if (me?.data) {
+      dispatch(setUser(me.data));
+    }
   };
   const handleCancel = () => {
     setSelectedTeam(null);
