@@ -9,6 +9,7 @@ import type {
 import mongoose from "mongoose";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
+import { stat } from "node:fs";
 
 const SERVICE_NAME = "CheckService";
 const logger = getChildLogger(SERVICE_NAME);
@@ -134,6 +135,10 @@ class CheckService implements ICheckService {
   private buildInfrastructureCheck = (
     statusResponse: StatusResponse<ICapturePayload>
   ) => {
+    const code = statusResponse?.code;
+    if (code && (code < 200 || code >= 300)) {
+      throw new Error(statusResponse?.message || "Bad monitor response");
+    }
     if (!this.isCapturePayload(statusResponse.payload)) {
       throw new Error("Invalid payload for infrastructure monitor");
     }
