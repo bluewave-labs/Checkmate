@@ -50,6 +50,18 @@ export default function DiagnosticsAccessTab() {
       )
     : [];
 
+  const renderValue = (val: unknown): string => {
+    if (val === null || val === undefined) return "-";
+    if (typeof val === "boolean") return val ? "true" : "false";
+    if (typeof val === "number") return String(val);
+    if (typeof val === "string") return val;
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return String(val);
+    }
+  };
+
   const teamIdToName = new Map<string, string>(
     (Array.isArray(user?.teams) ? user?.teams : []).map((t: any) => [
       String(t?.id ?? t?._id ?? ""),
@@ -79,7 +91,7 @@ export default function DiagnosticsAccessTab() {
 
   const entHeaders: Header<EntitlementRow>[] = [
     { id: "key", content: "Entitlement", render: (r) => r.key },
-    { id: "value", content: "Value", render: (r) => r.value },
+    { id: "value", content: "Value", render: (r) => renderValue(r.value) },
   ];
 
   const clientOrgPermsArr: string[] = Array.isArray(user?.org?.permissions)
