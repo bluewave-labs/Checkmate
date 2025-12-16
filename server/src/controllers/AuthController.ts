@@ -133,17 +133,6 @@ class AuthController {
     res.status(200).json({ message: "Logout successful" });
   };
 
-  me = async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user;
-    if (!user) {
-      throw new ApiError("Unauthorized", 401);
-    }
-    const returnableUser = await this.authService.me(user.sub);
-    res
-      .status(200)
-      .json({ message: "User retrieved successfully", data: returnableUser });
-  };
-
   cleanup = async (req: Request, res: Response) => {
     try {
       await this.authService.cleanup();
