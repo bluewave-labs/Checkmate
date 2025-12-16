@@ -14,7 +14,9 @@ RUN npm run build
 FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+# For arm64 under QEMU, alpine + musl can trigger Illegal instruction with npm ci.
+# Use npm install for broader compatibility.
+RUN npm install --omit=dev
 
 ## Runtime image (target platform)
 FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-alpine
