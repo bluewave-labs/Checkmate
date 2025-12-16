@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { z } from "zod";
 import { monitorSchemaInfra } from "@/validation/zod";
 import { useGet, usePost } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { INotificationChannel } from "@/types/notification-channel";
 const InfraCreatePage = () => {
   type FormValues = z.infer<typeof monitorSchemaInfra>;

@@ -15,7 +15,7 @@ import { InitializingStatusBox } from "@/components/design-elements/StatusBox";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import {
   type IMonitor,
   type IMonitorWithStats,

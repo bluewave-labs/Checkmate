@@ -12,7 +12,7 @@ import type { ActionMenuItem } from "@/components/actions-menu";
 import type { Header } from "@/components/design-elements/Table";
 import type { INotificationChannel } from "@/types/notification-channel";
 import { useGet, usePatch, useDelete } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useTranslation } from "react-i18next";
 import { config } from "@/config/index";
 

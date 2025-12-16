@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 
 import type { Header } from "@/components/design-elements/Table";
 import type { ICheck, IChecksWithCount } from "@/types/check";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { MonitorStatus } from "@/types/monitor";
 
 import { useState } from "react";

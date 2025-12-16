@@ -10,7 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import { useSearchParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type { IIncident } from "@/types/incident";
 import type { IMonitor } from "@/types/monitor";

@@ -2,7 +2,7 @@ import { TeamMemberForm } from "./TeamMemberForm";
 
 import { useParams } from "react-router";
 import { useGet, usePost } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useNavigate } from "react-router";
 import { mutate } from "swr";
 import { useGetOnDemand } from "@/hooks/UseApi";

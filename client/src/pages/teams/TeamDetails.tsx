@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { ITeamMember } from "@/types/team-member";
 
 const TeamDetailsPage = () => {

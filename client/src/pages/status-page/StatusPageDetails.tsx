@@ -6,7 +6,7 @@ import { BasePage } from "@/components/design-elements";
 import { useTheme } from "@mui/material/styles";
 import type { IMonitor } from "@/types/monitor";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useParams } from "react-router";
 import type { IStatusPageWithMonitors } from "@/types/status-page";
 import { NameHeader } from "@/components/status-pages/NameHeader";

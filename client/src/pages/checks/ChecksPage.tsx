@@ -10,7 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IMonitor } from "@/types/monitor";
 import type { ICheck } from "@/types/check";
 import { config } from "@/config/index";

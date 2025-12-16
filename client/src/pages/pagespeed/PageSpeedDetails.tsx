@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useParams } from "react-router";
 import { useTheme } from "@mui/material/styles";
 import { useGet, usePatch } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IMonitor, IMonitorWithMonitorStats } from "@/types/monitor";
 import { getStatusPalette } from "@/utils/MonitorUtils";
 import prettyMilliseconds from "pretty-ms";

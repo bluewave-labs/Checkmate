@@ -9,7 +9,7 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { ActionMenuItem } from "@/components/actions-menu";
 import type { Header } from "@/components/design-elements/Table";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useGet, useDelete } from "@/hooks/UseApi";
 import type { ITeam } from "@/types/team";
 import { useState } from "react";

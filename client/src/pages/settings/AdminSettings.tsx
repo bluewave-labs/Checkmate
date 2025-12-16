@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import {} from "react-i18next";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { useGet, usePatch, usePost } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { z } from "zod";
 import { systemSettingsSchema } from "@/validation/zod";
 

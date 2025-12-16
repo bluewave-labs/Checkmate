@@ -7,7 +7,7 @@ import { Button } from "@/components/inputs";
 import { useTheme } from "@mui/material/styles";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useEffect, useMemo, useState } from "react";
 
 const BillingSuccessPage = () => {

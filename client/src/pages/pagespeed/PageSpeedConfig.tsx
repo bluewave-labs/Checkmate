@@ -3,7 +3,7 @@ import { useGet, usePatch } from "@/hooks/UseApi";
 import { PageSpeedForm } from "@/pages/pagespeed/PageSpeedForm";
 
 import { useParams } from "react-router";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import humanInterval from "human-interval";
 import { z } from "zod";
 import { useNavigate } from "react-router";

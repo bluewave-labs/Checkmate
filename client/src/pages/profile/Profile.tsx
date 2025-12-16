@@ -3,7 +3,7 @@ import { ProfileForm } from "@/pages/profile/ProfileForm";
 
 import { useState, useEffect } from "react";
 import type { IUser } from "@/types/user";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useGet, usePatch, useGetOnDemand } from "@/hooks/UseApi";
 import { z } from "zod";
 import { profileSchema } from "@/validation/zod";

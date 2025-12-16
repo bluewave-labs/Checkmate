@@ -5,11 +5,7 @@ import type { AxiosRequestConfig } from "axios";
 import { get, post, patch, deleteOp } from "@/utils/ApiClient";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { useToast } from "@/hooks//UseToast";
-
-export type ApiResponse<T> = {
-  message: string;
-  data: T;
-};
+import type { ApiResponse } from "@/types/api";
 
 export interface IExtraConfig {
   useTeamIdAsKey?: boolean;

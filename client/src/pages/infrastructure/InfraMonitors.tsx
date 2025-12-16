@@ -13,7 +13,7 @@ import { InfraMonitorsTable } from "./InfraMonitorsTable";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IMonitor, IMonitorWithStats } from "@/types/monitor";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";

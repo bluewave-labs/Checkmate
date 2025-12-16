@@ -5,7 +5,7 @@ import { Table } from "@/components/design-elements";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IJob, IJobMetrics } from "@/types/job";
 import type { Header } from "@/components/design-elements/Table";
 

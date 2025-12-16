@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { teamSchema } from "@/validation/zod";
 import { useGet, usePatch, useGetOnDemand } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IUser } from "@/types/user";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { setUser } from "@/features/authSlice";

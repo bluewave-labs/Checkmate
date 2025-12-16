@@ -6,7 +6,7 @@ import { Button } from "@/components/inputs";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/hooks/AppHooks";
 import { useGet, usePost } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { Entitlements, PlanKey } from "@/types/entitlements";
 import { useEffect } from "react";
 import type { IUser } from "@/types/user";

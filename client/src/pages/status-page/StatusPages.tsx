@@ -6,7 +6,7 @@ import { StatusPageTable } from "@/pages/status-page/StatusPageTable";
 import { useState } from "react";
 import type { IStatusPage } from "@/types/status-page";
 import { useGet, useDelete } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useTranslation } from "react-i18next";
 import { config } from "@/config/index";
 

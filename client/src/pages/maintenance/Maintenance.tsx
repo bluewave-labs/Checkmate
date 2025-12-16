@@ -11,7 +11,7 @@ import { usePatch, useGet, useDelete } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";
 import type { Header } from "@/components/design-elements/Table";
 import { useTranslation } from "react-i18next";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IMaintenance } from "@/types/maintenance";
 import type { ActionMenuItem } from "@/components/actions-menu";
 import { config } from "@/config/index";

@@ -8,7 +8,7 @@ import {
   setSelectedTeamId,
 } from "@/features/authSlice";
 import { useAppDispatch } from "@/hooks/AppHooks";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useTranslation } from "react-i18next";
 import { usePost } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";

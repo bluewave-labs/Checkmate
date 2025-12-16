@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import { usePatch, useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { notificationChannelSchema } from "@/validation/zod";
 import type { INotificationChannel } from "@/types/notification-channel";
 

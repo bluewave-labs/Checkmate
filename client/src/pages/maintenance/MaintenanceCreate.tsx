@@ -3,7 +3,7 @@ import { MaintenanceForm } from "@/pages/maintenance/MaintenanceForm";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import { usePost, useGet } from "@/hooks/UseApi";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { maintenanceSchema } from "@/validation/zod";
 import type { IMonitor } from "@/types/monitor";
 import type { IMaintenance } from "@/types/maintenance";

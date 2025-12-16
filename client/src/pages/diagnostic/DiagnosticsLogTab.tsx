@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useGet } from "@/hooks/UseApi";
 import { useTheme } from "@mui/material/styles";
 import type { ILogEntry } from "@/types/log";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 
 export const DiagnosticsLogTab = () => {
   const theme = useTheme();

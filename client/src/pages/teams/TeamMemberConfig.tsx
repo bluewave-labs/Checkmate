@@ -5,7 +5,7 @@ import { Dialog } from "@/components/inputs";
 import { useState } from "react";
 import { useGet, usePatch, useGetOnDemand } from "@/hooks/UseApi";
 import { useParams } from "react-router";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import { useNavigate } from "react-router";
 import { useDelete } from "@/hooks/UseApi";
 import { useTranslation } from "react-i18next";

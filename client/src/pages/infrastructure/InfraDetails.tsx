@@ -10,7 +10,7 @@ import { useGet, usePatch } from "@/hooks/UseApi";
 import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
-import type { ApiResponse } from "@/hooks/UseApi";
+import type { ApiResponse } from "@/types/api";
 import type { IMonitor, IMonitorWithMonitorStats } from "@/types/monitor";
 import type { IInfraCheck } from "@/types/check";
 import {
