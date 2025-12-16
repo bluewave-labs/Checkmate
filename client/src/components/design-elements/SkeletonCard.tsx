@@ -34,7 +34,9 @@ const SkeletonCard = ({
     height: 57,
     borderRadius: theme.shape.borderRadius,
     background:
-      theme.palette.mode === "dark" ? "#222222" : theme.palette.primary.main,
+      theme.palette.mode === "dark"
+        ? theme.palette.secondary.dark
+        : theme.palette.background.paper,
     boxShadow:
       theme.palette.mode === "dark"
         ? "0 8px 30px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.05) inset"
