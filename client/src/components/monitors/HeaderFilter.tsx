@@ -77,7 +77,7 @@ export const HeaderFilter = ({
       >
         {UptimeMonitorTypes.map((type) => (
           <MenuItem key={type} value={type}>
-            <Stack direction={"row"} gap={theme.spacing(2)}>
+            <Stack direction={"row"} alignItems={"center"} gap={theme.spacing(2)}>
               <Checkbox checked={selectedTypes.includes(type)} />
               <Typography textTransform={"capitalize"}>{type}</Typography>
             </Stack>
@@ -92,7 +92,7 @@ export const HeaderFilter = ({
       >
         {MonitorStatuses.map((status) => (
           <MenuItem key={status} value={status}>
-            <Stack direction={"row"} gap={theme.spacing(2)}>
+            <Stack direction={"row"} alignItems={"center"} gap={theme.spacing(2)}>
               <Checkbox checked={selectedStatuses.includes(status)} />
               <Typography textTransform={"capitalize"}>{status}</Typography>
             </Stack>

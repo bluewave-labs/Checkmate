@@ -52,7 +52,7 @@ export const AutoCompleteInput = ({
         const { key, ...optionProps } = props;
         return (
           <ListItem key={key} {...optionProps}>
-            <Stack direction={"row"} gap={theme.spacing(2)}>
+            <Stack direction={"row"} alignItems={"center"} gap={theme.spacing(2)}>
               {multiple && <Checkbox checked={selected} />}
               {option.name}
             </Stack>

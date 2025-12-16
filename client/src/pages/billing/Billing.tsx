@@ -87,7 +87,7 @@ const BillingPage = () => {
             onClick={handleCancel}
             loading={isPosting}
           >
-            {t("buttons.cancelSubscription")}
+            {t("common.buttons.cancelSubscription")}
           </Button>
         </Box>
       )}

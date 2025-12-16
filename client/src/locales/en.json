@@ -121,6 +121,7 @@
   "common": {
     "appName": "Checkmate",
     "breadcrumbs": {
+      "billing": "Bililng",
       "checks": "Checks",
       "configure": "Configure",
       "create": "Create",
