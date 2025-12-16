@@ -72,7 +72,7 @@ const UptimeMonitors = () => {
   ].filter(Boolean);
   const monitorRequestUrl = `/monitors?${requestParams.join("&")}`;
 
-  const { response, loading, isValidating, error, refetch } = useGet<
+  const { response, loading, error, refetch } = useGet<
     ApiResponse<IMonitorWithStats>
   >(
     monitorRequestUrl,
@@ -119,7 +119,7 @@ const UptimeMonitors = () => {
 
   return (
     <MonitorBasePageWithStates
-      loading={isValidating}
+      loading={loading}
       error={error}
       items={monitorItems}
       page="uptime"
@@ -152,7 +152,7 @@ const UptimeMonitors = () => {
         onStatusesChange={setSelectedStatuses}
         searchString={searchString}
         onSearchStringChange={setSearchString}
-        loading={isValidating}
+        loading={loading}
       />
       <MonitorTable
         monitors={monitors}
