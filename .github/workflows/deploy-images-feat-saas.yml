@@ -53,7 +53,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_SERVER }}:${{ env.TAG }}
   deploy-to-staging:
-    needs: docker-build-and-push-server
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: SSH into server and restart container using Docker Compose
