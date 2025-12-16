@@ -102,7 +102,11 @@ export const ChecksTable = ({
 
   return (
     <Box>
-      <Table headers={headers} data={checks} />
+      <Table
+        headers={headers}
+        data={checks}
+        emptyViewText={t("checks.table.empty")}
+      />
       <Pagination
         component="div"
         count={count}

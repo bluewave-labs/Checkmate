@@ -8,6 +8,7 @@ import type { ApiResponse } from "@/hooks/UseApi";
 import type { IUser } from "@/types/user";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { setUser } from "@/features/authSlice";
+import { mutate } from "swr";
 
 const TeamsConfigPage = () => {
   type FormValues = Omit<z.infer<typeof teamSchema>, "roleId">;
@@ -28,6 +29,7 @@ const TeamsConfigPage = () => {
       description: data.description,
     };
     await patch(`/teams/${id}`, toSubmit);
+    mutate("/teams/joined");
     const me = await getOnDemand("/me");
     if (me?.data) {
       dispatch(setUser(me.data));

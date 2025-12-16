@@ -160,6 +160,8 @@ export const IncidentTable = ({
         onRowClick={(row) => {
           navigate(`/incidents/${row._id}`);
         }}
+        emptyViewPositive
+        emptyViewText={t("incidents.table.empty")}
       />
       <Pagination
         component="div"

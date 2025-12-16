@@ -17,6 +17,8 @@ import {
   ChevronsRight,
   ChevronLeft,
   ChevronRight,
+  Coffee,
+  PartyPopper,
 } from "lucide-react";
 
 import TablePagination from "@mui/material/TablePagination";
@@ -45,6 +47,8 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
     cardsOnSmallScreens?: boolean;
     expandableRows?: boolean;
     renderExpandedContent?: (row: T) => React.ReactNode;
+    emptyViewText?: string;
+    emptyViewPositive?: boolean;
   };
 
 export function DataTable<
@@ -60,6 +64,8 @@ export function DataTable<
   cardsOnSmallScreens = true,
   expandableRows = false,
   renderExpandedContent,
+  emptyViewText,
+  emptyViewPositive,
 }: DataTableProps<T>) {
   const theme = useTheme();
   const [expanded, setExpanded] = useState<(string | number) | null>(null);
@@ -69,7 +75,10 @@ export function DataTable<
   };
 
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-  if (data.length === 0 || headers.length === 0) return <EmptyView />;
+
+  if (data.length === 0 || headers.length === 0) {
+    return <EmptyView text={emptyViewText} positive={emptyViewPositive} />;
+  }
 
   const keys = [];
   // Return stack of cards for small screens
@@ -369,21 +378,51 @@ export const Pagination = ({ ...props }: TablePaginationProps) => {
   );
 };
 
-const EmptyView = () => {
+const EmptyView = ({
+  text,
+  positive,
+}: {
+  text?: string;
+  positive?: boolean;
+}) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const Icon = positive ? PartyPopper : Coffee;
   return (
     <Stack
       alignItems={"center"}
+      justifyContent={"center"}
       sx={{
-        p: theme.spacing(4),
+        py: theme.spacing(12),
+        px: theme.spacing(4),
         borderWidth: 1,
         borderStyle: "solid",
         borderColor: theme.palette.divider,
         borderRadius: theme.shape.borderRadius,
+        textAlign: "center",
       }}
     >
-      <Typography>{t("common.table.empty")}</Typography>
+      <Box
+        sx={{
+          width: 64,
+          height: 64,
+          borderRadius: "50%",
+          backgroundColor: theme.palette.action.hover,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          mb: theme.spacing(2),
+        }}
+      >
+        <Icon size={28} strokeWidth={1} color={theme.palette.text.secondary} />
+      </Box>
+      <Typography
+        variant="subtitle1"
+        color={theme.palette.text.primary}
+        sx={{ fontWeight: 500 }}
+      >
+        {text ?? t("common.table.empty")}
+      </Typography>
     </Stack>
   );
 };

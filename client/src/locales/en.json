@@ -110,6 +110,7 @@
   },
   "checks": {
     "table": {
+      "empty": "No checks",
       "headers": {
         "dateTime": "Date & Time",
         "message": "Message",
@@ -120,21 +121,21 @@
   "common": {
     "appName": "Checkmate",
     "breadcrumbs": {
-      "uptime": "Uptime Monitors",
-      "pagespeed": "PageSpeed Monitors",
-      "infrastructure": "Infrastructure Monitors",
+      "checks": "Checks",
+      "configure": "Configure",
+      "create": "Create",
       "diagnostics": "Diagnostics",
       "incidents": "Incidents",
+      "infrastructure": "Infrastructure Monitors",
+      "invite": "Invite",
       "maintenance": "Maintenance",
       "notification-channels": "Notification Channels",
-      "status-pages": "Status Pages",
-      "teams": "Teams",
+      "pagespeed": "PageSpeed Monitors",
       "settings": "Settings",
-      "create": "Create",
-      "configure": "Configure",
-      "invite": "Invite",
+      "status-pages": "Status Pages",
       "team-members": "Team Members",
-      "checks": "Checks"
+      "teams": "Teams",
+      "uptime": "Uptime Monitors"
     },
     "buttons": {
       "acceptInvitation": "Accept invitation",
@@ -273,6 +274,7 @@
       }
     },
     "table": {
+      "empty": "No incidents",
       "headers": {
         "end": "Incident end",
         "monitorStatus": "Current monitor status",
@@ -709,20 +711,6 @@
     }
   },
   "teams": {
-    "form": {
-      "basic": {
-        "title": "Basic information",
-        "description": "Set team name and description",
-        "optionName": "Team name",
-        "optionDescription": "Team description"
-      },
-      "role": {
-        "title": "Role",
-        "description": "Choose your role for this new team.  You will be the first member",
-        "optionRole": "Role",
-        "optionIncludedPermissions": "Included permissions"
-      }
-    },
     "details": {
       "infoHeader": {
         "description": "Description",
@@ -734,6 +722,20 @@
           "role": "Role"
         },
         "title": "Team members"
+      }
+    },
+    "form": {
+      "basic": {
+        "description": "Set team name and description",
+        "optionDescription": "Team description",
+        "optionName": "Team name",
+        "title": "Basic information"
+      },
+      "role": {
+        "description": "Choose your role for this new team.  You will be the first member",
+        "optionIncludedPermissions": "Included permissions",
+        "optionRole": "Role",
+        "title": "Role"
       }
     },
     "infoBox": {
