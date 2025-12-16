@@ -52,3 +52,19 @@ jobs:
           platforms: ${{ env.PLATFORMS }}
           push: true
           tags: ${{ env.IMAGE_SERVER }}:${{ env.TAG }}
+  deploy-to-staging:
+    needs: docker-build-and-push-server
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into server and restart container using Docker Compose
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.AJHOLLID_HOST }}
+          username: ${{ secrets.AJHOLLID_USER }}
+          key: ${{ secrets.AJHOLLID_SSH_PRIVATE_KEY }}
+          script: |
+            cd checkmate-saas
+            docker compose down
+            docker compose pull
+            docker compose up -d
+            docker system prune -af
