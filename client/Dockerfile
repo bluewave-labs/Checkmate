@@ -2,7 +2,7 @@
 
 ARG NODE_VERSION=20
 
-FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-slim AS build
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-bookworm-slim AS build
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 WORKDIR /app
 COPY package*.json ./

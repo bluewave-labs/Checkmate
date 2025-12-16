@@ -57,7 +57,7 @@ jobs:
           platforms: ${{ env.PLATFORMS }}
           push: true
           tags: ${{ env.IMAGE_SERVER }}:${{ env.TAG }}
-  deploy-to-staging:
+  deploy-to-ajhollid:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:

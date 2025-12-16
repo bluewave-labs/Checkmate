@@ -3,7 +3,7 @@
 ARG NODE_VERSION=20
 
 ## Build stage (with dev deps, native to build platform)
-FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-alpine AS build
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-bookworm-slim AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -11,15 +11,13 @@ COPY . .
 RUN npm run build
 
 ## Production deps (native to target platform)
-FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-alpine AS deps
+FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-bookworm-slim AS deps
 WORKDIR /app
 COPY package*.json ./
-# For arm64 under QEMU, alpine + musl can trigger Illegal instruction with npm ci.
-# Use npm install for broader compatibility.
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 ## Runtime image (target platform)
-FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-alpine
+FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-bookworm-slim
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
