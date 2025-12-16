@@ -22,7 +22,6 @@ export { default as StatusService } from "@/services/infrastructure/StatusServic
 export { default as JobQueue } from "@/services/infrastructure/JobQueue.js";
 export { default as JobGenerator } from "@/services/infrastructure/JobGenerator.js";
 
-export { default as ServiceRegistry } from "@/services/system/ServiceRegistry.js";
 export { default as SettingsService } from "@/services/system/SettingsService.js";
 export { default as BillingService } from "@/services/system/BillingService.js";
 export { default as StripeService } from "@/services/system/StripeService.js";

@@ -257,6 +257,106 @@ describe("StatusService.updateMonitorStats", () => {
         expect(stats.avgResponseTime).toBeCloseTo((200 * 10 + 400) / 11);
         expect(stats.uptimePercentage).toBeCloseTo(7 / 11);
         expect(stats.lastResponseTime).toBe(400);
-        expect(stats.maxResponseTime).toBe(400);
+    expect(stats.maxResponseTime).toBe(400);
+  });
+});
+
+// Additional coverage: evaluateThresholds branches
+describe("StatusService.evaluateThresholds", () => {
+  const service = new StatusService();
+
+  const buildCheck = (systemOverrides = {}) => ({
+    system: {
+      cpu: { usage_percent: 0.2, temperature: [40, 45] },
+      memory: { usage_percent: 0.3 },
+      disk: [{ usage_percent: 0.4 }],
+      ...systemOverrides,
+    },
+  });
+
+  it("returns early when monitor is not infrastructure or not up", async () => {
+    const { monitor } = buildMonitor({ type: "http", status: "up", thresholds: { cpu: 50 } });
+    const check = buildCheck();
+    const res1 = await service.evaluateThresholds(monitor, check);
+    expect(res1).toEqual({ hasBreach: false, notes: [], metrics: expect.any(Object) });
+
+    const { monitor: m2 } = buildMonitor({ type: "infrastructure", status: "down", thresholds: { cpu: 50 } });
+    const res2 = await service.evaluateThresholds(m2, check);
+    expect(res2).toEqual({ hasBreach: false, notes: [], metrics: expect.any(Object) });
+  });
+
+  it("returns early when thresholds or system missing", async () => {
+    const { monitor } = buildMonitor({ type: "infrastructure", status: "up" });
+    const check = buildCheck();
+    const res1 = await service.evaluateThresholds(monitor, check);
+    expect(res1.hasBreach).toBe(false);
+
+    const { monitor: m2 } = buildMonitor({ type: "infrastructure", status: "up", thresholds: { cpu: 50 } });
+    const res2 = await service.evaluateThresholds(m2, { system: undefined });
+    expect(res2.hasBreach).toBe(false);
+  });
+
+  it("detects cpu/memory/disk/temperature breaches and fills notes", async () => {
+    const { monitor } = buildMonitor({
+      type: "infrastructure",
+      status: "up",
+      thresholds: { cpu: 50, memory: 60, disk: 80, temperature: 70 },
     });
+    const check = buildCheck({
+      cpu: { usage_percent: 0.8, temperature: [60, 75] }, // 80% & 75C
+      memory: { usage_percent: 0.7 }, // 70%
+      disk: [{ usage_percent: 0.5 }, { usage_percent: 0.95 }], // max 95%
+    });
+    const res = await service.evaluateThresholds(monitor, check);
+    expect(res.hasBreach).toBe(true);
+    expect(res.notes).toEqual(
+      expect.arrayContaining([
+        "cpu 80% > 50%",
+        "memory 70% > 60%",
+        "disk 95.00% > 80%",
+        "temperature 75C > 70C",
+      ])
+    );
+    expect(res.metrics.cpu).toMatchObject({ value: 80, threshold: 50, breached: true });
+    expect(res.metrics.memory).toMatchObject({ value: 70, threshold: 60, breached: true });
+    expect(res.metrics.disk).toMatchObject({ value: 95, threshold: 80, breached: true });
+  });
+
+  it("handles non-breach values and undefined fields safely", async () => {
+    const { monitor } = buildMonitor({
+      type: "infrastructure",
+      status: "up",
+      thresholds: { cpu: 95, memory: 95, disk: 99, temperature: 100 },
+    });
+    const check = buildCheck({
+      cpu: { usage_percent: undefined, temperature: [] },
+      memory: {},
+      disk: [{}, { usage_percent: 0.1 }], // max 10%
+    });
+    const res = await service.evaluateThresholds(monitor, check);
+    expect(res.hasBreach).toBe(false);
+    expect(res.notes).toEqual([]);
+    expect(res.metrics.cpu.breached).toBe(false);
+    expect(res.metrics.memory.breached).toBe(false);
+    expect(res.metrics.disk.breached).toBe(false);
+  });
+
+  it("returns safe default when unexpected error occurs", async () => {
+    const { monitor } = buildMonitor({
+      type: "infrastructure",
+      status: "up",
+      thresholds: { cpu: 50 },
+    });
+    // Create a system object that throws when accessed to exercise catch {}
+    const throwingSystem = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error("boom");
+        },
+      }
+    );
+    const res = await service.evaluateThresholds(monitor, { system: throwingSystem });
+    expect(res).toEqual({ hasBreach: false, notes: [], metrics: expect.any(Object) });
+  });
 });

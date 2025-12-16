@@ -19,7 +19,6 @@ import {
   AuthService,
   MonitorService,
   QueueService,
-  ServiceRegistry,
   TeamService,
   RoleService,
   TeamMemberService,
@@ -108,10 +107,6 @@ export const initServices = async () => {
     billingService,
     stripeService,
   };
-
-  Object.values(services).forEach((service) => {
-    ServiceRegistry.register(service.SERVICE_NAME, service);
-  });
 
   return services;
 };
