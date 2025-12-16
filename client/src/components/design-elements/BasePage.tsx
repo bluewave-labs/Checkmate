@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import { ErrorFallback, EmptyFallback, EmptyMonitorFallback } from "./Fallback";
 import { Breadcrumb } from "./Breadcrumb";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -49,7 +50,15 @@ export const BasePageWithStates = ({
   const showLoading = loading && (!items || items.length === 0);
 
   if (showLoading) {
-    return null;
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: "100%" }}
+      >
+        <CircularProgress color="primary" size={28} />
+      </Stack>
+    );
   }
 
   if (error) {
@@ -106,7 +115,15 @@ export const MonitorBasePageWithStates = ({
   const showLoading = loading && (!items || items.length === 0);
 
   if (showLoading) {
-    return null;
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: "100%" }}
+      >
+        <CircularProgress color="primary" size={28} />
+      </Stack>
+    );
   }
 
   if (error) {

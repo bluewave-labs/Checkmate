@@ -23,7 +23,7 @@ const RootLayout = () => {
           alignItems: "center",
         }}
       >
-        <Stack maxWidth={1280} width="100%" paddingY={theme.spacing(6)}>
+        <Stack maxWidth={1280} width="100%" paddingY={theme.spacing(6)} flex={1}>
           <Outlet />
         </Stack>
       </Stack>
