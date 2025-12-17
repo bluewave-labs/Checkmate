@@ -77,13 +77,20 @@ class IncidentController extends BaseController {
 	 * @function getIncidentSummary
 	 * @param {Object} req - Express request object
 	 * @param {Object} req.query - Query parameters
-	 * @param {string} [req.query.dateRange] - Date range filter
+	 * @param {number} [req.query.limit=10] - Number of latest incidents to return
 	 * @param {Object} req.user - Current authenticated user (from JWT)
 	 * @param {string} req.user.teamId - User's team ID
 	 * @param {Object} res - Express response object
-	 * @returns {Promise<Object>} Success response with incidents summary
+	 * @returns {Promise<Object>} Success response with incidents summary containing:
+	 *   - totalActive: Number of active incidents
+	 *   - avgResolutionTimeHours: Average time to resolve incidents in hours
+	 *   - topMonitor: Monitor with most incidents (monitorId, monitorName, incidentCount)
+	 *   - total: Total number of incidents
+	 *   - totalManualResolutions: Total incidents resolved manually
+	 *   - totalAutomaticResolutions: Total incidents resolved automatically
+	 *   - latestIncidents: Array of latest incidents created
 	 * @example
-	 * GET /incidents/summary?dateRange=week
+	 * GET /incidents/team/summary?limit=5
 	 * // Requires JWT authentication
 	 */
 	getIncidentSummary = this.asyncHandler(

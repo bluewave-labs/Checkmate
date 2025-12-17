@@ -185,12 +185,28 @@ class IncidentModule {
 				...(statusBoolean !== undefined && { status: statusBoolean }),
 				...(monitorId && { monitorId: new ObjectId(monitorId) }),
 				...(resolutionType && { resolutionType }),
-				...(dateRangeLookup[dateRange] && {
-					startTime: {
-						$gte: dateRangeLookup[dateRange],
-					},
-				}),
 			};
+
+			// Date range filter:
+			// - Active incidents: always show (no date filter) - they're currently happening
+			// - Resolved incidents: filter by endTime (when they were resolved)
+			// - All incidents: show all active + resolved in the range
+			if (dateRangeLookup[dateRange]) {
+				const dateThreshold = dateRangeLookup[dateRange];
+				if (statusBoolean === true) {
+					// Active incidents: show all active incidents regardless of when they started
+					// No date filter applied
+				} else if (statusBoolean === false) {
+					// Resolved incidents: only show if resolved in the range
+					matchStage.endTime = { $gte: dateThreshold };
+				} else {
+					// All incidents: show all active + resolved incidents in the range
+					matchStage.$or = [
+						{ status: true }, // All active incidents
+						{ status: false, endTime: { $gte: dateThreshold } }, // Resolved in range
+					];
+				}
+			}
 
 			sortOrder = sortOrder === "asc" ? 1 : -1;
 
@@ -199,6 +215,14 @@ class IncidentModule {
 			const incidents = await this.Incident.aggregate([
 				{ $match: matchStage },
 				{ $sort: { startTime: sortOrder } },
+				{
+					$lookup: {
+						from: "monitors",
+						localField: "monitorId",
+						foreignField: "_id",
+						as: "monitor",
+					},
+				},
 				{
 					$facet: {
 						summary: [{ $count: "incidentsCount" }],
@@ -211,7 +235,27 @@ class IncidentModule {
 							$ifNull: [{ $arrayElemAt: ["$summary.incidentsCount", 0] }, 0],
 						},
 						incidents: {
-							$ifNull: ["$incidents", []],
+							$map: {
+								input: { $ifNull: ["$incidents", []] },
+								as: "incident",
+								in: {
+									$mergeObjects: [
+										"$$incident",
+										{
+											monitorName: {
+												$let: {
+													vars: {
+														monitor: { $arrayElemAt: ["$$incident.monitor", 0] },
+													},
+													in: {
+														$ifNull: ["$$monitor.name", null],
+													},
+												},
+											},
+										},
+									],
+								},
+							},
 						},
 					},
 				},
@@ -225,18 +269,14 @@ class IncidentModule {
 		}
 	};
 
-	getIncidentSummary = async ({ teamId, dateRange }) => {
+	getIncidentSummary = async ({ teamId, limit = 10 }) => {
 		try {
 			const matchStage = {
 				teamId: new ObjectId(teamId),
-				...(dateRangeLookup[dateRange] && {
-					startTime: {
-						$gte: dateRangeLookup[dateRange],
-					},
-				}),
 			};
 
-			const summary = await this.Incident.aggregate([
+			// Get basic counts and resolution types
+			const countsPipeline = [
 				{ $match: matchStage },
 				{
 					$group: {
@@ -247,29 +287,135 @@ class IncidentModule {
 								$cond: [{ $eq: ["$resolutionType", "manual"] }, 1, 0],
 							},
 						},
+						automaticResolutions: {
+							$sum: {
+								$cond: [{ $eq: ["$resolutionType", "automatic"] }, 1, 0],
+							},
+						},
 					},
 				},
-			]);
+			];
 
-			const result = {
-				total: 0,
-				active: 0,
-				resolved: 0,
-				manual: 0,
-			};
+			const counts = await this.Incident.aggregate(countsPipeline);
 
-			summary.forEach((item) => {
-				result.total += item.count;
+			// Calculate totals
+			let total = 0;
+			let active = 0;
+			let resolved = 0;
+			let manual = 0;
+			let automatic = 0;
+
+			counts.forEach((item) => {
+				total += item.count;
 				if (item._id === true) {
-					result.active = item.count;
+					active = item.count;
 				}
 				if (item._id === false) {
-					result.resolved = item.count;
+					resolved = item.count;
 				}
-				result.manual += item.manualResolutions;
+				manual += item.manualResolutions;
+				automatic += item.automaticResolutions;
 			});
 
-			return result;
+			// Calculate average resolution time (in milliseconds)
+			const resolutionTimePipeline = [
+				{ $match: { ...matchStage, status: false, endTime: { $exists: true, $ne: null } } },
+				{
+					$project: {
+						resolutionTime: {
+							$subtract: ["$endTime", "$startTime"],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						avgResolutionTime: { $avg: "$resolutionTime" },
+					},
+				},
+			];
+
+			const resolutionTimeResult = await this.Incident.aggregate(resolutionTimePipeline);
+			const avgResolutionTimeMs = resolutionTimeResult[0]?.avgResolutionTime || 0;
+			const avgResolutionTimeHours = avgResolutionTimeMs / (1000 * 60 * 60); // Convert to hours
+
+			// Get monitor with most incidents
+			const monitorPipeline = [
+				{ $match: matchStage },
+				{
+					$group: {
+						_id: "$monitorId",
+						count: { $sum: 1 },
+					},
+				},
+				{ $sort: { count: -1 } },
+				{ $limit: 1 },
+				{
+					$lookup: {
+						from: "monitors",
+						localField: "_id",
+						foreignField: "_id",
+						as: "monitor",
+					},
+				},
+				{
+					$project: {
+						monitorId: "$_id",
+						count: 1,
+						monitorName: { $arrayElemAt: ["$monitor.name", 0] },
+					},
+				},
+			];
+
+			const monitorResult = await this.Incident.aggregate(monitorPipeline);
+			const topMonitor = monitorResult[0] || null;
+
+			// Get latest incidents
+			const latestIncidentsPipeline = [
+				{ $match: matchStage },
+				{ $sort: { createdAt: -1 } },
+				{ $limit: parseInt(limit) },
+				{
+					$lookup: {
+						from: "monitors",
+						localField: "monitorId",
+						foreignField: "_id",
+						as: "monitor",
+					},
+				},
+				{
+					$project: {
+						_id: 1,
+						monitorId: 1,
+						monitorName: { $arrayElemAt: ["$monitor.name", 0] },
+						status: 1,
+						startTime: 1,
+						endTime: 1,
+						resolutionType: 1,
+						message: 1,
+						statusCode: 1,
+						createdAt: 1,
+					},
+				},
+			];
+
+			const latestIncidents = await this.Incident.aggregate(latestIncidentsPipeline);
+
+			return {
+				totalActive: active,
+				avgResolutionTimeHours: Math.round(avgResolutionTimeHours * 100) / 100, // Round to 2 decimal places
+				topMonitor: topMonitor
+					? {
+							monitorId: topMonitor.monitorId,
+							monitorName: topMonitor.monitorName,
+							incidentCount: topMonitor.count,
+						}
+					: null,
+				total: total,
+				totalManualResolutions: manual,
+				totalAutomaticResolutions: automatic,
+				latestIncidents: latestIncidents,
+			};
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getIncidentSummary";
