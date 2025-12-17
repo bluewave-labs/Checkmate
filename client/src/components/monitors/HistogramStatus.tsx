@@ -16,7 +16,6 @@ import type { MonitorStatus } from "@/types/monitor";
 
 import { useTranslation } from "react-i18next";
 import { normalizeResponseTimes } from "@/utils/DataUtils";
-import { useState } from "react";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { useTheme } from "@mui/material/styles";
