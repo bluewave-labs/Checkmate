@@ -28,10 +28,10 @@ import Scheduler from "super-simple-scheduler";
 import { Monitor } from "@/db/models/index.js";
 
 const mockJobGenerator = () => ({
-  generateJob: jest.fn(() => ({
-    handler: jest.fn(),
-  })),
+  generateJob: jest.fn(() => ({ handler: jest.fn() })),
   generateCleanupJob: jest.fn(() => ({ handler: jest.fn() })),
+  // Provide stats aggregation job to satisfy JobQueue.init expectations
+  generateStatsAggregationJob: jest.fn(() => jest.fn().mockResolvedValue(undefined)),
 });
 
 describe("JobQueue", () => {
