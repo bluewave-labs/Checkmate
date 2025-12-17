@@ -4,9 +4,12 @@ import { DiagnosticsQueueTab } from "@/pages/diagnostic/DiagnosticsQueueTab";
 import DiagnosticsConfigTab from "@/pages/diagnostic/DiagnosticsConfigTab";
 import DiagnosticsAccessTab from "@/pages/diagnostic/DiagnosticsAccessTab";
 import { FileText, ListTodo, Settings, Shield } from "lucide-react";
+
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const DiagnosticPage = () => {
+  const { t } = useTranslation();
   const [tabValue, setTabValue] = useState("logs");
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -16,33 +19,33 @@ const DiagnosticPage = () => {
   return (
     <BasePage>
       <InfoBox
-        title="System Diagnostics"
-        description="Review system logs and background job status to troubleshoot issues. Monitor the health of your monitoring infrastructure and investigate any problems."
+        title={t("diagnostics.infoBox.title")}
+        description={t("diagnostics.infoBox.description")}
       />
       <Tabs value={tabValue} onChange={handleTabChange}>
         <Tab
-          label="Logs"
+          label={t("diagnostics.tabs.logs")}
           value="logs"
           icon={<FileText size={18} strokeWidth={1.5} />}
         />
         <Tab
-          label="Jobs"
-          value="jobs"
+          label={t("diagnostics.tabs.queue")}
+          value="queue"
           icon={<ListTodo size={18} strokeWidth={1.5} />}
         />
         <Tab
-          label="Config"
+          label={t("diagnostics.tabs.config")}
           value="config"
           icon={<Settings size={18} strokeWidth={1.5} />}
         />
         <Tab
-          label="Access"
+          label={t("diagnostics.tabs.access")}
           value="access"
           icon={<Shield size={18} strokeWidth={1.5} />}
         />
       </Tabs>
       {tabValue === "logs" && <DiagnosticsLogTab />}
-      {tabValue === "jobs" && <DiagnosticsQueueTab />}
+      {tabValue === "queue" && <DiagnosticsQueueTab />}
       {tabValue === "config" && <DiagnosticsConfigTab />}
       {tabValue === "access" && <DiagnosticsAccessTab />}
     </BasePage>

@@ -11,9 +11,11 @@ import { useGet } from "@/hooks/UseApi";
 import { useTheme } from "@mui/material/styles";
 import type { ILogEntry } from "@/types/log";
 import type { ApiResponse } from "@/types/api";
+import { useTranslation } from "react-i18next";
 
 export const DiagnosticsLogTab = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const [logLevel, setLogLevel] = useState("all");
   const { response } = useGet<ApiResponse<ILogEntry[]>>(
     `/diagnostic/logs`,
@@ -33,12 +35,12 @@ export const DiagnosticsLogTab = () => {
   const headers: Header<ILogEntry>[] = [
     {
       id: "timestamp",
-      content: "Timestamp",
+      content: t("diagnostics.logs.table.headers.timestamp"),
       render: (log: ILogEntry) => log.timestamp,
     },
     {
       id: "level",
-      content: "Level",
+      content: t("diagnostics.logs.table.headers.level"),
       render: (log: ILogEntry) => {
         const color =
           levelColors[log.level] || theme.palette.primary.contrastText;
@@ -53,12 +55,12 @@ export const DiagnosticsLogTab = () => {
     },
     {
       id: "service",
-      content: "Service",
+      content: t("diagnostics.logs.table.headers.service"),
       render: (log: ILogEntry) => log.service,
     },
     {
       id: "message",
-      content: "Message",
+      content: t("common.table.headers.message"),
       render: (log: ILogEntry) => log.message,
     },
   ];

@@ -113,7 +113,6 @@
       "empty": "No checks",
       "headers": {
         "dateTime": "Date & Time",
-        "message": "Message",
         "statusCode": "Status code"
       }
     }
@@ -229,7 +228,8 @@
         "monitor": "Monitor",
         "name": "Name",
         "status": "Status",
-        "type": "Type"
+        "type": "Type",
+        "message": "Message"
       }
     },
     "toasts": {
@@ -242,6 +242,63 @@
       "settings": "Settings",
       "teams": "Teams",
       "toggleTheme": "Toggle theme"
+    }
+  },
+  "diagnostics": {
+    "infoBox": {
+      "title": "System Diagnostics",
+      "description": "Review system logs and background job status to troubleshoot issues. Monitor the health of your monitoring infrastructure and investigate any problems."
+    },
+    "tabs": {
+      "logs": "Logs",
+      "queue": "Queue",
+      "config": "Config",
+      "access": "Access"
+    },
+    "logs": {
+      "table": {
+        "headers": {
+          "timestamp": "Timestamp",
+          "level": "Level",
+          "service": "Service"
+        }
+      }
+    },
+    "queue": {
+      "stats": {
+        "monitoringJobs": {
+          "title": "Monitoring jobs",
+          "tooltip": "Total number of monitoring jobs in the queue"
+        },
+        "activeJobs": {
+          "title": "Active jobs",
+          "tooltip": "Number of jobs being processed"
+        },
+        "failingJobs": {
+          "title": "Failing jobs",
+          "tooltip": "Jobs that failed on their last execution"
+        },
+        "totalRuns": {
+          "title": "Total runs",
+          "tooltip": "Total number of job executions"
+        },
+        "totalFailures": {
+          "title": "Total failures",
+          "tooltip": "Total number of failed job executions"
+        }
+      },
+      "table": {
+        "headers": {
+          "jobId": "Job ID",
+          "url": "URL",
+          "interval": "Interval",
+          "runs": "Runs",
+          "lastRun": "Last run",
+          "lockedAt": "Locked at",
+          "finishedAt": "Finished at",
+          "lastRunTook": "Last run took (ms)"
+        }
+      }
     }
   },
   "export": {
