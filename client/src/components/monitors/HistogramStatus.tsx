@@ -88,6 +88,15 @@ export const HistogramStatus = ({
     };
     const avg = d?.avgResponseTime ?? 0;
     const titleText = t("common.charts.uptime.avgResponseTime");
+    const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
+    const fmt = range === "30d" ? "MMM D, YYYY" : "ddd, MMM D, YYYY, h:mm A";
+    let dateLabel = "";
+    if (d?._id) {
+      const base = new Date(d._id as any);
+      const midBucket =
+        range === "30d" ? new Date(base.getTime() + 12 * 60 * 60 * 1000) : base;
+      dateLabel = formatDateWithTz(midBucket.toISOString(), fmt, uiTimezone);
+    }
     return (
       <Stack
         sx={{
@@ -98,6 +107,11 @@ export const HistogramStatus = ({
           borderRadius: 1,
         }}
       >
+        {dateLabel ? (
+          <Typography sx={{ color: "text.secondary" }} variant="caption">
+            {dateLabel}
+          </Typography>
+        ) : null}
         <Typography variant="caption">{titleText}</Typography>
         <Typography variant="body2">{Math.floor(avg)} ms</Typography>
       </Stack>

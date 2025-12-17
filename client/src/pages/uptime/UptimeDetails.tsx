@@ -40,8 +40,6 @@ const UptimeDetailsPage = () => {
     { refreshInterval: GLOBAL_REFRESH, keepPreviousData: true }
   );
 
-  // Up/Down derived from single response (server returns up/down/all in one payload)
-
   const {
     patch,
     loading: isPatching,
