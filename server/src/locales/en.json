@@ -165,6 +165,10 @@
 	"sendTestEmail": "Test email sent successfully",
 	"errorForValidEmailAddress": "A valid recipient email address is required.",
 	"testEmailSubject": "Test E-mail from Checkmate",
+	"monitorSummaryByTeamId": "Got monitors and summary by team id successfully",
+	"monitorExportSuccess": "Monitors exported successfully",
+	"gameListSuccess": "Got game list successfully",
+	"groupsByTeamId": "Got groups by team id successfully",
 	"discordNotification": {
 		"monitor": "Monitor",
 		"status": "Status",

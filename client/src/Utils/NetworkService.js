@@ -1146,6 +1146,10 @@ class NetworkService {
 		});
 	}
 
+	async fetchJson() {
+		return this.axiosInstance.get("/monitors/export/json");
+	}
+
 	getIncidentsByTeam = async (config) => {
 		const params = new URLSearchParams();
 		if (config.monitorId) params.append("monitorId", config.monitorId);

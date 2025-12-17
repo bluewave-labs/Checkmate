@@ -16,13 +16,6 @@ import NotificationController from "../controllers/v1/notificationController.js"
 import DiagnosticController from "../controllers/v1/diagnosticController.js";
 import IncidentController from "../controllers/v1/incidentController.js";
 
-// V2 Controllers
-import AuthControllerV2 from "../controllers/v2/AuthController.js";
-import InviteControllerV2 from "../controllers/v2/InviteController.js";
-import MaintenanceControllerV2 from "../controllers/v2/MaintenanceController.js";
-import MonitorControllerV2 from "../controllers/v2/MonitorController.js";
-import NotificationChannelControllerV2 from "../controllers/v2/NotificationChannelController.js";
-import QueueControllerV2 from "../controllers/v2/QueueController.js";
 export const initializeControllers = (services) => {
 	const controllers = {};
 	const commonDependencies = createCommonDependencies(services.db, services.errorService, services.logger, services.stringService);
@@ -74,14 +67,6 @@ export const initializeControllers = (services) => {
 	controllers.incidentController = new IncidentController(commonDependencies, {
 		incidentService: services.incidentService,
 	});
-
-	//V2
-	controllers.authControllerV2 = new AuthControllerV2(services.authServiceV2, services.inviteServiceV2);
-	controllers.inviteControllerV2 = new InviteControllerV2(services.inviteServiceV2);
-	controllers.maintenanceControllerV2 = new MaintenanceControllerV2(services.maintenanceServiceV2);
-	controllers.monitorControllerV2 = new MonitorControllerV2(services.monitorServiceV2, services.checkServiceV2);
-	controllers.notificationChannelControllerV2 = new NotificationChannelControllerV2(services.notificationChannelServiceV2);
-	controllers.queueControllerV2 = new QueueControllerV2(services.jobQueueV2);
 
 	return controllers;
 };
