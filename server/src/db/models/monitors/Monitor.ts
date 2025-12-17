@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
-import { Check, Incident, MonitorStats } from "@/db/models/index.js";
+import {
+  Check,
+  Incident,
+  MonitorStats,
+  StatsDaily,
+  StatsHourly,
+} from "@/db/models/index.js";
 
 export const MonitorTypes = [
   "http",
@@ -120,6 +126,8 @@ MonitorSchema.pre(
       const monitorId = this._id;
       await Check.deleteMany({ "metadata.monitorId": monitorId });
       await MonitorStats.deleteMany({ monitorId });
+      await StatsHourly.deleteMany({ monitorId });
+      await StatsDaily.deleteMany({ monitorId });
       await Incident.deleteMany({ monitorId });
       next();
     } catch (error: any) {
@@ -139,6 +147,8 @@ MonitorSchema.pre(
       if (monitorIds.length > 0) {
         await Check.deleteMany({ "metadata.monitorId": { $in: monitorIds } });
         await MonitorStats.deleteMany({ monitorId: { $in: monitorIds } });
+        await StatsHourly.deleteMany({ monitorId: { $in: monitorIds } });
+        await StatsDaily.deleteMany({ monitorId: { $in: monitorIds } });
         await Incident.deleteMany({ monitorId: { $in: monitorIds } });
       }
       next();

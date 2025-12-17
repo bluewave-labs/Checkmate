@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import { IMonitor, Monitor, MonitorStats, Check } from "@/db/models/index.js";
+import { StatsHourly, StatsDaily } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
 import { MonitorWithChecksResponse } from "@/types/index.js";
@@ -255,19 +256,7 @@ class MonitorService implements IMonitorService {
     }
   }
 
-  private getDateFormat(range: string): string {
-    switch (range) {
-      case "2h":
-        return "%Y-%m-%dT%H:%M:00Z";
-      case "24h":
-      case "7d":
-        return "%Y-%m-%dT%H:00:00Z";
-      case "30d":
-        return "%Y-%m-%d";
-      default:
-        throw new ApiError("Invalid range parameter", 400);
-    }
-  }
+  // getDateFormat removed — only 2h (raw checks) remains, using minute buckets inline
 
   private getBaseGroup = (dateFormat: string): Record<string, any> => {
     return {
@@ -527,9 +516,66 @@ class MonitorService implements IMonitorService {
     }
 
     const startDate = this.getStartDate(range);
-    const dateFormat = this.getDateFormat(range);
 
-    // Build match stage
+    // Route for aggregated stats (24h, 7d, 30d)
+    if (range === "24h" || range === "7d" || range === "30d") {
+      const monitorStats = await MonitorStats.findOne({ monitorId: monitor._id });
+      if (!monitorStats) {
+        throw new ApiError("Monitor stats not found", 404);
+      }
+
+      const useDaily = range === "30d";
+      const Model = useDaily ? StatsDaily : StatsHourly;
+      const endDate = new Date();
+
+      const docs = await Model.find({
+        monitorId: monitor._id,
+        windowStart: { $gte: startDate, $lt: endDate },
+      })
+        .sort({ windowStart: -1 })
+        .lean();
+
+      const checks = (docs as any[]).map((d) => {
+        const base: any = {
+          _id: new Date(d.windowStart).toISOString(),
+          count: d.count ?? 0,
+          avgResponseTime: d.avgResponseTime ?? 0,
+        };
+        if (monitor.type === "pagespeed") {
+          return {
+            ...base,
+            accessibility: d.accessibility,
+            seo: d.seo,
+            bestPractices: d.bestPractices,
+            performance: d.performance,
+            cls: d.cls,
+            si: d.si,
+            fcp: d.fcp,
+            lcp: d.lcp,
+            tbt: d.tbt,
+          };
+        }
+        if (monitor.type === "infrastructure") {
+          return {
+            ...base,
+            cpu: d.cpu,
+            memory: d.memory,
+            disk: d.disk,
+            host: d.host,
+            net: d.net,
+          };
+        }
+        return base;
+      });
+
+      return {
+        monitor: monitor.toObject(),
+        checks,
+        stats: monitorStats,
+      };
+    }
+
+    // Route for raw checks (2h)
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
       createdAt: { $gte: Date };
@@ -543,8 +589,8 @@ class MonitorService implements IMonitorService {
       matchStage.status = status;
     }
 
+    const dateFormat = "%Y-%m-%dT%H:%M:00Z";
     let groupClause;
-
     if (monitor.type === "pagespeed") {
       groupClause = this.getPageSpeedGroup(dateFormat);
     } else if (monitor.type === "infrastructure") {

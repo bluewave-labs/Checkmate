@@ -29,6 +29,7 @@ import {
   SettingsService,
   StripeService,
   BillingService,
+  StatsAggregationService,
 } from "@/services/index.js";
 import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
 import { MeService } from "@/services/index.js";
@@ -55,6 +56,7 @@ export const initServices = async () => {
     settingsService
   );
   const incidentService = new IncidentService();
+  const statsAggregationService = new StatsAggregationService();
   const jobGenerator = new JobGenerator(
     networkService,
     checkService,
@@ -62,7 +64,8 @@ export const initServices = async () => {
     statusService,
     notificationService,
     incidentService,
-    maintenanceService
+    maintenanceService,
+    statsAggregationService
   );
   const jobQueue = await JobQueue.create(jobGenerator);
   const entitlementsProvider = EntitlementsFactory.create();

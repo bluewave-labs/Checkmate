@@ -6,6 +6,10 @@ import { IStatusService } from "./StatusService.js";
 import { INotificationService } from "./NotificationService.js";
 import { IMaintenanceService } from "../business/MaintenanceService.js";
 import { IIncidentService } from "../business/IncidentService.js";
+import StatsAggregationService, {
+  IStatsAggregationService,
+} from "@/services/business/StatsAggregationService.js";
+import { StatsHourly } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
 
@@ -25,6 +29,7 @@ class JobGenerator implements IJobGenerator {
   private notificationService: INotificationService;
   private maintenanceService: IMaintenanceService;
   private incidentService: IIncidentService;
+  private statsAggregationService: IStatsAggregationService;
 
   constructor(
     networkService: INetworkService,
@@ -33,7 +38,8 @@ class JobGenerator implements IJobGenerator {
     statusService: IStatusService,
     notificationService: INotificationService,
     incidentService: IIncidentService,
-    maintenanceService: IMaintenanceService
+    maintenanceService: IMaintenanceService,
+    statsAggregationService: IStatsAggregationService
   ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.networkService = networkService;
@@ -43,6 +49,7 @@ class JobGenerator implements IJobGenerator {
     this.notificationService = notificationService;
     this.incidentService = incidentService;
     this.maintenanceService = maintenanceService;
+    this.statsAggregationService = statsAggregationService;
   }
 
   generateJob = () => {
@@ -131,6 +138,62 @@ class JobGenerator implements IJobGenerator {
         await this.incidentService.cleanupOrphanedIncidents();
       } catch (error) {
         throw error;
+      }
+    };
+  };
+
+  // Aggregates stats for the previous UTC hour and (at UTC midnight) the previous UTC day
+  generateStatsAggregationJob = () => {
+    return async () => {
+      // Compute previous hour window in UTC
+      const now = new Date();
+      const utcNow = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds(),
+          0
+        )
+      );
+      const hourEnd = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          now.getUTCHours(),
+          0,
+          0,
+          0
+        )
+      );
+      const hourStart = new Date(hourEnd.getTime() - 60 * 60 * 1000);
+
+      // Upsert hourly stats for the last full hour
+      await this.statsAggregationService.upsertHourly(hourStart, hourEnd);
+
+      // Roll up the current day-so-far (not finalized) so charts have partial daily data
+      const todayStart = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          0,
+          0,
+          0,
+          0
+        )
+      );
+      await this.statsAggregationService.rollupDaily(todayStart, utcNow, false);
+
+      // If at UTC midnight hour (i.e., hour just rolled over), finalize the previous day
+      const hour = utcNow.getUTCHours();
+      if (hour === 0) {
+        const dayEnd = todayStart; // just reached 00:00, previous day ends now
+        const dayStart = new Date(dayEnd.getTime() - 24 * 60 * 60 * 1000);
+        await this.statsAggregationService.rollupDaily(dayStart, dayEnd, true);
       }
     };
   };

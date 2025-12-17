@@ -59,3 +59,8 @@ export type { IIncident, ResolutionType } from "./incidents/Incident.js";
 
 export { SystemSettings } from "./system/SystemSettings.js";
 export type { ISystemSettings } from "./system/SystemSettings.js";
+
+export { StatsHourly } from "./monitors/StatsHourly.js";
+export type { IStatsHourly } from "./monitors/StatsHourly.js";
+export { StatsDaily } from "./monitors/StatsDaily.js";
+export type { IStatsDaily } from "./monitors/StatsDaily.js";

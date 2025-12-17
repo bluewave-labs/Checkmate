@@ -86,6 +86,18 @@ export default class JobQueue implements IJobQueue {
         active: true,
       });
 
+      // Stats aggregation job (hourly)
+      this.scheduler.addTemplate(
+        "stats-aggregation-job",
+        this.jobGenerator.generateStatsAggregationJob()
+      );
+      await this.scheduler.addJob({
+        id: "stats-aggregation",
+        template: "stats-aggregation-job",
+        repeat: 60 * 60 * 1000, // hourly
+        active: true,
+      });
+
       const monitors = await Monitor.find();
       for (const monitor of monitors) {
         const randomOffset = 1000 + Math.random() * 1000;

@@ -15,6 +15,7 @@ export { default as DiagnosticService } from "@/services/business/DiagnosticServ
 export { default as RecoveryService } from "@/services/business/RecoveryService.js";
 export { default as IncidentService } from "@/services/business/IncidentService.js";
 export { default as MeService } from "@/services/business/MeService.js";
+export { default as StatsAggregationService } from "@/services/business/StatsAggregationService.js";
 
 export { default as NetworkService } from "@/services/infrastructure/NetworkService.js";
 export { default as NotificationService } from "@/services/infrastructure/NotificationService.js";
