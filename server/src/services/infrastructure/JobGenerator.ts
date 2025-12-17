@@ -142,10 +142,9 @@ class JobGenerator implements IJobGenerator {
     };
   };
 
-  // Aggregates stats for the previous UTC hour and (at UTC midnight) the previous UTC day
   generateStatsAggregationJob = () => {
     return async () => {
-      // Compute previous hour window in UTC
+      // Get previous hour window in UTC
       const now = new Date();
       const utcNow = new Date(
         Date.UTC(
@@ -174,7 +173,7 @@ class JobGenerator implements IJobGenerator {
       // Upsert hourly stats for the last full hour
       await this.statsAggregationService.upsertHourly(hourStart, hourEnd);
 
-      // Roll up the current day-so-far (not finalized) so charts have partial daily data
+      // Roll up the current day so far so we have partial data for the current day
       const todayStart = new Date(
         Date.UTC(
           now.getUTCFullYear(),
@@ -188,7 +187,7 @@ class JobGenerator implements IJobGenerator {
       );
       await this.statsAggregationService.rollupDaily(todayStart, utcNow, false);
 
-      // If at UTC midnight hour (i.e., hour just rolled over), finalize the previous day
+      // If at UTC midnight hour finalize the previous day
       const hour = utcNow.getUTCHours();
       if (hour === 0) {
         const dayEnd = todayStart; // just reached 00:00, previous day ends now
