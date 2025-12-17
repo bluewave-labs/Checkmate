@@ -67,6 +67,10 @@ export const SettingsSwitch = () => {
     [perms]
   );
 
+  console.log("IS_SAAS:", IS_SAAS);
+  console.log("showBilling:", showBilling);
+  console.log("perms:", perms);
+
   const hasMaster = perms.includes("master");
 
   return (
