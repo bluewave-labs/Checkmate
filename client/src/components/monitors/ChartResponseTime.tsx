@@ -94,9 +94,12 @@ export const ChartResponseTime = ({
     "avgResponseTime"
   );
   return (
-    <BaseChart icon={<Clock size={20} strokeWidth={1.5} />} title="Response times">
+    <BaseChart
+      icon={<Clock size={20} strokeWidth={1.5} />}
+      title="Response times"
+    >
       <ResponsiveContainer width="100%" height={300}>
-        <AreaChart data={normalized?.slice().reverse()}>
+        <AreaChart data={normalized?.slice()}>
           <CartesianGrid
             stroke={theme.palette.divider}
             strokeWidth={1}

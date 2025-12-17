@@ -35,6 +35,46 @@ class StatsAggregationService implements IStatsAggregationService {
           type: { $first: "$metadata.type" },
           count: { $sum: 1 },
           avgResponseTime: { $avg: "$responseTime" },
+          upChecks: {
+            $sum: { $cond: [{ $eq: ["$status", "up"] }, 1, 0] },
+          },
+          downChecks: {
+            $sum: { $cond: [{ $eq: ["$status", "down"] }, 1, 0] },
+          },
+          sumResponseUp: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "up"] }, "$responseTime", 0],
+            },
+          },
+          sumResponseDown: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "down"] }, "$responseTime", 0],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          teamId: 1,
+          type: 1,
+          count: 1,
+          avgResponseTime: 1,
+          upChecks: 1,
+          downChecks: 1,
+          avgResponseTimeUp: {
+            $cond: [
+              { $gt: ["$upChecks", 0] },
+              { $divide: ["$sumResponseUp", "$upChecks"] },
+              null,
+            ],
+          },
+          avgResponseTimeDown: {
+            $cond: [
+              { $gt: ["$downChecks", 0] },
+              { $divide: ["$sumResponseDown", "$downChecks"] },
+              null,
+            ],
+          },
         },
       },
     ]);
@@ -44,6 +84,7 @@ class StatsAggregationService implements IStatsAggregationService {
       { $match: { ...matchWindow, "metadata.type": "pagespeed" } },
       {
         $project: {
+          status: 1,
           responseTime: 1,
           createdAt: 1,
           "lighthouse.accessibility": 1,
@@ -67,6 +108,14 @@ class StatsAggregationService implements IStatsAggregationService {
           type: { $first: "$metadata.type" },
           count: { $sum: 1 },
           avgResponseTime: { $avg: "$responseTime" },
+          upChecks: { $sum: { $cond: [{ $eq: ["$status", "up"] }, 1, 0] } },
+          downChecks: { $sum: { $cond: [{ $eq: ["$status", "down"] }, 1, 0] } },
+          sumResponseUp: {
+            $sum: { $cond: [{ $eq: ["$status", "up"] }, "$responseTime", 0] },
+          },
+          sumResponseDown: {
+            $sum: { $cond: [{ $eq: ["$status", "down"] }, "$responseTime", 0] },
+          },
           accessibility: { $avg: "$lighthouse.accessibility" },
           bestPractices: { $avg: "$lighthouse.bestPractices" },
           seo: { $avg: "$lighthouse.seo" },
@@ -78,6 +127,39 @@ class StatsAggregationService implements IStatsAggregationService {
           tbt: { $avg: "$lighthouse.audits.tbt.score" },
         },
       },
+      {
+        $project: {
+          teamId: 1,
+          type: 1,
+          count: 1,
+          avgResponseTime: 1,
+          upChecks: 1,
+          downChecks: 1,
+          avgResponseTimeUp: {
+            $cond: [
+              { $gt: ["$upChecks", 0] },
+              { $divide: ["$sumResponseUp", "$upChecks"] },
+              null,
+            ],
+          },
+          avgResponseTimeDown: {
+            $cond: [
+              { $gt: ["$downChecks", 0] },
+              { $divide: ["$sumResponseDown", "$downChecks"] },
+              null,
+            ],
+          },
+          accessibility: 1,
+          bestPractices: 1,
+          seo: 1,
+          performance: 1,
+          cls: 1,
+          si: 1,
+          fcp: 1,
+          lcp: 1,
+          tbt: 1,
+        },
+      },
     ]);
 
     // 3) Infrastructure
@@ -85,6 +167,7 @@ class StatsAggregationService implements IStatsAggregationService {
       { $match: { ...matchWindow, "metadata.type": "infrastructure" } },
       {
         $project: {
+          status: 1,
           responseTime: 1,
           createdAt: 1,
           "system.cpu.physical_core": 1,
@@ -116,6 +199,14 @@ class StatsAggregationService implements IStatsAggregationService {
           type: { $first: "$metadata.type" },
           count: { $sum: 1 },
           avgResponseTime: { $avg: "$responseTime" },
+          upChecks: { $sum: { $cond: [{ $eq: ["$status", "up"] }, 1, 0] } },
+          downChecks: { $sum: { $cond: [{ $eq: ["$status", "down"] }, 1, 0] } },
+          sumResponseUp: {
+            $sum: { $cond: [{ $eq: ["$status", "up"] }, "$responseTime", 0] },
+          },
+          sumResponseDown: {
+            $sum: { $cond: [{ $eq: ["$status", "down"] }, "$responseTime", 0] },
+          },
           physicalCores: { $last: "$system.cpu.physical_core" },
           logicalCores: { $last: "$system.cpu.logical_core" },
           frequency: { $avg: "$system.cpu.frequency" },
@@ -142,6 +233,22 @@ class StatsAggregationService implements IStatsAggregationService {
           type: 1,
           count: 1,
           avgResponseTime: 1,
+          upChecks: 1,
+          downChecks: 1,
+          avgResponseTimeUp: {
+            $cond: [
+              { $gt: ["$upChecks", 0] },
+              { $divide: ["$sumResponseUp", "$upChecks"] },
+              null,
+            ],
+          },
+          avgResponseTimeDown: {
+            $cond: [
+              { $gt: ["$downChecks", 0] },
+              { $divide: ["$sumResponseDown", "$downChecks"] },
+              null,
+            ],
+          },
           cpu: {
             physical_core: "$physicalCores",
             logical_core: "$logicalCores",
@@ -291,6 +398,10 @@ class StatsAggregationService implements IStatsAggregationService {
               finalized: false,
               count: d.count ?? 0,
               avgResponseTime: d.avgResponseTime ?? 0,
+              upChecks: d.upChecks ?? 0,
+              downChecks: d.downChecks ?? 0,
+              avgResponseTimeUp: (d.avgResponseTimeUp ?? null) as any,
+              avgResponseTimeDown: (d.avgResponseTimeDown ?? null) as any,
               accessibility: d.accessibility,
               bestPractices: d.bestPractices,
               seo: d.seo,
@@ -354,8 +465,12 @@ class StatsAggregationService implements IStatsAggregationService {
       type: string;
       // totals
       count: number;
+      upChecks: number;
+      downChecks: number;
       // base
       rt: Weighted;
+      rtUp: Weighted;
+      rtDown: Weighted;
       // pagespeed
       accessibility: Weighted;
       bestPractices: Weighted;
@@ -400,7 +515,11 @@ class StatsAggregationService implements IStatsAggregationService {
           teamId: h.teamId as any,
           type: h.type,
           count: 0,
+          upChecks: 0,
+          downChecks: 0,
           rt: { sum: 0, w: 0 },
+          rtUp: { sum: 0, w: 0 },
+          rtDown: { sum: 0, w: 0 },
           accessibility: { sum: 0, w: 0 },
           bestPractices: { sum: 0, w: 0 },
           seo: { sum: 0, w: 0 },
@@ -428,7 +547,13 @@ class StatsAggregationService implements IStatsAggregationService {
 
       const w = h.count ?? 0;
       g.count += w;
+      const up = (h as any).upChecks ?? 0;
+      const down = (h as any).downChecks ?? 0;
+      g.upChecks += up;
+      g.downChecks += down;
       addW(g.rt, h.avgResponseTime, w);
+      addW(g.rtUp, (h as any).avgResponseTimeUp, up);
+      addW(g.rtDown, (h as any).avgResponseTimeDown, down);
 
       // pagespeed
       addW(g.accessibility, (h as any).accessibility, w);
@@ -601,7 +726,11 @@ class StatsAggregationService implements IStatsAggregationService {
         $set: {
           finalized: finalize,
           count: g.count,
+          upChecks: g.upChecks,
+          downChecks: g.downChecks,
           avgResponseTime: avg(g.rt) ?? 0,
+          avgResponseTimeUp: (avg(g.rtUp) ?? null) as any,
+          avgResponseTimeDown: (avg(g.rtDown) ?? null) as any,
           accessibility: avg(g.accessibility),
           bestPractices: avg(g.bestPractices),
           seo: avg(g.seo),

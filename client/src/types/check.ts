@@ -147,6 +147,10 @@ export interface GroupedCheck {
   _id: string;
   avgResponseTime: number;
   count: number;
+  upChecks?: number;
+  downChecks?: number;
+  avgResponseTimeUp?: number | null;
+  avgResponseTimeDown?: number | null;
 }
 
 export interface LatestCheck {

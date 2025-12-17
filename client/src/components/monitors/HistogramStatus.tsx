@@ -1,7 +1,14 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/components/monitors/Chart";
-import { ResponsiveContainer, BarChart, XAxis, Bar, Cell } from "recharts";
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  Bar,
+  Cell,
+  Tooltip,
+} from "recharts";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 
 import type { GroupedCheck } from "@/types/check";
@@ -65,7 +72,6 @@ export const HistogramStatus = ({
   title: string;
 }) => {
   const { t } = useTranslation();
-  const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
 
   const icon =
     status === "up" ? (
@@ -74,9 +80,30 @@ export const HistogramStatus = ({
       <AlertTriangle size={20} strokeWidth={1.5} />
     );
   const theme = useTheme();
-  const [idx, setIdx] = useState<number | null>(null);
-  const dateFormat = range === "1d" || range === "2h" ? "MMM D, h A" : "MMM D";
   const normalChecks = normalizeResponseTimes(checks, "avgResponseTime");
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0]?.payload as GroupedCheck & {
+      avgResponseTime?: number;
+    };
+    const avg = d?.avgResponseTime ?? 0;
+    const titleText = t("common.charts.uptime.avgResponseTime");
+    return (
+      <Stack
+        sx={{
+          p: 1,
+          bgcolor: "background.paper",
+          border: 1,
+          borderColor: "divider",
+          borderRadius: 1,
+        }}
+      >
+        <Typography variant="caption">{titleText}</Typography>
+        <Typography variant="body2">{Math.floor(avg)} ms</Typography>
+      </Stack>
+    );
+  };
 
   if (normalChecks.length === 0) {
     return (
@@ -105,23 +132,7 @@ export const HistogramStatus = ({
           justifyContent="space-between"
         >
           <Stack>
-            <Typography>Total checks</Typography>
-            {idx ? (
-              <Stack>
-                <Typography variant="h2">
-                  {normalChecks?.[idx]?.count}
-                </Typography>
-                <Typography position={"absolute"} top={"100%"}>
-                  {formatDateWithTz(
-                    normalChecks?.[idx]?._id,
-                    dateFormat,
-                    uiTimezone
-                  )}
-                </Typography>
-              </Stack>
-            ) : (
-              <Typography variant="h2">{totalChecks}</Typography>
-            )}
+            <Typography>Checks: {totalChecks}</Typography>
           </Stack>
         </Stack>
         <ResponsiveContainer width="100%" height={155}>
@@ -138,19 +149,18 @@ export const HistogramStatus = ({
                 />
               }
             />
+            <Tooltip cursor={false} content={<CustomTooltip />} />
             <Bar
               dataKey="normalResponseTime"
               maxBarSize={7}
               background={{ fill: "transparent" }}
             >
-              {normalChecks?.map((groupedCheck, idx) => {
+              {normalChecks?.map((groupedCheck) => {
                 const fillColor = getResponseTimeColor(
                   groupedCheck.normalResponseTime
                 );
                 return (
                   <Cell
-                    onMouseEnter={() => setIdx(idx)}
-                    onMouseLeave={() => setIdx(null)}
                     key={groupedCheck._id}
                     fill={theme.palette[fillColor].main}
                   />

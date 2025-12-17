@@ -144,7 +144,7 @@ class JobGenerator implements IJobGenerator {
 
   generateStatsAggregationJob = () => {
     return async () => {
-      // Get previous hour window in UTC
+      // Compute hour window in UTC based on flag
       const now = new Date();
       const utcNow = new Date(
         Date.UTC(
@@ -157,18 +157,37 @@ class JobGenerator implements IJobGenerator {
           0
         )
       );
-      const hourEnd = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          now.getUTCHours(),
-          0,
-          0,
-          0
-        )
-      );
-      const hourStart = new Date(hourEnd.getTime() - 60 * 60 * 1000);
+      let hourStart: Date;
+      let hourEnd: Date;
+      if (config.STATS_USE_CURRENT_HOUR) {
+        // Current hour [hh:00, hh+1:00)
+        hourStart = new Date(
+          Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            now.getUTCHours(),
+            0,
+            0,
+            0
+          )
+        );
+        hourEnd = new Date(hourStart.getTime() + 60 * 60 * 1000);
+      } else {
+        // Previous hour [hh-1:00, hh:00)
+        hourEnd = new Date(
+          Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            now.getUTCHours(),
+            0,
+            0,
+            0
+          )
+        );
+        hourStart = new Date(hourEnd.getTime() - 60 * 60 * 1000);
+      }
 
       // Upsert hourly stats for the last full hour
       await this.statsAggregationService.upsertHourly(hourStart, hourEnd);
@@ -199,3 +218,4 @@ class JobGenerator implements IJobGenerator {
 }
 
 export default JobGenerator;
+import { config } from "@/config/index.js";

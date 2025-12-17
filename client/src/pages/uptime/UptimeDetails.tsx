@@ -40,25 +40,7 @@ const UptimeDetailsPage = () => {
     { refreshInterval: GLOBAL_REFRESH, keepPreviousData: true }
   );
 
-  const {
-    response: upResponse,
-    loading: upIsLoading,
-    error: upError,
-  } = useGet<ApiResponse<IMonitorWithMonitorStats>>(
-    `/monitors/${id}?embedChecks=true&range=${range}&status=up`,
-    {},
-    { keepPreviousData: true }
-  );
-
-  const {
-    response: downResponse,
-    error: downError,
-    loading: downIsLoading,
-  } = useGet<ApiResponse<IMonitorWithMonitorStats>>(
-    `/monitors/${id}?embedChecks=true&range=${range}&status=down`,
-    {},
-    { keepPreviousData: true }
-  );
+  // Up/Down derived from single response (server returns up/down/all in one payload)
 
   const {
     patch,
@@ -85,20 +67,33 @@ const UptimeDetailsPage = () => {
     : -1;
 
   const checks = response?.data?.checks || [];
-  const upChecks = upResponse?.data?.checks
-    ? [...upResponse.data.checks].reverse()
-    : [];
-  const downChecks = downResponse?.data?.checks
-    ? [...downResponse.data.checks].reverse()
-    : [];
+  const checksAll = checks.length ? [...checks].reverse() : [];
+  const upChecksMapped = checksAll.map((c: any) => ({
+    ...c,
+    count: c.upChecks ?? 0,
+    avgResponseTime: c.avgResponseTimeUp ?? 0,
+  }));
+  const totalUp = upChecksMapped.reduce(
+    (sum: number, c: any) => sum + (c.count ?? 0),
+    0
+  );
+  const upChecks = totalUp === 0 ? [] : upChecksMapped;
+  const downChecksMapped = checksAll.map((c: any) => ({
+    ...c,
+    count: c.downChecks ?? 0,
+    avgResponseTime: c.avgResponseTimeDown ?? 0,
+  }));
+  const totalDown = downChecksMapped.reduce(
+    (sum: number, c: any) => sum + (c.count ?? 0),
+    0
+  );
+  const downChecks = totalDown === 0 ? [] : downChecksMapped;
 
   const palette = getStatusPalette(monitor?.status);
 
-  if (error || upError || downError || postError) {
+  if (error || postError) {
     console.error("Error fetching monitor data:", {
       error,
-      upError,
-      downError,
       postError,
     });
   }
@@ -145,11 +140,7 @@ const UptimeDetailsPage = () => {
           }
         />
       </Stack>
-      <HeaderRange
-        loading={loading || upIsLoading || downIsLoading}
-        range={range}
-        setRange={setRange}
-      />
+      <HeaderRange loading={loading} range={range} setRange={setRange} />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
         <HistogramStatus
           title={t("common.charts.uptime.upTitle")}
@@ -165,7 +156,7 @@ const UptimeDetailsPage = () => {
         />
         <ChartAvgResponse avg={avgResponseTime} max={maxResponseTime} />
       </Stack>
-      <ChartResponseTime checks={checks} range={range} />
+      <ChartResponseTime checks={checksAll} range={range} />
       <CheckTable monitorId={monitor?._id} />
     </BasePage>
   );

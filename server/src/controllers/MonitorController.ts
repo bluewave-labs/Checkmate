@@ -205,11 +205,6 @@ class MonitorController {
 
       let monitor;
 
-      const status = req.query.status;
-      if (status && typeof status !== "string") {
-        throw new ApiError("Status query parameter must be a string", 400);
-      }
-
       if (req.query.embedChecks === "true") {
         const range = req.query.range;
         if (!range || typeof range !== "string")
@@ -218,8 +213,7 @@ class MonitorController {
         monitor = await this.monitorService.getEmbedChecks(
           teamId,
           monitorId,
-          range,
-          status
+          range
         );
       } else {
         monitor = await this.monitorService.get(teamId, monitorId);

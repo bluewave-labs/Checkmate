@@ -11,6 +11,10 @@ export interface IStatsBase {
   finalized: boolean;
   count: number; // number of checks in window
   avgResponseTime: number; // ms
+  upChecks?: number;
+  downChecks?: number;
+  avgResponseTimeUp?: number;
+  avgResponseTimeDown?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -170,6 +174,10 @@ const StatsHourlySchema = new Schema<IStatsHourly>(
     finalized: { type: Boolean, default: false },
     count: { type: Number, required: true, default: 0 },
     avgResponseTime: { type: Number, required: true, default: 0 },
+    upChecks: { type: Number, required: false },
+    downChecks: { type: Number, required: false },
+    avgResponseTimeUp: { type: Number, required: false },
+    avgResponseTimeDown: { type: Number, required: false },
 
     // Pagespeed
     accessibility: { type: Number },
@@ -199,4 +207,3 @@ export const StatsHourly = mongoose.model<IStatsHourly>(
   "StatsHourly",
   StatsHourlySchema
 );
-

@@ -64,8 +64,7 @@ export interface IMonitorService {
   getEmbedChecks: (
     teamId: string,
     monitorId: string,
-    range: string,
-    status?: string
+    range: string
   ) => Promise<MonitorWithChecksResponse>;
   togglePause: (
     userId: string,
@@ -504,11 +503,11 @@ class MonitorService implements IMonitorService {
     return {};
   };
 
+  // status parameter deprecated and ignored; retained for backward compatibility
   getEmbedChecks = async (
     teamId: string,
     monitorId: string,
-    range: string,
-    status: string | undefined
+    range: string
   ): Promise<MonitorWithChecksResponse> => {
     const monitor = await Monitor.findOne({ _id: monitorId, teamId });
     if (!monitor) {
@@ -519,7 +518,9 @@ class MonitorService implements IMonitorService {
 
     // Route for aggregated stats (24h, 7d, 30d)
     if (range === "24h" || range === "7d" || range === "30d") {
-      const monitorStats = await MonitorStats.findOne({ monitorId: monitor._id });
+      const monitorStats = await MonitorStats.findOne({
+        monitorId: monitor._id,
+      });
       if (!monitorStats) {
         throw new ApiError("Monitor stats not found", 404);
       }
@@ -540,6 +541,10 @@ class MonitorService implements IMonitorService {
           _id: new Date(d.windowStart).toISOString(),
           count: d.count ?? 0,
           avgResponseTime: d.avgResponseTime ?? 0,
+          upChecks: d.upChecks ?? 0,
+          downChecks: d.downChecks ?? 0,
+          avgResponseTimeUp: d.avgResponseTimeUp ?? null,
+          avgResponseTimeDown: d.avgResponseTimeDown ?? null,
         };
         if (monitor.type === "pagespeed") {
           return {
@@ -579,15 +584,10 @@ class MonitorService implements IMonitorService {
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
       createdAt: { $gte: Date };
-      status?: string;
     } = {
       "metadata.monitorId": monitor._id,
       createdAt: { $gte: startDate },
     };
-
-    if (status) {
-      matchStage.status = status;
-    }
 
     const dateFormat = "%Y-%m-%dT%H:%M:00Z";
     let groupClause;
@@ -620,11 +620,41 @@ class MonitorService implements IMonitorService {
         $match: matchStage,
       },
       { $sort: { createdAt: 1 } },
-      { $project: projectStage },
-      { $group: groupClause },
+      { $project: { ...projectStage, status: 1 } },
+      {
+        $group: {
+          ...groupClause,
+          upChecks: { $sum: { $cond: [{ $eq: ["$status", "up"] }, 1, 0] } },
+          downChecks: { $sum: { $cond: [{ $eq: ["$status", "down"] }, 1, 0] } },
+          sumResponseUp: {
+            $sum: { $cond: [{ $eq: ["$status", "up"] }, "$responseTime", 0] },
+          },
+          sumResponseDown: {
+            $sum: { $cond: [{ $eq: ["$status", "down"] }, "$responseTime", 0] },
+          },
+        },
+      },
       { $sort: { _id: -1 } },
       {
-        $project: finalProjection,
+        $project: {
+          ...finalProjection,
+          upChecks: 1,
+          downChecks: 1,
+          avgResponseTimeUp: {
+            $cond: [
+              { $gt: ["$upChecks", 0] },
+              { $divide: ["$sumResponseUp", "$upChecks"] },
+              null,
+            ],
+          },
+          avgResponseTimeDown: {
+            $cond: [
+              { $gt: ["$downChecks", 0] },
+              { $divide: ["$sumResponseDown", "$downChecks"] },
+              null,
+            ],
+          },
+        },
       },
     ]);
 

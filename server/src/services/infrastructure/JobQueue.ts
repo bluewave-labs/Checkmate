@@ -3,6 +3,7 @@ import { Monitor, IMonitor } from "@/db/models/index.js";
 import Scheduler from "super-simple-scheduler";
 import { IJobGenerator } from "./JobGenerator.js";
 import { getChildLogger } from "@/logger/Logger.js";
+import { config } from "@/config/index.js";
 
 const SERVICE_NAME = "JobQueue";
 const logger = getChildLogger(SERVICE_NAME);
@@ -86,7 +87,7 @@ export default class JobQueue implements IJobQueue {
         active: true,
       });
 
-      // Stats aggregation job (hourly)
+      // Stats aggregation job (frequency depends on config)
       this.scheduler.addTemplate(
         "stats-aggregation-job",
         this.jobGenerator.generateStatsAggregationJob()
@@ -97,6 +98,14 @@ export default class JobQueue implements IJobQueue {
         repeat: 60 * 60 * 1000, // hourly
         active: true,
       });
+
+      // Trigger an immediate run to populate stats on startup
+      try {
+        const runNow = this.jobGenerator.generateStatsAggregationJob();
+        await runNow();
+      } catch (e) {
+        logger.warn("Initial stats aggregation run failed", e as any);
+      }
 
       const monitors = await Monitor.find();
       for (const monitor of monitors) {

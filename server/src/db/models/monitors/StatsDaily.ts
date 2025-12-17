@@ -100,6 +100,10 @@ const StatsDailySchema = new Schema<IStatsDaily>(
     finalized: { type: Boolean, default: false },
     count: { type: Number, required: true, default: 0 },
     avgResponseTime: { type: Number, required: true, default: 0 },
+    upChecks: { type: Number, required: false },
+    downChecks: { type: Number, required: false },
+    avgResponseTimeUp: { type: Number, required: false },
+    avgResponseTimeDown: { type: Number, required: false },
 
     // Pagespeed
     accessibility: { type: Number },
@@ -129,4 +133,3 @@ export const StatsDaily = mongoose.model<IStatsDaily>(
   "StatsDaily",
   StatsDailySchema
 );
-

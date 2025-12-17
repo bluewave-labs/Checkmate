@@ -15,6 +15,7 @@ export interface IEnvConfig {
   SMTP_PASS: string;
   STRIPE_SECRET: string;
   STRIPE_WEBHOOK_SECRET: string;
+  STATS_USE_CURRENT_HOUR?: boolean;
 }
 
 dotenv.config();
@@ -34,4 +35,5 @@ export const config: IEnvConfig = {
   SMTP_PASS: process.env.SMTP_PASS || "not_set",
   STRIPE_SECRET: process.env.STRIPE_SECRET || "not_set",
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "not_set",
+  STATS_USE_CURRENT_HOUR: process.env.STATS_USE_CURRENT_HOUR === "true",
 };

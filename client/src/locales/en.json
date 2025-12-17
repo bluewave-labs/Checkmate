@@ -211,7 +211,8 @@
         "downTitle": "Downtime",
         "emptyDown": "Great, no downtime!",
         "emptyUp": "No checks yet",
-        "upTitle": "Uptime"
+        "upTitle": "Uptime",
+        "avgResponseTime": "Avg response time"
       }
     },
     "dialog": {
