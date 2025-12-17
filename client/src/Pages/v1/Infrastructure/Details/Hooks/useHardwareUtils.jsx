@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, Tooltip } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
@@ -121,19 +121,84 @@ const useHardwareUtils = () => {
 	};
 
 	const formatDeviceName = (device) => {
+		const deviceStr = String(device || '');
+		
+		// Extract the last part of the path (after last '/')
+		const parts = deviceStr.split('/');
+		const lastPart = parts[parts.length - 1];
+		
+		// If there's more than one part, show with "..." prefix
+		const displayText = parts.length > 1 ? `.../${lastPart}` : deviceStr;
+		
+		// Always show tooltip with full device path
 		return (
-			<>
-				{String(device)}
-			</>
+			<Tooltip title={deviceStr} arrow placement="top">
+				<Typography 
+					component="span" 
+					sx={{ 
+						cursor: 'default',
+						display: 'inline-block',
+						userSelect: 'none',
+						whiteSpace: 'nowrap',
+						overflow: 'hidden',
+						textOverflow: 'ellipsis',
+						maxWidth: '100%'
+					}}
+				>
+					{displayText}
+				</Typography>
+			</Tooltip>
 		);
 	};
 
 	const formatMountpoint = (mountpoint) => {
+		const mountpointStr = String(mountpoint || '');
+		
+		if (!mountpointStr) {
+			return (
+				<Tooltip title="No mountpoint available" arrow placement="top">
+					<Typography 
+						component="span" 
+						sx={{ 
+							cursor: 'default',
+							display: 'inline-block',
+							userSelect: 'none',
+							color: 'text.secondary',
+							fontStyle: 'italic'
+						}}
+					>
+						N/A
+					</Typography>
+				</Tooltip>
+			);
+		}
+		
+		// Extract the last part of the path (after last '/')
+		const parts = mountpointStr.split('/');
+		const lastPart = parts[parts.length - 1];
+		
+		// If there's more than one part, show with "..." prefix
+		const displayText = parts.length > 1 ? `.../${lastPart}` : mountpointStr;
+		
+		// Always show tooltip with full mountpoint path
 		return (
-			<>
-				{String(mountpoint)}
-			</>
-		)
+			<Tooltip title={mountpointStr} arrow placement="top">
+				<Typography 
+					component="span" 
+					sx={{ 
+						cursor: 'default',
+						display: 'inline-block',
+						userSelect: 'none',
+						whiteSpace: 'nowrap',
+						overflow: 'hidden',
+						textOverflow: 'ellipsis',
+						maxWidth: '100%'
+					}}
+				>
+					{displayText}
+				</Typography>
+			</Tooltip>
+		);
 	}
 
 	/**

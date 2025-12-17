@@ -14,7 +14,7 @@ import DiskSelection from "./Components/DiskSelection.jsx";
 // Utils
 import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
 import { useGetNotificationsByTeamId } from "../../../../Hooks/v1/useNotifications.js";
-import NetworkService from "../../../../Utils/NetworkService";
+import { networkService } from "../../../../Utils/NetworkService";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
@@ -75,9 +75,9 @@ const CreateInfrastructureMonitor = () => {
 		...(isCreate
 			? [{ name: "Create", path: "/infrastructure/create" }]
 			: [
-					{ name: "Details", path: `/infrastructure/${monitorId}` },
-					{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
-				]),
+				{ name: "Details", path: `/infrastructure/${monitorId}` },
+				{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
+			]),
 	];
 	// Populate form fields if editing
 	useEffect(() => {
@@ -89,23 +89,30 @@ const CreateInfrastructureMonitor = () => {
 			setHttps(monitor.url.startsWith("https"));
 			initializeInfrastructureMonitorForUpdate(monitor);
 			const fetchLastCheck = async () => {
-            try {
-                const params = {
-                    dateRange: "recent",
-                    limit: 1,
-                    sortOrder: "desc",
-                };
-                // On utilise NetworkService directement
-                const response = await NetworkService.get(`/api/v1/checks/${monitorId}`, { params });
-                const disks = response?.data?.checks?.[0]?.payload?.disks || [];
-                setAvailableDisks(disks);
-            } catch (error) {
-                console.error("Erreur pendant la récupération des disques:", error);
-                setAvailableDisks([]); // En cas d'erreur, on met un tableau vide
-            }
-        };
+				try {
+					const { stats } = monitor ?? {};
+					let latestCheck = stats?.aggregateData?.latestCheck;
+					let disks = latestCheck?.disk || [];
 
-        fetchLastCheck();
+					if (disks.length > 0) {
+						setAvailableDisks(disks);
+						return;
+					}
+
+					const response = await networkService.getChecksByMonitor({
+						monitorId,
+						dateRange: "all",
+						rowsPerPage: 1,
+						sortOrder: "desc",
+					});
+					disks = response?.data?.data?.checks?.[0]?.disk || [];
+					setAvailableDisks(disks);
+				} catch (error) {
+					setAvailableDisks([]);
+				}
+			};
+
+			fetchLastCheck();
 		}
 	}, [
 		isCreate,
@@ -154,14 +161,7 @@ const CreateInfrastructureMonitor = () => {
 		isPausing ||
 		notificationsAreLoading;
 
-	// --- AJOUT TEMPORAIRE : Fausses données ---
-    const MOCK_DISKS = [
-        { mountpoint: "C:" },
-        { mountpoint: "D:" },
-        { mountpoint: "/mnt/data" },
-        { mountpoint: "/var/lib/docker" }
-    ];
-    // -----------------------------------------
+
 
 	return (
 		<Box className="create-infrastructure-monitor">
@@ -359,15 +359,15 @@ const CreateInfrastructureMonitor = () => {
 				/>
 
 				{monitorId && (
-                    <DiskSelection
-                        availableDisks={availableDisks}
-                        selectedDisks={infrastructureMonitor.selectedDisks}
-                        onChange={(newSelectedDisks) =>
-                            onChangeForm("selectedDisks", newSelectedDisks)
-                        }
-                    />
-                )}
-				
+					<DiskSelection
+						availableDisks={availableDisks}
+						selectedDisks={infrastructureMonitor.selectedDisks}
+						onChange={(newSelectedDisks) =>
+							onChangeForm("selectedDisks", newSelectedDisks)
+						}
+					/>
+				)}
+
 				<ConfigBox>
 					<Box>
 						<Typography

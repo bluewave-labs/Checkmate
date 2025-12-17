@@ -11,7 +11,6 @@ const DiskSelection = ({ availableDisks, selectedDisks, onChange }) => {
     const { t } = useTranslation();
 
     const handleDiskChange = (event, mountpoint) => {
-        // Le composant Checkbox personnalisé renvoie l'event natif
         const isChecked = event.target.checked;
         let newSelectedDisks = [];
 
@@ -37,42 +36,38 @@ const DiskSelection = ({ availableDisks, selectedDisks, onChange }) => {
 
             <Stack gap={theme.spacing(6)}>
                 {(!availableDisks || availableDisks.length === 0) ? (
-                    <Typography 
-                        variant="body2" 
+                    <Typography
+                        variant="body2"
                         sx={{ fontStyle: 'italic', opacity: 0.8 }}
                     >
                         {t("v1.infrastructure.disk_selection_info")}
                     </Typography>
                 ) : (
-                    availableDisks.map((disk) => (
-                        /* Reproduction exacte de la structure de CustomThreshold 
-                           pour garantir l'alignement parfait avec la section Alertes 
-                        */
-                        <Stack
-                            key={disk.mountpoint}
-                            direction={{ sm: "column", md: "row" }}
-                            spacing={theme.spacing(2)}
-                        >
-                            <Box
-                                sx={{
-                                    // Mêmes largeurs que dans CustomThreshold pour aligner les labels
-                                    width: { md: "45%", lg: "25%", xl: "20%" },
-                                }}
-                                justifyContent="flex-start"
+                    availableDisks.map((disk) => {
+                        const identifier = disk.mountpoint || disk.device;
+                        return (
+                            <Stack
+                                key={identifier}
+                                direction={{ sm: "column", md: "row" }}
+                                spacing={theme.spacing(2)}
                             >
-                                <Checkbox
-                                    id={`disk-${disk.mountpoint}`}
-                                    name={disk.mountpoint}
-                                    label={disk.mountpoint}
-                                    isChecked={selectedDisks.includes(disk.mountpoint)}
-                                    onChange={(e) => handleDiskChange(e, disk.mountpoint)}
-                                />
-                            </Box>
-                            {/* Pas de deuxième Stack ici car nous n'avons pas besoin 
-                                du champ TextInput pour la sélection simple 
-                            */}
-                        </Stack>
-                    ))
+                                <Box
+                                    sx={{
+                                        width: "100%",
+                                    }}
+                                    justifyContent="flex-start"
+                                >
+                                    <Checkbox
+                                        id={`disk-${identifier}`}
+                                        name={identifier}
+                                        label={identifier}
+                                        isChecked={selectedDisks.includes(identifier)}
+                                        onChange={(e) => handleDiskChange(e, identifier)}
+                                    />
+                                </Box>
+                            </Stack>
+                        )
+                    })
                 )}
             </Stack>
         </ConfigBox>
