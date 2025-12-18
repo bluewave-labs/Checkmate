@@ -82,13 +82,13 @@ export const HistogramStatus = ({
   const normalChecks = normalizeResponseTimes(checks, "avgResponseTime");
 
   const CustomTooltip = ({ active, payload }: any) => {
+    const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
     if (!active || !payload?.length) return null;
     const d = payload[0]?.payload as GroupedCheck & {
       avgResponseTime?: number;
     };
     const avg = d?.avgResponseTime ?? 0;
     const titleText = t("common.charts.uptime.avgResponseTime");
-    const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
     const fmt = range === "30d" ? "MMM D, YYYY" : "ddd, MMM D, YYYY, h:mm A";
     let dateLabel = "";
     if (d?._id) {

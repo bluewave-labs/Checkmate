@@ -65,13 +65,15 @@ export const Breadcrumb = ({
         const last = index === pathnames.length - 1;
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
 
-        let displayName =
-          t(`common.breadcrumbs.${value}`) ||
-          value.charAt(0).toUpperCase() + value.slice(1);
+        let displayName = "";
 
         // Paths that are IDs should be detail pages
         if (value.length === 24 || value.match(/^[a-f0-9-]{36}$/)) {
           displayName = "Details";
+        } else {
+          displayName =
+            t(`common.breadcrumbs.${value}`) ||
+            value.charAt(0).toUpperCase() + value.slice(1);
         }
 
         return last ? (
