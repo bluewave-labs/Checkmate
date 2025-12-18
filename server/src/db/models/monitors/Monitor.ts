@@ -163,5 +163,8 @@ MonitorSchema.index({ type: 1 });
 MonitorSchema.index({ lastCheckedAt: 1 });
 MonitorSchema.index({ createdBy: 1 });
 MonitorSchema.index({ updatedBy: 1 });
+// Common filter keys used across services and routes
+MonitorSchema.index({ teamId: 1 });
+MonitorSchema.index({ orgId: 1 });
 
 export const Monitor = mongoose.model<IMonitor>("Monitor", MonitorSchema);

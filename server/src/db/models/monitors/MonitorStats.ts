@@ -26,7 +26,7 @@ const MonitorStatsSchema = new Schema<IMonitorStats>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Monitor",
       immutable: true,
-      index: true,
+      unique: true,
     },
     avgResponseTime: {
       type: Number,

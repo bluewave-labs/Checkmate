@@ -87,7 +87,10 @@ export interface IInfraNetEntry {
   fifo_out?: number;
 }
 
-export interface IStatsHourly extends mongoose.Document, IStatsBase, IPageSpeedMetrics {
+export interface IStatsHourly
+  extends mongoose.Document,
+    IStatsBase,
+    IPageSpeedMetrics {
   cpu?: IInfraCpu;
   memory?: IInfraMemory;
   disk?: IInfraDiskEntry[];
@@ -166,8 +169,18 @@ const InfraNetEntrySchema = new Schema<IInfraNetEntry>(
 
 const StatsHourlySchema = new Schema<IStatsHourly>(
   {
-    monitorId: { type: Schema.Types.ObjectId, ref: "Monitor", index: true, required: true },
-    teamId: { type: Schema.Types.ObjectId, ref: "Team", index: true, required: true },
+    monitorId: {
+      type: Schema.Types.ObjectId,
+      ref: "Monitor",
+      index: true,
+      required: true,
+    },
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      index: true,
+      required: true,
+    },
     type: { type: String, required: true },
     windowStart: { type: Date, required: true, index: true },
     windowEnd: { type: Date, required: true },
@@ -200,7 +213,6 @@ const StatsHourlySchema = new Schema<IStatsHourly>(
   { timestamps: true, collection: "stats_hourly" }
 );
 
-// One document per (monitorId, windowStart)
 StatsHourlySchema.index({ monitorId: 1, windowStart: 1 }, { unique: true });
 
 export const StatsHourly = mongoose.model<IStatsHourly>(

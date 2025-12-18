@@ -92,8 +92,18 @@ const InfraNetEntrySchema = new Schema<IInfraNetEntry>(
 
 const StatsDailySchema = new Schema<IStatsDaily>(
   {
-    monitorId: { type: Schema.Types.ObjectId, ref: "Monitor", index: true, required: true },
-    teamId: { type: Schema.Types.ObjectId, ref: "Team", index: true, required: true },
+    monitorId: {
+      type: Schema.Types.ObjectId,
+      ref: "Monitor",
+      index: true,
+      required: true,
+    },
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      index: true,
+      required: true,
+    },
     type: { type: String, required: true },
     windowStart: { type: Date, required: true, index: true },
     windowEnd: { type: Date, required: true },
@@ -126,7 +136,6 @@ const StatsDailySchema = new Schema<IStatsDaily>(
   { timestamps: true, collection: "stats_daily" }
 );
 
-// One document per (monitorId, windowStart)
 StatsDailySchema.index({ monitorId: 1, windowStart: 1 }, { unique: true });
 
 export const StatsDaily = mongoose.model<IStatsDaily>(
