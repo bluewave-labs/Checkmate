@@ -23,8 +23,8 @@ const Incidents2 = () => {
 		{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" },
 	];
 
-	const [selectedMonitor, setSelectedMonitor] = useState(undefined);
-	const [filter, setFilter] = useState(undefined);
+	const [selectedMonitor, setSelectedMonitor] = useState("0");
+	const [filter, setFilter] = useState("all");
 	const [dateRange, setDateRange] = useState("all");
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -73,7 +73,17 @@ const Incidents2 = () => {
 		} else {
 			fetchIncidents(config);
 		}
-	}, [selectedMonitor, filter, dateRange, page, rowsPerPage, updateTrigger]); // Refetch when filters or pagination change
+	}, [
+		selectedMonitor,
+		filter,
+		dateRange,
+		page,
+		rowsPerPage,
+		updateTrigger,
+		fetchActiveIncidents,
+		fetchResolvedIncidents,
+		fetchIncidents,
+	]);
 
 	useEffect(() => {
 		const lookup = monitors?.reduce((acc, monitor) => {

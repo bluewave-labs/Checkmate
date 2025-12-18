@@ -39,7 +39,7 @@ const useFetchIncidents = () => {
 	 * @param {number} [config.page] - Page number
 	 * @param {number} [config.rowsPerPage] - Rows per page
 	 */
-	const fetchIncidentsByTeam = async (config = {}) => {
+	const fetchIncidentsByTeam = useCallback(async (config = {}) => {
 		try {
 			setIsLoading(true);
 			setNetworkError(false);
@@ -55,42 +55,51 @@ const useFetchIncidents = () => {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
 	/**
 	 * Fetch active (open) incidents - Default function
 	 *
 	 * @param {Object} config - Additional configuration
 	 */
-	const fetchActiveIncidents = async (config = {}) => {
-		await fetchIncidentsByTeam({
-			status: true,
-			sortOrder: "desc",
-			...config,
-		});
-	};
+	const fetchActiveIncidents = useCallback(
+		async (config = {}) => {
+			await fetchIncidentsByTeam({
+				status: true,
+				sortOrder: "desc",
+				...config,
+			});
+		},
+		[fetchIncidentsByTeam]
+	);
 
 	/**
 	 * Fetch resolved incidents
 	 *
 	 * @param {Object} config - Additional configuration
 	 */
-	const fetchResolvedIncidents = async (config = {}) => {
-		await fetchIncidentsByTeam({
-			status: false,
-			sortOrder: "desc",
-			...config,
-		});
-	};
+	const fetchResolvedIncidents = useCallback(
+		async (config = {}) => {
+			await fetchIncidentsByTeam({
+				status: false,
+				sortOrder: "desc",
+				...config,
+			});
+		},
+		[fetchIncidentsByTeam]
+	);
 
 	/**
 	 * Fetch incidents with custom filters (alias for fetchIncidentsByTeam)
 	 *
 	 * @param {Object} config - Configuration object
 	 */
-	const fetchIncidents = async (config = {}) => {
-		await fetchIncidentsByTeam(config);
-	};
+	const fetchIncidents = useCallback(
+		async (config = {}) => {
+			await fetchIncidentsByTeam(config);
+		},
+		[fetchIncidentsByTeam]
+	);
 
 	/**
 	 * Fetch a single incident by ID
@@ -98,9 +107,9 @@ const useFetchIncidents = () => {
 	 * @param {string} incidentId - The ID of the incident to fetch
 	 * @returns {Promise<Object|null>} The incident object or null if not found
 	 */
-	const fetchIncidentById = async (incidentId) => {
+	const fetchIncidentById = useCallback(async (incidentId) => {
 		if (!incidentId) {
-			console.error(t("incidentsPage.noIcidentIdProvided"));
+			console.error(t("incidentsPage.noIncidentIdProvided"));
 			return null;
 		}
 
@@ -118,7 +127,7 @@ const useFetchIncidents = () => {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
 	/**
 	 * Resolve an incident manually
@@ -129,9 +138,9 @@ const useFetchIncidents = () => {
 	 * @param {Function} [onSuccess] - Callback function to call on success
 	 * @param {Function} [onError] - Callback function to call on error
 	 */
-	const resolveIncident = async (incidentId, options = {}) => {
+	const resolveIncident = useCallback(async (incidentId, options = {}) => {
 		if (!incidentId) {
-			console.error(t("incidentsPage.noIcidentIdProvided"));
+			console.error(t("incidentsPage.noIncidentIdProvided"));
 			return;
 		}
 
@@ -156,7 +165,7 @@ const useFetchIncidents = () => {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
 	/**
 	 * Fetch incident summary

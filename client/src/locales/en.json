@@ -1178,7 +1178,7 @@
 		"incidentResolvedFailed": "Error resolving incident",
 		"errorFetchingIncidents": "Error fetching incidents",
 		"errorFetchingIncident": "Error fetching incident",
-		"noIcidentIdProvided": "No incident ID provided",
+		"noIncidentIdProvided": "No incident ID provided",
 		"errorFetchingIncidentSummary": "Error fetching incident summary",
 		"incidentsOptionsHeaderFilterManual": "Manual",
 		"incidentsOptionsHeaderFilterAll": "All",

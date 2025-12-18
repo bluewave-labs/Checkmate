@@ -34,7 +34,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const totalResolutions =
-		summary?.totalManualResolutions + summary?.totalAutomaticResolutions;
+		(summary?.totalManualResolutions || 0) + (summary?.totalAutomaticResolutions || 0);
 	const automaticPercentage =
 		totalResolutions > 0
 			? (summary?.totalAutomaticResolutions / totalResolutions) * 100

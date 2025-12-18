@@ -32,8 +32,12 @@ const IncidentTable = ({
 	const theme = useTheme();
 
 	const handleResolveIncident = async (incidentId) => {
-		await resolveIncident(incidentId);
-		handleUpdateTrigger();
+		try {
+			await resolveIncident(incidentId);
+			handleUpdateTrigger();
+		} catch (error) {
+			console.error(t("incidentsPage.errorResolvingIncident"), error);
+		}
 	};
 
 	const headers = [
@@ -156,7 +160,7 @@ const IncidentTable = ({
 		);
 	}
 
-	if (!isLoading && incidents == undefined) {
+	if (!isLoading && !networkError && incidents?.length === 0) {
 		return (
 			<GenericFallback>
 				{t("incidentsTableNoIncidents", "No incidents found")}

@@ -166,6 +166,38 @@ class IncidentModule {
 		}
 	};
 
+	/**
+	 * Get incidents by team with filtering
+	 *
+	 * STATUS PARAMETER CONTRACT (IMPORTANT - Frontend dependency):
+	 * This method has an implicit contract with frontend's useFetchIncidents hook:
+	 *
+	 * - status === undefined: Frontend uses this to represent "all incidents" (filter === "all")
+	 *   Backend applies $or logic: { status: true } OR { status: false, endTime: >= dateRange }
+	 *   This shows all active incidents + resolved incidents within the date range
+	 *
+	 * - status === true: Frontend uses for "active incidents" (filter === "active")
+	 *   Backend shows all active incidents (no date filter applied)
+	 *   Active incidents are currently happening, so date range doesn't apply
+	 *
+	 * - status === false: Frontend uses for "resolved incidents" (filter === "resolved")
+	 *   Backend filters by endTime >= dateRange
+	 *   Only shows incidents that were resolved within the specified date range
+	 *
+	 * WARNING: Changing this logic will break frontend filtering behavior.
+	 * The frontend depends on undefined status triggering the $or logic for "all incidents".
+	 * This contract must be maintained when modifying either frontend or backend code.
+	 *
+	 * @param {Object} params - Query parameters
+	 * @param {string} params.teamId - Team ID
+	 * @param {string} [params.sortOrder] - Sort order (asc/desc)
+	 * @param {string} [params.dateRange] - Date range filter
+	 * @param {number} [params.page] - Page number
+	 * @param {number} [params.rowsPerPage] - Rows per page
+	 * @param {boolean|undefined} [params.status] - Status filter. undefined = all, true = active, false = resolved
+	 * @param {string} [params.monitorId] - Monitor ID filter
+	 * @param {string} [params.resolutionType] - Resolution type filter
+	 */
 	getIncidentsByTeam = async ({ teamId, sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType }) => {
 		try {
 			page = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
@@ -187,10 +219,10 @@ class IncidentModule {
 				...(resolutionType && { resolutionType }),
 			};
 
-			// Date range filter:
-			// - Active incidents: always show (no date filter) - they're currently happening
-			// - Resolved incidents: filter by endTime (when they were resolved)
-			// - All incidents: show all active + resolved in the range
+			// Date range filter logic (see contract documentation above):
+			// - Active incidents (statusBoolean === true): always show (no date filter) - they're currently happening
+			// - Resolved incidents (statusBoolean === false): filter by endTime (when they were resolved)
+			// - All incidents (statusBoolean === undefined): show all active + resolved in the range using $or
 			if (dateRangeLookup[dateRange]) {
 				const dateThreshold = dateRangeLookup[dateRange];
 				if (statusBoolean === true) {
@@ -201,6 +233,7 @@ class IncidentModule {
 					matchStage.endTime = { $gte: dateThreshold };
 				} else {
 					// All incidents: show all active + resolved incidents in the range
+					// This is the critical contract: undefined status triggers $or logic
 					matchStage.$or = [
 						{ status: true }, // All active incidents
 						{ status: false, endTime: { $gte: dateThreshold } }, // Resolved in range
@@ -374,7 +407,7 @@ class IncidentModule {
 			const latestIncidentsPipeline = [
 				{ $match: matchStage },
 				{ $sort: { createdAt: -1 } },
-				{ $limit: parseInt(limit) },
+				{ $limit: Math.max(1, parseInt(limit) || 10) },
 				{
 					$lookup: {
 						from: "monitors",
