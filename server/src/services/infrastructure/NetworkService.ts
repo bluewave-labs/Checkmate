@@ -158,8 +158,17 @@ class NetworkService implements INetworkService {
                 // Non-TLS or unsupported socket; ignore
               }
             };
+
+            // Attempt immediate capture; for reused TLS sockets this is sufficient.
             capture();
-            if (typeof socket.once === "function") {
+
+            // Only add a one-time listener if TLS handshake hasn't completed.
+            const isTLS =
+              typeof (socket as any).getPeerCertificate === "function";
+            const isEncrypted = isTLS && (socket as any).encrypted === true;
+            const connectPending =
+              isTLS && !isEncrypted && (socket as any).connecting === true;
+            if (connectPending && typeof socket.once === "function") {
               socket.once("secureConnect", capture);
             }
           });
