@@ -215,11 +215,11 @@ class IncidentService {
 				throw this.errorService.createBadRequestError("No team ID in request");
 			}
 
-			const { dateRange } = query || {};
+			const { limit } = query || {};
 
 			const summary = await this.db.incidentModule.getIncidentSummary({
 				teamId,
-				dateRange,
+				limit,
 			});
 
 			return summary;

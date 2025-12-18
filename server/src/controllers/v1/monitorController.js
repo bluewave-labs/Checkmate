@@ -380,7 +380,7 @@ class MonitorController extends BaseController {
 			const result = await this.monitorService.getMonitorsAndSummaryByTeamId({ teamId, type, explain });
 
 			return res.success({
-				msg: "OK", // TODO
+				msg: this.stringService.monitorSummaryByTeamId,
 				data: result,
 			});
 		},
@@ -413,7 +413,7 @@ class MonitorController extends BaseController {
 			});
 
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.monitorGetByTeamId,
 				data: monitors,
 			});
 		},
@@ -452,7 +452,7 @@ class MonitorController extends BaseController {
 			const json = await this.monitorService.exportMonitorsToJSON({ teamId });
 
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.monitorExportSuccess,
 				data: json,
 			});
 		},
@@ -463,7 +463,7 @@ class MonitorController extends BaseController {
 	getAllGames = this.asyncHandler(
 		async (req, res) => {
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.gameListSuccess,
 				data: this.monitorService.getAllGames(),
 			});
 		},
@@ -481,7 +481,7 @@ class MonitorController extends BaseController {
 			const groups = await this.monitorService.getGroupsByTeamId({ teamId });
 
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.groupsByTeamId,
 				data: groups,
 			});
 		},

@@ -48,6 +48,7 @@ const getMenu = (t) => [
 		path: "notifications",
 		icon: <Notifications />,
 	},
+	{ name: t("menu.checks"), path: "checks", icon: <Docs /> },
 	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
 
 	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
