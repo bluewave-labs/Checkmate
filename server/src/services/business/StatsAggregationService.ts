@@ -16,7 +16,51 @@ export interface IStatsAggregationService {
 const BASE_TYPES: MonitorType[] = ["http", "https", "port", "ping"];
 
 class StatsAggregationService implements IStatsAggregationService {
-  upsertHourly = async (windowStart: Date, windowEnd: Date): Promise<number> => {
+  private makeUpsertOp = (d: any, windowStart: Date, windowEnd: Date) => {
+    return {
+      updateOne: {
+        filter: { monitorId: d._id, windowStart },
+        update: {
+          $setOnInsert: {
+            monitorId: d._id,
+            teamId: d.teamId,
+            type: d.type,
+            windowStart,
+            windowEnd,
+          },
+          $set: {
+            finalized: false,
+            count: d.count ?? 0,
+            avgResponseTime: d.avgResponseTime ?? 0,
+            upChecks: d.upChecks ?? 0,
+            downChecks: d.downChecks ?? 0,
+            avgResponseTimeUp: (d.avgResponseTimeUp ?? null) as any,
+            avgResponseTimeDown: (d.avgResponseTimeDown ?? null) as any,
+            accessibility: d.accessibility,
+            bestPractices: d.bestPractices,
+            seo: d.seo,
+            performance: d.performance,
+            cls: d.cls,
+            si: d.si,
+            fcp: d.fcp,
+            lcp: d.lcp,
+            tbt: d.tbt,
+            cpu: d.cpu,
+            memory: d.memory,
+            disk: d.disk,
+            host: d.host,
+            net: d.net,
+          },
+        },
+        upsert: true,
+      },
+    };
+  };
+
+  upsertHourly = async (
+    windowStart: Date,
+    windowEnd: Date
+  ): Promise<number> => {
     const matchWindow = { createdAt: { $gte: windowStart, $lt: windowEnd } };
 
     // 1) Base types (http/https/port/ping)
@@ -320,7 +364,9 @@ class StatsAggregationService implements IStatsAggregationService {
                     total_inodes: { $avg: "$$diskGroup.total_inodes" },
                     free_inodes: { $avg: "$$diskGroup.free_inodes" },
                     used_inodes: { $avg: "$$diskGroup.used_inodes" },
-                    inodes_usage_percent: { $avg: "$$diskGroup.inodes_usage_percent" },
+                    inodes_usage_percent: {
+                      $avg: "$$diskGroup.inodes_usage_percent",
+                    },
                     read_bytes: { $avg: "$$diskGroup.read_bytes" },
                     write_bytes: { $avg: "$$diskGroup.write_bytes" },
                     read_time: { $avg: "$$diskGroup.read_time" },
@@ -342,7 +388,9 @@ class StatsAggregationService implements IStatsAggregationService {
                 $range: [
                   0,
                   {
-                    $size: { $ifNull: [{ $arrayElemAt: ["$netsArray", 0] }, []] },
+                    $size: {
+                      $ifNull: [{ $arrayElemAt: ["$netsArray", 0] }, []],
+                    },
                   },
                 ],
               },
@@ -382,50 +430,16 @@ class StatsAggregationService implements IStatsAggregationService {
     let upserts = 0;
 
     const bulkOps: any[] = [];
-    const addUpsert = (d: any) => {
-      bulkOps.push({
-        updateOne: {
-          filter: { monitorId: d._id, windowStart },
-          update: {
-            $setOnInsert: {
-              monitorId: d._id,
-              teamId: d.teamId,
-              type: d.type,
-              windowStart,
-              windowEnd,
-            },
-            $set: {
-              finalized: false,
-              count: d.count ?? 0,
-              avgResponseTime: d.avgResponseTime ?? 0,
-              upChecks: d.upChecks ?? 0,
-              downChecks: d.downChecks ?? 0,
-              avgResponseTimeUp: (d.avgResponseTimeUp ?? null) as any,
-              avgResponseTimeDown: (d.avgResponseTimeDown ?? null) as any,
-              accessibility: d.accessibility,
-              bestPractices: d.bestPractices,
-              seo: d.seo,
-              performance: d.performance,
-              cls: d.cls,
-              si: d.si,
-              fcp: d.fcp,
-              lcp: d.lcp,
-              tbt: d.tbt,
-              cpu: d.cpu,
-              memory: d.memory,
-              disk: d.disk,
-              host: d.host,
-              net: d.net,
-            },
-          },
-          upsert: true,
-        },
-      });
-    };
 
-    baseAgg.forEach(addUpsert);
-    pagespeedAgg.forEach(addUpsert);
-    infraAgg.forEach(addUpsert);
+    baseAgg.forEach((el) =>
+      bulkOps.push(this.makeUpsertOp(el, windowStart, windowEnd))
+    );
+    pagespeedAgg.forEach((el) =>
+      bulkOps.push(this.makeUpsertOp(el, windowStart, windowEnd))
+    );
+    infraAgg.forEach((el) =>
+      bulkOps.push(this.makeUpsertOp(el, windowStart, windowEnd))
+    );
 
     if (bulkOps.length > 0) {
       const res = await StatsHourly.bulkWrite(bulkOps, { ordered: false });
@@ -499,7 +513,12 @@ class StatsAggregationService implements IStatsAggregationService {
         usagePct: Weighted;
       };
       disk: Map<string, DeviceAgg>;
-      host: { os?: string; platform?: string; kernel_version?: string; pretty_name?: string };
+      host: {
+        os?: string;
+        platform?: string;
+        kernel_version?: string;
+        pretty_name?: string;
+      };
       net: Map<string, DeviceAgg>;
       lastTs: number; // for choosing "last" fields
     }
@@ -571,14 +590,20 @@ class StatsAggregationService implements IStatsAggregationService {
         g.lastTs = ts;
         // capture last-known fields
         const cpu = (h as any).cpu || {};
-        if (typeof cpu.physical_core === "number") g.cpu.lastPhysical = cpu.physical_core;
-        if (typeof cpu.logical_core === "number") g.cpu.lastLogical = cpu.logical_core;
-        if (typeof cpu.current_frequency === "number") g.cpu.lastCurrentFreq = cpu.current_frequency;
+        if (typeof cpu.physical_core === "number")
+          g.cpu.lastPhysical = cpu.physical_core;
+        if (typeof cpu.logical_core === "number")
+          g.cpu.lastLogical = cpu.logical_core;
+        if (typeof cpu.current_frequency === "number")
+          g.cpu.lastCurrentFreq = cpu.current_frequency;
 
         const mem = (h as any).memory || {};
-        if (typeof mem.total_bytes === "number") g.memory.lastTotal = mem.total_bytes;
-        if (typeof mem.available_bytes === "number") g.memory.lastAvail = mem.available_bytes;
-        if (typeof mem.used_bytes === "number") g.memory.lastUsed = mem.used_bytes;
+        if (typeof mem.total_bytes === "number")
+          g.memory.lastTotal = mem.total_bytes;
+        if (typeof mem.available_bytes === "number")
+          g.memory.lastAvail = mem.available_bytes;
+        if (typeof mem.used_bytes === "number")
+          g.memory.lastUsed = mem.used_bytes;
 
         const host = (h as any).host || {};
         g.host = {
@@ -675,10 +700,12 @@ class StatsAggregationService implements IStatsAggregationService {
     // Prepare bulk upserts for daily
     const bulkOps: any[] = [];
     for (const g of groups.values()) {
-      const cpuTemps: number[] | undefined = g.cpu.tempSums.map((s, i) => {
-        const w = g.cpu.tempWeights[i] ?? 0;
-        return w > 0 ? s / w : undefined;
-      }).filter((v) => typeof v === "number") as number[];
+      const cpuTemps: number[] | undefined = g.cpu.tempSums
+        .map((s, i) => {
+          const w = g.cpu.tempWeights[i] ?? 0;
+          return w > 0 ? s / w : undefined;
+        })
+        .filter((v) => typeof v === "number") as number[];
 
       const diskArr = Array.from(g.disk.values()).map((d) => {
         const o: any = { device: d.key };
