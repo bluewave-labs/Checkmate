@@ -1,6 +1,7 @@
 import { BaseChart } from "@/components/monitors/Chart";
 import { TrendingUp } from "lucide-react";
 import {
+  XAxis,
   AreaChart,
   Area,
   Tooltip,
@@ -59,6 +60,7 @@ export const HistogramPageSpeedScores = ({
     >
       <ResponsiveContainer width="100%" minWidth={25} height={215}>
         <AreaChart data={checks}>
+          <XAxis dataKey={"_id"} />
           <CartesianGrid
             stroke={theme.palette.divider}
             strokeWidth={1}
