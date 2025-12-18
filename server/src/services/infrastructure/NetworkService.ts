@@ -16,8 +16,6 @@ import ApiError from "@/utils/ApiError.js";
 import { config } from "@/config/index.js";
 import CacheableLookup from "cacheable-lookup";
 import { getChildLogger } from "@/logger/Logger.js";
-// Track sockets we've already attached a secureConnect listener to avoid leaks on keep-alive reuse
-const tlsCaptureAttached: WeakSet<any> = new WeakSet();
 const SERVICE_NAME = "NetworkService";
 const logger = getChildLogger(SERVICE_NAME);
 export interface INetworkService {
@@ -146,36 +144,7 @@ class NetworkService implements INetworkService {
               },
             })
           : this.client(url);
-        req.on("request", (nodeReq: ClientRequest) => {
-          nodeReq.on("socket", (socket: any) => {
-            const capture = () => {
-              try {
-                if (typeof socket.getPeerCertificate === "function") {
-                  const cert = socket.getPeerCertificate(true);
-                  if (cert && cert.valid_to) {
-                    certificateExpiry = new Date(cert.valid_to);
-                  }
-                }
-              } catch (_) {
-                // Non-TLS or unsupported socket; ignore
-              }
-            };
 
-            const isTLS = typeof (socket as any).getPeerCertificate === "function";
-            if (!isTLS) return;
-
-            // If socket already encrypted (keep-alive reuse), capture immediately
-            if ((socket as any).encrypted === true) {
-              capture();
-            }
-
-            // Add at most one secureConnect listener per socket
-            if (!tlsCaptureAttached.has(socket) && typeof socket.once === "function") {
-              tlsCaptureAttached.add(socket);
-              socket.once("secureConnect", capture);
-            }
-          });
-        });
         const response: Response = await req;
         return this.buildStatusResponse(
           monitor,
