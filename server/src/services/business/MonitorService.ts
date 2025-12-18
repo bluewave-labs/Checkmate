@@ -581,12 +581,13 @@ class MonitorService implements IMonitorService {
     }
 
     // Route for raw checks (2h)
+    const endDate = new Date();
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
-      createdAt: { $gte: Date };
+      createdAt: { $gte: Date; $lt: Date };
     } = {
       "metadata.monitorId": monitor._id,
-      createdAt: { $gte: startDate },
+      createdAt: { $gte: startDate, $lt: endDate },
     };
 
     const dateFormat = "%Y-%m-%dT%H:%M:00Z";
@@ -615,12 +616,17 @@ class MonitorService implements IMonitorService {
       finalProjection = { _id: 1, count: 1, avgResponseTime: 1 };
     }
 
-    const checks = await Check.aggregate([
-      {
-        $match: matchStage,
-      },
-      { $sort: { createdAt: 1 } },
+    const pipeline: any[] = [
+      { $match: matchStage },
       { $project: { ...projectStage, status: 1 } },
+    ];
+
+    // For infrastructure monitors we rely on $last in group, which requires ordering by createdAt
+    if (monitor.type === "infrastructure") {
+      pipeline.push({ $sort: { createdAt: 1 } });
+    }
+
+    pipeline.push(
       {
         $group: {
           ...groupClause,
@@ -655,8 +661,10 @@ class MonitorService implements IMonitorService {
             ],
           },
         },
-      },
-    ]);
+      }
+    );
+
+    const checks = await Check.aggregate(pipeline);
 
     // Get monitor stats
     const monitorStats = await MonitorStats.findOne({
