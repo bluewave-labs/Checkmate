@@ -308,4 +308,6 @@ const CheckSchema = new Schema<ICheck>(
   }
 );
 
+CheckSchema.index({ "metadata.monitorId": 1, createdAt: 1 });
+
 export const Check = mongoose.model<ICheck>("Check", CheckSchema);
