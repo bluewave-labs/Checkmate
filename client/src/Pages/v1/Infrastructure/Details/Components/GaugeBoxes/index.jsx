@@ -10,7 +10,7 @@ import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
 const Gauges = ({ isLoading = false, monitor }) => {
-	const { decimalToPercentage, formatBytes } = useHardwareUtils();
+	const { decimalToPercentage, formatBytes, formatDeviceName, formatMountpoint } = useHardwareUtils();
 	const theme = useTheme();
 	const { t } = useTranslation();
 
@@ -46,16 +46,27 @@ const Gauges = ({ isLoading = false, monitor }) => {
 			metricTwo: t("frequency"),
 			valueTwo: `${(cpuFrequency / 1000).toFixed(2)} Ghz`,
 		},
-		...(latestCheck?.disk ?? []).map((disk, idx) => ({
-			type: "disk",
-			diskIndex: idx,
-			value: decimalToPercentage(disk.usage_percent),
-			heading: `Disk${idx} usage`,
-			metricOne: t("used"),
-			valueOne: formatBytes(disk.total_bytes - disk.free_bytes, true),
-			metricTwo: t("total"),
-			valueTwo: formatBytes(disk.total_bytes, true),
-		})),
+		...(latestCheck?.disk ?? [])
+			.filter((disk) => {
+				if (!monitor?.selectedDisks || monitor.selectedDisks.length === 0) {
+					return true;
+				}
+				return monitor.selectedDisks.includes(disk.mountpoint || disk.device);
+			})
+			.map((disk, idx) => ({
+				type: "disk",
+				diskIndex: idx,
+				value: decimalToPercentage(disk.usage_percent),
+				heading: `Disk${idx} usage`,
+				metricOne: t("used"),
+				valueOne: formatBytes(disk.total_bytes - disk.free_bytes, true),
+				metricTwo: t("total"),
+				valueTwo: formatBytes(disk.total_bytes, true),
+				metricThree: t("device"),
+				valueThree: formatDeviceName(disk.device),
+				metricFour: t("mountpoint"),
+				valueFour: formatMountpoint(disk.mountpoint),
+			})),
 	];
 
 	return (
@@ -74,6 +85,10 @@ const Gauges = ({ isLoading = false, monitor }) => {
 						valueOne={gauge.valueOne}
 						metricTwo={gauge.metricTwo}
 						valueTwo={gauge.valueTwo}
+						metricThree={gauge.metricThree}
+						valueThree={gauge.valueThree}
+						metricFour={gauge.metricFour}
+						valueFour={gauge.valueFour}
 					/>
 				);
 			})}

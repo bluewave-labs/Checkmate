@@ -10,9 +10,11 @@ import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index
 import MonitorStatusHeader from "./Components/MonitorStatusHeader.jsx";
 import MonitorActionButtons from "./Components/MonitorActionButtons.jsx";
 import CustomAlertsSection from "./Components/CustomAlertsSection.jsx";
+import DiskSelection from "./Components/DiskSelection.jsx";
 // Utils
 import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
 import { useGetNotificationsByTeamId } from "../../../../Hooks/v1/useNotifications.js";
+import { networkService } from "../../../../Utils/NetworkService";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
@@ -37,6 +39,7 @@ const CreateInfrastructureMonitor = () => {
 	// State
 	const [https, setHttps] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [availableDisks, setAvailableDisks] = useState([]);
 
 	// Fetch monitor details if editing
 	const [monitor, isLoading] = useFetchHardwareMonitorById({
@@ -72,9 +75,9 @@ const CreateInfrastructureMonitor = () => {
 		...(isCreate
 			? [{ name: "Create", path: "/infrastructure/create" }]
 			: [
-					{ name: "Details", path: `/infrastructure/${monitorId}` },
-					{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
-				]),
+				{ name: "Details", path: `/infrastructure/${monitorId}` },
+				{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
+			]),
 	];
 	// Populate form fields if editing
 	useEffect(() => {
@@ -85,6 +88,31 @@ const CreateInfrastructureMonitor = () => {
 		} else if (monitor) {
 			setHttps(monitor.url.startsWith("https"));
 			initializeInfrastructureMonitorForUpdate(monitor);
+			const fetchLastCheck = async () => {
+				try {
+					const { stats } = monitor ?? {};
+					let latestCheck = stats?.aggregateData?.latestCheck;
+					let disks = latestCheck?.disk || [];
+
+					if (disks.length > 0) {
+						setAvailableDisks(disks);
+						return;
+					}
+
+					const response = await networkService.getChecksByMonitor({
+						monitorId,
+						dateRange: "all",
+						rowsPerPage: 1,
+						sortOrder: "desc",
+					});
+					disks = response?.data?.data?.checks?.[0]?.disk || [];
+					setAvailableDisks(disks);
+				} catch (error) {
+					setAvailableDisks([]);
+				}
+			};
+
+			fetchLastCheck();
 		}
 	}, [
 		isCreate,
@@ -132,6 +160,8 @@ const CreateInfrastructureMonitor = () => {
 		isDeleting ||
 		isPausing ||
 		notificationsAreLoading;
+
+
 
 	return (
 		<Box className="create-infrastructure-monitor">
@@ -327,6 +357,17 @@ const CreateInfrastructureMonitor = () => {
 					infrastructureMonitor={infrastructureMonitor}
 					handleCheckboxChange={handleCheckboxChange}
 				/>
+
+				{monitorId && (
+					<DiskSelection
+						availableDisks={availableDisks}
+						selectedDisks={infrastructureMonitor.selectedDisks}
+						onChange={(newSelectedDisks) =>
+							onChangeForm("selectedDisks", newSelectedDisks)
+						}
+					/>
+				)}
+
 				<ConfigBox>
 					<Box>
 						<Typography

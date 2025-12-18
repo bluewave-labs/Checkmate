@@ -1142,6 +1142,12 @@
 	"packetsSent": "Packets Sent",
 	"rate": "Rate",
 	"selectInterface": "Select Interface",
+	"v1": {
+		"infrastructure": {
+		"disk_selection_title": "Disk Selection",
+		"disk_selection_info": "No disk detected for the moment.",
+		"disk_selection_description": "Select the specific disks you want to monitor."
+		}
 	"incidentsPage": {
 		"title": "Incidents",
 		"description": "Manage incidents for your monitors. You can resolve incidents here.",

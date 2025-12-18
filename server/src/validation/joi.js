@@ -174,6 +174,7 @@ const createMonitorBodyValidation = joi.object({
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string(),
 	gameId: joi.string().allow(""),
+	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
 });
 
@@ -204,6 +205,7 @@ const editMonitorBodyValidation = joi.object({
 		usage_temperature: joi.number(),
 	}),
 	gameId: joi.string(),
+	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
 });
 

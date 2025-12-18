@@ -1129,5 +1129,12 @@
 	"packetsReceivedRate": "Rate empfangener Pakete",
 	"packetsSent": "Gesendete Pakete",
 	"rate": "Rate",
-	"selectInterface": "Schnittstelle auswählen"
+	"selectInterface": "Schnittstelle auswählen",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "Festplattenauswahl",
+			"disk_selection_info": "Momentan wurde keine Festplatte erkannt.",
+			"disk_selection_description": "Wählen Sie die spezifischen Festplatten aus, die Sie überwachen möchten."
+		}
+	}
 }

@@ -6,7 +6,8 @@ import { Stack, Typography, Box } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
-const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => {
+const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo, 
+				metricThree, valueThree, metricFour, valueFour }) => {
 	const theme = useTheme();
 
 	const valueStyle = {
@@ -70,6 +71,24 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 						<Typography>{metricTwo}</Typography>
 						<Typography sx={valueStyle}>{valueTwo}</Typography>
 					</Stack>
+					<Stack
+						justifyContent={"space-between"}
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+					>
+						<Typography>{metricThree}</Typography>
+						<Typography sx={valueStyle}>{valueThree}</Typography>
+					</Stack>
+					<Stack
+						justifyContent={"space-between"}
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+					>
+						<Typography>{metricFour}</Typography>
+						<Typography sx={valueStyle}>{valueFour}</Typography>
+					</Stack>
 				</Box>
 			</Stack>
 		</BaseContainer>
@@ -83,6 +102,10 @@ Gauge.propTypes = {
 	valueOne: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 	metricTwo: PropTypes.string,
 	valueTwo: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricThree: PropTypes.string,
+	valueThree: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricFour: PropTypes.string,
+	valueFour: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
 
 export default Gauge;
