@@ -1,5 +1,6 @@
 import { BaseChart } from "@/components/monitors/Chart";
 import { TrendingUp } from "lucide-react";
+import { XTick } from "./ChartResponseTime";
 import {
   XAxis,
   AreaChart,
@@ -49,8 +50,10 @@ const config: Record<string, ConfigItem> = {
 
 export const HistogramPageSpeedScores = ({
   checks,
+  range,
 }: {
   checks: GroupedCheck[];
+  range: string;
 }) => {
   const theme = useTheme();
   return (
@@ -60,7 +63,10 @@ export const HistogramPageSpeedScores = ({
     >
       <ResponsiveContainer width="100%" minWidth={25} height={215}>
         <AreaChart data={checks}>
-          <XAxis dataKey={"_id"} />
+          <XAxis
+            dataKey={"_id"}
+            tick={(props) => <XTick {...props} range={range} />}
+          />
           <CartesianGrid
             stroke={theme.palette.divider}
             strokeWidth={1}

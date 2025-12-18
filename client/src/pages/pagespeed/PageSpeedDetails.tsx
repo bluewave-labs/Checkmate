@@ -87,7 +87,7 @@ const PageSpeedDetailsPage = () => {
         />
       </Stack>
       <HeaderRange loading={isValidating} range={range} setRange={setRange} />
-      <HistogramPageSpeedScores checks={checks} />
+      <HistogramPageSpeedScores checks={checks} range={range} />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(10)}>
         <ChartPageSpeedReport latestCheck={checks?.[0]} />
         <ChartPageSpeedReportLegend latestCheck={checks?.[0]} />
