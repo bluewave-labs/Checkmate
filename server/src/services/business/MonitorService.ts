@@ -257,9 +257,9 @@ class MonitorService implements IMonitorService {
 
   // getDateFormat removed — only 2h (raw checks) remains, using minute buckets inline
 
-  private getBaseGroup = (dateFormat: string): Record<string, any> => {
+  private getBaseGroup = (_dateFormat: string): Record<string, any> => {
     return {
-      _id: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+      _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
       count: { $sum: 1 },
       avgResponseTime: { $avg: "$responseTime" },
     };
@@ -269,9 +269,9 @@ class MonitorService implements IMonitorService {
     return { status: 1, responseTime: 1, createdAt: 1 };
   };
 
-  private getPageSpeedGroup = (dateFormat: string): Record<string, any> => {
+  private getPageSpeedGroup = (_dateFormat: string): Record<string, any> => {
     return {
-      _id: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+      _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
       count: { $sum: 1 },
       avgResponseTime: { $avg: "$responseTime" },
       accessibility: { $avg: "$lighthouse.accessibility" },
@@ -300,9 +300,9 @@ class MonitorService implements IMonitorService {
     return projectStage;
   };
 
-  private getInfraGroup = (dateFormat: string): Record<string, any> => {
+  private getInfraGroup = (_dateFormat: string): Record<string, any> => {
     return {
-      _id: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+      _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
       count: { $sum: 1 },
       avgResponseTime: { $avg: "$responseTime" },
       physicalCores: { $last: "$system.cpu.physical_core" },
