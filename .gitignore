@@ -5,3 +5,4 @@ AGENTS.md
 *.sh
 notes
 docker-compose.yml
+mongo

@@ -6,6 +6,7 @@ import type { ICheck, IChecksWithCount } from "@/types/check";
 import type { ApiResponse } from "@/types/api";
 import type { MonitorStatus } from "@/types/monitor";
 
+import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/hooks/UseApi";
@@ -51,6 +52,7 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 };
 
 export const CheckTable = ({ monitorId }: { monitorId: string }) => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { t } = useTranslation();
@@ -87,7 +89,13 @@ export const CheckTable = ({ monitorId }: { monitorId: string }) => {
 
   return (
     <Box>
-      <Table headers={headers} data={checks} />
+      <Table
+        headers={headers}
+        data={checks}
+        onRowClick={(row) => {
+          navigate(`/checks/${row._id}`);
+        }}
+      />
       <Pagination
         component="div"
         count={count}

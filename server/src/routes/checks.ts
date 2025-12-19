@@ -26,6 +26,13 @@ class CheckRoutes {
       validateQuery(checksStatusIdQuerySchema),
       this.controller.getChecksByStatus
     );
+    this.router.get(
+      "/:id",
+      verifyToken,
+      addUserContext,
+      verifyOrgPermission([PERMISSIONS.checks.read]),
+      this.controller.getCheckById
+    );
   };
 
   getRouter() {

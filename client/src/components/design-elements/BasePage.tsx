@@ -7,16 +7,42 @@ import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 interface BasePageProps extends StackProps {
+  loading?: boolean;
+  error?: boolean;
   children: React.ReactNode;
   breadcrumbOverride?: string[];
 }
 
 export const BasePage = ({
+  loading,
+  error,
   children,
   breadcrumbOverride,
   ...props
 }: BasePageProps) => {
   const theme = useTheme();
+
+  if (loading) {
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: "100%" }}
+      >
+        <CircularProgress color="primary" size={28} />
+      </Stack>
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorFallback
+        title="Something went wrong..."
+        subtitle="Please try again later"
+      />
+    );
+  }
+
   return (
     <Stack spacing={theme.spacing(10)} {...props}>
       <Breadcrumb breadcrumbOverride={breadcrumbOverride} />
@@ -49,27 +75,6 @@ export const BasePageWithStates = ({
 }: BasePageWithStatesProps) => {
   const showLoading = loading && (!items || items.length === 0);
 
-  if (showLoading) {
-    return (
-      <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ height: "100%" }}
-      >
-        <CircularProgress color="primary" size={28} />
-      </Stack>
-    );
-  }
-
-  if (error) {
-    return (
-      <ErrorFallback
-        title="Something went wrong..."
-        subtitle="Please try again later"
-      />
-    );
-  }
-
   if (isEmpty(items)) {
     return (
       <EmptyFallback
@@ -81,7 +86,11 @@ export const BasePageWithStates = ({
     );
   }
 
-  return <BasePage {...props}>{children}</BasePage>;
+  return (
+    <BasePage loading={showLoading} error={error} {...props}>
+      {children}
+    </BasePage>
+  );
 };
 
 interface MonitorBasePageWithStatesProps extends StackProps {
@@ -114,27 +123,6 @@ export const MonitorBasePageWithStates = ({
 
   const showLoading = loading && (!items || items.length === 0);
 
-  if (showLoading) {
-    return (
-      <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ height: "100%" }}
-      >
-        <CircularProgress color="primary" size={28} />
-      </Stack>
-    );
-  }
-
-  if (error) {
-    return (
-      <ErrorFallback
-        title="Something went wrong..."
-        subtitle="Please try again later"
-      />
-    );
-  }
-
   if (isEmpty(items)) {
     return (
       <EmptyMonitorFallback
@@ -148,5 +136,9 @@ export const MonitorBasePageWithStates = ({
     );
   }
 
-  return <BasePage {...props}>{children}</BasePage>;
+  return (
+    <BasePage loading={showLoading} error={error} {...props}>
+      {children}
+    </BasePage>
+  );
 };

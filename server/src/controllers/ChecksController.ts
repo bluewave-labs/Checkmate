@@ -4,6 +4,7 @@ import { CheckService } from "@/services/index.js";
 
 export interface IChecksController {
   getChecksByStatus: (req: Request, res: Response, next: NextFunction) => void;
+  getCheckById: (req: Request, res: Response, next: NextFunction) => void;
 }
 
 class ChecksController implements IChecksController {
@@ -48,6 +49,30 @@ class ChecksController implements IChecksController {
       return res.status(200).json({
         message: "Checks retrieved successfully",
         data: checks,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getCheckById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userContext = req.user;
+      if (!userContext) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const teamId = userContext.currentTeamId;
+      if (!teamId) {
+        throw new ApiError("No team ID", 400);
+      }
+
+      const checkId = req.params.id;
+      const check = await this.checkService.getCheckById(checkId, teamId);
+
+      return res.status(200).json({
+        message: "Check retrieved successfully",
+        data: check,
       });
     } catch (error) {
       next(error);

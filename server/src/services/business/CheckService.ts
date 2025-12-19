@@ -33,6 +33,8 @@ export interface ICheckService {
     range: string
   ) => Promise<{ checks: ICheck[]; count: number }>;
 
+  getCheckById: (checkId: string, teamId: string) => Promise<ICheck | null>;
+
   cleanupOrphanedChecks: () => Promise<boolean>;
 }
 
@@ -258,6 +260,13 @@ class CheckService implements ICheckService {
         .limit(rowsPerPage),
     ]);
     return { checks, count };
+  };
+
+  getCheckById = async (checkId: string, teamId: string) => {
+    return await Check.findOne({
+      _id: new mongoose.Types.ObjectId(checkId),
+      "metadata.teamId": new mongoose.Types.ObjectId(teamId),
+    });
   };
 }
 
