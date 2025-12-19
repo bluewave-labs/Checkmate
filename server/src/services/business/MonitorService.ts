@@ -503,84 +503,7 @@ class MonitorService implements IMonitorService {
     return {};
   };
 
-  // status parameter deprecated and ignored; retained for backward compatibility
-  getEmbedChecks = async (
-    teamId: string,
-    monitorId: string,
-    range: string
-  ): Promise<MonitorWithChecksResponse> => {
-    const monitor = await Monitor.findOne({ _id: monitorId, teamId });
-    if (!monitor) {
-      throw new ApiError("Monitor not found", 404);
-    }
-
-    const startDate = this.getStartDate(range);
-
-    // Route for aggregated stats (24h, 7d, 30d)
-    if (range === "24h" || range === "7d" || range === "30d") {
-      const monitorStats = await MonitorStats.findOne({
-        monitorId: monitor._id,
-      });
-      if (!monitorStats) {
-        throw new ApiError("Monitor stats not found", 404);
-      }
-
-      const useDaily = range === "30d";
-      const Model = useDaily ? StatsDaily : StatsHourly;
-      const endDate = new Date();
-
-      const docs = await Model.find({
-        monitorId: monitor._id,
-        windowStart: { $gte: startDate, $lt: endDate },
-      })
-        .sort({ windowStart: -1 })
-        .lean();
-
-      const checks = (docs as any[]).map((d) => {
-        const base: any = {
-          _id: new Date(d.windowStart).toISOString(),
-          count: d.count ?? 0,
-          avgResponseTime: d.avgResponseTime ?? 0,
-          upChecks: d.upChecks ?? 0,
-          downChecks: d.downChecks ?? 0,
-          avgResponseTimeUp: d.avgResponseTimeUp ?? null,
-          avgResponseTimeDown: d.avgResponseTimeDown ?? null,
-        };
-        if (monitor.type === "pagespeed") {
-          return {
-            ...base,
-            accessibility: d.accessibility,
-            seo: d.seo,
-            bestPractices: d.bestPractices,
-            performance: d.performance,
-            cls: d.cls,
-            si: d.si,
-            fcp: d.fcp,
-            lcp: d.lcp,
-            tbt: d.tbt,
-          };
-        }
-        if (monitor.type === "infrastructure") {
-          return {
-            ...base,
-            cpu: d.cpu,
-            memory: d.memory,
-            disk: d.disk,
-            host: d.host,
-            net: d.net,
-          };
-        }
-        return base;
-      });
-
-      return {
-        monitor: monitor.toObject(),
-        checks,
-        stats: monitorStats,
-      };
-    }
-
-    // Route for raw checks (2h)
+  private getEmbedChecksRecent = async (monitor: IMonitor, startDate: Date) => {
     const endDate = new Date();
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
@@ -680,6 +603,92 @@ class MonitorService implements IMonitorService {
       checks,
       stats: monitorStats,
     };
+  };
+
+  private getEmbedChecksOtherRanges = async (
+    monitor: IMonitor,
+    range: string,
+    startDate: Date
+  ) => {
+    const monitorStats = await MonitorStats.findOne({
+      monitorId: monitor._id,
+    });
+    if (!monitorStats) {
+      throw new ApiError("Monitor stats not found", 404);
+    }
+
+    const useDaily = range === "30d";
+    const Model = useDaily ? StatsDaily : StatsHourly;
+    const endDate = new Date();
+
+    const docs = await Model.find({
+      monitorId: monitor._id,
+      windowStart: { $gte: startDate, $lt: endDate },
+    })
+      .sort({ windowStart: -1 })
+      .lean();
+
+    const checks = (docs as any[]).map((d) => {
+      const base: any = {
+        _id: new Date(d.windowStart).toISOString(),
+        count: d.count ?? 0,
+        avgResponseTime: d.avgResponseTime ?? 0,
+        upChecks: d.upChecks ?? 0,
+        downChecks: d.downChecks ?? 0,
+        avgResponseTimeUp: d.avgResponseTimeUp ?? null,
+        avgResponseTimeDown: d.avgResponseTimeDown ?? null,
+      };
+      if (monitor.type === "pagespeed") {
+        return {
+          ...base,
+          accessibility: d.accessibility,
+          seo: d.seo,
+          bestPractices: d.bestPractices,
+          performance: d.performance,
+          cls: d.cls,
+          si: d.si,
+          fcp: d.fcp,
+          lcp: d.lcp,
+          tbt: d.tbt,
+        };
+      }
+      if (monitor.type === "infrastructure") {
+        return {
+          ...base,
+          cpu: d.cpu,
+          memory: d.memory,
+          disk: d.disk,
+          host: d.host,
+          net: d.net,
+        };
+      }
+      return base;
+    });
+
+    return {
+      monitor: monitor.toObject(),
+      checks,
+      stats: monitorStats,
+    };
+  };
+
+  getEmbedChecks = async (
+    teamId: string,
+    monitorId: string,
+    range: string
+  ): Promise<MonitorWithChecksResponse> => {
+    const monitor = await Monitor.findOne({ _id: monitorId, teamId });
+    if (!monitor) {
+      throw new ApiError("Monitor not found", 404);
+    }
+
+    const startDate = this.getStartDate(range);
+
+    if (range === "24h" || range === "7d" || range === "30d") {
+      return await this.getEmbedChecksOtherRanges(monitor, range, startDate);
+    } else {
+      return await this.getEmbedChecksRecent(monitor, startDate);
+    }
   };
 
   async togglePause(userId: string, teamId: string, id: string) {
