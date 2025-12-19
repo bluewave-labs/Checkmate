@@ -29,7 +29,7 @@ export const formatDateWithTz = (
 
 export const tickDateFormatLookup = (range: string) => {
   const tickFormatLookup: Record<string, string> = {
-    "2h": "h:mm A",
+    "1h": "h:mm A",
     "24h": "h:mm A",
     "7d": "MM/D, h:mm A",
     "30d": "ddd. M/D",
@@ -43,7 +43,7 @@ export const tickDateFormatLookup = (range: string) => {
 
 export const tooltipDateFormatLookup = (range: string) => {
   const dateFormatLookup: Record<string, string> = {
-    "2h": "ddd. MMMM D, YYYY, hh:mm A",
+    "1h": "ddd. MMMM D, YYYY, hh:mm A",
     "24h": "ddd. MMMM D, YYYY, hh:mm A",
     "7d": "ddd. MMMM D, YYYY, hh:mm A",
     "30d": "ddd. MMMM D, YYYY",

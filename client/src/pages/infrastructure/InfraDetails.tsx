@@ -29,7 +29,7 @@ const InfraDetailsPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { id } = useParams();
-  const [range, setRange] = useState("2h");
+  const [range, setRange] = useState("1h");
 
   const { response, isValidating, refetch } = useGet<
     ApiResponse<IMonitorWithMonitorStats>

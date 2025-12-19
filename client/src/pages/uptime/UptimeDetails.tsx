@@ -29,7 +29,7 @@ const UptimeDetailsPage = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { t } = useTranslation();
   // Local state
-  const [range, setRange] = useState("2h");
+  const [range, setRange] = useState("1h");
 
   const { response, loading, error, refetch } = useGet<
     ApiResponse<IMonitorWithMonitorStats>

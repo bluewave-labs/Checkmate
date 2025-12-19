@@ -22,7 +22,7 @@ const PageSpeedDetailsPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { id } = useParams();
-  const [range, setRange] = useState("2h");
+  const [range, setRange] = useState("1h");
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
   const { patch, loading: isPatching } = usePatch<any, IMonitor>();

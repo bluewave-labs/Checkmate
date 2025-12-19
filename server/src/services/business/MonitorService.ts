@@ -242,7 +242,7 @@ class MonitorService implements IMonitorService {
   private getStartDate(range: string): Date {
     const now = new Date();
     switch (range) {
-      case "2h":
+      case "1h":
         return new Date(now.getTime() - 2 * 60 * 60 * 1000);
       case "24h":
         return new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -587,7 +587,9 @@ class MonitorService implements IMonitorService {
       }
     );
 
-    const checks = await Check.aggregate(pipeline);
+    const checks = await Check.aggregate(pipeline)
+      .allowDiskUse(true)
+      .hint({ "metadata.monitorId": 1, createdAt: 1 });
 
     // Get monitor stats
     const monitorStats = await MonitorStats.findOne({

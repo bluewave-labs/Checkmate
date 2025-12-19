@@ -18,7 +18,7 @@ import { config } from "@/config/index";
 const ChecksPage = () => {
   const theme = useTheme();
   const [selectedMonitorId, setSelectedMonitorId] = useState<string>("all");
-  const [range, setRange] = useState("2h");
+  const [range, setRange] = useState("1h");
   const [status, setStatus] = useState<"up" | "down">("down");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);

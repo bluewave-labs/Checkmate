@@ -52,10 +52,10 @@ export const HeaderRange = ({
         )}
         <Button
           variant="contained"
-          onClick={() => setRange("2h")}
+          onClick={() => setRange("1h")}
           loading={loading}
           sx={
-            range === "2h"
+            range === "1h"
               ? {
                   backgroundColor: theme.palette.secondary.dark,
                   color: theme.palette.secondary.contrastText,
