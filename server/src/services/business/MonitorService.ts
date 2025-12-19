@@ -7,6 +7,7 @@ import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
 import { MonitorWithChecksResponse } from "@/types/index.js";
 import { MonitorStatus, MonitorType } from "@/db/models/monitors/Monitor.js";
 import { Entitlements } from "@/types/entitlements.js";
+import { getStartDate } from "@/utils/TimeUtils.js";
 
 export interface IImportedMonitor {
   name: string;
@@ -238,22 +239,6 @@ class MonitorService implements IMonitorService {
     }
     return monitor;
   };
-
-  private getStartDate(range: string): Date {
-    const now = new Date();
-    switch (range) {
-      case "1h":
-        return new Date(now.getTime() - 1 * 60 * 60 * 1000);
-      case "24h":
-        return new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      case "7d":
-        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      case "30d":
-        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      default:
-        throw new ApiError("Invalid range parameter", 400);
-    }
-  }
 
   private getBaseGroup = (): Record<string, any> => {
     return {
@@ -681,7 +666,7 @@ class MonitorService implements IMonitorService {
       throw new ApiError("Monitor not found", 404);
     }
 
-    const startDate = this.getStartDate(range);
+    const startDate = getStartDate(range);
 
     if (range === "24h" || range === "7d" || range === "30d") {
       return await this.getEmbedChecksOtherRanges(monitor, range, startDate);

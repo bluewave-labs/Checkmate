@@ -9,8 +9,8 @@ import {
 import type { ResolutionType } from "@/db/models/index.js";
 import mongoose from "mongoose";
 import { getChildLogger } from "@/logger/Logger.js";
-import ApiError from "@/utils/ApiError.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
+import { getStartDate } from "@/utils/TimeUtils.js";
 
 type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
   monitorId: IMonitor;
@@ -64,24 +64,6 @@ class IncidentService implements IIncidentService {
   public SERVICE_NAME: string;
   constructor() {
     this.SERVICE_NAME = SERVICE_NAME;
-  }
-
-  private getStartDate(range: string): Date {
-    const now = new Date();
-    switch (range) {
-      case "all":
-        return new Date(0);
-      case "2h":
-        return new Date(now.getTime() - 2 * 60 * 60 * 1000);
-      case "24h":
-        return new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      case "7d":
-        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      case "30d":
-        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      default:
-        throw new ApiError("Invalid range parameter", 400);
-    }
   }
 
   handleStatusChange = async (updatedMonitor: IMonitor, lastCheck: ICheck) => {
@@ -216,7 +198,7 @@ class IncidentService implements IIncidentService {
     resolved?: boolean,
     resolutionType?: ResolutionType
   ) => {
-    const startDate = this.getStartDate(range);
+    const startDate = getStartDate(range);
     const match = {
       teamId: teamId,
       ...(monitorId && { monitorId }),
