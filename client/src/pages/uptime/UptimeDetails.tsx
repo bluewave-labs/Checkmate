@@ -129,6 +129,7 @@ const UptimeDetailsPage = () => {
             stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"
           }
         />
+        {/**
         <StatBox
           title={t("monitors.common.stats.certificate")}
           subtitle={
@@ -137,6 +138,7 @@ const UptimeDetailsPage = () => {
               : "N/A"
           }
         />
+        */}
       </Stack>
       <HeaderRange loading={loading} range={range} setRange={setRange} />
       <Stack direction={isSmall ? "column" : "row"} gap={theme.spacing(8)}>
