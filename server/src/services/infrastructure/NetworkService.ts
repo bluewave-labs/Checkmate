@@ -9,8 +9,7 @@ import type {
   ICaptureInfo,
   ILighthouseResult,
 } from "@/db/models/index.js";
-import type { TLSSocket, DetailedPeerCertificate } from "node:tls";
-import type { ClientRequest } from "node:http";
+import type { TLSSocket } from "node:tls";
 import { MonitorType, MonitorStatus } from "@/db/models/monitors/Monitor.js";
 import ApiError from "@/utils/ApiError.js";
 import { config } from "@/config/index.js";
@@ -69,15 +68,28 @@ class NetworkService implements INetworkService {
     });
   }
 
+  private getCertificateExpiryFromSocket(
+    socket?: TLSSocket | null
+  ): Date | null {
+    if (!socket || typeof socket.getPeerCertificate !== "function") {
+      return null;
+    }
+    try {
+      const cert = socket.getPeerCertificate(true);
+      if (!cert?.valid_to) return null;
+      const parsed = new Date(cert.valid_to);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    } catch {
+      return null;
+    }
+  }
+
   private buildStatusResponse = <T>(
     monitor: IMonitor,
     response: Response<T> | null,
     certificateExpiryOrError?: Date | null | any,
     maybeError?: any | null
   ): StatusResponse<T> => {
-    // Support both call styles:
-    // - buildStatusResponse(monitor, response, error)
-    // - buildStatusResponse(monitor, response, certificateExpiry, error)
     let certificateExpiry: Date | null = null;
     let error: any | null = null;
     if (
@@ -137,15 +149,21 @@ class NetworkService implements INetworkService {
         const isHttps = url.startsWith("https://");
         const haveRejectFlag =
           isHttps && typeof (monitor as any).rejectUnauthorized !== "undefined";
-        const req: any = haveRejectFlag
+        const req = haveRejectFlag
           ? this.client(url, {
               https: {
                 rejectUnauthorized: (monitor as any).rejectUnauthorized,
               },
             })
-          : this.client(url);
+          : this.client(url, {});
 
         const response: Response = await req;
+
+        // Attempt to get SSL certificate expiry date
+        certificateExpiry = this.getCertificateExpiryFromSocket(
+          (response.request?.socket as TLSSocket | undefined) ?? null
+        );
+
         return this.buildStatusResponse(
           monitor,
           response,
