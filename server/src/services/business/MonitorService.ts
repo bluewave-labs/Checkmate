@@ -243,7 +243,7 @@ class MonitorService implements IMonitorService {
     const now = new Date();
     switch (range) {
       case "1h":
-        return new Date(now.getTime() - 2 * 60 * 60 * 1000);
+        return new Date(now.getTime() - 1 * 60 * 60 * 1000);
       case "24h":
         return new Date(now.getTime() - 24 * 60 * 60 * 1000);
       case "7d":
