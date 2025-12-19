@@ -255,9 +255,7 @@ class MonitorService implements IMonitorService {
     }
   }
 
-  // getDateFormat removed — only 2h (raw checks) remains, using minute buckets inline
-
-  private getBaseGroup = (_dateFormat: string): Record<string, any> => {
+  private getBaseGroup = (): Record<string, any> => {
     return {
       _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
       count: { $sum: 1 },
@@ -269,7 +267,7 @@ class MonitorService implements IMonitorService {
     return { status: 1, responseTime: 1, createdAt: 1 };
   };
 
-  private getPageSpeedGroup = (_dateFormat: string): Record<string, any> => {
+  private getPageSpeedGroup = (): Record<string, any> => {
     return {
       _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
       count: { $sum: 1 },
@@ -300,7 +298,7 @@ class MonitorService implements IMonitorService {
     return projectStage;
   };
 
-  private getInfraGroup = (_dateFormat: string): Record<string, any> => {
+  private getInfraGroup = (): Record<string, any> => {
     return {
       _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
       count: { $sum: 1 },
@@ -513,14 +511,13 @@ class MonitorService implements IMonitorService {
       createdAt: { $gte: startDate, $lt: endDate },
     };
 
-    const dateFormat = "%Y-%m-%dT%H:%M:00Z";
     let groupClause;
     if (monitor.type === "pagespeed") {
-      groupClause = this.getPageSpeedGroup(dateFormat);
+      groupClause = this.getPageSpeedGroup();
     } else if (monitor.type === "infrastructure") {
-      groupClause = this.getInfraGroup(dateFormat);
+      groupClause = this.getInfraGroup();
     } else {
-      groupClause = this.getBaseGroup(dateFormat);
+      groupClause = this.getBaseGroup();
     }
 
     let projectStage;
