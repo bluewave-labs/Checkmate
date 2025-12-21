@@ -12,17 +12,18 @@ interface TextInputProps extends Omit<TextFieldProps, "label"> {
 }
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  function TextInput({ fieldLabel, required, ...props }, ref) {
+  function TextInput({ fieldLabel, required, multiline, ...props }, ref) {
     const theme = useTheme();
 
     const input = (
       <TextField
+        multiline={multiline}
         {...props}
         inputRef={ref}
         sx={{
           "& .MuiOutlinedInput-root": {
             borderRadius: theme.shape.borderRadius,
-            height: 34,
+            ...(multiline ? {} : { height: 34 }),
             fontSize: typographyLevels.base,
           },
           "& .MuiOutlinedInput-notchedOutline": {
