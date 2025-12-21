@@ -748,5 +748,34 @@
         "teamDescription": "Team description"
       }
     }
+  },
+  "IncidentPage": {
+    "create": {
+      "title": "Create New Incident",
+      "description": "Manually create a new incident to track downtime or issues with your monitors."
+    },
+    "configure": {
+      "title": "Configure Incident",
+      "description": "Update the incident details and resolution information."
+    },
+    "form": {
+      "monitor": {
+        "title": "Select Monitor",
+        "description": "Choose which monitor this incident is associated with"
+      },
+      "timeline": {
+        "title": "Incident Timeline",
+        "description": "When did the incident start and end",
+        "optionStartTime": "Incident Start",
+        "optionEndTime": "Incident End"
+      },
+      "resolution": {
+        "title": "Resolution Status",
+        "description": "Mark the incident as resolved and add resolution details",
+        "optionResolved": "Mark as Resolved",
+        "optionType": "Resolution Type",
+        "optionNote": "Resolution Note"
+      }
+    }
   }
 }
