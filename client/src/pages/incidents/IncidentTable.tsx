@@ -1,9 +1,4 @@
-import {
-  Table,
-  Pagination,
-  ValueLabel,
-  StatusLabel,
-} from "@/components/design-elements";
+import { Table, Pagination, ValueLabel, StatusLabel } from "@/components/design-elements";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Button } from "@/components/inputs";
