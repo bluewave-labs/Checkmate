@@ -23,22 +23,14 @@ const ChecksPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const {
-    response: monitorResponse,
-    loading: monitorsLoading,
-    isValidating: monitorsValidating,
-  } = useGet<ApiResponse<IMonitor[]>>(
-    `/monitors`,
-    {},
-    { keepPreviousData: true }
-  );
+  const { response: monitorResponse, loading: monitorsLoading } = useGet<
+    ApiResponse<IMonitor[]>
+  >(`/monitors`, {}, { keepPreviousData: true });
   const monitors: IMonitor[] = monitorResponse?.data || [];
 
-  const {
-    response: checksResponse,
-    loading: checksLoading,
-    isValidating: checksValidating,
-  } = useGet<ApiResponse<{ count: number; checks: ICheck[] }>>(
+  const { response: checksResponse, loading: checksLoading } = useGet<
+    ApiResponse<{ count: number; checks: ICheck[] }>
+  >(
     `/checks?page=${page}&rowsPerPage=${rowsPerPage}&range=${range}&status=${status}${
       selectedMonitorId !== "all" ? `&monitorId=${selectedMonitorId}` : ""
     }`,
@@ -93,7 +85,7 @@ const ChecksPage = () => {
             <MenuItem value="down">Down</MenuItem>
           </Select>
           <LoadingSpinner
-            show={monitorsValidating || checksValidating}
+            show={monitorsLoading || checksLoading}
             sx={{ alignSelf: "center" }}
           />
         </Stack>

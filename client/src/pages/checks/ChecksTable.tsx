@@ -12,6 +12,7 @@ import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 import type { ICheck } from "@/types/check";
 import type { MonitorStatus } from "@/types/monitor";
+import { useNavigate } from "react-router";
 
 type CheckWithMonitor = ICheck & {
   metadata?: { monitorId?: { name?: string } };
@@ -34,6 +35,7 @@ export const ChecksTable = ({
 }) => {
   const { t } = useTranslation();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
+  const navigate = useNavigate();
 
   const getHeaders = (t: Function, uiTimezone: string) => {
     const headers: Header<CheckWithMonitor>[] = [
@@ -105,6 +107,9 @@ export const ChecksTable = ({
       <Table
         headers={headers}
         data={checks}
+        onRowClick={(row) => {
+          navigate(`/checks/${row._id}`);
+        }}
         emptyViewText={t("checks.table.empty")}
       />
       <Pagination
