@@ -12,6 +12,7 @@ import { PERMISSIONS } from "@/types/permissions.js";
 import {
   getIncidentsQuerySchema,
   getIncidentQuerySchema,
+  postIncidentsBodySchema,
   patchIncidentsBodySchema,
 } from "@/validation/index.js";
 
@@ -41,12 +42,30 @@ class IncidentsRoutes {
       this.controller.exportIncidents
     );
 
+    this.router.post(
+      "/",
+      verifyToken,
+      addUserContext,
+      verifyOrgPermission([PERMISSIONS.incidents.write]),
+      validateBody(postIncidentsBodySchema),
+      this.controller.createIncident
+    );
+
     this.router.get(
       "/:id",
       verifyToken,
       addUserContext,
       verifyOrgPermission([PERMISSIONS.incidents.read]),
       this.controller.getIncidentById
+    );
+
+    this.router.patch(
+      "/:id",
+      verifyToken,
+      addUserContext,
+      verifyOrgPermission([PERMISSIONS.incidents.update]),
+      validateBody(patchIncidentsBodySchema),
+      this.controller.updateIncident
     );
 
     this.router.patch(

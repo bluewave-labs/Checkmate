@@ -1,6 +1,15 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-export const ResolutionTypes = ["auto", "manual"] as const;
+export const ResolutionTypes = [
+  "auto",
+  "manual",
+  "monitoring",
+  "acknowledged",
+  "identified",
+  "investigating",
+  "fixed",
+  "workaround",
+] as const;
 export type ResolutionType = (typeof ResolutionTypes)[number];
 
 export interface IIncident {
@@ -8,7 +17,7 @@ export interface IIncident {
   monitorId: Types.ObjectId;
   teamId: Types.ObjectId;
   startedAt: Date;
-  startCheck: Types.ObjectId;
+  startCheck?: Types.ObjectId;
   endedAt?: Date;
   endCheck?: Types.ObjectId;
   resolved: boolean;
@@ -22,7 +31,7 @@ const IncidentSchema = new Schema<IIncident>(
     monitorId: { type: Schema.Types.ObjectId, ref: "Monitor", required: true },
     teamId: { type: Schema.Types.ObjectId, ref: "Team", required: true },
     startedAt: { type: Date, required: true },
-    startCheck: { type: Schema.Types.ObjectId, ref: "Check", required: true },
+    startCheck: { type: Schema.Types.ObjectId, ref: "Check" },
     endedAt: { type: Date },
     endCheck: { type: Schema.Types.ObjectId, ref: "Check" },
     resolved: { type: Boolean, default: false },

@@ -32,6 +32,29 @@ export interface IIncidentService {
     monitorId: mongoose.Types.ObjectId,
     startCheckId: mongoose.Types.ObjectId
   ) => Promise<IIncident>;
+  createManual: (data: {
+    teamId: string;
+    monitorId: string;
+    startedAt: Date;
+    endedAt?: Date;
+    resolved?: boolean;
+    resolutionType?: ResolutionType;
+    resolutionNote?: string;
+    resolvedBy?: string;
+  }) => Promise<IIncident>;
+  updateManual: (
+    teamId: string,
+    incidentId: string,
+    data: Partial<{
+      monitorId: string;
+      startedAt: Date;
+      endedAt: Date | undefined;
+      resolved: boolean;
+      resolutionType: ResolutionType;
+      resolutionNote: string;
+      resolvedBy: string;
+    }>
+  ) => Promise<IIncident | null>;
   get: (teamId: string, incidentId: string) => Promise<IIncident | null>;
   getAll: (
     teamId: string,
@@ -194,6 +217,85 @@ class IncidentService implements IIncidentService {
       startCheck: new mongoose.Types.ObjectId(startCheckId),
     };
     const incident = await Incident.create(data);
+    return incident;
+  };
+
+  createManual = async (data: {
+    teamId: string;
+    monitorId: string;
+    startedAt: Date;
+    endedAt?: Date;
+    resolved?: boolean;
+    resolutionType?: ResolutionType;
+    resolutionNote?: string;
+    resolvedBy?: string;
+  }) => {
+    const incidentData: Partial<IIncident> = {
+      teamId: new mongoose.Types.ObjectId(data.teamId),
+      monitorId: new mongoose.Types.ObjectId(data.monitorId),
+      startedAt: data.startedAt,
+      resolved: data.resolved ?? false,
+    };
+
+    if (data.endedAt) {
+      incidentData.endedAt = data.endedAt;
+    }
+
+    if (data.resolved) {
+      incidentData.resolutionType = data.resolutionType;
+      incidentData.resolutionNote = data.resolutionNote;
+      if (data.resolvedBy) {
+        incidentData.resolvedBy = new mongoose.Types.ObjectId(data.resolvedBy);
+      }
+    }
+
+    const incident = await Incident.create(incidentData);
+    return incident;
+  };
+
+  updateManual = async (
+    teamId: string,
+    incidentId: string,
+    data: Partial<{
+      monitorId: string;
+      startedAt: Date;
+      endedAt: Date | undefined;
+      resolved: boolean;
+      resolutionType: ResolutionType;
+      resolutionNote: string;
+      resolvedBy: string;
+    }>
+  ) => {
+    const updateData: any = {};
+
+    if (data.monitorId) {
+      updateData.monitorId = new mongoose.Types.ObjectId(data.monitorId);
+    }
+    if (data.startedAt) {
+      updateData.startedAt = data.startedAt;
+    }
+    if (data.endedAt !== undefined) {
+      updateData.endedAt = data.endedAt;
+    }
+    if (data.resolved !== undefined) {
+      updateData.resolved = data.resolved;
+    }
+    if (data.resolutionType !== undefined) {
+      updateData.resolutionType = data.resolutionType;
+    }
+    if (data.resolutionNote !== undefined) {
+      updateData.resolutionNote = data.resolutionNote;
+    }
+    if (data.resolvedBy) {
+      updateData.resolvedBy = new mongoose.Types.ObjectId(data.resolvedBy);
+    }
+
+    const incident = await Incident.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(incidentId), teamId: new mongoose.Types.ObjectId(teamId) },
+      { $set: updateData },
+      { new: true }
+    );
+
     return incident;
   };
 

@@ -598,8 +598,108 @@ export const getIncidentsQuerySchema = z.object({
     .optional(),
 });
 
+export const postIncidentsBodySchema = z.object({
+  monitorId: z
+    .string()
+    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+      message: "Invalid MongoDB ObjectId",
+    }),
+  startedAt: z
+    .string()
+    .refine(
+      (val) =>
+        !isNaN(Date.parse(val)) ||
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(val),
+      "Invalid datetime format"
+    )
+    .transform((val) => new Date(val)),
+  endedAt: z
+    .union([
+      z
+        .string()
+        .transform((val) => (val === "" ? undefined : val))
+        .refine(
+          (val) =>
+            val === undefined ||
+            !isNaN(Date.parse(val)) ||
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(val),
+          "Invalid datetime format"
+        )
+        .transform((val) => (val ? new Date(val) : undefined)),
+      z.undefined(),
+    ])
+    .optional(),
+  resolved: z.boolean().optional(),
+  resolutionType: z
+    .union([
+      z
+        .string()
+        .transform((val) => (val === "" ? undefined : val))
+        .refine(
+          (val) => val === undefined || ResolutionTypes.includes(val as any),
+          "Invalid resolution type"
+        ),
+      z.undefined(),
+    ])
+    .optional(),
+  resolutionNote: z
+    .string()
+    .max(500)
+    .transform((val) => (val === "" ? undefined : val))
+    .optional(),
+});
+
 export const patchIncidentsBodySchema = z.object({
-  resolutionNote: z.string().max(200).optional(),
+  monitorId: z
+    .string()
+    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+      message: "Invalid MongoDB ObjectId",
+    })
+    .optional(),
+  startedAt: z
+    .string()
+    .refine(
+      (val) =>
+        !isNaN(Date.parse(val)) ||
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(val),
+      "Invalid datetime format"
+    )
+    .transform((val) => new Date(val))
+    .optional(),
+  endedAt: z
+    .union([
+      z
+        .string()
+        .transform((val) => (val === "" ? undefined : val))
+        .refine(
+          (val) =>
+            val === undefined ||
+            !isNaN(Date.parse(val)) ||
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(val),
+          "Invalid datetime format"
+        )
+        .transform((val) => (val ? new Date(val) : undefined)),
+      z.undefined(),
+    ])
+    .optional(),
+  resolved: z.boolean().optional(),
+  resolutionType: z
+    .union([
+      z
+        .string()
+        .transform((val) => (val === "" ? undefined : val))
+        .refine(
+          (val) => val === undefined || ResolutionTypes.includes(val as any),
+          "Invalid resolution type"
+        ),
+      z.undefined(),
+    ])
+    .optional(),
+  resolutionNote: z
+    .string()
+    .max(500)
+    .transform((val) => (val === "" ? undefined : val))
+    .optional(),
 });
 
 export const systemSettingsSchema = z

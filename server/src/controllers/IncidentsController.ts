@@ -90,6 +90,93 @@ class IncidentsController implements IIncidentsController {
     }
   };
 
+  createIncident = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userContext = req.user;
+      if (!userContext) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const teamId = userContext.currentTeamId;
+      if (!teamId) {
+        throw new ApiError("No team ID", 400);
+      }
+
+      const { monitorId, startedAt, endedAt, resolved, resolutionType, resolutionNote } = req.body;
+
+      // Create the incident with manual data
+      const incidentData = {
+        teamId,
+        monitorId,
+        startedAt: startedAt instanceof Date ? startedAt : new Date(startedAt),
+        endedAt: endedAt instanceof Date ? endedAt : (endedAt ? new Date(endedAt) : undefined),
+        resolved: resolved ?? false,
+        resolutionType: resolved ? resolutionType : undefined,
+        resolutionNote: resolved ? resolutionNote : undefined,
+        resolvedBy: resolved ? userContext.sub : undefined,
+      };
+
+      const incident = await this.incidentService.createManual(incidentData);
+
+      return res
+        .status(201)
+        .json({ message: "Incident created", data: incident });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateIncident = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userContext = req.user;
+      if (!userContext) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const teamId = userContext.currentTeamId;
+      if (!teamId) {
+        throw new ApiError("No team ID", 400);
+      }
+
+      const { id } = req.params;
+      if (!id) {
+        throw new ApiError("No incident ID", 400);
+      }
+
+      const { monitorId, startedAt, endedAt, resolved, resolutionType, resolutionNote } = req.body;
+
+      const updateData: any = {};
+      if (monitorId) updateData.monitorId = monitorId;
+      if (startedAt) updateData.startedAt = startedAt instanceof Date ? startedAt : new Date(startedAt);
+      if (endedAt !== undefined) updateData.endedAt = endedAt instanceof Date ? endedAt : (endedAt ? new Date(endedAt) : undefined);
+      if (resolved !== undefined) {
+        updateData.resolved = resolved;
+        if (resolved) {
+          updateData.resolutionType = resolutionType;
+          updateData.resolutionNote = resolutionNote;
+          updateData.resolvedBy = userContext.sub;
+          updateData.endedAt = endedAt instanceof Date ? endedAt : (endedAt ? new Date(endedAt) : new Date());
+        } else {
+          updateData.resolutionType = undefined;
+          updateData.resolutionNote = undefined;
+          updateData.resolvedBy = undefined;
+        }
+      }
+
+      const incident = await this.incidentService.updateManual(teamId, id, updateData);
+
+      if (!incident) {
+        throw new ApiError("Incident not found", 404);
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Incident updated", data: incident });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   resolveIncident = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userContext = req.user;
