@@ -1,22 +1,24 @@
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
-import { Select } from "@/components/inputs";
+import { Button, Select } from "@/components/inputs";
 import { LoadingSpinner } from "@/components/design-elements";
 import { BasePage, InfoBox } from "@/components/design-elements";
 import { IncidentTable } from "@/pages/incidents/IncidentTable";
 import { HeaderRange } from "@/components/common/HeaderRange";
 
 import { useTheme } from "@mui/material/styles";
-import { useSearchParams } from "react-router";
+import { useSearchParams, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/hooks/UseApi";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type { IIncident } from "@/types/incident";
 import type { IMonitor } from "@/types/monitor";
+import { Box } from "@mui/material";
 
 const IncidentsPage = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [selectedMonitorId, setSelectedMonitorId] = useState<string>("all");
   const [searchParams] = useSearchParams();
 
@@ -64,6 +66,10 @@ const IncidentsPage = () => {
       setSelectedMonitorId(monitorId);
     }
   }, [searchParams]);
+
+  const handleCreateIncident = () => {
+    navigate("/incidents/create");
+  };
 
   return (
     <BasePage>
@@ -116,12 +122,17 @@ const IncidentsPage = () => {
             sx={{ alignSelf: "center" }}
           />
         </Stack>
-        <HeaderRange
-          range={range}
-          setRange={setRange}
-          loading={incidentsLoading || monitorsLoading}
-          all={true}
-        />
+        <Box sx={{ display: "flex", gap: "10px" }}>
+          <HeaderRange
+            range={range}
+            setRange={setRange}
+            loading={incidentsLoading || monitorsLoading}
+            all={true}
+          />
+          <Button variant="contained" onClick={handleCreateIncident}>
+            Create Incident
+          </Button>
+        </Box>
       </Stack>
       <IncidentTable
         incidents={incidents}
