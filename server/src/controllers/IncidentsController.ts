@@ -11,6 +11,8 @@ const logger = getChildLogger("IncidentController");
 export interface IIncidentsController {
   getIncidents: (req: Request, res: Response, next: NextFunction) => void;
   getIncidentById: (req: Request, res: Response, next: NextFunction) => void;
+  createIncident: (req: Request, res: Response, next: NextFunction) => void;
+  updateIncident: (req: Request, res: Response, next: NextFunction) => void;
   resolveIncident: (req: Request, res: Response, next: NextFunction) => void;
   exportIncidents: (req: Request, res: Response, next: NextFunction) => void;
 }
