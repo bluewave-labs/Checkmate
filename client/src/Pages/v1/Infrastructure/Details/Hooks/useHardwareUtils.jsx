@@ -121,28 +121,32 @@ const useHardwareUtils = () => {
 	};
 
 	const formatDeviceName = (device) => {
-		const deviceStr = String(device || '');
-		
+		const deviceStr = String(device || "");
+
 		// Extract the last part of the path (after last '/')
-		const parts = deviceStr.split('/');
+		const parts = deviceStr.split("/");
 		const lastPart = parts[parts.length - 1];
-		
+
 		// If there's more than one part, show with "..." prefix
 		const displayText = parts.length > 1 ? `.../${lastPart}` : deviceStr;
-		
+
 		// Always show tooltip with full device path
 		return (
-			<Tooltip title={deviceStr} arrow placement="top">
-				<Typography 
-					component="span" 
-					sx={{ 
-						cursor: 'default',
-						display: 'inline-block',
-						userSelect: 'none',
-						whiteSpace: 'nowrap',
-						overflow: 'hidden',
-						textOverflow: 'ellipsis',
-						maxWidth: '100%'
+			<Tooltip
+				title={deviceStr}
+				arrow
+				placement="top"
+			>
+				<Typography
+					component="span"
+					sx={{
+						cursor: "default",
+						display: "inline-block",
+						userSelect: "none",
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						maxWidth: "100%",
 					}}
 				>
 					{displayText}
@@ -152,19 +156,23 @@ const useHardwareUtils = () => {
 	};
 
 	const formatMountpoint = (mountpoint) => {
-		const mountpointStr = String(mountpoint || '');
-		
+		const mountpointStr = String(mountpoint || "");
+
 		if (!mountpointStr) {
 			return (
-				<Tooltip title="No mountpoint available" arrow placement="top">
-					<Typography 
-						component="span" 
-						sx={{ 
-							cursor: 'default',
-							display: 'inline-block',
-							userSelect: 'none',
-							color: 'text.secondary',
-							fontStyle: 'italic'
+				<Tooltip
+					title="No mountpoint available"
+					arrow
+					placement="top"
+				>
+					<Typography
+						component="span"
+						sx={{
+							cursor: "default",
+							display: "inline-block",
+							userSelect: "none",
+							color: "text.secondary",
+							fontStyle: "italic",
 						}}
 					>
 						N/A
@@ -172,34 +180,38 @@ const useHardwareUtils = () => {
 				</Tooltip>
 			);
 		}
-		
+
 		// Extract the last part of the path (after last '/')
-		const parts = mountpointStr.split('/');
+		const parts = mountpointStr.split("/");
 		const lastPart = parts[parts.length - 1];
-		
+
 		// If there's more than one part, show with "..." prefix
 		const displayText = parts.length > 1 ? `.../${lastPart}` : mountpointStr;
-		
+
 		// Always show tooltip with full mountpoint path
 		return (
-			<Tooltip title={mountpointStr} arrow placement="top">
-				<Typography 
-					component="span" 
-					sx={{ 
-						cursor: 'default',
-						display: 'inline-block',
-						userSelect: 'none',
-						whiteSpace: 'nowrap',
-						overflow: 'hidden',
-						textOverflow: 'ellipsis',
-						maxWidth: '100%'
+			<Tooltip
+				title={mountpointStr}
+				arrow
+				placement="top"
+			>
+				<Typography
+					component="span"
+					sx={{
+						cursor: "default",
+						display: "inline-block",
+						userSelect: "none",
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						maxWidth: "100%",
 					}}
 				>
 					{displayText}
 				</Typography>
 			</Tooltip>
 		);
-	}
+	};
 
 	/**
 	 * Converts a decimal value to a percentage

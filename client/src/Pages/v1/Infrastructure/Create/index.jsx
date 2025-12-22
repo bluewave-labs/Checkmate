@@ -75,9 +75,9 @@ const CreateInfrastructureMonitor = () => {
 		...(isCreate
 			? [{ name: "Create", path: "/infrastructure/create" }]
 			: [
-				{ name: "Details", path: `/infrastructure/${monitorId}` },
-				{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
-			]),
+					{ name: "Details", path: `/infrastructure/${monitorId}` },
+					{ name: "Configure", path: `/infrastructure/configure/${monitorId}` },
+				]),
 	];
 	// Populate form fields if editing
 	useEffect(() => {
@@ -160,8 +160,6 @@ const CreateInfrastructureMonitor = () => {
 		isDeleting ||
 		isPausing ||
 		notificationsAreLoading;
-
-
 
 	return (
 		<Box className="create-infrastructure-monitor">

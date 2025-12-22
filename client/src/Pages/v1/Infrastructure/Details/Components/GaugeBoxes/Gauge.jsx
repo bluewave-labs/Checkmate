@@ -6,8 +6,18 @@ import { Stack, Typography, Box } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
-const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo, 
-				metricThree, valueThree, metricFour, valueFour }) => {
+const Gauge = ({
+	value,
+	heading,
+	metricOne,
+	valueOne,
+	metricTwo,
+	valueTwo,
+	metricThree,
+	valueThree,
+	metricFour,
+	valueFour,
+}) => {
 	const theme = useTheme();
 
 	const valueStyle = {

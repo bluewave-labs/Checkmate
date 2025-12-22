@@ -12,8 +12,8 @@ export default defineConfig(({}) => {
 	return {
 		base: "/",
 		plugins: [svgr(), react()],
-		server: { 
-			host: true, 
+		server: {
+			host: true,
 		},
 		resolve: {
 			alias: {

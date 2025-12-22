@@ -10,7 +10,8 @@ import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
 const Gauges = ({ isLoading = false, monitor }) => {
-	const { decimalToPercentage, formatBytes, formatDeviceName, formatMountpoint } = useHardwareUtils();
+	const { decimalToPercentage, formatBytes, formatDeviceName, formatMountpoint } =
+		useHardwareUtils();
 	const theme = useTheme();
 	const { t } = useTranslation();
 
