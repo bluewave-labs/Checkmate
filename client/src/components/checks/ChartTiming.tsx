@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import { alpha, useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { BaseBox } from "@/components/design-elements";
-
+import { useTranslation } from "react-i18next";
 type TimingsChartProps = { check: ICheck | null };
 
 export type TimingSegment = {
@@ -41,11 +41,11 @@ const buildTimingSegments = (
 };
 
 export const TimingsChart = ({ check }: TimingsChartProps) => {
-  if (!check) return null;
-
   const theme = useTheme();
+  const { t } = useTranslation();
   const strokeColor = alpha(theme.palette.primary.main, 0.8);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  if (!check) return null;
   const segments = buildTimingSegments(
     check?.timings?.phases,
     strokeColor,
@@ -57,9 +57,11 @@ export const TimingsChart = ({ check }: TimingsChartProps) => {
   return (
     <BaseBox p={4} flex={1} height={"100%"}>
       <Stack spacing={2} sx={{ width: "100%", height: 400 }}>
-        <Typography>Request timings</Typography>
+        <Typography>{t("checks.details.timingChart.title")}</Typography>
         <Typography variant="body2">
-          {`Total request time: ${Math.floor(Number(check?.timings?.phases?.total ?? 0))} ms`}
+          {t("checks.details.common.requestTime", {
+            time: `${Math.floor(Number(check?.timings?.phases?.total ?? 0))} ms`,
+          })}
         </Typography>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>

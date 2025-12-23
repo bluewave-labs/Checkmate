@@ -115,6 +115,38 @@
         "dateTime": "Date & Time",
         "statusCode": "Status code"
       }
+    },
+    "details": {
+      "common": {
+        "requestTime": "Total request time: {{time}}"
+      },
+      "detailsCard": {
+        "title": "Check details",
+        "linkText": "View monitor",
+        "headers": {
+          "basicInfo": "Basic check info",
+          "timing": "Timing phases"
+        },
+        "fields": {
+          "status": "Status",
+          "code": "HTTP Code",
+          "type": "Type",
+          "checkTime": "Check time",
+          "message": "Message",
+          "timingPhases": "Timing phases",
+          "wait": "Wait",
+          "dns": "DNS",
+          "tcp": "TCP",
+          "tls": "TLS",
+          "request": "Request",
+          "firstByte": "First byte",
+          "download": "Download",
+          "total": "Total"
+        }
+      },
+      "timingChart": {
+        "title": "Request timings"
+      }
     }
   },
   "common": {
