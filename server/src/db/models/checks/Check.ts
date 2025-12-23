@@ -308,6 +308,19 @@ const CheckSchema = new Schema<ICheck>(
   }
 );
 
-CheckSchema.index({ "metadata.monitorId": 1, createdAt: 1 });
+CheckSchema.index({ "metadata.monitorId": 1, createdAt: -1 });
+CheckSchema.index({ "metadata.teamId": 1, createdAt: -1 });
+CheckSchema.index({
+  "metadata.teamId": 1,
+  "metadata.monitorId": 1,
+  createdAt: -1,
+});
+CheckSchema.index({ "metadata.teamId": 1, status: 1, createdAt: -1 });
+CheckSchema.index({
+  "metadata.teamId": 1,
+  "metadata.monitorId": 1,
+  status: 1,
+  createdAt: -1,
+});
 
 export const Check = mongoose.model<ICheck>("Check", CheckSchema);
