@@ -179,9 +179,13 @@
       }
     },
     "/auth/logout": { "post": { "responses": { "200": { "description": "Logged out" } } } },
-    "/auth/me": { "get": { "responses": { "200": { "description": "Current user" } } } },
     "/auth/cleanup": { "post": { "responses": { "200": { "description": "Cleanup executed" } } } },
     "/auth/cleanup-monitors": { "post": { "responses": { "200": { "description": "Monitor cleanup executed" } } } },
+
+    "/billing/plans": { "get": { "responses": { "200": { "description": "Available plans" } } } },
+    "/billing/subscribe": { "post": { "responses": { "200": { "description": "Subscribed" } } } },
+    "/billing/cancel": { "post": { "responses": { "200": { "description": "Canceled" } } } },
+    "/billing/confirm": { "get": { "responses": { "200": { "description": "Subscription confirmed" } } } },
 
     "/monitors": {
       "get": {
@@ -282,6 +286,9 @@
         "security": []
       }
     },
+    "/diagnostic/logs": { "get": { "responses": { "200": { "description": "Logs" } } } },
+    "/diagnostic/jobs": { "get": { "responses": { "200": { "description": "Jobs" } } } },
+    "/diagnostic/env": { "get": { "responses": { "200": { "description": "Environment" } } } },
 
     "/checks": {
       "get": {
@@ -293,6 +300,14 @@
           { "name": "range", "in": "query", "required": true, "schema": { "type": "string" } }
         ],
         "responses": { "200": { "description": "Checks list" } }
+      }
+    },
+    "/checks/{id}": {
+      "get": {
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Check by id" }, "404": { "description": "Not found" } }
       }
     },
 
@@ -310,10 +325,11 @@
     "/incidents/{id}/resolve": {
       "patch": {
         "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } } },
         "responses": { "200": { "description": "Resolved" } }
       }
     },
+    "/incidents/export": { "get": { "responses": { "200": { "description": "Export incidents" } } } },
+    "/incidents/{id}": { "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Incident" } } } },
 
     "/invite": {
       "get": { "responses": { "200": { "description": "Invites list" } } },
@@ -399,9 +415,15 @@
       "post": { "responses": { "200": { "description": "Created" } } }
     },
     "/team-members/{id}": {
-      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Member" } } },
+      "get": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Team member" } } },
       "patch": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Updated" } } },
       "delete": { "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "Deleted" } } }
-    }
+    },
+
+    "/me": { "get": { "responses": { "200": { "description": "Current user" } } } },
+    "/me/entitlements": { "get": { "responses": { "200": { "description": "Entitlements" } } } },
+    "/me/permissions": { "get": { "responses": { "200": { "description": "Permissions" } } } },
+
+    "/stripe/webhook": { "post": { "responses": { "200": { "description": "Webhook received" } } } }
   }
 }

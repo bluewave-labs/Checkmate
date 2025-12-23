@@ -123,7 +123,7 @@ export const MonitorBasePageWithStates = ({
 
   const showLoading = loading && (!items || items.length === 0);
 
-  if (isEmpty(items)) {
+  if (!loading && isEmpty(items)) {
     return (
       <EmptyMonitorFallback
         page={page}

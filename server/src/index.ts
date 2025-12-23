@@ -12,6 +12,7 @@ const indexLogger = getChildLogger("index");
 import swaggerUi from "swagger-ui-express";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const createApp = async () => {
   await connectDatabase();
@@ -38,13 +39,28 @@ const createApp = async () => {
   const routes = initRoutes(controllers, app);
   // expose services for route-level access (e.g., in me routes)
   app.set("services", services);
-  // Swagger UI at /api-docs
+
   try {
-    // Load OpenAPI doc from project root within server folder
-    const openapiPath = path.resolve(process.cwd(), "openapi.json");
-    const openapiJson = JSON.parse(fs.readFileSync(openapiPath, "utf-8"));
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiJson));
-    indexLogger.info("Swagger UI available at /api-docs");
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const candidates = [
+      path.resolve(process.cwd(), "openapi.json"),
+      path.resolve(process.cwd(), "server/openapi.json"),
+      path.resolve(__dirname, "../openapi.json"),
+    ];
+    const existing = candidates.find((p) => fs.existsSync(p));
+    if (!existing) {
+      indexLogger.error(
+        "OpenAPI file not found. Checked: " + candidates.join(", ")
+      );
+    } else {
+      const openapiJson = JSON.parse(fs.readFileSync(existing, "utf-8"));
+      const setup = swaggerUi.setup(openapiJson);
+      app.use("/api-docs", swaggerUi.serve, setup);
+
+      indexLogger.info(
+        `Swagger UI available at /api-docs and /api/v1/api-docs (spec: ${existing})`
+      );
+    }
   } catch (e) {
     indexLogger.error("Failed to load OpenAPI document for Swagger UI", e);
   }
@@ -53,7 +69,6 @@ const createApp = async () => {
       status: "OK",
     });
   });
-
   const port = 52345;
   app.listen(port, "0.0.0.0", () => {
     indexLogger.info(`Server is running on http://localhost:${port}`);

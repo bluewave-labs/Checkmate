@@ -1,3 +1,5 @@
+import type { MonitorType } from "./monitor";
+
 export interface CheckTimingPhases {
   wait: number;
   dns: number;
@@ -105,7 +107,7 @@ export interface ICheck {
   _id: string;
   metadata: {
     monitorId: string;
-    type: string;
+    type: MonitorType;
     teamId: string;
   };
   status: string;

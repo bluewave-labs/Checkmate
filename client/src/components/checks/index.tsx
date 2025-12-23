@@ -1,2 +1,2 @@
 export { TimingsChart } from "./ChartTiming";
-export { CheckDetailsCard } from "./CardChecktDetails";
+export { CheckDetailsCard } from "./CardCheckDetails";
