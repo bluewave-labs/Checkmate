@@ -251,16 +251,56 @@ class CheckService implements ICheckService {
         createdAt: { $gte: startDate, $lte: new Date() },
       };
     }
-    // Has-more pagination: over-fetch by 1 to infer existence of a next page
+
     const pageSizePlusOne = rowsPerPage + 1;
     const docs = await Check.find(match)
-      .populate({ path: "metadata.monitorId", select: "name" })
       .sort({ createdAt: -1 })
       .skip(page * rowsPerPage)
-      .limit(pageSizePlusOne);
+      .limit(pageSizePlusOne)
+      .select({
+        _id: 1,
+        status: 1,
+        httpStatusCode: 1,
+        message: 1,
+        responseTime: 1,
+        createdAt: 1,
+        "metadata.monitorId": 1,
+        "metadata.teamId": 1,
+        "metadata.type": 1,
+      });
 
     const hasMore = docs.length > rowsPerPage;
-    const checks = hasMore ? docs.slice(0, rowsPerPage) : docs;
+    const limited = hasMore ? docs.slice(0, rowsPerPage) : docs;
+
+    const monitorIds = Array.from(
+      new Set(
+        limited
+          .map((d) => d?.metadata?.monitorId)
+          .filter((v): v is mongoose.Types.ObjectId => !!v)
+          .map((v) => v.toString())
+      )
+    );
+
+    let nameById = new Map<string, string>();
+    if (monitorIds.length > 0) {
+      const monitors = await Monitor.find({ _id: { $in: monitorIds } }).select({
+        _id: 1,
+        name: 1,
+      });
+      nameById = new Map(monitors.map((m) => [m._id.toString(), m.name]));
+    }
+
+    const checks = limited.map((doc) => {
+      const asObj = doc.toObject();
+      const idStr = asObj?.metadata?.monitorId?.toString?.() ?? "";
+      const name = idStr ? nameById.get(idStr) : undefined;
+      if (name) {
+        asObj.metadata = asObj.metadata || {};
+        (asObj.metadata as any).monitorId = { name } as any;
+      }
+      return asObj as ICheck;
+    });
+
     return { checks, hasMore };
   };
 
