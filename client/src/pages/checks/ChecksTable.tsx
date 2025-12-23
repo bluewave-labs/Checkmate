@@ -76,7 +76,7 @@ export const ChecksTable = ({
       },
       {
         id: "message",
-        content: t("checks.table.headers.message"),
+        content: t("common.table.headers.message"),
         render: (row) => {
           return row.message || "N/A";
         },
