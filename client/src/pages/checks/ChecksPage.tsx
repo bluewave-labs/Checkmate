@@ -7,7 +7,7 @@ import { ChecksTable } from "@/pages/checks/ChecksTable";
 import { LoadingSpinner } from "@/components/design-elements";
 
 import { useTheme } from "@mui/material/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
@@ -45,6 +45,10 @@ const ChecksPage = () => {
 
   const checks = checksResponse?.data?.checks || [];
   const hasMore = checksResponse?.data?.hasMore;
+
+  useEffect(() => {
+    setPage(0);
+  }, [range, status, selectedMonitorId]);
 
   return (
     <BasePage>

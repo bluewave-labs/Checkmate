@@ -114,7 +114,7 @@ export const ChecksTable = ({
       />
       <Pagination
         component="div"
-        count={0}
+        count={(page + 1) * rowsPerPage + 1}
         hasMore={hasMore}
         page={page}
         rowsPerPage={rowsPerPage}

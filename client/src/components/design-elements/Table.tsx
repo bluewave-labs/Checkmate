@@ -346,7 +346,6 @@ function HasMoreTablePaginationActions(
 ) {
   const theme = useTheme();
   const { hasMore, page, onPageChange } = props;
-  console.log(JSON.stringify(props, null, 2));
 
   const handleFirstPageButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -420,7 +419,7 @@ interface PaginationProps extends TablePaginationProps {
 }
 
 export const Pagination = ({ ...props }: PaginationProps) => {
-  const hasMore = props.hasMore;
+  const { hasMore, ...rest } = props;
   const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
   const theme = useTheme();
   const labelDisplayedRows = ({
@@ -440,12 +439,16 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 
   return (
     <TablePagination
-      ActionsComponent={
-        hasMore ? HasMoreTablePaginationActions : TablePaginationActions
+      ActionsComponent={(props) =>
+        typeof hasMore === "boolean" ? (
+          <HasMoreTablePaginationActions {...props} hasMore={hasMore} />
+        ) : (
+          <TablePaginationActions {...props} />
+        )
       }
       rowsPerPageOptions={[5, 10, 25]}
       labelDisplayedRows={labelDisplayedRows}
-      {...props}
+      {...rest}
       sx={{
         "& .MuiTablePagination-toolbar": isSmall
           ? {
