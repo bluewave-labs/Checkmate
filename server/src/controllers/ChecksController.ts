@@ -68,6 +68,9 @@ class ChecksController implements IChecksController {
       }
 
       const checkId = req.params.id;
+      if (!checkId) {
+        throw new ApiError("No check ID", 400);
+      }
       const check = await this.checkService.getCheckById(checkId, teamId);
 
       return res.status(200).json({
