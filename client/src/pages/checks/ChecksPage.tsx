@@ -29,7 +29,7 @@ const ChecksPage = () => {
   const monitors: IMonitor[] = monitorResponse?.data || [];
 
   const { response: checksResponse, loading: checksLoading } = useGet<
-    ApiResponse<{ count: number; checks: ICheck[] }>
+    ApiResponse<{ hasMore: boolean; checks: ICheck[] }>
   >(
     `/checks?page=${page}&rowsPerPage=${rowsPerPage}&range=${range}&status=${status}${
       selectedMonitorId !== "all" ? `&monitorId=${selectedMonitorId}` : ""
@@ -44,7 +44,7 @@ const ChecksPage = () => {
   );
 
   const checks = checksResponse?.data?.checks || [];
-  const checksCount = checksResponse?.data?.count || 0;
+  const hasMore = checksResponse?.data?.hasMore;
 
   return (
     <BasePage>
@@ -97,7 +97,7 @@ const ChecksPage = () => {
       </Stack>
       <ChecksTable
         checks={checks}
-        count={checksCount}
+        hasMore={hasMore}
         page={page}
         setPage={setPage}
         rowsPerPage={rowsPerPage}

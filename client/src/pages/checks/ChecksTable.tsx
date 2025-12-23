@@ -20,14 +20,14 @@ type CheckWithMonitor = ICheck & {
 
 export const ChecksTable = ({
   checks,
-  count,
+  hasMore,
   page,
   setPage,
   rowsPerPage,
   setRowsPerPage,
 }: {
   checks: CheckWithMonitor[];
-  count: number;
+  hasMore?: boolean;
   page: number;
   setPage: (page: number) => void;
   rowsPerPage: number;
@@ -76,7 +76,7 @@ export const ChecksTable = ({
       },
       {
         id: "message",
-        content: t("checks.table.headers.message"),
+        content: t("common.table.headers.message"),
         render: (row) => {
           return row.message || "N/A";
         },
@@ -114,7 +114,8 @@ export const ChecksTable = ({
       />
       <Pagination
         component="div"
-        count={count}
+        count={0}
+        hasMore={hasMore}
         page={page}
         rowsPerPage={rowsPerPage}
         onPageChange={handlePageChange}

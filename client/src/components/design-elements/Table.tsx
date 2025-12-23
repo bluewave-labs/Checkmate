@@ -10,6 +10,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Collapse from "@mui/material/Collapse";
+import Tooltip from "@mui/material/Tooltip";
 
 import IconButton from "@mui/material/IconButton";
 import {
@@ -18,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Coffee,
+  Ellipsis,
   PartyPopper,
 } from "lucide-react";
 
@@ -331,13 +333,118 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export const Pagination = ({ ...props }: TablePaginationProps) => {
+interface HasMoreTablePaginationActionsProps {
+  hasMore?: boolean;
+  page: number;
+  onPageChange: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    newPage: number
+  ) => void;
+}
+function HasMoreTablePaginationActions(
+  props: HasMoreTablePaginationActionsProps
+) {
+  const theme = useTheme();
+  const { hasMore, page, onPageChange } = props;
+  console.log(JSON.stringify(props, null, 2));
+
+  const handleFirstPageButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, page + 1);
+  };
+
+  return (
+    <Box
+      sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
+      className="table-pagination-actions"
+    >
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? (
+          <ChevronsRight size={20} strokeWidth={1.5} />
+        ) : (
+          <ChevronsLeft size={20} strokeWidth={1.5} />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <ChevronRight size={20} strokeWidth={1.5} />
+        ) : (
+          <ChevronLeft size={20} strokeWidth={1.5} />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={hasMore === false}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <ChevronLeft size={20} strokeWidth={1.5} />
+        ) : (
+          <ChevronRight size={20} strokeWidth={1.5} />
+        )}
+      </IconButton>
+      <Tooltip
+        title={hasMore === true ? "More pages available" : "No more pages"}
+      >
+        <IconButton disabled={hasMore === false} aria-label="next page">
+          <Ellipsis size={20} strokeWidth={1.5} />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
+}
+
+interface PaginationProps extends TablePaginationProps {
+  hasMore?: boolean;
+}
+
+export const Pagination = ({ ...props }: PaginationProps) => {
+  const hasMore = props.hasMore;
   const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
   const theme = useTheme();
+  const labelDisplayedRows = ({
+    from,
+    to,
+    count,
+  }: {
+    from: number;
+    to: number;
+    count: number;
+  }) => {
+    if (hasMore) {
+      return to === 0 ? "" : `${from}–${to}`;
+    }
+    return `${from}–${to} of ${count}`;
+  };
+
   return (
     <TablePagination
-      ActionsComponent={TablePaginationActions}
+      ActionsComponent={
+        hasMore ? HasMoreTablePaginationActions : TablePaginationActions
+      }
       rowsPerPageOptions={[5, 10, 25]}
+      labelDisplayedRows={labelDisplayedRows}
       {...props}
       sx={{
         "& .MuiTablePagination-toolbar": isSmall

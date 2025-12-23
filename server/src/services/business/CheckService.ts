@@ -31,7 +31,7 @@ export interface ICheckService {
     page: number,
     rowsPerPage: number,
     range: string
-  ) => Promise<{ checks: ICheck[]; count: number }>;
+  ) => Promise<{ checks: ICheck[]; hasMore: boolean }>;
 
   getCheckById: (checkId: string, teamId: string) => Promise<ICheck | null>;
 
@@ -242,24 +242,26 @@ class CheckService implements ICheckService {
         status,
         "metadata.teamId": new mongoose.Types.ObjectId(teamId),
         "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-        createdAt: { $gte: startDate },
+        createdAt: { $gte: startDate, $lte: new Date() },
       };
     } else {
       match = {
         status,
         "metadata.teamId": new mongoose.Types.ObjectId(teamId),
-        createdAt: { $gte: startDate },
+        createdAt: { $gte: startDate, $lte: new Date() },
       };
     }
-    const [count, checks] = await Promise.all([
-      Check.countDocuments(match),
-      Check.find(match)
-        .populate({ path: "metadata.monitorId", select: "name" })
-        .sort({ createdAt: -1 })
-        .skip(page * rowsPerPage)
-        .limit(rowsPerPage),
-    ]);
-    return { checks, count };
+    // Has-more pagination: over-fetch by 1 to infer existence of a next page
+    const pageSizePlusOne = rowsPerPage + 1;
+    const docs = await Check.find(match)
+      .populate({ path: "metadata.monitorId", select: "name" })
+      .sort({ createdAt: -1 })
+      .skip(page * rowsPerPage)
+      .limit(pageSizePlusOne);
+
+    const hasMore = docs.length > rowsPerPage;
+    const checks = hasMore ? docs.slice(0, rowsPerPage) : docs;
+    return { checks, hasMore };
   };
 
   getCheckById = async (checkId: string, teamId: string) => {
