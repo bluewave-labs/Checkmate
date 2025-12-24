@@ -29,35 +29,43 @@ const StatusPageSchema = mongoose.Schema(
 			type: String,
 			unique: true,
 			required: true,
-			default: "",
 		},
-		timezone: {
-			type: String,
-			required: false,
-		},
+		timezone: String,
 		color: {
 			type: String,
-			required: false,
 			default: "#4169E1",
 		},
+
+		monitorSelectionMode: {
+			type: String,
+			enum: ["manual", "cidr"],
+			default: "manual",
+		},
+
+		cidrRanges: {
+			type: [String],
+			default: [],
+		},
+
 		monitors: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "Monitor",
-				required: true,
 			},
 		],
+
 		subMonitors: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "Monitor",
-				required: true,
 			},
 		],
+
 		logo: {
 			data: Buffer,
 			contentType: String,
 		},
+
 		isPublished: {
 			type: Boolean,
 			default: false,
