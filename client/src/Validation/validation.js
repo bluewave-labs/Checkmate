@@ -4,11 +4,7 @@ import { ROLES } from "../Utils/roleUtils";
 
 const THRESHOLD_COMMON_BASE_MSG = "Threshold must be a number.";
 
-const cidrSchema = joi
-	.string()
-	.custom((value, helpers) => {
-		const cidrRegex =
-			/^(?:\d{1,3}\.){3}\d{1,3}\/(?:[0-9]|[12][0-9]|3[0-2])$/;
+const cidrRegex = /^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\/([0-9]|[12][0-9]|3[0-2])$/;
 
 		if (!cidrRegex.test(value)) {
 			return helpers.error("string.invalidCidr");
