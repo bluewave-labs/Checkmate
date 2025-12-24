@@ -4,6 +4,29 @@ import { ROLES } from "../Utils/roleUtils";
 
 const THRESHOLD_COMMON_BASE_MSG = "Threshold must be a number.";
 
+const cidrSchema = joi
+	.string()
+	.custom((value, helpers) => {
+		const cidrRegex =
+			/^(?:\d{1,3}\.){3}\d{1,3}\/(?:[0-9]|[12][0-9]|3[0-2])$/;
+
+		if (!cidrRegex.test(value)) {
+			return helpers.error("string.invalidCidr");
+		}
+
+		const [ip] = value.split("/");
+		const octets = ip.split(".").map(Number);
+		if (octets.some((o) => o < 0 || o > 255)) {
+			return helpers.error("string.invalidCidr");
+		}
+
+		return value;
+	})
+	.messages({
+		"string.invalidCidr": "Please enter a valid CIDR range (e.g. 10.0.0.0/24)",
+	});
+
+
 const nameSchema = joi
 	.string()
 	.max(50)
@@ -278,34 +301,55 @@ const logoImageValidation = joi
 const statusPageValidation = joi.object({
 	type: joi.string().valid("uptime").required(),
 	isPublished: joi.bool(),
-	companyName: joi
-		.string()
-		.trim()
-		.messages({ "string.empty": "Company name is required." }),
+
+	companyName: joi.string().trim().messages({
+		"string.empty": "Company name is required.",
+	}),
+
 	url: joi
 		.string()
-		.pattern(/^[a-zA-Z0-9_-]+$/) // Only allow alphanumeric, underscore, and hyphen
+		.pattern(/^[a-zA-Z0-9_-]+$/)
 		.required()
 		.messages({
 			"string.pattern.base":
 				"URL can only contain letters, numbers, underscores, and hyphens",
 		}),
-	timezone: joi.string().trim().messages({ "string.empty": "Timezone is required." }),
-	color: joi.string().trim().messages({ "string.empty": "Color is required." }),
-	theme: joi.string(),
-	monitors: joi.array().min(1).required().messages({
-		"string.pattern.base": "Must be a valid monitor ID",
-		"array.base": "Monitors must be an array",
-		"array.min": "At least one monitor is required",
-		"array.empty": "At least one monitor is required",
-		"any.required": "At least one monitor is required",
+
+	timezone: joi.string().trim().messages({
+		"string.empty": "Timezone is required.",
 	}),
+
+	color: joi.string().trim().messages({
+		"string.empty": "Color is required.",
+	}),
+
+	monitorSelectionMode: joi
+		.string()
+		.valid("manual", "cidr")
+		.default("manual"),
+
+	cidrRanges: joi.when("monitorSelectionMode", {
+		is: "cidr",
+		then: joi.array().items(cidrSchema).min(1).required(),
+		otherwise: joi.array().optional(),
+	}),
+
+	monitors: joi.when("monitorSelectionMode", {
+		is: "manual",
+		then: joi.array().min(1).required().messages({
+			"array.min": "At least one monitor is required",
+		}),
+		otherwise: joi.array().optional(),
+	}),
+
 	subMonitors: joi.array().optional(),
 	logo: logoImageValidation,
+
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
 	showAdminLoginLink: joi.boolean(),
 });
+
 
 const settingsValidation = joi.object({
 	checkTTL: joi.number().required().messages({
