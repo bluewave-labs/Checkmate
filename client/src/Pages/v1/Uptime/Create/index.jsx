@@ -261,7 +261,14 @@ const UptimeCreate = ({ isClone = false }) => {
 			value = value * MS_PER_MINUTE;
 		}
 
-		setMonitor((prev) => ({ ...prev, [name]: value }));
+		setMonitor((prev) => {
+			const updatedMonitor = { ...prev, [name]: value };
+			// Automatically check "Advanced matching" checkbox if user enters expectedValue or jsonPath
+			if ((name === "expectedValue" || name === "jsonPath") && value && value.trim()) {
+				setUseAdvancedMatching(true);
+			}
+			return updatedMonitor;
+		});
 
 		if (name === "type") {
 			setErrors({});
@@ -296,14 +303,14 @@ const UptimeCreate = ({ isClone = false }) => {
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
-		if (!isCreate || isClone) {
-			if (monitor.matchMethod) {
-				setUseAdvancedMatching(true);
-			} else {
-				setUseAdvancedMatching(false);
-			}
+		// Automatically check "Advanced matching" checkbox if any value exists in matchMethod, expectedValue, or jsonPath
+		if (monitor.matchMethod || monitor.expectedValue || monitor.jsonPath) {
+			setUseAdvancedMatching(true);
+		} else if (!isCreate || isClone) {
+			// Only uncheck when editing/cloning and no values exist
+			setUseAdvancedMatching(false);
 		}
-	}, [monitor, isCreate]);
+	}, [monitor.matchMethod, monitor.expectedValue, monitor.jsonPath, isCreate, isClone]);
 
 	if (Object.keys(monitor).length === 0) {
 		return <SkeletonLayout />;
