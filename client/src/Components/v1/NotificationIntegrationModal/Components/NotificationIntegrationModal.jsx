@@ -24,6 +24,7 @@ const NOTIFICATION_TYPES = {
 	DISCORD: "discord",
 	TELEGRAM: "telegram",
 	WEBHOOK: "webhook",
+	TWILIO: "twilio",
 };
 
 // Define constants for field IDs

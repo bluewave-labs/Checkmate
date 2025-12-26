@@ -615,6 +615,13 @@ const createNotificationBodyValidation = joi.object({
 				is: "matrix",
 				then: joi.string().allow("").optional(),
 			},
+			{
+				is: "twilio",
+				then: joi.string().required().messages({
+					"string.empty": "Twilio phone number cannot be empty",
+					"any.required": "Twilio phone number is required",
+				}),
+			},
 		],
 	}),
 

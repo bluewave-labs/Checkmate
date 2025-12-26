@@ -2,12 +2,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
 
@@ -28,8 +26,6 @@ const SettingsTwilio = ({
 		twilioAuthToken = "",
 		twilioPhoneNumber = "",
 	} = settingsData?.settings || {};
-	
-	// Local state
 
 	if (!isAdmin) {
 		return null;

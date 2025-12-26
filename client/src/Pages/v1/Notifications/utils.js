@@ -35,7 +35,7 @@ export const LABEL_MAP = {
 	webhook: "createNotifications.webhookSettings.webhookLabel",
 	discord: "createNotifications.discordSettings.webhookLabel",
 	matrix: "createNotifications.matrixSettings.homeserverLabel",
-	twilioPhoneNumber: "createNotifications.twilioSettings.twilioPhoneNumber",
+	twilio: "createNotifications.twilioSettings.twilioPhoneNumber",
 };
 
 export const PLACEHOLDER_MAP = {
