@@ -4,13 +4,14 @@ import Matrix from "./notificationProviders/matrix.js";
 class NotificationService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ emailService, db, logger, networkService, stringService, notificationUtils }) {
+	constructor({ emailService, db, logger, networkService, stringService, notificationUtils, twilioService }) {
 		this.emailService = emailService;
 		this.db = db;
 		this.logger = logger;
 		this.networkService = networkService;
 		this.stringService = stringService;
 		this.notificationUtils = notificationUtils;
+		this.twilioService = twilioService;
 	}
 
 	get serviceName() {
@@ -54,6 +55,11 @@ class NotificationService {
 			const matrix = new Matrix({ networkService: this.networkService, logger: this.logger });
 			const success = await matrix.send({ friendlyName, homeserverUrl, accessToken, roomId, message, monitorName });
 			return success;
+		}
+		if (type === "twilio") {
+			const messageId = await this.twilioService.sendSms(address, content);
+			if (!messageId) return false;
+			return true;
 		}
 	};
 

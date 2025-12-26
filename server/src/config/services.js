@@ -4,6 +4,7 @@ import StringService from "../service/v1/system/stringService.js";
 import MongoDB from "../db/v1/MongoDB.js";
 import NetworkService from "../service/v1/infrastructure/networkService.js";
 import EmailService from "../service/v1/infrastructure/emailService.js";
+import TwilioService from "../service/v1/infrastructure/twilioService.js";
 import BufferService from "../service/v1/infrastructure/bufferService.js";
 import StatusService from "../service/v1/infrastructure/statusService.js";
 import NotificationUtils from "../service/v1/infrastructure/notificationUtils.js";
@@ -135,6 +136,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		settingsService,
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
+	const twilioService = new TwilioService(settingsService, logger);
 	const errorService = new ErrorService();
 
 	const incidentService = new IncidentService({
@@ -161,6 +163,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		networkService,
 		stringService,
 		notificationUtils,
+		twilioService,
 	});
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({

@@ -81,6 +81,14 @@ const useNotifications = () => {
 				}
 				break;
 
+			case NOTIFICATION_TYPES.TWILIO:
+				payload.phoneNumber = config.phoneNumber;
+				if (typeof payload.phoneNumber === "undefined" || payload.phoneNumber === "") {
+					isValid = false;
+					errorMessage = t("notifications.twilio.phoneNumberRequired");
+				}
+				break;
+
 			default:
 				isValid = false;
 				errorMessage = t("notifications.unsupportedType");

@@ -54,6 +54,7 @@
 		"ssl-checker": "2.0.10",
 		"super-simple-scheduler": "1.4.5",
 		"swagger-ui-express": "5.0.1",
+		"twilio": "^5.11.1",
 		"winston": "^3.13.0"
 	},
 	"devDependencies": {

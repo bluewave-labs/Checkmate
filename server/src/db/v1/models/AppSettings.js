@@ -71,6 +71,15 @@ const AppSettingsSchema = mongoose.Schema(
 			disk: { type: Number },
 			temperature: { type: Number },
 		},
+		twilioAccountSid: {
+			type: String,
+		},
+		twilioAuthToken: {
+			type: String,
+		},
+		twilioPhoneNumber: {
+			type: String,
+		},
 	},
 	{
 		timestamps: true,

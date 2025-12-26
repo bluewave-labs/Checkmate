@@ -435,6 +435,9 @@ const updateAppSettingsBodyValidation = joi.object({
 			temperature: joi.number().min(1).max(150).allow("").optional(),
 		})
 		.optional(),
+	twilioAccountSid: joi.string().allow(""),
+	twilioAuthToken: joi.string().allow(""),
+	twilioPhoneNumber: joi.string().allow(""),
 });
 
 //****************************************
@@ -577,10 +580,10 @@ const createNotificationBodyValidation = joi.object({
 		"any.required": "Notification name is required",
 	}),
 
-	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty", "matrix").required().messages({
+	type: joi.string().valid("email", "webhook", "slack", "discord", "pager_duty", "matrix", "twilio").required().messages({
 		"string.empty": "Notification type is required",
 		"any.required": "Notification type is required",
-		"any.only": "Notification type must be email, webhook, slack, discord, pager_duty, or matrix",
+		"any.only": "Notification type must be email, webhook, slack, discord, pager_duty, matrix, or twilio",
 	}),
 
 	address: joi.when("type", {

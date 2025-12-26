@@ -8,6 +8,7 @@ import SettingsPagespeed from "./SettingsPagespeed.jsx";
 import SettingsDemoMonitors from "./SettingsDemoMonitors.jsx";
 import SettingsAbout from "./SettingsAbout.jsx";
 import SettingsEmail from "./SettingsEmail.jsx";
+import SettingsTwilio from "./SettingsTwilio";
 import SettingsGlobalThresholds from "./SettingsGlobalThresholds.jsx";
 import SettingsExport from "./SettingsExport.jsx";
 import Button from "@mui/material/Button";
@@ -246,6 +247,14 @@ const Settings = () => {
 				isEmailPasswordSet={isEmailPasswordSet}
 				emailPasswordHasBeenReset={emailPasswordHasBeenReset}
 				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
+			/>
+
+			<SettingsTwilio
+				isAdmin={isAdmin}
+				HEADER_SX={HEADING_SX}
+				handleChange={handleChange}
+				settingsData={settingsData}
+				setSettingsData={setSettingsData}
 			/>
 
 			<SettingsExport

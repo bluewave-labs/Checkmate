@@ -336,6 +336,9 @@ const settingsValidation = joi.object({
 			temperature: joi.number().min(1).max(150).allow("").optional(),
 		})
 		.optional(),
+	twilioAccountSid: joi.string().allow(""),
+	twilioAuthToken: joi.string().allow(""),
+	twilioPhoneNumber: joi.string().allow(""),
 });
 
 const dayjsValidator = (value, helpers) => {
@@ -459,12 +462,12 @@ const notificationValidation = joi.object({
 
 	type: joi
 		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty", "matrix")
+		.valid("email", "webhook", "slack", "discord", "pager_duty", "matrix", "twilio")
 		.required()
 		.messages({
 			"string.empty": "Notification type is required",
 			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, or pager_duty",
+			"any.only": "Notification type must be email, webhook, pager_duty, matrix, or twilio",
 		}),
 
 	address: joi.when("type", {
@@ -499,6 +502,13 @@ const notificationValidation = joi.object({
 			{
 				is: "matrix",
 				then: joi.string().allow("").optional(),
+			},
+			{
+				is: "twilio",
+				then: joi.string().required().messages({
+					"string.empty": "Twilio phone number cannot be empty",
+					"any.required": "Twilio phone number is required",
+				}),
 			},
 		],
 	}),

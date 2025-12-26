@@ -84,6 +84,9 @@
 			"urlPlaceholder": "https://your-server.com/webhook",
 			"urlRequired": "Webhook URL is required"
 		},
+		"twilio": {
+			"phoneNumberRequired": "Phone number is required"
+		},
 		"testNotificationDevelop": "Test notification 2",
 		"integrationButton": "Notification Integration",
 		"testSuccess": "Test notification sent successfully!",
@@ -752,6 +755,11 @@
 			"webhookLabel": "Webhook URL",
 			"webhookPlaceholder": "https://your-server.com/webhook"
 		},
+		"twilioSettings": {
+			"title": "Twilio",
+			"description": "Configure your Twilio SMS integration here",
+			"phoneNumberPlaceholder": "e.g. +1234567890"
+		},
 		"testNotification": "Test notification",
 		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
 		"dialogDeleteConfirm": "Delete"
@@ -876,6 +884,17 @@
 			"labelApiKeySet": "API key is set. Click Reset to change it.",
 			"labelApiKey": "PageSpeed API key",
 			"title": "Google PageSpeed API key"
+		},
+		"twilioSettings": {
+			"title": "Twilio",
+			"description": "Configure your Twilio SMS integration here. These settings are used to send SMS notifications.",
+			"labelAccountSid": "Account SID",
+			"labelAuthToken": "Auth Token",
+			"labelAuthTokenSet": "Auth Token is set. Click Reset to change it.",
+			"labelPhoneNumber": "Phone Number",
+			"placeholderAccountSid": "e.g. ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"placeholderAuthToken": "Enter your Twilio Auth Token",
+			"placeholderPhoneNumber": "e.g. +1234567890"
 		},
 		"saveButtonLabel": "Save",
 		"statsSettings": {
