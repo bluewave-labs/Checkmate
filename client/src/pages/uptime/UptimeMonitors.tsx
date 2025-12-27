@@ -119,7 +119,7 @@ const UptimeMonitors = () => {
 
   return (
     <MonitorBasePageWithStates
-      loading={true}
+      loading={loading}
       error={error}
       items={monitorItems}
       page="uptime"
