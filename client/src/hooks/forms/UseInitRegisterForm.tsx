@@ -1,4 +1,4 @@
-import { registerSchema } from "@/validation/zod";
+import { registerSchema } from "@/validation";
 import { useMemo } from "react";
 
 import { z } from "zod";

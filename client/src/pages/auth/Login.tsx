@@ -15,13 +15,11 @@ import {
   logout,
 } from "@/features/authSlice";
 import { z } from "zod";
+import { loginSchema } from "@/validation";
 import { useForm, Controller } from "react-hook-form";
 import type { IUser } from "@/types/user";
 
-const schema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+const schema = loginSchema;
 
 type FormData = z.infer<typeof schema>;
 
@@ -99,7 +97,6 @@ const Login = () => {
           <Controller
             name="email"
             control={control}
-            defaultValue=""
             render={({ field }) => (
               <TextInput
                 {...field}
@@ -114,7 +111,6 @@ const Login = () => {
           <Controller
             name="password"
             control={control}
-            defaultValue=""
             render={({ field }) => (
               <TextInput
                 {...field}

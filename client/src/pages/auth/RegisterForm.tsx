@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useInitForm } from "@/hooks/forms/UseInitRegisterForm";
 
-import { registerSchema } from "@/validation/zod";
+import { registerSchema } from "@/validation";
 type FormData = z.infer<typeof registerSchema>;
 
 export const RegisterForm = ({
@@ -41,11 +41,7 @@ export const RegisterForm = ({
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+    defaultValues: defaults,
   });
 
   useEffect(() => {
@@ -83,7 +79,6 @@ export const RegisterForm = ({
       <Controller
         name="email"
         control={control}
-        defaultValue=""
         render={({ field }) => (
           <TextInput
             disabled={mode === "invite"}
@@ -100,7 +95,6 @@ export const RegisterForm = ({
         disabled={defaults.firstName ? true : false}
         name="firstName"
         control={control}
-        defaultValue=""
         render={({ field }) => (
           <TextInput
             {...field}
@@ -116,7 +110,6 @@ export const RegisterForm = ({
         disabled={defaults.lastName ? true : false}
         name="lastName"
         control={control}
-        defaultValue=""
         render={({ field }) => (
           <TextInput
             {...field}
@@ -131,7 +124,6 @@ export const RegisterForm = ({
       <Controller
         name="password"
         control={control}
-        defaultValue=""
         render={({ field }) => (
           <TextInput
             {...field}
@@ -147,7 +139,6 @@ export const RegisterForm = ({
       <Controller
         name="confirmPassword"
         control={control}
-        defaultValue=""
         render={({ field }) => (
           <TextInput
             {...field}

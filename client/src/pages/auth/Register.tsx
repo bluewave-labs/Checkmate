@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { usePost } from "@/hooks/UseApi";
 import { useNavigate } from "react-router";
 import { z } from "zod";
-import { registerSchema } from "@/validation/zod";
+import { registerSchema } from "@/validation";
 
 type FormData = z.infer<typeof registerSchema>;
 const Register = () => {
