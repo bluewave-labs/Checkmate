@@ -6,14 +6,14 @@ import { ConfigBox } from "@/components/design-elements";
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { systemSettingsSchema } from "@/validation/zod";
+import { systemSettingsSchema } from "@/validation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { useInitForm } from "@/hooks/forms/UseInitSettingsForm";
 import { useEffect } from "react";
 
-type FormValues = z.infer<typeof systemSettingsSchema>;
+export type FormValues = z.infer<typeof systemSettingsSchema>;
 
 export const SettingsForm = ({
   initialData,

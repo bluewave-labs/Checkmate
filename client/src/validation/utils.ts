@@ -21,3 +21,10 @@ export const durationSchema = (minInterval: number) =>
       });
     }
   });
+
+export const optionalString = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess(
+    (val) =>
+      val === "" || val === null || val === undefined ? undefined : val,
+    schema.optional()
+  );

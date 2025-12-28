@@ -1,85 +1,10 @@
 import { z } from "zod";
-// humanInterval moved to split schema files
-// MaintenanceRepeats moved to maintenance schema
-
-// urlRegex moved to client/src/validation/utils.ts
-
-// monitor duration schema moved to client/src/validation/monitor.ts
-// pagespeed duration schema moved to client/src/validation/pagespeed.ts
-// infra duration schema moved to client/src/validation/infra.ts
-
-const optionalString = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess(
-    (val) =>
-      val === "" || val === null || val === undefined ? undefined : val,
-    schema.optional()
-  );
-
-// moved to client/src/validation/monitor.ts
-
-// moved to client/src/validation/pagespeed.ts
-// moved to client/src/validation/infra.ts
-
-// moved to client/src/validation/team.ts
 
 export const inviteSchema = z.object({
   email: z.email("Invalid email address"),
   teamId: z.string().min(1, "Team is required"),
   teamRoleId: z.string().min(1, "Role is required"),
   orgRoleId: z.string().optional(),
-});
-
-export const systemSettingsSchema = z.object({
-  systemEmailHost: optionalString(
-    z.string().trim().min(1, { message: "SMTP host is required" }).max(255, {
-      message: "SMTP host must be 255 characters or fewer",
-    })
-  ),
-  systemEmailPort: optionalString(
-    z
-      .union([z.number().int(), z.string().regex(/^\d+$/)])
-      .transform((val) => (typeof val === "string" ? Number(val) : val))
-      .refine(
-        (val) =>
-          val === undefined ||
-          (Number.isInteger(val) && val > 0 && val < 65536),
-        {
-          message: "Port must be a number between 1 and 65535",
-        }
-      )
-  ),
-  systemEmailAddress: optionalString(
-    z.string().email({ message: "SMTP email must be valid" })
-  ),
-  systemEmailPassword: optionalString(
-    z.string().max(255, {
-      message: "SMTP password must be 255 characters or fewer",
-    })
-  ),
-  systemEmailUser: optionalString(
-    z.string().trim().max(255, {
-      message: "SMTP username must be 255 characters or fewer",
-    })
-  ),
-  systemEmailConnectionHost: optionalString(
-    z.string().trim().max(255, {
-      message: "Connection host must be 255 characters or fewer",
-    })
-  ),
-  systemEmailTLSServername: optionalString(
-    z.string().trim().max(255, {
-      message: "TLS server name must be 255 characters or fewer",
-    })
-  ),
-  systemEmailSecure: z.boolean().optional(),
-  systemEmailPool: z.boolean().optional(),
-  systemEmailIgnoreTLS: z.boolean().optional(),
-  systemEmailRequireTLS: z.boolean().optional(),
-  systemEmailRejectUnauthorized: z.boolean().optional(),
-  checksRetentionDays: z.coerce
-    .number({ message: "Number required" })
-    .min(1, "Retention days must be at least 1")
-    .max(365, "Retention days cannot exceed 365 days"),
 });
 
 const statusPageUrlRegex = /^[A-Za-z0-9]+$/;
