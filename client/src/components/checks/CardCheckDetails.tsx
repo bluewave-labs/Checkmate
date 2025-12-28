@@ -13,16 +13,18 @@ import type { MonitorStatus } from "@/types/monitor";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
 import { getMonitorPath } from "@/utils/MonitorUtils";
+import { useTranslation } from "react-i18next";
 
 type CheckDetailsCardProps = {
   check: ICheck;
 };
 
 export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
   const phases = check?.timings?.phases;
-  const phaseKeys = [
+  type phaseKeys = [
     "wait",
     "dns",
     "tcp",
@@ -31,7 +33,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
     "firstByte",
     "download",
     "total",
-  ] as const;
+  ];
 
   const status =
     (check?.status as MonitorStatus) ?? ("initializing" as MonitorStatus);
@@ -53,7 +55,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
     ? formatDateWithTz(check.createdAt, "ddd, MMM D, YYYY, HH:mm A", uiTimezone)
     : "-";
   const messageText = check?.message ?? "-";
-  const getPhaseMs = (key: (typeof phaseKeys)[number]) => {
+  const getPhaseMs = (key: phaseKeys[number]) => {
     const v = Number((phases as any)?.[key] ?? NaN);
     return Number.isFinite(v) ? `${Math.floor(Math.max(0, v))} ms` : "-";
   };
@@ -62,8 +64,12 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
     <BaseBox p={4} flex={1} height={"100%"}>
       <Stack spacing={8} sx={{ width: "100%" }}>
         <Stack>
-          <Typography>Check details</Typography>
-          <Typography variant="body2">{`Total request time: ${getPhaseMs("total")}`}</Typography>
+          <Typography>{t("checks.details.detailsCard.title")}</Typography>
+          <Typography variant="body2">
+            {t("checks.details.common.requestTime", {
+              time: getPhaseMs("total"),
+            })}
+          </Typography>
           {(() => {
             const href = `/${getMonitorPath(check.metadata.type)}/${check.metadata.monitorId}`;
             return href ? (
@@ -74,7 +80,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
                   underline="hover"
                   color="primary"
                 >
-                  View monitor details
+                  {t("checks.details.detailsCard.linkText")}
                 </Link>
               </Typography>
             ) : null;
@@ -89,11 +95,13 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
             mt={4}
             mb={2}
           >
-            <Typography>Basic check info</Typography>
+            <Typography>
+              {t("checks.details.detailsCard.headers.basicInfo")}
+            </Typography>
           </Grid>
           <Grid size={6} sx={{ display: "flex", alignItems: "center" }}>
             <Typography variant="body1" color="text.secondary">
-              Status
+              {t("checks.details.detailsCard.fields.status")}
             </Typography>
           </Grid>
           <Grid size={6} sx={{ display: "flex", alignItems: "center" }}>
@@ -103,7 +111,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
           </Grid>
           <Grid size={6} sx={{ display: "flex", alignItems: "center" }}>
             <Typography variant="body1" color="text.secondary">
-              HTTP Code
+              {t("checks.details.detailsCard.fields.code")}
             </Typography>
           </Grid>
           <Grid size={6} sx={{ display: "flex", alignItems: "center" }}>
@@ -113,7 +121,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
           </Grid>
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Type
+              {t("checks.details.detailsCard.fields.type")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -122,7 +130,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Check time
+              {t("checks.details.detailsCard.fields.checkTime")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -130,7 +138,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
           </Grid>
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Message
+              {t("checks.details.detailsCard.fields.message")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -146,12 +154,14 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
             mb={4}
             mt={2}
           >
-            <Typography>Timing phases</Typography>
+            <Typography>
+              {t("checks.details.detailsCard.headers.timing")}
+            </Typography>
           </Grid>
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Wait
+              {t("checks.details.detailsCard.fields.wait")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -160,7 +170,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              DNS
+              {t("checks.details.detailsCard.fields.dns")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -169,7 +179,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              TCP
+              {t("checks.details.detailsCard.fields.tcp")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -178,7 +188,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              TLS
+              {t("checks.details.detailsCard.fields.tls")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -187,7 +197,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Request
+              {t("checks.details.detailsCard.fields.request")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -196,7 +206,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              First Byte
+              {t("checks.details.detailsCard.fields.firstByte")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -205,7 +215,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Download
+              {t("checks.details.detailsCard.fields.download")}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -214,7 +224,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
 
           <Grid size={6}>
             <Typography variant="body1" color="text.secondary">
-              Total
+              {t("checks.details.detailsCard.fields.total")}
             </Typography>
           </Grid>
           <Grid size={6}>
