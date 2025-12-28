@@ -14,7 +14,7 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { useInitForm } from "@/hooks/forms/UseInitTeamsForm";
 
-type FormValues = z.infer<typeof teamSchema>;
+export type FormValues = z.infer<typeof teamSchema>;
 
 export const TeamsForm = ({
   mode = "create",

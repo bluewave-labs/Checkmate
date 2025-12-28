@@ -1,20 +1,18 @@
 import { TeamsForm } from "@/pages/teams/TeamsForm";
 
 import { useNavigate, useParams } from "react-router";
-import { z } from "zod";
-import { teamSchema } from "@/validation";
 import { useGet, usePatch, useGetOnDemand } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import type { IUser } from "@/types/user";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { setUser } from "@/features/authSlice";
 import { mutate } from "swr";
+import type { FormValues } from "@/pages/teams/TeamsForm";
 
 const TeamsConfigPage = () => {
-  type FormValues = Omit<z.infer<typeof teamSchema>, "roleId">;
   const navigate = useNavigate();
   const { response } = useGet<ApiResponse<any>>("/roles?type=team");
-  const { patch, loading } = usePatch<FormValues, ApiResponse<any>>();
+  const { patch, loading } = usePatch<Partial<FormValues>, ApiResponse<any>>();
   const { get: getOnDemand } = useGetOnDemand<IUser>();
   const dispatch = useAppDispatch();
 

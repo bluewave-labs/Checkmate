@@ -13,6 +13,7 @@ import { mutate } from "swr";
 import type { IUser } from "@/types/user";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { setUser } from "@/features/authSlice";
+import type { FormValues } from "@/pages/teams/TeamMemberForm";
 
 const TeamMemberConfig = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -20,7 +21,7 @@ const TeamMemberConfig = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { id, memberId } = useParams();
-  const { patch, loading } = usePatch();
+  const { patch, loading } = usePatch<Partial<FormValues>, any>();
   const { get: getOnDemand } = useGetOnDemand<IUser>();
   const dispatch = useAppDispatch();
   const { response } = useGet<ApiResponse<any>>("/team-members");
