@@ -1,6 +1,6 @@
 import { z } from "zod";
 // humanInterval moved to split schema files
-import { MaintenanceRepeats } from "@/types/maintenance";
+// MaintenanceRepeats moved to maintenance schema
 
 // urlRegex moved to client/src/validation/utils.ts
 
@@ -20,17 +20,7 @@ const optionalString = <T extends z.ZodTypeAny>(schema: T) =>
 // moved to client/src/validation/pagespeed.ts
 // moved to client/src/validation/infra.ts
 
-export const teamSchema = z.object({
-  name: z.string().min(1, "Team name is required"),
-  roleId: z.string().min(1, "Role is required"),
-  description: z.string().optional(),
-});
-
-export const teamMemberSchema = z.object({
-  userId: z.string().min(1, "User is required"),
-  roleId: z.string().min(1, "Role is required"),
-  teamId: z.string().min(1, "Team is required"),
-});
+// moved to client/src/validation/team.ts
 
 export const inviteSchema = z.object({
   email: z.email("Invalid email address"),

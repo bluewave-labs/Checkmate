@@ -2,7 +2,7 @@ import { TeamsForm } from "@/pages/teams/TeamsForm";
 
 import { useNavigate } from "react-router";
 import { z } from "zod";
-import { teamSchema } from "@/validation/zod";
+import { teamSchema } from "@/validation";
 import { useGet, usePost, useGetOnDemand } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import { mutate } from "swr";

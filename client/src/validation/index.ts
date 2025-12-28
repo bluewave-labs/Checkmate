@@ -7,3 +7,4 @@ export * from "./infra";
 export * from "./utils";
 export * from "./notification-channel";
 export * from "./maintenance";
+export * from "./team";
