@@ -7,19 +7,6 @@ export const inviteSchema = z.object({
   orgRoleId: z.string().optional(),
 });
 
-const statusPageUrlRegex = /^[A-Za-z0-9]+$/;
-
-export const statusPageSchema = z.object({
-  name: z.string().min(1, "Status page name is required"),
-  description: z.string().optional(),
-  url: z
-    .string()
-    .min(1, "URL is required")
-    .regex(statusPageUrlRegex, "Invalid URL"),
-  isPublished: z.boolean().optional(),
-  monitors: z.array(z.string()),
-});
-
 export const recoverySchema = z.object({
   email: z.email({ message: "Invalid email address" }).trim().toLowerCase(),
 });

@@ -1,14 +1,12 @@
-import { statusPageSchema } from "@/validation/zod";
 import { useMemo } from "react";
-
-import { z } from "zod";
+import type { FormValues } from "@/pages/status-page/StatusPageForm";
 export const useInitForm = ({
   initialData,
 }: {
-  initialData: Partial<z.infer<typeof statusPageSchema>> | undefined;
+  initialData: Partial<FormValues> | undefined;
 }) => {
   return useMemo(() => {
-    const defaults: z.infer<typeof statusPageSchema> = {
+    const defaults: FormValues = {
       name: initialData?.name || "",
       description: initialData?.description || "",
       url: initialData?.url || Math.floor(Math.random() * 1000000).toFixed(0),

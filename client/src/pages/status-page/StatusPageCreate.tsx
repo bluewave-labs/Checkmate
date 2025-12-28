@@ -1,13 +1,10 @@
 import { StatusPageForm } from "@/pages/status-page/StatusPageForm";
 
 import { useNavigate } from "react-router";
-import { z } from "zod";
 import { usePost, useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import { statusPageSchema } from "@/validation/zod";
 import type { IMonitor } from "@/types/monitor";
-
-type FormValues = z.infer<typeof statusPageSchema>;
+import type { FormValues } from "@/pages/status-page/StatusPageForm";
 
 const StatusPageCreatePage = () => {
   const navigate = useNavigate();

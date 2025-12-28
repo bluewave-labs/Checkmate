@@ -9,7 +9,7 @@ import { useTheme } from "@mui/material/styles";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { statusPageSchema } from "@/validation/zod";
+import { statusPageSchema } from "@/validation";
 import {
   useForm,
   Controller,
@@ -20,7 +20,7 @@ import { useEffect } from "react";
 import { useInitForm } from "@/hooks/forms/UseInitStatusPageForm";
 import type { IMonitor } from "@/types/monitor";
 
-type FormValues = z.infer<typeof statusPageSchema>;
+export type FormValues = z.infer<typeof statusPageSchema>;
 
 export const StatusPageForm = ({
   initialData,
