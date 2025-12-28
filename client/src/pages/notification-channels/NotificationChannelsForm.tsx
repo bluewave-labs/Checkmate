@@ -10,7 +10,7 @@ import { ChannelTypes } from "@/types/notification-channel";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { notificationChannelSchema } from "@/validation/zod";
+import { notificationChannelSchema } from "@/validation";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { useInitForm } from "@/hooks/forms/UseInitNotificationsChannelForm";
@@ -79,6 +79,7 @@ export const NotificationChannelsForm = ({
           <Controller
             name="name"
             control={control}
+            defaultValue={defaults.name}
             render={({ field }) => (
               <TextInput
                 {...field}

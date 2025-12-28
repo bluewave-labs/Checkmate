@@ -3,7 +3,7 @@ import { NotificationChannelsForm } from "./NotificationChannelsForm";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import { usePost } from "@/hooks/UseApi";
-import { notificationChannelSchema } from "@/validation/zod";
+import { notificationChannelSchema } from "@/validation";
 import type { INotificationChannel } from "@/types/notification-channel";
 
 type FormValues = z.infer<typeof notificationChannelSchema>;

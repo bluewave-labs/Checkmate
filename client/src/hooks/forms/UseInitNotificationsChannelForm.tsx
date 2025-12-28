@@ -1,4 +1,4 @@
-import { notificationChannelSchema } from "@/validation/zod";
+import { notificationChannelSchema } from "@/validation";
 import { useMemo } from "react";
 
 import { z } from "zod";
