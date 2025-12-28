@@ -14,7 +14,7 @@ import { Typography } from "@mui/material";
 
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { monitorSchema } from "@/validation/zod";
+import { monitorSchema } from "@/validation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,10 +23,14 @@ import {
   useWatch,
   type SubmitHandler,
 } from "react-hook-form";
+import type { IMonitor } from "@/types/monitor";
 import { useTheme } from "@mui/material/styles";
 import { useInitForm } from "@/hooks/forms/UseInitMonitorFrom";
 
-type FormValues = z.infer<typeof monitorSchema>;
+export type FormValues = z.infer<typeof monitorSchema>;
+export type SubmitValues = Omit<z.infer<typeof monitorSchema>, "interval"> & {
+  interval: number | undefined;
+};
 
 export const UptimeForm = ({
   mode = "create",
@@ -36,14 +40,14 @@ export const UptimeForm = ({
   loading,
 }: {
   mode?: "create" | "configure";
-  initialData?: Partial<FormValues>;
-  onSubmit: SubmitHandler<FormValues>;
+  initialData?: IMonitor;
+  onSubmit: SubmitHandler<SubmitValues>;
   notificationOptions: any[];
   loading: boolean;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { defaults } = useInitForm({ initialData: initialData });
+  const { defaults, formToApi } = useInitForm({ initialData: initialData });
   const urlInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -72,6 +76,10 @@ export const UptimeForm = ({
     control,
     name: "notificationChannels",
   });
+
+  const submitForm = (formData: FormValues) => {
+    onSubmit(formToApi(formData));
+  };
 
   useEffect(() => {
     if (!selectedType) return;
@@ -108,7 +116,7 @@ export const UptimeForm = ({
   }, [selectedType]);
 
   return (
-    <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
+    <BasePage component={"form"} onSubmit={handleSubmit(submitForm)}>
       {mode === "create" && (
         <ConfigBox
           title={t("monitors.uptime.form.type.title")}

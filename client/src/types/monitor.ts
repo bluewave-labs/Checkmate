@@ -32,6 +32,7 @@ export interface IMonitor {
   latestChecks: ICheck[];
   n: number;
   name: string;
+  port: number;
   notificationChannels: string[];
   status: MonitorStatus;
   type: string;

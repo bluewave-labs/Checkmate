@@ -2,7 +2,7 @@ import { PageSpeedForm } from "@/pages/pagespeed/PageSpeedForm";
 
 import humanInterval from "human-interval";
 import { z } from "zod";
-import { monitorSchema } from "@/validation/zod";
+import { monitorSchema } from "@/validation";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import { useNavigate } from "react-router";

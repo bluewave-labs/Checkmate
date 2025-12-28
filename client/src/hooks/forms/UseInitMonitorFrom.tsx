@@ -1,32 +1,56 @@
-import { monitorSchema } from "@/validation/zod";
-import ms from "ms";
 import { useMemo } from "react";
+import humanInterval from "human-interval";
+import type { FormValues, SubmitValues } from "@/pages/uptime/UptimeForm";
+import type { IMonitor } from "@/types/monitor";
 
-import { z } from "zod";
+import ms from "ms";
+
 export const useInitForm = ({
   initialData,
 }: {
-  initialData: Partial<z.infer<typeof monitorSchema>> | undefined;
+  initialData: IMonitor | undefined;
 }) => {
   return useMemo(() => {
-    let humanInterval = "1 minute";
-    if (initialData?.interval) {
-      const parsed = Number(initialData.interval);
-      if (!isNaN(parsed)) {
-        humanInterval = ms(parsed, { long: true });
-      }
-    }
-
-    const defaults: z.infer<typeof monitorSchema> = {
-      type: initialData?.type || "https",
-      url: initialData?.url || "",
-      port: initialData?.port || 80,
-      n: initialData?.n || 3,
-      notificationChannels: initialData?.notificationChannels || [],
-      name: initialData?.name || "",
-      interval: humanInterval,
-      rejectUnauthorized: initialData?.rejectUnauthorized ?? true,
+    const apiToForm = (apiData: IMonitor): FormValues => {
+      return {
+        type: apiData.type,
+        url: apiData.url,
+        port: apiData.port,
+        n: apiData.n,
+        notificationChannels: apiData.notificationChannels,
+        name: apiData.name,
+        interval: ms(apiData.interval, { long: true }),
+        rejectUnauthorized: apiData.rejectUnauthorized,
+      };
     };
-    return { defaults };
+
+    const formToApi = (formData: FormValues): SubmitValues => {
+      const submitData: SubmitValues = {
+        type: formData.type,
+        url: formData.url,
+        port: formData.type === "port" ? formData.port : undefined,
+        n: formData.n,
+        notificationChannels: formData.notificationChannels,
+        name: formData.name,
+        interval: humanInterval(formData.interval),
+        rejectUnauthorized: formData.rejectUnauthorized,
+      };
+
+      return submitData;
+    };
+
+    const defaults: FormValues = initialData
+      ? apiToForm(initialData)
+      : {
+          type: "https",
+          url: "",
+          port: 80,
+          n: 3,
+          notificationChannels: [],
+          name: "",
+          interval: "1 minute",
+          rejectUnauthorized: true,
+        };
+    return { defaults, apiToForm, formToApi };
   }, [initialData]);
 };
