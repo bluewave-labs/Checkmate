@@ -1,14 +1,13 @@
-import { maintenanceSchema } from "@/validation/zod";
 import { useMemo } from "react";
+import type { FormValues } from "@/pages/maintenance/MaintenanceForm";
 
-import { z } from "zod";
 export const useInitForm = ({
   initialData,
 }: {
-  initialData: Partial<z.infer<typeof maintenanceSchema>> | undefined;
+  initialData: Partial<FormValues> | undefined;
 }) => {
   return useMemo(() => {
-    const defaults: z.infer<typeof maintenanceSchema> = {
+    const defaults: FormValues = {
       name: initialData?.name || "",
       repeat: initialData?.repeat || "no repeat",
       startTime: initialData?.startTime

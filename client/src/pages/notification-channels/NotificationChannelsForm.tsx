@@ -17,7 +17,7 @@ import { useInitForm } from "@/hooks/forms/UseInitNotificationsChannelForm";
 import { Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-type FormValues = z.infer<typeof notificationChannelSchema>;
+export type FormValues = z.infer<typeof notificationChannelSchema>;
 
 export const NotificationChannelsForm = ({
   initialData,

@@ -2,13 +2,10 @@ import { MaintenanceForm } from "@/pages/maintenance/MaintenanceForm";
 
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
-import { z } from "zod";
 import { usePatch, useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import { maintenanceSchema } from "@/validation/zod";
 import type { IMonitor } from "@/types/monitor";
-
-type FormValues = z.infer<typeof maintenanceSchema>;
+import type { FormValues } from "@/pages/maintenance/MaintenanceForm";
 
 const MaintenanceConfigPage = () => {
   const { id } = useParams<{ id: string }>();
