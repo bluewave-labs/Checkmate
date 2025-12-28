@@ -104,7 +104,6 @@ export const UptimeForm = ({
     } else {
       setValue("url", `${selectedType}://${url}`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType, setValue]);
 
   useEffect(() => {

@@ -13,7 +13,7 @@ import { Typography } from "@mui/material";
 
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { monitorSchemaInfra } from "@/validation/zod";
+import { monitorSchemaInfra } from "@/validation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -24,8 +24,12 @@ import {
 } from "react-hook-form";
 import { useTheme } from "@mui/material/styles";
 import { useInitForm } from "@/hooks/forms/UseInitInfraForm";
+import type { IMonitor } from "@/types/monitor";
 
-type FormValues = z.infer<typeof monitorSchemaInfra>;
+export type FormValues = z.infer<typeof monitorSchemaInfra>;
+export type SubmitValues = Omit<FormValues, "interval"> & {
+  interval: number | undefined;
+};
 
 export const InfraForm = ({
   mode = "create",
@@ -35,14 +39,14 @@ export const InfraForm = ({
   loading,
 }: {
   mode?: "create" | "configure";
-  initialData?: Partial<FormValues>;
-  onSubmit: SubmitHandler<FormValues>;
+  initialData?: IMonitor;
+  onSubmit: SubmitHandler<SubmitValues>;
   notificationOptions: any[];
   loading: boolean;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { defaults } = useInitForm({ initialData: initialData });
+  const { defaults, formToApi } = useInitForm({ initialData: initialData });
   const urlInputRef = useRef<HTMLInputElement>(null);
   const [selectedProtocol, setSelectedProtocol] = useState<string>("https");
 
@@ -97,8 +101,12 @@ export const InfraForm = ({
     name: "notificationChannels",
   });
 
+  const submitForm = (formData: FormValues) => {
+    onSubmit(formToApi(formData));
+  };
+
   return (
-    <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
+    <BasePage component={"form"} onSubmit={handleSubmit(submitForm)}>
       <ConfigBox
         title={t("monitors.common.form.general.title")}
         subtitle={t(`monitors.infrastructure.form.general.description`)}
@@ -303,7 +311,7 @@ export const InfraForm = ({
               )}
             />
             <Stack gap={theme.spacing(2)} mt={theme.spacing(2)}>
-              {notificationChannels.map((notificationId) => {
+              {notificationChannels.map((notificationId: string) => {
                 const option = notificationOptions.find(
                   (o: any) => o._id === notificationId
                 );
@@ -321,7 +329,7 @@ export const InfraForm = ({
                       strokeWidth={1.5}
                       onClick={() => {
                         const updated = notificationChannels.filter(
-                          (id) => id !== notificationId
+                          (id: string) => id !== notificationId
                         );
                         setValue("notificationChannels", updated);
                       }}

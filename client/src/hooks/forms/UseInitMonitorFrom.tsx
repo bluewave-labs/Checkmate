@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import humanInterval from "human-interval";
 import type { FormValues, SubmitValues } from "@/pages/uptime/UptimeForm";
 import type { IMonitor } from "@/types/monitor";
-
 import ms from "ms";
 
 export const useInitForm = ({

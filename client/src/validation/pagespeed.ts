@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { urlRegex, durationSchema } from "@/validation";
+import { urlRegex, durationSchema } from "@/validation/utils";
 
 export const monitorSchemaPageSpeed = z.object({
   type: z.string().min(1, "You must select an option"),

@@ -39,6 +39,13 @@ export interface IMonitor {
   updatedAt: string;
   updatedBy: string;
   url: string;
+  secret: string;
+  thresholds: {
+    cpu: number;
+    memory: number;
+    disk: number;
+    temperature: number;
+  };
   __v: number;
   _id: string;
 }
