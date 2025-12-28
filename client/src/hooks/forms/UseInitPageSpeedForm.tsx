@@ -1,31 +1,53 @@
-import { monitorSchemaPageSpeed } from "@/validation/zod";
+import humanInterval from "human-interval";
+import type { IMonitor } from "@/types/monitor";
 import ms from "ms";
 import { useMemo } from "react";
+import type { FormValues, SubmitValues } from "@/pages/pagespeed/PageSpeedForm";
 
-import { z } from "zod";
 export const useInitForm = ({
   initialData,
 }: {
-  initialData: Partial<z.infer<typeof monitorSchemaPageSpeed>> | undefined;
+  initialData: IMonitor | undefined;
 }) => {
   return useMemo(() => {
-    let humanInterval = "3 minutes";
-    if (initialData?.interval) {
-      const parsed = Number(initialData.interval);
-      if (!isNaN(parsed)) {
-        humanInterval = ms(parsed, { long: true });
-      }
-    }
-
-    const defaults: z.infer<typeof monitorSchemaPageSpeed> = {
-      type: "pagespeed",
-      url: initialData?.url || "",
-      n: initialData?.n || 3,
-      notificationChannels: initialData?.notificationChannels || [],
-      name: initialData?.name || "",
-      interval: humanInterval,
-      rejectUnauthorized: true,
+    const apiToForm = (apiData: IMonitor): FormValues => {
+      console.log(JSON.stringify(apiData));
+      return {
+        type: apiData.type,
+        url: apiData.url,
+        n: apiData.n,
+        notificationChannels: apiData.notificationChannels,
+        name: apiData.name,
+        interval: ms(apiData.interval, { long: true }),
+        rejectUnauthorized: apiData.rejectUnauthorized,
+      };
     };
-    return { defaults };
+
+    const formToApi = (form: FormValues): SubmitValues => {
+      const submitData: SubmitValues = {
+        type: form.type,
+        url: form.url,
+        n: form.n,
+        notificationChannels: form.notificationChannels,
+        name: form.name,
+        interval: humanInterval(form.interval),
+        rejectUnauthorized: form.rejectUnauthorized,
+      };
+      return submitData;
+    };
+
+    const defaults: FormValues = initialData
+      ? apiToForm(initialData)
+      : {
+          type: "pagespeed",
+          url: "",
+          n: 3,
+          notificationChannels: [],
+          name: "",
+          interval: "3 minutes",
+          rejectUnauthorized: true,
+        };
+
+    return { defaults, formToApi };
   }, [initialData]);
 };

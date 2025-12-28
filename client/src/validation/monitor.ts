@@ -1,24 +1,25 @@
 import { z } from "zod";
 import humanInterval from "human-interval";
-const urlRegex =
+import ms from "ms";
+export const urlRegex =
   /^(https?:\/\/)?(localhost|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|[a-zA-Z0-9-]+|(\d{1,3}\.){3}\d{1,3})(:\d{1,5})?(\/.*)?$/;
 
-const durationSchema = z.string().superRefine((val, ctx) => {
-  // if (!val || val.trim() === "") return;
-  const ms = humanInterval(val);
+export const durationSchema = (minInterval: number) =>
+  z.string().superRefine((val, ctx) => {
+    const milis = humanInterval(val);
 
-  if (!ms || isNaN(ms)) {
-    ctx.addIssue({
-      code: "custom",
-      message: "Invalid duration format",
-    });
-  } else if (ms < 10000) {
-    ctx.addIssue({
-      code: "custom",
-      message: "Minimum duration is 10 seconds",
-    });
-  }
-});
+    if (!milis || isNaN(milis)) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Invalid duration format",
+      });
+    } else if (milis < minInterval) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Minimum duration is ${ms(minInterval, { long: true })}`,
+      });
+    }
+  });
 
 export const monitorSchema = z
   .object({
@@ -31,7 +32,7 @@ export const monitorSchema = z
     port: z.coerce.number().optional(),
     notificationChannels: z.array(z.string()).optional().default([]),
     name: z.string().min(1, "Display name is required"),
-    interval: durationSchema,
+    interval: durationSchema(10000),
     rejectUnauthorized: z.boolean().default(true),
   })
   .superRefine((data, ctx) => {
