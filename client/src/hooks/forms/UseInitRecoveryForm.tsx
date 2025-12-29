@@ -1,14 +1,13 @@
-import { recoverySchema } from "@/validation/zod";
 import { useMemo } from "react";
+import type { FormValues } from "@/pages/recovery/RecoveryForm";
 
-import { z } from "zod";
 export const useInitForm = ({
   initialData,
 }: {
-  initialData: Partial<z.infer<typeof recoverySchema>> | undefined;
+  initialData: FormValues | undefined;
 }) => {
   return useMemo(() => {
-    const defaults: z.infer<typeof recoverySchema> = {
+    const defaults: FormValues = {
       email: initialData?.email || "",
     };
     return { defaults };

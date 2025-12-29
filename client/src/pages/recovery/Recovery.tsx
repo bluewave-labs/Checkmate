@@ -2,19 +2,16 @@ import { AuthBasePage } from "@/components/auth";
 
 import { useTranslation } from "react-i18next";
 import { RecoveryForm } from "./RecoveryForm";
-import { recoverySchema } from "@/validation/zod";
-import { z } from "zod";
 import { usePost } from "@/hooks/UseApi";
 import { useToast } from "@/hooks/UseToast";
-
-type FormData = z.infer<typeof recoverySchema>;
+import type { FormValues } from "@/pages/recovery/RecoveryForm";
 
 const Recovery = () => {
   const { t } = useTranslation();
-  const { post, loading } = usePost<FormData>();
+  const { post, loading } = usePost<FormValues>();
   const { showToast } = useToast();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormValues) => {
     await post("/recovery", data);
     showToast(t("common.toasts.recoveryEmailSent"));
   };

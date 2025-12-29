@@ -7,12 +7,9 @@ import {} from "react-i18next";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { useGet, usePatch, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import { z } from "zod";
-import { systemSettingsSchema } from "@/validation/zod";
+import type { FormValues } from "@/pages/settings/SettingsForm";
 
 const AdminSettingsPage = () => {
-  type FormValues = z.infer<typeof systemSettingsSchema>;
-
   const user = useAppSelector((state) => state.auth.user);
 
   const orgPermissions = user?.org?.permissions || [];

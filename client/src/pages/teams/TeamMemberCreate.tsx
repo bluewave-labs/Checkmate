@@ -9,6 +9,7 @@ import { useGetOnDemand } from "@/hooks/UseApi";
 import type { IUser } from "@/types/user";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { setUser } from "@/features/authSlice";
+import type { FormValues } from "@/pages/teams/TeamMemberForm";
 const TeamMemberCreate = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -17,7 +18,7 @@ const TeamMemberCreate = () => {
   const { response } = useGet<ApiResponse<any>>("/team-members?type=org");
   const { response: rolesResponse } =
     useGet<ApiResponse<any>>("/roles?type=team");
-  const { post } = usePost<ApiResponse<any>>();
+  const { post } = usePost<FormValues>();
   const teamMembers = response?.data || [];
   const roles = rolesResponse?.data || [];
 

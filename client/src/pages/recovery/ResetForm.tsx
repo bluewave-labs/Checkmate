@@ -11,8 +11,8 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useInitForm } from "@/hooks/forms/UseInitResetForm";
 
-import { resetSchema } from "@/validation/zod";
-type FormData = z.infer<typeof resetSchema>;
+import { resetSchema } from "@/validation";
+export type FormValues = z.infer<typeof resetSchema>;
 
 export const ResetForm = ({
   initialData,
@@ -20,8 +20,8 @@ export const ResetForm = ({
   loading,
 }: {
   hasUser?: boolean;
-  initialData?: Partial<FormData>;
-  onSubmit: SubmitHandler<FormData>;
+  initialData?: Partial<FormValues>;
+  onSubmit: SubmitHandler<FormValues>;
   loading: boolean;
 }) => {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ export const ResetForm = ({
     control,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<FormValues>({
     resolver: zodResolver(resetSchema),
     defaultValues: {
       password: "",

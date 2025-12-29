@@ -1,21 +1,14 @@
-import { monitorSchemaPageSpeed } from "@/validation/zod";
 import { useGet, usePatch } from "@/hooks/UseApi";
 import { PageSpeedForm } from "@/pages/pagespeed/PageSpeedForm";
 
 import { useParams } from "react-router";
 import type { ApiResponse } from "@/types/api";
-import humanInterval from "human-interval";
-import { z } from "zod";
 import { useNavigate } from "react-router";
 import type { INotificationChannel } from "@/types/notification-channel";
 import type { IMonitor } from "@/types/monitor";
+import type { SubmitValues } from "@/pages/pagespeed/PageSpeedForm";
 
 const PageSpeedConfigurePage = () => {
-  type FormValues = z.infer<typeof monitorSchemaPageSpeed>;
-  type SubmitValues = Omit<FormValues, "interval"> & {
-    interval: number | undefined;
-  };
-
   const { id } = useParams();
   const navigate = useNavigate();
   const { response } = useGet<ApiResponse<INotificationChannel[]>>(
@@ -29,16 +22,12 @@ const PageSpeedConfigurePage = () => {
 
   const { patch, loading, error } = usePatch<Partial<SubmitValues>, IMonitor>();
 
-  const onSubmit = async (data: FormValues) => {
-    let interval = humanInterval(data.interval);
-    if (!interval) interval = 180000;
-    const submitData = {
-      type: data.type,
-      name: data.name,
-      notificationChannels: data.notificationChannels,
-      interval,
-    };
-    const result = await patch(`/monitors/${id}`, submitData);
+  if (!monitor) {
+    return null;
+  }
+
+  const onSubmit = async (data: SubmitValues) => {
+    const result = await patch(`/monitors/${id}`, data);
     if (result) {
       navigate(`/pagespeed/${id}`);
     } else {

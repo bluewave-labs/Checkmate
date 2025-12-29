@@ -1,21 +1,14 @@
-import { monitorSchemaInfra } from "@/validation/zod";
 import { useGet, usePatch } from "@/hooks/UseApi";
 import { InfraForm } from "@/pages/infrastructure/InfraForm";
 
 import { useParams } from "react-router";
 import type { ApiResponse } from "@/types/api";
-import humanInterval from "human-interval";
-import { z } from "zod";
 import { useNavigate } from "react-router";
 import type { INotificationChannel } from "@/types/notification-channel";
 import type { IMonitor } from "@/types/monitor";
+import type { SubmitValues } from "@/pages/infrastructure/InfraForm";
 
 const InfraConfigurePage = () => {
-  type FormValues = z.infer<typeof monitorSchemaInfra>;
-  type SubmitValues = Omit<FormValues, "interval"> & {
-    interval: number | undefined;
-  };
-
   const { id } = useParams();
   const navigate = useNavigate();
   const { response } = useGet<ApiResponse<INotificationChannel[]>>(
@@ -29,20 +22,12 @@ const InfraConfigurePage = () => {
 
   const { patch, loading, error } = usePatch<Partial<SubmitValues>, IMonitor>();
 
-  const onSubmit = async (data: FormValues) => {
-    let interval = humanInterval(data.interval);
-    if (!interval) interval = 180000;
-    const submitData = {
-      type: data.type,
-      secret: data.secret,
-      name: data.name,
-      notificationChannels: data.notificationChannels,
-      thresholds: data.thresholds,
-      interval,
-    };
+  if (!monitor) {
+    return null;
+  }
 
-
-    const result = await patch(`/monitors/${id}`, submitData);
+  const onSubmit = async (data: SubmitValues) => {
+    const result = await patch(`/monitors/${id}`, data);
     if (result) {
       navigate(`/infrastructure/${id}`);
     } else {

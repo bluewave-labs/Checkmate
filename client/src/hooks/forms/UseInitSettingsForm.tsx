@@ -1,11 +1,12 @@
-import { systemSettingsSchema } from "@/validation/zod";
+import { systemSettingsSchema } from "@/validation";
 import { useMemo } from "react";
+import type { FormValues } from "@/pages/settings/SettingsForm";
 
 import { z } from "zod";
 export const useInitForm = ({
   initialData,
 }: {
-  initialData: Partial<z.infer<typeof systemSettingsSchema>> | undefined;
+  initialData: Partial<FormValues> | undefined;
 }) => {
   return useMemo(() => {
     const defaults: z.infer<typeof systemSettingsSchema> = {

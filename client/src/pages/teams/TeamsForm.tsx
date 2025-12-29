@@ -9,12 +9,12 @@ import { useTheme } from "@mui/material/styles";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { teamSchema } from "@/validation/zod";
+import { teamSchema } from "@/validation";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { useInitForm } from "@/hooks/forms/UseInitTeamsForm";
 
-type FormValues = z.infer<typeof teamSchema>;
+export type FormValues = z.infer<typeof teamSchema>;
 
 export const TeamsForm = ({
   mode = "create",

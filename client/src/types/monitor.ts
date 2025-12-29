@@ -32,12 +32,20 @@ export interface IMonitor {
   latestChecks: ICheck[];
   n: number;
   name: string;
+  port: number;
   notificationChannels: string[];
   status: MonitorStatus;
   type: string;
   updatedAt: string;
   updatedBy: string;
   url: string;
+  secret: string;
+  thresholds: {
+    cpu: number;
+    memory: number;
+    disk: number;
+    temperature: number;
+  };
   __v: number;
   _id: string;
 }

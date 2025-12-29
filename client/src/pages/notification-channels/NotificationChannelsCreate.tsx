@@ -1,12 +1,9 @@
 import { NotificationChannelsForm } from "./NotificationChannelsForm";
 
 import { useNavigate } from "react-router";
-import { z } from "zod";
 import { usePost } from "@/hooks/UseApi";
-import { notificationChannelSchema } from "@/validation/zod";
 import type { INotificationChannel } from "@/types/notification-channel";
-
-type FormValues = z.infer<typeof notificationChannelSchema>;
+import type { FormValues } from "./NotificationChannelsForm";
 
 const NotificationsChannelCreatePage = () => {
   const { post, loading } = usePost<FormValues, INotificationChannel>();

@@ -5,12 +5,10 @@ import { useState, useEffect } from "react";
 import type { IUser } from "@/types/user";
 import type { ApiResponse } from "@/types/api";
 import { useGet, usePatch, useGetOnDemand } from "@/hooks/UseApi";
-import { z } from "zod";
-import { profileSchema } from "@/validation/zod";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/hooks/AppHooks";
 import { setUser as setUserGlobal } from "@/features/authSlice";
-type FormValues = z.infer<typeof profileSchema>;
+import type { FormValues } from "@/pages/profile/ProfileForm";
 
 const Profile = () => {
   const { t } = useTranslation();

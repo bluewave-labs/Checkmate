@@ -13,7 +13,7 @@ import { Typography } from "@mui/material";
 
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { monitorSchemaPageSpeed } from "@/validation/zod";
+import { monitorSchemaPageSpeed } from "@/validation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -24,8 +24,15 @@ import {
 } from "react-hook-form";
 import { useTheme } from "@mui/material/styles";
 import { useInitForm } from "@/hooks/forms/UseInitPageSpeedForm";
+import type { IMonitor } from "@/types/monitor";
 
-type FormValues = z.infer<typeof monitorSchemaPageSpeed>;
+export type FormValues = z.infer<typeof monitorSchemaPageSpeed>;
+export type SubmitValues = Omit<
+  z.infer<typeof monitorSchemaPageSpeed>,
+  "interval"
+> & {
+  interval: number | undefined;
+};
 
 export const PageSpeedForm = ({
   mode = "create",
@@ -35,14 +42,14 @@ export const PageSpeedForm = ({
   loading,
 }: {
   mode?: "create" | "configure";
-  initialData?: Partial<FormValues>;
-  onSubmit: SubmitHandler<FormValues>;
+  initialData?: IMonitor;
+  onSubmit: SubmitHandler<SubmitValues>;
   notificationOptions: any[];
   loading: boolean;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { defaults } = useInitForm({ initialData: initialData });
+  const { defaults, formToApi } = useInitForm({ initialData: initialData });
   const urlInputRef = useRef<HTMLInputElement>(null);
   const [selectedProtocol, setSelectedProtocol] = useState<string>("https");
 
@@ -92,13 +99,13 @@ export const PageSpeedForm = ({
     }
   }, [selectedProtocol]);
 
-  const notificationChannels = useWatch({
-    control,
-    name: "notificationChannels",
-  });
+  const notificationChannels =
+    useWatch({ control, name: "notificationChannels" }) || [];
+
+  const submitForm = (data: FormValues) => onSubmit(formToApi(data) as any);
 
   return (
-    <BasePage component={"form"} onSubmit={handleSubmit(onSubmit)}>
+    <BasePage component={"form"} onSubmit={handleSubmit(submitForm)}>
       <ConfigBox
         title={t("monitors.common.form.general.title")}
         subtitle={t("monitors.pageSpeed.form.general.description")}

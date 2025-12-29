@@ -24,7 +24,7 @@ import { useLimitReached } from "@/hooks/UsePlanEntitlements";
 
 const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 
-const PageSpeedMonitorsPage = () => {
+const InfraMonitorsPage = () => {
   const theme = useTheme();
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -131,4 +131,4 @@ const PageSpeedMonitorsPage = () => {
   );
 };
 
-export default PageSpeedMonitorsPage;
+export default InfraMonitorsPage;
