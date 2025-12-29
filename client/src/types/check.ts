@@ -122,6 +122,8 @@ export interface ICheck {
   timings: CheckTimings;
   lighthouse?: ICheckLighthouseFields;
   system?: ISystemInfo;
+  // Present for docker monitor checks
+  dockerContainers?: IDockerContainerSummary[];
 }
 export interface CheckWithMonitor {
   _id: string;
@@ -173,7 +175,42 @@ export interface IInfraCheck {
   net: INetInfo[];
 }
 
+export interface IDokcerCheck {
+  _id: string;
+  avgResponseTime: number;
+  avgRespponseTimeUp: number;
+  avgResponseTimeDown: number;
+  count: number;
+  downChecks: number;
+  healthyContainers: number;
+  runningContainers: number;
+  totalContainers: number;
+  upChecks: number;
+}
+
 export interface IChecksWithCount {
   checks: ICheck[];
   count: number;
+}
+
+// Docker types (used by docker monitor checks)
+export interface IDockerContainerHealth {
+  healthy: boolean;
+  source?: string;
+  message?: string;
+}
+export interface IDockerExposedPort {
+  port: string;
+  protocol: string;
+}
+export interface IDockerContainerSummary {
+  container_id: string;
+  container_name: string;
+  status: string;
+  running: boolean;
+  base_image: string;
+  exposed_ports: IDockerExposedPort[];
+  started_at: number;
+  finished_at: number;
+  health: IDockerContainerHealth;
 }

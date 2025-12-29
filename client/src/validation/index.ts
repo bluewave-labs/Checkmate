@@ -13,3 +13,4 @@ export * from "./invite";
 export * from "./recovery";
 export * from "./reset";
 export * from "./profile";
+export * from "./docker";

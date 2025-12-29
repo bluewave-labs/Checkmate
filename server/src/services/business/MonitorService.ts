@@ -191,7 +191,9 @@ class MonitorService implements IMonitorService {
 
     if (
       type.length === 1 &&
-      (type[0] === "pagespeed" || type[0] === "infrastructure")
+      (type[0] === "pagespeed" ||
+        type[0] === "infrastructure" ||
+        type[0] === "docker")
     ) {
       const monitorIds = monitors.map((m) => m._id);
 
@@ -327,6 +329,65 @@ class MonitorService implements IMonitorService {
     projectStage["system.host.kernel_version"] = 1;
     projectStage["system.host.pretty_name"] = 1;
     projectStage["system.net"] = 1;
+    return projectStage;
+  };
+
+  private getDockerGroup = (): Record<string, any> => {
+    return {
+      _id: { $dateTrunc: { date: "$createdAt", unit: "minute" } },
+      count: { $sum: 1 },
+      avgResponseTime: { $last: "$responseTime" },
+      totalContainers: {
+        $last: { $size: { $ifNull: ["$dockerContainers", []] } },
+      },
+      runningContainers: {
+        $last: {
+          $size: {
+            $filter: {
+              input: { $ifNull: ["$dockerContainers", []] },
+              as: "c",
+              cond: { $eq: ["$$c.running", true] },
+            },
+          },
+        },
+      },
+      healthyContainers: {
+        $last: {
+          $size: {
+            $filter: {
+              input: { $ifNull: ["$dockerContainers", []] },
+              as: "c",
+              cond: { $eq: ["$$c.health.healthy", true] },
+            },
+          },
+        },
+      },
+      runningContainersSnapshot: {
+        $last: {
+          $map: {
+            input: {
+              $filter: {
+                input: { $ifNull: ["$dockerContainers", []] },
+                as: "c",
+                cond: { $eq: ["$$c.running", true] },
+              },
+            },
+            as: "c",
+            in: {
+              container_id: "$$c.container_id",
+              container_name: "$$c.container_name",
+              base_image: "$$c.base_image",
+              exposed_ports: "$$c.exposed_ports",
+            },
+          },
+        },
+      },
+    };
+  };
+
+  private getDockerProjection = (): object => {
+    const projectStage: any = { status: 1, responseTime: 1, createdAt: 1 };
+    projectStage["dockerContainers"] = 1;
     return projectStage;
   };
 
@@ -483,6 +544,33 @@ class MonitorService implements IMonitorService {
         },
       };
     }
+    if (type === "docker") {
+      return {
+        _id: 1,
+        count: 1,
+        avgResponseTime: 1,
+        totalContainers: "$totalContainers",
+        runningContainers: "$runningContainers",
+        healthyContainers: "$healthyContainers",
+        runningContainersSnapshot: "$runningContainersSnapshot",
+        totalExposedPorts: "$totalExposedPorts",
+        uniqueImages: "$uniqueImages",
+        runningPercent: {
+          $cond: [
+            { $gt: ["$totalContainers", 0] },
+            { $multiply: [{ $divide: ["$runningContainers", "$totalContainers"] }, 100] },
+            null,
+          ],
+        },
+        healthyPercent: {
+          $cond: [
+            { $gt: ["$totalContainers", 0] },
+            { $multiply: [{ $divide: ["$healthyContainers", "$totalContainers"] }, 100] },
+            null,
+          ],
+        },
+      };
+    }
     return {};
   };
 
@@ -501,6 +589,8 @@ class MonitorService implements IMonitorService {
       groupClause = this.getPageSpeedGroup();
     } else if (monitor.type === "infrastructure") {
       groupClause = this.getInfraGroup();
+    } else if (monitor.type === "docker") {
+      groupClause = this.getDockerGroup();
     } else {
       groupClause = this.getBaseGroup();
     }
@@ -510,12 +600,18 @@ class MonitorService implements IMonitorService {
       projectStage = this.getPageSpeedProjection();
     } else if (monitor.type === "infrastructure") {
       projectStage = this.getInfraProjection();
+    } else if (monitor.type === "docker") {
+      projectStage = this.getDockerProjection();
     } else {
       projectStage = this.getBaseProjection();
     }
 
     let finalProjection = {};
-    if (monitor.type === "pagespeed" || monitor.type === "infrastructure") {
+    if (
+      monitor.type === "pagespeed" ||
+      monitor.type === "infrastructure" ||
+      monitor.type === "docker"
+    ) {
       finalProjection = this.getFinalProjection(monitor.type);
     } else {
       finalProjection = { _id: 1, count: 1, avgResponseTime: 1 };
@@ -526,8 +622,8 @@ class MonitorService implements IMonitorService {
       { $project: { ...projectStage, status: 1 } },
     ];
 
-    // For infrastructure monitors we rely on $last in group, which requires ordering by createdAt
-    if (monitor.type === "infrastructure") {
+    // For infrastructure and docker monitors we rely on $last in group, which requires ordering by createdAt
+    if (monitor.type === "infrastructure" || monitor.type === "docker") {
       pipeline.push({ $sort: { createdAt: 1 } });
     }
 
@@ -662,6 +758,10 @@ class MonitorService implements IMonitorService {
     range: string
   ): Promise<MonitorWithChecksResponse> => {
     const monitor = await Monitor.findOne({ _id: monitorId, teamId });
+    if (!monitor) {
+      throw new ApiError("Monitor not found", 404);
+    }
+
     if (!monitor) {
       throw new ApiError("Monitor not found", 404);
     }

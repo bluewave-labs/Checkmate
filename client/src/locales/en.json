@@ -525,6 +525,11 @@
           "Provide visibility into what is running on each Docker host"
         ],
         "title": "A Docker monitor is used to:"
+      },
+      "table": {
+        "headers": {
+          "runningContainers": "Running containers"
+        }
       }
     },
     "infrastructure": {

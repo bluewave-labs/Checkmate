@@ -107,6 +107,8 @@ const DockerMonitorsPage = () => {
       </Stack>
       <DockerMonitorsTable
         monitors={monitors}
+        refetch={refetch}
+        setSelectedMonitor={setSelectedMonitor}
         count={count}
         page={page}
         setPage={setPage}
