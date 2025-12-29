@@ -31,7 +31,7 @@ const NotFound = ({ title = DefaultValue.title, desc = DefaultValue.desc }) => {
           sx={{ mt: theme.spacing(10) }}
           onClick={() => navigate("/")}
         >
-          {t("notFoundButton")}
+          {t("common.buttons.home")}
         </Button>
       </Stack>
     </Stack>

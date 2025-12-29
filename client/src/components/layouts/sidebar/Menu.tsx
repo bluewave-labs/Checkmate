@@ -3,6 +3,7 @@ import {
   Monitor,
   Gauge,
   Server,
+  Boxes,
   AlertTriangle,
   LayoutList,
   ListChecks,
@@ -35,6 +36,11 @@ export const getMenu = (t: Function, user: IUser) => {
       name: t("menu.infrastructure"),
       path: "infrastructure",
       icon: <Server size={20} strokeWidth={1.5} />,
+    },
+    {
+      name: t("menu.docker"),
+      path: "docker",
+      icon: <Boxes size={20} strokeWidth={1.5} />,
     },
     {
       name: t("menu.notifications"),

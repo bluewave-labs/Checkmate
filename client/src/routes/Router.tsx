@@ -31,6 +31,7 @@ import InfraMonitorsPage from "@/pages/infrastructure/InfraMonitors";
 import InfraDetailsPage from "@/pages/infrastructure/InfraDetails";
 import InfraConfigurePage from "@/pages/infrastructure/InfraConfig";
 import InfraCreatePage from "@/pages/infrastructure/InfraCreate";
+import DockerMonitorsPage from "@/pages/docker/DockerMonitors";
 
 import MaintenancePage from "@/pages/maintenance/Maintenance";
 import MaintenanceConfigPage from "@/pages/maintenance/MaintenanceConfig";
@@ -137,6 +138,7 @@ const Router = () => {
         />
         <Route path="infrastructure/:id" element={<InfraDetailsPage />} />
         <Route path="infrastructure" element={<InfraMonitorsPage />} />
+        <Route path="docker" element={<DockerMonitorsPage />} />
 
         <Route path="maintenance" element={<MaintenancePage />} />
         <Route path="maintenance/create" element={<MaintenanceCreatePage />} />

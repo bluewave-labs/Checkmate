@@ -184,6 +184,7 @@
       "incidents": "Incidents",
       "limitReached": "Your plan's limit has been reached",
       "no": "No",
+      "home": "Return home",
       "pause": "Pause",
       "range": {
         "all": "All",
@@ -447,6 +448,7 @@
     "checks": "Checks",
     "diagnostics": "Diagnostics",
     "discussions": "Discussions",
+    "docker": "Docker",
     "docs": "Documentation",
     "incidents": "Incidents",
     "infrastructure": "Infrastructure",
@@ -511,6 +513,18 @@
         "initializing": "initializing",
         "paused": "paused",
         "up": "up"
+      }
+    },
+    "docker": {
+      "fallback": {
+        "actionButton": "Create a monitor!",
+        "checks": [
+          "Discover running Docker containers and track their lifecycle",
+          "Determine container health based on runtime state or health checks",
+          "Track exposed ports and network availability",
+          "Provide visibility into what is running on each Docker host"
+        ],
+        "title": "A Docker monitor is used to:"
       }
     },
     "infrastructure": {
