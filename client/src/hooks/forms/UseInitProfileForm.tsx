@@ -1,4 +1,4 @@
-import { profileSchema } from "@/validation/zod";
+import { profileSchema } from "@/validation";
 import { useMemo } from "react";
 
 import { z } from "zod";

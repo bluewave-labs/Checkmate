@@ -1,4 +1,4 @@
-import { resetSchema } from "@/validation/zod";
+import { resetSchema } from "@/validation";
 import { useMemo } from "react";
 
 import { z } from "zod";

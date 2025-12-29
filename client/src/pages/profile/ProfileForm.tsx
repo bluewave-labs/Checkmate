@@ -12,8 +12,8 @@ import { useTheme } from "@mui/material/styles";
 import { useInitForm } from "@/hooks/forms/UseInitProfileForm";
 import type { IUser } from "@/types/user";
 
-import { profileSchema } from "@/validation/zod";
-type FormData = z.infer<typeof profileSchema>;
+import { profileSchema } from "@/validation";
+export type FormValues = z.infer<typeof profileSchema>;
 
 export const ProfileForm = ({
   user,
@@ -23,21 +23,21 @@ export const ProfileForm = ({
 }: {
   user: Partial<IUser> | null;
   hasUser?: boolean;
-  initialData?: Partial<FormData>;
-  onSubmit: SubmitHandler<FormData>;
+  initialData?: Partial<FormValues>;
+  onSubmit: SubmitHandler<FormValues>;
   loading: boolean;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { defaults } = useInitForm({ initialData: initialData });
-  const resolver = zodResolver(profileSchema) as unknown as Resolver<FormData>;
+  const resolver = zodResolver(profileSchema) as Resolver<FormValues>;
 
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<FormValues>({
     resolver,
     defaultValues: {
       firstName: "",

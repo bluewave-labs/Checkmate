@@ -3,8 +3,6 @@ import { AuthBasePage } from "@/components/auth";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { ResetForm } from "@/pages/recovery/ResetForm";
-import { resetSchema } from "@/validation/zod";
-import { z } from "zod";
 import { usePost } from "@/hooks/UseApi";
 import { useToast } from "@/hooks/UseToast";
 import { useNavigate } from "react-router";
@@ -15,8 +13,7 @@ import {
   setSelectedTeamId,
   logout,
 } from "@/features/authSlice";
-
-type FormData = z.infer<typeof resetSchema>;
+import type { FormValues } from "@/pages/recovery/ResetForm";
 
 const Reset = () => {
   const { t } = useTranslation();
@@ -26,7 +23,7 @@ const Reset = () => {
   const { toastSuccess } = useToast();
   const { id: token } = useParams<{ id: string }>();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormValues) => {
     const result = await post(`/recovery/reset`, {
       password: data.password,
       token: token || "",

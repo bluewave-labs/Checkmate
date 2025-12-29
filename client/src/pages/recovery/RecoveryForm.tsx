@@ -9,18 +9,18 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
-import { useInitForm } from "@/hooks/forms/UseInitRegisterForm";
+import { useInitForm } from "@/hooks/forms/UseInitRecoveryForm";
 
-import { recoverySchema } from "@/validation/zod";
-type FormData = z.infer<typeof recoverySchema>;
+import { recoverySchema } from "@/validation";
+export type FormValues = z.infer<typeof recoverySchema>;
 
 export const RecoveryForm = ({
   initialData,
   onSubmit,
   loading,
 }: {
-  initialData?: Partial<FormData>;
-  onSubmit: SubmitHandler<FormData>;
+  initialData?: FormValues;
+  onSubmit: SubmitHandler<FormValues>;
   loading: boolean;
 }) => {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export const RecoveryForm = ({
     control,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<FormValues>({
     resolver: zodResolver(recoverySchema),
     defaultValues: {
       email: "",
