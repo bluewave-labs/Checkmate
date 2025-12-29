@@ -4,6 +4,7 @@ export type {
   ISystemInfo,
   ICaptureInfo,
   ILighthouseResult,
+  IDockerContainerSummary,
 } from "./checks/Check.js";
 
 export { Monitor, MonitorStatuses, MonitorTypes } from "./monitors/Monitor.js";

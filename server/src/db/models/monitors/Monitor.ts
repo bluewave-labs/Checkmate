@@ -14,6 +14,7 @@ export const MonitorTypes = [
   "ping",
   "infrastructure",
   "pagespeed",
+  "docker",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 

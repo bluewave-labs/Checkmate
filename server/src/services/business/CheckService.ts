@@ -1,4 +1,5 @@
 import { ICheck, Check, Monitor, ISystemInfo } from "@/db/models/index.js";
+import type { IDockerPayload } from "@/services/infrastructure/NetworkService.js";
 import { MonitorStatus } from "@/db/models/monitors/Monitor.js";
 import { MonitorType } from "@/db/models/monitors/Monitor.js";
 import { StatusResponse } from "../infrastructure/NetworkService.js";
@@ -98,6 +99,25 @@ class CheckService implements ICheckService {
     return true;
   };
 
+  private isDockerPayload = (payload: any): payload is IDockerPayload => {
+    if (!payload || typeof payload !== "object") return false;
+    if (!Array.isArray((payload as any).data)) return false;
+    // Spot-check a couple of properties on the first element if present
+    const first = (payload as any).data[0];
+    if (first) {
+      if (typeof first !== "object") return false;
+      if (
+        typeof first.container_id !== "string" ||
+        typeof first.container_name !== "string"
+      ) {
+        return false;
+      }
+    }
+    if (!("capture" in payload) || typeof (payload as any).capture !== "object")
+      return false;
+    return true;
+  };
+
   private buildBaseCheck = (statusResponse: StatusResponse) => {
     const monitorId = new mongoose.Types.ObjectId(statusResponse.monitorId);
     const teamId = new mongoose.Types.ObjectId(statusResponse.teamId);
@@ -159,6 +179,22 @@ class CheckService implements ICheckService {
     return check;
   };
 
+  private buildDockerCheck = (
+    statusResponse: StatusResponse<IDockerPayload>
+  ) => {
+    const code = statusResponse?.code;
+    if (code && (code < 200 || code >= 300)) {
+      throw new Error(statusResponse?.message || "Bad monitor response");
+    }
+    if (!this.isDockerPayload(statusResponse.payload)) {
+      throw new Error("Invalid payload for docker monitor");
+    }
+    const check = this.buildBaseCheck(statusResponse);
+    check.dockerContainers = statusResponse.payload.data || [];
+    check.capture = statusResponse.payload.capture;
+    return check;
+  };
+
   buildCheck = async (
     statusResponse: StatusResponse,
     type: MonitorType
@@ -167,6 +203,10 @@ class CheckService implements ICheckService {
       case "infrastructure":
         return this.buildInfrastructureCheck(
           statusResponse as StatusResponse<ICapturePayload>
+        );
+      case "docker":
+        return this.buildDockerCheck(
+          statusResponse as StatusResponse<IDockerPayload>
         );
 
       case "pagespeed":

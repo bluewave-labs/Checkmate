@@ -15,6 +15,8 @@ import ApiError from "@/utils/ApiError.js";
 import { config } from "@/config/index.js";
 import CacheableLookup from "cacheable-lookup";
 import { getChildLogger } from "@/logger/Logger.js";
+import type { IDockerContainerSummary } from "@/db/models/index.js";
+
 const SERVICE_NAME = "NetworkService";
 const logger = getChildLogger(SERVICE_NAME);
 export interface INetworkService {
@@ -33,6 +35,11 @@ export interface ICapturePayload {
 
 export interface ILighthousePayload {
   lighthouseResult: ILighthouseResult;
+}
+
+export interface IDockerPayload {
+  data: IDockerContainerSummary[];
+  capture: ICaptureInfo;
 }
 
 export interface StatusResponse<TPayload = unknown> {
@@ -359,6 +366,11 @@ class NetworkService implements INetworkService {
         return await this.requestHttp(monitor); // uses GOT
       case "infrastructure":
         return await this.requestInfrastructure(monitor); // uses GOT
+      case "docker":
+        // For now, docker monitors reuse the infrastructure capture protocol
+        // (same capture agent and auth flow). This lets us ship server support
+        // quickly; specialized parsing will be added in CheckService.
+        return await this.requestInfrastructure(monitor);
       case "pagespeed":
         return await this.requestPagespeed(monitor); // uses GOT
       case "ping":

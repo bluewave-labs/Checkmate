@@ -137,9 +137,33 @@ export interface ICheck extends Document {
   system?: ISystemInfo;
   capture?: ICaptureInfo;
   lighthouse?: ICheckLighthouseFields;
+  dockerContainers?: IDockerContainerSummary[];
   createdAt: Date;
   updatedAt: Date;
   expiry: Date;
+}
+
+export interface IDockerContainerHealth {
+  healthy: boolean;
+  source?: string;
+  message?: string;
+}
+
+export interface IDockerExposedPort {
+  port: string;
+  protocol: string;
+}
+
+export interface IDockerContainerSummary {
+  container_id: string;
+  container_name: string;
+  status: string;
+  health?: IDockerContainerHealth;
+  running: boolean;
+  base_image?: string;
+  exposed_ports?: IDockerExposedPort[];
+  started_at?: number;
+  finished_at?: number;
 }
 
 const CheckSchema = new Schema<ICheck>(
@@ -292,6 +316,29 @@ const CheckSchema = new Schema<ICheck>(
       },
       required: false,
     },
+
+    dockerContainers: [
+      {
+        container_id: { type: String },
+        container_name: { type: String },
+        status: { type: String },
+        health: {
+          healthy: { type: Boolean },
+          source: { type: String },
+          message: { type: String },
+        },
+        running: { type: Boolean },
+        base_image: { type: String },
+        exposed_ports: [
+          {
+            port: { type: String },
+            protocol: { type: String },
+          },
+        ],
+        started_at: { type: Number },
+        finished_at: { type: Number },
+      },
+    ],
 
     errorMessage: { type: String, trim: true },
     ackAt: { type: Date },
