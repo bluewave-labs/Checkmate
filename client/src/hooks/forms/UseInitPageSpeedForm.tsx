@@ -11,7 +11,6 @@ export const useInitForm = ({
 }) => {
   return useMemo(() => {
     const apiToForm = (apiData: IMonitor): FormValues => {
-      console.log(JSON.stringify(apiData));
       return {
         type: apiData.type,
         url: apiData.url,

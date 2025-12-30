@@ -31,7 +31,6 @@ export const DockerMonitorsTable = ({
   const navigate = useNavigate();
   const theme = useTheme();
   const { patch } = usePatch<any, IMonitor>();
-  console.log(monitors);
   const handlePageChange = (
     _e: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
@@ -124,7 +123,11 @@ export const DockerMonitorsTable = ({
     },
     {
       id: "actions",
-      content: <Typography component="div">{t("common.table.headers.actions")}</Typography>,
+      content: (
+        <Typography component="div">
+          {t("common.table.headers.actions")}
+        </Typography>
+      ),
       render: (row) => <ActionsMenu items={getActions(row)} />,
     },
   ];

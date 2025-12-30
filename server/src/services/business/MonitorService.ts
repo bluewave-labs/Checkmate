@@ -362,28 +362,6 @@ class MonitorService implements IMonitorService {
           },
         },
       },
-      runningContainersSnapshot: {
-        $last: {
-          $map: {
-            input: {
-              $filter: {
-                input: { $ifNull: ["$dockerContainers", []] },
-                as: "c",
-                cond: { $eq: ["$$c.running", true] },
-              },
-            },
-            as: "c",
-            in: {
-              container_id: "$$c.container_id",
-              container_name: "$$c.container_name",
-              base_image: "$$c.base_image",
-              exposed_ports: "$$c.exposed_ports",
-              status: "$$c.status",
-              health: "$$c.health",
-            },
-          },
-        },
-      },
     };
   };
 

@@ -5,6 +5,7 @@ import {
   ICheck,
 } from "@/db/models/index.js";
 import { StatusResponse } from "./NetworkService.js";
+import { LatestCheck } from "@/db/models/monitors/Monitor.js";
 
 const emptyMetrics = (): ThresholdEvaluationResult["metrics"] => ({
   cpu: { breached: false },
@@ -74,11 +75,21 @@ class StatusService implements IStatusService {
 
     // Store latest checks for display
     monitor.latestChecks = monitor.latestChecks || [];
-    monitor.latestChecks.push({
+    const nextCheck: LatestCheck = {
       status: newStatus,
       responseTime: statusResponse.responseTime,
       checkedAt: monitor.lastCheckedAt,
-    });
+    };
+    // If this is a docker type, add the snapshot
+    if (monitor.type === "docker") {
+      const payload: any = statusResponse.payload;
+      nextCheck.containerSnapshot = payload.data;
+    }
+    monitor.latestChecks.push(nextCheck);
+
+    if (monitor.type === "docker") {
+    }
+
     while (monitor.latestChecks.length > MAX_LATEST_CHECKS) {
       monitor.latestChecks.shift();
     }
@@ -102,6 +113,7 @@ class StatusService implements IStatusService {
       if (allDifferent && monitor.status !== newStatus) {
         monitor.status = newStatus;
       }
+
       return [await monitor.save(), allDifferent];
     }
   };

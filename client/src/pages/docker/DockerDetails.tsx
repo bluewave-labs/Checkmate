@@ -38,9 +38,7 @@ const DockerDetailsPage = () => {
   const monitor = response?.data?.monitor;
   const stats = response?.data?.stats;
   const checks = (response?.data?.checks || []) as any;
-  const latestCheck = checks[0];
-  const snapshot = latestCheck?.runningContainersSnapshot || [];
-  console.log(checks);
+  const snapshot = monitor?.latestChecks?.[0].containerSnapshot || [];
   const palette = getStatusPalette(monitor?.status || "initializing");
 
   const streakDuration = stats?.currentStreakStartedAt

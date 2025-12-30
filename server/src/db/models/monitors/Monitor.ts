@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
+import type { IDockerContainerSummary } from "@/db/models/checks/Check.js";
 import {
   Check,
   Incident,
@@ -33,6 +34,13 @@ export interface IMonitorThresholds {
   temperature?: number;
 }
 
+export interface LatestCheck {
+  status: MonitorStatus;
+  responseTime: number;
+  checkedAt: Date;
+  // Snapshot of containers from the latest docker check (array from payload.data)
+  containerSnapshot?: IDockerContainerSummary[];
+}
 export interface IMonitor extends Document {
   _id: Types.ObjectId;
   orgId: Types.ObjectId;
@@ -48,11 +56,7 @@ export interface IMonitor extends Document {
   n: number; // Number of consecutive successes required to change status
   thresholds?: IMonitorThresholds;
   lastCheckedAt?: Date;
-  latestChecks: {
-    status: MonitorStatus;
-    responseTime: number;
-    checkedAt: Date;
-  }[];
+  latestChecks: LatestCheck[];
   notificationChannels?: Types.ObjectId[];
   createdBy: Types.ObjectId;
   updatedBy: Types.ObjectId;
@@ -104,6 +108,32 @@ const MonitorSchema = new Schema<IMonitor>(
           },
           responseTime: { type: Number, required: true },
           checkedAt: { type: Date, required: true },
+          containerSnapshot: {
+            type: [
+              {
+                container_id: { type: String },
+                container_name: { type: String },
+                status: { type: String },
+                health: {
+                  healthy: { type: Boolean },
+                  source: { type: String },
+                  message: { type: String },
+                },
+                running: { type: Boolean },
+                base_image: { type: String },
+                exposed_ports: [
+                  {
+                    port: { type: String },
+                    protocol: { type: String },
+                  },
+                ],
+                started_at: { type: Number },
+                finished_at: { type: Number },
+              },
+            ],
+            required: false,
+            default: undefined,
+          },
         },
       ],
       default: [],
