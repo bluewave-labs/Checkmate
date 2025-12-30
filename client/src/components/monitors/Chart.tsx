@@ -2,6 +2,7 @@ import { BaseBox } from "../design-elements";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import type { ResponsiveStyleValue } from "@mui/system";
 
 import { useTheme } from "@mui/material/styles";
 
@@ -10,6 +11,7 @@ type BaseChartProps = React.PropsWithChildren<{
   title: string;
   width?: number | string;
   maxWidth?: number | string;
+  padding?: number | string | ResponsiveStyleValue<number | string>;
 }>;
 
 export const BaseChart = ({
@@ -18,13 +20,13 @@ export const BaseChart = ({
   title,
   width = "100%",
   maxWidth = "100%",
+  padding,
 }: BaseChartProps) => {
   const theme = useTheme();
-
   return (
     <BaseBox
       sx={{
-        padding: theme.spacing(8),
+        padding: padding ?? theme.spacing(8),
         display: "flex",
         flex: 1,
         width: width,

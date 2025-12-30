@@ -547,6 +547,9 @@
         "runningCountChart": {
           "empty": "No data",
           "title": "# of running containers"
+        },
+        "tooltips": {
+          "containers": "Containers: {{value}}"
         }
       },
       "fallback": {
@@ -585,7 +588,7 @@
           "optionCpuUsage": "CPU usage (%)",
           "optionDiskUsage": "Disk usage (%)",
           "optionMemoryUsage": "Memory usage (%)",
-          "optionTemperature": "Temperature (°C)",
+          "optionTemperature": "Temperature (\u00b0C)",
           "title": "Thresholds for alerts"
         }
       },
@@ -715,7 +718,7 @@
     },
     "form": {
       "discord": {
-        "description": "Configure your Discord webhook URL. Create one in Discord: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
+        "description": "Configure your Discord webhook URL. Create one in Discord: Settings & administration \u2192 Manage apps \u2192 Custom Integrations \u2192 Incoming Webhooks",
         "option": "Webhook URL",
         "placeholder": "https://discord.com/api/webhooks/YOUR/WEBHOOK/URL",
         "title": "Discord configuration"
@@ -733,7 +736,7 @@
         "title": "Channel name"
       },
       "slack": {
-        "description": "Configure your Slack webhook URL. Create one in Slack: Settings & administration → Manage apps → Custom Integrations → Incoming Webhooks",
+        "description": "Configure your Slack webhook URL. Create one in Slack: Settings & administration \u2192 Manage apps \u2192 Custom Integrations \u2192 Incoming Webhooks",
         "option": "Webhook URL",
         "placeholder": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
         "title": "Slack configuration"

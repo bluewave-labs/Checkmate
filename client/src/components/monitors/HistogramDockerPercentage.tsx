@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { XTick } from "@/components/monitors/ChartResponseTime";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const HistogramDockerPercentage = ({
   data,
@@ -26,17 +27,25 @@ export const HistogramDockerPercentage = ({
   emptyText?: string;
 }) => {
   const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const hasData = Array.isArray(data) && data.length > 0;
 
   return (
-    <BaseChart title={title} icon={null}>
+    <BaseChart
+      title={title}
+      icon={null}
+      padding={{ xs: theme.spacing(4), md: theme.spacing(8) }}
+    >
       {!hasData ? (
         <Stack height={"100%"} alignItems={"center"} justifyContent={"center"}>
           <Typography variant="h2">{emptyText || "No data"}</Typography>
         </Stack>
       ) : (
-        <ResponsiveContainer width="100%" height={155}>
-          <AreaChart data={data}>
+        <ResponsiveContainer width="100%" height={200}>
+          <AreaChart
+            data={data}
+            margin={{ top: 8, right: 8, left: isSmall ? 0 : 8, bottom: 8 }}
+          >
             <CartesianGrid
               stroke={theme.palette.divider}
               strokeWidth={1}
@@ -60,9 +69,15 @@ export const HistogramDockerPercentage = ({
             </defs>
             <XAxis
               dataKey={"_id"}
+              axisLine={false}
+              tickLine={false}
               tick={(props) => <XTick {...props} range={range} />}
             />
-            <YAxis />
+            <YAxis
+              width={isSmall ? 24 : 36}
+              tick={{ fontSize: isSmall ? 10 : 11 }}
+              tickMargin={4}
+            />
             <Area
               dataKey={dataKey}
               stroke={theme.palette.primary.main}

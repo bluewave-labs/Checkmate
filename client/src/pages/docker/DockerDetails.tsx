@@ -86,34 +86,39 @@ const DockerDetailsPage = () => {
           <CardDockerContainer key={c.container_id} container={c} />
         ))}
       </Stack>
-      <BarDockerCount
-        data={checks}
-        dataKey="healthyContainers"
-        range={range}
-        title={t("monitors.docker.details.healthyCountChart.title")}
-        emptyText={t("monitors.docker.details.healthyCountChart.empty")}
-      />
-      <BarDockerCount
-        data={checks}
-        dataKey="runningContainers"
-        range={range}
-        title={t("monitors.docker.details.runningCountChart.title")}
-        emptyText={t("monitors.docker.details.runningCountChart.empty")}
-      />
-      <HistogramDockerPercentage
-        data={checks}
-        dataKey="healthyPercent"
-        range={range}
-        title={t("monitors.docker.details.healthyChart.title")}
-        emptyText={t("monitors.docker.details.healthyChart.empty")}
-      />
-      <HistogramDockerPercentage
-        data={checks}
-        dataKey="runningPercent"
-        range={range}
-        title={t("monitors.docker.details.healthyChart.title")}
-        emptyText={t("monitors.docker.details.healthyChart.empty")}
-      />
+      <Stack gap={theme.spacing(6)} direction={{ xs: "column", lg: "row" }}>
+        <HistogramDockerPercentage
+          data={checks}
+          dataKey="healthyPercent"
+          range={range}
+          title={t("monitors.docker.details.healthyChart.title")}
+          emptyText={t("monitors.docker.details.healthyChart.empty")}
+        />
+        <BarDockerCount
+          data={checks}
+          dataKey="healthyContainers"
+          range={range}
+          title={t("monitors.docker.details.healthyCountChart.title")}
+          emptyText={t("monitors.docker.details.healthyCountChart.empty")}
+        />
+      </Stack>
+
+      <Stack gap={theme.spacing(6)} direction={{ xs: "column", lg: "row" }}>
+        <HistogramDockerPercentage
+          data={checks}
+          dataKey="runningPercent"
+          range={range}
+          title={t("monitors.docker.details.runningChart.title")}
+          emptyText={t("monitors.docker.details.runningChart.empty")}
+        />
+        <BarDockerCount
+          data={checks}
+          dataKey="runningContainers"
+          range={range}
+          title={t("monitors.docker.details.runningCountChart.title")}
+          emptyText={t("monitors.docker.details.runningCountChart.empty")}
+        />
+      </Stack>
     </BasePage>
   );
 };
