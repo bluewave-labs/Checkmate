@@ -83,7 +83,7 @@ class StatusService implements IStatusService {
     // If this is a docker type, add the snapshot
     if (monitor.type === "docker") {
       const payload: any = statusResponse.payload;
-      nextCheck.containerSnapshot = payload.data;
+      nextCheck.dockerContainers = payload.data;
     }
     monitor.latestChecks.push(nextCheck);
 

@@ -39,7 +39,7 @@ export interface LatestCheck {
   responseTime: number;
   checkedAt: Date;
   // Snapshot of containers from the latest docker check (array from payload.data)
-  containerSnapshot?: IDockerContainerSummary[];
+  dockerContainers?: IDockerContainerSummary[];
 }
 export interface IMonitor extends Document {
   _id: Types.ObjectId;
@@ -108,7 +108,7 @@ const MonitorSchema = new Schema<IMonitor>(
           },
           responseTime: { type: Number, required: true },
           checkedAt: { type: Date, required: true },
-          containerSnapshot: {
+          dockerContainers: {
             type: [
               {
                 container_id: { type: String },
