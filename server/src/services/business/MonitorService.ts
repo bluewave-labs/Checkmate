@@ -560,14 +560,24 @@ class MonitorService implements IMonitorService {
         runningPercent: {
           $cond: [
             { $gt: ["$totalContainers", 0] },
-            { $multiply: [{ $divide: ["$runningContainers", "$totalContainers"] }, 100] },
+            {
+              $multiply: [
+                { $divide: ["$runningContainers", "$totalContainers"] },
+                100,
+              ],
+            },
             null,
           ],
         },
         healthyPercent: {
           $cond: [
             { $gt: ["$totalContainers", 0] },
-            { $multiply: [{ $divide: ["$healthyContainers", "$totalContainers"] }, 100] },
+            {
+              $multiply: [
+                { $divide: ["$healthyContainers", "$totalContainers"] },
+                100,
+              ],
+            },
             null,
           ],
         },
@@ -742,6 +752,18 @@ class MonitorService implements IMonitorService {
           disk: d.disk,
           host: d.host,
           net: d.net,
+        };
+      }
+      if (monitor.type === "docker") {
+        return {
+          ...base,
+          totalContainers: d.dockerTotalContainers,
+          runningContainers: d.dockerRunningContainers,
+          healthyContainers: d.dockerHealthyContainers,
+          totalExposedPorts: d.dockerTotalExposedPorts,
+          uniqueImages: d.dockerUniqueImages,
+          runningPercent: d.dockerRunningPercent,
+          healthyPercent: d.dockerHealthyPercent,
         };
       }
       return base;

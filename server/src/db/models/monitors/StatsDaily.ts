@@ -19,6 +19,12 @@ export interface IStatsDaily
   disk?: IInfraDiskEntry[];
   host?: IInfraHost;
   net?: IInfraNetEntry[];
+  // Docker rollups
+  dockerRunningPercent?: number;
+  dockerHealthyPercent?: number;
+  dockerRunningContainers?: number;
+  dockerHealthyContainers?: number;
+  dockerTotalContainers?: number;
 }
 
 const InfraCpuSchema = new Schema<IInfraCpu>(
@@ -132,6 +138,13 @@ const StatsDailySchema = new Schema<IStatsDaily>(
     disk: { type: [InfraDiskEntrySchema], required: false, default: undefined },
     host: { type: InfraHostSchema, required: false },
     net: { type: [InfraNetEntrySchema], required: false, default: undefined },
+
+    // Docker
+    dockerRunningPercent: { type: Number },
+    dockerHealthyPercent: { type: Number },
+    dockerRunningContainers: { type: Number },
+    dockerHealthyContainers: { type: Number },
+    dockerTotalContainers: { type: Number },
   },
   { timestamps: true, collection: "stats_daily" }
 );

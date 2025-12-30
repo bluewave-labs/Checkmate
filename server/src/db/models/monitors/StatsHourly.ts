@@ -96,6 +96,11 @@ export interface IStatsHourly
   disk?: IInfraDiskEntry[];
   host?: IInfraHost;
   net?: IInfraNetEntry[];
+  dockerRunningPercent?: number;
+  dockerHealthyPercent?: number;
+  dockerRunningContainers?: number;
+  dockerHealthyContainers?: number;
+  dockerTotalContainers?: number;
 }
 
 const InfraCpuSchema = new Schema<IInfraCpu>(
@@ -209,6 +214,11 @@ const StatsHourlySchema = new Schema<IStatsHourly>(
     disk: { type: [InfraDiskEntrySchema], required: false, default: undefined },
     host: { type: InfraHostSchema, required: false },
     net: { type: [InfraNetEntrySchema], required: false, default: undefined },
+    dockerRunningPercent: { type: Number },
+    dockerHealthyPercent: { type: Number },
+    dockerRunningContainers: { type: Number },
+    dockerHealthyContainers: { type: Number },
+    dockerTotalContainers: { type: Number },
   },
   { timestamps: true, collection: "stats_hourly" }
 );

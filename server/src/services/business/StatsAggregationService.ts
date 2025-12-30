@@ -50,6 +50,12 @@ class StatsAggregationService implements IStatsAggregationService {
             disk: d.disk,
             host: d.host,
             net: d.net,
+            // Docker (present when type === "docker")
+            dockerRunningPercent: d.dockerRunningPercent,
+            dockerHealthyPercent: d.dockerHealthyPercent,
+            dockerRunningContainers: d.dockerRunningContainers,
+            dockerHealthyContainers: d.dockerHealthyContainers,
+            dockerTotalContainers: d.dockerTotalContainers,
           },
         },
         upsert: true,
@@ -441,6 +447,82 @@ class StatsAggregationService implements IStatsAggregationService {
       bulkOps.push(this.makeUpsertOp(el, windowStart, windowEnd))
     );
 
+    // 4) Docker hourly
+    const dockerAgg = await Check.aggregate<any>([
+      { $match: { ...matchWindow, "metadata.type": "docker" } },
+      {
+        $project: {
+          status: 1,
+          responseTime: 1,
+          createdAt: 1,
+          dockerContainers: 1,
+          "metadata.monitorId": 1,
+          "metadata.teamId": 1,
+          "metadata.type": 1,
+        },
+      },
+      { $sort: { createdAt: 1 } },
+      {
+        $addFields: {
+          total: { $size: { $ifNull: ["$dockerContainers", []] } },
+          running: {
+            $size: {
+              $filter: {
+                input: { $ifNull: ["$dockerContainers", []] },
+                as: "c",
+                cond: { $eq: ["$$c.running", true] },
+              },
+            },
+          },
+          healthy: {
+            $size: {
+              $filter: {
+                input: { $ifNull: ["$dockerContainers", []] },
+                as: "c",
+                cond: { $eq: ["$$c.health.healthy", true] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          runningPercent: {
+            $cond: [
+              { $gt: ["$total", 0] },
+              { $multiply: [{ $divide: ["$running", "$total"] }, 100] },
+              null,
+            ],
+          },
+          healthyPercent: {
+            $cond: [
+              { $gt: ["$total", 0] },
+              { $multiply: [{ $divide: ["$healthy", "$total"] }, 100] },
+              null,
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$metadata.monitorId",
+          teamId: { $first: "$metadata.teamId" },
+          type: { $first: "$metadata.type" },
+          count: { $sum: 1 },
+          avgResponseTime: { $avg: "$responseTime" },
+          dockerRunningPercent: { $avg: "$runningPercent" },
+          dockerHealthyPercent: { $avg: "$healthyPercent" },
+          dockerTotalContainers: { $last: "$total" },
+          dockerRunningContainers: { $last: "$running" },
+          dockerHealthyContainers: { $last: "$healthy" },
+        },
+      },
+    ]);
+
+    dockerAgg.forEach((el) =>
+      bulkOps.push(this.makeUpsertOp(el, windowStart, windowEnd))
+    );
+
     if (bulkOps.length > 0) {
       const res = await StatsHourly.bulkWrite(bulkOps, { ordered: false });
       upserts += res.upsertedCount + (res.modifiedCount ?? 0);
@@ -457,7 +539,11 @@ class StatsAggregationService implements IStatsAggregationService {
     // Fetch hourly docs for the day
     const hourly = await StatsHourly.find({
       windowStart: { $gte: dayStart, $lt: dayEnd },
-    }).lean();
+    })
+      .select(
+        "monitorId teamId type windowStart count avgResponseTime upChecks downChecks avgResponseTimeUp avgResponseTimeDown accessibility bestPractices seo performance cls si fcp lcp tbt cpu memory disk host net dockerRunningPercent dockerHealthyPercent dockerTotalContainers dockerRunningContainers dockerHealthyContainers"
+      )
+      .lean();
 
     type Weighted = { sum: number; w: number };
     const addW = (acc: Weighted, v?: number, w = 0) => {
@@ -521,6 +607,12 @@ class StatsAggregationService implements IStatsAggregationService {
       };
       net: Map<string, DeviceAgg>;
       lastTs: number; // for choosing "last" fields
+      // docker
+      dockerRunningPercent?: Weighted;
+      dockerHealthyPercent?: Weighted;
+      dockerTotalContainers?: number;
+      dockerRunningContainers?: number;
+      dockerHealthyContainers?: number;
     }
 
     const groups = new Map<string, GroupAgg>();
@@ -585,6 +677,12 @@ class StatsAggregationService implements IStatsAggregationService {
       addW(g.lcp, (h as any).lcp, w);
       addW(g.tbt, (h as any).tbt, w);
 
+      // docker
+      if (!(g as any).dockerRunningPercent) (g as any).dockerRunningPercent = { sum: 0, w: 0 };
+      if (!(g as any).dockerHealthyPercent) (g as any).dockerHealthyPercent = { sum: 0, w: 0 };
+      addW((g as any).dockerRunningPercent!, (h as any).dockerRunningPercent, w);
+      addW((g as any).dockerHealthyPercent!, (h as any).dockerHealthyPercent, w);
+
       const ts = new Date(h.windowStart).getTime();
       if (ts >= g.lastTs) {
         g.lastTs = ts;
@@ -612,6 +710,11 @@ class StatsAggregationService implements IStatsAggregationService {
           kernel_version: host.kernel_version,
           pretty_name: host.pretty_name,
         };
+
+        // docker last snapshot
+        (g as any).dockerTotalContainers = (h as any).dockerTotalContainers;
+        (g as any).dockerRunningContainers = (h as any).dockerRunningContainers;
+        (g as any).dockerHealthyContainers = (h as any).dockerHealthyContainers;
       }
 
       // weighted CPU averages
@@ -772,6 +875,11 @@ class StatsAggregationService implements IStatsAggregationService {
           disk: diskArr.length > 0 ? diskArr : undefined,
           host: g.host,
           net: netArr.length > 0 ? netArr : undefined,
+          dockerRunningPercent: avg((g as any).dockerRunningPercent!),
+          dockerHealthyPercent: avg((g as any).dockerHealthyPercent!),
+          dockerTotalContainers: (g as any).dockerTotalContainers,
+          dockerRunningContainers: (g as any).dockerRunningContainers,
+          dockerHealthyContainers: (g as any).dockerHealthyContainers,
         },
       };
 
