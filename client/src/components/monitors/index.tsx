@@ -5,5 +5,6 @@ export { HeaderControls } from "./HeaderControls";
 export { ChartResponseTime } from "./ChartResponseTime";
 export { HistogramPageSpeed } from "./HistogramPageSpeed";
 export { HistogramInfrastructure } from "./HistogramInfrastructure";
-
+export { CardDockerContainer } from "./CardDockerContainer";
 export { HeaderFilter } from "./HeaderFilter";
+export { HistogramDockerPercentage } from "./HistogramDockerPercentage";

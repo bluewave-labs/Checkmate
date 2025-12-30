@@ -149,6 +149,7 @@
       }
     }
   },
+
   "common": {
     "appName": "Checkmate",
     "breadcrumbs": {
@@ -529,6 +530,30 @@
       "table": {
         "headers": {
           "runningContainers": "Running containers"
+        }
+      },
+      "details": {
+        "dockerContainerCard": {
+          "title": "Container: {{name}}",
+          "fields": {
+            "status": "Status",
+            "health": "Health",
+            "id": "ID",
+            "image": "Image",
+            "ports": "Ports"
+          },
+          "values": {
+            "healthy": "Healthy",
+            "unhealthy": "Unhealthy"
+          }
+        },
+        "healthyChart": {
+          "title": "Healthy container %",
+          "empty": "No data"
+        },
+        "runningChart": {
+          "title": "Running container %",
+          "empty": "No data"
         }
       }
     },
