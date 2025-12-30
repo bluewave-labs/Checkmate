@@ -378,6 +378,8 @@ class MonitorService implements IMonitorService {
               container_name: "$$c.container_name",
               base_image: "$$c.base_image",
               exposed_ports: "$$c.exposed_ports",
+              status: "$$c.status",
+              health: "$$c.health",
             },
           },
         },
