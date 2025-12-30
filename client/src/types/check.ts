@@ -123,7 +123,7 @@ export interface ICheck {
   lighthouse?: ICheckLighthouseFields;
   system?: ISystemInfo;
   // Present for docker monitor checks
-  containerSnapshot?: IDockerContainerSummary[];
+  dockerContainers?: IDockerContainerSummary[];
 }
 export interface CheckWithMonitor {
   _id: string;

@@ -109,47 +109,46 @@
     }
   },
   "checks": {
+    "details": {
+      "common": {
+        "requestTime": "Total request time: {{time}}"
+      },
+      "detailsCard": {
+        "fields": {
+          "checkTime": "Check time",
+          "code": "HTTP Code",
+          "dns": "DNS",
+          "download": "Download",
+          "firstByte": "First byte",
+          "message": "Message",
+          "request": "Request",
+          "status": "Status",
+          "tcp": "TCP",
+          "timingPhases": "Timing phases",
+          "tls": "TLS",
+          "total": "Total",
+          "type": "Type",
+          "wait": "Wait"
+        },
+        "headers": {
+          "basicInfo": "Basic check info",
+          "timing": "Timing phases"
+        },
+        "linkText": "View monitor",
+        "title": "Check details"
+      },
+      "timingChart": {
+        "title": "Request timings"
+      }
+    },
     "table": {
       "empty": "No checks",
       "headers": {
         "dateTime": "Date & Time",
         "statusCode": "Status code"
       }
-    },
-    "details": {
-      "common": {
-        "requestTime": "Total request time: {{time}}"
-      },
-      "detailsCard": {
-        "title": "Check details",
-        "linkText": "View monitor",
-        "headers": {
-          "basicInfo": "Basic check info",
-          "timing": "Timing phases"
-        },
-        "fields": {
-          "status": "Status",
-          "code": "HTTP Code",
-          "type": "Type",
-          "checkTime": "Check time",
-          "message": "Message",
-          "timingPhases": "Timing phases",
-          "wait": "Wait",
-          "dns": "DNS",
-          "tcp": "TCP",
-          "tls": "TLS",
-          "request": "Request",
-          "firstByte": "First byte",
-          "download": "Download",
-          "total": "Total"
-        }
-      },
-      "timingChart": {
-        "title": "Request timings"
-      }
     }
   },
-
   "common": {
     "appName": "Checkmate",
     "breadcrumbs": {
@@ -158,6 +157,7 @@
       "configure": "Configure",
       "create": "Create",
       "diagnostics": "Diagnostics",
+      "docker": "Docker Monitors",
       "incidents": "Incidents",
       "infrastructure": "Infrastructure Monitors",
       "invite": "Invite",
@@ -181,11 +181,11 @@
       "disable": "Disable",
       "enable": "Enable",
       "exportJson": "Export to JSON",
+      "home": "Return home",
       "importJson": "Import from JSON",
       "incidents": "Incidents",
       "limitReached": "Your plan's limit has been reached",
       "no": "No",
-      "home": "Return home",
       "pause": "Pause",
       "range": {
         "all": "All",
@@ -240,12 +240,12 @@
         "weight": "Weight"
       },
       "uptime": {
+        "avgResponseTime": "Avg response time",
         "detail": "Total checks",
         "downTitle": "Downtime",
         "emptyDown": "Great, no downtime!",
         "emptyUp": "No checks yet",
-        "upTitle": "Uptime",
-        "avgResponseTime": "Avg response time"
+        "upTitle": "Uptime"
       }
     },
     "dialog": {
@@ -259,11 +259,11 @@
       "headers": {
         "actions": "Actions",
         "active": "Active",
+        "message": "Message",
         "monitor": "Monitor",
         "name": "Name",
         "status": "Status",
-        "type": "Type",
-        "message": "Message"
+        "type": "Type"
       }
     },
     "toasts": {
@@ -280,30 +280,20 @@
   },
   "diagnostics": {
     "infoBox": {
-      "title": "System Diagnostics",
-      "description": "Review system logs and background job status to troubleshoot issues. Monitor the health of your monitoring infrastructure and investigate any problems."
-    },
-    "tabs": {
-      "logs": "Logs",
-      "queue": "Queue",
-      "config": "Config",
-      "access": "Access"
+      "description": "Review system logs and background job status to troubleshoot issues. Monitor the health of your monitoring infrastructure and investigate any problems.",
+      "title": "System Diagnostics"
     },
     "logs": {
       "table": {
         "headers": {
-          "timestamp": "Timestamp",
           "level": "Level",
-          "service": "Service"
+          "service": "Service",
+          "timestamp": "Timestamp"
         }
       }
     },
     "queue": {
       "stats": {
-        "monitoringJobs": {
-          "title": "Monitoring jobs",
-          "tooltip": "Total number of monitoring jobs in the queue"
-        },
         "activeJobs": {
           "title": "Active jobs",
           "tooltip": "Number of jobs being processed"
@@ -312,27 +302,37 @@
           "title": "Failing jobs",
           "tooltip": "Jobs that failed on their last execution"
         },
-        "totalRuns": {
-          "title": "Total runs",
-          "tooltip": "Total number of job executions"
+        "monitoringJobs": {
+          "title": "Monitoring jobs",
+          "tooltip": "Total number of monitoring jobs in the queue"
         },
         "totalFailures": {
           "title": "Total failures",
           "tooltip": "Total number of failed job executions"
+        },
+        "totalRuns": {
+          "title": "Total runs",
+          "tooltip": "Total number of job executions"
         }
       },
       "table": {
         "headers": {
-          "jobId": "Job ID",
-          "url": "URL",
-          "interval": "Interval",
-          "runs": "Runs",
-          "lastRun": "Last run",
-          "lockedAt": "Locked at",
           "finishedAt": "Finished at",
-          "lastRunTook": "Last run took (ms)"
+          "interval": "Interval",
+          "jobId": "Job ID",
+          "lastRun": "Last run",
+          "lastRunTook": "Last run took (ms)",
+          "lockedAt": "Locked at",
+          "runs": "Runs",
+          "url": "URL"
         }
       }
+    },
+    "tabs": {
+      "access": "Access",
+      "config": "Config",
+      "logs": "Logs",
+      "queue": "Queue"
     }
   },
   "export": {
@@ -517,6 +517,38 @@
       }
     },
     "docker": {
+      "details": {
+        "dockerContainerCard": {
+          "fields": {
+            "health": "Health",
+            "id": "ID",
+            "image": "Image",
+            "ports": "Ports",
+            "status": "Status"
+          },
+          "title": "Container: {{name}}",
+          "values": {
+            "healthy": "Healthy",
+            "unhealthy": "Unhealthy"
+          }
+        },
+        "healthyChart": {
+          "empty": "No data",
+          "title": "Healthy container %"
+        },
+        "healthyCountChart": {
+          "empty": "No data",
+          "title": "# of healthy containers"
+        },
+        "runningChart": {
+          "empty": "No data",
+          "title": "Running container %"
+        },
+        "runningCountChart": {
+          "empty": "No data",
+          "title": "# of running containers"
+        }
+      },
       "fallback": {
         "actionButton": "Create a monitor!",
         "checks": [
@@ -530,30 +562,6 @@
       "table": {
         "headers": {
           "runningContainers": "Running containers"
-        }
-      },
-      "details": {
-        "dockerContainerCard": {
-          "title": "Container: {{name}}",
-          "fields": {
-            "status": "Status",
-            "health": "Health",
-            "id": "ID",
-            "image": "Image",
-            "ports": "Ports"
-          },
-          "values": {
-            "healthy": "Healthy",
-            "unhealthy": "Unhealthy"
-          }
-        },
-        "healthyChart": {
-          "title": "Healthy container %",
-          "empty": "No data"
-        },
-        "runningChart": {
-          "title": "Running container %",
-          "empty": "No data"
         }
       }
     },

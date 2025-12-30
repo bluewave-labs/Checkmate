@@ -8,3 +8,4 @@ export { HistogramInfrastructure } from "./HistogramInfrastructure";
 export { CardDockerContainer } from "./CardDockerContainer";
 export { HeaderFilter } from "./HeaderFilter";
 export { HistogramDockerPercentage } from "./HistogramDockerPercentage";
+export { BarDockerCount } from "./BarDockerCount";

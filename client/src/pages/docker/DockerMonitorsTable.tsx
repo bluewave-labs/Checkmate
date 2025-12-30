@@ -116,8 +116,10 @@ export const DockerMonitorsTable = ({
         </Typography>
       ),
       render: (row) => {
-        const containerCount = (row.latestChecks?.[0]?.dockerContainers || [])
-          .length;
+        console.log(row);
+        const containerCount = (
+          row.latestChecks?.[0]?.dockerContainers || []
+        ).filter((c: any) => c?.running).length;
         return containerCount;
       },
     },

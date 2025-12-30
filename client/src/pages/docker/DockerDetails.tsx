@@ -2,6 +2,7 @@ import { BasePage, StatBox } from "@/components/design-elements";
 import {
   HeaderControls,
   HeaderRange,
+  BarDockerCount,
   HistogramDockerPercentage,
 } from "@/components/monitors";
 import Stack from "@mui/material/Stack";
@@ -38,7 +39,7 @@ const DockerDetailsPage = () => {
   const monitor = response?.data?.monitor;
   const stats = response?.data?.stats;
   const checks = (response?.data?.checks || []) as any;
-  const snapshot = monitor?.latestChecks?.[0].containerSnapshot || [];
+  const snapshot = monitor?.latestChecks?.[0].dockerContainers || [];
   const palette = getStatusPalette(monitor?.status || "initializing");
 
   const streakDuration = stats?.currentStreakStartedAt
@@ -85,6 +86,20 @@ const DockerDetailsPage = () => {
           <CardDockerContainer key={c.container_id} container={c} />
         ))}
       </Stack>
+      <BarDockerCount
+        data={checks}
+        dataKey="healthyContainers"
+        range={range}
+        title={t("monitors.docker.details.healthyCountChart.title")}
+        emptyText={t("monitors.docker.details.healthyCountChart.empty")}
+      />
+      <BarDockerCount
+        data={checks}
+        dataKey="runningContainers"
+        range={range}
+        title={t("monitors.docker.details.runningCountChart.title")}
+        emptyText={t("monitors.docker.details.runningCountChart.empty")}
+      />
       <HistogramDockerPercentage
         data={checks}
         dataKey="healthyPercent"
@@ -96,8 +111,8 @@ const DockerDetailsPage = () => {
         data={checks}
         dataKey="runningPercent"
         range={range}
-        title={t("monitors.docker.details.runningChart.title")}
-        emptyText={t("monitors.docker.details.runningChart.empty")}
+        title={t("monitors.docker.details.healthyChart.title")}
+        emptyText={t("monitors.docker.details.healthyChart.empty")}
       />
     </BasePage>
   );
