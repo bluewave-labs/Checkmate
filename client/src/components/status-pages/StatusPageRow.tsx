@@ -23,13 +23,16 @@ export const StatusPageRow = ({ monitor }: { monitor: IMonitor }) => {
         alignItems={"center"}
         justifyContent={"flex-end"}
       >
-        <StatusLabel status={monitor?.status} sx={{ py: 1 }} />
+        <StatusLabel
+          status={(monitor?.status as any) ?? "initializing"}
+          sx={{ py: 1 }}
+        />
       </Grid>
       <Grid size={12} marginTop={theme.spacing(2)}>
         {type === "heatmap" && (
           <HeatmapResponseTime
             gap={{ xs: theme.spacing(0.5), md: theme.spacing(2) }}
-            checks={monitor?.latestChecks}
+            checks={monitor?.latestChecks ?? []}
             availabilityCellSx={{
               borderRadius: {
                 xs: theme.spacing(0.5),
@@ -46,7 +49,7 @@ export const StatusPageRow = ({ monitor }: { monitor: IMonitor }) => {
         )}
         {type === "histogram" && (
           <HistogramResponseTime
-            checks={monitor?.latestChecks}
+            checks={monitor?.latestChecks ?? []}
             height={{ xs: 50, md: 100 }}
             gap={{ xs: 0.5, md: theme.spacing(4) }}
           />

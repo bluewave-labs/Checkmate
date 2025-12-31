@@ -193,7 +193,9 @@ export const InfraMonitorsTable = ({
           </Typography>
         ),
         render: (row) => {
-          return <StatusLabel status={row.status} />;
+          return (
+            <StatusLabel status={(row.status as any) ?? ("initializing" as any)} />
+          );
         },
       },
       {

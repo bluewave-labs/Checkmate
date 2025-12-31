@@ -20,7 +20,7 @@ const StatusPageConfigPage = () => {
   );
 
   const monitors = response?.data || [];
-  const initialData = statusPageResponse?.data;
+  const initialData = statusPageResponse?.data || {};
   initialData.monitors =
     initialData?.monitors?.map((monitor: IMonitor) => monitor?._id) || [];
 

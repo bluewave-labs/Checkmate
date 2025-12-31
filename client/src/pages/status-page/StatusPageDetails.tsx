@@ -16,7 +16,7 @@ const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 const StatusPages = () => {
   const theme = useTheme();
   const { id } = useParams();
-  const { response } = useGet<ApiResponse<IStatusPageWithMonitors>>(
+  const { response, loading } = useGet<ApiResponse<IStatusPageWithMonitors>>(
     `/status-pages/${id}`,
     {},
     { refreshInterval: GLOBAL_REFRESH, keepPreviousData: true }
@@ -29,7 +29,7 @@ const StatusPages = () => {
   }
 
   return (
-    <BasePage alignItems={"center"}>
+    <BasePage alignItems={"center"} loading={loading}>
       <Stack minWidth={"66vw"} spacing={theme.spacing(8)}>
         <NameHeader statusPage={statusPage} />
         <StatusHeader statusPage={statusPage} />

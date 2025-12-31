@@ -206,9 +206,9 @@ export const MonitorTable = ({
         content: t("monitors.uptime.table.headers.responseTime"),
         render: (row) => {
           if (chartType === "histogram") {
-            return <HistogramResponseTime checks={row.latestChecks} />;
+            return <HistogramResponseTime checks={row.latestChecks ?? []} />;
           } else {
-            return <HeatmapResponseTime checks={row.latestChecks} />;
+            return <HeatmapResponseTime checks={row.latestChecks ?? []} />;
           }
         },
       },

@@ -204,7 +204,7 @@ export const PageSpeedMonitorTable = ({
           return (
             <Stack alignItems={"center"}>
               <HistogramPageSpeed
-                checks={row.latestChecks}
+                checks={row.latestChecks ?? []}
                 status={row.status}
               />
             </Stack>

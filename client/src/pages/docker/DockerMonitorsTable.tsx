@@ -106,7 +106,9 @@ export const DockerMonitorsTable = ({
           {t("common.table.headers.status")}
         </Typography>
       ),
-      render: (row) => <StatusLabel status={row.status} />,
+      render: (row) => (
+        <StatusLabel status={(row.status as any) ?? ("initializing" as any)} />
+      ),
     },
     {
       id: "runningContainers",
@@ -116,7 +118,6 @@ export const DockerMonitorsTable = ({
         </Typography>
       ),
       render: (row) => {
-        console.log(row);
         const containerCount = (
           row.latestChecks?.[0]?.dockerContainers || []
         ).filter((c: any) => c?.running).length;

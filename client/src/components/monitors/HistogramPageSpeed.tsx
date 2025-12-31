@@ -45,7 +45,7 @@ export const HistogramPageSpeed = ({
   status: MonitorStatus;
 }) => {
   const theme = useTheme();
-  const scores = processData(checks);
+  const scores = processData(checks ?? []);
   const color = getStatusColor(status, theme);
   return (
     <Stack

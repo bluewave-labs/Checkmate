@@ -8,10 +8,14 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
 } from "recharts";
 import { XTick } from "@/components/monitors/ChartResponseTime";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { BaseBox } from "@/components/design-elements";
+import { useAppSelector } from "@/hooks/AppHooks";
+import { formatDateWithTz, tooltipDateFormatLookup } from "@/utils/TimeUtils";
 
 export const HistogramDockerPercentage = ({
   data,
@@ -29,6 +33,21 @@ export const HistogramDockerPercentage = ({
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const hasData = Array.isArray(data) && data.length > 0;
+  const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
+
+  const PercentTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !label) return null;
+    const fmt = tooltipDateFormatLookup(range);
+    const value = payload?.[0]?.payload?.[dataKey] ?? 0;
+    return (
+      <BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+        <Typography>
+          {formatDateWithTz(String(label), fmt, uiTimezone)}
+        </Typography>
+        <Typography>{`${value}%`}</Typography>
+      </BaseBox>
+    );
+  };
 
   return (
     <BaseChart
@@ -78,6 +97,7 @@ export const HistogramDockerPercentage = ({
               tick={{ fontSize: isSmall ? 10 : 11 }}
               tickMargin={4}
             />
+            <Tooltip content={<PercentTooltip />} cursor={false} />
             <Area
               dataKey={dataKey}
               stroke={theme.palette.primary.main}

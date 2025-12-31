@@ -1,8 +1,9 @@
 import Box from "@mui/material/Box";
 import { BaseBox } from "@/components/design-elements";
+import Typography from "@mui/material/Typography";
+
 import type { MonitorStatus } from "@/types/monitor";
 import type { SxProps } from "@mui/material/styles";
-
 import { getStatusPalette, getValuePalette } from "@/utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 
@@ -18,8 +19,6 @@ export const StatusLabel = ({
 }) => {
   const theme = useTheme();
   const palette = getStatusPalette(status);
-  const transformedText =
-    status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
   return (
     <BaseBox
@@ -37,8 +36,14 @@ export const StatusLabel = ({
         ...sx,
       }}
     >
-      <Box width={7} height={7} bgcolor={theme.palette[palette].light} borderRadius="50%" marginRight="5px" />
-      {transformedText}
+      <Box
+        width={7}
+        height={7}
+        bgcolor={theme.palette[palette].light}
+        borderRadius="50%"
+        marginRight="5px"
+      />
+      <Typography textTransform={"capitalize"}>{status}</Typography>
     </BaseBox>
   );
 };
@@ -70,7 +75,13 @@ export const ValueLabel = ({
             : "rgba(0, 0, 0, 0.08)",
       }}
     >
-      <Box width={7} height={7} bgcolor={theme.palette[palette].light} borderRadius="50%" marginRight="5px" />
+      <Box
+        width={7}
+        height={7}
+        bgcolor={theme.palette[palette].light}
+        borderRadius="50%"
+        marginRight="5px"
+      />
       {transformedText}
     </BaseBox>
   );
