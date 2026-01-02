@@ -14,12 +14,14 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePatch } from "@/hooks/UseApi";
 
+import type { ICheck } from "@/types/check";
 import type { IMonitor } from "@/types/monitor";
 import type { ActionMenuItem } from "@/components/actions-menu";
 import type { ChartType } from "@/features/uiSlice";
 
 export const MonitorTable = ({
   monitors,
+  checksMap,
   refetch,
   setSelectedMonitor,
   sortField,
@@ -33,6 +35,7 @@ export const MonitorTable = ({
   setRowsPerPage,
 }: {
   monitors: IMonitor[];
+  checksMap: Record<string, ICheck[]>;
   refetch: Function;
   setSelectedMonitor: Function;
   sortField: string;
@@ -206,9 +209,9 @@ export const MonitorTable = ({
         content: t("monitors.uptime.table.headers.responseTime"),
         render: (row) => {
           if (chartType === "histogram") {
-            return <HistogramResponseTime checks={row.latestChecks ?? []} />;
+            return <HistogramResponseTime checks={checksMap[row._id] ?? []} />;
           } else {
-            return <HeatmapResponseTime checks={row.latestChecks ?? []} />;
+            return <HeatmapResponseTime checks={checksMap[row._id] ?? []} />;
           }
         },
       },

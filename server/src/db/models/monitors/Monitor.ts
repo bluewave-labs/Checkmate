@@ -24,6 +24,7 @@ export const MonitorStatuses = [
   "down",
   "paused",
   "initializing",
+  "resuming",
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
@@ -56,7 +57,7 @@ export interface IMonitor extends Document {
   n: number; // Number of consecutive successes required to change status
   thresholds?: IMonitorThresholds;
   lastCheckedAt?: Date;
-  latestChecks: LatestCheck[];
+  latestStatuses?: MonitorStatus[];
   notificationChannels?: Types.ObjectId[];
   createdBy: Types.ObjectId;
   updatedBy: Types.ObjectId;
@@ -98,46 +99,7 @@ const MonitorSchema = new Schema<IMonitor>(
     n: { type: Number, required: true, default: 1 },
     thresholds: { type: ThresholdsSchema, required: false, default: undefined },
     lastCheckedAt: { type: Date },
-    latestChecks: {
-      type: [
-        {
-          status: {
-            type: String,
-            required: true,
-            enum: MonitorStatuses,
-          },
-          responseTime: { type: Number, required: true },
-          checkedAt: { type: Date, required: true },
-          dockerContainers: {
-            type: [
-              {
-                container_id: { type: String },
-                container_name: { type: String },
-                status: { type: String },
-                health: {
-                  healthy: { type: Boolean },
-                  source: { type: String },
-                  message: { type: String },
-                },
-                running: { type: Boolean },
-                base_image: { type: String },
-                exposed_ports: [
-                  {
-                    port: { type: String },
-                    protocol: { type: String },
-                  },
-                ],
-                started_at: { type: Number },
-                finished_at: { type: Number },
-              },
-            ],
-            required: false,
-            default: undefined,
-          },
-        },
-      ],
-      default: [],
-    },
+    latestStatuses: { type: [String], enum: MonitorStatuses, default: [] },
     notificationChannels: {
       type: [{ type: Schema.Types.ObjectId, ref: "NotificationChannel" }],
       default: [],

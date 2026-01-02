@@ -29,7 +29,7 @@ export interface IMonitor {
   createdBy: string;
   interval: number;
   rejectUnauthorized: boolean;
-  latestChecks: ICheck[];
+  latestStatuses: MonitorStatus[];
   n: number;
   name: string;
   port: number;
@@ -56,6 +56,7 @@ export interface IMonitorWithStats {
   upCount: number;
   pausedCount: number;
   monitors: IMonitor[];
+  checksMap: Record<string, ICheck[]>;
 }
 
 export interface IMonitorWithMonitorStats {

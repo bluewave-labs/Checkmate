@@ -5,7 +5,7 @@ import {
   ICheck,
 } from "@/db/models/index.js";
 import { StatusResponse } from "./NetworkService.js";
-import { LatestCheck } from "@/db/models/monitors/Monitor.js";
+// Using compact latestStatuses on Monitor for transition checks
 
 const emptyMetrics = (): ThresholdEvaluationResult["metrics"] => ({
   cpu: { breached: false },
@@ -73,49 +73,31 @@ class StatusService implements IStatusService {
     const newStatus = statusResponse.status;
     monitor.lastCheckedAt = new Date();
 
-    // Store latest checks for display
-    monitor.latestChecks = monitor.latestChecks || [];
-    const nextCheck: LatestCheck = {
-      status: newStatus,
-      responseTime: statusResponse.responseTime,
-      checkedAt: monitor.lastCheckedAt,
-    };
-    // If this is a docker type, add the snapshot
-    if (monitor.type === "docker") {
-      const payload: any = statusResponse.payload;
-      nextCheck.dockerContainers = payload.data;
-    }
-    monitor.latestChecks.push(nextCheck);
-
-    if (monitor.type === "docker") {
+    monitor.latestStatuses = monitor.latestStatuses || [];
+    const prevLen = monitor.latestStatuses.length;
+    monitor.latestStatuses.push(newStatus);
+    while (monitor.latestStatuses.length > MAX_LATEST_CHECKS) {
+      monitor.latestStatuses.shift();
     }
 
-    while (monitor.latestChecks.length > MAX_LATEST_CHECKS) {
-      monitor.latestChecks.shift();
-    }
-
-    // Update monitor status
     if (monitor.status === "initializing") {
       monitor.status = newStatus;
-      return [await monitor.save(), monitor.latestChecks.length === 0];
-    } else {
-      const { n } = monitor;
-      const latestChecks = monitor.latestChecks.slice(-n);
-      // Return early if not enough statuses to evaluate
-      if (latestChecks.length < n) {
-        return [await monitor.save(), false];
-      }
-
-      // If all different than current status, update status
-      const allDifferent = latestChecks.every(
-        (check) => check.status !== monitor.status
-      );
-      if (allDifferent && monitor.status !== newStatus) {
-        monitor.status = newStatus;
-      }
-
-      return [await monitor.save(), allDifferent];
+      const lenAfter = monitor.latestStatuses.length;
+      const thresholdReachedNow = lenAfter >= monitor.n && prevLen < monitor.n;
+      return [await monitor.save(), thresholdReachedNow];
     }
+
+    const { n } = monitor;
+    const latestN = monitor.latestStatuses.slice(-n);
+    if (latestN.length < n) {
+      return [await monitor.save(), false];
+    }
+
+    const allDifferent = latestN.every((s) => s !== monitor.status);
+    if (allDifferent && monitor.status !== newStatus) {
+      monitor.status = newStatus;
+    }
+    return [await monitor.save(), allDifferent];
   };
 
   calculateAvgResponseTime = (

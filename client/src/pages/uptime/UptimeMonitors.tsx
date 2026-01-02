@@ -88,6 +88,7 @@ const UptimeMonitors = () => {
   );
 
   const monitors: IMonitor[] = response?.data?.monitors ?? ([] as IMonitor[]);
+  const checksMap = response?.data?.checksMap || {};
   const count = response?.data?.count || 0;
   const upCount = response?.data?.upCount || 0;
   const downCount = response?.data?.downCount || 0;
@@ -156,6 +157,7 @@ const UptimeMonitors = () => {
       />
       <MonitorTable
         monitors={monitors}
+        checksMap={checksMap}
         refetch={refetch}
         setSelectedMonitor={setSelectedMonitor}
         sortField={sortField}

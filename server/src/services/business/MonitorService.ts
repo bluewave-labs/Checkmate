@@ -189,48 +189,39 @@ class MonitorService implements IMonitorService {
       .skip(skip)
       .limit(rowsPerPage);
 
-    if (
-      type.length === 1 &&
-      (type[0] === "pagespeed" ||
-        type[0] === "infrastructure" ||
-        type[0] === "docker")
-    ) {
-      const monitorIds = monitors.map((m) => m._id);
+    const monitorIds = monitors.map((m) => m._id);
 
-      const checks = await Check.aggregate([
-        {
-          $match: {
-            "metadata.monitorId": { $in: monitorIds },
-          },
+    const checks = await Check.aggregate([
+      {
+        $match: {
+          "metadata.monitorId": { $in: monitorIds },
         },
-        { $sort: { createdAt: -1 } },
-        {
-          $group: {
-            _id: "$metadata.monitorId",
-            latestChecks: { $push: "$$ROOT" },
-          },
+      },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$metadata.monitorId",
+          latestChecks: { $push: "$$ROOT" },
         },
-        {
-          $project: {
-            latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
-          },
+      },
+      {
+        $project: {
+          latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
         },
-      ]);
+      },
+    ]);
 
-      const checksMap = new Map(
-        checks.map((c: any) => [c._id.toString(), c.latestChecks])
-      );
+    const checksMap = new Map(
+      checks.map((c: any) => [c._id.toString(), c.latestChecks])
+    );
 
-      monitors.forEach((monitor) => {
-        monitor.latestChecks = checksMap.get(monitor._id.toString()) || [];
-      });
-    }
     return {
       count: counts.total,
       upCount: counts.upCount,
       downCount: counts.downCount,
       pausedCount: counts.pausedCount,
       monitors,
+      checksMap: Object.fromEntries(checksMap),
     };
   };
 
@@ -786,7 +777,7 @@ class MonitorService implements IMonitorService {
             status: {
               $cond: {
                 if: { $eq: ["$status", "paused"] },
-                then: "initializing",
+                then: "resuming",
                 else: "paused",
               },
             },
