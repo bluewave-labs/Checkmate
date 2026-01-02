@@ -1,15 +1,19 @@
 import Typography from "@mui/material/Typography";
 import { Table, Pagination, StatusLabel } from "@/components/design-elements";
 import { ActionsMenu } from "@/components/actions-menu";
+
 import { usePatch } from "@/hooks/UseApi";
 import { useNavigate } from "react-router-dom";
+
 import { useTheme } from "@mui/material/styles";
+import type { ICheck } from "@/types/check";
 import type { Header } from "@/components/design-elements/Table";
 import type { IMonitor } from "@/types/monitor";
 import { useTranslation } from "react-i18next";
 
 export const DockerMonitorsTable = ({
   monitors,
+  checksMap,
   count,
   page,
   setPage,
@@ -19,6 +23,7 @@ export const DockerMonitorsTable = ({
   setSelectedMonitor,
 }: {
   monitors: IMonitor[];
+  checksMap: Record<string, ICheck[]>;
   count: number;
   page: number;
   setPage: (page: number) => void;
@@ -119,7 +124,7 @@ export const DockerMonitorsTable = ({
       ),
       render: (row) => {
         const containerCount = (
-          row.latestChecks?.[0]?.dockerContainers || []
+          checksMap[row._id]?.[0]?.dockerContainers || []
         ).filter((c: any) => c?.running).length;
         return containerCount;
       },

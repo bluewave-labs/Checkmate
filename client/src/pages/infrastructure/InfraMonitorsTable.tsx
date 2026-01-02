@@ -12,11 +12,13 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePatch } from "@/hooks/UseApi";
 
+import type { ICheck } from "@/types/check";
 import type { IMonitor } from "@/types/monitor";
 import type { ActionMenuItem } from "@/components/actions-menu";
 
 export const InfraMonitorsTable = ({
   monitors,
+  checksMap,
   refetch,
   setSelectedMonitor,
   sortField,
@@ -30,6 +32,7 @@ export const InfraMonitorsTable = ({
   setRowsPerPage,
 }: {
   monitors: IMonitor[];
+  checksMap: Record<string, ICheck[]>;
   refetch: Function;
   setSelectedMonitor: Function;
   sortField: string;
@@ -194,7 +197,9 @@ export const InfraMonitorsTable = ({
         ),
         render: (row) => {
           return (
-            <StatusLabel status={(row.status as any) ?? ("initializing" as any)} />
+            <StatusLabel
+              status={(row.status as any) ?? ("initializing" as any)}
+            />
           );
         },
       },
@@ -203,7 +208,7 @@ export const InfraMonitorsTable = ({
         content: t("monitors.infrastructure.table.headers.cpu"),
         render: (row) => {
           const cpuUsage =
-            (row.latestChecks?.[0]?.system?.cpu?.usage_percent || 0) * 100;
+            (checksMap[row._id]?.[0]?.system?.cpu?.usage_percent || 0) * 100;
           return <Gauge progress={cpuUsage} />;
         },
       },
@@ -212,7 +217,7 @@ export const InfraMonitorsTable = ({
         content: t("monitors.infrastructure.table.headers.memory"),
         render: (row) => {
           const memoryUsage =
-            (row.latestChecks?.[0]?.system?.memory?.usage_percent || 0) * 100;
+            (checksMap[row._id]?.[0]?.system?.memory?.usage_percent || 0) * 100;
           return <Gauge progress={memoryUsage} />;
         },
       },
@@ -220,11 +225,11 @@ export const InfraMonitorsTable = ({
         id: "disk",
         content: t("monitors.infrastructure.table.headers.disk"),
         render: (row) => {
-          const totalDiskUsage = row.latestChecks?.[0]?.system?.disk?.reduce(
+          const totalDiskUsage = checksMap[row._id]?.[0]?.system?.disk?.reduce(
             (acc, disk) => acc + disk.usage_percent,
             0
           );
-          const diskCount = row.latestChecks?.[0]?.system?.disk?.length || 1;
+          const diskCount = checksMap[row._id]?.[0]?.system?.disk?.length || 1;
           const diskUsage = ((totalDiskUsage || 0) / diskCount) * 100;
           return <Gauge progress={diskUsage} />;
         },
