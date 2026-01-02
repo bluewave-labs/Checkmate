@@ -98,21 +98,21 @@ export const PageSpeedMonitorTable = ({
         id: 2,
         label: t("monitors.common.actions.details"),
         action: () => {
-          navigate(`${monitor._id}`);
+          navigate(`${monitor.id}`);
         },
       },
       {
         id: 3,
         label: t("monitors.common.actions.incidents"),
         action: () => {
-          navigate(`/incidents?monitorId=${monitor._id}`);
+          navigate(`/incidents?monitorId=${monitor.id}`);
         },
       },
       {
         id: 4,
         label: t("monitors.common.actions.configure"),
         action: () => {
-          navigate(`/pagespeed/${monitor._id}/configure`);
+          navigate(`/pagespeed/${monitor.id}/configure`);
         },
       },
       // {
@@ -129,7 +129,7 @@ export const PageSpeedMonitorTable = ({
             ? t("common.buttons.resume")
             : t("common.buttons.pause"),
         action: async () => {
-          await patch(`/monitors/${monitor._id}/active`);
+          await patch(`/monitors/${monitor.id}/active`);
           refetch();
         },
         closeMenu: true,
@@ -207,7 +207,7 @@ export const PageSpeedMonitorTable = ({
           return (
             <Stack alignItems={"center"}>
               <HistogramPageSpeed
-                checks={checksMap[row._id] ?? []}
+                checks={checksMap[row.id] ?? []}
                 status={row.status}
               />
             </Stack>
@@ -237,7 +237,7 @@ export const PageSpeedMonitorTable = ({
         headers={headers}
         data={monitors}
         onRowClick={(row) => {
-          navigate(`/pagespeed/${row._id}`);
+          navigate(`/pagespeed/${row.id}`);
         }}
       />
       <Pagination

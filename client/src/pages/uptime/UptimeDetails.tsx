@@ -155,7 +155,7 @@ const UptimeDetailsPage = () => {
         <ChartAvgResponse avg={avgResponseTime} max={maxResponseTime} />
       </Stack>
       <ChartResponseTime checks={checksAll} range={range} />
-      <CheckTable monitorId={monitor?._id} />
+      <CheckTable monitorId={monitor?.id} />
     </BasePage>
   );
 };

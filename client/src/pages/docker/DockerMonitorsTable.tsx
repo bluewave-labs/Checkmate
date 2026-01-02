@@ -58,17 +58,17 @@ export const DockerMonitorsTable = ({
     {
       id: 2,
       label: t("monitors.common.actions.details"),
-      action: () => navigate(`/docker/${monitor._id}`),
+      action: () => navigate(`/docker/${monitor.id}`),
     },
     {
       id: 3,
       label: t("monitors.common.actions.incidents"),
-      action: () => navigate(`/incidents?monitorId=${monitor._id}`),
+      action: () => navigate(`/incidents?monitorId=${monitor.id}`),
     },
     {
       id: 4,
       label: t("monitors.common.actions.configure"),
-      action: () => navigate(`/docker/${monitor._id}/configure`),
+      action: () => navigate(`/docker/${monitor.id}/configure`),
     },
     {
       id: 6,
@@ -77,7 +77,7 @@ export const DockerMonitorsTable = ({
           ? t("common.buttons.resume")
           : t("common.buttons.pause"),
       action: async () => {
-        await patch(`/monitors/${monitor._id}/active`);
+        await patch(`/monitors/${monitor.id}/active`);
         refetch();
       },
       closeMenu: true,
@@ -124,7 +124,7 @@ export const DockerMonitorsTable = ({
       ),
       render: (row) => {
         const containerCount = (
-          checksMap[row._id]?.[0]?.dockerContainers || []
+          checksMap[row.id]?.[0]?.dockerContainers || []
         ).filter((c: any) => c?.running).length;
         return containerCount;
       },
@@ -145,7 +145,7 @@ export const DockerMonitorsTable = ({
       <Table
         headers={headers}
         data={monitors}
-        onRowClick={(row) => navigate(`/docker/${row._id}`)}
+        onRowClick={(row) => navigate(`/docker/${row.id}`)}
       />
       <Pagination
         component="div"

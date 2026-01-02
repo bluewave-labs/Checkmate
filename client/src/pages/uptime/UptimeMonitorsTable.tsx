@@ -102,21 +102,21 @@ export const MonitorTable = ({
         id: 2,
         label: t("monitors.common.actions.details"),
         action: () => {
-          navigate(`${monitor._id}`);
+          navigate(`${monitor.id}`);
         },
       },
       {
         id: 3,
         label: t("monitors.common.actions.incidents"),
         action: () => {
-          navigate(`/incidents?monitorId=${monitor._id}`);
+          navigate(`/incidents?monitorId=${monitor.id}`);
         },
       },
       {
         id: 4,
         label: t("monitors.common.actions.configure"),
         action: () => {
-          navigate(`/uptime/${monitor._id}/configure`);
+          navigate(`/uptime/${monitor.id}/configure`);
         },
       },
       // {
@@ -133,7 +133,7 @@ export const MonitorTable = ({
             ? t("common.buttons.resume")
             : t("common.buttons.pause"),
         action: async () => {
-          await patch(`/monitors/${monitor._id}/active`);
+          await patch(`/monitors/${monitor.id}/active`);
           refetch();
         },
         closeMenu: true,
@@ -209,9 +209,9 @@ export const MonitorTable = ({
         content: t("monitors.uptime.table.headers.responseTime"),
         render: (row) => {
           if (chartType === "histogram") {
-            return <HistogramResponseTime checks={checksMap[row._id] ?? []} />;
+            return <HistogramResponseTime checks={checksMap[row.id] ?? []} />;
           } else {
-            return <HeatmapResponseTime checks={checksMap[row._id] ?? []} />;
+            return <HeatmapResponseTime checks={checksMap[row.id] ?? []} />;
           }
         },
       },
@@ -253,7 +253,7 @@ export const MonitorTable = ({
         headers={headers}
         data={monitors}
         onRowClick={(row) => {
-          navigate(`/uptime/${row._id}`);
+          navigate(`/uptime/${row.id}`);
         }}
       />
       <Pagination

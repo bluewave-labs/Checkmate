@@ -21,6 +21,7 @@ export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
     down: "error",
     paused: "warning",
     initializing: "warning",
+    resuming: "warning",
   };
   return paletteMap[status];
 };
@@ -40,6 +41,7 @@ export const getStatusColor = (status: MonitorStatus, theme: any): string => {
     down: theme.palette.error.light,
     paused: theme.palette.warning.light,
     initializing: theme.palette.warning.light,
+    resuming: theme.palette.warning.light,
   };
   return statusColors[status];
 };

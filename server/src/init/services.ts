@@ -33,6 +33,7 @@ import {
 } from "@/services/index.js";
 import { EntitlementsFactory } from "@/services/system/EntitlementsService.js";
 import { MeService } from "@/services/index.js";
+import { MongoMonitorRepository } from "@/repositories/index.js";
 
 export const initServices = async () => {
   const checkService = new CheckService();
@@ -71,7 +72,8 @@ export const initServices = async () => {
   const entitlementsProvider = EntitlementsFactory.create();
   const authService = new AuthService(jobQueue, entitlementsProvider);
   const meService = new MeService(entitlementsProvider);
-  const monitorService = new MonitorService(jobQueue);
+  const monitorRepository = new MongoMonitorRepository();
+  const monitorService = new MonitorService(jobQueue, monitorRepository);
   const queueService = new QueueService(jobQueue);
   const teamService = new TeamService(jobQueue);
   const roleService = new RoleService();

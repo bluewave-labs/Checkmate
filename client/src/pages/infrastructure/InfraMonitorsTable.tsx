@@ -97,21 +97,21 @@ export const InfraMonitorsTable = ({
         id: 2,
         label: t("monitors.common.actions.details"),
         action: () => {
-          navigate(`${monitor._id}`);
+          navigate(`${monitor.id}`);
         },
       },
       {
         id: 3,
         label: t("monitors.common.actions.incidents"),
         action: () => {
-          navigate(`/incidents?monitorId=${monitor._id}`);
+          navigate(`/incidents?monitorId=${monitor.id}`);
         },
       },
       {
         id: 4,
         label: t("monitors.common.actions.configure"),
         action: () => {
-          navigate(`/infrastructure/${monitor._id}/configure`);
+          navigate(`/infrastructure/${monitor.id}/configure`);
         },
       },
       // {
@@ -128,7 +128,7 @@ export const InfraMonitorsTable = ({
             ? t("common.buttons.resume")
             : t("common.buttons.pause"),
         action: async () => {
-          await patch(`/monitors/${monitor._id}/active`);
+          await patch(`/monitors/${monitor.id}/active`);
           refetch();
         },
         closeMenu: true,
@@ -208,7 +208,7 @@ export const InfraMonitorsTable = ({
         content: t("monitors.infrastructure.table.headers.cpu"),
         render: (row) => {
           const cpuUsage =
-            (checksMap[row._id]?.[0]?.system?.cpu?.usage_percent || 0) * 100;
+            (checksMap[row.id]?.[0]?.system?.cpu?.usage_percent || 0) * 100;
           return <Gauge progress={cpuUsage} />;
         },
       },
@@ -217,7 +217,7 @@ export const InfraMonitorsTable = ({
         content: t("monitors.infrastructure.table.headers.memory"),
         render: (row) => {
           const memoryUsage =
-            (checksMap[row._id]?.[0]?.system?.memory?.usage_percent || 0) * 100;
+            (checksMap[row.id]?.[0]?.system?.memory?.usage_percent || 0) * 100;
           return <Gauge progress={memoryUsage} />;
         },
       },
@@ -225,11 +225,11 @@ export const InfraMonitorsTable = ({
         id: "disk",
         content: t("monitors.infrastructure.table.headers.disk"),
         render: (row) => {
-          const totalDiskUsage = checksMap[row._id]?.[0]?.system?.disk?.reduce(
+          const totalDiskUsage = checksMap[row.id]?.[0]?.system?.disk?.reduce(
             (acc, disk) => acc + disk.usage_percent,
             0
           );
-          const diskCount = checksMap[row._id]?.[0]?.system?.disk?.length || 1;
+          const diskCount = checksMap[row.id]?.[0]?.system?.disk?.length || 1;
           const diskUsage = ((totalDiskUsage || 0) / diskCount) * 100;
           return <Gauge progress={diskUsage} />;
         },
@@ -257,7 +257,7 @@ export const InfraMonitorsTable = ({
         headers={headers}
         data={monitors}
         onRowClick={(row) => {
-          navigate(`/infrastructure/${row._id}`);
+          navigate(`/infrastructure/${row.id}`);
         }}
       />
       <Pagination

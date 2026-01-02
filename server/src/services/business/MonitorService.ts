@@ -8,6 +8,8 @@ import { MonitorWithChecksResponse } from "@/types/index.js";
 import { MonitorStatus, MonitorType } from "@/db/models/monitors/Monitor.js";
 import { Entitlements } from "@/types/entitlements.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
+import { IMonitorRepository } from "@/repositories/index.js";
+import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
 
 export interface IImportedMonitor {
   name: string;
@@ -44,7 +46,7 @@ export interface IMonitorService {
     currentTeamId: string,
     monitorData: IMonitor
   ) => Promise<IMonitor>;
-  getAll: (teamId: string) => Promise<IMonitor[]>;
+  getAll: (teamId: string) => Promise<MonitorEntity[]>;
   getAllEmbedChecks: (
     teamId: string,
     search: string,
@@ -61,7 +63,7 @@ export interface IMonitorService {
     pausedCount: number;
     monitors: any[];
   }>;
-  get: (teamId: string, monitorId: string) => Promise<IMonitor>;
+  get: (teamId: string, monitorId: string) => Promise<MonitorEntity>;
   getEmbedChecks: (
     teamId: string,
     monitorId: string,
@@ -93,9 +95,11 @@ export interface IMonitorService {
 class MonitorService implements IMonitorService {
   public SERVICE_NAME: string;
   private jobQueue: IJobQueue;
-  constructor(jobQueue: IJobQueue) {
+  private monitorRepository: IMonitorRepository;
+  constructor(jobQueue: IJobQueue, monitorRepository: IMonitorRepository) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
+    this.monitorRepository = monitorRepository;
   }
 
   create = async (
@@ -122,7 +126,7 @@ class MonitorService implements IMonitorService {
   };
 
   getAll = async (teamId: string) => {
-    return Monitor.find({ teamId });
+    return await this.monitorRepository.findByTeamId(teamId);
   };
 
   getAllEmbedChecks = async (
@@ -135,61 +139,24 @@ class MonitorService implements IMonitorService {
     type: MonitorType[] = [],
     status: MonitorStatus[] = []
   ) => {
-    const teamObjectId = new mongoose.Types.ObjectId(teamId);
+    const counts = await this.monitorRepository.findMonitorCountsByTeamId(
+      teamId
+    );
 
-    const matchConditions: Record<string, unknown> = {
-      teamId: teamObjectId,
-    };
-
-    if (search && search.trim() !== "") {
-      const term = search.trim();
-      (matchConditions as any).$or = [
-        { name: { $regex: term, $options: "i" } },
-        { url: { $regex: term, $options: "i" } },
-      ];
-    }
-
-    if (Array.isArray(type) && type.length > 0) {
-      matchConditions.type = { $in: type };
-    }
-
-    if (Array.isArray(status) && status.length > 0) {
-      matchConditions.status = { $in: status };
-    }
-
-    const countResult = await Monitor.aggregate([
+    const monitors = await this.monitorRepository.findByTeamIdWithConfig(
+      teamId,
       {
-        $match: { teamId: teamObjectId },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: 1 },
-          upCount: { $sum: { $cond: [{ $eq: ["$status", "up"] }, 1, 0] } },
-          downCount: { $sum: { $cond: [{ $eq: ["$status", "down"] }, 1, 0] } },
-          pausedCount: {
-            $sum: { $cond: [{ $eq: ["$status", "paused"] }, 1, 0] },
-          },
-        },
-      },
-    ]);
+        search,
+        sortField,
+        sortOrder,
+        page,
+        rowsPerPage,
+        type,
+        status,
+      }
+    );
 
-    const counts = countResult[0] || {
-      total: 0,
-      upCount: 0,
-      downCount: 0,
-      pausedCount: 0,
-    };
-
-    const skip = page * rowsPerPage;
-
-    const monitors = await Monitor.find(matchConditions)
-      .lean()
-      .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
-      .skip(skip)
-      .limit(rowsPerPage);
-
-    const monitorIds = monitors.map((m) => m._id);
+    const monitorIds = monitors.map((m) => new mongoose.Types.ObjectId(m.id));
 
     const checks = await Check.aggregate([
       {
@@ -226,7 +193,7 @@ class MonitorService implements IMonitorService {
   };
 
   get = async (teamId: string, monitorId: string) => {
-    const monitor = await Monitor.findOne({ _id: monitorId, teamId });
+    const monitor = await this.monitorRepository.findById(monitorId, teamId);
     if (!monitor) {
       throw new ApiError("Monitor not found", 404);
     }
@@ -555,13 +522,16 @@ class MonitorService implements IMonitorService {
     return {};
   };
 
-  private getEmbedChecksRecent = async (monitor: IMonitor, startDate: Date) => {
+  private getEmbedChecksRecent = async (
+    monitor: MonitorEntity,
+    startDate: Date
+  ) => {
     const endDate = new Date();
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
       createdAt: { $gte: Date; $lt: Date };
     } = {
-      "metadata.monitorId": monitor._id,
+      "metadata.monitorId": new mongoose.Types.ObjectId(monitor.id),
       createdAt: { $gte: startDate, $lt: endDate },
     };
 
@@ -652,7 +622,7 @@ class MonitorService implements IMonitorService {
 
     // Get monitor stats
     const monitorStats = await MonitorStats.findOne({
-      monitorId: monitor._id,
+      monitorId: monitor.id,
     });
 
     if (!monitorStats) {
@@ -660,19 +630,19 @@ class MonitorService implements IMonitorService {
     }
 
     return {
-      monitor: monitor.toObject(),
+      monitor: monitor,
       checks,
       stats: monitorStats,
     };
   };
 
   private getEmbedChecksOtherRanges = async (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     range: string,
     startDate: Date
   ) => {
     const monitorStats = await MonitorStats.findOne({
-      monitorId: monitor._id,
+      monitorId: monitor.id,
     });
     if (!monitorStats) {
       throw new ApiError("Monitor stats not found", 404);
@@ -683,7 +653,7 @@ class MonitorService implements IMonitorService {
     const endDate = new Date();
 
     const docs = await Model.find({
-      monitorId: monitor._id,
+      monitorId: monitor.id,
       windowStart: { $gte: startDate, $lt: endDate },
     })
       .sort({ windowStart: -1 })
@@ -739,7 +709,7 @@ class MonitorService implements IMonitorService {
     });
 
     return {
-      monitor: monitor.toObject(),
+      monitor: monitor,
       checks,
       stats: monitorStats,
     };
@@ -750,7 +720,7 @@ class MonitorService implements IMonitorService {
     monitorId: string,
     range: string
   ): Promise<MonitorWithChecksResponse> => {
-    const monitor = await Monitor.findOne({ _id: monitorId, teamId });
+    const monitor = await this.monitorRepository.findById(monitorId, teamId);
     if (!monitor) {
       throw new ApiError("Monitor not found", 404);
     }

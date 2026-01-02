@@ -19,11 +19,13 @@ export const MonitorStatuses = [
   "down",
   "paused",
   "initializing",
+  "resuming",
 ] as const;
 
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export interface IMonitor {
+  id: string;
   checks: ICheck[];
   createdAt: string;
   createdBy: string;
@@ -47,7 +49,6 @@ export interface IMonitor {
     temperature: number;
   };
   __v: number;
-  _id: string;
 }
 
 export interface IMonitorWithStats {

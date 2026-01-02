@@ -71,7 +71,7 @@ const PageSpeedMonitorsPage = () => {
   const monitorLimitReached = useLimitReached("monitorsMax", count);
 
   const handleConfirm = async () => {
-    await deleteFn(`/monitors/${selectedMonitor?._id}`);
+    await deleteFn(`/monitors/${selectedMonitor?.id}`);
     setSelectedMonitor(null);
     refetch();
   };
