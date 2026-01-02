@@ -522,10 +522,7 @@ class MonitorService implements IMonitorService {
     return {};
   };
 
-  private getEmbedChecksRecent = async (
-    monitor: MonitorEntity,
-    startDate: Date
-  ) => {
+  private getChecksRecent = async (monitor: MonitorEntity, startDate: Date) => {
     const endDate = new Date();
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
@@ -636,7 +633,7 @@ class MonitorService implements IMonitorService {
     };
   };
 
-  private getEmbedChecksOtherRanges = async (
+  private getChecksOtherRanges = async (
     monitor: MonitorEntity,
     range: string,
     startDate: Date
@@ -732,9 +729,9 @@ class MonitorService implements IMonitorService {
     const startDate = getStartDate(range);
 
     if (range === "24h" || range === "7d" || range === "30d") {
-      return await this.getEmbedChecksOtherRanges(monitor, range, startDate);
+      return await this.getChecksOtherRanges(monitor, range, startDate);
     } else {
-      return await this.getEmbedChecksRecent(monitor, startDate);
+      return await this.getChecksRecent(monitor, startDate);
     }
   };
 
