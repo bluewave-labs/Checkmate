@@ -16,16 +16,17 @@ import { config } from "@/config/index.js";
 import CacheableLookup from "cacheable-lookup";
 import { getChildLogger } from "@/logger/Logger.js";
 import type { IDockerContainerSummary } from "@/db/models/index.js";
+import type { Monitor as MonitorEntity } from "@/types/domain/monitor.js";
 
 const SERVICE_NAME = "NetworkService";
 const logger = getChildLogger(SERVICE_NAME);
 export interface INetworkService {
-  requestHttp: (monitor: IMonitor) => Promise<StatusResponse>;
-  requestInfrastructure: (monitor: IMonitor) => Promise<StatusResponse>;
-  requestStatus: (monitor: IMonitor) => Promise<StatusResponse>;
-  requestPagespeed: (monitor: IMonitor) => Promise<StatusResponse>;
-  requestPing: (monitor: IMonitor) => Promise<StatusResponse>;
-  requestPort: (monitor: IMonitor) => Promise<StatusResponse>;
+  requestHttp: (monitor: MonitorEntity) => Promise<StatusResponse>;
+  requestInfrastructure: (monitor: MonitorEntity) => Promise<StatusResponse>;
+  requestStatus: (monitor: MonitorEntity) => Promise<StatusResponse>;
+  requestPagespeed: (monitor: MonitorEntity) => Promise<StatusResponse>;
+  requestPing: (monitor: MonitorEntity) => Promise<StatusResponse>;
+  requestPort: (monitor: MonitorEntity) => Promise<StatusResponse>;
 }
 
 export interface ICapturePayload {
@@ -92,7 +93,7 @@ class NetworkService implements INetworkService {
   }
 
   private buildStatusResponse = <T>(
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     response: Response<T> | null,
     certificateExpiryOrError?: Date | null | any,
     maybeError?: any | null
@@ -110,8 +111,8 @@ class NetworkService implements INetworkService {
     }
     if (error) {
       const statusResponse: StatusResponse<T> = {
-        monitorId: monitor._id.toString(),
-        teamId: monitor.teamId.toString(),
+        monitorId: monitor.id,
+        teamId: monitor.teamId,
         type: monitor.type,
         status: "down" as MonitorStatus,
         code: this.NETWORK_ERROR,
@@ -130,8 +131,8 @@ class NetworkService implements INetworkService {
     }
 
     const statusResponse: StatusResponse<T> = {
-      monitorId: monitor._id.toString(),
-      teamId: monitor.teamId.toString(),
+      monitorId: monitor.id,
+      teamId: monitor.teamId,
       type: monitor.type,
       code: response?.statusCode || this.NETWORK_ERROR,
       status: response?.ok === true ? "up" : "down",
@@ -144,7 +145,7 @@ class NetworkService implements INetworkService {
     return statusResponse;
   };
 
-  requestHttp = async (monitor: IMonitor) => {
+  requestHttp = async (monitor: MonitorEntity) => {
     try {
       const url = monitor.url;
       if (!url) {
@@ -190,7 +191,7 @@ class NetworkService implements INetworkService {
     }
   };
 
-  requestInfrastructure = async (monitor: IMonitor) => {
+  requestInfrastructure = async (monitor: MonitorEntity) => {
     const url = monitor.url;
     if (!url) {
       throw new Error("No URL provided");
@@ -225,7 +226,7 @@ class NetworkService implements INetworkService {
     return statusResponse;
   };
 
-  requestPagespeed = async (monitor: IMonitor) => {
+  requestPagespeed = async (monitor: MonitorEntity) => {
     const apiKey = config.PAGESPEED_API_KEY;
     if (!apiKey) {
       throw new Error("No API key provided for pagespeed monitor");
@@ -265,7 +266,7 @@ class NetworkService implements INetworkService {
     }
   };
 
-  requestPing = async (monitor: IMonitor) => {
+  requestPing = async (monitor: MonitorEntity) => {
     const response = await ping.promise.probe(monitor.url);
     const status = response?.alive === true ? "up" : "down";
 
@@ -276,8 +277,8 @@ class NetworkService implements INetworkService {
     const responseTime = Number.isFinite(rawTime) ? rawTime : 0;
 
     return {
-      monitorId: monitor._id.toString(),
-      teamId: monitor.teamId.toString(),
+      monitorId: monitor.id,
+      teamId: monitor.teamId,
       type: monitor.type,
       status: status as MonitorStatus,
       message: "Ping successful",
@@ -286,10 +287,10 @@ class NetworkService implements INetworkService {
     };
   };
 
-  requestPort = async (monitor: IMonitor) => {
+  requestPort = async (monitor: MonitorEntity) => {
     const response = {
-      monitorId: monitor._id.toString(),
-      teamId: monitor.teamId.toString(),
+      monitorId: monitor.id,
+      teamId: monitor.teamId,
       type: monitor.type,
       status: "down" as MonitorStatus,
       message: "Port check failed",
@@ -358,7 +359,7 @@ class NetworkService implements INetworkService {
     }
   };
 
-  requestStatus = async (monitor: IMonitor) => {
+  requestStatus = async (monitor: MonitorEntity) => {
     switch (monitor?.type) {
       case "http":
         return await this.requestHttp(monitor); // uses GOT

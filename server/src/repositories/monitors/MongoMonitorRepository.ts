@@ -30,6 +30,27 @@ class MongoMonitorRepository implements IMonitorRepository {
     };
   };
 
+  // Create
+  create = async (
+    orgId: string,
+    userId: string,
+    currentTeamId: string,
+    monitorData: MonitorEntity
+  ) => {
+    const monitorLiteral: Partial<IMonitor> = {
+      ...monitorData,
+      orgId: new mongoose.Types.ObjectId(orgId),
+      teamId: new mongoose.Types.ObjectId(currentTeamId),
+      createdBy: new mongoose.Types.ObjectId(userId),
+      updatedBy: new mongoose.Types.ObjectId(userId),
+      notificationChannels: monitorData.notificationChannels?.map(
+        (id) => new mongoose.Types.ObjectId(id)
+      ),
+    };
+    const monitor = await Monitor.create(monitorLiteral);
+    return this.toEntity(monitor);
+  };
+
   // Single fetch
   findById = async (monitorId: string, teamId: string) => {
     const monitor = await Monitor.findOne({ _id: monitorId, teamId });
@@ -38,6 +59,11 @@ class MongoMonitorRepository implements IMonitorRepository {
   };
 
   // Collection fetches
+  findAll = async () => {
+    const monitors = await Monitor.find();
+    return monitors.map(this.toEntity);
+  };
+
   findByTeamId = async (teamId: string) => {
     const monitors = await Monitor.find({ teamId });
     return monitors.map(this.toEntity);
@@ -81,8 +107,10 @@ class MongoMonitorRepository implements IMonitorRepository {
 
     return monitors.map(this.toEntity);
   };
+
   findByOrgId = async (orgId: string) => {
-    return [];
+    const monitors = await Monitor.find({ orgId });
+    return monitors.map(this.toEntity);
   };
 
   findMonitorCountsByTeamId = async (teamId: string) => {
@@ -115,12 +143,69 @@ class MongoMonitorRepository implements IMonitorRepository {
   };
 
   // Deletions
-  deleteById = async (id: string) => {
-    return false;
+  deleteById = async (monitorId: string, teamId: string) => {
+    await Monitor.deleteOne({ _id: monitorId, teamId });
+    return true;
   };
   deleteByOrgId = async (orgId: string) => {
-    return 0;
+    const deleted = await Monitor.deleteMany({ orgId });
+    return deleted.acknowledged;
   };
+
+  togglePauseById = async (
+    monitorId: string,
+    teamId: string,
+    userId: string
+  ) => {
+    const monitor = await Monitor.findOneAndUpdate(
+      { _id: monitorId, teamId },
+      [
+        {
+          $set: {
+            status: {
+              $cond: {
+                if: { $eq: ["$status", "paused"] },
+                then: "resuming",
+                else: "paused",
+              },
+            },
+            updatedBy: userId,
+            updatedAt: new Date(),
+          },
+        },
+      ],
+      { new: true }
+    );
+    if (!monitor) return null;
+    return this.toEntity(monitor);
+  };
+
+  // Update
+  updateById = async (
+    monitorId: string,
+    teamId: string,
+    userId: string,
+    patch: Partial<MonitorEntity>
+  ) => {
+    const updatedMonitor = await Monitor.findOneAndUpdate(
+      { _id: monitorId, teamId },
+      {
+        $set: {
+          ...patch,
+          updatedAt: new Date(),
+          updatedBy: userId,
+        },
+      },
+      { new: true, runValidators: true }
+    );
+    if (!updatedMonitor) return null;
+    return this.toEntity(updatedMonitor);
+  };
+
+  // Counts
+  countByOrgId(orgId: string): Promise<number> {
+    return Monitor.countDocuments({ orgId });
+  }
 }
 
 export default MongoMonitorRepository;

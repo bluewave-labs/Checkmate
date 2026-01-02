@@ -4,6 +4,20 @@ import type {
   MonitorStatus,
 } from "@/types/domain/monitor.js";
 
+export type UpdateMonitorPatch = Partial<
+  Pick<
+    Monitor,
+    | "name"
+    | "secret"
+    | "interval"
+    | "rejectUnauthorized"
+    | "n"
+    | "thresholds"
+    | "notificationChannels"
+    | "status"
+  >
+>;
+
 export interface TeamQueryConfig {
   search: string;
   sortField: string;
@@ -15,7 +29,16 @@ export interface TeamQueryConfig {
 }
 
 export interface IMonitorRepository {
+  // Create
+  create(
+    orgId: string,
+    userId: string,
+    currentTeamId: string,
+    monitorData: Monitor
+  ): Promise<Monitor>;
+
   // Single fetch
+  findAll(): Promise<Monitor[]>;
   findById(monitorId: string, teamId: string): Promise<Monitor | null>;
 
   // Collection fetches
@@ -34,8 +57,23 @@ export interface IMonitorRepository {
   findByOrgId(orgId: string): Promise<Monitor[]>;
 
   // Deletions
-  deleteById(id: string): Promise<boolean>;
-  deleteByOrgId(orgId: string): Promise<number>;
-}
+  deleteById(monitorId: string, teamId: string): Promise<boolean>;
+  deleteByOrgId(orgId: string): Promise<boolean>;
 
-export default IMonitorRepository;
+  // Updates
+  togglePauseById(
+    monitorId: string,
+    teamId: string,
+    userId: string
+  ): Promise<Monitor | null>;
+
+  updateById(
+    monitorId: string,
+    teamId: string,
+    userId: string,
+    patch: UpdateMonitorPatch
+  ): Promise<Monitor | null>;
+
+  // Counts
+  countByOrgId(orgId: string): Promise<number>;
+}

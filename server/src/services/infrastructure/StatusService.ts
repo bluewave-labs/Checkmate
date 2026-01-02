@@ -5,6 +5,9 @@ import {
   ICheck,
 } from "@/db/models/index.js";
 import { StatusResponse } from "./NetworkService.js";
+import { IMonitorRepository } from "@/repositories/index.js";
+import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
+import ApiError from "@/utils/ApiError.js";
 // Using compact latestStatuses on Monitor for transition checks
 
 const emptyMetrics = (): ThresholdEvaluationResult["metrics"] => ({
@@ -33,9 +36,10 @@ export interface ThresholdEvaluationResult {
 
 const SERVICE_NAME = "StatusService";
 const MAX_LATEST_CHECKS = 25;
+
 export interface IStatusService {
   updateMonitorStatus: (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     status: StatusResponse
   ) => Promise<StatusChangeResult>;
 
@@ -56,18 +60,20 @@ export interface IStatusService {
 }
 
 export type StatusChangeResult = [
-  updatedMonitor: IMonitor,
+  updatedMonitor: MonitorEntity,
   statusChanged: boolean
 ];
 
 class StatusService implements IStatusService {
   public SERVICE_NAME: string;
-  constructor() {
+  private monitorRepository: IMonitorRepository;
+  constructor(monitorRepository: IMonitorRepository) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.monitorRepository = monitorRepository;
   }
 
   updateMonitorStatus = async (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     statusResponse: StatusResponse
   ): Promise<StatusChangeResult> => {
     const newStatus = statusResponse.status;
@@ -84,20 +90,47 @@ class StatusService implements IStatusService {
       monitor.status = newStatus;
       const lenAfter = monitor.latestStatuses.length;
       const thresholdReachedNow = lenAfter >= monitor.n && prevLen < monitor.n;
-      return [await monitor.save(), thresholdReachedNow];
+      const updated = await this.monitorRepository.updateById(
+        monitor.id,
+        monitor.teamId,
+        monitor.updatedBy,
+        monitor
+      );
+      if (!updated) {
+        throw new ApiError("Failed to update monitor status", 500);
+      }
+      return [updated, thresholdReachedNow];
     }
 
     const { n } = monitor;
     const latestN = monitor.latestStatuses.slice(-n);
     if (latestN.length < n) {
-      return [await monitor.save(), false];
+      const updated = await this.monitorRepository.updateById(
+        monitor.id,
+        monitor.teamId,
+        monitor.updatedBy,
+        monitor
+      );
+      if (!updated) {
+        throw new ApiError("Failed to update monitor status", 500);
+      }
+      return [updated, false];
     }
 
     const allDifferent = latestN.every((s) => s !== monitor.status);
     if (allDifferent && monitor.status !== newStatus) {
       monitor.status = newStatus;
     }
-    return [await monitor.save(), allDifferent];
+    const updated = await this.monitorRepository.updateById(
+      monitor.id,
+      monitor.teamId,
+      monitor.updatedBy,
+      monitor
+    );
+    if (!updated) {
+      throw new ApiError("Failed to update monitor status", 500);
+    }
+    return [updated, allDifferent];
   };
 
   calculateAvgResponseTime = (

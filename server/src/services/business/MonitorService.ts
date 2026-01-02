@@ -44,8 +44,8 @@ export interface IMonitorService {
     orgId: string,
     userId: string,
     currentTeamId: string,
-    monitorData: IMonitor
-  ) => Promise<IMonitor>;
+    monitorData: MonitorEntity
+  ) => Promise<MonitorEntity>;
   getAll: (teamId: string) => Promise<MonitorEntity[]>;
   getAllEmbedChecks: (
     teamId: string,
@@ -73,13 +73,13 @@ export interface IMonitorService {
     userId: string,
     teamId: string,
     monitorId: string
-  ) => Promise<IMonitor>;
+  ) => Promise<MonitorEntity>;
   update: (
     userId: string,
     teamId: string,
     monitorId: string,
-    updateData: Partial<IMonitor>
-  ) => Promise<IMonitor>;
+    updateData: Partial<MonitorEntity>
+  ) => Promise<MonitorEntity>;
   delete: (teamId: string, monitorId: string) => Promise<boolean>;
   deleteAllInOrg: (orgId: string) => Promise<boolean>;
   export: (teamId: string) => Promise<Array<Record<string, unknown>>>;
@@ -106,19 +106,16 @@ class MonitorService implements IMonitorService {
     orgId: string,
     userId: string,
     currentTeamId: string,
-    monitorData: IMonitor
+    monitorData: MonitorEntity
   ) => {
-    const monitorLiteral: Partial<IMonitor> = {
-      ...monitorData,
-      orgId: new mongoose.Types.ObjectId(orgId),
-      teamId: new mongoose.Types.ObjectId(currentTeamId),
-      createdBy: new mongoose.Types.ObjectId(userId),
-      updatedBy: new mongoose.Types.ObjectId(userId),
-    };
-
-    const monitor = await Monitor.create(monitorLiteral);
+    const monitor = await this.monitorRepository.create(
+      orgId,
+      userId,
+      currentTeamId,
+      monitorData
+    );
     await MonitorStats.create({
-      monitorId: monitor._id,
+      monitorId: monitor.id,
       currentStreakStartedAt: Date.now(),
     });
     await this.jobQueue.addJob(monitor);
@@ -736,24 +733,10 @@ class MonitorService implements IMonitorService {
   };
 
   async togglePause(userId: string, teamId: string, id: string) {
-    const updatedMonitor = await Monitor.findOneAndUpdate(
-      { _id: id, teamId },
-      [
-        {
-          $set: {
-            status: {
-              $cond: {
-                if: { $eq: ["$status", "paused"] },
-                then: "resuming",
-                else: "paused",
-              },
-            },
-            updatedBy: userId,
-            updatedAt: new Date(),
-          },
-        },
-      ],
-      { new: true }
+    const updatedMonitor = await this.monitorRepository.togglePauseById(
+      id,
+      teamId,
+      userId
     );
 
     if (!updatedMonitor) {
@@ -774,9 +757,9 @@ class MonitorService implements IMonitorService {
     userId: string,
     teamId: string,
     monitorId: string,
-    updateData: Partial<IMonitor>
+    updateData: Partial<MonitorEntity>
   ) {
-    const allowedFields: (keyof IMonitor)[] = [
+    const allowedFields: (keyof MonitorEntity)[] = [
       "name",
       "secret",
       "interval",
@@ -785,7 +768,7 @@ class MonitorService implements IMonitorService {
       "notificationChannels",
       "thresholds",
     ];
-    const safeUpdate: Partial<IMonitor> = {};
+    const safeUpdate: Partial<MonitorEntity> = {};
 
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
@@ -793,16 +776,11 @@ class MonitorService implements IMonitorService {
       }
     }
 
-    const updatedMonitor = await Monitor.findOneAndUpdate(
-      { _id: monitorId, teamId },
-      {
-        $set: {
-          ...safeUpdate,
-          updatedAt: new Date(),
-          updatedBy: userId,
-        },
-      },
-      { new: true, runValidators: true }
+    const updatedMonitor = await this.monitorRepository.updateById(
+      monitorId,
+      teamId,
+      userId,
+      safeUpdate
     );
 
     if (!updatedMonitor) {
@@ -813,7 +791,7 @@ class MonitorService implements IMonitorService {
   }
 
   async delete(teamId: string, monitorId: string) {
-    const monitor = await Monitor.findOne({ _id: monitorId, teamId });
+    const monitor = await this.monitorRepository.findById(monitorId, teamId);
     if (!monitor) {
       throw new ApiError("Monitor not found", 404);
     }
@@ -821,23 +799,29 @@ class MonitorService implements IMonitorService {
     if (!deleted) {
       throw new ApiError("Failed to delete monitor job from queue", 500);
     }
-    await monitor.deleteOne();
+    await this.monitorRepository.deleteById(monitorId, teamId);
     return true;
   }
 
   async deleteAllInOrg(orgId: string) {
-    const montiors = await Monitor.find({ orgId });
+    const montiors = await this.monitorRepository.findByOrgId(orgId);
     for (const monitor of montiors) {
       await this.jobQueue.deleteJob(monitor);
     }
-    const deleted = await Monitor.deleteMany({ orgId });
-    return deleted.acknowledged;
+    return await this.monitorRepository.deleteByOrgId(orgId);
   }
 
   export = async (teamId: string) => {
-    return Monitor.find({ teamId })
-      .select("name url port type interval n secret -_id")
-      .lean();
+    const monitor = await this.monitorRepository.findByTeamId(teamId);
+    return monitor.map((m) => ({
+      name: m.name,
+      url: m.url,
+      port: m.port,
+      type: m.type,
+      interval: m.interval,
+      n: m.n,
+      secret: m.secret,
+    }));
   };
 
   import = async (
@@ -852,7 +836,7 @@ class MonitorService implements IMonitorService {
     let canImport = 0;
     try {
       // Get current count
-      const monitorCount = await Monitor.countDocuments({ orgId });
+      const monitorCount = await this.monitorRepository.countByOrgId(orgId);
 
       // Check limits, return NO_CAPACITY if at limit
       if (monitorCount >= entitlements.monitorsMax) {

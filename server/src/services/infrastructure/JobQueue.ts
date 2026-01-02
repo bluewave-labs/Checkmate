@@ -1,9 +1,10 @@
 import { IJob } from "super-simple-scheduler/dist/job/job.js";
 import { Monitor, IMonitor } from "@/db/models/index.js";
+import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
 import Scheduler from "super-simple-scheduler";
 import { IJobGenerator } from "./JobGenerator.js";
 import { getChildLogger } from "@/logger/Logger.js";
-import { config } from "@/config/index.js";
+import { IMonitorRepository } from "@/repositories/index.js";
 
 const SERVICE_NAME = "JobQueue";
 const logger = getChildLogger(SERVICE_NAME);
@@ -29,11 +30,11 @@ export interface IJobData extends IJob {
 
 export interface IJobQueue {
   init: () => Promise<boolean>;
-  addJob: (monitor: IMonitor) => Promise<boolean>;
-  pauseJob: (monitor: IMonitor) => Promise<boolean>;
-  resumeJob: (monitor: IMonitor) => Promise<boolean>;
-  updateJob: (monitor: IMonitor) => Promise<boolean>;
-  deleteJob: (monitor: IMonitor) => Promise<boolean>;
+  addJob: (monitor: MonitorEntity) => Promise<boolean>;
+  pauseJob: (monitor: MonitorEntity) => Promise<boolean>;
+  resumeJob: (monitor: MonitorEntity) => Promise<boolean>;
+  updateJob: (monitor: MonitorEntity) => Promise<boolean>;
+  deleteJob: (monitor: MonitorEntity) => Promise<boolean>;
   getMetrics: () => Promise<IJobMetrics | null>;
   getJobs: () => Promise<IJobData[] | null>;
   flush: () => Promise<boolean>;
@@ -45,16 +46,21 @@ export default class JobQueue implements IJobQueue {
   private scheduler: Scheduler;
   private static instance: JobQueue | null = null;
   private jobGenerator: any;
-  constructor() {
+  private monitorRepository: IMonitorRepository;
+  constructor(monitorRepository: IMonitorRepository) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.scheduler = new Scheduler({
       logLevel: "debug",
     });
+    this.monitorRepository = monitorRepository;
   }
 
-  static async create(jobGenerator: IJobGenerator) {
+  static async create(
+    jobGenerator: IJobGenerator,
+    monitorRepository: IMonitorRepository
+  ) {
     if (!JobQueue.instance) {
-      const instance = new JobQueue();
+      const instance = new JobQueue(monitorRepository);
       instance.jobGenerator = jobGenerator;
       await instance.init();
       JobQueue.instance = instance;
@@ -107,12 +113,12 @@ export default class JobQueue implements IJobQueue {
         logger.warn("Initial stats aggregation run failed", e as any);
       }
 
-      const monitors = await Monitor.find();
+      const monitors = await this.monitorRepository.findAll();
       for (const monitor of monitors) {
         const randomOffset = 1000 + Math.random() * 1000;
 
         setTimeout(async () => {
-          const exists = await Monitor.exists({ _id: monitor._id });
+          const exists = await Monitor.exists({ _id: monitor.id });
           if (exists) {
             this.addJob(monitor);
           }
@@ -126,10 +132,10 @@ export default class JobQueue implements IJobQueue {
     }
   };
 
-  addJob = async (monitor: IMonitor) => {
+  addJob = async (monitor: MonitorEntity) => {
     try {
       return await this.scheduler?.addJob({
-        id: monitor._id.toString(),
+        id: monitor.id,
         template: "monitor-job",
         repeat: monitor.interval,
         active: monitor.status !== "paused",
@@ -141,27 +147,27 @@ export default class JobQueue implements IJobQueue {
     }
   };
 
-  pauseJob = async (monitor: IMonitor) => {
+  pauseJob = async (monitor: MonitorEntity) => {
     try {
-      return await this.scheduler?.pauseJob(monitor._id.toString());
+      return await this.scheduler?.pauseJob(monitor.id);
     } catch (error) {
       logger.error(error);
       return false;
     }
   };
 
-  resumeJob = async (monitor: IMonitor) => {
+  resumeJob = async (monitor: MonitorEntity) => {
     try {
-      return await this.scheduler.resumeJob(monitor._id.toString());
+      return await this.scheduler.resumeJob(monitor.id);
     } catch (error) {
       logger.error(error);
       return false;
     }
   };
 
-  updateJob = async (monitor: IMonitor) => {
+  updateJob = async (monitor: MonitorEntity) => {
     try {
-      return await this.scheduler.updateJob(monitor._id.toString(), {
+      return await this.scheduler.updateJob(monitor.id, {
         repeat: monitor.interval,
         data: monitor,
       });
@@ -171,9 +177,9 @@ export default class JobQueue implements IJobQueue {
     }
   };
 
-  deleteJob = async (monitor: IMonitor) => {
+  deleteJob = async (monitor: MonitorEntity) => {
     try {
-      this.scheduler?.removeJob(monitor._id.toString());
+      this.scheduler?.removeJob(monitor.id);
       return true;
     } catch (error) {
       logger.error(error);
