@@ -17,9 +17,7 @@ import { BaseBox } from "@/components/design-elements";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { formatDateWithTz, tooltipDateFormatLookup } from "@/utils/TimeUtils";
 import { useTranslation } from "react-i18next";
-
-type Datum = Record<string, unknown> & { _id: string | number };
-
+import type { GroupedCheck } from "@/types/check";
 export const BarDockerCount = ({
   data,
   dataKey,
@@ -27,7 +25,7 @@ export const BarDockerCount = ({
   title,
   emptyText,
 }: {
-  data: Datum[];
+  data: GroupedCheck[];
   dataKey: string;
   range: string;
   title: string;

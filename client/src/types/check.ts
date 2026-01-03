@@ -155,6 +155,7 @@ export interface GroupedCheck {
   downChecks?: number;
   avgResponseTimeUp?: number | null;
   avgResponseTimeDown?: number | null;
+  runningContainersSnapshot?: IDockerContainerSummary[];
 }
 
 export interface LatestCheck {

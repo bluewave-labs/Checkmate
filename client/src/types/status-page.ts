@@ -6,14 +6,17 @@ export interface IStatusPage {
   description: string;
   url: string;
   isPublished: boolean;
-  monitors: string[];
+  monitors: IMonitor[];
 }
 
-export interface IStatusPageWithMonitors {
-  _id: string;
-  name: string;
-  description: string;
-  url: string;
-  isPublished: boolean;
-  monitors: IMonitor[];
+export interface IStatusPageWithChecksMap {
+  statusPage: {
+    _id: string;
+    name: string;
+    description: string;
+    url: string;
+    isPublished: boolean;
+    monitors: IMonitor[];
+  };
+  checksMap: Record<string, any[]>;
 }

@@ -73,7 +73,7 @@ const ChecksPage = () => {
           >
             <MenuItem value="all">All monitors</MenuItem>
             {monitors.map((monitor) => (
-              <MenuItem key={monitor._id} value={monitor._id}>
+              <MenuItem key={monitor.id} value={monitor.id}>
                 {monitor.name}
               </MenuItem>
             ))}

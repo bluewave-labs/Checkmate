@@ -8,7 +8,9 @@ import { useTheme } from "@mui/material/styles";
 import { useAppSelector } from "@/hooks/AppHooks";
 import type { IMonitor } from "@/types/monitor";
 
-export const StatusPageRow = ({ monitor }: { monitor: IMonitor }) => {
+type Props = { monitor: IMonitor; checks: any[] };
+
+export const StatusPageRow = ({ monitor, checks }: Props) => {
   const theme = useTheme();
   const type = useAppSelector((state) => state?.ui?.chartType || "heatmap");
 
@@ -32,7 +34,7 @@ export const StatusPageRow = ({ monitor }: { monitor: IMonitor }) => {
         {type === "heatmap" && (
           <HeatmapResponseTime
             gap={{ xs: theme.spacing(0.5), md: theme.spacing(2) }}
-            checks={monitor?.latestChecks ?? []}
+            checks={checks ?? []}
             availabilityCellSx={{
               borderRadius: {
                 xs: theme.spacing(0.5),
@@ -49,7 +51,7 @@ export const StatusPageRow = ({ monitor }: { monitor: IMonitor }) => {
         )}
         {type === "histogram" && (
           <HistogramResponseTime
-            checks={monitor?.latestChecks ?? []}
+            checks={checks ?? []}
             height={{ xs: 50, md: 100 }}
             gap={{ xs: 0.5, md: theme.spacing(4) }}
           />

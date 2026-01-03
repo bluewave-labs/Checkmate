@@ -4,11 +4,10 @@ import { StatusPageRow } from "@/components/status-pages/StatusPageRow";
 import { BasePage } from "@/components/design-elements";
 
 import { useTheme } from "@mui/material/styles";
-import type { IMonitor } from "@/types/monitor";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import { useParams } from "react-router";
-import type { IStatusPageWithMonitors } from "@/types/status-page";
+import type { IStatusPageWithChecksMap } from "@/types/status-page";
 import { NameHeader } from "@/components/status-pages/NameHeader";
 import { config } from "@/config/index";
 
@@ -16,13 +15,14 @@ const GLOBAL_REFRESH = config.GLOBAL_REFRESH;
 const StatusPages = () => {
   const theme = useTheme();
   const { id } = useParams();
-  const { response, loading } = useGet<ApiResponse<IStatusPageWithMonitors>>(
+  const { response, loading } = useGet<ApiResponse<IStatusPageWithChecksMap>>(
     `/status-pages/${id}`,
     {},
     { refreshInterval: GLOBAL_REFRESH, keepPreviousData: true }
   );
-  const statusPage = response?.data;
-  const monitors: IMonitor[] = statusPage?.monitors || [];
+  const statusPage = response?.data?.statusPage;
+  const monitors = statusPage?.monitors || [];
+  const checksMap: Record<string, any[]> = response?.data?.checksMap || {};
 
   if (!statusPage) {
     return null;
@@ -33,8 +33,15 @@ const StatusPages = () => {
       <Stack minWidth={"66vw"} spacing={theme.spacing(8)}>
         <NameHeader statusPage={statusPage} />
         <StatusHeader statusPage={statusPage} />
-        {monitors?.map((monitor: IMonitor) => {
-          return <StatusPageRow key={monitor?._id} monitor={monitor} />;
+        {monitors?.map((monitor: any) => {
+          const checks = checksMap?.[monitor?._id as any] || [];
+          return (
+            <StatusPageRow
+              key={monitor?._id}
+              monitor={monitor}
+              checks={checks}
+            />
+          );
         })}
       </Stack>
     </BasePage>

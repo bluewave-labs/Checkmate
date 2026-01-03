@@ -48,7 +48,7 @@ export const HeaderControls = ({
               loading={isPosting || isPatching}
               startIcon={<Mail size={20} strokeWidth={1.5} />}
               onClick={async () => {
-                await post(`/monitors/${monitor._id}/notifications/test`, {});
+                await post(`/monitors/${monitor.id}/notifications/test`, {});
               }}
             >
               {t("common.buttons.testNotification")}
@@ -57,7 +57,7 @@ export const HeaderControls = ({
           <Button
             startIcon={<Bug size={20} strokeWidth={1.5} />}
             onClick={() => {
-              navigate(`/incidents?monitorId=${monitor._id}`);
+              navigate(`/incidents?monitorId=${monitor.id}`);
             }}
           >
             {t("common.buttons.incidents")}
@@ -65,7 +65,7 @@ export const HeaderControls = ({
           <Button
             loading={isPatching || isPosting}
             onClick={async () => {
-              await patch(`/monitors/${monitor._id}/active`);
+              await patch(`/monitors/${monitor.id}/active`);
               refetch();
             }}
             startIcon={
@@ -83,7 +83,7 @@ export const HeaderControls = ({
           <Button
             startIcon={<Settings size={20} strokeWidth={1.5} />}
             onClick={() => {
-              navigate(`${path}/${monitor._id}/configure`);
+              navigate(`${path}/${monitor.id}/configure`);
             }}
           >
             {t("common.buttons.configure")}

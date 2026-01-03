@@ -5,24 +5,27 @@ import { useNavigate } from "react-router";
 import { usePatch, useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import type { IMonitor } from "@/types/monitor";
-import type { IStatusPageWithMonitors } from "@/types/status-page";
+import type {
+  IStatusPage,
+  IStatusPageWithChecksMap,
+} from "@/types/status-page";
 import type { FormValues } from "@/pages/status-page/StatusPageForm";
 
 const StatusPageConfigPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const { patch, loading } = usePatch<FormValues, IStatusPageWithMonitors>();
+  const { patch, loading } = usePatch<FormValues, IStatusPage>();
   const { response, isValidating } =
     useGet<ApiResponse<IMonitor[]>>("/monitors");
-  const { response: statusPageResponse } = useGet<ApiResponse<any>>(
-    `/status-pages/${id}`
-  );
+  const { response: statusPageResponse } = useGet<
+    ApiResponse<IStatusPageWithChecksMap>
+  >(`/status-pages/${id}`);
 
   const monitors = response?.data || [];
-  const initialData = statusPageResponse?.data || {};
+  const initialData: any = statusPageResponse?.data?.statusPage || {};
   initialData.monitors =
-    initialData?.monitors?.map((monitor: IMonitor) => monitor?._id) || [];
+    initialData?.monitors?.map((monitor: any) => monitor?._id) || [];
 
   const onSubmit = async (data: FormValues) => {
     const res = await patch(`/status-pages/${id}`, data);

@@ -160,17 +160,17 @@ export const StatusPageForm = ({
                   options={monitorOptions}
                   getOptionLabel={(option) => option.name}
                   value={monitorOptions.filter((o: any) =>
-                    (field.value || []).includes(o._id)
+                    (field.value || []).includes(o.id)
                   )}
                   onChange={(_, newValue) => {
-                    field.onChange(newValue.map((o: any) => o._id));
+                    field.onChange(newValue.map((o: any) => o.id));
                   }}
                 />
               )}
             />
             <Stack gap={theme.spacing(2)} mt={theme.spacing(2)}>
               {monitors.map((monitorId) => {
-                const option = monitorOptions.find((o) => o._id === monitorId);
+                const option = monitorOptions.find((o) => o.id === monitorId);
                 if (!option) return null;
                 return (
                   <Stack

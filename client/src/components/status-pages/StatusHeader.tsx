@@ -2,15 +2,11 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 
 import { getStatusPageHeaderConfig } from "@/utils/MonitorUtils";
-import type { IStatusPageWithMonitors } from "@/types/status-page";
+import type { IStatusPage } from "@/types/status-page";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
-export const StatusHeader = ({
-  statusPage,
-}: {
-  statusPage: IStatusPageWithMonitors;
-}) => {
+export const StatusHeader = ({ statusPage }: { statusPage: IStatusPage }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const headerConfig = getStatusPageHeaderConfig(statusPage?.monitors || [], t);

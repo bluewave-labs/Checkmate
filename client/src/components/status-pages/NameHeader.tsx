@@ -5,14 +5,10 @@ import Link from "@mui/material/Link";
 import { config } from "@/config/index";
 import { useTranslation } from "react-i18next";
 
-import type { IStatusPageWithMonitors } from "@/types/status-page";
+import type { IStatusPage } from "@/types/status-page";
 const HOST = config.HOST;
 
-export const NameHeader = ({
-  statusPage,
-}: {
-  statusPage: IStatusPageWithMonitors;
-}) => {
+export const NameHeader = ({ statusPage }: { statusPage: IStatusPage }) => {
   const { t } = useTranslation();
   return (
     <Stack direction={"row"} alignItems={"flex-end"} spacing={4}>
