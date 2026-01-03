@@ -72,7 +72,11 @@ export const initServices = async () => {
   );
   const jobQueue = await JobQueue.create(jobGenerator, monitorRepository);
   const entitlementsProvider = EntitlementsFactory.create();
-  const authService = new AuthService(jobQueue, entitlementsProvider);
+  const authService = new AuthService(
+    jobQueue,
+    entitlementsProvider,
+    monitorRepository
+  );
   const meService = new MeService(entitlementsProvider);
   const monitorService = new MonitorService(jobQueue, monitorRepository);
   const queueService = new QueueService(jobQueue);

@@ -57,6 +57,7 @@ export interface IMonitorRepository {
   findByOrgId(orgId: string): Promise<Monitor[]>;
 
   // Deletions
+  deleteAll(): Promise<boolean>;
   deleteById(monitorId: string, teamId: string): Promise<boolean>;
   deleteByOrgId(orgId: string): Promise<boolean>;
 

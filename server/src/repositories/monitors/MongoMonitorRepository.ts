@@ -143,6 +143,10 @@ class MongoMonitorRepository implements IMonitorRepository {
   };
 
   // Deletions
+  deleteAll = async () => {
+    const deleted = await Monitor.deleteMany({});
+    return deleted.acknowledged;
+  };
   deleteById = async (monitorId: string, teamId: string) => {
     await Monitor.deleteOne({ _id: monitorId, teamId });
     return true;

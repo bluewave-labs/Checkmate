@@ -5,6 +5,8 @@ import {
   IStatusPage,
   StatusPage,
   Monitor,
+  Check,
+  IMonitor,
 } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { count } from "node:console";
@@ -21,8 +23,13 @@ export interface IStatusPageService {
     page: number,
     rowsPerPage: number
   ) => Promise<{ statusPages: IStatusPage[]; count: number }>;
-  get: (teamId: string, id: string) => Promise<IStatusPage>;
-  getPublic: (url: string) => Promise<IStatusPage>;
+  get: (
+    teamId: string,
+    id: string
+  ) => Promise<{ statusPage: IStatusPage; checksMap: Record<string, any[]> }>;
+  getPublic: (
+    url: string
+  ) => Promise<{ statusPage: IStatusPage; checksMap: Record<string, any[]> }>;
   update: (
     teamId: string,
     tokenizedUser: IUserContext,
@@ -72,7 +79,32 @@ class StatusPageService implements IStatusPageService {
     if (!statusPage) {
       throw new ApiError("Status page not found", 404);
     }
-    return statusPage;
+
+    const monitorIds = (statusPage.monitors || []).map((m) => m._id);
+
+    const checks = await Check.aggregate([
+      { $match: { "metadata.monitorId": { $in: monitorIds } } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$metadata.monitorId",
+          latestChecks: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $project: {
+          latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
+        },
+      },
+    ]);
+
+    const checksMap = new Map(
+      checks.map((c: any) => [c._id.toString(), c.latestChecks])
+    );
+    return {
+      statusPage,
+      checksMap: Object.fromEntries(checksMap),
+    };
   };
 
   getPublic = async (url: string) => {
@@ -83,7 +115,31 @@ class StatusPageService implements IStatusPageService {
     if (!statusPage) {
       throw new ApiError("Public status page not found", 404);
     }
-    return statusPage;
+    const monitorIds = (statusPage.monitors || []).map((m) => m._id);
+
+    const checks = await Check.aggregate([
+      { $match: { "metadata.monitorId": { $in: monitorIds } } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$metadata.monitorId",
+          latestChecks: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $project: {
+          latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
+        },
+      },
+    ]);
+
+    const checksMap = new Map(
+      checks.map((c: any) => [c._id.toString(), c.latestChecks])
+    );
+    return {
+      statusPage,
+      checksMap: Object.fromEntries(checksMap),
+    };
   };
 
   getAll = async (teamId: string, page: number, rowsPerPage: number) => {

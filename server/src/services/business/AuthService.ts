@@ -11,7 +11,6 @@ import {
   IRole,
   IUser,
   ITokenizedUser,
-  Monitor,
   Check,
   NotificationChannel,
   IInvite,
@@ -24,6 +23,7 @@ import { Plans } from "@/types/entitlements.js";
 import { PERMISSIONS } from "@/types/permissions.js";
 import type { Entitlements } from "@/types/entitlements.js";
 import type { IEntitlementsProvider } from "@/services/system/EntitlementsService.js";
+import type { IMonitorRepository } from "@/repositories/index.js";
 
 const SERVICE_NAME = "AuthService";
 
@@ -68,13 +68,16 @@ class AuthService implements IAuthService {
   public SERVICE_NAME: string;
   private jobQueue: IJobQueue;
   private entitlementsProvider: IEntitlementsProvider;
+  private monitorRepository: IMonitorRepository;
   constructor(
     jobQueue: IJobQueue,
-    entitlementsProvider: IEntitlementsProvider
+    entitlementsProvider: IEntitlementsProvider,
+    monitorRepository: IMonitorRepository
   ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
     this.entitlementsProvider = entitlementsProvider;
+    this.monitorRepository = monitorRepository;
   }
 
   async register(signupData: RegisterData) {
@@ -487,14 +490,14 @@ class AuthService implements IAuthService {
   async cleanup() {
     await User.deleteMany({});
     await Role.deleteMany({});
-    await Monitor.deleteMany({});
+    await this.monitorRepository.deleteAll();
     await Check.deleteMany({});
     await NotificationChannel.deleteMany({});
     await this.jobQueue.flush();
   }
 
   async cleanMonitors() {
-    await Monitor.deleteMany({});
+    this.monitorRepository.deleteAll();
     await Check.deleteMany({});
   }
 
