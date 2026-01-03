@@ -9,6 +9,7 @@ import { MonitorStatus, MonitorType } from "@/db/models/monitors/Monitor.js";
 import { Entitlements } from "@/types/entitlements.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
 import { IMonitorRepository } from "@/repositories/index.js";
+import type IChecksRepository from "@/repositories/checks/IChecksRepository.js";
 import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
 
 export interface IImportedMonitor {
@@ -96,10 +97,16 @@ class MonitorService implements IMonitorService {
   public SERVICE_NAME: string;
   private jobQueue: IJobQueue;
   private monitorRepository: IMonitorRepository;
-  constructor(jobQueue: IJobQueue, monitorRepository: IMonitorRepository) {
+  private checksRepository: IChecksRepository;
+  constructor(
+    jobQueue: IJobQueue,
+    monitorRepository: IMonitorRepository,
+    checksRepository: IChecksRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
     this.monitorRepository = monitorRepository;
+    this.checksRepository = checksRepository;
   }
 
   create = async (
