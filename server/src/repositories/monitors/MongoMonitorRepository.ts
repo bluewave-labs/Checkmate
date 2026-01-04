@@ -1,5 +1,6 @@
 import { Monitor, IMonitor } from "@/db/models/index.js";
 import { IMonitorRepository, TeamQueryConfig } from "@/repositories/index.js";
+import { IImportedMonitor } from "@/services/business/MonitorService.js";
 import type { Monitor as MonitorEntity } from "@/types/domain/monitor.js";
 import mongoose from "mongoose";
 class MongoMonitorRepository implements IMonitorRepository {
@@ -49,6 +50,28 @@ class MongoMonitorRepository implements IMonitorRepository {
     };
     const monitor = await Monitor.create(monitorLiteral);
     return this.toEntity(monitor);
+  };
+
+  createMany = async (
+    userId: string,
+    orgId: string,
+    teamId: string,
+    monitorData: MonitorEntity[]
+  ) => {
+    const inserted = await Monitor.insertMany(
+      monitorData.map((monitor) => ({
+        name: monitor.name,
+        type: monitor.type,
+        interval: monitor.interval,
+        url: monitor.url,
+        n: monitor.n,
+        orgId: new mongoose.Types.ObjectId(orgId),
+        teamId: new mongoose.Types.ObjectId(teamId),
+        createdBy: new mongoose.Types.ObjectId(userId),
+        updatedBy: new mongoose.Types.ObjectId(userId),
+      }))
+    );
+    return inserted.map(this.toEntity);
   };
 
   // Single fetch

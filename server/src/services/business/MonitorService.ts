@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { IMonitor, Monitor, MonitorStats, Check } from "@/db/models/index.js";
+import { MonitorStats, Check } from "@/db/models/index.js";
 import { StatsHourly, StatsDaily } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
@@ -10,15 +10,7 @@ import { Entitlements } from "@/types/entitlements.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
 import { IMonitorRepository } from "@/repositories/index.js";
 import type IChecksRepository from "@/repositories/checks/IChecksRepository.js";
-import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
-
-export interface IImportedMonitor {
-  name: string;
-  type: MonitorType;
-  interval: number;
-  url: string;
-  n: number;
-}
+import type { Monitor } from "@/types/domain/index.js";
 
 export enum MonitorImportCode {
   OK = "OK",
@@ -45,9 +37,9 @@ export interface IMonitorService {
     orgId: string,
     userId: string,
     currentTeamId: string,
-    monitorData: MonitorEntity
-  ) => Promise<MonitorEntity>;
-  getAll: (teamId: string) => Promise<MonitorEntity[]>;
+    monitorData: Monitor
+  ) => Promise<Monitor>;
+  getAll: (teamId: string) => Promise<Monitor[]>;
   getAllEmbedChecks: (
     teamId: string,
     search: string,
@@ -64,7 +56,7 @@ export interface IMonitorService {
     pausedCount: number;
     monitors: any[];
   }>;
-  get: (teamId: string, monitorId: string) => Promise<MonitorEntity>;
+  get: (teamId: string, monitorId: string) => Promise<Monitor>;
   getEmbedChecks: (
     teamId: string,
     monitorId: string,
@@ -74,13 +66,13 @@ export interface IMonitorService {
     userId: string,
     teamId: string,
     monitorId: string
-  ) => Promise<MonitorEntity>;
+  ) => Promise<Monitor>;
   update: (
     userId: string,
     teamId: string,
     monitorId: string,
-    updateData: Partial<MonitorEntity>
-  ) => Promise<MonitorEntity>;
+    updateData: Partial<Monitor>
+  ) => Promise<Monitor>;
   delete: (teamId: string, monitorId: string) => Promise<boolean>;
   deleteAllInOrg: (orgId: string) => Promise<boolean>;
   export: (teamId: string) => Promise<Array<Record<string, unknown>>>;
@@ -89,7 +81,7 @@ export interface IMonitorService {
     teamId: string,
     userId: string,
     entitlements: Entitlements,
-    data: { monitors: Array<IImportedMonitor> }
+    data: { monitors: Array<Monitor> }
   ) => Promise<MonitorImportResult>;
 }
 
@@ -113,7 +105,7 @@ class MonitorService implements IMonitorService {
     orgId: string,
     userId: string,
     currentTeamId: string,
-    monitorData: MonitorEntity
+    monitorData: Monitor
   ) => {
     const monitor = await this.monitorRepository.create(
       orgId,
@@ -506,7 +498,7 @@ class MonitorService implements IMonitorService {
     return {};
   };
 
-  private getChecksRecent = async (monitor: MonitorEntity, startDate: Date) => {
+  private getChecksRecent = async (monitor: Monitor, startDate: Date) => {
     const endDate = new Date();
     const matchStage: {
       "metadata.monitorId": mongoose.Types.ObjectId;
@@ -618,7 +610,7 @@ class MonitorService implements IMonitorService {
   };
 
   private getChecksOtherRanges = async (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     range: string,
     startDate: Date
   ) => {
@@ -744,9 +736,9 @@ class MonitorService implements IMonitorService {
     userId: string,
     teamId: string,
     monitorId: string,
-    updateData: Partial<MonitorEntity>
+    updateData: Partial<Monitor>
   ) {
-    const allowedFields: (keyof MonitorEntity)[] = [
+    const allowedFields: (keyof Monitor)[] = [
       "name",
       "secret",
       "interval",
@@ -755,7 +747,7 @@ class MonitorService implements IMonitorService {
       "notificationChannels",
       "thresholds",
     ];
-    const safeUpdate: Partial<MonitorEntity> = {};
+    const safeUpdate: Partial<Monitor> = {};
 
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
@@ -816,10 +808,10 @@ class MonitorService implements IMonitorService {
     teamId: string,
     userId: string,
     entitlements: Entitlements,
-    data: { monitors: Array<IImportedMonitor> }
+    data: { monitors: Array<Monitor> }
   ) => {
     const attempted = data.monitors.length ?? 0;
-    let result: IMonitor[] = [];
+    let result: Monitor[] = [];
     let canImport = 0;
     try {
       // Get current count
@@ -842,14 +834,11 @@ class MonitorService implements IMonitorService {
       canImport = entitlements.monitorsMax - monitorCount;
       const importableMonitors = data?.monitors.slice(0, canImport);
 
-      result = await Monitor.insertMany(
-        importableMonitors.map((monitor) => ({
-          ...monitor,
-          orgId: new mongoose.Types.ObjectId(orgId),
-          teamId: new mongoose.Types.ObjectId(teamId),
-          createdBy: new mongoose.Types.ObjectId(userId),
-          updatedBy: new mongoose.Types.ObjectId(userId),
-        }))
+      result = await this.monitorRepository.createMany(
+        userId,
+        orgId,
+        teamId,
+        importableMonitors
       );
 
       for (const monitor of result) {

@@ -37,6 +37,13 @@ export interface IMonitorRepository {
     monitorData: Monitor
   ): Promise<Monitor>;
 
+  createMany(
+    userId: string,
+    orgId: string,
+    teamId: string,
+    monitorData: Monitor[]
+  ): Promise<Monitor[]>;
+
   // Single fetch
   findAll(): Promise<Monitor[]>;
   findById(monitorId: string, teamId: string): Promise<Monitor | null>;
