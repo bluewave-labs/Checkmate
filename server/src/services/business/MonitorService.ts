@@ -160,31 +160,11 @@ class MonitorService implements IMonitorService {
       }
     );
 
-    const monitorIds = monitors.map((m) => new mongoose.Types.ObjectId(m.id));
-
-    const checks = await Check.aggregate([
-      {
-        $match: {
-          "metadata.monitorId": { $in: monitorIds },
-        },
-      },
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: "$metadata.monitorId",
-          latestChecks: { $push: "$$ROOT" },
-        },
-      },
-      {
-        $project: {
-          latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
-        },
-      },
-    ]);
-
-    const checksMap = new Map(
-      checks.map((c: any) => [c._id.toString(), c.latestChecks])
+    const checks = await this.checksRepository.findLatestChecksByMonitorIds(
+      monitors.map((m) => m.id)
     );
+
+    const checksMap = new Map(checks.map((c: any) => [c.id, c.latestChecks]));
 
     return {
       count: counts.total,

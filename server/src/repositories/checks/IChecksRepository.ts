@@ -1,5 +1,14 @@
 import type { CheckEntity } from "@/types/domain/index.js";
-
-export interface IChecksRepository {}
+import type { LatestChecksByMonitor } from "@/repositories/checks/MongoCheckRepository.js";
+export interface IChecksRepository {
+  // Create
+  // Single fetch
+  // Collection fetch
+  findLatestChecksByMonitorIds(
+    monitorIds: string[]
+  ): Promise<LatestChecksByMonitor>;
+  // Update
+  // Delete
+}
 
 export default IChecksRepository;
