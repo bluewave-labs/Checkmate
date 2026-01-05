@@ -55,7 +55,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
     return this.toEntity(monitorStats);
   };
 
-  deleteManyExcludedtByMonitorIds = async (monitorIds: string[]) => {
+  deleteManyExcludedByMonitorIds = async (monitorIds: string[]) => {
     const result = await MonitorStats.deleteMany({
       monitorId: { $nin: monitorIds },
     });

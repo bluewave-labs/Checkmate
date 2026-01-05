@@ -41,7 +41,11 @@ class MongoCheckRepository implements IChecksRepository {
     const agg: AggregateCheck = {
       bucketDate: doc._id instanceof Date ? doc._id : new Date(doc._id),
       count: doc.count,
+      upChecks: doc.upChecks,
+      downChecks: doc.downChecks,
       avgResponseTime: doc.avgResponseTime,
+      avgResponseTimeUp: doc.avgResponseTimeUp,
+      avgResponseTimeDown: doc.avgResponseTimeDown,
       totalContainers: doc.totalContainers,
       runningContainers: doc.runningContainers,
       healthyContainers: doc.healthyContainers,
@@ -579,6 +583,8 @@ class MongoCheckRepository implements IChecksRepository {
       }
       return base;
     });
+
+    console.log(checks);
 
     return checks.map(this.toAggregateCheck);
   };

@@ -144,7 +144,11 @@ export interface AggregateCheck {
 
   // Common aggregates
   count?: number;
+  upChecks?: number;
+  downChecks?: number;
   avgResponseTime?: number;
+  avgResponseTimeUp?: number;
+  avgResponseTimeDown?: number;
 
   // Docker aggregates (counts per bucket)
   totalContainers?: number;
