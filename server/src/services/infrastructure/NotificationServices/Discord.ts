@@ -1,8 +1,5 @@
-import {
-  IMonitor,
-  INotificationChannel,
-  IIncident,
-} from "@/db/models/index.js";
+import { INotificationChannel, IIncident } from "@/db/models/index.js";
+import type { Monitor } from "@/types/domain/index.js";
 import { IAlert, IMessageService } from "./IMessageService.js";
 import got from "got";
 import ApiError from "@/utils/ApiError.js";
@@ -52,7 +49,7 @@ class DiscordService implements IMessageService {
     };
   };
 
-  buildAlert = (monitor: IMonitor, incident: IIncident) => {
+  buildAlert = (monitor: Monitor, incident: IIncident) => {
     const name = monitor?.name || "Unnamed monitor";
     const monitorStatus = monitor?.status || "unknown status";
     const url = monitor?.url || "no URL";

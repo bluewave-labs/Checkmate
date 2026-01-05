@@ -1,10 +1,7 @@
-import {
-  IMonitor,
-  INotificationChannel,
-  IIncident,
-} from "@/db/models/index.js";
+import { INotificationChannel, IIncident } from "@/db/models/index.js";
 import { IAlert, IMessageService } from "./IMessageService.js";
 import got from "got";
+import { Monitor } from "@/types/domain/index.js";
 
 import { getChildLogger } from "@/logger/Logger.js";
 const SERVICE_NAME = "SlackService";
@@ -113,7 +110,7 @@ class SlackService implements IMessageService {
     ];
   };
 
-  buildAlert = (monitor: IMonitor, incident: IIncident) => {
+  buildAlert = (monitor: Monitor, incident: IIncident) => {
     const name = monitor?.name || "Unnamed monitor";
     const monitorStatus = monitor?.status || "unknown status";
     const url = monitor?.url || "no URL";

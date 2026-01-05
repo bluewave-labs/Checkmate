@@ -1,9 +1,9 @@
 import {
-  IMonitor,
   INotificationChannel,
   IIncident,
   ResolutionType,
 } from "@/db/models/index.js";
+import type { Monitor } from "@/types/domain/index.js";
 
 export interface IAlert {
   name: string;
@@ -18,7 +18,7 @@ export interface IAlert {
   alertTime: Date;
 }
 export interface IMessageService {
-  buildAlert: (monitor: IMonitor, incident: IIncident) => IAlert;
+  buildAlert: (monitor: Monitor, incident: IIncident) => IAlert;
   sendMessage: (
     alert: IAlert,
     channel: INotificationChannel

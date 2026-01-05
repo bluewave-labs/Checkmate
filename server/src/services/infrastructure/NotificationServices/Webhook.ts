@@ -1,12 +1,9 @@
-import {
-  IMonitor,
-  INotificationChannel,
-  IIncident,
-} from "@/db/models/index.js";
+import { INotificationChannel, IIncident } from "@/db/models/index.js";
 import { IAlert, IMessageService } from "./IMessageService.js";
 import ApiError from "@/utils/ApiError.js";
 import got from "got";
 import { getChildLogger } from "@/logger/Logger.js";
+import type { Monitor } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "WebhookService";
 const logger = getChildLogger(SERVICE_NAME);
@@ -17,7 +14,7 @@ class WebhookService implements IMessageService {
     this.SERVICE_NAME = SERVICE_NAME;
   }
 
-  buildAlert = (monitor: IMonitor, incident: IIncident) => {
+  buildAlert = (monitor: Monitor, incident: IIncident) => {
     const name = monitor?.name || "Unnamed monitor";
     const monitorStatus = monitor?.status || "unknown status";
     const url = monitor?.url || "no URL";

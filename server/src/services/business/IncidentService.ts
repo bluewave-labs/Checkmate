@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 import { getChildLogger } from "@/logger/Logger.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
+import type { Monitor as MonitorEntity } from "@/types/domain/monitor.js";
 
 type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
   monitorId: IMonitor;
@@ -19,11 +20,11 @@ type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
 
 export interface IIncidentService {
   handleStatusChange: (
-    updatedMonitor: IMonitor,
+    updatedMonitor: MonitorEntity,
     lastCheck: ICheck
   ) => Promise<IIncident | null>;
   handleThresholdBreach: (
-    updatedMonitor: IMonitor,
+    updatedMonitor: MonitorEntity,
     lastCheck: ICheck,
     evalResult: ThresholdEvaluationResult
   ) => Promise<IIncident | null>;
@@ -66,17 +67,20 @@ class IncidentService implements IIncidentService {
     this.SERVICE_NAME = SERVICE_NAME;
   }
 
-  handleStatusChange = async (updatedMonitor: IMonitor, lastCheck: ICheck) => {
+  handleStatusChange = async (
+    updatedMonitor: MonitorEntity,
+    lastCheck: ICheck
+  ) => {
     if (updatedMonitor.status === "down") {
       const incident = await this.create(
-        updatedMonitor.teamId,
-        updatedMonitor._id,
+        new mongoose.Types.ObjectId(updatedMonitor.teamId),
+        new mongoose.Types.ObjectId(updatedMonitor.id),
         lastCheck._id
       );
       return incident;
     } else if (updatedMonitor.status === "up") {
       const incident = await Incident.findOne({
-        monitorId: updatedMonitor._id,
+        monitorId: updatedMonitor.id,
         teamId: updatedMonitor.teamId,
         resolved: false,
       });
@@ -97,12 +101,12 @@ class IncidentService implements IIncidentService {
   };
 
   handleThresholdBreach = async (
-    updatedMonitor: IMonitor,
+    updatedMonitor: MonitorEntity,
     lastCheck: ICheck,
     evalResult: ThresholdEvaluationResult
   ) => {
     const existing = await Incident.findOne({
-      monitorId: updatedMonitor._id,
+      monitorId: updatedMonitor.id,
       teamId: updatedMonitor.teamId,
       resolved: false,
     });
@@ -110,8 +114,8 @@ class IncidentService implements IIncidentService {
     if (evalResult.hasBreach) {
       if (!existing) {
         const incident = await this.create(
-          updatedMonitor.teamId,
-          updatedMonitor._id,
+          new mongoose.Types.ObjectId(updatedMonitor.teamId),
+          new mongoose.Types.ObjectId(updatedMonitor.id),
           lastCheck._id
         );
         if (evalResult.notes.length) {

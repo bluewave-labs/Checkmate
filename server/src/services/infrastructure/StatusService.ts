@@ -49,12 +49,12 @@ export interface IStatusService {
   ) => number;
 
   updateMonitorStats: (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     status: StatusResponse,
     statusChanged: boolean
   ) => Promise<IMonitorStats | null>;
   evaluateThresholds: (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     check: ICheck
   ) => Promise<ThresholdEvaluationResult>;
 }
@@ -151,14 +151,14 @@ class StatusService implements IStatusService {
   };
 
   updateMonitorStats = async (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     statusResponse: StatusResponse,
     statusChanged: boolean
   ) => {
-    let stats = await MonitorStats.findOne({ monitorId: monitor._id });
+    let stats = await MonitorStats.findOne({ monitorId: monitor.id });
     if (!stats) {
       stats = await MonitorStats.create({
-        monitorId: monitor._id,
+        monitorId: monitor.id,
         currentStreakStartedAt: Date.now(),
       });
     }
@@ -203,7 +203,7 @@ class StatusService implements IStatusService {
   };
 
   evaluateThresholds = async (
-    monitor: IMonitor,
+    monitor: MonitorEntity,
     check: ICheck
   ): Promise<ThresholdEvaluationResult> => {
     try {
