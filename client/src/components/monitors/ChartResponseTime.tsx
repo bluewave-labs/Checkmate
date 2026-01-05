@@ -19,7 +19,7 @@ import {
   tooltipDateFormatLookup,
 } from "@/utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
-import type { GroupedCheck } from "@/types/check";
+import type { AggregateCheck } from "@/types/check";
 import { useAppSelector } from "@/hooks/AppHooks";
 
 type XTickProps = {
@@ -33,7 +33,6 @@ export const XTick = ({ x, y, payload, range }: XTickProps) => {
   const format = tickDateFormatLookup(range);
   const theme = useTheme();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
-  console.log(payload);
   return (
     <Text
       x={x}
@@ -85,7 +84,7 @@ export const ChartResponseTime = ({
   checks,
   range,
 }: {
-  checks: GroupedCheck[];
+  checks: AggregateCheck[];
   range: string;
 }) => {
   const theme = useTheme();

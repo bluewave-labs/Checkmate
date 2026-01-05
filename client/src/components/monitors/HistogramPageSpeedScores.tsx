@@ -12,7 +12,7 @@ import {
 import { HistogramPageSpeedScoresTooltip } from "./HistogramPageSpeedScoresTooltip";
 
 import { useTheme } from "@mui/material/styles";
-import type { GroupedCheck } from "@/types/check";
+import type { AggregateCheck } from "@/types/check";
 import type { Palette } from "@mui/material/styles";
 type PaletteColorKey = Extract<
   keyof Palette,
@@ -52,7 +52,7 @@ export const HistogramPageSpeedScores = ({
   checks,
   range,
 }: {
-  checks: GroupedCheck[];
+  checks: AggregateCheck[];
   range: string;
 }) => {
   const theme = useTheme();

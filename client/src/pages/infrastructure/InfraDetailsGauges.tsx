@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getGbs, getFrequency } from "./InfraUtils";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import type { GroupedCheck } from "@/types/check";
+import type { AggregateCheck } from "@/types/check";
 
 const InfraDetailGauge = ({
   title,
@@ -42,7 +42,11 @@ const InfraDetailGauge = ({
   );
 };
 
-export const InfraDetailsGauges = ({ checks }: { checks: GroupedCheck[] }) => {
+export const InfraDetailsGauges = ({
+  checks,
+}: {
+  checks: AggregateCheck[];
+}) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));

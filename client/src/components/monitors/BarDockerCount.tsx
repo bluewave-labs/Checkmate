@@ -17,7 +17,7 @@ import { BaseBox } from "@/components/design-elements";
 import { useAppSelector } from "@/hooks/AppHooks";
 import { formatDateWithTz, tooltipDateFormatLookup } from "@/utils/TimeUtils";
 import { useTranslation } from "react-i18next";
-import type { GroupedCheck } from "@/types/check";
+import type { AggregateCheck } from "@/types/check";
 export const BarDockerCount = ({
   data,
   dataKey,
@@ -25,7 +25,7 @@ export const BarDockerCount = ({
   title,
   emptyText,
 }: {
-  data: GroupedCheck[];
+  data: AggregateCheck[];
   dataKey: string;
   range: string;
   title: string;
@@ -89,7 +89,7 @@ export const BarDockerCount = ({
               vertical={false}
             />
             <XAxis
-              dataKey={"_id"}
+              dataKey={"bucketDate"}
               tick={(props) => <XTick {...props} range={range} />}
             />
             <YAxis

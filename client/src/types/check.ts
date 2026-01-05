@@ -146,16 +146,28 @@ export interface CheckWithMonitor {
   updatedAt: string;
   timings: CheckTimings;
 }
-export interface GroupedCheck {
-  bucketDate: Date;
+export interface AggregateCheck {
+  bucketDate: string;
 
+  // Common aggregates
   count?: number;
+  upChecks?: number;
+  downChecks?: number;
   avgResponseTime?: number;
+  avgResponseTimeUp?: number;
+  avgResponseTimeDown?: number;
 
+  // Docker aggregates
   totalContainers?: number;
   runningContainers?: number;
+  runningPercent?: number;
   healthyContainers?: number;
+  healthyPercent?: number;
+  runningContainersSnapshot?: IDockerContainerSummary[];
+  totalExposedPorts?: number;
+  uniqueImages?: number;
 
+  // PageSpeed aggregates
   accessibility?: number | null;
   bestPractices?: number | null;
   seo?: number | null;

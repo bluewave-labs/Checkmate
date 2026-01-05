@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 
-import type { GroupedCheck } from "@/types/check";
+import type { AggregateCheck } from "@/types/check";
 import type { MonitorStatus } from "@/types/monitor";
 
 import { useTranslation } from "react-i18next";
@@ -26,8 +26,8 @@ const XLabel = ({
   p2,
   range,
 }: {
-  p1: GroupedCheck;
-  p2: GroupedCheck;
+  p1: AggregateCheck;
+  p2: AggregateCheck;
   range: string;
 }) => {
   const theme = useTheme();
@@ -65,7 +65,7 @@ export const HistogramStatus = ({
   range,
   title,
 }: {
-  checks: GroupedCheck[];
+  checks: AggregateCheck[];
   status: MonitorStatus;
   range: string;
   title: string;
@@ -84,7 +84,7 @@ export const HistogramStatus = ({
   const CustomTooltip = ({ active, payload }: any) => {
     const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
     if (!active || !payload?.length) return null;
-    const d = payload[0]?.payload as GroupedCheck & {
+    const d = payload[0]?.payload as AggregateCheck & {
       avgResponseTime?: number;
     };
     const avg = d?.avgResponseTime ?? 0;
@@ -133,7 +133,7 @@ export const HistogramStatus = ({
   }
 
   const totalChecks = normalChecks.reduce((count, check) => {
-    return count + check.count;
+    return count + (check.count ?? 0);
   }, 0);
 
   return (

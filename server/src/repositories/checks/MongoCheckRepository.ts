@@ -48,7 +48,12 @@ class MongoCheckRepository implements IChecksRepository {
       avgResponseTimeDown: doc.avgResponseTimeDown,
       totalContainers: doc.totalContainers,
       runningContainers: doc.runningContainers,
+      runningPercent: doc.runningPercent,
       healthyContainers: doc.healthyContainers,
+      healthyPercent: doc.healthyPercent,
+      runningContainersSnapshot: doc.runningContainersSnapshot,
+      totalExposedPorts: doc.totalExposedPorts,
+      uniqueImages: doc.uniqueImages,
       accessibility: doc.accessibility,
       bestPractices: doc.bestPractices,
       seo: doc.seo,
@@ -190,12 +195,53 @@ class MongoCheckRepository implements IChecksRepository {
           },
         },
       },
+      runningContainersSnapshot: { $last: "$runningContainersSnapshot" },
+      totalExposedPorts: { $last: "$totalExposedPorts" },
+      uniqueImages: { $last: "$uniqueImages" },
     };
   };
 
   private getDockerProjection = (): object => {
     const projectStage: any = { status: 1, responseTime: 1, createdAt: 1 };
     projectStage["dockerContainers"] = 1;
+    projectStage["runningContainersSnapshot"] = {
+      $filter: {
+        input: { $ifNull: ["$dockerContainers", []] },
+        as: "c",
+        cond: { $eq: ["$$c.running", true] },
+      },
+    };
+    projectStage["totalExposedPorts"] = {
+      $sum: {
+        $map: {
+          input: { $ifNull: ["$dockerContainers", []] },
+          as: "c",
+          in: { $size: { $ifNull: ["$$c.exposed_ports", []] } },
+        },
+      },
+    };
+    projectStage["uniqueImages"] = {
+      $size: {
+        $setUnion: [
+          {
+            $filter: {
+              input: {
+                $map: {
+                  input: { $ifNull: ["$dockerContainers", []] },
+                  as: "c",
+                  in: "$$c.base_image",
+                },
+              },
+              as: "img",
+              cond: {
+                $and: [{ $ne: ["$$img", null] }, { $ne: ["$$img", ""] }],
+              },
+            },
+          },
+          [],
+        ],
+      },
+    };
     return projectStage;
   };
 
@@ -516,6 +562,7 @@ class MongoCheckRepository implements IChecksRepository {
       .allowDiskUse(true)
       .hint({ "metadata.monitorId": 1, createdAt: 1 });
 
+    console.log(checks);
     return checks.map(this.toAggregateCheck);
   };
 

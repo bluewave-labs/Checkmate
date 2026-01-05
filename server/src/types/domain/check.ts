@@ -136,8 +136,6 @@ export interface CheckEntity {
   expiry: Date;
 }
 
-// AggregateCheck reflects the minimal shape needed from aggregation results
-// for list/history views, with string ids and optional docker payload.
 export interface AggregateCheck {
   // Time bucket identifier from aggregation (_id)
   bucketDate: Date;
@@ -153,8 +151,12 @@ export interface AggregateCheck {
   // Docker aggregates (counts per bucket)
   totalContainers?: number;
   runningContainers?: number;
+  runningPercent?: number;
   healthyContainers?: number;
-
+  healthyPercent?: number;
+  runningContainersSnapshot?: IDockerContainerSummary[];
+  totalExposedPorts?: number;
+  uniqueImages?: number;
   // PageSpeed aggregates
   accessibility?: number | null;
   bestPractices?: number | null;
@@ -166,8 +168,7 @@ export interface AggregateCheck {
   lcp?: number | null;
   tbt?: number | null;
 
-  // Infrastructure aggregates (optional snapshot/averages)
-  cpu?: Partial<ICpuInfo>;
+  // Infrastructure aggregates
   memory?: Partial<IMemoryInfo>;
   disk?: Partial<IDiskInfo>[];
   host?: Partial<IHostInfo>;

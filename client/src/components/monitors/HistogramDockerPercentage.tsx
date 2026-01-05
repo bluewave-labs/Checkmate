@@ -87,7 +87,7 @@ export const HistogramDockerPercentage = ({
               </linearGradient>
             </defs>
             <XAxis
-              dataKey={"_id"}
+              dataKey={"bucketDate"}
               axisLine={false}
               tickLine={false}
               tick={(props) => <XTick {...props} range={range} />}

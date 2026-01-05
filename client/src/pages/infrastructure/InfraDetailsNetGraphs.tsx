@@ -4,17 +4,18 @@ import Grid from "@mui/material/Grid";
 import { HistogramInfrastructure } from "@/components/monitors";
 import { Select } from "@/components/inputs";
 
-import type { IInfraCheck } from "@/types/check";
+import type { AggregateCheck } from "@/types/check";
 import { useMemo, useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const getChartConfigs = (
   theme: any,
-  checks: IInfraCheck[],
+  checks: AggregateCheck[],
   selectedInterface: string
 ) => {
-  const idx = checks[0]?.net.findIndex((i) => i.name === selectedInterface);
+  const idx =
+    checks?.[0]?.net?.findIndex((i) => i.name === selectedInterface) ?? -1;
   if (idx === -1) return [];
   return [
     {
@@ -56,7 +57,7 @@ export const InfraDetailsNetGraphs = ({
   checks,
   range,
 }: {
-  checks: IInfraCheck[];
+  checks: AggregateCheck[];
   range: string;
 }) => {
   const theme = useTheme();
@@ -68,11 +69,15 @@ export const InfraDetailsNetGraphs = ({
   );
 
   useEffect(() => {
-    if (checks[0]) {
+    if (checks?.[0]?.net && checks[0].net.length > 0) {
       const firstNonLoopback = checks[0].net.find(
         (iface) => iface.name !== "lo"
       );
-      setSelectedInterface(firstNonLoopback?.name || "");
+      setSelectedInterface(
+        firstNonLoopback?.name || checks[0].net[0]?.name || ""
+      );
+    } else {
+      setSelectedInterface("");
     }
   }, [checks]);
   return (
@@ -84,7 +89,7 @@ export const InfraDetailsNetGraphs = ({
             value={selectedInterface}
             onChange={(e) => setSelectedInterface(e.target.value)}
           >
-            {checks[0]?.net.map((iface) => {
+            {checks?.[0]?.net?.map((iface) => {
               return (
                 <MenuItem key={iface.name} value={iface.name}>
                   {iface.name}
@@ -108,7 +113,7 @@ export const InfraDetailsNetGraphs = ({
                 idx={config.idx}
                 key={`${config.type}-${config.idx ?? ""}`}
                 checks={checks}
-                xKey="_id"
+                xKey="bucketDate"
                 yDomain={config.yDomain}
                 dataKeys={config.dataKeys}
                 gradient={true}

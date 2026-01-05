@@ -1,4 +1,4 @@
-import type { GroupedCheck, ICheck } from "@/types/check";
+import type { AggregateCheck, ICheck } from "@/types/check";
 import type { IMonitorStats } from "./monitorStats";
 
 export const MonitorTypes = [
@@ -61,7 +61,7 @@ export interface IMonitorWithStats {
 }
 
 export interface IMonitorWithMonitorStats {
-  checks: GroupedCheck[];
+  checks: AggregateCheck[];
   monitor: IMonitor;
   stats: IMonitorStats;
 }
