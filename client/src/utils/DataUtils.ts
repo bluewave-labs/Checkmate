@@ -2,7 +2,7 @@ const MIN_OUT = 10;
 const MAX_OUT = 100;
 
 export const normalizeResponseTimes = <
-  T extends Record<K, number>,
+  T,
   K extends keyof T,
 >(
   checks: T[],
@@ -22,10 +22,16 @@ export const normalizeResponseTimes = <
     ];
   }
 
+  const getVal = (check: T): number => {
+    const v = check[key] as unknown;
+    return typeof v === "number" && Number.isFinite(v) ? v : 0;
+  };
+
   const { min, max } = checks.reduce(
     (acc, check) => {
-      if (check[key] > acc.max) acc.max = check[key];
-      if (check[key] < acc.min) acc.min = check[key];
+      const v = getVal(check);
+      if (v > acc.max) acc.max = v;
+      if (v < acc.min) acc.min = v;
       return acc;
     },
     { max: -Infinity, min: Infinity }
@@ -36,7 +42,7 @@ export const normalizeResponseTimes = <
   return checks.map((check) => ({
     ...check,
     normalResponseTime:
-      MIN_OUT + ((check[key] - min) * (MAX_OUT - MIN_OUT)) / range,
+      MIN_OUT + ((getVal(check) - min) * (MAX_OUT - MIN_OUT)) / range,
   }));
 };
 
@@ -61,7 +67,8 @@ export const getResponseColor = (
 
   const toHex = (c: number) => c.toString(16).padStart(2, "0");
   const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)));
-  const rgbToHex = (r: number, g: number, b: number) => `#${toHex(clamp(r))}${toHex(clamp(g))}${toHex(clamp(b))}`;
+  const rgbToHex = (r: number, g: number, b: number) =>
+    `#${toHex(clamp(r))}${toHex(clamp(g))}${toHex(clamp(b))}`;
 
   const normalizeToHex = (value: string) => {
     const v = value.trim();
@@ -69,7 +76,10 @@ export const getResponseColor = (
       const h = v.slice(1);
       const full =
         h.length === 3
-          ? h.split("").map((c) => c + c).join("")
+          ? h
+              .split("")
+              .map((c) => c + c)
+              .join("")
           : h.substring(0, 6);
       return `#${full.toLowerCase()}`;
     }
@@ -88,7 +98,13 @@ export const getResponseColor = (
 
   const parseHex = (hex: string) => {
     const h = hex.replace("#", "");
-    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+    const full =
+      h.length === 3
+        ? h
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : h;
     const n = parseInt(full, 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
   };

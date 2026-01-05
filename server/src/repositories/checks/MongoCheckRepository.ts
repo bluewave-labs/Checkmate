@@ -584,8 +584,6 @@ class MongoCheckRepository implements IChecksRepository {
       return base;
     });
 
-    console.log(checks);
-
     return checks.map(this.toAggregateCheck);
   };
 }

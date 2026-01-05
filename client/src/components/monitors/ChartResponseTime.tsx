@@ -90,10 +90,7 @@ export const ChartResponseTime = ({
 }) => {
   const theme = useTheme();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
-  const normalized = normalizeResponseTimes<GroupedCheck, "avgResponseTime">(
-    checks,
-    "avgResponseTime"
-  );
+  const normalized = normalizeResponseTimes(checks, "avgResponseTime");
   return (
     <BaseChart
       icon={<Clock size={20} strokeWidth={1.5} />}
