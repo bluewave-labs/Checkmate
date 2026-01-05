@@ -36,23 +36,32 @@ import { MeService } from "@/services/index.js";
 import {
   MongoMonitorRepository,
   MongoChecksRepository,
+  MongoMonitorStatsRepository,
 } from "@/repositories/index.js";
 
 export const initServices = async () => {
   const monitorRepository = new MongoMonitorRepository();
   const checksRepository = new MongoChecksRepository();
+  const monitorStatsRepository = new MongoMonitorStatsRepository();
 
   const checkService = new CheckService();
   const inviteService = new InviteService();
   const maintenanceService = new MaintenanceService();
-  const monitorStatsService = new MonitorStatsService();
+  const monitorStatsService = new MonitorStatsService(
+    monitorRepository,
+    monitorStatsRepository
+  );
   const notificationChannelService = new NotificationChannelService();
   const userService = new UserService();
   const discordService = new DiscordService();
   const slackService = new SlackService();
   const webhookService = new WebhookService();
   const networkService = new NetworkService(got);
-  const statusService = new StatusService(monitorRepository);
+  const statusService = new StatusService(
+    monitorRepository,
+    monitorStatsRepository
+  );
+  // If desired in future, use repository for stats as well
   const settingsService = new SettingsService();
   const stripeService = new StripeService();
   const billingService = new BillingService();
@@ -85,7 +94,8 @@ export const initServices = async () => {
   const monitorService = new MonitorService(
     jobQueue,
     monitorRepository,
-    checksRepository
+    checksRepository,
+    monitorStatsRepository
   );
   const queueService = new QueueService(jobQueue);
   const teamService = new TeamService(jobQueue, monitorRepository);

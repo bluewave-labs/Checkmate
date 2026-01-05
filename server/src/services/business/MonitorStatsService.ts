@@ -1,4 +1,7 @@
-import { Monitor, MonitorStats } from "@/db/models/index.js";
+import type {
+  IMonitorRepository,
+  IMonitorStatsRepository,
+} from "@/repositories/index.js";
 import { getChildLogger } from "@/logger/Logger.js";
 
 const SERVICE_NAME = "MonitorStatsService";
@@ -9,17 +12,28 @@ export interface IMonitorStatsService {
 
 class MonitorStatsService implements IMonitorStatsService {
   public SERVICE_NAME: string;
-  constructor() {
+  private monitorRepository: IMonitorRepository;
+  private monitorStatsRepository: IMonitorStatsRepository;
+
+  constructor(
+    monitorRepository: IMonitorRepository,
+    monitorStatsRepository: IMonitorStatsRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.monitorRepository = monitorRepository;
+    this.monitorStatsRepository = monitorStatsRepository;
   }
 
   async cleanupOrphanedMonitorStats() {
     try {
-      const monitorIds = await Monitor.find().distinct("_id");
-      const result = await MonitorStats.deleteMany({
-        monitorId: { $nin: monitorIds },
-      });
-      logger.info(`Deleted ${result.deletedCount} orphaned MonitorStats.`);
+      const monitorIds = (await this.monitorRepository.findAll()).map(
+        (m) => m.id
+      );
+      const deletedCount =
+        await this.monitorStatsRepository.deleteManyExcludedByMonitorIds(
+          monitorIds
+        );
+      logger.info(`Deleted ${deletedCount} orphaned MonitorStats.`);
       return true;
     } catch (error) {
       logger.error("Error cleaning up orphaned MonitorStats:", error);

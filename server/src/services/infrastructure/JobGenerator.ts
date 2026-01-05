@@ -1,4 +1,3 @@
-import { IMonitor } from "@/db/models/index.js";
 import { INetworkService } from "./NetworkService.js";
 import { ICheckService } from "../business/CheckService.js";
 import { IMonitorStatsService } from "../business/MonitorStatsService.js";
@@ -9,12 +8,12 @@ import { IIncidentService } from "../business/IncidentService.js";
 import { IStatsAggregationService } from "@/services/business/StatsAggregationService.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
-import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
+import type { Monitor } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "JobGenerator";
 const logger = getChildLogger(SERVICE_NAME);
 export interface IJobGenerator {
-  generateJob: () => (monitor: MonitorEntity) => Promise<void>;
+  generateJob: () => (monitor: Monitor) => Promise<void>;
   generateCleanupJob: () => () => Promise<void>;
 }
 
@@ -51,7 +50,7 @@ class JobGenerator implements IJobGenerator {
   }
 
   generateJob = () => {
-    return async (monitor: MonitorEntity) => {
+    return async (monitor: Monitor) => {
       try {
         const monitorId = monitor.id.toString();
         if (!monitorId) {

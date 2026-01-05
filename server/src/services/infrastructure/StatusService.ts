@@ -1,14 +1,11 @@
-import {
-  IMonitor,
-  IMonitorStats,
-  MonitorStats,
-  ICheck,
-} from "@/db/models/index.js";
+import { ICheck } from "@/db/models/index.js";
 import { StatusResponse } from "./NetworkService.js";
-import { IMonitorRepository } from "@/repositories/index.js";
-import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
+import {
+  IMonitorRepository,
+  IMonitorStatsRepository,
+} from "@/repositories/index.js";
+import type { Monitor, MonitorStats } from "@/types/domain/index.js";
 import ApiError from "@/utils/ApiError.js";
-// Using compact latestStatuses on Monitor for transition checks
 
 const emptyMetrics = (): ThresholdEvaluationResult["metrics"] => ({
   cpu: { breached: false },
@@ -39,41 +36,46 @@ const MAX_LATEST_CHECKS = 25;
 
 export interface IStatusService {
   updateMonitorStatus: (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     status: StatusResponse
   ) => Promise<StatusChangeResult>;
 
   calculateAvgResponseTime: (
-    stats: IMonitorStats,
+    stats: MonitorStats,
     statusResponse: StatusResponse
   ) => number;
 
   updateMonitorStats: (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     status: StatusResponse,
     statusChanged: boolean
-  ) => Promise<IMonitorStats | null>;
+  ) => Promise<MonitorStats | null>;
   evaluateThresholds: (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     check: ICheck
   ) => Promise<ThresholdEvaluationResult>;
 }
 
 export type StatusChangeResult = [
-  updatedMonitor: MonitorEntity,
+  updatedMonitor: Monitor,
   statusChanged: boolean
 ];
 
 class StatusService implements IStatusService {
   public SERVICE_NAME: string;
   private monitorRepository: IMonitorRepository;
-  constructor(monitorRepository: IMonitorRepository) {
+  private monitorStatsRepository: IMonitorStatsRepository;
+  constructor(
+    monitorRepository: IMonitorRepository,
+    monitorStatsRepository: IMonitorStatsRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.monitorRepository = monitorRepository;
+    this.monitorStatsRepository = monitorStatsRepository;
   }
 
   updateMonitorStatus = async (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     statusResponse: StatusResponse
   ): Promise<StatusChangeResult> => {
     const newStatus = statusResponse.status;
@@ -134,7 +136,7 @@ class StatusService implements IStatusService {
   };
 
   calculateAvgResponseTime = (
-    stats: IMonitorStats,
+    stats: MonitorStats,
     statusResponse: StatusResponse
   ): number => {
     let avgResponseTime = stats.avgResponseTime;
@@ -151,13 +153,15 @@ class StatusService implements IStatusService {
   };
 
   updateMonitorStats = async (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     statusResponse: StatusResponse,
     statusChanged: boolean
   ) => {
-    let stats = await MonitorStats.findOne({ monitorId: monitor.id });
-    if (!stats) {
-      stats = await MonitorStats.create({
+    let stats: MonitorStats;
+    try {
+      stats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+    } catch (error) {
+      stats = await this.monitorStatsRepository.create({
         monitorId: monitor.id,
         currentStreakStartedAt: Date.now(),
       });
@@ -199,11 +203,14 @@ class StatusService implements IStatusService {
       stats.certificateExpiry = statusResponse.certificateExpiry;
     }
 
-    return await stats.save();
+    return await this.monitorStatsRepository.updateByMonitorId(
+      monitor.id,
+      stats
+    );
   };
 
   evaluateThresholds = async (
-    monitor: MonitorEntity,
+    monitor: Monitor,
     check: ICheck
   ): Promise<ThresholdEvaluationResult> => {
     try {

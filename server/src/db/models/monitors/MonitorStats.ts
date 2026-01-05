@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import { MonitorStatus, MonitorStatuses } from "@/types/domain/index.js";
 
 export interface IMonitorStats extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   monitorId: mongoose.Types.ObjectId;
   avgResponseTime: number;
   maxResponseTime: number;

@@ -1,11 +1,14 @@
-import { MonitorStats } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "@/services/infrastructure/JobQueue.js";
 import { MonitorWithChecksResponse } from "@/types/index.js";
 import { MonitorStatus } from "@/types/domain/index.js";
 import { Entitlements } from "@/types/entitlements.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
-import { IMonitorRepository, IChecksRepository } from "@/repositories/index.js";
+import {
+  IMonitorRepository,
+  IChecksRepository,
+  IMonitorStatsRepository,
+} from "@/repositories/index.js";
 import type { Monitor, MonitorType } from "@/types/domain/index.js";
 
 export enum MonitorImportCode {
@@ -86,15 +89,18 @@ class MonitorService implements IMonitorService {
   private jobQueue: IJobQueue;
   private monitorRepository: IMonitorRepository;
   private checksRepository: IChecksRepository;
+  private monitorStatsRepository: IMonitorStatsRepository;
   constructor(
     jobQueue: IJobQueue,
     monitorRepository: IMonitorRepository,
-    checksRepository: IChecksRepository
+    checksRepository: IChecksRepository,
+    monitorStatsRepository: IMonitorStatsRepository
   ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
     this.monitorRepository = monitorRepository;
     this.checksRepository = checksRepository;
+    this.monitorStatsRepository = monitorStatsRepository;
   }
 
   create = async (
@@ -109,7 +115,7 @@ class MonitorService implements IMonitorService {
       currentTeamId,
       monitorData
     );
-    await MonitorStats.create({
+    await this.monitorStatsRepository.create({
       monitorId: monitor.id,
       currentStreakStartedAt: Date.now(),
     });
@@ -186,13 +192,7 @@ class MonitorService implements IMonitorService {
       throw new ApiError("Monitor not found", 404);
     }
 
-    const stats = await MonitorStats.findOne({
-      monitorId: monitor.id,
-    });
-
-    if (!stats) {
-      throw new ApiError("Monitor stats not found", 404);
-    }
+    const stats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
     const startDate = getStartDate(range);
 
@@ -206,7 +206,7 @@ class MonitorService implements IMonitorService {
       return {
         checks,
         monitor,
-        stats,
+        stats: (stats as any) || undefined,
       };
     } else {
       const checks = await this.checksRepository.findRecentChecksByMonitor(
@@ -217,7 +217,7 @@ class MonitorService implements IMonitorService {
       return {
         checks,
         monitor,
-        stats,
+        stats: (stats as any) || undefined,
       };
     }
   };

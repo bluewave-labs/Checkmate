@@ -1,6 +1,5 @@
 import UserService from "../business/UserService.js";
 import {
-  IMonitor,
   Monitor,
   NotificationChannel,
   INotificationChannel,

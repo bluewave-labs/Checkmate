@@ -6,3 +6,6 @@ export { default as MongoMonitorRepository } from "@/repositories/monitors/Mongo
 
 export type { IChecksRepository } from "@/repositories/checks/IChecksRepository.js";
 export { default as MongoChecksRepository } from "@/repositories/checks/MongoCheckRepository.js";
+
+export type { IMonitorStatsRepository } from "@/repositories/monitor-stats/IMonitorStatsRepository.js";
+export { default as MongoMonitorStatsRepository } from "@/repositories/monitor-stats/MongoMonitorStatsRepository.js";
