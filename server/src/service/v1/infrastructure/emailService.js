@@ -1,9 +1,3 @@
-import { fileURLToPath } from "url";
-import path from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const SERVICE_NAME = "EmailService";
 
 /**
@@ -46,40 +40,10 @@ class EmailService {
 		 */
 		this.loadTemplate = (templateName) => {
 			try {
-				// Try multiple possible paths for template files
-				// to support both development and production environments
-				const possiblePaths = [
-					// Production/Docker path - templates in dist/templates (from dist/src/service/v1/infrastructure)
-					this.path.join(__dirname, `../../../templates/${templateName}.mjml`),
-					// Alternative production path - templates in dist/templates (from dist/service/v1/infrastructure)
-					this.path.join(__dirname, `../../templates/${templateName}.mjml`),
-					// If running from dist, templates might be in parent src directory
-					this.path.join(__dirname, `../../../../src/templates/${templateName}.mjml`),
-					// Development path - from the project root
-					this.path.join(process.cwd(), `templates/${templateName}.mjml`),
-					this.path.join(process.cwd(), `src/templates/${templateName}.mjml`),
-					this.path.join(process.cwd(), `dist/templates/${templateName}.mjml`),
-				];
-
-				let templatePath;
-				let templateContent;
-
-				// Try each path until we find one that works
-				for (const tryPath of possiblePaths) {
-					try {
-						if (this.fs.existsSync(tryPath)) {
-							templatePath = tryPath;
-							templateContent = this.fs.readFileSync(templatePath, "utf8");
-							break;
-						}
-					} catch (e) {
-						// Continue to next path
-					}
-				}
-
-				if (!templateContent) {
-					throw new Error(`Template file not found in any of: ${possiblePaths.map((p) => p.replace(__dirname, ".")).join(", ")}`);
-				}
+				// Use EMAIL_TEMPLATE_PATH environment variable or default to templates/ in cwd
+				const templateBase = process.env.EMAIL_TEMPLATE_PATH
+					|| this.path.join(process.cwd(), 'templates');
+				const templatePath = this.path.join(templateBase, `${templateName}.mjml`);
 
 				this.logger.debug({
 					message: `Loading template: ${templateName}`,
@@ -88,6 +52,7 @@ class EmailService {
 					templatePath: templatePath,
 				});
 
+				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				const compiled = this.compile(templateContent);
 
 				this.logger.debug({
@@ -105,8 +70,8 @@ class EmailService {
 					error: error.message,
 					stack: error.stack,
 				});
-				// Return a no-op function that returns empty string to prevent runtime errors
-				return () => "";
+				// Fail fast - throw error instead of returning empty function
+				throw error;
 			}
 		};
 
@@ -195,27 +160,112 @@ class EmailService {
 		}
 	};
 
-	sendEmail = async (to, subject, html, transportConfig) => {
-		// Validate required fields
+	/**
+	 * Validates email parameters.
+	 * @param {string} to - The recipient email address.
+	 * @param {string} subject - The email subject.
+	 * @param {string} html - The email HTML content.
+	 * @returns {boolean} True if valid, false otherwise.
+	 */
+	validateEmailParams(to, subject, html) {
 		if (!to || !subject) {
 			this.logger.error({
 				message: "Invalid email parameters: missing 'to' or 'subject'",
 				service: SERVICE_NAME,
-				method: "sendEmail",
+				method: "validateEmailParams",
 			});
 			return false;
 		}
 
-		// Validate HTML content
 		if (!html || html.trim() === "") {
-			this.logger.warn({
-				message: "Email HTML content is empty, using fallback text",
+			this.logger.error({
+				message: "Cannot send email: HTML content is empty",
 				service: SERVICE_NAME,
-				method: "sendEmail",
-				to: to,
-				subject: subject,
+				method: "validateEmailParams",
 			});
-			html = "<p>Email content unavailable</p>";
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates the from email address.
+	 * @param {string} systemEmailAddress - The system email address.
+	 * @returns {boolean} True if valid, false otherwise.
+	 */
+	validateFromAddress(systemEmailAddress) {
+		const fromAddress = systemEmailAddress;
+		if (!fromAddress || !fromAddress.includes('@')) {
+			this.logger.error({
+				message: "Missing or invalid systemEmailAddress - a valid email address is required",
+				service: SERVICE_NAME,
+				method: "validateFromAddress",
+			});
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Builds the TLS configuration for the email transporter.
+	 * @param {Object} config - The email configuration object.
+	 * @returns {Object} The TLS configuration object.
+	 */
+	buildTLSConfig(config) {
+		const {
+			systemEmailSecure,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
+			systemEmailTLSServername,
+		} = config;
+
+		const tlsConfig = {};
+
+		// Only apply TLS settings if secure is enabled
+		if (systemEmailSecure) {
+			// Top-level Nodemailer options (control STARTTLS behavior):
+			// - ignoreTLS: If true, the connection will not attempt to use STARTTLS
+			// - requireTLS: If true, connection will fail if STARTTLS is not available
+			if (systemEmailIgnoreTLS !== undefined) {
+				tlsConfig.ignoreTLS = systemEmailIgnoreTLS;
+			}
+			if (systemEmailRequireTLS !== undefined) {
+				tlsConfig.requireTLS = systemEmailRequireTLS;
+			}
+
+			// Node.js TLS options (go inside the 'tls' object):
+			// - rejectUnauthorized: If false, accepts self-signed certificates
+			// - servername: Overrides the hostname for SNI (Server Name Indication)
+			const tlsSettings = {};
+
+			if (systemEmailRejectUnauthorized !== undefined) {
+				tlsSettings.rejectUnauthorized = systemEmailRejectUnauthorized;
+			}
+			if (systemEmailTLSServername !== undefined && systemEmailTLSServername !== null && systemEmailTLSServername !== "") {
+				tlsSettings.servername = systemEmailTLSServername;
+			}
+
+			// Only add tls property if we have TLS settings
+			if (Object.keys(tlsSettings).length > 0) {
+				tlsConfig.tls = tlsSettings;
+				this.logger.debug({
+					message: `TLS settings applied to email config`,
+					service: SERVICE_NAME,
+					method: "buildTLSConfig",
+					tlsSettings: Object.keys(tlsSettings),
+				});
+			}
+		}
+
+		return tlsConfig;
+	}
+
+	sendEmail = async (to, subject, html, transportConfig) => {
+		// Validate email parameters
+		if (!this.validateEmailParams(to, subject, html)) {
+			return false;
 		}
 
 		let config;
@@ -232,20 +282,10 @@ class EmailService {
 			systemEmailAddress,
 			systemEmailPassword,
 			systemEmailConnectionHost,
-			systemEmailRejectUnauthorized,
-			systemEmailIgnoreTLS,
-			systemEmailRequireTLS,
-			systemEmailTLSServername,
 		} = config;
 
 		// Validate from address
-		const fromAddress = systemEmailAddress || systemEmailUser;
-		if (!fromAddress || !fromAddress.includes("@")) {
-			this.logger.error({
-				message: "Invalid from email address",
-				service: SERVICE_NAME,
-				method: "sendEmail",
-			});
+		if (!this.validateFromAddress(systemEmailAddress)) {
 			return false;
 		}
 
@@ -254,6 +294,7 @@ class EmailService {
 			host: systemEmailHost,
 			port: Number(systemEmailPort),
 			secure: systemEmailSecure,
+			pool: config.systemEmailPool ?? false,
 			auth: {
 				user: systemEmailUser || systemEmailAddress,
 				pass: systemEmailPassword,
@@ -262,38 +303,10 @@ class EmailService {
 			connectionTimeout: 5000,
 		};
 
-		// Conditionally add TLS settings only if secure is enabled
-		if (systemEmailSecure) {
-			// Add top-level TLS options
-			if (systemEmailIgnoreTLS !== undefined) {
-				emailConfig.ignoreTLS = systemEmailIgnoreTLS;
-			}
-			if (systemEmailRequireTLS !== undefined) {
-				emailConfig.requireTLS = systemEmailRequireTLS;
-			}
+		// Apply TLS configuration
+		const tlsConfig = this.buildTLSConfig(config);
+		Object.assign(emailConfig, tlsConfig);
 
-			const tlsSettings = {};
-
-			// Only add TLS settings that are explicitly configured
-			// (rejectUnauthorized and servername go INSIDE the tls object)
-			if (systemEmailRejectUnauthorized !== undefined) {
-				tlsSettings.rejectUnauthorized = systemEmailRejectUnauthorized;
-			}
-			if (systemEmailTLSServername !== undefined && systemEmailTLSServername !== null && systemEmailTLSServername !== "") {
-				tlsSettings.servername = systemEmailTLSServername;
-			}
-
-			// Only add tls property if we have TLS settings
-			if (Object.keys(tlsSettings).length > 0) {
-				emailConfig.tls = tlsSettings;
-				this.logger.debug({
-					message: `TLS settings applied to email config`,
-					service: SERVICE_NAME,
-					method: "sendEmail",
-					tlsSettings: Object.keys(tlsSettings),
-				});
-			}
-		}
 		this.transporter = this.nodemailer.createTransport(emailConfig);
 
 		try {
@@ -302,7 +315,8 @@ class EmailService {
 			this.logger.warn({
 				message: "Email transporter verification failed",
 				service: SERVICE_NAME,
-				method: "verifyTransporter",
+				method: "sendEmail",
+				error: error.message,
 			});
 			return false;
 		}
@@ -310,7 +324,7 @@ class EmailService {
 		try {
 			const info = await this.transporter.sendMail({
 				to: to,
-				from: fromAddress,
+				from: systemEmailAddress,
 				subject: subject,
 				html: html,
 			});
