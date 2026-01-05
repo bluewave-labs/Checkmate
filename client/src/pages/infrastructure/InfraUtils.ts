@@ -36,7 +36,10 @@ export const getGbs = (bytes: number): string => {
   }
 };
 
-export const getDiskTotalGbs = (disk: IDiskInfo[]): string => {
+export const getDiskTotalGbs = (disk?: Partial<IDiskInfo>[]): string => {
+  if (!disk) {
+    return getGbs(0);
+  }
   const totalBytes =
     disk?.reduce((acc, disk) => acc + (disk.total_bytes || 0), 0) || 0;
   return getGbs(totalBytes);

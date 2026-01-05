@@ -707,7 +707,25 @@ class MonitorService implements IMonitorService {
     if (range === "24h" || range === "7d" || range === "30d") {
       return await this.getChecksOtherRanges(monitor, range, startDate);
     } else {
-      return await this.getChecksRecent(monitor, startDate);
+      const checks = await this.checksRepository.findRecentChecksByMonitor(
+        monitor,
+        startDate
+      );
+
+      const stats = await MonitorStats.findOne({
+        monitorId: monitor.id,
+      });
+
+      if (!stats) {
+        throw new ApiError("Monitor stats not found", 404);
+      }
+
+      return {
+        checks,
+        monitor,
+        stats,
+      };
+      // return await this.getChecksRecent(monitor, startDate);
     }
   };
 

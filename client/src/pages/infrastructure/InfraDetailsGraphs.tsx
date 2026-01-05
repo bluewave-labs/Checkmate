@@ -2,12 +2,12 @@ import Grid from "@mui/material/Grid";
 import { HistogramInfrastructure } from "@/components/monitors";
 
 import { useTranslation } from "react-i18next";
-import type { IInfraCheck } from "@/types/check";
+import type { GroupedCheck } from "@/types/check";
 import { useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-const getChartConfigs = (theme: any, checks: IInfraCheck[], t: any) => {
+const getChartConfigs = (theme: any, checks: GroupedCheck[], t: any) => {
   return [
     {
       title: t("common.charts.infrastructure.memory.title"),
@@ -52,7 +52,7 @@ export const InfraDetailsGraphs = ({
   checks,
   range,
 }: {
-  checks: IInfraCheck[];
+  checks: GroupedCheck[];
   range: string;
 }) => {
   const theme = useTheme();

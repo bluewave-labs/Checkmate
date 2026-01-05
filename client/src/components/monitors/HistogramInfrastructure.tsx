@@ -11,7 +11,7 @@ import { Fragment, useId } from "react";
 import { XTick } from "./ChartResponseTime";
 
 import { useTheme } from "@mui/material/styles";
-import type { IInfraCheck } from "@/types/check";
+import type { GroupedCheck } from "@/types/check";
 
 const AREA_COLORS = [
   // Blues
@@ -104,7 +104,7 @@ export const HistogramInfrastructure = ({
   title: string;
   type: string;
   idx: number | null;
-  checks: IInfraCheck[];
+  checks: GroupedCheck[];
   xKey: string;
   yDomain?: number[];
   dataKeys: string[];
@@ -118,15 +118,15 @@ export const HistogramInfrastructure = ({
   const theme = useTheme();
   const uniqueId = useId();
 
-  let avgTemps: { _id: string; avg_temp: number | null }[] = [];
+  let avgTemps: { bucketDate: Date; avg_temp: number | null }[] = [];
   let tempYDomain: number[] = [];
   if (type === "temp") {
     avgTemps = checks.map((check) => {
-      const temps = check.cpu.temperature || [];
+      const temps = check.cpu?.temperature || [];
       if (temps.length === 0) return { ...check, avg_temp: null };
       const totalTemp = temps.reduce((sum, temp) => sum + (temp || 0), 0);
       const avgTemp = totalTemp / temps.length;
-      return { _id: check._id, avg_temp: avgTemp };
+      return { bucketDate: check.bucketDate, avg_temp: avgTemp };
     });
 
     const maxTemp: number = avgTemps.reduce((max, item) => {

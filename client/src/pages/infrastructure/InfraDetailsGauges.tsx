@@ -5,9 +5,9 @@ import { Gauge } from "@/components/design-elements";
 
 import { useTranslation } from "react-i18next";
 import { getGbs, getFrequency } from "./InfraUtils";
-import type { IInfraCheck } from "@/types/check";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import type { GroupedCheck } from "@/types/check";
 
 const InfraDetailGauge = ({
   title,
@@ -42,7 +42,7 @@ const InfraDetailGauge = ({
   );
 };
 
-export const InfraDetailsGauges = ({ checks }: { checks: IInfraCheck[] }) => {
+export const InfraDetailsGauges = ({ checks }: { checks: GroupedCheck[] }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -54,31 +54,31 @@ export const InfraDetailsGauges = ({ checks }: { checks: IInfraCheck[] }) => {
     >
       <InfraDetailGauge
         title={t("monitors.infrastructure.gauges.memory.title")}
-        progress={(checks[0]?.memory.usage_percent || 0) * 100}
+        progress={(checks[0]?.memory?.usage_percent || 0) * 100}
         upperLabel={t("monitors.infrastructure.gauges.memory.upperLabel")}
-        upperValue={getGbs(checks[0]?.memory.used_bytes)}
+        upperValue={getGbs(checks[0]?.memory?.used_bytes || 0)}
         lowerLabel={t("monitors.infrastructure.gauges.memory.lowerLabel")}
-        lowerValue={getGbs(checks[0]?.memory.total_bytes)}
+        lowerValue={getGbs(checks[0]?.memory?.total_bytes || 0)}
       />
       <InfraDetailGauge
         title={t("monitors.infrastructure.gauges.cpu.title")}
-        progress={(checks[0]?.cpu.usage_percent || 0) * 100}
+        progress={(checks[0]?.cpu?.usage_percent || 0) * 100}
         upperLabel={t("monitors.infrastructure.gauges.cpu.upperLabel")}
-        upperValue={getFrequency(checks[0]?.cpu.current_frequency)}
+        upperValue={getFrequency(checks[0]?.cpu?.current_frequency || 0)}
         lowerLabel={t("monitors.infrastructure.gauges.cpu.lowerLabel")}
-        lowerValue={getFrequency(checks[0]?.cpu.frequency)}
+        lowerValue={getFrequency(checks[0]?.cpu?.frequency || 0)}
       />
       {checks[0]?.disk?.map((disk, idx) => {
         return (
           <InfraDetailGauge
-            key={disk.device + idx}
+            key={disk?.device || 0 + idx}
             // title={`Disk ${idx} usage`}
             title={t("monitors.infrastructure.gauges.disk.title", { idx })}
             progress={(disk.usage_percent || 0) * 100}
             upperLabel={t("monitors.infrastructure.gauges.disk.upperLabel")}
-            upperValue={getGbs(disk.used_bytes)}
+            upperValue={getGbs(disk?.used_bytes || 0)}
             lowerLabel={t("monitors.infrastructure.gauges.disk.lowerLabel")}
-            lowerValue={getGbs(disk.total_bytes)}
+            lowerValue={getGbs(disk?.total_bytes || 0)}
           />
         );
       })}

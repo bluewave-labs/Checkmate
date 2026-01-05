@@ -64,7 +64,7 @@ export const HistogramPageSpeedScores = ({
       <ResponsiveContainer width="100%" minWidth={25} height={215}>
         <AreaChart data={checks}>
           <XAxis
-            dataKey={"_id"}
+            dataKey={"bucketDate"}
             tick={(props) => <XTick {...props} range={range} />}
           />
           <CartesianGrid

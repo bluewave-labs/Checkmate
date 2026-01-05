@@ -12,7 +12,6 @@ import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router";
 import type { ApiResponse } from "@/types/api";
 import type { IMonitor, IMonitorWithMonitorStats } from "@/types/monitor";
-import type { IInfraCheck } from "@/types/check";
 import {
   getFrequency,
   getCores,
@@ -43,16 +42,16 @@ const InfraDetailsPage = () => {
 
   const monitor = response?.data?.monitor;
   const stats = response?.data?.stats;
-  const checks = (response?.data?.checks || []) as IInfraCheck[];
-  const palette = getStatusPalette(monitor?.status || "initializing");
+  const checks = Array.isArray(response?.data?.checks)
+    ? response?.data?.checks
+    : [];
+  const palette = getStatusPalette(monitor?.status ?? "initializing");
 
-  const streakDuration = stats?.currentStreakStartedAt
-    ? Date.now() - stats?.currentStreakStartedAt
-    : 0;
+  const streakStartedAt = stats?.currentStreakStartedAt ?? 0;
+  const streakDuration = streakStartedAt > 0 ? Date.now() - streakStartedAt : 0;
 
-  const lastChecked = stats?.lastCheckTimestamp
-    ? Date.now() - stats?.lastCheckTimestamp
-    : -1;
+  const lastCheckTs = stats?.lastCheckTimestamp ?? -1;
+  const lastChecked = lastCheckTs >= 0 ? Date.now() - lastCheckTs : -1;
 
   if (!monitor) {
     return null;
@@ -88,36 +87,38 @@ const InfraDetailsPage = () => {
         <StatBox
           title={t("monitors.common.stats.lastResponseTime")}
           subtitle={
-            stats?.lastResponseTime ? `${stats?.lastResponseTime} ms` : "N/A"
+            typeof stats?.lastResponseTime === "number"
+              ? `${stats.lastResponseTime} ms`
+              : "N/A"
           }
         />
         <StatBox
           title={t("monitors.common.stats.cpuPhysical")}
-          subtitle={getCores(checks[0]?.cpu?.physical_core)}
+          subtitle={getCores(checks?.[0]?.cpu?.physical_core || 0)}
         />
         <StatBox
           title={t("monitors.common.stats.cpuLogical")}
-          subtitle={getCores(checks[0]?.cpu?.logical_core)}
+          subtitle={getCores(checks?.[0]?.cpu?.logical_core || 0)}
         />
         <StatBox
           title={t("monitors.common.stats.cpuFrequency")}
-          subtitle={getFrequency(checks[0]?.cpu?.current_frequency)}
+          subtitle={getFrequency(checks?.[0]?.cpu?.current_frequency || 0)}
         />
         <StatBox
           title={t("monitors.common.stats.cpuTemperature")}
-          subtitle={getAvgTemp(checks[0]?.cpu?.temperature)}
+          subtitle={getAvgTemp(checks?.[0]?.cpu?.temperature || [])}
         />
         <StatBox
           title={t("monitors.common.stats.memory")}
-          subtitle={getGbs(checks[0]?.memory?.total_bytes)}
+          subtitle={getGbs(checks?.[0]?.memory?.total_bytes || 0)}
         />
         <StatBox
           title={t("monitors.common.stats.disk")}
-          subtitle={getDiskTotalGbs(checks[0]?.disk)}
+          subtitle={getDiskTotalGbs(checks?.[0]?.disk)}
         />
         <StatBox
           title={t("monitors.common.stats.os")}
-          subtitle={getOsAndPlatform(checks[0]?.host)}
+          subtitle={getOsAndPlatform(checks?.[0]?.host || {})}
         />
       </Stack>
 

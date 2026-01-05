@@ -33,6 +33,7 @@ export const XTick = ({ x, y, payload, range }: XTickProps) => {
   const format = tickDateFormatLookup(range);
   const theme = useTheme();
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
+  console.log(payload);
   return (
     <Text
       x={x}
@@ -124,7 +125,7 @@ export const ChartResponseTime = ({
           <XAxis
             axisLine={false}
             tickLine={false}
-            dataKey="_id"
+            dataKey="bucketDate"
             tick={(props) => <XTick {...props} range={range} />}
           />
 

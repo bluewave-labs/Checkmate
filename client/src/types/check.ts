@@ -146,16 +146,32 @@ export interface CheckWithMonitor {
   updatedAt: string;
   timings: CheckTimings;
 }
-
 export interface GroupedCheck {
-  _id: string;
-  avgResponseTime: number;
-  count: number;
-  upChecks?: number;
-  downChecks?: number;
-  avgResponseTimeUp?: number | null;
-  avgResponseTimeDown?: number | null;
-  runningContainersSnapshot?: IDockerContainerSummary[];
+  bucketDate: Date;
+
+  count?: number;
+  avgResponseTime?: number;
+
+  totalContainers?: number;
+  runningContainers?: number;
+  healthyContainers?: number;
+
+  accessibility?: number | null;
+  bestPractices?: number | null;
+  seo?: number | null;
+  performance?: number | null;
+  cls?: number | null;
+  si?: number | null;
+  fcp?: number | null;
+  lcp?: number | null;
+  tbt?: number | null;
+
+  // Infrastructure aggregates (optional snapshot/averages)
+  cpu?: Partial<ICpuInfo>;
+  memory?: Partial<IMemoryInfo>;
+  disk?: Partial<IDiskInfo>[];
+  host?: Partial<IHostInfo>;
+  net?: Array<Pick<INetInfo, "name" | "bytes_recv" | "bytes_sent">>;
 }
 
 export interface LatestCheck {

@@ -1,4 +1,8 @@
-import type { CheckEntity } from "@/types/domain/index.js";
+import type {
+  AggregateCheck,
+  CheckEntity,
+  Monitor,
+} from "@/types/domain/index.js";
 import type { LatestChecksByMonitor } from "@/repositories/checks/MongoCheckRepository.js";
 export interface IChecksRepository {
   // Create
@@ -7,6 +11,10 @@ export interface IChecksRepository {
   findLatestChecksByMonitorIds(
     monitorIds: string[]
   ): Promise<LatestChecksByMonitor>;
+  findRecentChecksByMonitor(
+    monitor: Monitor,
+    startDate: Date
+  ): Promise<AggregateCheck[]>;
   // Update
   // Delete
 }
