@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
-import { MonitorStatus, MonitorStatuses } from "./Monitor.js";
+import mongoose, { Schema } from "mongoose";
+import { MonitorStatus, MonitorStatuses } from "@/types/domain/index.js";
 
 export interface IMonitorStats extends mongoose.Document {
   monitorId: mongoose.Types.ObjectId;

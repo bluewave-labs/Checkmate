@@ -1,7 +1,6 @@
 import { ICheck, Check, Monitor, ISystemInfo } from "@/db/models/index.js";
 import type { IDockerPayload } from "@/services/infrastructure/NetworkService.js";
-import { MonitorStatus } from "@/db/models/monitors/Monitor.js";
-import { MonitorType } from "@/db/models/monitors/Monitor.js";
+import { MonitorStatus, MonitorType } from "@/types/domain/index.js";
 import { StatusResponse } from "../infrastructure/NetworkService.js";
 import type {
   ICapturePayload,

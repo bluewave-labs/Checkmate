@@ -1,5 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose";
-import type { MonitorType } from "@/db/models/monitors/Monitor.js";
+import type { MonitorType } from "@/types/domain/index.js";
 
 // Common/base metrics across monitor types
 export interface IStatsBase {

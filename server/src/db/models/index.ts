@@ -7,7 +7,7 @@ export type {
   IDockerContainerSummary,
 } from "./checks/Check.js";
 
-export { Monitor, MonitorStatuses, MonitorTypes } from "./monitors/Monitor.js";
+export { Monitor } from "./monitors/Monitor.js";
 export type { IMonitor } from "./monitors/Monitor.js";
 
 export { MonitorStats } from "./monitors/MonitorStats.js";

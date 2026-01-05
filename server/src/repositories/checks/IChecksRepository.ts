@@ -15,6 +15,11 @@ export interface IChecksRepository {
     monitor: Monitor,
     startDate: Date
   ): Promise<AggregateCheck[]>;
+  findDateRangeChecksByMonitor(
+    monitor: Monitor,
+    startDate: Date,
+    range: string
+  ): Promise<AggregateCheck[]>;
   // Update
   // Delete
 }

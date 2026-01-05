@@ -3,6 +3,7 @@ import { CheckEntity, AggregateCheck, Monitor } from "@/types/domain/index.js";
 import type { ICheck } from "@/db/models/index.js";
 import { Check } from "@/db/models/index.js";
 import mongoose from "mongoose";
+import { StatsHourly, StatsDaily } from "@/db/models/index.js";
 
 export type LatestChecksByMonitor = Array<{
   id: string;
@@ -512,6 +513,74 @@ class MongoCheckRepository implements IChecksRepository {
       .hint({ "metadata.monitorId": 1, createdAt: 1 });
 
     return checks.map(this.toAggregateCheck);
+  };
+
+  findDateRangeChecksByMonitor = async (
+    monitor: Monitor,
+    startDate: Date,
+    range: string
+  ) => {
+    const useDaily = range === "30d";
+    const Model = useDaily ? StatsDaily : StatsHourly;
+    const endDate = new Date();
+
+    const docs = await Model.find({
+      monitorId: monitor.id,
+      windowStart: { $gte: startDate, $lt: endDate },
+    })
+      .sort({ windowStart: -1 })
+      .lean();
+
+    const checks = (docs as any[]).map((d) => {
+      const base: any = {
+        _id: new Date(d.windowStart).toISOString(),
+        count: d.count ?? 0,
+        avgResponseTime: d.avgResponseTime ?? 0,
+        upChecks: d.upChecks ?? 0,
+        downChecks: d.downChecks ?? 0,
+        avgResponseTimeUp: d.avgResponseTimeUp ?? null,
+        avgResponseTimeDown: d.avgResponseTimeDown ?? null,
+      };
+      if (monitor.type === "pagespeed") {
+        return {
+          ...base,
+          accessibility: d.accessibility,
+          seo: d.seo,
+          bestPractices: d.bestPractices,
+          performance: d.performance,
+          cls: d.cls,
+          si: d.si,
+          fcp: d.fcp,
+          lcp: d.lcp,
+          tbt: d.tbt,
+        };
+      }
+      if (monitor.type === "infrastructure") {
+        return {
+          ...base,
+          cpu: d.cpu,
+          memory: d.memory,
+          disk: d.disk,
+          host: d.host,
+          net: d.net,
+        };
+      }
+      if (monitor.type === "docker") {
+        return {
+          ...base,
+          totalContainers: d.dockerTotalContainers,
+          runningContainers: d.dockerRunningContainers,
+          healthyContainers: d.dockerHealthyContainers,
+          totalExposedPorts: d.dockerTotalExposedPorts,
+          uniqueImages: d.dockerUniqueImages,
+          runningPercent: d.dockerRunningPercent,
+          healthyPercent: d.dockerHealthyPercent,
+        };
+      }
+      return base;
+    });
+
+    return checks;
   };
 }
 

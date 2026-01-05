@@ -88,7 +88,7 @@ export const initServices = async () => {
     checksRepository
   );
   const queueService = new QueueService(jobQueue);
-  const teamService = new TeamService(jobQueue);
+  const teamService = new TeamService(jobQueue, monitorRepository);
   const roleService = new RoleService();
   const teamMemberService = new TeamMemberService();
   const statusPageService = new StatusPageService();

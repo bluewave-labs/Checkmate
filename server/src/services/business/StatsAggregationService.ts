@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Check } from "@/db/models/index.js";
 import { StatsHourly } from "@/db/models/index.js";
 import { StatsDaily } from "@/db/models/index.js";
-import type { MonitorType } from "@/db/models/monitors/Monitor.js";
+import type { MonitorType } from "@/types/domain/index.js";
 
 export interface IStatsAggregationService {
   upsertHourly: (windowStart: Date, windowEnd: Date) => Promise<number>;
@@ -678,10 +678,20 @@ class StatsAggregationService implements IStatsAggregationService {
       addW(g.tbt, (h as any).tbt, w);
 
       // docker
-      if (!(g as any).dockerRunningPercent) (g as any).dockerRunningPercent = { sum: 0, w: 0 };
-      if (!(g as any).dockerHealthyPercent) (g as any).dockerHealthyPercent = { sum: 0, w: 0 };
-      addW((g as any).dockerRunningPercent!, (h as any).dockerRunningPercent, w);
-      addW((g as any).dockerHealthyPercent!, (h as any).dockerHealthyPercent, w);
+      if (!(g as any).dockerRunningPercent)
+        (g as any).dockerRunningPercent = { sum: 0, w: 0 };
+      if (!(g as any).dockerHealthyPercent)
+        (g as any).dockerHealthyPercent = { sum: 0, w: 0 };
+      addW(
+        (g as any).dockerRunningPercent!,
+        (h as any).dockerRunningPercent,
+        w
+      );
+      addW(
+        (g as any).dockerHealthyPercent!,
+        (h as any).dockerHealthyPercent,
+        w
+      );
 
       const ts = new Date(h.windowStart).getTime();
       if (ts >= g.lastTs) {

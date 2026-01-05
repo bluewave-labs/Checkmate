@@ -1,5 +1,4 @@
-import mongoose, { Schema, Types } from "mongoose";
-import type { MonitorType } from "@/db/models/monitors/Monitor.js";
+import mongoose, { Schema } from "mongoose";
 import type {
   IInfraCpu,
   IInfraDiskEntry,

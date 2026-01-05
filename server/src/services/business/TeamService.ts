@@ -9,6 +9,7 @@ import {
   OrgMembership,
   IUserContext,
 } from "@/db/models/index.js";
+import type { IMonitorRepository } from "@/repositories/index.js";
 import type { IJobQueue } from "../infrastructure/JobQueue.js";
 import ApiError from "@/utils/ApiError.js";
 import { PERMISSIONS } from "@/types/permissions.js";
@@ -35,10 +36,12 @@ export interface ITeamService {
 class TeamService implements ITeamService {
   public SERVICE_NAME: string;
   private jobQueue: IJobQueue;
+  private monitorsRepository: IMonitorRepository;
 
-  constructor(jobQueue: IJobQueue) {
+  constructor(jobQueue: IJobQueue, monitorsRepository: IMonitorRepository) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
+    this.monitorsRepository = monitorsRepository;
   }
 
   create = async (
@@ -149,7 +152,7 @@ class TeamService implements ITeamService {
       await membership.deleteOne();
     }
 
-    const monitors = await Monitor.find({ teamId });
+    const monitors = await this.monitorsRepository.findByTeamId(teamId);
     await Promise.all(
       monitors.map((monitor) => this.jobQueue.deleteJob(monitor))
     );

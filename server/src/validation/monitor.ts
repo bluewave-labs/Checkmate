@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MonitorTypes } from "@/db/models/index.js";
+import { MonitorTypes } from "@/types/domain/index.js";
 import { urlRegex } from "./common.js";
 
 export const monitorSchema = z
@@ -43,7 +43,10 @@ export const monitorSchema = z
       });
     }
 
-    if ((data.type === "infrastructure" || data.type === "docker") && !data.secret) {
+    if (
+      (data.type === "infrastructure" || data.type === "docker") &&
+      !data.secret
+    ) {
       ctx.addIssue({
         code: "custom",
         message: `Secret is required for ${data.type} monitors`,
@@ -118,4 +121,3 @@ export const monitorPatchSchema = monitorSchema
       });
     }
   });
-

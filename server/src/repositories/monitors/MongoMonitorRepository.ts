@@ -1,6 +1,5 @@
 import { Monitor, IMonitor } from "@/db/models/index.js";
 import { IMonitorRepository, TeamQueryConfig } from "@/repositories/index.js";
-import { IImportedMonitor } from "@/services/business/MonitorService.js";
 import type { Monitor as MonitorEntity } from "@/types/domain/monitor.js";
 import mongoose from "mongoose";
 class MongoMonitorRepository implements IMonitorRepository {

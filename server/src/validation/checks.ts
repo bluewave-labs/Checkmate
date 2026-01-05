@@ -1,6 +1,6 @@
 import { z } from "zod";
 import mongoose from "mongoose";
-import { MonitorStatuses } from "@/db/models/index.js";
+import { MonitorStatuses } from "@/types/domain/index.js";
 
 export const checksStatusIdQuerySchema = z.object({
   status: z.enum(MonitorStatuses, { error: "Invalid status" }),
@@ -29,15 +29,20 @@ export const checksStatusIdQuerySchema = z.object({
       return z.NEVER;
     }
     if (num < 0) {
-      ctx.addIssue({ code: "custom", message: "rowsPerPage must be greater than 0" });
+      ctx.addIssue({
+        code: "custom",
+        message: "rowsPerPage must be greater than 0",
+      });
       return z.NEVER;
     }
     if (num > 100) {
-      ctx.addIssue({ code: "custom", message: "rowsPerPage must be less than or equal to 100" });
+      ctx.addIssue({
+        code: "custom",
+        message: "rowsPerPage must be less than or equal to 100",
+      });
       return z.NEVER;
     }
     return num;
   }),
   range: z.string().min(1),
 });
-

@@ -7,26 +7,8 @@ import {
   StatsDaily,
   StatsHourly,
 } from "@/db/models/index.js";
-
-export const MonitorTypes = [
-  "http",
-  "https",
-  "port",
-  "ping",
-  "infrastructure",
-  "pagespeed",
-  "docker",
-] as const;
-export type MonitorType = (typeof MonitorTypes)[number];
-
-export const MonitorStatuses = [
-  "up",
-  "down",
-  "paused",
-  "initializing",
-  "resuming",
-] as const;
-export type MonitorStatus = (typeof MonitorStatuses)[number];
+import type { MonitorType, MonitorStatus } from "@/types/domain/index.js";
+import { MonitorStatuses, MonitorTypes } from "@/types/domain/index.js";
 
 export interface IMonitorThresholds {
   cpu?: number;
