@@ -263,6 +263,46 @@ class MonitorService {
 		const csv = this.papaparse.unparse(csvData);
 		return csv;
 	};
+	exportMonitorsToJSON = async ({ teamId }) => {
+		const monitors = await this.db.monitorModule.getMonitorsByTeamId({ teamId });
+
+		if (!monitors || monitors.length === 0) {
+			throw this.errorService.createNotFoundError("No monitors to export");
+		}
+
+		const json = monitors?.filteredMonitors
+			?.map((monitor) => {
+				const initialType = monitor.type;
+				let parsedType;
+
+				if (initialType === "hardware") {
+					parsedType = "infrastructure";
+				} else if (initialType === "http") {
+					if (monitor.url.startsWith("https://")) {
+						parsedType = "https";
+					} else {
+						parsedType = "http";
+					}
+				} else if (initialType === "pagespeed") {
+					parsedType = initialType;
+				} else {
+					// Skip unsupported types
+					return;
+				}
+
+				return {
+					name: monitor.name,
+					url: monitor.url,
+					type: parsedType,
+					interval: monitor.interval,
+					n: monitor.statusWindowSize,
+					secret: monitor.secret,
+				};
+			})
+			.filter(Boolean);
+
+		return json;
+	};
 
 	getAllGames = () => {
 		return this.games;

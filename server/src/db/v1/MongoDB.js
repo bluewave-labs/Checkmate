@@ -19,6 +19,7 @@ class MongoDB {
 		pageSpeedCheckModule,
 		recoveryModule,
 		settingsModule,
+		incidentModule,
 	}) {
 		this.logger = logger;
 		this.envSettings = envSettings;
@@ -34,6 +35,7 @@ class MongoDB {
 		this.settingsModule = settingsModule;
 		this.statusPageModule = statusPageModule;
 		this.networkCheckModule = networkCheckModule;
+		this.incidentModule = incidentModule;
 	}
 
 	get serviceName() {

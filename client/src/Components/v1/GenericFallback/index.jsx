@@ -40,13 +40,13 @@ const GenericFallback = ({ children }) => {
 				<Box
 					component="img"
 					src={mode === "light" ? OutputAnimation : DarkmodeOutput}
-					Background="transparent"
 					alt="Loading animation"
 					sx={{
 						zIndex: 1,
 						border: "none",
 						borderRadius: theme.spacing(8),
 						width: "100%",
+						backgroundColor: "transparent",
 					}}
 				/>
 				<Box

@@ -380,7 +380,7 @@ class MonitorController extends BaseController {
 			const result = await this.monitorService.getMonitorsAndSummaryByTeamId({ teamId, type, explain });
 
 			return res.success({
-				msg: "OK", // TODO
+				msg: this.stringService.monitorSummaryByTeamId,
 				data: result,
 			});
 		},
@@ -413,7 +413,7 @@ class MonitorController extends BaseController {
 			});
 
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.monitorGetByTeamId,
 				data: monitors,
 			});
 		},
@@ -442,10 +442,28 @@ class MonitorController extends BaseController {
 		"exportMonitorsToCSV"
 	);
 
+	exportMonitorsToJSON = this.asyncHandler(
+		async (req, res) => {
+			const teamId = req?.user?.teamId;
+			if (!teamId) {
+				throw this.errorService.createBadRequestError("Team ID is required");
+			}
+
+			const json = await this.monitorService.exportMonitorsToJSON({ teamId });
+
+			return res.success({
+				msg: this.stringService.monitorExportSuccess,
+				data: json,
+			});
+		},
+		SERVICE_NAME,
+		"exportMonitorsToJSON"
+	);
+
 	getAllGames = this.asyncHandler(
 		async (req, res) => {
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.gameListSuccess,
 				data: this.monitorService.getAllGames(),
 			});
 		},
@@ -463,7 +481,7 @@ class MonitorController extends BaseController {
 			const groups = await this.monitorService.getGroupsByTeamId({ teamId });
 
 			return res.success({
-				msg: "OK",
+				msg: this.stringService.groupsByTeamId,
 				data: groups,
 			});
 		},

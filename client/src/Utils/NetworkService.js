@@ -1145,6 +1145,41 @@ class NetworkService {
 			},
 		});
 	}
+
+	async fetchJson() {
+		return this.axiosInstance.get("/monitors/export/json");
+	}
+
+	getIncidentsByTeam = async (config) => {
+		const params = new URLSearchParams();
+		if (config.monitorId) params.append("monitorId", config.monitorId);
+		if (config.status !== undefined) params.append("status", config.status);
+		if (config.resolutionType) params.append("resolutionType", config.resolutionType);
+		if (config.sortOrder) params.append("sortOrder", config.sortOrder);
+		if (config.dateRange) params.append("dateRange", config.dateRange);
+		if (config.page) params.append("page", config.page);
+		if (config.rowsPerPage) params.append("rowsPerPage", config.rowsPerPage);
+		return this.axiosInstance.get(`/incidents/team?${params.toString()}`);
+	};
+
+	getIncidentById = async (incidentId) => {
+		return this.axiosInstance.get(`/incidents/${incidentId}`);
+	};
+
+	resolveIncidentManually = async (incidentId, options = {}) => {
+		const body = {};
+		if (options.comment) body.comment = options.comment;
+		return this.axiosInstance.put(`/incidents/${incidentId}/resolve`, body);
+	};
+
+	getIncidentSummary = async (config = {}) => {
+		const params = new URLSearchParams();
+		if (config.limit) params.append("limit", config.limit);
+		const queryString = params.toString();
+		return this.axiosInstance.get(
+			`/incidents/team/summary${queryString ? `?${queryString}` : ""}`
+		);
+	};
 }
 
 export default NetworkService;

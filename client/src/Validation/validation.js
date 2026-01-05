@@ -448,6 +448,7 @@ const infrastructureMonitorValidation = joi.object({
 		"number.max": "Status window threshold cannot exceed 100%.",
 	}),
 	notifications: joi.array().items(joi.string()),
+	selectedDisks: joi.array().items(joi.string()).optional(),
 });
 
 const notificationValidation = joi.object({

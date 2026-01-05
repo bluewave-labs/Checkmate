@@ -29,11 +29,11 @@ const useInfrastructureSubmit = () => {
 			...(infrastructureMonitor.disk
 				? { usage_disk: infrastructureMonitor.usage_disk }
 				: {}),
-			temperature: infrastructureMonitor.temperature,
 			...(infrastructureMonitor.temperature
 				? { usage_temperature: infrastructureMonitor.usage_temperature }
 				: {}),
 			secret: infrastructureMonitor.secret,
+			selectedDisks: infrastructureMonitor.selectedDisks,
 		};
 		return form;
 	};
@@ -52,6 +52,7 @@ const useInfrastructureSubmit = () => {
 			usage_disk,
 			temperature,
 			usage_temperature,
+			selectedDisks,
 			...rest
 		} = form;
 
@@ -68,6 +69,7 @@ const useInfrastructureSubmit = () => {
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
+			selectedDisks,
 			thresholds,
 		};
 		// Handle create or update

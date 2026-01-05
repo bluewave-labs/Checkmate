@@ -18,13 +18,11 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 //Constants
-const Incidents = () => {
+const Checks = () => {
 	// Redux state
 	const { t } = useTranslation();
 
-	const BREADCRUMBS = [
-		{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" },
-	];
+	const BREADCRUMBS = [{ name: t("checksPageTitle"), path: "/checks" }];
 
 	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState("0");
@@ -86,8 +84,8 @@ const Incidents = () => {
 					disabled={isLoadingAcknowledge}
 				>
 					{selectedMonitor === "0"
-						? t("incidentsPageActionResolveAll")
-						: t("incidentsPageActionResolveMonitor")}
+						? t("checksPageActionResolveAllMonitor")
+						: t("checksPageActionResolveMonitor")}
 				</Button>
 			</Box>
 			<StatusBoxes
@@ -117,4 +115,4 @@ const Incidents = () => {
 	);
 };
 
-export default Incidents;
+export default Checks;

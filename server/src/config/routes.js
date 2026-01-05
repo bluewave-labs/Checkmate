@@ -13,13 +13,7 @@ import LogRoutes from "../routes/v1/logRoutes.js";
 import DiagnosticRoutes from "../routes/v1//diagnosticRoute.js";
 import NotificationRoutes from "../routes/v1/notificationRoute.js";
 
-//V2
-import AuthRoutesV2 from "../routes/v2/auth.js";
-import InviteRoutesV2 from "../routes/v2/invite.js";
-import MaintenanceRoutesV2 from "../routes/v2/maintenance.js";
-import MonitorRoutesV2 from "../routes/v2/monitors.js";
-import NotificationChannelRoutesV2 from "../routes/v2/notificationChannels.js";
-import QueueRoutesV2 from "../routes/v2/queue.js";
+import IncidentRoutes from "../routes/v1/incidentRoute.js";
 
 export const setupRoutes = (app, controllers) => {
 	// V1
@@ -34,6 +28,7 @@ export const setupRoutes = (app, controllers) => {
 	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController);
 	const notificationRoutes = new NotificationRoutes(controllers.notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController);
+	const incidentRoutes = new IncidentRoutes(controllers.incidentController);
 
 	app.use("/api/v1/auth", authApiLimiter, authRoutes.getRouter());
 	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
@@ -46,19 +41,5 @@ export const setupRoutes = (app, controllers) => {
 	app.use("/api/v1/status-page", statusPageRoutes.getRouter());
 	app.use("/api/v1/notifications", verifyJWT, notificationRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
-
-	// V2
-	const authRoutesV2 = new AuthRoutesV2(controllers.authControllerV2);
-	const inviteRoutesV2 = new InviteRoutesV2(controllers.inviteControllerV2);
-	const maintenanceRoutesV2 = new MaintenanceRoutesV2(controllers.maintenanceControllerV2);
-	const monitorRoutesV2 = new MonitorRoutesV2(controllers.monitorControllerV2);
-	const notificationChannelRoutesV2 = new NotificationChannelRoutesV2(controllers.notificationChannelControllerV2);
-	const queueRoutesV2 = new QueueRoutesV2(controllers.queueControllerV2);
-
-	app.use("/api/v2/auth", authApiLimiter, authRoutesV2.getRouter());
-	app.use("/api/v2/invite", inviteRoutesV2.getRouter());
-	app.use("/api/v2/maintenance", maintenanceRoutesV2.getRouter());
-	app.use("/api/v2/monitors", monitorRoutesV2.getRouter());
-	app.use("/api/v2/notification-channels", notificationChannelRoutesV2.getRouter());
-	app.use("/api/v2/queue", queueRoutesV2.getRouter());
+	app.use("/api/v1/incidents", verifyJWT, incidentRoutes.getRouter());
 };

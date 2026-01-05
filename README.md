@@ -91,6 +91,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 - Website monitoring
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
+  - Selective disk monitoring with mountpoint selection
 - Docker monitoring
 - Ping monitoring
 - SSL monitoring
