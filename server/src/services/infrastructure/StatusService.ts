@@ -4,7 +4,11 @@ import {
   IMonitorRepository,
   IMonitorStatsRepository,
 } from "@/repositories/index.js";
-import type { Monitor, MonitorStats } from "@/types/domain/index.js";
+import type {
+  Monitor,
+  MonitorStats,
+  CheckEntity,
+} from "@/types/domain/index.js";
 import ApiError from "@/utils/ApiError.js";
 
 const emptyMetrics = (): ThresholdEvaluationResult["metrics"] => ({
@@ -52,7 +56,7 @@ export interface IStatusService {
   ) => Promise<MonitorStats | null>;
   evaluateThresholds: (
     monitor: Monitor,
-    check: ICheck
+    check: CheckEntity
   ) => Promise<ThresholdEvaluationResult>;
 }
 
@@ -211,7 +215,7 @@ class StatusService implements IStatusService {
 
   evaluateThresholds = async (
     monitor: Monitor,
-    check: ICheck
+    check: CheckEntity
   ): Promise<ThresholdEvaluationResult> => {
     try {
       if (monitor.type !== "infrastructure" || monitor.status !== "up")

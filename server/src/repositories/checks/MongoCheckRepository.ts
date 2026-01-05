@@ -1,5 +1,10 @@
 import type { IChecksRepository } from "@/repositories/index.js";
-import { CheckEntity, AggregateCheck, Monitor } from "@/types/domain/index.js";
+import type {
+  CheckEntity,
+  AggregateCheck,
+  Monitor,
+  MonitorStatus,
+} from "@/types/domain/index.js";
 import type { ICheck } from "@/db/models/index.js";
 import { Check } from "@/db/models/index.js";
 import mongoose from "mongoose";
@@ -66,11 +71,11 @@ class MongoCheckRepository implements IChecksRepository {
     };
 
     if (doc.cpu || doc.memory || doc.disk || doc.host || doc.net) {
-      if (doc.cpu) agg.cpu = doc.cpu;
-      if (doc.memory) agg.memory = doc.memory;
-      if (Array.isArray(doc.disk)) agg.disk = doc.disk;
-      if (doc.host) agg.host = doc.host;
-      if (Array.isArray(doc.net)) agg.net = doc.net;
+      if (doc.cpu) (agg as any).cpu = doc.cpu;
+      if (doc.memory) (agg as any).memory = doc.memory;
+      if (Array.isArray(doc.disk)) (agg as any).disk = doc.disk;
+      if (doc.host) (agg as any).host = doc.host;
+      if (Array.isArray(doc.net)) (agg as any).net = doc.net;
     }
     return agg;
   };
@@ -438,6 +443,111 @@ class MongoCheckRepository implements IChecksRepository {
     return {};
   };
 
+  create = async (checkData: Partial<CheckEntity>) => {
+    const check = new Check({ ...checkData });
+    check.metadata.monitorId = new mongoose.Types.ObjectId(checkData.monitorId);
+    check.metadata.teamId = new mongoose.Types.ObjectId(checkData.teamId);
+    check.metadata.type = checkData.type || "http";
+    const inserted = await check.save();
+    return this.toEntity(inserted);
+  };
+
+  findById = async (checkId: string, teamId: string) => {
+    const check = await Check.findOne({
+      _id: new mongoose.Types.ObjectId(checkId),
+      "metadata.teamId": new mongoose.Types.ObjectId(teamId),
+    });
+
+    if (!check) {
+      return null;
+    }
+    return this.toEntity(check);
+  };
+
+  findCountByMonitorId = async (monitorId: string) => {
+    return await Check.countDocuments({
+      "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+    });
+  };
+
+  findByTeamIdAndStatus = async (
+    status: MonitorStatus,
+    teamId: string,
+    startDate: Date,
+    page: number,
+    rowsPerPage: number
+  ) => {
+    const pageSizePlusOne = rowsPerPage + 1;
+
+    const checks = await Check.find({
+      status,
+      "metadata.teamId": new mongoose.Types.ObjectId(teamId),
+      createdAt: { $gte: new Date(startDate), $lte: new Date() },
+    })
+      .sort({ createdAt: -1 })
+      .skip(page * rowsPerPage)
+      .limit(pageSizePlusOne)
+      .select({
+        _id: 1,
+        status: 1,
+        httpStatusCode: 1,
+        message: 1,
+        responseTime: 1,
+        createdAt: 1,
+        "metadata.monitorId": 1,
+        "metadata.teamId": 1,
+        "metadata.type": 1,
+      });
+    return checks.map(this.toEntity);
+  };
+
+  findByMonitorIdAndStatus = async (
+    status: MonitorStatus,
+    teamId: string,
+    monitorId: string,
+    startDate: Date,
+    page: number,
+    rowsPerPage: number
+  ) => {
+    const pageSizePlusOne = rowsPerPage + 1;
+
+    const checks = await Check.find({
+      status,
+      "metadata.teamId": new mongoose.Types.ObjectId(teamId),
+      "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+      createdAt: { $gte: startDate, $lte: new Date() },
+    })
+      .sort({ createdAt: -1 })
+      .skip(page * rowsPerPage)
+      .limit(pageSizePlusOne)
+      .select({
+        _id: 1,
+        status: 1,
+        httpStatusCode: 1,
+        message: 1,
+        responseTime: 1,
+        createdAt: 1,
+        "metadata.monitorId": 1,
+        "metadata.teamId": 1,
+        "metadata.type": 1,
+      });
+    return checks.map(this.toEntity);
+  };
+
+  findPageByMonitorId = async (
+    monitorId: string,
+    page: number,
+    rowsPerPage: number
+  ) => {
+    const checks = await Check.find({
+      "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+    })
+      .sort({ createdAt: -1 })
+      .skip(page * rowsPerPage)
+      .limit(rowsPerPage);
+    return checks.map(this.toEntity);
+  };
+
   findLatestChecksByMonitorIds = async (monitorIds: string[]) => {
     const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
     const checkMap = await Check.aggregate([
@@ -562,7 +672,6 @@ class MongoCheckRepository implements IChecksRepository {
       .allowDiskUse(true)
       .hint({ "metadata.monitorId": 1, createdAt: 1 });
 
-    console.log(checks);
     return checks.map(this.toAggregateCheck);
   };
 
@@ -632,6 +741,15 @@ class MongoCheckRepository implements IChecksRepository {
     });
 
     return checks.map(this.toAggregateCheck);
+  };
+
+  deleteManyExcludedByMonitorIds = async (monitorIds: string[]) => {
+    const result = await Check.deleteMany({
+      "metadata.monitorId": {
+        $nin: monitorIds.map((id) => new mongoose.Types.ObjectId(id)),
+      },
+    });
+    return result.deletedCount ?? 0;
   };
 }
 

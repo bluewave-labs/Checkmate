@@ -38,13 +38,14 @@ import {
   MongoChecksRepository,
   MongoMonitorStatsRepository,
 } from "@/repositories/index.js";
+import type { CheckEntity } from "@/types/domain/index.js";
 
 export const initServices = async () => {
   const monitorRepository = new MongoMonitorRepository();
   const checksRepository = new MongoChecksRepository();
   const monitorStatsRepository = new MongoMonitorStatsRepository();
 
-  const checkService = new CheckService();
+  const checkService = new CheckService(checksRepository, monitorRepository);
   const inviteService = new InviteService();
   const maintenanceService = new MaintenanceService();
   const monitorStatsService = new MonitorStatsService(

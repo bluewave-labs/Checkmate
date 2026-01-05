@@ -1,29 +1,35 @@
-import { ICheck, Check, Monitor, ISystemInfo } from "@/db/models/index.js";
+import { ISystemInfo } from "@/types/domain/index.js";
 import type { IDockerPayload } from "@/services/infrastructure/NetworkService.js";
 import { MonitorStatus, MonitorType } from "@/types/domain/index.js";
-import { StatusResponse } from "../infrastructure/NetworkService.js";
+import { StatusResponse } from "@/services/infrastructure/NetworkService.js";
 import type {
   ICapturePayload,
   ILighthousePayload,
-} from "../infrastructure/NetworkService.js";
-import mongoose from "mongoose";
+} from "@/services/infrastructure/NetworkService.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
+
+import type { CheckEntity } from "@/types/domain/index.js";
+import type {
+  IChecksRepository,
+  IMonitorRepository,
+} from "@/repositories/index.js";
 
 const SERVICE_NAME = "CheckService";
 const logger = getChildLogger(SERVICE_NAME);
 
 export interface ICheckService {
+  createCheck: (checkData: Partial<CheckEntity>) => Promise<CheckEntity>;
   buildCheck: (
     statusResponse: StatusResponse,
     type: MonitorType
-  ) => Promise<ICheck>;
+  ) => Promise<Partial<CheckEntity>>;
   getMonitorChecks: (
     monitorId: string,
     page: number,
     rowsPerPage: number
-  ) => Promise<{ checks: ICheck[]; count: number }>;
+  ) => Promise<{ checks: CheckEntity[]; count: number }>;
   getChecksByStatus: (
     status: MonitorStatus,
     teamId: string,
@@ -31,17 +37,27 @@ export interface ICheckService {
     page: number,
     rowsPerPage: number,
     range: string
-  ) => Promise<{ checks: ICheck[]; hasMore: boolean }>;
+  ) => Promise<{ checks: CheckEntity[]; hasMore: boolean }>;
 
-  getCheckById: (checkId: string, teamId: string) => Promise<ICheck | null>;
+  getCheckById: (
+    checkId: string,
+    teamId: string
+  ) => Promise<CheckEntity | null>;
 
   cleanupOrphanedChecks: () => Promise<boolean>;
 }
 
 class CheckService implements ICheckService {
   public SERVICE_NAME: string;
-  constructor() {
+  private checksRepository: IChecksRepository;
+  private monitorRepository: IMonitorRepository;
+  constructor(
+    checksRepository: IChecksRepository,
+    monitorRepository: IMonitorRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.checksRepository = checksRepository;
+    this.monitorRepository = monitorRepository;
   }
 
   private isCapturePayload = (payload: any): payload is ICapturePayload => {
@@ -118,14 +134,10 @@ class CheckService implements ICheckService {
   };
 
   private buildBaseCheck = (statusResponse: StatusResponse) => {
-    const monitorId = new mongoose.Types.ObjectId(statusResponse.monitorId);
-    const teamId = new mongoose.Types.ObjectId(statusResponse.teamId);
-    const checkData: Partial<ICheck> = {
-      metadata: {
-        monitorId: monitorId,
-        teamId: teamId,
-        type: statusResponse?.type,
-      },
+    const check: Partial<CheckEntity> = {
+      monitorId: statusResponse.monitorId,
+      teamId: statusResponse.teamId,
+      type: statusResponse?.type,
       status: statusResponse?.status,
       httpStatusCode: statusResponse?.code,
       message: statusResponse?.message,
@@ -133,7 +145,6 @@ class CheckService implements ICheckService {
       timings: statusResponse?.timings,
     };
 
-    const check: ICheck = new Check(checkData);
     return check;
   };
 
@@ -194,10 +205,15 @@ class CheckService implements ICheckService {
     return check;
   };
 
+  createCheck = async (checkData: Partial<CheckEntity>) => {
+    const check = await this.checksRepository.create(checkData);
+    return check;
+  };
+
   buildCheck = async (
     statusResponse: StatusResponse,
     type: MonitorType
-  ): Promise<ICheck> => {
+  ): Promise<Partial<CheckEntity>> => {
     switch (type) {
       case "infrastructure":
         return this.buildInfrastructureCheck(
@@ -227,11 +243,12 @@ class CheckService implements ICheckService {
 
   cleanupOrphanedChecks = async () => {
     try {
-      const monitorIds = await Monitor.find().distinct("_id");
-      const result = await Check.deleteMany({
-        "metadata.monitorId": { $nin: monitorIds },
-      });
-      logger.info(`Deleted ${result.deletedCount} orphaned Checks.`);
+      const monitorIds = (await this.monitorRepository.findAll()).map(
+        (m) => m.id
+      );
+      const deletedCount =
+        await this.checksRepository.deleteManyExcludedByMonitorIds(monitorIds);
+      logger.info(`Deleted ${deletedCount} orphaned Checks.`);
       return true;
     } catch (error) {
       logger.error("Error cleaning up orphaned Checks:", error);
@@ -244,16 +261,13 @@ class CheckService implements ICheckService {
     page: number,
     rowsPerPage: number
   ) => {
-    const count = await Check.countDocuments({
-      "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-    });
+    const count = await this.checksRepository.findCountByMonitorId(monitorId);
 
-    const checks = await Check.find({
-      "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-    })
-      .sort({ createdAt: -1 })
-      .skip(page * rowsPerPage)
-      .limit(rowsPerPage);
+    const checks = await this.checksRepository.findPageByMonitorId(
+      monitorId,
+      page,
+      rowsPerPage
+    );
     return { checks, count };
   };
 
@@ -265,89 +279,43 @@ class CheckService implements ICheckService {
     rowsPerPage: number,
     range: string
   ) => {
-    let match;
     const startDate = getStartDate(range);
 
+    let checks: CheckEntity[] = [];
     if (monitorId) {
-      const authorized = await Monitor.exists({
-        _id: monitorId,
-        teamId,
-      });
+      const authorized = await this.monitorRepository.findById(
+        monitorId,
+        teamId
+      );
+
       if (!authorized) {
         throw new ApiError("Not authorized", 403);
       }
-
-      match = {
+      checks = await this.checksRepository.findByMonitorIdAndStatus(
         status,
-        "metadata.teamId": new mongoose.Types.ObjectId(teamId),
-        "metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-        createdAt: { $gte: startDate, $lte: new Date() },
-      };
+        teamId,
+        monitorId,
+        startDate,
+        page,
+        rowsPerPage
+      );
     } else {
-      match = {
+      checks = await this.checksRepository.findByTeamIdAndStatus(
         status,
-        "metadata.teamId": new mongoose.Types.ObjectId(teamId),
-        createdAt: { $gte: startDate, $lte: new Date() },
-      };
+        teamId,
+        startDate,
+        page,
+        rowsPerPage
+      );
     }
 
-    const pageSizePlusOne = rowsPerPage + 1;
-    const docs = await Check.find(match)
-      .sort({ createdAt: -1 })
-      .skip(page * rowsPerPage)
-      .limit(pageSizePlusOne)
-      .select({
-        _id: 1,
-        status: 1,
-        httpStatusCode: 1,
-        message: 1,
-        responseTime: 1,
-        createdAt: 1,
-        "metadata.monitorId": 1,
-        "metadata.teamId": 1,
-        "metadata.type": 1,
-      });
-
-    const hasMore = docs.length > rowsPerPage;
-    const limited = hasMore ? docs.slice(0, rowsPerPage) : docs;
-
-    const monitorIds = Array.from(
-      new Set(
-        limited
-          .map((d) => d?.metadata?.monitorId)
-          .filter((v): v is mongoose.Types.ObjectId => !!v)
-          .map((v) => v.toString())
-      )
-    );
-
-    let nameById = new Map<string, string>();
-    if (monitorIds.length > 0) {
-      const monitors = await Monitor.find({ _id: { $in: monitorIds } }).select({
-        _id: 1,
-        name: 1,
-      });
-      nameById = new Map(monitors.map((m) => [m._id.toString(), m.name]));
-    }
-
-    const checks = limited.map((doc) => {
-      const asObj = doc.toObject();
-      const idStr = asObj?.metadata?.monitorId?.toString?.() ?? "";
-      const name = idStr ? nameById.get(idStr) : undefined;
-      if (name) {
-        asObj.metadata = asObj.metadata || {};
-        (asObj.metadata as any).monitorId = { name } as any;
-      }
-      return asObj as ICheck;
-    });
+    const hasMore = checks.length > rowsPerPage;
 
     return { checks, hasMore };
   };
 
   getCheckById = async (checkId: string, teamId: string) => {
-    return await Check.findOne({
-      _id: new mongoose.Types.ObjectId(checkId),
-      "metadata.teamId": new mongoose.Types.ObjectId(teamId),
-    });
+    return await this.checksRepository.findById(checkId, teamId);
   };
 }
 

@@ -69,8 +69,11 @@ class JobGenerator implements IJobGenerator {
         const status = await this.networkService.requestStatus(monitor);
 
         // Step 3. Build check
-        const check = await this.checkService.buildCheck(status, monitor.type);
-        await check.save();
+        const checkToInsert = await this.checkService.buildCheck(
+          status,
+          monitor.type
+        );
+        const check = await this.checkService.createCheck(checkToInsert);
 
         // Step 4. Update monitor's status
         const [updatedMonitor, statusChanged] =

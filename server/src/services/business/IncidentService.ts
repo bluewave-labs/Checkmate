@@ -3,7 +3,6 @@ import {
   Incident,
   IMonitor,
   Monitor,
-  ICheck,
   IUser,
 } from "@/db/models/index.js";
 import type { ResolutionType } from "@/db/models/index.js";
@@ -11,7 +10,10 @@ import mongoose from "mongoose";
 import { getChildLogger } from "@/logger/Logger.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
-import type { Monitor as MonitorEntity } from "@/types/domain/monitor.js";
+import type {
+  Monitor as MonitorEntity,
+  CheckEntity,
+} from "@/types/domain/index.js";
 
 type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
   monitorId: IMonitor;
@@ -21,11 +23,11 @@ type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
 export interface IIncidentService {
   handleStatusChange: (
     updatedMonitor: MonitorEntity,
-    lastCheck: ICheck
+    lastCheck: CheckEntity
   ) => Promise<IIncident | null>;
   handleThresholdBreach: (
     updatedMonitor: MonitorEntity,
-    lastCheck: ICheck,
+    lastCheck: CheckEntity,
     evalResult: ThresholdEvaluationResult
   ) => Promise<IIncident | null>;
   create: (
@@ -47,7 +49,7 @@ export interface IIncidentService {
     teamId: string,
     incidentId: string,
     resolutionType: ResolutionType,
-    lastCheck?: ICheck,
+    lastCheck?: CheckEntity,
     resolvedBy?: string,
     resolutionNote?: string
   ) => Promise<IIncident | null>;
@@ -69,13 +71,13 @@ class IncidentService implements IIncidentService {
 
   handleStatusChange = async (
     updatedMonitor: MonitorEntity,
-    lastCheck: ICheck
+    lastCheck: CheckEntity
   ) => {
     if (updatedMonitor.status === "down") {
       const incident = await this.create(
         new mongoose.Types.ObjectId(updatedMonitor.teamId),
         new mongoose.Types.ObjectId(updatedMonitor.id),
-        lastCheck._id
+        new mongoose.Types.ObjectId(lastCheck.id)
       );
       return incident;
     } else if (updatedMonitor.status === "up") {
@@ -102,7 +104,7 @@ class IncidentService implements IIncidentService {
 
   handleThresholdBreach = async (
     updatedMonitor: MonitorEntity,
-    lastCheck: ICheck,
+    lastCheck: CheckEntity,
     evalResult: ThresholdEvaluationResult
   ) => {
     const existing = await Incident.findOne({
@@ -116,7 +118,7 @@ class IncidentService implements IIncidentService {
         const incident = await this.create(
           new mongoose.Types.ObjectId(updatedMonitor.teamId),
           new mongoose.Types.ObjectId(updatedMonitor.id),
-          lastCheck._id
+          new mongoose.Types.ObjectId(lastCheck.id)
         );
         if (evalResult.notes.length) {
           await Incident.updateOne(
@@ -147,7 +149,7 @@ class IncidentService implements IIncidentService {
       return existing;
     } else if (existing) {
       const resolved = await this.resolve(
-        updatedMonitor.teamId.toString(),
+        updatedMonitor.teamId,
         existing._id.toString(),
         "auto",
         lastCheck
@@ -227,7 +229,7 @@ class IncidentService implements IIncidentService {
     teamId: string,
     incidentId: string,
     resolutionType: ResolutionType,
-    lastCheck?: ICheck,
+    lastCheck?: CheckEntity,
     resolvedBy?: string,
     resolutionNote?: string
   ) => {
@@ -237,7 +239,9 @@ class IncidentService implements IIncidentService {
         $set: {
           resolved: true,
           endedAt: new Date(),
-          endCheck: lastCheck ? lastCheck._id : undefined,
+          endCheck: lastCheck
+            ? new mongoose.Types.ObjectId(lastCheck.id)
+            : undefined,
           resolvedBy: resolvedBy ? resolvedBy : undefined,
           resolutionType,
           resolutionNote: resolutionNote ? resolutionNote : undefined,
