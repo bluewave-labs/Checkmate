@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
-import type { IDockerContainerSummary } from "@/db/models/checks/Check.js";
+import type { IDockerContainerSummary } from "@/types/domain/index.js";
 import {
   Check,
   Incident,

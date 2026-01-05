@@ -1,12 +1,5 @@
 export { Check } from "./checks/Check.js";
-export type {
-  ICheck,
-  ISystemInfo,
-  ICaptureInfo,
-  ILighthouseResult,
-  IDockerContainerSummary,
-} from "./checks/Check.js";
-
+export type { ICheck } from "./checks/Check.js";
 export { Monitor } from "./monitors/Monitor.js";
 export type { IMonitor } from "./monitors/Monitor.js";
 

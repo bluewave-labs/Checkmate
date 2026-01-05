@@ -6,15 +6,14 @@ import type { Response } from "got";
 import type {
   ISystemInfo,
   ICaptureInfo,
-  ILighthouseResult,
-} from "@/db/models/index.js";
+  IDockerContainerSummary,
+} from "@/types/domain/index.js";
 import type { TLSSocket } from "node:tls";
 import { MonitorType, MonitorStatus } from "@/types/domain/index.js";
 import ApiError from "@/utils/ApiError.js";
 import { config } from "@/config/index.js";
 import CacheableLookup from "cacheable-lookup";
 import { getChildLogger } from "@/logger/Logger.js";
-import type { IDockerContainerSummary } from "@/db/models/index.js";
 import type { Monitor } from "@/types/domain/monitor.js";
 
 const SERVICE_NAME = "NetworkService";
@@ -33,13 +32,23 @@ export interface ICapturePayload {
   capture: ICaptureInfo;
 }
 
-export interface ILighthousePayload {
-  lighthouseResult: ILighthouseResult;
-}
-
 export interface IDockerPayload {
   data: IDockerContainerSummary[];
   capture: ICaptureInfo;
+}
+
+interface ILighthouseCategories {
+  accessibility?: { score?: number | null };
+  "best-practices"?: { score?: number | null };
+  seo?: { score?: number | null };
+  performance?: { score?: number | null };
+}
+
+export interface IPageSpeedPayload {
+  lighthouseResult: {
+    categories: ILighthouseCategories;
+    audits: Record<string, unknown>;
+  };
 }
 
 export interface StatusResponse<TPayload = unknown> {
@@ -235,7 +244,7 @@ class NetworkService implements INetworkService {
       throw new Error("No URL provided");
     }
 
-    let statusResponse: StatusResponse<ILighthousePayload>;
+    let statusResponse: StatusResponse<IPageSpeedPayload>;
 
     try {
       const response: Response = await this.client(url);
@@ -244,13 +253,13 @@ class NetworkService implements INetworkService {
         response,
         null,
         null
-      ) as StatusResponse<ILighthousePayload>;
+      ) as StatusResponse<IPageSpeedPayload>;
     } catch (error) {
       statusResponse = this.buildStatusResponse(monitor, null, null, error);
     }
 
     const pagespeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&category=seo&category=accessibility&category=best-practices&category=performance&key=${apiKey}`;
-    const pagespeedResponse = await this.client<ILighthousePayload>(
+    const pagespeedResponse = await this.client<IPageSpeedPayload>(
       pagespeedUrl,
       {
         responseType: "json",

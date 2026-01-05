@@ -1,4 +1,3 @@
-import { ICheck } from "@/db/models/index.js";
 import { StatusResponse } from "./NetworkService.js";
 import {
   IMonitorRepository,

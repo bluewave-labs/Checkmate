@@ -1,16 +1,19 @@
 import { ISystemInfo } from "@/types/domain/index.js";
-import type { IDockerPayload } from "@/services/infrastructure/NetworkService.js";
+import type {
+  IDockerPayload,
+  IPageSpeedPayload,
+} from "@/services/infrastructure/NetworkService.js";
 import { MonitorStatus, MonitorType } from "@/types/domain/index.js";
 import { StatusResponse } from "@/services/infrastructure/NetworkService.js";
-import type {
-  ICapturePayload,
-  ILighthousePayload,
-} from "@/services/infrastructure/NetworkService.js";
+import type { ICapturePayload } from "@/services/infrastructure/NetworkService.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
 
-import type { CheckEntity } from "@/types/domain/index.js";
+import type {
+  CheckEntity,
+  ICheckLighthouseFields,
+} from "@/types/domain/index.js";
 import type {
   IChecksRepository,
   IMonitorRepository,
@@ -100,9 +103,7 @@ class CheckService implements ICheckService {
     return true;
   };
 
-  private isPagespeedPayload = (
-    payload: any
-  ): payload is ILighthousePayload => {
+  private isPagespeedPayload = (payload: any): payload is IPageSpeedPayload => {
     if (!payload || typeof payload !== "object") return false;
 
     if (
@@ -165,7 +166,7 @@ class CheckService implements ICheckService {
   };
 
   private buildPagespeedCheck = (
-    statusResponse: StatusResponse<ILighthousePayload>
+    statusResponse: StatusResponse<IPageSpeedPayload>
   ) => {
     if (!this.isPagespeedPayload(statusResponse.payload)) {
       throw new Error("Invalid payload for pagespeed monitor");
@@ -226,7 +227,7 @@ class CheckService implements ICheckService {
 
       case "pagespeed":
         return this.buildPagespeedCheck(
-          statusResponse as StatusResponse<ILighthousePayload>
+          statusResponse as StatusResponse<IPageSpeedPayload>
         );
       case "http":
       case "https":
