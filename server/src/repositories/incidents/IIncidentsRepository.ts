@@ -44,6 +44,7 @@ export interface IIncidentsRepository {
   ): Promise<IncidentEntity | null>;
   // delete
   deleteById(incidentId: string, teamId: string): Promise<boolean>;
+  deleteManyExcludedByMonitorIds(monitorIds: string[]): Promise<number>;
 }
 
 export default IIncidentsRepository;

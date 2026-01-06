@@ -64,7 +64,6 @@ export const initServices = async () => {
     monitorRepository,
     monitorStatsRepository
   );
-  // If desired in future, use repository for stats as well
   const settingsService = new SettingsService();
   const stripeService = new StripeService();
   const billingService = new BillingService();
@@ -74,7 +73,10 @@ export const initServices = async () => {
     userService,
     settingsService
   );
-  const incidentService = new IncidentService(incidentsRepository);
+  const incidentService = new IncidentService(
+    incidentsRepository,
+    monitorRepository
+  );
   const statsAggregationService = new StatsAggregationService();
   const jobGenerator = new JobGenerator(
     networkService,

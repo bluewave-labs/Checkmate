@@ -1,10 +1,4 @@
-import {
-  IIncident,
-  Incident,
-  IMonitor,
-  Monitor,
-  IUser,
-} from "@/db/models/index.js";
+import { Incident, Monitor } from "@/db/models/index.js";
 import type { ResolutionType } from "@/types/domain/index.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
@@ -15,7 +9,10 @@ import type {
   Incident as IncidentEntity,
   IncidentWithDetails,
 } from "@/types/domain/index.js";
-import type { IIncidentsRepository } from "@/repositories/index.js";
+import type {
+  IIncidentsRepository,
+  IMonitorRepository,
+} from "@/repositories/index.js";
 
 export interface IIncidentService {
   handleStatusChange: (
@@ -63,9 +60,14 @@ const logger = getChildLogger(SERVICE_NAME);
 class IncidentService implements IIncidentService {
   public SERVICE_NAME: string;
   private incidentsRepository: IIncidentsRepository;
-  constructor(incidentsRepository: IIncidentsRepository) {
+  private monitorRepository: IMonitorRepository;
+  constructor(
+    incidentsRepository: IIncidentsRepository,
+    monitorRepository: IMonitorRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.incidentsRepository = incidentsRepository;
+    this.monitorRepository = monitorRepository;
   }
 
   handleStatusChange = async (
@@ -263,11 +265,14 @@ class IncidentService implements IIncidentService {
 
   async cleanupOrphanedIncidents() {
     try {
-      const monitorIds = await Monitor.find().distinct("_id");
-      const result = await Incident.deleteMany({
-        monitorId: { $nin: monitorIds },
-      });
-      logger.info(`Deleted ${result.deletedCount} orphaned Incidents.`);
+      const monitorIds = (await this.monitorRepository.findAll()).map(
+        (m) => m.id
+      );
+      const deletedCount =
+        await this.incidentsRepository.deleteManyExcludedByMonitorIds(
+          monitorIds
+        );
+      logger.info(`Deleted ${deletedCount} orphaned Incidents.`);
       return true;
     } catch (error) {
       logger.error("Error cleaning up orphaned Incidents:", error);

@@ -187,6 +187,15 @@ class MongoIncidentsRepository implements IIncidentsRepository {
     });
     return result.deletedCount === 1;
   };
+
+  deleteManyExcludedByMonitorIds = async (monitorIds: string[]) => {
+    const result = await Incident.deleteMany({
+      monitorId: {
+        $nin: monitorIds.map((id) => new mongoose.Types.ObjectId(id)),
+      },
+    });
+    return result.deletedCount || 0;
+  };
 }
 
 export default MongoIncidentsRepository;
