@@ -2,7 +2,7 @@ import { Table, Pagination, StatusLabel } from "@/components/design-elements";
 import Box from "@mui/material/Box";
 
 import type { Header } from "@/components/design-elements/Table";
-import type { ICheck, IChecksWithCount } from "@/types/check";
+import type { Check, IChecksWithCount } from "@/types/check";
 import type { ApiResponse } from "@/types/api";
 import type { MonitorStatus } from "@/types/monitor";
 
@@ -14,7 +14,7 @@ import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 
 const getHeaders = (t: Function, uiTimezone: string) => {
-  const headers: Header<ICheck>[] = [
+  const headers: Header<Check>[] = [
     {
       id: "status",
       content: t("common.table.headers.status"),
@@ -93,7 +93,7 @@ export const CheckTable = ({ monitorId }: { monitorId: string }) => {
         headers={headers}
         data={checks}
         onRowClick={(row) => {
-          navigate(`/checks/${row._id}`);
+          navigate(`/checks/${row.id}`);
         }}
       />
       <Pagination

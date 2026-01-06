@@ -12,7 +12,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePatch } from "@/hooks/UseApi";
 
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import type { IMonitor } from "@/types/monitor";
 import type { ActionMenuItem } from "@/components/actions-menu";
 
@@ -32,7 +32,7 @@ export const InfraMonitorsTable = ({
   setRowsPerPage,
 }: {
   monitors: IMonitor[];
-  checksMap: Record<string, ICheck[]>;
+  checksMap: Record<string, Check[]>;
   refetch: Function;
   setSelectedMonitor: Function;
   sortField: string;

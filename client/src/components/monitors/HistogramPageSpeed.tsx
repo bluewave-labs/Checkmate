@@ -9,16 +9,16 @@ import {
 import { HistogramPageSpeedTooltip } from "@/components/monitors/HistogramPageSpeedTooltip";
 
 import { useTheme } from "@mui/material/styles";
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import type { MonitorStatus } from "@/types/monitor";
 
 import { getStatusColor } from "@/utils/MonitorUtils";
 
-const processData = (checks: ICheck[]) => {
+const processData = (checks: Check[]) => {
   if (checks.length === 0) return [];
   const formattedData: { score: number; date: string }[] = [];
 
-  const calculateScore = (entry: ICheck) => {
+  const calculateScore = (entry: Check) => {
     const accessibility = entry?.lighthouse?.accessibility || 0;
     const bestPractices = entry?.lighthouse?.bestPractices || 0;
     const performance = entry?.lighthouse?.performance || 0;
@@ -41,7 +41,7 @@ export const HistogramPageSpeed = ({
   checks,
   status,
 }: {
-  checks: ICheck[];
+  checks: Check[];
   status: MonitorStatus;
 }) => {
   const theme = useTheme();

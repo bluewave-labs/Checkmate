@@ -1,12 +1,12 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import { normalizeResponseTimes } from "@/utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "../common/HeatmapResponseTimeTooltip";
 const BAR_HEIGHT = "50px";
 
-export const HistogramStatusPage = ({ checks }: { checks: ICheck[] }) => {
+export const HistogramStatusPage = ({ checks }: { checks: Check[] }) => {
   const theme = useTheme();
   const normalChecks = normalizeResponseTimes(checks, "responseTime");
   let data = Array<any>();

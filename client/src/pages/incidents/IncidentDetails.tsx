@@ -12,7 +12,6 @@ import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 import prettyMilliseconds from "pretty-ms";
 import { getMonitorPath } from "@/utils/MonitorUtils";
-import type { MonitorType } from "@/types/monitor";
 import { useTranslation } from "react-i18next";
 
 const IncidentDetailsPage = () => {

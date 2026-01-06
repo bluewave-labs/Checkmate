@@ -109,29 +109,6 @@ export interface ICaptureInfo {
   mode?: string;
 }
 
-export interface ICheck {
-  _id: string;
-  metadata: {
-    monitorId: string;
-    type: MonitorType;
-    teamId: string;
-  };
-  status: string;
-  message: string;
-  responseTime: number;
-  normalResponseTime?: number;
-  httpStatusCode: number;
-  ack: boolean;
-  expiry: string;
-  createdAt: string;
-  updatedAt: string;
-  timings: GotTimings;
-  lighthouse?: ICheckLighthouseFields;
-  system?: ISystemInfo;
-  // Present for docker monitor checks
-  dockerContainers?: IDockerContainerSummary[];
-}
-
 export interface Check {
   id: string;
   monitorId: string;
@@ -226,7 +203,7 @@ export interface IDokcerCheck {
 }
 
 export interface IChecksWithCount {
-  checks: ICheck[];
+  checks: Check[];
   count: number;
 }
 

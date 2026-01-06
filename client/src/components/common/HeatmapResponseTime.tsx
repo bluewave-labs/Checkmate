@@ -1,12 +1,12 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import { getResponseColor } from "@/utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 import type { SxProps } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
 interface HeatmapResponseTimeProps {
-  checks: ICheck[];
+  checks: Check[];
   gap?: ResponsiveStyleValue<number | string>;
   availabilityCellSx?: SxProps;
   responseCellSx?: SxProps;
@@ -27,7 +27,7 @@ export const HeatmapResponseTime = ({
 
   const latestChecks = checks.slice(-25).reverse();
 
-  let data: Array<ICheck | { status: "placeholder" }>;
+  let data: Array<Check | { status: "placeholder" }>;
   if (latestChecks.length !== 25) {
     const placeholders = Array(25 - latestChecks.length).fill({
       status: "placeholder" as const,
@@ -57,7 +57,7 @@ export const HeatmapResponseTime = ({
           const respBg =
             check.status === "placeholder"
               ? theme.palette.action.hover
-              : getResponseColor(check.responseTime, {
+              : getResponseColor(check.responseTime || 0, {
                   start: theme.palette.success.main,
                   mid: theme.palette.warning.main,
                   end: theme.palette.error.main,

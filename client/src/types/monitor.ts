@@ -1,4 +1,4 @@
-import type { AggregateCheck, ICheck } from "@/types/check";
+import type { AggregateCheck, Check } from "@/types/check";
 import type { IMonitorStats } from "./monitorStats";
 
 export const MonitorTypes = [
@@ -26,7 +26,7 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export interface IMonitor {
   id: string;
-  checks: ICheck[];
+  checks: Check[];
   createdAt: string;
   createdBy: string;
   interval: number;
@@ -57,7 +57,7 @@ export interface IMonitorWithStats {
   upCount: number;
   pausedCount: number;
   monitors: IMonitor[];
-  checksMap: Record<string, ICheck[]>;
+  checksMap: Record<string, Check[]>;
 }
 
 export interface IMonitorWithMonitorStats {
