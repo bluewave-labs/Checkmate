@@ -3,9 +3,9 @@ import {
   IUserContext,
   IMaintenance,
   Maintenance,
-  MaintenanceRepeats,
 } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
+import { MaintenanceRepeats } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "MaintenanceService";
 const DAY_MS = 24 * 60 * 60 * 1000;

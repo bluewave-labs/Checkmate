@@ -27,7 +27,7 @@ export type { IInvite } from "./auth/Invite.js";
 export { Role } from "./auth/Role.js";
 export type { IRole } from "./auth/Role.js";
 
-export { Maintenance, MaintenanceRepeats } from "./maintenance/Maintenance.js";
+export { Maintenance } from "./maintenance/Maintenance.js";
 export type { IMaintenance } from "./maintenance/Maintenance.js";
 
 export { Org } from "./auth/Org.js";

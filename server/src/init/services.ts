@@ -42,6 +42,7 @@ import {
   MongoRoleRepository,
   MongoTeamRepository,
   MongoInviteRepository,
+  MongoTeamMembershipRepository,
 } from "@/repositories/index.js";
 
 export const initServices = async () => {
@@ -53,13 +54,15 @@ export const initServices = async () => {
   const roleRepository = new MongoRoleRepository();
   const teamRepository = new MongoTeamRepository();
   const inviteRepository = new MongoInviteRepository();
+  const teamMembershipRepository = new MongoTeamMembershipRepository();
 
   const checkService = new CheckService(checksRepository, monitorRepository);
   const inviteService = new InviteService(
     userRepository,
     roleRepository,
     teamRepository,
-    inviteRepository
+    inviteRepository,
+    teamMembershipRepository
   );
   const maintenanceService = new MaintenanceService();
   const monitorStatsService = new MonitorStatsService(

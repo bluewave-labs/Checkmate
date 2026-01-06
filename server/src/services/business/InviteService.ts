@@ -70,13 +70,13 @@ class InviteService implements IInviteService {
 
       // Check if already a team member
       const user = await this.userRepository.findByEmail(email);
-
-      const existingMembership =
-        await this.teamMembershipRepository.findByUserId(
-          user?.id || "",
+      let existingMembership = null;
+      if (user) {
+        existingMembership = await this.teamMembershipRepository.findByUserId(
+          user.id,
           teamId
         );
-
+      }
       if (existingMembership) {
         throw new ApiError("User is already a team member", 409);
       }

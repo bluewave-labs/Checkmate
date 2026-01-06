@@ -24,6 +24,8 @@ import { PERMISSIONS } from "@/types/permissions.js";
 import type { Entitlements } from "@/types/entitlements.js";
 import type { IEntitlementsProvider } from "@/services/system/EntitlementsService.js";
 import type { IMonitorRepository } from "@/repositories/index.js";
+import type { Invite } from "@/types/domain/index.js";
+import mongoose from "mongoose";
 
 const SERVICE_NAME = "AuthService";
 
@@ -47,7 +49,7 @@ export interface IAuthService {
     returnableUser: IUserReturnable;
   }>;
   registerWithInvite(
-    invite: IInvite,
+    invite: Invite,
     signupData: RegisterData
   ): Promise<{
     tokenizedUser: ITokenizedUser;
@@ -229,7 +231,7 @@ class AuthService implements IAuthService {
     }
   }
 
-  registerWithInvite = async (invite: IInvite, signupData: RegisterData) => {
+  registerWithInvite = async (invite: Invite, signupData: RegisterData) => {
     const created: Record<string, any> = {
       user: null,
       orgMembership: null,
@@ -279,7 +281,7 @@ class AuthService implements IAuthService {
         orgId,
       });
       if (orgMembership && !orgMembership.roleId && orgRoleId) {
-        orgMembership.roleId = orgRoleId;
+        orgMembership.roleId = new mongoose.Types.ObjectId(orgRoleId);
         await orgMembership.save();
       }
       if (!orgMembership) {

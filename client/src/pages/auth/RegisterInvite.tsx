@@ -17,6 +17,7 @@ import { registerSchema } from "@/validation";
 import { useGet } from "@/hooks/UseApi";
 import { useParams } from "react-router";
 import type { IUser } from "@/types/user";
+import type { Invite } from "@/types/invite";
 
 type FormData = z.infer<typeof registerSchema>;
 const RegisterInvite = () => {
@@ -25,9 +26,9 @@ const RegisterInvite = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { post, loading, error } = usePost<Partial<FormData>, IUser>();
-  const { response, error: errorInvite } = useGet<ApiResponse<any>>(
-    `/invite/${token}`
-  );
+  const { response, error: errorInvite } = useGet<
+    ApiResponse<{ user: IUser; invite: Invite }>
+  >(`/invite/${token}`);
   const { user, invite } = response?.data || {};
   const hasUser = Boolean(user);
   const dispatch = useAppDispatch();

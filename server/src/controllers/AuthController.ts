@@ -72,7 +72,7 @@ class AuthController {
         throw new Error("Registration failed");
       }
 
-      await this.inviteService.delete(invite._id.toString());
+      await this.inviteService.delete(invite.id);
 
       const jwt = encode(tokenizedUser);
 
