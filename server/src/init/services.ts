@@ -38,17 +38,29 @@ import {
   MongoChecksRepository,
   MongoMonitorStatsRepository,
   MongoIncidentsRepository,
+  MongoUserRepository,
+  MongoRoleRepository,
+  MongoTeamRepository,
+  MongoInviteRepository,
 } from "@/repositories/index.js";
-import type { CheckEntity } from "@/types/domain/index.js";
 
 export const initServices = async () => {
   const monitorRepository = new MongoMonitorRepository();
   const checksRepository = new MongoChecksRepository();
   const monitorStatsRepository = new MongoMonitorStatsRepository();
   const incidentsRepository = new MongoIncidentsRepository();
+  const userRepository = new MongoUserRepository();
+  const roleRepository = new MongoRoleRepository();
+  const teamRepository = new MongoTeamRepository();
+  const inviteRepository = new MongoInviteRepository();
 
   const checkService = new CheckService(checksRepository, monitorRepository);
-  const inviteService = new InviteService();
+  const inviteService = new InviteService(
+    userRepository,
+    roleRepository,
+    teamRepository,
+    inviteRepository
+  );
   const maintenanceService = new MaintenanceService();
   const monitorStatsService = new MonitorStatsService(
     monitorRepository,

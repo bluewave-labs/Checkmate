@@ -1,14 +1,14 @@
 import crypto from "node:crypto";
-import {
-  IInvite,
-  Invite,
-  User,
-  IUser,
-  Role,
-  Team,
-  TeamMembership,
-} from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
+import type {
+  IUserRepository,
+  IRoleRepository,
+  ITeamRepository,
+  IInviteRepository,
+  ITeamMembershipRepository,
+} from "@/repositories/index.js";
+import { User } from "@/types/domain/index.js";
+import { Invite } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "InviteService";
 export interface IInviteService {
@@ -20,15 +20,31 @@ export interface IInviteService {
     teamId: string,
     teamRoleId: string
   ) => Promise<string>;
-  getAll: () => Promise<IInvite[]>;
-  get: (tokenHash: string) => Promise<{ user: IUser | null; invite: IInvite }>;
+  getAll: () => Promise<Invite[]>;
+  get: (tokenHash: string) => Promise<{ user: User | null; invite: Invite }>;
   delete: (id: string) => Promise<boolean>;
 }
 
 class InviteService implements IInviteService {
   public SERVICE_NAME: string;
-  constructor() {
+  private userRepository: IUserRepository;
+  private roleRepository: IRoleRepository;
+  private teamRepository: ITeamRepository;
+  private inviteRepository: IInviteRepository;
+  private teamMembershipRepository: ITeamMembershipRepository;
+  constructor(
+    userRepository: IUserRepository,
+    roleRepository: IRoleRepository,
+    teamRepository: ITeamRepository,
+    inviteRepository: IInviteRepository,
+    teamMembershipRepository: ITeamMembershipRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
+    this.teamRepository = teamRepository;
+    this.inviteRepository = inviteRepository;
+    this.teamMembershipRepository = teamMembershipRepository;
   }
 
   create = async (
@@ -40,40 +56,36 @@ class InviteService implements IInviteService {
     teamRoleId: string
   ) => {
     try {
-      const role = await Role.findOne({
-        _id: teamRoleId,
-        organizationId: orgId,
-      });
+      const role = await this.roleRepository.findById(teamRoleId, orgId);
 
       if (!role) {
         throw new ApiError("Role not found", 404);
       }
 
-      const team = await Team.findOne({
-        _id: teamId,
-        orgId,
-      });
+      const team = await this.teamRepository.findById(teamId, orgId);
 
       if (!team) {
         throw new ApiError("Team not found", 404);
       }
 
       // Check if already a team member
-      const user = await User.findOne({ email });
-      const existingMembership = await TeamMembership.findOne({
-        userId: user?._id,
-        teamId,
-      });
+      const user = await this.userRepository.findByEmail(email);
+
+      const existingMembership =
+        await this.teamMembershipRepository.findByUserId(
+          user?.id || "",
+          teamId
+        );
 
       if (existingMembership) {
         throw new ApiError("User is already a team member", 409);
       }
 
       // Check if inivite already exists
-      const existingInvite = await Invite.findOne({
+      const existingInvite = await this.inviteRepository.findByEmail(
         email,
-        teamId,
-      });
+        teamId
+      );
 
       if (existingInvite) {
         throw new ApiError("An invite already exists for this email", 409);
@@ -82,7 +94,7 @@ class InviteService implements IInviteService {
       const token = crypto.randomBytes(32).toString("hex");
       const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-      const invite = await Invite.create({
+      const invite = await this.inviteRepository.create({
         orgId,
         ...(orgRoleId && { orgRoleId }),
         teamId,
@@ -104,24 +116,21 @@ class InviteService implements IInviteService {
 
   get = async (token: string) => {
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    const invite = await Invite.findOne({ tokenHash });
+    const invite = await this.inviteRepository.findByHash(tokenHash);
     if (!invite) {
       throw new ApiError("Invite not found", 404);
     }
-    const user = await User.findOne({ email: invite.email });
+    const user = await this.userRepository.findByEmail(invite.email);
+
     return { user, invite };
   };
 
   getAll = async () => {
-    return Invite.find();
+    return await this.inviteRepository.findAll();
   };
 
   delete = async (id: string) => {
-    const result = await Invite.deleteOne({ _id: id });
-    if (!result.deletedCount) {
-      throw new ApiError("Invite not found", 404);
-    }
-    return result.deletedCount === 1;
+    return await this.inviteRepository.deleteById(id);
   };
 }
 

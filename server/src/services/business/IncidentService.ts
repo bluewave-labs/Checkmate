@@ -1,4 +1,3 @@
-import { Incident, Monitor } from "@/db/models/index.js";
 import type { ResolutionType } from "@/types/domain/index.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";

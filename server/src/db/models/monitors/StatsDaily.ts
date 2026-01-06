@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import type { IStatsBase } from "./StatsHourly.js";
+
 import type {
   IInfraCpu,
   IInfraDiskEntry,
@@ -6,8 +8,7 @@ import type {
   IInfraMemory,
   IInfraNetEntry,
   IPageSpeedMetrics,
-  IStatsBase,
-} from "./StatsHourly.js";
+} from "@/types/domain/index.js";
 
 export interface IStatsDaily
   extends mongoose.Document,

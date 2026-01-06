@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
-export const MaintenanceRepeats = ["no repeat", "daily", "weekly"] as const;
-export type MaintenanceRepeat = (typeof MaintenanceRepeats)[number];
+import {
+  type MaintenanceRepeat,
+  MaintenanceRepeats,
+} from "@/types/domain/index.js";
 export interface IMaintenance extends Document {
   _id: Types.ObjectId;
   orgId: Types.ObjectId;

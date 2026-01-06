@@ -12,3 +12,18 @@ export { default as MongoMonitorStatsRepository } from "@/repositories/monitor-s
 
 export type { IIncidentsRepository } from "@/repositories/incidents/IIncidentsRepository.js";
 export { default as MongoIncidentsRepository } from "@/repositories/incidents/MongoIncidentsRepository.js";
+
+export type { IUserRepository } from "@/repositories/user/IUserRepository.js";
+export { default as MongoUserRepository } from "@/repositories/user/MongoUserRepository.js";
+
+export type { IInviteRepository } from "@/repositories/invites/IInviteRepository.js";
+export { default as MongoInviteRepository } from "@/repositories/invites/MongoInviteRepository.js";
+
+export type { IRoleRepository } from "@/repositories/role/IRoleRepository.js";
+export { default as MongoRoleRepository } from "@/repositories/role/MongoRoleRepository.js";
+
+export type { ITeamRepository } from "@/repositories/team/ITeamRepository.js";
+export { default as MongoTeamRepository } from "@/repositories/team/MongoTeamRepository.js";
+
+export type { ITeamMembershipRepository } from "@/repositories/team-membership/ITeamMembershipRepository.js";
+export { default as MongoTeamMembershipRepository } from "@/repositories/team-membership/MongoTeamMembershipRepository.js";
