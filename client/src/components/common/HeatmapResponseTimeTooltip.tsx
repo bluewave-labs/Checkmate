@@ -3,15 +3,17 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
-import type { LatestCheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import { useTheme } from "@mui/material/styles";
+
+type HeatmapCheck = Check | { status: "placeholder" };
 
 export const HeatmapResponseTimeTooltip = ({
   children,
   check,
 }: {
   children: React.ReactElement;
-  check: LatestCheck;
+  check: HeatmapCheck;
 }) => {
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
   const theme = useTheme();
@@ -47,7 +49,7 @@ export const HeatmapResponseTimeTooltip = ({
         >
           <Typography>
             {formatDateWithTz(
-              check?.checkedAt,
+              check?.createdAt,
               "ddd, MMMM D, YYYY, HH:mm A",
               uiTimezone
             )}

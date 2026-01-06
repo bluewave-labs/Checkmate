@@ -48,8 +48,8 @@ export type { IStatusPage } from "./status-page/StatusPage.js";
 export { RecoveryToken } from "./recovery/RecoveryToken.js";
 export type { IRecoveryToken } from "./recovery/RecoveryToken.js";
 
-export { Incident, ResolutionTypes } from "./incidents/Incident.js";
-export type { IIncident, ResolutionType } from "./incidents/Incident.js";
+export { Incident } from "./incidents/Incident.js";
+export type { IIncident } from "./incidents/Incident.js";
 
 export { SystemSettings } from "./system/SystemSettings.js";
 export type { ISystemSettings } from "./system/SystemSettings.js";

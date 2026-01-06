@@ -1,5 +1,5 @@
-import { INotificationChannel, IIncident } from "@/db/models/index.js";
-import type { Monitor } from "@/types/domain/index.js";
+import { INotificationChannel } from "@/db/models/index.js";
+import type { Monitor, Incident } from "@/types/domain/index.js";
 
 import { IMessageService, IAlert } from "./IMessageService.js";
 import nodemailer, { Transporter } from "nodemailer";
@@ -121,7 +121,7 @@ class EmailService implements IEmailService {
     }
   };
 
-  buildAlert = (monitor: Monitor, incident: IIncident) => {
+  buildAlert = (monitor: Monitor, incident: Incident) => {
     const name = monitor?.name || "Unnamed monitor";
     const monitorStatus = monitor?.status || "unknown status";
     const url = monitor?.url || "no URL";

@@ -5,37 +5,37 @@ import {
   Monitor,
   IUser,
 } from "@/db/models/index.js";
-import type { ResolutionType } from "@/db/models/index.js";
-import mongoose from "mongoose";
+import type { ResolutionType } from "@/types/domain/index.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import { ThresholdEvaluationResult } from "@/services/infrastructure/StatusService.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
 import type {
   Monitor as MonitorEntity,
   CheckEntity,
+  Incident as IncidentEntity,
+  IncidentWithDetails,
 } from "@/types/domain/index.js";
-
-type IncidentPopulated = Omit<IIncident, "monitorId" | "resolvedBy"> & {
-  monitorId: IMonitor;
-  resolvedBy?: IUser | null;
-};
+import type { IIncidentsRepository } from "@/repositories/index.js";
 
 export interface IIncidentService {
   handleStatusChange: (
     updatedMonitor: MonitorEntity,
     lastCheck: CheckEntity
-  ) => Promise<IIncident | null>;
+  ) => Promise<IncidentEntity | null>;
   handleThresholdBreach: (
     updatedMonitor: MonitorEntity,
     lastCheck: CheckEntity,
     evalResult: ThresholdEvaluationResult
-  ) => Promise<IIncident | null>;
+  ) => Promise<IncidentEntity | null>;
   create: (
-    teamId: mongoose.Types.ObjectId,
-    monitorId: mongoose.Types.ObjectId,
-    startCheckId: mongoose.Types.ObjectId
-  ) => Promise<IIncident>;
-  get: (teamId: string, incidentId: string) => Promise<IIncident | null>;
+    teamId: string,
+    monitorId: string,
+    startCheckId: string
+  ) => Promise<IncidentEntity>;
+  get: (
+    teamId: string,
+    incidentId: string
+  ) => Promise<IncidentWithDetails | null>;
   getAll: (
     teamId: string,
     monitorId: string,
@@ -44,7 +44,7 @@ export interface IIncidentService {
     range: string,
     resolved?: boolean,
     resolutionType?: ResolutionType
-  ) => Promise<{ incidents: IIncident[]; count: number }>;
+  ) => Promise<{ incidents: IncidentEntity[]; count: number }>;
   resolve: (
     teamId: string,
     incidentId: string,
@@ -52,11 +52,8 @@ export interface IIncidentService {
     lastCheck?: CheckEntity,
     resolvedBy?: string,
     resolutionNote?: string
-  ) => Promise<IIncident | null>;
-  delete: (
-    teamId: mongoose.Types.ObjectId,
-    incidentId: mongoose.Types.ObjectId
-  ) => Promise<boolean>;
+  ) => Promise<IncidentEntity | null>;
+  delete: (teamId: string, incidentId: string) => Promise<boolean>;
   export: (teamId: string) => Promise<Array<Record<string, unknown>>>;
   cleanupOrphanedIncidents: () => Promise<boolean>;
 }
@@ -65,8 +62,10 @@ const SERVICE_NAME = "IncidentService";
 const logger = getChildLogger(SERVICE_NAME);
 class IncidentService implements IIncidentService {
   public SERVICE_NAME: string;
-  constructor() {
+  private incidentsRepository: IIncidentsRepository;
+  constructor(incidentsRepository: IIncidentsRepository) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.incidentsRepository = incidentsRepository;
   }
 
   handleStatusChange = async (
@@ -75,25 +74,27 @@ class IncidentService implements IIncidentService {
   ) => {
     if (updatedMonitor.status === "down") {
       const incident = await this.create(
-        new mongoose.Types.ObjectId(updatedMonitor.teamId),
-        new mongoose.Types.ObjectId(updatedMonitor.id),
-        new mongoose.Types.ObjectId(lastCheck.id)
+        updatedMonitor.teamId,
+        updatedMonitor.id,
+        lastCheck.id
       );
+
       return incident;
     } else if (updatedMonitor.status === "up") {
-      const incident = await Incident.findOne({
-        monitorId: updatedMonitor.id,
-        teamId: updatedMonitor.teamId,
-        resolved: false,
-      });
+      const incident =
+        await this.incidentsRepository.findByMonitorIdAndResolved(
+          updatedMonitor.id,
+          updatedMonitor.teamId,
+          false
+        );
 
       if (!incident) {
         return null;
       }
 
       const resolvedIncident = await this.resolve(
-        updatedMonitor.teamId.toString(),
-        incident._id.toString(),
+        updatedMonitor.teamId,
+        incident.id,
         "auto",
         lastCheck
       );
@@ -107,42 +108,38 @@ class IncidentService implements IIncidentService {
     lastCheck: CheckEntity,
     evalResult: ThresholdEvaluationResult
   ) => {
-    const existing = await Incident.findOne({
-      monitorId: updatedMonitor.id,
-      teamId: updatedMonitor.teamId,
-      resolved: false,
-    });
+    const existing = await this.incidentsRepository.findByMonitorIdAndResolved(
+      updatedMonitor.id,
+      updatedMonitor.teamId,
+      false
+    );
 
     if (evalResult.hasBreach) {
       if (!existing) {
-        const incident = await this.create(
-          new mongoose.Types.ObjectId(updatedMonitor.teamId),
-          new mongoose.Types.ObjectId(updatedMonitor.id),
-          new mongoose.Types.ObjectId(lastCheck.id)
-        );
+        const incident = await this.incidentsRepository.create({
+          teamId: updatedMonitor.teamId,
+          monitorId: updatedMonitor.id,
+          startCheck: lastCheck.id,
+        });
         if (evalResult.notes.length) {
-          await Incident.updateOne(
-            { _id: incident._id },
+          await this.incidentsRepository.updateById(
+            incident.id,
+            updatedMonitor.teamId,
             {
-              $set: {
-                resolutionNote: `threshold breach: ${evalResult.notes.join(
-                  ", "
-                )}`,
-              },
+              resolutionNote: `threshold breach: ${evalResult.notes.join(
+                ", "
+              )}`,
             }
           );
         }
         return incident;
       }
       if (evalResult.notes.length) {
-        await Incident.updateOne(
-          { _id: existing._id },
+        await this.incidentsRepository.updateById(
+          existing.id,
+          updatedMonitor.teamId,
           {
-            $set: {
-              resolutionNote: `threshold breach: ${evalResult.notes.join(
-                ", "
-              )}`,
-            },
+            resolutionNote: `threshold breach: ${evalResult.notes.join(", ")}`,
           }
         );
       }
@@ -150,7 +147,7 @@ class IncidentService implements IIncidentService {
     } else if (existing) {
       const resolved = await this.resolve(
         updatedMonitor.teamId,
-        existing._id.toString(),
+        existing.id,
         "auto",
         lastCheck
       );
@@ -160,38 +157,32 @@ class IncidentService implements IIncidentService {
     return null;
   };
 
-  create = async (
-    teamId: mongoose.Types.ObjectId,
-    monitorId: mongoose.Types.ObjectId,
-    startCheckId: mongoose.Types.ObjectId
-  ) => {
-    const existing = await Incident.findOne({
+  create = async (teamId: string, monitorId: string, startCheckId: string) => {
+    const existing = await this.incidentsRepository.findByMonitorIdAndResolved(
       monitorId,
       teamId,
-      resolved: false,
-    });
+      false
+    );
 
     if (existing) {
       return existing;
     }
 
-    let data: Partial<IIncident> = {
-      teamId: new mongoose.Types.ObjectId(teamId),
-      monitorId: new mongoose.Types.ObjectId(monitorId),
-      startedAt: new Date(),
-      startCheck: new mongoose.Types.ObjectId(startCheckId),
+    let data: Partial<IncidentEntity> = {
+      teamId,
+      monitorId,
+      startCheck: startCheckId,
     };
-    const incident = await Incident.create(data);
+    const incident = await this.incidentsRepository.create(data);
     return incident;
   };
 
   get = async (teamId: string, incidentId: string) => {
-    const incident = await Incident.findOne({
-      _id: new mongoose.Types.ObjectId(incidentId),
-      teamId: new mongoose.Types.ObjectId(teamId),
-    })
-      .populate("monitorId")
-      .populate("resolvedBy");
+    const incident =
+      await this.incidentsRepository.findByIdWithMonitorAndResolvedBy(
+        incidentId,
+        teamId
+      );
     return incident;
   };
 
@@ -205,22 +196,24 @@ class IncidentService implements IIncidentService {
     resolutionType?: ResolutionType
   ) => {
     const startDate = getStartDate(range);
-    const match = {
-      teamId: teamId,
-      ...(monitorId && { monitorId }),
-      createdAt: { $gte: startDate },
-      ...(resolved !== undefined && { resolved }),
-      ...(resolutionType !== undefined && { resolutionType }),
-    };
 
     const [count, incidents] = await Promise.all([
-      Incident.countDocuments(match),
-      Incident.find(match)
-        .populate("monitorId")
-        .populate("resolvedBy")
-        .sort({ createdAt: -1 })
-        .skip(page * rowsPerPage)
-        .limit(rowsPerPage),
+      this.incidentsRepository.count(
+        teamId,
+        startDate,
+        monitorId,
+        resolved,
+        resolutionType
+      ),
+      this.incidentsRepository.findAllWithMonitorAndResolvedBy(
+        teamId,
+        page,
+        rowsPerPage,
+        startDate,
+        monitorId,
+        resolved,
+        resolutionType
+      ),
     ]);
     return { count, incidents };
   };
@@ -233,53 +226,38 @@ class IncidentService implements IIncidentService {
     resolvedBy?: string,
     resolutionNote?: string
   ) => {
-    const incident = await Incident.findOneAndUpdate(
-      { _id: incidentId, teamId, resolved: false },
+    const resolvedIncident = await this.incidentsRepository.updateById(
+      incidentId,
+      teamId,
       {
-        $set: {
-          resolved: true,
-          endedAt: new Date(),
-          endCheck: lastCheck
-            ? new mongoose.Types.ObjectId(lastCheck.id)
-            : undefined,
-          resolvedBy: resolvedBy ? resolvedBy : undefined,
-          resolutionType,
-          resolutionNote: resolutionNote ? resolutionNote : undefined,
-        },
-      },
-      { new: true }
+        resolved: true,
+        endedAt: new Date(),
+        endCheck: lastCheck ? lastCheck.id : undefined,
+        resolvedBy: resolvedBy ? resolvedBy : undefined,
+        resolutionType,
+        resolutionNote: resolutionNote ? resolutionNote : undefined,
+      }
     );
 
-    return incident;
+    return resolvedIncident;
   };
 
-  delete = async (
-    teamId: mongoose.Types.ObjectId,
-    incidentId: mongoose.Types.ObjectId
-  ) => {
-    const result = await Incident.deleteOne({
-      _id: new mongoose.Types.ObjectId(incidentId),
-      teamId: new mongoose.Types.ObjectId(teamId),
-    });
-    return result.deletedCount === 1;
+  delete = async (teamId: string, incidentId: string) => {
+    return await this.incidentsRepository.deleteById(incidentId, teamId);
   };
 
   export = async (teamId: string) => {
-    const incidents = await Incident.find({
-      teamId,
-    })
-      .populate("monitorId")
-      .populate("resolvedBy")
-      .lean<IncidentPopulated[]>();
-
+    const incidents = await this.incidentsRepository.findAllByTeamId(teamId);
     return incidents.map((incident) => ({
-      monitor: incident.monitorId?.name ?? "",
-      monitorId: incident.monitorId?._id?.toString?.() ?? "",
+      monitor: incident.monitor.name ?? "",
+      monitorId: incident.monitor.id ?? "",
       resolved: incident.resolved,
       resolutionType: incident.resolutionType ?? "Unresolved",
       startedAt: incident.startedAt,
       endedAt: incident.endedAt ?? "Ongoing",
-      resolvedBy: incident.resolvedBy ? incident.resolvedBy.email ?? "" : "",
+      resolvedBy: incident.resolvedByUser
+        ? incident.resolvedByUser.email ?? ""
+        : "",
     }));
   };
 

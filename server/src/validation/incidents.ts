@@ -1,6 +1,6 @@
 import { z } from "zod";
 import mongoose from "mongoose";
-import { ResolutionTypes } from "@/db/models/index.js";
+import { ResolutionTypes } from "@/types/domain/index.js";
 
 export const getIncidentQuerySchema = z.object({
   id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
@@ -17,7 +17,10 @@ export const getIncidentsQuerySchema = z.object({
       if (val === undefined) return undefined;
       if (val === "true") return true;
       if (val === "false") return false;
-      ctx.addIssue({ code: "custom", message: "resolved must be 'true' or 'false'" });
+      ctx.addIssue({
+        code: "custom",
+        message: "resolved must be 'true' or 'false'",
+      });
       return z.NEVER;
     }),
   page: z
@@ -43,15 +46,24 @@ export const getIncidentsQuerySchema = z.object({
       if (!val) return;
       const num = Number(val);
       if (Number.isNaN(num)) {
-        ctx.addIssue({ code: "custom", message: "rowsPerPage must be a number" });
+        ctx.addIssue({
+          code: "custom",
+          message: "rowsPerPage must be a number",
+        });
         return z.NEVER;
       }
       if (num < 0) {
-        ctx.addIssue({ code: "custom", message: "rowsPerPage must be greater than 0" });
+        ctx.addIssue({
+          code: "custom",
+          message: "rowsPerPage must be greater than 0",
+        });
         return z.NEVER;
       }
       if (num > 100) {
-        ctx.addIssue({ code: "custom", message: "rowsPerPage must be less than or equal to 100" });
+        ctx.addIssue({
+          code: "custom",
+          message: "rowsPerPage must be less than or equal to 100",
+        });
         return z.NEVER;
       }
       return num;
@@ -68,4 +80,3 @@ export const getIncidentsQuerySchema = z.object({
 export const patchIncidentsBodySchema = z.object({
   resolutionNote: z.string().max(200).optional(),
 });
-

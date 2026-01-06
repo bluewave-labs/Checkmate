@@ -13,7 +13,7 @@ import { usePatch } from "@/hooks/UseApi";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
-import type { IIncident } from "@/types/incident";
+import type { IncidentWithDetails } from "@/types/incident";
 import { useNavigate } from "react-router";
 
 export const IncidentTable = ({
@@ -25,7 +25,7 @@ export const IncidentTable = ({
   setRowsPerPage,
   refetch,
 }: {
-  incidents: IIncident[];
+  incidents: IncidentWithDetails[];
   count: number;
   page: number;
   setPage: (page: number) => void;
@@ -39,12 +39,12 @@ export const IncidentTable = ({
   const navigate = useNavigate();
 
   const getHeaders = (t: Function, uiTimezone: string) => {
-    const headers: Header<IIncident>[] = [
+    const headers: Header<IncidentWithDetails>[] = [
       {
         id: "name",
         content: t("common.table.headers.monitor"),
         render: (row) => {
-          return row.monitorId?.name || "N/A";
+          return row.monitor?.name || "N/A";
         },
       },
       {
@@ -75,7 +75,7 @@ export const IncidentTable = ({
         id: "status",
         content: t("incidents.table.headers.monitorStatus"),
         render: (row) => {
-          const status = row.monitorId?.status;
+          const status = row.monitor?.status;
           return status ? (
             <StatusLabel status={status} />
           ) : (
@@ -106,7 +106,7 @@ export const IncidentTable = ({
         id: "resolvedBy",
         content: t("incidents.table.headers.resolvedBy"),
         render: (row) => {
-          return row.resolvedBy?.email || "N/A";
+          return row.resolvedByUser?.email || "N/A";
         },
       },
       {
@@ -118,7 +118,7 @@ export const IncidentTable = ({
               loading={isPatching}
               onClick={async (e) => {
                 e.stopPropagation();
-                await patch(`/incidents/${row._id}/resolve`, {
+                await patch(`/incidents/${row.id}/resolve`, {
                   resolutionNote: "Resolved via UI",
                 });
                 refetch();
@@ -158,7 +158,7 @@ export const IncidentTable = ({
         headers={headers}
         data={incidents}
         onRowClick={(row) => {
-          navigate(`/incidents/${row._id}`);
+          navigate(`/incidents/${row.id}`);
         }}
         emptyViewPositive
         emptyViewText={t("incidents.table.empty")}

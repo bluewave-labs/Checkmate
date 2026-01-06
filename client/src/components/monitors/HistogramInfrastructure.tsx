@@ -117,11 +117,12 @@ export const HistogramInfrastructure = ({
 }) => {
   const theme = useTheme();
   const uniqueId = useId();
+  let data = checks.reverse();
 
   let avgTemps: { bucketDate: string; avg_temp: number | null }[] = [];
   let tempYDomain: number[] = [];
   if (type === "temp") {
-    avgTemps = checks.map((check) => {
+    avgTemps = data.map((check) => {
       const temps = check.cpu?.temperature || [];
       if (temps.length === 0) return { ...check, avg_temp: null };
       const totalTemp = temps.reduce((sum, temp) => sum + (temp || 0), 0);
@@ -139,7 +140,7 @@ export const HistogramInfrastructure = ({
   return (
     <BaseChart icon={null} title={title}>
       <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={type === "temp" ? avgTemps : checks}>
+        <AreaChart data={type === "temp" ? avgTemps : data}>
           <XAxis
             dataKey={xKey}
             tick={(props) => <XTick {...props} range={range} />}

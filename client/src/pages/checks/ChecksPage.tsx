@@ -12,7 +12,7 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import type { IMonitor } from "@/types/monitor";
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import { config } from "@/config/index";
 
 const ChecksPage = () => {
@@ -29,7 +29,7 @@ const ChecksPage = () => {
   const monitors: IMonitor[] = monitorResponse?.data || [];
 
   const { response: checksResponse, loading: checksLoading } = useGet<
-    ApiResponse<{ hasMore: boolean; checks: ICheck[] }>
+    ApiResponse<{ hasMore: boolean; checks: Check[] }>
   >(
     `/checks?page=${page}&rowsPerPage=${rowsPerPage}&range=${range}&status=${status}${
       selectedMonitorId !== "all" ? `&monitorId=${selectedMonitorId}` : ""
@@ -101,6 +101,7 @@ const ChecksPage = () => {
       </Stack>
       <ChecksTable
         checks={checks}
+        monitors={monitors}
         hasMore={hasMore}
         page={page}
         setPage={setPage}

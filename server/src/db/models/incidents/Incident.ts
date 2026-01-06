@@ -1,7 +1,6 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
-
-export const ResolutionTypes = ["auto", "manual"] as const;
-export type ResolutionType = (typeof ResolutionTypes)[number];
+import mongoose, { Schema, Types } from "mongoose";
+import type { ResolutionType } from "@/types/domain/index.js";
+import { ResolutionTypes } from "@/types/domain/index.js";
 
 export interface IIncident {
   _id: Types.ObjectId;

@@ -37,6 +37,7 @@ import {
   MongoMonitorRepository,
   MongoChecksRepository,
   MongoMonitorStatsRepository,
+  MongoIncidentsRepository,
 } from "@/repositories/index.js";
 import type { CheckEntity } from "@/types/domain/index.js";
 
@@ -44,6 +45,7 @@ export const initServices = async () => {
   const monitorRepository = new MongoMonitorRepository();
   const checksRepository = new MongoChecksRepository();
   const monitorStatsRepository = new MongoMonitorStatsRepository();
+  const incidentsRepository = new MongoIncidentsRepository();
 
   const checkService = new CheckService(checksRepository, monitorRepository);
   const inviteService = new InviteService();
@@ -72,7 +74,7 @@ export const initServices = async () => {
     userService,
     settingsService
   );
-  const incidentService = new IncidentService();
+  const incidentService = new IncidentService(incidentsRepository);
   const statsAggregationService = new StatsAggregationService();
   const jobGenerator = new JobGenerator(
     networkService,

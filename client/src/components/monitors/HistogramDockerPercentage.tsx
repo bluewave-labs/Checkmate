@@ -62,7 +62,7 @@ export const HistogramDockerPercentage = ({
       ) : (
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart
-            data={data}
+            data={[...data].reverse()}
             margin={{ top: 8, right: 8, left: isSmall ? 0 : 8, bottom: 8 }}
           >
             <CartesianGrid

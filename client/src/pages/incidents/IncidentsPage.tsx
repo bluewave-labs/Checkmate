@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import type { SelectChangeEvent } from "@mui/material/Select";
-import type { IIncident } from "@/types/incident";
+import type { IncidentWithDetails } from "@/types/incident";
 import type { IMonitor } from "@/types/monitor";
 import { config } from "@/config/index";
 
@@ -31,7 +31,7 @@ const IncidentsPage = () => {
     loading: incidentsLoading,
     isValidating: incidentsValidating,
     refetch,
-  } = useGet<ApiResponse<{ count: number; incidents: IIncident[] }>>(
+  } = useGet<ApiResponse<{ count: number; incidents: IncidentWithDetails[] }>>(
     `/incidents?page=${page}&rowsPerPage=${rowsPerPage}&range=${range}${
       selectedMonitorId && selectedMonitorId !== "all"
         ? `&monitorId=${selectedMonitorId}`

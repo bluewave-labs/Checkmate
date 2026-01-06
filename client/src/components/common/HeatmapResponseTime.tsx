@@ -24,18 +24,17 @@ export const HeatmapResponseTime = ({
   }
 
   if (!checks || checks.length === 0) return null;
-  let data = Array<any>();
 
-  if (!checks || checks.length === 0) {
-    checks = [];
-  }
-  if (checks.length !== 25) {
-    const placeholders = Array(25 - checks.length).fill({
-      status: "placeholder",
+  const latestChecks = checks.slice(-25).reverse();
+
+  let data: Array<ICheck | { status: "placeholder" }>;
+  if (latestChecks.length !== 25) {
+    const placeholders = Array(25 - latestChecks.length).fill({
+      status: "placeholder" as const,
     });
-    data = [...checks, ...placeholders];
+    data = [...latestChecks, ...placeholders];
   } else {
-    data = checks;
+    data = latestChecks;
   }
   return (
     <Box sx={{ width: "100%" }}>

@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router";
 import { useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import type { IIncident } from "@/types/incident";
+import type { IncidentWithDetails } from "@/types/incident";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
 import prettyMilliseconds from "pretty-ms";
@@ -22,7 +22,9 @@ const IncidentDetailsPage = () => {
   const uiTimezone = useAppSelector((state: any) => state.ui.timezone);
   const navigate = useNavigate();
 
-  const { response } = useGet<ApiResponse<IIncident>>(`/incidents/${id}`);
+  const { response } = useGet<ApiResponse<IncidentWithDetails>>(
+    `/incidents/${id}`
+  );
   const incident = response?.data || null;
 
   if (!incident) {
@@ -45,11 +47,11 @@ const IncidentDetailsPage = () => {
         <Stack direction={{ xs: "column", md: "row" }} gap={theme.spacing(8)}>
           <StatBox
             title={t("monitors.common.stats.monitor")}
-            subtitle={incident.monitorId?.name || "N/A"}
+            subtitle={incident.monitor?.name || "N/A"}
             onClick={() => {
-              const type = incident.monitorId.type as MonitorType;
+              const type = incident.monitor.type;
               const path = getMonitorPath(type);
-              const id = (incident.monitorId as any)?._id;
+              const id = incident.monitor?.id;
               if (id) navigate(`/${path}/${id}`);
             }}
           />
@@ -78,7 +80,7 @@ const IncidentDetailsPage = () => {
         <ResolutionCard
           resolved={incident.resolved}
           type={incident.resolutionType}
-          by={incident.resolvedBy?.email}
+          by={incident.resolvedByUser?.email}
           note={incident.resolutionNote}
           timestampLabel={
             incident.resolved && incident.endedAt

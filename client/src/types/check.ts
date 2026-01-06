@@ -1,4 +1,4 @@
-import type { MonitorType } from "./monitor";
+import type { MonitorType, MonitorStatus } from "./monitor";
 
 export interface CheckTimingPhases {
   wait: number;
@@ -11,7 +11,7 @@ export interface CheckTimingPhases {
   total: number;
 }
 
-export interface CheckTimings {
+export interface GotTimings {
   start: string;
   socket: string;
   lookup: string;
@@ -103,6 +103,12 @@ export interface INetInfo {
   fifo_in: number;
   fifo_out: number;
 }
+
+export interface ICaptureInfo {
+  version?: string;
+  mode?: string;
+}
+
 export interface ICheck {
   _id: string;
   metadata: {
@@ -119,33 +125,35 @@ export interface ICheck {
   expiry: string;
   createdAt: string;
   updatedAt: string;
-  timings: CheckTimings;
+  timings: GotTimings;
   lighthouse?: ICheckLighthouseFields;
   system?: ISystemInfo;
   // Present for docker monitor checks
   dockerContainers?: IDockerContainerSummary[];
 }
-export interface CheckWithMonitor {
-  _id: string;
-  metadata: {
-    monitorId: {
-      _id: string;
-      name: string;
-    };
-    type: string;
-    teamId: string;
-  };
-  status: string;
+
+export interface Check {
+  id: string;
+  monitorId: string;
+  teamId: string;
+  type: MonitorType;
+  status: MonitorStatus;
+  httpStatusCode?: number;
   message: string;
-  responseTime: number;
-  normalResponseTime?: number;
-  httpStatusCode: number;
-  ack: boolean;
-  expiry: string;
+  responseTime?: number;
+  timings?: GotTimings;
+  errorMessage?: string;
+  ackAt?: string;
+  ackBy?: string;
+  system?: ISystemInfo;
+  capture?: ICaptureInfo;
+  lighthouse?: ICheckLighthouseFields;
+  dockerContainers?: IDockerContainerSummary[];
   createdAt: string;
   updatedAt: string;
-  timings: CheckTimings;
+  expiry: string;
 }
+
 export interface AggregateCheck {
   bucketDate: string;
 

@@ -1,13 +1,13 @@
 export const ResolutionTypes = ["auto", "manual"] as const;
 export type ResolutionType = (typeof ResolutionTypes)[number];
-import type { MonitorType, MonitorStatus } from "@/types/monitor";
+import type { MonitorType, MonitorStatus } from "@/types/domain/index.js";
 export interface Incident {
   id: string;
   monitorId: string;
   teamId: string;
-  startedAt: string;
+  startedAt: Date;
   startCheck: string;
-  endedAt?: string;
+  endedAt?: Date;
   endCheck?: string;
   resolved: boolean;
   resolvedBy?: string;

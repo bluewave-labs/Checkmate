@@ -8,7 +8,7 @@ import { StatusLabel, ValueLabel } from "@/components/design-elements";
 import { BaseBox } from "@/components/design-elements";
 
 import { useAppSelector } from "@/hooks/AppHooks";
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import type { MonitorStatus } from "@/types/monitor";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
@@ -16,7 +16,7 @@ import { getMonitorPath } from "@/utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
 
 type CheckDetailsCardProps = {
-  check: ICheck;
+  check: Check;
 };
 
 export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
@@ -50,7 +50,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
   const httpText = Number.isFinite(httpStatusCode)
     ? String(httpStatusCode)
     : "-";
-  const typeText = check?.metadata?.type ?? "-";
+  const typeText = check?.type ?? "-";
   const checkedAtText = check?.createdAt
     ? formatDateWithTz(check.createdAt, "ddd, MMM D, YYYY, HH:mm A", uiTimezone)
     : "-";
@@ -71,7 +71,7 @@ export const CheckDetailsCard = ({ check }: CheckDetailsCardProps) => {
             })}
           </Typography>
           {(() => {
-            const href = `/${getMonitorPath(check.metadata.type)}/${check.metadata.monitorId}`;
+            const href = `/${getMonitorPath(check.type)}/${check.monitorId}`;
             return href ? (
               <Typography variant="body2" sx={{ mt: 0.5 }}>
                 <Link

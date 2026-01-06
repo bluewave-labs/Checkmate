@@ -15,7 +15,10 @@ import SettingsService from "@/services/system/SettingsService.js";
 import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import type { IEmailTransport } from "./NotificationServices/Email.js";
-import type { Monitor as MonitorEntity } from "@/types/domain/index.js";
+import type {
+  Monitor as MonitorEntity,
+  Incident,
+} from "@/types/domain/index.js";
 
 const SERVICE_NAME = "NotificationService";
 const logger = getChildLogger(SERVICE_NAME);
@@ -29,7 +32,7 @@ export interface ITestResult {
 export interface INotificationService {
   handleNotifications: (
     monitor: MonitorEntity,
-    incident: IIncident
+    incident: Incident
   ) => Promise<void>;
   testNotificationChannels: (
     monitorId: string,
@@ -58,7 +61,7 @@ class NotificationService implements INotificationService {
     this.webhookService = new WebhookService();
   }
 
-  handleNotifications = async (monitor: MonitorEntity, incident: IIncident) => {
+  handleNotifications = async (monitor: MonitorEntity, incident: Incident) => {
     const notificationIds = monitor.notificationChannels || [];
 
     if (notificationIds.length === 0) {
@@ -89,7 +92,7 @@ class NotificationService implements INotificationService {
   private sendForChannel = async (
     channel: INotificationChannel,
     monitor: MonitorEntity,
-    incident: IIncident
+    incident: Incident
   ): Promise<boolean> => {
     try {
       switch (channel.type) {

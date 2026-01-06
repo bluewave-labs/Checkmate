@@ -1,4 +1,4 @@
-import type { ICheck, CheckTimingPhases } from "@/types/check";
+import type { Check, CheckTimingPhases } from "@/types/check";
 import { PieChart, Pie, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -6,7 +6,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { BaseBox } from "@/components/design-elements";
 import { useTranslation } from "react-i18next";
-type TimingsChartProps = { check: ICheck | null };
+type TimingsChartProps = { check: Check | null };
 
 export type TimingSegment = {
   name: string;

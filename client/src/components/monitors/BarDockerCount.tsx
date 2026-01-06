@@ -66,7 +66,7 @@ export const BarDockerCount = ({
       ) : (
         <ResponsiveContainer width="100%" height={200}>
           <BarChart
-            data={data}
+            data={[...data].reverse()}
             margin={{ top: 8, right: 8, left: isSmall ? 4 : 12, bottom: 8 }}
           >
             <defs>

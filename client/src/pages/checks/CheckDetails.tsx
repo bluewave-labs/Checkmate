@@ -4,12 +4,12 @@ import Grid from "@mui/material/Grid";
 
 import { useParams } from "react-router";
 import { useGet } from "@/hooks/UseApi";
-import type { ICheck } from "@/types/check";
+import type { Check } from "@/types/check";
 import type { ApiResponse } from "@/types/api";
 const CheckDetails = () => {
   const { id } = useParams();
 
-  const { response, loading, error } = useGet<ApiResponse<ICheck>>(
+  const { response, loading, error } = useGet<ApiResponse<Check>>(
     `/checks/${id}`
   );
 

@@ -22,7 +22,10 @@ export const HistogramResponseTime = ({
 
   if (!Array.isArray(checks) || checks.length === 0) return null;
 
-  const normalized = normalizeResponseTimes(checks.slice(-25), "responseTime");
+  const normalized = normalizeResponseTimes(
+    checks.slice(-25).reverse(),
+    "responseTime"
+  );
   let data = Array<any>();
 
   if (!normalized || normalized.length === 0) {
@@ -36,7 +39,6 @@ export const HistogramResponseTime = ({
   } else {
     data = normalized;
   }
-
   const chartHeight = typeof height === "number" ? `${height}px` : height;
   const gridGap = gap ?? theme.spacing(0.5);
 

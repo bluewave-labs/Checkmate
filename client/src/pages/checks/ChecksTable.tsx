@@ -6,27 +6,26 @@ import {
 } from "@/components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/components/design-elements/Table";
+import type { IMonitor } from "@/types/monitor";
 
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/utils/TimeUtils";
 import { useAppSelector } from "@/hooks/AppHooks";
-import type { ICheck } from "@/types/check";
 import type { MonitorStatus } from "@/types/monitor";
 import { useNavigate } from "react-router";
-
-type CheckWithMonitor = ICheck & {
-  metadata?: { monitorId?: { name?: string } };
-};
+import type { Check } from "@/types/check";
 
 export const ChecksTable = ({
   checks,
+  monitors,
   hasMore,
   page,
   setPage,
   rowsPerPage,
   setRowsPerPage,
 }: {
-  checks: CheckWithMonitor[];
+  checks: Check[];
+  monitors: IMonitor[] | null;
   hasMore?: boolean;
   page: number;
   setPage: (page: number) => void;
@@ -38,12 +37,15 @@ export const ChecksTable = ({
   const navigate = useNavigate();
 
   const getHeaders = (t: Function, uiTimezone: string) => {
-    const headers: Header<CheckWithMonitor>[] = [
+    const headers: Header<Check>[] = [
       {
         id: "monitorName",
         content: t("common.table.headers.monitor"),
         render: (row) => {
-          return row.metadata?.monitorId?.name || "N/A";
+          return (
+            monitors?.find((monitor) => monitor.id === row.monitorId)?.name ||
+            "N/A"
+          );
         },
       },
       {
@@ -69,6 +71,7 @@ export const ChecksTable = ({
         content: t("checks.table.headers.statusCode"),
         render: (row) => {
           const code = row.httpStatusCode;
+          if (!code) return "N/A";
           const value =
             code < 300 ? "positive" : code < 400 ? "neutral" : "negative";
           return <ValueLabel value={value} text={String(code)} />;
@@ -108,7 +111,7 @@ export const ChecksTable = ({
         headers={headers}
         data={checks}
         onRowClick={(row) => {
-          navigate(`/checks/${row._id}`);
+          navigate(`/checks/${row.id}`);
         }}
         emptyViewText={t("checks.table.empty")}
       />
