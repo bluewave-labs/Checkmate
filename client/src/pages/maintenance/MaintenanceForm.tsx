@@ -177,8 +177,8 @@ export const MaintenanceForm = ({
             control={control}
             defaultValue={[]}
             render={({ field }) => {
-              const selectedMonitors = monitorOptions.filter((o: any) =>
-                (field.value || []).includes(o._id)
+              const selectedMonitors = monitorOptions.filter((o: IMonitor) =>
+                (field.value || []).includes(o.id)
               );
               const count = selectedMonitors.length;
 
@@ -193,7 +193,7 @@ export const MaintenanceForm = ({
                   getOptionLabel={(option) => option.name}
                   value={selectedMonitors}
                   onChange={(_, newValue) => {
-                    field.onChange(newValue.map((o: any) => o._id));
+                    field.onChange(newValue.map((o: IMonitor) => o.id));
                   }}
                   renderInput={(params) => (
                     <TextInput

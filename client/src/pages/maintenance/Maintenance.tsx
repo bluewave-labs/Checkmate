@@ -12,7 +12,7 @@ import { useNavigate } from "react-router";
 import type { Header } from "@/components/design-elements/Table";
 import { useTranslation } from "react-i18next";
 import type { ApiResponse } from "@/types/api";
-import type { IMaintenance } from "@/types/maintenance";
+import type { Maintenance } from "@/types/maintenance";
 import type { ActionMenuItem } from "@/components/actions-menu";
 import { config } from "@/config/index";
 
@@ -20,11 +20,13 @@ const MaintenancePage = () => {
   const theme = useTheme();
   const { t } = useTranslation();
   const [selectedMaintenance, setSelectedMaintenance] =
-    useState<IMaintenance | null>(null);
+    useState<Maintenance | null>(null);
   const open = Boolean(selectedMaintenance);
 
   const { patch, loading: isPausing } = usePatch<{}, any>();
-  const { response, isValidating, refetch } = useGet<ApiResponse<any>>(
+  const { response, isValidating, refetch } = useGet<
+    ApiResponse<Maintenance[]>
+  >(
     "/maintenance",
     {},
     {
@@ -43,7 +45,7 @@ const MaintenancePage = () => {
 
   const handleConfirm = async () => {
     if (!selectedMaintenance) return;
-    const res = await deleteFn(`/maintenance/${selectedMaintenance._id}`);
+    const res = await deleteFn(`/maintenance/${selectedMaintenance.id}`);
     if (res) {
       setSelectedMaintenance(null);
       refetch();
@@ -54,13 +56,13 @@ const MaintenancePage = () => {
     setSelectedMaintenance(null);
   };
 
-  const getActions = (maintenance: IMaintenance): ActionMenuItem[] => {
+  const getActions = (maintenance: Maintenance): ActionMenuItem[] => {
     return [
       {
         id: 1,
         label: "Configure",
         action: () => {
-          navigate(`/maintenance/${maintenance._id}/configure`);
+          navigate(`/maintenance/${maintenance.id}/configure`);
         },
         closeMenu: true,
       },
@@ -68,7 +70,7 @@ const MaintenancePage = () => {
         id: 2,
         label: maintenance.isActive ? "Disable" : "Enable",
         action: async () => {
-          const res = await patch(`/maintenance/${maintenance._id}/active`, {});
+          const res = await patch(`/maintenance/${maintenance.id}/active`, {});
           if (res) {
             refetch();
           }
@@ -87,7 +89,7 @@ const MaintenancePage = () => {
   };
 
   const getHeaders = () => {
-    const headers: Header<IMaintenance>[] = [
+    const headers: Header<Maintenance>[] = [
       {
         id: "name",
         content: t("common.table.headers.name"),
@@ -148,8 +150,8 @@ const MaintenancePage = () => {
       <Table
         headers={headers}
         data={maintenance}
-        onRowClick={(row: IMaintenance) => {
-          navigate(`/maintenance/${row._id}/configure`);
+        onRowClick={(row: Maintenance) => {
+          navigate(`/maintenance/${row.id}/configure`);
         }}
       />
 

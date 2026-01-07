@@ -1,18 +1,18 @@
 export const MaintenanceRepeats = ["no repeat", "daily", "weekly"] as const;
 export type MaintenanceRepeat = (typeof MaintenanceRepeats)[number];
 
-export interface IMaintenance extends Document {
-  _id: string;
+export interface Maintenance {
+  id: string;
   orgId: string;
   teamId: string;
   name: string;
-  isActive: boolean;
+  isActive: boolean | unknown;
   repeat: MaintenanceRepeat;
   monitors: string[];
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   createdBy: string;
   updatedBy: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
