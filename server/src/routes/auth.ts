@@ -1,7 +1,6 @@
 import { Router } from "express";
 
 import { AuthController } from "@/controllers/index.js";
-import { verifyToken } from "@/middleware/VerifyToken.js";
 import { validateBody } from "@/middleware/validation.js";
 import {
   registerSchema,
@@ -36,8 +35,6 @@ class AuthRoutes {
     );
     this.router.post("/logout", this.controller.logout);
     // this.router.get("/me", verifyToken, this.controller.me);
-    this.router.post("/cleanup", this.controller.cleanup);
-    this.router.post("/cleanup-monitors", this.controller.cleanMonitors);
   };
 
   getRouter() {

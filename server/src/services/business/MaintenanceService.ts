@@ -1,11 +1,6 @@
-import {
-  Monitor,
-  IUserContext,
-  IMaintenance,
-  Maintenance,
-} from "@/db/models/index.js";
+import { Monitor, IMaintenance, Maintenance } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
-import { MaintenanceRepeats } from "@/types/domain/index.js";
+import { MaintenanceRepeats, UserContext } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "MaintenanceService";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -13,19 +8,19 @@ const WEEK_MS = 7 * DAY_MS;
 
 export interface IMaintenanceService {
   create: (
-    userContext: IUserContext,
+    userContext: UserContext,
     maintenance: IMaintenance
   ) => Promise<IMaintenance>;
   getAll: (teamId: string) => Promise<IMaintenance[]>;
   get: (teamId: string, id: string) => Promise<IMaintenance>;
   toggleActive: (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string
   ) => Promise<IMaintenance>;
   update: (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string,
     updateData: Partial<IMaintenance>
   ) => Promise<IMaintenance>;
@@ -47,7 +42,7 @@ class MaintenanceService implements IMaintenanceService {
     this.lastRefresh = 0;
   }
 
-  create = async (userContext: IUserContext, maintenanceData: IMaintenance) => {
+  create = async (userContext: UserContext, maintenanceData: IMaintenance) => {
     // Make sure monitors belong to current team
     const monitorIds = maintenanceData.monitors || [];
     const count = await Monitor.countDocuments({
@@ -86,7 +81,7 @@ class MaintenanceService implements IMaintenanceService {
 
   toggleActive = async (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string
   ) => {
     const updatedMaintenance = await Maintenance.findOneAndUpdate(
@@ -110,7 +105,7 @@ class MaintenanceService implements IMaintenanceService {
 
   update = async (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string,
     updateData: Partial<IMaintenance>
   ) => {

@@ -1,30 +1,30 @@
 import mongoose from "mongoose";
 
 import {
-  IUserContext,
   INotificationChannel,
   NotificationChannel,
   Monitor,
 } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
+import type { UserContext } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "NotificationChannelService";
 
 export interface INotificationChannelService {
   create: (
-    tokenizedUser: IUserContext,
+    tokenizedUser: UserContext,
     notificationChannel: INotificationChannel
   ) => Promise<INotificationChannel>;
   getAll: (teamId: string) => Promise<INotificationChannel[]>;
   get: (teamId: string, id: string) => Promise<INotificationChannel>;
   toggleActive: (
     teamId: string,
-    tokenizedUser: IUserContext,
+    tokenizedUser: UserContext,
     id: string
   ) => Promise<INotificationChannel>;
   update: (
     teamId: string,
-    tokenizedUser: IUserContext,
+    tokenizedUser: UserContext,
     id: string,
     updateData: Partial<INotificationChannel>
   ) => Promise<INotificationChannel>;
@@ -39,7 +39,7 @@ class NotificationChannelService implements INotificationChannelService {
   }
 
   create = async (
-    userContext: IUserContext,
+    userContext: UserContext,
     notificationChannelData: INotificationChannel
   ) => {
     const data: INotificationChannel = {
@@ -68,7 +68,7 @@ class NotificationChannelService implements INotificationChannelService {
 
   toggleActive = async (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string
   ) => {
     const updatedChannel = await NotificationChannel.findOneAndUpdate(
@@ -92,7 +92,7 @@ class NotificationChannelService implements INotificationChannelService {
 
   update = async (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string,
     updateData: Partial<INotificationChannel>
   ) => {

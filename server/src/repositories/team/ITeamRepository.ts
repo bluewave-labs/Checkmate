@@ -6,6 +6,8 @@ export interface ITeamRepository {
   // single fetch
   findById(teamId: string, orgId: string): Promise<Team | null>;
   // collection fetch
+  findManyById(teamIds: string[]): Promise<Team[]>;
   // update
   // delete
+  deleteById(teamId: string): Promise<boolean>;
 }

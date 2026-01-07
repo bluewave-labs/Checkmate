@@ -2,43 +2,6 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import { IRole, ITeam } from "@/db/models/index.js";
 import { Entitlements } from "@/types/entitlements.js";
 
-export interface ITokenizedUser {
-  sub: string;
-  email: string;
-  orgId: string;
-}
-export interface IUserContext {
-  sub: string;
-  email: string;
-  orgId: string;
-  teamIds?: string[];
-  teams?: ITeam[];
-  currentTeamId?: string;
-  roles?: {
-    orgRole?: IRole;
-    teamRole: IRole;
-  };
-  entitlements: Entitlements;
-}
-
-export interface IUserReturnable {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  org: {
-    name: string;
-    planKey: string;
-    permissions: string[];
-  };
-  teams: {
-    id: string;
-    name: string;
-    permissions: string[];
-  }[];
-  entitlements: Entitlements;
-}
-
 export interface IUser extends Document {
   _id: Types.ObjectId;
   firstName: string;

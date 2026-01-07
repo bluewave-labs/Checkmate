@@ -7,13 +7,7 @@ export { MonitorStats } from "./monitors/MonitorStats.js";
 export type { IMonitorStats } from "./monitors/MonitorStats.js";
 
 export { User } from "./auth/User.js";
-export type {
-  IUser,
-  ITokenizedUser,
-  IUserReturnable,
-  IUserContext,
-  IUserProfile,
-} from "./auth/User.js";
+export type { IUser, IUserProfile } from "./auth/User.js";
 
 export {
   NotificationChannel,
@@ -25,7 +19,7 @@ export { Invite } from "./auth/Invite.js";
 export type { IInvite } from "./auth/Invite.js";
 
 export { Role } from "./auth/Role.js";
-export type { IRole } from "./auth/Role.js";
+export type { IRole, RoleLike } from "./auth/Role.js";
 
 export { Maintenance } from "./maintenance/Maintenance.js";
 export type { IMaintenance } from "./maintenance/Maintenance.js";

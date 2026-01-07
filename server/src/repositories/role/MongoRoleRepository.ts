@@ -1,11 +1,10 @@
-import { Types } from "mongoose";
 import type { IRoleRepository } from "./IRoleRepository.js";
 import { Role } from "@/db/models/index.js";
-import type { IRole } from "@/db/models/index.js";
+import type { RoleLike, IRole } from "@/db/models/index.js";
 import type { Role as RoleEntity } from "@/types/domain/index.js";
 
 class MongoRoleRepository implements IRoleRepository {
-  private toEntity = (doc: IRole): RoleEntity => {
+  private toEntity = (doc: RoleLike): RoleEntity => {
     return {
       id: doc._id.toString(),
       organizationId: doc.organizationId.toString(),
@@ -18,24 +17,18 @@ class MongoRoleRepository implements IRoleRepository {
   };
 
   createMany = async (rolesData: RoleEntity[]): Promise<RoleEntity[]> => {
-    const docs = rolesData.map((role) => ({
-      ...role,
-      organizationId: role.organizationId
-        ? new Types.ObjectId(role.organizationId)
-        : undefined,
-    }));
-
-    const insertedRoles = await Role.insertMany(docs);
+    const insertedRoles = await Role.insertMany(rolesData);
     return insertedRoles.map((r) => {
-      return this.toEntity({
-        _id: r._id,
-        organizationId: r.organizationId || new Types.ObjectId(),
+      const e = {
+        _id: r._id.toString(),
+        organizationId: r.organizationId.toString(),
         name: r.name,
         scope: r.scope,
         permissions: r.permissions,
         createdAt: r.createdAt,
         updatedAt: r.updatedAt,
-      });
+      };
+      return this.toEntity(e);
     });
   };
 
@@ -51,6 +44,11 @@ class MongoRoleRepository implements IRoleRepository {
       return null;
     }
     return this.toEntity(role);
+  };
+
+  deleteMany = async (roleIds: string[]) => {
+    const result = await Role.deleteMany({ _id: { $in: roleIds } });
+    return result.deletedCount ?? 0;
   };
 }
 

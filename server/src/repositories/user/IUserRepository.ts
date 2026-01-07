@@ -6,5 +6,10 @@ export interface IUserRepository {
   findByEmail: (email: string) => Promise<User | null>;
   // collection fetch
   // update
+  updateById: (
+    userId: string,
+    updateData: Partial<User>
+  ) => Promise<User | null>;
   // delete
+  deleteById(userId: string): Promise<boolean>;
 }

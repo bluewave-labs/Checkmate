@@ -1,6 +1,7 @@
 import type { ITeamRepository } from "@/repositories/index.js";
 import { type ITeam, Team } from "@/db/models/index.js";
 import { Team as TeamEntity } from "@/types/domain/index.js";
+
 class MongoTeamRepository implements ITeamRepository {
   private toEntity = (doc: ITeam): TeamEntity => {
     return {
@@ -28,6 +29,16 @@ class MongoTeamRepository implements ITeamRepository {
       return null;
     }
     return this.toEntity(team);
+  };
+
+  findManyById = async (teamIds: string[]) => {
+    const teams = await Team.find({ _id: { $in: teamIds } });
+    return teams.map(this.toEntity);
+  };
+
+  deleteById = async (teamId: string) => {
+    const result = await Team.deleteOne({ _id: teamId });
+    return result.deletedCount === 1;
   };
 }
 

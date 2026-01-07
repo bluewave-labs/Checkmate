@@ -73,7 +73,10 @@ class RecoveryController implements IRecoveryController {
       if (!recoveryToken) {
         throw new ApiError("Invalid recovery token", 400);
       }
-      await this.authService.changePassword(recoveryToken.userId, password);
+      await this.authService.changePassword(
+        recoveryToken.userId.toString(),
+        password
+      );
       await this.recoveryService.delete(recoveryToken._id);
 
       const user = await User.findById(recoveryToken.userId);

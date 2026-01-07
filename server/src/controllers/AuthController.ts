@@ -132,22 +132,6 @@ class AuthController {
     });
     res.status(200).json({ message: "Logout successful" });
   };
-
-  cleanup = async (req: Request, res: Response) => {
-    try {
-      await this.authService.cleanup();
-      res.status(200).json({ message: "Cleanup successful" });
-    } catch (error) {}
-  };
-
-  cleanMonitors = async (req: Request, res: Response) => {
-    try {
-      await this.authService.cleanMonitors();
-      res.status(200).json({ message: "Monitors cleanup successful" });
-    } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
-    }
-  };
 }
 
 export default AuthController;

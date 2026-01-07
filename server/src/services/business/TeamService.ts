@@ -2,18 +2,14 @@ import mongoose from "mongoose";
 import {
   Monitor,
   Role,
-  IRole,
   ITeam,
   Team,
   TeamMembership,
-  OrgMembership,
-  IUserContext,
 } from "@/db/models/index.js";
 import type { IMonitorRepository } from "@/repositories/index.js";
 import type { IJobQueue } from "../infrastructure/JobQueue.js";
 import ApiError from "@/utils/ApiError.js";
-import { PERMISSIONS } from "@/types/permissions.js";
-
+import type { UserContext } from "@/types/domain/index.js";
 const SERVICE_NAME = "TeamService";
 export interface ITeamService {
   create: (
@@ -26,7 +22,7 @@ export interface ITeamService {
   getJoined: (teamId: string, orgId: string) => Promise<Partial<ITeam[]>>;
   get: (teamId: string, orgId: string) => Promise<ITeam>;
   update: (
-    user: IUserContext,
+    user: UserContext,
     teamId: string,
     teamData: Partial<ITeam>
   ) => Promise<ITeam>;
@@ -115,7 +111,7 @@ class TeamService implements ITeamService {
   };
 
   update = async (
-    user: IUserContext,
+    user: UserContext,
     teamId: string,
     teamData: Partial<ITeam>
   ) => {

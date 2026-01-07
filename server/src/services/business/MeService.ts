@@ -3,8 +3,6 @@ import {
   Org,
   OrgMembership,
   Team,
-  ITeam,
-  IUserReturnable,
   TeamMembership,
   Role,
   IRole,
@@ -12,9 +10,10 @@ import {
 import ApiError from "@/utils/ApiError.js";
 import type { IEntitlementsProvider } from "@/services/system/EntitlementsService.js";
 import type { Entitlements } from "@/types/entitlements.js";
+import type { UserReturnable } from "@/types/domain/index.js";
 
 export interface IMeService {
-  me(userId: string): Promise<IUserReturnable>;
+  me(userId: string): Promise<UserReturnable>;
   getEntitlements(orgId: string): Promise<Entitlements>;
   getPermissions(user: any): Promise<{
     org: string[];
@@ -32,7 +31,7 @@ class MeService implements IMeService {
     this.entitlementsProvider = entitlementsProvider;
   }
 
-  me = async (userId: string): Promise<IUserReturnable> => {
+  me = async (userId: string): Promise<UserReturnable> => {
     // Need to get teamIds
     const user = await User.findById(userId);
     if (!user) {
@@ -85,7 +84,7 @@ class MeService implements IMeService {
     const entitlements: Entitlements =
       await this.entitlementsProvider.getForOrg(org._id.toString());
 
-    const returnableUser: IUserReturnable = {
+    const returnableUser: UserReturnable = {
       id: user._id.toString(),
       email: user.email,
       firstName: user.firstName,

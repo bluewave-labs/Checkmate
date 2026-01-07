@@ -29,6 +29,27 @@ class MongoOrgRepository implements IOrgRepository {
     const org = await Org.create(orgData);
     return this.toEntity(org);
   };
+
+  findById = async (orgId: string) => {
+    const org = await Org.findById(orgId);
+    if (!org) return null;
+    return this.toEntity(org);
+  };
+
+  updateById = async (orgId: string, orgData: Partial<OrgEntity>) => {
+    const updated = await Org.findOneAndUpdate(
+      { _id: orgId },
+      { $set: orgData },
+      { new: true }
+    );
+    if (!updated) return null;
+    return this.toEntity(updated);
+  };
+
+  deleteById = async (orgId: string) => {
+    const result = await Org.deleteOne({ _id: orgId });
+    return result.deletedCount === 1;
+  };
 }
 
 export default MongoOrgRepository;

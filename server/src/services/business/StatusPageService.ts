@@ -1,21 +1,13 @@
 import mongoose from "mongoose";
 
-import {
-  IUserContext,
-  IStatusPage,
-  StatusPage,
-  Monitor,
-  Check,
-  IMonitor,
-} from "@/db/models/index.js";
+import { IStatusPage, StatusPage, Monitor, Check } from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
-import { count } from "node:console";
-
+import type { UserContext } from "@/types/domain/index.js";
 const SERVICE_NAME = "StatusPageService";
 
 export interface IStatusPageService {
   create: (
-    tokenizedUser: IUserContext,
+    tokenizedUser: UserContext,
     statusPage: IStatusPage
   ) => Promise<IStatusPage>;
   getAll: (
@@ -32,7 +24,7 @@ export interface IStatusPageService {
   ) => Promise<{ statusPage: IStatusPage; checksMap: Record<string, any[]> }>;
   update: (
     teamId: string,
-    tokenizedUser: IUserContext,
+    tokenizedUser: UserContext,
     id: string,
     updateData: Partial<IStatusPage>
   ) => Promise<IStatusPage>;
@@ -46,7 +38,7 @@ class StatusPageService implements IStatusPageService {
     this.SERVICE_NAME = SERVICE_NAME;
   }
 
-  create = async (userContext: IUserContext, statusPageData: IStatusPage) => {
+  create = async (userContext: UserContext, statusPageData: IStatusPage) => {
     const monitorIds = statusPageData.monitors || [];
     const count = await Monitor.countDocuments({
       _id: { $in: monitorIds },
@@ -153,7 +145,7 @@ class StatusPageService implements IStatusPageService {
 
   update = async (
     teamId: string,
-    userContext: IUserContext,
+    userContext: UserContext,
     id: string,
     updateData: Partial<IStatusPage>
   ) => {

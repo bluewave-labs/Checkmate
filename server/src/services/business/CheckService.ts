@@ -10,10 +10,7 @@ import ApiError from "@/utils/ApiError.js";
 import { getChildLogger } from "@/logger/Logger.js";
 import { getStartDate } from "@/utils/TimeUtils.js";
 
-import type {
-  CheckEntity,
-  ICheckLighthouseFields,
-} from "@/types/domain/index.js";
+import type { CheckEntity } from "@/types/domain/index.js";
 import type {
   IChecksRepository,
   IMonitorRepository,

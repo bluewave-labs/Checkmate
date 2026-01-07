@@ -27,6 +27,21 @@ class MongoUserRepository implements IUserRepository {
     if (!user) return null;
     return this.toEntity(user);
   };
+
+  updateById = async (userId: string, updateData: Partial<UserEntity>) => {
+    const result = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: updateData },
+      { new: true }
+    );
+    if (!result) return null;
+    return this.toEntity(result);
+  };
+
+  deleteById = async (userId: string) => {
+    const result = await User.deleteOne({ _id: userId });
+    return result.deletedCount === 1;
+  };
 }
 
 export default MongoUserRepository;

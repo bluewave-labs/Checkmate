@@ -1,20 +1,4 @@
 import bcrypt from "bcryptjs";
-import {
-  User,
-  Org,
-  OrgMembership,
-  Team,
-  ITeam,
-  IUserReturnable,
-  TeamMembership,
-  Role,
-  IRole,
-  IUser,
-  ITokenizedUser,
-  Check,
-  NotificationChannel,
-} from "@/db/models/index.js";
-import { Types } from "mongoose";
 import ApiError from "@/utils/ApiError.js";
 import { IJobQueue } from "../infrastructure/JobQueue.js";
 import { hashPassword } from "@/utils/JWTUtils.js";
@@ -26,11 +10,18 @@ import type {
   IMonitorRepository,
   IUserRepository,
   IOrgRepository,
+  IRoleRepository,
   ITeamRepository,
+  IOrgMembershipRepository,
   ITeamMembershipRepository,
 } from "@/repositories/index.js";
-import type { Invite } from "@/types/domain/index.js";
-import mongoose from "mongoose";
+import type {
+  User,
+  UserReturnable,
+  TokenizedUser,
+  Team,
+  Invite,
+} from "@/types/domain/index.js";
 
 const SERVICE_NAME = "AuthService";
 
@@ -46,29 +37,26 @@ export type LoginData = {
   password: string;
 };
 
-export type AuthResult = Partial<ITokenizedUser>;
+export type AuthResult = Partial<TokenizedUser>;
 
 export interface IAuthService {
   register(signupData: RegisterData): Promise<{
-    tokenizedUser: ITokenizedUser;
-    returnableUser: IUserReturnable;
+    tokenizedUser: TokenizedUser;
+    returnableUser: UserReturnable;
   }>;
   registerWithInvite(
     invite: Invite,
     signupData: RegisterData
   ): Promise<{
-    tokenizedUser: ITokenizedUser;
-    returnableUser: IUserReturnable;
+    tokenizedUser: TokenizedUser;
+    returnableUser: UserReturnable;
   }>;
   login(loginData: LoginData): Promise<{
-    tokenizedUser: ITokenizedUser;
-    returnableUser: IUserReturnable;
+    tokenizedUser: TokenizedUser;
+    returnableUser: UserReturnable;
   }>;
-  getTeamIds(userId: string): Promise<string[]>;
-  getTeams(teamIds: string[]): Promise<ITeam[]>;
-  cleanup(): Promise<void>;
-  cleanMonitors(): Promise<void>;
-  changePassword(userId: Types.ObjectId, newPassword: string): Promise<boolean>;
+  getTeams(teamIds: string[]): Promise<Team[]>;
+  changePassword(userId: string, newPassword: string): Promise<boolean>;
 }
 
 class AuthService implements IAuthService {
@@ -77,7 +65,9 @@ class AuthService implements IAuthService {
   private entitlementsProvider: IEntitlementsProvider;
   private monitorRepository: IMonitorRepository;
   private userRepository: IUserRepository;
+  private roleRepository: IRoleRepository;
   private orgRepository: IOrgRepository;
+  private orgMembershipRepository: IOrgMembershipRepository;
   private teamRepository: ITeamRepository;
   private teamMembershipRepository: ITeamMembershipRepository;
 
@@ -86,7 +76,9 @@ class AuthService implements IAuthService {
     entitlementsProvider: IEntitlementsProvider,
     monitorRepository: IMonitorRepository,
     userRepository: IUserRepository,
+    roleRepository: IRoleRepository,
     orgRepository: IOrgRepository,
+    orgMembershipRepository: IOrgMembershipRepository,
     teamRepository: ITeamRepository,
     teamMembershipRepository: ITeamMembershipRepository
   ) {
@@ -96,8 +88,10 @@ class AuthService implements IAuthService {
     this.monitorRepository = monitorRepository;
     this.userRepository = userRepository;
     this.orgRepository = orgRepository;
+    this.roleRepository = roleRepository;
     this.teamRepository = teamRepository;
     this.teamMembershipRepository = teamMembershipRepository;
+    this.orgMembershipRepository = orgMembershipRepository;
   }
 
   async register(signupData: RegisterData) {
@@ -113,7 +107,7 @@ class AuthService implements IAuthService {
     };
 
     try {
-      const newUserData: Partial<IUser> = {
+      const newUserData: Partial<User> = {
         firstName: signupData.firstName,
         lastName: signupData.lastName,
         email: signupData.email,
@@ -132,7 +126,7 @@ class AuthService implements IAuthService {
 
       created.org = org.id;
 
-      const roles = await Role.insertMany([
+      const roles = await this.roleRepository.createMany([
         {
           organizationId: org.id,
           name: "Org Admin",
@@ -184,14 +178,14 @@ class AuthService implements IAuthService {
         },
       ]);
 
-      created.roles = roles.map((r) => r._id);
+      created.roles = roles.map((r) => r.id);
 
-      const membership = await OrgMembership.create({
+      const membership = await this.orgMembershipRepository.create({
         userId: user.id,
         orgId: org.id,
-        roleId: roles[0]?._id,
+        roleId: roles[0]?.id,
       });
-      created.orgMembership = membership._id;
+      created.orgMembership = membership.id;
 
       const team = await this.teamRepository.create({
         name: "Default Team",
@@ -205,11 +199,11 @@ class AuthService implements IAuthService {
         orgId: org.id,
         userId: user.id,
         teamId: team.id,
-        roleId: roles[2]?._id.toString(),
+        roleId: roles[2]?.id.toString(),
       });
       created.teamMembership = teamMembership.id;
 
-      const tokenizedUser: ITokenizedUser = {
+      const tokenizedUser: TokenizedUser = {
         sub: user.id,
         email: user.email,
         orgId: org.id,
@@ -224,7 +218,7 @@ class AuthService implements IAuthService {
       const entitlements: Entitlements =
         await this.entitlementsProvider.getForOrg(org.id);
 
-      const returnableUser: IUserReturnable = {
+      const returnableUser: UserReturnable = {
         id: user.id,
         email: user.email,
         firstName: user.firstName,
@@ -240,12 +234,12 @@ class AuthService implements IAuthService {
 
       return { tokenizedUser, returnableUser };
     } catch (error) {
-      await TeamMembership.deleteOne({ _id: created.teamMembership });
-      await OrgMembership.deleteOne({ _id: created.orgMembership });
-      await Team.deleteOne({ _id: created.team });
-      await Role.deleteMany({ _id: { $in: created.roles } });
-      if (created.org) await Org.findByIdAndDelete(created.org);
-      if (created.user) await User.findByIdAndDelete(created.user);
+      await this.teamMembershipRepository.deleteById(created.teamMembership);
+      await this.orgMembershipRepository.deleteById(created.orgMembership);
+      await this.teamRepository.deleteById(created.team);
+      await this.roleRepository.deleteMany(created.roles);
+      if (created.org) await this.orgRepository.deleteById(created.org);
+      if (created.user) await this.userRepository.deleteById(created.user);
       throw error;
     }
   }
@@ -271,100 +265,102 @@ class AuthService implements IAuthService {
         throw new ApiError("No organization ID", 400);
       }
       // Check for org
-      const org = await Org.findById(orgId);
+      const org = await this.orgRepository.findById(orgId);
       if (!org) {
         throw new ApiError("Organization not found", 404);
       }
 
       // Get or Create user
-      let user = await User.findOne({ email });
+      let user = await this.userRepository.findByEmail(email);
       if (!user) {
         const passwordHash = await hashPassword(signupData.password);
-        user = await User.create({
+        user = await this.userRepository.create({
           email,
           firstName: signupData.firstName,
           lastName: signupData.lastName,
           passwordHash,
         });
-        created.user = user._id;
+        created.user = user.id;
       }
 
-      const team = await Team.findById(teamId);
+      const team = await this.teamRepository.findById(teamId, org.id);
       if (!team) {
         throw new ApiError("Team not found", 404);
       }
 
       // Get or create orgMembership
-      let orgMembership = await OrgMembership.findOne({
-        userId: user._id,
-        orgId,
-      });
+      let orgMembership = await this.orgMembershipRepository.findByUserId(
+        user.id
+      );
+
       if (orgMembership && !orgMembership.roleId && orgRoleId) {
-        orgMembership.roleId = new mongoose.Types.ObjectId(orgRoleId);
-        await orgMembership.save();
+        orgMembership.roleId = orgRoleId;
+        await this.orgMembershipRepository.update(orgMembership);
       }
       if (!orgMembership) {
-        orgMembership = await OrgMembership.create({
+        orgMembership = await this.orgMembershipRepository.create({
           orgId,
-          userId: user._id,
+          userId: user.id,
           ...(orgRoleId ? { roleId: orgRoleId } : {}),
         });
-        created.orgMembership = orgMembership._id;
+        created.orgMembership = orgMembership.id;
       }
 
       // Create TeamMembership
-      let teamMembership = await TeamMembership.findOne({
-        userId: user._id,
-        teamId,
-      });
+      let teamMembership = await this.teamMembershipRepository.findByUserId(
+        user.id,
+        teamId
+      );
       if (teamMembership) {
         throw new ApiError("User is already a member of the team", 400);
       }
-      teamMembership = await TeamMembership.create({
+      teamMembership = await this.teamMembershipRepository.create({
         orgId,
         teamId,
-        userId: user._id,
+        userId: user.id,
         roleId: teamRoleId,
       });
-      created.teamMembership = teamMembership._id;
+      created.teamMembership = teamMembership.id;
 
       // Get data for return
-      const teamMembershipWithRoles = await TeamMembership.find({
-        userId: user._id,
-      })
-        .populate<{ roleId: IRole }>("roleId")
-        .lean();
-
-      const teamIds = teamMembershipWithRoles.map((tm) => tm.teamId.toString());
+      const teamMembershipsWithRole =
+        await this.teamMembershipRepository.findByUserIdWithRole(user.id);
+      if (!teamMembershipsWithRole) {
+        throw new ApiError("Team memberships not found for user", 404);
+      }
+      const teamIds = teamMembershipsWithRole.map((tm) => tm.teamId);
 
       const teams = await this.getTeams(teamIds);
-      const teamMap = new Map(teams.map((t) => [t._id.toString(), t]));
+      const teamMap = new Map(teams.map((t) => [t.id, t]));
 
-      const tokenizedUser: ITokenizedUser = {
-        sub: user._id.toString(),
+      const tokenizedUser: TokenizedUser = {
+        sub: user.id,
         email: user.email,
-        orgId: orgId.toString(),
+        orgId: orgId,
       };
 
-      const returnableTeams = teamMembershipWithRoles.map((tm) => {
-        const team = teamMap.get(tm.teamId.toString());
+      const returnableTeams = teamMembershipsWithRole.map((tm) => {
+        const team = teamMap.get(tm.teamId);
         if (!team) {
           throw new ApiError("Team not found for membership");
         }
         return {
-          id: team._id.toString(),
+          id: team.id,
           name: team.name,
-          permissions: tm.roleId?.permissions ?? [],
+          permissions: tm.role?.permissions ?? [],
         };
       });
 
-      const orgRole = await Role.findById(orgMembership.roleId);
+      const orgRole = await this.roleRepository.findById(
+        orgMembership.roleId || "",
+        org.id
+      );
       const orgPermissions = orgRole?.permissions || [];
 
       const entitlements: Entitlements =
-        await this.entitlementsProvider.getForOrg(org._id.toString());
-      const returnableUser: IUserReturnable = {
-        id: user._id.toString(),
+        await this.entitlementsProvider.getForOrg(org.id);
+      const returnableUser: UserReturnable = {
+        id: user.id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -383,26 +379,26 @@ class AuthService implements IAuthService {
       };
     } catch (error) {
       if (created.orgMembership) {
-        await OrgMembership.deleteOne({ _id: created.orgMembership });
+        await this.orgMembershipRepository.deleteById(created.orgMembership);
       }
       if (created.teamMembership) {
-        await TeamMembership.deleteOne({ _id: created.teamMembership });
+        await this.teamMembershipRepository.deleteById(created.teamMembership);
       }
       if (created.user) {
-        await User.findByIdAndDelete(created.user);
+        await this.userRepository.deleteById(created.user);
       }
       throw error;
     }
   };
 
   async login(loginData: LoginData): Promise<{
-    tokenizedUser: ITokenizedUser;
-    returnableUser: IUserReturnable;
+    tokenizedUser: TokenizedUser;
+    returnableUser: UserReturnable;
   }> {
     const { email, password } = loginData;
 
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       throw new ApiError("Invalid email or password");
@@ -415,15 +411,16 @@ class AuthService implements IAuthService {
     }
 
     // Find OrgMembership
-    const orgMembership = await OrgMembership.findOne({
-      userId: user._id,
-    }).lean();
+    const orgMembership = await this.orgMembershipRepository.findByUserId(
+      user.id
+    );
+
     if (!orgMembership) {
       throw new ApiError("User is not part of any organization");
     }
 
     // Find org and roles
-    let org = await Org.findById(orgMembership.orgId).lean();
+    let org = await this.orgRepository.findById(orgMembership.orgId);
 
     if (!org) {
       throw new ApiError("Organization not found");
@@ -431,50 +428,53 @@ class AuthService implements IAuthService {
 
     // Update org entitlements
     const planKey = org.entitlements.plan;
-    org = await Org.findOneAndUpdate(
-      { _id: org._id },
-      { $set: { entitlements: Plans[planKey] } },
-      { new: true }
-    );
+    org = await this.orgRepository.updateById(org.id, {
+      entitlements: Plans[planKey],
+    });
 
     if (!org) {
       throw new ApiError("Organization entitlement error");
     }
 
-    const orgRoles = await Role.findById(orgMembership.roleId).lean();
+    const orgRoles = await this.roleRepository.findById(
+      orgMembership.roleId || "",
+      org.id
+    );
 
     // Get teams
-    const teamMemberships = await TeamMembership.find({ userId: user._id })
-      .populate<{ roleId: IRole }>("roleId")
-      .lean();
+    const teamMemberships =
+      await this.teamMembershipRepository.findByUserIdWithRole(user.id);
+    if (!teamMemberships) {
+      throw new ApiError("Team memberships not found for user", 404);
+    }
 
-    const teamIds = teamMemberships.map((tm) => tm.teamId.toString());
+    const teamIds = teamMemberships.map((tm) => tm.teamId);
 
     const teams = await this.getTeams(teamIds);
-    const teamMap = new Map(teams.map((t) => [t._id.toString(), t]));
+    const teamMap = new Map(teams.map((t) => [t.id, t]));
     const returnableTeams = teamMemberships.map((tm) => {
-      const team = teamMap.get(tm.teamId.toString());
+      const team = teamMap.get(tm.teamId);
       if (!team) {
         throw new ApiError("Team not found for membership");
       }
       return {
-        id: team._id.toString(),
+        id: team.id,
         name: team.name,
-        permissions: tm.roleId?.permissions ?? [],
+        permissions: tm.role?.permissions ?? [],
       };
     });
 
-    const tokenizedUser: ITokenizedUser = {
-      sub: user._id.toString(),
+    const tokenizedUser: TokenizedUser = {
+      sub: user.id,
       email: user.email,
-      orgId: orgMembership.orgId.toString(),
+      orgId: orgMembership.orgId,
     };
 
     const entitlements: Entitlements =
-      await this.entitlementsProvider.getForOrg(org._id.toString());
+      await this.entitlementsProvider.getForOrg(org.id);
 
-    const returnableUser: IUserReturnable = {
-      id: user._id.toString(),
+    const returnableUser: UserReturnable = {
+      id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -493,46 +493,20 @@ class AuthService implements IAuthService {
     };
   }
 
-  async getTeamIds(userId: string): Promise<string[]> {
-    const teamMemberships = await TeamMembership.find({ userId })
-      .select("teamId")
-      .lean();
-    const teamIds = teamMemberships.map((t) => t.teamId.toString());
-    return teamIds;
-  }
-
-  async getTeams(teamIds: string[]): Promise<ITeam[]> {
-    const teams = await Team.find({ _id: { $in: teamIds } }).select(
-      "_id, name"
-    );
-    return teams;
-  }
-
-  async cleanup() {
-    await User.deleteMany({});
-    await Role.deleteMany({});
-    await this.monitorRepository.deleteAll();
-    await Check.deleteMany({});
-    await NotificationChannel.deleteMany({});
-    await this.jobQueue.flush();
-  }
-
-  async cleanMonitors() {
-    this.monitorRepository.deleteAll();
-    await Check.deleteMany({});
+  async getTeams(teamIds: string[]): Promise<Team[]> {
+    return await this.teamRepository.findManyById(teamIds);
   }
 
   changePassword = async (
-    userId: Types.ObjectId,
+    userId: string,
     newPassword: string
   ): Promise<boolean> => {
     try {
       const passwordHash = await hashPassword(newPassword);
-      const result = await User.updateOne(
-        { _id: userId },
-        { $set: { passwordHash } }
-      );
-      return result.modifiedCount > 0;
+      const result = await this.userRepository.updateById(userId, {
+        passwordHash,
+      });
+      return Boolean(result);
     } catch (error) {
       throw error;
     }
