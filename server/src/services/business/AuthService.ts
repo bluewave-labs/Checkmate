@@ -13,7 +13,6 @@ import {
   ITokenizedUser,
   Check,
   NotificationChannel,
-  IInvite,
 } from "@/db/models/index.js";
 import { Types } from "mongoose";
 import ApiError from "@/utils/ApiError.js";
@@ -23,7 +22,13 @@ import { Plans } from "@/types/entitlements.js";
 import { PERMISSIONS } from "@/types/permissions.js";
 import type { Entitlements } from "@/types/entitlements.js";
 import type { IEntitlementsProvider } from "@/services/system/EntitlementsService.js";
-import type { IMonitorRepository } from "@/repositories/index.js";
+import type {
+  IMonitorRepository,
+  IUserRepository,
+  IOrgRepository,
+  ITeamRepository,
+  ITeamMembershipRepository,
+} from "@/repositories/index.js";
 import type { Invite } from "@/types/domain/index.js";
 import mongoose from "mongoose";
 
@@ -71,15 +76,28 @@ class AuthService implements IAuthService {
   private jobQueue: IJobQueue;
   private entitlementsProvider: IEntitlementsProvider;
   private monitorRepository: IMonitorRepository;
+  private userRepository: IUserRepository;
+  private orgRepository: IOrgRepository;
+  private teamRepository: ITeamRepository;
+  private teamMembershipRepository: ITeamMembershipRepository;
+
   constructor(
     jobQueue: IJobQueue,
     entitlementsProvider: IEntitlementsProvider,
-    monitorRepository: IMonitorRepository
+    monitorRepository: IMonitorRepository,
+    userRepository: IUserRepository,
+    orgRepository: IOrgRepository,
+    teamRepository: ITeamRepository,
+    teamMembershipRepository: ITeamMembershipRepository
   ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
     this.entitlementsProvider = entitlementsProvider;
     this.monitorRepository = monitorRepository;
+    this.userRepository = userRepository;
+    this.orgRepository = orgRepository;
+    this.teamRepository = teamRepository;
+    this.teamMembershipRepository = teamMembershipRepository;
   }
 
   async register(signupData: RegisterData) {
@@ -102,26 +120,27 @@ class AuthService implements IAuthService {
         passwordHash,
       };
 
-      const user = await User.create(newUserData);
-      created.user = user._id;
+      const user = await this.userRepository.create(newUserData);
+      created.user = user.id;
 
-      const org = await Org.create({
+      const org = await this.orgRepository.create({
         name: `${user.firstName}'s Org`,
-        ownerId: user._id,
+        ownerId: user.id,
         planKey: "free",
         entitlements: Plans["free"],
       });
-      created.org = org._id;
+
+      created.org = org.id;
 
       const roles = await Role.insertMany([
         {
-          organizationId: org._id,
+          organizationId: org.id,
           name: "Org Admin",
           scope: "organization",
           permissions: ["*"],
         },
         {
-          organizationId: org._id,
+          organizationId: org.id,
           name: "Org Member",
           scope: "organization",
           permissions: [
@@ -142,7 +161,7 @@ class AuthService implements IAuthService {
           ],
         },
         {
-          organizationId: org._id,
+          organizationId: org.id,
           name: "Team Admin",
           permissions: [
             PERMISSIONS.monitors.all,
@@ -153,7 +172,7 @@ class AuthService implements IAuthService {
           scope: "team",
         },
         {
-          organizationId: org._id,
+          organizationId: org.id,
           name: "Team Member",
           permissions: [
             PERMISSIONS.monitors.read,
@@ -168,45 +187,45 @@ class AuthService implements IAuthService {
       created.roles = roles.map((r) => r._id);
 
       const membership = await OrgMembership.create({
-        userId: user._id,
-        orgId: org._id,
+        userId: user.id,
+        orgId: org.id,
         roleId: roles[0]?._id,
       });
       created.orgMembership = membership._id;
 
-      const team = await Team.create({
+      const team = await this.teamRepository.create({
         name: "Default Team",
-        orgId: org._id,
+        orgId: org.id,
         description: "This is your default team",
         isSystem: true,
       });
-      created.team = team._id;
+      created.team = team.id;
 
-      const teamMembership = await TeamMembership.create({
-        orgId: org._id,
-        userId: user._id,
-        teamId: team._id,
-        roleId: roles[2]?._id,
+      const teamMembership = await this.teamMembershipRepository.create({
+        orgId: org.id,
+        userId: user.id,
+        teamId: team.id,
+        roleId: roles[2]?._id.toString(),
       });
-      created.teamMembership = teamMembership._id;
+      created.teamMembership = teamMembership.id;
 
       const tokenizedUser: ITokenizedUser = {
-        sub: user._id.toString(),
+        sub: user.id,
         email: user.email,
-        orgId: org._id.toString(),
+        orgId: org.id,
       };
 
       const returnableTeam = {
-        id: team._id.toString(),
+        id: team.id,
         name: team.name,
         permissions: roles[2]?.permissions || [],
       };
 
       const entitlements: Entitlements =
-        await this.entitlementsProvider.getForOrg(org._id.toString());
+        await this.entitlementsProvider.getForOrg(org.id);
 
       const returnableUser: IUserReturnable = {
-        id: user._id.toString(),
+        id: user.id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,

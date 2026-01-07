@@ -27,3 +27,9 @@ export { default as MongoTeamRepository } from "@/repositories/team/MongoTeamRep
 
 export type { ITeamMembershipRepository } from "@/repositories/team-membership/ITeamMembershipRepository.js";
 export { default as MongoTeamMembershipRepository } from "@/repositories/team-membership/MongoTeamMembershipRepository.js";
+
+export type { IOrgRepository } from "@/repositories/org/IOrgRepository.js";
+export { default as MongoOrgRepository } from "@/repositories/org/MongoOrgRepository.js";
+
+export type { IOrgMembershipRepository } from "@/repositories/org-membership/IOrgMembershopRepository.js";
+export { default as MongoOrgMembershipRepository } from "@/repositories/org-membership/MongoOrgMembershipRepository.js";

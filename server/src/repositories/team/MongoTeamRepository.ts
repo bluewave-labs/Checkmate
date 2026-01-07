@@ -14,6 +14,11 @@ class MongoTeamRepository implements ITeamRepository {
     };
   };
 
+  create = async (team: Partial<TeamEntity>) => {
+    const created = await Team.create(team);
+    return this.toEntity(created);
+  };
+
   findById = async (teamId: string, orgId: string) => {
     const team = await Team.findOne({
       _id: teamId,

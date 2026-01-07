@@ -13,6 +13,11 @@ class MongoTeamMembershipRepository implements ITeamMembershipRepository {
       updatedAt: doc.updatedAt,
     };
   };
+  create = async (membership: Partial<TeamMembershipEntity>) => {
+    const created = await TeamMembership.create(membership);
+    return this.toEntity(created);
+  };
+
   findByUserId = async (userId: string, teamId: string) => {
     const membership = await TeamMembership.findOne({
       userId,

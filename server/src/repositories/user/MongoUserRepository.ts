@@ -17,6 +17,11 @@ class MongoUserRepository implements IUserRepository {
     };
   };
 
+  create = async (userData: Partial<UserEntity>) => {
+    const user = await User.create(userData);
+    return this.toEntity(user);
+  };
+
   findByEmail = async (email: string) => {
     const user = await User.findOne({ email });
     if (!user) return null;

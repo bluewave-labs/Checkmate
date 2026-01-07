@@ -1,4 +1,4 @@
-export interface OrgMembership extends Document {
+export interface OrgMembership {
   id: string;
   orgId: string;
   userId: string;
