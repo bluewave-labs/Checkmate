@@ -232,6 +232,13 @@ class MongoMonitorRepository implements IMonitorRepository {
   countByOrgId(orgId: string): Promise<number> {
     return Monitor.countDocuments({ orgId });
   }
+
+  countByIdAndTeamId = async (monitorIds: string[], teamId: string) => {
+    return await Monitor.countDocuments({
+      _id: { $in: monitorIds },
+      teamId: teamId,
+    });
+  };
 }
 
 export default MongoMonitorRepository;

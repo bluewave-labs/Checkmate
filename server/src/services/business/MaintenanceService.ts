@@ -1,6 +1,9 @@
-import { Monitor, IMaintenance, Maintenance } from "@/db/models/index.js";
+import {
+  IMonitorRepository,
+  IMaintenanceRepository,
+} from "@/repositories/index.js";
 import ApiError from "@/utils/ApiError.js";
-import { MaintenanceRepeats, UserContext } from "@/types/domain/index.js";
+import { UserContext, Maintenance } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "MaintenanceService";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -9,26 +12,26 @@ const WEEK_MS = 7 * DAY_MS;
 export interface IMaintenanceService {
   create: (
     userContext: UserContext,
-    maintenance: IMaintenance
-  ) => Promise<IMaintenance>;
-  getAll: (teamId: string) => Promise<IMaintenance[]>;
-  get: (teamId: string, id: string) => Promise<IMaintenance>;
+    maintenance: Maintenance
+  ) => Promise<Maintenance>;
+  get: (teamId: string, id: string) => Promise<Maintenance>;
+  getAll: (teamId: string) => Promise<Maintenance[]>;
   toggleActive: (
     teamId: string,
     userContext: UserContext,
     id: string
-  ) => Promise<IMaintenance>;
+  ) => Promise<Maintenance>;
   update: (
     teamId: string,
     userContext: UserContext,
     id: string,
-    updateData: Partial<IMaintenance>
-  ) => Promise<IMaintenance>;
+    updateData: Partial<Maintenance>
+  ) => Promise<Maintenance>;
   delete: (teamId: string, id: string) => Promise<boolean>;
   isInMaintenance: (monitorId: string) => Promise<boolean>;
 }
 
-type MaintenanceCache = Map<string, IMaintenance[]>;
+type MaintenanceCache = Map<string, Maintenance[]>;
 
 class MaintenanceService implements IMaintenanceService {
   public SERVICE_NAME: string;
@@ -36,19 +39,27 @@ class MaintenanceService implements IMaintenanceService {
   private lastRefresh: number;
   private CACHE_TTL_MS = 60 * 1000;
 
-  constructor() {
+  // Repositories
+  private maintenanceRepository: IMaintenanceRepository;
+  private monitorRepository: IMonitorRepository;
+  constructor(
+    maintenanceRepository: IMaintenanceRepository,
+    monitorRepository: IMonitorRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.maintenanceCache = new Map();
     this.lastRefresh = 0;
+    this.monitorRepository = monitorRepository;
+    this.maintenanceRepository = maintenanceRepository;
   }
 
-  create = async (userContext: UserContext, maintenanceData: IMaintenance) => {
+  create = async (userContext: UserContext, maintenanceData: Maintenance) => {
     // Make sure monitors belong to current team
     const monitorIds = maintenanceData.monitors || [];
-    const count = await Monitor.countDocuments({
-      _id: { $in: monitorIds },
-      teamId: userContext.currentTeamId,
-    });
+    const count = await this.monitorRepository.countByIdAndTeamId(
+      monitorIds,
+      userContext.currentTeamId || ""
+    );
 
     if (count !== monitorIds.length) {
       throw new ApiError(
@@ -57,7 +68,7 @@ class MaintenanceService implements IMaintenanceService {
       );
     }
 
-    const maintenance = await Maintenance.create({
+    const maintenance = await this.maintenanceRepository.create({
       ...maintenanceData,
       orgId: userContext.orgId,
       teamId: userContext.currentTeamId,
@@ -68,7 +79,7 @@ class MaintenanceService implements IMaintenanceService {
   };
 
   get = async (teamId: string, id: string) => {
-    const maintenance = await Maintenance.findOne({ _id: id, teamId });
+    const maintenance = await this.maintenanceRepository.findById(id, teamId);
     if (!maintenance) {
       throw new ApiError("Maintenance not found", 404);
     }
@@ -76,7 +87,7 @@ class MaintenanceService implements IMaintenanceService {
   };
 
   getAll = async (teamId: string) => {
-    return Maintenance.find({ teamId });
+    return this.maintenanceRepository.findByTeamId(teamId);
   };
 
   toggleActive = async (
@@ -84,18 +95,14 @@ class MaintenanceService implements IMaintenanceService {
     userContext: UserContext,
     id: string
   ) => {
-    const updatedMaintenance = await Maintenance.findOneAndUpdate(
-      { _id: id, teamId },
-      [
-        {
-          $set: {
-            isActive: { $not: "$isActive" },
-            updatedBy: userContext.sub,
-            updatedAt: new Date(),
-          },
-        },
-      ],
-      { new: true }
+    const updatedMaintenance = await this.maintenanceRepository.updateById(
+      id,
+      teamId,
+      {
+        isActive: { $not: "$isActive" },
+        updatedBy: userContext.sub,
+        updatedAt: new Date(),
+      }
     );
     if (!updatedMaintenance) {
       throw new ApiError("Maintenance not found", 404);
@@ -107,14 +114,14 @@ class MaintenanceService implements IMaintenanceService {
     teamId: string,
     userContext: UserContext,
     id: string,
-    updateData: Partial<IMaintenance>
+    updateData: Partial<Maintenance>
   ) => {
     // Make sure monitors belong to current team
     const monitorIds = updateData.monitors || [];
-    const count = await Monitor.countDocuments({
-      _id: { $in: monitorIds },
-      teamId: userContext.currentTeamId,
-    });
+    const count = await this.monitorRepository.countByIdAndTeamId(
+      monitorIds,
+      userContext.currentTeamId || ""
+    );
 
     if (count !== monitorIds.length) {
       throw new ApiError(
@@ -123,7 +130,7 @@ class MaintenanceService implements IMaintenanceService {
       );
     }
 
-    const allowedFields: (keyof IMaintenance)[] = [
+    const allowedFields: (keyof Maintenance)[] = [
       "name",
       "monitors",
       "repeat",
@@ -131,25 +138,22 @@ class MaintenanceService implements IMaintenanceService {
       "endTime",
       "isActive",
     ];
-    const safeUpdate: Partial<IMaintenance> = {};
+    const safeUpdate: Partial<Maintenance> = {};
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
         (safeUpdate as any)[field] = updateData[field];
       }
     }
 
-    const updatedMaintenance = await Maintenance.findOneAndUpdate(
-      { _id: id, teamId },
+    const updatedMaintenance = await this.maintenanceRepository.updateById(
+      id,
+      teamId,
       {
-        $set: {
-          ...safeUpdate,
-          updatedAt: new Date(),
-          updatedBy: userContext.sub,
-        },
-      },
-      { new: true, runValidators: true }
+        ...safeUpdate,
+        updatedAt: new Date(),
+        updatedBy: userContext.sub,
+      }
     );
-
     if (!updatedMaintenance) {
       throw new ApiError("Failed to update maintenance", 500);
     }
@@ -158,23 +162,15 @@ class MaintenanceService implements IMaintenanceService {
   };
 
   delete = async (teamId: string, id: string) => {
-    const result = await Maintenance.deleteOne({ _id: id, teamId });
-    if (!result.deletedCount) {
+    const didDelete = await this.maintenanceRepository.deleteById(id, teamId);
+    if (!didDelete) {
       throw new ApiError("Maintenance not found", 404);
     }
-    return result.deletedCount === 1;
+    return didDelete;
   };
 
   private refreshCache = async () => {
-    const now = new Date();
-
-    const activeMaintenances = await Maintenance.find({
-      isActive: true,
-      $or: [
-        { repeat: { $in: MaintenanceRepeats } },
-        { startTime: { $lte: now }, endTime: { $gte: now } },
-      ],
-    }).lean();
+    const activeMaintenances = await this.maintenanceRepository.findActive();
 
     // Reset cache
     const newCache = new Map();

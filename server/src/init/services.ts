@@ -68,7 +68,7 @@ export const initServices = async () => {
     inviteRepository,
     teamMembershipRepository
   );
-  const maintenanceService = new MaintenanceService();
+  const maintenanceService = new MaintenanceService(monitorRepository);
   const monitorStatsService = new MonitorStatsService(
     monitorRepository,
     monitorStatsRepository

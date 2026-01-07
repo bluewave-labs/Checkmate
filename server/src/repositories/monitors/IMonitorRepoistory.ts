@@ -84,4 +84,5 @@ export interface IMonitorRepository {
 
   // Counts
   countByOrgId(orgId: string): Promise<number>;
+  countByIdAndTeamId(monitorIds: string[], teamId: string): Promise<number>;
 }

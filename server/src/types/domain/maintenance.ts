@@ -6,7 +6,7 @@ export interface Maintenance {
   orgId: string;
   teamId: string;
   name: string;
-  isActive: boolean;
+  isActive: boolean | unknown;
   repeat: MaintenanceRepeat;
   monitors: string[];
   startTime: Date;

@@ -7,8 +7,7 @@ import type {
   IInviteRepository,
   ITeamMembershipRepository,
 } from "@/repositories/index.js";
-import { User } from "@/types/domain/index.js";
-import { Invite } from "@/types/domain/index.js";
+import { User, Invite } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "InviteService";
 export interface IInviteService {

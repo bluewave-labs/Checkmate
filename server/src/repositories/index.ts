@@ -33,3 +33,6 @@ export { default as MongoOrgRepository } from "@/repositories/org/MongoOrgReposi
 
 export type { IOrgMembershipRepository } from "@/repositories/org-membership/IOrgMembershopRepository.js";
 export { default as MongoOrgMembershipRepository } from "@/repositories/org-membership/MongoOrgMembershipRepository.js";
+
+export type { IMaintenanceRepository } from "@/repositories/maintenance/IMaintenanceRepository.js";
+export { default as MongoMaintenanceRepository } from "@/repositories/maintenance/MongoMaintenanceRepository.js";
