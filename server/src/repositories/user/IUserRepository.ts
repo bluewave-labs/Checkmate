@@ -4,6 +4,7 @@ export interface IUserRepository {
   create(userData: Partial<User>): Promise<User>;
   // single fetch
   findByEmail: (email: string) => Promise<User | null>;
+  findByUserId: (userId: string) => Promise<User | null>;
   // collection fetch
   // update
   updateById: (

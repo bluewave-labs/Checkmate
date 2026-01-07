@@ -4,12 +4,12 @@ import { useNavigate } from "react-router";
 import { usePost, useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import type { IMonitor } from "@/types/monitor";
-import type { IMaintenance } from "@/types/maintenance";
+import type { Maintenance } from "@/types/maintenance";
 import type { FormValues } from "@/pages/maintenance/MaintenanceForm";
 
 const MaintenanceCreatePage = () => {
   const navigate = useNavigate();
-  const { post, loading } = usePost<FormValues, IMaintenance>();
+  const { post, loading } = usePost<FormValues, Maintenance>();
   const { response, loading: monitorsLoading } =
     useGet<ApiResponse<IMonitor[]>>("/monitors");
 

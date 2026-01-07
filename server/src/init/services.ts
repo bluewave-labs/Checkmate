@@ -125,7 +125,15 @@ export const initServices = async () => {
     teamRepository,
     teamMembershipRepository
   );
-  const meService = new MeService(entitlementsProvider);
+  const meService = new MeService(
+    entitlementsProvider,
+    userRepository,
+    orgRepository,
+    orgMembershipRepository,
+    teamRepository,
+    teamMembershipRepository,
+    roleRepository
+  );
   const monitorService = new MonitorService(
     jobQueue,
     monitorRepository,

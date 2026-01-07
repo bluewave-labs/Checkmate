@@ -31,8 +31,11 @@ export { default as MongoTeamMembershipRepository } from "@/repositories/team-me
 export type { IOrgRepository } from "@/repositories/org/IOrgRepository.js";
 export { default as MongoOrgRepository } from "@/repositories/org/MongoOrgRepository.js";
 
-export type { IOrgMembershipRepository } from "@/repositories/org-membership/IOrgMembershopRepository.js";
+export type { IOrgMembershipRepository } from "@/repositories/org-membership/IOrgMembershipRepository.js";
 export { default as MongoOrgMembershipRepository } from "@/repositories/org-membership/MongoOrgMembershipRepository.js";
 
 export type { IMaintenanceRepository } from "@/repositories/maintenance/IMaintenanceRepository.js";
 export { default as MongoMaintenanceRepository } from "@/repositories/maintenance/MongoMaintenanceRepository.js";
+
+export type { INotificationChannelRepository } from "@/repositories/notification-channels/INotificationChannelRepository.js";
+export { default as MongoNotificationChannelRepository } from "@/repositories/notification-channels/MongoNotificationChannelRepository.js";
