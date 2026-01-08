@@ -756,6 +756,11 @@
     "infoBox": {
       "description": "Configure where you want to receive notifications when monitors detect issues. Connect email, Slack, Discord, webhooks, and other channels to stay informed.",
       "title": "Notification Channels"
+    },
+    "table": {
+      "headers": {
+        "destination": "Destination"
+      }
     }
   },
   "profile": {

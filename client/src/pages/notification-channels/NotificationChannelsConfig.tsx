@@ -4,18 +4,18 @@ import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import { usePatch, useGet } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { FormValues } from "./NotificationChannelsForm";
 
 const NotificationsChannelConfigPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { response, loading } = useGet<ApiResponse<INotificationChannel>>(
+  const { response, loading } = useGet<ApiResponse<NotificationChannel>>(
     `/notification-channels/${id}`
   );
   const { patch, loading: updating } = usePatch<
     FormValues,
-    INotificationChannel
+    NotificationChannel
   >();
   const notification = response?.data;
 

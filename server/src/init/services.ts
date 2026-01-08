@@ -47,6 +47,7 @@ import {
   MongoOrgMembershipRepository,
   MongoMaintenanceRepository,
   MongoNotificationChannelRepository,
+  MongoRecoveryTokenRepository,
 } from "@/repositories/index.js";
 
 export const initServices = async () => {
@@ -62,7 +63,9 @@ export const initServices = async () => {
   const orgRepository = new MongoOrgRepository();
   const orgMembershipRepository = new MongoOrgMembershipRepository();
   const maintenanceRepository = new MongoMaintenanceRepository();
-  const notificationChannelRepository = new MongoNotificationChannelRepository();
+  const notificationChannelRepository =
+    new MongoNotificationChannelRepository();
+  const recoveryTokenRepository = new MongoRecoveryTokenRepository();
 
   const checkService = new CheckService(checksRepository, monitorRepository);
   const inviteService = new InviteService(
@@ -147,11 +150,11 @@ export const initServices = async () => {
   );
   const queueService = new QueueService(jobQueue);
   const teamService = new TeamService(jobQueue, monitorRepository);
-  const roleService = new RoleService();
+  const roleService = new RoleService(roleRepository);
   const teamMemberService = new TeamMemberService();
   const statusPageService = new StatusPageService();
   const diagnosticService = new DiagnosticService(jobQueue);
-  const recoveryService = new RecoveryService();
+  const recoveryService = new RecoveryService(recoveryTokenRepository);
   const services = {
     checkService,
     inviteService,

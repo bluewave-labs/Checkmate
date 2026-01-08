@@ -10,7 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import type { ActionMenuItem } from "@/components/actions-menu";
 import type { Header } from "@/components/design-elements/Table";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import { useGet, usePatch, useDelete } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import { useTranslation } from "react-i18next";
@@ -21,11 +21,11 @@ const NotificationChannelsPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [selectedChannel, setSelectedChannel] =
-    useState<INotificationChannel | null>(null);
+    useState<NotificationChannel | null>(null);
   const open = Boolean(selectedChannel);
 
   const { response, isValidating, error, refetch } = useGet<
-    ApiResponse<INotificationChannel[]>
+    ApiResponse<NotificationChannel[]>
   >(
     "/notification-channels",
     {},
@@ -37,15 +37,15 @@ const NotificationChannelsPage = () => {
     { useTeamIdAsKey: true }
   );
 
-  const { patch, loading: pausing } = usePatch<{}, INotificationChannel>();
+  const { patch, loading: pausing } = usePatch<{}, NotificationChannel>();
   const { deleteFn, loading: isDeleting } =
-    useDelete<ApiResponse<INotificationChannel>>();
+    useDelete<ApiResponse<NotificationChannel>>();
 
   const notificationChannels = response?.data || [];
 
   const handleConfirm = async () => {
     if (!selectedChannel) return;
-    const res = await deleteFn(`/notification-channels/${selectedChannel._id}`);
+    const res = await deleteFn(`/notification-channels/${selectedChannel.id}`);
     if (res) {
       setSelectedChannel(null);
       refetch();
@@ -56,13 +56,13 @@ const NotificationChannelsPage = () => {
     setSelectedChannel(null);
   };
 
-  const getActions = (channel: INotificationChannel): ActionMenuItem[] => {
+  const getActions = (channel: NotificationChannel): ActionMenuItem[] => {
     return [
       {
         id: 1,
         label: t("monitors.common.actions.configure"),
         action: () => {
-          navigate(`/notification-channels/${channel._id}/configure`);
+          navigate(`/notification-channels/${channel.id}/configure`);
         },
         closeMenu: true,
       },
@@ -73,7 +73,7 @@ const NotificationChannelsPage = () => {
           : t("common.buttons.enable"),
         action: async () => {
           const res = await patch(
-            `/notification-channels/${channel._id}/active`,
+            `/notification-channels/${channel.id}/active`,
             {}
           );
           if (res) {
@@ -98,7 +98,7 @@ const NotificationChannelsPage = () => {
   };
 
   const getHeaders = () => {
-    const headers: Header<INotificationChannel>[] = [
+    const headers: Header<NotificationChannel>[] = [
       {
         id: "name",
         content: t("common.table.headers.name"),
@@ -122,6 +122,17 @@ const NotificationChannelsPage = () => {
         render: (row) => {
           return (
             <Typography textTransform={"capitalize"}>{row?.type}</Typography>
+          );
+        },
+      },
+      {
+        id: "destination",
+        content: t("notificationChannels.table.headers.destination"),
+        render: (row) => {
+          return (
+            <Typography>
+              {row?.config?.url || row?.config?.emailAddress}
+            </Typography>
           );
         },
       },
@@ -167,7 +178,7 @@ const NotificationChannelsPage = () => {
         headers={headers}
         data={notificationChannels}
         onRowClick={(row) => {
-          navigate(`/notification-channels/${row._id}/configure`);
+          navigate(`/notification-channels/${row.id}/configure`);
         }}
       />
 

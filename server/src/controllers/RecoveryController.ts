@@ -46,7 +46,9 @@ class RecoveryController implements IRecoveryController {
 
       if (user) {
         try {
-          const recoveryToken = await this.recoveryService.create(user._id);
+          const recoveryToken = await this.recoveryService.create(
+            user._id.toString()
+          );
           // Don't wait for email to be sent
           this.emailService
             .sendGeneric(user.email, "Password Recovery", {
@@ -77,7 +79,7 @@ class RecoveryController implements IRecoveryController {
         recoveryToken.userId.toString(),
         password
       );
-      await this.recoveryService.delete(recoveryToken._id);
+      await this.recoveryService.delete(recoveryToken.id);
 
       const user = await User.findById(recoveryToken.userId);
       if (!user) {

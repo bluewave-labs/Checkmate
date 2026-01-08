@@ -2,11 +2,11 @@ import { NotificationChannelsForm } from "./NotificationChannelsForm";
 
 import { useNavigate } from "react-router";
 import { usePost } from "@/hooks/UseApi";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { FormValues } from "./NotificationChannelsForm";
 
 const NotificationsChannelCreatePage = () => {
-  const { post, loading } = usePost<FormValues, INotificationChannel>();
+  const { post, loading } = usePost<FormValues, NotificationChannel>();
   const navigate = useNavigate();
 
   const onSubmit = async (data: FormValues) => {

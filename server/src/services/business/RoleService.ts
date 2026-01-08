@@ -1,5 +1,5 @@
 import { Role, IRole } from "@/db/models/index.js";
-import type { IJobQueue } from "../infrastructure/JobQueue.js";
+import type { IRoleRepository } from "@/repositories/index.js";
 import ApiError from "@/utils/ApiError.js";
 
 const SERVICE_NAME = "RoleService";
@@ -11,9 +11,11 @@ export interface IRoleService {
 
 class RoleService implements IRoleService {
   public SERVICE_NAME: string;
+  private roleRepository: IRoleRepository;
 
-  constructor() {
+  constructor(roleRepository: IRoleRepository) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.roleRepository = roleRepository;
   }
 
   getAll = async (orgId: string, type: string) => {
