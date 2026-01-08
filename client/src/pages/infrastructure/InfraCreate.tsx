@@ -2,11 +2,11 @@ import { InfraForm } from "@/pages/infrastructure/InfraForm";
 import { useNavigate } from "react-router";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { SubmitValues } from "@/pages/infrastructure/InfraForm";
 
 const InfraCreatePage = () => {
-  const { response } = useGet<ApiResponse<INotificationChannel[]>>(
+  const { response } = useGet<ApiResponse<NotificationChannel[]>>(
     "/notification-channels"
   );
   const { post, loading, error } = usePost<SubmitValues, any>();

@@ -4,14 +4,14 @@ import { UptimeForm } from "@/pages/uptime/UptimeForm";
 import { useParams } from "react-router";
 import type { ApiResponse } from "@/types/api";
 import { useNavigate } from "react-router";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { IMonitor } from "@/types/monitor";
 import type { SubmitValues } from "@/pages/uptime/UptimeForm";
 
 const UptimeConfigurePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { response } = useGet<ApiResponse<INotificationChannel[]>>(
+  const { response } = useGet<ApiResponse<NotificationChannel[]>>(
     "/notification-channels"
   );
   const { response: monitorResponse } = useGet<ApiResponse<IMonitor>>(

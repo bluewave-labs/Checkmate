@@ -3,11 +3,11 @@ import { PageSpeedForm } from "@/pages/pagespeed/PageSpeedForm";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import { useNavigate } from "react-router";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { SubmitValues } from "@/pages/pagespeed/PageSpeedForm";
 const UptimeCreatePage = () => {
   const navigate = useNavigate();
-  const { response } = useGet<ApiResponse<INotificationChannel[]>>(
+  const { response } = useGet<ApiResponse<NotificationChannel[]>>(
     "/notification-channels"
   );
   const { post, loading, error } = usePost<SubmitValues>();

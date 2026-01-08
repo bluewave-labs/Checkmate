@@ -3,11 +3,11 @@ import { UptimeForm } from "./UptimeForm";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
 import { useNavigate } from "react-router";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { SubmitValues } from "@/pages/uptime/UptimeForm";
 const UptimeCreatePage = () => {
   const navigate = useNavigate();
-  const { response } = useGet<ApiResponse<INotificationChannel[]>>(
+  const { response } = useGet<ApiResponse<NotificationChannel[]>>(
     "/notification-channels"
   );
   const { post, loading, error } = usePost<SubmitValues>();

@@ -3,14 +3,14 @@ import DockerForm from "@/pages/docker/DockerForm";
 
 import { useParams, useNavigate } from "react-router";
 import type { ApiResponse } from "@/types/api";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 import type { IMonitor } from "@/types/monitor";
 import type { SubmitValues } from "@/pages/docker/DockerForm";
 
 const DockerConfigurePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { response } = useGet<ApiResponse<INotificationChannel[]>>(
+  const { response } = useGet<ApiResponse<NotificationChannel[]>>(
     "/notification-channels"
   );
   const { response: monitorResponse } = useGet<ApiResponse<IMonitor>>(

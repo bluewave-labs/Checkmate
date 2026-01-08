@@ -2,10 +2,10 @@ import DockerForm, { type SubmitValues } from "@/pages/docker/DockerForm";
 import { useNavigate } from "react-router";
 import { useGet, usePost } from "@/hooks/UseApi";
 import type { ApiResponse } from "@/types/api";
-import type { INotificationChannel } from "@/types/notification-channel";
+import type { NotificationChannel } from "@/types/notification-channel";
 
 const DockerCreatePage = () => {
-  const { response } = useGet<ApiResponse<INotificationChannel[]>>(
+  const { response } = useGet<ApiResponse<NotificationChannel[]>>(
     "/notification-channels"
   );
   const { post, loading, error } = usePost<SubmitValues, any>();
@@ -31,4 +31,3 @@ const DockerCreatePage = () => {
 };
 
 export default DockerCreatePage;
-
