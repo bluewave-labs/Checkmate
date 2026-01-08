@@ -32,18 +32,42 @@ class MongoRoleRepository implements IRoleRepository {
     });
   };
 
-  findById = async (roleId: string, orgId: string) => {
+  findById = async (roleId: string): Promise<RoleEntity | null> => {
+    const role = await Role.findById(roleId);
+    if (!role) return null;
+    return this.toEntity(role);
+  };
+
+  findByIdAndOrgId = async (roleId: string, orgId: string) => {
     const role = await Role.findOne({
       _id: roleId,
       organizationId: orgId,
-    })
-      .lean<IRole>()
-      .exec();
+    });
 
     if (!role) {
       return null;
     }
     return this.toEntity(role);
+  };
+
+  findAll = async (orgId: string) => {
+    const res = await Role.find({ organizationId: orgId });
+    return res.map(this.toEntity);
+  };
+
+  findAllByScope = async (orgId: string, scope: string) => {
+    const result = await Role.find({ organizationId: orgId, scope });
+    return result.map(this.toEntity);
+  };
+
+  findAllByTeam = async (orgId: string, teamId: string) => {
+    const result = await Role.find({
+      organizationId: orgId,
+      teamId,
+      scope: "team",
+    });
+
+    return result.map(this.toEntity);
   };
 
   deleteMany = async (roleIds: string[]) => {

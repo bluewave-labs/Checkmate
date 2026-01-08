@@ -1,12 +1,12 @@
-import { Role, IRole } from "@/db/models/index.js";
 import type { IRoleRepository } from "@/repositories/index.js";
 import ApiError from "@/utils/ApiError.js";
+import { Role as RoleEntity } from "@/types/domain/index.js";
 
 const SERVICE_NAME = "RoleService";
 export interface IRoleService {
-  getAll: (orgId: string, type: string) => Promise<Partial<IRole[]>>;
-  getTeam: (orgId: string, teamId: string) => Promise<Partial<IRole[]>>;
-  get: (roleId: string) => Promise<IRole>;
+  getAll: (orgId: string, type: string) => Promise<Partial<RoleEntity[]>>;
+  getTeam: (orgId: string, teamId: string) => Promise<Partial<RoleEntity[]>>;
+  get: (roleId: string) => Promise<RoleEntity>;
 }
 
 class RoleService implements IRoleService {
@@ -20,23 +20,17 @@ class RoleService implements IRoleService {
 
   getAll = async (orgId: string, type: string) => {
     if (!type) {
-      return await Role.find({ organizationId: orgId });
+      return await this.roleRepository.findAll(orgId);
     }
-    const roles = await Role.find({ organizationId: orgId, scope: type });
-    return roles;
+    return await this.roleRepository.findAllByScope(orgId, type);
   };
 
   getTeam = async (orgId: string, teamId: string) => {
-    const roles = await Role.find({
-      organizationId: orgId,
-      teamId,
-      scope: "team",
-    });
-    return roles;
+    return await this.roleRepository.findAllByTeam(orgId, teamId);
   };
 
   get = async (roleId: string) => {
-    const role = await Role.findById(roleId);
+    const role = await this.roleRepository.findById(roleId);
     if (!role) {
       throw new ApiError("Role not found", 404);
     }
