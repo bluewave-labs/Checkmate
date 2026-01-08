@@ -39,3 +39,6 @@ export { default as MongoMaintenanceRepository } from "@/repositories/maintenanc
 
 export type { INotificationChannelRepository } from "@/repositories/notification-channels/INotificationChannelRepository.js";
 export { default as MongoNotificationChannelRepository } from "@/repositories/notification-channels/MongoNotificationChannelRepository.js";
+
+export type { IRecoveryTokenRepistory } from "@/repositories/recovery-token/IRecoveryTokenRepistory.js";
+export { default as MongoRecoveryTokenRepository } from "@/repositories/recovery-token/MongoRecoveryTokenRepository.js";

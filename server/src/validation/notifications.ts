@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ChannelTypes } from "@/db/models/index.js";
+import { ChannelTypes } from "@/types/domain/index.js";
 import { urlRegex } from "./common.js";
 
 export const notificationChannelSchema = z
@@ -101,4 +101,3 @@ export const notificationPatchSchema = z
       });
     }
   });
-

@@ -1,19 +1,16 @@
 import mongoose, { Schema, Types } from "mongoose";
-export const ChannelTypes = ["email", "slack", "discord", "webhook"] as const;
-export type ChannelType = (typeof ChannelTypes)[number];
-
-export interface INotificationChannelConfig {
-  url?: string; // For webhook, slack, discord
-  emailAddress?: string; // For email
-}
-
+import {
+  type ChannelType,
+  ChannelTypes,
+  NotificationChannelConfig,
+} from "@/types/domain/index.js";
 export interface INotificationChannel {
   _id: Types.ObjectId;
   orgId: Types.ObjectId;
   teamId: Types.ObjectId;
   name: string;
   type: ChannelType;
-  config: INotificationChannelConfig;
+  config: NotificationChannelConfig;
   isActive: boolean;
   createdBy: Types.ObjectId;
   updatedBy: Types.ObjectId;
@@ -21,7 +18,7 @@ export interface INotificationChannel {
   updatedAt: Date;
 }
 
-const NotificationChannelConfigSchema = new Schema<INotificationChannelConfig>(
+const NotificationChannelConfigSchema = new Schema<NotificationChannelConfig>(
   {
     url: { type: String, required: false },
     emailAddress: { type: String, required: false },

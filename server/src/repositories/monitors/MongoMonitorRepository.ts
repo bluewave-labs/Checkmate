@@ -239,6 +239,15 @@ class MongoMonitorRepository implements IMonitorRepository {
       teamId: teamId,
     });
   };
+
+  // Other
+  removeNotificationChannelFromMonitors = async (notificationId: string) => {
+    const result = await Monitor.updateMany(
+      { notificationChannels: notificationId },
+      { $pull: { notificationChannels: notificationId } }
+    );
+    return result.modifiedCount > 0;
+  };
 }
 
 export default MongoMonitorRepository;

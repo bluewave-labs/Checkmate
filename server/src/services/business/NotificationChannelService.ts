@@ -1,61 +1,70 @@
-import mongoose from "mongoose";
-
-import {
-  INotificationChannel,
-  NotificationChannel,
-  Monitor,
-} from "@/db/models/index.js";
 import ApiError from "@/utils/ApiError.js";
-import type { UserContext } from "@/types/domain/index.js";
+import {
+  INotificationChannelRepository,
+  IMonitorRepository,
+} from "@/repositories/index.js";
+import {
+  type UserContext,
+  NotificationChannel as NotificationChannelEntity,
+} from "@/types/domain/index.js";
 
 const SERVICE_NAME = "NotificationChannelService";
 
 export interface INotificationChannelService {
   create: (
     tokenizedUser: UserContext,
-    notificationChannel: INotificationChannel
-  ) => Promise<INotificationChannel>;
-  getAll: (teamId: string) => Promise<INotificationChannel[]>;
-  get: (teamId: string, id: string) => Promise<INotificationChannel>;
+    notificationChannel: NotificationChannelEntity
+  ) => Promise<NotificationChannelEntity>;
+  getAll: (teamId: string) => Promise<NotificationChannelEntity[]>;
+  get: (teamId: string, id: string) => Promise<NotificationChannelEntity>;
   toggleActive: (
     teamId: string,
     tokenizedUser: UserContext,
     id: string
-  ) => Promise<INotificationChannel>;
+  ) => Promise<NotificationChannelEntity>;
   update: (
     teamId: string,
     tokenizedUser: UserContext,
     id: string,
-    updateData: Partial<INotificationChannel>
-  ) => Promise<INotificationChannel>;
+    updateData: Partial<NotificationChannelEntity>
+  ) => Promise<NotificationChannelEntity>;
   delete: (teamId: string, id: string) => Promise<boolean>;
 }
 
 class NotificationChannelService implements INotificationChannelService {
   public SERVICE_NAME: string;
-
-  constructor() {
+  private notificationChannelRepository: INotificationChannelRepository;
+  private monitorRepository: IMonitorRepository;
+  constructor(
+    notificationChannelRepository: INotificationChannelRepository,
+    monitorRepository: IMonitorRepository
+  ) {
     this.SERVICE_NAME = SERVICE_NAME;
+    this.notificationChannelRepository = notificationChannelRepository;
+    this.monitorRepository = monitorRepository;
   }
 
   create = async (
     userContext: UserContext,
-    notificationChannelData: INotificationChannel
+    notificationChannelData: NotificationChannelEntity
   ) => {
-    const data: INotificationChannel = {
-      ...notificationChannelData,
-      orgId: new mongoose.Types.ObjectId(userContext.orgId),
-      teamId: new mongoose.Types.ObjectId(userContext.currentTeamId),
-      createdBy: new mongoose.Types.ObjectId(userContext.sub),
-      updatedBy: new mongoose.Types.ObjectId(userContext.sub),
-    };
-
-    const notificationChannel = await NotificationChannel.create(data);
+    const notificationChannel = await this.notificationChannelRepository.create(
+      {
+        ...notificationChannelData,
+        orgId: userContext.orgId,
+        teamId: userContext.currentTeamId || "",
+        createdBy: userContext.sub,
+        updatedBy: userContext.sub,
+      }
+    );
     return notificationChannel;
   };
 
   get = async (teamId: string, id: string) => {
-    const channel = await NotificationChannel.findOne({ _id: id, teamId });
+    const channel = await this.notificationChannelRepository.findById(
+      id,
+      teamId
+    );
     if (!channel) {
       throw new ApiError("Notification channel not found", 404);
     }
@@ -63,7 +72,7 @@ class NotificationChannelService implements INotificationChannelService {
   };
 
   getAll = async (teamId: string) => {
-    return NotificationChannel.find({ teamId });
+    return await this.notificationChannelRepository.findByTeamId(teamId);
   };
 
   toggleActive = async (
@@ -71,18 +80,14 @@ class NotificationChannelService implements INotificationChannelService {
     userContext: UserContext,
     id: string
   ) => {
-    const updatedChannel = await NotificationChannel.findOneAndUpdate(
-      { _id: id, teamId },
-      [
-        {
-          $set: {
-            isActive: { $not: "$isActive" },
-            updatedBy: userContext.sub,
-            updatedAt: new Date(),
-          },
-        },
-      ],
-      { new: true }
+    const updatedChannel = await this.notificationChannelRepository.update(
+      id,
+      teamId,
+      {
+        isActive: { $not: "$isActive" },
+        updatedBy: userContext.sub,
+        updatedAt: new Date(),
+      }
     );
     if (!updatedChannel) {
       throw new ApiError("Notification channel not found", 404);
@@ -94,18 +99,16 @@ class NotificationChannelService implements INotificationChannelService {
     teamId: string,
     userContext: UserContext,
     id: string,
-    updateData: Partial<INotificationChannel>
+    updateData: Partial<NotificationChannelEntity>
   ) => {
-    const updatedChannel = await NotificationChannel.findOneAndUpdate(
-      { _id: id, teamId },
+    const updatedChannel = await this.notificationChannelRepository.update(
+      id,
+      teamId,
       {
-        $set: {
-          ...updateData,
-          updatedAt: new Date(),
-          updatedBy: userContext.sub,
-        },
-      },
-      { new: true, runValidators: true }
+        ...updateData,
+        updatedAt: new Date(),
+        updatedBy: userContext.sub,
+      }
     );
 
     if (!updatedChannel) {
@@ -115,17 +118,20 @@ class NotificationChannelService implements INotificationChannelService {
     return updatedChannel;
   };
 
-  delete = async (teamId: string, id: string) => {
-    const result = await NotificationChannel.deleteOne({ _id: id, teamId });
-    if (!result.deletedCount) {
+  delete = async (teamId: string, notificationChannelId: string) => {
+    const didDelete = await this.notificationChannelRepository.deleteById(
+      notificationChannelId,
+      teamId
+    );
+    if (!didDelete) {
       throw new ApiError("Notification channel not found", 404);
     }
 
-    await Monitor.updateMany(
-      { notificationChannels: id },
-      { $pull: { notificationChannels: id } }
+    await this.monitorRepository.removeNotificationChannelFromMonitors(
+      notificationChannelId
     );
-    return result.deletedCount === 1;
+
+    return didDelete;
   };
 }
 

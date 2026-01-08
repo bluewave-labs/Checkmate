@@ -11,3 +11,6 @@ export * from "@/types/domain/org.js";
 export * from "@/types/domain/orgMembership.js";
 export * from "@/types/domain/maintenance.js";
 export * from "@/types/domain/statsHourly.js";
+export * from "@/types/domain/notificationChannel.js";
+export * from "@/types/domain/statsDaily.js";
+export * from "@/types/domain/recoveryToken.js";

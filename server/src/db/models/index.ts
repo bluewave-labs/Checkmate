@@ -9,10 +9,7 @@ export type { IMonitorStats } from "./monitors/MonitorStats.js";
 export { User } from "./auth/User.js";
 export type { IUser, IUserProfile } from "./auth/User.js";
 
-export {
-  NotificationChannel,
-  ChannelTypes,
-} from "./notification-channel/NotificationChannel.js";
+export { NotificationChannel } from "./notification-channel/NotificationChannel.js";
 export type { INotificationChannel } from "./notification-channel/NotificationChannel.js";
 
 export { Invite } from "./auth/Invite.js";

@@ -46,6 +46,7 @@ import {
   MongoOrgRepository,
   MongoOrgMembershipRepository,
   MongoMaintenanceRepository,
+  MongoNotificationChannelRepository,
 } from "@/repositories/index.js";
 
 export const initServices = async () => {
@@ -61,6 +62,7 @@ export const initServices = async () => {
   const orgRepository = new MongoOrgRepository();
   const orgMembershipRepository = new MongoOrgMembershipRepository();
   const maintenanceRepository = new MongoMaintenanceRepository();
+  const notificationChannelRepository = new MongoNotificationChannelRepository();
 
   const checkService = new CheckService(checksRepository, monitorRepository);
   const inviteService = new InviteService(
@@ -78,7 +80,10 @@ export const initServices = async () => {
     monitorRepository,
     monitorStatsRepository
   );
-  const notificationChannelService = new NotificationChannelService();
+  const notificationChannelService = new NotificationChannelService(
+    notificationChannelRepository,
+    monitorRepository
+  );
   const userService = new UserService();
   const discordService = new DiscordService();
   const slackService = new SlackService();
