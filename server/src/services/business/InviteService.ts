@@ -55,7 +55,10 @@ class InviteService implements IInviteService {
     teamRoleId: string
   ) => {
     try {
-      const role = await this.roleRepository.findById(teamRoleId, orgId);
+      const role = await this.roleRepository.findByIdAndOrgId(
+        teamRoleId,
+        orgId
+      );
 
       if (!role) {
         throw new ApiError("Role not found", 404);

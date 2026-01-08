@@ -436,7 +436,7 @@ class AuthService implements IAuthService {
       throw new ApiError("Organization entitlement error");
     }
 
-    const orgRoles = await this.roleRepository.findById(
+    const orgRoles = await this.roleRepository.findByIdAndOrgId(
       orgMembership.roleId || "",
       org.id
     );

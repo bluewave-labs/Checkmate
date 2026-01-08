@@ -72,7 +72,7 @@ class MeService implements IMeService {
       throw new ApiError("Organization not found");
     }
 
-    const orgRole = await this.roleRepository.findById(
+    const orgRole = await this.roleRepository.findByIdAndOrgId(
       orgMembership.roleId || "",
       org.id
     );
