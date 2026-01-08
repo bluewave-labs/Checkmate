@@ -31,9 +31,13 @@ class NetworkService {
 				config.headers = {
 					Authorization: `Bearer ${authToken}`,
 					"Accept-Language": currentLanguage === "gb" ? "en" : currentLanguage,
-					...(refreshToken && { "x-refresh-token": refreshToken }),
 					...config.headers,
 				};
+
+				// Only send refresh token to the refresh endpoint
+				if (refreshToken && config.url?.includes("/auth/refresh")) {
+					config.headers["x-refresh-token"] = refreshToken;
+				}
 
 				return config;
 			},
@@ -70,7 +74,22 @@ class NetworkService {
 				const originalRequest = error.config;
 
 				// Handle 403 - server is telling us to request a new access token
-				if (error.response && error.response.status === 403 && !originalRequest._retry) {
+				// Skip refresh logic for the refresh endpoint itself to prevent circular dependency
+				const isRefreshEndpoint = originalRequest.url?.includes("/auth/refresh");
+				if (
+					error.response &&
+					error.response.status === 403 &&
+					!originalRequest._retry &&
+					!isRefreshEndpoint
+				) {
+					// Check if we have a refresh token before attempting refresh
+					const { refreshToken } = store.getState().auth;
+					if (!refreshToken) {
+						dispatch(clearAuthState());
+						navigate("/login");
+						return Promise.reject(error);
+					}
+
 					if (this.isRefreshing) {
 						// If already refreshing, queue this request
 						return new Promise((resolve, reject) => {
