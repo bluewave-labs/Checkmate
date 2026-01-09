@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect , useMemo } from "react";
 import { useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
@@ -14,7 +14,10 @@ import AppLayout from "@/Components/v1/Layouts/AppLayout";
 function App() {
 	const mode = useSelector((state) => state.ui.mode);
 
-	// Cleanup
+	const theme = useMemo(() => {
+		return mode === "light" ? lightTheme : darkTheme;
+	}, [mode]);
+
 	useEffect(() => {
 		return () => {
 			logger.cleanup();
@@ -23,7 +26,7 @@ function App() {
 	}, []);
 
 	return (
-		<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<AppLayout>
 				<Routes />
@@ -32,5 +35,6 @@ function App() {
 		</ThemeProvider>
 	);
 }
+
 
 export default App;
