@@ -1,9 +1,12 @@
+import { config } from "@/config/index.js";
+
 const SERVICE_NAME = "BufferService";
 
 class BufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	constructor({ db, logger, envSettings, incidentService }) {
-		this.BUFFER_TIMEOUT = envSettings.nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
+		console.log(envSettings);
+		this.BUFFER_TIMEOUT = config.NODE_ENV === "development" ? 10 : 1000 * 60 * 1; // 1 minute
 		this.db = db;
 		this.logger = logger;
 		this.incidentService = incidentService;
