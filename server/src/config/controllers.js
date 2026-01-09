@@ -51,10 +51,7 @@ export const initializeControllers = (services) => {
 	});
 	controllers.logController = new LogController(commonDependencies);
 	controllers.statusPageController = new StatusPageController(commonDependencies);
-	controllers.notificationController = new NotificationController(commonDependencies, {
-		notificationService: services.notificationService,
-		statusService: services.statusService,
-	});
+	controllers.notificationController = new NotificationController(services.notificationService, services.db);
 	controllers.diagnosticController = new DiagnosticController(commonDependencies, {
 		diagnosticService: services.diagnosticService,
 	});
