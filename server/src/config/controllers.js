@@ -46,9 +46,7 @@ export const initializeControllers = (services) => {
 		diagnosticService: services.diagnosticService,
 	});
 
-	controllers.incidentController = new IncidentController(commonDependencies, {
-		incidentService: services.incidentService,
-	});
+	controllers.incidentController = new IncidentController(services.incidentService);
 
 	return controllers;
 };
