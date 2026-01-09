@@ -1,4 +1,4 @@
-import { useEffect , useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
@@ -35,6 +35,5 @@ function App() {
 		</ThemeProvider>
 	);
 }
-
 
 export default App;
