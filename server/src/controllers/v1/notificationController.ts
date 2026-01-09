@@ -9,7 +9,7 @@ class NotificationController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private db: any;
 	private notificationService: any;
-	constructor(notificationService: any, statusService: any, db: any) {
+	constructor(notificationService: any, db: any) {
 		this.notificationService = notificationService;
 		this.db = db;
 	}
