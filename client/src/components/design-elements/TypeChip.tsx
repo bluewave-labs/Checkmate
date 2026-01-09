@@ -1,7 +1,16 @@
 import Box from "@mui/material/Box";
 import { useTheme, alpha } from "@mui/material/styles";
 
-export type MonitorType = "http" | "https" | "ping" | "tcp" | "smtp" | "dns" | "udp" | "docker" | string;
+export type MonitorType =
+  | "http"
+  | "https"
+  | "ping"
+  | "tcp"
+  | "smtp"
+  | "dns"
+  | "udp"
+  | "docker"
+  | string;
 
 interface TypeChipProps {
   type: MonitorType;
@@ -22,7 +31,9 @@ export const TypeChip = ({ type }: TypeChipProps) => {
   const theme = useTheme();
   const normalizedType = type.toLowerCase();
   const paletteKey = typeColors[normalizedType] || "primary";
-  const color = theme.palette[paletteKey as keyof typeof theme.palette] as { main: string };
+  const color = theme.palette[paletteKey as keyof typeof theme.palette] as {
+    main: string;
+  };
 
   return (
     <Box

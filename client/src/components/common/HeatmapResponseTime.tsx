@@ -23,7 +23,10 @@ export const HeatmapResponseTime = ({
 
   if (!checks || checks.length === 0) return null;
 
-  const normalized = normalizeResponseTimes(checks.slice(-25).reverse(), "responseTime");
+  const normalized = normalizeResponseTimes(
+    checks.slice(-25).reverse(),
+    "responseTime",
+  );
   let data = Array<any>();
 
   if (!normalized || normalized.length === 0) {
@@ -63,7 +66,7 @@ export const HeatmapResponseTime = ({
             const isPlaceholder = check.status === "placeholder";
             const heightPct = Math.max(
               15,
-              Math.min(100, check.normalResponseTime ?? 0)
+              Math.min(100, check.normalResponseTime ?? 0),
             );
 
             const barColor = isPlaceholder
@@ -100,10 +103,7 @@ export const HeatmapResponseTime = ({
             );
 
             return isPlaceholder ? (
-              <Box
-                key={index}
-                sx={{ flex: 1, height: "100%" }}
-              >
+              <Box key={index} sx={{ flex: 1, height: "100%" }}>
                 {barContent}
               </Box>
             ) : (

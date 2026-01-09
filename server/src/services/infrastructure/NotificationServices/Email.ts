@@ -31,7 +31,7 @@ export interface IEmailService extends IMessageService {
   sendGeneric: (
     to: string,
     subject: string,
-    content: { text?: string; html?: string }
+    content: { text?: string; html?: string },
   ) => Promise<boolean>;
   testTransport: (transport: IEmailTransport) => Promise<boolean>;
   rebuildTransport: (transport: IEmailTransport) => Promise<boolean>;
@@ -166,24 +166,24 @@ class EmailService implements IEmailService {
       if (error?.code === "ECONNREFUSED") {
         throw new ApiError(
           "Could not connect to email server. Please check your SMTP settings.",
-          503
+          503,
         );
       }
       if (error?.code === "EAUTH") {
         throw new ApiError(
           "Email authentication failed. Please check your SMTP credentials.",
-          401
+          401,
         );
       }
       if (error?.code === "ESOCKET") {
         throw new ApiError(
           "Email server connection timed out. Please check your SMTP host and port.",
-          503
+          503,
         );
       }
       throw new ApiError(
         error?.message || "Failed to send email notification",
-        500
+        500,
       );
     }
   };
@@ -201,14 +201,14 @@ class EmailService implements IEmailService {
         resolvedBy: "system",
         resolutionNote: "This is a test message",
       },
-      channel
+      channel,
     );
   };
 
   sendGeneric = async (
     to: string,
     subject: string,
-    content: { text?: string; html?: string }
+    content: { text?: string; html?: string },
   ) => {
     try {
       if (this.transporter === null) {
@@ -232,7 +232,7 @@ class EmailService implements IEmailService {
     if (this.hasEnvConfig()) {
       throw new ApiError(
         "Cannot test transport when environment SMTP settings are set",
-        400
+        400,
       );
     }
     const testTransport = await this.buildSystemSettingsTransport(transport);

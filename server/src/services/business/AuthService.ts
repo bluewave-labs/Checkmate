@@ -46,7 +46,7 @@ export interface IAuthService {
   }>;
   registerWithInvite(
     invite: Invite,
-    signupData: RegisterData
+    signupData: RegisterData,
   ): Promise<{
     tokenizedUser: TokenizedUser;
     returnableUser: UserReturnable;
@@ -80,7 +80,7 @@ class AuthService implements IAuthService {
     orgRepository: IOrgRepository,
     orgMembershipRepository: IOrgMembershipRepository,
     teamRepository: ITeamRepository,
-    teamMembershipRepository: ITeamMembershipRepository
+    teamMembershipRepository: ITeamMembershipRepository,
   ) {
     this.SERVICE_NAME = SERVICE_NAME;
     this.jobQueue = jobQueue;
@@ -294,7 +294,7 @@ class AuthService implements IAuthService {
 
       // Get or create orgMembership
       let orgMembership = await this.orgMembershipRepository.findByUserId(
-        user.id
+        user.id,
       );
 
       if (orgMembership && !orgMembership.roleId && orgRoleId) {
@@ -313,7 +313,7 @@ class AuthService implements IAuthService {
       // Create TeamMembership
       let teamMembership = await this.teamMembershipRepository.findByUserId(
         user.id,
-        teamId
+        teamId,
       );
       if (teamMembership) {
         throw new ApiError("User is already a member of the team", 400);
@@ -357,7 +357,7 @@ class AuthService implements IAuthService {
 
       const orgRole = await this.roleRepository.findByIdAndOrgId(
         orgMembership.roleId || "",
-        org.id
+        org.id,
       );
       const orgPermissions = orgRole?.permissions || [];
 
@@ -416,7 +416,7 @@ class AuthService implements IAuthService {
 
     // Find OrgMembership
     const orgMembership = await this.orgMembershipRepository.findByUserId(
-      user.id
+      user.id,
     );
 
     if (!orgMembership) {
@@ -442,7 +442,7 @@ class AuthService implements IAuthService {
 
     const orgRoles = await this.roleRepository.findByIdAndOrgId(
       orgMembership.roleId || "",
-      org.id
+      org.id,
     );
 
     // Get teams
@@ -503,7 +503,7 @@ class AuthService implements IAuthService {
 
   changePassword = async (
     userId: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<boolean> => {
     try {
       const passwordHash = await hashPassword(newPassword);

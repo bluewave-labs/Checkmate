@@ -51,15 +51,17 @@ export const SegmentedControl = ({
             fontSize: 13,
             transition: "all 150ms ease",
             bgcolor: value === opt.value ? "#fff" : "transparent",
-            color:
-              opt.disabled
-                ? theme.palette.text.disabled
-                : value === opt.value
-                  ? theme.palette.text.primary
-                  : theme.palette.text.secondary,
-            boxShadow: value === opt.value ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+            color: opt.disabled
+              ? theme.palette.text.disabled
+              : value === opt.value
+                ? theme.palette.text.primary
+                : theme.palette.text.secondary,
+            boxShadow:
+              value === opt.value ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
             "&:hover": {
-              color: opt.disabled ? theme.palette.text.disabled : theme.palette.text.primary,
+              color: opt.disabled
+                ? theme.palette.text.disabled
+                : theme.palette.text.primary,
             },
           }}
         >

@@ -25,7 +25,7 @@ export const HistogramResponseTime = ({
 
   const normalized = normalizeResponseTimes(
     checks.slice(-25).reverse(),
-    "responseTime"
+    "responseTime",
   );
   let data = Array<any>();
 
@@ -66,7 +66,7 @@ export const HistogramResponseTime = ({
             const isPlaceholder = check.status === "placeholder";
             const heightPct = Math.max(
               15,
-              Math.min(100, check.normalResponseTime ?? 0)
+              Math.min(100, check.normalResponseTime ?? 0),
             );
 
             const barColor = isPlaceholder
@@ -103,10 +103,7 @@ export const HistogramResponseTime = ({
             );
 
             return isPlaceholder ? (
-              <Box
-                key={index}
-                sx={{ flex: 1, height: "100%" }}
-              >
+              <Box key={index} sx={{ flex: 1, height: "100%" }}>
                 {barContent}
               </Box>
             ) : (

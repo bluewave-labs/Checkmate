@@ -1,12 +1,9 @@
 const MIN_OUT = 10;
 const MAX_OUT = 100;
 
-export const normalizeResponseTimes = <
-  T,
-  K extends keyof T,
->(
+export const normalizeResponseTimes = <T, K extends keyof T>(
   checks: T[],
-  key: K
+  key: K,
 ): (T & { normalResponseTime: number })[] => {
   if (!Array.isArray(checks) || checks.length === 0)
     return checks as (T & {
@@ -34,7 +31,7 @@ export const normalizeResponseTimes = <
       if (v < acc.min) acc.min = v;
       return acc;
     },
-    { max: -Infinity, min: Infinity }
+    { max: -Infinity, min: Infinity },
   );
 
   const range = max - min || 1;
@@ -62,7 +59,7 @@ export const getResponseColor = (
     start: string | undefined;
     mid: string | undefined;
     end: string | undefined;
-  }
+  },
 ): string => {
   const safe = { ...colors };
   if (!safe.start) safe.start = "#22c55e"; // green
