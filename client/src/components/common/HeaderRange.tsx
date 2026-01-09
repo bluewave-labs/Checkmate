@@ -1,9 +1,10 @@
 import Stack from "@mui/material/Stack";
-import { ButtonGroup, Button } from "@/components/inputs";
+import { SegmentedControl } from "@/components/inputs";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTranslation } from "react-i18next";
+
 export const HeaderRange = ({
   range,
   setRange,
@@ -18,6 +19,15 @@ export const HeaderRange = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+
+  const options = [
+    ...(all ? [{ value: "all", label: t("common.buttons.range.all") }] : []),
+    { value: "1h", label: t("common.buttons.range.recent") },
+    { value: "24h", label: t("common.buttons.range.day") },
+    { value: "7d", label: t("common.buttons.range.week") },
+    { value: "30d", label: t("common.buttons.range.month") },
+  ];
+
   return (
     <Stack
       gap={theme.spacing(9)}
@@ -28,89 +38,12 @@ export const HeaderRange = ({
       <Typography variant="body2">
         {range === "all" ? "Showing all" : `Showing past ${range}`}
       </Typography>
-      <ButtonGroup
-        orientation={isSmall ? "vertical" : "horizontal"}
-        fullWidth={isSmall}
-        color="secondary"
-      >
-        {all && (
-          <Button
-            variant="contained"
-            onClick={() => setRange("all")}
-            loading={loading}
-            sx={
-              range === "all"
-                ? {
-                    backgroundColor: theme.palette.secondary.dark,
-                    color: theme.palette.secondary.contrastText,
-                  }
-                : undefined
-            }
-          >
-            {t("common.buttons.range.all")}
-          </Button>
-        )}
-        <Button
-          variant="contained"
-          onClick={() => setRange("1h")}
-          loading={loading}
-          sx={
-            range === "1h"
-              ? {
-                  backgroundColor: theme.palette.secondary.dark,
-                  color: theme.palette.secondary.contrastText,
-                }
-              : undefined
-          }
-        >
-          {t("common.buttons.range.recent")}
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => setRange("24h")}
-          loading={loading}
-          sx={
-            range === "24h"
-              ? {
-                  backgroundColor: theme.palette.secondary.dark,
-                  color: theme.palette.secondary.contrastText,
-                }
-              : undefined
-          }
-        >
-          {t("common.buttons.range.day")}
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => setRange("7d")}
-          loading={loading}
-          sx={
-            range === "7d"
-              ? {
-                  backgroundColor: theme.palette.secondary.dark,
-                  color: theme.palette.secondary.contrastText,
-                }
-              : undefined
-          }
-        >
-          {t("common.buttons.range.week")}
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => setRange("30d")}
-          loading={loading}
-          sx={
-            range === "30d"
-              ? {
-                  backgroundColor: theme.palette.secondary.dark,
-                  color: theme.palette.secondary.contrastText,
-                }
-              : undefined
-          }
-        >
-          {t("common.buttons.range.month")}
-        </Button>
-      </ButtonGroup>
+      <SegmentedControl
+        options={options}
+        value={range}
+        onChange={(value) => setRange(value)}
+        loading={loading}
+      />
     </Stack>
   );
 };

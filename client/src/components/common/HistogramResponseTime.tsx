@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
 import type { Check } from "@/types/check";
-import { normalizeResponseTimes } from "@/utils/DataUtils";
+import { normalizeResponseTimes, getResponseColor } from "@/utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 
 interface HistogramResponseTimeProps {
@@ -11,7 +11,8 @@ interface HistogramResponseTimeProps {
   gap?: ResponsiveStyleValue<number | string>;
 }
 
-const DEFAULT_HEIGHT = 50;
+const DEFAULT_HEIGHT = 38;
+const STATUS_ROW_HEIGHT = 4;
 
 export const HistogramResponseTime = ({
   checks,
@@ -39,63 +40,121 @@ export const HistogramResponseTime = ({
   } else {
     data = normalized;
   }
-  const chartHeight = typeof height === "number" ? `${height}px` : height;
-  const gridGap = gap ?? theme.spacing(0.5);
+
+  const barHeight = typeof height === "number" ? height : DEFAULT_HEIGHT;
+  const gridGap = gap ?? "3px";
 
   return (
     <Box sx={{ width: "100%" }}>
       <Box
         sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(25, 1fr)",
-          gap: gridGap,
-          alignItems: "end",
-          height: chartHeight,
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
         }}
       >
-        {data.map((check, index) => {
-          const isPlaceholder = (check as any).status === "placeholder";
-          const heightPct = `${Math.max(0, Math.min(100, (check as any).normalResponseTime ?? 0))}%`;
-          const barColor =
-            check.status === "up"
-              ? theme.palette.success.light
-              : theme.palette.error.light;
-          const bar = (
-            <Box
-              sx={{
-                position: "relative",
-                width: "100%",
-                height: "100%",
-                borderRadius: theme.spacing(1),
-                bgcolor: theme.palette.action.hover,
-                overflow: "hidden",
-              }}
-            >
+        {/* Response time bars row */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "flex-end",
+            gap: gridGap,
+            height: barHeight,
+          }}
+        >
+          {data.map((check, index) => {
+            const isPlaceholder = check.status === "placeholder";
+            const heightPct = Math.max(
+              15,
+              Math.min(100, check.normalResponseTime ?? 0)
+            );
+
+            const barColor = isPlaceholder
+              ? "transparent"
+              : getResponseColor(check.responseTime, {
+                  start: theme.palette.success.main,
+                  mid: theme.palette.warning.main,
+                  end: theme.palette.error.main,
+                });
+
+            const barContent = (
               <Box
                 sx={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  width: "100%",
-                  height: isPlaceholder ? 0 : heightPct,
-                  bgcolor: barColor,
-                  transition: "height 500ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  flex: 1,
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "flex-end",
+                  bgcolor: theme.palette.grey[100],
+                  borderRadius: "4px",
+                  p: "3px",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: isPlaceholder ? "20%" : `${heightPct}%`,
+                    minHeight: 4,
+                    bgcolor: barColor,
+                    borderRadius: "3px",
+                    transition: "height 300ms ease",
+                  }}
+                />
+              </Box>
+            );
+
+            return isPlaceholder ? (
+              <Box
+                key={index}
+                sx={{ flex: 1, height: "100%" }}
+              >
+                {barContent}
+              </Box>
+            ) : (
+              <HeatmapResponseTimeTooltip key={index} check={check}>
+                {barContent}
+              </HeatmapResponseTimeTooltip>
+            );
+          })}
+        </Box>
+
+        {/* Status indicators row (bottom) */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: gridGap,
+            height: STATUS_ROW_HEIGHT,
+          }}
+        >
+          {data.map((check, index) => {
+            const isPlaceholder = check.status === "placeholder";
+            const statusColor = isPlaceholder
+              ? theme.palette.grey[100]
+              : check.status === "up"
+                ? theme.palette.success.main
+                : theme.palette.error.main;
+
+            const indicator = (
+              <Box
+                sx={{
+                  flex: 1,
+                  height: "100%",
+                  bgcolor: statusColor,
+                  borderRadius: "2px",
                 }}
               />
-            </Box>
-          );
+            );
 
-          return isPlaceholder ? (
-            <Box key={index} sx={{ height: "100%" }}>
-              {bar}
-            </Box>
-          ) : (
-            <HeatmapResponseTimeTooltip key={index} check={check}>
-              {bar}
-            </HeatmapResponseTimeTooltip>
-          );
-        })}
+            return isPlaceholder ? (
+              <Box key={index} sx={{ flex: 1, height: "100%" }}>
+                {indicator}
+              </Box>
+            ) : (
+              <HeatmapResponseTimeTooltip key={index} check={check}>
+                {indicator}
+              </HeatmapResponseTimeTooltip>
+            );
+          })}
+        </Box>
       </Box>
     </Box>
   );

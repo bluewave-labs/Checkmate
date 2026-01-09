@@ -1,9 +1,7 @@
 import Box from "@mui/material/Box";
-import { BaseBox } from "@/components/design-elements";
-import Typography from "@mui/material/Typography";
-
 import type { MonitorStatus } from "@/types/monitor";
 import type { SxProps } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { getStatusPalette, getValuePalette } from "@/utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 
@@ -19,32 +17,30 @@ export const StatusLabel = ({
 }) => {
   const theme = useTheme();
   const palette = getStatusPalette(status);
+  const color = theme.palette[palette].main;
+  const transformedText =
+    status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
   return (
-    <BaseBox
+    <Box
       sx={{
         display: "inline-flex",
-        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        padding: theme.spacing(3, 5),
-        color: theme.palette[palette].main,
-        borderColor:
-          theme.palette.mode === "dark"
-            ? "rgba(255, 255, 255, 0.08)"
-            : "rgba(0, 0, 0, 0.08)",
+        px: 3,
+        py: 1,
+        bgcolor: alpha(color, 0.1),
+        color: color,
+        borderRadius: "4px",
+        fontSize: 12,
+        fontWeight: 500,
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
         ...sx,
       }}
     >
-      <Box
-        width={7}
-        height={7}
-        bgcolor={theme.palette[palette].light}
-        borderRadius="50%"
-        marginRight="5px"
-      />
-      <Typography textTransform={"capitalize"}>{status}</Typography>
-    </BaseBox>
+      {transformedText}
+    </Box>
   );
 };
 
@@ -57,32 +53,28 @@ export const ValueLabel = ({
 }) => {
   const theme = useTheme();
   const palette = getValuePalette(value);
+  const color = theme.palette[palette].main;
   const transformedText =
     text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
   return (
-    <BaseBox
+    <Box
       sx={{
         display: "inline-flex",
-        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        padding: theme.spacing(3, 5),
-        color: theme.palette[palette].main,
-        borderColor:
-          theme.palette.mode === "dark"
-            ? "rgba(255, 255, 255, 0.08)"
-            : "rgba(0, 0, 0, 0.08)",
+        px: 3,
+        py: 1,
+        bgcolor: alpha(color, 0.1),
+        color: color,
+        borderRadius: "4px",
+        fontSize: 12,
+        fontWeight: 500,
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
       }}
     >
-      <Box
-        width={7}
-        height={7}
-        bgcolor={theme.palette[palette].light}
-        borderRadius="50%"
-        marginRight="5px"
-      />
       {transformedText}
-    </BaseBox>
+    </Box>
   );
 };

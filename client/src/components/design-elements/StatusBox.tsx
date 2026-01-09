@@ -18,6 +18,10 @@ export const BGBox = ({ children }: StatusBoxProps) => {
         position: "relative",
         flex: 1,
         padding: theme.spacing(4),
+        background:
+          theme.palette.mode === "dark"
+            ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%)"
+            : "linear-gradient(135deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.03) 100%)",
       }}
     >
       <Box position="absolute" top="-10%" left="5%">

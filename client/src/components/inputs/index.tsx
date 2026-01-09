@@ -17,3 +17,5 @@ export { FormControlLabel } from "./FormControlLabel";
 export { FieldLabel } from "./FieldLabel";
 export { FormField } from "./FormField";
 export { SwitchComponent as Switch } from "./Switch";
+export { SegmentedControl } from "./SegmentedControl";
+export type { SegmentedControlOption } from "./SegmentedControl";

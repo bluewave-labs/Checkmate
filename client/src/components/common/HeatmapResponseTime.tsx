@@ -1,129 +1,157 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { Check } from "@/types/check";
-import { getResponseColor } from "@/utils/DataUtils";
+import { getResponseColor, normalizeResponseTimes } from "@/utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
-import type { SxProps } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
+
 interface HeatmapResponseTimeProps {
   checks: Check[];
   gap?: ResponsiveStyleValue<number | string>;
-  availabilityCellSx?: SxProps;
-  responseCellSx?: SxProps;
+  height?: ResponsiveStyleValue<number | string>;
 }
+
+const DEFAULT_HEIGHT = 38;
+const STATUS_ROW_HEIGHT = 4;
 
 export const HeatmapResponseTime = ({
   checks,
   gap,
-  availabilityCellSx,
-  responseCellSx,
+  height = DEFAULT_HEIGHT,
 }: HeatmapResponseTimeProps) => {
   const theme = useTheme();
-  if (!gap) {
-    gap = theme.spacing(0.5);
-  }
 
   if (!checks || checks.length === 0) return null;
 
-  const latestChecks = checks.slice(-25).reverse();
+  const normalized = normalizeResponseTimes(checks.slice(-25).reverse(), "responseTime");
+  let data = Array<any>();
 
-  let data: Array<Check | { status: "placeholder" }>;
-  if (latestChecks.length !== 25) {
-    const placeholders = Array(25 - latestChecks.length).fill({
-      status: "placeholder" as const,
-    });
-    data = [...latestChecks, ...placeholders];
-  } else {
-    data = latestChecks;
+  if (!normalized || normalized.length === 0) {
+    data = [];
   }
+  if (normalized.length !== 25) {
+    const placeholders = Array(25 - normalized.length).fill({
+      status: "placeholder",
+    });
+    data = [...normalized, ...placeholders];
+  } else {
+    data = normalized;
+  }
+
+  const barHeight = typeof height === "number" ? height : DEFAULT_HEIGHT;
+  const gridGap = gap ?? "3px";
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box
         sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(25, 1fr)",
-          gap: gap,
-          alignItems: "stretch",
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
         }}
       >
-        {data.map((check, index) => {
-          const statusBg =
-            check.status === "placeholder"
-              ? theme.palette.action.hover
-              : check.status === "up"
-                ? theme.palette.success.light
-                : theme.palette.error.light;
-          const respBg =
-            check.status === "placeholder"
-              ? theme.palette.action.hover
-              : getResponseColor(check.responseTime || 0, {
+        {/* Response time bars row */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "flex-end",
+            gap: gridGap,
+            height: barHeight,
+          }}
+        >
+          {data.map((check, index) => {
+            const isPlaceholder = check.status === "placeholder";
+            const heightPct = Math.max(
+              15,
+              Math.min(100, check.normalResponseTime ?? 0)
+            );
+
+            const barColor = isPlaceholder
+              ? "transparent"
+              : getResponseColor(check.responseTime, {
                   start: theme.palette.success.main,
                   mid: theme.palette.warning.main,
                   end: theme.palette.error.main,
                 });
-          const statusBorder =
-            check.status === "placeholder"
-              ? theme.palette.divider
-              : check.status === "up"
-                ? theme.palette.success.main
-                : theme.palette.error.main;
 
-          return (
-            <HeatmapResponseTimeTooltip key={`${check}-${index}`} check={check}>
+            const barContent = (
               <Box
                 sx={{
-                  display: "grid",
-                  gridTemplateRows: "auto auto",
+                  flex: 1,
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "flex-end",
+                  bgcolor: theme.palette.grey[100],
+                  borderRadius: "4px",
+                  p: "3px",
                 }}
               >
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: theme.spacing(2),
+                    width: "100%",
+                    height: isPlaceholder ? "20%" : `${heightPct}%`,
+                    minHeight: 4,
+                    bgcolor: barColor,
+                    borderRadius: "3px",
+                    transition: "height 300ms ease",
                   }}
-                >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      aspectRatio: "10",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        inset: 0,
-                        bgcolor: statusBg,
-                        borderRadius: theme.spacing(0.5),
-                        ...availabilityCellSx,
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        inset: 0,
-                        pointerEvents: "none",
-                        borderRadius: theme.spacing(0.5),
-                        boxShadow: `inset 0 0 0 2px ${statusBorder}`,
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      width: "100%",
-                      aspectRatio: "1 / 1",
-                      bgcolor: respBg,
-                      borderRadius: theme.spacing(0.5),
-                      ...responseCellSx,
-                    }}
-                  />
-                </Box>
+                />
               </Box>
-            </HeatmapResponseTimeTooltip>
-          );
-        })}
+            );
+
+            return isPlaceholder ? (
+              <Box
+                key={index}
+                sx={{ flex: 1, height: "100%" }}
+              >
+                {barContent}
+              </Box>
+            ) : (
+              <HeatmapResponseTimeTooltip key={index} check={check}>
+                {barContent}
+              </HeatmapResponseTimeTooltip>
+            );
+          })}
+        </Box>
+
+        {/* Status indicators row (bottom) */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: gridGap,
+            height: STATUS_ROW_HEIGHT,
+          }}
+        >
+          {data.map((check, index) => {
+            const isPlaceholder = check.status === "placeholder";
+            const statusColor = isPlaceholder
+              ? theme.palette.grey[100]
+              : check.status === "up"
+                ? theme.palette.success.main
+                : theme.palette.error.main;
+
+            const indicator = (
+              <Box
+                sx={{
+                  flex: 1,
+                  height: "100%",
+                  bgcolor: statusColor,
+                  borderRadius: "2px",
+                }}
+              />
+            );
+
+            return isPlaceholder ? (
+              <Box key={index} sx={{ flex: 1, height: "100%" }}>
+                {indicator}
+              </Box>
+            ) : (
+              <HeatmapResponseTimeTooltip key={index} check={check}>
+                {indicator}
+              </HeatmapResponseTimeTooltip>
+            );
+          })}
+        </Box>
       </Box>
     </Box>
   );

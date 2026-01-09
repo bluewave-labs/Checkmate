@@ -31,3 +31,4 @@ export { InfoBox } from "./InfoBox";
 export { Tooltip, TooltipWithInfo } from "./Tooltip";
 export { PlanCard } from "./PlanCard";
 export { LoadingSpinner } from "./LoadingSpinner";
+export { TypeChip } from "./TypeChip";

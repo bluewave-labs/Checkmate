@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel } from "@/components/design-elements";
+import { Table, Pagination, StatusLabel, TypeChip } from "@/components/design-elements";
 import { HeatmapResponseTime } from "@/components/common/HeatmapResponseTime";
 import { HistogramResponseTime } from "@/components/common/HistogramResponseTime";
 import type { Header } from "@/components/design-elements/Table";
@@ -231,7 +231,7 @@ export const MonitorTable = ({
           </Stack>
         ),
         render: (row) => {
-          return row.type;
+          return <TypeChip type={row.type} />;
         },
       },
       {
