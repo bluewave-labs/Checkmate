@@ -1,4 +1,4 @@
-const fetchMonitorCertificate = async (sslChecker, monitor) => {
+const fetchMonitorCertificate = async (sslChecker: any, monitor: any): Promise<any> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
 	const cert = await sslChecker(hostname);
