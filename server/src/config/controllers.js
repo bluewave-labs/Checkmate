@@ -31,10 +31,7 @@ export const initializeControllers = (services) => {
 	controllers.monitorController = new MonitorController(services.monitorService);
 
 	controllers.settingsController = new SettingsController(services.settingsService, services.emailService, services.db);
-	controllers.checkController = new CheckController(commonDependencies, {
-		settingsService: services.settingsService,
-		checkService: services.checkService,
-	});
+	controllers.checkController = new CheckController(services.checkService);
 	controllers.inviteController = new InviteController(services.inviteService);
 
 	controllers.maintenanceWindowController = new MaintenanceWindowController(services.maintenanceWindowService);
