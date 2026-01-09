@@ -29,6 +29,7 @@ class StatusPageController {
 				teamId,
 			});
 			return res.status(200).json({
+				success: true,
 				msg: "Status page created successfully",
 				data: statusPage,
 			});
@@ -47,6 +48,7 @@ class StatusPageController {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
 			return res.status(200).json({
+				success: true,
 				msg: "Status page updated successfully",
 				data: statusPage,
 			});
@@ -59,6 +61,7 @@ class StatusPageController {
 		try {
 			const statusPage = await this.db.statusPageModule.getStatusPage();
 			return res.status(200).json({
+				success: true,
 				msg: "Status page retrieved successfully",
 				data: statusPage,
 			});
@@ -74,6 +77,7 @@ class StatusPageController {
 
 			const statusPage = await this.db.statusPageModule.getStatusPageByUrl(req.params.url);
 			return res.status(200).json({
+				success: true,
 				msg: "Status page retrieved successfully",
 				data: statusPage,
 			});
@@ -87,6 +91,7 @@ class StatusPageController {
 			const statusPages = await this.db.statusPageModule.getStatusPagesByTeamId(teamId);
 
 			return res.status(200).json({
+				success: true,
 				msg: "Status pages retrieved successfully",
 				data: statusPages,
 			});
@@ -98,6 +103,7 @@ class StatusPageController {
 		try {
 			await this.db.statusPageModule.deleteStatusPage(req.params.url);
 			return res.status(200).json({
+				success: true,
 				msg: "Status page deleted successfully",
 			});
 		} catch (error) {

@@ -17,6 +17,7 @@ class JobQueueController {
 		try {
 			const metrics = await this.jobQueue.getMetrics();
 			res.status(200).json({
+				success: true,
 				msg: "Queue metrics fetched successfully",
 				data: metrics,
 			});
@@ -29,6 +30,7 @@ class JobQueueController {
 		try {
 			const jobs = await this.jobQueue.getJobs();
 			return res.status(200).json({
+				success: true,
 				msg: "Queue jobs fetched successfully",
 				data: jobs,
 			});
@@ -42,6 +44,7 @@ class JobQueueController {
 			const jobs = await this.jobQueue.getJobs();
 			const metrics = await this.jobQueue.getMetrics();
 			return res.status(200).json({
+				success: true,
 				msg: "Queue metrics fetched successfully",
 				data: { jobs, metrics },
 			});
@@ -54,6 +57,7 @@ class JobQueueController {
 		try {
 			await this.jobQueue.addJob(Math.random().toString(36).substring(7));
 			return res.status(200).json({
+				success: true,
 				msg: "Job added to queue successfully",
 			});
 		} catch (error) {
@@ -65,6 +69,7 @@ class JobQueueController {
 		try {
 			const result = await this.jobQueue.flushQueues();
 			return res.status(200).json({
+				success: true,
 				msg: "Queue flushed successfully",
 				data: result,
 			});
@@ -77,6 +82,7 @@ class JobQueueController {
 		try {
 			const stuckQueues = await this.jobQueue.checkQueueHealth();
 			return res.status(200).json({
+				success: true,
 				msg: "Queue health checked successfully",
 				data: stuckQueues,
 			});
