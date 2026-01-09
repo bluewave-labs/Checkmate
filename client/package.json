@@ -8,7 +8,8 @@
     "dev": "vite --host 127.0.0.1 --mode development",
     "build": "tsc -b && vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format-check": "prettier --check ."
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
