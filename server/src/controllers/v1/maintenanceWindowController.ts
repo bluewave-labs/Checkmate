@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/utils/AppError.js";
 import {
 	createMaintenanceWindowBodyValidation,
@@ -8,7 +9,6 @@ import {
 	getMaintenanceWindowsByTeamIdQueryValidation,
 	deleteMaintenanceWindowByIdParamValidation,
 } from "@/validation/joi.js";
-import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "maintenanceWindowController";
 

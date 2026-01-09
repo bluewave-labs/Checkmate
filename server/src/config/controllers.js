@@ -35,9 +35,7 @@ export const initializeControllers = (services) => {
 		settingsService: services.settingsService,
 		checkService: services.checkService,
 	});
-	controllers.inviteController = new InviteController(commonDependencies, {
-		inviteService: services.inviteService,
-	});
+	controllers.inviteController = new InviteController(services.inviteService);
 
 	controllers.maintenanceWindowController = new MaintenanceWindowController(services.maintenanceWindowService);
 	controllers.queueController = new QueueController(services.jobQueue);
