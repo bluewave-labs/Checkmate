@@ -6,9 +6,9 @@
 	"type": "module",
 	"scripts": {
 		"test": "c8 mocha",
-		"dev": "tsx watch src/index.js",
+		"dev": "nodemon --exec tsx src/index.js",
 		"start": "node --watch ./dist/index.js",
-		"build": "tsc",
+		"build": "tsc && tsc-alias",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",
 		"format": "prettier --write .",
@@ -71,6 +71,7 @@
 		"mocha": "11.1.0",
 		"prettier": "^3.3.3",
 		"sinon": "19.0.2",
+		"tsc-alias": "1.8.16",
 		"tsx": "4.20.5",
 		"typescript": "5.9.2"
 	}
