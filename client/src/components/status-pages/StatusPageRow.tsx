@@ -35,18 +35,6 @@ export const StatusPageRow = ({ monitor, checks }: Props) => {
           <HeatmapResponseTime
             gap={{ xs: theme.spacing(0.5), md: theme.spacing(2) }}
             checks={checks ?? []}
-            availabilityCellSx={{
-              borderRadius: {
-                xs: theme.spacing(0.5),
-                md: theme.shape.borderRadius,
-              },
-            }}
-            responseCellSx={{
-              borderRadius: {
-                xs: theme.spacing(0.5),
-                md: theme.shape.borderRadius,
-              },
-            }}
           />
         )}
         {type === "histogram" && (
