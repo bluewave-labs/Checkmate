@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -18,14 +20,29 @@ jobs:
         working-directory: client
         run: npm install
 
+      - name: Get changed files
+        id: changed-files
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          FILES=$(git diff --name-only origin/$BASE_REF...HEAD -- 'client/**/*.ts' 'client/**/*.tsx' 'client/**/*.js' 'client/**/*.jsx' 'client/**/*.json' | tr '\n' ' ')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
       - name: Check client formatting
         working-directory: client
-        run: npm run format-check
+        if: steps.changed-files.outputs.files != ''
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: |
+          cd ..
+          npx prettier --check $CHANGED_FILES
 
   format-server:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -36,6 +53,19 @@ jobs:
         working-directory: server
         run: npm install
 
+      - name: Get changed files
+        id: changed-files
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          FILES=$(git diff --name-only origin/$BASE_REF...HEAD -- 'server/**/*.ts' 'server/**/*.js' 'server/**/*.json' | tr '\n' ' ')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
       - name: Check server formatting
         working-directory: server
-        run: npm run format-check
+        if: steps.changed-files.outputs.files != ''
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: |
+          cd ..
+          npx prettier --check $CHANGED_FILES
