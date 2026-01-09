@@ -46,9 +46,7 @@ export const initializeControllers = (services) => {
 		settingsService: services.settingsService,
 		maintenanceWindowService: services.maintenanceWindowService,
 	});
-	controllers.queueController = new QueueController(commonDependencies, {
-		jobQueue: services.jobQueue,
-	});
+	controllers.queueController = new QueueController(services.jobQueue);
 	controllers.logController = new LogController(commonDependencies);
 	controllers.statusPageController = new StatusPageController(commonDependencies);
 	controllers.notificationController = new NotificationController(services.notificationService, services.db);
