@@ -30,10 +30,7 @@ export const initializeControllers = (services) => {
 
 	controllers.monitorController = new MonitorController(services.monitorService);
 
-	controllers.settingsController = new SettingsController(commonDependencies, {
-		settingsService: services.settingsService,
-		emailService: services.emailService,
-	});
+	controllers.settingsController = new SettingsController(services.settingsService, services.emailService, services.db);
 	controllers.checkController = new CheckController(commonDependencies, {
 		settingsService: services.settingsService,
 		checkService: services.checkService,

@@ -1,28 +1,32 @@
-import { updateAppSettingsBodyValidation } from "../../validation/joi.js";
-import { sendTestEmailBodyValidation } from "../../validation/joi.js";
-import BaseController from "./baseController.js";
+import { Request, Response, NextFunction } from "express";
+import { sendTestEmailBodyValidation, updateAppSettingsBodyValidation } from "@/validation/joi.js";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "SettingsController";
 
-class SettingsController extends BaseController {
+class SettingsController {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor(commonDependencies, { settingsService, emailService }) {
-		super(commonDependencies);
+	private settingsService: any;
+	private emailService: any;
+	private db: any;
+	constructor(settingsService: any, emailService: any, db: any) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
+		this.db = db;
 	}
 
 	get serviceName() {
 		return SettingsController.SERVICE_NAME;
 	}
 
-	buildAppSettings = (dbSettings) => {
+	buildAppSettings = (dbSettings: any) => {
 		const sanitizedSettings = { ...dbSettings };
 		delete sanitizedSettings.version;
 
 		const returnSettings = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
+			settings: null,
 		};
 
 		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
@@ -37,37 +41,33 @@ class SettingsController extends BaseController {
 		return returnSettings;
 	};
 
-	getAppSettings = this.asyncHandler(
-		async (req, res) => {
+	getAppSettings = async (req: Request, res: Response, next: NextFunction) => {
+		try {
 			const dbSettings = await this.settingsService.getDBSettings();
 
 			const returnSettings = this.buildAppSettings(dbSettings);
-			return res.success({
-				msg: this.stringService.getAppSettings,
+			return res.status(200).json({
+				msg: "App settings fetched successfully",
 				data: returnSettings,
 			});
-		},
-		SERVICE_NAME,
-		"getAppSettings"
-	);
+		} catch (error) {
+			next(error);
+		}
+	};
 
-	updateAppSettings = this.asyncHandler(
-		async (req, res) => {
-			await updateAppSettingsBodyValidation.validateAsync(req.body);
+	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
+		await updateAppSettingsBodyValidation.validateAsync(req.body);
 
-			const updatedSettings = await this.db.settingsModule.updateAppSettings(req.body);
-			const returnSettings = this.buildAppSettings(updatedSettings);
-			return res.success({
-				msg: this.stringService.updateAppSettings,
-				data: returnSettings,
-			});
-		},
-		SERVICE_NAME,
-		"updateAppSettings"
-	);
+		const updatedSettings = await this.db.settingsModule.updateAppSettings(req.body);
+		const returnSettings = this.buildAppSettings(updatedSettings);
+		return res.status(200).json({
+			msg: "App settings updated successfully",
+			data: returnSettings,
+		});
+	};
 
-	sendTestEmail = this.asyncHandler(
-		async (req, res) => {
+	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
+		try {
 			await sendTestEmailBodyValidation.validateAsync(req.body);
 
 			const {
@@ -86,7 +86,7 @@ class SettingsController extends BaseController {
 				systemEmailTLSServername,
 			} = req.body;
 
-			const subject = this.stringService.testEmailSubject;
+			const subject = "This is a test email from Checkmate";
 			const context = { testName: "Monitoring System" };
 
 			const html = await this.emailService.buildEmail("testEmailTemplate", context);
@@ -106,17 +106,17 @@ class SettingsController extends BaseController {
 			});
 
 			if (!messageId) {
-				throw this.errorService.createServerError("Failed to send test email.");
+				throw new AppError({ message: "Failed to send test email.", status: 500 });
 			}
 
-			return res.success({
-				msg: this.stringService.sendTestEmail,
+			return res.status(200).json({
+				msg: "Test email sent successfully",
 				data: { messageId },
 			});
-		},
-		SERVICE_NAME,
-		"sendTestEmail"
-	);
+		} catch (error) {
+			next(error);
+		}
+	};
 }
 
 export default SettingsController;
