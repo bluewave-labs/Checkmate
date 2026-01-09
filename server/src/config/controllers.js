@@ -28,12 +28,7 @@ export const initializeControllers = (services) => {
 		userService: services.userService,
 	});
 
-	controllers.monitorController = new MonitorController(commonDependencies, {
-		settingsService: services.settingsService,
-		jobQueue: services.jobQueue,
-		emailService: services.emailService,
-		monitorService: services.monitorService,
-	});
+	controllers.monitorController = new MonitorController(services.monitorService);
 
 	controllers.settingsController = new SettingsController(commonDependencies, {
 		settingsService: services.settingsService,
