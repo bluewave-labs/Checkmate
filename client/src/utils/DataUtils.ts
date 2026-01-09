@@ -46,8 +46,16 @@ export const normalizeResponseTimes = <
   }));
 };
 
-// Interpolate color between three theme colors over 0-100 range.
-// 0-50 => start (success.light), 50-75 => mid (warning.light), 75-100 => end (error.light)
+// Return a color based on response time thresholds.
+// Uses distinct color bands instead of interpolation to avoid muddy colors.
+// Based on industry standards:
+// - Google/MDN: <200ms instant, 200ms-1s acceptable, >1s problematic
+// - Nielsen Norman Group: 1s is where users lose feeling of direct interaction
+//
+// Thresholds:
+// 0-500ms: green (good) - instant to acceptable range
+// 500ms-1000ms: yellow/amber (warning) - starting to feel slow
+// >1000ms: red (slow) - problematic, needs attention
 export const getResponseColor = (
   ms: number,
   colors: {
@@ -56,19 +64,10 @@ export const getResponseColor = (
     end: string | undefined;
   }
 ): string => {
-  // New ranges with open high end:
-  // 0–300ms: interpolate start (good) -> mid (warning)
-  // 300–600ms: interpolate mid (warning) -> end (error)
-  // >600ms: solid end (error)
   const safe = { ...colors };
-  if (!safe.start) safe.start = "#4caf50"; // fallback green
-  if (!safe.mid) safe.mid = "#ff9800"; // fallback orange
-  if (!safe.end) safe.end = "#f44336"; // fallback red
-
-  const toHex = (c: number) => c.toString(16).padStart(2, "0");
-  const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)));
-  const rgbToHex = (r: number, g: number, b: number) =>
-    `#${toHex(clamp(r))}${toHex(clamp(g))}${toHex(clamp(b))}`;
+  if (!safe.start) safe.start = "#22c55e"; // green
+  if (!safe.mid) safe.mid = "#eab308"; // yellow/amber
+  if (!safe.end) safe.end = "#ef4444"; // red
 
   const normalizeToHex = (value: string) => {
     const v = value.trim();
@@ -90,44 +89,19 @@ export const getResponseColor = (
       const r = parseInt(m[1], 10);
       const g = parseInt(m[2], 10);
       const b = parseInt(m[3], 10);
-      return rgbToHex(r, g, b);
+      const toHex = (c: number) => c.toString(16).padStart(2, "0");
+      const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)));
+      return `#${toHex(clamp(r))}${toHex(clamp(g))}${toHex(clamp(b))}`;
     }
-    // Fallback neutral
     return "#7f7f7f";
   };
 
-  const parseHex = (hex: string) => {
-    const h = hex.replace("#", "");
-    const full =
-      h.length === 3
-        ? h
-            .split("")
-            .map((c) => c + c)
-            .join("")
-        : h;
-    const n = parseInt(full, 16);
-    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-  };
-  const mix = (a: number, b: number, t: number) => Math.round(a + (b - a) * t);
-
   const v = Math.max(0, ms);
-  if (v <= 300) {
-    const t = v / 300; // 0..1 from start->mid
-    const s = parseHex(normalizeToHex(safe.start));
-    const m = parseHex(normalizeToHex(safe.mid));
-    const r = mix(s.r, m.r, t);
-    const g = mix(s.g, m.g, t);
-    const b = mix(s.b, m.b, t);
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  if (v <= 500) {
+    return normalizeToHex(safe.start);
   }
-  if (v <= 600) {
-    const t = (v - 300) / 300; // 0..1 from mid->end
-    const m = parseHex(normalizeToHex(safe.mid));
-    const e = parseHex(normalizeToHex(safe.end));
-    const r = mix(m.r, e.r, t);
-    const g = mix(m.g, e.g, t);
-    const b = mix(m.b, e.b, t);
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  if (v <= 1000) {
+    return normalizeToHex(safe.mid);
   }
   return normalizeToHex(safe.end);
 };
