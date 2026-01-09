@@ -7,7 +7,7 @@ class NotificationChannelController {
   private notificationService: NotificationService;
   constructor(
     notificationChannelService: NotificationChannelService,
-    notificationService: NotificationService
+    notificationService: NotificationService,
   ) {
     this.notificationChannelService = notificationChannelService;
     this.notificationService = notificationService;
@@ -21,7 +21,7 @@ class NotificationChannelController {
       }
       const channel = await this.notificationChannelService.create(
         tokenizedUser,
-        req.body
+        req.body,
       );
       res.status(201).json({ message: "OK", data: channel });
     } catch (error) {
@@ -41,9 +41,8 @@ class NotificationChannelController {
         throw new ApiError("No team ID", 400);
       }
 
-      const notificationChannels = await this.notificationChannelService.getAll(
-        teamId
-      );
+      const notificationChannels =
+        await this.notificationChannelService.getAll(teamId);
       res.status(200).json({
         message: "OK",
         data: notificationChannels,
@@ -73,7 +72,7 @@ class NotificationChannelController {
         await this.notificationChannelService.toggleActive(
           teamId,
           tokenizedUser,
-          id
+          id,
         );
       res.status(200).json({ message: "OK", data: notificationChannel });
     } catch (error) {
@@ -101,7 +100,7 @@ class NotificationChannelController {
         teamId,
         tokenizedUser,
         id,
-        req.body
+        req.body,
       );
       res.status(200).json({ message: "OK", data: updatedChannel });
     } catch (error) {
@@ -127,7 +126,7 @@ class NotificationChannelController {
       }
       const notificationChannel = await this.notificationChannelService.get(
         teamId,
-        id
+        id,
       );
       res.status(200).json({ message: "OK", data: notificationChannel });
     } catch (error) {
@@ -161,15 +160,16 @@ class NotificationChannelController {
   test = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const notificationChannel = req.body;
-      const success = await this.notificationService.testNotificationChannel(
-        notificationChannel
-      );
+      const success =
+        await this.notificationService.testNotificationChannel(
+          notificationChannel,
+        );
       if (success) {
         res.status(200).json({ message: "OK" });
       } else {
         throw new ApiError(
           "Failed to send test notification. Please check your channel configuration.",
-          500
+          500,
         );
       }
     } catch (error) {

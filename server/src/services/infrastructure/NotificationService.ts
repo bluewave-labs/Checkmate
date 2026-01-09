@@ -32,14 +32,14 @@ export interface ITestResult {
 export interface INotificationService {
   handleNotifications: (
     monitor: MonitorEntity,
-    incident: Incident
+    incident: Incident,
   ) => Promise<void>;
   testNotificationChannels: (
     monitorId: string,
-    teamId: string
+    teamId: string,
   ) => Promise<ITestResult[]>;
   testNotificationChannel: (
-    notificationChannel: INotificationChannel
+    notificationChannel: INotificationChannel,
   ) => Promise<Boolean>;
   testEmailTransport: (transport: IEmailTransport) => Promise<boolean>;
 }
@@ -73,7 +73,7 @@ class NotificationService implements INotificationService {
     });
 
     const tasks = notificationChannels.map((channel) =>
-      this.sendForChannel(channel, monitor, incident)
+      this.sendForChannel(channel, monitor, incident),
     );
 
     const outcomes = await Promise.all(tasks);
@@ -82,7 +82,7 @@ class NotificationService implements INotificationService {
 
     if (failed > 0) {
       logger.warn(
-        `Notification send completed with ${succeeded} success, ${failed} failure(s)`
+        `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
       );
     }
 
@@ -92,35 +92,35 @@ class NotificationService implements INotificationService {
   private sendForChannel = async (
     channel: INotificationChannel,
     monitor: MonitorEntity,
-    incident: Incident
+    incident: Incident,
   ): Promise<boolean> => {
     try {
       switch (channel.type) {
         case "email": {
           const sent = await this.emailService.sendMessage(
             this.emailService.buildAlert(monitor, incident),
-            channel
+            channel,
           );
           return Boolean(sent);
         }
         case "slack": {
           const sent = await this.slackService.sendMessage(
             this.slackService.buildAlert(monitor, incident),
-            channel
+            channel,
           );
           return Boolean(sent);
         }
         case "discord": {
           const sent = await this.discordService.sendMessage(
             this.discordService.buildAlert(monitor, incident),
-            channel
+            channel,
           );
           return Boolean(sent);
         }
         case "webhook": {
           const sent = await this.webhookService.sendMessage(
             this.webhookService.buildAlert(monitor, incident),
-            channel
+            channel,
           );
           return Boolean(sent);
         }
@@ -137,7 +137,7 @@ class NotificationService implements INotificationService {
 
   private testNotification = async (
     channel: INotificationChannel,
-    results: any[]
+    results: any[],
   ) => {
     switch (channel.type) {
       case "email":
@@ -208,20 +208,20 @@ class NotificationService implements INotificationService {
 
     const results: any[] = [];
     await Promise.all(
-      notificationChannels.map((ch) => this.testNotification(ch, results))
+      notificationChannels.map((ch) => this.testNotification(ch, results)),
     );
     const succeeded = results.filter((r) => r.sent).length;
     const failed = results.length - succeeded;
     if (failed > 0) {
       logger.warn(
-        `Notification channel test completed with ${succeeded} success, ${failed} failure(s)`
+        `Notification channel test completed with ${succeeded} success, ${failed} failure(s)`,
       );
     }
     return results;
   };
 
   testNotificationChannel = async (
-    notificationChannel: INotificationChannel
+    notificationChannel: INotificationChannel,
   ) => {
     const result: any[] = [];
     await this.testNotification(notificationChannel, result);

@@ -36,12 +36,13 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             marginRight: 0,
             marginTop: theme.spacing(1),
           },
-          "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active": {
-            WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
-            WebkitTextFillColor: `${theme.palette.text.primary} !important`,
-            caretColor: theme.palette.text.primary,
-            borderRadius: theme.shape.borderRadius,
-          },
+          "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
+            {
+              WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
+              WebkitTextFillColor: `${theme.palette.text.primary} !important`,
+              caretColor: theme.palette.text.primary,
+              borderRadius: theme.shape.borderRadius,
+            },
         }}
       />
     );
@@ -56,6 +57,6 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     }
 
     return input;
-  }
+  },
 );
 TextInput.displayName = "TextInput";

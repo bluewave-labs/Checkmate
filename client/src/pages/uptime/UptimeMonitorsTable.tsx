@@ -1,7 +1,12 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel, TypeChip } from "@/components/design-elements";
+import {
+  Table,
+  Pagination,
+  StatusLabel,
+  TypeChip,
+} from "@/components/design-elements";
 import { HeatmapResponseTime } from "@/components/common/HeatmapResponseTime";
 import { HistogramResponseTime } from "@/components/common/HistogramResponseTime";
 import type { Header } from "@/components/design-elements/Table";
@@ -52,7 +57,7 @@ export const MonitorTable = ({
   const theme = useTheme();
   const navigate = useNavigate();
   const chartType = useAppSelector(
-    (state) => state?.ui?.chartType || "heatmap"
+    (state) => state?.ui?.chartType || "heatmap",
   );
   const {
     patch,
@@ -62,13 +67,13 @@ export const MonitorTable = ({
 
   const handlePageChange = (
     _e: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) => {
     setPage(newPage);
   };
 
   const handleRowsPerPageChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const value = Number(e.target.value);
     setPage(0);
