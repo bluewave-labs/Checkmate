@@ -47,6 +47,7 @@ class SettingsController {
 
 			const returnSettings = this.buildAppSettings(dbSettings);
 			return res.status(200).json({
+				success: true,
 				msg: "App settings fetched successfully",
 				data: returnSettings,
 			});
@@ -61,6 +62,7 @@ class SettingsController {
 		const updatedSettings = await this.db.settingsModule.updateAppSettings(req.body);
 		const returnSettings = this.buildAppSettings(updatedSettings);
 		return res.status(200).json({
+			success: true,
 			msg: "App settings updated successfully",
 			data: returnSettings,
 		});
@@ -110,6 +112,7 @@ class SettingsController {
 			}
 
 			return res.status(200).json({
+				success: true,
 				msg: "Test email sent successfully",
 				data: { messageId },
 			});
