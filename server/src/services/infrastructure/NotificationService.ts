@@ -141,6 +141,7 @@ class NotificationService implements INotificationService {
   ) => {
     switch (channel.type) {
       case "email":
+        // For email, let the error propagate with its descriptive message
         const sentEmail = await this.emailService.testMessage(channel);
         results.push({
           channelId: channel._id,

@@ -167,9 +167,13 @@ class NotificationChannelController {
       if (success) {
         res.status(200).json({ message: "OK" });
       } else {
-        throw new ApiError("Failed to send", 500);
+        throw new ApiError(
+          "Failed to send test notification. Please check your channel configuration.",
+          500
+        );
       }
     } catch (error) {
+      // Pass the error through - it should already have a descriptive message
       next(error);
     }
   };

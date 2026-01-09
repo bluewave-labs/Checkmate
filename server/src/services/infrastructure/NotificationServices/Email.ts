@@ -161,9 +161,30 @@ class EmailService implements IEmailService {
       });
 
       return true;
-    } catch (error) {
-      logger.error(error);
-      return false;
+    } catch (error: any) {
+      logger.error(error?.message || error);
+      if (error?.code === "ECONNREFUSED") {
+        throw new ApiError(
+          "Could not connect to email server. Please check your SMTP settings.",
+          503
+        );
+      }
+      if (error?.code === "EAUTH") {
+        throw new ApiError(
+          "Email authentication failed. Please check your SMTP credentials.",
+          401
+        );
+      }
+      if (error?.code === "ESOCKET") {
+        throw new ApiError(
+          "Email server connection timed out. Please check your SMTP host and port.",
+          503
+        );
+      }
+      throw new ApiError(
+        error?.message || "Failed to send email notification",
+        500
+      );
     }
   };
 
