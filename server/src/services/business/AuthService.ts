@@ -233,13 +233,17 @@ class AuthService implements IAuthService {
       };
 
       return { tokenizedUser, returnableUser };
-    } catch (error) {
+    } catch (error: any) {
       await this.teamMembershipRepository.deleteById(created.teamMembership);
       await this.orgMembershipRepository.deleteById(created.orgMembership);
       await this.teamRepository.deleteById(created.team);
       await this.roleRepository.deleteMany(created.roles);
       if (created.org) await this.orgRepository.deleteById(created.org);
       if (created.user) await this.userRepository.deleteById(created.user);
+
+      if (error.code === 11000) {
+        throw new ApiError("A user with this email already exists", 409);
+      }
       throw error;
     }
   }
