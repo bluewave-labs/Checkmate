@@ -263,16 +263,27 @@ class StatusPageModule {
 			const appSettings = await this.AppSettings.findOne({ singleton: true }).lean();
 		const showURL = appSettings?.showURL === true || appSettings?.showURL === "true";
 
+		// eslint-disable-next-line no-console
+		console.log("=== STATUS PAGE FETCH ===");
+		// eslint-disable-next-line no-console
+		console.log("appSettings object:", JSON.stringify(appSettings, null, 2));
+		// eslint-disable-next-line no-console
+		console.log("appSettings.showURL value:", appSettings?.showURL);
+		// eslint-disable-next-line no-console
+		console.log("appSettings.showURL type:", typeof appSettings?.showURL);
+		// eslint-disable-next-line no-console
+		console.log("showURL after check:", showURL);
+
 		const normalizedMonitors = monitors.map((monitor) => {
 			const normalizedChecks = this.NormalizeData(monitor.checks, 10, 100);
 			if (showURL !== true) {
 				const { url, port, secret, notifications, ...rest } = monitor;
-					return { ...rest, checks: normalizedChecks };
-				}
-				return { ...monitor, checks: normalizedChecks };
-			});
+				return { ...rest, checks: normalizedChecks };
+			}
+			return { ...monitor, checks: normalizedChecks };
+		});
 
-			return { statusPage, monitors: normalizedMonitors };
+		return { statusPage, monitors: normalizedMonitors };
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getStatusPageByUrl";
