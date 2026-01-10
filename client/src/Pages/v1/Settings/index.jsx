@@ -166,7 +166,7 @@ const Settings = () => {
 
 		// Update Redux immediately for UI feedback
 		if (name === "showURL") {
-			dispatch(setShowURL(newValue ?? value));
+			dispatch(setShowURL(value));
 		}
 	};
 
