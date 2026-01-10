@@ -93,6 +93,12 @@ const Settings = () => {
 		) {
 			newValue = checked;
 		}
+
+		// Ensure showURL is a proper boolean
+		if (name === "showURL") {
+			newValue = value === true || value === "true";
+		}
+
 		// Build next state early
 		const newSettingsData = {
 			...settingsData,
