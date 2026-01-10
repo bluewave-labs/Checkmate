@@ -57,6 +57,10 @@ class SettingsController {
 	};
 
 	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
+		// Diagnostics: capture inbound payload
+		// eslint-disable-next-line no-console
+		console.log("=== SETTINGS CONTROLLER REQUEST BODY ===", req.body);
+
 		await updateAppSettingsBodyValidation.validateAsync(req.body);
 
 		const updatedSettings = await this.db.settingsModule.updateAppSettings(req.body);

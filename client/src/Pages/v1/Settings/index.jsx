@@ -80,11 +80,6 @@ const Settings = () => {
 	const handleChange = async (e) => {
 		const { name, value, checked } = e.target;
 
-		// Special case for showURL until handled properly in the backend
-		if (name === "showURL") {
-			dispatch(setShowURL(value));
-			return;
-		}
 		let newValue;
 		if (
 			name === "systemEmailIgnoreTLS" ||
@@ -167,6 +162,11 @@ const Settings = () => {
 		}
 
 		setSettingsData(newSettingsData);
+
+		// Update Redux immediately for UI feedback
+		if (name === "showURL") {
+			dispatch(setShowURL(newValue ?? value));
+		}
 	};
 
 	const handleSave = () => {
