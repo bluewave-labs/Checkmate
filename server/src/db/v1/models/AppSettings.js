@@ -55,6 +55,10 @@ const AppSettingsSchema = mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
+		showURL: {
+			type: Boolean,
+			default: false,
+		},
 		singleton: {
 			type: Boolean,
 			required: true,
