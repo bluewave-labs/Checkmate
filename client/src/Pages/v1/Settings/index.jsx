@@ -153,29 +153,20 @@ const Settings = () => {
 			return;
 		}
 
-		// Validate
-		const { error } = settingsValidation.validate(newSettingsData.settings, {
-			abortEarly: false,
-		});
-		if (!error || error.details.length === 0) {
-			setErrors({});
-		} else {
-			const newErrors = {};
-			error.details.forEach((err) => {
-				newErrors[err.path[0]] = err.message;
-			});
-			setErrors(newErrors);
-		}
-
 		setSettingsData(newSettingsData);
 
 		// Update Redux immediately for UI feedback
 		if (name === "showURL") {
-		dispatch(setShowURL(newValue));
-	}
-};
+			dispatch(setShowURL(newValue));
+		}
+	};
 
-const handleSave = () => {
+	const handleSave = () => {
+		// Validate
+		const { error } = settingsValidation.validate(settingsData.settings, {
+			abortEarly: false,
+		});
+		if (!error || error.details.length === 0) {
 			setErrors({});
 		} else {
 			const newErrors = {};
