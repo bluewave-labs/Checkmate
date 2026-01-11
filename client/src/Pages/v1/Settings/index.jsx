@@ -168,6 +168,11 @@ const Settings = () => {
 		}
 
 		setSettingsData(newSettingsData);
+
+		// Update Redux immediately for UI feedback
+		if (name === "showURL") {
+			dispatch(setShowURL(newValue ?? value));
+		}
 	};
 
 	const handleSave = () => {
