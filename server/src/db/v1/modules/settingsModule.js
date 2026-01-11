@@ -8,6 +8,11 @@ class SettingsModule {
 
 	updateAppSettings = async (newSettings) => {
 		try {
+			// eslint-disable-next-line no-console
+			console.log("=== SETTINGS MODULE UPDATE ===");
+			// eslint-disable-next-line no-console
+			console.log("Incoming showURL:", newSettings.showURL, "type:", typeof newSettings.showURL);
+
 			const update = { $set: { ...newSettings } };
 
 			if (newSettings.pagespeedApiKey === "") {
@@ -24,6 +29,8 @@ class SettingsModule {
 				upsert: true,
 			});
 			const settings = await this.AppSettings.findOne().select("-__v -_id -createdAt -updatedAt -singleton").lean();
+			// eslint-disable-next-line no-console
+			console.log("Saved showURL:", settings.showURL, "type:", typeof settings.showURL);
 			return settings;
 		} catch (error) {
 			error.service = SERVICE_NAME;
