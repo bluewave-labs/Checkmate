@@ -83,8 +83,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	// Create DB
 	const checkModule = new CheckModule({ logger, Check, Monitor, User });
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
-	const settingsModule = new SettingsModule({ AppSettings });
-	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, settingsModule });
+	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, AppSettings });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
 	const monitorModule = new MonitorModule({
@@ -101,6 +100,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 	const notificationModule = new NotificationModule({ Notification, Monitor });
 	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
+	const settingsModule = new SettingsModule({ AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({

@@ -5,11 +5,11 @@
 const SERVICE_NAME = "statusPageModule";
 
 class StatusPageModule {
-	constructor({ StatusPage, NormalizeData, stringService, settingsModule }) {
+	constructor({ StatusPage, NormalizeData, stringService, AppSettings }) {
 		this.StatusPage = StatusPage;
 		this.NormalizeData = NormalizeData;
 		this.stringService = stringService;
-		this.settingsModule = settingsModule;
+		this.AppSettings = AppSettings;
 	}
 
 	createStatusPage = async ({ statusPageData, image, userId, teamId }) => {
@@ -260,7 +260,7 @@ class StatusPageModule {
 
 			const { statusPage, monitors } = statusPageQuery[0];
 
-			const appSettings = await this.settingsModule.getAppSettings();
+			const appSettings = await this.AppSettings.findOne({ singleton: true }).lean();
 			const showURL = appSettings?.showURL === true;
 
 			const normalizedMonitors = monitors.map((monitor) => {
