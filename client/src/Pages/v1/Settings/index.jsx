@@ -80,9 +80,6 @@ const Settings = () => {
 	const handleChange = async (e) => {
 		const { name, value, checked } = e.target;
 
-		// eslint-disable-next-line no-console
-		console.log("=== SETTINGS HANDLER CHANGE ===", { name, value, checked, type: typeof value });
-
 		let newValue;
 		if (
 			name === "systemEmailIgnoreTLS" ||
@@ -179,8 +176,6 @@ const Settings = () => {
 	};
 
 	const handleSave = () => {
-		// eslint-disable-next-line no-console
-		console.log("=== HANDLE SAVE ===", { settingsDataSettings: settingsData?.settings });
 		const { error } = settingsValidation.validate(settingsData.settings, {
 			abortEarly: false,
 		});

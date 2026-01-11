@@ -261,20 +261,9 @@ class StatusPageModule {
 			const { statusPage, monitors } = statusPageQuery[0];
 
 			const appSettings = await this.AppSettings.findOne({ singleton: true }).lean();
-		const showURL = appSettings?.showURL === true || appSettings?.showURL === "true";
+			const showURL = appSettings?.showURL === true;
 
-		// eslint-disable-next-line no-console
-		console.log("=== STATUS PAGE FETCH ===");
-		// eslint-disable-next-line no-console
-		console.log("appSettings object:", JSON.stringify(appSettings, null, 2));
-		// eslint-disable-next-line no-console
-		console.log("appSettings.showURL value:", appSettings?.showURL);
-		// eslint-disable-next-line no-console
-		console.log("appSettings.showURL type:", typeof appSettings?.showURL);
-		// eslint-disable-next-line no-console
-		console.log("showURL after check:", showURL);
-
-		const normalizedMonitors = monitors.map((monitor) => {
+			const normalizedMonitors = monitors.map((monitor) => {
 			const normalizedChecks = this.NormalizeData(monitor.checks, 10, 100);
 			if (showURL !== true) {
 				const { url, port, secret, notifications, ...rest } = monitor;
