@@ -5,11 +5,11 @@
 const SERVICE_NAME = "statusPageModule";
 
 class StatusPageModule {
-	constructor({ StatusPage, NormalizeData, stringService, AppSettings }) {
+	constructor({ StatusPage, NormalizeData, stringService, settingsModule }) {
 		this.StatusPage = StatusPage;
 		this.NormalizeData = NormalizeData;
 		this.stringService = stringService;
-		this.AppSettings = AppSettings;
+		this.settingsModule = settingsModule;
 	}
 
 	createStatusPage = async ({ statusPageData, image, userId, teamId }) => {
@@ -260,19 +260,19 @@ class StatusPageModule {
 
 			const { statusPage, monitors } = statusPageQuery[0];
 
-			const appSettings = await this.AppSettings.findOne({ singleton: true }).lean();
+			const appSettings = await this.settingsModule.getAppSettings();
 			const showURL = appSettings?.showURL === true;
 
 			const normalizedMonitors = monitors.map((monitor) => {
-			const normalizedChecks = this.NormalizeData(monitor.checks, 10, 100);
-			if (showURL !== true) {
-				const { url, port, secret, notifications, ...rest } = monitor;
-				return { ...rest, checks: normalizedChecks };
-			}
-			return { ...monitor, checks: normalizedChecks };
-		});
+				const normalizedChecks = this.NormalizeData(monitor.checks, 10, 100);
+				if (showURL !== true) {
+					const { url, port, secret, notifications, ...rest } = monitor;
+					return { ...rest, checks: normalizedChecks };
+				}
+				return { ...monitor, checks: normalizedChecks };
+			});
 
-		return { statusPage, monitors: normalizedMonitors };
+			return { statusPage, monitors: normalizedMonitors };
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "getStatusPageByUrl";

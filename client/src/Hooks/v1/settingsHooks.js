@@ -56,6 +56,14 @@ const useSaveSettings = ({
 				setEmailPasswordHasBeenReset(false);
 			}
 			setSettingsData(settingsResponse.data.data);
+
+			// Update Redux state after successful save
+			if (typeof settings.showURL !== "undefined") {
+				const { setShowURL } = await import("../../Features/UI/uiSlice.js");
+				const { default: store } = await import("../../store.js");
+				store.dispatch(setShowURL(settings.showURL));
+			}
+
 			createToast({ body: t("settingsSuccessSaved") });
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });
