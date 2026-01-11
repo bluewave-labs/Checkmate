@@ -171,11 +171,7 @@ const Settings = () => {
 
 		// Update Redux immediately for UI feedback
 		if (name === "showURL") {
-			dispatch(setShowURL(newValue ?? value));
-		}
-	};
-
-	const handleSave = () => {
+		dispatch(setShowURL(newValue));
 		const { error } = settingsValidation.validate(settingsData.settings, {
 			abortEarly: false,
 		});
