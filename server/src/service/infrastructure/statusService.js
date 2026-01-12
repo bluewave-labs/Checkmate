@@ -1,5 +1,5 @@
-import MonitorStats from "../../../db/v1/models/MonitorStats.js";
-import Check from "../../../db/v1/models/Check.js";
+import MonitorStats from "../../db/models/MonitorStats.js";
+import Check from "../../db/models/Check.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
@@ -337,9 +337,11 @@ class StatusService {
 		} = networkResponse;
 
 		const check = {
-			monitorId,
-			teamId,
-			type,
+			metadata: {
+				monitorId,
+				teamId,
+				type,
+			},
 			status,
 			statusCode: code,
 			responseTime,

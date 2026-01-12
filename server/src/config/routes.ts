@@ -2,7 +2,7 @@ import { verifyJWT } from "../middleware/v1/verifyJWT.js";
 import { authApiLimiter } from "../middleware/v1/rateLimiter.js";
 
 import AuthRoutes from "../routes/v1/authRoute.js";
-import InviteRoutes from "../routes/v1//inviteRoute.js";
+import InviteRoutes from "../routes/v1/inviteRoute.js";
 import MonitorRoutes from "../routes/v1/monitorRoute.js";
 import CheckRoutes from "../routes/v1/checkRoute.js";
 import SettingsRoutes from "../routes/v1/settingsRoute.js";
@@ -10,12 +10,12 @@ import MaintenanceWindowRoutes from "../routes/v1/maintenanceWindowRoute.js";
 import StatusPageRoutes from "../routes/v1/statusPageRoute.js";
 import QueueRoutes from "../routes/v1/queueRoute.js";
 import LogRoutes from "../routes/v1/logRoutes.js";
-import DiagnosticRoutes from "../routes/v1//diagnosticRoute.js";
+import DiagnosticRoutes from "../routes/v1/diagnosticRoute.js";
 import NotificationRoutes from "../routes/v1/notificationRoute.js";
 
 import IncidentRoutes from "../routes/v1/incidentRoute.js";
 
-export const setupRoutes = (app, controllers) => {
+export const setupRoutes = (app: any, controllers: Record<string, any>) => {
 	// V1
 	const authRoutes = new AuthRoutes(controllers.authController);
 	const monitorRoutes = new MonitorRoutes(controllers.monitorController);
