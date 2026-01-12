@@ -168,6 +168,7 @@ const Settings = () => {
 		});
 		if (!error || error.details.length === 0) {
 			setErrors({});
+			saveSettings(settingsData?.settings);
 		} else {
 			const newErrors = {};
 			error.details.forEach((err) => {
@@ -176,7 +177,6 @@ const Settings = () => {
 
 			setErrors(newErrors);
 		}
-		saveSettings(settingsData?.settings);
 	};
 
 	return (
