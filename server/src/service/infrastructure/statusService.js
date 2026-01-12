@@ -1,5 +1,5 @@
 import MonitorStats from "../../db/models/MonitorStats.js";
-import Check from "../../db/models/Check.js";
+import { CheckModel } from "@/db/models/index.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
@@ -115,7 +115,7 @@ class StatusService {
 
 			if (!check._id) {
 				try {
-					const checkModel = new Check(check);
+					const checkModel = new CheckModel(check);
 					savedCheck = await checkModel.save();
 
 					this.buffer.removeCheckFromBuffer(check);

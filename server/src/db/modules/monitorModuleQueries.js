@@ -4,7 +4,7 @@ const buildUptimeDetailsPipeline = (monitorId, dates, dateString) => {
 	return [
 		{
 			$match: {
-				monitorId: new ObjectId(monitorId),
+				"metadata.monitorId": new ObjectId(monitorId),
 				updatedAt: { $gte: dates.start, $lte: dates.end },
 			},
 		},
@@ -172,8 +172,8 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 	return [
 		{
 			$match: {
-				monitorId: monitor._id,
-				type: "hardware",
+				"metadata.monitorId": monitor._id,
+				"metadata.type": "hardware",
 				createdAt: { $gte: dates.start, $lte: dates.end },
 			},
 		},
@@ -233,11 +233,16 @@ const buildHardwareDetailsPipeline = (monitor, dates, dateString) => {
 							},
 							pipeline: [
 								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ["$monitorId", monitor._id] }, { $gte: ["$createdAt", dates.start] }, { $lte: ["$createdAt", dates.end] }],
-										},
-									},
+						$match: {
+							$expr: {
+								$and: [
+									{ $eq: ["$metadata.monitorId", monitor._id] },
+									{ $eq: ["$metadata.type", "hardware"] },
+									{ $gte: ["$createdAt", dates.start] },
+									{ $lte: ["$createdAt", dates.end] },
+								],
+							},
+						},
 								},
 								{
 									$group: {

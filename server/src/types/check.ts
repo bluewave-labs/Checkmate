@@ -1,5 +1,11 @@
 import type { MonitorType } from "@/types/index.js";
 
+export interface CheckMetadata {
+	monitorId: string;
+	teamId: string;
+	type: MonitorType;
+}
+
 export interface CheckTimingPhases {
 	wait: number;
 	dns: number;
@@ -50,29 +56,66 @@ export interface CheckCaptureInfo {
 	mode: string;
 }
 
-export interface CheckDiskInfo {}
+export interface CheckDiskInfo {
+	device: string;
+	mountpoint: string;
+	read_speed_bytes: number;
+	write_speed_bytes: number;
+	total_bytes: number;
+	free_bytes: number;
+	usage_percent: number;
+}
 
-export interface CheckNetInfo {}
+export interface CheckErrorInfo {
+	metric: string[];
+	err: string;
+}
+
+export interface CheckNetworkInterfaceInfo {
+	name: string;
+	bytes_sent: number;
+	bytes_recv: number;
+	packets_sent: number;
+	packets_recv: number;
+	err_in: number;
+	err_out: number;
+	drop_in: number;
+	drop_out: number;
+	fifo_in: number;
+	fifo_out: number;
+}
+
+export interface CheckAudits {
+	cls: number;
+	si: number;
+	fcp: number;
+	lcp: number;
+	tbt: number;
+}
 
 export interface Check {
 	id: string;
-	monitorId: string;
-	teamId: string;
-	type: MonitorType;
+	metadata: CheckMetadata;
 	status: boolean;
 	responseTime: number;
 	timings: CheckTimings;
 	statusCode: number;
 	message: string;
 	ack: boolean;
+	ackAt?: string | null;
 	expiry: string;
 	cpu: CheckCpuInfo;
 	memory: CheckMemoryInfo;
 	disk: CheckDiskInfo[];
 	host: CheckHostInfo;
-	errors: string[];
+	errors: CheckErrorInfo[];
 	capture: CheckCaptureInfo;
-	net: CheckNetInfo[];
+	net: CheckNetworkInterfaceInfo[];
+	accessibility?: number;
+	bestPractices?: number;
+	seo?: number;
+	performance?: number;
+	audits?: CheckAudits;
 	__v: number;
 	createdAt: string;
 	updatedAt: string;

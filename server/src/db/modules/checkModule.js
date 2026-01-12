@@ -1,4 +1,6 @@
 import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
+import { CheckModel } from "@/db/models/index.js";
 import { buildChecksSummaryByTeamIdPipeline } from "./checkModuleQueries.js";
 
 const SERVICE_NAME = "checkModule";
@@ -12,18 +14,15 @@ const dateRangeLookup = {
 };
 
 class CheckModule {
-	constructor({ logger, Check, HardwareCheck, PageSpeedCheck, Monitor, User }) {
+	constructor({ logger, Monitor, User }) {
 		this.logger = logger;
-		this.Check = Check;
-		this.HardwareCheck = HardwareCheck;
-		this.PageSpeedCheck = PageSpeedCheck;
 		this.Monitor = Monitor;
 		this.User = User;
 	}
 
 	createChecks = async (checks) => {
 		try {
-			await this.Check.insertMany(checks, { ordered: false });
+			await CheckModel.insertMany(checks, { ordered: false });
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "createCheck";
@@ -41,7 +40,7 @@ class CheckModule {
 
 			// Match
 			const matchStage = {
-				monitorId: new ObjectId(monitorId),
+				"metadata.monitorId": new ObjectId(monitorId),
 				...(typeof status !== "undefined" && { status }),
 				...(typeof ack !== "undefined" && ackStage),
 				...(dateRangeLookup[dateRange] && {
@@ -79,7 +78,7 @@ class CheckModule {
 				skip = page * rowsPerPage;
 			}
 
-			const checks = await this.Check.aggregate([
+			const checks = await CheckModel.aggregate([
 				{ $match: matchStage },
 				{ $sort: { createdAt: sortOrder } },
 				{
@@ -115,7 +114,7 @@ class CheckModule {
 			const ackStage = ack === "true" ? { ack: true } : { $or: [{ ack: false }, { ack: { $exists: false } }] };
 
 			const matchStage = {
-				teamId: new ObjectId(teamId),
+				"metadata.teamId": new ObjectId(teamId),
 				status: false,
 				...(typeof ack !== "undefined" && ackStage),
 				...(dateRangeLookup[dateRange] && {
@@ -170,7 +169,7 @@ class CheckModule {
 				},
 			];
 
-			const checks = await this.Check.aggregate(aggregatePipeline);
+			const checks = await CheckModel.aggregate(aggregatePipeline);
 			return checks[0];
 		} catch (error) {
 			error.service = SERVICE_NAME;
@@ -181,7 +180,11 @@ class CheckModule {
 
 	ackCheck = async (checkId, teamId, ack) => {
 		try {
-			const updatedCheck = await this.Check.findOneAndUpdate({ _id: checkId, teamId: teamId }, { $set: { ack, ackAt: new Date() } }, { new: true });
+			const updatedCheck = await CheckModel.findOneAndUpdate(
+				{ _id: checkId, "metadata.teamId": teamId },
+				{ $set: { ack, ackAt: new Date() } },
+				{ new: true }
+			);
 
 			if (!updatedCheck) {
 				throw new Error("Check not found");
@@ -197,7 +200,11 @@ class CheckModule {
 
 	ackAllChecks = async (monitorId, teamId, ack, path) => {
 		try {
-			const updatedChecks = await this.Check.updateMany(path === "monitor" ? { monitorId } : { teamId }, { $set: { ack, ackAt: new Date() } });
+			const filter =
+				path === "monitor"
+					? { "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) }
+					: { "metadata.teamId": new mongoose.Types.ObjectId(teamId) };
+			const updatedChecks = await CheckModel.updateMany(filter, { $set: { ack, ackAt: new Date() } });
 			return updatedChecks.modifiedCount;
 		} catch (error) {
 			error.service = SERVICE_NAME;
@@ -209,9 +216,9 @@ class CheckModule {
 	getChecksSummaryByTeamId = async ({ teamId }) => {
 		try {
 			const matchStage = {
-				teamId: new ObjectId(teamId),
+				"metadata.teamId": new ObjectId(teamId),
 			};
-			const checks = await this.Check.aggregate(buildChecksSummaryByTeamIdPipeline({ matchStage }));
+			const checks = await CheckModel.aggregate(buildChecksSummaryByTeamIdPipeline({ matchStage }));
 			return checks[0].summary;
 		} catch (error) {
 			error.service = SERVICE_NAME;
@@ -221,7 +228,7 @@ class CheckModule {
 	};
 	deleteChecks = async (monitorId) => {
 		try {
-			const result = await this.Check.deleteMany({ monitorId });
+			const result = await CheckModel.deleteMany({ "metadata.monitorId": monitorId });
 			return result.deletedCount;
 		} catch (error) {
 			error.service = SERVICE_NAME;
@@ -237,7 +244,7 @@ class CheckModule {
 			const monitorIds = teamMonitors.map((monitor) => monitor._id);
 
 			// Delete all checks for these monitors in one operation
-			const deleteResult = await this.Check.deleteMany({ monitorId: { $in: monitorIds } });
+			const deleteResult = await CheckModel.deleteMany({ "metadata.monitorId": { $in: monitorIds } });
 
 			return deleteResult.deletedCount;
 		} catch (error) {
@@ -249,7 +256,7 @@ class CheckModule {
 
 	updateChecksTTL = async (teamId, ttl) => {
 		try {
-			await this.Check.collection.dropIndex("expiry_1");
+			await CheckModel.collection.dropIndex("expiry_1");
 		} catch (error) {
 			this.logger.error({
 				message: error.message,
@@ -260,9 +267,9 @@ class CheckModule {
 		}
 
 		try {
-			await this.Check.collection.createIndex(
+			await CheckModel.collection.createIndex(
 				{ expiry: 1 },
-				{ expireAfterSeconds: ttl } // TTL in seconds, adjust as necessary
+				{ expireAfterSeconds: ttl, partialFilterExpression: { "metadata.mode": { $exists: true } } }
 			);
 		} catch (error) {
 			error.service = SERVICE_NAME;

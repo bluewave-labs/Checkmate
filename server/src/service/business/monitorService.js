@@ -1,10 +1,23 @@
 import { createMonitorsBodyValidation } from "@/validation/joi.js";
+import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "MonitorService";
 class MonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, settingsService, jobQueue, stringService, emailService, papaparse, logger, errorService, games }) {
+	constructor({
+		db,
+		settingsService,
+		jobQueue,
+		stringService,
+		emailService,
+		papaparse,
+		logger,
+		errorService,
+		games,
+		monitorsRepository,
+		checksRepository,
+	}) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.jobQueue = jobQueue;
@@ -14,6 +27,8 @@ class MonitorService {
 		this.logger = logger;
 		this.errorService = errorService;
 		this.games = games;
+		this.monitorsRepository = monitorsRepository;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
@@ -205,6 +220,7 @@ class MonitorService {
 	};
 
 	getMonitorsByTeamId = async ({ teamId, limit, type, page, rowsPerPage, filter, field, order }) => {
+		console.log("que");
 		const monitors = await this.db.monitorModule.getMonitorsByTeamId({
 			limit,
 			type,
@@ -228,7 +244,8 @@ class MonitorService {
 	};
 
 	getMonitorsWithChecksByTeamId = async ({ teamId, limit, type, page, rowsPerPage, filter, field, order, explain }) => {
-		const result = await this.db.monitorModule.getMonitorsWithChecksByTeamId({
+		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
+		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
 			type,
 			page,
@@ -236,10 +253,19 @@ class MonitorService {
 			filter,
 			field,
 			order,
-			teamId,
-			explain,
 		});
-		return result;
+
+		const monitorIds = monitors?.map((m) => m.id) ?? [];
+		const checksMap = await this.checksRepository.findLatestChecksByMonitorIds(monitorIds);
+		const monitorsWithChecks = (monitors ?? []).map((monitor) => {
+			const checks = NormalizeData(checksMap[monitor.id] ?? [], 10, 100);
+			return {
+				...monitor,
+				checks,
+			};
+		});
+
+		return { count, monitors: monitorsWithChecks };
 	};
 
 	exportMonitorsToCSV = async ({ teamId }) => {

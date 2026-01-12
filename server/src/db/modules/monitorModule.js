@@ -8,13 +8,14 @@ import {
 	buildFilteredMonitorsByTeamIdPipeline,
 } from "./monitorModuleQueries.js";
 
+import { CheckModel } from "@/db/models/index.js";
+
 const SERVICE_NAME = "monitorModule";
 
 class MonitorModule {
-	constructor({ Monitor, MonitorStats, Check, stringService, fs, path, fileURLToPath, ObjectId, NormalizeData, NormalizeDataUptimeDetails }) {
+	constructor({ Monitor, MonitorStats, stringService, fs, path, fileURLToPath, ObjectId, NormalizeData, NormalizeDataUptimeDetails }) {
 		this.Monitor = Monitor;
 		this.MonitorStats = MonitorStats;
-		this.Check = Check;
 		this.stringService = stringService;
 		this.fs = fs;
 		this.path = path;
@@ -123,15 +124,18 @@ class MonitorModule {
 
 	//Helper
 	getMonitorChecks = async (monitorId, dateRange, sortOrder) => {
+		const objectId = new this.ObjectId(monitorId);
 		const indexSpec = {
-			monitorId: 1,
-			updatedAt: sortOrder, // This will be 1 or -1
+			"metadata.monitorId": 1,
+			updatedAt: sortOrder,
 		};
 
+		const matchBase = { "metadata.monitorId": objectId };
+
 		const [checksAll, checksForDateRange] = await Promise.all([
-			this.Check.find({ monitorId }).sort({ createdAt: sortOrder }).hint(indexSpec).lean(),
-			this.Check.find({
-				monitorId,
+			CheckModel.find(matchBase).sort({ createdAt: sortOrder }).hint(indexSpec).lean(),
+			CheckModel.find({
+				...matchBase,
 				createdAt: { $gte: dateRange.start, $lte: dateRange.end },
 			})
 				.hint(indexSpec)
@@ -238,7 +242,8 @@ class MonitorModule {
 
 			const dateString = formatLookup[dateRange];
 
-			const results = await this.Check.aggregate(buildUptimeDetailsPipeline(monitorId, dates, dateString));
+			console.log("WTTTTFFF");
+			const results = await CheckModel.aggregate(buildUptimeDetailsPipeline(monitorId, dates, dateString));
 
 			const monitorData = results[0];
 
@@ -313,7 +318,7 @@ class MonitorModule {
 			};
 			const dateString = formatLookup[dateRange];
 
-			const hardwareStats = await this.Check.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
+			const hardwareStats = await CheckModel.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
 
 			const stats = hardwareStats[0];
 

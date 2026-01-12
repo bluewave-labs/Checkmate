@@ -1,18 +1,49 @@
-import mongoose from "mongoose";
+import { Schema, model, Types, type UpdateQuery } from "mongoose";
+import type { Monitor, MonitorMatchMethod, MonitorThresholds } from "@/types/monitor.js";
+import { MonitorTypes } from "@/types/monitor.js";
 import Check from "./Check.js";
 import MonitorStats from "./MonitorStats.js";
 import StatusPage from "./StatusPage.js";
 
-const MonitorSchema = mongoose.Schema(
+type MonitorDocumentBase = Omit<
+	Monitor,
+	"id" | "userId" | "teamId" | "notifications" | "selectedDisks" | "statusWindow" | "createdAt" | "updatedAt"
+> & {
+	statusWindow: boolean[];
+	notifications: Types.ObjectId[];
+	selectedDisks: string[];
+	matchMethod?: MonitorMatchMethod;
+	thresholds?: MonitorThresholds;
+};
+
+interface MonitorDocument extends MonitorDocumentBase {
+	_id: Types.ObjectId;
+	userId: Types.ObjectId;
+	teamId: Types.ObjectId;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+const thresholdsSchema = new Schema<MonitorThresholds>(
+	{
+		usage_cpu: { type: Number },
+		usage_memory: { type: Number },
+		usage_disk: { type: Number },
+		usage_temperature: { type: Number },
+	},
+	{ _id: false }
+);
+
+const MonitorSchema = new Schema<MonitorDocument>(
 	{
 		userId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "User",
 			immutable: true,
 			required: true,
 		},
 		teamId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "Team",
 			immutable: true,
 			required: true,
@@ -43,7 +74,7 @@ const MonitorSchema = mongoose.Schema(
 		type: {
 			type: String,
 			required: true,
-			enum: ["http", "ping", "pagespeed", "hardware", "docker", "port", "game"],
+			enum: MonitorTypes,
 		},
 		ignoreTlsErrors: {
 			type: Boolean,
@@ -71,7 +102,6 @@ const MonitorSchema = mongoose.Schema(
 			default: true,
 		},
 		interval: {
-			// in milliseconds
 			type: Number,
 			default: 60000,
 		},
@@ -81,7 +111,7 @@ const MonitorSchema = mongoose.Schema(
 		},
 		notifications: [
 			{
-				type: mongoose.Schema.Types.ObjectId,
+				type: Schema.Types.ObjectId,
 				ref: "Notification",
 			},
 		],
@@ -89,13 +119,7 @@ const MonitorSchema = mongoose.Schema(
 			type: String,
 		},
 		thresholds: {
-			type: {
-				usage_cpu: { type: Number },
-				usage_memory: { type: Number },
-				usage_disk: { type: Number },
-				usage_temperature: { type: Number },
-			},
-			_id: false,
+			type: thresholdsSchema,
 		},
 		alertThreshold: {
 			type: Number,
@@ -137,7 +161,7 @@ const MonitorSchema = mongoose.Schema(
 			trim: true,
 			maxLength: 50,
 			default: null,
-			set: function (value) {
+			set(value: string | null) {
 				return value && value.trim() ? value.trim() : null;
 			},
 		},
@@ -148,7 +172,6 @@ const MonitorSchema = mongoose.Schema(
 );
 
 MonitorSchema.pre("findOneAndDelete", async function (next) {
-	// Delete checks and stats
 	try {
 		const doc = await this.model.findOne(this.getFilter());
 
@@ -157,20 +180,17 @@ MonitorSchema.pre("findOneAndDelete", async function (next) {
 		}
 
 		await Check.deleteMany({ monitorId: doc._id });
-
-		// Deal with status pages
 		await StatusPage.updateMany({ monitors: doc?._id }, { $pull: { monitors: doc?._id } });
-
 		await MonitorStats.deleteMany({ monitorId: doc?._id.toString() });
 		next();
 	} catch (error) {
-		next(error);
+		next(error as Error);
 	}
 });
 
 MonitorSchema.pre("deleteMany", async function (next) {
 	const filter = this.getFilter();
-	const monitors = await this.model.find(filter).select(["_id", "type"]).lean();
+	const monitors = (await this.model.find(filter).select(["_id", "type"]).lean()) as { _id: Types.ObjectId }[];
 
 	for (const monitor of monitors) {
 		await Check.deleteMany({ monitorId: monitor._id });
@@ -197,8 +217,8 @@ MonitorSchema.pre("save", function (next) {
 });
 
 MonitorSchema.pre("findOneAndUpdate", function (next) {
-	const update = this.getUpdate();
-	if (update.alertThreshold) {
+	const update = this.getUpdate() as UpdateQuery<MonitorDocument> | null;
+	if (update && !Array.isArray(update) && update.alertThreshold !== undefined) {
 		update.cpuAlertThreshold = update.alertThreshold;
 		update.memoryAlertThreshold = update.alertThreshold;
 		update.diskAlertThreshold = update.alertThreshold;
@@ -209,4 +229,8 @@ MonitorSchema.pre("findOneAndUpdate", function (next) {
 
 MonitorSchema.index({ teamId: 1, type: 1 });
 
-export default mongoose.model("Monitor", MonitorSchema);
+const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
+
+export type { MonitorDocument };
+export { MonitorModel };
+export default MonitorModel;

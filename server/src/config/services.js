@@ -47,7 +47,7 @@ import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
 // Models
-import Check from "../db/models/Check.js";
+import { CheckModel } from "@/db/models/index.js";
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
 import InviteToken from "../db/models/InviteToken.js";
@@ -71,6 +71,9 @@ import RecoveryModule from "../db/modules/recoveryModule.js";
 import SettingsModule from "../db/modules/settingsModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
+// repositories
+import { MongoMonitorsRepository, MongoChecksRepository } from "@/repositories/index.js";
+
 export const initializeServices = async ({ logger, envSettings, settingsService }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
 	ServiceRegistry.instance = serviceRegistry;
@@ -81,7 +84,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const stringService = new StringService(translationService);
 
 	// Create DB
-	const checkModule = new CheckModule({ logger, Check, Monitor, User });
+	const checkModule = new CheckModule({ logger, CheckModel, Monitor, User });
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
@@ -89,7 +92,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const monitorModule = new MonitorModule({
 		Monitor,
 		MonitorStats,
-		Check,
 		stringService,
 		fs,
 		path,
@@ -119,6 +121,10 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 
 	await db.connect();
+
+	// Repositories
+	const monitorsRepository = new MongoMonitorsRepository();
+	const checksRepository = new MongoChecksRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -220,6 +226,8 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		logger,
 		errorService,
 		games,
+		monitorsRepository,
+		checksRepository,
 	});
 
 	const services = {

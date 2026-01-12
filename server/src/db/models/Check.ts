@@ -1,7 +1,78 @@
-import mongoose from "mongoose";
-import { MonitorTypes } from "@/types/monitor.js";
+import { Schema, model, Types } from "mongoose";
+import {
+	MonitorTypes,
+	type MonitorType,
+} from "@/types/monitor.js";
+import type {
+	Check,
+	CheckAudits,
+	CheckCaptureInfo,
+	CheckCpuInfo,
+	CheckDiskInfo,
+	CheckErrorInfo,
+	CheckHostInfo,
+	CheckMemoryInfo,
+	CheckMetadata,
+	CheckNetworkInterfaceInfo,
+	CheckTimings,
+	CheckTimingPhases,
+} from "@/types/check.js";
 
-const cpuSchema = new mongoose.Schema(
+type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
+	monitorId: Types.ObjectId;
+	teamId: Types.ObjectId;
+	type: MonitorType;
+};
+
+type CheckDocumentBase = Omit<
+	Check,
+	"id" | "metadata" | "expiry" | "ackAt" | "createdAt" | "updatedAt"
+> & {
+	metadata: CheckMetadataDocument;
+	expiry: Date;
+	ackAt?: Date | null;
+	createdAt: Date;
+	updatedAt: Date;
+	__v: number;
+};
+
+interface CheckDocument extends CheckDocumentBase {
+	_id: Types.ObjectId;
+}
+
+const timingPhasesSchema = new Schema<CheckTimingPhases>(
+	{
+		wait: { type: Number, default: 0 },
+		dns: { type: Number, default: 0 },
+		tcp: { type: Number, default: 0 },
+		tls: { type: Number, default: 0 },
+		request: { type: Number, default: 0 },
+		firstByte: { type: Number, default: 0 },
+		download: { type: Number, default: 0 },
+		total: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
+const timingsSchema = new Schema<CheckTimings>(
+	{
+		start: { type: Number, default: 0 },
+		socket: { type: Number, default: 0 },
+		lookup: { type: Number, default: 0 },
+		connect: { type: Number, default: 0 },
+		secureConnect: { type: Number, default: 0 },
+		upload: { type: Number, default: 0 },
+		response: { type: Number, default: 0 },
+		end: { type: Number, default: 0 },
+		phases: {
+			type: timingPhasesSchema,
+			default: () => ({}),
+		},
+	},
+	{ _id: false }
+);
+
+const cpuSchema = new Schema<CheckCpuInfo>(
 	{
 		physical_core: { type: Number, default: 0 },
 		logical_core: { type: Number, default: 0 },
@@ -13,7 +84,7 @@ const cpuSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const memorySchema = new mongoose.Schema(
+const memorySchema = new Schema<CheckMemoryInfo>(
 	{
 		total_bytes: { type: Number, default: 0 },
 		available_bytes: { type: Number, default: 0 },
@@ -23,7 +94,7 @@ const memorySchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const diskSchema = new mongoose.Schema(
+const diskSchema = new Schema<CheckDiskInfo>(
 	{
 		device: { type: String, default: "" },
 		mountpoint: { type: String, default: "" },
@@ -36,7 +107,7 @@ const diskSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const hostSchema = new mongoose.Schema(
+const hostSchema = new Schema<CheckHostInfo>(
 	{
 		os: { type: String, default: "" },
 		platform: { type: String, default: "" },
@@ -45,7 +116,7 @@ const hostSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const errorSchema = new mongoose.Schema(
+const errorSchema = new Schema<CheckErrorInfo>(
 	{
 		metric: { type: [String], default: [] },
 		err: { type: String, default: "" },
@@ -53,7 +124,7 @@ const errorSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const captureSchema = new mongoose.Schema(
+const captureSchema = new Schema<CheckCaptureInfo>(
 	{
 		version: { type: String, default: "" },
 		mode: { type: String, default: "" },
@@ -61,9 +132,9 @@ const captureSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const networkInterfaceSchema = new mongoose.Schema(
+const networkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
 	{
-		name: { type: String },
+		name: { type: String, default: "" },
 		bytes_sent: { type: Number, default: 0 },
 		bytes_recv: { type: Number, default: 0 },
 		packets_sent: { type: Number, default: 0 },
@@ -78,17 +149,30 @@ const networkInterfaceSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const metadataSchema = new mongoose.Schema(
+const auditsSchema = new Schema<CheckAudits>(
+	{
+		cls: { type: Number, default: 0 },
+		si: { type: Number, default: 0 },
+		fcp: { type: Number, default: 0 },
+		lcp: { type: Number, default: 0 },
+		tbt: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
+const metadataSchema = new Schema<CheckMetadataDocument>(
 	{
 		monitorId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "Monitor",
+			required: true,
 			immutable: true,
 			index: true,
 		},
 		teamId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "Team",
+			required: true,
 			immutable: true,
 			index: true,
 		},
@@ -102,7 +186,7 @@ const metadataSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const CheckSchema = new mongoose.Schema(
+const CheckSchema = new Schema<CheckDocument>(
 	{
 		metadata: {
 			type: metadataSchema,
@@ -112,40 +196,32 @@ const CheckSchema = new mongoose.Schema(
 			type: Boolean,
 			index: true,
 		},
-
 		responseTime: {
 			type: Number,
 		},
-
 		timings: {
-			type: Object,
-			default: {},
+			type: timingsSchema,
+			default: undefined,
 		},
-
 		statusCode: {
 			type: Number,
 			index: true,
 		},
-
 		message: {
 			type: String,
 		},
-
 		expiry: {
 			type: Date,
 			default: Date.now,
 		},
-
 		ack: {
 			type: Boolean,
 			default: false,
 		},
-
 		ackAt: {
 			type: Date,
+			default: undefined,
 		},
-
-		// Hardware fields
 		cpu: {
 			type: cpuSchema,
 			default: () => ({}),
@@ -162,23 +238,18 @@ const CheckSchema = new mongoose.Schema(
 			type: hostSchema,
 			default: () => ({}),
 		},
-
 		errors: {
 			type: [errorSchema],
 			default: () => [],
 		},
-
 		capture: {
 			type: captureSchema,
 			default: () => ({}),
 		},
-
 		net: {
 			type: [networkInterfaceSchema],
 			default: () => [],
 		},
-
-		// PageSpeed fields
 		accessibility: {
 			type: Number,
 		},
@@ -192,7 +263,8 @@ const CheckSchema = new mongoose.Schema(
 			type: Number,
 		},
 		audits: {
-			type: Object,
+			type: auditsSchema,
+			default: undefined,
 		},
 	},
 	{
@@ -211,4 +283,8 @@ CheckSchema.index({ "metadata.monitorId": 1, updatedAt: 1 });
 CheckSchema.index({ "metadata.monitorId": 1, updatedAt: -1 });
 CheckSchema.index({ "metadata.teamId": 1, updatedAt: -1 });
 
-export default mongoose.model("Check", CheckSchema);
+const CheckModel = model<CheckDocument>("Check", CheckSchema);
+
+export type { CheckDocument, CheckMetadataDocument };
+export { CheckModel };
+export default CheckModel;

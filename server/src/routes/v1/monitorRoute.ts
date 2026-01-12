@@ -7,7 +7,9 @@ const upload = multer({
 });
 
 class MonitorRoutes {
-	constructor(monitorController) {
+	private router: Router;
+	private monitorController: any;
+	constructor(monitorController: any) {
 		this.router = Router();
 		this.monitorController = monitorController;
 		this.initRoutes();
