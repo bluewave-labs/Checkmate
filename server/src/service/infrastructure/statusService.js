@@ -367,18 +367,30 @@ class StatusService {
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
 			const audits = payload?.lighthouseResult?.audits ?? {};
-			const {
-				"cumulative-layout-shift": cls = 0,
-				"speed-index": si = 0,
-				"first-contentful-paint": fcp = 0,
-				"largest-contentful-paint": lcp = 0,
-				"total-blocking-time": tbt = 0,
-			} = audits;
+			const mapAudit = (audit) => {
+				if (!audit || typeof audit !== "object") {
+					return undefined;
+				}
+				return {
+					id: audit.id,
+					title: audit.title,
+					score: typeof audit.score === "number" ? audit.score : audit.score ?? null,
+					displayValue: audit.displayValue,
+					numericValue: typeof audit.numericValue === "number" ? audit.numericValue : undefined,
+					numericUnit: audit.numericUnit,
+				};
+			};
 			check.accessibility = (categories?.accessibility?.score || 0) * 100;
 			check.bestPractices = (categories?.["best-practices"]?.score || 0) * 100;
 			check.seo = (categories?.seo?.score || 0) * 100;
 			check.performance = (categories?.performance?.score || 0) * 100;
-			check.audits = { cls, si, fcp, lcp, tbt };
+			check.audits = {
+				cls: mapAudit(audits?.["cumulative-layout-shift"]),
+				si: mapAudit(audits?.["speed-index"]),
+				fcp: mapAudit(audits?.["first-contentful-paint"]),
+				lcp: mapAudit(audits?.["largest-contentful-paint"]),
+				tbt: mapAudit(audits?.["total-blocking-time"]),
+			};
 		}
 
 		if (type === "hardware") {

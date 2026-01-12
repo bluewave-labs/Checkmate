@@ -16,6 +16,7 @@ import type {
 	CheckNetworkInterfaceInfo,
 	CheckTimings,
 	CheckTimingPhases,
+	ILighthouseAudit,
 } from "@/types/check.js";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
@@ -149,13 +150,25 @@ const networkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
 	{ _id: false }
 );
 
+const lighthouseAuditSchema = new Schema<ILighthouseAudit>(
+	{
+		id: { type: String },
+		title: { type: String },
+		score: { type: Number },
+		displayValue: { type: String },
+		numericValue: { type: Number },
+		numericUnit: { type: String },
+	},
+	{ _id: false }
+);
+
 const auditsSchema = new Schema<CheckAudits>(
 	{
-		cls: { type: Number, default: 0 },
-		si: { type: Number, default: 0 },
-		fcp: { type: Number, default: 0 },
-		lcp: { type: Number, default: 0 },
-		tbt: { type: Number, default: 0 },
+		cls: { type: lighthouseAuditSchema, default: undefined },
+		si: { type: lighthouseAuditSchema, default: undefined },
+		fcp: { type: lighthouseAuditSchema, default: undefined },
+		lcp: { type: lighthouseAuditSchema, default: undefined },
+		tbt: { type: lighthouseAuditSchema, default: undefined },
 	},
 	{ _id: false }
 );

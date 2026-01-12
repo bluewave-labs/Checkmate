@@ -220,7 +220,6 @@ class MonitorService {
 	};
 
 	getMonitorsByTeamId = async ({ teamId, limit, type, page, rowsPerPage, filter, field, order }) => {
-		console.log("que");
 		const monitors = await this.db.monitorModule.getMonitorsByTeamId({
 			limit,
 			type,

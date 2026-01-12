@@ -22,7 +22,7 @@ class CheckModule {
 
 	createChecks = async (checks) => {
 		try {
-			await CheckModel.insertMany(checks, { ordered: false });
+			await CheckModel.insertMany(checks, { ordered: false, runValidators: true });
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "createCheck";

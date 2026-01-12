@@ -242,7 +242,6 @@ class MonitorModule {
 
 			const dateString = formatLookup[dateRange];
 
-			console.log("WTTTTFFF");
 			const results = await CheckModel.aggregate(buildUptimeDetailsPipeline(monitorId, dates, dateString));
 
 			const monitorData = results[0];

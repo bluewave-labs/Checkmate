@@ -86,11 +86,20 @@ export interface CheckNetworkInterfaceInfo {
 }
 
 export interface CheckAudits {
-	cls: number;
-	si: number;
-	fcp: number;
-	lcp: number;
-	tbt: number;
+	cls: ILighthouseAudit;
+	si: ILighthouseAudit;
+	fcp: ILighthouseAudit;
+	lcp: ILighthouseAudit;
+	tbt: ILighthouseAudit;
+}
+
+export interface ILighthouseAudit {
+	id?: string;
+	title?: string;
+	score?: number | null;
+	displayValue?: string;
+	numericValue?: number;
+	numericUnit?: string;
 }
 
 export interface Check {

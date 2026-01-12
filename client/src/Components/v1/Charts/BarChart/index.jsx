@@ -103,7 +103,7 @@ const BarChart = ({ checks = [] }) => {
 							</>
 						}
 						placement="top"
-						key={`check-${check?._id}`}
+						key={`check-${check?.id}`}
 						slotProps={{
 							popper: {
 								className: "bar-tooltip",
@@ -145,7 +145,7 @@ const BarChart = ({ checks = [] }) => {
 							position="relative"
 							width="9px"
 							height="100%"
-							backgroundColor={theme.palette.primary.lowContrast} // CAIO_REVIEW
+							backgroundColor={theme.palette.primary.lowContrast}
 							sx={{
 								borderRadius: theme.spacing(1.5),
 								/* 
