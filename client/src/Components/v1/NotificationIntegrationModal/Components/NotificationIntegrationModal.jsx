@@ -125,6 +125,19 @@ const NotificationIntegrationModal = ({
 				},
 			],
 		},
+		{
+			id: NOTIFICATION_TYPES.TWILIO,
+			label: t("notifications.twilio.label"),
+			description: t("notifications.twilio.description"),
+			fields: [
+				{
+					id: "phoneNumber",
+					label: t("notifications.twilio.phoneNumberLabel"),
+					placeholder: t("notifications.twilio.phoneNumberPlaceholder"),
+					type: "text",
+				},
+			],
+		},
 	];
 
 	// Use provided notification types or default to our translated ones

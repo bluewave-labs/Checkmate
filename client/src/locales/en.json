@@ -85,6 +85,10 @@
 			"urlRequired": "Webhook URL is required"
 		},
 		"twilio": {
+			"label": "Twilio",
+			"description": "Send SMS notifications to your team using Twilio.",
+			"phoneNumberLabel": "Phone number",
+			"phoneNumberPlaceholder": "+1234567890",
 			"phoneNumberRequired": "Phone number is required"
 		},
 		"testNotificationDevelop": "Test notification 2",
