@@ -467,7 +467,8 @@ const notificationValidation = joi.object({
 		.messages({
 			"string.empty": "Notification type is required",
 			"any.required": "Notification type is required",
-			"any.only": "Notification type must be email, webhook, slack, discord, pager_duty, matrix, or twilio",
+			"any.only":
+				"Notification type must be email, webhook, slack, discord, pager_duty, matrix, or twilio",
 		}),
 
 	address: joi.when("type", {

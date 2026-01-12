@@ -55,17 +55,17 @@ const SettingsTwilio = ({
 							onChange={handleChange}
 						/>
 					</Box>
-						<Box>
-							<TextInput
-								label={t("settingsPage.twilioSettings.labelAuthToken")}
-								name="twilioAuthToken"
-								type="password"
-								placeholder={t("settingsPage.twilioSettings.placeholderAuthToken")}
-								value={twilioAuthToken}
-								onChange={handleChange}
-								endAdornment={<PasswordEndAdornment />}
-							/>
-						</Box>
+					<Box>
+						<TextInput
+							label={t("settingsPage.twilioSettings.labelAuthToken")}
+							name="twilioAuthToken"
+							type="password"
+							placeholder={t("settingsPage.twilioSettings.placeholderAuthToken")}
+							value={twilioAuthToken}
+							onChange={handleChange}
+							endAdornment={<PasswordEndAdornment />}
+						/>
+					</Box>
 
 					<Box>
 						<TextInput
