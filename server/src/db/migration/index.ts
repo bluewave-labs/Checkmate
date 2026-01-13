@@ -32,11 +32,7 @@ const runMigrations = async (logger?: { info: Function; error: Function }) => {
 				logger?.info({ message: `Completed ${migration.name}`, service: "Migrations" });
 			} catch (error) {
 				const err = error as Error;
-				await MigrationModel.findOneAndUpdate(
-					{ name: migration.name },
-					{ status: "failed", error: err?.message },
-					{ upsert: true }
-				);
+				await MigrationModel.findOneAndUpdate({ name: migration.name }, { status: "failed", error: err?.message }, { upsert: true });
 				throw error;
 			}
 		}

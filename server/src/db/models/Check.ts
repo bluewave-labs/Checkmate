@@ -1,8 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import {
-	MonitorTypes,
-	type MonitorType,
-} from "@/types/monitor.js";
+import { MonitorTypes, type MonitorType } from "@/types/monitor.js";
 import type {
 	Check,
 	CheckAudits,
@@ -25,10 +22,7 @@ type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	type: MonitorType;
 };
 
-type CheckDocumentBase = Omit<
-	Check,
-	"id" | "metadata" | "expiry" | "ackAt" | "createdAt" | "updatedAt"
-> & {
+type CheckDocumentBase = Omit<Check, "id" | "metadata" | "expiry" | "ackAt" | "createdAt" | "updatedAt"> & {
 	metadata: CheckMetadataDocument;
 	expiry: Date;
 	ackAt?: Date | null;

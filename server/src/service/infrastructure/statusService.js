@@ -374,7 +374,7 @@ class StatusService {
 				return {
 					id: audit.id,
 					title: audit.title,
-					score: typeof audit.score === "number" ? audit.score : audit.score ?? null,
+					score: typeof audit.score === "number" ? audit.score : (audit.score ?? null),
 					displayValue: audit.displayValue,
 					numericValue: typeof audit.numericValue === "number" ? audit.numericValue : undefined,
 					numericUnit: audit.numericUnit,

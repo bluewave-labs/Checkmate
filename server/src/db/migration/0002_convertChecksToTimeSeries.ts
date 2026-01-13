@@ -19,10 +19,10 @@ const backupAndDropExistingCollection = async () => {
 		return false;
 	}
 
-	await db.collection(CHECKS_COLLECTION).aggregate([
-		{ $match: {} },
-		{ $out: BACKUP_COLLECTION },
-	]).toArray();
+	await db
+		.collection(CHECKS_COLLECTION)
+		.aggregate([{ $match: {} }, { $out: BACKUP_COLLECTION }])
+		.toArray();
 	await db.collection(CHECKS_COLLECTION).drop();
 	return true;
 };
@@ -40,12 +40,14 @@ const createTimeSeriesCollection = async () => {
 		});
 	}
 
-	await db.collection(CHECKS_COLLECTION).createIndexes([
-		{ key: { updatedAt: 1 } },
-		{ key: { "metadata.monitorId": 1, updatedAt: 1 } },
-		{ key: { "metadata.monitorId": 1, updatedAt: -1 } },
-		{ key: { "metadata.teamId": 1, updatedAt: -1 } },
-	]);
+	await db
+		.collection(CHECKS_COLLECTION)
+		.createIndexes([
+			{ key: { updatedAt: 1 } },
+			{ key: { "metadata.monitorId": 1, updatedAt: 1 } },
+			{ key: { "metadata.monitorId": 1, updatedAt: -1 } },
+			{ key: { "metadata.teamId": 1, updatedAt: -1 } },
+		]);
 };
 
 const migrateBackupData = async () => {
