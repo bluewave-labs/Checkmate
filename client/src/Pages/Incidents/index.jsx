@@ -10,7 +10,10 @@ import { Box, Button } from "@mui/material";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useFetchMonitorsByTeamId } from "@/Hooks/monitorHooks.js";
-import { useFetchChecksSummaryByTeamId, useAcknowledgeChecks } from "@/Hooks/checkHooks.js";
+import {
+	useFetchChecksSummaryByTeamId,
+	useAcknowledgeChecks,
+} from "@/Hooks/checkHooks.js";
 import { useState, useEffect } from "react";
 import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 import { useTranslation } from "react-i18next";
