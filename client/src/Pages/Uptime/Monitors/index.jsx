@@ -29,7 +29,7 @@ import PropTypes from "prop-types";
 import {
 	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
-} from "../../../Hooks/monitorHooks.js";
+} from "@/Hooks/monitorHooks.js";
 import { useTranslation } from "react-i18next";
 
 const TYPES = ["http", "ping", "docker", "port", "game"];

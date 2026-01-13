@@ -13,7 +13,11 @@ import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import { useTranslation } from "react-i18next";
-import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks.js";
+import {
+	useFetchMonitorsByTeamId,
+	useFetchMonitorsWithChecks,
+} from "@/Hooks/monitorHooks.js";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 // Constants
@@ -70,14 +74,14 @@ const InfrastructureMonitors = () => {
 
 	const field = toFilterStatus !== undefined ? "status" : undefined;
 
-	const [monitors, summary, isLoading, networkError] = useFetchMonitorsByTeamId({
-		limit: 1,
+	const [monitors, count, isLoading, networkError] = useFetchMonitorsWithChecks({
 		types: TYPES,
-		page,
+		limit: 1,
+		page: page,
 		field: field,
 		filter: toFilterStatus ?? search,
-		rowsPerPage,
-		updateTrigger,
+		rowsPerPage: rowsPerPage,
+		monitorUpdateTrigger: updateTrigger,
 	});
 
 	return (
@@ -99,7 +103,7 @@ const InfrastructureMonitors = () => {
 					<Stack direction={"row"}>
 						<MonitorCountHeader
 							isLoading={isLoading}
-							monitorCount={summary?.totalMonitors ?? 0}
+							monitorCount={count || 0}
 						/>
 						<Filter
 							selectedStatus={selectedStatus}
@@ -122,7 +126,7 @@ const InfrastructureMonitors = () => {
 						isSearching={isSearching}
 					/>
 					<Pagination
-						itemCount={summary?.totalMonitors}
+						itemCount={count || 0}
 						paginationLabel={t("monitors")}
 						page={page}
 						rowsPerPage={rowsPerPage}
