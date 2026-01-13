@@ -173,28 +173,33 @@ class MongoChecksRepistory implements IChecksRepository {
 	};
 
 	findLatestChecksByMonitorIds = async (monitorIds: string[]): Promise<LatestChecksMap> => {
+		if (monitorIds.length === 0) {
+			return {};
+		}
 		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		const checkMap = await CheckModel.aggregate([
+		const limitPerMonitor = 25;
+		const checkGroups = await CheckModel.aggregate([
 			{
 				$match: {
 					"metadata.monitorId": { $in: mongoIds },
 				},
 			},
-			{ $sort: { createdAt: -1 } },
 			{
 				$group: {
 					_id: "$metadata.monitorId",
-					latestChecks: { $push: "$$ROOT" },
-				},
-			},
-			{
-				$project: {
-					latestChecks: { $slice: [{ $ifNull: ["$latestChecks", []] }, 25] },
+					latestChecks: {
+						$topN: {
+							n: limitPerMonitor,
+							sortBy: { createdAt: -1 },
+							output: "$$ROOT",
+						},
+					},
 				},
 			},
 		]);
-		return checkMap.reduce<LatestChecksMap>((acc, cm) => {
-			acc[cm._id.toString()] = cm.latestChecks.map((c: CheckDocument) => this.toEntity(c));
+		return checkGroups.reduce<LatestChecksMap>((acc, group) => {
+			const monitorId = group._id.toString();
+			acc[monitorId] = (group.latestChecks ?? []).map((doc: CheckDocument) => this.toEntity(doc));
 			return acc;
 		}, {});
 	};
