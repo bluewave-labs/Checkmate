@@ -13,9 +13,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	createBulkMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
-		const newMonitors = monitors.map((monitor) => new MonitorModel({ ...monitor, notifications: undefined }));
-		await MonitorModel.bulkSave(newMonitors);
-		return monitors;
+		if (!monitors.length) {
+			return [];
+		}
+		const payload = monitors.map((monitor) => ({ ...monitor, notifications: undefined }));
+		const inserted = await MonitorModel.insertMany(payload, { ordered: false });
+		return this.mapDocuments(inserted);
 	};
 
 	findById = async (MonitorModelId: string): Promise<Monitor> => {
@@ -104,6 +107,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
 		}
 		return this.toEntity(updatedMonitor);
+	};
+
+	deleteByTeamId = async (teamId: string) => {
+		const monitors = await MonitorModel.find({ teamId });
+		const { deletedCount } = await MonitorModel.deleteMany({ teamId });
+
+		return { monitors: this.mapDocuments(monitors), deletedCount };
 	};
 
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {

@@ -23,6 +23,7 @@ export interface IMonitorsRepository {
 	// update
 	update(monitorId: string, updates: Partial<Monitor>): Promise<Monitor>;
 	// delete
+	deleteByTeamId(teamId: string): Promise<{ monitors: Monitor[]; deletedCount: number }>;
 
 	// counts
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;

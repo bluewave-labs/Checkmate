@@ -3,6 +3,10 @@ import { NormalizeData } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
 import type { MonitorType } from "@/types/monitor.js";
 import type { IMonitorsRepository } from "@/repositories/index.js";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
+
 import { AppError } from "../infrastructure/errorService.js";
 
 const SERVICE_NAME = "MonitorService";
@@ -82,6 +86,7 @@ export class MonitorService implements IMonitorService {
 	private games: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: any;
+	private fs: any;
 
 	constructor({
 		db,
@@ -198,9 +203,25 @@ export class MonitorService implements IMonitorService {
 	};
 
 	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<any[]> => {
-		const demoMonitors = await this.db.monitorModule.addDemoMonitors(userId, teamId);
+		const __filename = fileURLToPath(import.meta.url);
+		const __dirname = path.dirname(__filename);
+		const demoMonitorsPath = path.resolve(__dirname, "../../utils/demoMonitors.json");
 
-		await Promise.all(demoMonitors.map((monitor: any) => this.jobQueue.addJob(monitor._id, monitor)));
+		const demoData = JSON.parse(fs.readFileSync(demoMonitorsPath, "utf8"));
+		const monitors: Monitor[] = demoData.map((monitor: Monitor) => {
+			return {
+				userId,
+				teamId,
+				name: monitor.name,
+				description: monitor.name,
+				type: "http",
+				url: monitor.url,
+				interval: 60000,
+			};
+		});
+		const demoMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+
+		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
 	};
 
@@ -399,17 +420,17 @@ export class MonitorService implements IMonitorService {
 	};
 
 	deleteAllMonitors = async ({ teamId }: { teamId: string }): Promise<number> => {
-		const { monitors, deletedCount } = await this.db.monitorModule.deleteAllMonitors(teamId);
+		const { monitors, deletedCount } = await this.monitorsRepository.deleteByTeamId(teamId);
 		await Promise.all(
-			monitors.map(async (monitor: any) => {
+			monitors.map(async (monitor) => {
 				try {
 					await this.jobQueue.deleteJob(monitor);
-					await this.db.checkModule.deleteChecks(monitor._id);
-					await this.db.pageSpeedCheckModule.deletePageSpeedChecksByMonitorId(monitor._id);
-					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor._id);
+					await this.db.checkModule.deleteChecks(monitor.id);
+					await this.db.pageSpeedCheckModule.deletePageSpeedChecksByMonitorId(monitor.id);
+					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor.id);
 				} catch (error: any) {
 					this.logger.warn({
-						message: `Error deleting associated records for monitor ${monitor._id} with name ${monitor.name}`,
+						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
 						service: SERVICE_NAME,
 						method: "deleteAllMonitors",
 						stack: error.stack,
