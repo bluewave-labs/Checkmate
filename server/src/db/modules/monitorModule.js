@@ -1,11 +1,13 @@
 import {
 	buildUptimeDetailsPipeline,
-	buildHardwareDetailsPipeline,
 	buildMonitorSummaryByTeamIdPipeline,
 	buildMonitorsByTeamIdPipeline,
 	buildMonitorsAndSummaryByTeamIdPipeline,
 	buildMonitorsWithChecksByTeamIdPipeline,
 	buildFilteredMonitorsByTeamIdPipeline,
+	getHardwareStats,
+	getUpChecks,
+	getAggregateData,
 } from "./monitorModuleQueries.js";
 
 import { CheckModel } from "@/db/models/index.js";
@@ -317,9 +319,17 @@ class MonitorModule {
 			};
 			const dateString = formatLookup[dateRange];
 
-			const hardwareStats = await CheckModel.aggregate(buildHardwareDetailsPipeline(monitor, dates, dateString));
+			const [aggregateData, upChecksCount, metrics] = await Promise.all([
+				getAggregateData(monitorId, dates),
+				getUpChecks(monitorId, dates),
+				getHardwareStats(monitorId, dates, dateString),
+			]);
 
-			const stats = hardwareStats[0];
+			const stats = {
+				aggregateData: aggregateData,
+				upChecks: upChecksCount,
+				checks: metrics,
+			};
 
 			return {
 				...monitor.toObject(),
