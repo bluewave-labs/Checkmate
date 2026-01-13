@@ -10,11 +10,12 @@ class StatusService {
 	 *  buffer: import("./bufferService.js").BufferService
 	 *  incidentService: import("../business/incidentService.js").IncidentService
 	 * }}
-	 */ constructor({ db, logger, buffer, incidentService }) {
+	 */ constructor({ db, logger, buffer, incidentService, monitorsRepository }) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
 		this.incidentService = incidentService;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
@@ -23,7 +24,7 @@ class StatusService {
 
 	async updateRunningStats({ monitor, networkResponse }) {
 		try {
-			const monitorId = monitor._id;
+			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
 			// Get stats
 			let stats = await MonitorStats.findOne({ monitorId });
@@ -124,7 +125,7 @@ class StatusService {
 						service: this.SERVICE_NAME,
 						method: "handleIncidentForCheck",
 						message: `Failed to save check immediately for ${errorContext}: ${checkError.message}`,
-						monitorId: monitor._id,
+						monitorId: monitor.id,
 						stack: checkError.stack,
 					});
 					savedCheck = null;
@@ -139,7 +140,7 @@ class StatusService {
 						service: this.SERVICE_NAME,
 						method: "handleIncidentForCheck",
 						message: `Failed to add incident to buffer for ${errorContext}: ${incidentError.message}`,
-						monitorId: monitor._id,
+						monitorId: monitor.id,
 						action,
 						stack: incidentError.stack,
 					});
@@ -150,7 +151,7 @@ class StatusService {
 				service: this.SERVICE_NAME,
 				method: "handleIncidentForCheck",
 				message: `Error in ${errorContext}: ${error.message}`,
-				monitorId: monitor?._id,
+				monitorId: monitor?.id,
 				stack: error.stack,
 			});
 		}
@@ -172,7 +173,8 @@ class StatusService {
 		await this.insertCheck(check);
 		try {
 			const { monitorId, status, code } = networkResponse;
-			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
+
+			const monitor = await this.monitorsRepository.findById(monitorId);
 
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });
@@ -198,9 +200,9 @@ class StatusService {
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
-				await monitor.save();
+				const updated = await this.monitorsRepository.update(monitor.id, monitor);
 				return {
-					monitor,
+					monitor: updated,
 					statusChanged: false,
 					prevStatus,
 					code,
@@ -240,14 +242,14 @@ class StatusService {
 
 			if (monitor.status === false && !statusChanged) {
 				try {
-					const lastManuallyResolvedIncident = await this.db.incidentModule.getLastManuallyResolvedIncident(monitor._id);
+					const lastManuallyResolvedIncident = await this.db.incidentModule.getLastManuallyResolvedIncident(monitor.id);
 
 					let calculatedFailureRate = failureRate;
 
 					if (lastManuallyResolvedIncident && lastManuallyResolvedIncident.endTime) {
 						try {
 							const checksAfterResolution = await Check.find({
-								monitorId: monitor._id,
+								monitorId: monitor.id,
 								createdAt: { $gt: lastManuallyResolvedIncident.endTime },
 							})
 								.sort({ createdAt: 1 })
@@ -267,7 +269,7 @@ class StatusService {
 								service: this.SERVICE_NAME,
 								method: "updateStatus",
 								message: `Failed to query checks after manual resolution: ${checkQueryError.message}`,
-								monitorId: monitor._id,
+								monitorId: monitor.id,
 								stack: checkQueryError.stack,
 							});
 						}
@@ -281,17 +283,17 @@ class StatusService {
 						service: this.SERVICE_NAME,
 						method: "updateStatus",
 						message: `Error handling threshold check without status change: ${error.message}`,
-						monitorId: monitor._id,
+						monitorId: monitor.id,
 						stack: error.stack,
 					});
 				}
 			}
 
 			monitor.status = newStatus;
-			await monitor.save();
+			const updated = await this.monitorsRepository.update(monitor.id, monitor);
 
 			return {
-				monitor,
+				monitor: updated,
 				statusChanged,
 				prevStatus,
 				code,
@@ -374,7 +376,7 @@ class StatusService {
 				return {
 					id: audit.id,
 					title: audit.title,
-					score: typeof audit.score === "number" ? audit.score : audit.score ?? null,
+					score: typeof audit.score === "number" ? audit.score : (audit.score ?? null),
 					displayValue: audit.displayValue,
 					numericValue: typeof audit.numericValue === "number" ? audit.numericValue : undefined,
 					numericUnit: audit.numericUnit,

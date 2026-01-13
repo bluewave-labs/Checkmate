@@ -95,7 +95,7 @@ class NetworkService {
 			}
 
 			const pingResponse = {
-				monitorId: monitor._id,
+				monitorId: monitor.id,
 				type: "ping",
 				status: response.alive,
 				code: 200,
@@ -120,9 +120,9 @@ class NetworkService {
 	}
 
 	async requestHttp(monitor) {
-		const { url, secret, _id, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
+		const { url, secret, id, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
 		const httpResponse = {
-			monitorId: _id,
+			monitorId: id,
 			teamId: teamId,
 			type,
 		};
@@ -298,7 +298,7 @@ class NetworkService {
 			});
 
 			const dockerResponse = {
-				monitorId: monitor._id,
+				monitorId: monitor.id,
 				type: monitor.type,
 			};
 
@@ -416,7 +416,7 @@ class NetworkService {
 				code: 200,
 				status: response.success,
 				message: this.stringService.portSuccess,
-				monitorId: monitor._id,
+				monitorId: monitor.id,
 				type: monitor.type,
 				responseTime: responseTime,
 			};
@@ -444,7 +444,7 @@ class NetworkService {
 				code: 200,
 				status: true,
 				message: "Success",
-				monitorId: monitor._id,
+				monitorId: monitor.id,
 				type: "game",
 			};
 

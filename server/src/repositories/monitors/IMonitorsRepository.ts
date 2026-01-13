@@ -12,11 +12,15 @@ export interface TeamQueryConfig {
 
 export interface IMonitorsRepository {
 	// create
+	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
 	// single fetch
+	findById(monitorId: string): Promise<Monitor | null>;
+
 	// collection fetch
 	findAll(): Promise<Monitor[] | null>;
 	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
 	// update
+	update(monitorId: string, updates: Partial<Monitor>): Promise<Monitor>;
 	// delete
 
 	// counts

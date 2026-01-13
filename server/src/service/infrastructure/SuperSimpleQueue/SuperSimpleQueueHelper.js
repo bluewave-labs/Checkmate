@@ -27,7 +27,7 @@ class SuperSimpleQueueHelper {
 	getMonitorJob = () => {
 		return async (monitor) => {
 			try {
-				const monitorId = monitor._id;
+				const monitorId = monitor.id;
 				const teamId = monitor.teamId;
 				if (!monitorId) {
 					throw new Error("No monitor id");
@@ -62,7 +62,7 @@ class SuperSimpleQueueHelper {
 							message: error.message,
 							service: SERVICE_NAME,
 							method: "getMonitorJob",
-							details: `Error sending notifications for job ${monitor._id}: ${error.message}`,
+							details: `Error sending notifications for job ${monitor.id}: ${error.message}`,
 							stack: error.stack,
 						});
 					});

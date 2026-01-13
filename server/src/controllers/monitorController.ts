@@ -193,7 +193,7 @@ class MonitorController {
 			const userId = req?.user?._id;
 			const teamId = req?.user?.teamId;
 
-			const monitor = await this.monitorService.createMonitor({ teamId, userId, body: req.body });
+			const monitor = await this.monitorService.createMonitor(teamId, userId, req.body);
 
 			return res.status(200).json({
 				success: true,

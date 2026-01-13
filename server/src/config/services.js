@@ -16,7 +16,7 @@ import CheckService from "../service/business/checkService.js";
 import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
-import MonitorService from "../service/business/monitorService.js";
+import { MonitorService } from "@/service/index.js";
 import IncidentService from "../service/business/incidentService.js";
 import papaparse from "papaparse";
 import axios from "axios";
@@ -152,7 +152,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 
 	const bufferService = new BufferService({ db, logger, envSettings, incidentService });
 
-	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService });
+	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService, monitorsRepository });
 
 	const notificationUtils = new NotificationUtils({
 		stringService,
@@ -182,6 +182,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		db,
 		logger,
 		helper: superSimpleQueueHelper,
+		monitorsRepository,
 	});
 
 	// Business services
@@ -218,7 +219,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 	const monitorService = new MonitorService({
 		db,
-		settingsService,
 		jobQueue: superSimpleQueue,
 		stringService,
 		emailService,
