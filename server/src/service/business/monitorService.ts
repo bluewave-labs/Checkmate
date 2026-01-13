@@ -1,8 +1,8 @@
 import { createMonitorsBodyValidation } from "@/validation/joi.js";
-import { NormalizeData } from "@/utils/dataUtils.js";
+import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
 import type { MonitorType } from "@/types/monitor.js";
-import type { IMonitorsRepository } from "@/repositories/index.js";
+import type { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -10,6 +10,7 @@ import path from "path";
 import { AppError } from "../infrastructure/errorService.js";
 
 const SERVICE_NAME = "MonitorService";
+type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
 
 export interface IMonitorService {
 	readonly serviceName: string;
@@ -21,7 +22,6 @@ export interface IMonitorService {
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<any[]>;
 
 	// read
-	getAllMonitors(): Promise<any[]>;
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<any>;
 	getMonitorStatsById(args: {
 		teamId: string;
@@ -85,7 +85,7 @@ export class MonitorService implements IMonitorService {
 	private errorService: any;
 	private games: any;
 	private monitorsRepository: IMonitorsRepository;
-	private checksRepository: any;
+	private checksRepository: IChecksRepository;
 	private fs: any;
 
 	constructor({
@@ -109,7 +109,7 @@ export class MonitorService implements IMonitorService {
 		errorService: any;
 		games: any;
 		monitorsRepository: IMonitorsRepository;
-		checksRepository: any;
+		checksRepository: IChecksRepository;
 	}) {
 		this.db = db;
 		this.jobQueue = jobQueue;
@@ -126,6 +126,31 @@ export class MonitorService implements IMonitorService {
 	get serviceName(): string {
 		return MonitorService.SERVICE_NAME;
 	}
+
+	private getDateRange = (dateRange: DateRangeKey) => {
+		const startDates = {
+			recent: new Date(new Date().setHours(new Date().getHours() - 2)),
+			day: new Date(new Date().setDate(new Date().getDate() - 1)),
+			week: new Date(new Date().setDate(new Date().getDate() - 7)),
+			month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+			all: new Date(0),
+		};
+		return {
+			start: startDates[dateRange],
+			end: new Date(),
+		};
+	};
+
+	private getDateFormat = (dateRange: DateRangeKey): string => {
+		const formatLookup = {
+			recent: "%Y-%m-%dT%H:%M:00Z",
+			day: "%Y-%m-%dT%H:00:00Z",
+			week: "%Y-%m-%dT00:00:00Z",
+			month: "%Y-%m-%dT00:00:00Z",
+			all: "%Y-%m-%dT00:00:00Z",
+		};
+		return formatLookup[dateRange];
+	};
 
 	verifyTeamAccess = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<void> => {
 		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
@@ -225,11 +250,6 @@ export class MonitorService implements IMonitorService {
 		return demoMonitors;
 	};
 
-	getAllMonitors = async (): Promise<any[]> => {
-		const monitors = await this.db.monitorModule.getAllMonitors();
-		return monitors;
-	};
-
 	getUptimeDetailsById = async ({
 		teamId,
 		monitorId,
@@ -242,13 +262,34 @@ export class MonitorService implements IMonitorService {
 		normalize?: boolean;
 	}): Promise<any> => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const data = await this.db.monitorModule.getUptimeDetailsById({
+
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const { start, end } = this.getDateRange(rangeKey);
+		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(
+			monitorId: monitor.id,
+			startDate: start,
+			endDate: end,
+			dateString: this.getDateFormat(rangeKey),
+		);
+		const monitorStats = await this.db.monitorModule.getMonitorStatsById({
 			monitorId,
-			dateRange,
-			normalize,
 		});
 
-		return data;
+		return {
+			monitorData: {
+				monitor,
+				groupedChecks: NormalizeDataUptimeDetails(checksData.groupedChecks, 10, 100),
+				groupedUpChecks: NormalizeDataUptimeDetails(checksData.groupedUpChecks, 10, 100),
+				groupedDownChecks: NormalizeDataUptimeDetails(checksData.groupedDownChecks, 10, 100),
+				groupedAvgResponseTime: checksData.avgResponseTime,
+				groupedUptimePercentage: checksData.uptimePercentage,
+			},
+			monitorStats,
+		};
 	};
 
 	getMonitorStatsById = async ({

@@ -209,6 +209,106 @@ class MongoChecksRepistory implements IChecksRepository {
 			return acc;
 		}, {});
 	};
+
+	findDateRangeChecksByMonitor = async (
+		monitorId: string,
+		startDate: Date,
+		endDate: Date,
+		dateString: string
+	): Promise<{
+		groupedChecks: Array<{ _id: string; avgResponseTime: number; totalChecks: number }>;
+		groupedUpChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+		groupedDownChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+		uptimePercentage: number;
+		avgResponseTime: number;
+	}> => {
+		const matchStage = {
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			updatedAt: { $gte: startDate, $lte: endDate },
+		};
+		const [result] = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { updatedAt: 1 } },
+			{
+				$facet: {
+					uptimePercentage: [
+						{
+							$group: {
+								_id: null,
+								upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								percentage: {
+									$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+								},
+							},
+						},
+					],
+					groupedAvgResponseTime: [
+						{
+							$group: {
+								_id: null,
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+					],
+					groupedChecks: [
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								avgResponseTime: { $avg: "$responseTime" },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+					groupedUpChecks: [
+						{ $match: { status: true } },
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								totalChecks: { $sum: 1 },
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+					groupedDownChecks: [
+						{ $match: { status: false } },
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								totalChecks: { $sum: 1 },
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+				},
+			},
+		]).exec();
+
+		const uptimePercentage = result?.uptimePercentage?.[0]?.percentage ?? 0;
+		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
+
+		return {
+			groupedChecks: result?.groupedChecks ?? [],
+			groupedUpChecks: result?.groupedUpChecks ?? [],
+			groupedDownChecks: result?.groupedDownChecks ?? [],
+			uptimePercentage,
+			avgResponseTime,
+		};
+	};
 }
 
 export default MongoChecksRepistory;

@@ -39,19 +39,6 @@ class MonitorController {
 		}
 	}
 
-	getAllMonitors = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const monitors = await this.monitorService.getAllMonitors();
-			return res.status(200).json({
-				success: true,
-				msg: "Retrieved all monitors successfully",
-				data: monitors,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	getMonitorCertificate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getCertificateParamValidation.validateAsync(req.params);

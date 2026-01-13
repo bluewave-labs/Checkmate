@@ -38,7 +38,6 @@ class MonitorRoutes {
 		});
 
 		// General monitor CRUD routes
-		this.router.get("/", this.monitorController.getAllMonitors);
 		this.router.post("/", isAllowed(["admin", "superadmin"]), this.monitorController.createMonitor);
 		this.router.delete("/", isAllowed(["superadmin"]), this.monitorController.deleteAllMonitors);
 

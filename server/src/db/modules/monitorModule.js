@@ -194,17 +194,6 @@ class MonitorModule {
 		};
 	};
 
-	getAllMonitors = async () => {
-		try {
-			const monitors = await this.Monitor.find();
-			return monitors;
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "getAllMonitors";
-			throw error;
-		}
-	};
-
 	getMonitorById = async (monitorId) => {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);

@@ -21,12 +21,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.mapDocuments(inserted);
 	};
 
-	findById = async (MonitorModelId: string): Promise<Monitor> => {
-		const monitor = await MonitorModel.findById(MonitorModelId);
+	findById = async (monitorId: string, teamId?: string): Promise<Monitor> => {
+		const match: { _id: string; teamId?: string } = { _id: monitorId };
+		if (teamId) {
+			match.teamId = teamId;
+		}
+		const monitor = await MonitorModel.findOne(match);
 		if (!monitor) {
 			if (monitor === null || monitor === undefined) {
 				throw new AppError({
-					message: `Monitor with ID ${MonitorModelId} not found.`,
+					message: `Monitor with ID ${monitorId} not found.`,
 					status: 404,
 				});
 			}

@@ -15,7 +15,7 @@ export interface IMonitorsRepository {
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
 	createBulkMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
-	findById(monitorId: string): Promise<Monitor | null>;
+	findById(monitorId: string, teamId?: string): Promise<Monitor | null>;
 
 	// collection fetch
 	findAll(): Promise<Monitor[] | null>;
