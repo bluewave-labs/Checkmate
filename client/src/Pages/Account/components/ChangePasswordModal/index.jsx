@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Button, Stack } from "@mui/material";
 import { GenericDialog } from "@/Components/v1/Dialog/genericDialog";
 import TextInput from "@/Components/v1/Inputs/TextInput";
-import PasswordTooltip from "@/Pages/v1/Auth/components/PasswordTooltip";
+import PasswordTooltip from "@/Pages/Auth/components/PasswordTooltip";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { createToast } from "../../../../Utils/toastUtils";
 import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments";
-import usePasswordFeedback from "@/Pages/v1/Auth/hooks/usePasswordFeedback";
+import usePasswordFeedback from "@/Pages/Auth/hooks/usePasswordFeedback";
 import PropTypes from "prop-types";
 
 const ChangePasswordModal = ({ isSaving, isLoading, changePassword }) => {
