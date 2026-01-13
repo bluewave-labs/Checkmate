@@ -153,7 +153,7 @@ class StatusPageModule {
 						pipeline: [
 							{
 								$match: {
-									$expr: { $eq: ["$monitorId", "$$monitorId"] },
+									$expr: { $eq: ["$metadata.monitorId", "$$monitorId"] },
 								},
 							},
 							{ $sort: { createdAt: -1 } },
