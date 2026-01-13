@@ -115,7 +115,7 @@ const MonitorsTable = ({
 					: theme.palette.success.main;
 
 		return {
-			id: monitor._id,
+			id: monitor.id,
 			name: monitor.name,
 			url: monitor.url,
 			processor,
