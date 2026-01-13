@@ -1,8 +1,10 @@
 import { createMonitorsBodyValidation } from "@/validation/joi.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
+import type { MonitorType } from "@/types/monitor.js";
 import type { IMonitorsRepository } from "@/repositories/index.js";
 import { AppError } from "../infrastructure/errorService.js";
+
 const SERVICE_NAME = "MonitorService";
 
 export interface IMonitorService {
@@ -11,7 +13,7 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
-	createBulkMonitors(args: { fileData: string; userId: string; teamId: string }): Promise<any>;
+	createBulkMonitors(fileData: string, userId: string, teamId: string): Promise<any>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<any[]>;
 
 	// read
@@ -31,7 +33,7 @@ export interface IMonitorService {
 	getMonitorsByTeamId(args: {
 		teamId: string;
 		limit?: number;
-		type?: string | string[];
+		type?: MonitorType | MonitorType[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -42,7 +44,7 @@ export interface IMonitorService {
 	getMonitorsWithChecksByTeamId(args: {
 		teamId: string;
 		limit?: number;
-		type?: string | string[];
+		type?: MonitorType | MonitorType[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -136,7 +138,7 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createBulkMonitors = async ({ fileData, userId, teamId }: { fileData: string; userId: string; teamId: string }): Promise<any> => {
+	createBulkMonitors = async (fileData: string, userId: string, teamId: string): Promise<any> => {
 		const { parse } = this.papaparse;
 
 		return new Promise<any>((resolve, reject) => {
@@ -167,10 +169,10 @@ export class MonitorService implements IMonitorService {
 							throw this.errorService.createServerError("CSV file contains no data rows");
 						}
 
-						const enrichedData = data.map((monitor: any) => ({
+						const enrichedData = data.map((monitor: Monitor) => ({
+							...monitor,
 							userId,
 							teamId,
-							...monitor,
 							description: monitor.description || monitor.name || monitor.url,
 							name: monitor.name || monitor.url,
 							type: monitor.type || "http",
@@ -178,11 +180,11 @@ export class MonitorService implements IMonitorService {
 
 						await createMonitorsBodyValidation.validateAsync(enrichedData);
 
-						const monitors = await this.db.monitorModule.createBulkMonitors(enrichedData);
+						const monitors = await this.monitorsRepository.createBulkMonitors(enrichedData);
 
 						await Promise.all(
-							monitors.map(async (monitor: any) => {
-								this.jobQueue.addJob(monitor._id, monitor);
+							monitors.map(async (monitor: Monitor) => {
+								this.jobQueue.addJob(monitor.id, monitor);
 							})
 						);
 
@@ -334,7 +336,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		limit?: number;
-		type?: string | string[];
+		type?: MonitorType | MonitorType[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;

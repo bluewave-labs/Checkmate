@@ -231,7 +231,7 @@ class MonitorController {
 				throw new AppError({ message: "Cannot get file from buffer", status: 400 });
 			}
 
-			const monitors = await this.monitorService.createBulkMonitors({ fileData, userId, teamId });
+			const monitors = await this.monitorService.createBulkMonitors(fileData, userId, teamId);
 
 			return res.status(200).json({
 				success: true,

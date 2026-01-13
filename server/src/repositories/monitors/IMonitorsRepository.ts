@@ -13,6 +13,7 @@ export interface TeamQueryConfig {
 export interface IMonitorsRepository {
 	// create
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
+	createBulkMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
 	findById(monitorId: string): Promise<Monitor | null>;
 

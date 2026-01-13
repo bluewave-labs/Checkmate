@@ -12,6 +12,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(saved);
 	};
 
+	createBulkMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
+		const newMonitors = monitors.map((monitor) => new MonitorModel({ ...monitor, notifications: undefined }));
+		await MonitorModel.bulkSave(newMonitors);
+		return monitors;
+	};
+
 	findById = async (MonitorModelId: string): Promise<Monitor> => {
 		const monitor = await MonitorModel.findById(MonitorModelId);
 		if (!monitor) {
