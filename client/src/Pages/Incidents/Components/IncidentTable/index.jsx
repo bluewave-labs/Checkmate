@@ -18,7 +18,11 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useFetchChecksTeam, useFetchChecksByMonitor, useResolveIncident } from "@/Hooks/checkHooks.js";
+import {
+	useFetchChecksTeam,
+	useFetchChecksByMonitor,
+	useResolveIncident,
+} from "@/Hooks/checkHooks.js";
 import { Button, Typography, useTheme } from "@mui/material";
 import { lighten } from "@mui/material/styles";
 
