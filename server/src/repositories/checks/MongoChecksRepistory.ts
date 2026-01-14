@@ -177,15 +177,18 @@ class MongoChecksRepistory implements IChecksRepository {
 		};
 	};
 
-	findLatestChecksByMonitorIds = async (monitorIds: string[]): Promise<LatestChecksMap> => {
+	findLatestChecksByMonitorIds = async (
+		monitorIds: string[],
+		options?: { limitPerMonitor?: number }
+	): Promise<LatestChecksMap> => {
 		if (monitorIds.length === 0) {
 			return {};
 		}
 		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		const limitPerMonitor = 25;
+		const limitPerMonitor = options?.limitPerMonitor ?? 25;
 		const maxIntervalMs = Number(10 * 60 * 1000);
 		const bufferMs = Number(maxIntervalMs);
-		const lookbackMs = 25 * maxIntervalMs + bufferMs;
+		const lookbackMs = limitPerMonitor * maxIntervalMs + bufferMs;
 		const cutoffDate = new Date(Date.now() - lookbackMs);
 		const checkGroups = await CheckModel.aggregate([
 			{

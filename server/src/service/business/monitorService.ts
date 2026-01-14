@@ -404,10 +404,22 @@ export class MonitorService implements IMonitorService {
 			order,
 		});
 
-		const monitorIds = monitors?.map((m: any) => m.id) ?? [];
-		const checksMap = await this.checksRepository.findLatestChecksByMonitorIds(monitorIds);
-		const monitorsWithChecks = (monitors ?? []).map((monitor: any) => {
-			const checks = NormalizeData(checksMap[monitor.id] ?? [], 10, 100);
+		const monitorsList = (monitors ?? []) as Monitor[];
+		const snapshotTypes: MonitorType[] = ["hardware", "pagespeed"];
+		const requestedTypes = Array.isArray(type) ? type : type ? [type] : [];
+		const snapshotOnlyRequest =
+			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
+
+		const limitPerMonitor = snapshotOnlyRequest ? 1 : 25;
+		const checksMap = await this.checksRepository.findLatestChecksByMonitorIds(
+			monitorsList.map((monitor) => monitor.id),
+			{ limitPerMonitor }
+		);
+
+		const monitorsWithChecks = monitorsList.map((monitor: Monitor) => {
+			const rawChecks = checksMap[monitor.id] ?? [];
+			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
+			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
 			return {
 				...monitor,
 				checks,

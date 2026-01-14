@@ -2,7 +2,7 @@ import type { Check, MonitorType } from "@/types/index.js";
 import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory.js";
 
 export interface IChecksRepository {
-	findLatestChecksByMonitorIds(monitorIds: string[]): Promise<LatestChecksMap>;
+	findLatestChecksByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findDateRangeChecksByMonitor(
 		monitorId: string,
 		startDate: Date,
