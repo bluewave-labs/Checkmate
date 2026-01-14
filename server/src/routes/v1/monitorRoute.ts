@@ -19,7 +19,6 @@ class MonitorRoutes {
 		// Team routes
 		this.router.get("/team", this.monitorController.getMonitorsByTeamId);
 		this.router.get("/team/with-checks", this.monitorController.getMonitorsWithChecksByTeamId);
-		this.router.get("/team/summary", this.monitorController.getMonitorsAndSummaryByTeamId);
 		this.router.get("/team/groups", this.monitorController.getGroupsByTeamId);
 
 		// Uptime routes

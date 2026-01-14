@@ -114,7 +114,7 @@ const UptimeMonitors = () => {
 	]);
 
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || sort?.field;
+	const field = activeFilter?.[1] || (search ? "name" : sort?.field);
 	const filter = activeFilter?.[0] || search;
 
 	const effectiveTypes = selectedTypes?.length ? selectedTypes : TYPES;

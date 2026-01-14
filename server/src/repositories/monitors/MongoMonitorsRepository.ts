@@ -44,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 25, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
+		const { page = 0, rowsPerPage = 5, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -75,9 +75,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
 		const skip = Math.max(page, 0) * rowsPerPage;
-		const limitValue = limit ?? rowsPerPage;
 
-		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limitValue).exec();
+		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(rowsPerPage);
 
 		return this.mapDocuments(documents);
 	};

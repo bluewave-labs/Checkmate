@@ -36,7 +36,6 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 	}): Promise<any>;
-	getMonitorsAndSummaryByTeamId(args: { teamId: string; type?: string | string[]; explain?: boolean }): Promise<any>;
 	getMonitorsWithChecksByTeamId(args: {
 		teamId: string;
 		limit?: number;
@@ -360,23 +359,6 @@ export class MonitorService implements IMonitorService {
 			filter,
 		});
 		return monitors;
-	};
-
-	getMonitorsAndSummaryByTeamId = async ({
-		teamId,
-		type,
-		explain,
-	}: {
-		teamId: string;
-		type?: string | string[];
-		explain?: boolean;
-	}): Promise<any> => {
-		const result = await this.db.monitorModule.getMonitorsAndSummaryByTeamId({
-			type,
-			explain,
-			teamId,
-		});
-		return result;
 	};
 
 	getMonitorsWithChecksByTeamId = async ({

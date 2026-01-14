@@ -23,7 +23,7 @@ import {
 
 export type LatestChecksMap = Record<string, Check[]>;
 
-class MongoChecksRepistory implements IChecksRepository {
+class MongoChecksRepository implements IChecksRepository {
 	private toEntity = (doc: CheckDocument): Check => {
 		const toStringId = (value: mongoose.Types.ObjectId | string | undefined | null): string => {
 			if (!value) {
@@ -392,4 +392,4 @@ class MongoChecksRepistory implements IChecksRepository {
 	};
 }
 
-export default MongoChecksRepistory;
+export default MongoChecksRepository;

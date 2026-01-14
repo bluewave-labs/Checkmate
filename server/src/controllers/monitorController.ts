@@ -339,26 +339,6 @@ class MonitorController {
 		}
 	};
 
-	getMonitorsAndSummaryByTeamId = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
-			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
-
-			const explain = optionalBoolean(req?.query?.explain, "explain");
-			const type = parseMonitorTypeFilter(req?.query?.type);
-			const teamId = requireTeamId(req?.user?.teamId);
-
-			const result = await this.monitorService.getMonitorsAndSummaryByTeamId({ teamId, type, explain });
-
-			return res.status(200).json({
-				msg: "Monitors and summary retrieved successfully",
-				data: result,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	getMonitorsWithChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
