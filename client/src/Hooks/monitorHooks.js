@@ -50,6 +50,7 @@ export const useFetchMonitorsWithChecks = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [count, setCount] = useState(undefined);
 	const [monitors, setMonitors] = useState(undefined);
+	const [summary, setSummary] = useState(undefined);
 	const [networkError, setNetworkError] = useState(false);
 
 	const theme = useTheme();
@@ -68,10 +69,11 @@ export const useFetchMonitorsWithChecks = ({
 					order,
 				});
 
-				const { count, monitors } = res?.data?.data ?? {};
+				const { count, monitors, summary } = res?.data?.data ?? {};
 				const mappedMonitors = monitors.map((monitor) =>
 					getMonitorWithPercentage(monitor, theme)
 				);
+				setSummary(summary);
 				setMonitors(mappedMonitors);
 				setCount(count || 0);
 			} catch (error) {
@@ -97,7 +99,7 @@ export const useFetchMonitorsWithChecks = ({
 		types,
 		monitorUpdateTrigger,
 	]);
-	return [monitors, count, isLoading, networkError];
+	return [summary, monitors, count, isLoading, networkError];
 };
 
 export const useFetchMonitorsByTeamId = ({ types, filter, updateTrigger }) => {

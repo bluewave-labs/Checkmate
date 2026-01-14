@@ -47,7 +47,7 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 		explain?: boolean;
-	}): Promise<{ count: number; monitors: any[] }>;
+	}): Promise<{ summary: any; count: number; monitors: any[] }>;
 	getAllGames(): any;
 	getGroupsByTeamId(args: { teamId: string }): Promise<any[]>;
 
@@ -399,7 +399,8 @@ export class MonitorService implements IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 		explain?: boolean;
-	}): Promise<{ count: number; monitors: any[] }> => {
+	}): Promise<{ summary: any; count: number; monitors: any[] }> => {
+		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId);
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
@@ -433,7 +434,7 @@ export class MonitorService implements IMonitorService {
 			};
 		});
 
-		return { count, monitors: monitorsWithChecks };
+		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
 	getAllGames = (): any => {

@@ -26,10 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 import PropTypes from "prop-types";
-import {
-	useFetchMonitorsWithSummary,
-	useFetchMonitorsWithChecks,
-} from "@/Hooks/monitorHooks.js";
+import { useFetchMonitorsWithChecks } from "@/Hooks/monitorHooks.js";
 import { useTranslation } from "react-i18next";
 
 const TYPES = ["http", "ping", "docker", "port", "game"];
@@ -103,12 +100,6 @@ const UptimeMonitors = () => {
 		setMonitorUpdateTrigger((prev) => !prev);
 	}, []);
 
-	const [monitors, monitorsSummary, monitorsWithSummaryIsLoading, networkError] =
-		useFetchMonitorsWithSummary({
-			types: TYPES,
-			monitorUpdateTrigger,
-		});
-
 	const handleReset = () => {
 		setSelectedState(undefined);
 		setSelectedTypes(undefined);
@@ -129,10 +120,11 @@ const UptimeMonitors = () => {
 	const effectiveTypes = selectedTypes?.length ? selectedTypes : TYPES;
 
 	const [
+		summary,
 		monitorsWithChecks,
 		monitorsWithChecksCount,
 		monitorsWithChecksIsLoading,
-		monitorsWithChecksNetworkError,
+		networkError,
 	] = useFetchMonitorsWithChecks({
 		types: effectiveTypes,
 		limit: 25,
@@ -150,14 +142,14 @@ const UptimeMonitors = () => {
 		}
 	}, [isSearching]);
 
-	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
+	const isLoading = monitorsWithChecksIsLoading;
 
 	return (
 		<>
 			<PageStateWrapper
 				networkError={networkError}
 				isLoading={isLoading}
-				items={monitors}
+				items={monitorsWithChecks}
 				type="uptimeMonitor"
 				fallbackLink="/uptime/create"
 			>
@@ -174,14 +166,14 @@ const UptimeMonitors = () => {
 					/>
 					<Greeting type="uptime" />
 					<StatusBoxes
-						monitorsSummary={monitorsSummary}
-						shouldRender={!monitorsWithSummaryIsLoading}
+						monitorsSummary={summary}
+						shouldRender={!monitorsWithChecksIsLoading}
 					/>
 
 					<Stack direction={"row"}>
 						<MonitorCountHeader
-							isLoading={monitorsWithSummaryIsLoading}
-							monitorCount={monitorsSummary?.totalMonitors}
+							isLoading={monitorsWithChecksIsLoading}
+							monitorCount={summary?.totalMonitors}
 						/>
 						<Filter
 							selectedTypes={selectedTypes}
@@ -195,7 +187,7 @@ const UptimeMonitors = () => {
 							handleReset={handleReset}
 						/>
 						<SearchComponent
-							monitors={monitors}
+							monitors={monitorsWithChecks}
 							onSearchChange={setSearch}
 							setIsSearching={setIsSearching}
 						/>

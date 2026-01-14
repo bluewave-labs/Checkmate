@@ -5,15 +5,6 @@ const SERVICE_NAME = "StatusService";
 class StatusService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	/**
-	 * @param {{
-	 *  db: any
-	 *  logger: any
-	 *  buffer: import("./bufferService.js").BufferService
-	 *  incidentService: import("../business/incidentService.js").IncidentService
-	 *  monitorsRepository: any
-	 * }}
-	 */
 	constructor({ db, logger, buffer, incidentService, monitorsRepository }) {
 		this.db = db;
 		this.logger = logger;

@@ -10,6 +10,10 @@ export interface TeamQueryConfig {
 	order?: "asc" | "desc";
 }
 
+export interface SummaryConfig {
+	type?: MonitorType | MonitorType[];
+}
+
 export interface IMonitorsRepository {
 	// create
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
@@ -27,4 +31,7 @@ export interface IMonitorsRepository {
 
 	// counts
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;
+
+	// other
+	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<any>;
 }
