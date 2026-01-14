@@ -22,6 +22,12 @@ const useMaintenanceActions = () => {
 		weekly: MS_PER_DAY * 7,
 	};
 	const handleSubmitForm = async (maintenanceWindowId, form) => {
+		const toStringId = (monitor) => {
+			if (!monitor) {
+				return "";
+			}
+			return monitor._id ?? monitor.id ?? "";
+		};
 		const start = dayjs(form.startDate)
 			.set("hour", form.startTime.hour())
 			.set("minute", form.startTime.minute());
@@ -33,7 +39,7 @@ const useMaintenanceActions = () => {
 		const repeat = REPEAT_LOOKUP[form.repeat];
 
 		const submit = {
-			monitors: form.monitors.map((monitor) => monitor._id),
+			monitors: form.monitors.map((monitor) => toStringId(monitor)).filter(Boolean),
 			name: form.name,
 			start: start.toISOString(),
 			end: end.toISOString(),

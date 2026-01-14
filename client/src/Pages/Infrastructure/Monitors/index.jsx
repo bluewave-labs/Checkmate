@@ -13,10 +13,7 @@ import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import { useTranslation } from "react-i18next";
-import {
-	useFetchMonitorsByTeamId,
-	useFetchMonitorsWithChecks,
-} from "@/Hooks/monitorHooks.js";
+import { useFetchMonitorsWithChecks } from "@/Hooks/monitorHooks.js";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";

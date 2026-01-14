@@ -108,6 +108,7 @@ const CreateMaintenance = () => {
 
 	const handleSubmit = async () => {
 		if (hasValidationErrors(form, maintenanceWindowValidation, setErrors)) return;
+
 		const request = handleSubmitForm(maintenanceWindowId, form);
 		try {
 			setIsLoading(true);

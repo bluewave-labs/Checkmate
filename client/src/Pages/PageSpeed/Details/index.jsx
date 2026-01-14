@@ -11,14 +11,13 @@ import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import { useParams } from "react-router-dom";
-import { useFetchStatsByMonitorId } from "../../../Hooks/monitorHooks.js";
+import { useFetchPageSpeedMonitorById } from "../../../Hooks/monitorHooks.js";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 // Constants
 const BREADCRUMBS = [
 	{ name: "pagespeed", path: "/pagespeed" },
 	{ name: "details", path: `` },
-	// { name: "details", path: `/pagespeed/${monitorId}` }, // Not needed?
 ];
 
 const PageSpeedDetails = () => {
@@ -36,13 +35,9 @@ const PageSpeedDetails = () => {
 	});
 	const [trigger, setTrigger] = useState(false);
 	// Network
-	const [monitor, audits, isLoading, networkError] = useFetchStatsByMonitorId({
+	const [monitor, isLoading, networkError] = useFetchPageSpeedMonitorById({
 		monitorId,
-		sortOrder: "desc",
-		limit: 50,
 		dateRange: "day",
-		numToDisplay: null,
-		normalize: null,
 		updateTrigger: trigger,
 	});
 
@@ -116,7 +111,7 @@ const PageSpeedDetails = () => {
 			/>
 			<PerformanceReport
 				shouldRender={!isLoading}
-				audits={audits}
+				audits={monitor?.checks[0]?.audits}
 			/>
 		</Stack>
 	);

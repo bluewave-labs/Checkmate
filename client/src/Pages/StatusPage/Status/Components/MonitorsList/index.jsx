@@ -28,14 +28,14 @@ const MonitorsList = ({
 				const status = determineState(monitor);
 				return (
 					<Stack
-						key={monitor._id}
+						key={monitor.id}
 						width="100%"
 						gap={theme.spacing(10)}
 						margin="0 auto"
 						maxWidth="95%"
 					>
 						<Host
-							key={monitor._id}
+							key={monitor.id}
 							url={monitor.url}
 							title={monitor.name}
 							percentageColor={monitor.percentageColor}

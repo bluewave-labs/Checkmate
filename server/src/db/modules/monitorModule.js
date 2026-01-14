@@ -194,17 +194,6 @@ class MonitorModule {
 		};
 	};
 
-	getAllMonitors = async () => {
-		try {
-			const monitors = await this.Monitor.find();
-			return monitors;
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "getAllMonitors";
-			throw error;
-		}
-	};
-
 	getMonitorById = async (monitorId) => {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);
@@ -264,48 +253,6 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorStatsById = async ({ monitorId, sortOrder, dateRange, numToDisplay, normalize }) => {
-		try {
-			// Get monitor, if we can't find it, abort with error
-			const monitor = await this.Monitor.findById(monitorId);
-			if (monitor === null || monitor === undefined) {
-				throw new Error(this.stringService.getDbFindMonitorById(monitorId));
-			}
-
-			// Get query params
-			const sort = sortOrder === "asc" ? 1 : -1;
-
-			// Get Checks for monitor in date range requested
-			const dates = this.getDateRange(dateRange);
-			const { checksAll, checksForDateRange } = await this.getMonitorChecks(monitorId, dates, sort);
-
-			// Build monitor stats
-			const monitorStats = {
-				...monitor.toObject(),
-				uptimeDuration: this.calculateUptimeDuration(checksAll),
-				lastChecked: this.getLastChecked(checksAll),
-				latestResponseTime: this.getLatestResponseTime(checksAll),
-				periodIncidents: this.getIncidents(checksForDateRange),
-				periodTotalChecks: checksForDateRange.length,
-				checks: this.processChecksForDisplay(this.NormalizeData, checksForDateRange, numToDisplay, normalize),
-			};
-
-			if (monitor.type === "http" || monitor.type === "ping" || monitor.type === "docker" || monitor.type === "port" || monitor.type === "game") {
-				// HTTP/PING Specific stats
-				monitorStats.periodAvgResponseTime = this.getAverageResponseTime(checksForDateRange);
-				monitorStats.periodUptime = this.getUptimePercentage(checksForDateRange);
-				const groupedChecks = this.groupChecksByTime(checksForDateRange, dateRange);
-				monitorStats.aggregateData = Object.values(groupedChecks).map(this.calculateGroupStats);
-			}
-
-			return monitorStats;
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "getMonitorStatsById";
-			throw error;
-		}
-	};
-
 	getHardwareDetailsById = async ({ monitorId, dateRange }) => {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);
@@ -342,47 +289,33 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorsByTeamId = async ({ limit, type, page, rowsPerPage, filter, field, order, teamId }) => {
-		limit = parseInt(limit);
-		page = parseInt(page);
-		rowsPerPage = parseInt(rowsPerPage);
-		if (field === undefined) {
-			field = "name";
-			order = "asc";
-		}
-		// Build match stage
-		const matchStage = { teamId: new this.ObjectId(teamId) };
-		if (type !== undefined) {
-			matchStage.type = Array.isArray(type) ? { $in: type } : type;
-		}
-
-		const summaryResult = await this.Monitor.aggregate(buildMonitorSummaryByTeamIdPipeline({ matchStage }));
-		const summary = summaryResult[0];
-
-		const monitors = await this.Monitor.aggregate(buildMonitorsByTeamIdPipeline({ matchStage, field, order }));
-
-		const filteredMonitors = await this.Monitor.aggregate(
-			buildFilteredMonitorsByTeamIdPipeline({
-				matchStage,
-				filter,
-				page,
-				rowsPerPage,
-				field,
-				order,
-				limit,
-				type,
-			})
-		);
-
-		const normalizedFilteredMonitors = filteredMonitors.map((monitor) => {
-			if (!monitor.checks) {
-				return monitor;
+	getMonitorsByTeamId = async ({ teamId, type, filter }) => {
+		try {
+			const matchStage = { teamId: new this.ObjectId(teamId) };
+			if (type !== undefined) {
+				matchStage.type = Array.isArray(type) ? { $in: type } : type;
 			}
-			monitor.checks = this.NormalizeData(monitor.checks, 10, 100);
-			return monitor;
-		});
-
-		return { summary, monitors, filteredMonitors: normalizedFilteredMonitors };
+			if (filter !== undefined && filter !== null && filter !== "") {
+				matchStage.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
+			}
+			const monitors = await this.Monitor.find(matchStage)
+				.sort({ name: 1 })
+				.select({
+					_id: 1,
+					name: 1,
+					type: 1,
+					url: 1,
+					status: 1,
+					isActive: 1,
+					teamId: 1,
+				})
+				.lean();
+			return monitors;
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "getMonitorsByTeamId";
+			throw error;
+		}
 	};
 
 	getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {

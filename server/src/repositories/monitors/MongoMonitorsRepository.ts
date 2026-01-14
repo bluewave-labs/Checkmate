@@ -3,11 +3,44 @@ import type { MonitorDocument } from "@/db/models/Monitor.js";
 import type { Monitor, MonitorType } from "@/types/monitor.js";
 import mongoose, { type FilterQuery } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig } from "./IMonitorsRepository.js";
+import { AppError } from "@/utils/AppError.js";
 
 class MongoMonitorsRepository implements IMonitorsRepository {
-	findAll = async (): Promise<Monitor[] | null> => {
-		const documents = await MonitorModel.find().exec();
-		return this.mapDocuments(documents);
+	create = async (monitor: Monitor, teamId: string, userId: string) => {
+		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
+		const saved = await monitorModel.save();
+		return this.toEntity(saved);
+	};
+
+	createBulkMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
+		if (!monitors.length) {
+			return [];
+		}
+		const payload = monitors.map((monitor) => ({ ...monitor, notifications: undefined }));
+		const inserted = await MonitorModel.insertMany(payload, { ordered: false });
+		return this.mapDocuments(inserted);
+	};
+
+	findById = async (monitorId: string, teamId?: string): Promise<Monitor> => {
+		const match: { _id: string; teamId?: string } = { _id: monitorId };
+		if (teamId) {
+			match.teamId = teamId;
+		}
+		const monitor = await MonitorModel.findOne(match);
+		if (!monitor) {
+			if (monitor === null || monitor === undefined) {
+				throw new AppError({
+					message: `Monitor with ID ${monitorId} not found.`,
+					status: 404,
+				});
+			}
+		}
+		return this.toEntity(monitor);
+	};
+
+	findAll = async (): Promise<Monitor[]> => {
+		const monitors = await MonitorModel.find();
+		return this.mapDocuments(monitors);
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
@@ -64,9 +97,32 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
-	private mapDocuments = (documents: MonitorDocument[]): Monitor[] | null => {
+	update = async (monitorId: string, patch: Partial<Monitor>) => {
+		const updatedMonitor = await MonitorModel.findOneAndUpdate(
+			{ _id: monitorId },
+			{
+				$set: {
+					...patch,
+				},
+			},
+			{ new: true, runValidators: true }
+		);
+		if (!updatedMonitor) {
+			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
+		}
+		return this.toEntity(updatedMonitor);
+	};
+
+	deleteByTeamId = async (teamId: string) => {
+		const monitors = await MonitorModel.find({ teamId });
+		const { deletedCount } = await MonitorModel.deleteMany({ teamId });
+
+		return { monitors: this.mapDocuments(monitors), deletedCount };
+	};
+
+	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {
 		if (!documents?.length) {
-			return null;
+			return [];
 		}
 		return documents.map((doc) => this.toEntity(doc));
 	};

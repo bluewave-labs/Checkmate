@@ -16,7 +16,7 @@ import CheckService from "../service/business/checkService.js";
 import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
-import MonitorService from "../service/business/monitorService.js";
+import { MonitorService } from "@/service/index.js";
 import IncidentService from "../service/business/incidentService.js";
 import papaparse from "papaparse";
 import axios from "axios";
@@ -34,9 +34,8 @@ const { compile } = pkg;
 import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { games } from "gamedig";
+import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
-import { GameDig } from "gamedig";
 
 import { fileURLToPath } from "url";
 import { ObjectId } from "mongodb";
@@ -47,7 +46,6 @@ import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
 // Models
-import { CheckModel } from "@/db/models/index.js";
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
 import InviteToken from "../db/models/InviteToken.js";
@@ -72,11 +70,11 @@ import SettingsModule from "../db/modules/settingsModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
-import { MongoMonitorsRepository, MongoChecksRepository } from "@/repositories/index.js";
+import { MongoMonitorsRepository, MongoChecksRepository, MongoMonitorStatsRepository } from "@/repositories/index.js";
 
-export const initializeServices = async ({ logger, envSettings, settingsService }) => {
+export const initializeServices = async ({ logger, envSettings, settingsService }: { logger: any; envSettings: any; settingsService: any }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
-	ServiceRegistry.instance = serviceRegistry;
+	(ServiceRegistry as any).instance = serviceRegistry;
 
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
@@ -84,7 +82,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const stringService = new StringService(translationService);
 
 	// Create DB
-	const checkModule = new CheckModule({ logger, CheckModel, Monitor, User });
+	const checkModule = new CheckModule({ logger, Monitor, User });
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
@@ -125,6 +123,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	// Repositories
 	const monitorsRepository = new MongoMonitorsRepository();
 	const checksRepository = new MongoChecksRepository();
+	const monitorStatsRepository = new MongoMonitorStatsRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -152,7 +151,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 
 	const bufferService = new BufferService({ db, logger, envSettings, incidentService });
 
-	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService });
+	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService, monitorsRepository });
 
 	const notificationUtils = new NotificationUtils({
 		stringService,
@@ -182,6 +181,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		db,
 		logger,
 		helper: superSimpleQueueHelper,
+		monitorsRepository,
 	});
 
 	// Business services
@@ -218,7 +218,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	});
 	const monitorService = new MonitorService({
 		db,
-		settingsService,
 		jobQueue: superSimpleQueue,
 		stringService,
 		emailService,
@@ -228,6 +227,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		games,
 		monitorsRepository,
 		checksRepository,
+		monitorStatsRepository,
 	});
 
 	const services = {

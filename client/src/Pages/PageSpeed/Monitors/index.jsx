@@ -11,10 +11,7 @@ import FallbackPageSpeedWarning from "@/Components/v1/Fallback/FallbackPageSpeed
 // Utils
 import { useTheme } from "@emotion/react";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
-import {
-	useFetchMonitorsByTeamId,
-	useFetchMonitorsWithChecks,
-} from "@/Hooks/monitorHooks.js";
+import { useFetchMonitorsWithChecks } from "@/Hooks/monitorHooks.js";
 import { useFetchSettings } from "@/Hooks/settingsHooks.js";
 // Constants
 const BREADCRUMBS = [{ name: `pagespeed`, path: "/pagespeed" }];
@@ -22,16 +19,6 @@ const TYPES = ["pagespeed"];
 const PageSpeed = () => {
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
-
-	// const [monitors, monitorsSummary, isLoading, networkError] = useFetchMonitorsByTeamId({
-	// 	limit: 10,
-	// 	types: TYPES,
-	// 	page: null,
-	// 	rowsPerPage: null,
-	// 	filter: null,
-	// 	field: null,
-	// 	order: null,
-	// });
 
 	const [
 		monitorsWithChecks,

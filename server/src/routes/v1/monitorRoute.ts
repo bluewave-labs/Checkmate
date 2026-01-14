@@ -27,10 +27,11 @@ class MonitorRoutes {
 
 		// Hardware routes
 		this.router.get("/hardware/details/:monitorId", this.monitorController.getHardwareDetailsById);
+		// PageSpeed routes
+		this.router.get("/pagespeed/details/:monitorId", this.monitorController.getPageSpeedDetailsById);
 
 		// General monitor routes
 		this.router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.pauseMonitor);
-		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
 
 		// Util routes
 		this.router.get("/certificate/:monitorId", (req, res, next) => {
@@ -38,7 +39,6 @@ class MonitorRoutes {
 		});
 
 		// General monitor CRUD routes
-		this.router.get("/", this.monitorController.getAllMonitors);
 		this.router.post("/", isAllowed(["admin", "superadmin"]), this.monitorController.createMonitor);
 		this.router.delete("/", isAllowed(["superadmin"]), this.monitorController.deleteAllMonitors);
 

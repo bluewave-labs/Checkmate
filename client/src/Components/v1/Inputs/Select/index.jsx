@@ -62,6 +62,7 @@ const Select = ({
 	fieldWrapperSx = {},
 }) => {
 	const theme = useTheme();
+	const getItemValue = (item) => item?._id ?? item?.id;
 	const itemStyles = {
 		fontSize: "var(--env-var-font-size-medium)",
 		color: theme.palette.primary.contrastTextTertiary,
@@ -123,7 +124,7 @@ const Select = ({
 					...sx,
 				}}
 				renderValue={(selected) => {
-					const selectedItem = items.find((item) => item._id === selected);
+					const selectedItem = items.find((item) => getItemValue(item) === selected);
 					const displayName = selectedItem ? selectedItem.name : placeholder;
 					return (
 						<Typography
@@ -152,17 +153,25 @@ const Select = ({
 						{placeholder}
 					</MenuItem>
 				)}
-				{items.map((item) => (
-					<MenuItem
-						value={item._id}
-						key={`${id}-${item._id}`}
-						sx={{
-							...itemStyles,
-						}}
-					>
-						{item.name}
-					</MenuItem>
-				))}
+				{items
+					.map((item) => {
+						const itemValue = getItemValue(item);
+						if (itemValue === undefined || itemValue === null) {
+							return null;
+						}
+						return (
+							<MenuItem
+								value={itemValue}
+								key={`${id}-${itemValue}`}
+								sx={{
+									...itemStyles,
+								}}
+							>
+								{item.name}
+							</MenuItem>
+						);
+					})
+					.filter(Boolean)}
 			</MuiSelect>
 		</FieldWrapper>
 	);
@@ -179,8 +188,8 @@ Select.propTypes = {
 		.isRequired,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
-			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])
-				.isRequired,
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
+			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
 
 			name: PropTypes.string.isRequired,
 		})

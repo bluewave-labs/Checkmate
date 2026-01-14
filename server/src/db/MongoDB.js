@@ -11,12 +11,9 @@ class MongoDB {
 		inviteModule,
 		statusPageModule,
 		userModule,
-		hardwareCheckModule,
 		maintenanceWindowModule,
 		monitorModule,
-		networkCheckModule,
 		notificationModule,
-		pageSpeedCheckModule,
 		recoveryModule,
 		settingsModule,
 		incidentModule,
@@ -26,15 +23,12 @@ class MongoDB {
 		this.userModule = userModule;
 		this.inviteModule = inviteModule;
 		this.recoveryModule = recoveryModule;
-		this.pageSpeedCheckModule = pageSpeedCheckModule;
-		this.hardwareCheckModule = hardwareCheckModule;
 		this.checkModule = checkModule;
 		this.maintenanceWindowModule = maintenanceWindowModule;
 		this.monitorModule = monitorModule;
 		this.notificationModule = notificationModule;
 		this.settingsModule = settingsModule;
 		this.statusPageModule = statusPageModule;
-		this.networkCheckModule = networkCheckModule;
 		this.incidentModule = incidentModule;
 	}
 

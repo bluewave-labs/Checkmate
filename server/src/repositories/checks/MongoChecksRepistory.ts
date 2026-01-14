@@ -11,9 +11,15 @@ import type {
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
 	CheckTimings,
+	MonitorType,
 } from "@/types/index.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
+import {
+	getAggregateData as getHardwareAggregateData,
+	getHardwareStats,
+	getUpChecks as getHardwareUpChecks,
+} from "@/db/modules/monitorModuleQueries.js";
 
 export type LatestChecksMap = Record<string, Check[]>;
 
@@ -172,15 +178,16 @@ class MongoChecksRepistory implements IChecksRepository {
 		};
 	};
 
-	findLatestChecksByMonitorIds = async (monitorIds: string[]): Promise<LatestChecksMap> => {
+	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
 		if (monitorIds.length === 0) {
 			return {};
 		}
 		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		const limitPerMonitor = 25;
-		const maxIntervalMs = Number(process.env.MONITOR_MAX_INTERVAL_MS ?? 10 * 60 * 1000);
-		const bufferMs = Number(process.env.MONITOR_INTERVAL_BUFFER_MS ?? maxIntervalMs);
-		const lookbackMs = 25 * maxIntervalMs + bufferMs;
+		const limitPerMonitor = options?.limitPerMonitor ?? 25;
+		const maxIntervalMs = Number(10 * 60 * 1000);
+		const bufferMs = Number(maxIntervalMs);
+		const lookbackMs = limitPerMonitor * maxIntervalMs + bufferMs;
+
 		const cutoffDate = new Date(Date.now() - lookbackMs);
 		const checkGroups = await CheckModel.aggregate([
 			{
@@ -202,11 +209,186 @@ class MongoChecksRepistory implements IChecksRepository {
 				},
 			},
 		]);
+
 		return checkGroups.reduce<LatestChecksMap>((acc, group) => {
 			const monitorId = group._id.toString();
 			acc[monitorId] = (group.latestChecks ?? []).map((doc: CheckDocument) => this.toEntity(doc));
 			return acc;
 		}, {});
+	};
+
+	findDateRangeChecksByMonitor = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
+		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		if (options?.type === "hardware") {
+			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+		}
+		if (options?.type === "pagespeed") {
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate);
+		}
+		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
+	};
+
+	private findUptimeDateRangeChecks = async (
+		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
+		monitorObjectId: mongoose.Types.ObjectId,
+		startDate: Date,
+		endDate: Date,
+		dateString: string
+	) => {
+		const matchStage = {
+			"metadata.monitorId": monitorObjectId,
+			updatedAt: { $gte: startDate, $lte: endDate },
+		};
+		const [result] = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { updatedAt: 1 } },
+			{
+				$facet: {
+					uptimePercentage: [
+						{
+							$group: {
+								_id: null,
+								upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								percentage: {
+									$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+								},
+							},
+						},
+					],
+					groupedAvgResponseTime: [
+						{
+							$group: {
+								_id: null,
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+					],
+					groupedChecks: [
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								avgResponseTime: { $avg: "$responseTime" },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+					groupedUpChecks: [
+						{ $match: { status: true } },
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								totalChecks: { $sum: 1 },
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+					groupedDownChecks: [
+						{ $match: { status: false } },
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								totalChecks: { $sum: 1 },
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+				},
+			},
+		]);
+
+		const uptimePercentage = result?.uptimePercentage?.[0]?.percentage ?? 0;
+		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
+
+		return {
+			monitorType,
+			groupedChecks: result?.groupedChecks ?? [],
+			groupedUpChecks: result?.groupedUpChecks ?? [],
+			groupedDownChecks: result?.groupedDownChecks ?? [],
+			uptimePercentage,
+			avgResponseTime,
+		};
+	};
+
+	private findHardwareDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
+		const monitorId = monitorObjectId.toHexString();
+		const dates = { start: startDate, end: endDate };
+		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
+			getHardwareAggregateData(monitorId, dates),
+			getHardwareUpChecks(monitorId, dates),
+			getHardwareStats(monitorId, dates, dateString),
+		]);
+
+		const aggregateData = {
+			latestCheck: aggregateDataDoc?.latestCheck ? this.toEntity(aggregateDataDoc.latestCheck as CheckDocument) : null,
+			totalChecks: aggregateDataDoc?.totalChecks ?? 0,
+		};
+
+		const upChecks = {
+			totalChecks: upChecksDoc?.totalChecks ?? 0,
+		};
+
+		const checks = (hardwareMetrics ?? []).map((metric) => ({
+			_id: metric._id,
+			avgCpuUsage: metric.avgCpuUsage ?? 0,
+			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+			avgTemperature: metric.avgTemperature ?? [],
+			disks: (metric.disks ?? []).map((disk: { [key: string]: number | string | undefined }) => ({
+				name: disk?.name ?? "",
+				readSpeed: disk?.readSpeed ?? 0,
+				writeSpeed: disk?.writeSpeed ?? 0,
+				totalBytes: disk?.totalBytes ?? 0,
+				freeBytes: disk?.freeBytes ?? 0,
+				usagePercent: disk?.usagePercent ?? 0,
+			})),
+			net: (metric.net ?? []).map((iface: { [key: string]: number | string | undefined }) => ({
+				name: iface?.name ?? "",
+				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+				deltaErrIn: iface?.deltaErrIn ?? 0,
+				deltaErrOut: iface?.deltaErrOut ?? 0,
+				deltaDropIn: iface?.deltaDropIn ?? 0,
+				deltaDropOut: iface?.deltaDropOut ?? 0,
+				deltaFifoIn: iface?.deltaFifoIn ?? 0,
+				deltaFifoOut: iface?.deltaFifoOut ?? 0,
+			})),
+		}));
+
+		return {
+			monitorType: "hardware" as const,
+			aggregateData,
+			upChecks,
+			checks,
+		};
+	};
+
+	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date) => {
+		const matchStage = {
+			"metadata.monitorId": monitorObjectId,
+			createdAt: { $gte: startDate, $lte: endDate },
+		};
+
+		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
+		return {
+			monitorType: "pagespeed" as const,
+			checks: checks.map((doc) => this.toEntity(doc)),
+		};
 	};
 }
 

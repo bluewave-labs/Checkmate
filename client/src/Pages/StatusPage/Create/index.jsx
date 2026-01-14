@@ -62,7 +62,6 @@ const CreateStatusPage = () => {
 		useStatusPageFetch(isCreate, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
-	console.log(JSON.stringify(form, null, 2));
 	// Handlers
 	const handleFormChange = (e) => {
 		let { type, name, value, checked } = e.target;
@@ -144,6 +143,8 @@ const CreateStatusPage = () => {
 			...form,
 			logo: { type: form.logo?.type ?? null, size: form.logo?.size ?? null },
 		};
+
+		console.log(toSubmit);
 		const { error } = statusPageValidation.validate(toSubmit, {
 			abortEarly: false,
 		});
@@ -205,7 +206,7 @@ const CreateStatusPage = () => {
 				companyName: statusPage?.companyName,
 				isPublished: statusPage?.isPublished,
 				timezone: statusPage?.timezone,
-				monitors: statusPageMonitors.map((monitor) => monitor._id),
+				monitors: statusPageMonitors.map((monitor) => monitor.id),
 				color: statusPage?.color,
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? true,

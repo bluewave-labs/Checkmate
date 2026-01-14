@@ -12,12 +12,18 @@ export interface TeamQueryConfig {
 
 export interface IMonitorsRepository {
 	// create
+	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
+	createBulkMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
+	findById(monitorId: string, teamId?: string): Promise<Monitor | null>;
+
 	// collection fetch
 	findAll(): Promise<Monitor[] | null>;
 	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
 	// update
+	update(monitorId: string, updates: Partial<Monitor>): Promise<Monitor>;
 	// delete
+	deleteByTeamId(teamId: string): Promise<{ monitors: Monitor[]; deletedCount: number }>;
 
 	// counts
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;

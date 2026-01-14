@@ -4,19 +4,20 @@ const SERVICE_NAME = "JobQueue";
 class SuperSimpleQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ envSettings, db, logger, helper }) {
+	constructor({ envSettings, db, logger, helper, monitorsRepository }) {
 		this.envSettings = envSettings;
 		this.db = db;
 		this.logger = logger;
 		this.helper = helper;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
 		return SuperSimpleQueue.SERVICE_NAME;
 	}
 
-	static async create({ envSettings, db, logger, helper }) {
-		const instance = new SuperSimpleQueue({ envSettings, db, logger, helper });
+	static async create({ envSettings, db, logger, helper, monitorsRepository }) {
+		const instance = new SuperSimpleQueue({ envSettings, db, logger, helper, monitorsRepository });
 		await instance.init();
 		return instance;
 	}
@@ -33,11 +34,11 @@ class SuperSimpleQueue {
 			this.scheduler.start();
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
-			const monitors = await this.db.monitorModule.getAllMonitors();
+			const monitors = await this.monitorsRepository.findAll();
 			for (const monitor of monitors) {
 				const randomOffset = Math.floor(Math.random() * 100);
 				setTimeout(() => {
-					this.addJob(monitor._id, monitor);
+					this.addJob(monitor.id, monitor);
 				}, randomOffset);
 			}
 
@@ -55,44 +56,44 @@ class SuperSimpleQueue {
 
 	addJob = async (monitorId, monitor) => {
 		this.scheduler.addJob({
-			id: monitorId.toString(),
+			id: monitorId,
 			template: "monitor-job",
 			repeat: monitor.interval,
 			active: monitor.isActive,
-			data: monitor.toObject(),
+			data: monitor,
 		});
 	};
 
 	deleteJob = async (monitor) => {
-		this.scheduler.removeJob(monitor._id.toString());
+		this.scheduler.removeJob(monitor.id);
 	};
 
 	pauseJob = async (monitor) => {
-		const result = this.scheduler.pauseJob(monitor._id.toString());
+		const result = this.scheduler.pauseJob(monitor.id);
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
 		this.logger.debug({
-			message: `Paused monitor ${monitor._id}`,
+			message: `Paused monitor ${monitor.id}`,
 			service: SERVICE_NAME,
 			method: "pauseJob",
 		});
 	};
 
 	resumeJob = async (monitor) => {
-		const result = this.scheduler.resumeJob(monitor._id.toString());
+		const result = this.scheduler.resumeJob(monitor.id);
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
 		this.logger.debug({
-			message: `Resumed monitor ${monitor._id}`,
+			message: `Resumed monitor ${monitor.id}`,
 			service: SERVICE_NAME,
 			method: "resumeJob",
 		});
 	};
 
 	updateJob = async (monitor) => {
-		this.scheduler.updateJob(monitor._id.toString(), { repeat: monitor.interval, data: monitor.toObject() });
+		this.scheduler.updateJob(monitor.id, { repeat: monitor.interval, data: monitor });
 	};
 
 	shutdown = async () => {

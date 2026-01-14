@@ -6,7 +6,7 @@ import { useMonitorUtils } from "./useMonitorUtils.js";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const useFetchMonitorsWithSummary = ({ types, monitorUpdateTrigger }) => {
+export const useFetchMonitorsWithSummary = ({ types, monitorUpdateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [monitors, setMonitors] = useState(undefined);
 	const [monitorsSummary, setMonitorsSummary] = useState(undefined);
@@ -37,7 +37,7 @@ const useFetchMonitorsWithSummary = ({ types, monitorUpdateTrigger }) => {
 	return [monitors, monitorsSummary, isLoading, networkError];
 };
 
-const useFetchMonitorsWithChecks = ({
+export const useFetchMonitorsWithChecks = ({
 	types,
 	limit,
 	page,
@@ -100,22 +100,9 @@ const useFetchMonitorsWithChecks = ({
 	return [monitors, count, isLoading, networkError];
 };
 
-const useFetchMonitorsByTeamId = ({
-	types,
-	limit,
-	page,
-	rowsPerPage,
-	filter,
-	field,
-	order,
-	checkOrder,
-	normalize,
-	status,
-	updateTrigger,
-}) => {
+export const useFetchMonitorsByTeamId = ({ types, filter, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [monitors, setMonitors] = useState(undefined);
-	const [summary, setSummary] = useState(undefined);
 	const [networkError, setNetworkError] = useState(false);
 
 	useEffect(() => {
@@ -123,20 +110,11 @@ const useFetchMonitorsByTeamId = ({
 			try {
 				setIsLoading(true);
 				const res = await networkService.getMonitorsByTeamId({
-					limit,
 					types,
-					page,
-					rowsPerPage,
 					filter,
-					field,
-					order,
-					checkOrder,
-					status,
-					normalize,
 				});
-				if (res?.data?.data?.filteredMonitors) {
-					setMonitors(res.data.data.filteredMonitors);
-					setSummary(res.data.data.summary);
+				if (res?.data?.data) {
+					setMonitors(res.data.data);
 				}
 			} catch (error) {
 				setNetworkError(true);
@@ -148,23 +126,11 @@ const useFetchMonitorsByTeamId = ({
 			}
 		};
 		fetchMonitors();
-	}, [
-		types,
-		limit,
-		page,
-		rowsPerPage,
-		filter,
-		field,
-		order,
-		updateTrigger,
-		checkOrder,
-		normalize,
-		status,
-	]);
-	return [monitors, summary, isLoading, networkError];
+	}, [types, filter, updateTrigger]);
+	return [monitors, isLoading, networkError];
 };
 
-const useFetchStatsByMonitorId = ({
+export const useFetchStatsByMonitorId = ({
 	monitorId,
 	sortOrder,
 	limit,
@@ -203,7 +169,7 @@ const useFetchStatsByMonitorId = ({
 	return [monitor, audits, isLoading, networkError];
 };
 
-const useFetchMonitorGames = ({ setGames, updateTrigger }) => {
+export const useFetchMonitorGames = ({ setGames, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		const fetchGames = async () => {
@@ -222,7 +188,7 @@ const useFetchMonitorGames = ({ setGames, updateTrigger }) => {
 	return [isLoading];
 };
 
-const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
+export const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		if (typeof monitorId === "undefined") {
@@ -245,7 +211,7 @@ const useFetchMonitorById = ({ monitorId, setMonitor, updateTrigger }) => {
 	return [isLoading];
 };
 
-const useFetchHardwareMonitorById = ({ monitorId, dateRange, updateTrigger }) => {
+export const useFetchHardwareMonitorById = ({ monitorId, dateRange, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [monitor, setMonitor] = useState(undefined);
@@ -271,8 +237,34 @@ const useFetchHardwareMonitorById = ({ monitorId, dateRange, updateTrigger }) =>
 	}, [monitorId, dateRange, updateTrigger]);
 	return [monitor, isLoading, networkError];
 };
+export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigger }) => {
+	const [isLoading, setIsLoading] = useState(true);
+	const [networkError, setNetworkError] = useState(false);
+	const [monitor, setMonitor] = useState(undefined);
 
-const useFetchUptimeMonitorById = ({ monitorId, dateRange, trigger }) => {
+	useEffect(() => {
+		const fetchMonitor = async () => {
+			try {
+				if (!monitorId) {
+					return { monitor: undefined, isLoading: false, networkError: undefined };
+				}
+				const response = await networkService.getPageSpeedDetailsByMonitorId({
+					monitorId: monitorId,
+					dateRange: dateRange,
+				});
+				setMonitor(response.data.data);
+			} catch (error) {
+				setNetworkError(true);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchMonitor();
+	}, [monitorId, dateRange, updateTrigger]);
+	return [monitor, isLoading, networkError];
+};
+
+export const useFetchUptimeMonitorById = ({ monitorId, dateRange, trigger }) => {
 	const [networkError, setNetworkError] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const [monitor, setMonitor] = useState(undefined);
@@ -300,7 +292,7 @@ const useFetchUptimeMonitorById = ({ monitorId, dateRange, trigger }) => {
 	return [monitor, monitorStats, isLoading, networkError];
 };
 
-const useCreateMonitor = () => {
+export const useCreateMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 	const createMonitor = async ({ monitor, redirect }) => {
@@ -320,7 +312,7 @@ const useCreateMonitor = () => {
 	return [createMonitor, isLoading];
 };
 
-const useFetchGlobalSettings = () => {
+export const useFetchGlobalSettings = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [globalSettings, setGlobalSettings] = useState(undefined);
 	useEffect(() => {
@@ -342,7 +334,7 @@ const useFetchGlobalSettings = () => {
 	return [globalSettings, isLoading];
 };
 
-const useDeleteMonitor = () => {
+export const useDeleteMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 	const deleteMonitor = async ({ monitor, redirect }) => {
@@ -363,7 +355,7 @@ const useDeleteMonitor = () => {
 	return [deleteMonitor, isLoading];
 };
 
-const useUpdateMonitor = () => {
+export const useUpdateMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 	const updateMonitor = async ({ monitor, redirect }) => {
@@ -410,7 +402,7 @@ const useUpdateMonitor = () => {
 	return [updateMonitor, isLoading];
 };
 
-const usePauseMonitor = () => {
+export const usePauseMonitor = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(undefined);
 	const pauseMonitor = async ({ monitorId, triggerUpdate }) => {
@@ -433,7 +425,7 @@ const usePauseMonitor = () => {
 	return [pauseMonitor, isLoading, error];
 };
 
-const useAddDemoMonitors = () => {
+export const useAddDemoMonitors = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
 	const addDemoMonitors = async () => {
@@ -450,7 +442,7 @@ const useAddDemoMonitors = () => {
 	return [addDemoMonitors, isLoading];
 };
 
-const useDeleteAllMonitors = () => {
+export const useDeleteAllMonitors = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
 	const deleteAllMonitors = async () => {
@@ -467,7 +459,7 @@ const useDeleteAllMonitors = () => {
 	return [deleteAllMonitors, isLoading];
 };
 
-const useDeleteMonitorStats = () => {
+export const useDeleteMonitorStats = () => {
 	const { t } = useTranslation();
 	const [isLoading, setIsLoading] = useState(false);
 	const deleteMonitorStats = async () => {
@@ -485,7 +477,7 @@ const useDeleteMonitorStats = () => {
 	return [deleteMonitorStats, isLoading];
 };
 
-const useCreateBulkMonitors = () => {
+export const useCreateBulkMonitors = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const createBulkMonitors = async (file, user) => {
@@ -508,7 +500,7 @@ const useCreateBulkMonitors = () => {
 	return [createBulkMonitors, isLoading];
 };
 
-const useExportMonitors = () => {
+export const useExportMonitors = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
 
@@ -541,7 +533,7 @@ const useExportMonitors = () => {
 	return [exportMonitors, isLoading];
 };
 
-const useFetchJson = () => {
+export const useFetchJson = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const fetchJson = async () => {
 		try {
@@ -556,26 +548,4 @@ const useFetchJson = () => {
 		}
 	};
 	return [fetchJson, isLoading];
-};
-
-export {
-	useFetchMonitorsWithSummary,
-	useFetchMonitorsWithChecks,
-	useFetchMonitorsByTeamId,
-	useFetchStatsByMonitorId,
-	useFetchMonitorById,
-	useFetchUptimeMonitorById,
-	useFetchHardwareMonitorById,
-	useCreateMonitor,
-	useFetchGlobalSettings,
-	useDeleteMonitor,
-	useUpdateMonitor,
-	usePauseMonitor,
-	useAddDemoMonitors,
-	useDeleteAllMonitors,
-	useDeleteMonitorStats,
-	useCreateBulkMonitors,
-	useExportMonitors,
-	useFetchMonitorGames,
-	useFetchJson,
 };
