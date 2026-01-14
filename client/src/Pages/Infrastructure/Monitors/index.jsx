@@ -71,7 +71,7 @@ const InfrastructureMonitors = () => {
 
 	const field = toFilterStatus !== undefined ? "status" : undefined;
 
-	const [monitors, count, isLoading, networkError] = useFetchMonitorsWithChecks({
+	const [summary, monitors, count, isLoading, networkError] = useFetchMonitorsWithChecks({
 		types: TYPES,
 		limit: 1,
 		page: page,

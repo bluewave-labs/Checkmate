@@ -26,7 +26,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 import PropTypes from "prop-types";
-import { useFetchMonitorsWithChecks } from "@/Hooks/monitorHooks.js";
+import {
+	useFetchMonitorsWithChecks,
+	useFetchMonitorsByTeamId,
+} from "@/Hooks/monitorHooks.js";
 import { useTranslation } from "react-i18next";
 
 const TYPES = ["http", "ping", "docker", "port", "game"];
@@ -136,6 +139,11 @@ const UptimeMonitors = () => {
 		monitorUpdateTrigger,
 	});
 
+	const [monitors, listIsLoading, listNetworkError] = useFetchMonitorsByTeamId({
+		type: ["http", "ping", "docker", "port", "game"],
+	});
+
+	console.log(monitors);
 	useEffect(() => {
 		if (isSearching) {
 			setPage(undefined);
@@ -149,7 +157,7 @@ const UptimeMonitors = () => {
 			<PageStateWrapper
 				networkError={networkError}
 				isLoading={isLoading}
-				items={monitorsWithChecks}
+				items={monitors}
 				type="uptimeMonitor"
 				fallbackLink="/uptime/create"
 			>
@@ -187,7 +195,7 @@ const UptimeMonitors = () => {
 							handleReset={handleReset}
 						/>
 						<SearchComponent
-							monitors={monitorsWithChecks}
+							monitors={monitors}
 							onSearchChange={setSearch}
 							setIsSearching={setIsSearching}
 						/>

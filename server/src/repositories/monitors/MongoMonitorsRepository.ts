@@ -44,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 5, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
