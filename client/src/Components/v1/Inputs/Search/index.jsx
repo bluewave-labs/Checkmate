@@ -85,7 +85,12 @@ const Search = ({
 	const enhancedOptions = React.useMemo(() => {
 		return multiple && isAdorned
 			? [
-					{ [filteredBy]: t("selectAll"), isSelectAll: true, _id: "select_all", id: "select_all" },
+					{
+						[filteredBy]: t("selectAll"),
+						isSelectAll: true,
+						_id: "select_all",
+						id: "select_all",
+					},
 					...options,
 				]
 			: options;
@@ -145,7 +150,9 @@ const Search = ({
 			disableClearable
 			options={enhancedOptions}
 			getOptionLabel={(option) => option[filteredBy]}
-			isOptionEqualToValue={(option, value) => (option._id ?? option.id) === (value?._id ?? value?.id)} // Compare by unique identifier
+			isOptionEqualToValue={(option, value) =>
+				(option._id ?? option.id) === (value?._id ?? value?.id)
+			} // Compare by unique identifier
 			renderInput={(params) => (
 				<FieldWrapper
 					label={label}

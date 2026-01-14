@@ -55,7 +55,9 @@ const useMaintenanceData = () => {
 		const endTime = dayjs(end);
 		const durationInMs = endTime.diff(startTime, "milliseconds").toString();
 		const { duration, durationUnit } = getDurationAndUnit(durationInMs);
-		const monitor = monitorList.find((monitor) => (monitor._id ?? monitor.id) === monitorId);
+		const monitor = monitorList.find(
+			(monitor) => (monitor._id ?? monitor.id) === monitorId
+		);
 		const maintenanceWindowInformation = {
 			name,
 			repeat: REVERSE_REPEAT_LOOKUP[repeat],
