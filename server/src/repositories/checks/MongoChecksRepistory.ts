@@ -11,6 +11,7 @@ import type {
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
 	CheckTimings,
+	MonitorType,
 } from "@/types/index.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
@@ -177,10 +178,7 @@ class MongoChecksRepistory implements IChecksRepository {
 		};
 	};
 
-	findLatestChecksByMonitorIds = async (
-		monitorIds: string[],
-		options?: { limitPerMonitor?: number }
-	): Promise<LatestChecksMap> => {
+	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
 		if (monitorIds.length === 0) {
 			return {};
 		}
@@ -218,15 +216,24 @@ class MongoChecksRepistory implements IChecksRepository {
 		}, {});
 	};
 
-	findDateRangeChecksByMonitor = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: string }) => {
+	findDateRangeChecksByMonitor = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		if (options?.type === "hardware") {
 			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
 		}
-		return this.findUptimeDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+		if (options?.type === "pagespeed") {
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate);
+		}
+		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
 	};
 
-	private findUptimeDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
+	private findUptimeDateRangeChecks = async (
+		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
+		monitorObjectId: mongoose.Types.ObjectId,
+		startDate: Date,
+		endDate: Date,
+		dateString: string
+	) => {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			updatedAt: { $gte: startDate, $lte: endDate },
@@ -307,7 +314,7 @@ class MongoChecksRepistory implements IChecksRepository {
 		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
 
 		return {
-			monitorType: "uptime" as const,
+			monitorType,
 			groupedChecks: result?.groupedChecks ?? [],
 			groupedUpChecks: result?.groupedUpChecks ?? [],
 			groupedDownChecks: result?.groupedDownChecks ?? [],
@@ -367,6 +374,19 @@ class MongoChecksRepistory implements IChecksRepository {
 			aggregateData,
 			upChecks,
 			checks,
+		};
+	};
+
+	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date) => {
+		const matchStage = {
+			"metadata.monitorId": monitorObjectId,
+			createdAt: { $gte: startDate, $lte: endDate },
+		};
+
+		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
+		return {
+			monitorType: "pagespeed" as const,
+			checks: checks.map((doc) => this.toEntity(doc)),
 		};
 	};
 }

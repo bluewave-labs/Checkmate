@@ -27,6 +27,8 @@ class MonitorRoutes {
 
 		// Hardware routes
 		this.router.get("/hardware/details/:monitorId", this.monitorController.getHardwareDetailsById);
+		// PageSpeed routes
+		this.router.get("/pagespeed/details/:monitorId", this.monitorController.getPageSpeedDetailsById);
 
 		// General monitor routes
 		this.router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.pauseMonitor);

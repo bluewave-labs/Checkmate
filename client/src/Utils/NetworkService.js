@@ -152,7 +152,8 @@ class NetworkService {
 				params.append("type", type);
 			});
 		}
-		if (filter !== undefined && filter !== null && filter !== "") params.append("filter", filter);
+		if (filter !== undefined && filter !== null && filter !== "")
+			params.append("filter", filter);
 
 		return this.axiosInstance.get(`/monitors/team?${params.toString()}`, {
 			headers: {
@@ -195,6 +196,14 @@ class NetworkService {
 
 		return this.axiosInstance.get(
 			`/monitors/hardware/details/${config.monitorId}?${params.toString()}`
+		);
+	}
+	async getPageSpeedDetailsByMonitorId(config) {
+		const params = new URLSearchParams();
+		if (config.dateRange) params.append("dateRange", config.dateRange);
+
+		return this.axiosInstance.get(
+			`/monitors/pagespeed/details/${config.monitorId}?${params.toString()}`
 		);
 	}
 	async getUptimeDetailsById(config) {

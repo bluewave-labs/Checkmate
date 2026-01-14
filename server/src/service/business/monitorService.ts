@@ -24,6 +24,7 @@ export interface IMonitorService {
 	// read
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<any>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<any>;
+	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<any>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -268,7 +269,13 @@ export class MonitorService implements IMonitorService {
 		});
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
-		if (checksData.monitorType !== "uptime") {
+		if (
+			checksData.monitorType !== "http" &&
+			checksData.monitorType !== "ping" &&
+			checksData.monitorType !== "docker" &&
+			checksData.monitorType !== "port" &&
+			checksData.monitorType !== "game"
+		) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
 
@@ -317,6 +324,30 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 
+	getPageSpeedDetailsById = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
+		await this.verifyTeamAccess({ teamId, monitorId });
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		if (monitor.type !== "pagespeed") {
+			throw new AppError({ message: `${monitor.type} monitors are not supported for pagespeed details`, status: 400 });
+		}
+
+		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const { start, end } = this.getDateRange(rangeKey);
+		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(monitor.id, start, end, this.getDateFormat(rangeKey), {
+			type: monitor.type,
+		});
+
+		if (checksData.monitorType !== "pagespeed") {
+			throw new AppError({ message: "Unable to load pagespeed stats for this monitor", status: 500 });
+		}
+		return {
+			...monitor,
+			checks: checksData.checks,
+		};
+	};
 	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
 		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
