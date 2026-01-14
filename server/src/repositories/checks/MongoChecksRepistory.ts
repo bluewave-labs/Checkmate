@@ -187,6 +187,7 @@ class MongoChecksRepistory implements IChecksRepository {
 		const maxIntervalMs = Number(10 * 60 * 1000);
 		const bufferMs = Number(maxIntervalMs);
 		const lookbackMs = limitPerMonitor * maxIntervalMs + bufferMs;
+
 		const cutoffDate = new Date(Date.now() - lookbackMs);
 		const checkGroups = await CheckModel.aggregate([
 			{
