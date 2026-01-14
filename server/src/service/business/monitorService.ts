@@ -269,12 +269,7 @@ export class MonitorService implements IMonitorService {
 		}
 		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
 		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(
-			monitorId: monitor.id,
-			startDate: start,
-			endDate: end,
-			dateString: this.getDateFormat(rangeKey),
-		);
+		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(monitor.id, start, end, this.getDateFormat(rangeKey));
 		const monitorStats = await this.db.monitorModule.getMonitorStatsById({
 			monitorId,
 		});
