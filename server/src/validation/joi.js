@@ -134,18 +134,6 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	order: joi.string().valid("asc", "desc"),
 });
 
-const getMonitorStatsByIdParamValidation = joi.object({
-	monitorId: joi.string().required(),
-});
-const getMonitorStatsByIdQueryValidation = joi.object({
-	status: joi.string(),
-	limit: joi.number(),
-	sortOrder: joi.string().valid("asc", "desc"),
-	dateRange: joi.string().valid("hour", "day", "week", "month", "all"),
-	numToDisplay: joi.number(),
-	normalize: joi.boolean(),
-});
-
 const getCertificateParamValidation = joi.object({
 	monitorId: joi.string().required(),
 });
@@ -725,8 +713,6 @@ export {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdParamValidation,
 	getMonitorsByTeamIdQueryValidation,
-	getMonitorStatsByIdParamValidation,
-	getMonitorStatsByIdQueryValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	getCertificateParamValidation,

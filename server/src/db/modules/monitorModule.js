@@ -253,48 +253,6 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorStatsById = async ({ monitorId, sortOrder, dateRange, numToDisplay, normalize }) => {
-		try {
-			// Get monitor, if we can't find it, abort with error
-			const monitor = await this.Monitor.findById(monitorId);
-			if (monitor === null || monitor === undefined) {
-				throw new Error(this.stringService.getDbFindMonitorById(monitorId));
-			}
-
-			// Get query params
-			const sort = sortOrder === "asc" ? 1 : -1;
-
-			// Get Checks for monitor in date range requested
-			const dates = this.getDateRange(dateRange);
-			const { checksAll, checksForDateRange } = await this.getMonitorChecks(monitorId, dates, sort);
-
-			// Build monitor stats
-			const monitorStats = {
-				...monitor.toObject(),
-				uptimeDuration: this.calculateUptimeDuration(checksAll),
-				lastChecked: this.getLastChecked(checksAll),
-				latestResponseTime: this.getLatestResponseTime(checksAll),
-				periodIncidents: this.getIncidents(checksForDateRange),
-				periodTotalChecks: checksForDateRange.length,
-				checks: this.processChecksForDisplay(this.NormalizeData, checksForDateRange, numToDisplay, normalize),
-			};
-
-			if (monitor.type === "http" || monitor.type === "ping" || monitor.type === "docker" || monitor.type === "port" || monitor.type === "game") {
-				// HTTP/PING Specific stats
-				monitorStats.periodAvgResponseTime = this.getAverageResponseTime(checksForDateRange);
-				monitorStats.periodUptime = this.getUptimePercentage(checksForDateRange);
-				const groupedChecks = this.groupChecksByTime(checksForDateRange, dateRange);
-				monitorStats.aggregateData = Object.values(groupedChecks).map(this.calculateGroupStats);
-			}
-
-			return monitorStats;
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "getMonitorStatsById";
-			throw error;
-		}
-	};
-
 	getHardwareDetailsById = async ({ monitorId, dateRange }) => {
 		try {
 			const monitor = await this.Monitor.findById(monitorId);

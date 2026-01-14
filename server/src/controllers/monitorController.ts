@@ -8,8 +8,6 @@ import {
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
-	getMonitorStatsByIdParamValidation,
-	getMonitorStatsByIdQueryValidation,
 	getCertificateParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
@@ -84,39 +82,6 @@ class MonitorController {
 				success: true,
 				msg: "Uptime details retrieved successfully",
 				data: data,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
-	getMonitorStatsById = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await getMonitorStatsByIdParamValidation.validateAsync(req.params);
-			await getMonitorStatsByIdQueryValidation.validateAsync(req.query);
-
-			let { limit, sortOrder, dateRange, numToDisplay, normalize } = req.query;
-			const monitorId = req?.params?.monitorId;
-
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
-			const monitorStats = await this.monitorService.getMonitorStatsById({
-				teamId,
-				monitorId,
-				limit,
-				sortOrder,
-				dateRange,
-				numToDisplay,
-				normalize,
-			});
-
-			return res.status(200).json({
-				success: true,
-				msg: "Monitor stats retrieved successfully",
-				data: monitorStats,
 			});
 		} catch (error) {
 			next(error);

@@ -14,6 +14,11 @@ import type {
 } from "@/types/index.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
+import {
+	getAggregateData as getHardwareAggregateData,
+	getHardwareStats,
+	getUpChecks as getHardwareUpChecks,
+} from "@/db/modules/monitorModuleQueries.js";
 
 export type LatestChecksMap = Record<string, Check[]>;
 
@@ -210,20 +215,17 @@ class MongoChecksRepistory implements IChecksRepository {
 		}, {});
 	};
 
-	findDateRangeChecksByMonitor = async (
-		monitorId: string,
-		startDate: Date,
-		endDate: Date,
-		dateString: string
-	): Promise<{
-		groupedChecks: Array<{ _id: string; avgResponseTime: number; totalChecks: number }>;
-		groupedUpChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
-		groupedDownChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
-		uptimePercentage: number;
-		avgResponseTime: number;
-	}> => {
+	findDateRangeChecksByMonitor = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: string }) => {
+		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		if (options?.type === "hardware") {
+			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+		}
+		return this.findUptimeDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+	};
+
+	private findUptimeDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
 		const matchStage = {
-			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			"metadata.monitorId": monitorObjectId,
 			updatedAt: { $gte: startDate, $lte: endDate },
 		};
 		const [result] = await CheckModel.aggregate([
@@ -296,17 +298,72 @@ class MongoChecksRepistory implements IChecksRepository {
 					],
 				},
 			},
-		]).exec();
+		]);
 
 		const uptimePercentage = result?.uptimePercentage?.[0]?.percentage ?? 0;
 		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
 
 		return {
+			monitorType: "uptime" as const,
 			groupedChecks: result?.groupedChecks ?? [],
 			groupedUpChecks: result?.groupedUpChecks ?? [],
 			groupedDownChecks: result?.groupedDownChecks ?? [],
 			uptimePercentage,
 			avgResponseTime,
+		};
+	};
+
+	private findHardwareDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
+		const monitorId = monitorObjectId.toHexString();
+		const dates = { start: startDate, end: endDate };
+		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
+			getHardwareAggregateData(monitorId, dates),
+			getHardwareUpChecks(monitorId, dates),
+			getHardwareStats(monitorId, dates, dateString),
+		]);
+
+		const aggregateData = {
+			latestCheck: aggregateDataDoc?.latestCheck ? this.toEntity(aggregateDataDoc.latestCheck as CheckDocument) : null,
+			totalChecks: aggregateDataDoc?.totalChecks ?? 0,
+		};
+
+		const upChecks = {
+			totalChecks: upChecksDoc?.totalChecks ?? 0,
+		};
+
+		const checks = (hardwareMetrics ?? []).map((metric) => ({
+			_id: metric._id,
+			avgCpuUsage: metric.avgCpuUsage ?? 0,
+			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+			avgTemperature: metric.avgTemperature ?? [],
+			disks: (metric.disks ?? []).map((disk: { [key: string]: number | string | undefined }) => ({
+				name: disk?.name ?? "",
+				readSpeed: disk?.readSpeed ?? 0,
+				writeSpeed: disk?.writeSpeed ?? 0,
+				totalBytes: disk?.totalBytes ?? 0,
+				freeBytes: disk?.freeBytes ?? 0,
+				usagePercent: disk?.usagePercent ?? 0,
+			})),
+			net: (metric.net ?? []).map((iface: { [key: string]: number | string | undefined }) => ({
+				name: iface?.name ?? "",
+				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+				deltaErrIn: iface?.deltaErrIn ?? 0,
+				deltaErrOut: iface?.deltaErrOut ?? 0,
+				deltaDropIn: iface?.deltaDropIn ?? 0,
+				deltaDropOut: iface?.deltaDropOut ?? 0,
+				deltaFifoIn: iface?.deltaFifoIn ?? 0,
+				deltaFifoOut: iface?.deltaFifoOut ?? 0,
+			})),
+		}));
+
+		return {
+			monitorType: "hardware" as const,
+			aggregateData,
+			upChecks,
+			checks,
 		};
 	};
 }

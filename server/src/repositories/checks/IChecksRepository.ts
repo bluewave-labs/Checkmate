@@ -1,3 +1,4 @@
+import type { Check, MonitorType } from "@/types/index.js";
 import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory.js";
 
 export interface IChecksRepository {
@@ -6,12 +7,53 @@ export interface IChecksRepository {
 		monitorId: string,
 		startDate: Date,
 		endDate: Date,
-		dateString: string
-	): Promise<{
-		groupedChecks: Array<{ _id: string; avgResponseTime: number; totalChecks: number }>;
-		groupedUpChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
-		groupedDownChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
-		uptimePercentage: number;
-		avgResponseTime: number;
-	}>;
+		dateString: string,
+		options?: { type?: MonitorType }
+	): Promise<
+		| {
+				monitorType: "uptime";
+				groupedChecks: Array<{ _id: string; avgResponseTime: number; totalChecks: number }>;
+				groupedUpChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+				groupedDownChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+				uptimePercentage: number;
+				avgResponseTime: number;
+		  }
+		| {
+				monitorType: "hardware";
+				aggregateData: {
+					latestCheck: Check | null;
+					totalChecks: number;
+				};
+				upChecks: {
+					totalChecks: number;
+				};
+				checks: Array<{
+					_id: string;
+					avgCpuUsage: number;
+					avgMemoryUsage: number;
+					avgTemperature: number[];
+					disks: Array<{
+						name: string;
+						readSpeed: number;
+						writeSpeed: number;
+						totalBytes: number;
+						freeBytes: number;
+						usagePercent: number;
+					}>;
+					net: Array<{
+						name: string;
+						bytesSentPerSecond: number;
+						deltaBytesRecv: number;
+						deltaPacketsSent: number;
+						deltaPacketsRecv: number;
+						deltaErrIn: number;
+						deltaErrOut: number;
+						deltaDropIn: number;
+						deltaDropOut: number;
+						deltaFifoIn: number;
+						deltaFifoOut: number;
+					}>;
+				}>;
+		  }
+	>;
 }

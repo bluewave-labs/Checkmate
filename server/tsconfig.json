@@ -12,7 +12,8 @@
 		"module": "nodenext",
 		"moduleResolution": "nodenext",
 		"skipLibCheck": true,
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"isolatedModules": true
 	},
 	"include": ["src"],
 	"exclude": ["tests", "dist", "node_modules"]

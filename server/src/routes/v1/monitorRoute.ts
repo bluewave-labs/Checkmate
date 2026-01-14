@@ -30,7 +30,6 @@ class MonitorRoutes {
 
 		// General monitor routes
 		this.router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.pauseMonitor);
-		this.router.get("/stats/:monitorId", this.monitorController.getMonitorStatsById);
 
 		// Util routes
 		this.router.get("/certificate/:monitorId", (req, res, next) => {

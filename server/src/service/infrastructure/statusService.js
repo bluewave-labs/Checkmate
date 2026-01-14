@@ -7,10 +7,14 @@ class StatusService {
 
 	/**
 	 * @param {{
+	 *  db: any
+	 *  logger: any
 	 *  buffer: import("./bufferService.js").BufferService
 	 *  incidentService: import("../business/incidentService.js").IncidentService
+	 *  monitorsRepository: any
 	 * }}
-	 */ constructor({ db, logger, buffer, incidentService, monitorsRepository }) {
+	 */
+	constructor({ db, logger, buffer, incidentService, monitorsRepository }) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
