@@ -24,7 +24,7 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 
 MonitorListItem.propTypes = {
 	monitor: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
+		id: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 	}).isRequired,
 	onDelete: PropTypes.func.isRequired,
@@ -33,7 +33,7 @@ MonitorListItem.propTypes = {
 const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 	const onDelete = (monitorToDelete) => {
 		const newMonitors = selectedMonitors.filter(
-			(monitor) => monitor._id !== monitorToDelete._id
+			(monitor) => monitor.id !== monitorToDelete.id
 		);
 		setSelectedMonitors(newMonitors);
 	};
@@ -47,7 +47,7 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 		>
 			{selectedMonitors?.map((monitor) => (
 				<MonitorListItem
-					key={monitor._id}
+					key={monitor.id}
 					monitor={monitor}
 					onDelete={onDelete}
 				/>
@@ -59,7 +59,7 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 MonitorList.propTypes = {
 	selectedMonitors: PropTypes.arrayOf(
 		PropTypes.shape({
-			_id: PropTypes.string.isRequired,
+			id: PropTypes.string.isRequired,
 			name: PropTypes.string.isRequired,
 		})
 	).isRequired,

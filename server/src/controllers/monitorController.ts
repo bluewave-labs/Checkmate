@@ -5,6 +5,7 @@ import {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdParamValidation,
 	getMonitorsByTeamIdQueryValidation,
+	getMonitorsWithChecksQueryValidation,
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
@@ -317,10 +318,10 @@ class MonitorController {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
 
-			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;
+			const { type, filter } = req.query;
 			const teamId = req?.user?.teamId;
 
-			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, limit, type, page, rowsPerPage, filter, field, order });
+			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, type, filter });
 
 			return res.status(200).json({
 				success: true,
@@ -358,7 +359,7 @@ class MonitorController {
 	getMonitorsWithChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
-			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
+			await getMonitorsWithChecksQueryValidation.validateAsync(req.query);
 
 			const explain = req?.query?.explain;
 			let { limit, type, page, rowsPerPage, filter, field, order } = req.query;

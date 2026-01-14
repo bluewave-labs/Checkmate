@@ -289,47 +289,33 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorsByTeamId = async ({ limit, type, page, rowsPerPage, filter, field, order, teamId }) => {
-		limit = parseInt(limit);
-		page = parseInt(page);
-		rowsPerPage = parseInt(rowsPerPage);
-		if (field === undefined) {
-			field = "name";
-			order = "asc";
-		}
-		// Build match stage
-		const matchStage = { teamId: new this.ObjectId(teamId) };
-		if (type !== undefined) {
-			matchStage.type = Array.isArray(type) ? { $in: type } : type;
-		}
-
-		const summaryResult = await this.Monitor.aggregate(buildMonitorSummaryByTeamIdPipeline({ matchStage }));
-		const summary = summaryResult[0];
-
-		const monitors = await this.Monitor.aggregate(buildMonitorsByTeamIdPipeline({ matchStage, field, order }));
-
-		const filteredMonitors = await this.Monitor.aggregate(
-			buildFilteredMonitorsByTeamIdPipeline({
-				matchStage,
-				filter,
-				page,
-				rowsPerPage,
-				field,
-				order,
-				limit,
-				type,
-			})
-		);
-
-		const normalizedFilteredMonitors = filteredMonitors.map((monitor) => {
-			if (!monitor.checks) {
-				return monitor;
+	getMonitorsByTeamId = async ({ teamId, type, filter }) => {
+		try {
+			const matchStage = { teamId: new this.ObjectId(teamId) };
+			if (type !== undefined) {
+				matchStage.type = Array.isArray(type) ? { $in: type } : type;
 			}
-			monitor.checks = this.NormalizeData(monitor.checks, 10, 100);
-			return monitor;
-		});
-
-		return { summary, monitors, filteredMonitors: normalizedFilteredMonitors };
+			if (filter !== undefined && filter !== null && filter !== "") {
+				matchStage.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
+			}
+			const monitors = await this.Monitor.find(matchStage)
+				.sort({ name: 1 })
+				.select({
+					_id: 1,
+					name: 1,
+					type: 1,
+					url: 1,
+					status: 1,
+					isActive: 1,
+					teamId: 1,
+				})
+				.lean();
+			return monitors;
+		} catch (error) {
+			error.service = SERVICE_NAME;
+			error.method = "getMonitorsByTeamId";
+			throw error;
+		}
 	};
 
 	getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {

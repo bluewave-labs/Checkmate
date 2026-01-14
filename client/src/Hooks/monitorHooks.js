@@ -100,22 +100,9 @@ const useFetchMonitorsWithChecks = ({
 	return [monitors, count, isLoading, networkError];
 };
 
-const useFetchMonitorsByTeamId = ({
-	types,
-	limit,
-	page,
-	rowsPerPage,
-	filter,
-	field,
-	order,
-	checkOrder,
-	normalize,
-	status,
-	updateTrigger,
-}) => {
+const useFetchMonitorsByTeamId = ({ types, filter, updateTrigger }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [monitors, setMonitors] = useState(undefined);
-	const [summary, setSummary] = useState(undefined);
 	const [networkError, setNetworkError] = useState(false);
 
 	useEffect(() => {
@@ -123,20 +110,11 @@ const useFetchMonitorsByTeamId = ({
 			try {
 				setIsLoading(true);
 				const res = await networkService.getMonitorsByTeamId({
-					limit,
 					types,
-					page,
-					rowsPerPage,
 					filter,
-					field,
-					order,
-					checkOrder,
-					status,
-					normalize,
 				});
-				if (res?.data?.data?.filteredMonitors) {
-					setMonitors(res.data.data.filteredMonitors);
-					setSummary(res.data.data.summary);
+				if (res?.data?.data) {
+					setMonitors(res.data.data);
 				}
 			} catch (error) {
 				setNetworkError(true);
@@ -150,18 +128,10 @@ const useFetchMonitorsByTeamId = ({
 		fetchMonitors();
 	}, [
 		types,
-		limit,
-		page,
-		rowsPerPage,
 		filter,
-		field,
-		order,
 		updateTrigger,
-		checkOrder,
-		normalize,
-		status,
 	]);
-	return [monitors, summary, isLoading, networkError];
+	return [monitors, isLoading, networkError];
 };
 
 const useFetchStatsByMonitorId = ({

@@ -323,34 +323,10 @@ export class MonitorService implements IMonitorService {
 		return monitor;
 	};
 
-	getMonitorsByTeamId = async ({
-		teamId,
-		limit,
-		type,
-		page,
-		rowsPerPage,
-		filter,
-		field,
-		order,
-	}: {
-		teamId: string;
-		limit?: number;
-		type?: string | string[];
-		page?: number;
-		rowsPerPage?: number;
-		filter?: string;
-		field?: string;
-		order?: "asc" | "desc";
-	}): Promise<any> => {
-		const monitors = await this.db.monitorModule.getMonitorsByTeamId({
-			limit,
+	getMonitorsByTeamId = async ({ teamId, type, filter }: { teamId: string; type?: MonitorType | MonitorType[]; filter?: string }): Promise<any> => {
+		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			type,
-			page,
-			rowsPerPage,
 			filter,
-			field,
-			order,
-			teamId,
 		});
 		return monitors;
 	};

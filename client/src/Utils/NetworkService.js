@@ -144,20 +144,15 @@ class NetworkService {
 	 */
 
 	async getMonitorsByTeamId(config) {
-		const { limit, types, page, rowsPerPage, filter, field, order } = config;
+		const { types, filter } = config ?? {};
 		const params = new URLSearchParams();
 
-		if (limit) params.append("limit", limit);
 		if (types) {
 			types.forEach((type) => {
 				params.append("type", type);
 			});
 		}
-		if (page) params.append("page", page);
-		if (rowsPerPage) params.append("rowsPerPage", rowsPerPage);
-		if (filter) params.append("filter", filter);
-		if (field) params.append("field", field);
-		if (order) params.append("order", order);
+		if (filter !== undefined && filter !== null && filter !== "") params.append("filter", filter);
 
 		return this.axiosInstance.get(`/monitors/team?${params.toString()}`, {
 			headers: {

@@ -43,7 +43,7 @@ const MonitorListItem = ({
 const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 	const onDelete = (monitorToDelete) => {
 		const newMonitors = selectedMonitors.filter(
-			(monitor) => monitor._id !== monitorToDelete._id
+			(monitor) => monitor.id !== monitorToDelete.id
 		);
 		setSelectedMonitors(newMonitors);
 	};
@@ -80,8 +80,8 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 					>
 						{selectedMonitors?.map((monitor, index) => (
 							<Draggable
-								key={monitor._id}
-								draggableId={monitor._id}
+								key={monitor.id}
+								draggableId={monitor.id}
 								index={index}
 							>
 								{(provided, snapshot) => (

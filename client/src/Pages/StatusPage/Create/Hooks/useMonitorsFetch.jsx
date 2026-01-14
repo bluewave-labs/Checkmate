@@ -16,7 +16,7 @@ const useMonitorsFetch = () => {
 					limit: null, // donot return any checks for the monitors
 					types: ["http", "ping", "port", "game"], // include game servers in status page monitor selection
 				});
-				setMonitors(response.data.data.monitors);
+				setMonitors(response.data.data);
 			} catch (error) {
 				setNetworkError(true);
 				createToast({ body: error.message });

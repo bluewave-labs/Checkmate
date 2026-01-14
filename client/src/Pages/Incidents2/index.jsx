@@ -34,7 +34,7 @@ const Incidents2 = () => {
 		setUpdateTrigger((prev) => !prev);
 	};
 
-	const [monitors, , isLoadingMonitors, monitorsNetworkError] = useFetchMonitorsByTeamId(
+	const [monitors, isLoadingMonitors, monitorsNetworkError] = useFetchMonitorsByTeamId(
 		{}
 	);
 
