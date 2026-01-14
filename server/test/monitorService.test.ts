@@ -213,6 +213,5 @@ describe("MonitorService", () => {
 				})
 			);
 		});
-
 	});
 });
