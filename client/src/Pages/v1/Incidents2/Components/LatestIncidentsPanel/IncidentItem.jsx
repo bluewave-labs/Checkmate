@@ -2,40 +2,16 @@ import PropTypes from "prop-types";
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
-import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
 import Monitors from "@/assets/icons/monitors.svg?react";
 import AverageResponseIcon from "@/assets/icons/status-pages.svg?react";
 import { useTranslation } from "react-i18next";
+import useGetIncidentsDuration from "../../hooks/useGetIncidentsDuration";
 
 const IncidentItem = ({ incident }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isActive = incident.status === true;
-	const calculateDuration = () => {
-		if (!incident.startTime) {
-			return "-";
-		}
-		const startTime = new Date(incident.startTime);
-		const endTime = isActive
-			? new Date()
-			: incident.endTime
-				? new Date(incident.endTime)
-				: null;
-
-		if (!endTime) {
-			return "-";
-		}
-
-		const durationMs = endTime.getTime() - startTime.getTime();
-
-		if (durationMs < 0) {
-			return "-";
-		}
-
-		return getHumanReadableDuration(durationMs);
-	};
-
-	const duration = calculateDuration();
+	const duration = useGetIncidentsDuration(incident, isActive);
 	const iconWrapperStyle = {
 		px: theme.spacing(2),
 		display: "flex",

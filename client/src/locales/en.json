@@ -1193,6 +1193,16 @@
 		"incidentsOptionsHeaderFilterResolved": "Resolved",
 		"incidentsTableResolved": "Closed",
 		"incidentsTableActionResolveManually": "Resolve Manually",
-		"hours": "hours"
+		"incidentsTableActionDetails": "Details",
+		"incidentsTableActionGoToMonitor": "Go to monitor",
+		"resolveIncidentDialogTitle": "Resolve Incident",
+		"resolveIncidentDialogDescription": "Are you sure you want to resolve this incident manually?",
+		"resolveIncidentDialogCommentLabel": "Comment (optional)",
+		"resolveIncidentDialogCommentPlaceholder": "Add a comment about the resolution...",
+		"resolveIncidentDialogConfirm": "Resolve",
+		"hours": "hours",
+		"loading": "Loading incident details...",
+		"incidentNotFound": "Incident not found",
+		"incidentDetails": "Incident Details"
 	}
 }
