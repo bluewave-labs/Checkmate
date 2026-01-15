@@ -2,7 +2,10 @@ import { Schema, model, type Types } from "mongoose";
 import type { StatusPage, StatusPageLogo } from "@/types/statusPage.js";
 import { StatusPageTypes } from "@/types/statusPage.js";
 
-type StatusPageDocumentBase = Omit<StatusPage, "id" | "userId" | "teamId" | "monitors" | "subMonitors" | "originalMonitors" | "createdAt" | "updatedAt"> & {
+type StatusPageDocumentBase = Omit<
+	StatusPage,
+	"id" | "userId" | "teamId" | "monitors" | "subMonitors" | "originalMonitors" | "createdAt" | "updatedAt"
+> & {
 	monitors: Types.ObjectId[];
 	subMonitors: Types.ObjectId[];
 	originalMonitors?: Types.ObjectId[];
