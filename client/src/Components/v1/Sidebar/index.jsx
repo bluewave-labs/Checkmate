@@ -84,7 +84,7 @@ const Sidebar = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	// Redux state
-	const collapsed = useSelector((state) => state.ui.sidebar.collapsed);
+	const collapsed = useSelector((state) => state.ui.sidebar?.collapsed ?? false);
 
 	const menu = getMenu(t);
 	const otherMenuItems = getOtherMenuItems(t);

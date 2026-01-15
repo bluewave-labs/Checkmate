@@ -1,8 +1,9 @@
-import { Grid, Grid2 } from "@mui/material";
+import { Grid } from "@mui/material";
 import Card from "../Card/index.jsx";
 
-const MonitorGrid = ({ shouldRender, monitors }) => {
-	console.log(monitors);
+const MonitorGrid = ({ monitors, shouldRender = true }) => {
+	if (!shouldRender) return null;
+
 	return (
 		<Grid
 			container
@@ -11,7 +12,7 @@ const MonitorGrid = ({ shouldRender, monitors }) => {
 			{monitors?.map((monitor) => (
 				<Card
 					monitor={monitor}
-					key={monitor._id}
+					key={monitor._id || monitor.id}
 				/>
 			))}
 		</Grid>
