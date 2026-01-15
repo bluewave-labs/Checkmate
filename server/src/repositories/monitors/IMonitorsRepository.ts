@@ -29,6 +29,7 @@ export interface IMonitorsRepository {
 	updateById(monitorId: string, updates: Partial<Monitor>): Promise<Monitor>;
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
 	// delete
+	deleteById(monitorId: string, teamId: string): Promise<Monitor>;
 	deleteByTeamId(teamId: string): Promise<{ monitors: Monitor[]; deletedCount: number }>;
 
 	// counts

@@ -52,10 +52,10 @@ export interface IMonitorService {
 
 	// update
 	editMonitor(args: { teamId: string; monitorId: string; body: Monitor }): Promise<Monitor>;
-	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<any>;
+	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
-	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<any>;
+	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	deleteAllMonitors(args: { teamId: string }): Promise<number>;
 
 	// other
@@ -435,18 +435,18 @@ export class MonitorService implements IMonitorService {
 		return editedMonitor;
 	};
 
-	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
+	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitor = await this.monitorsRepository.togglePauseById(monitorId, teamId);
 		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor) : await this.jobQueue.pauseJob(monitor);
 		return monitor;
 	};
 
-	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
+	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.monitorModule.deleteMonitor({ teamId, monitorId });
+		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
 		await this.jobQueue.deleteJob(monitor);
-		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor._id);
+		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor.id);
 		return monitor;
 	};
 

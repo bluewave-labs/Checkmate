@@ -131,6 +131,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(monitor);
 	};
 
+	deleteById = async (monitorId: string, teamId: string) => {
+		const deletedMonitor = await MonitorModel.findOneAndDelete({ _id: monitorId, teamId });
+
+		if (!deletedMonitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found for the given team.`, status: 404 });
+		}
+
+		return this.toEntity(deletedMonitor);
+	};
+
 	deleteByTeamId = async (teamId: string) => {
 		const monitors = await MonitorModel.find({ teamId });
 		const { deletedCount } = await MonitorModel.deleteMany({ teamId });
