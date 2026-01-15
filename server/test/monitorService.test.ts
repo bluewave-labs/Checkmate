@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import { MonitorService } from "../src/service/business/monitorService.ts";
-import type {
-	IChecksRepository,
-	IMonitorStatsRepository,
-	IMonitorsRepository,
-	IStatusPagesRepository,
-} from "../src/repositories/index.ts";
+import type { IChecksRepository, IMonitorStatsRepository, IMonitorsRepository, IStatusPagesRepository } from "../src/repositories/index.ts";
 
 const createMonitorsRepositoryMock = () =>
 	({
@@ -89,17 +84,17 @@ describe("MonitorService", () => {
 				{ id: "m2", name: "Monitor 2", interval: 60000 },
 			]);
 
-		const checksRepository = createChecksRepositoryMock();
-		(checksRepository.findLatestChecksByMonitorIds as jest.Mock).mockResolvedValue({
-			m1: [
+			const checksRepository = createChecksRepositoryMock();
+			(checksRepository.findLatestChecksByMonitorIds as jest.Mock).mockResolvedValue({
+				m1: [
 					{ responseTime: 10, status: true, message: "OK" },
 					{ responseTime: 20, status: true, message: "OK" },
 				],
 				m2: [{ responseTime: 50, status: true, message: "OK" }],
 			});
 
-		const service = createService({ monitorsRepository, checksRepository });
-		const result = await service.getMonitorsWithChecksByTeamId({ teamId: "team" });
+			const service = createService({ monitorsRepository, checksRepository });
+			const result = await service.getMonitorsWithChecksByTeamId({ teamId: "team" });
 
 			expect(result).toMatchObject({ count: 2 });
 			expect(result.monitors).toHaveLength(2);
