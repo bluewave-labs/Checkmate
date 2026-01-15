@@ -265,7 +265,7 @@ class StatusPageModule {
 
 			const normalizedMonitors = monitors.map((monitor) => {
 				const normalizedChecks = this.NormalizeData(monitor.checks, 10, 100);
-				if (showURL !== true) {
+				if (!showURL) {
 					const { url, port, secret, notifications, ...rest } = monitor;
 					return { ...rest, checks: normalizedChecks };
 				}
