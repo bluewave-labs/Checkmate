@@ -1,0 +1,31 @@
+import { Request, Response, NextFunction } from "express";
+
+const SERVICE_NAME = "diagnosticController";
+class DiagnosticController {
+	static SERVICE_NAME = SERVICE_NAME;
+
+	private diagnosticService: any;
+
+	constructor(diagnosticService: any) {
+		this.diagnosticService = diagnosticService;
+	}
+
+	get serviceName() {
+		return DiagnosticController.SERVICE_NAME;
+	}
+
+	getSystemStats = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const diagnostics = await this.diagnosticService.getSystemStats();
+			return res.status(200).json({
+				success: true,
+				msg: "OK",
+				data: diagnostics,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+}
+
+export default DiagnosticController;

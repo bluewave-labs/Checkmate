@@ -1,5 +1,5 @@
 {
-	"ignore": ["src/locales/*", "*.log", "node_modules/*"],
+	"ignore": ["node_modules/*"],
 	"watch": ["src/**/*.ts", "src/**/*.js", "*.json"],
 	"ext": "ts,js,json"
 }
