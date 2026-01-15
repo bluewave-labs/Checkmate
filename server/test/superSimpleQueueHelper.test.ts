@@ -2,7 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import SuperSimpleQueueHelper from "../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
 import type { Monitor } from "../src/types/monitor.ts";
 
-const createLogger = () => ({ info: jest.fn(), error: jest.fn(), warn: jest.fn() });
+const createLogger = () => ({ info: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() });
 
 const createHelper = (overrides?: Partial<ConstructorParameters<typeof SuperSimpleQueueHelper>[0]>) => {
 	const maintenanceWindowModule = {
@@ -27,7 +27,7 @@ describe("SuperSimpleQueueHelper", () => {
 			const job = helper.getMonitorJob();
 			await job({ id: "m1", teamId: "team", interval: 60000 } as Monitor);
 			expect(helper["networkService"].requestStatus).not.toHaveBeenCalled();
-			expect(helper["logger"].info).toHaveBeenCalledWith(
+			expect(helper["logger"].debug).toHaveBeenCalledWith(
 				expect.objectContaining({ message: expect.stringContaining("Monitor m1 is in maintenance window") })
 			);
 			spy.mockRestore();

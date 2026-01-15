@@ -1,11 +1,30 @@
+import { IMonitorsRepository } from "@/repositories/index.js";
 import MonitorStats from "../../db/models/MonitorStats.js";
 import { CheckModel } from "@/db/models/index.js";
+import type { Monitor } from "@/types/index.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
 	static SERVICE_NAME = SERVICE_NAME;
+	private db: any;
+	private logger: any;
+	private buffer: any;
+	private incidentService: any;
+	private monitorsRepository: IMonitorsRepository;
 
-	constructor({ db, logger, buffer, incidentService, monitorsRepository }) {
+	constructor({
+		db,
+		logger,
+		buffer,
+		incidentService,
+		monitorsRepository,
+	}: {
+		db: any;
+		logger: any;
+		buffer: any;
+		incidentService: any;
+		monitorsRepository: IMonitorsRepository;
+	}) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
@@ -17,7 +36,7 @@ class StatusService {
 		return StatusService.SERVICE_NAME;
 	}
 
-	async updateRunningStats({ monitor, networkResponse }) {
+	async updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }) {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
@@ -78,9 +97,9 @@ class StatusService {
 
 			await stats.save();
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				message: error.message,
 				method: "updateRunningStats",
 				stack: error.stack,
@@ -89,23 +108,13 @@ class StatusService {
 		}
 	}
 
-	getStatusString = (status) => {
+	getStatusString = (status: boolean | undefined) => {
 		if (status === true) return "up";
 		if (status === false) return "down";
 		return "unknown";
 	};
 
-	/**
-	 * Saves check if needed and adds to incident buffer
-	 * Removes check from checks buffer if it was saved immediately
-	 *
-	 * @param {Object} check - The check object
-	 * @param {Object} monitor - The monitor object
-	 * @param {string} action - The incident action ("create" or "resolve")
-	 * @param {string} errorContext - Context for error messages
-	 * @returns {Promise<void>}
-	 */
-	handleIncidentForCheck = async (check, monitor, action, errorContext = "incident handling") => {
+	handleIncidentForCheck = async (check: any, monitor: Monitor, action: any, errorContext = "incident handling") => {
 		try {
 			let savedCheck = check;
 
@@ -115,9 +124,9 @@ class StatusService {
 					savedCheck = await checkModel.save();
 
 					this.buffer.removeCheckFromBuffer(check);
-				} catch (checkError) {
+				} catch (checkError: any) {
 					this.logger.error({
-						service: this.SERVICE_NAME,
+						service: SERVICE_NAME,
 						method: "handleIncidentForCheck",
 						message: `Failed to save check immediately for ${errorContext}: ${checkError.message}`,
 						monitorId: monitor.id,
@@ -130,9 +139,9 @@ class StatusService {
 			if (savedCheck && savedCheck._id) {
 				try {
 					this.buffer.addIncidentToBuffer({ monitor, check: savedCheck, action });
-				} catch (incidentError) {
+				} catch (incidentError: any) {
 					this.logger.error({
-						service: this.SERVICE_NAME,
+						service: SERVICE_NAME,
 						method: "handleIncidentForCheck",
 						message: `Failed to add incident to buffer for ${errorContext}: ${incidentError.message}`,
 						monitorId: monitor.id,
@@ -141,9 +150,9 @@ class StatusService {
 					});
 				}
 			}
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "handleIncidentForCheck",
 				message: `Error in ${errorContext}: ${error.message}`,
 				monitorId: monitor?.id,
@@ -151,19 +160,8 @@ class StatusService {
 			});
 		}
 	};
-	/**
-	 * Updates the status of a monitor based on the network response.
-	 *
-	 * @param {Object} networkResponse - The network response containing monitorId and status.
-	 * @param {string} networkResponse.monitorId - The ID of the monitor.
-	 * @param {string} networkResponse.status - The new status of the monitor.
-	 * @returns {Promise<Object>} - A promise that resolves to an object containinfg the monitor, statusChanged flag, and previous status if the status changed, or false if an error occurred.
-	 * @returns {Promise<Object>} returnObject - The object returned by the function.
-	 * @returns {Object} returnObject.monitor - The monitor object.
-	 * @returns {boolean} returnObject.statusChanged - Flag indicating if the status has changed.
-	 * @returns {boolean} returnObject.prevStatus - The previous status of the monitor
-	 */
-	updateStatus = async (networkResponse) => {
+
+	updateStatus = async (networkResponse: any) => {
 		const check = this.buildCheck(networkResponse);
 		await this.insertCheck(check);
 		try {
@@ -221,7 +219,7 @@ class StatusService {
 
 			if (statusChanged) {
 				this.logger.info({
-					service: this.SERVICE_NAME,
+					service: SERVICE_NAME,
 					message: `${monitor.name} went from ${this.getStatusString(prevStatus)} to ${this.getStatusString(newStatus)}`,
 					prevStatus,
 					newStatus,
@@ -242,7 +240,7 @@ class StatusService {
 
 					if (lastManuallyResolvedIncident && lastManuallyResolvedIncident.endTime) {
 						try {
-							const checksAfterResolution = await Check.find({
+							const checksAfterResolution = await CheckModel.find({
 								monitorId: monitor.id,
 								createdAt: { $gt: lastManuallyResolvedIncident.endTime },
 							})
@@ -258,9 +256,9 @@ class StatusService {
 							} else {
 								calculatedFailureRate = 0;
 							}
-						} catch (checkQueryError) {
+						} catch (checkQueryError: any) {
 							this.logger.error({
-								service: this.SERVICE_NAME,
+								service: SERVICE_NAME,
 								method: "updateStatus",
 								message: `Failed to query checks after manual resolution: ${checkQueryError.message}`,
 								monitorId: monitor.id,
@@ -272,9 +270,9 @@ class StatusService {
 					if (calculatedFailureRate >= monitor.statusWindowThreshold) {
 						await this.handleIncidentForCheck(check, monitor, "create", "threshold check without status change");
 					}
-				} catch (error) {
+				} catch (error: any) {
 					this.logger.error({
-						service: this.SERVICE_NAME,
+						service: SERVICE_NAME,
 						method: "updateStatus",
 						message: `Error handling threshold check without status change: ${error.message}`,
 						monitorId: monitor.id,
@@ -293,27 +291,14 @@ class StatusService {
 				code,
 				timestamp: new Date().getTime(),
 			};
-		} catch (error) {
-			error.service = this.SERVICE_NAME;
+		} catch (error: any) {
+			error.service = SERVICE_NAME;
 			error.method = "updateStatus";
 			throw error;
 		}
 	};
 
-	/**
-	 * Builds a check object from the network response.
-	 *
-	 * @param {Object} networkResponse - The network response object.
-	 * @param {string} networkResponse.monitorId - The monitor ID.
-	 * @param {string} networkResponse.type - The type of the response.
-	 * @param {string} networkResponse.status - The status of the response.
-	 * @param {number} networkResponse.responseTime - The response time.
-	 * @param {number} networkResponse.code - The status code.
-	 * @param {string} networkResponse.message - The message.
-	 * @param {Object} networkResponse.payload - The payload of the response.
-	 * @returns {Object} The check object.
-	 */
-	buildCheck = (networkResponse) => {
+	buildCheck = (networkResponse: any) => {
 		const {
 			monitorId,
 			teamId,
@@ -355,7 +340,7 @@ class StatusService {
 			if (typeof payload === "undefined") {
 				this.logger.warn({
 					message: "Failed to build check",
-					service: this.SERVICE_NAME,
+					service: SERVICE_NAME,
 					method: "buildCheck",
 					details: "empty payload",
 				});
@@ -363,7 +348,7 @@ class StatusService {
 			}
 			const categories = payload?.lighthouseResult?.categories ?? {};
 			const audits = payload?.lighthouseResult?.audits ?? {};
-			const mapAudit = (audit) => {
+			const mapAudit = (audit: any) => {
 				if (!audit || typeof audit !== "object") {
 					return undefined;
 				}
@@ -416,22 +401,22 @@ class StatusService {
 	 * @param {Object} networkResponse.payload - The payload of the response.
 	 * @returns {Promise<void>} A promise that resolves when the check is inserted.
 	 */
-	insertCheck = async (check) => {
+	insertCheck = async (check: any) => {
 		try {
 			if (typeof check === "undefined") {
 				this.logger.warn({
 					message: "Failed to build check",
-					service: this.SERVICE_NAME,
+					service: SERVICE_NAME,
 					method: "insertCheck",
 				});
 				return false;
 			}
 			this.buffer.addToBuffer({ check });
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
-				service: error.service || this.SERVICE_NAME,
+				service: error.service || SERVICE_NAME,
 				method: error.method || "insertCheck",
 				details: error.details || `Error inserting check for monitor: ${check?.monitorId}`,
 				stack: error.stack,

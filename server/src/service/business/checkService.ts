@@ -1,4 +1,5 @@
 import { IMonitorsRepository } from "@/repositories/index.js";
+import type { MonitorType } from "@/types/index.js";
 
 const SERVICE_NAME = "checkService";
 
@@ -34,6 +35,8 @@ class CheckService {
 	get serviceName() {
 		return CheckService.SERVICE_NAME;
 	}
+
+	buildCheck = async (statusResponse: any, type: MonitorType) => {};
 
 	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
 		if (!monitorId) {

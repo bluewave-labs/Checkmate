@@ -1,13 +1,4 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { pathsToModuleNameMapper } from "ts-jest";
 import type { Config } from "jest";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const tsconfigPath = path.resolve(__dirname, "./tsconfig.json");
-const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, "utf-8"));
 
 const config: Config = {
 	rootDir: ".",
@@ -17,7 +8,12 @@ const config: Config = {
 		"^.+\\.(t|j)sx?$": ["ts-jest", { useESM: true, tsconfig: "./tsconfig.jest.json" }],
 	},
 	moduleNameMapper: {
-		...pathsToModuleNameMapper(tsconfig.compilerOptions.paths || {}, { prefix: "<rootDir>/" }),
+		"^@/validation/(.*)\\.js$": "<rootDir>/src/validation/$1.js",
+		"^@/utils/(AppError)\\.js$": "<rootDir>/src/utils/$1.ts",
+		"^@/utils/(.*)\\.js$": "<rootDir>/src/utils/$1.js",
+		"^@/(.*)\\.ts$": "<rootDir>/src/$1.ts",
+		"^@/(.*)\\.js$": "<rootDir>/src/$1.ts",
+		"^@/(.*)$": "<rootDir>/src/$1",
 	},
 	testMatch: ["<rootDir>/test/**/*.test.ts"],
 	setupFilesAfterEnv: [],

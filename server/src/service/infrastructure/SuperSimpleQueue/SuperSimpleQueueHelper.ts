@@ -1,7 +1,6 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-import { error } from "winston";
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
