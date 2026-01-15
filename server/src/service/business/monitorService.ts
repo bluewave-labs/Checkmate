@@ -48,10 +48,10 @@ export interface IMonitorService {
 		explain?: boolean;
 	}): Promise<{ summary: any; count: number; monitors: any[] }>;
 	getAllGames(): any;
-	getGroupsByTeamId(args: { teamId: string }): Promise<any[]>;
+	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
-	editMonitor(args: { teamId: string; monitorId: string; body: any }): Promise<void>;
+	editMonitor(args: { teamId: string; monitorId: string; body: Monitor }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<any>;
 
 	// delete
@@ -423,21 +423,22 @@ export class MonitorService implements IMonitorService {
 		return this.games;
 	};
 
-	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<any[]> => {
-		const groups = await this.db.monitorModule.getGroupsByTeamId({ teamId });
+	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<string[]> => {
+		const groups = await this.monitorsRepository.findGroupsByTeamId(teamId);
 		return groups;
 	};
 
-	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: any }): Promise<void> => {
+	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Monitor }) => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const editedMonitor = await this.db.monitorModule.editMonitor({ monitorId, body });
+		const editedMonitor = await this.monitorsRepository.updateById(monitorId, body);
 		await this.jobQueue.updateJob(editedMonitor);
+		return editedMonitor;
 	};
 
 	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
 		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.monitorModule.pauseMonitor({ monitorId });
-		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor._id, monitor) : await this.jobQueue.pauseJob(monitor);
+		const monitor = await this.monitorsRepository.togglePauseById(monitorId, teamId);
+		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor) : await this.jobQueue.pauseJob(monitor);
 		return monitor;
 	};
 

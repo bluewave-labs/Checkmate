@@ -112,7 +112,7 @@ const loginCredentials = joi.object({
 });
 
 const monitorValidation = joi.object({
-	_id: joi.string(),
+	id: joi.string(),
 	userId: joi.string(),
 	teamId: joi.string(),
 	statusWindowSize: joi.number().min(1).max(20).default(5).messages({

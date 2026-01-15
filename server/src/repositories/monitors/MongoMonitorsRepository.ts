@@ -96,7 +96,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
-	update = async (monitorId: string, patch: Partial<Monitor>) => {
+	updateById = async (monitorId: string, patch: Partial<Monitor>) => {
 		const updatedMonitor = await MonitorModel.findOneAndUpdate(
 			{ _id: monitorId },
 			{
@@ -110,6 +110,25 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
 		}
 		return this.toEntity(updatedMonitor);
+	};
+
+	togglePauseById = async (monitorId: string, teamId: string) => {
+		const monitor = await MonitorModel.findOneAndUpdate(
+			{ _id: monitorId, teamId },
+			[
+				{
+					$set: {
+						isActive: { $not: "$isActive" },
+						status: "$$REMOVE",
+					},
+				},
+			],
+			{ new: true }
+		);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found for the given team.`, status: 404 });
+		}
+		return this.toEntity(monitor);
 	};
 
 	deleteByTeamId = async (teamId: string) => {
@@ -155,6 +174,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const [summary] = await MonitorModel.aggregate(pipeline);
 		return summary ?? { totalMonitors: 0, upMonitors: 0, downMonitors: 0, pausedMonitors: 0 };
+	};
+
+	findGroupsByTeamId = async (teamId: string): Promise<string[]> => {
+		const groups = await MonitorModel.distinct("group", {
+			teamId: new mongoose.Types.ObjectId(teamId),
+			group: { $nin: [null, ""] },
+		});
+		return groups.sort();
 	};
 
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {

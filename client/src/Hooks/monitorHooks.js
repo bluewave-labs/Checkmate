@@ -387,7 +387,7 @@ export const useUpdateMonitor = () => {
 				}),
 			};
 			await networkService.updateMonitor({
-				monitorId: monitor._id,
+				monitorId: monitor.id,
 				updatedFields,
 			});
 

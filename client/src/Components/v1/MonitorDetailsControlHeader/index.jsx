@@ -66,7 +66,7 @@ const MonitorDetailsControlHeader = ({
 				gap={theme.spacing(2)}
 			>
 				<Tooltip
-					key={monitor?._id}
+					key={monitor?.id}
 					placement="bottom"
 					title={tooltipTitle}
 				>
@@ -78,7 +78,7 @@ const MonitorDetailsControlHeader = ({
 							startIcon={<EmailIcon />}
 							disabled={isTestNotificationsDisabled}
 							onClick={() => {
-								testAllNotifications({ monitorId: monitor?._id });
+								testAllNotifications({ monitorId: monitor?.id });
 							}}
 							sx={{
 								whiteSpace: "nowrap",
@@ -92,7 +92,7 @@ const MonitorDetailsControlHeader = ({
 					variant="contained"
 					color="secondary"
 					onClick={(e) => {
-						navigate(`/incidents/${monitor?._id}`);
+						navigate(`/incidents/${monitor?.id}`);
 					}}
 				>
 					{t("menu.incidents")}
@@ -107,7 +107,7 @@ const MonitorDetailsControlHeader = ({
 						}
 						onClick={() => {
 							pauseMonitor({
-								monitorId: monitor?._id,
+								monitorId: monitor?.id,
 								triggerUpdate,
 							});
 						}}
@@ -120,7 +120,7 @@ const MonitorDetailsControlHeader = ({
 						variant="contained"
 						color="secondary"
 						startIcon={<SettingsOutlinedIcon />}
-						onClick={() => navigate(`/${path}/configure/${monitor._id}`)}
+						onClick={() => navigate(`/${path}/configure/${monitor.id}`)}
 					>
 						Configure
 					</Button>

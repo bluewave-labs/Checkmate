@@ -184,18 +184,13 @@ class MongoChecksRepository implements IChecksRepository {
 		}
 		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const maxIntervalMs = Number(10 * 60 * 1000);
-		const bufferMs = Number(maxIntervalMs);
-		const lookbackMs = limitPerMonitor * maxIntervalMs + bufferMs;
-
-		const cutoffDate = new Date(Date.now() - lookbackMs);
 		const checkGroups = await CheckModel.aggregate([
 			{
 				$match: {
 					"metadata.monitorId": { $in: mongoIds },
-					createdAt: { $gte: cutoffDate },
 				},
 			},
+			{ $sort: { "metadata.monitorId": 1, createdAt: -1 } },
 			{
 				$group: {
 					_id: "$metadata.monitorId",
