@@ -14,7 +14,6 @@ import { sanitizeBody, sanitizeQuery } from "./middleware/v1/sanitization.js";
 
 export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
 	const allowedOrigin = envSettings.clientHost;
-
 	const app = express();
 	app.use(generalApiLimiter);
 	// Static files

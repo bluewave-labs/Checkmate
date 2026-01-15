@@ -1,0 +1,395 @@
+import { IChecksRepository } from "@/repositories/index.js";
+import type {
+	Check,
+	CheckAudits,
+	CheckCaptureInfo,
+	CheckCpuInfo,
+	CheckDiskInfo,
+	CheckErrorInfo,
+	CheckHostInfo,
+	CheckMemoryInfo,
+	CheckMetadata,
+	CheckNetworkInterfaceInfo,
+	CheckTimings,
+	MonitorType,
+} from "@/types/index.js";
+import { CheckModel, type CheckDocument } from "@/db/models/index.js";
+import mongoose from "mongoose";
+import {
+	getAggregateData as getHardwareAggregateData,
+	getHardwareStats,
+	getUpChecks as getHardwareUpChecks,
+} from "@/db/modules/monitorModuleQueries.js";
+
+export type LatestChecksMap = Record<string, Check[]>;
+
+class MongoChecksRepistory implements IChecksRepository {
+	private toEntity = (doc: CheckDocument): Check => {
+		const toStringId = (value: mongoose.Types.ObjectId | string | undefined | null): string => {
+			if (!value) {
+				return "";
+			}
+			return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
+		};
+
+		const toDateString = (value?: Date | string | null): string => {
+			if (!value) {
+				return new Date(0).toISOString();
+			}
+			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+		};
+
+		const toOptionalDateString = (value?: Date | string | null): string | undefined => {
+			if (!value) {
+				return undefined;
+			}
+			return toDateString(value);
+		};
+
+		const mapTimings = (timings?: CheckTimings): CheckTimings => {
+			const phases = timings?.phases ?? {
+				wait: 0,
+				dns: 0,
+				tcp: 0,
+				tls: 0,
+				request: 0,
+				firstByte: 0,
+				download: 0,
+				total: 0,
+			};
+
+			return {
+				start: timings?.start ?? 0,
+				socket: timings?.socket ?? 0,
+				lookup: timings?.lookup ?? 0,
+				connect: timings?.connect ?? 0,
+				secureConnect: timings?.secureConnect ?? 0,
+				upload: timings?.upload ?? 0,
+				response: timings?.response ?? 0,
+				end: timings?.end ?? 0,
+				phases,
+			};
+		};
+
+		const mapCpu = (cpu?: CheckCpuInfo): CheckCpuInfo => ({
+			physical_core: cpu?.physical_core ?? 0,
+			logical_core: cpu?.logical_core ?? 0,
+			frequency: cpu?.frequency ?? 0,
+			temperature: cpu?.temperature ?? [],
+			free_percent: cpu?.free_percent ?? 0,
+			usage_percent: cpu?.usage_percent ?? 0,
+		});
+
+		const mapMemory = (memory?: CheckMemoryInfo): CheckMemoryInfo => ({
+			total_bytes: memory?.total_bytes ?? 0,
+			available_bytes: memory?.available_bytes ?? 0,
+			used_bytes: memory?.used_bytes ?? 0,
+			usage_percent: memory?.usage_percent ?? 0,
+		});
+
+		const mapHost = (host?: CheckHostInfo): CheckHostInfo => ({
+			os: host?.os ?? "",
+			platform: host?.platform ?? "",
+			kernel_version: host?.kernel_version ?? "",
+		});
+
+		const mapCapture = (capture?: CheckCaptureInfo): CheckCaptureInfo => ({
+			version: capture?.version ?? "",
+			mode: capture?.mode ?? "",
+		});
+
+		const mapDisks = (disks?: CheckDiskInfo[]): CheckDiskInfo[] =>
+			(disks ?? []).map((disk) => ({
+				device: disk?.device ?? "",
+				mountpoint: disk?.mountpoint ?? "",
+				read_speed_bytes: disk?.read_speed_bytes ?? 0,
+				write_speed_bytes: disk?.write_speed_bytes ?? 0,
+				total_bytes: disk?.total_bytes ?? 0,
+				free_bytes: disk?.free_bytes ?? 0,
+				usage_percent: disk?.usage_percent ?? 0,
+			}));
+
+		const mapErrors = (errors?: CheckErrorInfo[]): CheckErrorInfo[] =>
+			(errors ?? []).map((error) => ({
+				metric: error?.metric ?? [],
+				err: error?.err ?? "",
+			}));
+
+		const mapNet = (net?: CheckNetworkInterfaceInfo[]): CheckNetworkInterfaceInfo[] =>
+			(net ?? []).map((iface) => ({
+				name: iface?.name ?? "",
+				bytes_sent: iface?.bytes_sent ?? 0,
+				bytes_recv: iface?.bytes_recv ?? 0,
+				packets_sent: iface?.packets_sent ?? 0,
+				packets_recv: iface?.packets_recv ?? 0,
+				err_in: iface?.err_in ?? 0,
+				err_out: iface?.err_out ?? 0,
+				drop_in: iface?.drop_in ?? 0,
+				drop_out: iface?.drop_out ?? 0,
+				fifo_in: iface?.fifo_in ?? 0,
+				fifo_out: iface?.fifo_out ?? 0,
+			}));
+
+		const mapAudits = (audits?: CheckAudits): CheckAudits | undefined => {
+			if (!audits) {
+				return undefined;
+			}
+			return {
+				cls: audits.cls ?? 0,
+				si: audits.si ?? 0,
+				fcp: audits.fcp ?? 0,
+				lcp: audits.lcp ?? 0,
+				tbt: audits.tbt ?? 0,
+			};
+		};
+
+		const mapMetadata = (metadata: CheckDocument["metadata"]): CheckMetadata => ({
+			monitorId: toStringId(metadata.monitorId),
+			teamId: toStringId(metadata.teamId),
+			type: metadata.type,
+		});
+
+		return {
+			id: toStringId(doc._id),
+			metadata: mapMetadata(doc.metadata),
+			status: doc.status ?? false,
+			responseTime: doc.responseTime ?? 0,
+			timings: mapTimings(doc.timings),
+			statusCode: doc.statusCode ?? 0,
+			message: doc.message ?? "",
+			ack: doc.ack ?? false,
+			ackAt: toOptionalDateString(doc.ackAt),
+			expiry: toDateString(doc.expiry),
+			cpu: mapCpu(doc.cpu),
+			memory: mapMemory(doc.memory),
+			disk: mapDisks(doc.disk),
+			host: mapHost(doc.host),
+			errors: mapErrors(doc.errors),
+			capture: mapCapture(doc.capture),
+			net: mapNet(doc.net),
+			accessibility: doc.accessibility,
+			bestPractices: doc.bestPractices,
+			seo: doc.seo,
+			performance: doc.performance,
+			audits: mapAudits(doc.audits),
+			__v: doc.__v ?? 0,
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
+		};
+	};
+
+	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
+		if (monitorIds.length === 0) {
+			return {};
+		}
+		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const limitPerMonitor = options?.limitPerMonitor ?? 25;
+		const maxIntervalMs = Number(10 * 60 * 1000);
+		const bufferMs = Number(maxIntervalMs);
+		const lookbackMs = limitPerMonitor * maxIntervalMs + bufferMs;
+
+		const cutoffDate = new Date(Date.now() - lookbackMs);
+		const checkGroups = await CheckModel.aggregate([
+			{
+				$match: {
+					"metadata.monitorId": { $in: mongoIds },
+					createdAt: { $gte: cutoffDate },
+				},
+			},
+			{
+				$group: {
+					_id: "$metadata.monitorId",
+					latestChecks: {
+						$topN: {
+							n: limitPerMonitor,
+							sortBy: { createdAt: -1 },
+							output: "$$ROOT",
+						},
+					},
+				},
+			},
+		]);
+
+		return checkGroups.reduce<LatestChecksMap>((acc, group) => {
+			const monitorId = group._id.toString();
+			acc[monitorId] = (group.latestChecks ?? []).map((doc: CheckDocument) => this.toEntity(doc));
+			return acc;
+		}, {});
+	};
+
+	findDateRangeChecksByMonitor = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
+		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		if (options?.type === "hardware") {
+			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+		}
+		if (options?.type === "pagespeed") {
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate);
+		}
+		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
+	};
+
+	private findUptimeDateRangeChecks = async (
+		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
+		monitorObjectId: mongoose.Types.ObjectId,
+		startDate: Date,
+		endDate: Date,
+		dateString: string
+	) => {
+		const matchStage = {
+			"metadata.monitorId": monitorObjectId,
+			updatedAt: { $gte: startDate, $lte: endDate },
+		};
+		const [result] = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { updatedAt: 1 } },
+			{
+				$facet: {
+					uptimePercentage: [
+						{
+							$group: {
+								_id: null,
+								upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								percentage: {
+									$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+								},
+							},
+						},
+					],
+					groupedAvgResponseTime: [
+						{
+							$group: {
+								_id: null,
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+					],
+					groupedChecks: [
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								avgResponseTime: { $avg: "$responseTime" },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+					groupedUpChecks: [
+						{ $match: { status: true } },
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								totalChecks: { $sum: 1 },
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+					groupedDownChecks: [
+						{ $match: { status: false } },
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								totalChecks: { $sum: 1 },
+								avgResponseTime: { $avg: "$responseTime" },
+							},
+						},
+						{ $sort: { _id: 1 } },
+					],
+				},
+			},
+		]);
+
+		const uptimePercentage = result?.uptimePercentage?.[0]?.percentage ?? 0;
+		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
+
+		return {
+			monitorType,
+			groupedChecks: result?.groupedChecks ?? [],
+			groupedUpChecks: result?.groupedUpChecks ?? [],
+			groupedDownChecks: result?.groupedDownChecks ?? [],
+			uptimePercentage,
+			avgResponseTime,
+		};
+	};
+
+	private findHardwareDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
+		const monitorId = monitorObjectId.toHexString();
+		const dates = { start: startDate, end: endDate };
+		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
+			getHardwareAggregateData(monitorId, dates),
+			getHardwareUpChecks(monitorId, dates),
+			getHardwareStats(monitorId, dates, dateString),
+		]);
+
+		const aggregateData = {
+			latestCheck: aggregateDataDoc?.latestCheck ? this.toEntity(aggregateDataDoc.latestCheck as CheckDocument) : null,
+			totalChecks: aggregateDataDoc?.totalChecks ?? 0,
+		};
+
+		const upChecks = {
+			totalChecks: upChecksDoc?.totalChecks ?? 0,
+		};
+
+		const checks = (hardwareMetrics ?? []).map((metric) => ({
+			_id: metric._id,
+			avgCpuUsage: metric.avgCpuUsage ?? 0,
+			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+			avgTemperature: metric.avgTemperature ?? [],
+			disks: (metric.disks ?? []).map((disk: { [key: string]: number | string | undefined }) => ({
+				name: disk?.name ?? "",
+				readSpeed: disk?.readSpeed ?? 0,
+				writeSpeed: disk?.writeSpeed ?? 0,
+				totalBytes: disk?.totalBytes ?? 0,
+				freeBytes: disk?.freeBytes ?? 0,
+				usagePercent: disk?.usagePercent ?? 0,
+			})),
+			net: (metric.net ?? []).map((iface: { [key: string]: number | string | undefined }) => ({
+				name: iface?.name ?? "",
+				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+				deltaErrIn: iface?.deltaErrIn ?? 0,
+				deltaErrOut: iface?.deltaErrOut ?? 0,
+				deltaDropIn: iface?.deltaDropIn ?? 0,
+				deltaDropOut: iface?.deltaDropOut ?? 0,
+				deltaFifoIn: iface?.deltaFifoIn ?? 0,
+				deltaFifoOut: iface?.deltaFifoOut ?? 0,
+			})),
+		}));
+
+		return {
+			monitorType: "hardware" as const,
+			aggregateData,
+			upChecks,
+			checks,
+		};
+	};
+
+	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date) => {
+		const matchStage = {
+			"metadata.monitorId": monitorObjectId,
+			createdAt: { $gte: startDate, $lte: endDate },
+		};
+
+		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
+		return {
+			monitorType: "pagespeed" as const,
+			checks: checks.map((doc) => this.toEntity(doc)),
+		};
+	};
+}
+
+export default MongoChecksRepistory;

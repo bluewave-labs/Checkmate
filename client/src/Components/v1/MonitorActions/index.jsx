@@ -11,7 +11,7 @@ import MenuList from "@mui/material/MenuList";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { createToast } from "../../../Utils/toastUtils.jsx";
-import { useExportMonitors } from "../../../Hooks/v1/monitorHooks.js";
+import { useExportMonitors } from "../../../Hooks/monitorHooks.js";
 
 const MonitorActions = ({ isLoading }) => {
 	const [open, setOpen] = React.useState(false);
