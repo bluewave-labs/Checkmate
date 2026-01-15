@@ -229,6 +229,7 @@ export const initializeServices = async ({
 		jwt,
 		errorService,
 		jobQueue: superSimpleQueue,
+		monitorsRepository,
 	});
 	const checkService = new CheckService({
 		db,
