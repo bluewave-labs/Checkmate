@@ -199,7 +199,7 @@ const UptimeCreate = ({ isClone = false }) => {
 			};
 		} else {
 			form = {
-				_id: monitor._id,
+				id: monitor.id,
 				url: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
 				statusWindowSize: monitor.statusWindowSize,
@@ -292,7 +292,7 @@ const UptimeCreate = ({ isClone = false }) => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		const TEMP_MONITOR = { id: monitor._id };
+		const TEMP_MONITOR = { id: monitor.id };
 		await deleteMonitor({ monitor: TEMP_MONITOR, redirect: "/uptime" });
 	};
 

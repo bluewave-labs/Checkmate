@@ -5,15 +5,6 @@ const SERVICE_NAME = "StatusService";
 class StatusService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	/**
-	 * @param {{
-	 *  db: any
-	 *  logger: any
-	 *  buffer: import("./bufferService.js").BufferService
-	 *  incidentService: import("../business/incidentService.js").IncidentService
-	 *  monitorsRepository: any
-	 * }}
-	 */
 	constructor({ db, logger, buffer, incidentService, monitorsRepository }) {
 		this.db = db;
 		this.logger = logger;
@@ -204,7 +195,7 @@ class StatusService {
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
-				const updated = await this.monitorsRepository.update(monitor.id, monitor);
+				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 				return {
 					monitor: updated,
 					statusChanged: false,
@@ -294,7 +285,7 @@ class StatusService {
 			}
 
 			monitor.status = newStatus;
-			const updated = await this.monitorsRepository.update(monitor.id, monitor);
+			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 
 			return {
 				monitor: updated,

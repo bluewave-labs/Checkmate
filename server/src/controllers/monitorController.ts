@@ -339,26 +339,6 @@ class MonitorController {
 		}
 	};
 
-	getMonitorsAndSummaryByTeamId = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
-			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
-
-			const explain = optionalBoolean(req?.query?.explain, "explain");
-			const type = parseMonitorTypeFilter(req?.query?.type);
-			const teamId = requireTeamId(req?.user?.teamId);
-
-			const result = await this.monitorService.getMonitorsAndSummaryByTeamId({ teamId, type, explain });
-
-			return res.status(200).json({
-				msg: "Monitors and summary retrieved successfully",
-				data: result,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	getMonitorsWithChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
@@ -390,21 +370,6 @@ class MonitorController {
 				msg: "Monitors retrieved successfully",
 				data: monitors,
 			});
-		} catch (error) {
-			next(error);
-		}
-	};
-	exportMonitorsToCSV = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
-			const csv = await this.monitorService.exportMonitorsToCSV({ teamId });
-			res.setHeader("Content-Type", "text/csv");
-			res.setHeader("Content-Disposition", "attachment; filename=monitors.csv");
-			return res.send(csv);
 		} catch (error) {
 			next(error);
 		}

@@ -287,6 +287,7 @@ class StatusPageModule {
 	deleteStatusPagesByMonitorId = async (monitorId) => {
 		try {
 			await this.StatusPage.deleteMany({ monitors: { $in: [monitorId] } });
+			await this.StatusPage.deleteMany({ subMonitors: { $in: [monitorId] } });
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "deleteStatusPageByMonitorId";

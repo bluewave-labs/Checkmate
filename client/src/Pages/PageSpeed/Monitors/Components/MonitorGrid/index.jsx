@@ -2,6 +2,7 @@ import { Grid, Grid2 } from "@mui/material";
 import Card from "../Card/index.jsx";
 
 const MonitorGrid = ({ shouldRender, monitors }) => {
+	console.log(monitors);
 	return (
 		<Grid
 			container

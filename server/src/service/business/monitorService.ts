@@ -2,7 +2,7 @@ import { createMonitorsBodyValidation } from "@/validation/joi.js";
 import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
 import type { MonitorType } from "@/types/monitor.js";
-import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
+import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -14,7 +14,6 @@ type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
 
 export interface IMonitorService {
 	readonly serviceName: string;
-	verifyTeamAccess(args: { teamId: string; monitorId: string }): Promise<void>;
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
@@ -36,7 +35,6 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 	}): Promise<any>;
-	getMonitorsAndSummaryByTeamId(args: { teamId: string; type?: string | string[]; explain?: boolean }): Promise<any>;
 	getMonitorsWithChecksByTeamId(args: {
 		teamId: string;
 		limit?: number;
@@ -47,21 +45,20 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 		explain?: boolean;
-	}): Promise<{ count: number; monitors: any[] }>;
+	}): Promise<{ summary: any; count: number; monitors: any[] }>;
 	getAllGames(): any;
-	getGroupsByTeamId(args: { teamId: string }): Promise<any[]>;
+	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
-	editMonitor(args: { teamId: string; monitorId: string; body: any }): Promise<void>;
-	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<any>;
+	editMonitor(args: { teamId: string; monitorId: string; body: Monitor }): Promise<Monitor>;
+	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
-	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<any>;
+	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	deleteAllMonitors(args: { teamId: string }): Promise<number>;
 
 	// other
 	sendTestEmail(args: { to: string }): Promise<string>;
-	exportMonitorsToCSV(args: { teamId: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<any[]>;
 }
 
@@ -79,9 +76,9 @@ export class MonitorService implements IMonitorService {
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
+	private statusPagesRepository: IStatusPagesRepository;
 
 	constructor({
-		db,
 		jobQueue,
 		stringService,
 		emailService,
@@ -92,8 +89,8 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository,
 		checksRepository,
 		monitorStatsRepository,
+		statusPagesRepository,
 	}: {
-		db: any;
 		jobQueue: any;
 		stringService: any;
 		emailService: any;
@@ -104,8 +101,8 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
+		statusPagesRepository: IStatusPagesRepository;
 	}) {
-		this.db = db;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
 		this.emailService = emailService;
@@ -116,6 +113,7 @@ export class MonitorService implements IMonitorService {
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
+		this.statusPagesRepository = statusPagesRepository;
 	}
 
 	get serviceName(): string {
@@ -145,13 +143,6 @@ export class MonitorService implements IMonitorService {
 			all: "%Y-%m-%dT00:00:00Z",
 		};
 		return formatLookup[dateRange];
-	};
-
-	verifyTeamAccess = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<void> => {
-		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
-		if (!monitor?.teamId?.equals(teamId)) {
-			throw this.errorService.createAuthorizationError();
-		}
 	};
 
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
@@ -256,8 +247,6 @@ export class MonitorService implements IMonitorService {
 		dateRange: string;
 		normalize?: boolean;
 	}): Promise<any> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
-
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -293,7 +282,6 @@ export class MonitorService implements IMonitorService {
 	};
 
 	getHardwareDetailsById = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -325,7 +313,6 @@ export class MonitorService implements IMonitorService {
 	};
 
 	getPageSpeedDetailsById = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -349,7 +336,6 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		return monitor;
 	};
@@ -360,23 +346,6 @@ export class MonitorService implements IMonitorService {
 			filter,
 		});
 		return monitors;
-	};
-
-	getMonitorsAndSummaryByTeamId = async ({
-		teamId,
-		type,
-		explain,
-	}: {
-		teamId: string;
-		type?: string | string[];
-		explain?: boolean;
-	}): Promise<any> => {
-		const result = await this.db.monitorModule.getMonitorsAndSummaryByTeamId({
-			type,
-			explain,
-			teamId,
-		});
-		return result;
 	};
 
 	getMonitorsWithChecksByTeamId = async ({
@@ -399,7 +368,8 @@ export class MonitorService implements IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 		explain?: boolean;
-	}): Promise<{ count: number; monitors: any[] }> => {
+	}): Promise<{ summary: any; count: number; monitors: any[] }> => {
+		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId);
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
@@ -433,36 +403,36 @@ export class MonitorService implements IMonitorService {
 			};
 		});
 
-		return { count, monitors: monitorsWithChecks };
+		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
 	getAllGames = (): any => {
 		return this.games;
 	};
 
-	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<any[]> => {
-		const groups = await this.db.monitorModule.getGroupsByTeamId({ teamId });
+	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<string[]> => {
+		const groups = await this.monitorsRepository.findGroupsByTeamId(teamId);
 		return groups;
 	};
 
-	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: any }): Promise<void> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
-		const editedMonitor = await this.db.monitorModule.editMonitor({ monitorId, body });
+	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Monitor }) => {
+		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body);
 		await this.jobQueue.updateJob(editedMonitor);
+		return editedMonitor;
 	};
 
-	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.monitorModule.pauseMonitor({ monitorId });
-		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor._id, monitor) : await this.jobQueue.pauseJob(monitor);
+	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		const monitor = await this.monitorsRepository.togglePauseById(monitorId, teamId);
+		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor) : await this.jobQueue.pauseJob(monitor);
 		return monitor;
 	};
 
-	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
-		await this.verifyTeamAccess({ teamId, monitorId });
-		const monitor = await this.db.monitorModule.deleteMonitor({ teamId, monitorId });
+	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
+		await this.checksRepository.deleteByMonitorId(monitor.id);
+		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 		await this.jobQueue.deleteJob(monitor);
-		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor._id);
 		return monitor;
 	};
 
@@ -472,9 +442,9 @@ export class MonitorService implements IMonitorService {
 			monitors.map(async (monitor) => {
 				try {
 					await this.jobQueue.deleteJob(monitor);
-					await this.db.checkModule.deleteChecks(monitor.id);
-					await this.db.pageSpeedCheckModule.deletePageSpeedChecksByMonitorId(monitor.id);
-					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor.id);
+					await this.checksRepository.deleteByMonitorId(monitor.id);
+					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
+					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
 				} catch (error: any) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
@@ -502,65 +472,13 @@ export class MonitorService implements IMonitorService {
 		return messageId;
 	};
 
-	exportMonitorsToCSV = async ({ teamId }: { teamId: string }): Promise<string> => {
-		const monitors = await this.db.monitorModule.getMonitorsByTeamId({ teamId });
-
-		if (!monitors || monitors.length === 0) {
-			throw this.errorService.createNotFoundError("No monitors to export");
-		}
-
-		const csvData = monitors?.filteredMonitors?.map((monitor: any) => ({
-			name: monitor.name,
-			description: monitor.description,
-			type: monitor.type,
-			url: monitor.url,
-			interval: monitor.interval,
-			port: monitor.port,
-			ignoreTlsErrors: monitor.ignoreTlsErrors,
-			isActive: monitor.isActive,
-		}));
-
-		const csv = this.papaparse.unparse(csvData);
-		return csv;
-	};
 	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<any[]> => {
-		const monitors = await this.db.monitorModule.getMonitorsByTeamId({ teamId });
+		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 
 		if (!monitors || monitors.length === 0) {
 			throw this.errorService.createNotFoundError("No monitors to export");
 		}
 
-		const json = monitors?.filteredMonitors
-			?.map((monitor: any) => {
-				const initialType = monitor.type;
-				let parsedType;
-
-				if (initialType === "hardware") {
-					parsedType = "infrastructure";
-				} else if (initialType === "http") {
-					if (monitor.url.startsWith("https://")) {
-						parsedType = "https";
-					} else {
-						parsedType = "http";
-					}
-				} else if (initialType === "pagespeed") {
-					parsedType = initialType;
-				} else {
-					// Skip unsupported types
-					return;
-				}
-
-				return {
-					name: monitor.name,
-					url: monitor.url,
-					type: parsedType,
-					interval: monitor.interval,
-					n: monitor.statusWindowSize,
-					secret: monitor.secret,
-				};
-			})
-			.filter(Boolean);
-
-		return json;
+		return monitors;
 	};
 }

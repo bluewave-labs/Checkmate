@@ -318,23 +318,22 @@ class MonitorModule {
 		}
 	};
 
-	getMonitorsAndSummaryByTeamId = async ({ type, explain, teamId }) => {
+	findMonitorsSummaryByTeamId = async ({ type, teamId, explain }) => {
 		try {
 			const matchStage = { teamId: new this.ObjectId(teamId) };
 			if (type !== undefined) {
 				matchStage.type = Array.isArray(type) ? { $in: type } : type;
 			}
 
+			const pipeline = buildMonitorsSummaryByTeamIdPipeline({ matchStage });
 			if (explain === true) {
-				return this.Monitor.aggregate(buildMonitorsAndSummaryByTeamIdPipeline({ matchStage })).explain("executionStats");
+				return this.Monitor.aggregate(pipeline).explain("executionStats");
 			}
-
-			const queryResult = await this.Monitor.aggregate(buildMonitorsAndSummaryByTeamIdPipeline({ matchStage }));
-			const { monitors, summary } = queryResult?.[0] ?? {};
-			return { monitors, summary };
+			const [summary] = await this.Monitor.aggregate(pipeline);
+			return summary ?? { totalMonitors: 0, upMonitors: 0, downMonitors: 0, pausedMonitors: 0 };
 		} catch (error) {
 			error.service = SERVICE_NAME;
-			error.method = "getMonitorsAndSummaryByTeamId";
+			error.method = "findMonitorsSummaryByTeamId";
 			throw error;
 		}
 	};

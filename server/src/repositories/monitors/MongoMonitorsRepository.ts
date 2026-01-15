@@ -1,8 +1,8 @@
 import { MonitorModel } from "@/db/models/index.js";
-import type { MonitorDocument } from "@/db/models/Monitor.js";
-import type { Monitor, MonitorType } from "@/types/monitor.js";
+import type { MonitorDocument } from "@/db/models/index.js";
+import type { Monitor } from "@/types/index.js";
 import mongoose, { type FilterQuery } from "mongoose";
-import type { IMonitorsRepository, TeamQueryConfig } from "./IMonitorsRepository.js";
+import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
 
 class MongoMonitorsRepository implements IMonitorsRepository {
@@ -44,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 25, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -75,9 +75,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
 		const skip = Math.max(page, 0) * rowsPerPage;
-		const limitValue = limit ?? rowsPerPage;
 
-		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limitValue).exec();
+		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(rowsPerPage);
 
 		return this.mapDocuments(documents);
 	};
@@ -97,9 +96,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
-	update = async (monitorId: string, patch: Partial<Monitor>) => {
+	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>) => {
 		const updatedMonitor = await MonitorModel.findOneAndUpdate(
-			{ _id: monitorId },
+			{ _id: monitorId, teamId },
 			{
 				$set: {
 					...patch,
@@ -113,11 +112,86 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(updatedMonitor);
 	};
 
+	togglePauseById = async (monitorId: string, teamId: string) => {
+		const monitor = await MonitorModel.findOneAndUpdate(
+			{ _id: monitorId, teamId },
+			[
+				{
+					$set: {
+						isActive: { $not: "$isActive" },
+						status: "$$REMOVE",
+					},
+				},
+			],
+			{ new: true }
+		);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found for the given team.`, status: 404 });
+		}
+		return this.toEntity(monitor);
+	};
+
+	deleteById = async (monitorId: string, teamId: string) => {
+		const deletedMonitor = await MonitorModel.findOneAndDelete({ _id: monitorId, teamId });
+
+		if (!deletedMonitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found for the given team.`, status: 404 });
+		}
+
+		return this.toEntity(deletedMonitor);
+	};
+
 	deleteByTeamId = async (teamId: string) => {
 		const monitors = await MonitorModel.find({ teamId });
 		const { deletedCount } = await MonitorModel.deleteMany({ teamId });
 
 		return { monitors: this.mapDocuments(monitors), deletedCount };
+	};
+
+	findMonitorsSummaryByTeamId = async (
+		teamId: string,
+		config?: SummaryConfig
+	): Promise<{ totalMonitors: number; upMonitors: number; downMonitors: number; pausedMonitors: number }> => {
+		const match: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
+		if (config?.type !== undefined) {
+			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
+		}
+		const pipeline = [
+			{ $match: match },
+			{
+				$group: {
+					_id: null,
+					totalMonitors: { $sum: 1 },
+					upMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", true] }, 1, 0],
+						},
+					},
+					downMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", false] }, 1, 0],
+						},
+					},
+					pausedMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$isActive", false] }, 1, 0],
+						},
+					},
+				},
+			},
+			{ $project: { _id: 0 } },
+		];
+
+		const [summary] = await MonitorModel.aggregate(pipeline);
+		return summary ?? { totalMonitors: 0, upMonitors: 0, downMonitors: 0, pausedMonitors: 0 };
+	};
+
+	findGroupsByTeamId = async (teamId: string): Promise<string[]> => {
+		const groups = await MonitorModel.distinct("group", {
+			teamId: new mongoose.Types.ObjectId(teamId),
+			group: { $nin: [null, ""] },
+		});
+		return groups.sort();
 	};
 
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {

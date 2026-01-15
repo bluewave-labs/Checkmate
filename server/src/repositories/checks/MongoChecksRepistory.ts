@@ -23,7 +23,7 @@ import {
 
 export type LatestChecksMap = Record<string, Check[]>;
 
-class MongoChecksRepistory implements IChecksRepository {
+class MongoChecksRepository implements IChecksRepository {
 	private toEntity = (doc: CheckDocument): Check => {
 		const toStringId = (value: mongoose.Types.ObjectId | string | undefined | null): string => {
 			if (!value) {
@@ -184,18 +184,13 @@ class MongoChecksRepistory implements IChecksRepository {
 		}
 		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const maxIntervalMs = Number(10 * 60 * 1000);
-		const bufferMs = Number(maxIntervalMs);
-		const lookbackMs = limitPerMonitor * maxIntervalMs + bufferMs;
-
-		const cutoffDate = new Date(Date.now() - lookbackMs);
 		const checkGroups = await CheckModel.aggregate([
 			{
 				$match: {
 					"metadata.monitorId": { $in: mongoIds },
-					createdAt: { $gte: cutoffDate },
 				},
 			},
+			{ $sort: { "metadata.monitorId": 1, createdAt: -1 } },
 			{
 				$group: {
 					_id: "$metadata.monitorId",
@@ -390,6 +385,11 @@ class MongoChecksRepistory implements IChecksRepository {
 			checks: checks.map((doc) => this.toEntity(doc)),
 		};
 	};
+
+	deleteByMonitorId = async (monitorId: string): Promise<number> => {
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": monitorId });
+		return result.deletedCount;
+	};
 }
 
-export default MongoChecksRepistory;
+export default MongoChecksRepository;
