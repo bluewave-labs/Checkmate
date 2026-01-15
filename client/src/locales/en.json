@@ -985,6 +985,10 @@
 	},
 	"pageSpeedLighthouseAPI": "Use the Lighthouse PageSpeed API to monitor your website",
 	"time": {
+		"fifteenSeconds": "15 seconds",
+		"thirtySeconds": "30 seconds",
+		"fifteenMinutes": "15 minutes",
+		"thirtyMinutes": "30 minutes",
 		"threeMinutes": "3 minutes",
 		"fiveMinutes": "5 minutes",
 		"tenMinutes": "10 minutes",
@@ -994,9 +998,7 @@
 		"oneWeek": "1 week",
 		"fourMinutes": "4 minutes",
 		"oneMinute": "1 minute",
-		"twoMinutes": "2 minutes",
-		"fifteenSeconds": "15 seconds",
-		"thirtySeconds": "30 seconds"
+		"twoMinutes": "2 minutes"
 	},
 	"general": {
 		"noOptionsFound": "No {{unit}} found"

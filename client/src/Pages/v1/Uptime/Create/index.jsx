@@ -107,11 +107,16 @@ const UptimeCreate = ({ isClone = false }) => {
 	// Constants
 	const MS_PER_MINUTE = 60000;
 	const FREQUENCIES = [
+		{ _id: 0.25, name: t("time.fifteenSeconds") },
+		{ _id: 0.5, name: t("time.thirtySeconds") },
 		{ _id: 1, name: t("time.oneMinute") },
 		{ _id: 2, name: t("time.twoMinutes") },
 		{ _id: 3, name: t("time.threeMinutes") },
 		{ _id: 4, name: t("time.fourMinutes") },
 		{ _id: 5, name: t("time.fiveMinutes") },
+		{ _id: 10, name: t("time.tenMinutes") },
+		{ _id: 15, name: t("time.fifteenMinutes") },
+		{ _id: 30, name: t("time.thirtyMinutes") },
 	];
 
 	const GAMELIST = Object.entries(games).map(([key, value]) => ({
