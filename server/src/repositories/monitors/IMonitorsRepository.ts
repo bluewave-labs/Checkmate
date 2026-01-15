@@ -26,7 +26,7 @@ export interface IMonitorsRepository {
 	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
 
 	// update
-	updateById(monitorId: string, updates: Partial<Monitor>): Promise<Monitor>;
+	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
 	// delete
 	deleteById(monitorId: string, teamId: string): Promise<Monitor>;

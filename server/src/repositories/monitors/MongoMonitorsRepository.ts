@@ -96,9 +96,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
-	updateById = async (monitorId: string, patch: Partial<Monitor>) => {
+	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>) => {
 		const updatedMonitor = await MonitorModel.findOneAndUpdate(
-			{ _id: monitorId },
+			{ _id: monitorId, teamId },
 			{
 				$set: {
 					...patch,
