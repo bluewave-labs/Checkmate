@@ -7,7 +7,7 @@ import Dot from "../Dot/index.jsx";
 import { formatDurationRounded } from "../../../Utils/timeUtils.js";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import { useMonitorUtils } from "../../../Hooks/v1/useMonitorUtils.js";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils.js";
 import { formatMonitorUrl } from "../../../Utils/utils.js";
 /**
  * Status component displays the status information of a monitor.

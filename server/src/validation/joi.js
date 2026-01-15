@@ -120,30 +120,30 @@ const getMonitorByIdQueryValidation = joi.object({
 const getMonitorsByTeamIdParamValidation = joi.object({});
 
 const getMonitorsByTeamIdQueryValidation = joi.object({
-	limit: joi.number(),
 	type: joi
 		.alternatives()
 		.try(
 			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
 			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
 		),
-	page: joi.number(),
-	rowsPerPage: joi.number(),
-	filter: joi.string(),
-	field: joi.string(),
-	order: joi.string().valid("asc", "desc"),
+	filter: joi.string().allow("", null),
 });
 
-const getMonitorStatsByIdParamValidation = joi.object({
-	monitorId: joi.string().required(),
-});
-const getMonitorStatsByIdQueryValidation = joi.object({
-	status: joi.string(),
-	limit: joi.number(),
-	sortOrder: joi.string().valid("asc", "desc"),
-	dateRange: joi.string().valid("hour", "day", "week", "month", "all"),
-	numToDisplay: joi.number(),
-	normalize: joi.boolean(),
+const getMonitorsWithChecksQueryValidation = joi.object({
+	limit: joi.number().integer().min(1).max(100).optional(),
+	page: joi.number().integer().min(0).optional(),
+	rowsPerPage: joi.number().integer().min(1).max(100).optional(),
+	filter: joi.string().allow("", null).optional(),
+	field: joi.string().optional(),
+	order: joi.string().valid("asc", "desc").optional(),
+	type: joi
+		.alternatives()
+		.try(
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
+		)
+		.optional(),
+	explain: joi.boolean().optional(),
 });
 
 const getCertificateParamValidation = joi.object({
@@ -725,8 +725,7 @@ export {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdParamValidation,
 	getMonitorsByTeamIdQueryValidation,
-	getMonitorStatsByIdParamValidation,
-	getMonitorStatsByIdQueryValidation,
+	getMonitorsWithChecksQueryValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	getCertificateParamValidation,
