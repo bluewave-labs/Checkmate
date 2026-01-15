@@ -43,7 +43,6 @@ class MonitorRoutes {
 
 		// Other static routes
 		this.router.post("/demo", isAllowed(["admin", "superadmin"]), this.monitorController.addDemoMonitors);
-		this.router.get("/export", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToCSV);
 		this.router.get("/export/json", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToJSON);
 		this.router.post("/bulk", isAllowed(["admin", "superadmin"]), upload.single("csvFile"), this.monitorController.createBulkMonitors);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);

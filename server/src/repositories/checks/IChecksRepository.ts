@@ -54,6 +54,9 @@ export interface UptimeChecksResult {
 }
 
 export interface IChecksRepository {
+	// create
+	// single fetch
+	// collection fetch
 	findLatestChecksByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findDateRangeChecksByMonitor(
 		monitorId: string,
@@ -62,4 +65,7 @@ export interface IChecksRepository {
 		dateString: string,
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
+	// update
+	//delete
+	deleteByMonitorId(monitorId: string): Promise<number>;
 }

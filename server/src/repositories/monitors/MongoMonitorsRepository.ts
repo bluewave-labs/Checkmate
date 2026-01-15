@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorType } from "@/types/index.js";
+import type { Monitor } from "@/types/index.js";
 import mongoose, { type FilterQuery } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";

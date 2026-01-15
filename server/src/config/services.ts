@@ -70,7 +70,7 @@ import SettingsModule from "../db/modules/settingsModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
-import { MongoMonitorsRepository, MongoChecksRepository, MongoMonitorStatsRepository } from "@/repositories/index.js";
+import { MongoMonitorsRepository, MongoChecksRepository, MongoMonitorStatsRepository, MongoStatusPagesRepository } from "@/repositories/index.js";
 
 export const initializeServices = async ({ logger, envSettings, settingsService }: { logger: any; envSettings: any; settingsService: any }) => {
 	const serviceRegistry = new ServiceRegistry({ logger });
@@ -124,6 +124,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const monitorsRepository = new MongoMonitorsRepository();
 	const checksRepository = new MongoChecksRepository();
 	const monitorStatsRepository = new MongoMonitorStatsRepository();
+	const statusPagesRepository = new MongoStatusPagesRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -217,7 +218,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		errorService,
 	});
 	const monitorService = new MonitorService({
-		db,
 		jobQueue: superSimpleQueue,
 		stringService,
 		emailService,
@@ -228,6 +228,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		monitorsRepository,
 		checksRepository,
 		monitorStatsRepository,
+		statusPagesRepository,
 	});
 
 	const services = {

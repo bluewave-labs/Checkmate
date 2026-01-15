@@ -2,7 +2,7 @@ import { createMonitorsBodyValidation } from "@/validation/joi.js";
 import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
 import type { MonitorType } from "@/types/monitor.js";
-import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
+import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -76,9 +76,9 @@ export class MonitorService implements IMonitorService {
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
+	private statusPagesRepository: IStatusPagesRepository;
 
 	constructor({
-		db,
 		jobQueue,
 		stringService,
 		emailService,
@@ -89,8 +89,8 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository,
 		checksRepository,
 		monitorStatsRepository,
+		statusPagesRepository,
 	}: {
-		db: any;
 		jobQueue: any;
 		stringService: any;
 		emailService: any;
@@ -101,8 +101,8 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
+		statusPagesRepository: IStatusPagesRepository;
 	}) {
-		this.db = db;
 		this.jobQueue = jobQueue;
 		this.stringService = stringService;
 		this.emailService = emailService;
@@ -113,6 +113,7 @@ export class MonitorService implements IMonitorService {
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
+		this.statusPagesRepository = statusPagesRepository;
 	}
 
 	get serviceName(): string {
@@ -428,8 +429,10 @@ export class MonitorService implements IMonitorService {
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
+		await this.checksRepository.deleteByMonitorId(monitor.id);
+		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 		await this.jobQueue.deleteJob(monitor);
-		await this.db.statusPageModule.deleteStatusPagesByMonitorId(monitor.id);
 		return monitor;
 	};
 
@@ -439,9 +442,9 @@ export class MonitorService implements IMonitorService {
 			monitors.map(async (monitor) => {
 				try {
 					await this.jobQueue.deleteJob(monitor);
-					await this.db.checkModule.deleteChecks(monitor.id);
-					await this.db.pageSpeedCheckModule.deletePageSpeedChecksByMonitorId(monitor.id);
-					await this.db.notificationsModule.deleteNotificationsByMonitorId(monitor.id);
+					await this.checksRepository.deleteByMonitorId(monitor.id);
+					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
+					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
 				} catch (error: any) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,

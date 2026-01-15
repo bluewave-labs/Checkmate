@@ -374,21 +374,6 @@ class MonitorController {
 			next(error);
 		}
 	};
-	exportMonitorsToCSV = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
-			const csv = await this.monitorService.exportMonitorsToCSV({ teamId });
-			res.setHeader("Content-Type", "text/csv");
-			res.setHeader("Content-Disposition", "attachment; filename=monitors.csv");
-			return res.send(csv);
-		} catch (error) {
-			next(error);
-		}
-	};
 
 	exportMonitorsToJSON = async (req: Request, res: Response, next: NextFunction) => {
 		try {

@@ -171,35 +171,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 	}
 );
 
-MonitorSchema.pre("findOneAndDelete", async function (next) {
-	try {
-		const doc = await this.model.findOne(this.getFilter());
-
-		if (!doc) {
-			throw new Error("Monitor not found");
-		}
-
-		await Check.deleteMany({ monitorId: doc._id });
-		await StatusPage.updateMany({ monitors: doc?._id }, { $pull: { monitors: doc?._id } });
-		await MonitorStats.deleteMany({ monitorId: doc?._id.toString() });
-		next();
-	} catch (error) {
-		next(error as Error);
-	}
-});
-
-MonitorSchema.pre("deleteMany", async function (next) {
-	const filter = this.getFilter();
-	const monitors = (await this.model.find(filter).select(["_id", "type"]).lean()) as { _id: Types.ObjectId }[];
-
-	for (const monitor of monitors) {
-		await Check.deleteMany({ monitorId: monitor._id });
-		await StatusPage.updateMany({ monitors: monitor._id }, { $pull: { monitors: monitor._id } });
-		await MonitorStats.deleteMany({ monitorId: monitor._id.toString() });
-	}
-	next();
-});
-
 MonitorSchema.pre("save", function (next) {
 	if (!this.cpuAlertThreshold || this.isModified("alertThreshold")) {
 		this.cpuAlertThreshold = this.alertThreshold;

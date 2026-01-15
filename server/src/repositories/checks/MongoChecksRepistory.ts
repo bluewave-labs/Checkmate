@@ -385,6 +385,11 @@ class MongoChecksRepository implements IChecksRepository {
 			checks: checks.map((doc) => this.toEntity(doc)),
 		};
 	};
+
+	deleteByMonitorId = async (monitorId: string): Promise<number> => {
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": monitorId });
+		return result.deletedCount;
+	};
 }
 
 export default MongoChecksRepository;
