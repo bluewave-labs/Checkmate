@@ -87,8 +87,8 @@ const Incidents2 = () => {
 
 	useEffect(() => {
 		const lookup = monitors?.reduce((acc, monitor) => {
-			acc[monitor._id] = {
-				_id: monitor._id,
+			acc[monitor.id] = {
+				_id: monitor.id,
 				name: monitor.name,
 				type: monitor.type,
 			};

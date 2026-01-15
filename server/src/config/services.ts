@@ -211,8 +211,6 @@ export const initializeServices = async ({
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
-		envSettings,
-		db,
 		logger,
 		helper: superSimpleQueueHelper,
 		monitorsRepository,
