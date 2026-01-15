@@ -63,16 +63,61 @@ import CheckModule from "../db/modules/checkModule.js";
 import StatusPageModule from "../db/modules/statusPageModule.js";
 import UserModule from "../db/modules/userModule.js";
 import MaintenanceWindowModule from "../db/modules/maintenanceWindowModule.js";
-import MonitorModule from "../db/modules/monitorModule.js";
 import NotificationModule from "../db/modules/notificationModule.js";
 import RecoveryModule from "../db/modules/recoveryModule.js";
 import SettingsModule from "../db/modules/settingsModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
-import { MongoMonitorsRepository, MongoChecksRepository, MongoMonitorStatsRepository, MongoStatusPagesRepository } from "@/repositories/index.js";
+import {
+	MongoMonitorsRepository,
+	MongoChecksRepository,
+	MongoMonitorStatsRepository,
+	MongoStatusPagesRepository,
+	IMonitorsRepository,
+	IChecksRepository,
+	IMonitorStatsRepository,
+	IStatusPagesRepository,
+} from "@/repositories/index.js";
 
-export const initializeServices = async ({ logger, envSettings, settingsService }: { logger: any; envSettings: any; settingsService: any }) => {
+export type InitializedSerivces = {
+	//v1
+	settingsService: any;
+	translationService: any;
+	stringService: any;
+	db: any;
+	networkService: any;
+	emailService: any;
+	bufferService: any;
+	statusService: any;
+	notificationService: any;
+	jobQueue: any;
+	userService: any;
+	checkService: any;
+	diagnosticService: any;
+	inviteService: any;
+	maintenanceWindowService: any;
+	monitorService: any;
+	incidentService: any;
+	errorService: any;
+	logger: any;
+
+	// Repositories
+	monitorsRepository: IMonitorsRepository;
+	checksRepository: IChecksRepository;
+	monitorStatsRepository: IMonitorStatsRepository;
+	statusPagesRepository: IStatusPagesRepository;
+};
+
+export const initializeServices = async ({
+	logger,
+	envSettings,
+	settingsService,
+}: {
+	logger: any;
+	envSettings: any;
+	settingsService: any;
+}): Promise<InitializedSerivces> => {
 	const serviceRegistry = new ServiceRegistry({ logger });
 	(ServiceRegistry as any).instance = serviceRegistry;
 
@@ -87,17 +132,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
-	const monitorModule = new MonitorModule({
-		Monitor,
-		MonitorStats,
-		stringService,
-		fs,
-		path,
-		fileURLToPath,
-		ObjectId,
-		NormalizeData,
-		NormalizeDataUptimeDetails,
-	});
 	const notificationModule = new NotificationModule({ Notification, Monitor });
 	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
 	const settingsModule = new SettingsModule({ AppSettings });
@@ -111,7 +145,6 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		statusPageModule,
 		userModule,
 		maintenanceWindowModule,
-		monitorModule,
 		notificationModule,
 		recoveryModule,
 		settingsModule,
@@ -202,6 +235,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		settingsService,
 		stringService,
 		errorService,
+		monitorsRepository,
 	});
 	const diagnosticService = new DiagnosticService();
 	const inviteService = new InviteService({
@@ -216,6 +250,7 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		settingsService,
 		stringService,
 		errorService,
+		monitorsRepository,
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
@@ -252,6 +287,12 @@ export const initializeServices = async ({ logger, envSettings, settingsService 
 		incidentService,
 		errorService,
 		logger,
+
+		// Repositories
+		monitorsRepository,
+		checksRepository,
+		monitorStatsRepository,
+		statusPagesRepository,
 	};
 
 	Object.values(services).forEach((service) => {

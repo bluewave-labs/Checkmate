@@ -167,9 +167,8 @@ class StatusService {
 		const check = this.buildCheck(networkResponse);
 		await this.insertCheck(check);
 		try {
-			const { monitorId, status, code } = networkResponse;
-
-			const monitor = await this.monitorsRepository.findById(monitorId);
+			const { monitorId, teamId, status, code } = networkResponse;
+			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse });

@@ -19,11 +19,12 @@ export interface IMonitorsRepository {
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
 	createBulkMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
-	findById(monitorId: string, teamId?: string): Promise<Monitor | null>;
+	findById(monitorId: string, teamId: string): Promise<Monitor>;
 
 	// collection fetch
 	findAll(): Promise<Monitor[] | null>;
 	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
+	findByIds(monitorIds: string[]): Promise<Monitor[]>;
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
