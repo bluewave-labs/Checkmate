@@ -328,6 +328,7 @@ const settingsValidation = joi.object({
 	systemEmailIgnoreTLS: joi.boolean(),
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
+	showURL: joi.boolean().optional(),
 	globalThresholds: joi
 		.object({
 			cpu: joi.number().min(1).max(100).allow("").optional(),

@@ -129,7 +129,7 @@ export const initializeServices = async ({
 	// Create DB
 	const checkModule = new CheckModule({ logger, Monitor, User });
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
-	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService });
+	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, AppSettings });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
 	const notificationModule = new NotificationModule({ Notification, Monitor });
