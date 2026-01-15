@@ -15,13 +15,11 @@ import type {
 } from "@/types/index.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
-import {
-	getAggregateData as getHardwareAggregateData,
-	getHardwareStats,
-	getUpChecks as getHardwareUpChecks,
-} from "@/db/modules/monitorModuleQueries.js";
 
 export type LatestChecksMap = Record<string, Check[]>;
+type DateRange = { start: Date; end: Date };
+type HardwareAggregateData = { latestCheck: CheckDocument | null; totalChecks: number };
+type HardwareUpChecks = { totalChecks: number };
 
 class MongoChecksRepository implements IChecksRepository {
 	private toEntity = (doc: CheckDocument): Check => {
@@ -323,9 +321,9 @@ class MongoChecksRepository implements IChecksRepository {
 		const monitorId = monitorObjectId.toHexString();
 		const dates = { start: startDate, end: endDate };
 		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
-			getHardwareAggregateData(monitorId, dates),
-			getHardwareUpChecks(monitorId, dates),
-			getHardwareStats(monitorId, dates, dateString),
+			this.getHardwareAggregateData(monitorId, dates),
+			this.getHardwareUpChecks(monitorId, dates),
+			this.getHardwareStats(monitorId, dates, dateString),
 		]);
 
 		const aggregateData = {
@@ -387,8 +385,182 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
-		const result = await CheckModel.deleteMany({ "metadata.monitorId": monitorId });
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) });
 		return result.deletedCount;
+	};
+
+	private getHardwareAggregateData = async (monitorId: string, dates: DateRange): Promise<HardwareAggregateData> => {
+		const result = await CheckModel.aggregate([
+			{
+				$match: {
+					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+					"metadata.type": "hardware",
+					createdAt: { $gte: dates.start, $lte: dates.end },
+				},
+			},
+			{ $sort: { createdAt: -1 } },
+			{
+				$group: {
+					_id: null,
+					latestCheck: { $first: "$$ROOT" },
+					totalChecks: { $sum: 1 },
+				},
+			},
+		]);
+		return result[0] || { totalChecks: 0, latestCheck: null };
+	};
+
+	private getHardwareUpChecks = async (monitorId: string, dates: DateRange): Promise<HardwareUpChecks> => {
+		const count = await CheckModel.countDocuments({
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			"metadata.type": "hardware",
+			createdAt: { $gte: dates.start, $lte: dates.end },
+			status: true,
+		});
+		return { totalChecks: count };
+	};
+
+	private getHardwareStats = async (monitorId: string, dates: DateRange, dateString: string) => {
+		return await CheckModel.aggregate([
+			{
+				$match: {
+					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+					"metadata.type": "hardware",
+					createdAt: { $gte: dates.start, $lte: dates.end },
+				},
+			},
+			{ $sort: { createdAt: 1 } },
+			{
+				$group: {
+					_id: { $dateToString: { format: dateString, date: "$createdAt" } },
+					avgCpuUsage: { $avg: "$cpu.usage_percent" },
+					avgMemoryUsage: { $avg: "$memory.usage_percent" },
+					avgTemperatures: { $push: { $ifNull: ["$cpu.temperature", [0]] } },
+					disks: { $push: "$disk" },
+					net: { $push: "$net" },
+					updatedAts: { $push: "$updatedAt" },
+					sampleDoc: { $first: "$$ROOT" },
+				},
+			},
+			{
+				$project: {
+					_id: 1,
+					avgCpuUsage: 1,
+					avgMemoryUsage: 1,
+					avgTemperature: {
+						$map: {
+							input: { $range: [0, { $size: { $ifNull: [{ $arrayElemAt: ["$avgTemperatures", 0] }, [0]] } }] },
+							as: "idx",
+							in: { $avg: { $map: { input: "$avgTemperatures", as: "t", in: { $arrayElemAt: ["$$t", "$$idx"] } } } },
+						},
+					},
+					disks: {
+						$map: {
+							input: { $range: [0, { $size: { $ifNull: ["$sampleDoc.disk", []] } }] },
+							as: "dIdx",
+							in: {
+								name: { $concat: ["disk", { $toString: "$$dIdx" }] },
+								readSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.read_speed_bytes", "$$dIdx"] } } } },
+								writeSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.write_speed_bytes", "$$dIdx"] } } } },
+								totalBytes: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.total_bytes", "$$dIdx"] } } } },
+								freeBytes: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.free_bytes", "$$dIdx"] } } } },
+								usagePercent: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.usage_percent", "$$dIdx"] } } } },
+							},
+						},
+					},
+					net: {
+						$map: {
+							input: { $range: [0, { $size: { $ifNull: ["$sampleDoc.net", []] } }] },
+							as: "nIdx",
+							in: {
+								name: { $arrayElemAt: ["$sampleDoc.net.name", "$$nIdx"] },
+								bytesSentPerSecond: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.bytes_sent" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.bytes_sent" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaBytesRecv: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.bytes_recv" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.bytes_recv" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaPacketsSent: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.packets_sent" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.packets_sent" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaPacketsRecv: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.packets_recv" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.packets_recv" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaErrIn: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.err_in" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.err_in" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaErrOut: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.err_out" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.err_out" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaDropIn: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_in" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_in" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaDropOut: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			{ $sort: { _id: 1 } },
+		]);
 	};
 }
 

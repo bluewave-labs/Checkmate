@@ -21,19 +21,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.mapDocuments(inserted);
 	};
 
-	findById = async (monitorId: string, teamId?: string): Promise<Monitor> => {
-		const match: { _id: string; teamId?: string } = { _id: monitorId };
-		if (teamId) {
-			match.teamId = teamId;
-		}
+	findById = async (monitorId: string, teamId: string): Promise<Monitor> => {
+		const match: { _id: string; teamId: string } = { _id: monitorId, teamId };
 		const monitor = await MonitorModel.findOne(match);
 		if (!monitor) {
-			if (monitor === null || monitor === undefined) {
-				throw new AppError({
-					message: `Monitor with ID ${monitorId} not found.`,
-					status: 404,
-				});
-			}
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found`, status: 404 });
 		}
 		return this.toEntity(monitor);
 	};
@@ -79,6 +71,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(rowsPerPage);
 
 		return this.mapDocuments(documents);
+	};
+
+	findByIds = async (monitorIds: string[]): Promise<Monitor[]> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const monitors = await MonitorModel.find({ _id: { $in: objectIds } });
+		return this.mapDocuments(monitors);
 	};
 
 	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {

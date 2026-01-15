@@ -1,9 +1,44 @@
+import { IMonitorsRepository } from "@/repositories/index.js";
+
 const SERVICE_NAME = "userService";
 
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ crypto, db, emailService, settingsService, logger, stringService, jwt, errorService, jobQueue }) {
+	private db: any;
+	private emailService: any;
+	private settingsService: any;
+	private logger: any;
+	private stringService: any;
+	private jwt: any;
+	private errorService: any;
+	private jobQueue: any;
+	private crypto: any;
+	private monitorsRepository: IMonitorsRepository;
+
+	constructor({
+		crypto,
+		db,
+		emailService,
+		settingsService,
+		logger,
+		stringService,
+		jwt,
+		errorService,
+		jobQueue,
+		monitorsRepository,
+	}: {
+		crypto: any;
+		db: any;
+		emailService: any;
+		settingsService: any;
+		logger: any;
+		stringService: any;
+		jwt: any;
+		errorService: any;
+		jobQueue: any;
+		monitorsRepository: IMonitorsRepository;
+	}) {
 		this.db = db;
 		this.emailService = emailService;
 		this.settingsService = settingsService;
@@ -13,20 +48,21 @@ class UserService {
 		this.errorService = errorService;
 		this.jobQueue = jobQueue;
 		this.crypto = crypto;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
 		return UserService.SERVICE_NAME;
 	}
 
-	issueToken = (payload, appSettings) => {
+	issueToken = (payload: any, appSettings: any) => {
 		const tokenTTL = appSettings?.jwtTTL ?? "2h";
 		const tokenSecret = appSettings?.jwtSecret;
 		const payloadData = payload;
 		return this.jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
 	};
 
-	registerUser = async (user, file) => {
+	registerUser = async (user: any, file: any) => {
 		// Create a new user
 		// If superAdmin exists, a token should be attached to all further register requests
 		const superAdminExists = await this.db.userModule.checkSuperadmin();
@@ -61,7 +97,7 @@ class UserService {
 			const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
 				name: newUser.firstName,
 			});
-			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error) => {
+			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: any) => {
 				this.logger.warn({
 					message: error.message,
 					service: SERVICE_NAME,
@@ -69,7 +105,7 @@ class UserService {
 					stack: error.stack,
 				});
 			});
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.warn({
 				message: error.message,
 				service: SERVICE_NAME,
@@ -81,7 +117,7 @@ class UserService {
 		return { user: newUser, token };
 	};
 
-	loginUser = async (email, password) => {
+	loginUser = async (email: string, password: string) => {
 		// Check if user exists
 		const user = await this.db.userModule.getUserByEmail(email);
 		// Compare password
@@ -103,7 +139,7 @@ class UserService {
 		return { user: userWithoutPassword, token };
 	};
 
-	editUser = async (updates, file, currentUser) => {
+	editUser = async (updates: any, file: any, currentUser: any) => {
 		// Change Password check
 		if (updates?.password && updates?.newPassword) {
 			// Get user's email
@@ -131,7 +167,7 @@ class UserService {
 		return superAdminExists;
 	};
 
-	requestRecovery = async (email) => {
+	requestRecovery = async (email: string) => {
 		const user = await this.db.userModule.getUserByEmail(email);
 		const recoveryToken = await this.db.recoveryModule.requestRecoveryToken(email);
 		const name = user.firstName;
@@ -147,18 +183,18 @@ class UserService {
 		return msgId;
 	};
 
-	validateRecovery = async (recoveryToken) => {
+	validateRecovery = async (recoveryToken: string) => {
 		await this.db.recoveryModule.validateRecoveryToken(recoveryToken);
 	};
 
-	resetPassword = async (password, recoveryToken) => {
+	resetPassword = async (password: string, recoveryToken: string) => {
 		const user = await this.db.recoveryModule.resetPassword(password, recoveryToken);
 		const appSettings = await this.settingsService.getSettings();
 		const token = this.issueToken(user._doc, appSettings);
 		return { user, token };
 	};
 
-	deleteUser = async (user) => {
+	deleteUser = async (user: any) => {
 		const email = user?.email;
 		if (!email) {
 			throw this.errorService.createBadRequestError("No email in request");
@@ -181,15 +217,14 @@ class UserService {
 		}
 
 		// 1. Find all the monitors associated with the team ID if superadmin
-		const result = await this.db.monitorModule.getMonitorsByTeamId({
-			teamId: teamId,
-		});
+		const res = await this.monitorsRepository.findByTeamId(teamId, {});
 
 		if (roles.includes("superadmin")) {
 			// 2.  Remove all jobs, delete checks and alerts
-			result?.monitors.length > 0 &&
+			res &&
+				res?.length > 0 &&
 				(await Promise.all(
-					result.monitors.map(async (monitor) => {
+					res.map(async (monitor) => {
 						await this.jobQueue.deleteJob(monitor);
 					})
 				));
@@ -203,15 +238,15 @@ class UserService {
 		return users;
 	};
 
-	getUserById = async (roles, userId) => {
+	getUserById = async (roles: any, userId: any) => {
 		const user = await this.db.userModule.getUserById(roles, userId);
 		return user;
 	};
 
-	editUserById = async (userId, user) => {
+	editUserById = async (userId: any, user: any) => {
 		await this.db.userModule.editUserById(userId, user);
 	};
-	setPasswordByUserId = async (userId, password) => {
+	setPasswordByUserId = async (userId: any, password: string) => {
 		const updatedUser = await this.db.userModule.updateUser({ userId: userId, user: { password: password }, file: null });
 		return updatedUser;
 	};

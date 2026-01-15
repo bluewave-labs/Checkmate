@@ -1,20 +1,41 @@
+import { IMonitorsRepository } from "@/repositories/index.js";
+
 const SERVICE_NAME = "checkService";
 
 class CheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, settingsService, stringService, errorService }) {
+	private db: any;
+	private settingsService: any;
+	private stringService: any;
+	private errorService: any;
+	private monitorsRepository: IMonitorsRepository;
+
+	constructor({
+		db,
+		settingsService,
+		stringService,
+		errorService,
+		monitorsRepository,
+	}: {
+		db: any;
+		settingsService: any;
+		stringService: any;
+		errorService: any;
+		monitorsRepository: IMonitorsRepository;
+	}) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
 		this.errorService = errorService;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
 		return CheckService.SERVICE_NAME;
 	}
 
-	getChecksByMonitor = async ({ monitorId, query, teamId }) => {
+	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
 		if (!monitorId) {
 			throw this.errorService.createBadRequestError("No monitor ID in request");
 		}
@@ -23,15 +44,8 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
-
-		if (!monitor) {
-			throw this.errorService.createNotFoundError("Monitor not found");
-		}
-
-		if (!monitor.teamId.equals(teamId)) {
-			throw this.errorService.createAuthorizationError();
-		}
+		// For verificaiton, throws an error if monitor doesn't belong to team
+		await this.monitorsRepository.findById(monitorId, teamId);
 
 		let { sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
 		const result = await this.db.checkModule.getChecksByMonitor({
@@ -47,7 +61,7 @@ class CheckService {
 		return result;
 	};
 
-	getChecksByTeam = async ({ teamId, query }) => {
+	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: any }) => {
 		let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = query;
 
 		if (!teamId) {
@@ -66,7 +80,7 @@ class CheckService {
 		return checkData;
 	};
 
-	getChecksSummaryByTeamId = async ({ teamId }) => {
+	getChecksSummaryByTeamId = async ({ teamId }: { teamId: string }) => {
 		if (!teamId) {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
@@ -75,7 +89,7 @@ class CheckService {
 		return summary;
 	};
 
-	ackCheck = async ({ checkId, teamId, ack }) => {
+	ackCheck = async ({ checkId, teamId, ack }: { checkId: string; teamId: string; ack: any }) => {
 		if (!checkId) {
 			throw this.errorService.createBadRequestError("No check ID in request");
 		}
@@ -88,27 +102,21 @@ class CheckService {
 		return updatedCheck;
 	};
 
-	ackAllChecks = async ({ monitorId, path, teamId, ack }) => {
+	ackAllChecks = async ({ monitorId, path, teamId, ack }: { monitorId: string; path: string; teamId: string; ack: any }) => {
 		if (path === "monitor") {
 			if (!monitorId) {
 				throw this.errorService.createBadRequestError("No monitor ID in request");
 			}
 
-			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
-			if (!monitor) {
-				throw this.errorService.createNotFoundError("Monitor not found");
-			}
-
-			if (!monitor.teamId.equals(teamId)) {
-				throw this.errorService.createAuthorizationError();
-			}
+			// For verificaiton, throws an error if monitor doesn't belong to team
+			await this.monitorsRepository.findById(monitorId, teamId);
 		}
 
 		const updatedChecks = await this.db.checkModule.ackAllChecks(monitorId, teamId, ack, path);
 		return updatedChecks;
 	};
 
-	deleteChecks = async ({ monitorId, teamId }) => {
+	deleteChecks = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
 		if (!monitorId) {
 			throw this.errorService.createBadRequestError("No monitor ID in request");
 		}
@@ -117,20 +125,13 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const monitor = await this.db.monitorModule.getMonitorById(monitorId);
-
-		if (!monitor) {
-			throw this.errorService.createNotFoundError("Monitor not found");
-		}
-
-		if (!monitor.teamId.equals(teamId)) {
-			throw this.errorService.createAuthorizationError();
-		}
+		// For verificaiton, throws an error if monitor doesn't belong to team
+		await this.monitorsRepository.findById(monitorId, teamId);
 
 		const deletedCount = await this.db.checkModule.deleteChecks(monitorId);
 		return deletedCount;
 	};
-	deleteChecksByTeamId = async ({ teamId }) => {
+	deleteChecksByTeamId = async ({ teamId }: { teamId: string }) => {
 		if (!teamId) {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
@@ -139,7 +140,7 @@ class CheckService {
 		return deletedCount;
 	};
 
-	updateChecksTTL = async ({ teamId, ttl }) => {
+	updateChecksTTL = async ({ teamId, ttl }: { teamId: string; ttl: string }) => {
 		const SECONDS_PER_DAY = 86400;
 		const newTTL = parseInt(ttl, 10) * SECONDS_PER_DAY;
 		await this.db.checkModule.updateChecksTTL(teamId, newTTL);

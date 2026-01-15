@@ -1,30 +1,50 @@
+import { IMonitorsRepository } from "@/repositories/index.js";
+
 const SERVICE_NAME = "maintenanceWindowService";
 
 class MaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
+	private db: any;
+	private settingsService: any;
+	private stringService: any;
+	private errorService: any;
+	private monitorsRepository: IMonitorsRepository;
 
-	constructor({ db, settingsService, stringService, errorService }) {
+	constructor({
+		db,
+		settingsService,
+		stringService,
+		errorService,
+		monitorsRepository,
+	}: {
+		db: any;
+		settingsService: any;
+		stringService: any;
+		errorService: any;
+		monitorsRepository: IMonitorsRepository;
+	}) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
 		this.errorService = errorService;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
 		return MaintenanceWindowService.SERVICE_NAME;
 	}
 
-	createMaintenanceWindow = async ({ teamId, body }) => {
+	createMaintenanceWindow = async ({ teamId, body }: { teamId: string; body: any }) => {
 		const monitorIds = body.monitors;
-		const monitors = await this.db.monitorModule.getMonitorsByIds(monitorIds);
+		const monitors = await this.monitorsRepository.findByIds(monitorIds);
 
-		const unauthorizedMonitors = monitors.filter((monitor) => !monitor.teamId.equals(teamId));
+		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
 
 		if (unauthorizedMonitors.length > 0) {
 			throw this.errorService.createAuthorizationError();
 		}
 
-		const dbTransactions = monitorIds.map((monitorId) => {
+		const dbTransactions = monitorIds.map((monitorId: string) => {
 			return this.db.maintenanceWindowModule.createMaintenanceWindow({
 				teamId,
 				monitorId,
@@ -38,26 +58,26 @@ class MaintenanceWindowService {
 		await Promise.all(dbTransactions);
 	};
 
-	getMaintenanceWindowById = async ({ id, teamId }) => {
+	getMaintenanceWindowById = async ({ id, teamId }: { id: string; teamId: string }) => {
 		const maintenanceWindow = await this.db.maintenanceWindowModule.getMaintenanceWindowById({ id, teamId });
 		return maintenanceWindow;
 	};
 
-	getMaintenanceWindowsByTeamId = async ({ teamId, query }) => {
+	getMaintenanceWindowsByTeamId = async ({ teamId, query }: { teamId: string; query: any }) => {
 		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByTeamId(teamId, query);
 		return maintenanceWindows;
 	};
 
-	getMaintenanceWindowsByMonitorId = async ({ monitorId, teamId }) => {
+	getMaintenanceWindowsByMonitorId = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
 		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId({ monitorId, teamId });
 		return maintenanceWindows;
 	};
 
-	deleteMaintenanceWindow = async ({ id, teamId }) => {
+	deleteMaintenanceWindow = async ({ id, teamId }: { id: string; teamId: string }) => {
 		await this.db.maintenanceWindowModule.deleteMaintenanceWindowById({ id, teamId });
 	};
 
-	editMaintenanceWindow = async ({ id, teamId, body }) => {
+	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: any }) => {
 		const editedMaintenanceWindow = await this.db.maintenanceWindowModule.editMaintenanceWindowById({ id, body, teamId });
 		return editedMaintenanceWindow;
 	};

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { createNotificationBodyValidation } from "@/validation/joi.js";
 import { AppError } from "@/utils/AppError.js";
+import { IMonitorsRepository } from "@/repositories/index.js";
 
 const SERVICE_NAME = "NotificationController";
 
@@ -9,9 +10,11 @@ class NotificationController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private db: any;
 	private notificationService: any;
-	constructor(notificationService: any, db: any) {
+	private monitorsRepository: IMonitorsRepository;
+	constructor(notificationService: any, db: any, monitorsRepository: IMonitorsRepository) {
 		this.notificationService = notificationService;
 		this.db = db;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
@@ -167,11 +170,7 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
-
-			if (!monitor.teamId.equals(teamId)) {
-				throw new AppError({ message: "Unauthorized", status: 403 });
-			}
+			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			const notifications = monitor.notifications;
 			if (notifications.length === 0) {
