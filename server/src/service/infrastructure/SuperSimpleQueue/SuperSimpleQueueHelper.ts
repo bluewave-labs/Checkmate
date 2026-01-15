@@ -1,18 +1,30 @@
 const SERVICE_NAME = "JobQueueHelper";
+import type { Monitor } from "@/types/monitor.js";
+import { AppError } from "@/utils/AppError.js";
+import { error } from "winston";
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	/**
-	 * @param {{
-	 * 	db: import("../database.js").Database,
-	 * 	logger: import("../logger.js").Logger,
-	 * 	networkService: import("../networkService.js").NetworkService,
-	 * 	statusService: import("../statusService.js").StatusService,
-	 * 	notificationService: import("../notificationService.js").NotificationService
-	 * }}
-	 */
-	constructor({ db, logger, networkService, statusService, notificationService }) {
+	private db: any;
+	private logger: any;
+	private networkService: any;
+	private statusService: any;
+	private notificationService: any;
+
+	constructor({
+		db,
+		logger,
+		networkService,
+		statusService,
+		notificationService,
+	}: {
+		db: any;
+		logger: any;
+		networkService: any;
+		statusService: any;
+		notificationService: any;
+	}) {
 		this.db = db;
 		this.logger = logger;
 		this.networkService = networkService;
@@ -25,39 +37,41 @@ class SuperSimpleQueueHelper {
 	}
 
 	getMonitorJob = () => {
-		return async (monitor) => {
+		return async (monitor: Monitor) => {
 			try {
 				const monitorId = monitor.id;
 				const teamId = monitor.teamId;
 				if (!monitorId) {
-					throw new Error("No monitor id");
+					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getMonitorJob" });
 				}
 
+				// Step 1.  Check for maintenacne window, if found, skip the check
 				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
 				if (maintenanceWindowActive) {
-					this.logger.info({
+					this.logger.debug({
 						message: `Monitor ${monitorId} is in maintenance window`,
 						service: SERVICE_NAME,
 						method: "getMonitorJob",
 					});
 					return;
 				}
-				const networkResponse = await this.networkService.requestStatus(monitor);
 
-				if (!networkResponse) {
+				// Step 2.  Request monitor status
+				const status = await this.networkService.requestStatus(monitor);
+				if (!status) {
 					throw new Error("No network response");
 				}
 
-				const { monitor: updatedMonitor, statusChanged, prevStatus } = await this.statusService.updateStatus(networkResponse);
+				const { monitor: updatedMonitor, statusChanged, prevStatus } = await this.statusService.updateStatus(status);
 
 				this.notificationService
 					.handleNotifications({
-						...networkResponse,
+						...status,
 						monitor: updatedMonitor,
 						prevStatus,
 						statusChanged,
 					})
-					.catch((error) => {
+					.catch((error: any) => {
 						this.logger.error({
 							message: error.message,
 							service: SERVICE_NAME,
@@ -66,7 +80,7 @@ class SuperSimpleQueueHelper {
 							stack: error.stack,
 						});
 					});
-			} catch (error) {
+			} catch (error: any) {
 				this.logger.warn({
 					message: error.message,
 					service: error.service || SERVICE_NAME,
@@ -78,13 +92,13 @@ class SuperSimpleQueueHelper {
 		};
 	};
 
-	async isInMaintenanceWindow(monitorId, teamId) {
+	async isInMaintenanceWindow(monitorId: string, teamId: string) {
 		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId({
-			monitorId: monitorId.toString(),
-			teamId: teamId.toString(),
+			monitorId: monitorId,
+			teamId: teamId,
 		});
 		// Check for active maintenance window:
-		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc, window) => {
+		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc: any, window: any) => {
 			if (window.active) {
 				const start = new Date(window.start);
 				const end = new Date(window.end);

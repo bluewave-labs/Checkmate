@@ -4,7 +4,7 @@
 		"allowJs": true,
 		"checkJs": false,
 		"paths": {
-			"@/*": ["./src/*"] // allows "@/db" -> "./src/db"
+			"@/*": ["./src/*"]
 		},
 		"outDir": "./dist",
 		"strict": true,
