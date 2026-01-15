@@ -1,32 +1,11 @@
 import type { MonitorType } from "@/types/index.js";
+import type { Response } from "got";
+export type GotTimings = Response["timings"];
 
 export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
 	type: MonitorType;
-}
-
-export interface CheckTimingPhases {
-	wait: number;
-	dns: number;
-	tcp: number;
-	tls: number;
-	request: number;
-	firstByte: number;
-	download: number;
-	total: number;
-}
-
-export interface CheckTimings {
-	start: number;
-	socket: number;
-	lookup: number;
-	connect: number;
-	secureConnect: number;
-	upload: number;
-	response: number;
-	end: number;
-	phases: CheckTimingPhases;
 }
 
 export interface CheckCpuInfo {
@@ -107,7 +86,7 @@ export interface Check {
 	metadata: CheckMetadata;
 	status: boolean;
 	responseTime: number;
-	timings: CheckTimings;
+	timings: GotTimings;
 	statusCode: number;
 	message: string;
 	ack: boolean;

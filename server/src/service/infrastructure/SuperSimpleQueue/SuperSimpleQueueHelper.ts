@@ -1,13 +1,13 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-
+import { INetworkService } from "@/service/index.js";
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private db: any;
 	private logger: any;
-	private networkService: any;
+	private networkService: INetworkService;
 	private statusService: any;
 	private notificationService: any;
 
@@ -20,7 +20,7 @@ class SuperSimpleQueueHelper {
 	}: {
 		db: any;
 		logger: any;
-		networkService: any;
+		networkService: INetworkService;
 		statusService: any;
 		notificationService: any;
 	}) {
@@ -61,14 +61,13 @@ class SuperSimpleQueueHelper {
 					throw new Error("No network response");
 				}
 
-				const { monitor: updatedMonitor, statusChanged, prevStatus } = await this.statusService.updateStatus(status);
-
+				const statusChangeResult = await this.statusService.updateMonitorStatus(status);
 				this.notificationService
 					.handleNotifications({
 						...status,
-						monitor: updatedMonitor,
-						prevStatus,
-						statusChanged,
+						monitor: statusChangeResult.monitor,
+						prevStatus: statusChangeResult.prevStatus,
+						statusChanged: statusChangeResult.statusChanged,
 					})
 					.catch((error: any) => {
 						this.logger.error({

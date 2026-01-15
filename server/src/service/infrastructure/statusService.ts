@@ -1,7 +1,8 @@
 import { IMonitorsRepository } from "@/repositories/index.js";
 import MonitorStats from "../../db/models/MonitorStats.js";
 import { CheckModel } from "@/db/models/index.js";
-import type { Monitor } from "@/types/index.js";
+import type { CheckErrorInfo, Monitor, MonitorStatusResponse, StatusChangeResult } from "@/types/index.js";
+import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
@@ -161,15 +162,17 @@ class StatusService {
 		}
 	};
 
-	updateStatus = async (networkResponse: any) => {
-		const check = this.buildCheck(networkResponse);
+	updateMonitorStatus = async (
+		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>
+	): Promise<StatusChangeResult> => {
+		const check = this.buildCheck(statusResponse);
 		await this.insertCheck(check);
 		try {
-			const { monitorId, teamId, status, code } = networkResponse;
+			const { monitorId, teamId, status, code } = statusResponse;
 			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			// Update running stats
-			this.updateRunningStats({ monitor, networkResponse });
+			this.updateRunningStats({ monitor, networkResponse: statusResponse });
 
 			// If the status window size has changed, empty
 			while (monitor.statusWindow.length > monitor.statusWindowSize) {
@@ -298,7 +301,9 @@ class StatusService {
 		}
 	};
 
-	buildCheck = (networkResponse: any) => {
+	buildCheck = (
+		networkResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>
+	) => {
 		const {
 			monitorId,
 			teamId,
@@ -317,7 +322,7 @@ class StatusService {
 			timings,
 		} = networkResponse;
 
-		const check = {
+		const check: any = {
 			metadata: {
 				monitorId,
 				teamId,
@@ -337,7 +342,8 @@ class StatusService {
 		};
 
 		if (type === "pagespeed") {
-			if (typeof payload === "undefined") {
+			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
+			if (!pageSpeedPayload) {
 				this.logger.warn({
 					message: "Failed to build check",
 					service: SERVICE_NAME,
@@ -346,8 +352,8 @@ class StatusService {
 				});
 				return undefined;
 			}
-			const categories = payload?.lighthouseResult?.categories ?? {};
-			const audits = payload?.lighthouseResult?.audits ?? {};
+			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
+			const audits = pageSpeedPayload.lighthouseResult?.audits ?? {};
 			const mapAudit = (audit: any) => {
 				if (!audit || typeof audit !== "object") {
 					return undefined;
@@ -375,14 +381,17 @@ class StatusService {
 		}
 
 		if (type === "hardware") {
-			const { cpu, memory, disk, host, net } = payload?.data ?? {};
-			const { errors } = payload?.errors ?? [];
+			const hardwarePayload = payload as HardwareStatusPayload | undefined;
+			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
+			const errorsSource = Array.isArray(hardwarePayload?.errors)
+				? hardwarePayload?.errors
+				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
 			check.cpu = cpu ?? {};
 			check.memory = memory ?? {};
 			check.disk = disk ?? {};
 			check.host = host ?? {};
-			check.errors = errors ?? [];
-			check.capture = payload?.capture ?? {};
+			check.errors = errorsSource ?? [];
+			check.capture = hardwarePayload?.capture ?? {};
 			check.net = net ?? {};
 		}
 		return check;

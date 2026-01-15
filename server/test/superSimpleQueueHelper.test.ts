@@ -8,11 +8,14 @@ const createHelper = (overrides?: Partial<ConstructorParameters<typeof SuperSimp
 	const maintenanceWindowModule = {
 		getMaintenanceWindowsByMonitorId: jest.fn().mockResolvedValue([]),
 	};
+	const statusServiceMock = {
+		updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1" }, statusChanged: true, prevStatus: false }),
+	};
 	const helper = new SuperSimpleQueueHelper({
 		db: { maintenanceWindowModule },
 		logger: createLogger(),
 		networkService: { requestStatus: jest.fn() },
-		statusService: { updateStatus: jest.fn() },
+		statusService: statusServiceMock,
 		notificationService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
 		...overrides,
 	});
@@ -39,7 +42,9 @@ describe("SuperSimpleQueueHelper", () => {
 			const { helper } = createHelper({
 				networkService: { requestStatus: jest.fn().mockResolvedValue(networkResponse) },
 				statusService: {
-					updateStatus: jest.fn().mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false }),
+					updateMonitorStatus: jest
+						.fn()
+						.mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false }),
 				},
 				notificationService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
 			});
@@ -48,7 +53,7 @@ describe("SuperSimpleQueueHelper", () => {
 			const monitor = { id: "m1", teamId: "team" } as Monitor;
 			await job(monitor);
 			expect(helper["networkService"].requestStatus).toHaveBeenCalledWith(monitor);
-			expect(helper["statusService"].updateStatus).toHaveBeenCalledWith(networkResponse);
+			expect(helper["statusService"].updateMonitorStatus).toHaveBeenCalledWith(networkResponse);
 			expect(helper["notificationService"].handleNotifications).toHaveBeenCalledWith(
 				expect.objectContaining({ monitor: updatedMonitor, statusChanged: true, prevStatus: false })
 			);

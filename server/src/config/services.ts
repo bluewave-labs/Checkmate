@@ -155,7 +155,7 @@ export const initializeServices = async ({
 
 	// Repositories
 	const monitorsRepository = new MongoMonitorsRepository();
-	const checksRepository = new MongoChecksRepository();
+	const checksRepository = new MongoChecksRepository(logger);
 	const monitorStatsRepository = new MongoMonitorStatsRepository();
 	const statusPagesRepository = new MongoStatusPagesRepository();
 
