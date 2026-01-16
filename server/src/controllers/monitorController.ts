@@ -124,7 +124,7 @@ class MonitorController {
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const monitor = await this.monitorService.getPageSpeedDetailsById({
+			const data = await this.monitorService.getPageSpeedDetailsById({
 				teamId,
 				monitorId,
 				dateRange,
@@ -133,7 +133,7 @@ class MonitorController {
 			return res.status(200).json({
 				success: true,
 				msg: "Page speed details retrieved successfully",
-				data: monitor,
+				data,
 			});
 		} catch (error) {
 			next(error);

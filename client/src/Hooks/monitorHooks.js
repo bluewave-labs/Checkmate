@@ -243,6 +243,7 @@ export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigg
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [monitor, setMonitor] = useState(undefined);
+	const [monitorStats, setMonitorStats] = useState(undefined);
 
 	useEffect(() => {
 		const fetchMonitor = async () => {
@@ -254,7 +255,8 @@ export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigg
 					monitorId: monitorId,
 					dateRange: dateRange,
 				});
-				setMonitor(response.data.data);
+				setMonitor(response.data.data.monitor);
+				setMonitorStats(response.data.data.monitorStats);
 			} catch (error) {
 				setNetworkError(true);
 			} finally {
@@ -263,7 +265,7 @@ export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigg
 		};
 		fetchMonitor();
 	}, [monitorId, dateRange, updateTrigger]);
-	return [monitor, isLoading, networkError];
+	return [monitor, monitorStats, isLoading, networkError];
 };
 
 export const useFetchUptimeMonitorById = ({ monitorId, dateRange, trigger }) => {

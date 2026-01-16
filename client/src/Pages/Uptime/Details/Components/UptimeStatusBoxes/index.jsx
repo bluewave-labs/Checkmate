@@ -18,7 +18,10 @@ const UptimeStatusBoxes = ({
 
 	// Determine time since last failure
 	const timeOfLastFailure = monitorStats?.timeOfLastFailure;
-	const timeSinceLastFailure = timeOfLastFailure > 0 ? Date.now() - timeOfLastFailure : 0;
+	const timeSinceLastFailure =
+		timeOfLastFailure > 0
+			? Date.now() - timeOfLastFailure
+			: Date.now() - new Date(monitorStats?.createdAt);
 
 	// Determine time since last check
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp;
