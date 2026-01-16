@@ -178,8 +178,7 @@ const PageSpeedSetup = () => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		const TEMP_MONITOR = { id: monitor._id };
-		await deleteMonitor({ monitor: TEMP_MONITOR, redirect: "/pagespeed" });
+		await deleteMonitor({ monitor: { id: monitorId }, redirect: "/pagespeed" });
 	};
 
 	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
