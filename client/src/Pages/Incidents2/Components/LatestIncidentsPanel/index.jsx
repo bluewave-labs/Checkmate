@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
 import IncidentItem from "./IncidentItem.jsx";
 import SummaryCard from "../SummaryCard/index.jsx";
+import Icon from "@/Components/v1/Icon";
 
 /**
  * LatestIncidentsPanel Component
@@ -51,21 +52,35 @@ const LatestIncidentsPanel = ({ incidents = [], isLoading = false, error = null 
 	return (
 		<SummaryCard title={t("incidentsPage.incidentsLatestPanelTitle")}>
 			{!incidents || incidents.length === 0 ? (
-				<Box
-					sx={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						flexGrow: 1,
-					}}
+				<Stack
+					direction="column"
+					alignItems="center"
+					justifyContent="center"
+					padding={theme.spacing(6)}
+					gap={theme.spacing(2)}
+					sx={{ flex: 1 }}
 				>
+					<Box sx={{ mb: theme.spacing(1) }}>
+						<Icon
+							name="Check"
+							size={24}
+							color={theme.palette.success.main}
+							strokeWidth={2}
+						/>
+					</Box>
+
 					<Typography
-						variant="body2"
-						textAlign="center"
+						sx={{
+							fontSize: 13,
+							textTransform: "uppercase",
+							fontWeight: 500,
+							textAlign: "center",
+							color: theme.palette.success.lowContrast,
+						}}
 					>
 						{t("incidentsPage.incidentsLatestPanelEmpty")}
 					</Typography>
-				</Box>
+				</Stack>
 			) : (
 				<Stack gap={theme.spacing(4)}>
 					{incidents.map((incident, index) => (

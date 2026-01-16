@@ -12,13 +12,16 @@ import { Box } from "@mui/material";
 const BaseContainer = ({children}) => {
 	const theme = useTheme()
 	return(
-		<Box 
+		<Box
 			sx={{
 				padding: theme.spacing(3),
-				borderRadius: theme.spacing(2),
-				border: `1px solid ${theme.palette.divider}`,
-				minWidth: 250,
-				width: "fit-content",
+				borderRadius: 4,
+				border: `1px solid ${theme.palette.primary.lowContrast}`,
+				minWidth: 200,
+				width: `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
+				[theme.breakpoints.down("md")]: {
+					width: `calc(50% - (1 * ${theme.spacing(8)} / 2))`,
+				},
 			}}>
 				{children}
 		</Box>
@@ -99,7 +102,7 @@ const Gauges = ({ diagnostics, isLoading }) => {
 	return (
 		<Stack
 			direction="row"
-			spacing={theme.spacing(8)}
+			gap={theme.spacing(8)}
 			flexWrap="wrap"
 		>
 			<InfrastructureStyleGauge

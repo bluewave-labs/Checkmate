@@ -23,12 +23,12 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 				direction="row"
 				position="relative"
 				alignItems="center"
-				gap={theme.spacing(5)}
+				gap={theme.spacing(4)}
 			>
 				<Typography
-					variant="h6"
+					component="span"
 					sx={{
-						fontWeight: 600,
+						fontWeight: 500,
 					}}
 				>
 					{title}
@@ -38,9 +38,9 @@ const Host = ({ url, title, percentageColor, percentage, showURL, status }) => {
 					<>
 						<Dot />
 						<Typography
-							variant="h6"
+							component="span"
 							sx={{
-								fontWeight: 600,
+								fontWeight: 500,
 								color: percentageColor,
 							}}
 						>

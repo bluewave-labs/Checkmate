@@ -53,7 +53,7 @@ const IncidentsSummaryPanel = ({ updateTrigger }) => {
 		<>
 			<Grid
 				container
-				spacing={3}
+				spacing={"16px"}
 			>
 				<Grid
 					item

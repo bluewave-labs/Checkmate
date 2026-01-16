@@ -36,107 +36,68 @@ const IncidentItem = ({ incident }) => {
 
 	const duration = calculateDuration();
 	const iconWrapperStyle = {
-		px: theme.spacing(2),
 		display: "flex",
 		justifyContent: "center",
+		mx: theme.spacing(2),
 		color: theme.palette.primary.contrastTextTertiary,
+		"& svg": {
+			width: 18,
+			height: 18,
+		},
 		"& svg path": {
 			stroke: "currentColor",
+			strokeWidth: 1.5,
 		},
 	};
 
 	return (
 		<Box
 			sx={{
-				cursor: "pointer",
+				display: "grid",
+				gridTemplateColumns: "1fr 100px 80px",
+				alignItems: "center",
+				gap: theme.spacing(2),
 				width: "100%",
 				py: theme.spacing(0.5),
-				"&:hover": { opacity: 0.8 },
 			}}
 		>
 			<Stack
-				direction="column"
-				gap={theme.spacing(1.5)}
+				direction="row"
+				alignItems="center"
+				gap={theme.spacing(2)}
 			>
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={theme.spacing(1)}
+				<Box sx={iconWrapperStyle}>
+					<Icon
+						name="Globe"
+						size={18}
+					/>
+				</Box>
+				<Typography
+					variant="body1"
+					fontWeight={500}
+					noWrap
 				>
-					<Box
-						sx={{
-							...iconWrapperStyle,
-						}}
-					>
-						<Icon
-							name="Globe"
-							size={20}
-						/>
-					</Box>
-
-					<Stack
-						direction="row"
-						gap={theme.spacing(4)}
-						alignItems="baseline"
-					>
-						<Typography variant="body1">
-							{t("incidentsPage.incidentItemMonitor")}:
-						</Typography>
-						<Typography
-							variant="body1"
-							fontWeight={600}
-						>
-							{incident.monitorName || t("incidentsPage.unknownMonitor")}
-						</Typography>
-					</Stack>
-				</Stack>
-
-				<Stack
-					direction="row"
-					alignItems="center"
-					width="100%"
-					marginTop={theme.spacing(1)}
-				>
-					<Stack
-						direction="row"
-						alignItems="center"
-						gap={theme.spacing(3)}
-					>
-						<Box sx={{ ...iconWrapperStyle }}>
-							<Icon
-								name="Wifi"
-								size={20}
-							/>
-						</Box>
-						<Stack
-							direction="row"
-							alignItems="center"
-							spacing={2}
-						>
-							<Typography variant="body1">
-								{t("incidentsPage.incidentItemStatus")}:
-							</Typography>
-						</Stack>
-
-						<StatusLabel
-							status={isActive ? "down" : "up"}
-							text={isActive ? t("incidentsPage.active") : t("incidentsPage.resolved")}
-							customStyles={{
-								textTransform: "capitalize",
-							}}
-						/>
-					</Stack>
-
-					<Box sx={{ flexGrow: 1 }} />
-
-					<Typography
-						variant="body1"
-						fontWeight={500}
-					>
-						{duration}
-					</Typography>
-				</Stack>
+					{incident.monitorName || t("incidentsPage.unknownMonitor")}
+				</Typography>
 			</Stack>
+
+			<Box sx={{ display: "flex", justifyContent: "center" }}>
+				<StatusLabel
+					status={isActive ? "down" : "up"}
+					text={isActive ? t("incidentsPage.active") : t("incidentsPage.resolved")}
+					customStyles={{
+						textTransform: "capitalize",
+					}}
+				/>
+			</Box>
+
+			<Typography
+				variant="body1"
+				fontWeight={500}
+				textAlign="right"
+			>
+				{duration}
+			</Typography>
 		</Box>
 	);
 };

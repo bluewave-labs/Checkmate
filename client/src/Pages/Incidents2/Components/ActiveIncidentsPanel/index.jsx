@@ -42,25 +42,24 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 
 	if (!totalCount || totalCount === 0) {
 		return (
-			<SummaryCard>
+			<SummaryCard title={t("incidentsPage.incidentsActivePanelTitle")}>
 				<Stack
 					direction="column"
 					alignItems="center"
 					justifyContent="center"
-					padding={theme.spacing(10)}
-					gap={theme.spacing(4)}
+					padding={theme.spacing(6)}
+					gap={theme.spacing(2)}
 					sx={{ flex: 1 }}
 				>
 					<Box
 						sx={{
 							color: theme.palette.success.main,
 							"& svg": {
-								width: 60,
-								height: 60,
-
+								width: 24,
+								height: 24,
 								"& path": { stroke: "currentColor", strokeWidth: 2 },
 							},
-							mb: theme.spacing(2),
+							mb: theme.spacing(1),
 						}}
 					>
 						<Icon
@@ -70,14 +69,12 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 					</Box>
 
 					<Typography
-						variant="h1"
-						color={theme.palette.primary.contrastTextSecondary}
 						sx={{
+							fontSize: 13,
 							textTransform: "uppercase",
-							fontWeight: 600,
+							fontWeight: 500,
 							textAlign: "center",
 							color: theme.palette.success.lowContrast,
-							letterSpacing: theme.spacing(0.4),
 						}}
 					>
 						{t("incidentsPage.allSystemsAreOperational")}
@@ -88,21 +85,20 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 	}
 
 	return (
-		<SummaryCard isHighPriority={true}>
+		<SummaryCard title={t("incidentsPage.incidentsActivePanelTitle")}>
 			<Stack
 				direction="column"
 				alignItems="center"
 				justifyContent="center"
-				spacing={theme.spacing(4)}
+				gap={theme.spacing(2)}
+				sx={{ flex: 1 }}
 			>
 				<Box
 					sx={{
 						color: theme.palette.error.lowContrast,
-						padding: theme.spacing(2),
 						"& svg": {
-							width: 60,
-							height: 60,
-
+							width: 24,
+							height: 24,
 							"& path": { stroke: "currentColor", strokeWidth: 2 },
 						},
 					}}
@@ -114,26 +110,14 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 				</Box>
 
 				<Typography
-					variant="h1"
 					sx={{
-						fontSize: `calc(${theme.typography.h1.fontSize} * 2.5)`,
-						fontWeight: 700,
+						fontSize: 32,
+						fontWeight: 600,
 						color: theme.palette.error.lowContrast,
 						lineHeight: 1,
 					}}
 				>
 					{totalCount}
-				</Typography>
-				<Typography
-					variant="h2"
-					sx={{
-						textTransform: "uppercase",
-						fontWeight: 700,
-						letterSpacing: theme.spacing(0.4),
-						paddingTop: theme.spacing(3),
-					}}
-				>
-					{t("incidentsPage.incidentsActivePanelTitle")}
 				</Typography>
 			</Stack>
 		</SummaryCard>

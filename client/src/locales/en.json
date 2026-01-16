@@ -791,7 +791,16 @@
 				"error": "Error",
 				"debug": "Debug"
 			}
-		}
+		},
+		"table": {
+			"timestamp": "Timestamp",
+			"level": "Level",
+			"service": "Service",
+			"method": "Method",
+			"message": "Message",
+			"logs": "logs"
+		},
+		"noLogs": "No logs found"
 	},
 	"queuePage": {
 		"title": "Queue",
@@ -1195,6 +1204,7 @@
 		"incidentsOptionsHeaderFilterResolved": "Resolved",
 		"incidentsTableResolved": "Closed",
 		"incidentsTableActionResolveManually": "Resolve Manually",
-		"hours": "hours"
+		"hours": "hours",
+		"none": "None"
 	}
 }
