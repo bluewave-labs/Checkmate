@@ -101,6 +101,47 @@ const SettingsEmail = ({
 		return null;
 	}
 
+	/**
+	 * Build email configuration object for code preview
+	 * Constructs the config incrementally instead of using nested conditional spreads
+	 */
+	const buildEmailConfigPreview = () => {
+		const config = {
+			host: systemEmailHost,
+			port: systemEmailPort,
+			secure: systemEmailSecure,
+			auth: {
+				user: systemEmailUser || systemEmailAddress,
+				pass: "<your_password>",
+			},
+			name: systemEmailConnectionHost || "localhost",
+			pool: systemEmailPool,
+		};
+
+		if (systemEmailSecure) {
+			if (systemEmailIgnoreTLS) {
+				config.ignoreTLS = systemEmailIgnoreTLS;
+			}
+			if (systemEmailRequireTLS) {
+				config.requireTLS = systemEmailRequireTLS;
+			}
+
+			const tlsSettings = {};
+			if (systemEmailRejectUnauthorized !== undefined) {
+				tlsSettings.rejectUnauthorized = systemEmailRejectUnauthorized;
+			}
+			if (systemEmailTLSServername && systemEmailTLSServername !== "") {
+				tlsSettings.servername = systemEmailTLSServername;
+			}
+
+			if (Object.keys(tlsSettings).length > 0) {
+				config.tls = tlsSettings;
+			}
+		}
+
+		return config;
+	};
+
 	return (
 		<ConfigBox>
 			<Box>
@@ -271,29 +312,7 @@ const SettingsEmail = ({
 								overflow: "auto",
 							}}
 						>
-							<code>
-								{JSON.stringify(
-									{
-										host: systemEmailHost,
-										port: systemEmailPort,
-										secure: systemEmailSecure,
-										auth: {
-											user: systemEmailUser || systemEmailAddress,
-											pass: "<your_password>",
-										},
-										name: systemEmailConnectionHost || "localhost",
-										pool: systemEmailPool,
-										tls: {
-											rejectUnauthorized: systemEmailRejectUnauthorized,
-											ignoreTLS: systemEmailIgnoreTLS,
-											requireTLS: systemEmailRequireTLS,
-											servername: systemEmailTLSServername,
-										},
-									},
-									null,
-									2
-								)}
-							</code>
+							<code>{JSON.stringify(buildEmailConfigPreview(), null, 2)}</code>
 						</Box>
 					</Box>
 
