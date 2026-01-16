@@ -22,9 +22,9 @@ import { useTranslation } from "react-i18next";
 import {
 	useDeleteMonitor,
 	useFetchGlobalSettings,
-	useFetchHardwareMonitorById,
+	useFetchMonitorById,
 	usePauseMonitor,
-} from "../../../Hooks/monitorHooks.js";
+} from "@/Hooks/monitorHooks.js";
 import useInfrastructureMonitorForm from "./hooks/useInfrastructureMonitorForm.jsx";
 import useValidateInfrastructureForm from "./hooks/useValidateInfrastructureForm.jsx";
 import useInfrastructureSubmit from "./hooks/useInfrastructureSubmit.jsx";
@@ -37,14 +37,16 @@ const CreateInfrastructureMonitor = () => {
 	const { t } = useTranslation();
 
 	// State
+	const [monitor, setMonitor] = useState(null);
 	const [https, setHttps] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [availableDisks, setAvailableDisks] = useState([]);
 
 	// Fetch monitor details if editing
-	const [monitor, isLoading] = useFetchHardwareMonitorById({
+	const [isLoading] = useFetchMonitorById({
 		monitorId,
-		updateTrigger,
+		setMonitor,
+		updateTrigger: true,
 	});
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
 	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
@@ -150,8 +152,7 @@ const CreateInfrastructureMonitor = () => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		const TEMP_MONITOR = { id: monitor._id };
-		await deleteMonitor({ monitor: TEMP_MONITOR, redirect: "/infrastructure" });
+		await deleteMonitor({ monitor, redirect: "/infrastructure" });
 	};
 
 	const isBusy =
