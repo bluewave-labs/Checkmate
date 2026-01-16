@@ -34,7 +34,7 @@ import {
 	GripVertical,
 	HelpCircle,
 	History,
-	Image,
+	Image as ImageIcon,
 	Info,
 	Key,
 	Layers,
@@ -67,7 +67,8 @@ import {
 
 /**
  * Map of icon names to Lucide icon components.
- * Only includes icons that are actually used in the application.
+ * Only icons explicitly imported here will be included in the bundle (tree-shaking).
+ * To add a new icon: import it above and add it to this object.
  */
 const iconComponents = {
 	Activity,
@@ -103,7 +104,7 @@ const iconComponents = {
 	GripVertical,
 	HelpCircle,
 	History,
-	Image,
+	Image: ImageIcon,
 	Info,
 	Key,
 	Layers,
