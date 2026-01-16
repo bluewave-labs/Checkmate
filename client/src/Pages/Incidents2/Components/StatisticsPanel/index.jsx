@@ -149,7 +149,9 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 							}}
 						>
 							{t("incidentsPage.avgResolutionTime")}:{" "}
-							{summary.total > 0 ? `${summary.avgResolutionTimeHours || 0} ${t("incidentsPage.hours")}` : "N/A"}
+							{summary.total > 0
+								? `${summary.avgResolutionTimeHours || 0} ${t("incidentsPage.hours")}`
+								: "N/A"}
 						</Typography>
 					</Box>
 				</Stack>
