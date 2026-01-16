@@ -1,4 +1,4 @@
-import type { Check, CheckAudits, MonitorType } from "@/types/index.js";
+import type { Check, MonitorType } from "@/types/index.js";
 import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory.js";
 
 export interface PageSpeedChecksResult {
@@ -55,6 +55,8 @@ export interface UptimeChecksResult {
 
 export interface IChecksRepository {
 	// create
+	createChecks(checks: Check[]): Promise<Check[]>;
+
 	// single fetch
 	// collection fetch
 	findLatestChecksByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;

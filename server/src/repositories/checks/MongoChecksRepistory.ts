@@ -10,11 +10,13 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
-	CheckTimings,
+	GotTimings,
 	MonitorType,
 } from "@/types/index.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
+
+const SERVICE_NAME = "StatusService";
 
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
@@ -22,6 +24,13 @@ type HardwareAggregateData = { latestCheck: CheckDocument | null; totalChecks: n
 type HardwareUpChecks = { totalChecks: number };
 
 class MongoChecksRepository implements IChecksRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
+	private logger: any;
+	constructor(logger: any) {
+		this.logger = logger;
+	}
+
 	private toEntity = (doc: CheckDocument): Check => {
 		const toStringId = (value: mongoose.Types.ObjectId | string | undefined | null): string => {
 			if (!value) {
@@ -44,7 +53,7 @@ class MongoChecksRepository implements IChecksRepository {
 			return toDateString(value);
 		};
 
-		const mapTimings = (timings?: CheckTimings): CheckTimings => {
+		const mapTimings = (timings?: GotTimings): GotTimings => {
 			const phases = timings?.phases ?? {
 				wait: 0,
 				dns: 0,
@@ -133,11 +142,11 @@ class MongoChecksRepository implements IChecksRepository {
 				return undefined;
 			}
 			return {
-				cls: audits.cls ?? 0,
-				si: audits.si ?? 0,
-				fcp: audits.fcp ?? 0,
-				lcp: audits.lcp ?? 0,
-				tbt: audits.tbt ?? 0,
+				cls: audits.cls,
+				si: audits.si,
+				fcp: audits.fcp,
+				lcp: audits.lcp,
+				tbt: audits.tbt,
 			};
 		};
 
@@ -174,6 +183,10 @@ class MongoChecksRepository implements IChecksRepository {
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
+	};
+
+	createChecks = async (checks: Check[]) => {
+		return await CheckModel.insertMany(checks);
 	};
 
 	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
