@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Divider } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
 import { useTranslation } from "react-i18next";
@@ -86,74 +86,70 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 		return summary.topMonitor?.monitorName || t("incidentsPage.none");
 	};
 
+	const rowStyle = {
+		py: theme.spacing(0.5),
+		minHeight: 32,
+	};
+
 	return (
 		<SummaryCard title={t("incidentsPage.incidentsStatisticsPanelTitle")}>
 			<Stack gap={theme.spacing(4)}>
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={theme.spacing(3)}
-				>
-					<Box
-						sx={{
-							...iconWrapperStyle,
-						}}
+				<Box>
+					<Stack
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+						sx={rowStyle}
 					>
-						<NotificationIcon />
-					</Box>
-					<Box>
+						<Box sx={iconWrapperStyle}>
+							<NotificationIcon />
+						</Box>
 						<Typography
 							variant="body1"
-							sx={{
-								fontWeight: 500,
-								lineHeight: 1.2,
-							}}
+							fontWeight={500}
 						>
 							{t("incidentsPage.totalIncidents")}: {summary.total || 0}
 						</Typography>
-					</Box>
-				</Stack>
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={theme.spacing(2)}
-				>
-					<Box sx={iconWrapperStyle}>
-						<Incidents />
-					</Box>
-					<Box>
+					</Stack>
+					<Divider sx={{ mt: theme.spacing(2) }} />
+				</Box>
+				<Box>
+					<Stack
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+						sx={rowStyle}
+					>
+						<Box sx={iconWrapperStyle}>
+							<Incidents />
+						</Box>
 						<Typography
 							variant="body1"
-							sx={{
-								fontWeight: 500,
-								lineHeight: 1.2,
-							}}
+							fontWeight={500}
 						>
 							{t("incidentsPage.mostAffectedMonitor")}: {getMostAffectedMonitor()}
 						</Typography>
-					</Box>
-				</Stack>
+					</Stack>
+					<Divider sx={{ mt: theme.spacing(2) }} />
+				</Box>
 				<Stack
 					direction="row"
 					alignItems="center"
 					gap={theme.spacing(2)}
+					sx={rowStyle}
 				>
 					<Box sx={iconWrapperStyle}>
 						<Clock />
 					</Box>
-					<Box>
-						<Typography
-							variant="body1"
-							sx={{
-								fontWeight: 500,
-							}}
-						>
-							{t("incidentsPage.avgResolutionTime")}:{" "}
-							{summary.total > 0
-								? `${summary.avgResolutionTimeHours || 0} ${t("incidentsPage.hours")}`
-								: "N/A"}
-						</Typography>
-					</Box>
+					<Typography
+						variant="body1"
+						fontWeight={500}
+					>
+						{t("incidentsPage.avgResolutionTime")}:{" "}
+						{summary.total > 0
+							? `${summary.avgResolutionTimeHours || 0} ${t("incidentsPage.hours")}`
+							: "N/A"}
+					</Typography>
 				</Stack>
 			</Stack>
 		</SummaryCard>
