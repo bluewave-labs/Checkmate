@@ -1,9 +1,7 @@
 // Components
 import { Stack, Typography, Box } from "@mui/material";
 import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
-import UptimeIcon from "@/assets/icons/uptime-icon.svg?react";
-import IncidentsIcon from "@/assets/icons/incidents.svg?react";
-import AverageResponseIcon from "@/assets/icons/average-response-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 import UpBarChart from "../Charts/UpBarChart.jsx";
 import DownBarChart from "../Charts/DownBarChart.jsx";
 import ResponseGaugeChart from "../Charts/ResponseGaugeChart.jsx";
@@ -38,7 +36,12 @@ const ChartBoxes = ({
 			gap={theme.spacing(8)}
 		>
 			<ChartBox
-				icon={<UptimeIcon />}
+				icon={
+					<Icon
+						name="Activity"
+						size={20}
+					/>
+				}
 				header="Uptime"
 				isEmpty={monitorData?.groupedUpChecks?.length === 0}
 			>
@@ -89,7 +92,12 @@ const ChartBoxes = ({
 				/>
 			</ChartBox>
 			<ChartBox
-				icon={<IncidentsIcon />}
+				icon={
+					<Icon
+						name="AlertTriangle"
+						size={20}
+					/>
+				}
 				header="Incidents"
 				noDataMessage={noIncidentsMessage}
 				isEmpty={monitorData?.groupedDownChecks?.length === 0}
@@ -123,7 +131,12 @@ const ChartBoxes = ({
 				/>
 			</ChartBox>
 			<ChartBox
-				icon={<AverageResponseIcon />}
+				icon={
+					<Icon
+						name="BarChart3"
+						size={20}
+					/>
+				}
 				header="Average Response Time"
 			>
 				<ResponseGaugeChart avgResponseTime={monitorData?.groupedAvgResponseTime ?? 0} />

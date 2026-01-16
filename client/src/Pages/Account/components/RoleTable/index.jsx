@@ -1,6 +1,6 @@
 import Typography from "@mui/material/Typography";
 import DataTable from "@/Components/v1/Table/index.jsx";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import Icon from "@/Components/v1/Icon";
 
 import { useTranslation } from "react-i18next";
 import { ROLES } from "../../../../Utils/roleUtils.js";
@@ -21,11 +21,13 @@ const RoleTable = ({ roles, handleDeleteRole }) => {
 			render: (row) => {
 				if (row === ROLES.SUPERADMIN) return null;
 				return (
-					<DeleteOutlineRoundedIcon
+					<Icon
+						name="Trash2"
+						size={20}
 						onClick={() => {
 							handleDeleteRole(row);
 						}}
-						sx={{ cursor: "pointer" }}
+						style={{ cursor: "pointer" }}
 					/>
 				);
 			},

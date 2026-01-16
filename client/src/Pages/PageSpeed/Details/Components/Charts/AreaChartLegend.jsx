@@ -1,6 +1,6 @@
 import { Box, Typography, Divider } from "@mui/material";
 import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
-import MetricsIcon from "@/assets/icons/ruler-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 import LegendBox from "@/Components/v1/Charts/LegendBox/index.jsx";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
@@ -10,7 +10,12 @@ const AreaChartLegend = ({ metrics, handleMetrics }) => {
 	const { t } = useTranslation();
 	return (
 		<LegendBox
-			icon={<MetricsIcon />}
+			icon={
+				<Icon
+					name="Ruler"
+					size={20}
+				/>
+			}
 			header="Metrics"
 		>
 			<Box>

@@ -1,9 +1,8 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
-import Arrow from "@/assets/icons/top-right-arrow.svg?react";
+import Icon from "@/Components/v1/Icon";
 import Background from "@/assets/Images/background-grid.svg?react";
-import ClockSnooze from "@/assets/icons/clock-snooze.svg?react";
 
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
@@ -20,21 +19,30 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(4) }}>
-				<Arrow />
+				<Icon
+					name="ArrowUpRight"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, transform: "rotate(180deg)", top: theme.spacing(2) }}>
-				<Arrow />
+				<Icon
+					name="ArrowUpRight"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<ClockSnooze />
+				<Icon
+					name="Clock"
+					size={20}
+				/>
 			</Box>
 		);
 	}

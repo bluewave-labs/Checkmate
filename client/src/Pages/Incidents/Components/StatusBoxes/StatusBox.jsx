@@ -2,10 +2,7 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import Background from "@/assets/Images/background-grid.svg?react";
-import AlertIcon from "@/assets/icons/alert-icon.svg?react";
-import CheckIcon from "@/assets/icons/check-icon.svg?react";
-import CloseIcon from "@/assets/icons/close-icon.svg?react";
-import WarningIcon from "@/assets/icons/warning-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 
 const StatusBox = ({ title, value, status }) => {
 	const theme = useTheme();
@@ -26,28 +23,40 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<CheckIcon />
+				<Icon
+					name="CheckCircle"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<CloseIcon />
+				<Icon
+					name="X"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<WarningIcon />
+				<Icon
+					name="AlertTriangle"
+					size={20}
+				/>
 			</Box>
 		);
 	} else {
 		color = theme.palette.accent.main;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<AlertIcon />
+				<Icon
+					name="Bell"
+					size={20}
+				/>
 			</Box>
 		);
 	}

@@ -1,5 +1,5 @@
 import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
-import PerformanceIcon from "@/assets/icons/performance-report.svg?react";
+import Icon from "@/Components/v1/Icon";
 import PieChart from "../Charts/PieChart.jsx";
 import { Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
@@ -17,7 +17,12 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 
 	return (
 		<ChartBox
-			icon={<PerformanceIcon />}
+			icon={
+				<Icon
+					name="Layers"
+					size={20}
+				/>
+			}
 			header="Performance report"
 			Legend={<PieChartLegend audits={audits} />}
 			borderRadiusRight={16}

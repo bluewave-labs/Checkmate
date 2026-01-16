@@ -8,7 +8,7 @@ import {
 	Checkbox,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import SearchIcon from "../../../../assets/icons/search.svg?react";
+import Icon from "../../Icon";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import FieldWrapper from "../FieldWrapper/index.jsx";
@@ -31,20 +31,13 @@ import FieldWrapper from "../FieldWrapper/index.jsx";
 const SearchAdornment = () => {
 	const theme = useTheme();
 	return (
-		<Box
-			height={16}
-			sx={{
-				"& svg": {
-					width: 16,
-					height: 16,
-					"& path": {
-						stroke: theme.palette.primary.contrastTextTertiary,
-						strokeWidth: 1.2,
-					},
-				},
-			}}
-		>
-			<SearchIcon />
+		<Box height={16}>
+			<Icon
+				name="Search"
+				size={16}
+				color="primary.contrastTextTertiary"
+				strokeWidth={1.2}
+			/>
 		</Box>
 	);
 };

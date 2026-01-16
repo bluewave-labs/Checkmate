@@ -3,10 +3,9 @@ import { Box, Stack, Tooltip, Typography, Button, ButtonGroup } from "@mui/mater
 import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import Select from "@/Components/v1/Inputs/Select/index.jsx";
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
-import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import Icon from "@/Components/v1/Icon";
 import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import PulseDot from "@/Components/v1/Animated/PulseDot.jsx";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import SkeletonLayout from "./skeleton.jsx";
 import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
 import Dialog from "@/Components/v1/Dialog/index.jsx";
@@ -313,12 +312,18 @@ const PageSpeedSetup = () => {
 							>
 								{monitor?.isActive ? (
 									<>
-										<PauseCircleOutlineIcon />
+										<Icon
+											name="PauseCircle"
+											size={20}
+										/>
 										{t("pause")}
 									</>
 								) : (
 									<>
-										<PlayCircleOutlineRoundedIcon />
+										<Icon
+											name="PlayCircle"
+											size={20}
+										/>
 										{t("resume")}
 									</>
 								)}

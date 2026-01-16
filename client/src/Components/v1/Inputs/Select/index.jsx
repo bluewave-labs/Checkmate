@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { MenuItem, Select as MuiSelect, Stack, Typography } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Icon from "../../Icon";
 import FieldWrapper from "../FieldWrapper/index.jsx";
 
 import "./index.css";
@@ -98,7 +98,13 @@ const Select = ({
 				error={error}
 				name={name}
 				inputProps={{ id: id }}
-				IconComponent={KeyboardArrowDownIcon}
+				IconComponent={(props) => (
+					<Icon
+						name="ChevronDown"
+						size={20}
+						{...props}
+					/>
+				)}
 				MenuProps={{ disableScrollLock: true }}
 				sx={{
 					fontSize: 13,

@@ -3,8 +3,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
-import Incidents from "@/assets/icons/incidents.svg?react";
-import CheckIcon from "@/assets/icons/check-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 import SummaryCard from "../SummaryCard/index.jsx";
 
 /**
@@ -64,7 +63,10 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 							mb: theme.spacing(2),
 						}}
 					>
-						<CheckIcon />
+						<Icon
+							name="CheckCircle"
+							size={60}
+						/>
 					</Box>
 
 					<Typography
@@ -105,7 +107,10 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 						},
 					}}
 				>
-					<Incidents />
+					<Icon
+						name="AlertTriangle"
+						size={60}
+					/>
 				</Box>
 
 				<Typography
