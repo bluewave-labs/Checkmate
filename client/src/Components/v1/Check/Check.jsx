@@ -39,17 +39,11 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 					size={20}
 				/>
 			) : (
-				<Box
-					lineHeight={0}
-					sx={{
-						"& svg > path": { fill: colors[variant] },
-					}}
-				>
-					<Icon
-						name="Check"
-						size={16}
-					/>
-				</Box>
+				<Icon
+					name="Check"
+					size={16}
+					color={colors[variant]}
+				/>
 			)}
 			<Typography
 				component="span"

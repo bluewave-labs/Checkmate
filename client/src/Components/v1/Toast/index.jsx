@@ -18,7 +18,7 @@ const icons = {
 	),
 	error: (
 		<Icon
-			name="AlertTriangle"
+			name="AlertCircle"
 			size={24}
 		/>
 	),

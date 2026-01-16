@@ -17,7 +17,7 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 			<Icon
 				name="Trash2"
 				size={20}
-				sx={{ cursor: "pointer" }}
+				style={{ cursor: "pointer" }}
 				onClick={() => onDelete(monitor)}
 			/>
 		</Stack>

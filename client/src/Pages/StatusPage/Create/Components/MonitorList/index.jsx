@@ -35,7 +35,7 @@ const MonitorListItem = ({
 			<Icon
 				name="Trash2"
 				size={20}
-				sx={{ marginLeft: "auto" }}
+				style={{ marginLeft: "auto", cursor: "pointer" }}
 				onClick={() => {
 					onDelete(monitor);
 				}}
