@@ -67,7 +67,10 @@ const IncidentItem = ({ incident }) => {
 				gap={theme.spacing(2)}
 			>
 				<Box sx={iconWrapperStyle}>
-					<Icon name="Globe" size={18} />
+					<Icon
+						name="Globe"
+						size={18}
+					/>
 				</Box>
 				<Typography
 					variant="body1"

@@ -96,7 +96,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						sx={rowStyle}
 					>
 						<Box sx={iconWrapperStyle}>
-							<Icon name="Bell" size={18} />
+							<Icon
+								name="Bell"
+								size={18}
+							/>
 						</Box>
 						<Typography
 							variant="body1"
@@ -115,7 +118,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						sx={rowStyle}
 					>
 						<Box sx={iconWrapperStyle}>
-							<Icon name="AlertTriangle" size={18} />
+							<Icon
+								name="AlertTriangle"
+								size={18}
+							/>
 						</Box>
 						<Typography
 							variant="body1"
@@ -133,7 +139,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					sx={rowStyle}
 				>
 					<Box sx={iconWrapperStyle}>
-						<Icon name="Wrench" size={18} />
+						<Icon
+							name="Wrench"
+							size={18}
+						/>
 					</Box>
 					<Typography
 						variant="body1"

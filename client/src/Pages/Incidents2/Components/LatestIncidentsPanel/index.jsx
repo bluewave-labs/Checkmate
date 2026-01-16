@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
 import IncidentItem from "./IncidentItem.jsx";
 import SummaryCard from "../SummaryCard/index.jsx";
-import CheckIcon from "@/assets/icons/check-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 
 /**
  * LatestIncidentsPanel Component
@@ -60,18 +60,13 @@ const LatestIncidentsPanel = ({ incidents = [], isLoading = false, error = null 
 					gap={theme.spacing(2)}
 					sx={{ flex: 1 }}
 				>
-					<Box
-						sx={{
-							color: theme.palette.success.main,
-							"& svg": {
-								width: 24,
-								height: 24,
-								"& path": { stroke: "currentColor", strokeWidth: 2 },
-							},
-							mb: theme.spacing(1),
-						}}
-					>
-						<CheckIcon />
+					<Box sx={{ mb: theme.spacing(1) }}>
+						<Icon
+							name="Check"
+							size={24}
+							color={theme.palette.success.main}
+							strokeWidth={2}
+						/>
 					</Box>
 
 					<Typography
