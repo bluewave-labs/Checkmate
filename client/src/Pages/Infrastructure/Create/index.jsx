@@ -44,7 +44,6 @@ const CreateInfrastructureMonitor = () => {
 	// Fetch monitor details if editing
 	const [monitor, isLoading] = useFetchHardwareMonitorById({
 		monitorId,
-		dateRange: "day",
 		updateTrigger,
 	});
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
