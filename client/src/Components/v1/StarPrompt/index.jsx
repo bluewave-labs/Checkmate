@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, IconButton, Stack, Box } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import Icon from "../Icon";
 import { useTheme } from "@emotion/react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -67,7 +67,7 @@ const StarPrompt = ({ repoUrl = "https://github.com/bluewave-labs/checkmate" }) 
 						},
 					}}
 				>
-					<CloseIcon sx={{ fontSize: "1.25rem" }} />
+					<Icon name="X" size={20} />
 				</IconButton>
 			</Stack>
 

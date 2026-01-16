@@ -1,8 +1,7 @@
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 import { Box, IconButton, LinearProgress, Stack, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import Icon from "../Icon";
 import "./index.css";
 
 /**
@@ -51,7 +50,7 @@ const ProgressUpload = ({ icon, label, size, progress = 0, onClick, error }) => 
 				alignItems={error ? "center" : "flex-start"}
 			>
 				{error ? (
-					<ErrorOutlineOutlinedIcon />
+					<Icon name="AlertTriangle" size={20} />
 				) : icon ? (
 					<Box
 						sx={{
@@ -127,11 +126,7 @@ const ProgressUpload = ({ icon, label, size, progress = 0, onClick, error }) => 
 								}
 					}
 				>
-					<CloseIcon
-						sx={{
-							fontSize: "20px",
-						}}
-					/>
+					<Icon name="X" size={20} />
 				</IconButton>
 			</Stack>
 			{!error ? (

@@ -1,6 +1,6 @@
 import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import MonitorDetailsAreaChart from "@/Components/v1/Charts/MonitorDetailsAreaChart/index.jsx";
-import ResponseTimeIcon from "@/assets/icons/response-time-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 import SkeletonLayout from "./ResponseTimeChartSkeleton.jsx";
 import PropTypes from "prop-types";
 
@@ -11,7 +11,7 @@ const ResponseTImeChart = ({ isLoading = false, groupedChecks = [], dateRange })
 
 	return (
 		<ChartBox
-			icon={<ResponseTimeIcon />}
+			icon={<Icon name="TrendingUp" size={20} />}
 			header="Response Times"
 		>
 			<MonitorDetailsAreaChart

@@ -5,7 +5,7 @@ import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { createToast } from "@/Utils/toastUtils.jsx";
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import Settings from "@/assets/icons/settings-bold.svg?react";
+import Icon from "@/Components/v1/Icon";
 import PropTypes from "prop-types";
 import Dialog from "@/Components/v1/Dialog/index.jsx";
 import { networkService } from "@/Utils/NetworkService.js";
@@ -100,7 +100,7 @@ const InfrastructureMenu = ({ monitor, isAdmin, updateCallback }) => {
 				}}
 				ref={anchor}
 			>
-				<Settings />
+				<Icon name="Settings" size={20} />
 			</IconButton>
 
 			<Menu

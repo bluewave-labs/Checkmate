@@ -1,6 +1,6 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Icon from "@/Components/v1/Icon";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
@@ -14,7 +14,7 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 			width="100%"
 		>
 			<Typography flexGrow={1}>{monitor.name}</Typography>
-			<DeleteIcon
+			<Icon name="Trash2" size={20}
 				sx={{ cursor: "pointer" }}
 				onClick={() => onDelete(monitor)}
 			/>

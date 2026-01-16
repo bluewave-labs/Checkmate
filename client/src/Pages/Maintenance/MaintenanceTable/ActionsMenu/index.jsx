@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { logger } from "@/Utils/Logger.js";
-import Settings from "@/assets/icons/settings-bold.svg?react";
+import Icon from "@/Components/v1/Icon";
 import PropTypes from "prop-types";
 import { networkService } from "../../../../main.jsx";
 import { createToast } from "@/Utils/toastUtils.jsx";
@@ -98,7 +98,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 					},
 				}}
 			>
-				<Settings />
+				<Icon name="Settings" size={20} />
 			</IconButton>
 
 			<Menu

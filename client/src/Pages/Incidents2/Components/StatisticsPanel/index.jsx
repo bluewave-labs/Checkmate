@@ -4,10 +4,7 @@ import { useTheme } from "@emotion/react";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
 import { useTranslation } from "react-i18next";
 import { Divider } from "@mui/material";
-import Clock from "@/assets/icons/maintenance.svg?react";
-import Incidents from "@/assets/icons/incidents.svg?react";
-import ResolutionItem from "@/assets/icons/interval-check.svg?react";
-import NotificationIcon from "@/assets/icons/notifications.svg?react";
+import Icon from "@/Components/v1/Icon";
 import SummaryCard from "../SummaryCard/index.jsx";
 
 /**
@@ -89,7 +86,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 							...iconWrapperStyle,
 						}}
 					>
-						<NotificationIcon />
+						<Icon name="Bell" size={20} />
 					</Box>
 					<Box>
 						<Typography
@@ -110,7 +107,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					gap={theme.spacing(2)}
 				>
 					<Box sx={iconWrapperStyle}>
-						<Incidents />
+						<Icon name="AlertTriangle" size={20} />
 					</Box>
 					<Box>
 						<Typography
@@ -132,7 +129,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					gap={theme.spacing(2)}
 				>
 					<Box sx={iconWrapperStyle}>
-						<Clock />
+						<Icon name="Wrench" size={20} />
 					</Box>
 					<Box>
 						<Typography
@@ -156,7 +153,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						mb={theme.spacing(1.5)}
 					>
 						<Box sx={iconWrapperStyle}>
-							<ResolutionItem />
+							<Icon name="RefreshCw" size={20} />
 						</Box>
 
 						<Box>

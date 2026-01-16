@@ -2,7 +2,7 @@ import DataTable from "@/Components/v1/Table/index.jsx";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import Icon from "@/Components/v1/Icon";
 import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 const StatusPagesTable = ({ data }) => {
@@ -48,7 +48,7 @@ const StatusPagesTable = ({ data }) => {
 						}}
 					>
 						<Typography>{content}</Typography>
-						{row.isPublished && <ArrowOutwardIcon />}
+						{row.isPublished && <Icon name="ExternalLink" size={18} />}
 					</Stack>
 				);
 			},

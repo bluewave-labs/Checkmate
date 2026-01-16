@@ -1,9 +1,8 @@
 // Components
 import { Box, Stack, Typography, Button } from "@mui/material";
 import Image from "@/Components/v1/Image/index.jsx";
-import SettingsIcon from "@/assets/icons/settings-bold.svg?react";
+import Icon from "@/Components/v1/Icon";
 import ThemeSwitch from "@/Components/v1/ThemeSwitch/index.jsx";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 //Utils
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +45,7 @@ const Controls = ({ url, type }) => {
 						},
 					}}
 				>
-					<SettingsIcon /> {t("configure")}
+					<Icon name="Settings" size={18} style={{ marginRight: '8px' }} /> {t("configure")}
 				</Button>
 			</Box>
 		</Stack>
@@ -111,7 +110,7 @@ const ControlsHeader = ({ statusPage, isPublic, url, type = "uptime" }) => {
 						}}
 					>
 						<Typography>{t("publicLink")}</Typography>
-						<ArrowOutwardIcon />
+						<Icon name="ExternalLink" size={18} />
 					</Stack>
 				)}
 			</Stack>

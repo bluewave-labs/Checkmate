@@ -1,11 +1,10 @@
 // Components
 import { Box, Stack, Typography } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Icon from "../../Icon";
 import Image from "../../Image/index.jsx";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import ProgressUpload from "../../ProgressBars/index.jsx";
-import ImageIcon from "@mui/icons-material/Image";
 
 // Utils
 import PropTypes from "prop-types";
@@ -176,7 +175,7 @@ const ImageUpload = ({
 									boxShadow: theme.shape.boxShadow,
 								}}
 							>
-								<CloudUploadIcon />
+								<Icon name="Upload" size={24} />
 							</IconButton>
 							<Typography
 								component="h2"
@@ -203,7 +202,7 @@ const ImageUpload = ({
 					</Box>
 					{(localError || progress.isLoading || progress.value !== 0) && (
 						<ProgressUpload
-							icon={<ImageIcon />}
+							icon={<Icon name="Image" size={20} />}
 							label={file?.name || "Upload failed"}
 							size={file?.size}
 							progress={progress.value}

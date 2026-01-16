@@ -7,7 +7,7 @@ import { Stack } from "@mui/material";
 import { InfrastructureMenu } from "../MonitorsTableMenu/index.jsx";
 import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner/index.jsx";
 // Assets
-import CPUChipIcon from "@/assets/icons/cpu-chip.svg?react";
+import Icon from "@/Components/v1/Icon";
 import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
 
 // Utils
@@ -67,10 +67,7 @@ const MonitorsTable = ({
 					alignItems={"center"}
 					gap=".25rem"
 				>
-					<CPUChipIcon
-						width={20}
-						height={20}
-					/>
+					<Icon name="Cpu" size={20} />
 					{row.processor}
 				</Stack>
 			),

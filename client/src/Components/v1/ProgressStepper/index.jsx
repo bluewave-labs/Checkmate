@@ -1,15 +1,14 @@
 import React from "react";
 import { Step, Stepper, StepLabel, Typography } from "@mui/material";
-import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
-import CheckCircle from "@mui/icons-material/CheckCircle";
+import Icon from "../Icon";
 import PropTypes from "prop-types";
 
 const CustomStepIcon = (props) => {
 	const { completed, active } = props;
 	return completed ? (
-		<CheckCircle color="accent" />
+		<Icon name="CheckCircle2" size={24} color="accent.main" />
 	) : (
-		<RadioButtonCheckedIcon color={active ? "accent" : "disabled"} />
+		<Icon name="Circle" size={24} color={active ? "accent.main" : "text.disabled"} />
 	);
 };
 

@@ -28,10 +28,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../Validation/validation.js";
 import { createToast } from "../../../Utils/toastUtils.jsx";
-import {
-	PauseOutlined as PauseOutlinedIcon,
-	PlayArrowOutlined as PlayArrowOutlinedIcon,
-} from "@mui/icons-material";
+import Icon from "@/Components/v1/Icon";
 import { useMonitorUtils } from "../../../Hooks/useMonitorUtils.js";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications.js";
 import { useParams } from "react-router-dom";
@@ -429,7 +426,7 @@ const UptimeCreate = ({ isClone = false }) => {
 								color="secondary"
 								loading={isBusy}
 								startIcon={
-									monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+									monitor?.isActive ? <Icon name="Pause" size={18} /> : <Icon name="Play" size={18} />
 								}
 								onClick={handlePause}
 							>

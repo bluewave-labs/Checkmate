@@ -1,6 +1,6 @@
 import { Button, Box } from "@mui/material";
 import ProgressUpload from "@/Components/v1/ProgressBars/index.jsx";
-import ImageIcon from "@mui/icons-material/Image";
+import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 import { formatBytes } from "../../../../../Utils/fileUtils.js";
 const Progress = ({ isLoading, progressValue, logo, logoType, removeLogo, errors }) => {
@@ -8,7 +8,7 @@ const Progress = ({ isLoading, progressValue, logo, logoType, removeLogo, errors
 	if (isLoading) {
 		return (
 			<ProgressUpload
-				icon={<ImageIcon />}
+				icon={<Icon name="Image" size={20} />}
 				label={logo?.name}
 				size={formatBytes(logo?.size)}
 				progress={progressValue}

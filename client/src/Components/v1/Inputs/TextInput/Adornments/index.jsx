@@ -1,10 +1,7 @@
 import { Stack, Typography, InputAdornment, IconButton } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Visibility from "@mui/icons-material/Visibility";
-import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
-import DeleteIcon from "../../../../../assets/icons/trash-bin.svg?react";
+import Icon from "../../../Icon";
 
 export const HttpAdornment = ({ https }) => {
 	const theme = useTheme();
@@ -56,7 +53,11 @@ export const PasswordEndAdornment = ({ fieldType, setFieldType }) => {
 					},
 				}}
 			>
-				{fieldType === "password" ? <VisibilityOff /> : <Visibility />}
+				{fieldType === "password" ? (
+					<Icon name="EyeOff" size={20} />
+				) : (
+					<Icon name="Eye" size={20} />
+				)}
 			</IconButton>
 		</InputAdornment>
 	);

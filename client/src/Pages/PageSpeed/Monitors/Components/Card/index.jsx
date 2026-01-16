@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
-// import PageSpeedIcon from "../../../../assets/icons/page-speed.svg?react";
-import PageSpeedIcon from "@/assets/icons/page-speed.svg?react";
+import Icon from "@/Components/v1/Icon";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -241,7 +240,7 @@ const Card = ({ monitor }) => {
 				}}
 			>
 				<IconBox>
-					<PageSpeedIcon />
+					<Icon name="Gauge" size={20} />
 				</IconBox>
 				<Typography
 					component="h2"

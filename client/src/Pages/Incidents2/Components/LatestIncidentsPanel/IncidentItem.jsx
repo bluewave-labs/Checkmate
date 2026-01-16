@@ -3,8 +3,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
-import Monitors from "@/assets/icons/monitors.svg?react";
-import AverageResponseIcon from "@/assets/icons/status-pages.svg?react";
+import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 
 const IncidentItem = ({ incident }) => {
@@ -69,7 +68,7 @@ const IncidentItem = ({ incident }) => {
 							...iconWrapperStyle,
 						}}
 					>
-						<Monitors />
+						<Icon name="Globe" size={20} />
 					</Box>
 
 					<Stack
@@ -101,7 +100,7 @@ const IncidentItem = ({ incident }) => {
 						gap={theme.spacing(3)}
 					>
 						<Box sx={{ ...iconWrapperStyle }}>
-							<AverageResponseIcon />
+							<Icon name="Wifi" size={20} />
 						</Box>
 						<Stack
 							direction="row"
