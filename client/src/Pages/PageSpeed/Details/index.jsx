@@ -35,7 +35,7 @@ const PageSpeedDetails = () => {
 	});
 	const [trigger, setTrigger] = useState(false);
 	// Network
-	const [monitor, isLoading, networkError] = useFetchPageSpeedMonitorById({
+	const [monitor, monitorStats, isLoading, networkError] = useFetchPageSpeedMonitorById({
 		monitorId,
 		dateRange: "day",
 		updateTrigger: trigger,
@@ -95,7 +95,7 @@ const PageSpeedDetails = () => {
 			/>
 			<PageSpeedStatusBoxes
 				shouldRender={!isLoading}
-				monitor={monitor}
+				monitorStats={monitorStats}
 			/>
 			<MonitorTimeFrameHeader
 				shouldRender={!isLoading}

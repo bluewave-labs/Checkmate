@@ -4,9 +4,21 @@ import { Typography } from "@mui/material";
 import { getHumanReadableDuration } from "../../../../../Utils/timeUtils.js";
 import { useTranslation } from "react-i18next";
 
-const PageSpeedStatusBoxes = ({ shouldRender, monitor }) => {
-	const uptimeDuration = getHumanReadableDuration(monitor?.uptimeDuration);
-	const time = getHumanReadableDuration(monitor?.lastChecked);
+const PageSpeedStatusBoxes = ({ shouldRender, monitorStats }) => {
+	const lastChecked = monitorStats?.lastCheckTimestamp
+		? Date.now() - monitorStats.lastCheckTimestamp
+		: 0;
+
+	// Determine time since last failure
+	const timeOfLastFailure = monitorStats?.timeOfLastFailure;
+	const timeSinceLastFailure =
+		timeOfLastFailure > 0
+			? Date.now() - timeOfLastFailure
+			: Date.now() - new Date(monitorStats?.createdAt);
+
+	const streakTime = getHumanReadableDuration(timeSinceLastFailure);
+
+	const time = getHumanReadableDuration(lastChecked);
 
 	const { t } = useTranslation();
 
@@ -16,7 +28,7 @@ const PageSpeedStatusBoxes = ({ shouldRender, monitor }) => {
 				heading="checks since"
 				subHeading={
 					<>
-						{uptimeDuration}
+						{streakTime}
 						<Typography component="span">{t("ago")}</Typography>
 					</>
 				}

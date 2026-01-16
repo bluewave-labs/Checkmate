@@ -330,9 +330,15 @@ export class MonitorService implements IMonitorService {
 		if (checksData.monitorType !== "pagespeed") {
 			throw new AppError({ message: "Unable to load pagespeed stats for this monitor", status: 500 });
 		}
+
+		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+
 		return {
-			...monitor,
-			checks: checksData.checks,
+			monitor: {
+				...monitor,
+				checks: checksData.checks,
+			},
+			monitorStats,
 		};
 	};
 	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
