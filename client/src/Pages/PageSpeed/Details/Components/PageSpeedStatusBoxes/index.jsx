@@ -5,10 +5,21 @@ import { getHumanReadableDuration } from "../../../../../Utils/timeUtils.js";
 import { useTranslation } from "react-i18next";
 
 const PageSpeedStatusBoxes = ({ shouldRender, monitor }) => {
-	const uptimeDuration = getHumanReadableDuration(monitor?.uptimeDuration);
-	const time = getHumanReadableDuration(monitor?.lastChecked);
-
 	const { t } = useTranslation();
+
+	// Calculate time since first check (checks since)
+	const checks = monitor?.checks || [];
+	const oldestCheck = checks.length > 0 ? checks[checks.length - 1] : null;
+	const oldestCheckTime = oldestCheck?.createdAt ? new Date(oldestCheck.createdAt).getTime() : null;
+	const checksSinceDuration = oldestCheckTime ? Date.now() - oldestCheckTime : 0;
+
+	// Calculate time since last check
+	const latestCheck = checks.length > 0 ? checks[0] : null;
+	const latestCheckTime = latestCheck?.createdAt ? new Date(latestCheck.createdAt).getTime() : null;
+	const lastCheckDuration = latestCheckTime ? Date.now() - latestCheckTime : 0;
+
+	const uptimeDuration = getHumanReadableDuration(checksSinceDuration);
+	const time = getHumanReadableDuration(lastCheckDuration);
 
 	return (
 		<StatusBoxes shouldRender={shouldRender}>

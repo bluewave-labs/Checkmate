@@ -26,6 +26,18 @@ import SummaryCard from "../SummaryCard/index.jsx";
  * @param {boolean} props.isLoading - Loading state
  * @param {Object} props.error - Error object if any
  */
+const formatResolutionTime = (hours) => {
+	if (!hours || hours === 0) return "0m";
+
+	const totalMinutes = Math.round(hours * 60);
+	const h = Math.floor(totalMinutes / 60);
+	const m = totalMinutes % 60;
+
+	if (h === 0) return `${m}m`;
+	if (m === 0) return `${h}h`;
+	return `${h}h ${m}m`;
+};
+
 const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -150,7 +162,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					>
 						{t("incidentsPage.avgResolutionTime")}:{" "}
 						{summary.total > 0
-							? `${summary.avgResolutionTimeHours || 0} ${t("incidentsPage.hours")}`
+							? formatResolutionTime(summary.avgResolutionTimeHours)
 							: "N/A"}
 					</Typography>
 				</Stack>

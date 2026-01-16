@@ -8,7 +8,7 @@ import IncidentsSummaryPanel from "./Components/IncidentsSummaryPanel/index.jsx"
 
 //Utils
 import { useTheme } from "@emotion/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 import { useTranslation } from "react-i18next";
 
@@ -53,16 +53,33 @@ const Incidents2 = () => {
 
 	const theme = useTheme();
 
-	useEffect(() => {
-		setPage(0);
-	}, [selectedMonitor, filter, dateRange]);
+	// Track previous filter values to detect changes and reset page
+	const prevFiltersRef = useRef({ selectedMonitor, filter, dateRange });
 
 	useEffect(() => {
+		const prevFilters = prevFiltersRef.current;
+		const filtersChanged =
+			prevFilters.selectedMonitor !== selectedMonitor ||
+			prevFilters.filter !== filter ||
+			prevFilters.dateRange !== dateRange;
+
+		// Determine the effective page - reset to 0 if filters changed
+		const effectivePage = filtersChanged ? 0 : page;
+
+		// Update the ref for next comparison
+		if (filtersChanged) {
+			prevFiltersRef.current = { selectedMonitor, filter, dateRange };
+			// Also update the page state (for pagination component)
+			if (page !== 0) {
+				setPage(0);
+			}
+		}
+
 		const config = {
 			monitorId: selectedMonitor !== "0" ? selectedMonitor : undefined,
 			sortOrder: "desc",
 			dateRange,
-			page,
+			page: effectivePage,
 			rowsPerPage,
 		};
 
