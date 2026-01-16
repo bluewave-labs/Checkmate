@@ -1,5 +1,5 @@
 // Components
-import { Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import Gauge from "./Gauge.jsx";
 import SkeletonLayout from "./skeleton.jsx";
 import PropTypes from "prop-types";
@@ -65,16 +65,23 @@ const Gauges = ({ isLoading = false, monitor }) => {
 				valueTwo: formatBytes(disk.total_bytes, true),
 				metricThree: t("device"),
 				valueThree: formatDeviceName(disk.device),
-				metricFour: t("mountpoint"),
+				metricFour: t("mountedOn"),
 				valueFour: formatMountpoint(disk.mountpoint),
 			})),
 	];
 
+	// Only expand gauges to fill row when there are 4 or more
+	const shouldExpand = gauges.length >= 4;
+
 	return (
-		<Stack
-			direction="row"
-			flexWrap="wrap"
-			gap={theme.spacing(8)}
+		<Box
+			sx={{
+				display: "grid",
+				gridTemplateColumns: shouldExpand
+					? "repeat(auto-fill, minmax(200px, 1fr))"
+					: "repeat(auto-fill, 225px)",
+				gap: theme.spacing(4),
+			}}
 		>
 			{gauges.map((gauge) => {
 				return (
@@ -90,10 +97,11 @@ const Gauges = ({ isLoading = false, monitor }) => {
 						valueThree={gauge.valueThree}
 						metricFour={gauge.metricFour}
 						valueFour={gauge.valueFour}
+						shouldExpand={shouldExpand}
 					/>
 				);
 			})}
-		</Stack>
+		</Box>
 	);
 };
 
