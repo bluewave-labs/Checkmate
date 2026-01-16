@@ -10,6 +10,8 @@ class SuperSimpleQueueHelper {
 	private networkService: INetworkService;
 	private statusService: any;
 	private notificationService: any;
+	private checkService: any;
+	private buffer: any;
 
 	constructor({
 		db,
@@ -17,18 +19,24 @@ class SuperSimpleQueueHelper {
 		networkService,
 		statusService,
 		notificationService,
+		checkService,
+		buffer,
 	}: {
 		db: any;
 		logger: any;
 		networkService: INetworkService;
 		statusService: any;
 		notificationService: any;
+		checkService: any;
+		buffer: any;
 	}) {
 		this.db = db;
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
 		this.notificationService = notificationService;
+		this.checkService = checkService;
+		this.buffer = buffer;
 	}
 
 	get serviceName() {
@@ -61,7 +69,15 @@ class SuperSimpleQueueHelper {
 					throw new Error("No network response");
 				}
 
-				const statusChangeResult = await this.statusService.updateMonitorStatus(status);
+				// Step 3.  Build check
+				const check = await this.checkService.buildCheck(status);
+
+				// Step 4 Add check to buffer
+				this.buffer.addToBuffer({ check });
+
+				// Step 4.  Update monitor status
+				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
+
 				this.notificationService
 					.handleNotifications({
 						...status,

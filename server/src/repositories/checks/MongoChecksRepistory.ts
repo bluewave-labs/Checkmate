@@ -11,10 +11,8 @@ import type {
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
 	GotTimings,
-	MonitorStatusResponse,
 	MonitorType,
 } from "@/types/index.js";
-import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 
@@ -144,11 +142,11 @@ class MongoChecksRepository implements IChecksRepository {
 				return undefined;
 			}
 			return {
-				cls: audits.cls ?? 0,
-				si: audits.si ?? 0,
-				fcp: audits.fcp ?? 0,
-				lcp: audits.lcp ?? 0,
-				tbt: audits.tbt ?? 0,
+				cls: audits.cls,
+				si: audits.si,
+				fcp: audits.fcp,
+				lcp: audits.lcp,
+				tbt: audits.tbt,
 			};
 		};
 
@@ -187,100 +185,8 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	buildCheck = (
-		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>
-	) => {
-		const {
-			monitorId,
-			teamId,
-			type,
-			status,
-			responseTime,
-			code,
-			message,
-			payload,
-			first_byte_took,
-			body_read_took,
-			dns_took,
-			conn_took,
-			connect_took,
-			tls_took,
-			timings,
-		} = statusResponse;
-
-		const check: any = {
-			metadata: {
-				monitorId,
-				teamId,
-				type,
-			},
-			status,
-			statusCode: code,
-			responseTime,
-			timings: timings || {},
-			message,
-			first_byte_took,
-			body_read_took,
-			dns_took,
-			conn_took,
-			connect_took,
-			tls_took,
-		};
-
-		if (type === "pagespeed") {
-			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
-			if (!pageSpeedPayload) {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "buildCheck",
-					details: "empty payload",
-				});
-				return undefined;
-			}
-			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
-			const audits = pageSpeedPayload.lighthouseResult?.audits ?? {};
-			const mapAudit = (audit: any) => {
-				if (!audit || typeof audit !== "object") {
-					return undefined;
-				}
-				return {
-					id: audit.id,
-					title: audit.title,
-					score: typeof audit.score === "number" ? audit.score : (audit.score ?? null),
-					displayValue: audit.displayValue,
-					numericValue: typeof audit.numericValue === "number" ? audit.numericValue : undefined,
-					numericUnit: audit.numericUnit,
-				};
-			};
-			check.accessibility = (categories?.accessibility?.score || 0) * 100;
-			check.bestPractices = (categories?.["best-practices"]?.score || 0) * 100;
-			check.seo = (categories?.seo?.score || 0) * 100;
-			check.performance = (categories?.performance?.score || 0) * 100;
-			check.audits = {
-				cls: mapAudit(audits?.["cumulative-layout-shift"]),
-				si: mapAudit(audits?.["speed-index"]),
-				fcp: mapAudit(audits?.["first-contentful-paint"]),
-				lcp: mapAudit(audits?.["largest-contentful-paint"]),
-				tbt: mapAudit(audits?.["total-blocking-time"]),
-			};
-		}
-
-		if (type === "hardware") {
-			const hardwarePayload = payload as HardwareStatusPayload | undefined;
-			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
-			const errorsSource = Array.isArray(hardwarePayload?.errors)
-				? hardwarePayload?.errors
-				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
-			check.cpu = cpu ?? {};
-			check.memory = memory ?? {};
-			check.disk = disk ?? {};
-			check.host = host ?? {};
-			check.errors = errorsSource ?? [];
-			check.capture = hardwarePayload?.capture ?? {};
-			check.net = net ?? {};
-		}
-		return check;
+	createChecks = async (checks: Check[]) => {
+		return await CheckModel.insertMany(checks);
 	};
 
 	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {

@@ -1,5 +1,6 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
-import type { MonitorType } from "@/types/index.js";
+import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
+import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
+import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 
 const SERVICE_NAME = "checkService";
 
@@ -11,32 +12,113 @@ class CheckService {
 	private stringService: any;
 	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
-
+	private checksRepository: IChecksRepository;
+	private logger: any;
 	constructor({
 		db,
 		settingsService,
 		stringService,
 		errorService,
 		monitorsRepository,
+		logger,
+		checksRepository,
 	}: {
 		db: any;
 		settingsService: any;
 		stringService: any;
 		errorService: any;
 		monitorsRepository: IMonitorsRepository;
+		logger: any;
+		checksRepository: IChecksRepository;
 	}) {
 		this.db = db;
 		this.settingsService = settingsService;
 		this.stringService = stringService;
 		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
+		this.logger = logger;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
 		return CheckService.SERVICE_NAME;
 	}
 
-	buildCheck = async (statusResponse: any, type: MonitorType) => {};
+	createChecks = async (checks: Check[]) => {
+		return this.checksRepository.createChecks(checks);
+	};
+
+	buildCheck = (statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>) => {
+		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings } = statusResponse;
+
+		const check: Partial<Check> = {
+			metadata: {
+				monitorId,
+				teamId,
+				type,
+			},
+			status,
+			statusCode: code,
+			responseTime: responseTime || 0,
+			timings: timings,
+			message,
+		};
+
+		if (type === "pagespeed") {
+			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
+			if (!pageSpeedPayload) {
+				this.logger.warn({
+					message: "Failed to build check",
+					service: SERVICE_NAME,
+					method: "buildCheck",
+					details: "empty payload",
+				});
+				return undefined;
+			}
+			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
+			const audits = pageSpeedPayload.lighthouseResult?.audits ?? {};
+			const mapAudit = (audit: any) => {
+				if (!audit || typeof audit !== "object") {
+					return undefined;
+				}
+				return {
+					id: audit.id,
+					title: audit.title,
+					score: typeof audit.score === "number" ? audit.score : (audit.score ?? null),
+					displayValue: audit.displayValue,
+					numericValue: typeof audit.numericValue === "number" ? audit.numericValue : undefined,
+					numericUnit: audit.numericUnit,
+				};
+			};
+			check.accessibility = (categories?.accessibility?.score || 0) * 100;
+			check.bestPractices = (categories?.["best-practices"]?.score || 0) * 100;
+			check.seo = (categories?.seo?.score || 0) * 100;
+			check.performance = (categories?.performance?.score || 0) * 100;
+			check.audits = {
+				cls: mapAudit(audits?.["cumulative-layout-shift"]),
+				si: mapAudit(audits?.["speed-index"]),
+				fcp: mapAudit(audits?.["first-contentful-paint"]),
+				lcp: mapAudit(audits?.["largest-contentful-paint"]),
+				tbt: mapAudit(audits?.["total-blocking-time"]),
+			};
+		}
+
+		if (type === "hardware") {
+			const hardwarePayload = payload as HardwareStatusPayload | undefined;
+			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
+			const errorsSource = Array.isArray(hardwarePayload?.errors)
+				? hardwarePayload?.errors
+				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
+			check.cpu = cpu;
+			check.memory = memory;
+			check.disk = disk;
+			check.host = host;
+			check.errors = errorsSource;
+			check.capture = hardwarePayload?.capture;
+			check.net = net;
+		}
+		return check;
+	};
 
 	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
 		if (!monitorId) {

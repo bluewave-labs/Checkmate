@@ -183,7 +183,17 @@ export const initializeServices = async ({
 		stringService,
 	});
 
-	const bufferService = new BufferService({ db, logger, envSettings, incidentService });
+	const checkService = new CheckService({
+		db,
+		settingsService,
+		stringService,
+		errorService,
+		monitorsRepository,
+		logger,
+		checksRepository,
+	});
+
+	const bufferService = new BufferService({ db, logger, envSettings, incidentService, checkService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService, monitorsRepository });
 
@@ -208,6 +218,8 @@ export const initializeServices = async ({
 		networkService,
 		statusService,
 		notificationService,
+		checkService,
+		buffer: bufferService,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
@@ -229,13 +241,7 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		monitorsRepository,
 	});
-	const checkService = new CheckService({
-		db,
-		settingsService,
-		stringService,
-		errorService,
-		monitorsRepository,
-	});
+
 	const diagnosticService = new DiagnosticService();
 	const inviteService = new InviteService({
 		db,

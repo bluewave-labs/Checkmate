@@ -9,40 +9,40 @@ export interface CheckMetadata {
 }
 
 export interface CheckCpuInfo {
-	physical_core: number;
-	logical_core: number;
-	frequency: number;
-	temperature: number[];
-	free_percent: number;
-	usage_percent: number;
+	physical_core?: number;
+	logical_core?: number;
+	frequency?: number;
+	temperature?: number[];
+	free_percent?: number;
+	usage_percent?: number;
 }
 
 export interface CheckMemoryInfo {
-	total_bytes: number;
-	available_bytes: number;
-	used_bytes: number;
-	usage_percent: number;
+	total_bytes?: number;
+	available_bytes?: number;
+	used_bytes?: number;
+	usage_percent?: number;
 }
 
 export interface CheckHostInfo {
-	os: string;
-	platform: string;
-	kernel_version: string;
+	os?: string;
+	platform?: string;
+	kernel_version?: string;
 }
 
 export interface CheckCaptureInfo {
-	version: string;
-	mode: string;
+	version?: string;
+	mode?: string;
 }
 
 export interface CheckDiskInfo {
-	device: string;
-	mountpoint: string;
-	read_speed_bytes: number;
-	write_speed_bytes: number;
-	total_bytes: number;
-	free_bytes: number;
-	usage_percent: number;
+	device?: string;
+	mountpoint?: string;
+	read_speed_bytes?: number;
+	write_speed_bytes?: number;
+	total_bytes?: number;
+	free_bytes?: number;
+	usage_percent?: number;
 }
 
 export interface CheckErrorInfo {
@@ -65,11 +65,11 @@ export interface CheckNetworkInterfaceInfo {
 }
 
 export interface CheckAudits {
-	cls: ILighthouseAudit;
-	si: ILighthouseAudit;
-	fcp: ILighthouseAudit;
-	lcp: ILighthouseAudit;
-	tbt: ILighthouseAudit;
+	cls?: ILighthouseAudit;
+	si?: ILighthouseAudit;
+	fcp?: ILighthouseAudit;
+	lcp?: ILighthouseAudit;
+	tbt?: ILighthouseAudit;
 }
 
 export interface ILighthouseAudit {
@@ -86,19 +86,19 @@ export interface Check {
 	metadata: CheckMetadata;
 	status: boolean;
 	responseTime: number;
-	timings: GotTimings;
+	timings?: GotTimings;
 	statusCode: number;
 	message: string;
 	ack: boolean;
 	ackAt?: string | null;
 	expiry: string;
-	cpu: CheckCpuInfo;
-	memory: CheckMemoryInfo;
-	disk: CheckDiskInfo[];
-	host: CheckHostInfo;
-	errors: CheckErrorInfo[];
-	capture: CheckCaptureInfo;
-	net: CheckNetworkInterfaceInfo[];
+	cpu?: CheckCpuInfo;
+	memory?: CheckMemoryInfo;
+	disk?: CheckDiskInfo[];
+	host?: CheckHostInfo;
+	errors?: CheckErrorInfo[];
+	capture?: CheckCaptureInfo;
+	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
 	seo?: number;

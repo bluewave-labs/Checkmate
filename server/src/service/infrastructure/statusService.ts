@@ -1,8 +1,15 @@
 import { IMonitorsRepository } from "@/repositories/index.js";
 import MonitorStats from "../../db/models/MonitorStats.js";
 import { CheckModel } from "@/db/models/index.js";
-import type { CheckErrorInfo, Monitor, MonitorStatusResponse, StatusChangeResult } from "@/types/index.js";
-import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
+import type {
+	CheckErrorInfo,
+	Monitor,
+	MonitorStatusResponse,
+	StatusChangeResult,
+	Check,
+	HardwareStatusPayload,
+	PageSpeedStatusPayload,
+} from "@/types/index.js";
 const SERVICE_NAME = "StatusService";
 
 class StatusService {
@@ -163,10 +170,9 @@ class StatusService {
 	};
 
 	updateMonitorStatus = async (
-		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>
+		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
+		check: Check
 	): Promise<StatusChangeResult> => {
-		const check = this.buildCheck(statusResponse);
-		await this.insertCheck(check);
 		try {
 			const { monitorId, teamId, status, code } = statusResponse;
 			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
@@ -301,116 +307,7 @@ class StatusService {
 		}
 	};
 
-	buildCheck = (
-		networkResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>
-	) => {
-		const {
-			monitorId,
-			teamId,
-			type,
-			status,
-			responseTime,
-			code,
-			message,
-			payload,
-			first_byte_took,
-			body_read_took,
-			dns_took,
-			conn_took,
-			connect_took,
-			tls_took,
-			timings,
-		} = networkResponse;
-
-		const check: any = {
-			metadata: {
-				monitorId,
-				teamId,
-				type,
-			},
-			status,
-			statusCode: code,
-			responseTime,
-			timings: timings || {},
-			message,
-			first_byte_took,
-			body_read_took,
-			dns_took,
-			conn_took,
-			connect_took,
-			tls_took,
-		};
-
-		if (type === "pagespeed") {
-			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
-			if (!pageSpeedPayload) {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "buildCheck",
-					details: "empty payload",
-				});
-				return undefined;
-			}
-			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
-			const audits = pageSpeedPayload.lighthouseResult?.audits ?? {};
-			const mapAudit = (audit: any) => {
-				if (!audit || typeof audit !== "object") {
-					return undefined;
-				}
-				return {
-					id: audit.id,
-					title: audit.title,
-					score: typeof audit.score === "number" ? audit.score : (audit.score ?? null),
-					displayValue: audit.displayValue,
-					numericValue: typeof audit.numericValue === "number" ? audit.numericValue : undefined,
-					numericUnit: audit.numericUnit,
-				};
-			};
-			check.accessibility = (categories?.accessibility?.score || 0) * 100;
-			check.bestPractices = (categories?.["best-practices"]?.score || 0) * 100;
-			check.seo = (categories?.seo?.score || 0) * 100;
-			check.performance = (categories?.performance?.score || 0) * 100;
-			check.audits = {
-				cls: mapAudit(audits?.["cumulative-layout-shift"]),
-				si: mapAudit(audits?.["speed-index"]),
-				fcp: mapAudit(audits?.["first-contentful-paint"]),
-				lcp: mapAudit(audits?.["largest-contentful-paint"]),
-				tbt: mapAudit(audits?.["total-blocking-time"]),
-			};
-		}
-
-		if (type === "hardware") {
-			const hardwarePayload = payload as HardwareStatusPayload | undefined;
-			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
-			const errorsSource = Array.isArray(hardwarePayload?.errors)
-				? hardwarePayload?.errors
-				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
-			check.cpu = cpu ?? {};
-			check.memory = memory ?? {};
-			check.disk = disk ?? {};
-			check.host = host ?? {};
-			check.errors = errorsSource ?? [];
-			check.capture = hardwarePayload?.capture ?? {};
-			check.net = net ?? {};
-		}
-		return check;
-	};
-
-	/**
-	 * Inserts a check into the database based on the network response.
-	 *
-	 * @param {Object} networkResponse - The network response object.
-	 * @param {string} networkResponse.monitorId - The monitor ID.
-	 * @param {string} networkResponse.type - The type of the response.
-	 * @param {string} networkResponse.status - The status of the response.
-	 * @param {number} networkResponse.responseTime - The response time.
-	 * @param {number} networkResponse.code - The status code.
-	 * @param {string} networkResponse.message - The message.
-	 * @param {Object} networkResponse.payload - The payload of the response.
-	 * @returns {Promise<void>} A promise that resolves when the check is inserted.
-	 */
-	insertCheck = async (check: any) => {
+	insertCheck = async (check: Check) => {
 		try {
 			if (typeof check === "undefined") {
 				this.logger.warn({
@@ -427,7 +324,7 @@ class StatusService {
 				message: error.message,
 				service: error.service || SERVICE_NAME,
 				method: error.method || "insertCheck",
-				details: error.details || `Error inserting check for monitor: ${check?.monitorId}`,
+				details: error.details || `Error inserting check for monitor: ${check?.metadata.monitorId}`,
 				stack: error.stack,
 			});
 		}

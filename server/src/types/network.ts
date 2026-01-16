@@ -16,7 +16,7 @@ import type {
 export interface MonitorStatusResponse<T = unknown> {
 	monitorId: string;
 	teamId: string;
-	type: MonitorType | "unknown";
+	type: MonitorType;
 	status: boolean;
 	code: number;
 	message: string;
