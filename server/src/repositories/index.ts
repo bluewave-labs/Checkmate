@@ -9,3 +9,6 @@ export { default as MongoMonitorStatsRepository } from "@/repositories/monitor-s
 
 export * from "@/repositories/status-pages/IStatusPagesRepository.js";
 export { default as MongoStatusPagesRepository } from "@/repositories/status-pages/MongoStatusPagesRepository.js";
+
+export * from "@/repositories/users/IUserRepository.js";
+export { default as MongoUserRepository } from "@/repositories/users/MongoUserRepository.js";
