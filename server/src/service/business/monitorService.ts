@@ -388,7 +388,7 @@ export class MonitorService implements IMonitorService {
 		});
 
 		const monitorsList = (monitors ?? []) as Monitor[];
-		const snapshotTypes: MonitorType[] = ["hardware", "pagespeed"];
+		const snapshotTypes: MonitorType[] = ["hardware"];
 		const requestedTypes = Array.isArray(type) ? type : type ? [type] : [];
 		const snapshotOnlyRequest =
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
