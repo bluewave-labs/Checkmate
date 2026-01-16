@@ -3,6 +3,8 @@
 	min-height: 100vh;
 	margin: 0 auto;
 	padding: 0;
+	overflow-x: hidden;
+	width: 100%;
 }
 
 /* TODO go for this approach for responsiveness. The aside needs to be taken care of */
@@ -30,4 +32,6 @@
 	max-width: 1400px;
 	margin: 0 auto;
 	flex: 1;
+	min-width: 0;
+	overflow-x: hidden;
 }
