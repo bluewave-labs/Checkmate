@@ -42,9 +42,7 @@ describe("SuperSimpleQueueHelper", () => {
 			const { helper } = createHelper({
 				networkService: { requestStatus: jest.fn().mockResolvedValue(networkResponse) },
 				statusService: {
-					updateMonitorStatus: jest
-						.fn()
-						.mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false }),
+					updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false }),
 				},
 				notificationService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
 			});

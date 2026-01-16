@@ -217,24 +217,24 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 	};
 
 	getJobs = async () => {
-	const jobs = await this.scheduler.getJobs();
-	return jobs.map((job) => {
-		return {
-			monitorId: job.id,
-			monitorUrl: job?.data?.url || null,
-			monitorType: job?.data?.type || null,
-			monitorInterval: job?.data?.interval || null,
-			active: job.active,
-			lockedAt: job.lockedAt ?? null,
-			runCount: job.runCount ?? 0,
-			failCount: job.failCount ?? 0,
-			failReason: job.lastFailReason ?? null,
-			lastRunAt: job.lastRunAt ?? null,
-			lastFinishedAt: job.lastFinishedAt ?? null,
-			lastRunTook: job.lockedAt ? null : (job.lastFinishedAt ?? 0) - (job.lastRunAt ?? 0),
-			lastFailedAt: job.lastFailedAt ?? null,
-		};
-	});
+		const jobs = await this.scheduler.getJobs();
+		return jobs.map((job) => {
+			return {
+				monitorId: job.id,
+				monitorUrl: job?.data?.url || null,
+				monitorType: job?.data?.type || null,
+				monitorInterval: job?.data?.interval || null,
+				active: job.active,
+				lockedAt: job.lockedAt ?? null,
+				runCount: job.runCount ?? 0,
+				failCount: job.failCount ?? 0,
+				failReason: job.lastFailReason ?? null,
+				lastRunAt: job.lastRunAt ?? null,
+				lastFinishedAt: job.lastFinishedAt ?? null,
+				lastRunTook: job.lockedAt ? null : (job.lastFinishedAt ?? 0) - (job.lastRunAt ?? 0),
+				lastFailedAt: job.lastFailedAt ?? null,
+			};
+		});
 	};
 
 	flushQueues = async () => {
