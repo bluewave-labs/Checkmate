@@ -483,7 +483,7 @@
 		"newPassword": "New password",
 		"enterNewPassword": "Enter your new password",
 		"confirmNewPassword": "Confirm new password",
-		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
+		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`).",
 		"saving": "Saving..."
 	},
 	"emailSent": "Email sent successfully",
@@ -542,7 +542,7 @@
 						},
 						"special": {
 							"beginning": "Must contain at least",
-							"highlighted": "one special character"
+							"highlighted": "one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 						},
 						"number": {
 							"beginning": "Must contain at least",
@@ -567,7 +567,7 @@
 						"uppercase": "Password must contain at least 1 uppercase letter",
 						"lowercase": "Password must contain at least 1 lowercase letter",
 						"number": "Password must contain at least 1 number",
-						"special": "Password must contain at least 1 special character",
+						"special": "Password must contain at least 1 special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)",
 						"incorrect": "The password you provided does not match our records"
 					}
 				},
