@@ -38,6 +38,7 @@ class AuthController {
 				newUser.email = newUser.email.toLowerCase();
 			}
 			await registrationBodyValidation.validateAsync(newUser);
+
 			const { user, token } = await this.userService.registerUser(newUser, newUserToken, req.file);
 			res.status(200).json({
 				success: true,

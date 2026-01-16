@@ -4,3 +4,4 @@ export * from "@/types/monitorStats.js";
 export * from "@/types/statusPage.js";
 export * from "@/types/network.js";
 export * from "@/types/user.js";
+export * from "@/types/invite.js";
