@@ -34,7 +34,10 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 			alignItems="center"
 		>
 			{outlined ? (
-				<Icon name="CheckCircle" size={20} />
+				<Icon
+					name="CheckCircle"
+					size={20}
+				/>
 			) : (
 				<Box
 					lineHeight={0}
@@ -42,7 +45,10 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 						"& svg > path": { fill: colors[variant] },
 					}}
 				>
-					<Icon name="Check" size={16} />
+					<Icon
+						name="Check"
+						size={16}
+					/>
 				</Box>
 			)}
 			<Typography

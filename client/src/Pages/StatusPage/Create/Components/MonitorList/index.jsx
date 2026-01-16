@@ -27,9 +27,14 @@ const MonitorListItem = ({
 			justifyContent={"start"}
 			border={`1px solid ${theme.palette.primary.lowContrast}`}
 		>
-			<Icon name="GripVertical" size={20} />
+			<Icon
+				name="GripVertical"
+				size={20}
+			/>
 			<Typography>{monitor.name}</Typography>
-			<Icon name="Trash2" size={20}
+			<Icon
+				name="Trash2"
+				size={20}
 				sx={{ marginLeft: "auto" }}
 				onClick={() => {
 					onDelete(monitor);

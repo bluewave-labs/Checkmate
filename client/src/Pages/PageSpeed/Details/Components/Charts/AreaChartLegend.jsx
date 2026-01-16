@@ -10,7 +10,12 @@ const AreaChartLegend = ({ metrics, handleMetrics }) => {
 	const { t } = useTranslation();
 	return (
 		<LegendBox
-			icon={<Icon name="Ruler" size={20} />}
+			icon={
+				<Icon
+					name="Ruler"
+					size={20}
+				/>
+			}
 			header="Metrics"
 		>
 			<Box>

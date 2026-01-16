@@ -312,12 +312,18 @@ const PageSpeedSetup = () => {
 							>
 								{monitor?.isActive ? (
 									<>
-										<Icon name="PauseCircle" size={20} />
+										<Icon
+											name="PauseCircle"
+											size={20}
+										/>
 										{t("pause")}
 									</>
 								) : (
 									<>
-										<Icon name="PlayCircle" size={20} />
+										<Icon
+											name="PlayCircle"
+											size={20}
+										/>
 										{t("resume")}
 									</>
 								)}

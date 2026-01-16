@@ -9,7 +9,12 @@ const PieChartLegend = ({ audits }) => {
 
 	return (
 		<LegendBox
-			icon={<Icon name="Gauge" size={20} />}
+			icon={
+				<Icon
+					name="Gauge"
+					size={20}
+				/>
+			}
 			header="Performance metrics"
 			sx={{ flex: 1 }}
 		>

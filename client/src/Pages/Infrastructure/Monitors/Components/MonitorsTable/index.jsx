@@ -67,7 +67,10 @@ const MonitorsTable = ({
 					alignItems={"center"}
 					gap=".25rem"
 				>
-					<Icon name="Cpu" size={20} />
+					<Icon
+						name="Cpu"
+						size={20}
+					/>
 					{row.processor}
 				</Stack>
 			),

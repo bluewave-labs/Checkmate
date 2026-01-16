@@ -48,7 +48,12 @@ const StatusPagesTable = ({ data }) => {
 						}}
 					>
 						<Typography>{content}</Typography>
-						{row.isPublished && <Icon name="ExternalLink" size={18} />}
+						{row.isPublished && (
+							<Icon
+								name="ExternalLink"
+								size={18}
+							/>
+						)}
 					</Stack>
 				);
 			},

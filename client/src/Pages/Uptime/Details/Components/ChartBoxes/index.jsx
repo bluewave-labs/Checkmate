@@ -36,7 +36,12 @@ const ChartBoxes = ({
 			gap={theme.spacing(8)}
 		>
 			<ChartBox
-				icon={<Icon name="Activity" size={20} />}
+				icon={
+					<Icon
+						name="Activity"
+						size={20}
+					/>
+				}
 				header="Uptime"
 				isEmpty={monitorData?.groupedUpChecks?.length === 0}
 			>
@@ -87,7 +92,12 @@ const ChartBoxes = ({
 				/>
 			</ChartBox>
 			<ChartBox
-				icon={<Icon name="AlertTriangle" size={20} />}
+				icon={
+					<Icon
+						name="AlertTriangle"
+						size={20}
+					/>
+				}
 				header="Incidents"
 				noDataMessage={noIncidentsMessage}
 				isEmpty={monitorData?.groupedDownChecks?.length === 0}
@@ -121,7 +131,12 @@ const ChartBoxes = ({
 				/>
 			</ChartBox>
 			<ChartBox
-				icon={<Icon name="BarChart3" size={20} />}
+				icon={
+					<Icon
+						name="BarChart3"
+						size={20}
+					/>
+				}
 				header="Average Response Time"
 			>
 				<ResponseGaugeChart avgResponseTime={monitorData?.groupedAvgResponseTime ?? 0} />

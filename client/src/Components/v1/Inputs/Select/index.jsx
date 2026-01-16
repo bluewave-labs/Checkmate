@@ -98,7 +98,13 @@ const Select = ({
 				error={error}
 				name={name}
 				inputProps={{ id: id }}
-				IconComponent={(props) => <Icon name="ChevronDown" size={20} {...props} />}
+				IconComponent={(props) => (
+					<Icon
+						name="ChevronDown"
+						size={20}
+						{...props}
+					/>
+				)}
 				MenuProps={{ disableScrollLock: true }}
 				sx={{
 					fontSize: 13,

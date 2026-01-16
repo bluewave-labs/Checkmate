@@ -19,21 +19,30 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(4) }}>
-				<Icon name="ArrowUpRight" size={20} />
+				<Icon
+					name="ArrowUpRight"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, transform: "rotate(180deg)", top: theme.spacing(2) }}>
-				<Icon name="ArrowUpRight" size={20} />
+				<Icon
+					name="ArrowUpRight"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<Icon name="Clock" size={20} />
+				<Icon
+					name="Clock"
+					size={20}
+				/>
 			</Box>
 		);
 	}

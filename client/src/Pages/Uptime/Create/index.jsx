@@ -426,7 +426,17 @@ const UptimeCreate = ({ isClone = false }) => {
 								color="secondary"
 								loading={isBusy}
 								startIcon={
-									monitor?.isActive ? <Icon name="Pause" size={18} /> : <Icon name="Play" size={18} />
+									monitor?.isActive ? (
+										<Icon
+											name="Pause"
+											size={18}
+										/>
+									) : (
+										<Icon
+											name="Play"
+											size={18}
+										/>
+									)
 								}
 								onClick={handlePause}
 							>

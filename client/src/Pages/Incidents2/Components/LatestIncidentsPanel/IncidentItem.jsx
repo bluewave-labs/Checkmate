@@ -68,7 +68,10 @@ const IncidentItem = ({ incident }) => {
 							...iconWrapperStyle,
 						}}
 					>
-						<Icon name="Globe" size={20} />
+						<Icon
+							name="Globe"
+							size={20}
+						/>
 					</Box>
 
 					<Stack
@@ -100,7 +103,10 @@ const IncidentItem = ({ incident }) => {
 						gap={theme.spacing(3)}
 					>
 						<Box sx={{ ...iconWrapperStyle }}>
-							<Icon name="Wifi" size={20} />
+							<Icon
+								name="Wifi"
+								size={20}
+							/>
 						</Box>
 						<Stack
 							direction="row"

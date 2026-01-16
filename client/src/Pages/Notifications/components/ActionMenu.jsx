@@ -49,7 +49,10 @@ const ActionMenu = ({ notification, onDelete }) => {
 				onClick={handleClick}
 				onMouseDown={(e) => e.stopPropagation()}
 			>
-				<Icon name="Settings" size={20} />
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu

@@ -24,7 +24,12 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 		>
 			<ChartBox
 				justifyContent="flex-start"
-				icon={<Icon name="TrendingUp" size={20} />}
+				icon={
+					<Icon
+						name="TrendingUp"
+						size={20}
+					/>
+				}
 				header="Score history"
 				height="100%"
 				borderRadiusRight={16}

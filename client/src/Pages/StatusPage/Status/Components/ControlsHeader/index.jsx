@@ -45,7 +45,12 @@ const Controls = ({ url, type }) => {
 						},
 					}}
 				>
-					<Icon name="Settings" size={18} style={{ marginRight: '8px' }} /> {t("configure")}
+					<Icon
+						name="Settings"
+						size={18}
+						style={{ marginRight: "8px" }}
+					/>{" "}
+					{t("configure")}
 				</Button>
 			</Box>
 		</Stack>
@@ -110,7 +115,10 @@ const ControlsHeader = ({ statusPage, isPublic, url, type = "uptime" }) => {
 						}}
 					>
 						<Typography>{t("publicLink")}</Typography>
-						<Icon name="ExternalLink" size={18} />
+						<Icon
+							name="ExternalLink"
+							size={18}
+						/>
 					</Stack>
 				)}
 			</Stack>

@@ -50,7 +50,10 @@ const ProgressUpload = ({ icon, label, size, progress = 0, onClick, error }) => 
 				alignItems={error ? "center" : "flex-start"}
 			>
 				{error ? (
-					<Icon name="AlertTriangle" size={20} />
+					<Icon
+						name="AlertTriangle"
+						size={20}
+					/>
 				) : icon ? (
 					<Box
 						sx={{
@@ -126,7 +129,10 @@ const ProgressUpload = ({ icon, label, size, progress = 0, onClick, error }) => 
 								}
 					}
 				>
-					<Icon name="X" size={20} />
+					<Icon
+						name="X"
+						size={20}
+					/>
 				</IconButton>
 			</Stack>
 			{!error ? (

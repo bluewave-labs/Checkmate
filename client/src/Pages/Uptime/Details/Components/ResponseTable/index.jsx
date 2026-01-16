@@ -184,7 +184,12 @@ const ResponseTable = ({
 
 	return (
 		<ChartBox
-			icon={<Icon name="History" size={20} />}
+			icon={
+				<Icon
+					name="History"
+					size={20}
+				/>
+			}
 			header="Response Times"
 			height="100%"
 		>

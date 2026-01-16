@@ -55,7 +55,13 @@ const ShareComponent = ({ elementToCapture, fileName = "screenshot" }) => {
 	return (
 		<Button
 			variant="outlined"
-			startIcon={<Icon name="Share2" size={18} color="success.main" />}
+			startIcon={
+				<Icon
+					name="Share2"
+					size={18}
+					color="success.main"
+				/>
+			}
 			color="success"
 			onClick={captureAndShare}
 		>

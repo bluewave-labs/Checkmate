@@ -47,7 +47,12 @@ const Radio = ({
 				<MUIRadio
 					id={id}
 					size={size}
-					checkedIcon={<Icon name="CircleDot" size={16} />}
+					checkedIcon={
+						<Icon
+							name="CircleDot"
+							size={16}
+						/>
+					}
 					sx={{
 						color: "transparent",
 						width: 16,

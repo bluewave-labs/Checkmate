@@ -8,7 +8,12 @@ const Progress = ({ isLoading, progressValue, logo, logoType, removeLogo, errors
 	if (isLoading) {
 		return (
 			<ProgressUpload
-				icon={<Icon name="Image" size={20} />}
+				icon={
+					<Icon
+						name="Image"
+						size={20}
+					/>
+				}
 				label={logo?.name}
 				size={formatBytes(logo?.size)}
 				progress={progressValue}

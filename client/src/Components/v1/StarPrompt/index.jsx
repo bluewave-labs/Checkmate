@@ -67,7 +67,10 @@ const StarPrompt = ({ repoUrl = "https://github.com/bluewave-labs/checkmate" }) 
 						},
 					}}
 				>
-					<Icon name="X" size={20} />
+					<Icon
+						name="X"
+						size={20}
+					/>
 				</IconButton>
 			</Stack>
 

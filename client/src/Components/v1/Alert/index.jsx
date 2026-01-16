@@ -10,9 +10,24 @@ import "./index.css";
  */
 
 const icons = {
-	info: <Icon name="Info" size={24} />,
-	error: <Icon name="AlertTriangle" size={24} />,
-	warning: <Icon name="AlertTriangle" size={24} />,
+	info: (
+		<Icon
+			name="Info"
+			size={24}
+		/>
+	),
+	error: (
+		<Icon
+			name="AlertTriangle"
+			size={24}
+		/>
+	),
+	warning: (
+		<Icon
+			name="AlertTriangle"
+			size={24}
+		/>
+	),
 };
 
 /**
@@ -94,7 +109,10 @@ const Alert = ({ variant, title, body, isToast, hasIcon = true, onClick }) => {
 						},
 					}}
 				>
-					<Icon name="X" size={20} />
+					<Icon
+						name="X"
+						size={20}
+					/>
 				</IconButton>
 			)}
 		</Stack>

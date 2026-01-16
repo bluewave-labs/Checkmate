@@ -86,7 +86,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 							...iconWrapperStyle,
 						}}
 					>
-						<Icon name="Bell" size={20} />
+						<Icon
+							name="Bell"
+							size={20}
+						/>
 					</Box>
 					<Box>
 						<Typography
@@ -107,7 +110,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					gap={theme.spacing(2)}
 				>
 					<Box sx={iconWrapperStyle}>
-						<Icon name="AlertTriangle" size={20} />
+						<Icon
+							name="AlertTriangle"
+							size={20}
+						/>
 					</Box>
 					<Box>
 						<Typography
@@ -129,7 +135,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					gap={theme.spacing(2)}
 				>
 					<Box sx={iconWrapperStyle}>
-						<Icon name="Wrench" size={20} />
+						<Icon
+							name="Wrench"
+							size={20}
+						/>
 					</Box>
 					<Box>
 						<Typography
@@ -153,7 +162,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						mb={theme.spacing(1.5)}
 					>
 						<Box sx={iconWrapperStyle}>
-							<Icon name="RefreshCw" size={20} />
+							<Icon
+								name="RefreshCw"
+								size={20}
+							/>
 						</Box>
 
 						<Box>

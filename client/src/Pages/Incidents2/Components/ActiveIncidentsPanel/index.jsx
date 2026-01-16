@@ -63,7 +63,10 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 							mb: theme.spacing(2),
 						}}
 					>
-						<Icon name="CheckCircle" size={60} />
+						<Icon
+							name="CheckCircle"
+							size={60}
+						/>
 					</Box>
 
 					<Typography
@@ -104,7 +107,10 @@ const ActiveIncidentsPanel = ({ totalCount = 0, isLoading = false, error = null 
 						},
 					}}
 				>
-					<Icon name="AlertTriangle" size={60} />
+					<Icon
+						name="AlertTriangle"
+						size={60}
+					/>
 				</Box>
 
 				<Typography

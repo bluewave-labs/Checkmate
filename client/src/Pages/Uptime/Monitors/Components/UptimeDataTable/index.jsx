@@ -91,9 +91,15 @@ const UptimeDataTable = ({
 						}}
 					>
 						{sort?.order === "asc" ? (
-							<Icon name="ArrowUp" size={18} />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<Icon name="ArrowDown" size={18} />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</Stack>
 				</Stack>
@@ -127,9 +133,15 @@ const UptimeDataTable = ({
 						}}
 					>
 						{sort?.order === "asc" ? (
-							<Icon name="ArrowUp" size={18} />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<Icon name="ArrowDown" size={18} />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</Stack>
 				</Stack>

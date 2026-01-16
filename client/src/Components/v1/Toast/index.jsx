@@ -10,9 +10,24 @@ import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
 const icons = {
-	info: <Icon name="Info" size={24} />,
-	error: <Icon name="AlertTriangle" size={24} />,
-	warning: <Icon name="AlertTriangle" size={24} />,
+	info: (
+		<Icon
+			name="Info"
+			size={24}
+		/>
+	),
+	error: (
+		<Icon
+			name="AlertTriangle"
+			size={24}
+		/>
+	),
+	warning: (
+		<Icon
+			name="AlertTriangle"
+			size={24}
+		/>
+	),
 };
 
 const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
@@ -47,7 +62,10 @@ const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
 				)}
 				{title && (
 					<IconButton onClick={onClick}>
-						<Icon name="X" size={20} />
+						<Icon
+							name="X"
+							size={20}
+						/>
 					</IconButton>
 				)}
 			</Stack>
@@ -60,7 +78,10 @@ const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
 				<ToastBody body={body} />
 				{!title && (
 					<IconButton onClick={onClick}>
-						<Icon name="X" size={20} />
+						<Icon
+							name="X"
+							size={20}
+						/>
 					</IconButton>
 				)}
 			</Stack>

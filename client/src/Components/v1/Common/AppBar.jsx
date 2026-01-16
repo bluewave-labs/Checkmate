@@ -152,7 +152,11 @@ const AppAppBar = () => {
 							aria-label="Menu button"
 							onClick={toggleDrawer(true)}
 						>
-							<Icon name="Menu" size={24} color={theme.palette.text.primary} />
+							<Icon
+								name="Menu"
+								size={24}
+								color={theme.palette.text.primary}
+							/>
 						</IconButton>
 						<Drawer
 							anchor="top"
@@ -175,7 +179,11 @@ const AppAppBar = () => {
 									}}
 								>
 									<IconButton onClick={toggleDrawer(false)}>
-										<Icon name="X" size={24} color={theme.palette.text.primary} />
+										<Icon
+											name="X"
+											size={24}
+											color={theme.palette.text.primary}
+										/>
 									</IconButton>
 								</Box>
 

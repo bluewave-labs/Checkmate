@@ -240,7 +240,10 @@ const Card = ({ monitor }) => {
 				}}
 			>
 				<IconBox>
-					<Icon name="Gauge" size={20} />
+					<Icon
+						name="Gauge"
+						size={20}
+					/>
 				</IconBox>
 				<Typography
 					component="h2"

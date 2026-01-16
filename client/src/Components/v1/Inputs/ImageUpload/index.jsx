@@ -175,7 +175,10 @@ const ImageUpload = ({
 									boxShadow: theme.shape.boxShadow,
 								}}
 							>
-								<Icon name="Upload" size={24} />
+								<Icon
+									name="Upload"
+									size={24}
+								/>
 							</IconButton>
 							<Typography
 								component="h2"
@@ -202,7 +205,12 @@ const ImageUpload = ({
 					</Box>
 					{(localError || progress.isLoading || progress.value !== 0) && (
 						<ProgressUpload
-							icon={<Icon name="Image" size={20} />}
+							icon={
+								<Icon
+									name="Image"
+									size={20}
+								/>
+							}
 							label={file?.name || "Upload failed"}
 							size={file?.size}
 							progress={progress.value}

@@ -100,7 +100,12 @@ function Pagination({
 							},
 						},
 						inputProps: { id: "pagination-dropdown" },
-						IconComponent: () => <Icon name="ChevronsUpDown" size={16} />,
+						IconComponent: () => (
+							<Icon
+								name="ChevronsUpDown"
+								size={16}
+							/>
+						),
 						sx: {
 							ml: theme.spacing(4),
 							mr: theme.spacing(12),

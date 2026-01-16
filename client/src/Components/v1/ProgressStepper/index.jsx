@@ -6,9 +6,17 @@ import PropTypes from "prop-types";
 const CustomStepIcon = (props) => {
 	const { completed, active } = props;
 	return completed ? (
-		<Icon name="CheckCircle2" size={24} color="accent.main" />
+		<Icon
+			name="CheckCircle2"
+			size={24}
+			color="accent.main"
+		/>
 	) : (
-		<Icon name="Circle" size={24} color={active ? "accent.main" : "text.disabled"} />
+		<Icon
+			name="Circle"
+			size={24}
+			color={active ? "accent.main" : "text.disabled"}
+		/>
 	);
 };
 

@@ -17,7 +17,12 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 
 	return (
 		<ChartBox
-			icon={<Icon name="Layers" size={20} />}
+			icon={
+				<Icon
+					name="Layers"
+					size={20}
+				/>
+			}
 			header="Performance report"
 			Legend={<PieChartLegend audits={audits} />}
 			borderRadiusRight={16}

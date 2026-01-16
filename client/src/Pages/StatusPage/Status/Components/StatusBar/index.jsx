@@ -9,14 +9,22 @@ import PropTypes from "prop-types";
 const getMonitorStatus = (monitors, theme) => {
 	const monitorsStatus = {
 		icon: (
-			<Icon name="AlertTriangle" size={24} color="primary.contrastTextSecondaryDarkBg" />
+			<Icon
+				name="AlertTriangle"
+				size={24}
+				color="primary.contrastTextSecondaryDarkBg"
+			/>
 		),
 	};
 	if (monitors.every((monitor) => monitor.status === true)) {
 		monitorsStatus.msg = "All systems operational";
 		monitorsStatus.color = theme.palette.success.lowContrast;
 		monitorsStatus.icon = (
-			<Icon name="CheckCircle2" size={24} color="primary.contrastTextSecondaryDarkBg" />
+			<Icon
+				name="CheckCircle2"
+				size={24}
+				color="primary.contrastTextSecondaryDarkBg"
+			/>
 		);
 	}
 

@@ -84,7 +84,10 @@ const ActionsMenu = ({
 					},
 				}}
 			>
-				<Icon name="Settings" size={20} />
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu

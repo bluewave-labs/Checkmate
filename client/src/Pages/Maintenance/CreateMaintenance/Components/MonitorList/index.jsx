@@ -14,7 +14,9 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 			width="100%"
 		>
 			<Typography flexGrow={1}>{monitor.name}</Typography>
-			<Icon name="Trash2" size={20}
+			<Icon
+				name="Trash2"
+				size={20}
 				sx={{ cursor: "pointer" }}
 				onClick={() => onDelete(monitor)}
 			/>

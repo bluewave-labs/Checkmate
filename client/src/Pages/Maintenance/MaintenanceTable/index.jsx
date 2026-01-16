@@ -67,9 +67,15 @@ const MaintenanceTable = ({
 						}}
 					>
 						{sort.order === "asc" ? (
-							<Icon name="ArrowUp" size={18} />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<Icon name="ArrowDown" size={18} />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</span>
 				</Box>
@@ -88,9 +94,15 @@ const MaintenanceTable = ({
 						}}
 					>
 						{sort.order === "asc" ? (
-							<Icon name="ArrowUp" size={18} />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<Icon name="ArrowDown" size={18} />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</span>
 				</Box>

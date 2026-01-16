@@ -11,7 +11,12 @@ const ResponseTImeChart = ({ isLoading = false, groupedChecks = [], dateRange })
 
 	return (
 		<ChartBox
-			icon={<Icon name="TrendingUp" size={20} />}
+			icon={
+				<Icon
+					name="TrendingUp"
+					size={20}
+				/>
+			}
 			header="Response Times"
 		>
 			<MonitorDetailsAreaChart

@@ -217,7 +217,14 @@ const CreateMaintenance = () => {
 									disablePast
 									disableHighlightToday
 									value={form.startDate}
-									slots={{ openPickerIcon: () => <Icon name="Calendar" size={20} /> }}
+									slots={{
+										openPickerIcon: () => (
+											<Icon
+												name="Calendar"
+												size={20}
+											/>
+										),
+									}}
 									slotProps={{
 										switchViewButton: { sx: { display: "none" } },
 										nextIconButton: { sx: { ml: theme.spacing(2) } },

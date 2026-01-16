@@ -24,7 +24,13 @@ const AddMemberMenu = ({ handleInviteOpen, handleIsRegisterOpen }) => {
 			<Button
 				variant="contained"
 				color="accent"
-				endIcon={<Icon name="ChevronDown" size={20} color="secondary.light" />}
+				endIcon={
+					<Icon
+						name="ChevronDown"
+						size={20}
+						color="secondary.light"
+					/>
+				}
 				onClick={handleClick}
 			>
 				{t("teamPanel.addTeamMember.addMemberMenu")}

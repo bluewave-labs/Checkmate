@@ -72,7 +72,12 @@ const MonitorDetailsControlHeader = ({
 							variant="contained"
 							color="secondary"
 							loading={isSending}
-							startIcon={<Icon name="Mail" size={18} />}
+							startIcon={
+								<Icon
+									name="Mail"
+									size={18}
+								/>
+							}
 							disabled={isTestNotificationsDisabled}
 							onClick={() => {
 								testAllNotifications({ monitorId: monitor?.id });
@@ -100,7 +105,17 @@ const MonitorDetailsControlHeader = ({
 						color="secondary"
 						loading={isPausing}
 						startIcon={
-							monitor?.isActive ? <Icon name="Pause" size={18} /> : <Icon name="Play" size={18} />
+							monitor?.isActive ? (
+								<Icon
+									name="Pause"
+									size={18}
+								/>
+							) : (
+								<Icon
+									name="Play"
+									size={18}
+								/>
+							)
 						}
 						onClick={() => {
 							pauseMonitor({
@@ -116,7 +131,12 @@ const MonitorDetailsControlHeader = ({
 					<Button
 						variant="contained"
 						color="secondary"
-						startIcon={<Icon name="Settings" size={18} />}
+						startIcon={
+							<Icon
+								name="Settings"
+								size={18}
+							/>
+						}
 						onClick={() => navigate(`/${path}/configure/${monitor.id}`)}
 					>
 						Configure

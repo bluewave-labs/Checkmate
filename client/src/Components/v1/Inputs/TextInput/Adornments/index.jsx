@@ -54,9 +54,15 @@ export const PasswordEndAdornment = ({ fieldType, setFieldType }) => {
 				}}
 			>
 				{fieldType === "password" ? (
-					<Icon name="EyeOff" size={20} />
+					<Icon
+						name="EyeOff"
+						size={20}
+					/>
 				) : (
-					<Icon name="Eye" size={20} />
+					<Icon
+						name="Eye"
+						size={20}
+					/>
 				)}
 			</IconButton>
 		</InputAdornment>

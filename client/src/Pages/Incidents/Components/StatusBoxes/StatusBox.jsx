@@ -23,28 +23,40 @@ const StatusBox = ({ title, value, status }) => {
 		color = theme.palette.success.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<Icon name="CheckCircle" size={20} />
+				<Icon
+					name="CheckCircle"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "down") {
 		color = theme.palette.error.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<Icon name="X" size={20} />
+				<Icon
+					name="X"
+					size={20}
+				/>
 			</Box>
 		);
 	} else if (status === "paused") {
 		color = theme.palette.warning.lowContrast;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<Icon name="AlertTriangle" size={20} />
+				<Icon
+					name="AlertTriangle"
+					size={20}
+				/>
 			</Box>
 		);
 	} else {
 		color = theme.palette.accent.main;
 		icon = (
 			<Box sx={{ ...sharedStyles, top: theme.spacing(6), right: theme.spacing(6) }}>
-				<Icon name="Bell" size={20} />
+				<Icon
+					name="Bell"
+					size={20}
+				/>
 			</Box>
 		);
 	}

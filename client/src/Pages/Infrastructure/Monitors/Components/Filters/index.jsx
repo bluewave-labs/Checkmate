@@ -68,7 +68,12 @@ const Filter = ({
 				color={theme.palette.primary.contrastText}
 				onClick={handleReset}
 				variant="contained"
-				endIcon={<Icon name="X" size={18} />}
+				endIcon={
+					<Icon
+						name="X"
+						size={18}
+					/>
+				}
 				sx={{
 					visibility: isFilterActive ? "visible" : "hidden",
 				}}

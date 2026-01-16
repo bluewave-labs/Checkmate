@@ -70,7 +70,10 @@ const MonitorActions = ({ isLoading }) => {
 					aria-haspopup="menu"
 					onClick={handleToggle}
 				>
-					<Icon name="ChevronDown" size={20} />
+					<Icon
+						name="ChevronDown"
+						size={20}
+					/>
 				</Button>
 			</ButtonGroup>
 			<Popper
