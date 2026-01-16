@@ -347,17 +347,8 @@ class NetworkService {
 		return this.axiosInstance.get(`/monitors/certificate/${config.monitorId}`);
 	}
 
-	/**
-	 * ************************************
-	 * Registers a new user
-	 * ************************************
-	 *
-	 * @async
-	 * @param {Object} form - The form data for the new user to be registered.
-	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
-	 */
-	async registerUser(form) {
-		return this.axiosInstance.post(`/auth/register`, form);
+	async registerUser(user, token) {
+		return this.axiosInstance.post(`/auth/register`, { user, token });
 	}
 
 	/**

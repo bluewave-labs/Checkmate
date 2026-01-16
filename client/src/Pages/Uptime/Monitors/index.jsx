@@ -143,7 +143,6 @@ const UptimeMonitors = () => {
 		type: ["http", "ping", "docker", "port", "game"],
 	});
 
-	console.log(monitors);
 	useEffect(() => {
 		if (isSearching) {
 			setPage(undefined);
