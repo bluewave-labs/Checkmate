@@ -8,17 +8,14 @@ const SummaryCard = ({ children, isHighPriority = false, sx = {}, title = null }
 		<Paper
 			elevation={0}
 			sx={{
-				padding: theme.spacing(4),
-				borderRadius: 3,
+				padding: "16px",
+				borderRadius: theme.shape.borderRadius,
 				height: "100%",
 				display: "flex",
 				flexDirection: "column",
 				justifyContent: "center",
 				backgroundColor: theme.palette.primary.main,
-				border: isHighPriority
-					? `${theme.spacing(1.5)} solid ${theme.palette.error.lowContrast}`
-					: `${theme.spacing(1)} solid ${theme.palette.divider}`,
-				boxShadow: theme.palette.tertiary.cardShadow,
+				border: `1px solid ${theme.palette.primary.lowContrast}`,
 				color: theme.palette.primary.contrastTextTertiary,
 				fontSize: theme.typography.body1.fontSize,
 				...sx,
@@ -33,13 +30,12 @@ const SummaryCard = ({ children, isHighPriority = false, sx = {}, title = null }
 						}}
 					>
 						<Typography
-							variant="h6"
+							component="h2"
 							sx={{
 								textTransform: "uppercase",
-								fontWeight: 700,
-								fontSize: theme.typography.h2.fontSize,
-
-								letterSpacing: theme.spacing(0.5),
+								fontWeight: 500,
+								fontSize: 13,
+								color: theme.palette.primary.contrastTextSecondary,
 							}}
 						>
 							{title}
@@ -49,9 +45,9 @@ const SummaryCard = ({ children, isHighPriority = false, sx = {}, title = null }
 				</Box>
 			)}
 			<Stack
-				mt={theme.spacing(4)}
-				paddingTop={theme.spacing(5)}
-				gap={theme.spacing(4)}
+				mt={theme.spacing(2)}
+				paddingTop={theme.spacing(2)}
+				gap={theme.spacing(2)}
 				sx={{ height: "100%" }}
 			>
 				{children}

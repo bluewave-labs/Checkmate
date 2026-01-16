@@ -3,10 +3,8 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
 import { useTranslation } from "react-i18next";
-import { Divider } from "@mui/material";
 import Clock from "@/assets/icons/maintenance.svg?react";
 import Incidents from "@/assets/icons/incidents.svg?react";
-import ResolutionItem from "@/assets/icons/interval-check.svg?react";
 import NotificationIcon from "@/assets/icons/notifications.svg?react";
 import SummaryCard from "../SummaryCard/index.jsx";
 
@@ -43,10 +41,15 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 	const iconWrapperStyle = {
 		display: "flex",
 		justifyContent: "center",
-		mx: theme.spacing(3),
+		mx: theme.spacing(2),
 		color: theme.palette.primary.contrastTextTertiary,
+		"& svg": {
+			width: 18,
+			height: 18,
+		},
 		"& svg path": {
 			stroke: "currentColor",
+			strokeWidth: 1.5,
 		},
 	};
 	if (isLoading) {
@@ -76,6 +79,13 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 		);
 	}
 
+	const getMostAffectedMonitor = () => {
+		if (!summary.total || summary.total === 0) {
+			return t("incidentsPage.none");
+		}
+		return summary.topMonitor?.monitorName || t("incidentsPage.none");
+	};
+
 	return (
 		<SummaryCard title={t("incidentsPage.incidentsStatisticsPanelTitle")}>
 			<Stack gap={theme.spacing(4)}>
@@ -99,11 +109,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 								lineHeight: 1.2,
 							}}
 						>
-							{t("incidentsPage.totalIncidents")} : {summary.total || 0}
+							{t("incidentsPage.totalIncidents")}: {summary.total || 0}
 						</Typography>
 					</Box>
 				</Stack>
-				<Divider />
 				<Stack
 					direction="row"
 					alignItems="center"
@@ -120,12 +129,10 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 								lineHeight: 1.2,
 							}}
 						>
-							{t("incidentsPage.mostAffectedMonitor")} :{" "}
-							{summary.topMonitor?.monitorName || t("incidentsPage.unknownMonitor")}
+							{t("incidentsPage.mostAffectedMonitor")}: {getMostAffectedMonitor()}
 						</Typography>
 					</Box>
 				</Stack>
-				<Divider />
 				<Stack
 					direction="row"
 					alignItems="center"
@@ -138,88 +145,14 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						<Typography
 							variant="body1"
 							sx={{
-								fontWeight: 600,
+								fontWeight: 500,
 							}}
 						>
-							{t("incidentsPage.avgResolutionTime")} :{" "}
-							{summary.avgResolutionTimeHours || 0} {t("incidentsPage.hours")}
+							{t("incidentsPage.avgResolutionTime")}:{" "}
+							{summary.total > 0 ? `${summary.avgResolutionTimeHours || 0} ${t("incidentsPage.hours")}` : "N/A"}
 						</Typography>
 					</Box>
 				</Stack>
-				<Divider />
-
-				<Box padding={theme.spacing(2)}>
-					<Stack
-						direction="row"
-						alignItems="center"
-						gap={theme.spacing(2)}
-						mb={theme.spacing(1.5)}
-					>
-						<Box sx={iconWrapperStyle}>
-							<ResolutionItem />
-						</Box>
-
-						<Box>
-							<Typography
-								variant="body1"
-								sx={{
-									fontWeight: 500,
-									lineHeight: 1.2,
-								}}
-							>
-								{t("incidentsPage.resolutions")}: {totalResolutions}
-							</Typography>
-						</Box>
-					</Stack>
-
-					<Box
-						sx={{
-							display: "flex",
-							height: 8,
-							borderRadius: 4,
-							overflow: "hidden",
-							bgcolor: theme.palette.accent.main,
-							width: "100%",
-							marginTop: theme.spacing(4),
-						}}
-					>
-						<Box
-							sx={{
-								width: `${automaticPercentage}%`,
-
-								bgcolor: theme.palette.warningSecondary.lowContrast,
-								height: "100%",
-							}}
-						/>
-					</Box>
-					<Box
-						sx={{
-							display: "flex",
-							justifyContent: "space-between",
-							paddingTop: theme.spacing(4),
-							width: "100%",
-						}}
-					>
-						{summary.totalAutomaticResolutions > 0 && (
-							<Typography
-								variant="body2"
-								fontWeight={500}
-								color={theme.palette.warningSecondary.contrastText}
-							>
-								{t("incidentsPage.automatic")} ({summary.totalAutomaticResolutions})
-							</Typography>
-						)}
-						{summary.totalManualResolutions > 0 && (
-							<Typography
-								variant="body2"
-								fontWeight={500}
-								color={theme.palette.accent.main}
-							>
-								{t("incidentsPage.manual")} ({summary.totalManualResolutions})
-							</Typography>
-						)}
-					</Box>
-				</Box>
 			</Stack>
 		</SummaryCard>
 	);
