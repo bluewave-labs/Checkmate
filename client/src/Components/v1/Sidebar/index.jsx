@@ -8,22 +8,7 @@ import NavItem from "./components/navItem.jsx";
 import AuthFooter from "./components/authFooter.jsx";
 
 import StarPrompt from "../StarPrompt/index.jsx";
-import LockSvg from "../../../assets/icons/lock.svg?react";
-import UserSvg from "../../../assets/icons/user.svg?react";
-import TeamSvg from "../../../assets/icons/user-two.svg?react";
-import Support from "../../../assets/icons/support.svg?react";
-import Maintenance from "../../../assets/icons/maintenance.svg?react";
-import Monitors from "../../../assets/icons/monitors.svg?react";
-import Incidents from "../../../assets/icons/incidents.svg?react";
-import Integrations from "../../../assets/icons/integrations.svg?react";
-import PageSpeed from "../../../assets/icons/page-speed.svg?react";
-import Settings from "../../../assets/icons/settings.svg?react";
-import ChangeLog from "../../../assets/icons/changeLog.svg?react";
-import Docs from "../../../assets/icons/docs.svg?react";
-import StatusPages from "../../../assets/icons/status-pages.svg?react";
-import Discussions from "../../../assets/icons/discussions.svg?react";
-import Notifications from "../../../assets/icons/notifications.svg?react";
-import Logs from "../../../assets/icons/logs.svg?react";
+import Icon from "../Icon";
 
 // Utils
 import { useTheme } from "@mui/material/styles";
@@ -39,44 +24,41 @@ const URL_MAP = {
 };
 
 const getMenu = (t) => [
-	{ name: t("menu.uptime"), path: "uptime", icon: <Monitors /> },
-	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <PageSpeed /> },
-
-	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Integrations /> },
+	{ name: t("menu.uptime"), path: "uptime", icon: <Icon name="Globe" /> },
+	{ name: t("menu.pagespeed"), path: "pagespeed", icon: <Icon name="Gauge" /> },
+	{ name: t("menu.infrastructure"), path: "infrastructure", icon: <Icon name="Link" /> },
 	{
 		name: t("menu.notifications"),
 		path: "notifications",
-		icon: <Notifications />,
+		icon: <Icon name="Bell" />,
 	},
-	{ name: t("menu.checks"), path: "checks", icon: <Docs /> },
-	{ name: t("menu.incidents"), path: "incidents", icon: <Incidents /> },
-
-	{ name: t("menu.statusPages"), path: "status", icon: <StatusPages /> },
-	{ name: t("menu.maintenance"), path: "maintenance", icon: <Maintenance /> },
-	{ name: t("menu.logs"), path: "logs", icon: <Logs /> },
-
+	{ name: t("menu.checks"), path: "checks", icon: <Icon name="FileText" /> },
+	{ name: t("menu.incidents"), path: "incidents", icon: <Icon name="AlertTriangle" /> },
+	{ name: t("menu.statusPages"), path: "status", icon: <Icon name="Wifi" /> },
+	{ name: t("menu.maintenance"), path: "maintenance", icon: <Icon name="Wrench" /> },
+	{ name: t("menu.logs"), path: "logs", icon: <Icon name="Database" /> },
 	{
 		name: t("menu.settings"),
-		icon: <Settings />,
+		icon: <Icon name="Settings" />,
 		path: "settings",
 	},
 ];
 
 const getOtherMenuItems = (t) => [
-	{ name: t("menu.support"), path: "support", icon: <Support /> },
+	{ name: t("menu.support"), path: "support", icon: <Icon name="HelpCircle" /> },
 	{
 		name: t("menu.discussions"),
 		path: "discussions",
-		icon: <Discussions />,
+		icon: <Icon name="MessageCircle" />,
 	},
-	{ name: t("menu.docs"), path: "docs", icon: <Docs /> },
-	{ name: t("menu.changelog"), path: "changelog", icon: <ChangeLog /> },
+	{ name: t("menu.docs"), path: "docs", icon: <Icon name="FileText" /> },
+	{ name: t("menu.changelog"), path: "changelog", icon: <Icon name="Code" /> },
 ];
 
 const getAccountMenuItems = (t) => [
-	{ name: t("menu.profile"), path: "account/profile", icon: <UserSvg /> },
-	{ name: t("menu.password"), path: "account/password", icon: <LockSvg /> },
-	{ name: t("menu.team"), path: "account/team", icon: <TeamSvg /> },
+	{ name: t("menu.profile"), path: "account/profile", icon: <Icon name="User" /> },
+	{ name: t("menu.password"), path: "account/password", icon: <Icon name="Lock" /> },
+	{ name: t("menu.team"), path: "account/team", icon: <Icon name="Users" /> },
 ];
 
 const Sidebar = () => {

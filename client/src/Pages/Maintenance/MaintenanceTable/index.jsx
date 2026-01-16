@@ -2,8 +2,7 @@ import PropTypes from "prop-types";
 import { Box } from "@mui/material";
 import DataTable from "@/Components/v1/Table/index.jsx";
 import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
-import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import Icon from "@/Components/v1/Icon";
 import ActionsMenu from "./ActionsMenu/index.jsx";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,9 +67,15 @@ const MaintenanceTable = ({
 						}}
 					>
 						{sort.order === "asc" ? (
-							<ArrowUpwardRoundedIcon />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</span>
 				</Box>
@@ -89,9 +94,15 @@ const MaintenanceTable = ({
 						}}
 					>
 						{sort.order === "asc" ? (
-							<ArrowUpwardRoundedIcon />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</span>
 				</Box>

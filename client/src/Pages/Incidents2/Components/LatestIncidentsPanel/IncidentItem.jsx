@@ -3,7 +3,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
-import Monitors from "@/assets/icons/monitors.svg?react";
+import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 
 const IncidentItem = ({ incident }) => {
@@ -67,7 +67,7 @@ const IncidentItem = ({ incident }) => {
 				gap={theme.spacing(2)}
 			>
 				<Box sx={iconWrapperStyle}>
-					<Monitors />
+					<Icon name="Globe" size={18} />
 				</Box>
 				<Typography
 					variant="body1"

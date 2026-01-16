@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@emotion/react";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 import Proptypes from "prop-types";
 
@@ -24,7 +24,13 @@ const AddMemberMenu = ({ handleInviteOpen, handleIsRegisterOpen }) => {
 			<Button
 				variant="contained"
 				color="accent"
-				endIcon={<ArrowDropDownIcon sx={{ color: theme.palette.secondary.light }} />}
+				endIcon={
+					<Icon
+						name="ChevronDown"
+						size={20}
+						color="secondary.light"
+					/>
+				}
 				onClick={handleClick}
 			>
 				{t("teamPanel.addTeamMember.addMemberMenu")}

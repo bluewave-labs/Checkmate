@@ -1,10 +1,145 @@
+import { HTTPError, RequestError } from "got";
+import type { Got, Response } from "got";
+import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
+
 import CacheableLookup from "cacheable-lookup";
 const SERVICE_NAME = "NetworkService";
 
-class NetworkService {
+type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;
+
+interface BuildStatusResponseArgs<T> {
+	monitor: Monitor;
+	response?: Response<T> | null;
+	error?: Error | RequestError | HTTPError | null;
+	payload?: T | null;
+	jsonPath?: string;
+	matchMethod?: MonitorStatusResponse["matchMethod"];
+	expectedValue?: string;
+	extracted?: unknown;
+	overrides?: MonitorStatusResponseOverrides<T>;
+}
+
+export interface INetworkService {
+	readonly serviceName: string;
+	requestStatus(monitor: Monitor): Promise<MonitorStatusResponse>;
+	requestWebhook(type: string, url: string, body: any): Promise<{ type: string; status: boolean; code: number; message: string; payload?: unknown }>;
+	requestPagerDuty(args: { message: string; routingKey: string; monitorUrl: string }): Promise<boolean>;
+	requestMatrix(args: { homeserverUrl: string; accessToken: string; roomId: string; message: string }): Promise<{
+		status: boolean;
+		code: number;
+		message: string;
+		payload?: unknown;
+	}>;
+}
+
+class NetworkService implements INetworkService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ axios, got, https, jmespath, GameDig, ping, logger, http, Docker, net, stringService, settingsService }) {
+	private TYPE_PING: string;
+	private TYPE_HTTP: string;
+	private TYPE_PAGESPEED: string;
+	private TYPE_HARDWARE: string;
+	private TYPE_DOCKER: string;
+	private TYPE_PORT: string;
+	private TYPE_GAME: string;
+	private SERVICE_NAME: string;
+	private NETWORK_ERROR: number;
+	private PING_ERROR: number;
+
+	private axios: any;
+	private got: Got;
+	private https: any;
+	private jmespath: any;
+	private GameDig: any;
+	private ping: any;
+	private logger: any;
+	private http: any;
+	private Docker: any;
+	private net: any;
+	private stringService: any;
+	private settingsService: any;
+
+	private buildStatusResponse = <T>({
+		monitor,
+		response,
+		error,
+		payload,
+		jsonPath,
+		matchMethod,
+		expectedValue,
+		extracted,
+		overrides,
+	}: BuildStatusResponseArgs<T>): MonitorStatusResponse<T> => {
+		if (error) {
+			const statusResponse: MonitorStatusResponse<T> = {
+				monitorId: monitor.id,
+				teamId: monitor.teamId,
+				type: monitor.type,
+				status: false,
+				code: this.NETWORK_ERROR,
+				message: error.message ?? "Network error",
+				responseTime: 0,
+				timings: undefined,
+				jsonPath,
+				matchMethod,
+				expectedValue,
+				extracted,
+				payload,
+			};
+			if (error instanceof HTTPError || error instanceof RequestError) {
+				statusResponse.code = error?.response?.statusCode ?? this.NETWORK_ERROR;
+				statusResponse.message = error.message;
+				statusResponse.responseTime = error.timings?.phases?.total ?? 0;
+				statusResponse.timings = error.timings;
+			}
+			return { ...statusResponse, ...(overrides ?? {}) };
+		}
+
+		return {
+			monitorId: monitor.id,
+			teamId: monitor.teamId,
+			type: monitor.type,
+			status: response?.ok ?? false,
+			code: response?.statusCode ?? this.NETWORK_ERROR,
+			message: response?.statusMessage ?? "",
+			responseTime: response?.timings?.phases?.total ?? 0,
+			timings: response?.timings,
+			payload: payload ?? response?.body,
+			jsonPath,
+			matchMethod,
+			expectedValue,
+			extracted,
+			...(overrides ?? {}),
+		};
+	};
+
+	constructor({
+		axios,
+		got,
+		https,
+		jmespath,
+		GameDig,
+		ping,
+		logger,
+		http,
+		Docker,
+		net,
+		stringService,
+		settingsService,
+	}: {
+		axios: any;
+		got: Got;
+		https: any;
+		jmespath: any;
+		GameDig: any;
+		ping: any;
+		logger: any;
+		http: any;
+		Docker: any;
+		net: any;
+		stringService: any;
+		settingsService: any;
+	}) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
 		this.TYPE_PAGESPEED = "pagespeed";
@@ -17,11 +152,11 @@ class NetworkService {
 		this.PING_ERROR = 5001;
 		this.axios = axios;
 		this.https = https;
+		this.http = http;
 		this.jmespath = jmespath;
 		this.GameDig = GameDig;
 		this.ping = ping;
 		this.logger = logger;
-		this.http = http;
 		this.Docker = Docker;
 		this.net = net;
 		this.stringService = stringService;
@@ -38,13 +173,17 @@ class NetworkService {
 		});
 	}
 
+	get serviceName(): string {
+		return NetworkService.SERVICE_NAME;
+	}
+
 	// Helper functions
-	async timeRequest(operation) {
+	private async timeRequest<T>(operation: () => Promise<T>): Promise<{ response: T | null; responseTime: number; error: unknown }> {
 		const start = process.hrtime.bigint();
 		try {
 			const response = await operation();
 			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
-			return { response, responseTime: elapsedMs };
+			return { response, responseTime: elapsedMs, error: null };
 		} catch (error) {
 			const elapsedMs = Math.round(Number(process.hrtime.bigint() - start) / 1_000_000);
 			return { response: null, responseTime: elapsedMs, error };
@@ -52,7 +191,7 @@ class NetworkService {
 	}
 
 	// Main entry point
-	async requestStatus(monitor) {
+	async requestStatus(monitor: Monitor): Promise<MonitorStatusResponse> {
 		const type = monitor?.type || "unknown";
 		switch (type) {
 			case this.TYPE_PING:
@@ -70,11 +209,11 @@ class NetworkService {
 			case this.TYPE_GAME:
 				return await this.requestGame(monitor);
 			default:
-				return await this.handleUnsupportedType(type);
+				return this.handleUnsupportedType(type);
 		}
 	}
 
-	async requestPing(monitor) {
+	private async requestPing(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			if (!monitor?.url) {
 				throw new Error("Monitor URL is required");
@@ -94,44 +233,49 @@ class NetworkService {
 				throw new Error("Ping failed - no result returned");
 			}
 
-			const pingResponse = {
-				monitorId: monitor.id,
-				type: "ping",
-				status: response.alive,
-				code: 200,
-				responseTime: response.time,
-				message: "Success",
+			const pingResponse = this.buildStatusResponse({
+				monitor,
 				payload: response,
-			};
+				overrides: {
+					status: (response as { alive?: boolean })?.alive ?? false,
+					code: 200,
+					message: "Success",
+					responseTime: (response as { time?: number })?.time ?? 0,
+					payload: response,
+				},
+			});
 
 			if (error) {
 				pingResponse.status = false;
-				pingResponse.code = 200;
+				pingResponse.code = this.PING_ERROR;
 				pingResponse.message = "Ping failed";
 				return pingResponse;
 			}
 
 			return pingResponse;
-		} catch (err) {
+		} catch (err: any) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestPing";
 			throw err;
 		}
 	}
 
-	async requestHttp(monitor) {
+	private async requestHttp(monitor: Monitor): Promise<MonitorStatusResponse> {
 		const { url, secret, id, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
-		const httpResponse = {
-			monitorId: id,
-			teamId: teamId,
-			type,
-		};
+		const httpResponse = this.buildStatusResponse({
+			monitor,
+			overrides: {
+				status: false,
+				code: this.NETWORK_ERROR,
+				message: "Request not executed",
+			},
+		});
 
 		try {
 			if (!url) {
 				throw new Error("Monitor URL is required");
 			}
-			const config = {
+			const config: Record<string, any> = {
 				headers: secret ? { Authorization: `Bearer ${secret}` } : undefined,
 			};
 
@@ -145,7 +289,7 @@ class NetworkService {
 
 			const response = await this.got(url, config);
 
-			let payload;
+			let payload: any;
 			const contentType = response.headers["content-type"];
 
 			if (contentType && contentType.includes("application/json")) {
@@ -158,12 +302,14 @@ class NetworkService {
 				payload = response.body;
 			}
 
-			httpResponse.code = response.statusCode;
-			httpResponse.status = response.ok;
-			httpResponse.message = response.statusMessage;
-			httpResponse.responseTime = response.timings.phases.total || 0;
-			httpResponse.payload = payload;
-			httpResponse.timings = response.timings || {};
+			Object.assign(httpResponse, {
+				code: response.statusCode,
+				status: response.ok,
+				message: response.statusMessage ?? "",
+				responseTime: response.timings.phases.total || 0,
+				payload,
+				timings: response.timings,
+			});
 
 			if (!expectedValue && !jsonPath) {
 				return httpResponse;
@@ -231,7 +377,7 @@ class NetworkService {
 				}
 			}
 			return httpResponse;
-		} catch (err) {
+		} catch (err: any) {
 			if (err.name === "HTTPError" || err.name === "RequestError") {
 				httpResponse.code = err?.response?.statusCode || this.NETWORK_ERROR;
 				httpResponse.status = false;
@@ -247,7 +393,7 @@ class NetworkService {
 		}
 	}
 
-	async requestPageSpeed(monitor) {
+	private async requestPageSpeed(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			const url = monitor.url;
 			if (!url) {
@@ -269,24 +415,24 @@ class NetworkService {
 				...monitor,
 				url: pageSpeedUrl,
 			});
-		} catch (err) {
+		} catch (err: any) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestPageSpeed";
 			throw err;
 		}
 	}
 
-	async requestHardware(monitor) {
+	private async requestHardware(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			return await this.requestHttp(monitor);
-		} catch (err) {
+		} catch (err: any) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestHardware";
 			throw err;
 		}
 	}
 
-	async requestDocker(monitor) {
+	private async requestDocker(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			if (!monitor.url) {
 				throw new Error("Monitor URL is required");
@@ -297,10 +443,14 @@ class NetworkService {
 				handleError: true, // Enable error handling
 			});
 
-			const dockerResponse = {
-				monitorId: monitor.id,
-				type: monitor.type,
-			};
+			const dockerResponse = this.buildStatusResponse({
+				monitor,
+				overrides: {
+					status: false,
+					code: this.NETWORK_ERROR,
+					message: "No response",
+				},
+			});
 
 			const containers = await docker.listContainers({ all: true });
 
@@ -309,18 +459,18 @@ class NetworkService {
 
 			// Priority-based matching to avoid ambiguity:
 			// 1. Exact full ID match (64-char)
-			let exactIdMatch = containers.find((c) => c.Id.toLowerCase() === normalizedInput);
+			let exactIdMatch = containers.find((c: any) => c.Id.toLowerCase() === normalizedInput);
 
 			// 2. Exact container name match (case-insensitive)
-			let exactNameMatch = containers.find((c) =>
-				c.Names.some((name) => {
+			let exactNameMatch = containers.find((c: any) =>
+				c.Names.some((name: string) => {
 					const cleanName = name.replace(/^\/+/, "").toLowerCase();
 					return cleanName === normalizedInput;
 				})
 			);
 
 			// 3. Partial ID match (fallback for backwards compatibility)
-			let partialIdMatch = containers.find((c) => c.Id.toLowerCase().startsWith(normalizedInput));
+			let partialIdMatch = containers.find((c: any) => c.Id.toLowerCase().startsWith(normalizedInput));
 
 			// Select container based on priority
 			let targetContainer = exactIdMatch || exactNameMatch || partialIdMatch;
@@ -353,14 +503,15 @@ class NetworkService {
 					method: "requestDocker",
 					details: { url: monitor.url },
 				});
-				dockerResponse.status = 404;
 				dockerResponse.status = false;
 				dockerResponse.message = `Ambiguous container match for "${monitor.url}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`;
 				return dockerResponse;
 			}
 
 			const container = docker.getContainer(targetContainer.Id);
-			const { response, responseTime, error } = await this.timeRequest(() => container.inspect());
+			const { response, responseTime, error }: { response?: any; responseTime?: number; error?: any } = await this.timeRequest(() =>
+				container.inspect()
+			);
 
 			dockerResponse.responseTime = responseTime;
 			dockerResponse.status = response?.State?.Status === "running" ? true : false;
@@ -375,14 +526,14 @@ class NetworkService {
 			}
 
 			return dockerResponse;
-		} catch (err) {
+		} catch (err: any) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestDocker";
 			throw err;
 		}
 	}
 
-	async requestPort(monitor) {
+	private async requestPort(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			const { url, port } = monitor;
 			const { response, responseTime, error } = await this.timeRequest(async () => {
@@ -405,21 +556,22 @@ class NetworkService {
 						reject(new Error("Connection timeout"));
 					});
 
-					socket.on("error", (err) => {
+					socket.on("error", (err: any) => {
 						socket.destroy();
 						reject(err);
 					});
 				});
 			});
 
-			const portResponse = {
-				code: 200,
-				status: response.success,
-				message: this.stringService.portSuccess,
-				monitorId: monitor.id,
-				type: monitor.type,
-				responseTime: responseTime,
-			};
+			const portResponse = this.buildStatusResponse({
+				monitor,
+				overrides: {
+					code: 200,
+					status: (response as { success?: boolean })?.success ?? false,
+					message: this.stringService.portSuccess,
+					responseTime,
+				},
+			});
 
 			if (error) {
 				portResponse.code = this.NETWORK_ERROR;
@@ -429,30 +581,31 @@ class NetworkService {
 			}
 
 			return portResponse;
-		} catch (error) {
+		} catch (error: any) {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestTCP";
 			throw error;
 		}
 	}
 
-	async requestGame(monitor) {
+	private async requestGame(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			const { url, port, gameId } = monitor;
 
-			const gameResponse = {
-				code: 200,
-				status: true,
-				message: "Success",
-				monitorId: monitor.id,
-				type: "game",
-			};
+			const gameResponse = this.buildStatusResponse({
+				monitor,
+				overrides: {
+					code: 200,
+					status: true,
+					message: "Success",
+				},
+			});
 
 			const state = await this.GameDig.query({
 				type: gameId,
 				host: url,
 				port: port,
-			}).catch((error) => {
+			}).catch((error: any) => {
 				this.logger.warn({
 					message: error.message,
 					service: this.SERVICE_NAME,
@@ -471,21 +624,25 @@ class NetworkService {
 			gameResponse.responseTime = state.ping;
 			gameResponse.payload = state;
 			return gameResponse;
-		} catch (error) {
+		} catch (error: any) {
 			error.service = this.SERVICE_NAME;
 			error.method = "requestPing";
 			throw error;
 		}
 	}
-	async handleUnsupportedType(type) {
-		const err = new Error(`Unsupported type: ${type}`);
-		err.service = this.SERVICE_NAME;
-		err.method = "getStatus";
-		throw err;
+	private async handleUnsupportedType(type: string): Promise<MonitorStatusResponse> {
+		return {
+			monitorId: "unknown",
+			teamId: "unknown",
+			type: "unknown",
+			status: false,
+			code: this.NETWORK_ERROR,
+			message: `Unsupported type: ${type}`,
+		};
 	}
 
 	// Other network requests unrelated to monitoring:
-	async requestWebhook(type, url, body) {
+	async requestWebhook(type: string, url: string, body: any) {
 		try {
 			const response = await this.axios.post(url, body, {
 				headers: {
@@ -500,7 +657,7 @@ class NetworkService {
 				message: `Successfully sent ${type} notification`,
 				payload: response.data,
 			};
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.warn({
 				message: error.message,
 				service: this.SERVICE_NAME,
@@ -517,7 +674,7 @@ class NetworkService {
 		}
 	}
 
-	async requestPagerDuty({ message, routingKey, monitorUrl }) {
+	async requestPagerDuty({ message, routingKey, monitorUrl }: { message: string; routingKey: string; monitorUrl: string }) {
 		try {
 			const response = await this.axios.post(`https://events.pagerduty.com/v2/enqueue`, {
 				routing_key: routingKey,
@@ -532,7 +689,7 @@ class NetworkService {
 
 			if (response?.data?.status !== "success") return false;
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			error.details = error.response?.data;
 			error.service = this.SERVICE_NAME;
 			error.method = "requestPagerDuty";
@@ -540,7 +697,17 @@ class NetworkService {
 		}
 	}
 
-	async requestMatrix({ homeserverUrl, accessToken, roomId, message }) {
+	async requestMatrix({
+		homeserverUrl,
+		accessToken,
+		roomId,
+		message,
+	}: {
+		homeserverUrl: string;
+		accessToken: string;
+		roomId: string;
+		message: string;
+	}) {
 		try {
 			const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message?access_token=${accessToken}`;
 			const body = {
@@ -560,7 +727,7 @@ class NetworkService {
 				code: response.status,
 				message: "Successfully sent Matrix notification",
 			};
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.warn({
 				message: error.message,
 				service: this.SERVICE_NAME,

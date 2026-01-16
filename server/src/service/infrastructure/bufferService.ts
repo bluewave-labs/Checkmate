@@ -1,15 +1,38 @@
 import { config } from "@/config/index.js";
+import type { Check } from "@/types/index.js";
 
 const SERVICE_NAME = "BufferService";
 
 class BufferService {
 	static SERVICE_NAME = SERVICE_NAME;
-	constructor({ db, logger, envSettings, incidentService }) {
-		console.log(envSettings);
+	private BUFFER_TIMEOUT: number;
+	private db: any;
+	private logger: any;
+	private incidentService: any;
+	private SERVICE_NAME: string;
+	private buffer: any[];
+	private incidentBuffer: any[];
+	private bufferTimer: NodeJS.Timeout | null = null;
+	private checksService: any;
+
+	constructor({
+		db,
+		logger,
+		envSettings,
+		incidentService,
+		checkService,
+	}: {
+		db: any;
+		logger: any;
+		envSettings: any;
+		incidentService: any;
+		checkService: any;
+	}) {
 		this.BUFFER_TIMEOUT = config.NODE_ENV === "development" ? 10 : 1000 * 60 * 1; // 1 minute
 		this.db = db;
 		this.logger = logger;
 		this.incidentService = incidentService;
+		this.checksService = checkService;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
 		this.incidentBuffer = [];
@@ -25,10 +48,10 @@ class BufferService {
 		return BufferService.SERVICE_NAME;
 	}
 
-	addToBuffer({ check }) {
+	addToBuffer({ check }: { check: Check }) {
 		try {
 			this.buffer.push(check);
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
@@ -38,7 +61,7 @@ class BufferService {
 		}
 	}
 
-	addIncidentToBuffer({ monitor, check, action = "create" }) {
+	addIncidentToBuffer({ monitor, check, action = "create" }: { monitor: any; check: Check; action?: string }) {
 		try {
 			if (!monitor || !check) {
 				this.logger.warn({
@@ -50,7 +73,7 @@ class BufferService {
 			}
 
 			this.incidentBuffer.push({ monitor, check, action });
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
@@ -60,20 +83,20 @@ class BufferService {
 		}
 	}
 
-	removeCheckFromBuffer(checkToRemove) {
+	removeCheckFromBuffer(checkToRemove: Check) {
 		try {
 			if (!checkToRemove) {
 				return false;
 			}
 
 			const index = this.buffer.findIndex((check) => {
-				if (checkToRemove._id && check._id) {
-					return check._id.toString() === checkToRemove._id.toString();
+				if (checkToRemove.id && check.id) {
+					return check.id.toString() === checkToRemove.id.toString();
 				}
 				return (
-					check.monitorId?.toString() === checkToRemove.monitorId?.toString() &&
-					check.teamId?.toString() === checkToRemove.teamId?.toString() &&
-					check.type === checkToRemove.type &&
+					check.monitorId?.toString() === checkToRemove.metadata.monitorId &&
+					check.teamId?.toString() === checkToRemove.metadata.teamId &&
+					check.type === checkToRemove.metadata.type &&
 					check.status === checkToRemove.status &&
 					check.statusCode === checkToRemove.statusCode &&
 					check.responseTime === checkToRemove.responseTime &&
@@ -87,7 +110,7 @@ class BufferService {
 			}
 
 			return false;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
@@ -99,10 +122,13 @@ class BufferService {
 	}
 
 	scheduleNextFlush() {
+		if (this.bufferTimer) {
+			clearTimeout(this.bufferTimer);
+		}
 		this.bufferTimer = setTimeout(async () => {
 			try {
 				await this.flushBuffer();
-			} catch (error) {
+			} catch (error: any) {
 				this.logger.error({
 					message: `Error in flush cycle: ${error.message}`,
 					service: this.SERVICE_NAME,
@@ -118,9 +144,9 @@ class BufferService {
 	async flushBuffer() {
 		try {
 			if (this.buffer.length > 0) {
-				await this.db.checkModule.createChecks(this.buffer);
+				await this.checksService.createChecks(this.buffer);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
@@ -133,7 +159,7 @@ class BufferService {
 			if (this.incidentBuffer.length > 0 && this.incidentService) {
 				await this.flushIncidentBuffer();
 			}
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: this.SERVICE_NAME,
@@ -154,7 +180,7 @@ class BufferService {
 		try {
 			const itemsToProcess = [...this.incidentBuffer];
 			await this.incidentService.processIncidentsFromBuffer(itemsToProcess);
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: `Error flushing incident buffer: ${error.message}`,
 				service: this.SERVICE_NAME,

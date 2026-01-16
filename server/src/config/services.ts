@@ -155,7 +155,7 @@ export const initializeServices = async ({
 
 	// Repositories
 	const monitorsRepository = new MongoMonitorsRepository();
-	const checksRepository = new MongoChecksRepository();
+	const checksRepository = new MongoChecksRepository(logger);
 	const monitorStatsRepository = new MongoMonitorStatsRepository();
 	const statusPagesRepository = new MongoStatusPagesRepository();
 
@@ -183,7 +183,17 @@ export const initializeServices = async ({
 		stringService,
 	});
 
-	const bufferService = new BufferService({ db, logger, envSettings, incidentService });
+	const checkService = new CheckService({
+		db,
+		settingsService,
+		stringService,
+		errorService,
+		monitorsRepository,
+		logger,
+		checksRepository,
+	});
+
+	const bufferService = new BufferService({ db, logger, envSettings, incidentService, checkService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService, monitorsRepository });
 
@@ -208,11 +218,11 @@ export const initializeServices = async ({
 		networkService,
 		statusService,
 		notificationService,
+		checkService,
+		buffer: bufferService,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
-		envSettings,
-		db,
 		logger,
 		helper: superSimpleQueueHelper,
 		monitorsRepository,
@@ -231,13 +241,7 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		monitorsRepository,
 	});
-	const checkService = new CheckService({
-		db,
-		settingsService,
-		stringService,
-		errorService,
-		monitorsRepository,
-	});
+
 	const diagnosticService = new DiagnosticService();
 	const inviteService = new InviteService({
 		db,

@@ -1,7 +1,6 @@
 import "./check.css";
 import PropTypes from "prop-types";
-import CheckGrey from "../../../assets/icons/check.svg?react";
-import CheckOutlined from "../../../assets/icons/check-outlined.svg?react";
+import Icon from "../Icon";
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 
@@ -35,16 +34,16 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 			alignItems="center"
 		>
 			{outlined ? (
-				<CheckOutlined alt="check" />
+				<Icon
+					name="CheckCircle"
+					size={20}
+				/>
 			) : (
-				<Box
-					lineHeight={0}
-					sx={{
-						"& svg > path": { fill: colors[variant] },
-					}}
-				>
-					<CheckGrey alt="form checks" />
-				</Box>
+				<Icon
+					name="Check"
+					size={16}
+					color={colors[variant]}
+				/>
 			)}
 			<Typography
 				component="span"

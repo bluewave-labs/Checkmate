@@ -1,4 +1,4 @@
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game"] as const;
+export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export interface MonitorThresholds {

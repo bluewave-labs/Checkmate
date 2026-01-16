@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Stack, TablePagination, Typography } from "@mui/material";
 import { TablePaginationActions } from "./Actions/index.jsx";
-import SelectorVertical from "../../../../assets/icons/selector-vertical.svg?react";
+import Icon from "../../Icon";
 
 Pagination.propTypes = {
 	paginationLabel: PropTypes.string, // Label for the pagination.
@@ -100,7 +100,12 @@ function Pagination({
 							},
 						},
 						inputProps: { id: "pagination-dropdown" },
-						IconComponent: SelectorVertical,
+						IconComponent: () => (
+							<Icon
+								name="ChevronsUpDown"
+								size={16}
+							/>
+						),
 						sx: {
 							ml: theme.spacing(4),
 							mr: theme.spacing(12),

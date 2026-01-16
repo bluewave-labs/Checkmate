@@ -3,9 +3,7 @@ import { Box, Stack, Typography, Divider } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PanelSkeleton from "../IncidentsSummaryPanel/skeleton.jsx";
 import { useTranslation } from "react-i18next";
-import Clock from "@/assets/icons/maintenance.svg?react";
-import Incidents from "@/assets/icons/incidents.svg?react";
-import NotificationIcon from "@/assets/icons/notifications.svg?react";
+import Icon from "@/Components/v1/Icon";
 import SummaryCard from "../SummaryCard/index.jsx";
 
 /**
@@ -33,10 +31,6 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 	const { t } = useTranslation();
 	const totalResolutions =
 		(summary?.totalManualResolutions || 0) + (summary?.totalAutomaticResolutions || 0);
-	const automaticPercentage =
-		totalResolutions > 0
-			? (summary?.totalAutomaticResolutions / totalResolutions) * 100
-			: 0;
 
 	const iconWrapperStyle = {
 		display: "flex",
@@ -102,7 +96,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						sx={rowStyle}
 					>
 						<Box sx={iconWrapperStyle}>
-							<NotificationIcon />
+							<Icon name="Bell" size={18} />
 						</Box>
 						<Typography
 							variant="body1"
@@ -121,7 +115,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 						sx={rowStyle}
 					>
 						<Box sx={iconWrapperStyle}>
-							<Incidents />
+							<Icon name="AlertTriangle" size={18} />
 						</Box>
 						<Typography
 							variant="body1"
@@ -139,7 +133,7 @@ const StatisticsPanel = ({ isLoading = false, error = null, summary = {} }) => {
 					sx={rowStyle}
 				>
 					<Box sx={iconWrapperStyle}>
-						<Clock />
+						<Icon name="Wrench" size={18} />
 					</Box>
 					<Typography
 						variant="body1"

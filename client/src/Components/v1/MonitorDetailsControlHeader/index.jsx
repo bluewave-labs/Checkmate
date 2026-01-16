@@ -3,10 +3,7 @@ import Status from "./status.jsx";
 import Skeleton from "./skeleton.jsx";
 import Button from "@mui/material/Button";
 import { Tooltip } from "@mui/material";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
-import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
-import EmailIcon from "@mui/icons-material/Email";
+import Icon from "../Icon";
 
 // Utils
 import PropTypes from "prop-types";
@@ -75,7 +72,12 @@ const MonitorDetailsControlHeader = ({
 							variant="contained"
 							color="secondary"
 							loading={isSending}
-							startIcon={<EmailIcon />}
+							startIcon={
+								<Icon
+									name="Mail"
+									size={18}
+								/>
+							}
 							disabled={isTestNotificationsDisabled}
 							onClick={() => {
 								testAllNotifications({ monitorId: monitor?.id });
@@ -103,7 +105,17 @@ const MonitorDetailsControlHeader = ({
 						color="secondary"
 						loading={isPausing}
 						startIcon={
-							monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+							monitor?.isActive ? (
+								<Icon
+									name="Pause"
+									size={18}
+								/>
+							) : (
+								<Icon
+									name="Play"
+									size={18}
+								/>
+							)
 						}
 						onClick={() => {
 							pauseMonitor({
@@ -119,7 +131,12 @@ const MonitorDetailsControlHeader = ({
 					<Button
 						variant="contained"
 						color="secondary"
-						startIcon={<SettingsOutlinedIcon />}
+						startIcon={
+							<Icon
+								name="Settings"
+								size={18}
+							/>
+						}
 						onClick={() => navigate(`/${path}/configure/${monitor.id}`)}
 					>
 						Configure

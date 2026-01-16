@@ -1,7 +1,7 @@
 import { Checkbox, FormControl, ListItemText, MenuItem, Select } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Icon from "../Icon";
 
 /**
  * A reusable filter header component that displays a dropdown menu with selectable options.
@@ -29,9 +29,10 @@ const FilterHeader = ({ header, options, value, onChange, multiple = true }) => 
 			<Select
 				multiple={multiple}
 				IconComponent={(props) => (
-					<AddCircleOutlineIcon
+					<Icon
 						{...props}
-						sx={{ fontSize: "medium" }}
+						name="PlusCircle"
+						size={18}
 					/>
 				)}
 				displayEmpty

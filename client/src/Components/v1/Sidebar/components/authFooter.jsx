@@ -7,8 +7,7 @@ import Avatar from "../../Avatar/index.jsx";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
-import DotsVertical from "../../../../assets/icons/dots-vertical.svg?react";
-import LogoutSvg from "../../../../assets/icons/logout.svg?react";
+import Icon from "../../Icon";
 
 import { useTheme } from "@emotion/react";
 import { useSelector } from "react-redux";
@@ -81,6 +80,10 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 					gap: theme.spacing(2),
 					borderRadius: theme.shape.borderRadius,
 					pl: theme.spacing(4),
+					color: theme.palette.primary.contrastTextTertiary,
+					"& svg": {
+						stroke: theme.palette.primary.contrastTextTertiary,
+					},
 				}}
 			>
 				{item.icon}
@@ -160,19 +163,14 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 							ml: "50px",
 							"&:focus": { outline: "none" },
 							alignSelf: "center",
-
-							"& svg": {
-								width: "22px",
-								height: "22px",
-							},
-							"& svg path": {
-								/* Vertical three dots */
-								stroke: theme.palette.primary.contrastTextTertiary,
-							},
 						}}
 						onClick={(event) => openPopup(event)}
 					>
-						<DotsVertical />
+						<Icon
+							name="MoreVertical"
+							size={22}
+							color="primary.contrastTextTertiary"
+						/>
 					</IconButton>
 				</Tooltip>
 			</Stack>
@@ -256,12 +254,13 @@ const AuthFooter = ({ collapsed, accountMenuItems }) => {
 						gap: theme.spacing(4),
 						borderRadius: theme.shape.borderRadius,
 						pl: theme.spacing(4),
-						"& svg path": {
-							stroke: theme.palette.primary.contrastTextTertiary,
-						},
 					}}
 				>
-					<LogoutSvg />
+					<Icon
+						name="LogOut"
+						size={20}
+						color="primary.contrastTextTertiary"
+					/>
 					{t("menu.logOut", "Log out")}
 				</MenuItem>
 			</Menu>
