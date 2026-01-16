@@ -97,7 +97,7 @@ class MonitorController {
 			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const dateRange = requireString(req?.query?.dateRange, "dateRange");
+			const dateRange = optionalString(req?.query?.dateRange, "dateRange") || "recent";
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const monitor = await this.monitorService.getHardwareDetailsById({
