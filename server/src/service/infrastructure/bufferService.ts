@@ -12,7 +12,7 @@ class BufferService {
 	private SERVICE_NAME: string;
 	private buffer: any[];
 	private incidentBuffer: any[];
-	private bufferTimer: NodeJS.Timeout;
+	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
 
 	constructor({
@@ -122,6 +122,9 @@ class BufferService {
 	}
 
 	scheduleNextFlush() {
+		if (this.bufferTimer) {
+			clearTimeout(this.bufferTimer);
+		}
 		this.bufferTimer = setTimeout(async () => {
 			try {
 				await this.flushBuffer();
