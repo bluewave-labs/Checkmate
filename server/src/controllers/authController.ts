@@ -32,11 +32,13 @@ class AuthController {
 
 	registerUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			if (req.body?.email) {
-				req.body.email = req.body.email?.toLowerCase();
+			const newUser = req.body.user;
+			const newUserToken = req.body.token;
+			if (newUser?.email) {
+				newUser.email = newUser.email.toLowerCase();
 			}
-			await registrationBodyValidation.validateAsync(req.body);
-			const { user, token } = await this.userService.registerUser(req.body, req.file);
+			await registrationBodyValidation.validateAsync(newUser);
+			const { user, token } = await this.userService.registerUser(newUser, newUserToken, req.file);
 			res.status(200).json({
 				success: true,
 				msg: "User registered successfully",

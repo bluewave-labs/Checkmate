@@ -1,0 +1,95 @@
+import { Schema, model, type Types } from "mongoose";
+import bcrypt from "bcryptjs";
+import type { User, UserProfileImage, UserRole } from "@/types/index.js";
+import { MonitorModel } from "@/db/models/index.js";
+import Team from "./Team.js";
+import Notification from "./Notification.js";
+
+type UserDocumentBase = Omit<User, "id" | "teamId" | "createdAt" | "updatedAt"> & {
+	teamId?: Types.ObjectId;
+	profileImage?: Required<UserProfileImage>;
+};
+
+interface UserDocument extends UserDocumentBase {
+	_id: Types.ObjectId;
+	teamId?: Types.ObjectId;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+const profileImageSchema = new Schema<Required<UserProfileImage>>(
+	{
+		data: { type: Buffer },
+		contentType: { type: String },
+	},
+	{ _id: false }
+);
+
+const UserSchema = new Schema<UserDocument>(
+	{
+		firstName: { type: String, required: true },
+		lastName: { type: String, required: true },
+		email: { type: String, required: true, unique: true },
+		password: { type: String, required: true },
+		avatarImage: { type: String },
+		profileImage: { type: profileImageSchema },
+		isActive: { type: Boolean, default: true },
+		isVerified: { type: Boolean, default: false },
+		role: {
+			type: [String],
+			enum: ["user", "admin", "superadmin", "demo" satisfies UserRole],
+			default: ["user"],
+		},
+		teamId: {
+			type: Schema.Types.ObjectId,
+			ref: "Team",
+			immutable: true,
+		},
+		checkTTL: { type: Number },
+	},
+	{ timestamps: true }
+);
+
+UserSchema.pre("save", function (next) {
+	if (!this.isModified("password")) {
+		return next();
+	}
+	const salt = bcrypt.genSaltSync(10);
+	this.password = bcrypt.hashSync(this.password, salt);
+	next();
+});
+
+UserSchema.pre("findOneAndUpdate", function (next) {
+	const update = this.getUpdate();
+	if (update && "password" in update) {
+		const salt = bcrypt.genSaltSync(10);
+		(update as any).password = bcrypt.hashSync((update as any).password, salt);
+	}
+	next();
+});
+
+UserSchema.pre("findOneAndDelete", async function (next) {
+	try {
+		const userToDelete = await this.model.findOne(this.getFilter());
+		if (!userToDelete) return next();
+		if (userToDelete.role.includes("superadmin")) {
+			await Team.deleteOne({ _id: userToDelete.teamId });
+			await MonitorModel.deleteMany({ userId: userToDelete._id });
+			await this.model.deleteMany({ teamId: userToDelete.teamId, _id: { $ne: userToDelete._id } });
+			await Notification.deleteMany({ teamId: userToDelete.teamId });
+		}
+		next();
+	} catch (error) {
+		next(error as Error);
+	}
+});
+
+UserSchema.methods.comparePassword = async function (submittedPassword: string) {
+	return bcrypt.compare(submittedPassword, this.password);
+};
+
+const UserModel = model<UserDocument>("User", UserSchema);
+
+export type { UserDocument };
+export { UserModel };
+export default UserModel;

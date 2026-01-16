@@ -1,4 +1,5 @@
 import { IMonitorsRepository } from "@/repositories/index.js";
+import type { User } from "@/types/index.js";
 
 const SERVICE_NAME = "userService";
 
@@ -62,12 +63,12 @@ class UserService {
 		return this.jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
 	};
 
-	registerUser = async (user: any, file: any) => {
+	registerUser = async (user: Partial<User>, inviteToken: string, file: any) => {
 		// Create a new user
 		// If superAdmin exists, a token should be attached to all further register requests
 		const superAdminExists = await this.db.userModule.checkSuperadmin();
 		if (superAdminExists) {
-			const invitedUser = await this.db.inviteModule.getInviteTokenAndDelete(user.inviteToken);
+			const invitedUser = await this.db.inviteModule.getInviteTokenAndDelete(inviteToken);
 			user.role = invitedUser.role;
 			user.teamId = invitedUser.teamId;
 		} else {

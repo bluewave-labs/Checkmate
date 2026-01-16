@@ -9,3 +9,6 @@ export { default as MonitorStatsModel } from "@/db/models/MonitorStats.js";
 
 export * from "@/db/models/StatusPage.js";
 export { default as StatusPageModel } from "@/db/models/StatusPage.js";
+
+export * from "@/db/models/User.js";
+export { default as UserModel } from "@/db/models/User.js";
