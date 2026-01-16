@@ -82,6 +82,20 @@ class MongoUsersRepository implements IUsersRepository {
 		return this.toEntity(user);
 	};
 
+	findById = async (id: string) => {
+		const user = await UserModel.findById(id).select("-password").select("-profileImage");
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		return this.toEntity(user);
+	};
+
+	findAll = async () => {
+		const users = await UserModel.find().select("-password").select("-profileImage");
+		return this.mapDocuments(users);
+	};
+
 	updateById = async (id: string, patch: Partial<User & { deleteProfileImage?: boolean }>, file?: Express.Multer.File | null): Promise<User> => {
 		const candidateUser = { ...patch };
 
@@ -113,12 +127,27 @@ class MongoUsersRepository implements IUsersRepository {
 		return this.toEntity(updatedUser);
 	};
 
+	deleteById = async (id: string) => {
+		const deletedUser = await UserModel.findByIdAndDelete(id);
+		if (!deletedUser) {
+			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+		}
+		return this.toEntity(deletedUser);
+	};
+
 	findSuperAdmin = async () => {
 		const superAdmin = await UserModel.findOne({ role: "superadmin" });
 		if (superAdmin !== null) {
 			return true;
 		}
 		return false;
+	};
+
+	private mapDocuments = (documents: UserDocument[]): User[] => {
+		if (!documents?.length) {
+			return [];
+		}
+		return documents.map((doc) => this.toEntity(doc));
 	};
 }
 

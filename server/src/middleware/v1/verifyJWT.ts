@@ -1,3 +1,5 @@
+import { NextFunction, Request, Response } from "express";
+
 import jwt from "jsonwebtoken";
 import ServiceRegistry from "../../service/system/serviceRegistry.js";
 import SettingsService from "../../service/system/settingsService.js";
@@ -5,20 +7,12 @@ import StringService from "../../service/system/stringService.js";
 const SERVICE_NAME = "verifyJWT";
 const TOKEN_PREFIX = "Bearer ";
 
-/**
- * Verifies the JWT token
- * @function
- * @param {express.Request} req
- * @param {express.Response} res
- * @param {express.NextFunction} next
- * @returns {express.Response}
- */
-const verifyJWT = (req, res, next) => {
+const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
 	const token = req.headers["authorization"];
 	// Make sure a token is provided
 	if (!token) {
-		const error = new Error(stringService.noAuthToken);
+		const error: any = new Error(stringService.noAuthToken);
 		error.status = 401;
 		error.service = SERVICE_NAME;
 		next(error);
@@ -26,7 +20,7 @@ const verifyJWT = (req, res, next) => {
 	}
 	// Make sure it is properly formatted
 	if (!token.startsWith(TOKEN_PREFIX)) {
-		const error = new Error(stringService.invalidAuthToken); // Instantiate a new Error object for improperly formatted token
+		const error: any = new Error(stringService.invalidAuthToken); // Instantiate a new Error object for improperly formatted token
 		error.status = 401;
 		error.service = SERVICE_NAME;
 		error.method = "verifyJWT";
@@ -37,7 +31,7 @@ const verifyJWT = (req, res, next) => {
 	const parsedToken = token.slice(TOKEN_PREFIX.length, token.length);
 	// Verify the token's authenticity
 	const { jwtSecret } = ServiceRegistry.get(SettingsService.SERVICE_NAME).getSettings();
-	jwt.verify(parsedToken, jwtSecret, (err, decoded) => {
+	jwt.verify(parsedToken, jwtSecret, (err: any, decoded: any) => {
 		if (err) {
 			const errorMessage = err.name === "TokenExpiredError" ? stringService.expiredAuthToken : stringService.invalidAuthToken;
 			err.details = { msg: errorMessage };

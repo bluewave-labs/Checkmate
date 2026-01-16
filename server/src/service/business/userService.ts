@@ -187,7 +187,7 @@ class UserService {
 	};
 
 	requestRecovery = async (email: string) => {
-		const user = await this.db.userModule.getUserByEmail(email);
+		const user = await this.usersRepository.findByEmail(email);
 
 		// Delete existing tokens
 		await this.recoveryTokensRepository.deleteManyByEmail(email);
@@ -231,14 +231,14 @@ class UserService {
 		return { user: existingUser, token };
 	};
 
-	deleteUser = async (user: any) => {
+	deleteUser = async (user: User) => {
 		const email = user?.email;
 		if (!email) {
 			throw this.errorService.createBadRequestError("No email in request");
 		}
 
 		const teamId = user?.teamId;
-		const userId = user?._id;
+		const userId = user?.id;
 
 		if (!teamId) {
 			throw this.errorService.createBadRequestError("No team ID in request");
@@ -267,24 +267,28 @@ class UserService {
 				));
 		}
 		// 6. Delete the user by id
-		await this.db.userModule.deleteUser(userId);
+		await this.usersRepository.deleteById(userId);
 	};
 
 	getAllUsers = async () => {
-		const users = await this.db.userModule.getAllUsers();
-		return users;
+		return await this.usersRepository.findAll();
 	};
 
 	getUserById = async (roles: any, userId: any) => {
-		const user = await this.db.userModule.getUserById(roles, userId);
+		if (!roles.includes("superadmin")) {
+			throw new AppError({ message: "User is not a superadmin", service: SERVICE_NAME, status: 403 });
+		}
+		const user = await this.usersRepository.findById(userId);
+
 		return user;
 	};
 
-	editUserById = async (userId: any, user: any) => {
-		await this.db.userModule.editUserById(userId, user);
+	editUserById = async (userId: any, patch: Partial<User>) => {
+		await this.usersRepository.updateById(userId, patch, null);
 	};
+
 	setPasswordByUserId = async (userId: any, password: string) => {
-		const updatedUser = await this.db.userModule.updateUser({ userId: userId, user: { password: password }, file: null });
+		const updatedUser = await this.usersRepository.updateById(userId, { password }, null);
 		return updatedUser;
 	};
 }

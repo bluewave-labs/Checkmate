@@ -69,7 +69,7 @@ class IncidentController {
 		try {
 			const resolvedIncident = await this.incidentService.resolveIncidentManually({
 				incidentId: req?.params?.incidentId,
-				userId: req?.user?._id,
+				userId: req?.user?.id,
 				teamId: req?.user?.teamId,
 				comment: req?.body?.comment,
 			});
