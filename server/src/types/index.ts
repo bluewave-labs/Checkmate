@@ -5,3 +5,4 @@ export * from "@/types/statusPage.js";
 export * from "@/types/network.js";
 export * from "@/types/user.js";
 export * from "@/types/invite.js";
+export * from "@/types/recoveryToken.js";

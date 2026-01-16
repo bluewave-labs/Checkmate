@@ -73,12 +73,14 @@ import {
 	MongoStatusPagesRepository,
 	MongoUsersRepository,
 	MongoInvitesRepository,
+	MongoRecoveryTokensRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
 	IUsersRepository,
 	IInvitesRepository,
+	IRecoveryTokensRepository,
 } from "@/repositories/index.js";
 
 export type InitializedSerivces = {
@@ -110,6 +112,7 @@ export type InitializedSerivces = {
 	statusPagesRepository: IStatusPagesRepository;
 	usersRepository: IUsersRepository;
 	invitesRepository: IInvitesRepository;
+	recoveryTokensRepository: IRecoveryTokensRepository;
 };
 
 export const initializeServices = async ({
@@ -163,6 +166,7 @@ export const initializeServices = async ({
 	const statusPagesRepository = new MongoStatusPagesRepository();
 	const usersRepository = new MongoUsersRepository();
 	const invitesRepository = new MongoInvitesRepository();
+	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -247,6 +251,7 @@ export const initializeServices = async ({
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
+		recoveryTokensRepository,
 	});
 
 	const diagnosticService = new DiagnosticService();
@@ -307,6 +312,7 @@ export const initializeServices = async ({
 		statusPagesRepository,
 		usersRepository,
 		invitesRepository,
+		recoveryTokensRepository,
 	};
 
 	Object.values(services).forEach((service) => {

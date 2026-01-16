@@ -15,3 +15,6 @@ export { default as MongoUsersRepository } from "@/repositories/users/MongoUsers
 
 export * from "@/repositories/invites/IInvitesRepository.js";
 export { default as MongoInvitesRepository } from "@/repositories/invites/MongoInviteRepository.js";
+
+export * from "@/repositories/recovery-tokens/IRecoveryTokensRepository.js";
+export { default as MongoRecoveryTokensRepository } from "@/repositories/recovery-tokens/MongoRecoveryTokensRepository.js";

@@ -1,7 +1,8 @@
-import { IInvitesRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
+import { IInvitesRepository, IMonitorsRepository, IRecoveryTokensRepository, IUsersRepository } from "@/repositories/index.js";
 import Team from "@/db/models/Team.js";
 import type { User } from "@/types/index.js";
 import bcrypt from "bcryptjs";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "userService";
 
@@ -20,6 +21,7 @@ class UserService {
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
 	private invitesRepository: IInvitesRepository;
+	private recoveryTokensRepository: IRecoveryTokensRepository;
 
 	constructor({
 		crypto,
@@ -34,6 +36,7 @@ class UserService {
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
+		recoveryTokensRepository,
 	}: {
 		crypto: any;
 		db: any;
@@ -47,6 +50,7 @@ class UserService {
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
 		invitesRepository: IInvitesRepository;
+		recoveryTokensRepository: IRecoveryTokensRepository;
 	}) {
 		this.db = db;
 		this.emailService = emailService;
@@ -60,6 +64,7 @@ class UserService {
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
 		this.invitesRepository = invitesRepository;
+		this.recoveryTokensRepository = recoveryTokensRepository;
 	}
 
 	get serviceName() {
@@ -178,13 +183,15 @@ class UserService {
 	};
 
 	checkSuperadminExists = async () => {
-		const superAdminExists = await this.db.userModule.checkSuperadmin();
-		return superAdminExists;
+		return await this.usersRepository.findSuperAdmin();
 	};
 
 	requestRecovery = async (email: string) => {
 		const user = await this.db.userModule.getUserByEmail(email);
-		const recoveryToken = await this.db.recoveryModule.requestRecoveryToken(email);
+
+		// Delete existing tokens
+		await this.recoveryTokensRepository.deleteManyByEmail(email);
+		const recoveryToken = await this.recoveryTokensRepository.create(email);
 		const name = user.firstName;
 		const { clientHost } = this.settingsService.getSettings();
 		const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
@@ -199,14 +206,29 @@ class UserService {
 	};
 
 	validateRecovery = async (recoveryToken: string) => {
-		await this.db.recoveryModule.validateRecoveryToken(recoveryToken);
+		// Throws if token not found, validating
+		await this.recoveryTokensRepository.findByToken(recoveryToken);
 	};
 
 	resetPassword = async (password: string, recoveryToken: string) => {
-		const user = await this.db.recoveryModule.resetPassword(password, recoveryToken);
-		const appSettings = await this.settingsService.getSettings();
-		const token = this.issueToken(user._doc, appSettings);
-		return { user, token };
+		const existingToken = await this.recoveryTokensRepository.findByToken(recoveryToken);
+		const existingUser = await this.usersRepository.findByEmail(existingToken.email);
+
+		const match = await bcrypt.compare(password, existingUser.password);
+		if (match === true) {
+			throw new AppError({ message: "New password cannot be same as old password", service: SERVICE_NAME, status: 400 });
+		}
+
+		existingUser.password = password;
+		await this.usersRepository.updateById(existingUser.id, existingUser, null);
+		await this.recoveryTokensRepository.deleteManyByEmail(existingUser.email);
+
+		existingUser.password = "";
+		existingUser.profileImage = undefined;
+
+		const token = this.issueToken(existingUser, await this.settingsService.getSettings());
+
+		return { user: existingUser, token };
 	};
 
 	deleteUser = async (user: any) => {

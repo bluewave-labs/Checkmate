@@ -1,4 +1,4 @@
-import { UserRole } from "./user.js";
+import type { UserRole } from "@/types/user.js";
 
 export interface Invite {
 	id: string;
