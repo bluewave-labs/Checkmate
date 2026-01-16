@@ -152,10 +152,7 @@ class AuthController {
 				});
 			}
 
-			const { user, token, refreshToken: newRefreshToken } = await this.userService.refreshAuthToken(
-				authToken,
-				refreshToken
-			);
+			const { user, token, refreshToken: newRefreshToken } = await this.userService.refreshAuthToken(authToken, refreshToken);
 
 			return res.status(200).json({
 				success: true,

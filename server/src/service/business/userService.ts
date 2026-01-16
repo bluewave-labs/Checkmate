@@ -217,8 +217,7 @@ class UserService {
 		try {
 			this.jwt.verify(refreshTokenFromHeader, refreshTokenSecret);
 		} catch (err: any) {
-			const errorMessage =
-				err.name === "TokenExpiredError" ? "Refresh token has expired" : "Invalid refresh token";
+			const errorMessage = err.name === "TokenExpiredError" ? "Refresh token has expired" : "Invalid refresh token";
 			throw this.errorService.createAuthenticationError(errorMessage);
 		}
 
