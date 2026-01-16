@@ -33,7 +33,7 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
+	const { mode, language = "en", timezone, showURL } = useSelector((state) => state.ui);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
