@@ -5,6 +5,7 @@ import axios from "axios";
 const initialState = {
 	isLoading: false,
 	authToken: "",
+	refreshToken: "",
 	user: "",
 	success: null,
 	msg: null,
@@ -138,6 +139,7 @@ const handleAuthFulfilled = (state, action) => {
 	state.success = action.payload.success;
 	state.msg = action.payload.msg;
 	state.authToken = action.payload.data.token;
+	state.refreshToken = action.payload.data.refreshToken || "";
 	state.user = action.payload.data.user;
 };
 const handleAuthRejected = (state, action) => {
@@ -188,10 +190,14 @@ const authSlice = createSlice({
 	reducers: {
 		clearAuthState: (state) => {
 			state.authToken = "";
+			state.refreshToken = "";
 			state.user = "";
 			state.isLoading = false;
 			state.success = true;
 			state.msg = "Logged out successfully";
+		},
+		setAuthToken: (state, action) => {
+			state.authToken = action.payload;
 		},
 	},
 	extraReducers: (builder) => {
@@ -246,4 +252,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-export const { clearAuthState } = authSlice.actions;
+export const { clearAuthState, setAuthToken } = authSlice.actions;

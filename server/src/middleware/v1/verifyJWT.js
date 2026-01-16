@@ -41,7 +41,9 @@ const verifyJWT = (req, res, next) => {
 		if (err) {
 			const errorMessage = err.name === "TokenExpiredError" ? stringService.expiredAuthToken : stringService.invalidAuthToken;
 			err.details = { msg: errorMessage };
-			err.status = 401;
+			// Return 403 for expired tokens to trigger client refresh flow
+			// Return 401 for invalid tokens to trigger logout
+			err.status = err.name === "TokenExpiredError" ? 403 : 401;
 			err.service = SERVICE_NAME;
 			err.method = "verifyJWT";
 			next(err);

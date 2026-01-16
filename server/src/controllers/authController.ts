@@ -36,11 +36,11 @@ class AuthController {
 				req.body.email = req.body.email?.toLowerCase();
 			}
 			await registrationBodyValidation.validateAsync(req.body);
-			const { user, token } = await this.userService.registerUser(req.body, req.file);
+			const { user, token, refreshToken } = await this.userService.registerUser(req.body, req.file);
 			res.status(200).json({
 				success: true,
 				msg: "User registered successfully",
-				data: { user, token },
+				data: { user, token, refreshToken },
 			});
 		} catch (error) {
 			next(error);
@@ -53,7 +53,7 @@ class AuthController {
 				req.body.email = req.body.email?.toLowerCase();
 			}
 			await loginValidation.validateAsync(req.body);
-			const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
+			const { user, token, refreshToken } = await this.userService.loginUser(req.body.email, req.body.password);
 
 			return res.status(200).json({
 				success: true,
@@ -61,6 +61,7 @@ class AuthController {
 				data: {
 					user,
 					token,
+					refreshToken,
 				},
 			});
 		} catch (error) {
@@ -128,11 +129,38 @@ class AuthController {
 	resetPassword = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await newPasswordValidation.validateAsync(req.body);
-			const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
+			const { user, token, refreshToken } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
 			return res.status(200).json({
 				success: true,
 				msg: "Password has been reset successfully",
-				data: { user, token },
+				data: { user, token, refreshToken },
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	refreshAuthToken = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const authToken = req.headers.authorization?.split(" ")[1];
+			const refreshToken = req.headers["x-refresh-token"] as string;
+
+			if (!authToken || !refreshToken) {
+				return res.status(400).json({
+					success: false,
+					msg: "Auth token and refresh token are required",
+				});
+			}
+
+			const { user, token, refreshToken: newRefreshToken } = await this.userService.refreshAuthToken(
+				authToken,
+				refreshToken
+			);
+
+			return res.status(200).json({
+				success: true,
+				msg: "Token refreshed successfully",
+				data: { user, token, refreshToken: newRefreshToken },
 			});
 		} catch (error) {
 			next(error);

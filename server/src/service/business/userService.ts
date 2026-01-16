@@ -62,6 +62,17 @@ class UserService {
 		return this.jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
 	};
 
+	issueRefreshToken = (payload: any, appSettings: any) => {
+		const refreshTokenTTL = appSettings?.refreshTokenTTL ?? "7d";
+		const refreshTokenSecret = appSettings?.refreshTokenSecret ?? appSettings?.jwtSecret;
+		const payloadData = { ...payload };
+		// Remove sensitive data from refresh token payload
+		delete payloadData.password;
+		delete payloadData.profileImage;
+		delete payloadData.avatarImage;
+		return this.jwt.sign(payloadData, refreshTokenSecret, { expiresIn: refreshTokenTTL });
+	};
+
 	registerUser = async (user: any, file: any) => {
 		// Create a new user
 		// If superAdmin exists, a token should be attached to all further register requests
@@ -92,6 +103,7 @@ class UserService {
 		const appSettings = await this.settingsService.getSettings();
 
 		const token = this.issueToken(userForToken, appSettings);
+		const refreshToken = this.issueRefreshToken(userForToken, appSettings);
 
 		try {
 			const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
@@ -114,7 +126,7 @@ class UserService {
 			});
 		}
 
-		return { user: newUser, token };
+		return { user: newUser, token, refreshToken };
 	};
 
 	loginUser = async (email: string, password: string) => {
@@ -134,9 +146,10 @@ class UserService {
 		// Happy path, return token
 		const appSettings = await this.settingsService.getSettings();
 		const token = this.issueToken(userWithoutPassword, appSettings);
+		const refreshToken = this.issueRefreshToken(userWithoutPassword, appSettings);
 		// reset avatar image
 		userWithoutPassword.avatarImage = user.avatarImage;
-		return { user: userWithoutPassword, token };
+		return { user: userWithoutPassword, token, refreshToken };
 	};
 
 	editUser = async (updates: any, file: any, currentUser: any) => {
@@ -191,7 +204,40 @@ class UserService {
 		const user = await this.db.recoveryModule.resetPassword(password, recoveryToken);
 		const appSettings = await this.settingsService.getSettings();
 		const token = this.issueToken(user._doc, appSettings);
-		return { user, token };
+		const refreshToken = this.issueRefreshToken(user._doc, appSettings);
+		return { user, token, refreshToken };
+	};
+
+	refreshAuthToken = async (oldAuthToken: string, refreshTokenFromHeader: string) => {
+		const appSettings = await this.settingsService.getSettings();
+		const refreshTokenSecret = appSettings?.refreshTokenSecret ?? appSettings?.jwtSecret;
+		const jwtSecret = appSettings?.jwtSecret;
+
+		// Verify refresh token
+		try {
+			this.jwt.verify(refreshTokenFromHeader, refreshTokenSecret);
+		} catch (err: any) {
+			const errorMessage =
+				err.name === "TokenExpiredError" ? "Refresh token has expired" : "Invalid refresh token";
+			throw this.errorService.createAuthenticationError(errorMessage);
+		}
+
+		// Refresh token is valid, get payload from old auth token (ignoring expiration)
+		let payloadData: any;
+		try {
+			payloadData = this.jwt.verify(oldAuthToken, jwtSecret, { ignoreExpiration: true });
+		} catch (err: any) {
+			throw this.errorService.createAuthenticationError("Invalid auth token");
+		}
+
+		// Remove old token metadata
+		delete payloadData.iat;
+		delete payloadData.exp;
+
+		// Issue new access token
+		const newAuthToken = this.issueToken(payloadData, appSettings);
+
+		return { user: payloadData, token: newAuthToken, refreshToken: refreshTokenFromHeader };
 	};
 
 	deleteUser = async (user: any) => {

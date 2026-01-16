@@ -2,7 +2,7 @@ import axios from "axios";
 import i18next from "i18next";
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 const FALLBACK_BASE_URL = "http://localhost:5000/api/v1";
-import { clearAuthState } from "../Features/Auth/authSlice";
+import { clearAuthState, setAuthToken } from "../Features/Auth/authSlice";
 class NetworkService {
 	constructor(store, dispatch, navigate) {
 		this.store = store;
@@ -26,7 +26,7 @@ class NetworkService {
 			(config) => {
 				const currentLanguage = i18next.language || "en";
 
-				const { authToken } = store.getState().auth;
+				const { authToken, refreshToken } = store.getState().auth;
 
 				config.headers = {
 					Authorization: `Bearer ${authToken}`,
@@ -34,15 +34,36 @@ class NetworkService {
 					...config.headers,
 				};
 
+				// Only send refresh token to the refresh endpoint
+				if (refreshToken && config.url?.includes("/auth/refresh")) {
+					config.headers["x-refresh-token"] = refreshToken;
+				}
+
 				return config;
 			},
 			(error) => {
 				return Promise.reject(error);
 			}
 		);
+
+		// Track if we're currently refreshing to prevent multiple refresh calls
+		this.isRefreshing = false;
+		this.failedQueue = [];
+
+		const processQueue = (error, token = null) => {
+			this.failedQueue.forEach((prom) => {
+				if (error) {
+					prom.reject(error);
+				} else {
+					prom.resolve(token);
+				}
+			});
+			this.failedQueue = [];
+		};
+
 		this.axiosInstance.interceptors.response.use(
 			(response) => response,
-			(error) => {
+			async (error) => {
 				// Handle network errors (server unreachable)
 				if (error.code === "ERR_NETWORK") {
 					// Navigate to server unreachable page
@@ -51,8 +72,66 @@ class NetworkService {
 					return Promise.reject(error);
 				}
 
-				// Handle authentication errors
+				const originalRequest = error.config;
 
+				// Handle 403 - server is telling us to request a new access token
+				// Skip refresh logic for the refresh endpoint itself to prevent circular dependency
+				const isRefreshEndpoint = originalRequest.url?.includes("/auth/refresh");
+				if (
+					error.response &&
+					error.response.status === 403 &&
+					!originalRequest._retry &&
+					!isRefreshEndpoint
+				) {
+					// Check if we have a refresh token before attempting refresh
+					const { refreshToken } = store.getState().auth;
+					if (!refreshToken) {
+						dispatch(clearAuthState());
+						navigate("/login");
+						return Promise.reject(error);
+					}
+
+					if (this.isRefreshing) {
+						// If already refreshing, queue this request
+						return new Promise((resolve, reject) => {
+							this.failedQueue.push({ resolve, reject });
+						})
+							.then((token) => {
+								originalRequest.headers["Authorization"] = `Bearer ${token}`;
+								return this.axiosInstance(originalRequest);
+							})
+							.catch((err) => Promise.reject(err));
+					}
+
+					originalRequest._retry = true;
+					this.isRefreshing = true;
+
+					try {
+						// Call refresh endpoint
+						const response = await this.axiosInstance.post("/auth/refresh");
+						const newToken = response.data.data.token;
+
+						// Update the auth token in store
+						dispatch(setAuthToken(newToken));
+
+						// Process queued requests
+						processQueue(null, newToken);
+
+						// Retry original request with new token
+						originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+						return this.axiosInstance(originalRequest);
+					} catch (refreshError) {
+						// Refresh failed, clear auth and redirect to login
+						processQueue(refreshError, null);
+						dispatch(clearAuthState());
+						navigate("/login");
+						return Promise.reject(refreshError);
+					} finally {
+						this.isRefreshing = false;
+					}
+				}
+
+				// Handle 401 - authentication failed (invalid/expired refresh token or no token)
 				if (error.response && error.response.status === 401) {
 					dispatch(clearAuthState());
 					navigate("/login");
