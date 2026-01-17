@@ -13,15 +13,13 @@ const HomeLayout = () => {
 			className="home-layout"
 			flexDirection="row"
 			gap={14}
+			sx={{
+				marginRight: `${requiredPaddingRight}px`,
+				transition: "margin-right 300ms ease-in-out",
+			}}
 		>
 			<Sidebar />
-			<Stack
-				className="home-content-wrapper"
-				sx={{
-					paddingRight: `${requiredPaddingRight}px`,
-					transition: "padding-right 300ms ease-in-out",
-				}}
-			>
+			<Stack className="home-content-wrapper">
 				<Outlet />
 			</Stack>
 			<UserGuideSidebar />
