@@ -5,8 +5,10 @@ const SIDEBAR_STATE_KEY = "checkmate-sidebar-open";
 // Constants for sidebar dimensions
 export const TAB_BAR_WIDTH = 41; // 40px width + 1px border
 export const DEFAULT_CONTENT_WIDTH = 400;
-// Additional gap beyond the sidebar width
-export const MIN_GAP = 24;
+// Gap when sidebar is closed (need more space since tab bar is narrow)
+export const CLOSED_GAP = 24;
+// Gap when sidebar is open (less needed since content edge is clear)
+export const OPEN_GAP = 8;
 
 const UserGuideSidebarContext = createContext(null);
 
@@ -22,7 +24,8 @@ export const UserGuideSidebarProvider = ({ children }) => {
 
 	// Calculate total sidebar width and required padding
 	const totalSidebarWidth = isOpen ? TAB_BAR_WIDTH + contentWidth : TAB_BAR_WIDTH;
-	const requiredPaddingRight = totalSidebarWidth + MIN_GAP;
+	const gap = isOpen ? OPEN_GAP : CLOSED_GAP;
+	const requiredPaddingRight = totalSidebarWidth + gap;
 
 	// Set CSS custom properties on document root for global access
 	useEffect(() => {
