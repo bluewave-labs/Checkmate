@@ -304,7 +304,8 @@ class NetworkService implements INetworkService {
 
 			Object.assign(httpResponse, {
 				code: response.statusCode,
-				status: response.ok,
+				// 207 Multi-Status is used by Capture when some metrics fail - still a success
+				status: response.ok || response.statusCode === 207,
 				message: response.statusMessage ?? "",
 				responseTime: response.timings.phases.total || 0,
 				payload,
@@ -424,11 +425,132 @@ class NetworkService implements INetworkService {
 
 	private async requestHardware(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
-			return await this.requestHttp(monitor);
+			// Fetch main metrics
+			this.logger.info({
+				message: "Fetching hardware metrics",
+				service: this.SERVICE_NAME,
+				method: "requestHardware",
+				details: { url: monitor.url },
+			});
+			const mainResponse = await this.requestHttp(monitor);
+
+			// If main request failed, return early
+			if (!mainResponse.status) {
+				this.logger.warn({
+					message: "Main metrics request failed",
+					service: this.SERVICE_NAME,
+					method: "requestHardware",
+					details: { url: monitor.url, code: mainResponse.code, msg: mainResponse.message },
+				});
+				return mainResponse;
+			}
+
+			// Only fetch Proxmox metrics if enabled for this monitor
+			if (monitor?.enableProxmoxContainers === true) {
+				try {
+					const proxmoxUrl = this.buildProxmoxUrl(monitor.url);
+					this.logger.info({
+						message: "Attempting to fetch Proxmox metrics",
+						service: this.SERVICE_NAME,
+						method: "requestHardware",
+						details: { proxmoxUrl },
+					});
+					if (proxmoxUrl) {
+						const proxmoxResponse = await this.requestHttp({
+							...monitor,
+							url: proxmoxUrl,
+						});
+
+						// Proxmox response structure: { data: [...], errors: [...] | null, capture: {...} }
+						const proxmoxPayload = proxmoxResponse.payload as {
+							data?: unknown[] | null;
+							errors?: Array<{ metric: string[]; err: string }> | null;
+						};
+						const mainPayload = mainResponse.payload as {
+							data?: Record<string, unknown>;
+							errors?: Array<{ metric: string[]; err: string }>;
+						};
+
+						// Handle based on Capture's response scenarios:
+						// 1. Not configured: data=[], errors=null -> log and skip
+						// 2. Connection failed: data=null, errors=[...] -> merge errors
+						// 3. Partial failure: data=[...], errors=[...] -> merge both
+						// 4. Success: data=[...], errors=null -> merge data
+
+						if (proxmoxResponse.status && mainPayload?.data && typeof mainPayload.data === "object") {
+							// Merge container data if available
+							if (proxmoxPayload?.data && Array.isArray(proxmoxPayload.data)) {
+								if (proxmoxPayload.data.length > 0) {
+									(mainPayload.data as Record<string, unknown>).containers = proxmoxPayload.data;
+									this.logger.info({
+										message: "Successfully merged Proxmox container data",
+										service: this.SERVICE_NAME,
+										method: "requestHardware",
+										details: { containerCount: proxmoxPayload.data.length },
+									});
+								} else {
+									this.logger.debug({
+										message: "Proxmox returned empty container list (not configured or no containers running)",
+										service: this.SERVICE_NAME,
+										method: "requestHardware",
+									});
+								}
+							}
+
+							// Merge Proxmox errors into main errors array
+							if (proxmoxPayload?.errors && Array.isArray(proxmoxPayload.errors) && proxmoxPayload.errors.length > 0) {
+								if (!mainPayload.errors) {
+									mainPayload.errors = [];
+								}
+								mainPayload.errors.push(...proxmoxPayload.errors);
+								this.logger.warn({
+									message: "Proxmox returned errors",
+									service: this.SERVICE_NAME,
+									method: "requestHardware",
+									details: { errors: proxmoxPayload.errors },
+								});
+							}
+						} else if (!proxmoxResponse.status) {
+							this.logger.warn({
+								message: "Proxmox request failed",
+								service: this.SERVICE_NAME,
+								method: "requestHardware",
+								details: { status: proxmoxResponse.status, code: proxmoxResponse.code },
+							});
+						}
+					}
+				} catch (proxmoxErr: any) {
+					// Log but don't fail - Proxmox is optional
+					this.logger.warn({
+						message: "Proxmox fetch error (optional)",
+						service: this.SERVICE_NAME,
+						method: "requestHardware",
+						details: { error: proxmoxErr.message },
+					});
+				}
+			}
+
+			return mainResponse;
 		} catch (err: any) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestHardware";
 			throw err;
+		}
+	}
+
+	/**
+	 * Builds the Proxmox metrics URL from the main metrics URL
+	 * e.g., http://localhost:59232/api/v1/metrics -> http://localhost:59232/api/v1/metrics/proxmox
+	 */
+	private buildProxmoxUrl(baseUrl: string | undefined): string | null {
+		if (!baseUrl) return null;
+		try {
+			const url = new URL(baseUrl);
+			// Append /proxmox to the path
+			url.pathname = url.pathname.replace(/\/?$/, "/proxmox");
+			return url.toString();
+		} catch {
+			return null;
 		}
 	}
 

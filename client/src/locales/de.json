@@ -1136,5 +1136,8 @@
 			"disk_selection_info": "Momentan wurde keine Festplatte erkannt.",
 			"disk_selection_description": "Wählen Sie die spezifischen Festplatten aus, die Sie überwachen möchten."
 		}
-	}
+	},
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

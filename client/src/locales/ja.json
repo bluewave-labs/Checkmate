@@ -934,7 +934,9 @@
 		"generalSettings": "一般設定",
 		"contents": "コンテンツ",
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
@@ -989,28 +991,36 @@
 	},
 	"infrastructureMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"uptimeMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
@@ -1115,5 +1125,8 @@
 			"disk_selection_info": "現在ディスクが検出されていません。",
 			"disk_selection_description": "監視したい特定のディスクを選択してください。"
 		}
-	}
+	},
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

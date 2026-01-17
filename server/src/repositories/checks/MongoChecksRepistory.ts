@@ -3,6 +3,7 @@ import type {
 	Check,
 	CheckAudits,
 	CheckCaptureInfo,
+	CheckContainerInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
 	CheckErrorInfo,
@@ -137,6 +138,29 @@ class MongoChecksRepository implements IChecksRepository {
 				fifo_out: iface?.fifo_out ?? 0,
 			}));
 
+		const mapContainers = (containers?: CheckContainerInfo[]): CheckContainerInfo[] =>
+			(containers ?? []).map((container) => ({
+				vmid: container?.vmid ?? "",
+				name: container?.name ?? "",
+				node: container?.node ?? "",
+				status: container?.status ?? "",
+				type: container?.type ?? "lxc",
+				uptime: container?.uptime ?? 0,
+				cpu_cores: container?.cpu_cores ?? 0,
+				cpu_usage: container?.cpu_usage ?? 0,
+				memory_used: container?.memory_used ?? 0,
+				memory_total: container?.memory_total ?? 0,
+				memory_usage: container?.memory_usage ?? 0,
+				swap_used: container?.swap_used ?? 0,
+				swap_total: container?.swap_total ?? 0,
+				disk_used: container?.disk_used ?? 0,
+				disk_total: container?.disk_total ?? 0,
+				disk_read: container?.disk_read ?? 0,
+				disk_write: container?.disk_write ?? 0,
+				network_in: container?.network_in ?? 0,
+				network_out: container?.network_out ?? 0,
+			}));
+
 		const mapAudits = (audits?: CheckAudits): CheckAudits | undefined => {
 			if (!audits) {
 				return undefined;
@@ -174,6 +198,7 @@ class MongoChecksRepository implements IChecksRepository {
 			errors: mapErrors(doc.errors),
 			capture: mapCapture(doc.capture),
 			net: mapNet(doc.net),
+			containers: mapContainers(doc.containers),
 			accessibility: doc.accessibility,
 			bestPractices: doc.bestPractices,
 			seo: doc.seo,
@@ -374,6 +399,24 @@ class MongoChecksRepository implements IChecksRepository {
 				deltaFifoIn: iface?.deltaFifoIn ?? 0,
 				deltaFifoOut: iface?.deltaFifoOut ?? 0,
 			})),
+			containers: (metric.containers ?? []).map((container: { [key: string]: number | string | undefined }) => ({
+				vmid: container?.vmid ?? "",
+				name: container?.name ?? "",
+				node: container?.node ?? "",
+				status: container?.status ?? "",
+				type: container?.type ?? "",
+				cpu_cores: container?.cpu_cores ?? 0,
+				avgCpuUsage: container?.avgCpuUsage ?? 0,
+				avgMemoryUsage: container?.avgMemoryUsage ?? 0,
+				memoryTotal: container?.memoryTotal ?? 0,
+				swapTotal: container?.swapTotal ?? 0,
+				diskTotal: container?.diskTotal ?? 0,
+				diskUsed: container?.diskUsed ?? 0,
+				deltaDiskRead: container?.deltaDiskRead ?? 0,
+				deltaDiskWrite: container?.deltaDiskWrite ?? 0,
+				deltaNetIn: container?.deltaNetIn ?? 0,
+				deltaNetOut: container?.deltaNetOut ?? 0,
+			})),
 		}));
 
 		return {
@@ -451,6 +494,7 @@ class MongoChecksRepository implements IChecksRepository {
 					avgTemperatures: { $push: { $ifNull: ["$cpu.temperature", [0]] } },
 					disks: { $push: "$disk" },
 					net: { $push: "$net" },
+					containers: { $push: "$containers" },
 					updatedAts: { $push: "$updatedAt" },
 					sampleDoc: { $first: "$$ROOT" },
 				},
@@ -563,6 +607,66 @@ class MongoChecksRepository implements IChecksRepository {
 											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+							},
+						},
+					},
+					containers: {
+						$map: {
+							input: { $range: [0, { $size: { $ifNull: ["$sampleDoc.containers", []] } }] },
+							as: "cIdx",
+							in: {
+								vmid: { $arrayElemAt: ["$sampleDoc.containers.vmid", "$$cIdx"] },
+								name: { $arrayElemAt: ["$sampleDoc.containers.name", "$$cIdx"] },
+								node: { $arrayElemAt: ["$sampleDoc.containers.node", "$$cIdx"] },
+								status: { $arrayElemAt: ["$sampleDoc.containers.status", "$$cIdx"] },
+								type: { $arrayElemAt: ["$sampleDoc.containers.type", "$$cIdx"] },
+								cpu_cores: { $arrayElemAt: ["$sampleDoc.containers.cpu_cores", "$$cIdx"] },
+								avgCpuUsage: { $avg: { $map: { input: "$containers", as: "cA", in: { $arrayElemAt: ["$$cA.cpu_usage", "$$cIdx"] } } } },
+								avgMemoryUsage: { $avg: { $map: { input: "$containers", as: "cA", in: { $arrayElemAt: ["$$cA.memory_usage", "$$cIdx"] } } } },
+								memoryTotal: { $arrayElemAt: ["$sampleDoc.containers.memory_total", "$$cIdx"] },
+								swapTotal: { $arrayElemAt: ["$sampleDoc.containers.swap_total", "$$cIdx"] },
+								diskTotal: { $arrayElemAt: ["$sampleDoc.containers.disk_total", "$$cIdx"] },
+								diskUsed: { $avg: { $map: { input: "$containers", as: "cA", in: { $arrayElemAt: ["$$cA.disk_used", "$$cIdx"] } } } },
+								deltaDiskRead: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$containers" }, as: "c", in: "$$c.disk_read" } }, "$$cIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$containers" }, as: "c", in: "$$c.disk_read" } }, "$$cIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaDiskWrite: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$containers" }, as: "c", in: "$$c.disk_write" } }, "$$cIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$containers" }, as: "c", in: "$$c.disk_write" } }, "$$cIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaNetIn: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$containers" }, as: "c", in: "$$c.network_in" } }, "$$cIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$containers" }, as: "c", in: "$$c.network_in" } }, "$$cIdx"] },
+										},
+										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
+									},
+								},
+								deltaNetOut: {
+									$let: {
+										vars: {
+											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											f: { $arrayElemAt: [{ $map: { input: { $first: "$containers" }, as: "c", in: "$$c.network_out" } }, "$$cIdx"] },
+											l: { $arrayElemAt: [{ $map: { input: { $last: "$containers" }, as: "c", in: "$$c.network_out" } }, "$$cIdx"] },
 										},
 										in: { $cond: [{ $gt: ["$$tDiff", 0] }, { $divide: [{ $subtract: ["$$l", "$$f"] }, "$$tDiff"] }, 0] },
 									},

@@ -22,6 +22,7 @@ export interface Monitor {
 	statusWindowThreshold: number;
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
+	enableProxmoxContainers: boolean;
 	jsonPath?: string;
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;

@@ -154,7 +154,10 @@ export const InfrastructureTooltip = ({
 	yKey,
 	yIdx = -1,
 	yLabel,
+	yKey2,
+	yLabel2,
 	dotColor,
+	dotColor2,
 	dateRange,
 	formatter = getFormattedPercentage,
 }) => {
@@ -216,7 +219,37 @@ export const InfrastructureTooltip = ({
 						</Typography>
 					</Stack>
 				</Box>
-				{/* Display original value */}
+				{yKey2 && yLabel2 && (
+					<Box mt={theme.spacing(1)}>
+						<Box
+							display="inline-block"
+							width={theme.spacing(4)}
+							height={theme.spacing(4)}
+							backgroundColor={dotColor2 || dotColor}
+							sx={{ borderRadius: "50%" }}
+						/>
+						<Stack
+							display="inline-flex"
+							direction="row"
+							justifyContent="space-between"
+							ml={theme.spacing(3)}
+							sx={{
+								"& span": {
+									color: theme.palette.primary.contrastTextTertiary,
+									fontSize: 11,
+									fontWeight: 500,
+								},
+							}}
+						>
+							<Typography
+								component="span"
+								sx={{ opacity: 0.8 }}
+							>
+								{`${yLabel2} ${formatter(payload[0].payload[yKey2])}`}
+							</Typography>
+						</Stack>
+					</Box>
+				)}
 			</Box>
 		);
 	}
@@ -234,7 +267,10 @@ InfrastructureTooltip.propTypes = {
 	yKey: PropTypes.string,
 	yIdx: PropTypes.number,
 	yLabel: PropTypes.string,
+	yKey2: PropTypes.string,
+	yLabel2: PropTypes.string,
 	dotColor: PropTypes.string,
+	dotColor2: PropTypes.string,
 	dateRange: PropTypes.string,
 };
 

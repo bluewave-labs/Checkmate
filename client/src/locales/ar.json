@@ -85,7 +85,9 @@
 		"networkError": "",
 		"fallback": {
 			"title": "",
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"actionButton": ""
 		},
 		"createButton": "",
@@ -930,7 +932,9 @@
 		"generalSettings": "",
 		"contents": "",
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
@@ -985,28 +989,36 @@
 	},
 	"infrastructureMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
 	},
 	"uptimeMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": ""
 		}
@@ -1104,5 +1116,8 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

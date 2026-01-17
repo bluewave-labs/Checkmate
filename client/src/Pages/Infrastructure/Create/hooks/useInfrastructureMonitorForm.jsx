@@ -18,6 +18,7 @@ const useInfrastructureMonitorForm = () => {
 		usage_temperature: "",
 		secret: "",
 		selectedDisks: [],
+		enableProxmoxContainers: false,
 	});
 
 	const onChangeForm = (name, value) => {
@@ -50,6 +51,7 @@ const useInfrastructureMonitorForm = () => {
 			usage_temperature: gt.temperature !== undefined ? gt.temperature.toString() : "",
 			secret: "",
 			selectedDisks: [],
+			enableProxmoxContainers: false,
 		}));
 	}, []);
 
@@ -84,6 +86,7 @@ const useInfrastructureMonitorForm = () => {
 					: "",
 			secret: monitor.secret || "",
 			selectedDisks: monitor.selectedDisks || [],
+			enableProxmoxContainers: monitor.enableProxmoxContainers ?? false,
 		}));
 	}, []);
 	return {

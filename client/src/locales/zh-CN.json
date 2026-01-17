@@ -1004,14 +1004,22 @@
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": ["标记维护时段", "消除所有误解", "停止在维护窗口内发送警报"],
+			"checks": [
+				"标记维护时段",
+				"消除所有误解",
+				"停止在维护窗口内发送警报"
+			],
 			"title": "维护时段用于：",
 			"actionButton": "让我们创建您的第一个维护时段！"
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
-			"checks": ["报告页面的用户体验", "帮助分析网页速度", "就如何改进页面提出建议"],
+			"checks": [
+				"报告页面的用户体验",
+				"帮助分析网页速度",
+				"就如何改进页面提出建议"
+			],
 			"title": "PageSpeed 监视器用于：",
 			"actionButton": "让我们创建您的第一个 PageSpeed 监视器！"
 		}
@@ -1128,5 +1136,8 @@
 			"disk_selection_info": "目前没有检测到磁盘。",
 			"disk_selection_description": "选择您要监控的特定磁盘。"
 		}
-	}
+	},
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

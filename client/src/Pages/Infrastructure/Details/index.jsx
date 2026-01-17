@@ -8,6 +8,7 @@ import GaugeBoxes from "./Components/GaugeBoxes/index.jsx";
 import AreaChartBoxes from "./Components/AreaChartBoxes/index.jsx";
 import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import NetworkStats from "./Components/NetworkStats/index.jsx";
+import ContainerStats from "./Components/ContainerStats/index.jsx";
 import CustomTabList from "@/Components/v1/Tab/index.jsx";
 import TabContext from "@mui/lab/TabContext";
 
@@ -102,6 +103,12 @@ const InfrastructureDetails = () => {
 						label={t("network")}
 						value="network"
 					/>
+					{monitor?.enableProxmoxContainers && (
+						<Tab
+							label={t("containers")}
+							value="containers"
+						/>
+					)}
 				</CustomTabList>
 				{tab === "details" && (
 					<>
@@ -128,6 +135,15 @@ const InfrastructureDetails = () => {
 				{tab === "network" && (
 					<NetworkStats
 						net={monitor?.stats?.aggregateData?.latestCheck?.net || []}
+						isLoading={isLoading}
+						checks={monitor?.stats?.checks}
+						dateRange={dateRange}
+						setDateRange={setDateRange}
+					/>
+				)}
+				{tab === "containers" && monitor?.enableProxmoxContainers && (
+					<ContainerStats
+						containers={monitor?.stats?.aggregateData?.latestCheck?.containers || []}
 						isLoading={isLoading}
 						checks={monitor?.stats?.checks}
 						dateRange={dateRange}

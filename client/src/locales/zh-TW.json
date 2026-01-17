@@ -934,7 +934,9 @@
 		"generalSettings": "",
 		"contents": "內容",
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": "讓我們建立您的第一個狀態頁面！"
 		}
@@ -989,28 +991,40 @@
 	},
 	"infrastructureMonitor": {
 		"fallback": {
-			"checks": ["追蹤伺服器的效能", "識別瓶頸並優化資源使用", "透過即時監控確保可靠性"],
+			"checks": [
+				"追蹤伺服器的效能",
+				"識別瓶頸並優化資源使用",
+				"透過即時監控確保可靠性"
+			],
 			"title": "",
 			"actionButton": "讓我們建立您的第一個基礎設施監視器！"
 		}
 	},
 	"maintenanceWindow": {
 		"fallback": {
-			"checks": ["標記您的維護期間", "消除任何誤解", "在維護時段停止發送警報"],
+			"checks": [
+				"標記您的維護期間",
+				"消除任何誤解",
+				"在維護時段停止發送警報"
+			],
 			"title": "",
 			"actionButton": "讓我們建立您的第一個維護時段！"
 		}
 	},
 	"pageSpeed": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": "讓我們建立您的第一個 PageSpeed 監視器！"
 		}
 	},
 	"uptimeMonitor": {
 		"fallback": {
-			"checks": [""],
+			"checks": [
+				""
+			],
 			"title": "",
 			"actionButton": "讓我們建立您的第一個正常運行時間監視器！"
 		}
@@ -1108,5 +1122,8 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

@@ -31,6 +31,7 @@ const useInfrastructureSubmit = () => {
 				: {}),
 			secret: infrastructureMonitor.secret,
 			selectedDisks: infrastructureMonitor.selectedDisks,
+			enableProxmoxContainers: infrastructureMonitor.enableProxmoxContainers,
 		};
 		return form;
 	};
@@ -50,6 +51,7 @@ const useInfrastructureSubmit = () => {
 			temperature,
 			usage_temperature,
 			selectedDisks,
+			enableProxmoxContainers,
 			...rest
 		} = form;
 
@@ -67,6 +69,7 @@ const useInfrastructureSubmit = () => {
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
 			selectedDisks,
+			enableProxmoxContainers,
 			thresholds,
 		};
 		// Handle create or update

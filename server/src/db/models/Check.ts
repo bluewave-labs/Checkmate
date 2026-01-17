@@ -4,6 +4,7 @@ import type {
 	Check,
 	CheckAudits,
 	CheckCaptureInfo,
+	CheckContainerInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
 	CheckErrorInfo,
@@ -143,6 +144,31 @@ const networkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
 	{ _id: false }
 );
 
+const containerSchema = new Schema<CheckContainerInfo>(
+	{
+		vmid: { type: String, default: "" },
+		name: { type: String, default: "" },
+		node: { type: String, default: "" },
+		status: { type: String, default: "" },
+		type: { type: String, default: "lxc" },
+		uptime: { type: Number, default: 0 },
+		cpu_cores: { type: Number, default: 0 },
+		cpu_usage: { type: Number, default: 0 },
+		memory_used: { type: Number, default: 0 },
+		memory_total: { type: Number, default: 0 },
+		memory_usage: { type: Number, default: 0 },
+		swap_used: { type: Number, default: 0 },
+		swap_total: { type: Number, default: 0 },
+		disk_used: { type: Number, default: 0 },
+		disk_total: { type: Number, default: 0 },
+		disk_read: { type: Number, default: 0 },
+		disk_write: { type: Number, default: 0 },
+		network_in: { type: Number, default: 0 },
+		network_out: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
 const lighthouseAuditSchema = new Schema<ILighthouseAudit>(
 	{
 		id: { type: String },
@@ -254,6 +280,10 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		net: {
 			type: [networkInterfaceSchema],
+			default: () => [],
+		},
+		containers: {
+			type: [containerSchema],
 			default: () => [],
 		},
 		accessibility: {

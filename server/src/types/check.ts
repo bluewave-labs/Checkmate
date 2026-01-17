@@ -64,6 +64,28 @@ export interface CheckNetworkInterfaceInfo {
 	fifo_out: number;
 }
 
+export interface CheckContainerInfo {
+	vmid: string;
+	name: string;
+	node: string;
+	status: string;
+	type: string;
+	uptime: number;
+	cpu_cores: number;
+	cpu_usage: number;
+	memory_used: number;
+	memory_total: number;
+	memory_usage: number;
+	swap_used: number;
+	swap_total: number;
+	disk_used: number;
+	disk_total: number;
+	disk_read: number;
+	disk_write: number;
+	network_in: number;
+	network_out: number;
+}
+
 export interface CheckAudits {
 	cls?: ILighthouseAudit;
 	si?: ILighthouseAudit;
@@ -99,6 +121,7 @@ export interface Check {
 	errors?: CheckErrorInfo[];
 	capture?: CheckCaptureInfo;
 	net?: CheckNetworkInterfaceInfo[];
+	containers?: CheckContainerInfo[];
 	accessibility?: number;
 	bestPractices?: number;
 	seo?: number;

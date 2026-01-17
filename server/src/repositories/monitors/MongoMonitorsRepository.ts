@@ -225,6 +225,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			statusWindowThreshold: doc.statusWindowThreshold,
 			type: doc.type,
 			ignoreTlsErrors: doc.ignoreTlsErrors,
+			enableProxmoxContainers: doc.enableProxmoxContainers,
 			jsonPath: doc.jsonPath ?? undefined,
 			expectedValue: doc.expectedValue ?? undefined,
 			matchMethod: doc.matchMethod ?? undefined,

@@ -80,6 +80,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		enableProxmoxContainers: {
+			type: Boolean,
+			default: false,
+		},
 		jsonPath: {
 			type: String,
 		},

@@ -5,7 +5,7 @@ import FieldWrapper from "@/Components/v1/Inputs/FieldWrapper/index.jsx";
 import Link from "@/Components/v1/Link/index.jsx";
 import Select from "@/Components/v1/Inputs/Select/index.jsx";
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
-import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
+import { Box, Stack, Typography, Button, ButtonGroup, Switch, FormControlLabel } from "@mui/material";
 import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
 import MonitorStatusHeader from "./Components/MonitorStatusHeader.jsx";
 import MonitorActionButtons from "./Components/MonitorActionButtons.jsx";
@@ -367,6 +367,34 @@ const CreateInfrastructureMonitor = () => {
 						}
 					/>
 				)}
+
+				<ConfigBox>
+					<Box>
+						<Typography
+							component="h2"
+							variant="h2"
+						>
+							{t("proxmoxContainerMonitoring")}
+						</Typography>
+						<Typography component="p">
+							{t("proxmoxContainerMonitoringDescription")}
+						</Typography>
+					</Box>
+					<Stack>
+						<FormControlLabel
+							sx={{ marginLeft: theme.spacing(0) }}
+							control={
+								<Switch
+									name="enableProxmoxContainers"
+									checked={infrastructureMonitor.enableProxmoxContainers}
+									onChange={handleCheckboxChange}
+									sx={{ mr: theme.spacing(2) }}
+								/>
+							}
+							label={t("enableProxmoxContainers")}
+						/>
+					</Stack>
+				</ConfigBox>
 
 				<ConfigBox>
 					<Box>

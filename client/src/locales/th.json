@@ -1136,5 +1136,8 @@
 			"disk_selection_info": "ไม่พบดิสก์ในขณะนี้",
 			"disk_selection_description": "เลือกดิสก์ที่คุณต้องการตรวจสอบ"
 		}
-	}
+	},
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

@@ -86,7 +86,9 @@
 		"networkError": "",
 		"fallback": {
 			"title": "",
-			"checks": [""]
+			"checks": [
+				""
+			]
 		},
 		"createButton": "",
 		"createTitle": "",
@@ -834,5 +836,8 @@
 			"selectEnabled": "",
 			"title": ""
 		}
-	}
+	},
+	"proxmoxContainerMonitoring": "Proxmox container monitoring",
+	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
+	"enableProxmoxContainers": "Enable container monitoring"
 }

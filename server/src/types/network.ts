@@ -1,5 +1,6 @@
 import type {
 	CheckCaptureInfo,
+	CheckContainerInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
 	CheckErrorInfo,
@@ -75,6 +76,7 @@ export interface HardwareStatusMetrics {
 	disk?: CheckDiskInfo[];
 	host?: CheckHostInfo;
 	net?: CheckNetworkInterfaceInfo[];
+	containers?: CheckContainerInfo[];
 }
 
 export interface HardwareStatusPayload {
