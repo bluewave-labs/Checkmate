@@ -64,7 +64,12 @@ const TabBar = ({ activeTab, onTabChange }) => {
 			<TabItem
 				id="user-guide"
 				label="User guide"
-				icon={<BookOpen size={18} strokeWidth={1.5} />}
+				icon={
+					<BookOpen
+						size={18}
+						strokeWidth={1.5}
+					/>
+				}
 				isActive={activeTab === "user-guide"}
 				onClick={() => onTabChange("user-guide")}
 				colors={colors}
@@ -73,7 +78,12 @@ const TabBar = ({ activeTab, onTabChange }) => {
 			<TabItem
 				id="help"
 				label="Help"
-				icon={<HelpCircle size={18} strokeWidth={1.5} />}
+				icon={
+					<HelpCircle
+						size={18}
+						strokeWidth={1.5}
+					/>
+				}
 				isActive={activeTab === "help"}
 				onClick={() => onTabChange("help")}
 				colors={colors}

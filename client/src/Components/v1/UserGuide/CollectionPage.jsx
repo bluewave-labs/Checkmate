@@ -117,9 +117,7 @@ const CollectionPage = ({ collection, onBack, onArticleClick }) => {
 								cursor: "pointer",
 							}}
 						>
-							<div
-								style={{ display: "flex", alignItems: "flex-start", gap: spacing.md }}
-							>
+							<div style={{ display: "flex", alignItems: "flex-start", gap: spacing.md }}>
 								<FileText
 									size={16}
 									strokeWidth={1.5}

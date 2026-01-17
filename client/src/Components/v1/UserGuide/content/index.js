@@ -40,8 +40,7 @@ const articleContents = {
 					{
 						icon: "Gauge",
 						title: "PageSpeed insights",
-						description:
-							"Track website performance with Google Lighthouse integration.",
+						description: "Track website performance with Google Lighthouse integration.",
 					},
 					{
 						icon: "Server",
@@ -51,7 +50,8 @@ const articleContents = {
 					{
 						icon: "Bell",
 						title: "Instant alerts",
-						description: "Get notified via email, Slack, Discord, PagerDuty, or webhooks.",
+						description:
+							"Get notified via email, Slack, Discord, PagerDuty, or webhooks.",
 					},
 				],
 			},
@@ -141,14 +141,16 @@ const articleContents = {
 					{ text: "Click **Create monitor** in the top right" },
 					{ text: "Select **HTTP/HTTPS** as the monitor type" },
 					{ text: "Enter the URL you want to monitor (e.g., `https://example.com`)" },
-					{ text: "Set the check interval (1-5 minutes recommended for critical services)" },
+					{
+						text: "Set the check interval (1-5 minutes recommended for critical services)",
+					},
 					{ text: "Click **Create monitor** to start monitoring" },
 				],
 			},
 			{
 				type: "callout",
 				variant: "tip",
-				text: "Use descriptive names like \"Production API\" or \"Marketing Website\" to easily identify monitors in alerts.",
+				text: 'Use descriptive names like "Production API" or "Marketing Website" to easily identify monitors in alerts.',
 			},
 			{
 				type: "heading",
@@ -234,13 +236,22 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Uptime", text: "View and manage HTTP, ping, port, and Docker monitors" },
-					{ bold: "PageSpeed", text: "Access performance monitoring and Lighthouse reports" },
+					{
+						bold: "Uptime",
+						text: "View and manage HTTP, ping, port, and Docker monitors",
+					},
+					{
+						bold: "PageSpeed",
+						text: "Access performance monitoring and Lighthouse reports",
+					},
 					{ bold: "Infrastructure", text: "Monitor server hardware metrics" },
 					{ bold: "Incidents", text: "View current and past downtime events" },
 					{ bold: "Status pages", text: "Create and manage public status pages" },
 					{ bold: "Maintenance", text: "Schedule planned maintenance windows" },
-					{ bold: "Notifications", text: "Configure alert channels (email, Slack, Discord, etc.)" },
+					{
+						bold: "Notifications",
+						text: "Configure alert channels (email, Slack, Discord, etc.)",
+					},
 					{ bold: "Settings", text: "Manage account and global settings" },
 				],
 			},
@@ -257,7 +268,10 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Status indicator", text: "Green (up), red (down), or yellow (degraded)" },
+					{
+						bold: "Status indicator",
+						text: "Green (up), red (down), or yellow (degraded)",
+					},
 					{ bold: "Name", text: "The monitor's display name" },
 					{ bold: "URL/Host", text: "The target being monitored" },
 					{ bold: "Response time", text: "Latest response time in milliseconds" },
@@ -435,10 +449,19 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Name", text: "A descriptive name for the monitor (max 50 characters)" },
+					{
+						bold: "Name",
+						text: "A descriptive name for the monitor (max 50 characters)",
+					},
 					{ bold: "URL", text: "The full URL to monitor (must include protocol)" },
-					{ bold: "Check interval", text: "How often to check (15 seconds to 30 minutes)" },
-					{ bold: "Ignore TLS errors", text: "Skip SSL certificate validation if needed" },
+					{
+						bold: "Check interval",
+						text: "How often to check (15 seconds to 30 minutes)",
+					},
+					{
+						bold: "Ignore TLS errors",
+						text: "Skip SSL certificate validation if needed",
+					},
 				],
 			},
 			{
@@ -456,7 +479,10 @@ const articleContents = {
 				items: [
 					{ bold: "Match method", text: "How to compare: equal, include, or regex" },
 					{ bold: "Expected value", text: "The value to match against" },
-					{ bold: "JSON path", text: "JMESPath expression to extract data from JSON responses" },
+					{
+						bold: "JSON path",
+						text: "JMESPath expression to extract data from JSON responses",
+					},
 				],
 			},
 			{
@@ -680,10 +706,19 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Service criticality", text: "Mission-critical services need shorter intervals" },
-					{ bold: "Expected downtime impact", text: "High-traffic sites benefit from faster detection" },
+					{
+						bold: "Service criticality",
+						text: "Mission-critical services need shorter intervals",
+					},
+					{
+						bold: "Expected downtime impact",
+						text: "High-traffic sites benefit from faster detection",
+					},
 					{ bold: "Resource usage", text: "Shorter intervals use more system resources" },
-					{ bold: "False positive tolerance", text: "Longer intervals reduce noise from brief glitches" },
+					{
+						bold: "False positive tolerance",
+						text: "Longer intervals reduce noise from brief glitches",
+					},
 				],
 			},
 			{
@@ -782,7 +817,10 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Issuer", text: "The certificate authority that issued the certificate" },
+					{
+						bold: "Issuer",
+						text: "The certificate authority that issued the certificate",
+					},
 					{ bold: "Valid from", text: "When the certificate became valid" },
 					{ bold: "Expiration date", text: "When the certificate expires" },
 					{ bold: "Days until expiry", text: "Countdown to expiration" },
@@ -1002,7 +1040,10 @@ const articleContents = {
 				type: "bullet-list",
 				items: [
 					{ bold: "Performance", text: "Measures loading speed and interactivity" },
-					{ bold: "Accessibility", text: "Evaluates usability for people with disabilities" },
+					{
+						bold: "Accessibility",
+						text: "Evaluates usability for people with disabilities",
+					},
 					{ bold: "Best practices", text: "Checks for modern web development standards" },
 					{ bold: "SEO", text: "Assesses search engine optimization basics" },
 				],
@@ -1191,8 +1232,14 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Upward trends", text: "Scores improving—your optimizations are working" },
-					{ bold: "Downward trends", text: "Scores declining—investigate recent changes" },
+					{
+						bold: "Upward trends",
+						text: "Scores improving—your optimizations are working",
+					},
+					{
+						bold: "Downward trends",
+						text: "Scores declining—investigate recent changes",
+					},
 					{ bold: "Flat trends", text: "Stable performance—no significant changes" },
 					{ bold: "Spikes", text: "Temporary issues—check for one-time events" },
 				],
@@ -1573,7 +1620,10 @@ const articleContents = {
 				items: [
 					{ bold: "Started", text: "When the first failure was detected" },
 					{ bold: "Notifications sent", text: "When alerts were dispatched" },
-					{ bold: "Acknowledged", text: "When someone began investigating (if applicable)" },
+					{
+						bold: "Acknowledged",
+						text: "When someone began investigating (if applicable)",
+					},
 					{ bold: "Resolved", text: "When the monitor recovered" },
 				],
 			},
@@ -1678,9 +1728,18 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Recurring times", text: "Incidents at the same time might indicate scheduled jobs or traffic spikes" },
-					{ bold: "Duration trends", text: "Longer incidents may indicate slower recovery processes" },
-					{ bold: "Frequency changes", text: "Increasing incidents could signal infrastructure problems" },
+					{
+						bold: "Recurring times",
+						text: "Incidents at the same time might indicate scheduled jobs or traffic spikes",
+					},
+					{
+						bold: "Duration trends",
+						text: "Longer incidents may indicate slower recovery processes",
+					},
+					{
+						bold: "Frequency changes",
+						text: "Increasing incidents could signal infrastructure problems",
+					},
 				],
 			},
 		],
@@ -2174,10 +2233,19 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "Show uptime percentage", text: "Display overall uptime statistics for each monitor" },
+					{
+						bold: "Show uptime percentage",
+						text: "Display overall uptime statistics for each monitor",
+					},
 					{ bold: "Show charts", text: "Display response time performance graphs" },
-					{ bold: "Show admin login link", text: "Add a link to the Checkmate login page" },
-					{ bold: "Publish/Unpublish", text: "Control whether the page is publicly accessible" },
+					{
+						bold: "Show admin login link",
+						text: "Add a link to the Checkmate login page",
+					},
+					{
+						bold: "Publish/Unpublish",
+						text: "Control whether the page is publicly accessible",
+					},
 				],
 			},
 			{
@@ -2544,10 +2612,22 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "CPU threshold", text: "Alert when CPU usage exceeds this percentage (1-100%)" },
-					{ bold: "Memory threshold", text: "Alert when memory usage exceeds this percentage (1-100%)" },
-					{ bold: "Disk threshold", text: "Alert when disk usage exceeds this percentage (1-100%)" },
-					{ bold: "Temperature threshold", text: "Alert when temperature exceeds this value (1-150°C)" },
+					{
+						bold: "CPU threshold",
+						text: "Alert when CPU usage exceeds this percentage (1-100%)",
+					},
+					{
+						bold: "Memory threshold",
+						text: "Alert when memory usage exceeds this percentage (1-100%)",
+					},
+					{
+						bold: "Disk threshold",
+						text: "Alert when disk usage exceeds this percentage (1-100%)",
+					},
+					{
+						bold: "Temperature threshold",
+						text: "Alert when temperature exceeds this value (1-150°C)",
+					},
 				],
 			},
 		],
@@ -2576,7 +2656,10 @@ const articleContents = {
 				items: [
 					{ bold: "Light/Dark mode", text: "Toggle between light and dark themes" },
 					{ bold: "Language", text: "Select your preferred language" },
-					{ bold: "Show URLs", text: "Toggle whether to display monitor URLs in the interface" },
+					{
+						bold: "Show URLs",
+						text: "Toggle whether to display monitor URLs in the interface",
+					},
 				],
 			},
 			{

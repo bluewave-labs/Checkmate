@@ -105,7 +105,10 @@ const SidebarHeader = ({
 								}}
 								title="Back"
 							>
-								<ChevronLeft size={16} strokeWidth={1.5} />
+								<ChevronLeft
+									size={16}
+									strokeWidth={1.5}
+								/>
 							</button>
 
 							{/* Forward button */}
@@ -129,7 +132,10 @@ const SidebarHeader = ({
 								}}
 								title="Forward"
 							>
-								<ChevronRight size={16} strokeWidth={1.5} />
+								<ChevronRight
+									size={16}
+									strokeWidth={1.5}
+								/>
 							</button>
 
 							{/* Home button */}
@@ -156,7 +162,10 @@ const SidebarHeader = ({
 								}}
 								title="Home"
 							>
-								<Home size={16} strokeWidth={1.5} />
+								<Home
+									size={16}
+									strokeWidth={1.5}
+								/>
 							</button>
 						</>
 					)}
@@ -167,9 +176,7 @@ const SidebarHeader = ({
 						style={{ position: "relative", flex: 1, minWidth: 0 }}
 					>
 						<button
-							onClick={() =>
-								breadcrumbs.length > 1 && setIsDropdownOpen(!isDropdownOpen)
-							}
+							onClick={() => breadcrumbs.length > 1 && setIsDropdownOpen(!isDropdownOpen)}
 							className="user-guide-breadcrumb-dropdown-trigger"
 							style={{
 								display: "flex",
@@ -222,7 +229,9 @@ const SidebarHeader = ({
 									backgroundColor: colors.background.white,
 									border: border.default,
 									borderRadius: border.radius,
-									boxShadow: isDark ? "0 4px 12px rgba(0, 0, 0, 0.3)" : "0 4px 12px rgba(0, 0, 0, 0.1)",
+									boxShadow: isDark
+										? "0 4px 12px rgba(0, 0, 0, 0.3)"
+										: "0 4px 12px rgba(0, 0, 0, 0.1)",
 									minWidth: 180,
 									maxWidth: 280,
 									zIndex: 100,
@@ -286,7 +295,10 @@ const SidebarHeader = ({
 							}}
 							title="Open in new tab"
 						>
-							<ExternalLink size={16} strokeWidth={1.5} />
+							<ExternalLink
+								size={16}
+								strokeWidth={1.5}
+							/>
 						</button>
 					)}
 
@@ -308,7 +320,10 @@ const SidebarHeader = ({
 						}}
 						title="Search"
 					>
-						<Search size={16} strokeWidth={1.5} />
+						<Search
+							size={16}
+							strokeWidth={1.5}
+						/>
 					</button>
 
 					{/* Close button */}
@@ -329,7 +344,10 @@ const SidebarHeader = ({
 						}}
 						title="Close"
 					>
-						<X size={16} strokeWidth={1.5} />
+						<X
+							size={16}
+							strokeWidth={1.5}
+						/>
 					</button>
 				</div>
 			</div>

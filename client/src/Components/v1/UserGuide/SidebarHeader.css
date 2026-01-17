@@ -6,12 +6,12 @@
 
 .user-guide-header-icon-button:hover {
 	background-color: rgba(255, 255, 255, 0.1) !important;
-	color: #1570EF !important;
+	color: #1570ef !important;
 }
 
 .user-guide-header-icon-button.active {
 	background-color: #0d0d0d;
-	color: #1570EF;
+	color: #1570ef;
 }
 
 .user-guide-breadcrumb-dropdown-trigger {
@@ -32,7 +32,7 @@
 
 .user-guide-search-input:focus {
 	outline: none;
-	border-color: #1570EF;
+	border-color: #1570ef;
 }
 
 .user-guide-search-input::placeholder {

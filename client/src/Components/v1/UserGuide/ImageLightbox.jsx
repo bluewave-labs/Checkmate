@@ -74,7 +74,11 @@ const ImageLightbox = ({ src, alt, caption, onClose }) => {
 				}}
 				title="Close (Esc)"
 			>
-				<X size={24} strokeWidth={1.5} color="#fff" />
+				<X
+					size={24}
+					strokeWidth={1.5}
+					color="#fff"
+				/>
 			</button>
 
 			{/* Image container */}

@@ -53,7 +53,8 @@ const iconMap = {
 const getIcon = (name) => iconMap[name] || Info;
 
 const ContentRenderer = ({ content, onNavigate }) => {
-	const { colors, typography, spacing, border, chipStyles, imageStyles, isDark } = useUserGuideTheme();
+	const { colors, typography, spacing, border, chipStyles, imageStyles, isDark } =
+		useUserGuideTheme();
 	const [lightboxImage, setLightboxImage] = useState(null);
 
 	// Parse basic markdown in text (inside component to access onNavigate)
@@ -83,7 +84,10 @@ const ContentRenderer = ({ content, onNavigate }) => {
 				// Code: `text`
 				const style = getChipStyle(match[2]);
 				parts.push(
-					<span key={key++} style={style}>
+					<span
+						key={key++}
+						style={style}
+					>
 						{match[2]}
 					</span>
 				);
@@ -317,7 +321,10 @@ const ContentRenderer = ({ content, onNavigate }) => {
 	);
 
 	const renderChecklist = (block, index) => (
-		<div key={index} style={{ marginBottom: spacing["2xl"], paddingLeft: spacing.sm }}>
+		<div
+			key={index}
+			style={{ marginBottom: spacing["2xl"], paddingLeft: spacing.sm }}
+		>
 			{block.items.map((item, i) => (
 				<div
 					key={i}
@@ -383,7 +390,11 @@ const ContentRenderer = ({ content, onNavigate }) => {
 								height: "22px",
 							}}
 						>
-							<IconComponent size={20} strokeWidth={1.5} color={colors.brand.primary} />
+							<IconComponent
+								size={20}
+								strokeWidth={1.5}
+								color={colors.brand.primary}
+							/>
 						</div>
 						<div>
 							<span
@@ -513,7 +524,11 @@ const ContentRenderer = ({ content, onNavigate }) => {
 					height: "20px",
 				}}
 			>
-				<Clock size={16} strokeWidth={1.5} color={colors.brand.primary} />
+				<Clock
+					size={16}
+					strokeWidth={1.5}
+					color={colors.brand.primary}
+				/>
 			</span>
 			<span
 				style={{
@@ -762,7 +777,12 @@ const ContentRenderer = ({ content, onNavigate }) => {
 						display: "grid",
 						gridTemplateColumns: block.columns.map((col) => col.width || "1fr").join(" "),
 						borderBottom: i < block.rows.length - 1 ? border.default : "none",
-						backgroundColor: i % 2 === 1 ? (isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)") : "transparent",
+						backgroundColor:
+							i % 2 === 1
+								? isDark
+									? "rgba(255, 255, 255, 0.02)"
+									: "rgba(0, 0, 0, 0.02)"
+								: "transparent",
 						padding: `10px ${spacing.lg}`,
 						gap: spacing.md,
 						alignItems: "center",
@@ -820,7 +840,10 @@ const ContentRenderer = ({ content, onNavigate }) => {
 	);
 
 	const renderArticleLinks = (block, index) => (
-		<div key={index} style={{ marginBottom: spacing["2xl"] }}>
+		<div
+			key={index}
+			style={{ marginBottom: spacing["2xl"] }}
+		>
 			<div
 				style={{
 					height: "1px",

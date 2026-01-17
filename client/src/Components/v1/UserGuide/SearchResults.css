@@ -1,7 +1,9 @@
 /* SearchResults styles (Dark theme) */
 
 .user-guide-search-result-item {
-	transition: background-color 150ms ease, border-color 150ms ease;
+	transition:
+		background-color 150ms ease,
+		border-color 150ms ease;
 }
 
 .user-guide-search-result-item:hover {

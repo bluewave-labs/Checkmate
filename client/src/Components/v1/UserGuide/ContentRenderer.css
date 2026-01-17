@@ -32,7 +32,7 @@
 }
 
 .user-guide-article-link-item:hover .link-title {
-	color: #1570EF;
+	color: #1570ef;
 }
 
 .user-guide-article-link-item .arrow-icon {
@@ -41,5 +41,5 @@
 
 .user-guide-article-link-item:hover .arrow-icon {
 	transform: translateX(4px);
-	color: #1570EF;
+	color: #1570ef;
 }

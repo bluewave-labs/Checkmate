@@ -29,7 +29,12 @@ const iconMap = {
 	Users,
 };
 
-const UserGuideLanding = ({ onNavigate, searchQuery, onSearchChange, mode = "in-app" }) => {
+const UserGuideLanding = ({
+	onNavigate,
+	searchQuery,
+	onSearchChange,
+	mode = "in-app",
+}) => {
 	const { colors, typography, spacing, border } = useUserGuideTheme();
 	const isInApp = mode === "in-app";
 
@@ -199,7 +204,6 @@ const UserGuideLanding = ({ onNavigate, searchQuery, onSearchChange, mode = "in-
 								Look for help icons and tooltips throughout the interface.
 							</p>
 						</div>
-
 					</div>
 				)}
 			</div>

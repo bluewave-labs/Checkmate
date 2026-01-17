@@ -11,7 +11,10 @@ import SearchResults from "./SearchResults";
 import { getCollection, getArticle } from "./content/userGuideConfig";
 import { getArticleContent } from "./content";
 import { extractToc } from "./content/contentTypes";
-import { useUserGuideSidebarContext, DEFAULT_CONTENT_WIDTH } from "./UserGuideSidebarContext";
+import {
+	useUserGuideSidebarContext,
+	DEFAULT_CONTENT_WIDTH,
+} from "./UserGuideSidebarContext";
 import "./SidebarWrapper.css";
 
 const STORAGE_KEY = "checkmate-sidebar-state";
@@ -166,7 +169,8 @@ const SidebarWrapper = ({ isOpen, onClose, onOpen, initialPath, onOpenInNewTab }
 
 	// Get current collection and article
 	const collection = collectionId ? getCollection(collectionId) : undefined;
-	const article = collectionId && articleId ? getArticle(collectionId, articleId) : undefined;
+	const article =
+		collectionId && articleId ? getArticle(collectionId, articleId) : undefined;
 
 	// Get prev/next articles for navigation
 	const getAdjacentArticles = () => {
@@ -259,7 +263,10 @@ const SidebarWrapper = ({ isOpen, onClose, onOpen, initialPath, onOpenInNewTab }
 					mode="in-app"
 				>
 					{articleContent && (
-						<ContentRenderer content={articleContent} onNavigate={handleNavigate} />
+						<ContentRenderer
+							content={articleContent}
+							onNavigate={handleNavigate}
+						/>
 					)}
 				</ArticlePage>
 			);
@@ -419,7 +426,10 @@ const SidebarWrapper = ({ isOpen, onClose, onOpen, initialPath, onOpenInNewTab }
 			</div>
 
 			{/* Tab Bar - Always visible */}
-			<TabBar activeTab={isOpen ? activeTab : undefined} onTabChange={handleTabClick} />
+			<TabBar
+				activeTab={isOpen ? activeTab : undefined}
+				onTabChange={handleTabClick}
+			/>
 
 			{/* Main Sidebar Content - Slides in/out */}
 			<div

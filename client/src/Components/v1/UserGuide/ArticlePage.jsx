@@ -136,7 +136,9 @@ const ArticlePage = ({
 							<div
 								style={{
 									backgroundColor: isInApp
-										? isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)"
+										? isDark
+											? "rgba(255, 255, 255, 0.05)"
+											: "rgba(0, 0, 0, 0.02)"
 										: "transparent",
 									borderRadius: isInApp ? border.radius : 0,
 									padding: isInApp ? spacing.md : 0,
@@ -188,9 +190,7 @@ const ArticlePage = ({
 												style={{
 													fontFamily: typography.fontFamily.sans,
 													fontSize: isInApp ? 13 : 12,
-													color: isActive
-														? colors.brand.primary
-														: colors.text.secondary,
+													color: isActive ? colors.brand.primary : colors.text.secondary,
 													fontWeight: isActive
 														? typography.fontWeight.medium
 														: typography.fontWeight.normal,
@@ -250,7 +250,11 @@ const ArticlePage = ({
 										cursor: "pointer",
 									}}
 								>
-									<ChevronLeft size={16} strokeWidth={1.5} color={colors.text.muted} />
+									<ChevronLeft
+										size={16}
+										strokeWidth={1.5}
+										color={colors.text.muted}
+									/>
 									<div>
 										<span
 											style={{

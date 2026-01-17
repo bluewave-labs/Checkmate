@@ -62,7 +62,11 @@ const HelpSection = () => {
 					}}
 				>
 					Join our Discord
-					<ExternalLink size={14} strokeWidth={1.5} color={colors.text.muted} />
+					<ExternalLink
+						size={14}
+						strokeWidth={1.5}
+						color={colors.text.muted}
+					/>
 				</a>
 			</div>
 
@@ -116,7 +120,11 @@ const HelpSection = () => {
 					}}
 				>
 					GitHub discussions
-					<ExternalLink size={14} strokeWidth={1.5} color={colors.text.muted} />
+					<ExternalLink
+						size={14}
+						strokeWidth={1.5}
+						color={colors.text.muted}
+					/>
 				</a>
 			</div>
 		</div>

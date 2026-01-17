@@ -9,15 +9,18 @@ This document defines the writing standards, formatting rules, and content patte
 ### Core Principles
 
 1. **Second person, active voice** - Address the reader directly
+
    - ✅ "You can configure monitors from the dashboard"
    - ❌ "Monitors can be configured from the dashboard"
 
 2. **Professional but approachable** - Clear and helpful, not stiff or overly casual
+
    - ✅ "Select the notification channel you want to use"
    - ❌ "Go ahead and pick whatever notification channel works for you!"
    - ❌ "The user shall select the appropriate notification channel"
 
 3. **Direct and instructional** - Tell users what to do, not what the system does
+
    - ✅ "Click Save to apply your changes"
    - ❌ "The Save button will apply your changes"
 
@@ -28,18 +31,21 @@ This document defines the writing standards, formatting rules, and content patte
 ### Language Patterns
 
 **Opening phrases:**
+
 - "The [Feature] allows you to..."
 - "[Feature] is..."
 - "You can..."
 - "To [action]:"
 
 **Navigation instructions:**
+
 - "Navigate to [location]"
 - "Click [element]"
 - "Select [option]"
 - "From the [page], click..."
 
 **Avoid:**
+
 - Passive voice where active is clearer
 - Jargon without explanation
 - Assuming prior knowledge
@@ -88,11 +94,11 @@ Never use H4 or deeper. If content requires more nesting, restructure into separ
 
 ### Section Length
 
-| Element | Target Length |
-|---------|---------------|
-| Paragraphs | 2-4 sentences |
-| H2 sections | 100-300 words |
-| H3 sections | 50-150 words |
+| Element       | Target Length  |
+| ------------- | -------------- |
+| Paragraphs    | 2-4 sentences  |
+| H2 sections   | 100-300 words  |
+| H3 sections   | 50-150 words   |
 | Full articles | 800-1500 words |
 
 ---
@@ -102,6 +108,7 @@ Never use H4 or deeper. If content requires more nesting, restructure into separ
 ### Lists
 
 **Bullet lists** - Use for features, options, characteristics (unordered items)
+
 ```javascript
 {
   type: 'bullet-list',
@@ -114,6 +121,7 @@ Never use H4 or deeper. If content requires more nesting, restructure into separ
 ```
 
 **Ordered lists** - Use for step-by-step procedures (sequential actions)
+
 ```javascript
 {
   type: 'ordered-list',
@@ -127,6 +135,7 @@ Never use H4 or deeper. If content requires more nesting, restructure into separ
 ```
 
 **List guidelines:**
+
 - Keep procedures to 4-6 steps maximum
 - If longer, break into multiple procedures
 - Start each item with an action verb for procedures
@@ -138,12 +147,12 @@ Use callouts sparingly for important information that shouldn't be missed.
 
 **Types:**
 
-| Variant | Use For | Example |
-|---------|---------|---------|
-| `info` | Additional context, clarification | "Monitors check at the interval you specify, starting from creation time." |
-| `tip` | Best practices, recommendations | "Use descriptive names to easily identify monitors in alerts." |
-| `warning` | Restrictions, potential issues | "Deleting a monitor removes all associated check history." |
-| `success` | Confirmations, positive outcomes | "Your monitor is now active and checking every 5 minutes." |
+| Variant   | Use For                           | Example                                                                    |
+| --------- | --------------------------------- | -------------------------------------------------------------------------- |
+| `info`    | Additional context, clarification | "Monitors check at the interval you specify, starting from creation time." |
+| `tip`     | Best practices, recommendations   | "Use descriptive names to easily identify monitors in alerts."             |
+| `warning` | Restrictions, potential issues    | "Deleting a monitor removes all associated check history."                 |
+| `success` | Confirmations, positive outcomes  | "Your monitor is now active and checking every 5 minutes."                 |
 
 ```javascript
 {
@@ -155,6 +164,7 @@ Use callouts sparingly for important information that shouldn't be missed.
 ```
 
 **Callout guidelines:**
+
 - Maximum 2-3 callouts per article
 - Keep callout text concise (1-2 sentences)
 - Title is optional but helps scannability
@@ -163,11 +173,13 @@ Use callouts sparingly for important information that shouldn't be missed.
 ### Inline Formatting
 
 **Bold** - Use for:
+
 - UI element names: "Click **Save**"
 - Key terms on first use: "**Uptime** measures availability over time"
 - Emphasis in lists: "**Name** — The display name for your monitor"
 
 **Code/monospace** - Use for:
+
 - URLs: `https://example.com`
 - File paths: `/api/v1/monitors`
 - Technical values: `200`, `timeout`
@@ -175,12 +187,15 @@ Use callouts sparingly for important information that shouldn't be missed.
 
 ```javascript
 // In paragraph text, use backticks in markdown:
-{ text: 'Enter the URL (e.g., `https://example.com`) in the field' }
+{
+	text: "Enter the URL (e.g., `https://example.com`) in the field";
+}
 ```
 
 ### Tables
 
 Use tables for:
+
 - Feature comparisons
 - Configuration options
 - Reference data with multiple attributes
@@ -206,19 +221,19 @@ Use tables for:
 
 ### Block Types Reference
 
-| Type | Purpose | When to Use |
-|------|---------|-------------|
-| `heading` | Section titles | Start each major topic |
-| `paragraph` | Body text | Explanations, context |
-| `bullet-list` | Unordered items | Features, options |
-| `ordered-list` | Sequential steps | Procedures |
-| `checklist` | Checkable items | Requirements, checklists |
-| `callout` | Important notices | Tips, warnings |
-| `code` | Code blocks | Commands, config examples |
-| `table` | Structured data | Comparisons, reference |
-| `image` | Screenshots | UI demonstration |
-| `icon-cards` | Feature grids | Capability overviews |
-| `article-links` | Related content | End-of-article navigation |
+| Type            | Purpose           | When to Use               |
+| --------------- | ----------------- | ------------------------- |
+| `heading`       | Section titles    | Start each major topic    |
+| `paragraph`     | Body text         | Explanations, context     |
+| `bullet-list`   | Unordered items   | Features, options         |
+| `ordered-list`  | Sequential steps  | Procedures                |
+| `checklist`     | Checkable items   | Requirements, checklists  |
+| `callout`       | Important notices | Tips, warnings            |
+| `code`          | Code blocks       | Commands, config examples |
+| `table`         | Structured data   | Comparisons, reference    |
+| `image`         | Screenshots       | UI demonstration          |
+| `icon-cards`    | Feature grids     | Capability overviews      |
+| `article-links` | Related content   | End-of-article navigation |
 
 ### Icon Cards
 
@@ -284,11 +299,13 @@ Always end articles with related content:
 ```
 
 **Alt text guidelines:**
+
 - Describe what the image shows (15-30 words)
 - Include key UI elements visible
 - Make it useful for screen readers
 
 **Caption guidelines:**
+
 - Explain the context or what to notice
 - Keep to one sentence
 - Optional but recommended
@@ -308,6 +325,7 @@ Always end articles with related content:
 ### Step-by-Step Instructions
 
 **Format:**
+
 ```javascript
 {
   type: 'ordered-list',
@@ -322,6 +340,7 @@ Always end articles with related content:
 ```
 
 **Guidelines:**
+
 - Start each step with an action verb (Click, Enter, Select, Navigate)
 - One action per step
 - Include the location of UI elements
@@ -331,6 +350,7 @@ Always end articles with related content:
 ### Describing Features
 
 **Format:**
+
 ```javascript
 {
   type: 'bullet-list',
@@ -350,18 +370,19 @@ Always end articles with related content:
 
 Use these terms consistently throughout documentation:
 
-| Term | Use | Don't Use |
-|------|-----|-----------|
-| Monitor | The configured check | Watcher, probe, check |
-| Check | A single monitoring event | Ping, request, poll |
-| Incident | A detected problem | Outage, alert, issue |
-| Notification | Alert sent to user | Message, email, ping |
-| Dashboard | Main overview page | Home, overview |
-| Sidebar | Left navigation | Menu, nav |
+| Term         | Use                       | Don't Use             |
+| ------------ | ------------------------- | --------------------- |
+| Monitor      | The configured check      | Watcher, probe, check |
+| Check        | A single monitoring event | Ping, request, poll   |
+| Incident     | A detected problem        | Outage, alert, issue  |
+| Notification | Alert sent to user        | Message, email, ping  |
+| Dashboard    | Main overview page        | Home, overview        |
+| Sidebar      | Left navigation           | Menu, nav             |
 
 ### Feature Names
 
 Always match UI exactly:
+
 - **Uptime** (not "Uptime Monitoring")
 - **PageSpeed** (not "Page Speed" or "Pagespeed")
 - **Infrastructure** (not "Server Monitoring")
@@ -375,36 +396,36 @@ Always match UI exactly:
 
 ```javascript
 {
-  blocks: [
-    {
-      type: 'heading',
-      level: 2,
-      text: 'Overview',
-      id: 'overview'
-    },
-    {
-      type: 'paragraph',
-      text: '[1-2 sentences: What this feature/concept is]'
-    },
-    {
-      type: 'paragraph',
-      text: '[1-2 sentences: Why it matters to users]'
-    },
-    {
-      type: 'heading',
-      level: 2,
-      text: '[Main topic]',
-      id: 'main-topic'
-    },
-    // ... content blocks
-    {
-      type: 'article-links',
-      title: 'Next steps',
-      items: [
-        // 2-3 logical next articles
-      ]
-    }
-  ]
+	blocks: [
+		{
+			type: "heading",
+			level: 2,
+			text: "Overview",
+			id: "overview",
+		},
+		{
+			type: "paragraph",
+			text: "[1-2 sentences: What this feature/concept is]",
+		},
+		{
+			type: "paragraph",
+			text: "[1-2 sentences: Why it matters to users]",
+		},
+		{
+			type: "heading",
+			level: 2,
+			text: "[Main topic]",
+			id: "main-topic",
+		},
+		// ... content blocks
+		{
+			type: "article-links",
+			title: "Next steps",
+			items: [
+				// 2-3 logical next articles
+			],
+		},
+	];
 }
 ```
 
@@ -412,40 +433,40 @@ Always match UI exactly:
 
 ```javascript
 {
-  blocks: [
-    {
-      type: 'heading',
-      level: 2,
-      text: 'Overview',
-      id: 'overview'
-    },
-    {
-      type: 'paragraph',
-      text: '[Brief description of what user will accomplish]'
-    },
-    {
-      type: 'heading',
-      level: 2,
-      text: '[Action: Creating/Configuring/Setting up...]',
-      id: 'action'
-    },
-    {
-      type: 'ordered-list',
-      items: [
-        // 4-6 steps
-      ]
-    },
-    {
-      type: 'callout',
-      variant: 'tip',
-      text: '[Best practice or helpful hint]'
-    },
-    {
-      type: 'article-links',
-      title: 'Related articles',
-      items: []
-    }
-  ]
+	blocks: [
+		{
+			type: "heading",
+			level: 2,
+			text: "Overview",
+			id: "overview",
+		},
+		{
+			type: "paragraph",
+			text: "[Brief description of what user will accomplish]",
+		},
+		{
+			type: "heading",
+			level: 2,
+			text: "[Action: Creating/Configuring/Setting up...]",
+			id: "action",
+		},
+		{
+			type: "ordered-list",
+			items: [
+				// 4-6 steps
+			],
+		},
+		{
+			type: "callout",
+			variant: "tip",
+			text: "[Best practice or helpful hint]",
+		},
+		{
+			type: "article-links",
+			title: "Related articles",
+			items: [],
+		},
+	];
 }
 ```
 
@@ -492,6 +513,7 @@ Always match UI exactly:
 Before publishing any article, verify:
 
 ### Content
+
 - [ ] Overview explains what AND why
 - [ ] Procedures are tested and accurate
 - [ ] All UI element names match exactly
@@ -499,6 +521,7 @@ Before publishing any article, verify:
 - [ ] Related articles are linked
 
 ### Formatting
+
 - [ ] Only H2 and H3 headings used
 - [ ] All headings have unique IDs
 - [ ] Lists use correct type (bullet vs ordered)
@@ -506,6 +529,7 @@ Before publishing any article, verify:
 - [ ] Bold used for UI elements
 
 ### Style
+
 - [ ] Active voice throughout
 - [ ] Second person ("you")
 - [ ] Action verbs start procedure steps
@@ -513,6 +537,7 @@ Before publishing any article, verify:
 - [ ] No marketing language
 
 ### Technical
+
 - [ ] All links work
 - [ ] Images have alt text
 - [ ] Code examples are correct
@@ -525,6 +550,7 @@ Before publishing any article, verify:
 For icon-cards and other icon references, use these Lucide icon names:
 
 **Navigation:**
+
 - `Globe` - Uptime/HTTP
 - `Gauge` - PageSpeed
 - `Server` - Infrastructure
@@ -536,6 +562,7 @@ For icon-cards and other icon references, use these Lucide icon names:
 - `Users` - Team
 
 **Actions:**
+
 - `CheckCircle` - Success/complete
 - `Clock` - Time/scheduling
 - `Info` - Information
@@ -543,6 +570,7 @@ For icon-cards and other icon references, use these Lucide icon names:
 - `ArrowRight` - Navigation
 
 **Features:**
+
 - `Database` - Data/storage
 - `Terminal` - Commands
 - `FileText` - Documentation
@@ -557,13 +585,13 @@ Articles are stored in `/content/index.js`:
 
 ```javascript
 export const articleContents = {
-  'collection-id': {
-    'article-id': {
-      blocks: [
-        // Content blocks
-      ]
-    }
-  }
+	"collection-id": {
+		"article-id": {
+			blocks: [
+				// Content blocks
+			],
+		},
+	},
 };
 ```
 
@@ -583,9 +611,11 @@ Article metadata is in `/content/userGuideConfig.js`:
 ## Examples
 
 ### Good Paragraph
+
 > "HTTP monitors check your websites and APIs at regular intervals. When a check fails—due to a timeout, error response, or connection issue—Checkmate creates an incident and sends notifications to your configured channels."
 
 ### Good Procedure
+
 > 1. Navigate to **Uptime** in the sidebar
 > 2. Click **Create monitor** in the top right
 > 3. Enter the URL you want to monitor (include `https://`)
@@ -593,9 +623,11 @@ Article metadata is in `/content/userGuideConfig.js`:
 > 5. Click **Save** to create the monitor
 
 ### Good Callout
+
 > **Tip:** Use descriptive monitor names like "Production API" or "Marketing Website" to quickly identify issues in notifications.
 
 ### Good Feature List
+
 > - **Name** — A descriptive label for easy identification
 > - **URL** — The address to monitor (must include protocol)
 > - **Interval** — How often to check (1-60 minutes)
@@ -603,4 +635,4 @@ Article metadata is in `/content/userGuideConfig.js`:
 
 ---
 
-*Last updated: January 2025*
+_Last updated: January 2025_

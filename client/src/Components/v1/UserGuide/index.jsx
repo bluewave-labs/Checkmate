@@ -10,7 +10,13 @@ import {
 const UserGuideSidebar = () => {
 	const { isOpen, open, close } = useUserGuideSidebarContext();
 
-	return <SidebarWrapper isOpen={isOpen} onOpen={open} onClose={close} />;
+	return (
+		<SidebarWrapper
+			isOpen={isOpen}
+			onOpen={open}
+			onClose={close}
+		/>
+	);
 };
 
 export {
