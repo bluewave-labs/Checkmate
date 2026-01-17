@@ -18,3 +18,6 @@ export { default as MongoInvitesRepository } from "@/repositories/invites/MongoI
 
 export * from "@/repositories/recovery-tokens/IRecoveryTokensRepository.js";
 export { default as MongoRecoveryTokensRepository } from "@/repositories/recovery-tokens/MongoRecoveryTokensRepository.js";
+
+export * from "@/repositories/settings/ISettingsRepository.js";
+export { default as MongoSettingsRepository } from "@/repositories/settings/MongoSettingsRepository.js";

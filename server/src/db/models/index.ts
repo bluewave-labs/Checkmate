@@ -16,5 +16,8 @@ export { default as UserModel } from "@/db/models/User.js";
 export * from "@/db/models/Invite.js";
 export { default as InviteModel } from "@/db/models/Invite.js";
 
+export * from "@/db/models/AppSettings.js";
+export { default as AppSettingsModel } from "@/db/models/AppSettings.js";
+
 export * from "@/db/models/RecoveryToken.js";
 export { default as RecoveryTokenModel } from "@/db/models/RecoveryToken.js";
