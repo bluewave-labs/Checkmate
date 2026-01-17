@@ -81,14 +81,17 @@ const Sidebar = () => {
 					: "var(--env-var-side-bar-width)"
 			}
 			component="aside"
-			position="sticky"
+			position="fixed"
 			top={0}
-			borderRight={`1px solid ${theme.palette.primary.lowContrast}`}
+			left={0}
 			paddingTop={theme.spacing(6)}
 			paddingBottom={theme.spacing(6)}
 			gap={theme.spacing(6)}
 			sx={{
 				transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
+				backgroundColor: "#000000",
+				borderRight: "1px solid #344054",
+				zIndex: 1000,
 			}}
 		>
 			<CollapseButton collapsed={collapsed} />
