@@ -1,0 +1,45 @@
+/* ContentRenderer styles - hover states and list styling */
+
+/* List styling - colors handled by inline styles for theme support */
+.user-guide-content-list li {
+	/* Font styles handled inline for theme-aware colors */
+}
+
+/* Table row hover */
+.user-guide-table-row {
+	transition: background-color 150ms ease;
+}
+
+.user-guide-table-row:hover {
+	background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-mui-color-scheme="dark"] .user-guide-table-row:hover {
+	background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Article links hover */
+.user-guide-article-link-item {
+	transition: all 150ms ease;
+}
+
+.user-guide-article-link-item:hover {
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
+[data-mui-color-scheme="dark"] .user-guide-article-link-item:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+.user-guide-article-link-item:hover .link-title {
+	color: #1570EF;
+}
+
+.user-guide-article-link-item .arrow-icon {
+	transition: all 150ms ease;
+}
+
+.user-guide-article-link-item:hover .arrow-icon {
+	transform: translateX(4px);
+	color: #1570EF;
+}

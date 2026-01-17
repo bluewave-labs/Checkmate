@@ -1,6 +1,7 @@
 import Sidebar from "../../Sidebar/index.jsx";
 import { Outlet } from "react-router";
 import { Stack } from "@mui/material";
+import { UserGuideSidebar } from "../../UserGuide";
 
 import "./index.css";
 
@@ -15,6 +16,7 @@ const HomeLayout = () => {
 			<Stack className="home-content-wrapper">
 				<Outlet />
 			</Stack>
+			<UserGuideSidebar />
 		</Stack>
 	);
 };

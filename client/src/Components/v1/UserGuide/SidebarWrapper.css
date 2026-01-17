@@ -1,0 +1,11 @@
+/* SidebarWrapper styles (Dark theme) */
+
+.user-guide-sidebar-container {
+	box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Push main content when sidebar is open */
+body.user-guide-sidebar-open .home-content-wrapper {
+	margin-right: var(--help-sidebar-padding, 440px);
+	transition: margin-right 300ms ease-in-out;
+}

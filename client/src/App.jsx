@@ -10,6 +10,7 @@ import { logger } from "./Utils/Logger"; // Import the logger
 import { networkService } from "./main";
 import { Routes } from "./Routes";
 import AppLayout from "@/Components/v1/Layouts/AppLayout";
+import { UserGuideSidebarProvider } from "@/Components/v1/UserGuide";
 
 function App() {
 	const mode = useSelector((state) => state.ui.mode);
@@ -25,9 +26,11 @@ function App() {
 	return (
 		<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
 			<CssBaseline />
-			<AppLayout>
-				<Routes />
-			</AppLayout>
+			<UserGuideSidebarProvider>
+				<AppLayout>
+					<Routes />
+				</AppLayout>
+			</UserGuideSidebarProvider>
 			<ToastContainer />
 		</ThemeProvider>
 	);

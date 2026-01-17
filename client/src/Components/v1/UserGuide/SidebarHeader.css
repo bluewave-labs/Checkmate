@@ -1,0 +1,40 @@
+/* SidebarHeader styles - Dark theme */
+
+.user-guide-header-icon-button {
+	transition: all 150ms ease;
+}
+
+.user-guide-header-icon-button:hover {
+	background-color: rgba(255, 255, 255, 0.1) !important;
+	color: #1570EF !important;
+}
+
+.user-guide-header-icon-button.active {
+	background-color: #0d0d0d;
+	color: #1570EF;
+}
+
+.user-guide-breadcrumb-dropdown-trigger {
+	transition: background-color 150ms ease;
+}
+
+.user-guide-breadcrumb-dropdown-trigger:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+.user-guide-breadcrumb-item {
+	transition: background-color 150ms ease;
+}
+
+.user-guide-breadcrumb-item:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+.user-guide-search-input:focus {
+	outline: none;
+	border-color: #1570EF;
+}
+
+.user-guide-search-input::placeholder {
+	color: #667085;
+}

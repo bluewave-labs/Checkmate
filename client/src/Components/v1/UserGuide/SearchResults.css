@@ -1,0 +1,10 @@
+/* SearchResults styles (Dark theme) */
+
+.user-guide-search-result-item {
+	transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.user-guide-search-result-item:hover {
+	background-color: rgba(255, 255, 255, 0.05) !important;
+	border-color: #4a5568 !important;
+}

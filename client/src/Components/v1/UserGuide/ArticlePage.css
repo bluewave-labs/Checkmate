@@ -1,0 +1,157 @@
+/* ArticlePage styles - hover states and nested selectors (Dark theme) */
+
+/* Breadcrumb hover */
+.user-guide-breadcrumb-link {
+	transition: color 150ms ease;
+}
+
+.user-guide-breadcrumb-link:hover {
+	color: #1570EF;
+}
+
+/* ToC link hover */
+.user-guide-toc-link {
+	transition: all 150ms ease;
+}
+
+.user-guide-toc-link:hover {
+	color: #1570EF;
+	text-decoration: underline !important;
+}
+
+/* Navigation button hover */
+.user-guide-nav-button .nav-text {
+	transition: color 150ms ease;
+}
+
+.user-guide-nav-button:hover .nav-text {
+	color: #1570EF;
+}
+
+/* Article body typography */
+.user-guide-article-body h2 {
+	font-size: 18px;
+	font-weight: 600;
+	color: #ffffff;
+	margin-top: 32px;
+	margin-bottom: 16px;
+	line-height: 1.4;
+}
+
+.user-guide-article-body h3 {
+	font-size: 14px;
+	font-weight: 600;
+	color: #ffffff;
+	margin-top: 24px;
+	margin-bottom: 12px;
+	line-height: 1.4;
+}
+
+.user-guide-article-body p {
+	font-size: 13px;
+	color: #d0d5dd;
+	line-height: 1.5;
+	margin-bottom: 16px;
+	margin-top: 0;
+}
+
+.user-guide-article-body ul,
+.user-guide-article-body ol {
+	padding-left: 24px;
+	margin-bottom: 16px;
+	margin-top: 0;
+}
+
+.user-guide-article-body li {
+	font-size: 13px;
+	color: #d0d5dd;
+	line-height: 1.5;
+	margin-bottom: 8px;
+}
+
+.user-guide-article-body a {
+	color: #1570EF;
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.user-guide-article-body a:hover {
+	text-decoration: underline;
+}
+
+.user-guide-article-body code {
+	background-color: #2d2d2d;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 10px;
+	font-family: "Geist Mono", "Fira Code", "Consolas", monospace;
+	color: #d0d5dd;
+}
+
+.user-guide-article-body pre {
+	background-color: #1c2130;
+	border-radius: 4px;
+	padding: 16px;
+	overflow: auto;
+	margin-bottom: 16px;
+	margin-top: 0;
+}
+
+.user-guide-article-body pre code {
+	background-color: transparent;
+	padding: 0;
+	color: #e5e7eb;
+}
+
+.user-guide-article-body blockquote {
+	border-left: 3px solid #1570EF;
+	background-color: rgba(255, 255, 255, 0.05);
+	padding: 12px 16px;
+	border-radius: 0 4px 4px 0;
+	margin-bottom: 16px;
+	margin-top: 0;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.user-guide-article-body blockquote p {
+	margin-bottom: 0;
+	color: #d0d5dd;
+}
+
+.user-guide-article-body table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 16px;
+}
+
+.user-guide-article-body th,
+.user-guide-article-body td {
+	border: 1px solid #344054;
+	padding: 12px;
+	text-align: left;
+	font-size: 10px;
+}
+
+.user-guide-article-body th {
+	background-color: rgba(255, 255, 255, 0.05);
+	font-weight: 600;
+	color: #ffffff;
+}
+
+.user-guide-article-body td {
+	color: #d0d5dd;
+}
+
+.user-guide-article-body img {
+	max-width: 100%;
+	border-radius: 4px;
+	border: 1px solid #344054;
+	margin-bottom: 16px;
+}
+
+.user-guide-article-body hr {
+	border: none;
+	border-top: 1px solid #344054;
+	margin: 32px 0;
+}

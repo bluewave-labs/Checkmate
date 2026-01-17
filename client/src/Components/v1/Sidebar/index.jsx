@@ -89,6 +89,8 @@ const Sidebar = () => {
 			gap={theme.spacing(6)}
 			sx={{
 				transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
+				backgroundColor: theme.palette.primaryBackground.main,
+				zIndex: 1000,
 			}}
 		>
 			<CollapseButton collapsed={collapsed} />

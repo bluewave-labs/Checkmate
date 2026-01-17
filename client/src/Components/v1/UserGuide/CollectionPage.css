@@ -1,0 +1,31 @@
+/* CollectionPage styles - hover states */
+
+/* Back link hover */
+.user-guide-back-link {
+	transition: color 150ms ease;
+}
+
+.user-guide-back-link:hover {
+	color: #1570EF;
+}
+
+/* Article row hover */
+.user-guide-article-row {
+	transition: all 150ms ease;
+}
+
+.user-guide-article-row:hover {
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
+[data-mui-color-scheme="dark"] .user-guide-article-row:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+.user-guide-article-row .arrow-icon {
+	transition: all 150ms ease;
+}
+
+.user-guide-article-row:hover .arrow-icon {
+	color: #1570EF;
+}
