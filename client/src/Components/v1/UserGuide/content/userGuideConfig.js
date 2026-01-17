@@ -67,7 +67,7 @@ export const collections = [
 		title: "Uptime monitoring",
 		description: "Monitor website and service availability.",
 		icon: "Globe",
-		articleCount: 7,
+		articleCount: 9,
 		articles: [
 			{
 				id: "http-monitors",
@@ -86,6 +86,18 @@ export const collections = [
 				title: "Port monitors",
 				description: "TCP port availability monitoring.",
 				keywords: ["port", "tcp", "availability", "monitor", "service"],
+			},
+			{
+				id: "docker-monitors",
+				title: "Docker monitors",
+				description: "Monitor Docker container status and health.",
+				keywords: ["docker", "container", "monitoring", "health", "status"],
+			},
+			{
+				id: "bulk-import",
+				title: "Bulk import monitors",
+				description: "Import multiple monitors from a CSV file.",
+				keywords: ["bulk", "import", "csv", "multiple", "batch", "upload"],
 			},
 			{
 				id: "intervals-timing",
@@ -441,8 +453,14 @@ export const collections = [
 		title: "Settings & configuration",
 		description: "Customize your Checkmate instance.",
 		icon: "Settings",
-		articleCount: 5,
+		articleCount: 6,
 		articles: [
+			{
+				id: "account-settings",
+				title: "Account settings",
+				description: "Manage your profile, password, and account.",
+				keywords: ["account", "profile", "password", "avatar", "photo", "delete"],
+			},
 			{
 				id: "email-configuration",
 				title: "Email configuration",

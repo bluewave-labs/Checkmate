@@ -643,6 +643,215 @@ const articleContents = {
 		],
 	},
 
+	"uptime-monitoring/docker-monitors": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "Docker monitors check the status and health of Docker containers. They verify that containers are running and responding correctly, helping you detect container failures quickly.",
+			},
+			{
+				type: "heading",
+				id: "creating-docker-monitor",
+				level: 2,
+				text: "Creating a Docker monitor",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Navigate to **Uptime** in the sidebar" },
+					{ text: "Click **Create monitor**" },
+					{ text: "Select **Docker container** as the monitor type" },
+					{ text: "Enter the Docker host URL (e.g., `http://localhost:2375`)" },
+					{ text: "Enter the container name or ID" },
+					{ text: "Set the check interval" },
+					{ text: "Click **Create monitor**" },
+				],
+			},
+			{
+				type: "heading",
+				id: "docker-host-setup",
+				level: 2,
+				text: "Docker host setup",
+			},
+			{
+				type: "paragraph",
+				text: "To monitor Docker containers, Checkmate needs access to the Docker API. You can expose the Docker API in several ways:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{
+						bold: "TCP socket",
+						text: "Expose Docker on a TCP port (e.g., 2375 for unencrypted, 2376 for TLS)",
+					},
+					{
+						bold: "Unix socket",
+						text: "Use the default Unix socket at `/var/run/docker.sock`",
+					},
+				],
+			},
+			{
+				type: "callout",
+				variant: "warning",
+				text: "Exposing the Docker API without TLS is a security risk. In production, always use TLS encryption and proper authentication.",
+			},
+			{
+				type: "heading",
+				id: "container-status",
+				level: 2,
+				text: "Container status",
+			},
+			{
+				type: "paragraph",
+				text: "Docker monitors check the container's running state. A container is considered:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Up", text: "Container is running and healthy" },
+					{ bold: "Down", text: "Container is stopped, exited, or unreachable" },
+				],
+			},
+			{
+				type: "article-links",
+				title: "Related articles",
+				items: [
+					{
+						collectionId: "uptime-monitoring",
+						articleId: "http-monitors",
+						title: "HTTP monitors",
+						description: "Monitor container services via HTTP",
+					},
+					{
+						collectionId: "uptime-monitoring",
+						articleId: "port-monitors",
+						title: "Port monitors",
+						description: "Monitor container ports directly",
+					},
+				],
+			},
+		],
+	},
+
+	"uptime-monitoring/bulk-import": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "Bulk import allows you to create multiple monitors at once by uploading a CSV file. This is useful when migrating from another monitoring tool or setting up monitoring for many services.",
+			},
+			{
+				type: "heading",
+				id: "accessing-bulk-import",
+				level: 2,
+				text: "Accessing bulk import",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Navigate to **Uptime** in the sidebar" },
+					{ text: "Click the menu icon (three dots) next to **Create monitor**" },
+					{ text: "Select **Bulk import**" },
+				],
+			},
+			{
+				type: "heading",
+				id: "csv-format",
+				level: 2,
+				text: "CSV file format",
+			},
+			{
+				type: "paragraph",
+				text: "Your CSV file should include the following columns:",
+			},
+			{
+				type: "table",
+				columns: [
+					{ key: "column", label: "Column", width: "1fr" },
+					{ key: "description", label: "Description", width: "2fr" },
+					{ key: "required", label: "Required", width: "1fr" },
+				],
+				rows: [
+					{ column: "name", description: "Monitor display name", required: "Yes" },
+					{ column: "url", description: "Target URL or hostname", required: "Yes" },
+					{ column: "type", description: "Monitor type (http, ping, port, docker)", required: "Yes" },
+					{ column: "interval", description: "Check interval in seconds", required: "No" },
+					{ column: "port", description: "Port number (for port monitors)", required: "No" },
+				],
+			},
+			{
+				type: "heading",
+				id: "template-files",
+				level: 2,
+				text: "Template files",
+			},
+			{
+				type: "paragraph",
+				text: "Checkmate provides two files to help you get started:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Template", text: "An empty CSV with the correct column headers" },
+					{ bold: "Sample", text: "A pre-filled example with sample monitors" },
+				],
+			},
+			{
+				type: "callout",
+				variant: "tip",
+				text: "Download the template file first, fill it with your monitors, then upload it to create all monitors at once.",
+			},
+			{
+				type: "heading",
+				id: "importing-monitors",
+				level: 2,
+				text: "Importing monitors",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Download the template or create your own CSV file" },
+					{ text: "Fill in the monitor details following the format above" },
+					{ text: "Click **Choose file** to select your CSV" },
+					{ text: "Click **Submit** to create the monitors" },
+				],
+			},
+			{
+				type: "paragraph",
+				text: "After import, you'll be redirected to the Uptime page where you can see all your newly created monitors.",
+			},
+			{
+				type: "article-links",
+				title: "Related articles",
+				items: [
+					{
+						collectionId: "uptime-monitoring",
+						articleId: "http-monitors",
+						title: "HTTP monitors",
+						description: "Configure HTTP monitors individually",
+					},
+					{
+						collectionId: "settings",
+						articleId: "export-monitors",
+						title: "Export monitors",
+						description: "Export your monitors for backup",
+					},
+				],
+			},
+		],
+	},
+
 	"uptime-monitoring/intervals-timing": {
 		blocks: [
 			{
@@ -2989,6 +3198,124 @@ const articleContents = {
 	// ============================================
 	// SETTINGS COLLECTION
 	// ============================================
+
+	"settings/account-settings": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "Account settings let you manage your personal profile, change your password, and delete your account. Access these settings by clicking your avatar in the sidebar.",
+			},
+			{
+				type: "heading",
+				id: "profile-settings",
+				level: 2,
+				text: "Profile settings",
+			},
+			{
+				type: "paragraph",
+				text: "The Profile tab allows you to update your personal information:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "First name", text: "Your given name displayed throughout the app" },
+					{ bold: "Last name", text: "Your family name displayed throughout the app" },
+					{ bold: "Email", text: "Your login email (cannot be changed)" },
+					{ bold: "Profile photo", text: "Your avatar image (max 3 MB)" },
+				],
+			},
+			{
+				type: "heading",
+				id: "updating-profile",
+				level: 3,
+				text: "Updating your profile",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Click your avatar in the sidebar to open Account settings" },
+					{ text: "Select the **Profile** tab" },
+					{ text: "Update your first name and/or last name" },
+					{ text: "To change your photo, click **Update** and upload a new image" },
+					{ text: "Click **Save** to apply changes" },
+				],
+			},
+			{
+				type: "heading",
+				id: "password-settings",
+				level: 2,
+				text: "Changing your password",
+			},
+			{
+				type: "paragraph",
+				text: "To change your password:",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Click your avatar in the sidebar to open Account settings" },
+					{ text: "Select the **Password** tab" },
+					{ text: "Enter your current password" },
+					{ text: "Enter your new password" },
+					{ text: "Confirm your new password" },
+					{ text: "Click **Save**" },
+				],
+			},
+			{
+				type: "callout",
+				variant: "info",
+				text: "Passwords must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+			},
+			{
+				type: "heading",
+				id: "delete-account",
+				level: 2,
+				text: "Deleting your account",
+			},
+			{
+				type: "paragraph",
+				text: "You can permanently delete your account from the Profile tab. This action cannot be undone.",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Go to the **Profile** tab in Account settings" },
+					{ text: "Scroll down to the **Delete account** section" },
+					{ text: "Click **Delete account**" },
+					{ text: "Confirm the deletion in the dialog" },
+				],
+			},
+			{
+				type: "callout",
+				variant: "warning",
+				text: "Deleting your account is permanent. All your data will be removed and cannot be recovered.",
+			},
+			{
+				type: "article-links",
+				title: "Related articles",
+				items: [
+					{
+						collectionId: "getting-started",
+						articleId: "roles-permissions",
+						title: "User roles and permissions",
+						description: "Learn about different user roles",
+					},
+					{
+						collectionId: "team-management",
+						articleId: "user-roles",
+						title: "User roles",
+						description: "Admin vs User permissions",
+					},
+				],
+			},
+		],
+	},
 
 	"settings/email-configuration": {
 		blocks: [
