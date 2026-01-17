@@ -21,6 +21,7 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 	{
 		checkTTL: { type: Number, default: 30 },
 		language: { type: String, default: "gb" },
+		jwtSecret: { type: String },
 		pagespeedApiKey: { type: String },
 		systemEmailHost: { type: String },
 		systemEmailPort: { type: Number },

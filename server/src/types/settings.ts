@@ -9,6 +9,7 @@ export interface Settings {
 	id: string;
 	checkTTL: number;
 	language: string;
+	jwtSecret?: string;
 	pagespeedApiKey?: string;
 	systemEmailHost?: string;
 	systemEmailPort?: number;

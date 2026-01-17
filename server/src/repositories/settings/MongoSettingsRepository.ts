@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { ISettingsRepository } from "@/repositories/settings/ISettingsRepository.js";
 import type { Settings } from "@/types/index.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/AppSettings.js";
-import { AppError } from "@/utils/AppError.js";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
@@ -24,6 +23,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			id: this.toStringId(doc._id),
 			checkTTL: doc.checkTTL,
 			language: doc.language,
+			jwtSecret: doc.jwtSecret ?? undefined,
 			pagespeedApiKey: doc.pagespeedApiKey ?? undefined,
 			systemEmailHost: doc.systemEmailHost ?? undefined,
 			systemEmailPort: doc.systemEmailPort ?? undefined,
@@ -63,11 +63,13 @@ class MongoSettingsRepository implements ISettingsRepository {
 			upsert: true,
 		});
 
-		const currentSettings = await AppSettingsModel.findOne().select("-__v -_id -createdAt -updatedAt -singleton").lean();
-		if (!currentSettings) {
-			throw new AppError({ message: "Settings not found after update", status: 500 });
-		}
-		return this.toEntity(currentSettings);
+		const updatedSettings = await AppSettingsModel.findOneAndUpdate({}, update, {
+			upsert: true,
+			new: true,
+			projection: "-__v -_id -createdAt -updatedAt -singleton",
+		});
+
+		return this.toEntity(updatedSettings);
 	};
 }
 

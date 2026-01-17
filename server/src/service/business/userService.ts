@@ -1,4 +1,4 @@
-import { IInvitesRepository, IMonitorsRepository, IRecoveryTokensRepository, IUsersRepository } from "@/repositories/index.js";
+import { IInvitesRepository, IMonitorsRepository, IRecoveryTokensRepository, IUsersRepository, ISettingsRepository } from "@/repositories/index.js";
 import Team from "@/db/models/Team.js";
 import type { User } from "@/types/index.js";
 import bcrypt from "bcryptjs";
@@ -9,7 +9,6 @@ const SERVICE_NAME = "userService";
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private db: any;
 	private emailService: any;
 	private settingsService: any;
 	private logger: any;
@@ -22,10 +21,10 @@ class UserService {
 	private usersRepository: IUsersRepository;
 	private invitesRepository: IInvitesRepository;
 	private recoveryTokensRepository: IRecoveryTokensRepository;
+	private settingsRepository: ISettingsRepository;
 
 	constructor({
 		crypto,
-		db,
 		emailService,
 		settingsService,
 		logger,
@@ -37,9 +36,9 @@ class UserService {
 		usersRepository,
 		invitesRepository,
 		recoveryTokensRepository,
+		settingsRepository,
 	}: {
 		crypto: any;
-		db: any;
 		emailService: any;
 		settingsService: any;
 		logger: any;
@@ -51,8 +50,8 @@ class UserService {
 		usersRepository: IUsersRepository;
 		invitesRepository: IInvitesRepository;
 		recoveryTokensRepository: IRecoveryTokensRepository;
+		settingsRepository: ISettingsRepository;
 	}) {
-		this.db = db;
 		this.emailService = emailService;
 		this.settingsService = settingsService;
 		this.logger = logger;
@@ -65,6 +64,7 @@ class UserService {
 		this.usersRepository = usersRepository;
 		this.invitesRepository = invitesRepository;
 		this.recoveryTokensRepository = recoveryTokensRepository;
+		this.settingsRepository = settingsRepository;
 	}
 
 	get serviceName() {
@@ -89,7 +89,7 @@ class UserService {
 		} else {
 			// This is the first account, create JWT secret to use if one is not supplied by env
 			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
-			await this.db.settingsModule.updateAppSettings({ jwtSecret });
+			await this.settingsRepository.update({ jwtSecret });
 			// Create a new team
 			const team = new Team({
 				email: user.email,
