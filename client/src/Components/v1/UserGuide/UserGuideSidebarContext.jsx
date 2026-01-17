@@ -3,10 +3,10 @@ import { createContext, useContext, useState, useCallback, useEffect } from "rea
 const SIDEBAR_STATE_KEY = "checkmate-sidebar-open";
 
 // Constants for sidebar dimensions
-export const TAB_BAR_WIDTH = 40;
+export const TAB_BAR_WIDTH = 41; // 40px width + 1px border
 export const DEFAULT_CONTENT_WIDTH = 400;
 // Additional gap beyond the sidebar width
-export const MIN_GAP = 0;
+export const MIN_GAP = 8;
 
 const UserGuideSidebarContext = createContext(null);
 
