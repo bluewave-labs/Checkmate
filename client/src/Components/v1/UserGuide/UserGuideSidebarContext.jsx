@@ -6,7 +6,7 @@ const SIDEBAR_STATE_KEY = "checkmate-sidebar-open";
 export const TAB_BAR_WIDTH = 41; // 40px width + 1px border
 export const DEFAULT_CONTENT_WIDTH = 400;
 // Additional gap beyond the sidebar width
-export const MIN_GAP = 8;
+export const MIN_GAP = 24;
 
 const UserGuideSidebarContext = createContext(null);
 
