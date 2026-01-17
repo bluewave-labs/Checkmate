@@ -1748,6 +1748,450 @@ const articleContents = {
 	},
 
 	// ============================================
+	// CHECKS COLLECTION
+	// ============================================
+
+	"checks/understanding-checks": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "Checks are individual monitoring test results that record the status and performance of your monitors. Each time Checkmate tests a monitor, it creates a check record with detailed information about the result.",
+			},
+			{
+				type: "heading",
+				id: "what-checks-record",
+				level: 2,
+				text: "What checks record",
+			},
+			{
+				type: "paragraph",
+				text: "Each check captures:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Status", text: "Whether the check passed (up) or failed (down)" },
+					{ bold: "Timestamp", text: "When the check was performed" },
+					{ bold: "HTTP status code", text: "The response code for HTTP monitors" },
+					{ bold: "Response time", text: "How long the check took in milliseconds" },
+					{ bold: "Message", text: "Success confirmation or error details" },
+				],
+			},
+			{
+				type: "heading",
+				id: "viewing-checks",
+				level: 2,
+				text: "Viewing checks",
+			},
+			{
+				type: "paragraph",
+				text: "You can view checks in two places:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{
+						bold: "Checks page",
+						text: "Navigate to Checks in the sidebar to see recent checks across all monitors",
+					},
+					{
+						bold: "Monitor details",
+						text: "Click any monitor to see its specific check history in the Response Times table",
+					},
+				],
+			},
+			{
+				type: "heading",
+				id: "check-frequency",
+				level: 2,
+				text: "Check frequency",
+			},
+			{
+				type: "paragraph",
+				text: "The frequency of checks depends on the monitor's configured interval. Shorter intervals mean more checks and faster incident detection, but also more resource usage.",
+			},
+		],
+	},
+
+	"checks/check-details": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "Each check includes detailed timing information that helps you understand where time is spent during the request. This is especially useful for diagnosing slow response times.",
+			},
+			{
+				type: "heading",
+				id: "timing-breakdown",
+				level: 2,
+				text: "Timing breakdown",
+			},
+			{
+				type: "paragraph",
+				text: "Hover over the response time in the check table to see the full timing breakdown:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "DNS lookup", text: "Time to resolve the domain name to an IP address" },
+					{ bold: "TCP connection", text: "Time to establish the TCP connection" },
+					{ bold: "TLS handshake", text: "Time to complete SSL/TLS negotiation (HTTPS only)" },
+					{ bold: "Wait time (TTFB)", text: "Time waiting for the first byte from the server" },
+					{ bold: "Download", text: "Time to download the response body" },
+					{ bold: "Total time", text: "Sum of all timing components" },
+				],
+			},
+			{
+				type: "heading",
+				id: "status-codes",
+				level: 2,
+				text: "HTTP status codes",
+			},
+			{
+				type: "paragraph",
+				text: "For HTTP monitors, each check records the status code. A successful check returns a 2xx status code (200-299). Other codes indicate issues:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "3xx", text: "Redirect responses (may indicate configuration issues)" },
+					{ bold: "4xx", text: "Client errors (authentication, not found, etc.)" },
+					{ bold: "5xx", text: "Server errors (internal errors, gateway issues)" },
+				],
+			},
+			{
+				type: "heading",
+				id: "response-time-charts",
+				level: 2,
+				text: "Response time charts",
+			},
+			{
+				type: "paragraph",
+				text: "Monitor detail pages display response time trends over time. Use these charts to identify performance patterns, detect gradual degradation, or verify improvements after optimization.",
+			},
+		],
+	},
+
+	"checks/filtering-checks": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "Filter and navigate through your check history to find specific results or analyze patterns over time.",
+			},
+			{
+				type: "heading",
+				id: "date-ranges",
+				level: 2,
+				text: "Date range filtering",
+			},
+			{
+				type: "paragraph",
+				text: "Select from preset date ranges to narrow your view:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Recent", text: "The most recent checks (default view)" },
+					{ bold: "Day", text: "Last 24 hours of checks" },
+					{ bold: "Week", text: "Last 7 days of checks" },
+					{ bold: "Month", text: "Last 30 days of checks" },
+					{ bold: "Year", text: "Last 365 days of checks" },
+				],
+			},
+			{
+				type: "heading",
+				id: "pagination",
+				level: 2,
+				text: "Pagination",
+			},
+			{
+				type: "paragraph",
+				text: "The check table supports pagination to handle large amounts of data efficiently:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ text: "Choose rows per page: 5, 10, 25, 50, or 100" },
+					{ text: "Navigate between pages using the arrow buttons" },
+					{ text: "The total check count is displayed above the table" },
+				],
+			},
+			{
+				type: "heading",
+				id: "sorting",
+				level: 2,
+				text: "Sorting",
+			},
+			{
+				type: "paragraph",
+				text: "Checks are sorted by date in descending order by default, showing the newest checks first. This helps you quickly see the most recent monitoring results.",
+			},
+		],
+	},
+
+	// ============================================
+	// LOGS COLLECTION
+	// ============================================
+
+	"logs/application-logs": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "The Logs page displays application-level logs from the Checkmate server. Use it to troubleshoot issues, track system events, and debug problems.",
+			},
+			{
+				type: "heading",
+				id: "accessing-logs",
+				level: 2,
+				text: "Accessing logs",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Click **Logs** in the sidebar" },
+					{ text: "The **Logs** tab is selected by default" },
+					{ text: "Browse the log entries in the table" },
+				],
+			},
+			{
+				type: "heading",
+				id: "log-levels",
+				level: 2,
+				text: "Log levels",
+			},
+			{
+				type: "paragraph",
+				text: "Filter logs by severity level using the dropdown:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "All", text: "Show all log entries" },
+					{ bold: "Error", text: "Critical issues that need attention (red)" },
+					{ bold: "Warn", text: "Potential problems to investigate (orange)" },
+					{ bold: "Info", text: "General information messages (green)" },
+					{ bold: "Debug", text: "Detailed debugging information (blue)" },
+				],
+			},
+			{
+				type: "heading",
+				id: "log-details",
+				level: 2,
+				text: "Log entry details",
+			},
+			{
+				type: "paragraph",
+				text: "Each log entry shows:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Timestamp", text: "When the event occurred" },
+					{ bold: "Level", text: "Severity level with color-coded badge" },
+					{ bold: "Service", text: "Which service generated the log" },
+					{ bold: "Method", text: "The HTTP method or operation type" },
+					{ bold: "Message", text: "Description of the event" },
+				],
+			},
+		],
+	},
+
+	"logs/queue-monitoring": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "The Queue tab monitors the background job system that runs your monitoring checks. View job status, track failures, and manage the queue.",
+			},
+			{
+				type: "heading",
+				id: "accessing-queue",
+				level: 2,
+				text: "Accessing the queue",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Navigate to **Logs** in the sidebar" },
+					{ text: "Click the **Queue** tab" },
+				],
+			},
+			{
+				type: "heading",
+				id: "queue-metrics",
+				level: 2,
+				text: "Queue metrics",
+			},
+			{
+				type: "paragraph",
+				text: "The metrics section displays overall queue statistics including active jobs, completed jobs, and failed jobs.",
+			},
+			{
+				type: "heading",
+				id: "job-table",
+				level: 2,
+				text: "Job table",
+			},
+			{
+				type: "paragraph",
+				text: "The job table shows all monitoring jobs with:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Monitor ID and URL", text: "Which monitor the job belongs to" },
+					{ bold: "Interval", text: "How often the job runs (in milliseconds)" },
+					{ bold: "Monitor type", text: "HTTP, ping, port, etc." },
+					{ bold: "Run count", text: "Total number of executions" },
+					{ bold: "Fail count", text: "Number of failed runs" },
+					{ bold: "Last run", text: "Timestamp of the most recent execution" },
+					{ bold: "Status", text: "Active, locked, or failed indicator" },
+				],
+			},
+			{
+				type: "callout",
+				variant: "info",
+				title: "Quick navigation",
+				content: "Click any row in the job table to navigate directly to that monitor's configuration page.",
+			},
+			{
+				type: "heading",
+				id: "failed-jobs",
+				level: 2,
+				text: "Failed jobs",
+			},
+			{
+				type: "paragraph",
+				text: "A separate table highlights jobs that have failed, showing the fail count, timestamp, and failure reason. Investigate these to ensure all monitors are running correctly.",
+			},
+			{
+				type: "heading",
+				id: "queue-actions",
+				level: 2,
+				text: "Queue actions",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Refresh", text: "Reload queue data to see the latest status" },
+					{ bold: "Flush", text: "Clear the queue and reset all jobs (use with caution)" },
+				],
+			},
+		],
+	},
+
+	"logs/system-diagnostics": {
+		blocks: [
+			{
+				type: "heading",
+				id: "overview",
+				level: 2,
+				text: "Overview",
+			},
+			{
+				type: "paragraph",
+				text: "The Diagnostics tab provides real-time system performance metrics. Monitor server health, identify performance bottlenecks, and ensure Checkmate is running optimally.",
+			},
+			{
+				type: "heading",
+				id: "accessing-diagnostics",
+				level: 2,
+				text: "Accessing diagnostics",
+			},
+			{
+				type: "ordered-list",
+				items: [
+					{ text: "Navigate to **Logs** in the sidebar" },
+					{ text: "Click the **Diagnostics** tab" },
+				],
+			},
+			{
+				type: "heading",
+				id: "status-overview",
+				level: 2,
+				text: "Status overview",
+			},
+			{
+				type: "paragraph",
+				text: "The top section shows key status indicators:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Status", text: "Overall system status (up or error)" },
+					{ bold: "Event loop delay", text: "Node.js event loop latency in milliseconds" },
+					{ bold: "Process uptime", text: "How long the server has been running" },
+					{ bold: "Heap memory", text: "Used and total V8 heap memory" },
+					{ bold: "OS memory limit", text: "System memory available" },
+				],
+			},
+			{
+				type: "heading",
+				id: "performance-gauges",
+				level: 2,
+				text: "Performance gauges",
+			},
+			{
+				type: "paragraph",
+				text: "Visual gauges display resource utilization:",
+			},
+			{
+				type: "bullet-list",
+				items: [
+					{ bold: "Heap allocation", text: "Percentage of heap limit being allocated" },
+					{ bold: "Heap usage", text: "Percentage of allocated heap in use" },
+					{ bold: "Heap utilization", text: "Overall heap usage percentage" },
+					{ bold: "CPU usage", text: "Current CPU utilization" },
+				],
+			},
+			{
+				type: "callout",
+				variant: "warning",
+				title: "High resource usage",
+				content: "If gauges consistently show high utilization (>80%), consider scaling your server resources or reducing the number of monitors.",
+			},
+			{
+				type: "heading",
+				id: "refresh",
+				level: 2,
+				text: "Refreshing data",
+			},
+			{
+				type: "paragraph",
+				text: "Click the Refresh button to update diagnostics with the latest metrics. The data is not auto-refreshed to reduce server load.",
+			},
+		],
+	},
+
+	// ============================================
 	// NOTIFICATIONS COLLECTION
 	// ============================================
 

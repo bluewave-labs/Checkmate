@@ -239,6 +239,60 @@ export const collections = [
 		],
 	},
 	{
+		id: "checks",
+		title: "Checks",
+		description: "View monitoring check results and history.",
+		icon: "FileText",
+		articleCount: 3,
+		articles: [
+			{
+				id: "understanding-checks",
+				title: "Understanding checks",
+				description: "What checks are and how they work.",
+				keywords: ["check", "result", "monitoring", "status", "response"],
+			},
+			{
+				id: "check-details",
+				title: "Check details and timing",
+				description: "Response times, status codes, and timing breakdown.",
+				keywords: ["response", "time", "timing", "breakdown", "dns", "tls"],
+			},
+			{
+				id: "filtering-checks",
+				title: "Filtering and date ranges",
+				description: "Filter checks by date range and status.",
+				keywords: ["filter", "date", "range", "pagination", "sort"],
+			},
+		],
+	},
+	{
+		id: "logs",
+		title: "Logs & diagnostics",
+		description: "System logs, queue monitoring, and diagnostics.",
+		icon: "Database",
+		articleCount: 3,
+		articles: [
+			{
+				id: "application-logs",
+				title: "Application logs",
+				description: "View and filter system logs by level.",
+				keywords: ["log", "error", "warning", "info", "debug", "filter"],
+			},
+			{
+				id: "queue-monitoring",
+				title: "Queue monitoring",
+				description: "Monitor background jobs and queue status.",
+				keywords: ["queue", "job", "background", "bullmq", "worker"],
+			},
+			{
+				id: "system-diagnostics",
+				title: "System diagnostics",
+				description: "CPU, memory, and heap usage metrics.",
+				keywords: ["diagnostics", "cpu", "memory", "heap", "performance"],
+			},
+		],
+	},
+	{
 		id: "notifications",
 		title: "Notifications",
 		description: "Get alerted when things go wrong.",
