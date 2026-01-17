@@ -2,7 +2,7 @@ import Sidebar from "../../Sidebar/index.jsx";
 import { Outlet } from "react-router";
 import { Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { UserGuideSidebar } from "../../UserGuide";
+import { UserGuideSidebar, TAB_BAR_WIDTH } from "../../UserGuide";
 
 const HomeLayout = () => {
 	const theme = useTheme();
@@ -28,6 +28,7 @@ const HomeLayout = () => {
 			<Stack
 				sx={{
 					padding: theme.spacing(4),
+					paddingRight: `${TAB_BAR_WIDTH + 16}px`,
 					maxWidth: 1400,
 					margin: "0 auto",
 					flex: 1,
