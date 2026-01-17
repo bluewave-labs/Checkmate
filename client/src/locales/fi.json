@@ -1119,5 +1119,16 @@
 	"selectInterface": "",
 	"proxmoxContainerMonitoring": "Proxmox container monitoring",
 	"proxmoxContainerMonitoringDescription": "Enable monitoring of Proxmox LXC containers on this infrastructure node. Requires Capture agent to be configured with Proxmox API credentials.",
-	"enableProxmoxContainers": "Enable container monitoring"
+	"enableProxmoxContainers": "Enable container monitoring",
+	"noContainersAvailable": "No containers available.",
+	"noContainerSelected": "No container selected.",
+	"noContainerStatsAvailable": "No container stats available.",
+	"container": "Container",
+	"containers": "Containers",
+	"diskIO": "Disk I/O",
+	"networkIO": "Network I/O",
+	"diskRead": "Disk read",
+	"diskWrite": "Disk write",
+	"networkIn": "Network in",
+	"networkOut": "Network out"
 }
