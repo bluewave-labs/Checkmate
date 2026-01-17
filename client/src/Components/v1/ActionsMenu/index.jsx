@@ -32,7 +32,6 @@ const ActionsMenu = ({
 		event.preventDefault();
 		event.stopPropagation();
 		let monitor = { id: actions.id };
-		console.log(monitor);
 		await deleteMonitor({ monitor });
 		updateRowCallback();
 	};

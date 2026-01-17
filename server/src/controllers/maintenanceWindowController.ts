@@ -46,7 +46,7 @@ class MaintenanceWindowController {
 		try {
 			await getMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 
-			const teamId = req.user.teamId;
+			const teamId = req.user?.teamId;
 			if (!teamId) {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
@@ -130,7 +130,7 @@ class MaintenanceWindowController {
 			await editMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 			await editMaintenanceByIdWindowBodyValidation.validateAsync(req.body);
 
-			const teamId = req.user.teamId;
+			const teamId = req.user?.teamId;
 			if (!teamId) {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}

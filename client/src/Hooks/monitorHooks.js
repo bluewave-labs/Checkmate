@@ -344,7 +344,6 @@ export const useDeleteMonitor = () => {
 	const deleteMonitor = async ({ monitor, redirect }) => {
 		try {
 			setIsLoading(true);
-			console.log(monitor);
 			await networkService.deleteMonitorById({ monitorId: monitor.id });
 			createToast({ body: "Monitor deleted successfully!" });
 			if (redirect) {

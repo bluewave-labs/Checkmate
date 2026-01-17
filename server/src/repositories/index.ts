@@ -9,3 +9,15 @@ export { default as MongoMonitorStatsRepository } from "@/repositories/monitor-s
 
 export * from "@/repositories/status-pages/IStatusPagesRepository.js";
 export { default as MongoStatusPagesRepository } from "@/repositories/status-pages/MongoStatusPagesRepository.js";
+
+export * from "@/repositories/users/IUsersRepository.js";
+export { default as MongoUsersRepository } from "@/repositories/users/MongoUsersRepository.js";
+
+export * from "@/repositories/invites/IInvitesRepository.js";
+export { default as MongoInvitesRepository } from "@/repositories/invites/MongoInviteRepository.js";
+
+export * from "@/repositories/recovery-tokens/IRecoveryTokensRepository.js";
+export { default as MongoRecoveryTokensRepository } from "@/repositories/recovery-tokens/MongoRecoveryTokensRepository.js";
+
+export * from "@/repositories/settings/ISettingsRepository.js";
+export { default as MongoSettingsRepository } from "@/repositories/settings/MongoSettingsRepository.js";

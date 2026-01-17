@@ -164,7 +164,7 @@ class MonitorController {
 		try {
 			await createMonitorBodyValidation.validateAsync(req.body);
 
-			const userId = requireString(req?.user?._id, "User ID");
+			const userId = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const monitor = await this.monitorService.createMonitor(teamId, userId, req.body);
@@ -193,7 +193,7 @@ class MonitorController {
 				throw new AppError({ message: "File is empty", status: 400 });
 			}
 
-			const userId = requireString(req?.user?._id, "User ID");
+			const userId = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const fileData = req?.file?.buffer?.toString("utf-8");
@@ -286,9 +286,9 @@ class MonitorController {
 
 	addDemoMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const _id = requireString(req?.user?._id, "User ID");
+			const id = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
-			const demoMonitors = await this.monitorService.addDemoMonitors({ userId: _id, teamId });
+			const demoMonitors = await this.monitorService.addDemoMonitors({ userId: id, teamId });
 
 			return res.status(200).json({
 				success: true,

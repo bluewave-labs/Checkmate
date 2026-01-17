@@ -53,7 +53,7 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const userId = req?.user?._id;
+			const userId = req?.user?.id;
 			if (!userId) {
 				throw new AppError({ message: "User ID is required", status: 400 });
 			}

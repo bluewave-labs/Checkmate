@@ -37,9 +37,6 @@ import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 
-import { fileURLToPath } from "url";
-import { ObjectId } from "mongodb";
-
 // DB Modules
 import { NormalizeData, NormalizeDataUptimeDetails } from "../utils/dataUtils.js";
 import { GenerateAvatarImage } from "../utils/imageProcessing.js";
@@ -48,7 +45,7 @@ import { ParseBoolean } from "../utils/utils.js";
 // Models
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
-import InviteToken from "../db/models/InviteToken.js";
+import InviteToken from "../db/models/Invite.js";
 import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
@@ -74,10 +71,18 @@ import {
 	MongoChecksRepository,
 	MongoMonitorStatsRepository,
 	MongoStatusPagesRepository,
+	MongoUsersRepository,
+	MongoInvitesRepository,
+	MongoRecoveryTokensRepository,
+	MongoSettingsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
+	IUsersRepository,
+	IInvitesRepository,
+	IRecoveryTokensRepository,
+	ISettingsRepository,
 } from "@/repositories/index.js";
 
 export type InitializedSerivces = {
@@ -107,6 +112,10 @@ export type InitializedSerivces = {
 	checksRepository: IChecksRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
 	statusPagesRepository: IStatusPagesRepository;
+	usersRepository: IUsersRepository;
+	invitesRepository: IInvitesRepository;
+	recoveryTokensRepository: IRecoveryTokensRepository;
+	settingsRepository: ISettingsRepository;
 };
 
 export const initializeServices = async ({
@@ -158,6 +167,10 @@ export const initializeServices = async ({
 	const checksRepository = new MongoChecksRepository(logger);
 	const monitorStatsRepository = new MongoMonitorStatsRepository();
 	const statusPagesRepository = new MongoStatusPagesRepository();
+	const usersRepository = new MongoUsersRepository();
+	const invitesRepository = new MongoInvitesRepository();
+	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
+	const settingsRepository = new MongoSettingsRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -231,7 +244,6 @@ export const initializeServices = async ({
 	// Business services
 	const userService = new UserService({
 		crypto,
-		db,
 		emailService,
 		settingsService,
 		logger,
@@ -240,6 +252,10 @@ export const initializeServices = async ({
 		errorService,
 		jobQueue: superSimpleQueue,
 		monitorsRepository,
+		usersRepository,
+		invitesRepository,
+		recoveryTokensRepository,
+		settingsRepository,
 	});
 
 	const diagnosticService = new DiagnosticService();
@@ -298,6 +314,10 @@ export const initializeServices = async ({
 		checksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		usersRepository,
+		invitesRepository,
+		recoveryTokensRepository,
+		settingsRepository,
 	};
 
 	Object.values(services).forEach((service) => {
