@@ -386,6 +386,7 @@ export const useUpdateMonitor = () => {
 					thresholds: monitor.thresholds,
 					secret: monitor.secret,
 					selectedDisks: monitor.selectedDisks,
+					enableProxmoxContainers: monitor.enableProxmoxContainers,
 				}),
 			};
 			await networkService.updateMonitor({
