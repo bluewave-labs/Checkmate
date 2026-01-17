@@ -29,8 +29,6 @@
 
 .home-content-wrapper {
 	padding: var(--env-var-spacing-2);
-	max-width: 1400px;
-	margin: 0 auto;
 	flex: 1;
 	min-width: 0;
 	overflow-x: hidden;
