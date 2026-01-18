@@ -785,9 +785,21 @@ const articleContents = {
 				rows: [
 					{ column: "name", description: "Monitor display name", required: "Yes" },
 					{ column: "url", description: "Target URL or hostname", required: "Yes" },
-					{ column: "type", description: "Monitor type (http, ping, port, docker)", required: "Yes" },
-					{ column: "interval", description: "Check interval in seconds", required: "No" },
-					{ column: "port", description: "Port number (for port monitors)", required: "No" },
+					{
+						column: "type",
+						description: "Monitor type (http, ping, port, docker)",
+						required: "Yes",
+					},
+					{
+						column: "interval",
+						description: "Check interval in seconds",
+						required: "No",
+					},
+					{
+						column: "port",
+						description: "Port number (for port monitors)",
+						required: "No",
+					},
 				],
 			},
 			{
@@ -2053,10 +2065,19 @@ const articleContents = {
 			{
 				type: "bullet-list",
 				items: [
-					{ bold: "DNS lookup", text: "Time to resolve the domain name to an IP address" },
+					{
+						bold: "DNS lookup",
+						text: "Time to resolve the domain name to an IP address",
+					},
 					{ bold: "TCP connection", text: "Time to establish the TCP connection" },
-					{ bold: "TLS handshake", text: "Time to complete SSL/TLS negotiation (HTTPS only)" },
-					{ bold: "Wait time (TTFB)", text: "Time waiting for the first byte from the server" },
+					{
+						bold: "TLS handshake",
+						text: "Time to complete SSL/TLS negotiation (HTTPS only)",
+					},
+					{
+						bold: "Wait time (TTFB)",
+						text: "Time waiting for the first byte from the server",
+					},
 					{ bold: "Download", text: "Time to download the response body" },
 					{ bold: "Total time", text: "Sum of all timing components" },
 				],
@@ -2289,7 +2310,8 @@ const articleContents = {
 				type: "callout",
 				variant: "info",
 				title: "Quick navigation",
-				content: "Click any row in the job table to navigate directly to that monitor's configuration page.",
+				content:
+					"Click any row in the job table to navigate directly to that monitor's configuration page.",
 			},
 			{
 				type: "heading",
@@ -2311,7 +2333,10 @@ const articleContents = {
 				type: "bullet-list",
 				items: [
 					{ bold: "Refresh", text: "Reload queue data to see the latest status" },
-					{ bold: "Flush", text: "Clear the queue and reset all jobs (use with caution)" },
+					{
+						bold: "Flush",
+						text: "Clear the queue and reset all jobs (use with caution)",
+					},
 				],
 			},
 		],
@@ -2356,7 +2381,10 @@ const articleContents = {
 				type: "bullet-list",
 				items: [
 					{ bold: "Status", text: "Overall system status (up or error)" },
-					{ bold: "Event loop delay", text: "Node.js event loop latency in milliseconds" },
+					{
+						bold: "Event loop delay",
+						text: "Node.js event loop latency in milliseconds",
+					},
 					{ bold: "Process uptime", text: "How long the server has been running" },
 					{ bold: "Heap memory", text: "Used and total V8 heap memory" },
 					{ bold: "OS memory limit", text: "System memory available" },
@@ -2385,7 +2413,8 @@ const articleContents = {
 				type: "callout",
 				variant: "warning",
 				title: "High resource usage",
-				content: "If gauges consistently show high utilization (>80%), consider scaling your server resources or reducing the number of monitors.",
+				content:
+					"If gauges consistently show high utilization (>80%), consider scaling your server resources or reducing the number of monitors.",
 			},
 			{
 				type: "heading",
