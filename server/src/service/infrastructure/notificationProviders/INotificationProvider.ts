@@ -1,7 +1,7 @@
-import type { Monitor, Notification, Alert } from "@/types/index.js";
+import type { Monitor, Notification, Alert, MonitorStatusResponse } from "@/types/index.js";
 
-export interface IMessageProvider {
-	buildAlert: (monitor: Monitor) => Alert;
+export interface INotificationProvider {
+	buildAlert: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => Alert;
 	sendAlert: (alert: Alert, notification: Notification) => Promise<boolean>;
 	sendTestAlert(notification: Notification): Promise<boolean>;
 }
