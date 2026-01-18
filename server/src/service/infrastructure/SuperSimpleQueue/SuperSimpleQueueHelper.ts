@@ -1,18 +1,19 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-import { INetworkService, INotificationsService } from "@/service/index.js";
+import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private db: any;
 	private logger: any;
 	private networkService: INetworkService;
-	private statusService: any;
+	private statusService: IStatusService;
 	private notificationService: any;
 	private notificationsService: INotificationsService;
 	private checkService: any;
 	private buffer: any;
+	private incidentService: any;
 
 	constructor({
 		db,
@@ -23,15 +24,17 @@ class SuperSimpleQueueHelper {
 		notificationsService,
 		checkService,
 		buffer,
+		incidentService,
 	}: {
 		db: any;
 		logger: any;
 		networkService: INetworkService;
-		statusService: any;
+		statusService: IStatusService;
 		notificationService: any;
 		notificationsService: INotificationsService;
 		checkService: any;
 		buffer: any;
+		incidentService: any;
 	}) {
 		this.db = db;
 		this.logger = logger;
@@ -41,6 +44,7 @@ class SuperSimpleQueueHelper {
 		this.checkService = checkService;
 		this.buffer = buffer;
 		this.notificationsService = notificationsService;
+		this.incidentService = incidentService;
 	}
 
 	get serviceName() {
@@ -82,10 +86,9 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				// Step 5 handle incidents and notifications
-				if (statusChangeResult.statusChanged === true) {
-					this.notificationsService.handleNotifications(monitor, status);
-				}
+				// Step 5 handle notifications
+
+				this.notificationsService.handleNotifications(monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged);
 
 				// this.notificationService
 				// 	.handleNotifications({
