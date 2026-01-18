@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import type { User, UserProfileImage, UserRole } from "@/types/index.js";
 import { MonitorModel } from "@/db/models/index.js";
 import Team from "./Team.js";
-import Notification from "./Notification.js";
+import NotificationModel from "./Notification.js";
 
 type UserDocumentBase = Omit<User, "id" | "teamId" | "createdAt" | "updatedAt"> & {
 	teamId?: Types.ObjectId;
@@ -76,7 +76,7 @@ UserSchema.pre("findOneAndDelete", async function (next) {
 			await Team.deleteOne({ _id: userToDelete.teamId });
 			await MonitorModel.deleteMany({ userId: userToDelete._id });
 			await this.model.deleteMany({ teamId: userToDelete.teamId, _id: { $ne: userToDelete._id } });
-			await Notification.deleteMany({ teamId: userToDelete.teamId });
+			await NotificationModel.deleteMany({ teamId: userToDelete.teamId });
 		}
 		next();
 	} catch (error) {

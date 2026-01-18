@@ -21,3 +21,6 @@ export { default as AppSettingsModel } from "@/db/models/AppSettings.js";
 
 export * from "@/db/models/RecoveryToken.js";
 export { default as RecoveryTokenModel } from "@/db/models/RecoveryToken.js";
+
+export * from "@/db/models/Notification.js";
+export { default as NotificationModel } from "@/db/models/Notification.js";
