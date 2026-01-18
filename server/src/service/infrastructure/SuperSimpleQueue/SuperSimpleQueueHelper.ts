@@ -1,7 +1,7 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-import { INetworkService } from "@/service/index.js";
+import { INetworkService, INotificationsService } from "@/service/index.js";
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -10,6 +10,7 @@ class SuperSimpleQueueHelper {
 	private networkService: INetworkService;
 	private statusService: any;
 	private notificationService: any;
+	private notificationsService: INotificationsService;
 	private checkService: any;
 	private buffer: any;
 
@@ -19,6 +20,7 @@ class SuperSimpleQueueHelper {
 		networkService,
 		statusService,
 		notificationService,
+		notificationsService,
 		checkService,
 		buffer,
 	}: {
@@ -27,6 +29,7 @@ class SuperSimpleQueueHelper {
 		networkService: INetworkService;
 		statusService: any;
 		notificationService: any;
+		notificationsService: INotificationsService;
 		checkService: any;
 		buffer: any;
 	}) {
@@ -37,6 +40,7 @@ class SuperSimpleQueueHelper {
 		this.notificationService = notificationService;
 		this.checkService = checkService;
 		this.buffer = buffer;
+		this.notificationsService = notificationsService;
 	}
 
 	get serviceName() {
@@ -78,22 +82,27 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				this.notificationService
-					.handleNotifications({
-						...status,
-						monitor: statusChangeResult.monitor,
-						prevStatus: statusChangeResult.prevStatus,
-						statusChanged: statusChangeResult.statusChanged,
-					})
-					.catch((error: any) => {
-						this.logger.error({
-							message: error.message,
-							service: SERVICE_NAME,
-							method: "getMonitorJob",
-							details: `Error sending notifications for job ${monitor.id}: ${error.message}`,
-							stack: error.stack,
-						});
-					});
+				// Step 5 handle incidents and notifications
+				if (statusChangeResult.statusChanged === true) {
+					this.notificationsService.handleNotifications(monitor, status);
+				}
+
+				// this.notificationService
+				// 	.handleNotifications({
+				// 		...status,
+				// 		monitor: statusChangeResult.monitor,
+				// 		prevStatus: statusChangeResult.prevStatus,
+				// 		statusChanged: statusChangeResult.statusChanged,
+				// 	})
+				// 	.catch((error: any) => {
+				// 		this.logger.error({
+				// 			message: error.message,
+				// 			service: SERVICE_NAME,
+				// 			method: "getMonitorJob",
+				// 			details: `Error sending notifications for job ${monitor.id}: ${error.message}`,
+				// 			stack: error.stack,
+				// 		});
+				// 	});
 			} catch (error: any) {
 				this.logger.warn({
 					message: error.message,

@@ -17,26 +17,12 @@ class StatusService {
 	private db: any;
 	private logger: any;
 	private buffer: any;
-	private incidentService: any;
 	private monitorsRepository: IMonitorsRepository;
 
-	constructor({
-		db,
-		logger,
-		buffer,
-		incidentService,
-		monitorsRepository,
-	}: {
-		db: any;
-		logger: any;
-		buffer: any;
-		incidentService: any;
-		monitorsRepository: IMonitorsRepository;
-	}) {
+	constructor({ db, logger, buffer, monitorsRepository }: { db: any; logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
-		this.incidentService = incidentService;
 		this.monitorsRepository = monitorsRepository;
 	}
 

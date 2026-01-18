@@ -8,6 +8,7 @@ import BufferService from "../service/infrastructure/bufferService.js";
 import StatusService from "../service/infrastructure/statusService.js";
 import NotificationUtils from "../service/infrastructure/notificationUtils.js";
 import NotificationService from "../service/infrastructure/notificationService.js";
+import { NotificationsService } from "@/service/index.js";
 import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -206,9 +207,9 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ db, logger, envSettings, incidentService, checkService });
+	const bufferService = new BufferService({ logger, incidentService, checkService });
 
-	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService, monitorsRepository });
+	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
 
 	const notificationUtils = new NotificationUtils({
 		stringService,
@@ -225,12 +226,15 @@ export const initializeServices = async ({
 		notificationUtils,
 	});
 
+	const notificationsService = new NotificationsService();
+
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,
 		logger,
 		networkService,
 		statusService,
 		notificationService,
+		notificationsService,
 		checkService,
 		buffer: bufferService,
 	});
@@ -317,6 +321,7 @@ export const initializeServices = async ({
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		notificationsService,
 	};
 
 	Object.values(services).forEach((service) => {
