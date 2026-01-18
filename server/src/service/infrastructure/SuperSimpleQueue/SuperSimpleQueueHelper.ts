@@ -24,7 +24,6 @@ class SuperSimpleQueueHelper {
 		notificationsService,
 		checkService,
 		buffer,
-		incidentService,
 	}: {
 		db: any;
 		logger: any;
@@ -34,7 +33,6 @@ class SuperSimpleQueueHelper {
 		notificationsService: INotificationsService;
 		checkService: any;
 		buffer: any;
-		incidentService: any;
 	}) {
 		this.db = db;
 		this.logger = logger;
@@ -44,7 +42,6 @@ class SuperSimpleQueueHelper {
 		this.checkService = checkService;
 		this.buffer = buffer;
 		this.notificationsService = notificationsService;
-		this.incidentService = incidentService;
 	}
 
 	get serviceName() {

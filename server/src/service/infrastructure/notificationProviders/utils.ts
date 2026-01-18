@@ -8,7 +8,7 @@ const buildHardwareAlerts = async (clientHost: string, monitor: Monitor, network
 	const metrics = payload.data || {};
 	const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
 
-	const alerts = {
+	const alerts: Record<string, boolean> = {
 		cpu: cpuThreshold !== -1 && cpuUsage > cpuThreshold ? true : false,
 		memory: memoryThreshold !== -1 && memoryUsage > memoryThreshold ? true : false,
 		disk: disk?.some((d) => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold) ?? false,
