@@ -260,10 +260,9 @@ export const initializeServices = async ({
 
 	const diagnosticService = new DiagnosticService();
 	const inviteService = new InviteService({
-		db,
+		invitesRepository,
 		settingsService,
 		emailService,
-		stringService,
 		errorService,
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
