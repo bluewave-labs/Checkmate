@@ -50,7 +50,7 @@ import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
-import Notification from "../db/models/Notification.js";
+import NotificationModel from "../db/models/Notification.js";
 import RecoveryToken from "../db/models/RecoveryToken.js";
 import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
@@ -141,7 +141,7 @@ export const initializeServices = async ({
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, AppSettings });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
-	const notificationModule = new NotificationModule({ Notification, Monitor });
+	const notificationModule = new NotificationModule({ Notification: NotificationModel, Monitor });
 	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
 	const settingsModule = new SettingsModule({ AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });

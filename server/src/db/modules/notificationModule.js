@@ -1,5 +1,3 @@
-// import Notification from "../../models/Notification.js";
-// import Monitor from "../../models/Monitor.js";
 const SERVICE_NAME = "notificationModule";
 
 class NotificationModule {
