@@ -21,8 +21,6 @@ export class DiscordProvider implements INotificationProvider {
 			return false;
 		}
 
-		console.log({ body });
-
 		try {
 			await got.post(notification.address, {
 				json: body,

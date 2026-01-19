@@ -176,14 +176,14 @@ export const buildDiscordBody = (monitor: Monitor, monitorStatusResponse: Monito
 	let body = {
 		embeds: [
 			{
-				title: `Monitor ${monitor.name}`,
-				color: monitor.status ? 5763719 : 15548997,
+				title: `Monitor name: ${monitor.name}`,
+				color: monitorStatusResponse.status ? 5763719 : 15548997,
 
 				fields: [
-					{ name: "Monitor", value: monitor.name, inline: true },
-					{ name: "Status", value: monitor.status ? "Up" : "Down", inline: true },
-					{ name: "Status Code", value: String(monitorStatusResponse.code), inline: true },
-					{ name: "Time", value: `${localTime} (Local) / ${utcTime} (UTC)`, inline: true },
+					{ name: "Monitor", value: monitor.name, inline: false },
+					{ name: "Status", value: monitorStatusResponse.status ? "Up" : "Down", inline: false },
+					{ name: "Status Code", value: String(monitorStatusResponse.code), inline: false },
+					{ name: "Time", value: `${localTime} (Local) / ${utcTime} (UTC)`, inline: false },
 					{ name: "URL", value: monitor.url, inline: false },
 				],
 				footer: { text: "Checkmate" },
