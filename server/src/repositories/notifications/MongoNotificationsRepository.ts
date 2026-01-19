@@ -35,6 +35,12 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
+
+	findNotificationsByIds = async (ids: string[]) => {
+		const mongoIds = ids.map((id) => new mongoose.Types.ObjectId(id));
+		const documents = await NotificationModel.find({ _id: { $in: mongoIds } });
+		return this.mapDocuments(documents);
+	};
 }
 
 export default MongoNotificationsRepository;

@@ -93,11 +93,17 @@ export const buildHardwareAlerts = (
 	return { alertsToSend, discordPayload };
 };
 
-const buildHardwareNotificationMessage = (clientHost: string, alerts: any, monitor: Monitor) => {
+export const buildHardwareNotificationMessage = (clientHost: string, alerts: any, monitor: Monitor) => {
 	const alertsHeader = [`Monitor: ${monitor.name}`, `URL: ${monitor.url}`];
 	const alertFooter = [`Go to incident: ${clientHost}/infrastructure/${monitor.id}`];
 	const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts, ...alertFooter] : [];
 	return alertText.map((alert) => alert).join("\n");
+};
+
+export const buildHardwareWebhookBody = (alerts: string[], monitor: Monitor): { text: string; name: string; url: string } => {
+	const content = alerts.map((alert) => alert).join("\n");
+	const body = { text: content, name: monitor.name, url: monitor.url };
+	return body;
 };
 
 export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: MonitorStatusResponse): boolean => {
@@ -124,4 +130,10 @@ export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: Monit
 	}
 
 	return false;
+};
+
+export const buildWebhookBody = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
+	const { status, code } = monitorStatusResponse;
+	const formattedTime = Date.now().toLocaleString();
+	return `Monitor: ${monitor.name}\nTime: ${formattedTime}\nStatus: ${status ? "UP" : "DOWN"}\n Status Code: ${code}\n\u200B\n`;
 };

@@ -1,7 +1,7 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
-import { NotificationModel } from "@/db/models/index.js";
-import { buildHardwareAlerts, shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
+import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
 import { INotificationsRepository } from "@/repositories/index.js";
+import { WebhookProvider } from "@/service/index.js";
 export interface INotificationsService {
 	handleNotifications: (
 		monitor: Monitor,
@@ -13,21 +13,36 @@ export interface INotificationsService {
 
 export class NotificationsService implements INotificationsService {
 	private notificationsRepository: INotificationsRepository;
-	constructor(notificationsRepository: INotificationsRepository) {
+	private webhookProvider: WebhookProvider;
+
+	constructor(notificationsRepository: INotificationsRepository, webhookProvider: WebhookProvider) {
 		this.notificationsRepository = notificationsRepository;
+		this.webhookProvider = webhookProvider;
 	}
 
-	private send = (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
-		console.log(notification);
+	private send = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> => {
+		switch (notification.type) {
+			case " email": {
+			}
+			case "webhook": {
+				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse);
+			}
+		}
+		return false;
 	};
 
 	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
-		const notifications = await this.notificationsRepository.findByMonitorId(monitor.id);
-		console.log({ notifications });
-		const tasks = notifications.map((notification) => {
-			this.send(notification, monitor, monitorStatusResponse);
-		});
-		return true;
+		const notificationIds = monitor.notifications ?? [];
+		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse));
+		const outcomes = await Promise.all(tasks);
+		const succeeded = outcomes.filter(Boolean).length;
+		const failed = outcomes.length - succeeded;
+		if (failed > 0) {
+			// logger.warn(`Notification send completed with ${succeeded} success, ${failed} failure(s)`);
+		}
+		// Return true if all notificaitons succeeded
+		return succeeded === notifications.length;
 	};
 
 	handleNotifications = async (
@@ -51,12 +66,11 @@ export class NotificationsService implements INotificationsService {
 			const metrics = payload?.data ?? null;
 			if (metrics === null) return false; // No metrics, we're done
 
-			// We shoul dsend a notificaiton
+			// We should send a notificaiton
 
 			const shouldSend = shouldSendHardwareAlert(monitor, monitorStatusResponse);
 			if (shouldSend === false) return false;
 			console.log(JSON.stringify(monitor, null, 2));
-			console.log(JSON.stringify(monitorStatusResponse, null, 2));
 			// const { subject, html } = await this.notificationUtils.buildHardwareEmail(networkResponse, alerts);
 			// const content = await this.notificationUtils.buildHardwareNotificationMessage(alerts, monitor);
 			// const webhookBody = await this.notificationUtils.buildHardwareWebhookBody(alerts, monitor);

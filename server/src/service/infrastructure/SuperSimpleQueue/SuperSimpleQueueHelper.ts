@@ -83,7 +83,7 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				// Step 5 handle notifications
+				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
 				this.notificationsService.handleNotifications(monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged);
 
 				// this.notificationService
