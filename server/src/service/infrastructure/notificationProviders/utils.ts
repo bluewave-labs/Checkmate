@@ -134,6 +134,34 @@ export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: Monit
 
 export const buildWebhookBody = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 	const { status, code } = monitorStatusResponse;
-	const formattedTime = Date.now().toLocaleString();
-	return `Monitor: ${monitor.name}\nTime: ${formattedTime}\nStatus: ${status ? "UP" : "DOWN"}\n Status Code: ${code}\n\u200B\n`;
+	const now = new Date();
+	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const localTime = new Intl.DateTimeFormat(undefined, {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hour12: false,
+		timeZone: localTimeZone,
+		timeZoneName: "short",
+	}).format(now);
+	const utcTime = now.toUTCString();
+	return `Monitor: ${monitor.name}\nLocal Time (${localTimeZone}): ${localTime}\nUTC Time: ${utcTime}\nStatus: ${status ? "UP" : "DOWN"}\nStatus Code: ${code}\n\u200B\n`;
+};
+
+export const buildHardwareEmail = async (emailService: any, monitor: Monitor, alerts: string[]) => {
+	const template = "hardwareIncidentTemplate";
+	const context = { monitor: monitor.name, url: monitor.url, alerts };
+	const html = await emailService.buildEmail(template, context);
+	return html;
+};
+
+export const buildEmail = async (emailService: any, monitor: Monitor): Promise<string> => {
+	const template = monitor.status === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
+	const context = { monitor: monitor.name, url: monitor.url };
+	const html = await emailService.buildEmail(template, context);
+	console.log({ html: typeof html });
+	return html;
 };

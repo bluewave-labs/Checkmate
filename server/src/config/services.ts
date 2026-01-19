@@ -7,7 +7,7 @@ import EmailService from "../service/infrastructure/emailService.js";
 import BufferService from "../service/infrastructure/bufferService.js";
 import NotificationUtils from "../service/infrastructure/notificationUtils.js";
 import NotificationService from "../service/infrastructure/notificationService.js";
-import { NotificationsService, StatusService } from "@/service/index.js";
+import { NotificationsService, StatusService, WebhookProvider, SlackProvider, EmailProvider, DiscordProvider } from "@/service/index.js";
 import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -228,7 +228,17 @@ export const initializeServices = async ({
 		notificationUtils,
 	});
 
-	const notificationsService = new NotificationsService(notificationsRepository);
+	const webhookProvider = new WebhookProvider();
+	const slackProvider = new SlackProvider();
+	const emailProvider = new EmailProvider(emailService);
+	const discordProvider = new DiscordProvider();
+
+	const notificationsService = new NotificationsService(notificationsRepository, {
+		webhookProvider,
+		slackProvider,
+		emailProvider,
+		discordProvider,
+	});
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,
@@ -323,6 +333,7 @@ export const initializeServices = async ({
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		notificationsRepository,
 		notificationsService,
 	};
 

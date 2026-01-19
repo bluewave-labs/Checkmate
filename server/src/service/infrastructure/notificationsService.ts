@@ -1,7 +1,7 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
 import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
 import { INotificationsRepository } from "@/repositories/index.js";
-import { WebhookProvider } from "@/service/index.js";
+import { DiscordProvider, EmailProvider, SlackProvider, WebhookProvider } from "@/service/index.js";
 export interface INotificationsService {
 	handleNotifications: (
 		monitor: Monitor,
@@ -14,21 +14,39 @@ export interface INotificationsService {
 export class NotificationsService implements INotificationsService {
 	private notificationsRepository: INotificationsRepository;
 	private webhookProvider: WebhookProvider;
+	private emailProvider: EmailProvider;
+	private slackProvider: SlackProvider;
+	private discordProvider: DiscordProvider;
 
-	constructor(notificationsRepository: INotificationsRepository, webhookProvider: WebhookProvider) {
+	constructor(
+		notificationsRepository: INotificationsRepository,
+		providers: {
+			webhookProvider: WebhookProvider;
+			emailProvider: EmailProvider;
+			slackProvider: SlackProvider;
+			discordProvider: DiscordProvider;
+		}
+	) {
 		this.notificationsRepository = notificationsRepository;
-		this.webhookProvider = webhookProvider;
+		this.webhookProvider = providers.webhookProvider;
+		this.emailProvider = providers.emailProvider;
+		this.slackProvider = providers.slackProvider;
+		this.discordProvider = providers.discordProvider;
 	}
 
 	private send = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> => {
 		switch (notification.type) {
-			case " email": {
-			}
-			case "webhook": {
+			case "email":
+				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse);
+			case "slack":
+				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse);
+			case "discord":
+				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse);
+			case "webhook":
 				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse);
-			}
+			default:
+				return false;
 		}
-		return false;
 	};
 
 	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
