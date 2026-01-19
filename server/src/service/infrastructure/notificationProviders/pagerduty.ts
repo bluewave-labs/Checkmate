@@ -1,9 +1,15 @@
 import got from "got";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import { buildHardwareAlerts, buildHardwareWebhookBody, buildWebhookBody } from "@/service/infrastructure/notificationProviders/utils.js";
+import {
+	buildHardwareAlerts,
+	buildHardwareWebhookBody,
+	buildWebhookBody,
+	getTestMessage,
+} from "@/service/infrastructure/notificationProviders/utils.js";
 
 export class PagerDutyProvider implements INotificationProvider {
+	constructor(private logger: any) {}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -24,6 +30,7 @@ export class PagerDutyProvider implements INotificationProvider {
 		}
 
 		try {
+			this.logger?.debug?.("Sending PagerDuty alert", { routingKey: notification.address });
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
 				json: {
 					routing_key: notification.address,
@@ -40,11 +47,31 @@ export class PagerDutyProvider implements INotificationProvider {
 
 			return true;
 		} catch (error) {
+			this.logger?.error?.("PagerDuty alert failed", { error });
 			return false;
 		}
 	}
 
 	async sendTestAlert(notification: Notification): Promise<boolean> {
-		return false;
+		try {
+			this.logger?.debug?.("Sending PagerDuty test alert", { routingKey: notification.address });
+			await got.post("https://events.pagerduty.com/v2/enqueue", {
+				json: {
+					routing_key: notification.address,
+					event_action: "trigger",
+					payload: {
+						summary: getTestMessage(),
+						severity: "info",
+						source: "checkmate",
+						timestamp: new Date().toISOString(),
+					},
+				},
+				responseType: "json",
+			});
+			return true;
+		} catch (error) {
+			this.logger?.error?.("PagerDuty test alert failed", { error });
+			return false;
+		}
 	}
 }

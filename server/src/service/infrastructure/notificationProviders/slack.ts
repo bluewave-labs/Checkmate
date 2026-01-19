@@ -9,6 +9,7 @@ import {
 import got from "got";
 
 export class SlackProvider implements INotificationProvider {
+	constructor(private logger: any) {}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -33,6 +34,7 @@ export class SlackProvider implements INotificationProvider {
 		}
 
 		try {
+			this.logger?.debug?.("Sending Slack alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { text: body },
 				headers: {
@@ -42,6 +44,7 @@ export class SlackProvider implements INotificationProvider {
 			});
 			return true;
 		} catch (error) {
+			this.logger?.error?.("Slack alert failed", { error });
 			return false;
 		}
 	}
@@ -52,6 +55,7 @@ export class SlackProvider implements INotificationProvider {
 		}
 
 		try {
+			this.logger?.debug?.("Sending Slack test alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { text: getTestMessage() },
 				headers: {
@@ -61,6 +65,7 @@ export class SlackProvider implements INotificationProvider {
 			});
 			return true;
 		} catch (error) {
+			this.logger?.error?.("Slack test alert failed", { error });
 			return false;
 		}
 	}

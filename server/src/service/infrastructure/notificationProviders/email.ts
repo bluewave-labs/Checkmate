@@ -4,7 +4,7 @@ import { buildHardwareAlerts, buildHardwareEmail, buildEmail, buildTestEmail } f
 
 export class EmailProvider implements INotificationProvider {
 	private emailService: any;
-	constructor(emailService: any) {
+	constructor(emailService: any, private logger: any) {
 		this.emailService = emailService;
 	}
 
@@ -27,6 +27,7 @@ export class EmailProvider implements INotificationProvider {
 			return false;
 		}
 
+		this.logger?.debug?.("Sending Email alert", { address: notification.address });
 		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
 		if (!messageId) return false;
 		return true;
@@ -35,6 +36,7 @@ export class EmailProvider implements INotificationProvider {
 	async sendTestAlert(notification: Notification): Promise<boolean> {
 		const subject = "Test notification";
 		const html = await buildTestEmail(this.emailService);
+		this.logger?.debug?.("Sending Email test alert", { address: notification.address });
 		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
 		if (!messageId) return false;
 		return true;

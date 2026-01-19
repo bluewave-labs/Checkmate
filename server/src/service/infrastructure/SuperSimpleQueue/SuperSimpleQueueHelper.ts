@@ -18,7 +18,6 @@ class SuperSimpleQueueHelper {
 		logger,
 		networkService,
 		statusService,
-		notificationService,
 		notificationsService,
 		checkService,
 		buffer,

@@ -228,12 +228,12 @@ export const initializeServices = async ({
 		settingsService,
 	});
 
-	const webhookProvider = new WebhookProvider();
-	const slackProvider = new SlackProvider();
-	const emailProvider = new EmailProvider(emailService);
-	const discordProvider = new DiscordProvider();
-	const pagerDutyProvider = new PagerDutyProvider();
-	const matrixProvider = new MatrixProvider();
+	const webhookProvider = new WebhookProvider(logger);
+	const slackProvider = new SlackProvider(logger);
+	const emailProvider = new EmailProvider(emailService, logger);
+	const discordProvider = new DiscordProvider(logger);
+	const pagerDutyProvider = new PagerDutyProvider(logger);
+	const matrixProvider = new MatrixProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,

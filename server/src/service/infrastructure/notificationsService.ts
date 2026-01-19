@@ -140,6 +140,7 @@ export class NotificationsService implements INotificationsService {
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 		const tasks = notifications.map((notification) => this.sendTestNotification(notification));
 		const outcomes = await Promise.all(tasks);
+		console.log(outcomes);
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;
 		if (failed > 0) {
