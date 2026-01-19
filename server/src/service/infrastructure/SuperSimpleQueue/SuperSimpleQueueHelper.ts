@@ -84,7 +84,6 @@ class SuperSimpleQueueHelper {
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
 				// Step 5 handle notifications
-
 				this.notificationsService.handleNotifications(monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged);
 
 				// this.notificationService

@@ -75,6 +75,7 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoSettingsRepository,
+	MongoNotificationsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -83,6 +84,7 @@ import {
 	IInvitesRepository,
 	IRecoveryTokensRepository,
 	ISettingsRepository,
+	INotificationsRepository,
 } from "@/repositories/index.js";
 
 export type InitializedSerivces = {
@@ -116,6 +118,7 @@ export type InitializedSerivces = {
 	invitesRepository: IInvitesRepository;
 	recoveryTokensRepository: IRecoveryTokensRepository;
 	settingsRepository: ISettingsRepository;
+	notificationsRepository: INotificationsRepository;
 };
 
 export const initializeServices = async ({
@@ -171,7 +174,7 @@ export const initializeServices = async ({
 	const invitesRepository = new MongoInvitesRepository();
 	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
 	const settingsRepository = new MongoSettingsRepository();
-
+	const notificationsRepository = new MongoNotificationsRepository();
 	const networkService = new NetworkService({
 		axios,
 		got,
@@ -225,7 +228,7 @@ export const initializeServices = async ({
 		notificationUtils,
 	});
 
-	const notificationsService = new NotificationsService();
+	const notificationsService = new NotificationsService(notificationsRepository);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,

@@ -1,6 +1,10 @@
 import { Monitor, HardwareStatusPayload, MonitorStatusResponse } from "@/types/index.js";
 
-const buildHardwareAlerts = async (clientHost: string, monitor: Monitor, networkResponse: MonitorStatusResponse) => {
+export const buildHardwareAlerts = (
+	clientHost: string,
+	monitor: Monitor,
+	networkResponse: MonitorStatusResponse
+): { alertsToSend: string[]; discordPayload: any } => {
 	const thresholds = monitor.thresholds || {};
 	const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
 
@@ -54,15 +58,22 @@ const buildHardwareAlerts = async (clientHost: string, monitor: Monitor, network
 			],
 		}),
 	};
-	const alertTypes = ["cpu", "memory", "disk"];
+	const alertTypes = ["cpu", "memory", "disk"] as const;
+	const alertThresholdKeyMap: Record<(typeof alertTypes)[number], "cpuAlertThreshold" | "memoryAlertThreshold" | "diskAlertThreshold"> = {
+		cpu: "cpuAlertThreshold",
+		memory: "memoryAlertThreshold",
+		disk: "diskAlertThreshold",
+	};
 	for (const type of alertTypes) {
+		const thresholdKey = alertThresholdKeyMap[type];
 		// Iterate over each alert type to see if any need to be decremented
 		if (alerts[type] === true) {
-			monitor[`${type}AlertThreshold`]--; // Decrement threshold if an alert is triggered
+			const nextValue = ((monitor[thresholdKey] ?? monitor.alertThreshold) as number) - 1;
+			monitor[thresholdKey] = nextValue; // Decrement threshold if an alert is triggered
 
-			if (monitor[`${type}AlertThreshold`] <= 0) {
+			if (monitor[thresholdKey] <= 0) {
 				// If threshold drops below 0, reset and send notification
-				monitor[`${type}AlertThreshold`] = monitor.alertThreshold;
+				monitor[thresholdKey] = monitor.alertThreshold;
 
 				const formatAlert = {
 					cpu: () => `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
@@ -70,7 +81,7 @@ const buildHardwareAlerts = async (clientHost: string, monitor: Monitor, network
 						`Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
 					disk: () =>
 						`Your current disk usage: ${disk
-							.map((d, idx) => `(Disk${idx}: ${(d.usage_percent * 100).toFixed(0)}%)`)
+							.map((d, idx) => `(Disk${idx}: ${(d?.usage_percent ?? 0 * 100).toFixed(0)}%)`)
 							.join(", ")} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
 				};
 				alertsToSend.push(formatAlert[type]());
@@ -79,13 +90,38 @@ const buildHardwareAlerts = async (clientHost: string, monitor: Monitor, network
 		}
 	}
 	const discordPayload = discordEmbeds.length ? { embeds: discordEmbeds } : null;
-	return [alertsToSend, discordPayload];
+	return { alertsToSend, discordPayload };
 };
 
-const buildHardwareNotificationMessage = (alerts: any, monitor: Monitor) => {
-	const { clientHost } = this.settingsService.getSettings();
+const buildHardwareNotificationMessage = (clientHost: string, alerts: any, monitor: Monitor) => {
 	const alertsHeader = [`Monitor: ${monitor.name}`, `URL: ${monitor.url}`];
-	const alertFooter = [`Go to incident: ${clientHost}/infrastructure/${monitor._id}`];
+	const alertFooter = [`Go to incident: ${clientHost}/infrastructure/${monitor.id}`];
 	const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts, ...alertFooter] : [];
 	return alertText.map((alert) => alert).join("\n");
+};
+
+export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: MonitorStatusResponse): boolean => {
+	const thresholds = monitor.thresholds || {};
+	const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
+
+	const payload = networkResponse?.payload as HardwareStatusPayload;
+	const metrics = payload.data || {};
+	const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
+
+	const cpuBreach = cpuThreshold !== -1 && cpuUsage > cpuThreshold;
+	if (cpuBreach && ((monitor.cpuAlertThreshold ?? monitor.alertThreshold) as number) - 1 <= 0) {
+		return true;
+	}
+
+	const memoryBreach = memoryThreshold !== -1 && memoryUsage > memoryThreshold;
+	if (memoryBreach && ((monitor.memoryAlertThreshold ?? monitor.alertThreshold) as number) - 1 <= 0) {
+		return true;
+	}
+
+	const diskBreach = disk?.some((d) => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold);
+	if (diskBreach && ((monitor.diskAlertThreshold ?? monitor.alertThreshold) as number) - 1 <= 0) {
+		return true;
+	}
+
+	return false;
 };
