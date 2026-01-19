@@ -21,3 +21,6 @@ export { default as MongoRecoveryTokensRepository } from "@/repositories/recover
 
 export * from "@/repositories/settings/ISettingsRepository.js";
 export { default as MongoSettingsRepository } from "@/repositories/settings/MongoSettingsRepository.js";
+
+export * from "@/repositories/notifications/INotificationsRepository.js";
+export { default as MongoNotificationsRepository } from "@/repositories/notifications/MongoNotificationsRepository.js";

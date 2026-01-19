@@ -26,7 +26,7 @@ export const initializeControllers = (services: InitializedSerivces) => {
 	controllers.queueController = new QueueController(services.jobQueue);
 	controllers.logController = new LogController(services.logger);
 	controllers.statusPageController = new StatusPageController(services.db);
-	controllers.notificationController = new NotificationController(services.notificationService, services.db, services.monitorsRepository);
+	controllers.notificationController = new NotificationController(services.notificationsService, services.db, services.monitorsRepository);
 	controllers.diagnosticController = new DiagnosticController(services.diagnosticService);
 
 	controllers.incidentController = new IncidentController(services.incidentService);

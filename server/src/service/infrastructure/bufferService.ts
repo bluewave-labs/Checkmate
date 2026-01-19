@@ -6,7 +6,6 @@ const SERVICE_NAME = "BufferService";
 class BufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
-	private db: any;
 	private logger: any;
 	private incidentService: any;
 	private SERVICE_NAME: string;
@@ -15,21 +14,8 @@ class BufferService {
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
 
-	constructor({
-		db,
-		logger,
-		envSettings,
-		incidentService,
-		checkService,
-	}: {
-		db: any;
-		logger: any;
-		envSettings: any;
-		incidentService: any;
-		checkService: any;
-	}) {
+	constructor({ logger, incidentService, checkService }: { logger: any; incidentService: any; checkService: any }) {
 		this.BUFFER_TIMEOUT = config.NODE_ENV === "development" ? 10 : 1000 * 60 * 1; // 1 minute
-		this.db = db;
 		this.logger = logger;
 		this.incidentService = incidentService;
 		this.checksService = checkService;

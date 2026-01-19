@@ -5,9 +5,17 @@ import MongoDB from "../db/MongoDB.js";
 import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
 import BufferService from "../service/infrastructure/bufferService.js";
-import StatusService from "../service/infrastructure/statusService.js";
-import NotificationUtils from "../service/infrastructure/notificationUtils.js";
-import NotificationService from "../service/infrastructure/notificationService.js";
+import {
+	NotificationsService,
+	StatusService,
+	WebhookProvider,
+	SlackProvider,
+	EmailProvider,
+	DiscordProvider,
+	PagerDutyProvider,
+	MatrixProvider,
+	INotificationsService,
+} from "@/service/index.js";
 import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -50,7 +58,7 @@ import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
-import Notification from "../db/models/Notification.js";
+import NotificationModel from "../db/models/Notification.js";
 import RecoveryToken from "../db/models/RecoveryToken.js";
 import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
@@ -75,6 +83,7 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoSettingsRepository,
+	MongoNotificationsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -83,6 +92,7 @@ import {
 	IInvitesRepository,
 	IRecoveryTokensRepository,
 	ISettingsRepository,
+	INotificationsRepository,
 } from "@/repositories/index.js";
 
 export type InitializedSerivces = {
@@ -95,7 +105,6 @@ export type InitializedSerivces = {
 	emailService: any;
 	bufferService: any;
 	statusService: any;
-	notificationService: any;
 	jobQueue: any;
 	userService: any;
 	checkService: any;
@@ -106,6 +115,7 @@ export type InitializedSerivces = {
 	incidentService: any;
 	errorService: any;
 	logger: any;
+	notificationsService: INotificationsService;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -116,6 +126,7 @@ export type InitializedSerivces = {
 	invitesRepository: IInvitesRepository;
 	recoveryTokensRepository: IRecoveryTokensRepository;
 	settingsRepository: ISettingsRepository;
+	notificationsRepository: INotificationsRepository;
 };
 
 export const initializeServices = async ({
@@ -141,7 +152,7 @@ export const initializeServices = async ({
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, AppSettings });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
-	const notificationModule = new NotificationModule({ Notification, Monitor });
+	const notificationModule = new NotificationModule({ Notification: NotificationModel, Monitor });
 	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
 	const settingsModule = new SettingsModule({ AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
@@ -171,7 +182,7 @@ export const initializeServices = async ({
 	const invitesRepository = new MongoInvitesRepository();
 	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
 	const settingsRepository = new MongoSettingsRepository();
-
+	const notificationsRepository = new MongoNotificationsRepository();
 	const networkService = new NetworkService({
 		axios,
 		got,
@@ -206,31 +217,34 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ db, logger, envSettings, incidentService, checkService });
+	const bufferService = new BufferService({ logger, incidentService, checkService });
 
-	const statusService = new StatusService({ db, logger, buffer: bufferService, incidentService, monitorsRepository });
+	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
 
-	const notificationUtils = new NotificationUtils({
-		stringService,
-		emailService,
-		settingsService,
-	});
+	const webhookProvider = new WebhookProvider(logger);
+	const slackProvider = new SlackProvider(logger);
+	const emailProvider = new EmailProvider(emailService, logger);
+	const discordProvider = new DiscordProvider(logger);
+	const pagerDutyProvider = new PagerDutyProvider(logger);
+	const matrixProvider = new MatrixProvider(logger);
 
-	const notificationService = new NotificationService({
-		emailService,
-		db,
-		logger,
-		networkService,
-		stringService,
-		notificationUtils,
-	});
+	const notificationsService = new NotificationsService(
+		notificationsRepository,
+		webhookProvider,
+		emailProvider,
+		slackProvider,
+		discordProvider,
+		pagerDutyProvider,
+		matrixProvider,
+		logger
+	);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,
 		logger,
 		networkService,
 		statusService,
-		notificationService,
+		notificationsService,
 		checkService,
 		buffer: bufferService,
 	});
@@ -296,7 +310,6 @@ export const initializeServices = async ({
 		emailService,
 		bufferService,
 		statusService,
-		notificationService,
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,
@@ -307,6 +320,7 @@ export const initializeServices = async ({
 		incidentService,
 		errorService,
 		logger,
+		notificationsService,
 
 		// Repositories
 		monitorsRepository,
@@ -317,6 +331,7 @@ export const initializeServices = async ({
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		notificationsRepository,
 	};
 
 	Object.values(services).forEach((service) => {

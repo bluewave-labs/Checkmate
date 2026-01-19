@@ -12,31 +12,27 @@ import type {
 } from "@/types/index.js";
 const SERVICE_NAME = "StatusService";
 
-class StatusService {
+export interface IStatusService {
+	updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }): Promise<boolean>;
+	getStatusString(status: boolean | undefined): string;
+	handleIncidentForCheck(check: any, monitor: Monitor, action: any, errorContext?: string): Promise<void>;
+	updateMonitorStatus(
+		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
+		check: Check
+	): Promise<StatusChangeResult>;
+}
+
+export class StatusService implements IStatusService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private db: any;
 	private logger: any;
 	private buffer: any;
-	private incidentService: any;
 	private monitorsRepository: IMonitorsRepository;
 
-	constructor({
-		db,
-		logger,
-		buffer,
-		incidentService,
-		monitorsRepository,
-	}: {
-		db: any;
-		logger: any;
-		buffer: any;
-		incidentService: any;
-		monitorsRepository: IMonitorsRepository;
-	}) {
+	constructor({ db, logger, buffer, monitorsRepository }: { db: any; logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
 		this.db = db;
 		this.logger = logger;
 		this.buffer = buffer;
-		this.incidentService = incidentService;
 		this.monitorsRepository = monitorsRepository;
 	}
 
@@ -122,11 +118,10 @@ class StatusService {
 		return "unknown";
 	};
 
-	handleIncidentForCheck = async (check: any, monitor: Monitor, action: any, errorContext = "incident handling") => {
+	handleIncidentForCheck = async (check: Check, monitor: Monitor, action: any, errorContext = "incident handling") => {
 		try {
-			let savedCheck = check;
-
-			if (!check._id) {
+			let savedCheck;
+			if (!check.id) {
 				try {
 					const checkModel = new CheckModel(check);
 					savedCheck = await checkModel.save();
@@ -144,7 +139,7 @@ class StatusService {
 				}
 			}
 
-			if (savedCheck && savedCheck._id) {
+			if (savedCheck && savedCheck.id) {
 				try {
 					this.buffer.addIncidentToBuffer({ monitor, check: savedCheck, action });
 				} catch (incidentError: any) {
@@ -181,13 +176,10 @@ class StatusService {
 			this.updateRunningStats({ monitor, networkResponse: statusResponse });
 
 			// If the status window size has changed, empty
-			while (monitor.statusWindow.length > monitor.statusWindowSize) {
-				monitor.statusWindow.shift();
-			}
 
-			// Update status sliding window
+			monitor.statusWindow = monitor.statusWindow || [];
 			monitor.statusWindow.push(status);
-			if (monitor.statusWindow.length > monitor.statusWindowSize) {
+			while (monitor.statusWindow.length > monitor.statusWindowSize) {
 				monitor.statusWindow.shift();
 			}
 
@@ -195,9 +187,9 @@ class StatusService {
 				monitor.status = status;
 			}
 
+			const prevStatus = monitor.status;
 			let newStatus = monitor.status;
 			let statusChanged = false;
-			const prevStatus = monitor.status;
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
@@ -330,4 +322,3 @@ class StatusService {
 		}
 	};
 }
-export default StatusService;

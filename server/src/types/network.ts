@@ -13,7 +13,7 @@ import type {
 	MonitorType,
 } from "@/types/index.js";
 
-export interface MonitorStatusResponse<T = unknown> {
+export interface MonitorStatusResponse<T = any> {
 	monitorId: string;
 	teamId: string;
 	type: MonitorType;

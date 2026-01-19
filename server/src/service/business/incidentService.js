@@ -305,7 +305,7 @@ class IncidentService {
 
 			const groupedByMonitor = {};
 			for (const item of createItems) {
-				if (!item.monitor || !item.monitor._id || !item.check || !item.check._id) {
+				if (!item.monitor || !item.monitor.id || !item.check || !item.check.id) {
 					this.logger.warn({
 						service: this.SERVICE_NAME,
 						method: "processIncidentsFromBuffer",
@@ -315,7 +315,7 @@ class IncidentService {
 					continue;
 				}
 
-				const monitorId = item.monitor._id.toString();
+				const monitorId = item.monitor.id.toString();
 				if (!groupedByMonitor[monitorId]) {
 					groupedByMonitor[monitorId] = [];
 				}
@@ -341,20 +341,20 @@ class IncidentService {
 					for (const item of items) {
 						checksToAddToIncidents.push({
 							incidentId,
-							checkId: item.check._id.toString(),
+							checkId: item.check.id.toString(),
 						});
 					}
 				} else {
 					const firstItem = items[0];
 					const incidentData = {
-						monitorId: firstItem.monitor._id,
+						monitorId: firstItem.monitor.id,
 						teamId: firstItem.monitor.teamId,
 						type: firstItem.monitor.type,
 						startTime: new Date(),
 						status: true,
 						message: firstItem.check.message || null,
 						statusCode: firstItem.check.statusCode || null,
-						checks: [firstItem.check._id],
+						checks: [firstItem.check.id],
 					};
 
 					newIncidentsToCreate.push({
@@ -380,7 +380,7 @@ class IncidentService {
 						for (const remainingItem of item.remainingChecks) {
 							checksToAddToIncidents.push({
 								incidentId,
-								checkId: remainingItem.check._id.toString(),
+								checkId: remainingItem.check.id,
 							});
 						}
 					}

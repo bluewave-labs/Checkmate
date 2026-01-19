@@ -1,15 +1,15 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-import { INetworkService } from "@/service/index.js";
+import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private db: any;
 	private logger: any;
 	private networkService: INetworkService;
-	private statusService: any;
-	private notificationService: any;
+	private statusService: IStatusService;
+	private notificationsService: INotificationsService;
 	private checkService: any;
 	private buffer: any;
 
@@ -18,15 +18,15 @@ class SuperSimpleQueueHelper {
 		logger,
 		networkService,
 		statusService,
-		notificationService,
+		notificationsService,
 		checkService,
 		buffer,
 	}: {
 		db: any;
 		logger: any;
 		networkService: INetworkService;
-		statusService: any;
-		notificationService: any;
+		statusService: IStatusService;
+		notificationsService: INotificationsService;
 		checkService: any;
 		buffer: any;
 	}) {
@@ -34,9 +34,9 @@ class SuperSimpleQueueHelper {
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
-		this.notificationService = notificationService;
 		this.checkService = checkService;
 		this.buffer = buffer;
+		this.notificationsService = notificationsService;
 	}
 
 	get serviceName() {
@@ -78,13 +78,9 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				this.notificationService
-					.handleNotifications({
-						...status,
-						monitor: statusChangeResult.monitor,
-						prevStatus: statusChangeResult.prevStatus,
-						statusChanged: statusChangeResult.statusChanged,
-					})
+				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
+				this.notificationsService
+					.handleNotifications(monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
 					.catch((error: any) => {
 						this.logger.error({
 							message: error.message,
