@@ -1,10 +1,15 @@
+const SERVICE_NAME = "DiscordProvider";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import { buildHardwareAlerts, buildDiscordBody, getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
 
 export class DiscordProvider implements INotificationProvider {
-	constructor(private logger: any) {}
+	private logger: any;
+
+	constructor(logger: any) {
+		this.logger = logger;
+	}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { discordPayload } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		return discordPayload;
@@ -23,17 +28,21 @@ export class DiscordProvider implements INotificationProvider {
 		}
 
 		try {
-			this.logger?.debug?.("Sending Discord alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: body,
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
-		} catch (error: any) {
-			this.logger?.error?.("Discord alert failed", { error });
+		} catch (error) {
+			const err = error as Error;
+			this.logger.warn({
+				message: "Discord alert failed",
+				service: SERVICE_NAME,
+				method: "sendAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	};
@@ -42,17 +51,21 @@ export class DiscordProvider implements INotificationProvider {
 			return false;
 		}
 		try {
-			this.logger?.debug?.("Sending Discord test alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { content: getTestMessage() },
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Discord test alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "Discord test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	};

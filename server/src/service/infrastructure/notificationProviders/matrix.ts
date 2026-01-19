@@ -1,3 +1,4 @@
+const SERVICE_NAME = "MatrixProvider";
 import got from "got";
 import type { INotificationProvider } from "@/service/index.js";
 import type { Notification, Monitor, MonitorStatusResponse } from "@/types/index.js";
@@ -9,7 +10,11 @@ import {
 } from "@/service/infrastructure/notificationProviders/utils.js";
 
 export class MatrixProvider implements INotificationProvider {
-	constructor(private logger: any) {}
+	private logger: any;
+
+	constructor(logger: any) {
+		this.logger = logger;
+	}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -43,17 +48,21 @@ export class MatrixProvider implements INotificationProvider {
 			formatted_body: formattedMessage,
 		};
 		try {
-			this.logger?.debug?.("Sending Matrix alert", { room: roomId });
 			await got.post(url, {
 				json: body,
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Matrix alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "Matrix alert failed",
+				service: SERVICE_NAME,
+				method: "sendAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	};
@@ -69,17 +78,21 @@ export class MatrixProvider implements INotificationProvider {
 			body: getTestMessage(),
 		};
 		try {
-			this.logger?.debug?.("Sending Matrix test alert", { room: roomId });
 			await got.post(url, {
 				json: body,
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Matrix test alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "Matrix test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	};

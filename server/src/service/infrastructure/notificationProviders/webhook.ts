@@ -1,3 +1,4 @@
+const SERVICE_NAME = "WebhookProvider";
 import type { Monitor, Alert, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import {
@@ -9,7 +10,11 @@ import {
 import got from "got";
 
 export class WebhookProvider implements INotificationProvider {
-	constructor(private logger: any) {}
+	private logger: any;
+
+	constructor(logger: any) {
+		this.logger = logger;
+	}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -34,17 +39,21 @@ export class WebhookProvider implements INotificationProvider {
 		}
 
 		try {
-			this.logger?.debug?.("Sending webhook alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { text: body },
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Webhook alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "Webhook alert failed",
+				service: SERVICE_NAME,
+				method: "sendAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	};
@@ -54,17 +63,21 @@ export class WebhookProvider implements INotificationProvider {
 			return false;
 		}
 		try {
-			this.logger?.debug?.("Sending webhook test alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { text: getTestMessage() },
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Webhook test alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "Webhook test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	};

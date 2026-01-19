@@ -1,3 +1,4 @@
+const SERVICE_NAME = "SlackProvider";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import {
@@ -6,10 +7,14 @@ import {
 	buildWebhookBody,
 	getTestMessage,
 } from "@/service/infrastructure/notificationProviders/utils.js";
-import got from "got";
+import got, { HTTPError } from "got";
 
 export class SlackProvider implements INotificationProvider {
-	constructor(private logger: any) {}
+	private logger: any;
+
+	constructor(logger: any) {
+		this.logger = logger;
+	}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -34,17 +39,21 @@ export class SlackProvider implements INotificationProvider {
 		}
 
 		try {
-			this.logger?.debug?.("Sending Slack alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { text: body },
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Slack alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "Slack alert failed",
+				service: SERVICE_NAME,
+				method: "sendAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	}
@@ -55,17 +64,21 @@ export class SlackProvider implements INotificationProvider {
 		}
 
 		try {
-			this.logger?.debug?.("Sending Slack test alert", { address: notification.address });
 			await got.post(notification.address, {
 				json: { text: getTestMessage() },
 				headers: {
 					"Content-Type": "application/json",
 				},
-				responseType: "json",
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("Slack test alert failed", { error });
+			const err = error as HTTPError;
+			this.logger.warn({
+				message: "Slack test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	}

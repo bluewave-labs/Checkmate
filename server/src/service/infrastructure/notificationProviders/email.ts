@@ -1,11 +1,15 @@
+const SERVICE_NAME = "EmailProvider";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import { buildHardwareAlerts, buildHardwareEmail, buildEmail, buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
 
 export class EmailProvider implements INotificationProvider {
 	private emailService: any;
-	constructor(emailService: any, private logger: any) {
+	private logger: any;
+
+	constructor(emailService: any, logger: any) {
 		this.emailService = emailService;
+		this.logger = logger;
 	}
 
 	private buildHardwareEmail = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
@@ -27,18 +31,31 @@ export class EmailProvider implements INotificationProvider {
 			return false;
 		}
 
-		this.logger?.debug?.("Sending Email alert", { address: notification.address });
 		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) return false;
+		if (!messageId) {
+			this.logger.warn({
+				message: "Email alert failed",
+				service: SERVICE_NAME,
+				method: "sendAlert",
+			});
+			return false;
+		}
 		return true;
 	}
 
 	async sendTestAlert(notification: Notification): Promise<boolean> {
 		const subject = "Test notification";
 		const html = await buildTestEmail(this.emailService);
-		this.logger?.debug?.("Sending Email test alert", { address: notification.address });
+
 		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) return false;
+		if (!messageId) {
+			this.logger.warn({
+				message: "Email test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+			});
+			return false;
+		}
 		return true;
 	}
 }

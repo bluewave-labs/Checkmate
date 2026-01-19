@@ -1,3 +1,4 @@
+const SERVICE_NAME = "PagerDutyProvider";
 import got from "got";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
@@ -9,7 +10,11 @@ import {
 } from "@/service/infrastructure/notificationProviders/utils.js";
 
 export class PagerDutyProvider implements INotificationProvider {
-	constructor(private logger: any) {}
+	private logger: any;
+
+	constructor(logger: any) {
+		this.logger = logger;
+	}
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -30,7 +35,6 @@ export class PagerDutyProvider implements INotificationProvider {
 		}
 
 		try {
-			this.logger?.debug?.("Sending PagerDuty alert", { routingKey: notification.address });
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
 				json: {
 					routing_key: notification.address,
@@ -42,19 +46,23 @@ export class PagerDutyProvider implements INotificationProvider {
 						timestamp: new Date().toISOString(),
 					},
 				},
-				responseType: "json",
 			});
 
 			return true;
 		} catch (error) {
-			this.logger?.error?.("PagerDuty alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "PagerDuty alert failed",
+				service: SERVICE_NAME,
+				method: "sendAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	}
 
 	async sendTestAlert(notification: Notification): Promise<boolean> {
 		try {
-			this.logger?.debug?.("Sending PagerDuty test alert", { routingKey: notification.address });
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
 				json: {
 					routing_key: notification.address,
@@ -70,7 +78,13 @@ export class PagerDutyProvider implements INotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger?.error?.("PagerDuty test alert failed", { error });
+			const err = error as Error;
+			this.logger.warn({
+				message: "PagerDuty test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				stack: err?.stack,
+			});
 			return false;
 		}
 	}
