@@ -5,7 +5,6 @@ import MongoDB from "../db/MongoDB.js";
 import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
 import BufferService from "../service/infrastructure/bufferService.js";
-import NotificationUtils from "../service/infrastructure/notificationUtils.js";
 import {
 	NotificationsService,
 	StatusService,
@@ -221,12 +220,6 @@ export const initializeServices = async ({
 	const bufferService = new BufferService({ logger, incidentService, checkService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
-
-	const notificationUtils = new NotificationUtils({
-		stringService,
-		emailService,
-		settingsService,
-	});
 
 	const webhookProvider = new WebhookProvider(logger);
 	const slackProvider = new SlackProvider(logger);
