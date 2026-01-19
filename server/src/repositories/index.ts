@@ -24,3 +24,6 @@ export { default as MongoSettingsRepository } from "@/repositories/settings/Mong
 
 export * from "@/repositories/notifications/INotificationsRepository.js";
 export { default as MongoNotificationsRepository } from "@/repositories/notifications/MongoNotificationsRepository.js";
+
+export * from "@/repositories/incidents/IIncidentsRepository.js";
+export { default as MongoIncidentRepository } from "@/repositories/incidents/MongoIncidentRepository.js";

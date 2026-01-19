@@ -24,3 +24,6 @@ export { default as RecoveryTokenModel } from "@/db/models/RecoveryToken.js";
 
 export * from "@/db/models/Notification.js";
 export { default as NotificationModel } from "@/db/models/Notification.js";
+
+export * from "@/db/models/Incident.js";
+export { default as IncidentModel } from "@/db/models/Incident.js";

@@ -1,183 +1,123 @@
 const SERVICE_NAME = "incidentService";
+import type { Monitor } from "@/types/monitor.js";
+import { AppError } from "@/utils/AppError.js";
+import type { IIncidentsRepository } from "@/repositories/index.js";
+import type { Incident } from "@/types/index.js";
 
 class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ db, logger, errorService, stringService }) {
+	private db: any;
+	private logger: any;
+	private errorService: any;
+	private stringService: any;
+	private incidentsRepository: IIncidentsRepository;
+
+	constructor({
+		db,
+		logger,
+		errorService,
+		stringService,
+		incidentsRepository,
+	}: {
+		db: any;
+		logger: any;
+		errorService: any;
+		stringService: any;
+		incidentsRepository: IIncidentsRepository;
+	}) {
 		this.db = db;
 		this.logger = logger;
 		this.errorService = errorService;
 		this.stringService = stringService;
+		this.incidentsRepository = incidentsRepository;
 	}
 
 	get serviceName() {
 		return IncidentService.SERVICE_NAME;
 	}
 
-	createIncident = async (monitor, check) => {
-		try {
-			if (!monitor || !monitor._id) {
-				throw this.errorService.createBadRequestError("Monitor is required");
-			}
-
-			if (!check || !check._id) {
-				throw this.errorService.createBadRequestError("Check is required");
-			}
-
-			const activeIncident = await this.db.incidentModule.getActiveIncidentByMonitor(monitor._id);
-
+	handleIncident = async (monitor: Monitor, code: number): Promise<Incident | null> => {
+		const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
+		// Monitor is down, create an incident
+		if (monitor.status === false) {
 			if (activeIncident) {
-				await this.db.incidentModule.addCheckToIncident(activeIncident._id, check._id);
-
-				this.logger.info({
-					service: this.SERVICE_NAME,
-					method: "createIncident",
-					message: `Check added to existing active incident for monitor ${monitor.name}`,
-					incidentId: activeIncident._id,
-					monitorId: monitor._id,
-				});
-
 				return activeIncident;
+			} else {
+				const incident = {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					startTime: Date.now().toString(),
+					status: true,
+					statusCode: code,
+				};
+				return await this.incidentsRepository.create(incident);
 			}
-
-			const incidentData = {
-				monitorId: monitor._id,
-				teamId: monitor.teamId,
-				type: monitor.type,
-				startTime: new Date(),
-				status: true,
-				message: check.message || null,
-				statusCode: check.statusCode || null,
-				checks: [check._id],
-			};
-
-			const incident = await this.db.incidentModule.createIncident(incidentData);
-
-			this.logger.info({
-				service: this.SERVICE_NAME,
-				method: "createIncident",
-				message: `New incident created for monitor ${monitor.name}`,
-				incidentId: incident._id,
-				monitorId: monitor._id,
-			});
-
-			return incident;
-		} catch (error) {
-			this.logger.error({
-				service: this.SERVICE_NAME,
-				method: "createIncident",
-				message: error.message,
-				monitorId: monitor?._id,
-				error: error.stack,
-			});
-			throw error;
 		}
+
+		// Monitor is up, resolve active incidents
+		if (!activeIncident) {
+			return null;
+		}
+		activeIncident.status = false;
+		activeIncident.endTime = Date.now().toString();
+		activeIncident.resolutionType = "automatic";
+		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
 
-	resolveIncident = async (monitor, check) => {
-		try {
-			if (!monitor || !monitor._id) {
-				throw this.errorService.createBadRequestError("Monitor is required");
-			}
-
-			const activeIncident = await this.db.incidentModule.getActiveIncidentByMonitor(monitor._id);
-
-			if (!activeIncident) {
-				this.logger.info({
-					service: this.SERVICE_NAME,
-					method: "resolveIncident",
-					message: `No active incident found for monitor ${monitor.name}`,
-					monitorId: monitor._id,
-				});
-				return null;
-			}
-
-			await this.db.incidentModule.addCheckToIncident(activeIncident._id, check._id);
-
-			const resolvedIncident = await this.db.incidentModule.resolveIncident(activeIncident._id, {
-				resolutionType: "automatic",
-				resolvedBy: null,
-				endTime: new Date(),
-			});
-
-			this.logger.info({
-				service: this.SERVICE_NAME,
-				method: "resolveIncident",
-				message: `Incident automatically resolved for monitor ${monitor.name}`,
-				incidentId: resolvedIncident._id,
-				monitorId: monitor._id,
-			});
-
-			return resolvedIncident;
-		} catch (error) {
-			this.logger.error({
-				service: this.SERVICE_NAME,
-				method: "resolveIncident",
-				message: error.message,
-				monitorId: monitor?._id,
-				error: error.stack,
-			});
-			throw error;
-		}
-	};
-
-	resolveIncidentManually = async ({ incidentId, userId, teamId, comment }) => {
+	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string) => {
 		try {
 			if (!incidentId) {
-				throw this.errorService.createBadRequestError("No incident ID in request");
+				throw new AppError({ message: "No incident ID in request", service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			if (!userId) {
-				throw this.errorService.createBadRequestError("No user ID in request");
+				throw new AppError({ message: "No user ID in request", service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			if (!teamId) {
-				throw this.errorService.createBadRequestError("No team ID in request");
+				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
-			const incident = await this.db.incidentModule.getIncidentById(incidentId);
+			const incident = await this.incidentsRepository.findActiveByIncidentId(incidentId, teamId);
 
 			if (!incident) {
-				throw this.errorService.createNotFoundError("Incident not found");
-			}
-
-			if (!incident.teamId.equals(teamId)) {
-				throw this.errorService.createAuthorizationError();
+				throw new AppError({ message: "Incident not found", service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			if (incident.status === false) {
-				throw this.errorService.createBadRequestError("Incident is already resolved");
+				throw new AppError({ message: "Incident is already resolved", service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
-			const resolvedIncident = await this.db.incidentModule.resolveIncident(incidentId, {
-				resolutionType: "manual",
-				resolvedBy: userId,
-				comment: comment || null,
-				endTime: new Date(),
-			});
+			incident.resolutionType = "manual";
+			incident.status = false;
+			incident.resolvedBy = userId;
+			incident.comment = comment || null;
+			incident.endTime = Date.now().toString();
 
-			this.logger.info({
-				service: this.SERVICE_NAME,
+			const resolvedIncident = await this.incidentsRepository.updateById(incident.id, teamId, incident);
+
+			this.logger.debug({
+				service: SERVICE_NAME,
 				method: "resolveIncidentManually",
 				message: `Incident manually resolved by user`,
-				incidentId: resolvedIncident._id,
-				userId,
+				details: resolvedIncident.id,
 			});
 
 			return resolvedIncident;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
-				method: "resolveIncidentManually",
+				service: SERVICE_NAME,
+				method: "resolveIncident",
 				message: error.message,
-				incidentId,
-				error: error.stack,
+				details: incidentId,
+				stack: error.stack,
 			});
 			throw error;
 		}
 	};
 
-	getIncidentsByTeam = async ({ teamId, query }) => {
+	getIncidentsByTeam = async ({ teamId, query }: { teamId: string; query?: any }) => {
 		try {
 			if (!teamId) {
 				throw this.errorService.createBadRequestError("No team ID in request");
@@ -197,19 +137,19 @@ class IncidentService {
 			});
 
 			return result;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "getIncidentsByTeam",
 				message: error.message,
-				teamId,
-				error: error.stack,
+				details: teamId,
+				stack: error.stack,
 			});
 			throw error;
 		}
 	};
 
-	getIncidentSummary = async ({ teamId, query }) => {
+	getIncidentSummary = async ({ teamId, query }: { teamId: string; query?: any }) => {
 		try {
 			if (!teamId) {
 				throw this.errorService.createBadRequestError("No team ID in request");
@@ -223,19 +163,19 @@ class IncidentService {
 			});
 
 			return summary;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "getIncidentSummary",
 				message: error.message,
-				teamId,
-				error: error.stack,
+				details: teamId,
+				stack: error.stack,
 			});
 			throw error;
 		}
 	};
 
-	getIncidentById = async ({ incidentId, teamId }) => {
+	getIncidentById = async ({ incidentId, teamId }: { incidentId: string; teamId: string }) => {
 		try {
 			if (!incidentId) {
 				throw this.errorService.createBadRequestError("No incident ID in request");
@@ -256,19 +196,19 @@ class IncidentService {
 			}
 
 			return incident;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "getIncidentById",
 				message: error.message,
-				incidentId,
-				error: error.stack,
+				details: incidentId,
+				stack: error.stack,
 			});
 			throw error;
 		}
 	};
 
-	processIncidentsFromBuffer = async (incidentBufferItems) => {
+	processIncidentsFromBuffer = async (incidentBufferItems: any[]) => {
 		try {
 			if (!incidentBufferItems || incidentBufferItems.length === 0) {
 				return;
@@ -285,16 +225,16 @@ class IncidentService {
 				}
 			}
 
-			for (const item of resolveItems) {
+			for (const item of resolveItems as any[]) {
 				try {
-					await this.resolveIncident(item.monitor, item.check);
-				} catch (error) {
+					await this.resolveIncident(item.monitor);
+				} catch (error: any) {
 					this.logger.error({
-						service: this.SERVICE_NAME,
+						service: SERVICE_NAME,
 						method: "processIncidentsFromBuffer",
 						message: `Failed to resolve incident from buffer: ${error.message}`,
 						monitorId: item.monitor?._id,
-						error: error.stack,
+						stack: error.stack,
 					});
 				}
 			}
@@ -303,11 +243,11 @@ class IncidentService {
 				return;
 			}
 
-			const groupedByMonitor = {};
+			const groupedByMonitor: Record<string, any[]> = {};
 			for (const item of createItems) {
 				if (!item.monitor || !item.monitor.id || !item.check || !item.check.id) {
 					this.logger.warn({
-						service: this.SERVICE_NAME,
+						service: SERVICE_NAME,
 						method: "processIncidentsFromBuffer",
 						message: "Skipping item with missing monitor or check data",
 						item,
@@ -329,7 +269,7 @@ class IncidentService {
 
 			const activeIncidents = await this.db.incidentModule.getActiveIncidentsByMonitors(monitorIds);
 
-			const incidentsCreatedInFlush = {};
+			const incidentsCreatedInFlush: Record<string, any> = {};
 			const checksToAddToIncidents = [];
 			const newIncidentsToCreate = [];
 
@@ -392,19 +332,19 @@ class IncidentService {
 			}
 
 			this.logger.info({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "processIncidentsFromBuffer",
 				message: `Processed ${incidentBufferItems.length} incident buffer items`,
 				created: newIncidentsToCreate.length,
 				checksAdded: checksToAddToIncidents.length,
 				resolved: resolveItems.length,
 			});
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "processIncidentsFromBuffer",
 				message: error.message,
-				error: error.stack,
+				stack: error.stack,
 			});
 			throw error;
 		}

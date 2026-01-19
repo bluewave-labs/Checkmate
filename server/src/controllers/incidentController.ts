@@ -67,12 +67,12 @@ class IncidentController {
 
 	resolveIncidentManually = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const resolvedIncident = await this.incidentService.resolveIncidentManually({
-				incidentId: req?.params?.incidentId,
-				userId: req?.user?.id,
-				teamId: req?.user?.teamId,
-				comment: req?.body?.comment,
-			});
+			const resolvedIncident = await this.incidentService.resolveIncident(
+				req?.params?.incidentId,
+				req?.user?.id,
+				req?.user?.teamId,
+				req?.body?.comment
+			);
 
 			return res.status(200).json({
 				success: true,
