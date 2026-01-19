@@ -1,6 +1,6 @@
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import { buildHardwareAlerts, buildHardwareEmail, buildEmail } from "@/service/infrastructure/notificationProviders/utils.js";
+import { buildHardwareAlerts, buildHardwareEmail, buildEmail, buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
 
 export class EmailProvider implements INotificationProvider {
 	private emailService: any;
@@ -33,6 +33,10 @@ export class EmailProvider implements INotificationProvider {
 	}
 
 	async sendTestAlert(notification: Notification): Promise<boolean> {
-		return false;
+		const subject = "Test notification";
+		const html = await buildTestEmail(this.emailService);
+		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
+		if (!messageId) return false;
+		return true;
 	}
 }

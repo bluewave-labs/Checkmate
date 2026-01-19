@@ -9,11 +9,9 @@ class SuperSimpleQueueHelper {
 	private logger: any;
 	private networkService: INetworkService;
 	private statusService: IStatusService;
-	private notificationService: any;
 	private notificationsService: INotificationsService;
 	private checkService: any;
 	private buffer: any;
-	private incidentService: any;
 
 	constructor({
 		db,
@@ -29,7 +27,6 @@ class SuperSimpleQueueHelper {
 		logger: any;
 		networkService: INetworkService;
 		statusService: IStatusService;
-		notificationService: any;
 		notificationsService: INotificationsService;
 		checkService: any;
 		buffer: any;
@@ -38,7 +35,6 @@ class SuperSimpleQueueHelper {
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
-		this.notificationService = notificationService;
 		this.checkService = checkService;
 		this.buffer = buffer;
 		this.notificationsService = notificationsService;
@@ -84,24 +80,17 @@ class SuperSimpleQueueHelper {
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
 				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
-				this.notificationsService.handleNotifications(monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged);
-
-				// this.notificationService
-				// 	.handleNotifications({
-				// 		...status,
-				// 		monitor: statusChangeResult.monitor,
-				// 		prevStatus: statusChangeResult.prevStatus,
-				// 		statusChanged: statusChangeResult.statusChanged,
-				// 	})
-				// 	.catch((error: any) => {
-				// 		this.logger.error({
-				// 			message: error.message,
-				// 			service: SERVICE_NAME,
-				// 			method: "getMonitorJob",
-				// 			details: `Error sending notifications for job ${monitor.id}: ${error.message}`,
-				// 			stack: error.stack,
-				// 		});
-				// 	});
+				this.notificationsService
+					.handleNotifications(monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
+					.catch((error: any) => {
+						this.logger.error({
+							message: error.message,
+							service: SERVICE_NAME,
+							method: "getMonitorJob",
+							details: `Error sending notifications for job ${monitor.id}: ${error.message}`,
+							stack: error.stack,
+						});
+					});
 			} catch (error: any) {
 				this.logger.warn({
 					message: error.message,

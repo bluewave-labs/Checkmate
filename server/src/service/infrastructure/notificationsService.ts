@@ -1,7 +1,7 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
 import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
 import { INotificationsRepository } from "@/repositories/index.js";
-import { DiscordProvider, EmailProvider, SlackProvider, WebhookProvider } from "@/service/index.js";
+import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 export interface INotificationsService {
 	handleNotifications: (
 		monitor: Monitor,
@@ -9,29 +9,42 @@ export interface INotificationsService {
 		prevStatus: boolean | undefined,
 		statusChanged: boolean
 	) => Promise<boolean>;
+	sendTestNotification: (notification: Notification) => Promise<boolean>;
+	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
 
+const SERVICE_NAME = "NotificationsService";
+
 export class NotificationsService implements INotificationsService {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private notificationsRepository: INotificationsRepository;
-	private webhookProvider: WebhookProvider;
-	private emailProvider: EmailProvider;
-	private slackProvider: SlackProvider;
-	private discordProvider: DiscordProvider;
+	private webhookProvider: INotificationProvider;
+	private emailProvider: INotificationProvider;
+	private slackProvider: INotificationProvider;
+	private discordProvider: INotificationProvider;
+	private pagerDutyProvider: INotificationProvider;
+	private matrixProvider: INotificationProvider;
+	private logger: any;
 
 	constructor(
 		notificationsRepository: INotificationsRepository,
-		providers: {
-			webhookProvider: WebhookProvider;
-			emailProvider: EmailProvider;
-			slackProvider: SlackProvider;
-			discordProvider: DiscordProvider;
-		}
+		webhookProvider: INotificationProvider,
+		emailProvider: INotificationProvider,
+		slackProvider: INotificationProvider,
+		discordProvider: INotificationProvider,
+		pagerDutyProvider: INotificationProvider,
+		matrixProvider: INotificationProvider,
+		logger: any
 	) {
 		this.notificationsRepository = notificationsRepository;
-		this.webhookProvider = providers.webhookProvider;
-		this.emailProvider = providers.emailProvider;
-		this.slackProvider = providers.slackProvider;
-		this.discordProvider = providers.discordProvider;
+		this.webhookProvider = webhookProvider;
+		this.emailProvider = emailProvider;
+		this.slackProvider = slackProvider;
+		this.discordProvider = discordProvider;
+		this.pagerDutyProvider = pagerDutyProvider;
+		this.matrixProvider = matrixProvider;
+		this.logger = logger;
 	}
 
 	private send = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> => {
@@ -42,6 +55,10 @@ export class NotificationsService implements INotificationsService {
 				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse);
 			case "discord":
 				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse);
+			case "matrix":
+				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse);
 			case "webhook":
 				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse);
 			default:
@@ -57,7 +74,11 @@ export class NotificationsService implements INotificationsService {
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;
 		if (failed > 0) {
-			// logger.warn(`Notification send completed with ${succeeded} success, ${failed} failure(s)`);
+			this.logger.warn({
+				message: `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
+				service: SERVICE_NAME,
+				method: "getMonitorJob",
+			});
 		}
 		// Return true if all notificaitons succeeded
 		return succeeded === notifications.length;
@@ -88,15 +109,42 @@ export class NotificationsService implements INotificationsService {
 
 			const shouldSend = shouldSendHardwareAlert(monitor, monitorStatusResponse);
 			if (shouldSend === false) return false;
-			console.log(JSON.stringify(monitor, null, 2));
-			// const { subject, html } = await this.notificationUtils.buildHardwareEmail(networkResponse, alerts);
-			// const content = await this.notificationUtils.buildHardwareNotificationMessage(alerts, monitor);
-			// const webhookBody = await this.notificationUtils.buildHardwareWebhookBody(alerts, monitor);
-			// const success = await this.notifyAll({ notificationIDs, subject, html, content, discordContent, webhookBody });
+
 			return await this.sendNotifications(monitor, monitorStatusResponse);
 		}
 
 		// We should send a notification for non-hardware monitor status change
 		return await this.sendNotifications(monitor, monitorStatusResponse);
+	};
+
+	sendTestNotification = async (notification: Notification) => {
+		switch (notification.type) {
+			case "email":
+				return await this.emailProvider.sendTestAlert(notification);
+			case "slack":
+				return await this.slackProvider.sendTestAlert(notification);
+			case "discord":
+				return await this.discordProvider.sendTestAlert(notification);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendTestAlert(notification);
+			case "matrix":
+				return await this.matrixProvider.sendTestAlert(notification);
+			case "webhook":
+				return await this.webhookProvider.sendTestAlert(notification);
+			default:
+				return false;
+		}
+	};
+
+	testAllNotifications = async (notificationIds: string[]) => {
+		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
+		const tasks = notifications.map((notification) => this.sendTestNotification(notification));
+		const outcomes = await Promise.all(tasks);
+		const succeeded = outcomes.filter(Boolean).length;
+		const failed = outcomes.length - succeeded;
+		if (failed > 0) {
+			return false;
+		}
+		return true;
 	};
 }

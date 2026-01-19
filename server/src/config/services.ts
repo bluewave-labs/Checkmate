@@ -6,8 +6,17 @@ import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
 import BufferService from "../service/infrastructure/bufferService.js";
 import NotificationUtils from "../service/infrastructure/notificationUtils.js";
-import NotificationService from "../service/infrastructure/notificationService.js";
-import { NotificationsService, StatusService, WebhookProvider, SlackProvider, EmailProvider, DiscordProvider } from "@/service/index.js";
+import {
+	NotificationsService,
+	StatusService,
+	WebhookProvider,
+	SlackProvider,
+	EmailProvider,
+	DiscordProvider,
+	PagerDutyProvider,
+	MatrixProvider,
+	INotificationsService,
+} from "@/service/index.js";
 import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -97,7 +106,6 @@ export type InitializedSerivces = {
 	emailService: any;
 	bufferService: any;
 	statusService: any;
-	notificationService: any;
 	jobQueue: any;
 	userService: any;
 	checkService: any;
@@ -108,6 +116,7 @@ export type InitializedSerivces = {
 	incidentService: any;
 	errorService: any;
 	logger: any;
+	notificationsService: INotificationsService;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -219,33 +228,29 @@ export const initializeServices = async ({
 		settingsService,
 	});
 
-	const notificationService = new NotificationService({
-		emailService,
-		db,
-		logger,
-		networkService,
-		stringService,
-		notificationUtils,
-	});
-
 	const webhookProvider = new WebhookProvider();
 	const slackProvider = new SlackProvider();
 	const emailProvider = new EmailProvider(emailService);
 	const discordProvider = new DiscordProvider();
+	const pagerDutyProvider = new PagerDutyProvider();
+	const matrixProvider = new MatrixProvider();
 
-	const notificationsService = new NotificationsService(notificationsRepository, {
+	const notificationsService = new NotificationsService(
+		notificationsRepository,
 		webhookProvider,
-		slackProvider,
 		emailProvider,
+		slackProvider,
 		discordProvider,
-	});
+		pagerDutyProvider,
+		matrixProvider,
+		logger
+	);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		db,
 		logger,
 		networkService,
 		statusService,
-		notificationService,
 		notificationsService,
 		checkService,
 		buffer: bufferService,
@@ -312,7 +317,6 @@ export const initializeServices = async ({
 		emailService,
 		bufferService,
 		statusService,
-		notificationService,
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,
@@ -323,6 +327,7 @@ export const initializeServices = async ({
 		incidentService,
 		errorService,
 		logger,
+		notificationsService,
 
 		// Repositories
 		monitorsRepository,
@@ -334,7 +339,6 @@ export const initializeServices = async ({
 		recoveryTokensRepository,
 		settingsRepository,
 		notificationsRepository,
-		notificationsService,
 	};
 
 	Object.values(services).forEach((service) => {

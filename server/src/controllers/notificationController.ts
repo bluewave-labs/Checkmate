@@ -1,18 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 
+import { Notification } from "@/types/index.js";
 import { createNotificationBodyValidation } from "@/validation/joi.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
+import { INotificationsService } from "@/service/index.js";
 
 const SERVICE_NAME = "NotificationController";
 
 class NotificationController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private db: any;
-	private notificationService: any;
+	private notificationsService: INotificationsService;
 	private monitorsRepository: IMonitorsRepository;
-	constructor(notificationService: any, db: any, monitorsRepository: IMonitorsRepository) {
-		this.notificationService = notificationService;
+	constructor(notificationsService: INotificationsService, db: any, monitorsRepository: IMonitorsRepository) {
+		this.notificationsService = notificationsService;
 		this.db = db;
 		this.monitorsRepository = monitorsRepository;
 	}
@@ -23,9 +25,8 @@ class NotificationController {
 
 	testNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const notification = req.body;
-
-			const success = await this.notificationService.sendTestNotification(notification);
+			const notification: Notification = req.body;
+			const success = await this.notificationsService.sendTestNotification(notification);
 
 			if (!success) {
 				throw new AppError({ message: "Sending notification failed", status: 500 });
@@ -177,7 +178,7 @@ class NotificationController {
 				throw new AppError({ message: "No notifications", status: 400 });
 			}
 
-			const result = await this.notificationService.testAllNotifications(notifications);
+			const result = await this.notificationsService.testAllNotifications(notifications);
 
 			if (!result) {
 				throw new AppError({ message: "Failed to send all notifications", status: 500 });

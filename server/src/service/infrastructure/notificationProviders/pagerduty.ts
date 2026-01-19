@@ -1,14 +1,9 @@
+import got from "got";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import {
-	buildHardwareAlerts,
-	buildHardwareWebhookBody,
-	buildWebhookBody,
-	getTestMessage,
-} from "@/service/infrastructure/notificationProviders/utils.js";
-import got from "got";
+import { buildHardwareAlerts, buildHardwareWebhookBody, buildWebhookBody } from "@/service/infrastructure/notificationProviders/utils.js";
 
-export class SlackProvider implements INotificationProvider {
+export class PagerDutyProvider implements INotificationProvider {
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
 		const body = buildHardwareWebhookBody(alertsToSend, monitor);
@@ -28,18 +23,21 @@ export class SlackProvider implements INotificationProvider {
 			body = this.getContent(monitor, monitorStatusResponse);
 		}
 
-		if (!notification.address) {
-			return false;
-		}
-
 		try {
-			await got.post(notification.address, {
-				json: { text: body },
-				headers: {
-					"Content-Type": "application/json",
+			await got.post("https://events.pagerduty.com/v2/enqueue", {
+				json: {
+					routing_key: notification.address,
+					event_action: "trigger",
+					payload: {
+						summary: body,
+						severity: "critical",
+						source: monitor.url,
+						timestamp: new Date().toISOString(),
+					},
 				},
 				responseType: "json",
 			});
+
 			return true;
 		} catch (error) {
 			return false;
@@ -47,21 +45,6 @@ export class SlackProvider implements INotificationProvider {
 	}
 
 	async sendTestAlert(notification: Notification): Promise<boolean> {
-		if (!notification.address) {
-			return false;
-		}
-
-		try {
-			await got.post(notification.address, {
-				json: { text: getTestMessage() },
-				headers: {
-					"Content-Type": "application/json",
-				},
-				responseType: "json",
-			});
-			return true;
-		} catch (error) {
-			return false;
-		}
+		return false;
 	}
 }
