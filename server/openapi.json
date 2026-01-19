@@ -162,51 +162,6 @@
 				}
 			}
 		},
-		"/auth/refresh": {
-			"post": {
-				"tags": ["auth"],
-				"summary": "Refresh access token",
-				"description": "Generate new access token using refresh token",
-				"parameters": [
-					{
-						"name": "x-refresh-token",
-						"in": "header",
-						"description": "Refresh token",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "authorization",
-						"in": "header",
-						"description": "Bearer token (old access token)",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Token refreshed successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/AuthResponse"
-								}
-							}
-						}
-					},
-					"401": {
-						"$ref": "#/components/responses/Unauthorized"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
 		"/auth/user/{userId}": {
 			"put": {
 				"tags": ["auth"],
@@ -1362,6 +1317,39 @@
 			}
 		},
 		"/notifications": {
+			"post": {
+				"tags": ["notifications"],
+				"summary": "Create notification",
+				"description": "Create a new notification integration",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateNotificationRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Notification created successfully"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/notifications/team": {
 			"get": {
 				"tags": ["notifications"],
 				"summary": "Get team notifications",
@@ -1391,37 +1379,6 @@
 								}
 							}
 						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
-			"post": {
-				"tags": ["notifications"],
-				"summary": "Create notification",
-				"description": "Create a new notification integration",
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateNotificationRequest"
-							}
-						}
-					}
-				},
-				"responses": {
-					"201": {
-						"description": "Notification created successfully"
-					},
-					"422": {
-						"$ref": "#/components/responses/ValidationError"
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
@@ -1794,6 +1751,64 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"422": {
+						"$ref": "#/components/responses/ValidationError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/users/{userId}/password": {
+			"put": {
+				"tags": ["auth"],
+				"summary": "Update user password by ID",
+				"description": "Update a specific user's password by ID (superadmin only)",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["password"],
+								"properties": {
+									"password": {
+										"type": "string",
+										"format": "password",
+										"minLength": 8,
+										"description": "New password for the user"
+									}
+								}
 							}
 						}
 					}
@@ -4096,9 +4111,8 @@
 						"description": "When the incident started"
 					},
 					"endTime": {
-						"type": "string",
+						"type": ["string", "null"],
 						"format": "date-time",
-						"nullable": true,
 						"description": "When the incident was resolved (null if ongoing)"
 					},
 					"status": {
@@ -4106,29 +4120,24 @@
 						"description": "Incident status (true = ongoing, false = resolved)"
 					},
 					"message": {
-						"type": "string",
-						"nullable": true,
+						"type": ["string", "null"],
 						"description": "Error message or description"
 					},
 					"statusCode": {
-						"type": "integer",
-						"nullable": true,
+						"type": ["integer", "null"],
 						"description": "HTTP status code if applicable"
 					},
 					"resolutionType": {
-						"type": "string",
-						"enum": ["automatic", "manual"],
-						"nullable": true,
+						"type": ["string", "null"],
+						"enum": ["automatic", "manual", null],
 						"description": "How the incident was resolved"
 					},
 					"resolvedBy": {
-						"type": "string",
-						"nullable": true,
+						"type": ["string", "null"],
 						"description": "User ID who resolved the incident (for manual resolution)"
 					},
 					"comment": {
-						"type": "string",
-						"nullable": true,
+						"type": ["string", "null"],
 						"description": "Resolution comment"
 					},
 					"checks": {
@@ -4220,15 +4229,13 @@
 						"description": "When the job was created"
 					},
 					"processedOn": {
-						"type": "string",
+						"type": ["string", "null"],
 						"format": "date-time",
-						"nullable": true,
 						"description": "When the job started processing"
 					},
 					"finishedOn": {
-						"type": "string",
+						"type": ["string", "null"],
 						"format": "date-time",
-						"nullable": true,
 						"description": "When the job finished"
 					}
 				}
@@ -4358,9 +4365,8 @@
 						"description": "Whether the check has been acknowledged"
 					},
 					"ackAt": {
-						"type": "string",
+						"type": ["string", "null"],
 						"format": "date-time",
-						"nullable": true,
 						"description": "When the check was acknowledged"
 					},
 					"expiry": {
