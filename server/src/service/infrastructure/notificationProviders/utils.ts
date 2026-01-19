@@ -1,5 +1,23 @@
 import { Monitor, HardwareStatusPayload, MonitorStatusResponse } from "@/types/index.js";
 
+const getTime = (): { localTimeZone: string; localTime: string; utcTime: string } => {
+	const now = new Date();
+	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const localTime = new Intl.DateTimeFormat(undefined, {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hour12: false,
+		timeZone: localTimeZone,
+		timeZoneName: "short",
+	}).format(now);
+	const utcTime = now.toUTCString();
+	return { localTimeZone, localTime, utcTime };
+};
+
 export const buildHardwareAlerts = (
 	clientHost: string,
 	monitor: Monitor,
@@ -134,20 +152,7 @@ export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: Monit
 
 export const buildWebhookBody = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
 	const { status, code } = monitorStatusResponse;
-	const now = new Date();
-	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	const localTime = new Intl.DateTimeFormat(undefined, {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hour12: false,
-		timeZone: localTimeZone,
-		timeZoneName: "short",
-	}).format(now);
-	const utcTime = now.toUTCString();
+	const { localTimeZone, localTime, utcTime } = getTime();
 	return `Monitor: ${monitor.name}\nLocal Time (${localTimeZone}): ${localTime}\nUTC Time: ${utcTime}\nStatus: ${status ? "UP" : "DOWN"}\nStatus Code: ${code}\n\u200B\n`;
 };
 
@@ -164,4 +169,26 @@ export const buildEmail = async (emailService: any, monitor: Monitor): Promise<s
 	const html = await emailService.buildEmail(template, context);
 	console.log({ html: typeof html });
 	return html;
+};
+
+export const buildDiscordBody = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
+	const { localTime, utcTime } = getTime();
+	let body = {
+		embeds: [
+			{
+				title: `Monitor ${monitor.name}`,
+				color: monitor.status ? 5763719 : 15548997,
+
+				fields: [
+					{ name: "Monitor", value: monitor.name, inline: true },
+					{ name: "Status", value: monitor.status ? "Up" : "Down", inline: true },
+					{ name: "Status Code", value: String(monitorStatusResponse.code), inline: true },
+					{ name: "Time", value: `${localTime} (Local) / ${utcTime} (UTC)`, inline: true },
+					{ name: "URL", value: monitor.url, inline: false },
+				],
+				footer: { text: "Checkmate" },
+			},
+		],
+	};
+	return body;
 };
