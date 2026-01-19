@@ -16,7 +16,6 @@ export class WebhookProvider implements INotificationProvider {
 	};
 
 	sendAlert = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
-		console.log("WebhookProvider.sendAlert called");
 		let body;
 		if (monitor.type === "hardware") {
 			body = this.getHardwareContent(monitor, monitorStatusResponse);

@@ -118,10 +118,9 @@ export const buildHardwareNotificationMessage = (clientHost: string, alerts: any
 	return alertText.map((alert) => alert).join("\n");
 };
 
-export const buildHardwareWebhookBody = (alerts: string[], monitor: Monitor): { text: string; name: string; url: string } => {
+export const buildHardwareWebhookBody = (alerts: string[], monitor: Monitor): string => {
 	const content = alerts.map((alert) => alert).join("\n");
-	const body = { text: content, name: monitor.name, url: monitor.url };
-	return body;
+	return content;
 };
 
 export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: MonitorStatusResponse): boolean => {
@@ -167,7 +166,6 @@ export const buildEmail = async (emailService: any, monitor: Monitor): Promise<s
 	const template = monitor.status === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
 	const context = { monitor: monitor.name, url: monitor.url };
 	const html = await emailService.buildEmail(template, context);
-	console.log({ html: typeof html });
 	return html;
 };
 

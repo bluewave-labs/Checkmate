@@ -1,7 +1,7 @@
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import { buildHardwareAlerts, buildDiscordBody } from "@/service/infrastructure/notificationProviders/utils.js";
-import got, { HTTPError } from "got";
+import got from "got";
 
 export class DiscordProvider implements INotificationProvider {
 	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
