@@ -21,13 +21,9 @@
 			"description": "Local Development Server",
 			"variables": {
 				"PORT": {
-					"description": "API Port",
-					"enum": ["52345"],
 					"default": "52345"
 				},
 				"API_PATH": {
-					"description": "API Base Path",
-					"enum": ["api/v1"],
 					"default": "api/v1"
 				}
 			}
@@ -37,8 +33,6 @@
 			"description": "Checkmate Demo Server",
 			"variables": {
 				"API_PATH": {
-					"description": "API Base Path",
-					"enum": ["api/v1"],
 					"default": "api/v1"
 				}
 			}
@@ -88,6 +82,10 @@
 		{
 			"name": "diagnostic",
 			"description": "System health and performance diagnostics"
+		},
+		{
+			"name": "incidents",
+			"description": "Incident management and resolution"
 		}
 	],
 	"paths": {
@@ -731,28 +729,54 @@
 				]
 			}
 		},
-		"/monitors/team/summary": {
+		"/monitors/team/groups": {
 			"get": {
 				"tags": ["monitors"],
-				"summary": "Get monitors summary",
-				"description": "Get team monitors with summary statistics",
-				"parameters": [
-					{
-						"name": "type",
-						"in": "query",
-						"description": "Filter by monitor type",
-						"schema": {
-							"type": "array",
-							"items": {
-								"type": "string",
-								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"]
-							}
-						}
-					}
-				],
+				"summary": "Get monitor groups by team",
+				"description": "Get all monitor groups for the authenticated user's team",
 				"responses": {
 					"200": {
-						"description": "Monitor summary retrieved successfully"
+						"description": "Monitor groups retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Monitor groups retrieved successfully"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"_id": {
+														"type": "string"
+													},
+													"name": {
+														"type": "string"
+													},
+													"monitors": {
+														"type": "array",
+														"items": {
+															"type": "string"
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
@@ -992,24 +1016,78 @@
 				]
 			}
 		},
-		"/monitors/stats/{monitorId}": {
+		"/monitors/pagespeed/details/{monitorId}": {
 			"get": {
 				"tags": ["monitors"],
-				"summary": "Get monitor statistics",
-				"description": "Get comprehensive statistics for a monitor",
+				"summary": "Get PageSpeed monitor details",
+				"description": "Get detailed PageSpeed monitoring data including performance metrics and Core Web Vitals",
 				"parameters": [
 					{
 						"name": "monitorId",
 						"in": "path",
 						"required": true,
+						"description": "The PageSpeed monitor ID",
 						"schema": {
 							"type": "string"
+						}
+					},
+					{
+						"name": "sortOrder",
+						"in": "query",
+						"description": "Sort order for results",
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"],
+							"default": "desc"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Number of results to return",
+						"schema": {
+							"type": "integer",
+							"default": 50
 						}
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "Monitor statistics retrieved successfully"
+						"description": "PageSpeed details retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "PageSpeed details retrieved successfully"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"monitor": {
+													"$ref": "#/components/schemas/Monitor"
+												},
+												"checks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Check"
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"404": {
 						"$ref": "#/components/responses/NotFound"
@@ -1078,21 +1156,43 @@
 				]
 			}
 		},
-		"/monitors/export": {
+		"/monitors/export/json": {
 			"get": {
 				"tags": ["monitors"],
-				"summary": "Export monitors to CSV",
-				"description": "Export all monitors to CSV format",
+				"summary": "Export monitors to JSON",
+				"description": "Export all monitors to JSON format (admin/superadmin only)",
 				"responses": {
 					"200": {
-						"description": "CSV file generated successfully",
+						"description": "JSON file generated successfully",
 						"content": {
-							"text/csv": {
+							"application/json": {
 								"schema": {
-									"type": "string"
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Monitors exported successfully"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Monitor"
+											}
+										}
+									}
 								}
 							}
 						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
@@ -2030,9 +2130,182 @@
 						}
 					}
 				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"ack": {
+										"type": "boolean",
+										"description": "Acknowledgement status"
+									}
+								}
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
 						"$ref": "#/components/responses/Success"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/{action}": {
+			"put": {
+				"tags": ["checks"],
+				"summary": "Acknowledge all checks for all monitors",
+				"description": "Acknowledge all checks across all monitors for the team",
+				"parameters": [
+					{
+						"name": "action",
+						"in": "path",
+						"required": true,
+						"description": "Action to perform (e.g., 'ack')",
+						"schema": {
+							"type": "string",
+							"enum": ["ack"]
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["ack"],
+								"properties": {
+									"ack": {
+										"type": "boolean",
+										"description": "Acknowledgement status to set"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Checks acknowledged successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "All checks acknowledged successfully"
+										},
+										"data": {
+											"type": "object",
+											"description": "Updated checks information"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/checks/{action}/{monitorId}": {
+			"put": {
+				"tags": ["checks"],
+				"summary": "Acknowledge all checks for a specific monitor",
+				"description": "Acknowledge all checks for a specific monitor",
+				"parameters": [
+					{
+						"name": "action",
+						"in": "path",
+						"required": true,
+						"description": "Action to perform (e.g., 'ack')",
+						"schema": {
+							"type": "string",
+							"enum": ["ack"]
+						}
+					},
+					{
+						"name": "monitorId",
+						"in": "path",
+						"required": true,
+						"description": "Monitor ID to acknowledge checks for",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["ack"],
+								"properties": {
+									"ack": {
+										"type": "boolean",
+										"description": "Acknowledgement status to set"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Checks acknowledged successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "All checks acknowledged successfully"
+										},
+										"data": {
+											"type": "object",
+											"description": "Updated checks information"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"404": {
 						"$ref": "#/components/responses/NotFound"
@@ -2279,6 +2552,142 @@
 					},
 					"404": {
 						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/jobs": {
+			"get": {
+				"tags": ["queue"],
+				"summary": "Get queue jobs",
+				"description": "Retrieve all jobs in the queue (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"description": "Queue jobs retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Queue jobs fetched successfully"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/QueueJob"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": ["queue"],
+				"summary": "Add job to queue",
+				"description": "Add a new job to the queue (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"description": "Job added successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Job added to queue successfully"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/queue/metrics": {
+			"get": {
+				"tags": ["queue"],
+				"summary": "Get queue metrics",
+				"description": "Retrieve queue metrics (admin/superadmin only)",
+				"responses": {
+					"200": {
+						"description": "Queue metrics retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Queue metrics fetched successfully"
+										},
+										"data": {
+											"$ref": "#/components/schemas/QueueMetrics"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
@@ -2618,6 +3027,286 @@
 					}
 				]
 			}
+		},
+		"/incidents/team": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "Get incidents by team",
+				"description": "Retrieve all incidents for the authenticated user's team with optional filtering",
+				"parameters": [
+					{
+						"name": "status",
+						"in": "query",
+						"description": "Filter by incident status (true = ongoing, false = resolved)",
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"name": "monitorId",
+						"in": "query",
+						"description": "Filter by monitor ID",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"description": "Page number for pagination",
+						"schema": {
+							"type": "integer",
+							"default": 1
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Number of items per page",
+						"schema": {
+							"type": "integer",
+							"default": 10
+						}
+					},
+					{
+						"name": "sortOrder",
+						"in": "query",
+						"description": "Sort order for results",
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"],
+							"default": "desc"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Incidents retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Incidents retrieved successfully"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Incident"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/incidents/team/summary": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "Get incident summary",
+				"description": "Retrieve a summary of incidents for the authenticated user's team",
+				"parameters": [
+					{
+						"name": "dateRange",
+						"in": "query",
+						"description": "Date range for summary",
+						"schema": {
+							"type": "string",
+							"enum": ["day", "week", "month"],
+							"default": "week"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Incident summary retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Incident summary retrieved successfully"
+										},
+										"data": {
+											"$ref": "#/components/schemas/IncidentSummary"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/incidents/{incidentId}": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "Get incident by ID",
+				"description": "Retrieve a specific incident by its ID",
+				"parameters": [
+					{
+						"name": "incidentId",
+						"in": "path",
+						"required": true,
+						"description": "The incident ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Incident retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Incident retrieved successfully"
+										},
+										"data": {
+											"$ref": "#/components/schemas/Incident"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
+		},
+		"/incidents/{incidentId}/resolve": {
+			"put": {
+				"tags": ["incidents"],
+				"summary": "Resolve incident manually",
+				"description": "Manually resolve an ongoing incident. Requires admin or superadmin role.",
+				"parameters": [
+					{
+						"name": "incidentId",
+						"in": "path",
+						"required": true,
+						"description": "The incident ID to resolve",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"comment": {
+										"type": "string",
+										"description": "Optional comment about the resolution",
+										"example": "Issue resolved by restarting the service"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Incident resolved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"example": true
+										},
+										"msg": {
+											"type": "string",
+											"example": "Incident resolved successfully"
+										},
+										"data": {
+											"$ref": "#/components/schemas/Incident"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				]
+			}
 		}
 	},
 	"components": {
@@ -2672,6 +3361,16 @@
 			},
 			"Forbidden": {
 				"description": "Insufficient permissions",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ErrorResponse"
+						}
+					}
+				}
+			},
+			"BadRequest": {
+				"description": "Invalid request parameters",
 				"content": {
 					"application/json": {
 						"schema": {
@@ -3373,6 +4072,566 @@
 								"type": "integer"
 							}
 						}
+					}
+				}
+			},
+			"Incident": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique incident identifier"
+					},
+					"monitorId": {
+						"type": "string",
+						"description": "ID of the associated monitor"
+					},
+					"teamId": {
+						"type": "string",
+						"description": "ID of the team"
+					},
+					"startTime": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the incident started"
+					},
+					"endTime": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true,
+						"description": "When the incident was resolved (null if ongoing)"
+					},
+					"status": {
+						"type": "boolean",
+						"description": "Incident status (true = ongoing, false = resolved)"
+					},
+					"message": {
+						"type": "string",
+						"nullable": true,
+						"description": "Error message or description"
+					},
+					"statusCode": {
+						"type": "integer",
+						"nullable": true,
+						"description": "HTTP status code if applicable"
+					},
+					"resolutionType": {
+						"type": "string",
+						"enum": ["automatic", "manual"],
+						"nullable": true,
+						"description": "How the incident was resolved"
+					},
+					"resolvedBy": {
+						"type": "string",
+						"nullable": true,
+						"description": "User ID who resolved the incident (for manual resolution)"
+					},
+					"comment": {
+						"type": "string",
+						"nullable": true,
+						"description": "Resolution comment"
+					},
+					"checks": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "Array of check IDs associated with this incident"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"IncidentSummary": {
+				"type": "object",
+				"properties": {
+					"totalIncidents": {
+						"type": "integer",
+						"description": "Total number of incidents"
+					},
+					"activeIncidents": {
+						"type": "integer",
+						"description": "Number of ongoing incidents"
+					},
+					"resolvedIncidents": {
+						"type": "integer",
+						"description": "Number of resolved incidents"
+					},
+					"averageResolutionTime": {
+						"type": "number",
+						"description": "Average time to resolve incidents in milliseconds"
+					},
+					"incidentsByMonitor": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"monitorId": {
+									"type": "string"
+								},
+								"monitorName": {
+									"type": "string"
+								},
+								"count": {
+									"type": "integer"
+								}
+							}
+						}
+					}
+				}
+			},
+			"QueueJob": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Job ID"
+					},
+					"name": {
+						"type": "string",
+						"description": "Job name"
+					},
+					"data": {
+						"type": "object",
+						"description": "Job payload data"
+					},
+					"status": {
+						"type": "string",
+						"enum": ["waiting", "active", "completed", "failed", "delayed"],
+						"description": "Current job status"
+					},
+					"progress": {
+						"type": "number",
+						"description": "Job progress percentage"
+					},
+					"attemptsMade": {
+						"type": "integer",
+						"description": "Number of attempts made"
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the job was created"
+					},
+					"processedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true,
+						"description": "When the job started processing"
+					},
+					"finishedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true,
+						"description": "When the job finished"
+					}
+				}
+			},
+			"QueueMetrics": {
+				"type": "object",
+				"properties": {
+					"waiting": {
+						"type": "integer",
+						"description": "Number of jobs waiting"
+					},
+					"active": {
+						"type": "integer",
+						"description": "Number of jobs currently processing"
+					},
+					"completed": {
+						"type": "integer",
+						"description": "Number of completed jobs"
+					},
+					"failed": {
+						"type": "integer",
+						"description": "Number of failed jobs"
+					},
+					"delayed": {
+						"type": "integer",
+						"description": "Number of delayed jobs"
+					}
+				}
+			},
+			"Check": {
+				"type": "object",
+				"description": "A monitoring check result",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Check ID"
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"monitorId": {
+								"type": "string",
+								"description": "Associated monitor ID"
+							},
+							"teamId": {
+								"type": "string",
+								"description": "Associated team ID"
+							},
+							"type": {
+								"type": "string",
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"],
+								"description": "Monitor type"
+							}
+						},
+						"required": ["monitorId", "teamId", "type"]
+					},
+					"status": {
+						"type": "boolean",
+						"description": "Check status (true = up, false = down)"
+					},
+					"responseTime": {
+						"type": "number",
+						"description": "Response time in milliseconds"
+					},
+					"statusCode": {
+						"type": "integer",
+						"description": "HTTP status code (for HTTP monitors)"
+					},
+					"message": {
+						"type": "string",
+						"description": "Status message or error description"
+					},
+					"timings": {
+						"$ref": "#/components/schemas/CheckTimings"
+					},
+					"cpu": {
+						"$ref": "#/components/schemas/CheckCpuInfo"
+					},
+					"memory": {
+						"$ref": "#/components/schemas/CheckMemoryInfo"
+					},
+					"disk": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/CheckDiskInfo"
+						}
+					},
+					"host": {
+						"$ref": "#/components/schemas/CheckHostInfo"
+					},
+					"errors": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/CheckErrorInfo"
+						}
+					},
+					"capture": {
+						"$ref": "#/components/schemas/CheckCaptureInfo"
+					},
+					"net": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/CheckNetworkInfo"
+						}
+					},
+					"accessibility": {
+						"type": "number",
+						"description": "PageSpeed accessibility score (0-100)"
+					},
+					"bestPractices": {
+						"type": "number",
+						"description": "PageSpeed best practices score (0-100)"
+					},
+					"seo": {
+						"type": "number",
+						"description": "PageSpeed SEO score (0-100)"
+					},
+					"performance": {
+						"type": "number",
+						"description": "PageSpeed performance score (0-100)"
+					},
+					"audits": {
+						"$ref": "#/components/schemas/CheckAudits"
+					},
+					"ack": {
+						"type": "boolean",
+						"description": "Whether the check has been acknowledged"
+					},
+					"ackAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true,
+						"description": "When the check was acknowledged"
+					},
+					"expiry": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the check expires"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"CheckTimings": {
+				"type": "object",
+				"description": "Detailed timing information for HTTP checks",
+				"properties": {
+					"start": {
+						"type": "number"
+					},
+					"socket": {
+						"type": "number"
+					},
+					"lookup": {
+						"type": "number"
+					},
+					"connect": {
+						"type": "number"
+					},
+					"secureConnect": {
+						"type": "number"
+					},
+					"upload": {
+						"type": "number"
+					},
+					"response": {
+						"type": "number"
+					},
+					"end": {
+						"type": "number"
+					},
+					"phases": {
+						"type": "object",
+						"properties": {
+							"wait": {
+								"type": "number"
+							},
+							"dns": {
+								"type": "number"
+							},
+							"tcp": {
+								"type": "number"
+							},
+							"tls": {
+								"type": "number"
+							},
+							"request": {
+								"type": "number"
+							},
+							"firstByte": {
+								"type": "number"
+							},
+							"download": {
+								"type": "number"
+							},
+							"total": {
+								"type": "number"
+							}
+						}
+					}
+				}
+			},
+			"CheckCpuInfo": {
+				"type": "object",
+				"description": "CPU information for infrastructure checks",
+				"properties": {
+					"physical_core": {
+						"type": "integer"
+					},
+					"logical_core": {
+						"type": "integer"
+					},
+					"frequency": {
+						"type": "number"
+					},
+					"temperature": {
+						"type": "array",
+						"items": {
+							"type": "number"
+						}
+					},
+					"free_percent": {
+						"type": "number"
+					},
+					"usage_percent": {
+						"type": "number"
+					}
+				}
+			},
+			"CheckMemoryInfo": {
+				"type": "object",
+				"description": "Memory information for infrastructure checks",
+				"properties": {
+					"total_bytes": {
+						"type": "number"
+					},
+					"available_bytes": {
+						"type": "number"
+					},
+					"used_bytes": {
+						"type": "number"
+					},
+					"usage_percent": {
+						"type": "number"
+					}
+				}
+			},
+			"CheckDiskInfo": {
+				"type": "object",
+				"description": "Disk information for infrastructure checks",
+				"properties": {
+					"device": {
+						"type": "string"
+					},
+					"mountpoint": {
+						"type": "string"
+					},
+					"read_speed_bytes": {
+						"type": "number"
+					},
+					"write_speed_bytes": {
+						"type": "number"
+					},
+					"total_bytes": {
+						"type": "number"
+					},
+					"free_bytes": {
+						"type": "number"
+					},
+					"usage_percent": {
+						"type": "number"
+					}
+				}
+			},
+			"CheckHostInfo": {
+				"type": "object",
+				"description": "Host information for infrastructure checks",
+				"properties": {
+					"os": {
+						"type": "string"
+					},
+					"platform": {
+						"type": "string"
+					},
+					"kernel_version": {
+						"type": "string"
+					}
+				}
+			},
+			"CheckErrorInfo": {
+				"type": "object",
+				"description": "Error information from checks",
+				"properties": {
+					"metric": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"err": {
+						"type": "string"
+					}
+				}
+			},
+			"CheckCaptureInfo": {
+				"type": "object",
+				"description": "Capture agent information",
+				"properties": {
+					"version": {
+						"type": "string"
+					},
+					"mode": {
+						"type": "string"
+					}
+				}
+			},
+			"CheckNetworkInfo": {
+				"type": "object",
+				"description": "Network interface information",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"bytes_sent": {
+						"type": "number"
+					},
+					"bytes_recv": {
+						"type": "number"
+					},
+					"packets_sent": {
+						"type": "number"
+					},
+					"packets_recv": {
+						"type": "number"
+					},
+					"err_in": {
+						"type": "number"
+					},
+					"err_out": {
+						"type": "number"
+					},
+					"drop_in": {
+						"type": "number"
+					},
+					"drop_out": {
+						"type": "number"
+					},
+					"fifo_in": {
+						"type": "number"
+					},
+					"fifo_out": {
+						"type": "number"
+					}
+				}
+			},
+			"CheckAudits": {
+				"type": "object",
+				"description": "PageSpeed audit results",
+				"properties": {
+					"cls": {
+						"$ref": "#/components/schemas/LighthouseAudit"
+					},
+					"si": {
+						"$ref": "#/components/schemas/LighthouseAudit"
+					},
+					"fcp": {
+						"$ref": "#/components/schemas/LighthouseAudit"
+					},
+					"lcp": {
+						"$ref": "#/components/schemas/LighthouseAudit"
+					},
+					"tbt": {
+						"$ref": "#/components/schemas/LighthouseAudit"
+					}
+				}
+			},
+			"LighthouseAudit": {
+				"type": "object",
+				"description": "Individual Lighthouse audit result",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"score": {
+						"type": "number"
+					},
+					"displayValue": {
+						"type": "string"
+					},
+					"numericValue": {
+						"type": "number"
+					},
+					"numericUnit": {
+						"type": "string"
 					}
 				}
 			}
