@@ -5,10 +5,10 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
-import { handleErrors } from "./middleware/v1/handleErrors.js";
+import { handleErrors } from "./middleware/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
-import { generalApiLimiter } from "./middleware/v1/rateLimiter.js";
-import { sanitizeBody, sanitizeQuery } from "./middleware/v1/sanitization.js";
+import { generalApiLimiter } from "./middleware/rateLimiter.js";
+import { sanitizeBody, sanitizeQuery } from "./middleware/sanitization.js";
 
 export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
 	const allowedOrigin = envSettings.clientHost;
