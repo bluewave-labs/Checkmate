@@ -222,7 +222,7 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ logger, incidentService, checkService });
+	const bufferService = new BufferService({ logger, checkService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
 
