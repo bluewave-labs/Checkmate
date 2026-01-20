@@ -19,7 +19,7 @@ class IncidentController {
 		try {
 			const result = await this.incidentService.getIncidentsByTeam({
 				teamId: req?.user?.teamId,
-				query: req?.query?.limit,
+				query: req?.query,
 			});
 
 			return res.status(200).json({

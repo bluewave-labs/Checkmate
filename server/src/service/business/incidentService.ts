@@ -134,7 +134,6 @@ class IncidentService {
 			}
 
 			const { sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType } = query || {};
-
 			const startDate = dateRangeLookup[dateRange];
 
 			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
