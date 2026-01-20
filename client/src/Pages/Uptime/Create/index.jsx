@@ -284,8 +284,10 @@ const UptimeCreate = ({ isClone = false }) => {
 	};
 
 	const handlePause = async () => {
-		await pauseMonitor({ monitorId, triggerUpdate });
-		setMonitor((prev) => ({ ...prev, isActive: !prev.isActive }));
+		const updatedMonitor = await pauseMonitor({ monitorId });
+		if (updatedMonitor) {
+			setMonitor((prev) => ({ ...prev, isActive: updatedMonitor.isActive }));
+		}
 	};
 
 	const handleRemove = async (event) => {
@@ -425,7 +427,8 @@ const UptimeCreate = ({ isClone = false }) => {
 							<Button
 								variant="contained"
 								color="secondary"
-								loading={isBusy}
+								loading={isPausing}
+								disabled={isBusy}
 								startIcon={
 									monitor?.isActive ? (
 										<Icon

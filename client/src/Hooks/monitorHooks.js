@@ -412,14 +412,19 @@ export const usePauseMonitor = () => {
 		try {
 			setIsLoading(true);
 			const res = await networkService.pauseMonitorById({ monitorId });
+			const updatedMonitor = res.data.data;
 			createToast({
-				body: res.data.data.isActive
+				body: updatedMonitor.isActive
 					? "Monitor resumed successfully"
 					: "Monitor paused successfully",
 			});
-			triggerUpdate();
+			if (triggerUpdate) {
+				triggerUpdate();
+			}
+			return updatedMonitor;
 		} catch (error) {
 			setError(error);
+			return null;
 		} finally {
 			setIsLoading(false);
 		}
