@@ -65,9 +65,7 @@ export interface IMonitorService {
 export class MonitorService implements IMonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private db: any;
 	private jobQueue: any;
-	private stringService: any;
 	private emailService: any;
 	private papaparse: any;
 	private logger: any;
@@ -80,7 +78,6 @@ export class MonitorService implements IMonitorService {
 
 	constructor({
 		jobQueue,
-		stringService,
 		emailService,
 		papaparse,
 		logger,
@@ -92,7 +89,6 @@ export class MonitorService implements IMonitorService {
 		statusPagesRepository,
 	}: {
 		jobQueue: any;
-		stringService: any;
 		emailService: any;
 		papaparse: any;
 		logger: any;
@@ -104,7 +100,6 @@ export class MonitorService implements IMonitorService {
 		statusPagesRepository: IStatusPagesRepository;
 	}) {
 		this.jobQueue = jobQueue;
-		this.stringService = stringService;
 		this.emailService = emailService;
 		this.papaparse = papaparse;
 		this.logger = logger;
@@ -465,7 +460,7 @@ export class MonitorService implements IMonitorService {
 	};
 
 	sendTestEmail = async ({ to }: { to: string }): Promise<string> => {
-		const subject = this.stringService.testEmailSubject;
+		const subject = "Test email from Checkmate";
 		const context = { testName: "Monitoring System" };
 
 		const html = await this.emailService.buildEmail("testEmailTemplate", context);

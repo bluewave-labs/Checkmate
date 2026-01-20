@@ -20,26 +20,23 @@ class IncidentService {
 	private db: any;
 	private logger: any;
 	private errorService: any;
-	private stringService: any;
+	private: any;
 	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
 		db,
 		logger,
 		errorService,
-		stringService,
 		incidentsRepository,
 	}: {
 		db: any;
 		logger: any;
 		errorService: any;
-		stringService: any;
 		incidentsRepository: IIncidentsRepository;
 	}) {
 		this.db = db;
 		this.logger = logger;
 		this.errorService = errorService;
-		this.stringService = stringService;
 		this.incidentsRepository = incidentsRepository;
 	}
 

@@ -1,10 +1,9 @@
 const SERVICE_NAME = "statusPageModule";
 
 class StatusPageModule {
-	constructor({ StatusPage, NormalizeData, stringService, AppSettings }) {
+	constructor({ StatusPage, NormalizeData, AppSettings }) {
 		this.StatusPage = StatusPage;
 		this.NormalizeData = NormalizeData;
-		this.stringService = stringService;
 		this.AppSettings = AppSettings;
 	}
 
@@ -27,7 +26,7 @@ class StatusPageModule {
 			if (error?.code === 11000) {
 				// Handle duplicate URL errors
 				error.status = 400;
-				error.message = this.stringService.statusPageUrlNotUnique;
+				error.message = "Status page URL must be unique";
 			}
 			error.service = SERVICE_NAME;
 			error.method = "createStatusPage";
@@ -87,7 +86,7 @@ class StatusPageModule {
 		try {
 			const preliminaryStatusPage = await this.StatusPage.findOne({ url });
 			if (!preliminaryStatusPage) {
-				const error = new Error(this.stringService.statusPageNotFound);
+				const error = new Error("Status page not found");
 				error.status = 404;
 				throw error;
 			}
@@ -249,7 +248,7 @@ class StatusPageModule {
 				},
 			]);
 			if (!statusPageQuery.length) {
-				const error = new Error(this.stringService.statusPageNotFound);
+				const error = new Error("Status page not found");
 				error.status = 404;
 				throw error;
 			}

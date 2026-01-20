@@ -3,6 +3,7 @@ import Team from "@/db/models/Team.js";
 import type { User } from "@/types/index.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
+import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 
 const SERVICE_NAME = "userService";
 
@@ -12,10 +13,8 @@ class UserService {
 	private emailService: any;
 	private settingsService: any;
 	private logger: any;
-	private stringService: any;
 	private jwt: any;
-	private errorService: any;
-	private jobQueue: any;
+	private jobQueue: ISuperSimpleQueue;
 	private crypto: any;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
@@ -28,9 +27,7 @@ class UserService {
 		emailService,
 		settingsService,
 		logger,
-		stringService,
 		jwt,
-		errorService,
 		jobQueue,
 		monitorsRepository,
 		usersRepository,
@@ -42,10 +39,9 @@ class UserService {
 		emailService: any;
 		settingsService: any;
 		logger: any;
-		stringService: any;
 		jwt: any;
 		errorService: any;
-		jobQueue: any;
+		jobQueue: ISuperSimpleQueue;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
 		invitesRepository: IInvitesRepository;
@@ -55,9 +51,7 @@ class UserService {
 		this.emailService = emailService;
 		this.settingsService = settingsService;
 		this.logger = logger;
-		this.stringService = stringService;
 		this.jwt = jwt;
-		this.errorService = errorService;
 		this.jobQueue = jobQueue;
 		this.crypto = crypto;
 		this.monitorsRepository = monitorsRepository;
@@ -144,7 +138,7 @@ class UserService {
 		const match = await bcrypt.compare(password, user.password);
 
 		if (match !== true) {
-			throw this.errorService.createAuthenticationError(this.stringService.authIncorrectPassword);
+			throw new AppError({ message: "Incorrect password", service: SERVICE_NAME, status: 401 });
 		}
 
 		// Remove password from user object.  Should this be abstracted to DB layer?
@@ -173,7 +167,7 @@ class UserService {
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
-				throw this.errorService.createAuthorizationError(this.stringService.authIncorrectPassword);
+				throw new AppError({ message: "Incorrect current password", service: SERVICE_NAME, status: 403 });
 			}
 			// If a match, update the password
 			updates.password = updates.newPassword;
@@ -234,23 +228,23 @@ class UserService {
 	deleteUser = async (user: User) => {
 		const email = user?.email;
 		if (!email) {
-			throw this.errorService.createBadRequestError("No email in request");
+			throw new AppError({ message: "No email in request", service: SERVICE_NAME, method: "deleteUser", status: 400 });
 		}
 
 		const teamId = user?.teamId;
 		const userId = user?.id;
 
 		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
+			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteUser", status: 400 });
 		}
 
 		if (!userId) {
-			throw this.errorService.createBadRequestError("No user ID in request");
+			throw new AppError({ message: "No user ID in request", service: SERVICE_NAME, method: "deleteUser", status: 400 });
 		}
 
 		const roles = user?.role;
 		if (roles.includes("demo")) {
-			throw this.errorService.createBadRequestError("Demo user cannot be deleted");
+			throw new AppError({ message: "Demo user cannot be deleted", service: SERVICE_NAME, method: "deleteUser", status: 400 });
 		}
 
 		// 1. Find all the monitors associated with the team ID if superadmin
@@ -262,7 +256,7 @@ class UserService {
 				res?.length > 0 &&
 				(await Promise.all(
 					res.map(async (monitor) => {
-						await this.jobQueue.deleteJob(monitor);
+						await this.jobQueue.deleteJob(monitor.id);
 					})
 				));
 		}

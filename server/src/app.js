@@ -4,7 +4,6 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import languageMiddleware from "./middleware/v1/languageMiddleware.js";
 import swaggerUi from "swagger-ui-express";
 import { handleErrors } from "./middleware/v1/handleErrors.js";
 import { setupRoutes } from "./config/routes.js";
@@ -58,7 +57,6 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 			},
 		})
 	);
-	app.use(languageMiddleware(services.stringService, services.translationService, services.settingsService));
 	// Swagger UI
 	app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
