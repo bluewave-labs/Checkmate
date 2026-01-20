@@ -1,28 +1,27 @@
 import { fileURLToPath } from "url";
 import path from "path";
+import { EmailTransportConfig } from "@/types/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SERVICE_NAME = "EmailService";
 
-/**
- * Represents an email service that can load templates, build, and send emails.
- */
 class EmailService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	/**
-	 * Constructs an instance of the EmailService, initializing template loaders and the email transporter.
-	 * @param {Object} settingsService - The settings service to get email configuration.
-	 * @param {Object} fs - The file system module.
-	 * @param {Object} path - The path module.
-	 * @param {Function} compile - The Handlebars compile function.
-	 * @param {Function} mjml2html - The MJML to HTML conversion function.
-	 * @param {Object} nodemailer - The nodemailer module.
-	 * @param {Object} logger - The logger module.
-	 */
-	constructor(settingsService, fs, path, compile, mjml2html, nodemailer, logger) {
+	private settingsService: any;
+	private fs: any;
+	private path: any;
+	private compile: any;
+	private mjml2html: any;
+	private nodemailer: any;
+	private logger: any;
+	private transporter: any;
+	private templateLookup: Record<string, Function>;
+	private loadTemplate: (templateName: string) => Function;
+
+	constructor(settingsService: any, fs: any, path: any, compile: any, mjml2html: any, nodemailer: any, logger: any) {
 		this.settingsService = settingsService;
 		this.fs = fs;
 		this.path = path;
@@ -31,6 +30,10 @@ class EmailService {
 		this.nodemailer = nodemailer;
 		this.logger = logger;
 		this.init();
+		this.templateLookup = {};
+		this.loadTemplate = () => {
+			return () => {};
+		};
 	}
 
 	get serviceName() {
@@ -38,18 +41,12 @@ class EmailService {
 	}
 
 	init = async () => {
-		/**
-		 * Loads an email template from the filesystem.
-		 *
-		 * @param {string} templateName - The name of the template to load.
-		 * @returns {Function} A compiled template function that can be used to generate HTML email content.
-		 */
 		this.loadTemplate = (templateName) => {
 			try {
 				const templatePath = this.path.join(__dirname, `../../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				return this.compile(templateContent);
-			} catch (error) {
+			} catch (error: any) {
 				this.logger.error({
 					message: error.message,
 					service: SERVICE_NAME,
@@ -59,11 +56,6 @@ class EmailService {
 			}
 		};
 
-		/**
-		 * A lookup object to access preloaded email templates.
-		 * @type {Object.<string, Function>}
-		 * TODO  Load less used templates in their respective functions
-		 */
 		this.templateLookup = {
 			welcomeEmailTemplate: this.loadTemplate("welcomeEmail"),
 			employeeActivationTemplate: this.loadTemplate("employeeActivation"),
@@ -74,19 +66,14 @@ class EmailService {
 			hardwareIncidentTemplate: this.loadTemplate("hardwareIncident"),
 			testEmailTemplate: this.loadTemplate("testEmailTemplate"),
 		};
-
-		/**
-		 * The email transporter used to send emails.
-		 * @type {Object}
-		 */
 	};
 
-	buildEmail = async (template, context) => {
+	buildEmail = async (template: string, context: Record<string, any>) => {
 		try {
-			const mjml = this.templateLookup[template](context);
+			const mjml = this.templateLookup[template]?.(context);
 			const html = await this.mjml2html(mjml);
 			return html.html;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: SERVICE_NAME,
@@ -96,8 +83,8 @@ class EmailService {
 		}
 	};
 
-	sendEmail = async (to, subject, html, transportConfig) => {
-		let config;
+	sendEmail = async (to: string, subject: string, html: string, transportConfig?: EmailTransportConfig) => {
+		let config: EmailTransportConfig;
 		if (typeof transportConfig !== "undefined") {
 			config = transportConfig;
 		} else {
@@ -157,7 +144,7 @@ class EmailService {
 				html: html,
 			});
 			return info?.messageId;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
 				service: SERVICE_NAME,

@@ -10,3 +10,4 @@ export * from "@/types/settings.js";
 export * from "@/types/notification.js";
 export * from "@/types/alert.js";
 export * from "@/types/incident.js";
+export * from "@/types/email.js";
