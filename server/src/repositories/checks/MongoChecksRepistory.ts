@@ -18,6 +18,15 @@ import mongoose from "mongoose";
 
 const SERVICE_NAME = "StatusService";
 
+const dateRangeLookup: Record<string, Date> = {
+	recent: new Date(new Date().setDate(new Date().getDate() - 2)),
+	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
+	day: new Date(new Date().setDate(new Date().getDate() - 1)),
+	week: new Date(new Date().setDate(new Date().getDate() - 7)),
+	month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+	all: undefined,
+};
+
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
 type HardwareAggregateData = { latestCheck: CheckDocument | null; totalChecks: number };
@@ -187,6 +196,77 @@ class MongoChecksRepository implements IChecksRepository {
 
 	createChecks = async (checks: Check[]) => {
 		return await CheckModel.insertMany(checks);
+	};
+
+	findByMonitorId = async (
+		monitorId: string,
+		sortOrder: string,
+		dateRange: string,
+		filter: string,
+		page: number,
+		rowsPerPage: number,
+		status: boolean | undefined
+	) => {
+		// Match
+		const matchStage: Record<string, any> = {
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			...(typeof status !== "undefined" && { status }),
+			...(dateRangeLookup[dateRange] && {
+				createdAt: {
+					$gte: dateRangeLookup[dateRange],
+				},
+			}),
+		};
+
+		if (filter !== undefined) {
+			switch (filter) {
+				case "all":
+					break;
+				case "down":
+					break;
+				case "resolve":
+					matchStage.statusCode = 5000;
+					break;
+				default:
+					this.logger.warn({
+						message: "invalid filter",
+						service: SERVICE_NAME,
+						method: "getChecks",
+					});
+					break;
+			}
+		}
+
+		//Sort
+		const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
+
+		// Pagination
+		let skip = 0;
+		if (page && rowsPerPage) {
+			skip = page * rowsPerPage;
+		}
+
+		const checks = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { createdAt: convertedSortOrder } },
+			{
+				$facet: {
+					summary: [{ $count: "checksCount" }],
+					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
+				},
+			},
+			{
+				$project: {
+					checksCount: {
+						$ifNull: [{ $arrayElemAt: ["$summary.checksCount", 0] }, 0],
+					},
+					checks: {
+						$ifNull: ["$checks", []],
+					},
+				},
+			},
+		]);
+		return checks[0];
 	};
 
 	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {

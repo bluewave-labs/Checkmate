@@ -214,8 +214,6 @@ export const initializeServices = async ({
 
 	const checkService = new CheckService({
 		db,
-		settingsService,
-		stringService,
 		errorService,
 		monitorsRepository,
 		logger,

@@ -20,29 +20,16 @@ class CheckModule {
 		this.User = User;
 	}
 
-	createChecks = async (checks) => {
-		try {
-			await CheckModel.insertMany(checks, { ordered: false, runValidators: true });
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "createCheck";
-			throw error;
-		}
-	};
-
-	getChecksByMonitor = async ({ monitorId, sortOrder, dateRange, filter, ack, page, rowsPerPage, status }) => {
+	getChecksByMonitor = async ({ monitorId, sortOrder, dateRange, filter, page, rowsPerPage, status }) => {
 		try {
 			status = status === "true" ? true : status === "false" ? false : undefined;
 			page = parseInt(page);
 			rowsPerPage = parseInt(rowsPerPage);
 
-			const ackStage = ack === "true" ? { ack: true } : { $or: [{ ack: false }, { ack: { $exists: false } }] };
-
 			// Match
 			const matchStage = {
 				"metadata.monitorId": new ObjectId(monitorId),
 				...(typeof status !== "undefined" && { status }),
-				...(typeof ack !== "undefined" && ackStage),
 				...(dateRangeLookup[dateRange] && {
 					createdAt: {
 						$gte: dateRangeLookup[dateRange],
@@ -106,17 +93,22 @@ class CheckModule {
 		}
 	};
 
-	getChecksByTeam = async ({ sortOrder, dateRange, filter, ack, page, rowsPerPage, teamId }) => {
+	getChecksByTeam = async ({ sortOrder, dateRange, filter, page, rowsPerPage, teamId }) => {
 		try {
+			console.log({
+				sortOrder,
+				dateRange,
+				filter,
+				page,
+				rowsPerPage,
+				teamId,
+			});
 			page = parseInt(page);
 			rowsPerPage = parseInt(rowsPerPage);
-
-			const ackStage = ack === "true" ? { ack: true } : { $or: [{ ack: false }, { ack: { $exists: false } }] };
 
 			const matchStage = {
 				"metadata.teamId": new ObjectId(teamId),
 				status: false,
-				...(typeof ack !== "undefined" && ackStage),
 				...(dateRangeLookup[dateRange] && {
 					createdAt: {
 						$gte: dateRangeLookup[dateRange],

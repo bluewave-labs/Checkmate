@@ -1,6 +1,7 @@
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
+import { ParseBoolean } from "@/utils/utils.js";
 
 const SERVICE_NAME = "checkService";
 
@@ -8,32 +9,24 @@ class CheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private db: any;
-	private settingsService: any;
-	private stringService: any;
 	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private logger: any;
 	constructor({
 		db,
-		settingsService,
-		stringService,
 		errorService,
 		monitorsRepository,
 		logger,
 		checksRepository,
 	}: {
 		db: any;
-		settingsService: any;
-		stringService: any;
 		errorService: any;
 		monitorsRepository: IMonitorsRepository;
 		logger: any;
 		checksRepository: IChecksRepository;
 	}) {
 		this.db = db;
-		this.settingsService = settingsService;
-		this.stringService = stringService;
 		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
@@ -132,22 +125,27 @@ class CheckService {
 		// For verificaiton, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		let { sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
-		const result = await this.db.checkModule.getChecksByMonitor({
-			monitorId,
-			sortOrder,
-			dateRange,
-			filter,
-			ack,
-			page,
-			rowsPerPage,
-			status,
-		});
+		let { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
+		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
+		const parsedPage = page ? parseInt(page) : page;
+		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+
+		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, parsedStatus);
+
+		// const result = await this.db.checkModule.getChecksByMonitor({
+		// 	monitorId,
+		// 	sortOrder,
+		// 	dateRange,
+		// 	filter,
+		// 	page,
+		// 	rowsPerPage,
+		// 	status,
+		// });
 		return result;
 	};
 
 	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: any }) => {
-		let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = query;
+		let { sortOrder, dateRange, filter, page, rowsPerPage } = query;
 
 		if (!teamId) {
 			throw this.errorService.createBadRequestError("No team ID in request");
@@ -157,7 +155,6 @@ class CheckService {
 			sortOrder,
 			dateRange,
 			filter,
-			ack,
 			page,
 			rowsPerPage,
 			teamId,

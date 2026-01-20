@@ -59,6 +59,15 @@ export interface IChecksRepository {
 
 	// single fetch
 	// collection fetch
+	findByMonitorId(
+		monitorId: string,
+		sortOrder: string,
+		dateRange: string,
+		filter: string,
+		page: number,
+		rowsPerPage: number,
+		status: boolean | undefined
+	): Promise<any>;
 	findLatestChecksByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findDateRangeChecksByMonitor(
 		monitorId: string,
