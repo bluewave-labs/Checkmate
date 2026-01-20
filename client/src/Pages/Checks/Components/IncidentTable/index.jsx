@@ -150,7 +150,9 @@ const IncidentTable = ({
 		{
 			id: "monitorName",
 			content: t("incidentsTableMonitorName"),
-			render: (row) => monitors[row.monitorId]?.name ?? "N/A",
+			render: (row) => {
+				return monitors?.[row.metadata?.monitorId]?.name || "N/A";
+			},
 		},
 		{
 			id: "status",

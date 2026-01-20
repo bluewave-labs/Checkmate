@@ -20,12 +20,13 @@ const OptionsHeader = ({
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	console.log(monitors);
 	const monitorNames = typeof monitors !== "undefined" ? Object.values(monitors) : [];
 	const filterOptions = [
-		{ _id: "all", name: t("incidentsOptionsHeaderFilterAll") },
-		{ _id: "down", name: t("incidentsOptionsHeaderFilterDown") },
-		{ _id: "resolve", name: t("incidentsOptionsHeaderFilterCannotResolve") },
-		{ _id: "resolved", name: t("incidentsOptionsHeaderFilterResolved") },
+		{ id: "all", name: t("incidentsOptionsHeaderFilterAll") },
+		{ id: "down", name: t("incidentsOptionsHeaderFilterDown") },
+		{ id: "resolve", name: t("incidentsOptionsHeaderFilterCannotResolve") },
+		{ id: "resolved", name: t("incidentsOptionsHeaderFilterResolved") },
 	];
 
 	// The stacks below which are three in number have the same style so

@@ -48,8 +48,8 @@ const Checks = () => {
 
 	useEffect(() => {
 		const monitorLookup = monitors?.reduce((acc, monitor) => {
-			acc[monitor._id] = {
-				_id: monitor._id,
+			acc[monitor.id] = {
+				id: monitor.id,
 				name: monitor.name,
 				type: monitor.type,
 			};
