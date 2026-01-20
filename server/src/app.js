@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { responseHandler } from "./middleware/v1/responseHandler.js";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
@@ -18,9 +17,6 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 	app.use(generalApiLimiter);
 	// Static files
 	app.use(express.static(frontendPath));
-
-	// Response handler
-	app.use(responseHandler);
 
 	app.use(
 		cors({
