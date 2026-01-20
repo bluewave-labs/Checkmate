@@ -174,33 +174,6 @@ class CheckService {
 		return summary;
 	};
 
-	ackCheck = async ({ checkId, teamId, ack }: { checkId: string; teamId: string; ack: any }) => {
-		if (!checkId) {
-			throw this.errorService.createBadRequestError("No check ID in request");
-		}
-
-		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
-		}
-
-		const updatedCheck = await this.db.checkModule.ackCheck(checkId, teamId, ack);
-		return updatedCheck;
-	};
-
-	ackAllChecks = async ({ monitorId, path, teamId, ack }: { monitorId: string; path: string; teamId: string; ack: any }) => {
-		if (path === "monitor") {
-			if (!monitorId) {
-				throw this.errorService.createBadRequestError("No monitor ID in request");
-			}
-
-			// For verificaiton, throws an error if monitor doesn't belong to team
-			await this.monitorsRepository.findById(monitorId, teamId);
-		}
-
-		const updatedChecks = await this.db.checkModule.ackAllChecks(monitorId, teamId, ack, path);
-		return updatedChecks;
-	};
-
 	deleteChecks = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
 		if (!monitorId) {
 			throw this.errorService.createBadRequestError("No monitor ID in request");
