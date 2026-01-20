@@ -1,12 +1,9 @@
 import { logger } from "../../utils/logger.js";
-import ServiceRegistry from "../../service/system/serviceRegistry.js";
-import StringService from "../../service/system/stringService.js";
 
 const handleErrors = (error, req, res, next) => {
 	const status = error.status || 500;
-	const stringService = ServiceRegistry.get(StringService.SERVICE_NAME);
-	const message = error.message || stringService.authIncorrectPassword;
-	const service = error.service || stringService.unknownService;
+	const message = error.message || "Server error";
+	const service = error.service || "unknownService";
 	logger.error({
 		message: message,
 		service: service,

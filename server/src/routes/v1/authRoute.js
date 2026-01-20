@@ -1,18 +1,17 @@
 import { Router } from "express";
-import { verifyJWT } from "../../middleware/v1/verifyJWT.js";
 import { isAllowed } from "../../middleware/v1/isAllowed.js";
 import multer from "multer";
 
 const upload = multer();
 
 class AuthRoutes {
-	constructor(authController) {
+	constructor(authController, verifyJWT) {
 		this.router = Router();
 		this.authController = authController;
-		this.initRoutes();
+		this.initRoutes(verifyJWT);
 	}
 
-	initRoutes() {
+	initRoutes(verifyJWT) {
 		this.router.post("/register", upload.single("profileImage"), this.authController.registerUser);
 		this.router.post("/login", this.authController.loginUser);
 

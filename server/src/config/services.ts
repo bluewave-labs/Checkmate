@@ -1,4 +1,3 @@
-import ServiceRegistry from "../service/system/serviceRegistry.js";
 import TranslationService from "../service/system/translationService.js";
 import StringService from "../service/system/stringService.js";
 import MongoDB from "../db/MongoDB.js";
@@ -46,7 +45,7 @@ import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 
 // DB Modules
-import { NormalizeData, NormalizeDataUptimeDetails } from "../utils/dataUtils.js";
+import { NormalizeData } from "../utils/dataUtils.js";
 import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
@@ -140,9 +139,6 @@ export const initializeServices = async ({
 	envSettings: any;
 	settingsService: any;
 }): Promise<InitializedSerivces> => {
-	const serviceRegistry = new ServiceRegistry({ logger });
-	(ServiceRegistry as any).instance = serviceRegistry;
-
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
 
@@ -334,10 +330,6 @@ export const initializeServices = async ({
 		notificationsRepository,
 		incidentsRepository,
 	};
-
-	Object.values(services).forEach((service) => {
-		ServiceRegistry.register(service.serviceName, service);
-	});
 
 	return services;
 };

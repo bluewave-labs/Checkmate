@@ -73,7 +73,7 @@ export const createApp = ({ services, controllers, envSettings, frontendPath, op
 	});
 
 	// Main app routes
-	setupRoutes(app, controllers);
+	setupRoutes(app, controllers, services);
 
 	// FE routes
 	app.get("*", (req, res) => {
