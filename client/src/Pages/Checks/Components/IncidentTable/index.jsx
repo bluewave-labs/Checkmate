@@ -18,11 +18,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import {
-	useFetchChecksTeam,
-	useFetchChecksByMonitor,
-	useResolveIncident,
-} from "@/Hooks/checkHooks.js";
+import { useFetchChecksTeam, useFetchChecksByMonitor } from "@/Hooks/checkHooks.js";
 import { Button, Typography, useTheme } from "@mui/material";
 import { lighten } from "@mui/material/styles";
 
@@ -93,7 +89,6 @@ const IncidentTable = ({
 	filter,
 	dateRange,
 	updateTrigger,
-	setUpdateTrigger,
 }) => {
 	//Redux state
 	const uiTimezone = useSelector((state) => state.ui.timezone);
@@ -105,8 +100,6 @@ const IncidentTable = ({
 	const selectedMonitorType = selectedMonitorDetails?.type;
 
 	//Hooks
-	const [resolveIncident, resolveLoading] = useResolveIncident();
-
 	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
 		useFetchChecksByMonitor({
 			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
@@ -153,10 +146,6 @@ const IncidentTable = ({
 		setRowsPerPage(event.target.value);
 	};
 
-	const handleResolveIncident = (checkId) => {
-		resolveIncident(checkId, setUpdateTrigger);
-	};
-
 	const headers = [
 		{
 			id: "monitorName",
@@ -195,31 +184,9 @@ const IncidentTable = ({
 			render: (row) => <HttpStatusLabel status={row.statusCode} />,
 		},
 		{ id: "message", content: t("incidentsTableMessage"), render: (row) => row.message },
-		{
-			id: "action",
-			content: t("actions"),
-			render: (row) => {
-				return row.ack === false ? (
-					<Button
-						variant="contained"
-						color="accent"
-						onClick={() => {
-							handleResolveIncident(row._id);
-						}}
-					>
-						{t("incidentsTableActionResolve")}
-					</Button>
-				) : (
-					<Typography>
-						{t("incidentsTableResolvedAt")}{" "}
-						{formatDateWithTz(row.ackAt, "YYYY-MM-DD HH:mm:ss A", uiTimezone)}
-					</Typography>
-				);
-			},
-		},
 	];
 
-	if (isLoading || resolveLoading) return <TableSkeleton />;
+	if (isLoading) return <TableSkeleton />;
 
 	if (networkError) {
 		return (
