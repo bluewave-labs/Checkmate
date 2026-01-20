@@ -1,6 +1,7 @@
-import { logger } from "../../utils/logger.js";
+import type { NextFunction, Request, Response } from "express";
+import { logger } from "@/utils/logger.js";
 
-const handleErrors = (error, req, res, next) => {
+const handleErrors = (error: any, req: Request, res: Response, next: NextFunction) => {
 	const status = error.status || 500;
 	const message = error.message || "Server error";
 	const service = error.service || "unknownService";
@@ -10,7 +11,7 @@ const handleErrors = (error, req, res, next) => {
 		method: error.method,
 		stack: error.stack,
 	});
-	res.error({
+	res.status(status).json({
 		status,
 		msg: message,
 	});
