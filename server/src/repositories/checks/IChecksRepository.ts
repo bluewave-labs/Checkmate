@@ -1,4 +1,12 @@
-import type { Check, ChecksQueryResult, ChecksSummary, MonitorType, PageSpeedChecksResult, HardwareChecksResult, UptimeChecksResult } from "@/types/index.js";
+import type {
+	Check,
+	ChecksQueryResult,
+	ChecksSummary,
+	MonitorType,
+	PageSpeedChecksResult,
+	HardwareChecksResult,
+	UptimeChecksResult,
+} from "@/types/index.js";
 import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory.js";
 
 export interface IChecksRepository {
