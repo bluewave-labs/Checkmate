@@ -285,6 +285,7 @@ const UptimeCreate = ({ isClone = false }) => {
 
 	const handlePause = async () => {
 		await pauseMonitor({ monitorId, triggerUpdate });
+		setMonitor((prev) => ({ ...prev, isActive: !prev.isActive }));
 	};
 
 	const handleRemove = async (event) => {
