@@ -3,6 +3,14 @@ import os from "os";
 
 const SERVICE_NAME = "diagnosticService";
 
+interface MemoryUsageMetrics {
+	rss: number;
+	heapTotal: number;
+	heapUsed: number;
+	external: number;
+	arrayBuffers: number;
+}
+
 class DiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -47,8 +55,8 @@ class DiagnosticService {
 		};
 
 		const used = process.memoryUsage();
-		const memoryUsage = {};
-		for (let key in used) {
+		const memoryUsage: Record<string, number> = {};
+		for (const key of Object.keys(used) as Array<keyof NodeJS.MemoryUsage>) {
 			memoryUsage[`${key}Mb`] = Math.round((used[key] / 1024 / 1024) * 100) / 100; // MB
 		}
 
@@ -70,7 +78,7 @@ class DiagnosticService {
 		performance.mark("end");
 		performance.measure("eventLoopDelay", "start", "end");
 		const entries = performance.getEntriesByName("eventLoopDelay");
-		if (entries.length > 0) {
+		if (entries.length > 0 && entries[0] !== undefined) {
 			eventLoopDelay = entries[0].duration;
 		}
 
