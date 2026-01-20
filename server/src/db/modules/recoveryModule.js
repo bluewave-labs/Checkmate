@@ -1,11 +1,10 @@
 const SERVICE_NAME = "recoveryModule";
 
 class RecoveryModule {
-	constructor({ User, RecoveryToken, crypto, stringService }) {
+	constructor({ User, RecoveryToken, crypto }) {
 		this.User = User;
 		this.RecoveryToken = RecoveryToken;
 		this.crypto = crypto;
-		this.stringService = stringService;
 	}
 
 	requestRecoveryToken = async (email) => {
@@ -32,7 +31,7 @@ class RecoveryModule {
 			if (recoveryToken !== null) {
 				return recoveryToken;
 			} else {
-				throw new Error(this.stringService.dbTokenNotFound);
+				throw new Error("Recovery token not found");
 			}
 		} catch (error) {
 			error.service = SERVICE_NAME;
@@ -50,7 +49,7 @@ class RecoveryModule {
 			const user = await this.User.findOne({ email: recoveryToken.email });
 
 			if (user === null) {
-				throw new Error(this.stringService.dbUserNotFound);
+				throw new Error("User not found");
 			}
 
 			const match = await user.comparePassword(newPassword);

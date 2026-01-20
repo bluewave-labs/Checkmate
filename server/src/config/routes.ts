@@ -1,5 +1,5 @@
-import { verifyJWT } from "../middleware/v1/verifyJWT.js";
-import { authApiLimiter } from "../middleware/v1/rateLimiter.js";
+import { createVerifyJWT } from "../middleware/verifyJWT.js";
+import { authApiLimiter } from "../middleware/rateLimiter.js";
 
 import AuthRoutes from "../routes/v1/authRoute.js";
 import InviteRoutes from "../routes/v1/inviteRoute.js";
@@ -15,19 +15,20 @@ import NotificationRoutes from "../routes/v1/notificationRoute.js";
 
 import IncidentRoutes from "../routes/v1/incidentRoute.js";
 
-export const setupRoutes = (app: any, controllers: Record<string, any>) => {
+export const setupRoutes = (app: any, controllers: Record<string, any>, services: Record<string, any>) => {
+	const verifyJWT = createVerifyJWT(services.settingsService);
 	// V1
-	const authRoutes = new AuthRoutes(controllers.authController);
+	const authRoutes = new AuthRoutes(controllers.authController, verifyJWT);
 	const monitorRoutes = new MonitorRoutes(controllers.monitorController);
 	const settingsRoutes = new SettingsRoutes(controllers.settingsController);
 	const checkRoutes = new CheckRoutes(controllers.checkController);
-	const inviteRoutes = new InviteRoutes(controllers.inviteController);
+	const inviteRoutes = new InviteRoutes(controllers.inviteController, verifyJWT);
 	const maintenanceWindowRoutes = new MaintenanceWindowRoutes(controllers.maintenanceWindowController);
 	const queueRoutes = new QueueRoutes(controllers.queueController);
 	const logRoutes = new LogRoutes(controllers.logController);
-	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController);
+	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController, verifyJWT);
 	const notificationRoutes = new NotificationRoutes(controllers.notificationController);
-	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController);
+	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController, verifyJWT);
 	const incidentRoutes = new IncidentRoutes(controllers.incidentController);
 
 	app.use("/api/v1/auth", authApiLimiter, authRoutes.getRouter());
