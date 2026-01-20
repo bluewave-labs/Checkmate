@@ -247,6 +247,7 @@
 	"addMonitors": "Add monitors",
 	"window": "window",
 	"cancel": "Cancel",
+	"close": "Close",
 	"message": "Message",
 	"low": "low",
 	"high": "high",
@@ -1203,6 +1204,23 @@
 		"hours": "hours",
 		"loading": "Loading incident details...",
 		"incidentNotFound": "Incident not found",
-		"incidentDetails": "Incident Details"
+		"incidentDetails": "INCIDENT DETAILS",
+		"activeIncident": "ACTIVE INCIDENT",
+		"resolvedIncident": "RESOLVED INCIDENT",
+		"overview": "OVERVIEW",
+		"URL": "URL",
+		"incidentAnalysis": "INCIDENT ANALYSIS",
+		"timeline": "Timeline",
+		"startedAt": "Started at",
+		"endedAt": "Ended at",
+		"downtime": "Downtime",
+		"errorDetails": "Error details",
+		"resolutionDetails": "Resolution details",
+		"statusCode": "Status code",
+		"resolutionMethod": "Resolution method",
+		"resolvedBy": "Resolved by",
+		"comment": "Comment",
+		"noCommentProvided": "No comment provided",
+		"loadingIncidentDetails": "Loading incident details..."
 	}
 }

@@ -2,28 +2,25 @@
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Settings from "../../../../../assets/icons/settings-bold.svg?react";
-import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
-import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
-import { Button, Stack } from "@mui/material";
+import Settings from "../../../../assets/icons/settings-bold.svg?react";
+import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
 import useFetchIncidents from "../../hooks/useFetchIncidents";
 
 // Utils
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { TypeToPathMap } from "@/Utils/monitorUtils.js";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const IncidentActionsMenu = ({ incident, onResolve }) => {
+const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [comment, setComment] = useState("");
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const { fetchIncidentById } = useFetchIncidents();
+	const navigate = useNavigate();
 	const openMenu = (event) => {
 		event.preventDefault();
 		event.stopPropagation();
@@ -39,7 +36,6 @@ const IncidentActionsMenu = ({ incident, onResolve }) => {
 
 	const openResolveDialog = (e) => {
 		closeMenu(e);
-		setComment("");
 		setIsDialogOpen(true);
 	};
 
@@ -47,17 +43,6 @@ const IncidentActionsMenu = ({ incident, onResolve }) => {
 		if (e) {
 			e.stopPropagation();
 		}
-		setComment("");
-		setIsDialogOpen(false);
-	};
-
-	const handleConfirmResolve = (e) => {
-		e.stopPropagation();
-		if (onResolve) {
-			const options = comment.trim() ? { comment: comment.trim() } : {};
-			onResolve(incident._id, options);
-		}
-		setComment("");
 		setIsDialogOpen(false);
 	};
 
@@ -65,7 +50,9 @@ const IncidentActionsMenu = ({ incident, onResolve }) => {
 	const handleGoToDetails = (e) => {
 		e.stopPropagation();
 		closeMenu(e);
-		navigate(`/incidents/details/${incident._id}`);
+		if (onOpenDetails) {
+			onOpenDetails(incident._id);
+		}
 	};
 
 	const handleGoToMonitor = async (e) => {
@@ -128,6 +115,12 @@ const IncidentActionsMenu = ({ incident, onResolve }) => {
 					},
 				}}
 			>
+				<MenuItem onClick={handleGoToDetails}>
+					{t("incidentsPage.incidentsTableActionDetails", "Details")}
+				</MenuItem>
+				<MenuItem onClick={handleGoToMonitor}>
+					{t("incidentsPage.incidentsTableActionGoToMonitor", "Go to monitor")}
+				</MenuItem>
 				{isActive && (
 					<MenuItem
 						onClick={(e) => {
@@ -138,57 +131,13 @@ const IncidentActionsMenu = ({ incident, onResolve }) => {
 						{t("incidentsPage.incidentsTableActionResolveManually")}
 					</MenuItem>
 				)}
-				<MenuItem onClick={handleGoToDetails}>
-					{t("incidentsPage.incidentsTableActionDetails", "Details")}
-				</MenuItem>
-				<MenuItem onClick={handleGoToMonitor}>
-					{t("incidentsPage.incidentsTableActionGoToMonitor", "Go to monitor")}
-				</MenuItem>
-				<MenuItem
-				//onClick={handleResolve}
-				>
-					Add comment
-				</MenuItem>
-				{/* Future options will be added here */}
 			</Menu>
-			<GenericDialog
+			<ResolveIncidentDialog
 				open={isDialogOpen}
-				theme={theme}
-				title={t("incidentsPage.resolveIncidentDialogTitle")}
-				description={t("incidentsPage.resolveIncidentDialogDescription")}
+				incidentId={incident._id}
 				onClose={closeDialog}
-			>
-				<Stack gap={theme.spacing(4)}>
-					<TextInput
-						label={t("incidentsPage.resolveIncidentDialogCommentLabel")}
-						placeholder={t("incidentsPage.resolveIncidentDialogCommentPlaceholder")}
-						value={comment}
-						onChange={(e) => setComment(e.target.value)}
-						maxWidth="100%"
-					/>
-					<Stack
-						direction="row"
-						gap={theme.spacing(4)}
-						mt={theme.spacing(4)}
-						justifyContent="flex-end"
-					>
-						<Button
-							variant="contained"
-							color="secondary"
-							onClick={closeDialog}
-						>
-							{t("cancel", "Cancel")}
-						</Button>
-						<Button
-							variant="contained"
-							color="error"
-							onClick={handleConfirmResolve}
-						>
-							{t("incidentsPage.resolveIncidentDialogConfirm")}
-						</Button>
-					</Stack>
-				</Stack>
-			</GenericDialog>
+				onResolve={onResolve}
+			/>
 		</>
 	);
 };
@@ -199,6 +148,7 @@ IncidentActionsMenu.propTypes = {
 		status: PropTypes.bool.isRequired,
 	}).isRequired,
 	onResolve: PropTypes.func.isRequired,
+	onOpenDetails: PropTypes.func,
 };
 
 export default IncidentActionsMenu;

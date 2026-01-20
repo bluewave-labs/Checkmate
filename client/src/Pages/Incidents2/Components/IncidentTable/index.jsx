@@ -26,6 +26,7 @@ const IncidentTable = ({
 	handleChangeRowsPerPage,
 	resolveIncident,
 	handleUpdateTrigger,
+	onOpenDetails,
 }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
@@ -125,6 +126,7 @@ const IncidentTable = ({
 					<IncidentActionsMenu
 						incident={row}
 						onResolve={handleResolveIncident}
+						onOpenDetails={onOpenDetails}
 					/>
 				);
 			},
@@ -180,6 +182,7 @@ IncidentTable.propTypes = {
 	handleChangeRowsPerPage: PropTypes.func.isRequired, // Handler for rows per page change
 	resolveIncident: PropTypes.func.isRequired,
 	handleUpdateTrigger: PropTypes.func.isRequired,
+	onOpenDetails: PropTypes.func,
 };
 
 export default IncidentTable;
