@@ -253,7 +253,7 @@ export class MonitorService implements IMonitorService {
 		}
 		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
 		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
 		});
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
@@ -292,7 +292,7 @@ export class MonitorService implements IMonitorService {
 
 		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
 		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
 		});
 
@@ -323,7 +323,7 @@ export class MonitorService implements IMonitorService {
 
 		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
 		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findDateRangeChecksByMonitor(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
 		});
 
@@ -394,7 +394,7 @@ export class MonitorService implements IMonitorService {
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
 
 		const limitPerMonitor = snapshotOnlyRequest ? 1 : 25;
-		const checksMap = await this.checksRepository.findLatestChecksByMonitorIds(
+		const checksMap = await this.checksRepository.findLatestByMonitorIds(
 			monitorsList.map((monitor) => monitor.id),
 			{ limitPerMonitor }
 		);

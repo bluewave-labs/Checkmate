@@ -64,7 +64,6 @@ import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
 
 import InviteModule from "../db/modules/inviteModule.js";
-import CheckModule from "../db/modules/checkModule.js";
 import StatusPageModule from "../db/modules/statusPageModule.js";
 import UserModule from "../db/modules/userModule.js";
 import MaintenanceWindowModule from "../db/modules/maintenanceWindowModule.js";
@@ -150,7 +149,6 @@ export const initializeServices = async ({
 	const stringService = new StringService(translationService);
 
 	// Create DB
-	const checkModule = new CheckModule({ logger, Monitor, User });
 	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, AppSettings });
 	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
@@ -163,7 +161,6 @@ export const initializeServices = async ({
 	const db = new MongoDB({
 		logger,
 		envSettings,
-		checkModule,
 		inviteModule,
 		statusPageModule,
 		userModule,
@@ -213,9 +210,6 @@ export const initializeServices = async ({
 	});
 
 	const checkService = new CheckService({
-		db,
-		settingsService,
-		stringService,
 		errorService,
 		monitorsRepository,
 		logger,

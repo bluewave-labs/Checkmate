@@ -1,39 +1,29 @@
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
+import { AppError } from "@/utils/AppError.js";
+import { ParseBoolean } from "@/utils/utils.js";
 
 const SERVICE_NAME = "checkService";
 
 class CheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private db: any;
-	private settingsService: any;
-	private stringService: any;
 	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private logger: any;
 	constructor({
-		db,
-		settingsService,
-		stringService,
 		errorService,
 		monitorsRepository,
 		logger,
 		checksRepository,
 	}: {
-		db: any;
-		settingsService: any;
-		stringService: any;
 		errorService: any;
 		monitorsRepository: IMonitorsRepository;
 		logger: any;
 		checksRepository: IChecksRepository;
 	}) {
-		this.db = db;
-		this.settingsService = settingsService;
-		this.stringService = stringService;
 		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
@@ -132,36 +122,27 @@ class CheckService {
 		// For verificaiton, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		let { sortOrder, dateRange, filter, ack, page, rowsPerPage, status } = query;
-		const result = await this.db.checkModule.getChecksByMonitor({
-			monitorId,
-			sortOrder,
-			dateRange,
-			filter,
-			ack,
-			page,
-			rowsPerPage,
-			status,
-		});
+		let { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
+		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
+		const parsedPage = page ? parseInt(page) : page;
+		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+
+		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, parsedStatus);
+
 		return result;
 	};
 
 	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: any }) => {
-		let { sortOrder, dateRange, filter, ack, page, rowsPerPage } = query;
+		let { sortOrder, dateRange, filter, page, rowsPerPage } = query;
 
 		if (!teamId) {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const checkData = await this.db.checkModule.getChecksByTeam({
-			sortOrder,
-			dateRange,
-			filter,
-			ack,
-			page,
-			rowsPerPage,
-			teamId,
-		});
+		const parsedPage = page ? parseInt(page) : page;
+		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+
+		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, teamId);
 		return checkData;
 	};
 
@@ -169,8 +150,7 @@ class CheckService {
 		if (!teamId) {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
-
-		const summary = await this.db.checkModule.getChecksSummaryByTeamId({ teamId });
+		const summary = await this.checksRepository.findSummaryByTeamId(teamId);
 		return summary;
 	};
 
@@ -186,7 +166,7 @@ class CheckService {
 		// For verificaiton, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		const deletedCount = await this.db.checkModule.deleteChecks(monitorId);
+		const deletedCount = await this.checksRepository.deleteByMonitorId(monitorId);
 		return deletedCount;
 	};
 	deleteChecksByTeamId = async ({ teamId }: { teamId: string }) => {
@@ -194,14 +174,12 @@ class CheckService {
 			throw this.errorService.createBadRequestError("No team ID in request");
 		}
 
-		const deletedCount = await this.db.checkModule.deleteChecksByTeamId(teamId);
+		const deletedCount = await this.checksRepository.deleteByTeamId(teamId);
 		return deletedCount;
 	};
 
 	updateChecksTTL = async ({ teamId, ttl }: { teamId: string; ttl: string }) => {
-		const SECONDS_PER_DAY = 86400;
-		const newTTL = parseInt(ttl, 10) * SECONDS_PER_DAY;
-		await this.db.checkModule.updateChecksTTL(teamId, newTTL);
+		throw new AppError({ message: "Not implemented", service: SERVICE_NAME, method: "updateChecksTTL", status: 500 });
 	};
 }
 
