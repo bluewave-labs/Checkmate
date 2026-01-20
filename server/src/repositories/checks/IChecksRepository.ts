@@ -68,15 +68,18 @@ export interface IChecksRepository {
 		rowsPerPage: number,
 		status: boolean | undefined
 	): Promise<any>;
-	findLatestChecksByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
-	findDateRangeChecksByMonitor(
+	findByTeamId(sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string): Promise<any>;
+	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
+	findByDateRangeAndMonitorId(
 		monitorId: string,
 		startDate: Date,
 		endDate: Date,
 		dateString: string,
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
+	findSummaryByTeamId(teamId: string): Promise<any>;
 	// update
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;
+	deleteByTeamId(teamId: string): Promise<number>;
 }

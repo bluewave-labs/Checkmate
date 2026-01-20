@@ -18,7 +18,7 @@ import mongoose from "mongoose";
 
 const SERVICE_NAME = "StatusService";
 
-const dateRangeLookup: Record<string, Date> = {
+const dateRangeLookup: Record<string, Date | undefined> = {
 	recent: new Date(new Date().setDate(new Date().getDate() - 2)),
 	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
 	day: new Date(new Date().setDate(new Date().getDate() - 1)),
@@ -269,7 +269,67 @@ class MongoChecksRepository implements IChecksRepository {
 		return checks[0];
 	};
 
-	findLatestChecksByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
+	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
+		const matchStage: Record<string, any> = {
+			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			status: false,
+			...(dateRangeLookup[dateRange] && {
+				createdAt: {
+					$gte: dateRangeLookup[dateRange],
+				},
+			}),
+		};
+		// Add filter to match stage
+		if (filter !== undefined) {
+			switch (filter) {
+				case "all":
+					break;
+				case "down":
+					break;
+				case "resolve":
+					matchStage.statusCode = 5000;
+					break;
+				default:
+					this.logger.warn({
+						message: "invalid filter",
+						service: SERVICE_NAME,
+						method: "getChecksByTeam",
+					});
+					break;
+			}
+		}
+
+		const parsedSortOrder = sortOrder === "asc" ? 1 : -1;
+
+		// pagination
+		let skip = 0;
+		if (page && rowsPerPage) {
+			skip = page * rowsPerPage;
+		}
+
+		const aggregatePipeline: any = [
+			{ $match: matchStage },
+
+			{ $sort: { createdAt: parsedSortOrder } },
+			{
+				$facet: {
+					summary: [{ $count: "checksCount" }],
+					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
+				},
+			},
+			{
+				$project: {
+					checksCount: { $arrayElemAt: ["$summary.checksCount", 0] },
+					checks: "$checks",
+				},
+			},
+		];
+
+		const checks = await CheckModel.aggregate(aggregatePipeline);
+		return checks[0];
+	};
+
+	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
 		if (monitorIds.length === 0) {
 			return {};
 		}
@@ -303,7 +363,7 @@ class MongoChecksRepository implements IChecksRepository {
 		}, {});
 	};
 
-	findDateRangeChecksByMonitor = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
+	findByDateRangeAndMonitorId = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		if (options?.type === "hardware") {
 			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
@@ -312,6 +372,63 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate);
 		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
+	};
+
+	findSummaryByTeamId = async (teamId: string) => {
+		const matchStage = {
+			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+		};
+		const checks = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{
+				$facet: {
+					summary: [
+						{
+							$group: {
+								_id: null,
+								totalChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
+								resolvedChecks: {
+									$sum: {
+										$cond: [{ $and: [{ $eq: ["$ack", true] }, { $eq: ["$status", false] }] }, 1, 0],
+									},
+								},
+								downChecks: {
+									$sum: {
+										$cond: [{ $and: [{ $eq: ["$ack", false] }, { $eq: ["$status", false] }] }, 1, 0],
+									},
+								},
+								cannotResolveChecks: {
+									$sum: {
+										$cond: [{ $eq: ["$statusCode", 5000] }, 1, 0],
+									},
+								},
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+							},
+						},
+					],
+				},
+			},
+			{
+				$project: {
+					summary: { $arrayElemAt: ["$summary", 0] },
+				},
+			},
+		]);
+		return checks[0].summary;
+	};
+
+	deleteByMonitorId = async (monitorId: string): Promise<number> => {
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) });
+		return result.deletedCount;
+	};
+
+	deleteByTeamId = async (teamId: string) => {
+		const deleteResult = await CheckModel.deleteMany({ "metadata.teamId": teamId });
+		return deleteResult.deletedCount;
 	};
 
 	private findUptimeDateRangeChecks = async (
@@ -475,11 +592,6 @@ class MongoChecksRepository implements IChecksRepository {
 			monitorType: "pagespeed" as const,
 			checks: checks.map((doc) => this.toEntity(doc)),
 		};
-	};
-
-	deleteByMonitorId = async (monitorId: string): Promise<number> => {
-		const result = await CheckModel.deleteMany({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) });
-		return result.deletedCount;
 	};
 
 	private getHardwareAggregateData = async (monitorId: string, dates: DateRange): Promise<HardwareAggregateData> => {
