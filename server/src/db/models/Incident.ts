@@ -1,16 +1,31 @@
-import mongoose from "mongoose";
+import { Schema, model, type Types } from "mongoose";
+import { IncidentResolutionTypes, type Incident } from "@/types/incident.js";
 
-const IncidentSchema = mongoose.Schema(
+type IncidentDocumentBase = Omit<Incident, "id" | "monitorId" | "teamId" | "resolvedBy" | "startTime" | "endTime" | "createdAt" | "updatedAt"> & {
+	monitorId: Types.ObjectId;
+	teamId: Types.ObjectId;
+	resolvedBy?: Types.ObjectId | null;
+	startTime: Date;
+	endTime: Date | null;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
+export interface IncidentDocument extends IncidentDocumentBase {
+	_id: Types.ObjectId;
+}
+
+const IncidentSchema = new Schema<IncidentDocument>(
 	{
 		monitorId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "Monitor",
 			required: true,
 			immutable: true,
 			index: true,
 		},
 		teamId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "Team",
 			required: true,
 			immutable: true,
@@ -18,8 +33,8 @@ const IncidentSchema = mongoose.Schema(
 		},
 		startTime: {
 			type: Date,
-			required: true,
 			immutable: true,
+			required: true,
 		},
 		endTime: {
 			type: Date,
@@ -36,16 +51,16 @@ const IncidentSchema = mongoose.Schema(
 		},
 		statusCode: {
 			type: Number,
-			index: true,
 			default: null,
+			index: true,
 		},
 		resolutionType: {
 			type: String,
-			enum: ["automatic", "manual"],
+			enum: IncidentResolutionTypes,
 			default: null,
 		},
 		resolvedBy: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId,
 			ref: "User",
 			default: null,
 		},
@@ -53,12 +68,6 @@ const IncidentSchema = mongoose.Schema(
 			type: String,
 			default: null,
 		},
-		checks: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Check",
-			},
-		],
 	},
 	{ timestamps: true }
 );
@@ -71,6 +80,7 @@ IncidentSchema.index({ resolutionType: 1, status: 1 });
 IncidentSchema.index({ resolvedBy: 1, status: 1 });
 IncidentSchema.index({ createdAt: -1 });
 
-const Incident = mongoose.model("Incident", IncidentSchema);
+const IncidentModel = model<IncidentDocument>("Incident", IncidentSchema);
 
-export default Incident;
+export { IncidentModel };
+export default IncidentModel;

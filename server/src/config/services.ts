@@ -84,6 +84,7 @@ import {
 	MongoRecoveryTokensRepository,
 	MongoSettingsRepository,
 	MongoNotificationsRepository,
+	MongoIncidentRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -93,6 +94,7 @@ import {
 	IRecoveryTokensRepository,
 	ISettingsRepository,
 	INotificationsRepository,
+	IIncidentsRepository,
 } from "@/repositories/index.js";
 
 export type InitializedSerivces = {
@@ -127,6 +129,7 @@ export type InitializedSerivces = {
 	recoveryTokensRepository: IRecoveryTokensRepository;
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
+	incidentsRepository: IIncidentsRepository;
 };
 
 export const initializeServices = async ({
@@ -183,6 +186,7 @@ export const initializeServices = async ({
 	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
 	const settingsRepository = new MongoSettingsRepository();
 	const notificationsRepository = new MongoNotificationsRepository();
+	const incidentsRepository = new MongoIncidentRepository();
 	const networkService = new NetworkService({
 		axios,
 		got,
@@ -205,6 +209,7 @@ export const initializeServices = async ({
 		logger,
 		errorService,
 		stringService,
+		incidentsRepository,
 	});
 
 	const checkService = new CheckService({
@@ -217,7 +222,7 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ logger, incidentService, checkService });
+	const bufferService = new BufferService({ logger, checkService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
 
@@ -247,6 +252,7 @@ export const initializeServices = async ({
 		notificationsService,
 		checkService,
 		buffer: bufferService,
+		incidentService,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
@@ -332,6 +338,7 @@ export const initializeServices = async ({
 		recoveryTokensRepository,
 		settingsRepository,
 		notificationsRepository,
+		incidentsRepository,
 	};
 
 	Object.values(services).forEach((service) => {

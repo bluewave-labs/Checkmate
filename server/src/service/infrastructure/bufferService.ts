@@ -7,21 +7,17 @@ class BufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
 	private logger: any;
-	private incidentService: any;
 	private SERVICE_NAME: string;
 	private buffer: any[];
-	private incidentBuffer: any[];
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
 
-	constructor({ logger, incidentService, checkService }: { logger: any; incidentService: any; checkService: any }) {
+	constructor({ logger, checkService }: { logger: any; checkService: any }) {
 		this.BUFFER_TIMEOUT = config.NODE_ENV === "development" ? 10 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
-		this.incidentService = incidentService;
 		this.checksService = checkService;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
-		this.incidentBuffer = [];
 		this.scheduleNextFlush();
 		this.logger.info({
 			message: `Buffer service initialized, flushing every ${this.BUFFER_TIMEOUT / 1000}s`,
@@ -42,28 +38,6 @@ class BufferService {
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "addToBuffer",
-				stack: error.stack,
-			});
-		}
-	}
-
-	addIncidentToBuffer({ monitor, check, action = "create" }: { monitor: any; check: Check; action?: string }) {
-		try {
-			if (!monitor || !check) {
-				this.logger.warn({
-					message: "Skipping incident buffer item: missing monitor or check",
-					service: this.SERVICE_NAME,
-					method: "addIncidentToBuffer",
-				});
-				return;
-			}
-
-			this.incidentBuffer.push({ monitor, check, action });
-		} catch (error: any) {
-			this.logger.error({
-				message: error.message,
-				service: this.SERVICE_NAME,
-				method: "addIncidentToBuffer",
 				stack: error.stack,
 			});
 		}
@@ -141,40 +115,7 @@ class BufferService {
 			});
 		}
 
-		try {
-			if (this.incidentBuffer.length > 0 && this.incidentService) {
-				await this.flushIncidentBuffer();
-			}
-		} catch (error: any) {
-			this.logger.error({
-				message: error.message,
-				service: this.SERVICE_NAME,
-				method: "flushBuffer",
-				stack: error.stack,
-			});
-		}
-
 		this.buffer = [];
-		this.incidentBuffer = [];
-	}
-
-	async flushIncidentBuffer() {
-		if (!this.incidentService || this.incidentBuffer.length === 0) {
-			return;
-		}
-
-		try {
-			const itemsToProcess = [...this.incidentBuffer];
-			await this.incidentService.processIncidentsFromBuffer(itemsToProcess);
-		} catch (error: any) {
-			this.logger.error({
-				message: `Error flushing incident buffer: ${error.message}`,
-				service: this.SERVICE_NAME,
-				method: "flushIncidentBuffer",
-				stack: error.stack,
-			});
-			throw error;
-		}
 	}
 }
 
