@@ -4,6 +4,15 @@ import { AppError } from "@/utils/AppError.js";
 import type { IIncidentsRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 
+const dateRangeLookup: Record<string, Date | undefined> = {
+	recent: new Date(new Date().setDate(new Date().getDate() - 2)),
+	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
+	day: new Date(new Date().setDate(new Date().getDate() - 1)),
+	week: new Date(new Date().setDate(new Date().getDate() - 7)),
+	month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+	all: undefined,
+};
+
 class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -125,18 +134,38 @@ class IncidentService {
 
 			const { sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType } = query || {};
 
-			const result = await this.db.incidentModule.getIncidentsByTeam({
-				teamId,
-				sortOrder,
-				dateRange,
-				page,
-				rowsPerPage,
-				status,
-				monitorId,
-				resolutionType,
-			});
+			const startDate = dateRangeLookup[dateRange];
 
-			return result;
+			const endDate = new Date();
+
+			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
+			const parsedRowsPerPage = Number.isFinite(parseInt(rowsPerPage)) ? parseInt(rowsPerPage) : 20;
+			const parsedStatus = status === "true" ? "true" : status === "false" ? "false" : undefined;
+
+			const res = await this.incidentsRepository.findByTeamId(
+				teamId,
+				startDate,
+				endDate,
+				parsedPage,
+				parsedRowsPerPage,
+				sortOrder,
+				parsedStatus,
+				monitorId,
+				resolutionType
+			);
+
+			// const result = await this.db.incidentModule.getIncidentsByTeam({
+			// 	teamId,
+			// 	sortOrder,
+			// 	dateRange,
+			// 	page,
+			// 	rowsPerPage,
+			// 	status,
+			// 	monitorId,
+			// 	resolutionType,
+			// });
+
+			return res;
 		} catch (error: any) {
 			this.logger.error({
 				service: SERVICE_NAME,

@@ -7,7 +7,8 @@ export interface IIncidentsRepository {
 	findActiveByMonitorId(monitorId: string, teamId: string): Promise<Incident | null>;
 	findByTeamId(
 		teamId: string,
-		dateRange: string,
+		startDate: Date,
+		endDate: Date,
 		page: number,
 		rowsPerPage: number,
 		sortOrder?: string,

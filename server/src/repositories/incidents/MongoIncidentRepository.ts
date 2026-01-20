@@ -77,8 +77,29 @@ class MongoIncidentRepository implements IIncidentsRepository {
 		return this.toEntity(incident);
 	};
 
-	findByTeamId = async (teamId: string): Promise<Incident[]> => {
-		throw new Error("Method not implemented.");
+	findByTeamId = async (
+		teamId: string,
+		startDate: Date,
+		endDate: Date,
+		page: number,
+		rowsPerPage: number,
+		sortOrder?: string,
+		status?: string,
+		monitorId?: string,
+		resolutionType?: string
+	): Promise<Incident[]> => {
+		const matchStage: Record<string, any> = {
+			teamId: new mongoose.Types.ObjectId(teamId),
+			...(status !== undefined && { status: status }),
+			...(monitorId && { monitorId: new mongoose.Types.ObjectId(monitorId) }),
+			...(resolutionType && { resolutionType }),
+			createdAt: { $gte: startDate, $lte: endDate },
+		};
+		const incidents = await IncidentModel.find(matchStage)
+			.sort({ createdAt: sortOrder === "asc" ? 1 : -1 })
+			.skip(page * rowsPerPage)
+			.limit(rowsPerPage);
+		return this.mapDocuments(incidents);
 	};
 
 	updateById = async (incidentId: string, teamId: string, patch: Partial<Incident>) => {
