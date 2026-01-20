@@ -270,7 +270,6 @@ export const initializeServices = async ({
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
 		db,
-		settingsService,
 		errorService,
 		monitorsRepository,
 	});
