@@ -163,7 +163,7 @@ export const buildHardwareEmail = async (emailService: any, monitor: Monitor, al
 };
 
 export const buildEmail = async (emailService: any, monitor: Monitor): Promise<string> => {
-	const template = monitor.status === false ? "serverIsUpTemplate" : "serverIsDownTemplate";
+	const template = monitor.status === true ? "serverIsUpTemplate" : "serverIsDownTemplate";
 	const context = { monitor: monitor.name, url: monitor.url };
 	const html = await emailService.buildEmail(template, context);
 	return html;
