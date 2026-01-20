@@ -14,7 +14,7 @@ import { useTheme } from "@emotion/react";
 import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 import PropTypes from "prop-types";
 
-const BaseContainer = ({ children, sx = {} }) => {
+const BaseContainer = ({ children, sx = {}, shouldExpand = false }) => {
 	const theme = useTheme();
 	const { getDimensions } = useHardwareUtils();
 	return (
@@ -22,7 +22,7 @@ const BaseContainer = ({ children, sx = {} }) => {
 			sx={{
 				padding: `${theme.spacing(getDimensions().baseBoxPaddingVertical)} ${theme.spacing(getDimensions().baseBoxPaddingHorizontal)}`,
 				minWidth: 200,
-				width: 225,
+				width: shouldExpand ? "100%" : 225,
 				backgroundColor: theme.palette.primary.main,
 				border: 1,
 				borderStyle: "solid",
@@ -38,6 +38,7 @@ const BaseContainer = ({ children, sx = {} }) => {
 BaseContainer.propTypes = {
 	children: PropTypes.node.isRequired,
 	sx: PropTypes.object,
+	shouldExpand: PropTypes.bool,
 };
 
 export default BaseContainer;

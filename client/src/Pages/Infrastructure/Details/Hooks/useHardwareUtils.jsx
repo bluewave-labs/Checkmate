@@ -123,14 +123,7 @@ const useHardwareUtils = () => {
 	const formatDeviceName = (device) => {
 		const deviceStr = String(device || "");
 
-		// Extract the last part of the path (after last '/')
-		const parts = deviceStr.split("/");
-		const lastPart = parts[parts.length - 1];
-
-		// If there's more than one part, show with "..." prefix
-		const displayText = parts.length > 1 ? `.../${lastPart}` : deviceStr;
-
-		// Always show tooltip with full device path
+		// Show full device path
 		return (
 			<Tooltip
 				title={deviceStr}
@@ -149,7 +142,7 @@ const useHardwareUtils = () => {
 						maxWidth: "100%",
 					}}
 				>
-					{displayText}
+					{deviceStr}
 				</Typography>
 			</Tooltip>
 		);
@@ -181,14 +174,7 @@ const useHardwareUtils = () => {
 			);
 		}
 
-		// Extract the last part of the path (after last '/')
-		const parts = mountpointStr.split("/");
-		const lastPart = parts[parts.length - 1];
-
-		// If there's more than one part, show with "..." prefix
-		const displayText = parts.length > 1 ? `.../${lastPart}` : mountpointStr;
-
-		// Always show tooltip with full mountpoint path
+		// Show full mountpoint path
 		return (
 			<Tooltip
 				title={mountpointStr}
@@ -207,7 +193,7 @@ const useHardwareUtils = () => {
 						maxWidth: "100%",
 					}}
 				>
-					{displayText}
+					{mountpointStr}
 				</Typography>
 			</Tooltip>
 		);

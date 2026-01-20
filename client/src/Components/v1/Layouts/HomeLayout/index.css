@@ -14,15 +14,7 @@
 	}
 } */
 
-/* .home-layout aside {
-	position: sticky;
-	top: 0;
-	left: 0;
-	height: 100vh;
-	max-width: var(--env-var-side-bar-width);
-} */
-
-.home-layout > div {
+.home-layout > .home-content-wrapper {
 	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
 	flex: 1;
 }

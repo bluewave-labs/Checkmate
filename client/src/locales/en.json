@@ -193,6 +193,8 @@
 	"total": "Total",
 	"cores": "Cores",
 	"frequency": "Frequency",
+	"device": "Device",
+	"mountedOn": "Mounted on",
 	"status": "Status",
 	"cpuPhysical": "CPU (Physical)",
 	"cpuLogical": "CPU (Logical)",

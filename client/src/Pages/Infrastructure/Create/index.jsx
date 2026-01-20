@@ -129,7 +129,9 @@ const CreateInfrastructureMonitor = () => {
 	const onSubmit = async (event) => {
 		event.preventDefault();
 		const form = buildForm(infrastructureMonitor, https);
-		const error = validateForm(form);
+		// When editing, exclude URL from validation since it's disabled and can't be changed
+		const formToValidate = isCreate ? form : { ...form, url: monitor.url };
+		const error = validateForm(formToValidate);
 		if (error) {
 			return;
 		}
@@ -205,14 +207,14 @@ const CreateInfrastructureMonitor = () => {
 								<></>
 							)}
 						</Typography>
-						{!isCreate && (
+						{!isCreate && monitor && (
 							<MonitorStatusHeader
 								monitor={monitor}
 								infrastructureMonitor={infrastructureMonitor}
 							/>
 						)}
 					</Box>
-					{!isCreate && (
+					{!isCreate && monitor && (
 						<MonitorActionButtons
 							monitor={monitor}
 							isBusy={isBusy}

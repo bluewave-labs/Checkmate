@@ -12,9 +12,9 @@ import Icon from "../Icon";
 
 // Utils
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { useSidebar } from "@/Hooks/useSidebar.js";
 
 const URL_MAP = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
@@ -65,8 +65,7 @@ const Sidebar = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	// Redux state
-	const collapsed = useSelector((state) => state.ui.sidebar?.collapsed ?? false);
+	const { collapsed, width, transition } = useSidebar();
 
 	const menu = getMenu(t);
 	const otherMenuItems = getOtherMenuItems(t);
@@ -75,20 +74,19 @@ const Sidebar = () => {
 	return (
 		<Stack
 			height="100vh"
-			width={
-				collapsed
-					? "var(--env-var-side-bar-collapsed-width)"
-					: "var(--env-var-side-bar-width)"
-			}
+			width={width}
 			component="aside"
-			position="sticky"
+			position="fixed"
 			top={0}
-			borderRight={`1px solid ${theme.palette.primary.lowContrast}`}
+			left={0}
 			paddingTop={theme.spacing(6)}
 			paddingBottom={theme.spacing(6)}
 			gap={theme.spacing(6)}
 			sx={{
-				transition: "width 650ms cubic-bezier(0.36, -0.01, 0, 0.77)",
+				transition,
+				backgroundColor: "#000000",
+				borderRight: "1px solid #344054",
+				zIndex: 1000,
 			}}
 		>
 			<CollapseButton collapsed={collapsed} />
