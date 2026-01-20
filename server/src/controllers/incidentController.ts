@@ -1,3 +1,4 @@
+import { AppError } from "@/utils/AppError.js";
 import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "incidentController";
@@ -18,7 +19,7 @@ class IncidentController {
 		try {
 			const result = await this.incidentService.getIncidentsByTeam({
 				teamId: req?.user?.teamId,
-				query: req?.query,
+				query: req?.query?.limit,
 			});
 
 			return res.status(200).json({
@@ -33,10 +34,15 @@ class IncidentController {
 
 	getIncidentSummary = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const summary = await this.incidentService.getIncidentSummary({
-				teamId: req?.user?.teamId,
-				query: req?.query,
-			});
+			const teamId = req.user?.teamId;
+
+			if (!teamId) {
+				throw new AppError({ message: "Team ID is required", service: SERVICE_NAME, status: 400 });
+			}
+
+			const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+			const summary = await this.incidentService.getIncidentSummary(req?.user?.teamId, limit);
 
 			return res.status(200).json({
 				success: true,

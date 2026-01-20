@@ -18,3 +18,32 @@ export interface Incident {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface IncidentSummaryTopMonitor {
+	monitorId: string;
+	monitorName: string | null;
+	incidentCount: number;
+}
+
+export interface IncidentSummaryItem {
+	id: string;
+	monitorId: string;
+	monitorName: string | null;
+	status: boolean;
+	startTime: string;
+	endTime: string | null;
+	resolutionType: IncidentResolutionType;
+	message: string | null;
+	statusCode: number | null;
+	createdAt: string;
+}
+
+export interface IncidentSummary {
+	total: number;
+	totalActive: number;
+	totalManualResolutions: number;
+	totalAutomaticResolutions: number;
+	avgResolutionTimeHours: number;
+	topMonitor: IncidentSummaryTopMonitor | null;
+	latestIncidents: IncidentSummaryItem[];
+}

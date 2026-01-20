@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Typography, useTheme } from "@mui/material";
 
 const IncidentTable = ({
+	monitors = [],
 	incidents = [],
 	incidentsCount = 0,
 	isLoading = false,
@@ -44,7 +45,11 @@ const IncidentTable = ({
 		{
 			id: "monitorName",
 			content: t("incidentsTableMonitorName"),
-			render: (row) => row.monitorName ?? "N/A",
+			render: (row) => {
+				console.log(monitors, row);
+				const monitor = monitors.find((monitor) => monitor.id === row.monitorId);
+				return monitor ? monitor.name : "N/A";
+			},
 		},
 		{
 			id: "status",
@@ -130,7 +135,7 @@ const IncidentTable = ({
 								lineHeight: 1.2,
 							}}
 							onClick={() => {
-								handleResolveIncident(row._id);
+								handleResolveIncident(row.id);
 							}}
 						>
 							{t("incidentsPage.incidentsTableActionResolveManually")}

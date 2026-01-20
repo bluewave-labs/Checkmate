@@ -45,9 +45,8 @@ const useFetchIncidents = () => {
 			setNetworkError(false);
 
 			const res = await networkService.getIncidentsByTeam(config);
-
 			setIncidents(res.data?.data?.incidents || []);
-			setIncidentsCount(res.data?.data?.incidentsCount || 0);
+			setIncidentsCount(res.data?.data?.count || 0);
 		} catch (error) {
 			setNetworkError(true);
 			console.error(t("incidentsPage.errorFetchingIncidents"), error);

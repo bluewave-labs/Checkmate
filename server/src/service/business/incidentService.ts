@@ -1,6 +1,7 @@
 const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
+import { ParseBoolean } from "@/utils/utils.js";
 import type { IIncidentsRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 
@@ -136,16 +137,13 @@ class IncidentService {
 
 			const startDate = dateRangeLookup[dateRange];
 
-			const endDate = new Date();
-
 			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
 			const parsedRowsPerPage = Number.isFinite(parseInt(rowsPerPage)) ? parseInt(rowsPerPage) : 20;
-			const parsedStatus = status === "true" ? "true" : status === "false" ? "false" : undefined;
+			const parsedStatus = typeof status === "undefined" ? undefined : ParseBoolean(status);
 
-			const res = await this.incidentsRepository.findByTeamId(
+			const incidents = await this.incidentsRepository.findByTeamId(
 				teamId,
 				startDate,
-				endDate,
 				parsedPage,
 				parsedRowsPerPage,
 				sortOrder,
@@ -154,18 +152,9 @@ class IncidentService {
 				resolutionType
 			);
 
-			// const result = await this.db.incidentModule.getIncidentsByTeam({
-			// 	teamId,
-			// 	sortOrder,
-			// 	dateRange,
-			// 	page,
-			// 	rowsPerPage,
-			// 	status,
-			// 	monitorId,
-			// 	resolutionType,
-			// });
+			const count = await this.incidentsRepository.countByTeamId(teamId, startDate, parsedStatus, monitorId, resolutionType);
 
-			return res;
+			return { incidents, count };
 		} catch (error: any) {
 			this.logger.error({
 				service: SERVICE_NAME,
@@ -178,18 +167,14 @@ class IncidentService {
 		}
 	};
 
-	getIncidentSummary = async ({ teamId, query }: { teamId: string; query?: any }) => {
+	getIncidentSummary = async (teamId: string, limit?: string) => {
 		try {
 			if (!teamId) {
-				throw this.errorService.createBadRequestError("No team ID in request");
+				throw this.errorService.createBadRequestError(" team ID in request");
 			}
 
-			const { limit } = query || {};
-
-			const summary = await this.db.incidentModule.getIncidentSummary({
-				teamId,
-				limit,
-			});
+			const parsedLimit = limit && Number.isFinite(parseInt(limit, 10)) ? parseInt(limit, 10) : 10;
+			const summary = await this.incidentsRepository.findSummaryByTeamId(teamId, parsedLimit);
 
 			return summary;
 		} catch (error: any) {
@@ -256,7 +241,7 @@ class IncidentService {
 
 			for (const item of resolveItems as any[]) {
 				try {
-					await this.resolveIncident(item.monitor);
+					await this.resolveIncidentForMonitor(item.monitor);
 				} catch (error: any) {
 					this.logger.error({
 						service: SERVICE_NAME,
@@ -377,6 +362,20 @@ class IncidentService {
 			});
 			throw error;
 		}
+	};
+
+	private resolveIncidentForMonitor = async (monitor: Monitor) => {
+		if (!monitor?.id) {
+			return;
+		}
+		const incident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
+		if (!incident) {
+			return;
+		}
+		incident.status = false;
+		incident.endTime = new Date().toISOString();
+		incident.resolutionType = "automatic";
+		await this.incidentsRepository.updateById(incident.id, incident.teamId, incident);
 	};
 }
 

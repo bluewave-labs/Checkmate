@@ -1,4 +1,4 @@
-const ParseBoolean = (value) => {
+export const ParseBoolean = (value: boolean | string | null | undefined) => {
 	if (value === true || value === "true") {
 		return true;
 	} else if (value === false || value === "false" || value === null || value === undefined) {
@@ -6,7 +6,7 @@ const ParseBoolean = (value) => {
 	}
 };
 
-const getTokenFromHeaders = (headers) => {
+export const getTokenFromHeaders = (headers: Record<string, string>) => {
 	const authorizationHeader = headers.authorization;
 	if (!authorizationHeader) throw new Error("No auth headers");
 
@@ -15,5 +15,3 @@ const getTokenFromHeaders = (headers) => {
 
 	return parts[1];
 };
-
-export { ParseBoolean, getTokenFromHeaders };

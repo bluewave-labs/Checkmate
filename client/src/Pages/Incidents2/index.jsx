@@ -88,7 +88,7 @@ const Incidents2 = () => {
 	useEffect(() => {
 		const lookup = monitors?.reduce((acc, monitor) => {
 			acc[monitor.id] = {
-				_id: monitor.id,
+				id: monitor.id,
 				name: monitor.name,
 				type: monitor.type,
 			};
@@ -132,6 +132,7 @@ const Incidents2 = () => {
 			/>
 
 			<IncidentTable
+				monitors={monitors || []}
 				incidents={incidents || []}
 				incidentsCount={incidentsCount || 0}
 				isLoading={isLoadingIncidents}
