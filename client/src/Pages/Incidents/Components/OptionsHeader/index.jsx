@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 
 //Utils
 import { useTheme } from "@emotion/react";
-import SkeletonLayout from "./skeleton.jsx";
 import { useTranslation } from "react-i18next";
 
 const OptionsHeader = ({
@@ -15,27 +14,27 @@ const OptionsHeader = ({
 	monitors,
 	filter = "all",
 	setFilter,
-	dateRange = "hour",
+	dateRange = "all",
 	setDateRange,
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const monitorNames = typeof monitors !== "undefined" ? Object.values(monitors) : [];
+
 	const filterOptions = [
-		{ _id: "all", name: t("incidentsOptionsHeaderFilterAll") },
-		{ _id: "down", name: t("incidentsOptionsHeaderFilterDown") },
-		{ _id: "resolve", name: t("incidentsOptionsHeaderFilterCannotResolve") },
-		{ _id: "resolved", name: t("incidentsOptionsHeaderFilterResolved") },
+		{ _id: "all", name: t("incidentsPage.incidentsOptionsHeaderFilterAll") },
+		{ _id: "active", name: t("incidentsPage.incidentsOptionsHeaderFilterActive") },
+		{ _id: "resolved", name: t("incidentsPage.incidentsOptionsHeaderFilterResolved") },
+		{ _id: "manual", name: t("incidentsPage.incidentsOptionsHeaderFilterManual") },
 	];
 
-	// The stacks below which are three in number have the same style so
 	const stackStyles = {
 		direction: "row",
 		alignItems: "center",
 		gap: theme.spacing(6),
 	};
 
-	if (!shouldRender) return <SkeletonLayout />;
+	if (!shouldRender) return;
 
 	return (
 		<Stack

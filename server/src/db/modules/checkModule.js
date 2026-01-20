@@ -178,41 +178,6 @@ class CheckModule {
 		}
 	};
 
-	ackCheck = async (checkId, teamId, ack) => {
-		try {
-			const updatedCheck = await CheckModel.findOneAndUpdate(
-				{ _id: checkId, "metadata.teamId": teamId },
-				{ $set: { ack, ackAt: new Date() } },
-				{ new: true }
-			);
-
-			if (!updatedCheck) {
-				throw new Error("Check not found");
-			}
-
-			return updatedCheck;
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "ackCheck";
-			throw error;
-		}
-	};
-
-	ackAllChecks = async (monitorId, teamId, ack, path) => {
-		try {
-			const filter =
-				path === "monitor"
-					? { "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) }
-					: { "metadata.teamId": new mongoose.Types.ObjectId(teamId) };
-			const updatedChecks = await CheckModel.updateMany(filter, { $set: { ack, ackAt: new Date() } });
-			return updatedChecks.modifiedCount;
-		} catch (error) {
-			error.service = SERVICE_NAME;
-			error.method = "ackAllChecks";
-			throw error;
-		}
-	};
-
 	getChecksSummaryByTeamId = async ({ teamId }) => {
 		try {
 			const matchStage = {

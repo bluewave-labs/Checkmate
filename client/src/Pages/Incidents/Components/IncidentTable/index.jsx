@@ -1,10 +1,5 @@
 //Components
-import Stack from "@mui/material/Stack";
 import DataTable from "@/Components/v1/Table/index.jsx";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
 import TableSkeleton from "@/Components/v1/Table/skeleton.jsx";
 import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
@@ -13,176 +8,70 @@ import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 
 //Utils
-import { formatDateWithTz } from "@/Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
 import { useSelector } from "react-redux";
-import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import {
-	useFetchChecksTeam,
-	useFetchChecksByMonitor,
-	useResolveIncident,
-} from "@/Hooks/checkHooks.js";
 import { Button, Typography, useTheme } from "@mui/material";
-import { lighten } from "@mui/material/styles";
-
-const GetTooltip = (row) => {
-	const theme = useTheme();
-	const phases = row?.timings?.phases;
-
-	const phaseKeyFormattingMap = {
-		firstByte: "first byte",
-	};
-	return (
-		<Stack
-			backgroundColor={lighten(theme.palette.primary.main, 0.1)}
-			border={`1px solid ${theme.palette.primary.lowContrast}`}
-			borderRadius={theme.shape.borderRadius}
-			py={theme.spacing(2)}
-			px={theme.spacing(4)}
-		>
-			<Typography
-				variant="body2"
-				color={theme.palette.primary.contrastText}
-			>{`Status code: ${row?.statusCode}`}</Typography>
-			<Typography
-				variant="body2"
-				color={theme.palette.primary.contrastText}
-			>{`Response time: ${row?.responseTime} ms`}</Typography>
-			{phases && (
-				<>
-					<Typography
-						variant="body2"
-						color={theme.palette.primary.contrastText}
-					>{`Request timing: `}</Typography>
-					<Table
-						size="small"
-						sx={{ ml: theme.spacing(2), mt: theme.spacing(2) }}
-					>
-						<TableBody>
-							{Object.keys(phases)?.map((phaseKey) => (
-								<TableRow key={phaseKey}>
-									<TableCell sx={{ border: "none", p: 0 }}>
-										<Typography
-											variant="body2"
-											color="success"
-										>
-											{`${phaseKeyFormattingMap[phaseKey] || phaseKey}:`}
-										</Typography>
-									</TableCell>
-									<TableCell sx={{ border: "none", p: 0 }}>
-										<Typography
-											color={theme.palette.primary.contrastText}
-											variant="body2"
-										>{`${phases[phaseKey]} ms`}</Typography>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</>
-			)}
-		</Stack>
-	);
-};
 
 const IncidentTable = ({
-	isLoading,
-	monitors,
-	selectedMonitor,
-	filter,
-	dateRange,
-	updateTrigger,
-	setUpdateTrigger,
+	monitors = [],
+	incidents = [],
+	incidentsCount = 0,
+	isLoading = false,
+	networkError = false,
+	page = 0,
+	rowsPerPage = 10,
+	handleChangePage,
+	handleChangeRowsPerPage,
+	resolveIncident,
+	handleUpdateTrigger,
 }) => {
-	//Redux state
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
-	//Local state
-	const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState(10);
-	const selectedMonitorDetails = monitors?.[selectedMonitor];
-	const selectedMonitorType = selectedMonitorDetails?.type;
-
-	//Hooks
-	const [resolveIncident, resolveLoading] = useResolveIncident();
-
-	const [checksMonitor, checksCountMonitor, isLoadingMonitor, networkErrorMonitor] =
-		useFetchChecksByMonitor({
-			monitorId: selectedMonitor === "0" ? undefined : selectedMonitor,
-			type: selectedMonitorType,
-			status: false,
-			sortOrder: "desc",
-			limit: null,
-			dateRange,
-			filter: filter === "resolved" ? "all" : filter,
-			ack: filter === "resolved" ? true : false,
-			page: page,
-			rowsPerPage: rowsPerPage,
-			enabled: selectedMonitor !== "0",
-			updateTrigger,
-		});
-
-	const [checksTeam, checksCountTeam, isLoadingTeam, networkErrorTeam] =
-		useFetchChecksTeam({
-			status: false,
-			sortOrder: "desc",
-			limit: null,
-			dateRange,
-			filter: filter === "resolved" ? "all" : filter,
-			ack: filter === "resolved" ? true : false,
-			page: page,
-			rowsPerPage: rowsPerPage,
-			enabled: selectedMonitor === "0",
-			updateTrigger,
-		});
-
-	const checks = selectedMonitor === "0" ? checksTeam : checksMonitor;
-	const checksCount = selectedMonitor === "0" ? checksCountTeam : checksCountMonitor;
-	isLoading = isLoadingTeam || isLoadingMonitor;
-	const networkError = selectedMonitor === "0" ? networkErrorTeam : networkErrorMonitor;
-
 	const { t } = useTranslation();
+	const theme = useTheme();
 
-	//Handlers
-	const handleChangePage = (_, newPage) => {
-		setPage(newPage);
-	};
-
-	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(event.target.value);
-	};
-
-	const handleResolveIncident = (checkId) => {
-		resolveIncident(checkId, setUpdateTrigger);
+	const handleResolveIncident = async (incidentId) => {
+		try {
+			await resolveIncident(incidentId);
+			handleUpdateTrigger();
+		} catch (error) {
+			console.error(t("incidentsPage.errorResolvingIncident"), error);
+		}
 	};
 
 	const headers = [
 		{
 			id: "monitorName",
 			content: t("incidentsTableMonitorName"),
-			render: (row) => monitors[row.monitorId]?.name ?? "N/A",
+			render: (row) => {
+				console.log(monitors, row);
+				const monitor = monitors.find((monitor) => monitor.id === row.monitorId);
+				return monitor ? monitor.name : "N/A";
+			},
 		},
 		{
 			id: "status",
 			content: t("incidentsTableStatus"),
 			render: (row) => {
-				const status = row.status === true ? "up" : "down";
+				const status = row.status === true ? "down" : "up";
+				const statusText =
+					row.status === true ? t("incidentsPage.active") : t("incidentsPage.resolved");
 				return (
 					<StatusLabel
 						status={status}
-						text={status}
-						customStyles={{ textTransform: "capitalize" }}
+						text={statusText}
 					/>
 				);
 			},
 		},
 		{
-			id: "dateTime",
-			content: t("incidentsTableDateTime"),
+			id: "startTime",
+			content: t("incidentsPage.startTime"),
 			render: (row) => {
 				const formattedDate = formatDateWithTz(
-					row.createdAt,
+					row.startTime || row.createdAt,
 					"YYYY-MM-DD HH:mm:ss A",
 					uiTimezone
 				);
@@ -190,36 +79,83 @@ const IncidentTable = ({
 			},
 		},
 		{
+			id: "endTime",
+			content: t("incidentsPage.endTime"),
+			render: (row) => {
+				if (row.endTime) {
+					return formatDateWithTz(row.endTime, "YYYY-MM-DD HH:mm:ss A", uiTimezone);
+				}
+				return "-";
+			},
+		},
+		{
+			id: "resolutionType",
+			content: t("incidentsPage.resolutionType"),
+			render: (row) => {
+				if (row.resolutionType) {
+					return (
+						<Typography
+							variant="body2"
+							sx={{
+								textTransform: "capitalize",
+								color:
+									row.resolutionType === "manual"
+										? theme.palette.accent.main
+										: theme.palette.success.main,
+							}}
+						>
+							{row.resolutionType}
+						</Typography>
+					);
+				}
+				return "-";
+			},
+		},
+		{
 			id: "statusCode",
 			content: t("incidentsTableStatusCode"),
 			render: (row) => <HttpStatusLabel status={row.statusCode} />,
 		},
-		{ id: "message", content: t("incidentsTableMessage"), render: (row) => row.message },
+		{
+			id: "message",
+			content: t("incidentsTableMessage"),
+			render: (row) => row.message || "-",
+		},
 		{
 			id: "action",
 			content: t("actions"),
 			render: (row) => {
-				return row.ack === false ? (
-					<Button
-						variant="contained"
-						color="accent"
-						onClick={() => {
-							handleResolveIncident(row._id);
-						}}
-					>
-						{t("incidentsTableActionResolve")}
-					</Button>
-				) : (
-					<Typography>
-						{t("incidentsTableResolvedAt")}{" "}
-						{formatDateWithTz(row.ackAt, "YYYY-MM-DD HH:mm:ss A", uiTimezone)}
-					</Typography>
-				);
+				if (row.status === true) {
+					return (
+						<Button
+							variant="contained"
+							color="accent"
+							sx={{
+								minHeight: "max-content",
+								lineHeight: 1.2,
+							}}
+							onClick={() => {
+								handleResolveIncident(row.id);
+							}}
+						>
+							{t("incidentsPage.incidentsTableActionResolveManually")}
+						</Button>
+					);
+				} else {
+					return (
+						<Typography
+							variant="body2"
+							color={theme.palette.primary.contrastTextSecondary}
+						>
+							{t("incidentsPage.incidentsTableResolved")}
+						</Typography>
+					);
+				}
 			},
 		},
 	];
 
-	if (isLoading || resolveLoading) return <TableSkeleton />;
+	if (isLoading) return <TableSkeleton />;
 
 	if (networkError) {
 		return (
@@ -229,20 +165,25 @@ const IncidentTable = ({
 		);
 	}
 
-	if (!isLoading && typeof checksCount === "undefined") {
-		return <GenericFallback>{t("incidentsTableNoIncidents")}</GenericFallback>;
+	if (!isLoading && !networkError && incidents?.length === 0) {
+		return (
+			<GenericFallback>
+				{t("incidentsTableNoIncidents", "No incidents found")}
+			</GenericFallback>
+		);
 	}
+
+	const incidentsData = Array.isArray(incidents) ? incidents : [];
 
 	return (
 		<>
 			<DataTable
 				headers={headers}
-				data={checks}
-				config={{ tooltipContent: GetTooltip }}
+				data={incidentsData}
 			/>
 			<Pagination
-				paginationLabel={t("incidentsTablePaginationLabel")}
-				itemCount={checksCount}
+				paginationLabel={t("incidentsTablePaginationLabel", "Incidents")}
+				itemCount={incidentsCount || 0}
 				page={page}
 				rowsPerPage={rowsPerPage}
 				handleChangePage={handleChangePage}
@@ -253,12 +194,16 @@ const IncidentTable = ({
 };
 
 IncidentTable.propTypes = {
-	isLoading: PropTypes.bool,
-	monitors: PropTypes.object,
-	selectedMonitor: PropTypes.string,
-	filter: PropTypes.string,
-	dateRange: PropTypes.string,
-	updateTrigger: PropTypes.bool,
-	setUpdateTrigger: PropTypes.func,
+	incidents: PropTypes.array.isRequired, // Array of incident objects
+	incidentsCount: PropTypes.number.isRequired, // Total count for pagination
+	isLoading: PropTypes.bool.isRequired, // Loading state
+	networkError: PropTypes.bool, // Network error object
+	page: PropTypes.number.isRequired, // Current page number
+	rowsPerPage: PropTypes.number.isRequired, // Number of rows per page
+	handleChangePage: PropTypes.func.isRequired, // Handler for page change
+	handleChangeRowsPerPage: PropTypes.func.isRequired, // Handler for rows per page change
+	resolveIncident: PropTypes.func.isRequired,
+	handleUpdateTrigger: PropTypes.func.isRequired,
 };
+
 export default IncidentTable;
