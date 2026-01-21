@@ -22,7 +22,7 @@ class SettingsController {
 	buildAppSettings = (dbSettings: any) => {
 		const sanitizedSettings = { ...dbSettings };
 		delete sanitizedSettings.version;
-
+		delete sanitizedSettings.jwtSecret;
 		const returnSettings = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
@@ -59,7 +59,7 @@ class SettingsController {
 	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
 		await updateAppSettingsBodyValidation.validateAsync(req.body);
 
-		const updatedSettings = await this.db.settingsModule.updateAppSettings(req.body);
+		const updatedSettings = await this.settingsService.updateDbSettings(req.body);
 		const returnSettings = this.buildAppSettings(updatedSettings);
 		return res.status(200).json({
 			success: true,
