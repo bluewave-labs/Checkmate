@@ -1,7 +1,10 @@
 import { Router } from "express";
-import { isAllowed } from "../../middleware/isAllowed.js";
+import { isAllowed } from "../middleware/isAllowed.js";
 class QueueRoutes {
-	constructor(queueController) {
+	private router: Router;
+	private queueController: any;
+
+	constructor(queueController: any) {
 		this.router = Router();
 		this.queueController = queueController;
 		this.initRoutes();

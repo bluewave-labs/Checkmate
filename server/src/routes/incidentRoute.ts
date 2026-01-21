@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { isAllowed } from "../../middleware/isAllowed.js";
+import { isAllowed } from "../middleware/isAllowed.js";
 
 class IncidentRoutes {
-	constructor(incidentController) {
+	private router: Router;
+	private incidentController: any;
+
+	constructor(incidentController: any) {
 		this.router = Router();
 		this.incidentController = incidentController;
 		this.initRoutes();
