@@ -1,4 +1,3 @@
-import TranslationService from "../service/system/translationService.js";
 import MongoDB from "../db/MongoDB.js";
 import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
@@ -81,6 +80,7 @@ import {
 	MongoSettingsRepository,
 	MongoNotificationsRepository,
 	MongoIncidentRepository,
+	MongoTeamsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -91,14 +91,13 @@ import {
 	ISettingsRepository,
 	INotificationsRepository,
 	IIncidentsRepository,
+	ITeamsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 
 export type InitializedServices = {
-	//v1
 	settingsService: any;
-	translationService: any;
 	db: any;
 	networkService: any;
 	emailService: any;
@@ -127,6 +126,7 @@ export type InitializedServices = {
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
 	incidentsRepository: IIncidentsRepository;
+	teamsRepository: ITeamsRepository;
 };
 
 export const initializeServices = async ({
@@ -138,9 +138,6 @@ export const initializeServices = async ({
 	envSettings: EnvConfig;
 	settingsService: any;
 }): Promise<InitializedServices> => {
-	const translationService = new TranslationService(logger);
-	await translationService.initialize();
-
 	// Create DB
 	const inviteModule = new InviteModule({ InviteToken, crypto });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
@@ -177,6 +174,8 @@ export const initializeServices = async ({
 	const settingsRepository = new MongoSettingsRepository();
 	const notificationsRepository = new MongoNotificationsRepository();
 	const incidentsRepository = new MongoIncidentRepository();
+	const teamsRepository = new MongoTeamsRepository();
+
 	const networkService = new NetworkService({
 		axios,
 		got,
@@ -260,6 +259,7 @@ export const initializeServices = async ({
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		teamsRepository,
 	});
 
 	const diagnosticService = new DiagnosticService();
@@ -289,7 +289,6 @@ export const initializeServices = async ({
 	const services = {
 		//v1
 		settingsService,
-		translationService,
 		db,
 		networkService,
 		emailService,
@@ -318,6 +317,7 @@ export const initializeServices = async ({
 		settingsRepository,
 		notificationsRepository,
 		incidentsRepository,
+		teamsRepository,
 	};
 
 	return services;

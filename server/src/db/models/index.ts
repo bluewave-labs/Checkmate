@@ -27,3 +27,6 @@ export { default as NotificationModel } from "@/db/models/Notification.js";
 
 export * from "@/db/models/Incident.js";
 export { default as IncidentModel } from "@/db/models/Incident.js";
+
+export * from "@/db/models/Team.js";
+export { default as TeamModel } from "@/db/models/Team.js";
