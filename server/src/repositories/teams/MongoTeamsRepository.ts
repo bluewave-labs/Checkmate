@@ -1,9 +1,9 @@
 import { Team } from "@/types/index.js";
 import { TeamDocument, TeamModel } from "@/db/models/index.js";
-import { ITeamRepository } from "@/repositories/index.js";
+import { ITeamsRepository } from "@/repositories/index.js";
 import mongoose from "mongoose";
 
-class MongoTeamRepository implements ITeamRepository {
+class MongoTeamsRepository implements ITeamsRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
 		if (!value) {
 			return "";
@@ -33,4 +33,4 @@ class MongoTeamRepository implements ITeamRepository {
 	};
 }
 
-export default MongoTeamRepository;
+export default MongoTeamsRepository;

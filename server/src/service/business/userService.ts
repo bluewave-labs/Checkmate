@@ -4,7 +4,7 @@ import {
 	IRecoveryTokensRepository,
 	IUsersRepository,
 	ISettingsRepository,
-	ITeamRepository,
+	ITeamsRepository,
 } from "@/repositories/index.js";
 import type { User } from "@/types/index.js";
 import bcrypt from "bcryptjs";
@@ -27,7 +27,7 @@ class UserService {
 	private invitesRepository: IInvitesRepository;
 	private recoveryTokensRepository: IRecoveryTokensRepository;
 	private settingsRepository: ISettingsRepository;
-	private teamsRepository: ITeamRepository;
+	private teamsRepository: ITeamsRepository;
 
 	constructor({
 		crypto,
@@ -55,7 +55,7 @@ class UserService {
 		invitesRepository: IInvitesRepository;
 		recoveryTokensRepository: IRecoveryTokensRepository;
 		settingsRepository: ISettingsRepository;
-		teamsRepository: ITeamRepository;
+		teamsRepository: ITeamsRepository;
 	}) {
 		this.emailService = emailService;
 		this.settingsService = settingsService;

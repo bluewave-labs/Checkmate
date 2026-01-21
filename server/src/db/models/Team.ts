@@ -2,7 +2,8 @@ import { Schema, model, type Types } from "mongoose";
 
 import type { Team } from "@/types/index.js";
 
-interface TeamDocument extends Team {
+type TeamDocumentBase = Omit<Team, "id" | "createdAt" | "updatedAt"> & {};
+interface TeamDocument extends TeamDocumentBase {
 	_id: Types.ObjectId;
 	createdAt: Date;
 	updatedAt: Date;
