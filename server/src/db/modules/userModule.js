@@ -2,12 +2,11 @@ const SERVICE_NAME = "userModule";
 const DUPLICATE_KEY_CODE = 11000; // MongoDB error code for duplicate key
 
 class UserModule {
-	constructor({ User, Team, GenerateAvatarImage, ParseBoolean, stringService }) {
+	constructor({ User, Team, GenerateAvatarImage, ParseBoolean }) {
 		this.User = User;
 		this.Team = Team;
 		this.GenerateAvatarImage = GenerateAvatarImage;
 		this.ParseBoolean = ParseBoolean;
-		this.stringService = stringService;
 	}
 
 	checkSuperadmin = async () => {
@@ -53,7 +52,7 @@ class UserModule {
 			return await this.User.findOne({ _id: newUser._id }).select("-password").select("-profileImage"); // .select() doesn't work with create, need to save then find
 		} catch (error) {
 			if (error.code === DUPLICATE_KEY_CODE) {
-				error.message = this.stringService.dbUserExists;
+				error.message = "User already exists";
 			}
 			error.service = SERVICE_NAME;
 			error.method = "insertUser";
@@ -66,7 +65,7 @@ class UserModule {
 			// We can strip the hash before returning the user
 			const user = await this.User.findOne({ email: email }).select("-profileImage");
 			if (!user) {
-				throw new Error(this.stringService.dbUserNotFound);
+				throw new Error("User not found");
 			}
 			return user;
 		} catch (error) {
@@ -117,7 +116,7 @@ class UserModule {
 		try {
 			const deletedUser = await this.User.findByIdAndDelete(userId);
 			if (!deletedUser) {
-				throw new Error(this.stringService.dbUserNotFound);
+				throw new Error("User not found");
 			}
 			return deletedUser;
 		} catch (error) {

@@ -1,15 +1,14 @@
 import { Router } from "express";
-import { verifyJWT } from "../../middleware/v1/verifyJWT.js";
-import { isAllowed } from "../../middleware/v1/isAllowed.js";
+import { isAllowed } from "../../middleware/isAllowed.js";
 
 class InviteRoutes {
-	constructor(inviteController) {
+	constructor(inviteController, verifyJWT) {
 		this.router = Router();
 		this.inviteController = inviteController;
-		this.initRoutes();
+		this.initRoutes(verifyJWT);
 	}
 
-	initRoutes() {
+	initRoutes(verifyJWT) {
 		this.router.post("/send", verifyJWT, isAllowed(["admin", "superadmin"]), this.inviteController.sendInviteEmail);
 		this.router.post("/verify", this.inviteController.verifyInviteToken);
 		this.router.post("/", verifyJWT, isAllowed(["admin", "superadmin"]), this.inviteController.getInviteToken);

@@ -41,13 +41,6 @@ class MonitorController {
 		return MonitorController.SERVICE_NAME;
 	}
 
-	async verifyTeamAccess(teamId: string, monitorId: string) {
-		const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
-		if (monitor.teamId !== teamId) {
-			throw new AppError({ message: "Access denied", status: 403 });
-		}
-	}
-
 	getMonitorCertificate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getCertificateParamValidation.validateAsync(req.params);

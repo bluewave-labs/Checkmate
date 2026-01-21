@@ -1,6 +1,4 @@
-import ServiceRegistry from "../service/system/serviceRegistry.js";
 import TranslationService from "../service/system/translationService.js";
-import StringService from "../service/system/stringService.js";
 import MongoDB from "../db/MongoDB.js";
 import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
@@ -46,7 +44,7 @@ import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 
 // DB Modules
-import { NormalizeData, NormalizeDataUptimeDetails } from "../utils/dataUtils.js";
+import { NormalizeData } from "../utils/dataUtils.js";
 import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
@@ -100,7 +98,6 @@ export type InitializedSerivces = {
 	//v1
 	settingsService: any;
 	translationService: any;
-	stringService: any;
 	db: any;
 	networkService: any;
 	emailService: any;
@@ -140,21 +137,16 @@ export const initializeServices = async ({
 	envSettings: any;
 	settingsService: any;
 }): Promise<InitializedSerivces> => {
-	const serviceRegistry = new ServiceRegistry({ logger });
-	(ServiceRegistry as any).instance = serviceRegistry;
-
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
 
-	const stringService = new StringService(translationService);
-
 	// Create DB
-	const inviteModule = new InviteModule({ InviteToken, crypto, stringService });
-	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, stringService, AppSettings });
-	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean, stringService });
+	const inviteModule = new InviteModule({ InviteToken, crypto });
+	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
+	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
 	const notificationModule = new NotificationModule({ Notification: NotificationModel, Monitor });
-	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto, stringService });
+	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto });
 	const settingsModule = new SettingsModule({ AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
@@ -195,7 +187,6 @@ export const initializeServices = async ({
 		http,
 		Docker,
 		net,
-		stringService,
 		settingsService,
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
@@ -205,7 +196,6 @@ export const initializeServices = async ({
 		db,
 		logger,
 		errorService,
-		stringService,
 		incidentsRepository,
 	});
 
@@ -261,7 +251,6 @@ export const initializeServices = async ({
 		emailService,
 		settingsService,
 		logger,
-		stringService,
 		jwt,
 		errorService,
 		jobQueue: superSimpleQueue,
@@ -281,14 +270,11 @@ export const initializeServices = async ({
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
 		db,
-		settingsService,
-		stringService,
 		errorService,
 		monitorsRepository,
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
-		stringService,
 		emailService,
 		papaparse,
 		logger,
@@ -304,7 +290,6 @@ export const initializeServices = async ({
 		//v1
 		settingsService,
 		translationService,
-		stringService,
 		db,
 		networkService,
 		emailService,
@@ -334,10 +319,6 @@ export const initializeServices = async ({
 		notificationsRepository,
 		incidentsRepository,
 	};
-
-	Object.values(services).forEach((service) => {
-		ServiceRegistry.register(service.serviceName, service);
-	});
 
 	return services;
 };

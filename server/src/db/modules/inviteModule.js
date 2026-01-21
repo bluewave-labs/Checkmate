@@ -1,10 +1,11 @@
+import { AppError } from "@/utils/AppError.js";
+
 const SERVICE_NAME = "inviteModule";
 
 class InviteModule {
-	constructor({ InviteToken, crypto, stringService }) {
+	constructor({ InviteToken, crypto }) {
 		this.InviteToken = InviteToken;
 		this.crypto = crypto;
-		this.stringService = stringService;
 	}
 
 	requestInviteToken = async (userData) => {
@@ -27,7 +28,7 @@ class InviteModule {
 				token,
 			});
 			if (invite === null) {
-				throw new Error(this.stringService.authInviteNotFound);
+				throw new AppError({ message: "Invite token not found", status: 404 });
 			}
 			return invite;
 		} catch (error) {
@@ -42,7 +43,7 @@ class InviteModule {
 				token,
 			});
 			if (invite === null) {
-				throw new Error(this.stringService.authInviteNotFound);
+				throw new Error("Invite not found");
 			}
 			return invite;
 		} catch (error) {

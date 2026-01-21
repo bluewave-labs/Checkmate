@@ -53,10 +53,8 @@ class NetworkService implements INetworkService {
 	private GameDig: any;
 	private ping: any;
 	private logger: any;
-	private http: any;
 	private Docker: any;
 	private net: any;
-	private stringService: any;
 	private settingsService: any;
 
 	private buildStatusResponse = <T>({
@@ -124,7 +122,6 @@ class NetworkService implements INetworkService {
 		http,
 		Docker,
 		net,
-		stringService,
 		settingsService,
 	}: {
 		axios: any;
@@ -137,7 +134,6 @@ class NetworkService implements INetworkService {
 		http: any;
 		Docker: any;
 		net: any;
-		stringService: any;
 		settingsService: any;
 	}) {
 		this.TYPE_PING = "ping";
@@ -152,14 +148,12 @@ class NetworkService implements INetworkService {
 		this.PING_ERROR = 5001;
 		this.axios = axios;
 		this.https = https;
-		this.http = http;
 		this.jmespath = jmespath;
 		this.GameDig = GameDig;
 		this.ping = ping;
 		this.logger = logger;
 		this.Docker = Docker;
 		this.net = net;
-		this.stringService = stringService;
 		this.settingsService = settingsService;
 
 		const cacheable = new CacheableLookup();
@@ -326,7 +320,7 @@ class NetworkService implements INetworkService {
 				} else {
 					httpResponse.code = 500;
 					httpResponse.status = false;
-					httpResponse.message = this.stringService.httpExpectedValueFail;
+					httpResponse.message = "Expected value did not match";
 					return httpResponse;
 				}
 			}
@@ -336,7 +330,7 @@ class NetworkService implements INetworkService {
 				const isJson = contentType?.includes("application/json");
 				if (!isJson) {
 					httpResponse.status = false;
-					httpResponse.message = this.stringService.httpNotJson;
+					httpResponse.message = "Response is not JSON";
 					return httpResponse;
 				}
 				try {
@@ -353,7 +347,7 @@ class NetworkService implements INetworkService {
 						} else {
 							httpResponse.status = false;
 							httpResponse.code = 500;
-							httpResponse.message = this.stringService.httpJsonPathFail;
+							httpResponse.message = "Expected value did not match";
 							httpResponse.extracted = extracted;
 							return httpResponse;
 						}
@@ -365,14 +359,14 @@ class NetworkService implements INetworkService {
 						} else {
 							httpResponse.status = false;
 							httpResponse.code = 500;
-							httpResponse.message = this.stringService.httpJsonPathFail;
+							httpResponse.message = "Expected value did not match";
 							httpResponse.extracted = extracted;
 							return httpResponse;
 						}
 					}
 				} catch {
 					httpResponse.status = false;
-					httpResponse.message = this.stringService.httpJsonPathError;
+					httpResponse.message = "Error evaluating JSON path";
 					return httpResponse;
 				}
 			}
@@ -486,7 +480,7 @@ class NetworkService implements INetworkService {
 
 				dockerResponse.code = 404;
 				dockerResponse.status = false;
-				dockerResponse.message = this.stringService.dockerNotFound;
+				dockerResponse.message = "Docker container not found";
 				return dockerResponse;
 			}
 
@@ -568,7 +562,7 @@ class NetworkService implements INetworkService {
 				overrides: {
 					code: 200,
 					status: (response as { success?: boolean })?.success ?? false,
-					message: this.stringService.portSuccess,
+					message: "Port check successful",
 					responseTime,
 				},
 			});
@@ -576,7 +570,7 @@ class NetworkService implements INetworkService {
 			if (error) {
 				portResponse.code = this.NETWORK_ERROR;
 				portResponse.status = false;
-				portResponse.message = this.stringService.portFail;
+				portResponse.message = "Port check failed";
 				return portResponse;
 			}
 

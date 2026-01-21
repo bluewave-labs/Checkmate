@@ -63,6 +63,7 @@
 		"@types/gamedig": "^5.0.3",
 		"@types/jest": "^30.0.0",
 		"@types/jmespath": "^0.15.2",
+		"@types/jsdom": "^27.0.0",
 		"@types/jsonwebtoken": "9.0.10",
 		"@types/mjml": "^4.7.4",
 		"@types/multer": "^2.0.0",

@@ -5,27 +5,11 @@ const SERVICE_NAME = "maintenanceWindowService";
 class MaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private db: any;
-	private settingsService: any;
-	private stringService: any;
 	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
 
-	constructor({
-		db,
-		settingsService,
-		stringService,
-		errorService,
-		monitorsRepository,
-	}: {
-		db: any;
-		settingsService: any;
-		stringService: any;
-		errorService: any;
-		monitorsRepository: IMonitorsRepository;
-	}) {
+	constructor({ db, errorService, monitorsRepository }: { db: any; errorService: any; monitorsRepository: IMonitorsRepository }) {
 		this.db = db;
-		this.settingsService = settingsService;
-		this.stringService = stringService;
 		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
 	}
