@@ -7,12 +7,12 @@ import path from "path";
 import fs from "fs";
 import { runMigrations } from "./db/migration/index.js";
 
-import Logger from "./utils/logger.js";
-import SettingsService from "./service/system/settingsService.js";
+import Logger, { ILogger } from "@/utils/logger.js";
+import SettingsService from "@/service/system/settingsService.js";
 import AppSettings from "./db/models/AppSettings.js";
 
 const SERVICE_NAME = "Server";
-let logger;
+let logger: ILogger;
 
 const startApp = async () => {
 	// FE path

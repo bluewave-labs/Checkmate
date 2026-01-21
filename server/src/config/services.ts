@@ -92,8 +92,10 @@ import {
 	INotificationsRepository,
 	IIncidentsRepository,
 } from "@/repositories/index.js";
+import { ILogger } from "@/utils/logger.js";
+import { EnvConfig } from "@/service/system/settingsService.js";
 
-export type InitializedSerivces = {
+export type InitializedServices = {
 	//v1
 	settingsService: any;
 	translationService: any;
@@ -132,10 +134,10 @@ export const initializeServices = async ({
 	envSettings,
 	settingsService,
 }: {
-	logger: any;
-	envSettings: any;
+	logger: ILogger;
+	envSettings: EnvConfig;
 	settingsService: any;
-}): Promise<InitializedSerivces> => {
+}): Promise<InitializedServices> => {
 	const translationService = new TranslationService(logger);
 	await translationService.initialize();
 
@@ -205,7 +207,7 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ logger, checkService });
+	const bufferService = new BufferService({ logger, checkService, settingsService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
 
