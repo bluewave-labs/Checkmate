@@ -73,6 +73,7 @@ class IncidentController {
 
 	resolveIncidentManually = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			console.log({ user: req.user });
 			const resolvedIncident = await this.incidentService.resolveIncident(
 				req?.params?.incidentId,
 				req?.user?.id,

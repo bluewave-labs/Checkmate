@@ -24,7 +24,6 @@ import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
 import { MonitorService } from "@/service/index.js";
 import IncidentService from "../service/business/incidentService.js";
-import papaparse from "papaparse";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -276,7 +275,6 @@ export const initializeServices = async ({
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
 		emailService,
-		papaparse,
 		logger,
 		errorService,
 		games,
