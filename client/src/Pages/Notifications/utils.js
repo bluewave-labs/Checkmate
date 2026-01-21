@@ -1,10 +1,10 @@
 export const NOTIFICATION_TYPES = [
-	{ _id: 1, name: "E-mail", value: "email" },
-	{ _id: 2, name: "Slack", value: "slack" },
-	{ _id: 3, name: "PagerDuty", value: "pager_duty" },
-	{ _id: 4, name: "Webhook", value: "webhook" },
-	{ _id: 5, name: "Discord", value: "discord" },
-	{ _id: 6, name: "Matrix", value: "matrix" },
+	{ id: 1, name: "E-mail", value: "email" },
+	{ id: 2, name: "Slack", value: "slack" },
+	{ id: 3, name: "PagerDuty", value: "pager_duty" },
+	{ id: 4, name: "Webhook", value: "webhook" },
+	{ id: 5, name: "Discord", value: "discord" },
+	{ id: 6, name: "Matrix", value: "matrix" },
 ];
 
 export const TITLE_MAP = {
