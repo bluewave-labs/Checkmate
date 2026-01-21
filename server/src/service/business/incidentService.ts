@@ -124,13 +124,21 @@ class IncidentService {
 		}
 	};
 
-	getIncidentsByTeam = async ({ teamId, query }: { teamId: string; query?: any }) => {
+	getIncidentsByTeam = async (
+		teamId: string,
+		sortOrder: string,
+		dateRange: string,
+		page: string,
+		rowsPerPage: string,
+		status: string,
+		monitorId: string,
+		resolutionType: string
+	) => {
 		try {
 			if (!teamId) {
 				throw this.errorService.createBadRequestError("No team ID in request");
 			}
 
-			const { sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType } = query || {};
 			const startDate = dateRangeLookup[dateRange];
 
 			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
