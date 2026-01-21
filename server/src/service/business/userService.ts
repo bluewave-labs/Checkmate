@@ -1,9 +1,15 @@
-import { IInvitesRepository, IMonitorsRepository, IRecoveryTokensRepository, IUsersRepository, ISettingsRepository } from "@/repositories/index.js";
-import Team from "@/db/models/Team.js";
+import {
+	IInvitesRepository,
+	IMonitorsRepository,
+	IRecoveryTokensRepository,
+	IUsersRepository,
+	ISettingsRepository,
+	ITeamRepository,
+} from "@/repositories/index.js";
 import type { User } from "@/types/index.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
-import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import { ISuperSimpleQueue } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 
 const SERVICE_NAME = "userService";
 
@@ -21,6 +27,7 @@ class UserService {
 	private invitesRepository: IInvitesRepository;
 	private recoveryTokensRepository: IRecoveryTokensRepository;
 	private settingsRepository: ISettingsRepository;
+	private teamsRepository: ITeamRepository;
 
 	constructor({
 		crypto,
@@ -34,6 +41,7 @@ class UserService {
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		teamsRepository,
 	}: {
 		crypto: any;
 		emailService: any;
@@ -47,6 +55,7 @@ class UserService {
 		invitesRepository: IInvitesRepository;
 		recoveryTokensRepository: IRecoveryTokensRepository;
 		settingsRepository: ISettingsRepository;
+		teamsRepository: ITeamRepository;
 	}) {
 		this.emailService = emailService;
 		this.settingsService = settingsService;
@@ -59,6 +68,7 @@ class UserService {
 		this.invitesRepository = invitesRepository;
 		this.recoveryTokensRepository = recoveryTokensRepository;
 		this.settingsRepository = settingsRepository;
+		this.teamsRepository = teamsRepository;
 	}
 
 	get serviceName() {
@@ -85,10 +95,11 @@ class UserService {
 			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
 			await this.settingsRepository.update({ jwtSecret });
 			// Create a new team
-			const team = new Team({
-				email: user.email,
-			});
-			user.teamId = team._id;
+			if (!user.email) {
+				throw new AppError({ message: "Email is required for first user", service: SERVICE_NAME, method: "registerUser", status: 400 });
+			}
+			const team = await this.teamsRepository.create(user.email);
+			user.teamId = team.id;
 		}
 
 		const newUser = await this.usersRepository.create({ ...user }, file);

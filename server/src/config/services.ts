@@ -80,6 +80,7 @@ import {
 	MongoSettingsRepository,
 	MongoNotificationsRepository,
 	MongoIncidentRepository,
+	MongoTeamsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -90,6 +91,7 @@ import {
 	ISettingsRepository,
 	INotificationsRepository,
 	IIncidentsRepository,
+	ITeamsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
@@ -124,6 +126,7 @@ export type InitializedServices = {
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
 	incidentsRepository: IIncidentsRepository;
+	teamsRepository: ITeamsRepository;
 };
 
 export const initializeServices = async ({
@@ -171,6 +174,8 @@ export const initializeServices = async ({
 	const settingsRepository = new MongoSettingsRepository();
 	const notificationsRepository = new MongoNotificationsRepository();
 	const incidentsRepository = new MongoIncidentRepository();
+	const teamsRepository = new MongoTeamsRepository();
+
 	const networkService = new NetworkService({
 		axios,
 		got,
@@ -254,6 +259,7 @@ export const initializeServices = async ({
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		teamsRepository,
 	});
 
 	const diagnosticService = new DiagnosticService();
@@ -311,6 +317,7 @@ export const initializeServices = async ({
 		settingsRepository,
 		notificationsRepository,
 		incidentsRepository,
+		teamsRepository,
 	};
 
 	return services;
