@@ -1,13 +1,20 @@
 import { createMonitorsBodyValidation } from "@/validation/joi.js";
 import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
-import type { MonitorType } from "@/types/monitor.js";
+import type {
+	MonitorType,
+	MonitorsWithChecksByTeamIdResult,
+	UptimeDetailsResult,
+	HardwareDetailsResult,
+	PageSpeedDetailsResult,
+} from "@/types/monitor.js";
 import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 
 import { AppError } from "../infrastructure/errorService.js";
+import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 
 const SERVICE_NAME = "MonitorService";
 type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
@@ -17,13 +24,13 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
-	createBulkMonitors(fileData: string, userId: string, teamId: string): Promise<any>;
-	addDemoMonitors(args: { userId: string; teamId: string }): Promise<any[]>;
+	createBulkMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
+	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
-	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<any>;
-	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<any>;
-	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<any>;
+	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
+	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
+	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -34,7 +41,7 @@ export interface IMonitorService {
 		filter?: string;
 		field?: string;
 		order?: "asc" | "desc";
-	}): Promise<any>;
+	}): Promise<Monitor[] | null>;
 	getMonitorsWithChecksByTeamId(args: {
 		teamId: string;
 		limit?: number;
@@ -45,7 +52,7 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 		explain?: boolean;
-	}): Promise<{ summary: any; count: number; monitors: any[] }>;
+	}): Promise<MonitorsWithChecksByTeamIdResult>;
 	getAllGames(): any;
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
@@ -59,15 +66,14 @@ export interface IMonitorService {
 
 	// other
 	sendTestEmail(args: { to: string }): Promise<string>;
-	exportMonitorsToJSON(args: { teamId: string }): Promise<any[]>;
+	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
 }
 
 export class MonitorService implements IMonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private jobQueue: any;
+	private jobQueue: ISuperSimpleQueue;
 	private emailService: any;
-	private papaparse: any;
 	private logger: any;
 	private errorService: any;
 	private games: any;
@@ -79,7 +85,6 @@ export class MonitorService implements IMonitorService {
 	constructor({
 		jobQueue,
 		emailService,
-		papaparse,
 		logger,
 		errorService,
 		games,
@@ -88,9 +93,8 @@ export class MonitorService implements IMonitorService {
 		monitorStatsRepository,
 		statusPagesRepository,
 	}: {
-		jobQueue: any;
+		jobQueue: ISuperSimpleQueue;
 		emailService: any;
-		papaparse: any;
 		logger: any;
 		errorService: any;
 		games: any;
@@ -101,7 +105,6 @@ export class MonitorService implements IMonitorService {
 	}) {
 		this.jobQueue = jobQueue;
 		this.emailService = emailService;
-		this.papaparse = papaparse;
 		this.logger = logger;
 		this.errorService = errorService;
 		this.games = games;
@@ -149,63 +152,14 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createBulkMonitors = async (fileData: string, userId: string, teamId: string): Promise<any> => {
-		const { parse } = this.papaparse;
+	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
+		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+		if (!monitors || monitors.length === 0) {
+			throw new AppError("Failed to create monitors", 500);
+		}
 
-		return new Promise<any>((resolve, reject) => {
-			parse(fileData, {
-				header: true,
-				skipEmptyLines: true,
-				transform: (value: string, header: string): string | number | undefined => {
-					if (value === "") return undefined; // Empty fields become undefined
-
-					// Handle 'port' and 'interval' fields, check if they're valid numbers
-					if (["port", "interval"].includes(header)) {
-						const num = parseInt(value, 10);
-						if (isNaN(num)) {
-							throw this.errorService.createBadRequestError(`${header} should be a valid number, got: ${value}`);
-						}
-						return num;
-					}
-
-					return value;
-				},
-				complete: async ({ data, errors }: { data: any[]; errors: Error[] }): Promise<void> => {
-					try {
-						if (errors.length > 0) {
-							throw this.errorService.createServerError("Error parsing CSV");
-						}
-
-						if (!data || data.length === 0) {
-							throw this.errorService.createServerError("CSV file contains no data rows");
-						}
-
-						const enrichedData = data.map((monitor: Monitor) => ({
-							...monitor,
-							userId,
-							teamId,
-							description: monitor.description || monitor.name || monitor.url,
-							name: monitor.name || monitor.url,
-							type: monitor.type || "http",
-						}));
-
-						await createMonitorsBodyValidation.validateAsync(enrichedData);
-
-						const monitors = await this.monitorsRepository.createBulkMonitors(enrichedData);
-
-						await Promise.all(
-							monitors.map(async (monitor: Monitor) => {
-								this.jobQueue.addJob(monitor.id, monitor);
-							})
-						);
-
-						resolve(monitors);
-					} catch (error) {
-						reject(error);
-					}
-				},
-			});
-		});
+		await Promise.all(createdMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
+		return createdMonitors;
 	};
 
 	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<any[]> => {
@@ -241,7 +195,7 @@ export class MonitorService implements IMonitorService {
 		monitorId: string;
 		dateRange: string;
 		normalize?: boolean;
-	}): Promise<any> => {
+	}): Promise<UptimeDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -276,7 +230,15 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 
-	getHardwareDetailsById = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
+	getHardwareDetailsById = async ({
+		teamId,
+		monitorId,
+		dateRange,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+	}): Promise<HardwareDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -307,7 +269,15 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 
-	getPageSpeedDetailsById = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
+	getPageSpeedDetailsById = async ({
+		teamId,
+		monitorId,
+		dateRange,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+	}): Promise<PageSpeedDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -336,12 +306,20 @@ export class MonitorService implements IMonitorService {
 			monitorStats,
 		};
 	};
-	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<any> => {
+	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		return monitor;
 	};
 
-	getMonitorsByTeamId = async ({ teamId, type, filter }: { teamId: string; type?: MonitorType | MonitorType[]; filter?: string }): Promise<any> => {
+	getMonitorsByTeamId = async ({
+		teamId,
+		type,
+		filter,
+	}: {
+		teamId: string;
+		type?: MonitorType | MonitorType[];
+		filter?: string;
+	}): Promise<Monitor[] | null> => {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			type,
 			filter,
@@ -369,7 +347,7 @@ export class MonitorService implements IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 		explain?: boolean;
-	}): Promise<{ summary: any; count: number; monitors: any[] }> => {
+	}): Promise<MonitorsWithChecksByTeamIdResult> => {
 		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId);
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {

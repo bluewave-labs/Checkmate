@@ -1,5 +1,5 @@
 import joi from "joi";
-import { ROLES, VALID_ROLES } from "../utils/roleUtils.js";
+import { UserRoles } from "@/types/user.js";
 
 //****************************************
 // Custom Validators
@@ -689,7 +689,7 @@ const editUserByIdBodyValidation = joi.object({
 	email: joi.string().email().required(),
 	role: joi
 		.array()
-		.items(joi.string().valid(...VALID_ROLES))
+		.items(joi.string().valid(...UserRoles))
 		.min(1)
 		.required(),
 });
@@ -700,7 +700,7 @@ const editSuperadminUserByIdBodyValidation = joi.object({
 	email: joi.string().email().required(),
 	role: joi
 		.array()
-		.items(joi.string().valid(...VALID_ROLES, ROLES.SUPERADMIN))
+		.items(joi.string().valid(...UserRoles))
 		.min(1)
 		.required(),
 });

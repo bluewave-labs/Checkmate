@@ -1,5 +1,6 @@
 import { AppError } from "@/utils/AppError.js";
 import { Request, Response, NextFunction } from "express";
+import { requireTeamId } from "./controllerUtils.js";
 
 const SERVICE_NAME = "incidentController";
 
@@ -17,10 +18,19 @@ class IncidentController {
 
 	getIncidentsByTeam = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const result = await this.incidentService.getIncidentsByTeam({
-				teamId: req?.user?.teamId,
-				query: req?.query,
-			});
+			const { sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType } = req.query || {};
+
+			const teamId = requireTeamId(req.user?.teamId);
+			const result = await this.incidentService.getIncidentsByTeam(
+				teamId,
+				sortOrder,
+				dateRange,
+				page,
+				rowsPerPage,
+				status,
+				monitorId,
+				resolutionType
+			);
 
 			return res.status(200).json({
 				success: true,

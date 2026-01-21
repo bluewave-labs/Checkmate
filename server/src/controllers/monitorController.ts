@@ -174,27 +174,15 @@ class MonitorController {
 
 	createBulkMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			if (!req.file) {
-				throw new AppError({ message: "No file uploaded", status: 400 });
+			const userId = req.user?.id;
+			if (!userId) {
+				throw new AppError({ message: "User ID is required", status: 400 });
 			}
 
-			if (!req.file.mimetype.includes("csv")) {
-				throw new AppError({ message: "File is not a CSV", status: 400 });
-			}
-
-			if (req.file.size === 0) {
-				throw new AppError({ message: "File is empty", status: 400 });
-			}
-
-			const userId = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const fileData = req?.file?.buffer?.toString("utf-8");
-			if (!fileData) {
-				throw new AppError({ message: "Cannot get file from buffer", status: 400 });
-			}
-
-			const monitors = await this.monitorService.createBulkMonitors(fileData, userId, teamId);
+			const data = req.body;
+			const monitors = await this.monitorService.createBulkMonitors(data, userId, teamId);
 
 			return res.status(200).json({
 				success: true,
