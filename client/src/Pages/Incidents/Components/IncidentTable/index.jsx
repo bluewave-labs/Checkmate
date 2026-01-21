@@ -27,7 +27,7 @@ const IncidentTable = ({
 	handleChangeRowsPerPage,
 	resolveIncident,
 	handleUpdateTrigger,
-	onOpenDetails
+	onOpenDetails,
 }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 

@@ -2,7 +2,7 @@
 import { Stack, Typography, Grid, Box, Button, Divider } from "@mui/material";
 import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
 import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
-import SummaryCard from "@/Pages/Incidents2/Components/SummaryCard";
+import SummaryCard from "../SummaryCard/index.jsx";
 import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
 
 // Utils
@@ -14,8 +14,8 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
 // Hooks
-import useFetchIncidents from "@/Pages/Incidents2/hooks/useFetchIncidents";
-import useGetIncidentsDuration from "@/Pages/Incidents2/hooks/useGetIncidentsDuration";
+import useFetchIncidents from "../../hooks/useFetchIncidents.js";
+import useGetIncidentsDuration from "../../hooks/useGetIncidentsDuration.js";
 
 const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 	const theme = useTheme();

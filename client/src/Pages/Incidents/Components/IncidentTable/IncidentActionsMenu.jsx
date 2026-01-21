@@ -2,7 +2,7 @@
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Settings from "../../../../assets/icons/settings-bold.svg?react";
+//import Settings from "../../../../assets/icons/settings-bold.svg?react";
 import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
 import useFetchIncidents from "../../hooks/useFetchIncidents";
 
@@ -94,7 +94,7 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 					},
 				}}
 			>
-				<Settings />
+				{/* <Settings /> */}M
 			</IconButton>
 
 			<Menu

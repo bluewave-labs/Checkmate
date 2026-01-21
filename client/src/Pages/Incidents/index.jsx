@@ -157,7 +157,7 @@ const Incidents2 = () => {
 				handleUpdateTrigger={handleUpdateTrigger}
 				onOpenDetails={handleOpenDetails}
 			/>
-				<IncidentDetailsModal
+			<IncidentDetailsModal
 				open={isDetailsOpen}
 				incidentId={selectedIncidentId}
 				onClose={handleCloseDetails}
