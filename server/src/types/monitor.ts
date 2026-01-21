@@ -44,3 +44,78 @@ export interface Monitor {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface MonitorsSummary {
+	totalMonitors: number;
+	upMonitors: number;
+	downMonitors: number;
+	pausedMonitors: number;
+}
+
+export interface MonitorWithChecks extends Monitor {
+	checks: import("./check.js").Check[];
+}
+
+export interface MonitorsWithChecksByTeamIdResult {
+	summary: MonitorsSummary | null;
+	count: number;
+	monitors: MonitorWithChecks[];
+}
+
+export interface UptimeDetailsResult {
+	monitorData: {
+		monitor: Monitor;
+		groupedChecks: import("./check.js").GroupedCheck[];
+		groupedUpChecks: import("./check.js").GroupedCheck[];
+		groupedDownChecks: import("./check.js").GroupedCheck[];
+		groupedAvgResponseTime: number;
+		groupedUptimePercentage: number;
+	};
+	monitorStats: import("./monitorStats.js").MonitorStats | null;
+}
+
+export interface HardwareDetailsResult extends Monitor {
+	stats: {
+		aggregateData: {
+			latestCheck: import("./check.js").Check | null;
+			totalChecks: number;
+		};
+		upChecks: {
+			totalChecks: number;
+		};
+		checks: Array<{
+			_id: string;
+			avgCpuUsage: number;
+			avgMemoryUsage: number;
+			avgTemperature: number[];
+			disks: Array<{
+				name: string;
+				readSpeed: number;
+				writeSpeed: number;
+				totalBytes: number;
+				freeBytes: number;
+				usagePercent: number;
+			}>;
+			net: Array<{
+				name: string;
+				bytesSentPerSecond: number;
+				deltaBytesRecv: number;
+				deltaPacketsSent: number;
+				deltaPacketsRecv: number;
+				deltaErrIn: number;
+				deltaErrOut: number;
+				deltaDropIn: number;
+				deltaDropOut: number;
+				deltaFifoIn: number;
+				deltaFifoOut: number;
+			}>;
+		}>;
+	};
+}
+
+export interface PageSpeedDetailsResult {
+	monitor: Monitor & {
+		checks: import("./check.js").Check[];
+	};
+	monitorStats: import("./monitorStats.js").MonitorStats | null;
+}

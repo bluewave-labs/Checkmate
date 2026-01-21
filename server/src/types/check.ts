@@ -156,11 +156,17 @@ export interface HardwareChecksResult {
 	}>;
 }
 
+export interface GroupedCheck {
+	_id: string;
+	avgResponseTime: number;
+	totalChecks: number;
+}
+
 export interface UptimeChecksResult {
 	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
-	groupedChecks: Array<{ _id: string; avgResponseTime: number; totalChecks: number }>;
-	groupedUpChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
-	groupedDownChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+	groupedChecks: GroupedCheck[];
+	groupedUpChecks: GroupedCheck[];
+	groupedDownChecks: GroupedCheck[];
 	uptimePercentage: number;
 	avgResponseTime: number;
 }
@@ -171,3 +177,11 @@ export interface ChecksSummary {
 	downChecks: number;
 	cannotResolveChecks: number;
 }
+
+export type NormalizedCheck<T extends Check = Check> = T & {
+	originalResponseTime: number;
+};
+
+export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
+	originalAvgResponseTime: number;
+};

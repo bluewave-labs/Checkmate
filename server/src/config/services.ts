@@ -1,4 +1,3 @@
-import TranslationService from "../service/system/translationService.js";
 import MongoDB from "../db/MongoDB.js";
 import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
@@ -24,7 +23,6 @@ import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
 import { MonitorService } from "@/service/index.js";
 import IncidentService from "../service/business/incidentService.js";
-import papaparse from "papaparse";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -82,6 +80,7 @@ import {
 	MongoSettingsRepository,
 	MongoNotificationsRepository,
 	MongoIncidentRepository,
+	MongoTeamsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -92,12 +91,13 @@ import {
 	ISettingsRepository,
 	INotificationsRepository,
 	IIncidentsRepository,
+	ITeamsRepository,
 } from "@/repositories/index.js";
+import { ILogger } from "@/utils/logger.js";
+import { EnvConfig } from "@/service/system/settingsService.js";
 
-export type InitializedSerivces = {
-	//v1
+export type InitializedServices = {
 	settingsService: any;
-	translationService: any;
 	db: any;
 	networkService: any;
 	emailService: any;
@@ -126,6 +126,7 @@ export type InitializedSerivces = {
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
 	incidentsRepository: IIncidentsRepository;
+	teamsRepository: ITeamsRepository;
 };
 
 export const initializeServices = async ({
@@ -133,13 +134,10 @@ export const initializeServices = async ({
 	envSettings,
 	settingsService,
 }: {
-	logger: any;
-	envSettings: any;
+	logger: ILogger;
+	envSettings: EnvConfig;
 	settingsService: any;
-}): Promise<InitializedSerivces> => {
-	const translationService = new TranslationService(logger);
-	await translationService.initialize();
-
+}): Promise<InitializedServices> => {
 	// Create DB
 	const inviteModule = new InviteModule({ InviteToken, crypto });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
@@ -176,6 +174,8 @@ export const initializeServices = async ({
 	const settingsRepository = new MongoSettingsRepository();
 	const notificationsRepository = new MongoNotificationsRepository();
 	const incidentsRepository = new MongoIncidentRepository();
+	const teamsRepository = new MongoTeamsRepository();
+
 	const networkService = new NetworkService({
 		axios,
 		got,
@@ -206,7 +206,7 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ logger, checkService });
+	const bufferService = new BufferService({ logger, checkService, settingsService });
 
 	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
 
@@ -259,6 +259,7 @@ export const initializeServices = async ({
 		invitesRepository,
 		recoveryTokensRepository,
 		settingsRepository,
+		teamsRepository,
 	});
 
 	const diagnosticService = new DiagnosticService();
@@ -276,7 +277,6 @@ export const initializeServices = async ({
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
 		emailService,
-		papaparse,
 		logger,
 		errorService,
 		games,
@@ -289,7 +289,6 @@ export const initializeServices = async ({
 	const services = {
 		//v1
 		settingsService,
-		translationService,
 		db,
 		networkService,
 		emailService,
@@ -318,6 +317,7 @@ export const initializeServices = async ({
 		settingsRepository,
 		notificationsRepository,
 		incidentsRepository,
+		teamsRepository,
 	};
 
 	return services;

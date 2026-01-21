@@ -1,15 +1,18 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import multer from "multer";
 const upload = multer();
 
 class StatusPageRoutes {
-	constructor(statusPageController, verifyJWT) {
+	private router: Router;
+	private statusPageController: any;
+
+	constructor(statusPageController: any, verifyJWT: RequestHandler) {
 		this.router = Router();
 		this.statusPageController = statusPageController;
 		this.initRoutes(verifyJWT);
 	}
 
-	initRoutes(verifyJWT) {
+	initRoutes(verifyJWT: RequestHandler) {
 		this.router.get("/", this.statusPageController.getStatusPage);
 		this.router.get("/team", verifyJWT, this.statusPageController.getStatusPagesByTeamId);
 

@@ -10,26 +10,35 @@ import StatusPageController from "../controllers/statusPageController.js";
 import NotificationController from "../controllers/notificationController.js";
 import DiagnosticController from "../controllers/diagnosticController.js";
 import IncidentController from "../controllers/incidentController.js";
-import type { InitializedSerivces } from "@/config/services.js";
-export const initializeControllers = (services: InitializedSerivces) => {
-	const controllers: Record<string, any> = {};
+import type { InitializedServices } from "@/config/services.js";
 
-	controllers.authController = new AuthController(services.userService);
-
-	controllers.monitorController = new MonitorController(services.monitorService);
-
-	controllers.settingsController = new SettingsController(services.settingsService, services.emailService, services.db);
-	controllers.checkController = new CheckController(services.checkService);
-	controllers.inviteController = new InviteController(services.inviteService);
-
-	controllers.maintenanceWindowController = new MaintenanceWindowController(services.maintenanceWindowService);
-	controllers.queueController = new QueueController(services.jobQueue);
-	controllers.logController = new LogController(services.logger);
-	controllers.statusPageController = new StatusPageController(services.db);
-	controllers.notificationController = new NotificationController(services.notificationsService, services.db, services.monitorsRepository);
-	controllers.diagnosticController = new DiagnosticController(services.diagnosticService);
-
-	controllers.incidentController = new IncidentController(services.incidentService);
-
-	return controllers;
+export interface InitializedControllers {
+	authController: AuthController;
+	monitorController: MonitorController;
+	settingsController: SettingsController;
+	checkController: CheckController;
+	inviteController: InviteController;
+	maintenanceWindowController: MaintenanceWindowController;
+	queueController: QueueController;
+	logController: LogController;
+	statusPageController: StatusPageController;
+	notificationController: NotificationController;
+	diagnosticController: DiagnosticController;
+	incidentController: IncidentController;
+}
+export const initializeControllers = (services: InitializedServices): InitializedControllers => {
+	return {
+		authController: new AuthController(services.userService),
+		monitorController: new MonitorController(services.monitorService),
+		settingsController: new SettingsController(services.settingsService, services.emailService, services.db),
+		checkController: new CheckController(services.checkService),
+		inviteController: new InviteController(services.inviteService),
+		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
+		queueController: new QueueController(services.jobQueue),
+		logController: new LogController(services.logger),
+		statusPageController: new StatusPageController(services.db),
+		notificationController: new NotificationController(services.notificationsService, services.db, services.monitorsRepository),
+		diagnosticController: new DiagnosticController(services.diagnosticService),
+		incidentController: new IncidentController(services.incidentService),
+	};
 };

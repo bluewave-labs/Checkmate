@@ -5,12 +5,27 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
-import { handleErrors } from "./middleware/handleErrors.js";
-import { setupRoutes } from "./config/routes.js";
-import { generalApiLimiter } from "./middleware/rateLimiter.js";
-import { sanitizeBody, sanitizeQuery } from "./middleware/sanitization.js";
+import { handleErrors } from "@/middleware/handleErrors.js";
+import { generalApiLimiter } from "@/middleware/rateLimiter.js";
+import { sanitizeBody, sanitizeQuery } from "@/middleware/sanitization.js";
+import { setupRoutes } from "@/config/routes.js";
+import { InitializedServices } from "@/config/services.js";
+import { InitializedControllers } from "@/config/controllers.js";
+import { EnvConfig } from "@/service/system/settingsService.js";
 
-export const createApp = ({ services, controllers, envSettings, frontendPath, openApiSpec }) => {
+export const createApp = ({
+	services,
+	controllers,
+	envSettings,
+	frontendPath,
+	openApiSpec,
+}: {
+	services: InitializedServices;
+	controllers: InitializedControllers;
+	envSettings: EnvConfig;
+	frontendPath: string;
+	openApiSpec: any;
+}) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
 	app.use(generalApiLimiter);
