@@ -1,6 +1,9 @@
 import { Router } from "express";
 class NotificationRoutes {
-	constructor(notificationController) {
+	private router: Router;
+	private notificationController: any;
+
+	constructor(notificationController: any) {
 		this.router = Router();
 		this.notificationController = notificationController;
 		this.initializeRoutes();
