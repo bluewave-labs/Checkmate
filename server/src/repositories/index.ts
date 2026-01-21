@@ -30,3 +30,6 @@ export { default as MongoIncidentRepository } from "@/repositories/incidents/Mon
 
 export * from "@/repositories/teams/ITeamsRepository.js";
 export { default as MongoTeamsRepository } from "@/repositories/teams/MongoTeamsRepository.js";
+
+export * from "@/repositories/maintenance-windows/IMaintenanceWindowsRepository.js";
+export { default as MongoMaintenanceWindowsRepository } from "@/repositories/maintenance-windows/MongoMaintenanceWindowsRepository.js";

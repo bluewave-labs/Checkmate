@@ -61,7 +61,6 @@ import Incident from "../db/models/Incident.js";
 
 import StatusPageModule from "../db/modules/statusPageModule.js";
 import MaintenanceWindowModule from "../db/modules/maintenanceWindowModule.js";
-import NotificationModule from "../db/modules/notificationModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
@@ -138,7 +137,6 @@ export const initializeServices = async ({
 	// Create DB
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
-	const notificationModule = new NotificationModule({ Notification: NotificationModel, Monitor });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
@@ -146,7 +144,6 @@ export const initializeServices = async ({
 		envSettings,
 		statusPageModule,
 		maintenanceWindowModule,
-		notificationModule,
 		incidentModule,
 	});
 
