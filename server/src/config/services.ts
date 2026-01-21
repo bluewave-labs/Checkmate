@@ -1,4 +1,3 @@
-import TranslationService from "../service/system/translationService.js";
 import MongoDB from "../db/MongoDB.js";
 import NetworkService from "../service/infrastructure/networkService.js";
 import EmailService from "../service/infrastructure/emailService.js";
@@ -96,9 +95,7 @@ import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 
 export type InitializedServices = {
-	//v1
 	settingsService: any;
-	translationService: any;
 	db: any;
 	networkService: any;
 	emailService: any;
@@ -138,9 +135,6 @@ export const initializeServices = async ({
 	envSettings: EnvConfig;
 	settingsService: any;
 }): Promise<InitializedServices> => {
-	const translationService = new TranslationService(logger);
-	await translationService.initialize();
-
 	// Create DB
 	const inviteModule = new InviteModule({ InviteToken, crypto });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
@@ -289,7 +283,6 @@ export const initializeServices = async ({
 	const services = {
 		//v1
 		settingsService,
-		translationService,
 		db,
 		networkService,
 		emailService,
