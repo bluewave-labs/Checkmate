@@ -1,6 +1,5 @@
 import type { Check, GroupedCheck, NormalizedCheck, NormalizedUptimeCheck } from "@/types/index.js";
 
-
 const calculatePercentile = (arr: Check[], percentile: number): number => {
 	const sorted = arr.slice().sort((a, b) => a.responseTime - b.responseTime);
 	const index = (percentile / 100) * (sorted.length - 1);

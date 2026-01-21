@@ -146,10 +146,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { monitors: this.mapDocuments(monitors), deletedCount };
 	};
 
-	findMonitorsSummaryByTeamId = async (
-		teamId: string,
-		config?: SummaryConfig
-	): Promise<MonitorsSummary> => {
+	findMonitorsSummaryByTeamId = async (teamId: string, config?: SummaryConfig): Promise<MonitorsSummary> => {
 		const match: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
 		if (config?.type !== undefined) {
 			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
