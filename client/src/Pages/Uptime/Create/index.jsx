@@ -80,13 +80,13 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [isFetchingMonitor] = useFetchMonitorById({
 		monitorId,
 		setMonitor,
-		updateTrigger: true,
+		updateTrigger,
 	});
 
 	// Fetch games
 	const [isFetchingGames] = useFetchMonitorGames({
 		setGames,
-		triggerUpdate: true,
+		updateTrigger,
 	});
 
 	// Combine the loading states
@@ -283,10 +283,6 @@ const UptimeCreate = ({ isClone = false }) => {
 		}));
 	};
 
-	const handlePause = async () => {
-		await pauseMonitor({ monitorId, triggerUpdate });
-	};
-
 	const handleRemove = async (event) => {
 		event.preventDefault();
 		const TEMP_MONITOR = { id: monitor.id };
@@ -438,7 +434,12 @@ const UptimeCreate = ({ isClone = false }) => {
 										/>
 									)
 								}
-								onClick={handlePause}
+								onClick={() => {
+									pauseMonitor({
+										monitorId: monitor?.id,
+										triggerUpdate,
+									});
+								}}
 							>
 								{monitor?.isActive ? t("pause") : t("resume")}
 							</Button>

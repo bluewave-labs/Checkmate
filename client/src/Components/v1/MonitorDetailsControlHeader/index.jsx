@@ -124,7 +124,7 @@ const MonitorDetailsControlHeader = ({
 							});
 						}}
 					>
-						{monitor?.isActive ? "Pause" : "Resume"}
+						{monitor?.isActive ? t("pause") : t("resume")}
 					</Button>
 				)}
 				{isAdmin && (
