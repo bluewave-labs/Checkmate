@@ -75,6 +75,7 @@ import {
 	MongoNotificationsRepository,
 	MongoIncidentRepository,
 	MongoTeamsRepository,
+	MongoMaintenanceWindowsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -86,6 +87,7 @@ import {
 	INotificationsRepository,
 	IIncidentsRepository,
 	ITeamsRepository,
+	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
@@ -121,6 +123,7 @@ export type InitializedServices = {
 	notificationsRepository: INotificationsRepository;
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
+	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 };
 
 export const initializeServices = async ({
@@ -160,6 +163,7 @@ export const initializeServices = async ({
 	const notificationsRepository = new MongoNotificationsRepository();
 	const incidentsRepository = new MongoIncidentRepository();
 	const teamsRepository = new MongoTeamsRepository();
+	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -256,9 +260,9 @@ export const initializeServices = async ({
 		errorService,
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
-		db,
 		errorService,
 		monitorsRepository,
+		maintenanceWindowsRepository,
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
@@ -304,6 +308,7 @@ export const initializeServices = async ({
 		notificationsRepository,
 		incidentsRepository,
 		teamsRepository,
+		maintenanceWindowsRepository,
 	};
 
 	return services;

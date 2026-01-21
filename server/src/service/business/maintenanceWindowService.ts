@@ -1,17 +1,26 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
+import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
+import { ParseBoolean } from "@/utils/utils.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
 class MaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
-	private db: any;
 	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
+	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 
-	constructor({ db, errorService, monitorsRepository }: { db: any; errorService: any; monitorsRepository: IMonitorsRepository }) {
-		this.db = db;
+	constructor({
+		errorService,
+		monitorsRepository,
+		maintenanceWindowsRepository,
+	}: {
+		errorService: any;
+		monitorsRepository: IMonitorsRepository;
+		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	}) {
 		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
+		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 	}
 
 	get serviceName() {
@@ -29,7 +38,7 @@ class MaintenanceWindowService {
 		}
 
 		const dbTransactions = monitorIds.map((monitorId: string) => {
-			return this.db.maintenanceWindowModule.createMaintenanceWindow({
+			return this.maintenanceWindowsRepository.create({
 				teamId,
 				monitorId,
 				name: body.name,
@@ -43,13 +52,19 @@ class MaintenanceWindowService {
 	};
 
 	getMaintenanceWindowById = async ({ id, teamId }: { id: string; teamId: string }) => {
-		const maintenanceWindow = await this.db.maintenanceWindowModule.getMaintenanceWindowById({ id, teamId });
-		return maintenanceWindow;
+		return await this.maintenanceWindowsRepository.findById(id, teamId);
 	};
 
 	getMaintenanceWindowsByTeamId = async ({ teamId, query }: { teamId: string; query: any }) => {
-		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByTeamId(teamId, query);
-		return maintenanceWindows;
+		let { active, page, rowsPerPage, field, order } = query || {};
+
+		active = typeof active === "undefined" ? undefined : ParseBoolean(active);
+		page = parseInt(page) || 0;
+		rowsPerPage = parseInt(rowsPerPage) || 10;
+
+		const maintenanceWindows = await this.maintenanceWindowsRepository.findByTeamId(teamId, active, page, rowsPerPage, field, order);
+		const maintenanceWindowCount = await this.maintenanceWindowsRepository.countByTeamId(teamId, active);
+		return { maintenanceWindows, maintenanceWindowCount };
 	};
 
 	getMaintenanceWindowsByMonitorId = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {

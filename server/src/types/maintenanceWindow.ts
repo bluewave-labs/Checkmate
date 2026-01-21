@@ -1,4 +1,5 @@
 export interface MaintenanceWindow {
+	id: string;
 	monitorId: String;
 	teamId: string;
 	active: boolean;
