@@ -1,6 +1,7 @@
 import { createLogger, format, transports, Logger as WinstonLogger } from "winston";
 import type { Logform } from "winston";
 import dotenv from "dotenv";
+import { EnvConfig } from "@/service/system/settingsService.js";
 dotenv.config();
 
 const SERVICE_NAME = "Logger";
@@ -18,19 +19,26 @@ interface LogEntry extends LogConfig {
 	timestamp: string;
 }
 
-interface EnvSettings {
-	logLevel?: string;
+export interface ILogger {
+	readonly serviceName: string;
+	info(config: LogConfig): void;
+	warn(config: LogConfig): void;
+	error(config: LogConfig): void;
+	debug(config: LogConfig): void;
+	cacheLog(entry: LogEntry): void;
+	getLogs(): LogEntry[];
+	buildLogEntry(level: string, config: LogConfig): LogEntry;
 }
 
-class Logger {
+class Logger implements ILogger {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: WinstonLogger;
-	private envSettings: EnvSettings;
+	private envSettings: Partial<EnvConfig>;
 	private logCache: LogEntry[];
 	private maxCacheSize: number;
 
-	constructor({ envSettings }: { envSettings: EnvSettings }) {
+	constructor({ envSettings }: { envSettings: Partial<EnvConfig> }) {
 		this.envSettings = envSettings;
 		this.logCache = [];
 		this.maxCacheSize = 1000;

@@ -1,4 +1,3 @@
-import { config } from "@/config/index.js";
 import type { Check } from "@/types/index.js";
 
 const SERVICE_NAME = "BufferService";
@@ -12,8 +11,9 @@ class BufferService {
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
 
-	constructor({ logger, checkService }: { logger: any; checkService: any }) {
-		this.BUFFER_TIMEOUT = config.NODE_ENV === "development" ? 10 : 1000 * 60 * 1; // 1 minute
+	constructor({ logger, checkService, settingsService }: { logger: any; checkService: any; settingsService: any }) {
+		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 10 : 1000 * 60 * 1; // 1 minute
+		console.log(this.BUFFER_TIMEOUT);
 		this.logger = logger;
 		this.checksService = checkService;
 		this.SERVICE_NAME = SERVICE_NAME;
