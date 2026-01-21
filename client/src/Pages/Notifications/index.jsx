@@ -100,7 +100,7 @@ const Notifications = () => {
 					<Typography variant="h1">{t("notifications.createTitle")}</Typography>
 					<DataTable
 						config={{
-							onRowClick: (row) => navigate(`/notifications/${row._id}`),
+							onRowClick: (row) => navigate(`/notifications/${row.id}`),
 							rowSX: {
 								cursor: "pointer",
 								"&:hover td": {

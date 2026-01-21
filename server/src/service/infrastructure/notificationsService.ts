@@ -1,14 +1,20 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
 import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
-import { INotificationsRepository } from "@/repositories/index.js";
+import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 export interface INotificationsService {
+	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
+	findById: (id: string, teamId: string) => Promise<Notification>;
+	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
+	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
+	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
 		prevStatus: boolean | undefined,
 		statusChanged: boolean
 	) => Promise<boolean>;
+
 	sendTestNotification: (notification: Notification) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
@@ -19,6 +25,7 @@ export class NotificationsService implements INotificationsService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private notificationsRepository: INotificationsRepository;
+	private monitorsRepository: IMonitorsRepository;
 	private webhookProvider: INotificationProvider;
 	private emailProvider: INotificationProvider;
 	private slackProvider: INotificationProvider;
@@ -29,6 +36,7 @@ export class NotificationsService implements INotificationsService {
 
 	constructor(
 		notificationsRepository: INotificationsRepository,
+		monitorsRepository: IMonitorsRepository,
 		webhookProvider: INotificationProvider,
 		emailProvider: INotificationProvider,
 		slackProvider: INotificationProvider,
@@ -38,6 +46,7 @@ export class NotificationsService implements INotificationsService {
 		logger: any
 	) {
 		this.notificationsRepository = notificationsRepository;
+		this.monitorsRepository = monitorsRepository;
 		this.webhookProvider = webhookProvider;
 		this.emailProvider = emailProvider;
 		this.slackProvider = slackProvider;
@@ -146,5 +155,27 @@ export class NotificationsService implements INotificationsService {
 			return false;
 		}
 		return true;
+	};
+
+	createNotification = async (notificationData: Partial<Notification>): Promise<Notification> => {
+		return await this.notificationsRepository.create(notificationData);
+	};
+
+	findById = async (id: string, teamId: string): Promise<Notification> => {
+		return await this.notificationsRepository.findById(id, teamId);
+	};
+
+	findNotificationsByTeamId = async (teamId: string): Promise<Notification[]> => {
+		return await this.notificationsRepository.findByTeamId(teamId);
+	};
+
+	updateById = async (id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification> => {
+		return await this.notificationsRepository.updateById(id, teamId, updateData);
+	};
+
+	deleteById = async (id: string, teamId: string): Promise<Notification> => {
+		const deleted = await this.notificationsRepository.deleteById(id, teamId);
+		await this.monitorsRepository.removeNotificationFromMonitors(id);
+		return deleted;
 	};
 }
