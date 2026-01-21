@@ -2,7 +2,7 @@
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-//import Settings from "../../../../assets/icons/settings-bold.svg?react";
+import Icon from "@/Components/v1/Icon/index.jsx";
 import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
 import useFetchIncidents from "../../hooks/useFetchIncidents";
 
@@ -51,7 +51,7 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 		e.stopPropagation();
 		closeMenu(e);
 		if (onOpenDetails) {
-			onOpenDetails(incident._id);
+			onOpenDetails(incident.id);
 		}
 	};
 
@@ -59,8 +59,7 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 		e.stopPropagation();
 		closeMenu(e);
 		try {
-			const incidentData = await fetchIncidentById(incident._id);
-			console.log(incidentData);
+			const incidentData = await fetchIncidentById(incident.id);
 			if (incidentData) {
 				const { type, _id: monitorId } = incidentData.monitorId;
 				const path = TypeToPathMap[type];
@@ -94,7 +93,10 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 					},
 				}}
 			>
-				{/* <Settings /> */}M
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu
@@ -134,7 +136,7 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 			</Menu>
 			<ResolveIncidentDialog
 				open={isDialogOpen}
-				incidentId={incident._id}
+				incidentId={incident.id}
 				onClose={closeDialog}
 				onResolve={onResolve}
 			/>
@@ -144,7 +146,7 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 
 IncidentActionsMenu.propTypes = {
 	incident: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
+		id: PropTypes.string.isRequired,
 		status: PropTypes.bool.isRequired,
 	}).isRequired,
 	onResolve: PropTypes.func.isRequired,

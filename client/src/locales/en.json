@@ -1202,6 +1202,7 @@
 		"noIncidentIdProvided": "No incident ID provided",
 		"errorFetchingIncidentSummary": "Error fetching incident summary",
 		"incidentsOptionsHeaderFilterManual": "Manual",
+		"incidentsOptionsHeaderFilterAutomatic": "Automatic",
 		"incidentsOptionsHeaderFilterAll": "All",
 		"incidentsOptionsHeaderFilterActive": "Active",
 		"incidentsOptionsHeaderFilterResolved": "Resolved",

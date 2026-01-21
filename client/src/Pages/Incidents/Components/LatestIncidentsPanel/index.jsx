@@ -84,7 +84,7 @@ const LatestIncidentsPanel = ({ incidents = [], isLoading = false, error = null 
 			) : (
 				<Stack gap={theme.spacing(4)}>
 					{incidents.map((incident, index) => (
-						<Box key={incident._id}>
+						<Box key={incident.id}>
 							<IncidentItem incident={incident} />
 							{index < incidents.length - 1 && <Divider sx={{ mt: theme.spacing(2) }} />}
 						</Box>

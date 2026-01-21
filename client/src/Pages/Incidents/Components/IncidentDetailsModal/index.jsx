@@ -168,7 +168,6 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 								>
 									<Typography
 										variant="body1"
-										color="text.secondary"
 										fontWeight={500}
 										sx={{ minWidth: 70 }}
 									>
@@ -188,7 +187,6 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 								>
 									<Typography
 										variant="body1"
-										color="text.secondary"
 										fontWeight={500}
 										sx={{ minWidth: 70 }}
 									>

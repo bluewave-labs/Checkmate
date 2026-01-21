@@ -26,6 +26,7 @@ const OptionsHeader = ({
 		{ _id: "active", name: t("incidentsPage.incidentsOptionsHeaderFilterActive") },
 		{ _id: "resolved", name: t("incidentsPage.incidentsOptionsHeaderFilterResolved") },
 		{ _id: "manual", name: t("incidentsPage.incidentsOptionsHeaderFilterManual") },
+		{ _id: "automatic", name: t("incidentsPage.incidentsOptionsHeaderFilterAutomatic") },
 	];
 
 	const stackStyles = {

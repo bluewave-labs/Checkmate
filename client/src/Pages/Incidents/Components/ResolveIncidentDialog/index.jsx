@@ -13,7 +13,7 @@ const ResolveIncidentDialog = ({
 	onResolve,
 	onAfterResolve,
 	onResolved,
-	isLoading,
+	isLoading = false,
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -90,16 +90,12 @@ const ResolveIncidentDialog = ({
 
 ResolveIncidentDialog.propTypes = {
 	open: PropTypes.bool.isRequired,
-	incidentId: PropTypes.string.isRequired,
+	incidentId: PropTypes.string,
 	onClose: PropTypes.func.isRequired,
 	onResolve: PropTypes.func.isRequired,
 	onAfterResolve: PropTypes.func,
 	isLoading: PropTypes.bool,
 	onResolved: PropTypes.func,
-};
-
-ResolveIncidentDialog.defaultProps = {
-	isLoading: false,
 };
 
 export default ResolveIncidentDialog;

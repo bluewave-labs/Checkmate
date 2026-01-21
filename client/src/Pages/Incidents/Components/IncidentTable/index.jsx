@@ -13,7 +13,7 @@ import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 
 const IncidentTable = ({
 	monitors = [],
@@ -36,7 +36,7 @@ const IncidentTable = ({
 
 	const handleResolveIncident = async (incidentId, options = {}) => {
 		try {
-			await resolveIncident(incidentId);
+			await resolveIncident(incidentId, options);
 			handleUpdateTrigger();
 		} catch (error) {
 			console.error(t("incidentsPage.errorResolvingIncident"), error);
@@ -48,7 +48,6 @@ const IncidentTable = ({
 			id: "monitorName",
 			content: t("incidentsTableMonitorName"),
 			render: (row) => {
-				console.log(monitors, row);
 				const monitor = monitors.find((monitor) => monitor.id === row.monitorId);
 				return monitor ? monitor.name : "N/A";
 			},

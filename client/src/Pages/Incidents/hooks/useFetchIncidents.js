@@ -71,7 +71,28 @@ const useFetchIncidents = () => {
 		},
 		[fetchIncidentsByTeam]
 	);
-
+	const fetchManualResolvedIncidents = useCallback(
+		async (config = {}) => {
+			await fetchIncidentsByTeam({
+				status: false,
+				resolutionType: "manual",
+				sortOrder: "desc",
+				...config,
+			});
+		},
+		[fetchIncidentsByTeam]
+	);
+	const fetchAutomaticResolvedIncidents = useCallback(
+		async (config = {}) => {
+			await fetchIncidentsByTeam({
+				status: false,
+				resolutionType: "automatic",
+				sortOrder: "desc",
+				...config,
+			});
+		},
+		[fetchIncidentsByTeam]
+	);
 	/**
 	 * Fetch resolved incidents
 	 *
@@ -154,6 +175,7 @@ const useFetchIncidents = () => {
 				createToast({ body: t("incidentsPage.errorResolvingIncident") });
 			}
 		} catch (error) {
+			console.log("cayo a error");
 			setNetworkError(true);
 			console.error(t("incidentsPage.errorResolvingIncident"), error);
 			const errorMessage =
@@ -198,6 +220,8 @@ const useFetchIncidents = () => {
 		fetchIncidentById,
 		resolveIncident,
 		fetchIncidentSummary,
+		fetchManualResolvedIncidents,
+		fetchAutomaticResolvedIncidents,
 	};
 };
 
