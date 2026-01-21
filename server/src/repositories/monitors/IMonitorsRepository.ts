@@ -1,4 +1,4 @@
-import { type MonitorType, type Monitor } from "@/types/index.js";
+import { type MonitorType, type Monitor, type MonitorsSummary } from "@/types/index.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -37,6 +37,6 @@ export interface IMonitorsRepository {
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;
 
 	// other
-	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<any>;
+	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	findGroupsByTeamId(teamId: string): Promise<string[]>;
 }

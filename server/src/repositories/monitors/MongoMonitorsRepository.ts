@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument } from "@/db/models/index.js";
-import type { Monitor } from "@/types/index.js";
+import type { Monitor, MonitorsSummary } from "@/types/index.js";
 import mongoose, { type FilterQuery } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
@@ -149,7 +149,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	findMonitorsSummaryByTeamId = async (
 		teamId: string,
 		config?: SummaryConfig
-	): Promise<{ totalMonitors: number; upMonitors: number; downMonitors: number; pausedMonitors: number }> => {
+	): Promise<MonitorsSummary> => {
 		const match: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
 		if (config?.type !== undefined) {
 			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
