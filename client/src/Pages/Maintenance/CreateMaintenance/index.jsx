@@ -16,7 +16,7 @@ import useMaintenanceActions from "./hooks/useMaintenanceActions.jsx";
 
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
-import CalendarIcon from "@/assets/icons/calendar.svg?react";
+import Icon from "@/Components/v1/Icon";
 import "./index.css";
 import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import { logger } from "@/Utils/Logger.js";
@@ -217,7 +217,14 @@ const CreateMaintenance = () => {
 									disablePast
 									disableHighlightToday
 									value={form.startDate}
-									slots={{ openPickerIcon: () => <CalendarIcon /> }}
+									slots={{
+										openPickerIcon: () => (
+											<Icon
+												name="Calendar"
+												size={20}
+											/>
+										),
+									}}
 									slotProps={{
 										switchViewButton: { sx: { display: "none" } },
 										nextIconButton: { sx: { ml: theme.spacing(2) } },

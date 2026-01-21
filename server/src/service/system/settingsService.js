@@ -60,6 +60,7 @@ class SettingsService {
 			await this.AppSettings.create({});
 			settings = await this.AppSettings.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
 		}
+
 		return settings;
 	}
 }

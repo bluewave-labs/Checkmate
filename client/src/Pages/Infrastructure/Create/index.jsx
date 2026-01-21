@@ -22,9 +22,9 @@ import { useTranslation } from "react-i18next";
 import {
 	useDeleteMonitor,
 	useFetchGlobalSettings,
-	useFetchHardwareMonitorById,
+	useFetchMonitorById,
 	usePauseMonitor,
-} from "../../../Hooks/monitorHooks.js";
+} from "@/Hooks/monitorHooks.js";
 import useInfrastructureMonitorForm from "./hooks/useInfrastructureMonitorForm.jsx";
 import useValidateInfrastructureForm from "./hooks/useValidateInfrastructureForm.jsx";
 import useInfrastructureSubmit from "./hooks/useInfrastructureSubmit.jsx";
@@ -37,14 +37,16 @@ const CreateInfrastructureMonitor = () => {
 	const { t } = useTranslation();
 
 	// State
+	const [monitor, setMonitor] = useState(null);
 	const [https, setHttps] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [availableDisks, setAvailableDisks] = useState([]);
 
 	// Fetch monitor details if editing
-	const [monitor, isLoading] = useFetchHardwareMonitorById({
+	const [isLoading] = useFetchMonitorById({
 		monitorId,
-		updateTrigger,
+		setMonitor,
+		updateTrigger: true,
 	});
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
 	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
@@ -127,7 +129,9 @@ const CreateInfrastructureMonitor = () => {
 	const onSubmit = async (event) => {
 		event.preventDefault();
 		const form = buildForm(infrastructureMonitor, https);
-		const error = validateForm(form);
+		// When editing, exclude URL from validation since it's disabled and can't be changed
+		const formToValidate = isCreate ? form : { ...form, url: monitor.url };
+		const error = validateForm(formToValidate);
 		if (error) {
 			return;
 		}
@@ -150,8 +154,7 @@ const CreateInfrastructureMonitor = () => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		const TEMP_MONITOR = { id: monitor._id };
-		await deleteMonitor({ monitor: TEMP_MONITOR, redirect: "/infrastructure" });
+		await deleteMonitor({ monitor, redirect: "/infrastructure" });
 	};
 
 	const isBusy =
@@ -204,14 +207,14 @@ const CreateInfrastructureMonitor = () => {
 								<></>
 							)}
 						</Typography>
-						{!isCreate && (
+						{!isCreate && monitor && (
 							<MonitorStatusHeader
 								monitor={monitor}
 								infrastructureMonitor={infrastructureMonitor}
 							/>
 						)}
 					</Box>
-					{!isCreate && (
+					{!isCreate && monitor && (
 						<MonitorActionButtons
 							monitor={monitor}
 							isBusy={isBusy}

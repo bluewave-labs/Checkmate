@@ -50,6 +50,7 @@ export const useFetchMonitorsWithChecks = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [count, setCount] = useState(undefined);
 	const [monitors, setMonitors] = useState(undefined);
+	const [summary, setSummary] = useState(undefined);
 	const [networkError, setNetworkError] = useState(false);
 
 	const theme = useTheme();
@@ -68,10 +69,11 @@ export const useFetchMonitorsWithChecks = ({
 					order,
 				});
 
-				const { count, monitors } = res?.data?.data ?? {};
+				const { count, monitors, summary } = res?.data?.data ?? {};
 				const mappedMonitors = monitors.map((monitor) =>
 					getMonitorWithPercentage(monitor, theme)
 				);
+				setSummary(summary);
 				setMonitors(mappedMonitors);
 				setCount(count || 0);
 			} catch (error) {
@@ -97,7 +99,7 @@ export const useFetchMonitorsWithChecks = ({
 		types,
 		monitorUpdateTrigger,
 	]);
-	return [monitors, count, isLoading, networkError];
+	return [summary, monitors, count, isLoading, networkError];
 };
 
 export const useFetchMonitorsByTeamId = ({ types, filter, updateTrigger }) => {
@@ -241,6 +243,7 @@ export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigg
 	const [isLoading, setIsLoading] = useState(true);
 	const [networkError, setNetworkError] = useState(false);
 	const [monitor, setMonitor] = useState(undefined);
+	const [monitorStats, setMonitorStats] = useState(undefined);
 
 	useEffect(() => {
 		const fetchMonitor = async () => {
@@ -252,7 +255,8 @@ export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigg
 					monitorId: monitorId,
 					dateRange: dateRange,
 				});
-				setMonitor(response.data.data);
+				setMonitor(response.data.data.monitor);
+				setMonitorStats(response.data.data.monitorStats);
 			} catch (error) {
 				setNetworkError(true);
 			} finally {
@@ -261,7 +265,7 @@ export const useFetchPageSpeedMonitorById = ({ monitorId, dateRange, updateTrigg
 		};
 		fetchMonitor();
 	}, [monitorId, dateRange, updateTrigger]);
-	return [monitor, isLoading, networkError];
+	return [monitor, monitorStats, isLoading, networkError];
 };
 
 export const useFetchUptimeMonitorById = ({ monitorId, dateRange, trigger }) => {
@@ -340,7 +344,6 @@ export const useDeleteMonitor = () => {
 	const deleteMonitor = async ({ monitor, redirect }) => {
 		try {
 			setIsLoading(true);
-			console.log(monitor);
 			await networkService.deleteMonitorById({ monitorId: monitor.id });
 			createToast({ body: "Monitor deleted successfully!" });
 			if (redirect) {
@@ -385,7 +388,7 @@ export const useUpdateMonitor = () => {
 				}),
 			};
 			await networkService.updateMonitor({
-				monitorId: monitor._id,
+				monitorId: monitor.id,
 				updatedFields,
 			});
 

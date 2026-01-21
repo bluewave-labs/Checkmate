@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { FormControlLabel, Radio as MUIRadio, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import RadioChecked from "../../../../assets/icons/radio-checked.svg?react";
+import Icon from "../../Icon";
 import "./index.css";
 
 /**
@@ -47,7 +47,12 @@ const Radio = ({
 				<MUIRadio
 					id={id}
 					size={size}
-					checkedIcon={<RadioChecked />}
+					checkedIcon={
+						<Icon
+							name="CircleDot"
+							size={16}
+						/>
+					}
 					sx={{
 						color: "transparent",
 						width: 16,

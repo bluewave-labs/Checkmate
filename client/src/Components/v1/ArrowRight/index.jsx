@@ -1,19 +1,20 @@
-import RightArrow from "../../../assets/icons/right-arrow.svg?react";
-import RightArrowDouble from "../../../assets/icons/right-arrow-double.svg?react";
+import Icon from "../Icon";
 import PropTypes from "prop-types";
 
 const ArrowRight = ({ type, color = "#667085", ...props }) => {
 	if (type === "double") {
 		return (
-			<RightArrowDouble
-				style={{ color }}
+			<Icon
+				name="ChevronsRight"
+				color={color}
 				{...props}
 			/>
 		);
 	} else {
 		return (
-			<RightArrow
-				style={{ color }}
+			<Icon
+				name="ChevronRight"
+				color={color}
 				{...props}
 			/>
 		);

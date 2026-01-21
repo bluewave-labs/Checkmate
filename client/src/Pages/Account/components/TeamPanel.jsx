@@ -104,7 +104,7 @@ const TeamPanel = () => {
 
 		team = team.map((member) => ({
 			...member,
-			id: member._id,
+			id: member.id,
 			role: member.role.map((role) => ROLE_MAP[role]).join(","),
 		}));
 		setData(team);
@@ -268,6 +268,7 @@ const TeamPanel = () => {
 							cursor: isSuperAdmin ? "pointer" : "default",
 						},
 						onRowClick: (row) => {
+							console.log(row);
 							if (isSuperAdmin) {
 								navigate(`/account/team/${row.id}`);
 							}

@@ -7,12 +7,10 @@ class MongoDB {
 	constructor({
 		logger,
 		envSettings,
-		checkModule,
 		inviteModule,
 		statusPageModule,
 		userModule,
 		maintenanceWindowModule,
-		monitorModule,
 		notificationModule,
 		recoveryModule,
 		settingsModule,
@@ -23,9 +21,7 @@ class MongoDB {
 		this.userModule = userModule;
 		this.inviteModule = inviteModule;
 		this.recoveryModule = recoveryModule;
-		this.checkModule = checkModule;
 		this.maintenanceWindowModule = maintenanceWindowModule;
-		this.monitorModule = monitorModule;
 		this.notificationModule = notificationModule;
 		this.settingsModule = settingsModule;
 		this.statusPageModule = statusPageModule;

@@ -2,7 +2,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import Icon from "../Icon";
 import Search from "../Inputs/Search/index.jsx";
 
 // Utils
@@ -102,11 +102,13 @@ const NotificationConfig = ({
 						>
 							{notification.notificationName}
 						</Typography>
-						<DeleteOutlineRoundedIcon
+						<Icon
+							name="Trash2"
+							size={20}
 							onClick={() => {
 								handleDelete(notification._id);
 							}}
-							sx={{ cursor: "pointer" }}
+							style={{ cursor: "pointer" }}
 						/>
 						{index < selectedNotifications.length - 1 && <Divider />}
 					</Stack>

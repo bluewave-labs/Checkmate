@@ -21,6 +21,7 @@ const PageSpeed = () => {
 	const isAdmin = useIsAdmin();
 
 	const [
+		summary,
 		monitorsWithChecks,
 		monitorsWithChecksCount,
 		monitorsWithChecksIsLoading,

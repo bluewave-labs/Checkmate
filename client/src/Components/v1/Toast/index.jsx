@@ -3,19 +3,31 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import ToastBody from "./body.jsx";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
-import CloseIcon from "@mui/icons-material/Close";
+import Icon from "../Icon";
 
 // Utils
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
 const icons = {
-	info: <InfoOutlinedIcon />,
-	error: <ErrorOutlineOutlinedIcon />,
-	warning: <WarningAmberOutlinedIcon />,
+	info: (
+		<Icon
+			name="Info"
+			size={24}
+		/>
+	),
+	error: (
+		<Icon
+			name="AlertCircle"
+			size={24}
+		/>
+	),
+	warning: (
+		<Icon
+			name="AlertTriangle"
+			size={24}
+		/>
+	),
 };
 
 const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
@@ -50,7 +62,10 @@ const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
 				)}
 				{title && (
 					<IconButton onClick={onClick}>
-						<CloseIcon />
+						<Icon
+							name="X"
+							size={20}
+						/>
 					</IconButton>
 				)}
 			</Stack>
@@ -63,7 +78,10 @@ const Toast = ({ variant, title, body, onClick, hasDismiss, hasIcon }) => {
 				<ToastBody body={body} />
 				{!title && (
 					<IconButton onClick={onClick}>
-						<CloseIcon />
+						<Icon
+							name="X"
+							size={20}
+						/>
 					</IconButton>
 				)}
 			</Stack>

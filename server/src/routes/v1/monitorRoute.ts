@@ -19,7 +19,6 @@ class MonitorRoutes {
 		// Team routes
 		this.router.get("/team", this.monitorController.getMonitorsByTeamId);
 		this.router.get("/team/with-checks", this.monitorController.getMonitorsWithChecksByTeamId);
-		this.router.get("/team/summary", this.monitorController.getMonitorsAndSummaryByTeamId);
 		this.router.get("/team/groups", this.monitorController.getGroupsByTeamId);
 
 		// Uptime routes
@@ -44,7 +43,6 @@ class MonitorRoutes {
 
 		// Other static routes
 		this.router.post("/demo", isAllowed(["admin", "superadmin"]), this.monitorController.addDemoMonitors);
-		this.router.get("/export", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToCSV);
 		this.router.get("/export/json", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToJSON);
 		this.router.post("/bulk", isAllowed(["admin", "superadmin"]), upload.single("csvFile"), this.monitorController.createBulkMonitors);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);

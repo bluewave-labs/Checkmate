@@ -10,21 +10,24 @@ const initialState = {
 	msg: null,
 };
 
-export const register = createAsyncThunk("auth/register", async (form, thunkApi) => {
-	try {
-		const res = await networkService.registerUser(form);
-		return res.data;
-	} catch (error) {
-		if (error.response.data) {
-			return thunkApi.rejectWithValue(error.response.data);
+export const register = createAsyncThunk(
+	"auth/register",
+	async ({ user, token }, thunkApi) => {
+		try {
+			const res = await networkService.registerUser(user, token);
+			return res.data;
+		} catch (error) {
+			if (error.response.data) {
+				return thunkApi.rejectWithValue(error.response.data);
+			}
+			const payload = {
+				status: false,
+				msg: error.message ? error.message : "Unknown error",
+			};
+			return thunkApi.rejectWithValue(payload);
 		}
-		const payload = {
-			status: false,
-			msg: error.message ? error.message : "Unknown error",
-		};
-		return thunkApi.rejectWithValue(payload);
 	}
-});
+);
 
 export const login = createAsyncThunk("auth/login", async (form, thunkApi) => {
 	try {

@@ -56,6 +56,7 @@ const useSaveSettings = ({
 				setEmailPasswordHasBeenReset(false);
 			}
 			setSettingsData(settingsResponse.data.data);
+
 			createToast({ body: t("settingsSuccessSaved") });
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });

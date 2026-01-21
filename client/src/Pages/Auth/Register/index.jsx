@@ -176,7 +176,7 @@ const Register = ({ superAdminExists }) => {
 
 		delete toSubmit.confirm;
 
-		const action = await dispatch(register(toSubmit));
+		const action = await dispatch(register({ user: toSubmit, token }));
 		if (action.payload.success) {
 			navigate("/uptime");
 			createToast({

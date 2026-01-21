@@ -5,5 +5,6 @@ export interface IMonitorStatsRepository {
 	findByMonitorId(monitorId: string): Promise<MonitorStats>;
 	// update
 	// delete
+	deleteByMonitorId(monitorId: string): Promise<MonitorStats>;
 	// other
 }

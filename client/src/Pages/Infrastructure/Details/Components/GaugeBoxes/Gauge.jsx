@@ -17,21 +17,26 @@ const Gauge = ({
 	valueThree,
 	metricFour,
 	valueFour,
+	shouldExpand = false,
 }) => {
 	const theme = useTheme();
 
 	const valueStyle = {
 		borderRadius: theme.spacing(2),
 		backgroundColor: theme.palette.tertiary.main,
-		width: "40%",
+		minWidth: "40%",
+		maxWidth: "60%",
 		mb: theme.spacing(2),
 		mt: theme.spacing(2),
 		pr: theme.spacing(2),
 		textAlign: "right",
+		overflow: "hidden",
+		textOverflow: "ellipsis",
+		whiteSpace: "nowrap",
 	};
 
 	return (
-		<BaseContainer>
+		<BaseContainer shouldExpand={shouldExpand}>
 			<Stack
 				direction="column"
 				gap={theme.spacing(2)}
@@ -116,6 +121,7 @@ Gauge.propTypes = {
 	valueThree: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 	metricFour: PropTypes.string,
 	valueFour: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	shouldExpand: PropTypes.bool,
 };
 
 export default Gauge;

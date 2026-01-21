@@ -1,10 +1,7 @@
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
-import CloseIcon from "@mui/icons-material/Close";
+import Icon from "../Icon";
 import "./index.css";
 
 /**
@@ -13,9 +10,24 @@ import "./index.css";
  */
 
 const icons = {
-	info: <InfoOutlinedIcon />,
-	error: <ErrorOutlineOutlinedIcon />,
-	warning: <WarningAmberOutlinedIcon />,
+	info: (
+		<Icon
+			name="Info"
+			size={24}
+		/>
+	),
+	error: (
+		<Icon
+			name="AlertCircle"
+			size={24}
+		/>
+	),
+	warning: (
+		<Icon
+			name="AlertTriangle"
+			size={24}
+		/>
+	),
 };
 
 /**
@@ -97,10 +109,9 @@ const Alert = ({ variant, title, body, isToast, hasIcon = true, onClick }) => {
 						},
 					}}
 				>
-					<CloseIcon
-						sx={{
-							fontSize: "20px",
-						}}
+					<Icon
+						name="X"
+						size={20}
 					/>
 				</IconButton>
 			)}

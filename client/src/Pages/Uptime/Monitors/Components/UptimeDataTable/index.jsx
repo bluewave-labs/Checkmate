@@ -1,8 +1,7 @@
 // Components
 import { Box, Stack } from "@mui/material";
 import DataTable from "@/Components/v1/Table/index.jsx";
-import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import Icon from "@/Components/v1/Icon";
 import Host from "@/Components/v1/Host/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import BarChart from "@/Components/v1/Charts/BarChart/index.jsx";
@@ -92,9 +91,15 @@ const UptimeDataTable = ({
 						}}
 					>
 						{sort?.order === "asc" ? (
-							<ArrowUpwardRoundedIcon />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</Stack>
 				</Stack>
@@ -128,9 +133,15 @@ const UptimeDataTable = ({
 						}}
 					>
 						{sort?.order === "asc" ? (
-							<ArrowUpwardRoundedIcon fontSize="18px" />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon fontSize="18px" />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</Stack>
 				</Stack>

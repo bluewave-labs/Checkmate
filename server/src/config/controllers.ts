@@ -10,8 +10,8 @@ import StatusPageController from "../controllers/statusPageController.js";
 import NotificationController from "../controllers/notificationController.js";
 import DiagnosticController from "../controllers/diagnosticController.js";
 import IncidentController from "../controllers/incidentController.js";
-
-export const initializeControllers = (services: any) => {
+import type { InitializedSerivces } from "@/config/services.js";
+export const initializeControllers = (services: InitializedSerivces) => {
 	const controllers: Record<string, any> = {};
 
 	controllers.authController = new AuthController(services.userService);
@@ -26,7 +26,7 @@ export const initializeControllers = (services: any) => {
 	controllers.queueController = new QueueController(services.jobQueue);
 	controllers.logController = new LogController(services.logger);
 	controllers.statusPageController = new StatusPageController(services.db);
-	controllers.notificationController = new NotificationController(services.notificationService, services.db);
+	controllers.notificationController = new NotificationController(services.notificationsService, services.db, services.monitorsRepository);
 	controllers.diagnosticController = new DiagnosticController(services.diagnosticService);
 
 	controllers.incidentController = new IncidentController(services.incidentService);

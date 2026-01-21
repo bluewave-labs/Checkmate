@@ -97,7 +97,7 @@ class MonitorController {
 			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const dateRange = requireString(req?.query?.dateRange, "dateRange");
+			const dateRange = optionalString(req?.query?.dateRange, "dateRange") || "recent";
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const monitor = await this.monitorService.getHardwareDetailsById({
@@ -124,7 +124,7 @@ class MonitorController {
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const monitor = await this.monitorService.getPageSpeedDetailsById({
+			const data = await this.monitorService.getPageSpeedDetailsById({
 				teamId,
 				monitorId,
 				dateRange,
@@ -133,7 +133,7 @@ class MonitorController {
 			return res.status(200).json({
 				success: true,
 				msg: "Page speed details retrieved successfully",
-				data: monitor,
+				data,
 			});
 		} catch (error) {
 			next(error);
@@ -164,7 +164,7 @@ class MonitorController {
 		try {
 			await createMonitorBodyValidation.validateAsync(req.body);
 
-			const userId = requireString(req?.user?._id, "User ID");
+			const userId = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const monitor = await this.monitorService.createMonitor(teamId, userId, req.body);
@@ -193,7 +193,7 @@ class MonitorController {
 				throw new AppError({ message: "File is empty", status: 400 });
 			}
 
-			const userId = requireString(req?.user?._id, "User ID");
+			const userId = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const fileData = req?.file?.buffer?.toString("utf-8");
@@ -286,9 +286,9 @@ class MonitorController {
 
 	addDemoMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const _id = requireString(req?.user?._id, "User ID");
+			const id = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
-			const demoMonitors = await this.monitorService.addDemoMonitors({ userId: _id, teamId });
+			const demoMonitors = await this.monitorService.addDemoMonitors({ userId: id, teamId });
 
 			return res.status(200).json({
 				success: true,
@@ -339,26 +339,6 @@ class MonitorController {
 		}
 	};
 
-	getMonitorsAndSummaryByTeamId = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
-			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
-
-			const explain = optionalBoolean(req?.query?.explain, "explain");
-			const type = parseMonitorTypeFilter(req?.query?.type);
-			const teamId = requireTeamId(req?.user?.teamId);
-
-			const result = await this.monitorService.getMonitorsAndSummaryByTeamId({ teamId, type, explain });
-
-			return res.status(200).json({
-				msg: "Monitors and summary retrieved successfully",
-				data: result,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	getMonitorsWithChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
@@ -390,21 +370,6 @@ class MonitorController {
 				msg: "Monitors retrieved successfully",
 				data: monitors,
 			});
-		} catch (error) {
-			next(error);
-		}
-	};
-	exportMonitorsToCSV = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
-			const csv = await this.monitorService.exportMonitorsToCSV({ teamId });
-			res.setHeader("Content-Type", "text/csv");
-			res.setHeader("Content-Disposition", "attachment; filename=monitors.csv");
-			return res.send(csv);
 		} catch (error) {
 			next(error);
 		}

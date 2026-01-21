@@ -1,4 +1,6 @@
 import type { MonitorType } from "@/types/index.js";
+import type { Response } from "got";
+export type GotTimings = Response["timings"];
 
 export interface CheckMetadata {
 	monitorId: string;
@@ -6,64 +8,41 @@ export interface CheckMetadata {
 	type: MonitorType;
 }
 
-export interface CheckTimingPhases {
-	wait: number;
-	dns: number;
-	tcp: number;
-	tls: number;
-	request: number;
-	firstByte: number;
-	download: number;
-	total: number;
-}
-
-export interface CheckTimings {
-	start: number;
-	socket: number;
-	lookup: number;
-	connect: number;
-	secureConnect: number;
-	upload: number;
-	response: number;
-	end: number;
-	phases: CheckTimingPhases;
-}
-
 export interface CheckCpuInfo {
-	physical_core: number;
-	logical_core: number;
-	frequency: number;
-	temperature: number[];
-	free_percent: number;
-	usage_percent: number;
+	physical_core?: number;
+	logical_core?: number;
+	frequency?: number;
+	temperature?: number[];
+	free_percent?: number;
+	usage_percent?: number;
 }
 
 export interface CheckMemoryInfo {
-	total_bytes: number;
-	available_bytes: number;
-	used_bytes: number;
-	usage_percent: number;
+	total_bytes?: number;
+	available_bytes?: number;
+	used_bytes?: number;
+	usage_percent?: number;
 }
 
 export interface CheckHostInfo {
-	os: string;
-	platform: string;
-	kernel_version: string;
+	os?: string;
+	platform?: string;
+	kernel_version?: string;
 }
 
 export interface CheckCaptureInfo {
-	version: string;
-	mode: string;
+	version?: string;
+	mode?: string;
 }
 
 export interface CheckDiskInfo {
-	device: string;
-	mountpoint: string;
-	read_speed_bytes: number;
-	write_speed_bytes: number;
-	total_bytes: number;
-	free_bytes: number;
-	usage_percent: number;
+	device?: string;
+	mountpoint?: string;
+	read_speed_bytes?: number;
+	write_speed_bytes?: number;
+	total_bytes?: number;
+	free_bytes?: number;
+	usage_percent?: number;
 }
 
 export interface CheckErrorInfo {
@@ -86,11 +65,11 @@ export interface CheckNetworkInterfaceInfo {
 }
 
 export interface CheckAudits {
-	cls: ILighthouseAudit;
-	si: ILighthouseAudit;
-	fcp: ILighthouseAudit;
-	lcp: ILighthouseAudit;
-	tbt: ILighthouseAudit;
+	cls?: ILighthouseAudit;
+	si?: ILighthouseAudit;
+	fcp?: ILighthouseAudit;
+	lcp?: ILighthouseAudit;
+	tbt?: ILighthouseAudit;
 }
 
 export interface ILighthouseAudit {
@@ -107,19 +86,19 @@ export interface Check {
 	metadata: CheckMetadata;
 	status: boolean;
 	responseTime: number;
-	timings: CheckTimings;
+	timings?: GotTimings;
 	statusCode: number;
 	message: string;
 	ack: boolean;
 	ackAt?: string | null;
 	expiry: string;
-	cpu: CheckCpuInfo;
-	memory: CheckMemoryInfo;
-	disk: CheckDiskInfo[];
-	host: CheckHostInfo;
-	errors: CheckErrorInfo[];
-	capture: CheckCaptureInfo;
-	net: CheckNetworkInterfaceInfo[];
+	cpu?: CheckCpuInfo;
+	memory?: CheckMemoryInfo;
+	disk?: CheckDiskInfo[];
+	host?: CheckHostInfo;
+	errors?: CheckErrorInfo[];
+	capture?: CheckCaptureInfo;
+	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
 	seo?: number;
@@ -128,4 +107,67 @@ export interface Check {
 	__v: number;
 	createdAt: string;
 	updatedAt: string;
+}
+export interface ChecksQueryResult {
+	checksCount: number;
+	checks: Check[];
+}
+
+export interface PageSpeedChecksResult {
+	monitorType: "pagespeed";
+	checks: Check[];
+}
+
+export interface HardwareChecksResult {
+	monitorType: "hardware";
+	aggregateData: {
+		latestCheck: Check | null;
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	checks: Array<{
+		_id: string;
+		avgCpuUsage: number;
+		avgMemoryUsage: number;
+		avgTemperature: number[];
+		disks: Array<{
+			name: string;
+			readSpeed: number;
+			writeSpeed: number;
+			totalBytes: number;
+			freeBytes: number;
+			usagePercent: number;
+		}>;
+		net: Array<{
+			name: string;
+			bytesSentPerSecond: number;
+			deltaBytesRecv: number;
+			deltaPacketsSent: number;
+			deltaPacketsRecv: number;
+			deltaErrIn: number;
+			deltaErrOut: number;
+			deltaDropIn: number;
+			deltaDropOut: number;
+			deltaFifoIn: number;
+			deltaFifoOut: number;
+		}>;
+	}>;
+}
+
+export interface UptimeChecksResult {
+	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
+	groupedChecks: Array<{ _id: string; avgResponseTime: number; totalChecks: number }>;
+	groupedUpChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+	groupedDownChecks: Array<{ _id: string; totalChecks: number; avgResponseTime: number }>;
+	uptimePercentage: number;
+	avgResponseTime: number;
+}
+
+export interface ChecksSummary {
+	totalChecks: number;
+	resolvedChecks: number;
+	downChecks: number;
+	cannotResolveChecks: number;
 }

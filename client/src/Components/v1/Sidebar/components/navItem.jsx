@@ -52,12 +52,11 @@ const NavItem = ({ item, collapsed, selected, onClick }) => {
 				<ListItemIcon
 					sx={{
 						minWidth: 0,
+						color: iconStroke,
 						"& svg": {
 							height: 20,
 							width: 20,
 							opacity: 0.81,
-						},
-						"& svg path": {
 							stroke: iconStroke,
 						},
 					}}

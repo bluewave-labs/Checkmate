@@ -1,17 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 
+import { Notification } from "@/types/index.js";
 import { createNotificationBodyValidation } from "@/validation/joi.js";
 import { AppError } from "@/utils/AppError.js";
+import { IMonitorsRepository } from "@/repositories/index.js";
+import { INotificationsService } from "@/service/index.js";
 
 const SERVICE_NAME = "NotificationController";
 
 class NotificationController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private db: any;
-	private notificationService: any;
-	constructor(notificationService: any, db: any) {
-		this.notificationService = notificationService;
+	private notificationsService: INotificationsService;
+	private monitorsRepository: IMonitorsRepository;
+	constructor(notificationsService: INotificationsService, db: any, monitorsRepository: IMonitorsRepository) {
+		this.notificationsService = notificationsService;
 		this.db = db;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
@@ -20,9 +25,8 @@ class NotificationController {
 
 	testNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const notification = req.body;
-
-			const success = await this.notificationService.sendTestNotification(notification);
+			const notification: Notification = req.body;
+			const success = await this.notificationsService.sendTestNotification(notification);
 
 			if (!success) {
 				throw new AppError({ message: "Sending notification failed", status: 500 });
@@ -50,7 +54,7 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const userId = req?.user?._id;
+			const userId = req?.user?.id;
 			if (!userId) {
 				throw new AppError({ message: "User ID is required", status: 400 });
 			}
@@ -167,18 +171,14 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const monitor = await this.db.monitorModule.getMonitorById(monitorId);
-
-			if (!monitor.teamId.equals(teamId)) {
-				throw new AppError({ message: "Unauthorized", status: 403 });
-			}
+			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			const notifications = monitor.notifications;
 			if (notifications.length === 0) {
 				throw new AppError({ message: "No notifications", status: 400 });
 			}
 
-			const result = await this.notificationService.testAllNotifications(notifications);
+			const result = await this.notificationsService.testAllNotifications(notifications);
 
 			if (!result) {
 				throw new AppError({ message: "Failed to send all notifications", status: 500 });

@@ -33,7 +33,7 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
+	const { mode, language = "en", timezone, showURL } = useSelector((state) => state.ui);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
@@ -75,11 +75,6 @@ const Settings = () => {
 	const handleChange = async (e) => {
 		const { name, value, checked } = e.target;
 
-		// Special case for showURL until handled properly in the backend
-		if (name === "showURL") {
-			dispatch(setShowURL(value));
-			return;
-		}
 		let newValue;
 		if (
 			name === "systemEmailIgnoreTLS" ||
@@ -90,6 +85,12 @@ const Settings = () => {
 		) {
 			newValue = checked;
 		}
+
+		// Ensure showURL is a proper boolean
+		if (name === "showURL") {
+			newValue = value === true || value === "true";
+		}
+
 		// Build next state early
 		const newSettingsData = {
 			...settingsData,
@@ -147,29 +148,22 @@ const Settings = () => {
 			return;
 		}
 
-		// Validate
-		const { error } = settingsValidation.validate(newSettingsData.settings, {
-			abortEarly: false,
-		});
-		if (!error || error.details.length === 0) {
-			setErrors({});
-		} else {
-			const newErrors = {};
-			error.details.forEach((err) => {
-				newErrors[err.path[0]] = err.message;
-			});
-			setErrors(newErrors);
-		}
-
 		setSettingsData(newSettingsData);
+
+		// Update Redux immediately for UI feedback
+		if (name === "showURL") {
+			dispatch(setShowURL(newValue));
+		}
 	};
 
 	const handleSave = () => {
+		// Validate
 		const { error } = settingsValidation.validate(settingsData.settings, {
 			abortEarly: false,
 		});
 		if (!error || error.details.length === 0) {
 			setErrors({});
+			saveSettings(settingsData?.settings);
 		} else {
 			const newErrors = {};
 			error.details.forEach((err) => {
@@ -178,7 +172,6 @@ const Settings = () => {
 
 			setErrors(newErrors);
 		}
-		saveSettings(settingsData?.settings);
 	};
 
 	return (

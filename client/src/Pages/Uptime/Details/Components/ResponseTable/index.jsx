@@ -1,6 +1,6 @@
 import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
 import PropTypes from "prop-types";
-import HistoryIcon from "@/assets/icons/history-icon.svg?react";
+import Icon from "@/Components/v1/Icon";
 import Table from "@/Components/v1/Table/index.jsx";
 import TablePagination from "@/Components/v1/Table/TablePagination/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
@@ -184,7 +184,12 @@ const ResponseTable = ({
 
 	return (
 		<ChartBox
-			icon={<HistoryIcon />}
+			icon={
+				<Icon
+					name="History"
+					size={20}
+				/>
+			}
 			header="Response Times"
 			height="100%"
 		>

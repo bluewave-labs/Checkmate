@@ -7,9 +7,9 @@ import { createToast } from "../../Utils/toastUtils.jsx";
 import { forgotPassword } from "../../Features/Auth/authSlice.js";
 import { Trans, useTranslation } from "react-i18next";
 import Background from "@/assets/Images/background-grid.svg?react";
-import EmailIcon from "@/assets/icons/email.svg?react";
 import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import IconBox from "@/Components/v1/IconBox/index.jsx";
+import Icon from "@/Components/v1/Icon";
 import "./index.css";
 
 const CheckEmail = () => {
@@ -160,7 +160,7 @@ const CheckEmail = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<EmailIcon alt={t("auth.forgotPassword.imageAlts.email")} />
+								<Icon name="Mail" />
 							</IconBox>
 						</Stack>
 						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>

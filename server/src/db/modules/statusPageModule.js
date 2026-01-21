@@ -1,4 +1,3 @@
-// import StatusPage from "../../models/StatusPage.js";
 // import { NormalizeData } from "../../../utils/dataUtils.js";
 // import ServiceRegistry from "../../../service/system/serviceRegistry.js";
 // import StringService from "../../../service/system/stringService.js";
@@ -6,10 +5,11 @@
 const SERVICE_NAME = "statusPageModule";
 
 class StatusPageModule {
-	constructor({ StatusPage, NormalizeData, stringService }) {
+	constructor({ StatusPage, NormalizeData, stringService, AppSettings }) {
 		this.StatusPage = StatusPage;
 		this.NormalizeData = NormalizeData;
 		this.stringService = stringService;
+		this.AppSettings = AppSettings;
 	}
 
 	createStatusPage = async ({ statusPageData, image, userId, teamId }) => {
@@ -260,11 +260,16 @@ class StatusPageModule {
 
 			const { statusPage, monitors } = statusPageQuery[0];
 
+			const appSettings = await this.AppSettings.findOne({ singleton: true }).lean();
+			const showURL = appSettings?.showURL === true;
+
 			const normalizedMonitors = monitors.map((monitor) => {
-				return {
-					...monitor,
-					checks: this.NormalizeData(monitor.checks, 10, 100),
-				};
+				const normalizedChecks = this.NormalizeData(monitor.checks, 10, 100);
+				if (!showURL) {
+					const { url, port, secret, notifications, ...rest } = monitor;
+					return { ...rest, checks: normalizedChecks };
+				}
+				return { ...monitor, checks: normalizedChecks };
 			});
 
 			return { statusPage, monitors: normalizedMonitors };
@@ -287,6 +292,7 @@ class StatusPageModule {
 	deleteStatusPagesByMonitorId = async (monitorId) => {
 		try {
 			await this.StatusPage.deleteMany({ monitors: { $in: [monitorId] } });
+			await this.StatusPage.deleteMany({ subMonitors: { $in: [monitorId] } });
 		} catch (error) {
 			error.service = SERVICE_NAME;
 			error.method = "deleteStatusPageByMonitorId";

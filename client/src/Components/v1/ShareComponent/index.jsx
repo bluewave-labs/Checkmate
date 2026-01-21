@@ -1,5 +1,5 @@
 import html2canvas from "html2canvas";
-import ShareIcon from "@mui/icons-material/Share";
+import Icon from "../Icon";
 import { Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 
@@ -55,7 +55,13 @@ const ShareComponent = ({ elementToCapture, fileName = "screenshot" }) => {
 	return (
 		<Button
 			variant="outlined"
-			startIcon={<ShareIcon sx={{ color: theme.palette.success.main }} />}
+			startIcon={
+				<Icon
+					name="Share2"
+					size={18}
+					color="success.main"
+				/>
+			}
 			color="success"
 			onClick={captureAndShare}
 		>

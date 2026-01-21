@@ -61,7 +61,7 @@ const useInfrastructureSubmit = () => {
 		};
 
 		const finalForm = {
-			...(isCreate ? {} : { _id: monitorId }),
+			...(isCreate ? {} : { id: monitorId }),
 			...rest,
 			description: form.name,
 			type: "hardware",

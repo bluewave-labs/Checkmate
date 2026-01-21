@@ -21,11 +21,11 @@ class StatusPageController {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 
-			const { _id, teamId } = req.user;
+			const { id, teamId } = req.user ?? {};
 			const statusPage = await this.db.statusPageModule.createStatusPage({
 				statusPageData: req.body,
 				image: req.file,
-				userId: _id,
+				userId: id,
 				teamId,
 			});
 			return res.status(200).json({
@@ -87,7 +87,7 @@ class StatusPageController {
 	};
 	getStatusPagesByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req.user.teamId;
+			const teamId = req.user?.teamId;
 			const statusPages = await this.db.statusPageModule.getStatusPagesByTeamId(teamId);
 
 			return res.status(200).json({

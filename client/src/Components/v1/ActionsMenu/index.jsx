@@ -2,7 +2,7 @@
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Settings from "../../../assets/icons/settings-bold.svg?react";
+import Icon from "../Icon";
 import Dialog from "../Dialog/index.jsx";
 
 // Utils
@@ -32,7 +32,6 @@ const ActionsMenu = ({
 		event.preventDefault();
 		event.stopPropagation();
 		let monitor = { id: actions.id };
-		console.log(monitor);
 		await deleteMonitor({ monitor });
 		updateRowCallback();
 	};
@@ -84,7 +83,10 @@ const ActionsMenu = ({
 					},
 				}}
 			>
-				<Settings />
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu

@@ -27,8 +27,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 import PropTypes from "prop-types";
 import {
-	useFetchMonitorsWithSummary,
 	useFetchMonitorsWithChecks,
+	useFetchMonitorsByTeamId,
 } from "@/Hooks/monitorHooks.js";
 import { useTranslation } from "react-i18next";
 
@@ -103,12 +103,6 @@ const UptimeMonitors = () => {
 		setMonitorUpdateTrigger((prev) => !prev);
 	}, []);
 
-	const [monitors, monitorsSummary, monitorsWithSummaryIsLoading, networkError] =
-		useFetchMonitorsWithSummary({
-			types: TYPES,
-			monitorUpdateTrigger,
-		});
-
 	const handleReset = () => {
 		setSelectedState(undefined);
 		setSelectedTypes(undefined);
@@ -123,16 +117,17 @@ const UptimeMonitors = () => {
 	]);
 
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || sort?.field;
+	const field = activeFilter?.[1] || (search ? "name" : sort?.field);
 	const filter = activeFilter?.[0] || search;
 
 	const effectiveTypes = selectedTypes?.length ? selectedTypes : TYPES;
 
 	const [
+		summary,
 		monitorsWithChecks,
 		monitorsWithChecksCount,
 		monitorsWithChecksIsLoading,
-		monitorsWithChecksNetworkError,
+		networkError,
 	] = useFetchMonitorsWithChecks({
 		types: effectiveTypes,
 		limit: 25,
@@ -144,13 +139,17 @@ const UptimeMonitors = () => {
 		monitorUpdateTrigger,
 	});
 
+	const [monitors, listIsLoading, listNetworkError] = useFetchMonitorsByTeamId({
+		type: ["http", "ping", "docker", "port", "game"],
+	});
+
 	useEffect(() => {
 		if (isSearching) {
 			setPage(undefined);
 		}
 	}, [isSearching]);
 
-	const isLoading = monitorsWithSummaryIsLoading || monitorsWithChecksIsLoading;
+	const isLoading = monitorsWithChecksIsLoading;
 
 	return (
 		<>
@@ -174,14 +173,14 @@ const UptimeMonitors = () => {
 					/>
 					<Greeting type="uptime" />
 					<StatusBoxes
-						monitorsSummary={monitorsSummary}
-						shouldRender={!monitorsWithSummaryIsLoading}
+						monitorsSummary={summary}
+						shouldRender={!monitorsWithChecksIsLoading}
 					/>
 
 					<Stack direction={"row"}>
 						<MonitorCountHeader
-							isLoading={monitorsWithSummaryIsLoading}
-							monitorCount={monitorsSummary?.totalMonitors}
+							isLoading={monitorsWithChecksIsLoading}
+							monitorCount={summary?.totalMonitors}
 						/>
 						<Filter
 							selectedTypes={selectedTypes}

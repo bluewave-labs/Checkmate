@@ -28,9 +28,11 @@ import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
 // Server Status
 import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
 
+// Checks
+import Checks from "../Pages/Checks/index.jsx";
+
 // Incidents
-import Checks from "../Pages/Incidents/index.jsx";
-import Incidents2 from "../Pages/Incidents2/index.jsx";
+import Incidents from "../Pages/Incidents/index.jsx";
 
 // Status pages
 import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
@@ -136,7 +138,7 @@ const Routes = () => {
 				/>
 				<Route
 					path="incidents/:monitorId?"
-					element={<Incidents2 />}
+					element={<Incidents />}
 				/>
 
 				<Route

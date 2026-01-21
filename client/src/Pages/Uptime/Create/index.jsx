@@ -28,10 +28,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../Validation/validation.js";
 import { createToast } from "../../../Utils/toastUtils.jsx";
-import {
-	PauseOutlined as PauseOutlinedIcon,
-	PlayArrowOutlined as PlayArrowOutlinedIcon,
-} from "@mui/icons-material";
+import Icon from "@/Components/v1/Icon";
 import { useMonitorUtils } from "../../../Hooks/useMonitorUtils.js";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications.js";
 import { useParams } from "react-router-dom";
@@ -107,11 +104,16 @@ const UptimeCreate = ({ isClone = false }) => {
 	// Constants
 	const MS_PER_MINUTE = 60000;
 	const FREQUENCIES = [
+		{ _id: 0.25, name: t("time.fifteenSeconds") },
+		{ _id: 0.5, name: t("time.thirtySeconds") },
 		{ _id: 1, name: t("time.oneMinute") },
 		{ _id: 2, name: t("time.twoMinutes") },
 		{ _id: 3, name: t("time.threeMinutes") },
 		{ _id: 4, name: t("time.fourMinutes") },
 		{ _id: 5, name: t("time.fiveMinutes") },
+		{ _id: 10, name: t("time.tenMinutes") },
+		{ _id: 15, name: t("time.fifteenMinutes") },
+		{ _id: 30, name: t("time.thirtyMinutes") },
 	];
 
 	const GAMELIST = Object.entries(games).map(([key, value]) => ({
@@ -194,7 +196,7 @@ const UptimeCreate = ({ isClone = false }) => {
 			};
 		} else {
 			form = {
-				_id: monitor._id,
+				id: monitor.id,
 				url: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
 				statusWindowSize: monitor.statusWindowSize,
@@ -287,7 +289,7 @@ const UptimeCreate = ({ isClone = false }) => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		const TEMP_MONITOR = { id: monitor._id };
+		const TEMP_MONITOR = { id: monitor.id };
 		await deleteMonitor({ monitor: TEMP_MONITOR, redirect: "/uptime" });
 	};
 
@@ -424,7 +426,17 @@ const UptimeCreate = ({ isClone = false }) => {
 								color="secondary"
 								loading={isBusy}
 								startIcon={
-									monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+									monitor?.isActive ? (
+										<Icon
+											name="Pause"
+											size={18}
+										/>
+									) : (
+										<Icon
+											name="Play"
+											size={18}
+										/>
+									)
 								}
 								onClick={handlePause}
 							>

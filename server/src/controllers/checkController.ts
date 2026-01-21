@@ -77,53 +77,6 @@ class CheckController {
 		}
 	};
 
-	ackCheck = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await ackCheckBodyValidation.validateAsync(req.body);
-
-			const updatedCheck = await this.checkService.ackCheck({
-				checkId: req?.params?.checkId,
-				teamId: req?.user?.teamId,
-				ack: req?.body?.ack,
-			});
-
-			return res.status(200).json({
-				success: true,
-				msg: "Check acknowledged successfully",
-				data: updatedCheck,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
-	ackAllChecks = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await ackAllChecksParamValidation.validateAsync(req.params);
-			await ackAllChecksBodyValidation.validateAsync(req.body);
-
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new Error("No team ID in request");
-			}
-
-			const updatedChecks = await this.checkService.ackAllChecks({
-				monitorId: req?.params?.monitorId,
-				path: req?.params?.path,
-				teamId: req?.user?.teamId,
-				ack: req?.body?.ack,
-			});
-
-			return res.status(200).json({
-				success: true,
-				msg: "All checks acknowledged successfully",
-				data: updatedChecks,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	deleteChecks = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await deleteChecksParamValidation.validateAsync(req.params);
