@@ -11,19 +11,21 @@ import { useTheme } from "@emotion/react";
 import { useState, useEffect } from "react";
 import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 
 // Hooks
 import useFetchIncidents from "./hooks/useFetchIncidents.js";
 import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks.js";
 
 const Incidents2 = () => {
+	const { monitorId } = useParams();
 	const { t } = useTranslation();
 
 	const BREADCRUMBS = [
 		{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" },
 	];
 
-	const [selectedMonitor, setSelectedMonitor] = useState("0");
+	const [selectedMonitor, setSelectedMonitor] = useState(monitorId || "0");
 	const [filter, setFilter] = useState("all");
 	const [dateRange, setDateRange] = useState("all");
 	const [page, setPage] = useState(0);
