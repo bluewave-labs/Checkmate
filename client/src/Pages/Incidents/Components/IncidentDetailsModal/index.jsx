@@ -318,21 +318,14 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 													value={toCapitalLetter(incident?.resolutionType) || "-"}
 												/>
 												{incident?.resolutionType === "manual" && (
-													<>
-														<KeyValueRow
-															label={t("incidentsPage.resolvedBy")}
-															value={incident?.resolvedBy?.email || "Unknown"}
-														/>
-
-														<KeyValueRow
-															label={t("incidentsPage.comment")}
-															value={
-																incident?.comment?.trim()
-																	? incident.comment
-																	: t("incidentsPage.noCommentProvided")
-															}
-														/>
-													</>
+													<KeyValueRow
+														label={t("incidentsPage.comment")}
+														value={
+															incident?.comment?.trim()
+																? incident.comment
+																: t("incidentsPage.noCommentProvided")
+														}
+													/>
 												)}
 											</>
 										)}
@@ -359,6 +352,18 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 				sx={{ maxHeight: "70vh", overflowY: "auto", pr: 1 }}
 			>
 				{renderContent()}
+				{!isActive &&
+					incident?.resolutionType === "manual" &&
+					incident?.resolvedBy?.email && (
+						<Typography
+							variant="body2"
+							sx={{
+								fontStyle: "italic",
+							}}
+						>
+							{t("incidentsPage.resolvedBy")}: {incident.resolvedBy.email}
+						</Typography>
+					)}
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
