@@ -85,7 +85,7 @@ const Sidebar = () => {
 			sx={{
 				transition,
 				backgroundColor: theme.palette.background.main,
-				borderRight: `1px solid ${theme.palette.border.light}`,
+				borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
 				zIndex: 1000,
 			}}
 		>
