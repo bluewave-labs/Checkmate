@@ -43,7 +43,6 @@ import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 
 // DB Modules
-import { NormalizeData } from "../utils/dataUtils.js";
 import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
@@ -51,16 +50,13 @@ import { ParseBoolean } from "../utils/utils.js";
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
 import InviteToken from "../db/models/Invite.js";
-import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
 import NotificationModel from "../db/models/Notification.js";
 import RecoveryToken from "../db/models/RecoveryToken.js";
-import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
 
-import StatusPageModule from "../db/modules/statusPageModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
@@ -139,13 +135,11 @@ export const initializeServices = async ({
 	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
-	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
 		envSettings,
-		statusPageModule,
 		incidentModule,
 	});
 
