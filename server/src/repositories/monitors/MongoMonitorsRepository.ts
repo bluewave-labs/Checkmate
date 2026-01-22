@@ -92,11 +92,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				$lookup: {
 					from: "checks",
 					let: { monitorId: "$_id" },
-					pipeline: [
-						{ $match: { $expr: { $eq: ["$metadata.monitorId", "$$monitorId"] } } },
-						{ $sort: { createdAt: -1 } },
-						{ $limit: checksCount },
-					],
+					pipeline: [{ $match: { $expr: { $eq: ["$metadata.monitorId", "$$monitorId"] } } }, { $sort: { createdAt: -1 } }, { $limit: checksCount }],
 					as: "checks",
 				},
 			},
@@ -126,11 +122,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 								$or: [
 									"$$value",
 									{
-										$and: [
-											{ $eq: ["$$this.active", true] },
-											{ $lte: ["$$this.start", "$$NOW"] },
-											{ $gte: ["$$this.end", "$$NOW"] },
-										],
+										$and: [{ $eq: ["$$this.active", true] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
 									},
 								],
 							},
