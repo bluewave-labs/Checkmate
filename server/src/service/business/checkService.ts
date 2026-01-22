@@ -1,3 +1,4 @@
+import { requireTeamId } from "@/controllers/controllerUtils.js";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
@@ -9,22 +10,18 @@ const SERVICE_NAME = "checkService";
 class CheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private logger: any;
 	constructor({
-		errorService,
 		monitorsRepository,
 		logger,
 		checksRepository,
 	}: {
-		errorService: any;
 		monitorsRepository: IMonitorsRepository;
 		logger: any;
 		checksRepository: IChecksRepository;
 	}) {
-		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
 		this.checksRepository = checksRepository;
@@ -112,11 +109,10 @@ class CheckService {
 
 	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
 		if (!monitorId) {
-			throw this.errorService.createBadRequestError("No monitor ID in request");
+			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
-
 		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
+			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
 
 		// For verificaiton, throws an error if monitor doesn't belong to team
@@ -136,7 +132,7 @@ class CheckService {
 		let { sortOrder, dateRange, filter, page, rowsPerPage } = query;
 
 		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
+			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
 		}
 
 		const parsedPage = page ? parseInt(page) : page;
@@ -148,7 +144,7 @@ class CheckService {
 
 	getChecksSummaryByTeamId = async ({ teamId }: { teamId: string }) => {
 		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
+			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksSummaryByTeamId", status: 400 });
 		}
 		const summary = await this.checksRepository.findSummaryByTeamId(teamId);
 		return summary;
@@ -156,11 +152,11 @@ class CheckService {
 
 	deleteChecks = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
 		if (!monitorId) {
-			throw this.errorService.createBadRequestError("No monitor ID in request");
+			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
 		}
 
 		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
+			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
 		}
 
 		// For verificaiton, throws an error if monitor doesn't belong to team
@@ -171,7 +167,7 @@ class CheckService {
 	};
 	deleteChecksByTeamId = async ({ teamId }: { teamId: string }) => {
 		if (!teamId) {
-			throw this.errorService.createBadRequestError("No team ID in request");
+			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecksByTeamId", status: 400 });
 		}
 
 		const deletedCount = await this.checksRepository.deleteByTeamId(teamId);

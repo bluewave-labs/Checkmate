@@ -13,7 +13,6 @@ import {
 	MatrixProvider,
 	INotificationsService,
 } from "@/service/index.js";
-import ErrorService from "../service/infrastructure/errorService.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import UserService from "../service/business/userService.js";
@@ -98,7 +97,6 @@ export type InitializedServices = {
 	maintenanceWindowService: any;
 	monitorService: any;
 	incidentService: any;
-	errorService: any;
 	logger: any;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
@@ -131,10 +129,7 @@ export const initializeServices = async ({
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	const db = new MongoDB({
-		logger,
-		envSettings,
-	});
+	const db = new MongoDB(logger, envSettings);
 
 	await db.connect();
 
@@ -165,18 +160,15 @@ export const initializeServices = async ({
 		settingsService,
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
-	const errorService = new ErrorService();
 
 	const incidentService = new IncidentService({
 		logger,
-		errorService,
 		incidentsRepository,
 		monitorsRepository,
 		usersRepository,
 	});
 
 	const checkService = new CheckService({
-		errorService,
 		monitorsRepository,
 		logger,
 		checksRepository,
@@ -229,7 +221,6 @@ export const initializeServices = async ({
 		settingsService,
 		logger,
 		jwt,
-		errorService,
 		jobQueue: superSimpleQueue,
 		monitorsRepository,
 		usersRepository,
@@ -244,10 +235,8 @@ export const initializeServices = async ({
 		invitesRepository,
 		settingsService,
 		emailService,
-		errorService,
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
-		errorService,
 		monitorsRepository,
 		maintenanceWindowsRepository,
 	});
@@ -255,7 +244,6 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		emailService,
 		logger,
-		errorService,
 		games,
 		monitorsRepository,
 		checksRepository,
@@ -281,7 +269,6 @@ export const initializeServices = async ({
 		maintenanceWindowService,
 		monitorService,
 		incidentService,
-		errorService,
 		logger,
 		notificationsService,
 		statusPageService,

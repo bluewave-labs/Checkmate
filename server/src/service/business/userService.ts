@@ -48,7 +48,6 @@ class UserService {
 		settingsService: any;
 		logger: any;
 		jwt: any;
-		errorService: any;
 		jobQueue: ISuperSimpleQueue;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;

@@ -1,14 +1,14 @@
-import joi from "joi";
-import { UserRoles } from "@/types/user.js";
+import joi, { type CustomHelpers } from "joi";
+import { type UserRole, UserRoles } from "@/types/user.js";
 
 //****************************************
 // Custom Validators
 //****************************************
 
-const roleValidatior = (role) => (value, helpers) => {
-	const hasRole = role.some((role) => value.includes(role));
+const roleValidatior = (role: UserRole[]) => (value: UserRole[], helpers: CustomHelpers) => {
+	const hasRole = role.some((role: UserRole) => value.includes(role));
 	if (!hasRole) {
-		throw new joi.ValidationError(`You do not have the required authorization. Required roles: ${role.join(", ")}`);
+		return helpers.error("any.invalid", { message: `You do not have the required authorization. Required roles: ${role.join(", ")}` });
 	}
 	return value;
 };
@@ -45,7 +45,7 @@ const registrationBodyValidation = joi.object({
 		.custom((value, helpers) => {
 			const lowercasedValue = value.toLowerCase();
 			if (value !== lowercasedValue) {
-				return helpers.message("Email must be in lowercase");
+				return helpers.message({ custom: "Email must be in lowercase" });
 			}
 			return lowercasedValue;
 		}),

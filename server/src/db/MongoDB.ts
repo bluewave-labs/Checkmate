@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
 import AppSettings from "./models/AppSettings.js";
 import { runMigrations } from "./migration/index.js";
+import { ILogger } from "@/utils/logger.js";
+import { EnvConfig } from "@/service/system/settingsService.js";
+const SERVICE_NAME = "MongoDB";
 class MongoDB {
-	static SERVICE_NAME = "MongoDB";
+	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor({ logger, envSettings }) {
+	private logger: ILogger;
+	private envSettings: EnvConfig;
+
+	constructor(logger: ILogger, envSettings: EnvConfig) {
 		this.logger = logger;
 		this.envSettings = envSettings;
 	}
@@ -35,15 +41,15 @@ class MongoDB {
 
 			this.logger.info({
 				message: "Connected to MongoDB",
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "connect",
 			});
 
 			await runMigrations();
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "connect",
 				stack: error.stack,
 			});
@@ -53,14 +59,14 @@ class MongoDB {
 
 	disconnect = async () => {
 		try {
-			this.logger.info({ message: "Disconnecting from MongoDB" });
+			this.logger.info({ message: "Disconnecting from MongoDB", service: SERVICE_NAME, method: "disconnect" });
 			await mongoose.disconnect();
-			this.logger.info({ message: "Disconnected from MongoDB" });
+			this.logger.info({ message: "Disconnected from MongoDB", service: SERVICE_NAME, method: "disconnect" });
 			return;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "disconnect",
 				stack: error.stack,
 			});

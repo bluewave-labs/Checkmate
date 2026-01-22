@@ -1,24 +1,21 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
 import { ParseBoolean } from "@/utils/utils.js";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
 class MaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
-	private errorService: any;
 	private monitorsRepository: IMonitorsRepository;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 
 	constructor({
-		errorService,
 		monitorsRepository,
 		maintenanceWindowsRepository,
 	}: {
-		errorService: any;
 		monitorsRepository: IMonitorsRepository;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	}) {
-		this.errorService = errorService;
 		this.monitorsRepository = monitorsRepository;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 	}
@@ -34,7 +31,12 @@ class MaintenanceWindowService {
 		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
 
 		if (unauthorizedMonitors.length > 0) {
-			throw this.errorService.createAuthorizationError();
+			throw new AppError({
+				message: "Unauthorized to create maintenance window for one or more monitors",
+				service: SERVICE_NAME,
+				method: "createMaintenanceWindow",
+				status: 403,
+			});
 		}
 
 		const dbTransactions = monitorIds.map((monitorId: string) => {

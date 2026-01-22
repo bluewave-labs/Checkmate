@@ -1,9 +1,6 @@
 import sharp from "sharp";
-/**
- * Generates a 64 * 64 pixel image from a given image
- * @param {} file
- */
-const GenerateAvatarImage = async (file) => {
+
+const GenerateAvatarImage = async (file: Express.Multer.File) => {
 	try {
 		// Resize to target 64 * 64
 		let resizedImageBuffer = await sharp(file.buffer)

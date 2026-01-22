@@ -18,26 +18,22 @@ class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: any;
-	private errorService: any;
 	private incidentsRepository: IIncidentsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
 
 	constructor({
 		logger,
-		errorService,
 		incidentsRepository,
 		monitorsRepository,
 		usersRepository,
 	}: {
 		logger: any;
-		errorService: any;
 		incidentsRepository: IIncidentsRepository;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
 	}) {
 		this.logger = logger;
-		this.errorService = errorService;
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
@@ -139,7 +135,7 @@ class IncidentService {
 	) => {
 		try {
 			if (!teamId) {
-				throw this.errorService.createBadRequestError("No team ID in request");
+				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentsByTeam", status: 400 });
 			}
 
 			const startDate = dateRangeLookup[dateRange];
@@ -177,7 +173,7 @@ class IncidentService {
 	getIncidentSummary = async (teamId: string, limit?: string) => {
 		try {
 			if (!teamId) {
-				throw this.errorService.createBadRequestError(" team ID in request");
+				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentSummary", status: 400 });
 			}
 
 			const parsedLimit = limit && Number.isFinite(parseInt(limit, 10)) ? parseInt(limit, 10) : 10;
