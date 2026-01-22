@@ -1,7 +1,8 @@
 import { InitializedServices } from "./config/services.js";
 import { logger } from "./utils/logger.js";
+import type { Server } from "http";
 
-export const initShutdownListener = (server: any, services: InitializedServices) => {
+export const initShutdownListener = (server: Server, services: InitializedServices) => {
 	const SERVICE_NAME = "Server";
 
 	let isShuttingDown = false;
