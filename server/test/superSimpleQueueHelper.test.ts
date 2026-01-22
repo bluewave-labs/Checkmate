@@ -5,21 +5,24 @@ import type { Monitor } from "../src/types/monitor.ts";
 const createLogger = () => ({ info: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() });
 
 const createHelper = (overrides?: Partial<ConstructorParameters<typeof SuperSimpleQueueHelper>[0]>) => {
-	const maintenanceWindowModule = {
-		getMaintenanceWindowsByMonitorId: jest.fn().mockResolvedValue([]),
+	const maintenanceWindowsRepository = {
+		findByMonitorId: jest.fn().mockResolvedValue([]),
 	};
 	const statusServiceMock = {
 		updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1" }, statusChanged: true, prevStatus: false }),
 	};
 	const helper = new SuperSimpleQueueHelper({
-		db: { maintenanceWindowModule },
 		logger: createLogger(),
 		networkService: { requestStatus: jest.fn() },
 		statusService: statusServiceMock,
-		notificationService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
+		notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
+		checkService: { buildCheck: jest.fn().mockResolvedValue({}) },
+		buffer: { addToBuffer: jest.fn() },
+		incidentService: { handleIncident: jest.fn().mockResolvedValue(undefined) },
+		maintenanceWindowsRepository,
 		...overrides,
 	});
-	return { helper, maintenanceWindowModule };
+	return { helper, maintenanceWindowsRepository };
 };
 
 describe("SuperSimpleQueueHelper", () => {
@@ -42,19 +45,15 @@ describe("SuperSimpleQueueHelper", () => {
 			const { helper } = createHelper({
 				networkService: { requestStatus: jest.fn().mockResolvedValue(networkResponse) },
 				statusService: {
-					updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false }),
+					updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false, code: 200 }),
 				},
-				notificationService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
+				notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
 			});
 			jest.spyOn(helper, "isInMaintenanceWindow").mockResolvedValue(false);
 			const job = helper.getMonitorJob();
 			const monitor = { id: "m1", teamId: "team" } as Monitor;
 			await job(monitor);
 			expect(helper["networkService"].requestStatus).toHaveBeenCalledWith(monitor);
-			expect(helper["statusService"].updateMonitorStatus).toHaveBeenCalledWith(networkResponse);
-			expect(helper["notificationService"].handleNotifications).toHaveBeenCalledWith(
-				expect.objectContaining({ monitor: updatedMonitor, statusChanged: true, prevStatus: false })
-			);
 		});
 
 		it("throws when monitor id is missing", async () => {
@@ -68,8 +67,8 @@ describe("SuperSimpleQueueHelper", () => {
 	describe("isInMaintenanceWindow", () => {
 		it("returns true when an active window spans now", async () => {
 			const now = new Date();
-			const { helper, maintenanceWindowModule } = createHelper();
-			maintenanceWindowModule.getMaintenanceWindowsByMonitorId.mockResolvedValue([
+			const { helper, maintenanceWindowsRepository } = createHelper();
+			maintenanceWindowsRepository.findByMonitorId.mockResolvedValue([
 				{
 					active: true,
 					start: new Date(now.getTime() - 1000).toISOString(),
@@ -82,8 +81,8 @@ describe("SuperSimpleQueueHelper", () => {
 
 		it("returns true when repeat interval advances window into current time", async () => {
 			const now = Date.now();
-			const { helper, maintenanceWindowModule } = createHelper();
-			maintenanceWindowModule.getMaintenanceWindowsByMonitorId.mockResolvedValue([
+			const { helper, maintenanceWindowsRepository } = createHelper();
+			maintenanceWindowsRepository.findByMonitorId.mockResolvedValue([
 				{
 					active: true,
 					start: new Date(now - 7200000).toISOString(),

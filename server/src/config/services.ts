@@ -60,7 +60,6 @@ import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
 
 import StatusPageModule from "../db/modules/statusPageModule.js";
-import MaintenanceWindowModule from "../db/modules/maintenanceWindowModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
@@ -139,14 +138,12 @@ export const initializeServices = async ({
 }): Promise<InitializedServices> => {
 	// Create DB
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
-	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
 		envSettings,
 		statusPageModule,
-		maintenanceWindowModule,
 		incidentModule,
 	});
 
@@ -219,7 +216,6 @@ export const initializeServices = async ({
 	);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
-		db,
 		logger,
 		networkService,
 		statusService,
@@ -227,6 +223,7 @@ export const initializeServices = async ({
 		checkService,
 		buffer: bufferService,
 		incidentService,
+		maintenanceWindowsRepository,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
