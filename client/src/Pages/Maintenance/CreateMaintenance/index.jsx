@@ -261,30 +261,6 @@ const CreateMaintenance = () => {
 												"&:hover": { backgroundColor: "transparent" },
 											},
 										},
-										// CAIO_REVIEW, entire popper
-										popper: {
-											sx: {
-												"& .MuiPickersDay-root": {
-													color: theme.palette.primary.contrastText,
-													"&.Mui-selected": {
-														backgroundColor: theme.palette.accent.main, // Selected day background
-														color: theme.palette.primary.contrastText, // Selected day text color
-													},
-													"&:hover": {
-														backgroundColor: theme.palette.accent.light, // Hover background
-													},
-													"&.Mui-disabled": {
-														color: theme.palette.secondary.main, // Disabled day color
-													},
-												},
-												"& .MuiDayCalendar-weekDayLabel": {
-													color: theme.palette.primary.contrastText,
-												},
-												"& .MuiPickersCalendarHeader-label": {
-													color: theme.palette.primary.contrastText,
-												},
-											},
-										},
 									}}
 									sx={{}}
 									onChange={(newDate) => {
