@@ -687,6 +687,58 @@ const baseTheme = (palette) => ({
 				}),
 			},
 		},
+		// DatePicker calendar popup styling
+		MuiPickersPopper: {
+			styleOverrides: {
+				paper: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+				}),
+			},
+		},
+		MuiDateCalendar: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+				}),
+			},
+		},
+		MuiPickersCalendarHeader: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiPickersCalendarHeader-label": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		MuiDayCalendar: {
+			styleOverrides: {
+				weekDayLabel: ({ theme }) => ({
+					color: theme.palette.primary.contrastTextTertiary,
+				}),
+			},
+		},
+		MuiPickersDay: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					color: theme.palette.primary.contrastText,
+					"&:hover": {
+						backgroundColor: theme.palette.tertiary.main,
+					},
+					"&.Mui-selected": {
+						backgroundColor: theme.palette.accent.main,
+						color: theme.palette.accent.contrastText,
+						"&:hover": {
+							backgroundColor: theme.palette.accent.main,
+						},
+					},
+					"&.Mui-disabled": {
+						color: theme.palette.primary.contrastTextTertiary,
+						opacity: 0.5,
+					},
+				}),
+			},
+		},
 		// code ends here.
 
 		// For labels of input fields
