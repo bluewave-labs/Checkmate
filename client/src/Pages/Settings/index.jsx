@@ -157,19 +157,40 @@ const Settings = () => {
 	};
 
 	const handleSave = () => {
-		// Validate
-		const { error } = settingsValidation.validate(settingsData.settings, {
+		// Validate]
+
+		const toSubmit = {
+			checkTTL: settingsData.settings.checkTTL,
+			pagespeedApiKey: settingsData.settings.pagespeedApiKey,
+			language: settingsData.settings.language,
+			timezone: settingsData.settings.timezone,
+			systemEmailHost: settingsData.settings.systemEmailHost,
+			systemEmailPort: settingsData.settings.systemEmailPort,
+			systemEmailSecure: settingsData.settings.systemEmailSecure,
+			systemEmailPool: settingsData.settings.systemEmailPool,
+			systemEmailAddress: settingsData.settings.systemEmailAddress,
+			systemEmailPassword: settingsData.settings.systemEmailPassword,
+			systemEmailUser: settingsData.settings.systemEmailUser,
+			systemEmailConnectionHost: settingsData.settings.systemEmailConnectionHost,
+			systemEmailTLSServername: settingsData.settings.systemEmailTLSServername,
+			systemEmailIgnoreTLS: settingsData.settings.systemEmailIgnoreTLS,
+			systemEmailRequireTLS: settingsData.settings.systemEmailRequireTLS,
+			systemEmailRejectUnauthorized: settingsData.settings.systemEmailRejectUnauthorized,
+			showURL: settingsData.settings.showURL,
+			globalThresholds: settingsData.settings.globalThresholds,
+		};
+
+		const { error } = settingsValidation.validate(toSubmit, {
 			abortEarly: false,
 		});
 		if (!error || error.details.length === 0) {
 			setErrors({});
-			saveSettings(settingsData?.settings);
+			saveSettings(toSubmit);
 		} else {
 			const newErrors = {};
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
-
 			setErrors(newErrors);
 		}
 	};

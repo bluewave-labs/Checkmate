@@ -32,13 +32,13 @@ const ActionMenu = ({ notification, onDelete }) => {
 
 	const handleRemove = (e) => {
 		e.stopPropagation();
-		onDelete(notification._id);
+		onDelete(notification.id);
 		handleClose();
 	};
 
 	const handleConfigure = (e) => {
 		e.stopPropagation();
-		navigate(`/notifications/${notification._id}`);
+		navigate(`/notifications/${notification.id}`);
 		handleClose();
 	};
 

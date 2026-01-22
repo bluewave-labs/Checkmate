@@ -56,7 +56,7 @@ const CreateNotifications = () => {
 	const [notification, setNotification] = useState({
 		notificationName: "",
 		address: "",
-		type: NOTIFICATION_TYPES[0]._id,
+		type: NOTIFICATION_TYPES[0].id,
 	});
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
@@ -66,7 +66,7 @@ const CreateNotifications = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const getNotificationTypeValue = (typeId) => {
-		return NOTIFICATION_TYPES.find((type) => type._id === typeId)?.value || "email";
+		return NOTIFICATION_TYPES.find((type) => type.id === typeId)?.value || "email";
 	};
 
 	const extractError = (error, field) =>

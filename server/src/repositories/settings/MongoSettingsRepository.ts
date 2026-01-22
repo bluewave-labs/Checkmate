@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { ISettingsRepository } from "@/repositories/settings/ISettingsRepository.js";
 import type { Settings } from "@/types/index.js";
-import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/AppSettings.js";
+import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/index.js";
+import { SERVFAIL } from "dns";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
@@ -46,6 +47,19 @@ class MongoSettingsRepository implements ISettingsRepository {
 		};
 	};
 
+	create = async (settings: Partial<Settings>) => {
+		const newSettings = await AppSettingsModel.create(settings);
+		return this.toEntity(newSettings);
+	};
+
+	findSingleton = async () => {
+		let settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+		if (!settings) {
+			return null;
+		}
+		return this.toEntity(settings);
+	};
+
 	update = async (settings: Partial<Settings>) => {
 		const update: Record<string, any> = { $set: { ...settings } };
 
@@ -70,6 +84,11 @@ class MongoSettingsRepository implements ISettingsRepository {
 		});
 
 		return this.toEntity(updatedSettings);
+	};
+
+	deleteLegacy = async () => {
+		const res = await AppSettingsModel.deleteMany({ version: { $exists: false } });
+		return res.deletedCount > 0;
 	};
 }
 

@@ -39,4 +39,5 @@ export interface IMonitorsRepository {
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	findGroupsByTeamId(teamId: string): Promise<string[]>;
+	removeNotificationFromMonitors(notificationId: string): Promise<void>;
 }

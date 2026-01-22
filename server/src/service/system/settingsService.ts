@@ -1,3 +1,7 @@
+import { ISettingsRepository } from "@/repositories/index.js";
+import { Settings } from "@/types/index.js";
+import { AppError } from "@/utils/AppError.js";
+
 const SERVICE_NAME = "SettingsService";
 
 export type EnvConfig = {
@@ -26,16 +30,16 @@ export interface ISettingsService {
 	readonly serviceName: string;
 	loadSettings(): EnvConfig;
 	getSettings(): EnvConfig;
-	getDBSettings(): Promise<Record<string, any>>;
+	getDBSettings(): Promise<Settings>;
 }
 
 class SettingsService implements ISettingsService {
 	static SERVICE_NAME = "SettingsService";
-	private AppSettings: any;
 	private settings: EnvConfig;
+	private settingsRepository: ISettingsRepository;
 
-	constructor(AppSettings: any) {
-		this.AppSettings = AppSettings;
+	constructor(settingsRepository: ISettingsRepository) {
+		this.settingsRepository = settingsRepository;
 		this.settings = { ...envConfig };
 	}
 
@@ -54,18 +58,26 @@ class SettingsService implements ISettingsService {
 		return this.settings;
 	}
 
-	async getDBSettings() {
-		// Remove any old settings
-		await this.AppSettings.deleteMany({ version: { $exists: false } });
+	updateDbSettings = async (newSettings: Partial<Settings>) => {
+		return await this.settingsRepository.update(newSettings);
+	};
 
-		let settings = await this.AppSettings.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+	getDBSettings = async () => {
+		// Remove any old settings
+		await this.settingsRepository.deleteLegacy();
+
+		let settings = await this.settingsRepository.findSingleton();
 		if (settings === null) {
-			await this.AppSettings.create({});
-			settings = await this.AppSettings.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+			await this.settingsRepository.create({});
+			settings = await this.settingsRepository.findSingleton();
+		}
+
+		if (!settings) {
+			throw new AppError({ message: "Settings not found", status: 500 });
 		}
 
 		return settings;
-	}
+	};
 }
 
 export default SettingsService;

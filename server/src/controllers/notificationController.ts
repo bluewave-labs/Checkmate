@@ -5,17 +5,16 @@ import { createNotificationBodyValidation } from "@/validation/joi.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { INotificationsService } from "@/service/index.js";
+import { requireTeamId } from "./controllerUtils.js";
 
 const SERVICE_NAME = "NotificationController";
 
 class NotificationController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private db: any;
 	private notificationsService: INotificationsService;
 	private monitorsRepository: IMonitorsRepository;
-	constructor(notificationsService: INotificationsService, db: any, monitorsRepository: IMonitorsRepository) {
+	constructor(notificationsService: INotificationsService, monitorsRepository: IMonitorsRepository) {
 		this.notificationsService = notificationsService;
-		this.db = db;
 		this.monitorsRepository = monitorsRepository;
 	}
 
@@ -61,7 +60,7 @@ class NotificationController {
 			body.userId = userId;
 			body.teamId = teamId;
 
-			const notification = await this.db.notificationModule.createNotification(body);
+			const notification = await this.notificationsService.createNotification(body);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification created successfully",
@@ -79,7 +78,7 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const notifications = await this.db.notificationModule.getNotificationsByTeamId(teamId);
+			const notifications = await this.notificationsService.findNotificationsByTeamId(teamId);
 
 			return res.status(200).json({
 				success: true,
@@ -98,12 +97,12 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const notification = await this.db.notificationModule.getNotificationById(req.params.id);
-			if (!notification.teamId.equals(teamId)) {
-				throw new AppError({ message: "Unauthorized", status: 403 });
+			const notificationId = req.params.id;
+			if (!notificationId) {
+				throw new AppError({ message: "Notification ID is required", status: 400 });
 			}
 
-			await this.db.notificationModule.deleteNotificationById(req.params.id);
+			await this.notificationsService.deleteById(notificationId, teamId);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification deleted successfully",
@@ -115,16 +114,14 @@ class NotificationController {
 
 	getNotificationById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const notification = await this.db.notificationModule.getNotificationById(req.params.id);
-
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
+			const teamId = requireTeamId(req.user?.teamId);
+			const notificationId = req.params.id;
+			if (!notificationId) {
+				throw new AppError({ message: "Notification ID is required", status: 400 });
 			}
 
-			if (!notification.teamId.equals(teamId)) {
-				throw new AppError({ message: "Unauthorized", status: 403 });
-			}
+			const notification = await this.notificationsService.findById(notificationId, teamId);
+
 			return res.status(200).json({
 				success: true,
 				msg: "Notification fetched successfully",
@@ -141,18 +138,12 @@ class NotificationController {
 				abortEarly: false,
 			});
 
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
+			const teamId = requireTeamId(req.user?.teamId);
+			const notificationId = req.params.id;
+			if (!notificationId) {
+				throw new AppError({ message: "Notification ID is required", status: 400 });
 			}
-
-			const notification = await this.db.notificationModule.getNotificationById(req.params.id);
-
-			if (!notification.teamId.equals(teamId)) {
-				throw new AppError({ message: "Unauthorized", status: 403 });
-			}
-
-			const editedNotification = await this.db.notificationModule.editNotification(req.params.id, req.body);
+			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, req.body);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",

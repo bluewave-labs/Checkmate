@@ -102,7 +102,7 @@ const useGetNotificationById = (id, setNotification) => {
 			const notificationData = {
 				address: notification?.address,
 				notificationName: notification?.notificationName,
-				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?._id,
+				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?.id,
 			};
 
 			setNotification(notificationData);

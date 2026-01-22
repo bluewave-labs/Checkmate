@@ -189,6 +189,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return groups.sort();
 	};
 
+	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
+		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
+	};
+
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {
 		if (!documents?.length) {
 			return [];

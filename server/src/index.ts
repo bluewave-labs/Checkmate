@@ -9,7 +9,7 @@ import { runMigrations } from "./db/migration/index.js";
 
 import Logger, { ILogger } from "@/utils/logger.js";
 import SettingsService from "@/service/system/settingsService.js";
-import AppSettings from "./db/models/AppSettings.js";
+import { MongoSettingsRepository } from "./repositories/index.js";
 
 const SERVICE_NAME = "Server";
 let logger: ILogger;
@@ -22,14 +22,16 @@ const startApp = async () => {
 	const frontendPath = path.join(__dirname, "..", "public");
 
 	// Create services
-	const settingsService = new SettingsService(AppSettings);
+	const settingsRepository = new MongoSettingsRepository();
+	const settingsService = new SettingsService(settingsRepository);
+
 	const envSettings = settingsService.loadSettings();
 
 	// Create logger
 	logger = new Logger({ envSettings });
 
 	// Initialize services
-	const services = await initializeServices({ logger, envSettings, settingsService });
+	const services = await initializeServices({ logger, envSettings, settingsService, settingsRepository });
 
 	await runMigrations(logger);
 

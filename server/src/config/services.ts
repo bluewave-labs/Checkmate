@@ -59,13 +59,9 @@ import RecoveryToken from "../db/models/RecoveryToken.js";
 import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
 
-import InviteModule from "../db/modules/inviteModule.js";
 import StatusPageModule from "../db/modules/statusPageModule.js";
-import UserModule from "../db/modules/userModule.js";
 import MaintenanceWindowModule from "../db/modules/maintenanceWindowModule.js";
 import NotificationModule from "../db/modules/notificationModule.js";
-import RecoveryModule from "../db/modules/recoveryModule.js";
-import SettingsModule from "../db/modules/settingsModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
@@ -77,7 +73,6 @@ import {
 	MongoUsersRepository,
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
-	MongoSettingsRepository,
 	MongoNotificationsRepository,
 	MongoIncidentRepository,
 	MongoTeamsRepository,
@@ -133,31 +128,25 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
+	settingsRepository,
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: any;
+	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
-	const inviteModule = new InviteModule({ InviteToken, crypto });
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
-	const userModule = new UserModule({ User, Team, GenerateAvatarImage, ParseBoolean });
 	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
 	const notificationModule = new NotificationModule({ Notification: NotificationModel, Monitor });
-	const recoveryModule = new RecoveryModule({ User, RecoveryToken, crypto });
-	const settingsModule = new SettingsModule({ AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
 		envSettings,
-		inviteModule,
 		statusPageModule,
-		userModule,
 		maintenanceWindowModule,
 		notificationModule,
-		recoveryModule,
-		settingsModule,
 		incidentModule,
 	});
 
@@ -171,7 +160,6 @@ export const initializeServices = async ({
 	const usersRepository = new MongoUsersRepository();
 	const invitesRepository = new MongoInvitesRepository();
 	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
-	const settingsRepository = new MongoSettingsRepository();
 	const notificationsRepository = new MongoNotificationsRepository();
 	const incidentsRepository = new MongoIncidentRepository();
 	const teamsRepository = new MongoTeamsRepository();
@@ -219,6 +207,7 @@ export const initializeServices = async ({
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
+		monitorsRepository,
 		webhookProvider,
 		emailProvider,
 		slackProvider,
