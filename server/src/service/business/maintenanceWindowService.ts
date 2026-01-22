@@ -68,17 +68,15 @@ class MaintenanceWindowService {
 	};
 
 	getMaintenanceWindowsByMonitorId = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
-		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId({ monitorId, teamId });
-		return maintenanceWindows;
+		return await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
 	};
 
 	deleteMaintenanceWindow = async ({ id, teamId }: { id: string; teamId: string }) => {
-		await this.db.maintenanceWindowModule.deleteMaintenanceWindowById({ id, teamId });
+		return await this.maintenanceWindowsRepository.deleteById(id, teamId);
 	};
 
 	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: any }) => {
-		const editedMaintenanceWindow = await this.db.maintenanceWindowModule.editMaintenanceWindowById({ id, body, teamId });
-		return editedMaintenanceWindow;
+		return await this.maintenanceWindowsRepository.updateById(id, teamId, body);
 	};
 }
 

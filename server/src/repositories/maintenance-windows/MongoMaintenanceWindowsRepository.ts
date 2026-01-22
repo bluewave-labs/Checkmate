@@ -63,6 +63,14 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.toEntity(maintenanceWindow);
 	};
 
+	findByMonitorId = async (monitorId: string, teamId: string): Promise<MaintenanceWindow[]> => {
+		const maintenanceWindows = await MaintenanceWindowModel.find({
+			monitorId: monitorId,
+			teamId: teamId,
+		});
+		return this.mapDocuments(maintenanceWindows);
+	};
+
 	findByTeamId = async (
 		teamId: string,
 		active: boolean,
@@ -91,6 +99,31 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.mapDocuments(maintenanceWindows);
 	};
 
+	updateById = async (id: string, teamId: string, data: Partial<MaintenanceWindow>): Promise<MaintenanceWindow> => {
+		const updated = await MaintenanceWindowModel.findOneAndUpdate(
+			{
+				_id: new mongoose.Types.ObjectId(id),
+				teamId: new mongoose.Types.ObjectId(teamId),
+			},
+			{ $set: data },
+			{ new: true, runValidators: true }
+		);
+		if (!updated) {
+			throw new AppError({ message: "Maintenance window not found or could not be updated", status: 404 });
+		}
+		return this.toEntity(updated);
+	};
+
+	deleteById = async (id: string, teamId: string): Promise<MaintenanceWindow> => {
+		const deleted = await MaintenanceWindowModel.findOneAndDelete({
+			_id: new mongoose.Types.ObjectId(id),
+			teamId: new mongoose.Types.ObjectId(teamId),
+		});
+		if (!deleted) {
+			throw new AppError({ message: "Maintenance window not found or could not be deleted", status: 404 });
+		}
+		return this.toEntity(deleted);
+	};
 	countByTeamId = async (teamId: string, active: boolean) => {
 		const maintenanceQuery: Record<string, any> = { teamId };
 
