@@ -6,13 +6,14 @@ import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { HttpStatusLabel } from "@/Components/v1/HttpStatusLabel/index.jsx";
 import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
+import IncidentActionsMenu from "./IncidentActionsMenu.jsx";
 
 //Utils
 import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 
 const IncidentTable = ({
 	monitors = [],
@@ -26,15 +27,16 @@ const IncidentTable = ({
 	handleChangeRowsPerPage,
 	resolveIncident,
 	handleUpdateTrigger,
+	onOpenDetails,
 }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);
 
 	const { t } = useTranslation();
 	const theme = useTheme();
 
-	const handleResolveIncident = async (incidentId) => {
+	const handleResolveIncident = async (incidentId, options = {}) => {
 		try {
-			await resolveIncident(incidentId);
+			await resolveIncident(incidentId, options);
 			handleUpdateTrigger();
 		} catch (error) {
 			console.error(t("incidentsPage.errorResolvingIncident"), error);
@@ -46,7 +48,6 @@ const IncidentTable = ({
 			id: "monitorName",
 			content: t("incidentsTableMonitorName"),
 			render: (row) => {
-				console.log(monitors, row);
 				const monitor = monitors.find((monitor) => monitor.id === row.monitorId);
 				return monitor ? monitor.name : "N/A";
 			},
@@ -125,32 +126,13 @@ const IncidentTable = ({
 			id: "action",
 			content: t("actions"),
 			render: (row) => {
-				if (row.status === true) {
-					return (
-						<Button
-							variant="contained"
-							color="accent"
-							sx={{
-								minHeight: "max-content",
-								lineHeight: 1.2,
-							}}
-							onClick={() => {
-								handleResolveIncident(row.id);
-							}}
-						>
-							{t("incidentsPage.incidentsTableActionResolveManually")}
-						</Button>
-					);
-				} else {
-					return (
-						<Typography
-							variant="body2"
-							color={theme.palette.primary.contrastTextSecondary}
-						>
-							{t("incidentsPage.incidentsTableResolved")}
-						</Typography>
-					);
-				}
+				return (
+					<IncidentActionsMenu
+						incident={row}
+						onResolve={handleResolveIncident}
+						onOpenDetails={onOpenDetails}
+					/>
+				);
 			},
 		},
 	];
@@ -204,6 +186,7 @@ IncidentTable.propTypes = {
 	handleChangeRowsPerPage: PropTypes.func.isRequired, // Handler for rows per page change
 	resolveIncident: PropTypes.func.isRequired,
 	handleUpdateTrigger: PropTypes.func.isRequired,
+	onOpenDetails: PropTypes.func,
 };
 
 export default IncidentTable;

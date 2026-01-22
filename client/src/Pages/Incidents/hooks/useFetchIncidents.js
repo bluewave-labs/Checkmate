@@ -72,6 +72,16 @@ const useFetchIncidents = () => {
 		[fetchIncidentsByTeam]
 	);
 
+	const fetchIncidentsByResolutionType = useCallback(
+		async (resolutionType, config = {}) => {
+			await fetchIncidentsByTeam({
+				resolutionType,
+				sortOrder: "desc",
+				...config,
+			});
+		},
+		[fetchIncidentsByTeam]
+	);
 	/**
 	 * Fetch resolved incidents
 	 *
@@ -198,6 +208,7 @@ const useFetchIncidents = () => {
 		fetchIncidentById,
 		resolveIncident,
 		fetchIncidentSummary,
+		fetchIncidentsByResolutionType,
 	};
 };
 

@@ -5,36 +5,13 @@ import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
 import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
+import useGetIncidentsDuration from "../../hooks/useGetIncidentsDuration";
 
 const IncidentItem = ({ incident }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isActive = incident.status === true;
-	const calculateDuration = () => {
-		if (!incident.startTime) {
-			return "-";
-		}
-		const startTime = new Date(incident.startTime);
-		const endTime = isActive
-			? new Date()
-			: incident.endTime
-				? new Date(incident.endTime)
-				: null;
-
-		if (!endTime) {
-			return "-";
-		}
-
-		const durationMs = endTime.getTime() - startTime.getTime();
-
-		if (durationMs < 0) {
-			return "-";
-		}
-
-		return getHumanReadableDuration(durationMs);
-	};
-
-	const duration = calculateDuration();
+	const duration = useGetIncidentsDuration(incident, isActive);
 	const iconWrapperStyle = {
 		display: "flex",
 		justifyContent: "center",
