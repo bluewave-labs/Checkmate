@@ -22,9 +22,18 @@ function App() {
 		};
 	}, []);
 
+	const theme = mode === "light" ? lightTheme : darkTheme;
+
 	return (
-		<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+		<ThemeProvider theme={theme}>
 			<CssBaseline />
+			<GlobalStyles
+				styles={{
+					body: {
+						backgroundColor: theme.palette.background.main,
+					},
+				}}
+			/>
 			<AppLayout>
 				<Routes />
 			</AppLayout>
