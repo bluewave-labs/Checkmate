@@ -27,7 +27,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 		try {
 			setIsLoading(true);
 			await networkService.deleteMaintenanceWindow({
-				maintenanceWindowId: maintenanceWindow._id,
+				maintenanceWindowId: maintenanceWindow.id,
 			});
 			updateCallback();
 			createToast({ body: "Maintenance window deleted successfully." });
@@ -47,7 +47,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 				active: !maintenanceWindow.active,
 			};
 			await networkService.editMaintenanceWindow({
-				maintenanceWindowId: maintenanceWindow._id,
+				maintenanceWindowId: maintenanceWindow.id,
 				maintenanceWindow: data,
 			});
 			updateCallback();
@@ -60,7 +60,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 	};
 
 	const handleEdit = () => {
-		navigate(`/maintenance/create/${maintenanceWindow._id}`);
+		navigate(`/maintenance/create/${maintenanceWindow.id}`);
 	};
 
 	const openMenu = (event) => {
