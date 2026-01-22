@@ -4,7 +4,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Icon from "@/Components/v1/Icon/index.jsx";
 import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
-import useFetchIncidents from "../../hooks/useFetchIncidents";
 
 // Utils
 import { useState } from "react";
@@ -14,12 +13,11 @@ import { TypeToPathMap } from "@/Utils/monitorUtils.js";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
+const IncidentActionsMenu = ({ incident, monitor, onResolve, onOpenDetails }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { fetchIncidentById } = useFetchIncidents();
 	const navigate = useNavigate();
 	const openMenu = (event) => {
 		event.preventDefault();
@@ -59,12 +57,10 @@ const IncidentActionsMenu = ({ incident, onResolve, onOpenDetails }) => {
 		e.stopPropagation();
 		closeMenu(e);
 		try {
-			const incidentData = await fetchIncidentById(incident.id);
-			if (incidentData) {
-				const { type, _id: monitorId } = incidentData.monitorId;
-				const path = TypeToPathMap[type];
-				if (path && monitorId) {
-					navigate(`/${path}/${monitorId}`);
+			if (monitor) {
+				const path = TypeToPathMap[monitor.type];
+				if (path && monitor.id) {
+					navigate(`/${path}/${monitor.id}`);
 				} else {
 					console.error(`Monitor type not found`);
 				}
@@ -148,6 +144,10 @@ IncidentActionsMenu.propTypes = {
 	incident: PropTypes.shape({
 		id: PropTypes.string.isRequired,
 		status: PropTypes.bool.isRequired,
+	}).isRequired,
+	monitor: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
 	}).isRequired,
 	onResolve: PropTypes.func.isRequired,
 	onOpenDetails: PropTypes.func,

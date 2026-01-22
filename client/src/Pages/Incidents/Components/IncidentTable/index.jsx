@@ -129,6 +129,7 @@ const IncidentTable = ({
 				return (
 					<IncidentActionsMenu
 						incident={row}
+						monitor={monitors.find((monitor) => monitor.id === row.monitorId)}
 						onResolve={handleResolveIncident}
 						onOpenDetails={onOpenDetails}
 					/>
