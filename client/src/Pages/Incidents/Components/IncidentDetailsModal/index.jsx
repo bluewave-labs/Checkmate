@@ -45,15 +45,26 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 				item
 				xs={4}
 			>
-				<Typography variant="body1">{label}</Typography>
+				<Typography
+					variant="body1"
+					sx={{ whiteSpace: "nowrap" }}
+				>
+					{label}
+				</Typography>
 			</Grid>
 			<Grid
 				item
 				xs
+				sx={{ minWidth: 0 }}
 			>
 				<Typography
 					variant="body1"
 					textAlign="right"
+					sx={{
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+					}}
 				>
 					{value ?? "-"}
 				</Typography>
@@ -171,7 +182,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 										fontWeight={500}
 										sx={{ minWidth: 70 }}
 									>
-										{t("incidentsPage.incidentItemMonitor")}:
+										{t("incidentsPage.incidentItemMonitor")}
 									</Typography>
 									<Typography
 										variant="body1"
@@ -190,7 +201,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 										fontWeight={500}
 										sx={{ minWidth: 70 }}
 									>
-										{t("incidentsPage.URL")}:
+										{t("incidentsPage.URL")}
 									</Typography>
 									<Typography
 										variant="body1"
@@ -295,22 +306,13 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 											value={incident?.statusCode ?? "-"}
 										/>
 
-										<Typography
-											variant="body2"
-											sx={{
-												fontFamily: "monospace",
-
-												wordBreak: "break-word",
-												lineHeight: 1.6,
-											}}
-										>
-											{incident?.message || "-"}
-										</Typography>
+										<KeyValueRow
+											label={t("incidentsPage.message")}
+											value={incident?.message ?? "-"}
+										/>
 
 										{!isActive && (
 											<>
-												<Divider sx={{ mb: theme.spacing(2) }} />
-
 												<KeyValueRow
 													label={t("incidentsPage.resolutionMethod")}
 													value={toCapitalLetter(incident?.resolutionType) || "-"}
