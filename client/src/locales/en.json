@@ -1236,6 +1236,7 @@
 		"comment": "Comment",
 		"noCommentProvided": "No comment provided",
 		"loadingIncidentDetails": "Loading incident details...",
-		"none": "None"
+		"none": "None",
+		"message": "Message"
 	}
 }
