@@ -36,7 +36,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
 		queueController: new QueueController(services.jobQueue),
 		logController: new LogController(services.logger),
-		statusPageController: new StatusPageController(services.db),
+		statusPageController: new StatusPageController(services.statusPageService, services.monitorsRepository, services.settingsService),
 		notificationController: new NotificationController(services.notificationsService, services.monitorsRepository),
 		diagnosticController: new DiagnosticController(services.diagnosticService),
 		incidentController: new IncidentController(services.incidentService),

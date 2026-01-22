@@ -148,7 +148,7 @@ const StatusPageBarChart = ({ checks = [] }) => {
 							</>
 						}
 						placement="top"
-						key={`check-${check?._id}`}
+						key={`check-${check?.id}`}
 						slotProps={{
 							popper: {
 								className: "bar-tooltip",

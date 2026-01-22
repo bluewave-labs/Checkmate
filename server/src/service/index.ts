@@ -11,3 +11,4 @@ export * from "@/service/infrastructure/notificationsService.js";
 export * from "@/service/infrastructure/statusService.js";
 export * from "@/service/infrastructure/notificationProviders/webhook.js";
 export * from "@/service/infrastructure/notificationProviders/matrix.js";
+export * from "@/service/business/statusPageService.js";

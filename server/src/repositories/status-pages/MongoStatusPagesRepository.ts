@@ -2,6 +2,7 @@ import { IStatusPagesRepository } from "@/repositories/index.js";
 import { type StatusPageDocument, StatusPageModel } from "@/db/models/StatusPage.js";
 import type { StatusPage, StatusPageLogo } from "@/types/statusPage.js";
 import mongoose from "mongoose";
+import { AppError } from "@/utils/AppError.js";
 
 class MongoStatusPagesRepository implements IStatusPagesRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
@@ -54,6 +55,74 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			createdAt: this.toDateString(doc.createdAt),
 			updatedAt: this.toDateString(doc.updatedAt),
 		};
+	};
+
+	private mapDocuments = (documents: StatusPageDocument[]): StatusPage[] => {
+		if (!documents?.length) {
+			return [];
+		}
+		return documents.map((doc) => this.toEntity(doc));
+	};
+
+	create = async (userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {
+		const statusPage = new StatusPageModel({
+			...data,
+			userId,
+			teamId,
+		});
+		if (image) {
+			statusPage.logo = {
+				data: image.buffer,
+				contentType: image.mimetype,
+			};
+		}
+		await statusPage.save();
+		return this.toEntity(statusPage);
+	};
+
+	findByUrl = async (url: string): Promise<StatusPage> => {
+		const statusPage = await StatusPageModel.findOne({
+			url,
+		});
+		if (!statusPage) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+		return this.toEntity(statusPage);
+		// Get status page
+	};
+
+	findByTeamId = async (teamId: string): Promise<StatusPage[]> => {
+		const statusPages = await StatusPageModel.find({ teamId });
+		return this.mapDocuments(statusPages);
+	};
+
+	updateById = async (id: string, teamId: string, image: Express.Multer.File | undefined, patch: Partial<StatusPage>): Promise<StatusPage> => {
+		if (image) {
+			patch.logo = {
+				data: image.buffer,
+				contentType: image.mimetype,
+			};
+		} else {
+			patch.logo = null;
+		}
+
+		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, patch, {
+			new: true,
+		});
+
+		if (!statusPage) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+
+		return this.toEntity(statusPage);
+	};
+
+	deleteById = async (id: string, teamId: string): Promise<StatusPage> => {
+		const statusPage = await StatusPageModel.findOneAndDelete({ _id: id, teamId });
+		if (!statusPage) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+		return this.toEntity(statusPage);
 	};
 
 	removeMonitorFromStatusPages = async (monitorId: string): Promise<number> => {

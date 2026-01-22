@@ -1,3 +1,4 @@
+import type { Check } from "@/types/check.js";
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
@@ -53,7 +54,7 @@ export interface MonitorsSummary {
 }
 
 export interface MonitorWithChecks extends Monitor {
-	checks: import("./check.js").Check[];
+	checks: Check[];
 }
 
 export interface MonitorsWithChecksByTeamIdResult {

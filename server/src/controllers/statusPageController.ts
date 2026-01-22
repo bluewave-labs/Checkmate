@@ -2,14 +2,25 @@ import { Request, Response, NextFunction } from "express";
 
 import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation, imageValidation } from "@/validation/joi.js";
 import { AppError } from "@/utils/AppError.js";
+import { requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
+import { IStatusPageService } from "@/service/business/statusPageService.js";
+import { IMonitorsRepository } from "@/repositories/index.js";
+import { ISettingsService } from "@/service/system/settingsService.js";
+import { ParseBoolean } from "@/utils/utils.js";
+import { MonitorWithChecks } from "@/types/index.js";
+import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
 
 class StatusPageController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private db: any;
-	constructor(db: any) {
-		this.db = db;
+	private statusPageService: IStatusPageService;
+	private monitorsRepository: IMonitorsRepository;
+	private settingsService: ISettingsService;
+	constructor(statusPageService: IStatusPageService, monitorsRepository: IMonitorsRepository, settingsService: ISettingsService) {
+		this.statusPageService = statusPageService;
+		this.monitorsRepository = monitorsRepository;
+		this.settingsService = settingsService;
 	}
 
 	get serviceName() {
@@ -21,13 +32,10 @@ class StatusPageController {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 
-			const { id, teamId } = req.user ?? {};
-			const statusPage = await this.db.statusPageModule.createStatusPage({
-				statusPageData: req.body,
-				image: req.file,
-				userId: id,
-				teamId,
-			});
+			const teamId = requireTeamId(req?.user?.teamId);
+			const userId = requireUserId(req?.user?.id);
+			const statusPage = await this.statusPageService.createStatusPage(userId, teamId, req.file, req.body);
+
 			return res.status(200).json({
 				success: true,
 				msg: "Status page created successfully",
@@ -42,8 +50,12 @@ class StatusPageController {
 		try {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
-
-			const statusPage = await this.db.statusPageModule.updateStatusPage(req.body, req.file);
+			const teamId = requireTeamId(req?.user?.teamId);
+			const statusPageId = req.params.id;
+			if (!statusPageId) {
+				throw new AppError({ message: "Status page ID is required", status: 400 });
+			}
+			const statusPage = await this.statusPageService.updateStatusPage(statusPageId, teamId, req.file, req.body);
 			if (statusPage === null) {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
@@ -57,29 +69,32 @@ class StatusPageController {
 		}
 	};
 
-	getStatusPage = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const statusPage = await this.db.statusPageModule.getStatusPage();
-			return res.status(200).json({
-				success: true,
-				msg: "Status page retrieved successfully",
-				data: statusPage,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	getStatusPageByUrl = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getStatusPageParamValidation.validateAsync(req.params);
 			await getStatusPageQueryValidation.validateAsync(req.query);
 
-			const statusPage = await this.db.statusPageModule.getStatusPageByUrl(req.params.url);
+			if (!req.params.url) {
+				throw new AppError({ message: "Status page URL is required", status: 400 });
+			}
+
+			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url);
+			const settings = await this.settingsService.getDBSettings();
+			const showURL = settings.showURL;
+
+			const monitors = await this.monitorsRepository.findByIdsWithChecks(statusPage.monitors);
+			const normalizedMonitors = monitors.map((monitor) => {
+				const normalizedChecks = NormalizeData(monitor.checks, 10, 100);
+				if (!showURL) {
+					const { url, port, secret, notifications, ...rest } = monitor;
+					return { ...rest, checks: normalizedChecks };
+				}
+				return { ...monitor, checks: normalizedChecks };
+			});
 			return res.status(200).json({
 				success: true,
 				msg: "Status page retrieved successfully",
-				data: statusPage,
+				data: { statusPage, monitors: normalizedMonitors },
 			});
 		} catch (error) {
 			next(error);
@@ -87,8 +102,8 @@ class StatusPageController {
 	};
 	getStatusPagesByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req.user?.teamId;
-			const statusPages = await this.db.statusPageModule.getStatusPagesByTeamId(teamId);
+			const teamId = requireTeamId(req.user?.teamId);
+			const statusPages = await this.statusPageService.getStatusPagesByTeamId(teamId);
 
 			return res.status(200).json({
 				success: true,
@@ -99,9 +114,15 @@ class StatusPageController {
 			next(error);
 		}
 	};
+
 	deleteStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await this.db.statusPageModule.deleteStatusPage(req.params.url);
+			const statusPageId = req.params.id;
+			if (!statusPageId) {
+				throw new AppError({ message: "Status page ID is required", status: 400 });
+			}
+			const teamId = requireTeamId(req.user?.teamId);
+			await this.statusPageService.deleteStatusPage(statusPageId, teamId);
 			return res.status(200).json({
 				success: true,
 				msg: "Status page deleted successfully",

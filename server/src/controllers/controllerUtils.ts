@@ -99,6 +99,13 @@ const requireTeamId = (teamId?: string): string => {
 	return teamId;
 };
 
+const requireUserId = (userId?: string): string => {
+	if (!userId) {
+		throw new AppError({ message: "User ID is required", status: 400 });
+	}
+	return userId;
+};
+
 export {
 	fetchMonitorCertificate,
 	requireString,
@@ -108,4 +115,5 @@ export {
 	parseMonitorTypeFilter,
 	parseSortOrder,
 	requireTeamId,
+	requireUserId,
 };

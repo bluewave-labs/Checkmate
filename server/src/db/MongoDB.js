@@ -4,10 +4,9 @@ import { runMigrations } from "./migration/index.js";
 class MongoDB {
 	static SERVICE_NAME = "MongoDB";
 
-	constructor({ logger, envSettings, statusPageModule, incidentModule }) {
+	constructor({ logger, envSettings, incidentModule }) {
 		this.logger = logger;
 		this.envSettings = envSettings;
-		this.statusPageModule = statusPageModule;
 		this.incidentModule = incidentModule;
 	}
 

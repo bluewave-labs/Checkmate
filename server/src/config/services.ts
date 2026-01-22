@@ -22,6 +22,7 @@ import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
 import { MonitorService } from "@/service/index.js";
+import { StatusPageService, IStatusPageService } from "../service/business/statusPageService.js";
 import IncidentService from "../service/business/incidentService.js";
 import axios from "axios";
 import got from "got";
@@ -42,7 +43,6 @@ import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 
 // DB Modules
-import { NormalizeData } from "../utils/dataUtils.js";
 import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
@@ -50,16 +50,13 @@ import { ParseBoolean } from "../utils/utils.js";
 import Monitor from "../db/models/Monitor.js";
 import User from "../db/models/User.js";
 import InviteToken from "../db/models/Invite.js";
-import StatusPage from "../db/models/StatusPage.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
 import NotificationModel from "../db/models/Notification.js";
 import RecoveryToken from "../db/models/RecoveryToken.js";
-import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
 
-import StatusPageModule from "../db/modules/statusPageModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
@@ -109,6 +106,7 @@ export type InitializedServices = {
 	errorService: any;
 	logger: any;
 	notificationsService: INotificationsService;
+	statusPageService: IStatusPageService;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -137,13 +135,11 @@ export const initializeServices = async ({
 	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
-	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
 		envSettings,
-		statusPageModule,
 		incidentModule,
 	});
 
@@ -273,6 +269,8 @@ export const initializeServices = async ({
 		statusPagesRepository,
 	});
 
+	const statusPageService = new StatusPageService(statusPagesRepository);
+
 	const services = {
 		//v1
 		settingsService,
@@ -292,6 +290,7 @@ export const initializeServices = async ({
 		errorService,
 		logger,
 		notificationsService,
+		statusPageService,
 
 		// Repositories
 		monitorsRepository,
