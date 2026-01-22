@@ -909,7 +909,7 @@ class NetworkService {
 	}
 
 	async createStatusPage(config) {
-		const { form, isCreate } = config;
+		const { form, isCreate, id } = config;
 
 		const fd = new FormData();
 		fd.append("type", form.type);
@@ -955,7 +955,7 @@ class NetworkService {
 			return this.axiosInstance.post(`/status-page`, fd, {});
 		}
 
-		return this.axiosInstance.put(`/status-page`, fd, {});
+		return this.axiosInstance.put(`/status-page/${id}`, fd, {});
 	}
 
 	async deleteStatusPage(config) {

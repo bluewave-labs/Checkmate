@@ -22,6 +22,7 @@ import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
 import { MonitorService } from "@/service/index.js";
+import { StatusPageService, IStatusPageService } from "../service/business/statusPageService.js";
 import IncidentService from "../service/business/incidentService.js";
 import axios from "axios";
 import got from "got";
@@ -109,6 +110,7 @@ export type InitializedServices = {
 	errorService: any;
 	logger: any;
 	notificationsService: INotificationsService;
+	statusPageService: IStatusPageService;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -273,6 +275,8 @@ export const initializeServices = async ({
 		statusPagesRepository,
 	});
 
+	const statusPageService = new StatusPageService(statusPagesRepository);
+
 	const services = {
 		//v1
 		settingsService,
@@ -292,6 +296,7 @@ export const initializeServices = async ({
 		errorService,
 		logger,
 		notificationsService,
+		statusPageService,
 
 		// Repositories
 		monitorsRepository,

@@ -14,7 +14,7 @@ const useStatusPagesFetch = () => {
 		const fetchStatusPages = async () => {
 			try {
 				const res = await networkService.getStatusPagesByTeamId();
-				setStatusPages(res?.data?.data);
+				setStatusPages(res?.data?.data || []);
 			} catch (error) {
 				setNetworkError(true);
 				createToast({

@@ -1,7 +1,7 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary } from "@/types/index.js";
-import mongoose, { type FilterQuery } from "mongoose";
+import type { Monitor, MonitorsSummary, MonitorWithChecks, Check } from "@/types/index.js";
+import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -77,6 +77,78 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const monitors = await MonitorModel.find({ _id: { $in: objectIds } });
 		return this.mapDocuments(monitors);
+	};
+
+	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<MonitorWithChecks[]> => {
+		if (!monitorIds.length) {
+			return [];
+		}
+
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+
+		const pipeline: PipelineStage[] = [
+			{ $match: { _id: { $in: objectIds } } },
+			{
+				$lookup: {
+					from: "checks",
+					let: { monitorId: "$_id" },
+					pipeline: [
+						{ $match: { $expr: { $eq: ["$metadata.monitorId", "$$monitorId"] } } },
+						{ $sort: { createdAt: -1 } },
+						{ $limit: checksCount },
+					],
+					as: "checks",
+				},
+			},
+			{
+				$lookup: {
+					from: "maintenancewindows",
+					let: { monitorId: "$_id" },
+					pipeline: [{ $match: { $expr: { $eq: ["$monitorId", "$$monitorId"] } } }],
+					as: "maintenanceWindows",
+				},
+			},
+			{
+				$lookup: {
+					from: "monitorstats",
+					localField: "_id",
+					foreignField: "monitorId",
+					as: "stats",
+				},
+			},
+			{
+				$addFields: {
+					isMaintenance: {
+						$reduce: {
+							input: "$maintenanceWindows",
+							initialValue: false,
+							in: {
+								$or: [
+									"$$value",
+									{
+										$and: [
+											{ $eq: ["$$this.active", true] },
+											{ $lte: ["$$this.start", "$$NOW"] },
+											{ $gte: ["$$this.end", "$$NOW"] },
+										],
+									},
+								],
+							},
+						},
+					},
+					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
+				},
+			},
+			{
+				$project: {
+					maintenanceWindows: 0,
+					stats: 0,
+				},
+			},
+		];
+
+		const documents = await MonitorModel.aggregate(pipeline);
+		return documents.map((doc) => this.toEntityWithChecks(doc));
 	};
 
 	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
@@ -247,6 +319,90 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			group: doc.group ?? null,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
+		};
+	};
+
+	private toEntityWithChecks = (doc: any): MonitorWithChecks => {
+		const toStringId = (value: unknown): string => {
+			if (value instanceof mongoose.Types.ObjectId) {
+				return value.toString();
+			}
+			return value?.toString() ?? "";
+		};
+
+		const toDateString = (value: Date | string): string => {
+			if (!value) return "";
+			return value instanceof Date ? value.toISOString() : value;
+		};
+
+		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
+
+		const checks: Check[] = (doc.checks ?? []).map((check: any) => ({
+			id: toStringId(check._id),
+			metadata: {
+				monitorId: toStringId(check.metadata?.monitorId),
+				teamId: toStringId(check.metadata?.teamId),
+				type: check.metadata?.type,
+			},
+			status: check.status,
+			responseTime: check.responseTime,
+			timings: check.timings,
+			statusCode: check.statusCode,
+			message: check.message,
+			ack: check.ack,
+			ackAt: check.ackAt ?? null,
+			expiry: toDateString(check.expiry),
+			cpu: check.cpu,
+			memory: check.memory,
+			disk: check.disk,
+			host: check.host,
+			errors: check.errors,
+			capture: check.capture,
+			net: check.net,
+			accessibility: check.accessibility,
+			bestPractices: check.bestPractices,
+			seo: check.seo,
+			performance: check.performance,
+			audits: check.audits,
+			__v: check.__v,
+			createdAt: toDateString(check.createdAt),
+			updatedAt: toDateString(check.updatedAt),
+		}));
+
+		return {
+			id: toStringId(doc._id),
+			userId: toStringId(doc.userId),
+			teamId: toStringId(doc.teamId),
+			name: doc.name,
+			description: doc.description ?? undefined,
+			status: doc.status ?? undefined,
+			statusWindow: doc.statusWindow ?? [],
+			statusWindowSize: doc.statusWindowSize,
+			statusWindowThreshold: doc.statusWindowThreshold,
+			type: doc.type,
+			ignoreTlsErrors: doc.ignoreTlsErrors,
+			jsonPath: doc.jsonPath ?? undefined,
+			expectedValue: doc.expectedValue ?? undefined,
+			matchMethod: doc.matchMethod ?? undefined,
+			url: doc.url,
+			port: doc.port ?? undefined,
+			isActive: doc.isActive,
+			interval: doc.interval,
+			uptimePercentage: doc.uptimePercentage ?? undefined,
+			notifications: notificationIds,
+			secret: doc.secret ?? undefined,
+			thresholds: doc.thresholds ?? undefined,
+			alertThreshold: doc.alertThreshold,
+			cpuAlertThreshold: doc.cpuAlertThreshold,
+			memoryAlertThreshold: doc.memoryAlertThreshold,
+			diskAlertThreshold: doc.diskAlertThreshold,
+			tempAlertThreshold: doc.tempAlertThreshold,
+			selectedDisks: doc.selectedDisks ?? [],
+			gameId: doc.gameId ?? undefined,
+			group: doc.group ?? null,
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
+			checks,
 		};
 	};
 }

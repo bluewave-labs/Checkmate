@@ -54,10 +54,10 @@ const CreateStatusPage = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, isLoading, networkError] = useMonitorsFetch();
-	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
+	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const [statusPage, statusPageMonitors, statusPageIsLoading, , fetchStatusPage] =
 		useStatusPageFetch(isCreate, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
@@ -144,13 +144,12 @@ const CreateStatusPage = () => {
 			logo: { type: form.logo?.type ?? null, size: form.logo?.size ?? null },
 		};
 
-		console.log(toSubmit);
 		const { error } = statusPageValidation.validate(toSubmit, {
 			abortEarly: false,
 		});
 
 		if (typeof error === "undefined") {
-			const success = await createStatusPage({ form });
+			const success = await createStatusPage({ form, id: statusPage?.id });
 			if (success) {
 				createToast({
 					body: isCreate ? t("statusPage.createSuccess") : t("statusPage.updateSuccess"),
