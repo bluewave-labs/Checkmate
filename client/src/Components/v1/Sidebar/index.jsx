@@ -84,8 +84,8 @@ const Sidebar = () => {
 			gap={theme.spacing(6)}
 			sx={{
 				transition,
-				backgroundColor: "#000000",
-				borderRight: "1px solid #344054",
+				backgroundColor: theme.palette.background.main,
+				borderRight: `1px solid ${theme.palette.primary.lowContrast}`,
 				zIndex: 1000,
 			}}
 		>
