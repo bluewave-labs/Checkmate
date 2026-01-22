@@ -30,3 +30,6 @@ export { default as IncidentModel } from "@/db/models/Incident.js";
 
 export * from "@/db/models/Team.js";
 export { default as TeamModel } from "@/db/models/Team.js";
+
+export * from "@/db/models/MaintenanceWindow.js";
+export { default as MaintenanceWindowModel } from "@/db/models/MaintenanceWindow.js";

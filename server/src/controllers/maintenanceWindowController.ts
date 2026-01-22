@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "@/utils/AppError.js";
 import {
 	createMaintenanceWindowBodyValidation,
 	editMaintenanceWindowByIdParamValidation,
@@ -9,6 +8,7 @@ import {
 	getMaintenanceWindowsByTeamIdQueryValidation,
 	deleteMaintenanceWindowByIdParamValidation,
 } from "@/validation/joi.js";
+import { requireTeamId } from "@/controllers/controllerUtils.js";
 
 const SERVICE_NAME = "maintenanceWindowController";
 
@@ -26,11 +26,7 @@ class MaintenanceWindowController {
 	createMaintenanceWindows = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await createMaintenanceWindowBodyValidation.validateAsync(req.body);
-
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req?.user?.teamId);
 
 			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: req.body });
 
@@ -46,10 +42,7 @@ class MaintenanceWindowController {
 		try {
 			await getMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 
-			const teamId = req.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const maintenanceWindow = await this.maintenanceWindowService.getMaintenanceWindowById({ id: req.params.id, teamId });
 
@@ -67,11 +60,7 @@ class MaintenanceWindowController {
 		try {
 			await getMaintenanceWindowsByTeamIdQueryValidation.validateAsync(req.query);
 
-			const teamId = req?.user?.teamId;
-
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req?.user?.teamId);
 
 			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByTeamId({ teamId, query: req.query });
 
@@ -89,10 +78,7 @@ class MaintenanceWindowController {
 		try {
 			await getMaintenanceWindowsByMonitorIdParamValidation.validateAsync(req.params);
 
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req?.user?.teamId);
 
 			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByMonitorId({ monitorId: req.params.monitorId, teamId });
 
@@ -109,10 +95,7 @@ class MaintenanceWindowController {
 		try {
 			await deleteMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req?.user?.teamId);
 
 			await this.maintenanceWindowService.deleteMaintenanceWindow({ id: req.params.id, teamId });
 
@@ -130,10 +113,7 @@ class MaintenanceWindowController {
 			await editMaintenanceWindowByIdParamValidation.validateAsync(req.params);
 			await editMaintenanceByIdWindowBodyValidation.validateAsync(req.body);
 
-			const teamId = req.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const editedMaintenanceWindow = await this.maintenanceWindowService.editMaintenanceWindow({ id: req.params.id, body: req.body, teamId });
 			return res.status(200).json({

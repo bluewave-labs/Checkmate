@@ -3,11 +3,11 @@ import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import IncidentService from "@/service/business/incidentService.js";
+import { IMaintenanceWindowsRepository } from "@/repositories/index.js";
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private db: any;
 	private logger: any;
 	private networkService: INetworkService;
 	private statusService: IStatusService;
@@ -15,9 +15,9 @@ class SuperSimpleQueueHelper {
 	private checkService: any;
 	private buffer: any;
 	private incidentService: IncidentService;
+	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 
 	constructor({
-		db,
 		logger,
 		networkService,
 		statusService,
@@ -25,8 +25,8 @@ class SuperSimpleQueueHelper {
 		checkService,
 		buffer,
 		incidentService,
+		maintenanceWindowsRepository,
 	}: {
-		db: any;
 		logger: any;
 		networkService: INetworkService;
 		statusService: IStatusService;
@@ -34,8 +34,8 @@ class SuperSimpleQueueHelper {
 		checkService: any;
 		buffer: any;
 		incidentService: IncidentService;
+		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	}) {
-		this.db = db;
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
@@ -43,6 +43,7 @@ class SuperSimpleQueueHelper {
 		this.buffer = buffer;
 		this.notificationsService = notificationsService;
 		this.incidentService = incidentService;
+		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 	}
 
 	get serviceName() {
@@ -122,10 +123,7 @@ class SuperSimpleQueueHelper {
 	};
 
 	async isInMaintenanceWindow(monitorId: string, teamId: string) {
-		const maintenanceWindows = await this.db.maintenanceWindowModule.getMaintenanceWindowsByMonitorId({
-			monitorId: monitorId,
-			teamId: teamId,
-		});
+		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
 		// Check for active maintenance window:
 		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc: any, window: any) => {
 			if (window.active) {

@@ -60,8 +60,6 @@ import AppSettings from "../db/models/AppSettings.js";
 import Incident from "../db/models/Incident.js";
 
 import StatusPageModule from "../db/modules/statusPageModule.js";
-import MaintenanceWindowModule from "../db/modules/maintenanceWindowModule.js";
-import NotificationModule from "../db/modules/notificationModule.js";
 import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
@@ -76,6 +74,7 @@ import {
 	MongoNotificationsRepository,
 	MongoIncidentRepository,
 	MongoTeamsRepository,
+	MongoMaintenanceWindowsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IMonitorStatsRepository,
@@ -87,6 +86,7 @@ import {
 	INotificationsRepository,
 	IIncidentsRepository,
 	ITeamsRepository,
+	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
@@ -122,6 +122,7 @@ export type InitializedServices = {
 	notificationsRepository: INotificationsRepository;
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
+	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 };
 
 export const initializeServices = async ({
@@ -137,16 +138,12 @@ export const initializeServices = async ({
 }): Promise<InitializedServices> => {
 	// Create DB
 	const statusPageModule = new StatusPageModule({ StatusPage, NormalizeData, AppSettings });
-	const maintenanceWindowModule = new MaintenanceWindowModule({ MaintenanceWindow });
-	const notificationModule = new NotificationModule({ Notification: NotificationModel, Monitor });
 	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
 		envSettings,
 		statusPageModule,
-		maintenanceWindowModule,
-		notificationModule,
 		incidentModule,
 	});
 
@@ -163,6 +160,7 @@ export const initializeServices = async ({
 	const notificationsRepository = new MongoNotificationsRepository();
 	const incidentsRepository = new MongoIncidentRepository();
 	const teamsRepository = new MongoTeamsRepository();
+	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
 	const networkService = new NetworkService({
 		axios,
@@ -218,7 +216,6 @@ export const initializeServices = async ({
 	);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
-		db,
 		logger,
 		networkService,
 		statusService,
@@ -226,6 +223,7 @@ export const initializeServices = async ({
 		checkService,
 		buffer: bufferService,
 		incidentService,
+		maintenanceWindowsRepository,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
@@ -259,9 +257,9 @@ export const initializeServices = async ({
 		errorService,
 	});
 	const maintenanceWindowService = new MaintenanceWindowService({
-		db,
 		errorService,
 		monitorsRepository,
+		maintenanceWindowsRepository,
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
@@ -307,6 +305,7 @@ export const initializeServices = async ({
 		notificationsRepository,
 		incidentsRepository,
 		teamsRepository,
+		maintenanceWindowsRepository,
 	};
 
 	return services;

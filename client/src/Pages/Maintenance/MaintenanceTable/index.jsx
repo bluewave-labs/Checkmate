@@ -203,7 +203,7 @@ const MaintenanceTable = ({
 						},
 					},
 					onRowClick: (row) => {
-						navigate(`/maintenance/create/${row._id}`);
+						navigate(`/maintenance/create/${row.id}`);
 					},
 				}}
 				headers={headers}
