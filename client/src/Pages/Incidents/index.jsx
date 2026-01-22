@@ -49,8 +49,7 @@ const Incidents2 = () => {
 		fetchActiveIncidents,
 		fetchResolvedIncidents,
 		resolveIncident,
-		fetchManualResolvedIncidents,
-		fetchAutomaticResolvedIncidents,
+		fetchIncidentsByResolutionType,
 	} = useFetchIncidents();
 
 	const networkError = monitorsNetworkError || incidentsNetworkError;
@@ -75,9 +74,9 @@ const Incidents2 = () => {
 		} else if (filter === "resolved") {
 			fetchResolvedIncidents(config);
 		} else if (filter === "manual") {
-			fetchManualResolvedIncidents(config);
+			fetchIncidentsByResolutionType("manual", config);
 		} else if (filter === "automatic") {
-			fetchAutomaticResolvedIncidents(config);
+			fetchIncidentsByResolutionType("automatic", config);
 		} else {
 			fetchIncidents(config);
 		}
@@ -91,8 +90,7 @@ const Incidents2 = () => {
 		fetchActiveIncidents,
 		fetchResolvedIncidents,
 		fetchIncidents,
-		fetchManualResolvedIncidents,
-		fetchAutomaticResolvedIncidents,
+		fetchIncidentsByResolutionType,
 	]);
 
 	useEffect(() => {
