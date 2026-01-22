@@ -2,7 +2,7 @@ const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
-import type { IIncidentsRepository } from "@/repositories/index.js";
+import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
@@ -17,27 +17,30 @@ const dateRangeLookup: Record<string, Date | undefined> = {
 class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private db: any;
 	private logger: any;
 	private errorService: any;
-	private: any;
 	private incidentsRepository: IIncidentsRepository;
+	private monitorsRepository: IMonitorsRepository;
+	private usersRepository: IUsersRepository;
 
 	constructor({
-		db,
 		logger,
 		errorService,
 		incidentsRepository,
+		monitorsRepository,
+		usersRepository,
 	}: {
-		db: any;
 		logger: any;
 		errorService: any;
 		incidentsRepository: IIncidentsRepository;
+		monitorsRepository: IMonitorsRepository;
+		usersRepository: IUsersRepository;
 	}) {
-		this.db = db;
 		this.logger = logger;
 		this.errorService = errorService;
 		this.incidentsRepository = incidentsRepository;
+		this.monitorsRepository = monitorsRepository;
+		this.usersRepository = usersRepository;
 	}
 
 	get serviceName() {
@@ -193,27 +196,15 @@ class IncidentService {
 		}
 	};
 
-	getIncidentById = async ({ incidentId, teamId }: { incidentId: string; teamId: string }) => {
+	getIncidentById = async (incidentId: string, teamId: string) => {
 		try {
-			if (!incidentId) {
-				throw this.errorService.createBadRequestError("No incident ID in request");
+			const incident = await this.incidentsRepository.findById(incidentId, teamId);
+			const monitor = await this.monitorsRepository.findById(incident.monitorId, teamId);
+			let user = null;
+			if (incident.resolvedBy) {
+				user = await this.usersRepository.findById(incident.resolvedBy);
 			}
-
-			if (!teamId) {
-				throw this.errorService.createBadRequestError("No team ID in request");
-			}
-
-			const incident = await this.db.incidentModule.getIncidentById(incidentId);
-
-			if (!incident) {
-				throw this.errorService.createNotFoundError("Incident not found");
-			}
-
-			if (!incident.teamId.equals(teamId)) {
-				throw this.errorService.createAuthorizationError();
-			}
-
-			return incident;
+			return { incident, monitor, user };
 		} catch (error: any) {
 			this.logger.error({
 				service: SERVICE_NAME,
