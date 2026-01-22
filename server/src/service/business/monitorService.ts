@@ -1,4 +1,3 @@
-import { createMonitorsBodyValidation } from "@/validation/joi.js";
 import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/types/index.js";
 import type {
@@ -12,8 +11,7 @@ import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, I
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
-
-import { AppError } from "../infrastructure/errorService.js";
+import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 
 const SERVICE_NAME = "MonitorService";
@@ -75,7 +73,6 @@ export class MonitorService implements IMonitorService {
 	private jobQueue: ISuperSimpleQueue;
 	private emailService: any;
 	private logger: any;
-	private errorService: any;
 	private games: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
@@ -86,7 +83,6 @@ export class MonitorService implements IMonitorService {
 		jobQueue,
 		emailService,
 		logger,
-		errorService,
 		games,
 		monitorsRepository,
 		checksRepository,
@@ -96,7 +92,6 @@ export class MonitorService implements IMonitorService {
 		jobQueue: ISuperSimpleQueue;
 		emailService: any;
 		logger: any;
-		errorService: any;
 		games: any;
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
@@ -106,7 +101,6 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue = jobQueue;
 		this.emailService = emailService;
 		this.logger = logger;
-		this.errorService = errorService;
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
@@ -146,7 +140,7 @@ export class MonitorService implements IMonitorService {
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
-			throw new AppError("Failed to create monitor", 500);
+			throw new AppError({ message: "Failed to create monitor", status: 500, service: SERVICE_NAME, method: "createMonitor" });
 		}
 
 		this.jobQueue.addJob(monitor.id, monitor);
@@ -155,7 +149,7 @@ export class MonitorService implements IMonitorService {
 	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
 		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
 		if (!monitors || monitors.length === 0) {
-			throw new AppError("Failed to create monitors", 500);
+			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createBulkMonitors" });
 		}
 
 		await Promise.all(createdMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
@@ -445,7 +439,7 @@ export class MonitorService implements IMonitorService {
 		const messageId = await this.emailService.sendEmail(to, subject, html);
 
 		if (!messageId) {
-			throw this.errorService.createServerError("Failed to send test email.");
+			throw new AppError({ message: "Failed to send test email.", service: SERVICE_NAME, method: "sendTestEmail", status: 500 });
 		}
 
 		return messageId;
@@ -455,7 +449,7 @@ export class MonitorService implements IMonitorService {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 
 		if (!monitors || monitors.length === 0) {
-			throw this.errorService.createNotFoundError("No monitors to export");
+			throw new AppError({ message: "No monitors found to export.", service: SERVICE_NAME, method: "exportMonitorsToJSON", status: 400 });
 		}
 
 		return monitors;
