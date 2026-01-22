@@ -4,6 +4,7 @@ export interface IIncidentsRepository {
 	// create
 	create(incident: Partial<Incident>): Promise<Incident>;
 	// fetch
+	findById(incidentId: string, teamId: string): Promise<Incident>;
 	findActiveByIncidentId(incidentId: string, teamId: string): Promise<Incident | null>;
 	findActiveByMonitorId(monitorId: string, teamId: string): Promise<Incident | null>;
 	findByTeamId(

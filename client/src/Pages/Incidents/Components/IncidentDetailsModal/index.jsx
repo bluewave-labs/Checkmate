@@ -21,12 +21,12 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const { fetchIncidentById, resolveIncident } = useFetchIncidents();
-	const [incident, setIncident] = useState(null);
+	const [incidentData, setIncidentData] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
 	const uiTimezone = useSelector((state) => state.ui.timezone);
-	const isActive = incident?.status === true;
-	const duration = useGetIncidentsDuration(incident || null, isActive);
+	const isActive = incidentData?.incident?.status === true;
+	const duration = useGetIncidentsDuration(incidentData?.incident || null, isActive);
 
 	const statusColor = isActive ? theme.palette.error.main : theme.palette.success.main;
 	const toCapitalLetter = (text) =>
@@ -75,7 +75,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 	useEffect(() => {
 		const loadIncident = async () => {
 			if (!incidentId || !open) {
-				setIncident(null);
+				setIncidentData(null);
 				setIsLoading(false);
 				return;
 			}
@@ -83,10 +83,10 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 			setIsLoading(true);
 			try {
 				const incidentData = await fetchIncidentById(incidentId);
-				setIncident(incidentData);
+				setIncidentData(incidentData);
 			} catch (error) {
 				console.error("Error fetching incident:", error);
-				setIncident(null);
+				setIncidentData(null);
 			} finally {
 				setIsLoading(false);
 			}
@@ -107,11 +107,13 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 		if (!incidentId) return;
 		const updatedIncident = await fetchIncidentById(incidentId);
 		if (updatedIncident) {
-			setIncident(updatedIncident);
+			setIncidentData(updatedIncident);
 		}
 	};
 
 	const renderContent = () => {
+		console.log(incidentData);
+
 		if (isLoading) {
 			return (
 				<GenericFallback
@@ -121,7 +123,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 			);
 		}
 
-		if (!incident) {
+		if (!incidentData) {
 			return (
 				<GenericFallback
 					isLoading={false}
@@ -188,7 +190,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 										variant="body1"
 										sx={{ flex: 1 }}
 									>
-										{incident?.monitorId?.name || t("incidentsPage.unknownMonitor")}
+										{incidentData?.monitor?.name || t("incidentsPage.unknownMonitor")}
 									</Typography>
 								</Stack>
 								<Stack
@@ -207,7 +209,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 										variant="body1"
 										sx={{ flex: 1, wordBreak: "break-word", fontFamily: "monospace" }}
 									>
-										{incident?.monitorId?.url || "-"}
+										{incidentData?.monitor?.url || "-"}
 									</Typography>
 								</Stack>
 							</Stack>
@@ -247,7 +249,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 											label={t("incidentsPage.startedAt")}
 											value={
 												formatDateWithTz(
-													incident?.startTime,
+													incidentData?.incident?.startTime,
 													"D MMM YYYY, h:mm A",
 													uiTimezone
 												) || "-"
@@ -259,7 +261,7 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 												label={t("incidentsPage.endedAt")}
 												value={
 													formatDateWithTz(
-														incident?.endTime,
+														incidentData?.incident?.endTime,
 														"D MMM YYYY, h:mm A",
 														uiTimezone
 													) || "-"
@@ -303,26 +305,28 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 
 										<KeyValueRow
 											label={t("incidentsPage.statusCode")}
-											value={incident?.statusCode ?? "-"}
+											value={incidentData?.incident?.statusCode ?? "-"}
 										/>
 
 										<KeyValueRow
 											label={t("incidentsPage.message")}
-											value={incident?.message ?? "-"}
+											value={incidentData?.incident?.message ?? "-"}
 										/>
 
 										{!isActive && (
 											<>
 												<KeyValueRow
 													label={t("incidentsPage.resolutionMethod")}
-													value={toCapitalLetter(incident?.resolutionType) || "-"}
+													value={
+														toCapitalLetter(incidentData?.incident?.resolutionType) || "-"
+													}
 												/>
-												{incident?.resolutionType === "manual" && (
+												{incidentData?.incident?.resolutionType === "manual" && (
 													<KeyValueRow
 														label={t("incidentsPage.comment")}
 														value={
-															incident?.comment?.trim()
-																? incident.comment
+															incidentData?.incident.comment?.trim()
+																? incidentData.incident.comment
 																: t("incidentsPage.noCommentProvided")
 														}
 													/>
@@ -353,15 +357,15 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 			>
 				{renderContent()}
 				{!isActive &&
-					incident?.resolutionType === "manual" &&
-					incident?.resolvedBy?.email && (
+					incidentData?.incident?.resolutionType === "manual" &&
+					incidentData?.user?.email && (
 						<Typography
 							variant="body2"
 							sx={{
 								fontStyle: "italic",
 							}}
 						>
-							{t("incidentsPage.resolvedBy")}: {incident.resolvedBy.email}
+							{t("incidentsPage.resolvedBy")}: {incidentData.user.email}
 						</Typography>
 					)}
 				<Stack

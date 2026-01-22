@@ -47,17 +47,12 @@ import { GenerateAvatarImage } from "../utils/imageProcessing.js";
 import { ParseBoolean } from "../utils/utils.js";
 
 // Models
-import Monitor from "../db/models/Monitor.js";
-import User from "../db/models/User.js";
 import InviteToken from "../db/models/Invite.js";
 import Team from "../db/models/Team.js";
 import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
 import MonitorStats from "../db/models/MonitorStats.js";
 import NotificationModel from "../db/models/Notification.js";
 import RecoveryToken from "../db/models/RecoveryToken.js";
-import Incident from "../db/models/Incident.js";
-
-import IncidentModule from "../db/modules/incidentModule.js";
 
 // repositories
 import {
@@ -135,12 +130,10 @@ export const initializeServices = async ({
 	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
-	const incidentModule = new IncidentModule({ logger, Incident, Monitor, User });
 
 	const db = new MongoDB({
 		logger,
 		envSettings,
-		incidentModule,
 	});
 
 	await db.connect();
@@ -175,10 +168,11 @@ export const initializeServices = async ({
 	const errorService = new ErrorService();
 
 	const incidentService = new IncidentService({
-		db,
 		logger,
 		errorService,
 		incidentsRepository,
+		monitorsRepository,
+		usersRepository,
 	});
 
 	const checkService = new CheckService({

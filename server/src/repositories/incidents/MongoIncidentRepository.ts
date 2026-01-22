@@ -79,6 +79,17 @@ class MongoIncidentRepository implements IIncidentsRepository {
 		return this.toEntity(newIncident);
 	}
 
+	findById = async (incidentId: string, teamId: string): Promise<Incident> => {
+		const incident = await IncidentModel.findOne({
+			_id: new mongoose.Types.ObjectId(incidentId),
+			teamId: new mongoose.Types.ObjectId(teamId),
+		});
+		if (!incident) {
+			throw new AppError({ message: `Incident with id ${incidentId} not found`, status: 404 });
+		}
+		return this.toEntity(incident);
+	};
+
 	findActiveByIncidentId = async (incidentId: string, teamId: string): Promise<Incident | null> => {
 		const incident = await IncidentModel.findOne({
 			_id: new mongoose.Types.ObjectId(incidentId),
