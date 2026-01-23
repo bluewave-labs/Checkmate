@@ -24,7 +24,7 @@ import SkeletonLayout from "./skeleton.jsx";
 // Utils
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { monitorValidation } from "../../../Validation/validation.js";
 import { createToast } from "../../../Utils/toastUtils.jsx";
@@ -68,6 +68,7 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [useAdvancedMatching, setUseAdvancedMatching] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 	const [games, setGames] = useState({});
+	const hasInitializedAdvancedMatching = useRef(false);
 	const triggerUpdate = () => {
 		setUpdateTrigger(!updateTrigger);
 	};
@@ -295,14 +296,13 @@ const UptimeCreate = ({ isClone = false }) => {
 	const protocol = parsedUrl?.protocol?.replace(":", "") || "";
 
 	useEffect(() => {
-		if (!isCreate || isClone) {
-			if (monitor.matchMethod) {
-				setUseAdvancedMatching(true);
-			} else {
-				setUseAdvancedMatching(false);
+		if ((!isCreate || isClone) && !hasInitializedAdvancedMatching.current) {
+			if (monitor.id) {
+				hasInitializedAdvancedMatching.current = true;
+				setUseAdvancedMatching(!!monitor.matchMethod);
 			}
 		}
-	}, [monitor, isCreate]);
+	}, [monitor, isCreate, isClone]);
 
 	if (Object.keys(monitor).length === 0) {
 		return <SkeletonLayout />;
