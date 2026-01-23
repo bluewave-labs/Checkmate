@@ -1,7 +1,7 @@
 import type { Check } from "@/Types/Check";
 export type MonitorStatus = "up" | "down" | "initializing";
 
-export interface IMonitor {
+export interface Monitor {
 	checks: Check[];
 	createdAt: string;
 	createdBy: string;

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import type { SWRConfiguration } from "swr";
 import type { AxiosRequestConfig } from "axios";
-import { get, post, patch, deleteOp } from "@/Utils/ApiClient";
+import { get } from "@/Utils/ApiClient";
 
 interface ApiResponse<T> {
 	success: boolean;
@@ -9,15 +9,8 @@ interface ApiResponse<T> {
 	data: T;
 }
 
-interface UseGetReturn<T> {
-	data: T | undefined;
-	isLoading: boolean;
-	error: Error | undefined;
-	refetch: () => Promise<ApiResponse<T> | undefined>;
-}
-
 const fetcher = async <T>(url: string, config?: AxiosRequestConfig) => {
-	const res = await get<T>(url, config);
+	const res = await get<ApiResponse<T>>(url, config);
 	return res.data;
 };
 
@@ -25,7 +18,7 @@ export const useGet = <T>(
 	url: string | null,
 	axiosConfig?: AxiosRequestConfig,
 	swrConfig?: SWRConfiguration
-): UseGetReturn<T> => {
+) => {
 	const { data, error, isLoading, mutate } = useSWR<ApiResponse<T>>(
 		url,
 		(url: string) => fetcher<T>(url, axiosConfig),
@@ -33,7 +26,7 @@ export const useGet = <T>(
 	);
 
 	return {
-		data: data?.data,
+		data: data?.data ?? null,
 		isLoading,
 		error,
 		refetch: mutate,
