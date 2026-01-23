@@ -23,10 +23,11 @@ const Content = ({
 
 	// Handlers
 	const handleMonitorsChange = (selectedMonitors) => {
+		const validMonitors = selectedMonitors.filter((monitor) => monitor?.id);
 		handleFormChange({
-			target: { name: "monitors", value: selectedMonitors.map((monitor) => monitor.id) },
+			target: { name: "monitors", value: validMonitors.map((monitor) => monitor.id) },
 		});
-		setSelectedMonitors(selectedMonitors);
+		setSelectedMonitors(validMonitors);
 	};
 
 	// Utils

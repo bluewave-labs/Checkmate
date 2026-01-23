@@ -186,7 +186,7 @@ const CreateStatusPage = () => {
 	// If we are configuring, populate fields
 	useEffect(() => {
 		if (isCreate) return;
-		if (typeof statusPage === "undefined") {
+		if (typeof statusPage === "undefined" || !Array.isArray(statusPageMonitors)) {
 			return;
 		}
 
@@ -205,7 +205,9 @@ const CreateStatusPage = () => {
 				companyName: statusPage?.companyName,
 				isPublished: statusPage?.isPublished,
 				timezone: statusPage?.timezone,
-				monitors: statusPageMonitors.map((monitor) => monitor.id),
+				monitors: statusPageMonitors
+					.filter((monitor) => monitor?.id)
+					.map((monitor) => monitor.id),
 				color: statusPage?.color,
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? true,
@@ -213,7 +215,7 @@ const CreateStatusPage = () => {
 				showAdminLoginLink: statusPage?.showAdminLoginLink ?? false,
 			};
 		});
-		setSelectedMonitors(statusPageMonitors);
+		setSelectedMonitors(statusPageMonitors.filter((monitor) => monitor?.id));
 	}, [isCreate, statusPage, statusPageMonitors]);
 
 	if (networkError === true) {
