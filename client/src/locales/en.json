@@ -128,7 +128,14 @@
 	"pages": {
 		"uptime": {
 			"fallback": {
-				"title": "An uptime monitor is used to:"
+				"title": "An uptime monitor is used to:",
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Check if websites or servers are online & responsive",
+					"Alert teams about downtime or performance issues",
+					"Monitor HTTP endpoints, pings, containers & ports",
+					"Track historical uptime and reliability trends"
+				]
 			}
 		}
 	},

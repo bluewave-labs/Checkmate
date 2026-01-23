@@ -140,8 +140,8 @@ export const MonitorBasePageWithStates = ({
 			<EmptyMonitorFallback
 				page={page}
 				title={t(`pages.${page}.fallback.title`)}
-				bullets={t(`monitors.${page}.fallback.checks`, { returnObjects: true })}
-				actionButtonText={t(`monitors.${page}.fallback.actionButton`)}
+				bullets={t(`pages.${page}.fallback.checks`, { returnObjects: true })}
+				actionButtonText={t(`pages.${page}.fallback.actionButton`)}
 				actionLink={actionLink || ""}
 			/>
 		);

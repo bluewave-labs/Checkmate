@@ -165,6 +165,15 @@ export const EmptyMonitorFallback = ({
 							/>
 						))}
 				</Stack>
+				<Stack>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={() => navigate(actionLink)}
+					>
+						{actionButtonText}
+					</Button>
+				</Stack>
 			</Stack>
 		</BaseFallback>
 	);
