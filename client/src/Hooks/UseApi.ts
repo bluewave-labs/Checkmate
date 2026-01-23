@@ -1,7 +1,9 @@
 import useSWR from "swr";
 import type { SWRConfiguration } from "swr";
 import type { AxiosRequestConfig } from "axios";
-import { get } from "@/Utils/ApiClient";
+import { get, patch, post } from "@/Utils/ApiClient";
+import { useState } from "react";
+import { useToast } from "@/Hooks/UseToast";
 
 interface ApiResponse<T> {
 	success: boolean;
@@ -31,4 +33,77 @@ export const useGet = <T>(
 		error,
 		refetch: mutate,
 	};
+};
+
+export const usePost = <B = any, R = any>() => {
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const { toastError, toastSuccess } = useToast();
+
+	const postFn = async (
+		endpoint: string,
+		body: B,
+		config?: AxiosRequestConfig
+	): Promise<ApiResponse<R> | null> => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const res = await post<ApiResponse<R>>(endpoint, body, {
+				...config,
+				headers: {
+					...config?.headers,
+				},
+			});
+			toastSuccess(res.data?.msg || "Operation successful");
+
+			return res.data;
+		} catch (err: any) {
+			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
+			console.error(err);
+			toastError(errMsg);
+			setError(errMsg);
+			return null;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return { post: postFn, loading, error };
+};
+
+export const usePatch = <B = any, R = any>() => {
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const { toastError, toastSuccess } = useToast();
+
+	const patchFn = async (
+		endpoint: string,
+		body?: B,
+		config?: AxiosRequestConfig
+	): Promise<ApiResponse<R> | null> => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const res = await patch<ApiResponse<R>>(endpoint, body, {
+				...config,
+				headers: {
+					...config?.headers,
+				},
+			});
+			toastSuccess(res.data?.msg || "Operation successful");
+			return res.data;
+		} catch (err: any) {
+			console.error(err);
+			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
+			toastError(errMsg);
+			setError(errMsg);
+			return null;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return { patch: patchFn, loading, error };
 };

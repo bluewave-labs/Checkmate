@@ -32,6 +32,7 @@ export interface UIState {
 	distributedUptimeEnabled: boolean;
 	language: string;
 	starPromptOpen: boolean;
+	chartType: string;
 }
 
 export interface RootState {

@@ -16,6 +16,7 @@ export const FilterControls = ({
 	setSelectedStatus,
 	selectedState,
 	setSelectedState,
+	onClearFilters,
 }: {
 	selectedTypes: MonitorType[];
 	setSelectedTypes: React.Dispatch<React.SetStateAction<MonitorType[]>>;
@@ -23,6 +24,7 @@ export const FilterControls = ({
 	setSelectedStatus: React.Dispatch<React.SetStateAction<string>>;
 	selectedState: string;
 	setSelectedState: React.Dispatch<React.SetStateAction<string>>;
+	onClearFilters: () => void;
 }) => {
 	const theme = useTheme();
 	const isFilterActive =
@@ -78,11 +80,7 @@ export const FilterControls = ({
 			{isFilterActive && (
 				<Button
 					variant="contained"
-					onClick={() => {
-						setSelectedTypes([]);
-						setSelectedStatus("");
-						setSelectedState("");
-					}}
+					onClick={onClearFilters}
 				>
 					Clear Filters
 				</Button>

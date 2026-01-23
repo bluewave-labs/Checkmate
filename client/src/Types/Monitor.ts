@@ -1,5 +1,5 @@
 import type { Check } from "@/Types/Check";
-export type MonitorStatus = "up" | "down" | "initializing";
+export type MonitorStatus = boolean | undefined;
 
 export const MonitorTypes = [
 	"http",
@@ -27,8 +27,7 @@ export interface Monitor {
 	updatedAt: string;
 	updatedBy: string;
 	url: string;
-	__v: number;
-	_id: string;
+	id: string;
 }
 
 export interface MonitorWithChecks extends Monitor {
@@ -38,9 +37,9 @@ export interface MonitorWithChecks extends Monitor {
 
 export interface MonitorsSummary {
 	totalMonitors: number;
-	totalUp: number;
-	totalDown: number;
-	totalPaused: number;
+	upMonitors: number;
+	downMonitors: number;
+	pausedMonitors: number;
 }
 
 export interface MonitorsWithChecksResponse {
