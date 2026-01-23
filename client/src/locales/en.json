@@ -125,6 +125,13 @@
 	"testLocale": "testLocale",
 	"add": "Add",
 	"monitors": "monitors",
+	"pages": {
+		"uptime": {
+			"fallback": {
+				"title": "An uptime monitor is used to:"
+			}
+		}
+	},
 	"distributedUptimeStatusCreateStatusPage": "status page",
 	"distributedUptimeStatusCreateStatusPageAccess": "Access",
 	"distributedUptimeStatusCreateStatusPageReady": "If your status page is ready, you can mark it as published.",
