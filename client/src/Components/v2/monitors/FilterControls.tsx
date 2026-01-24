@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import { Select, Button } from "@/Components/v2/inputs";
 import MenuItem from "@mui/material/MenuItem";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import type { MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
@@ -27,11 +28,12 @@ export const FilterControls = ({
 	onClearFilters: () => void;
 }) => {
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isFilterActive =
 		selectedTypes.length > 0 || selectedStatus !== "" || selectedState !== "";
 	return (
 		<Stack
-			direction="row"
+			direction={isSmall ? "column" : "row"}
 			gap={theme.spacing(2)}
 		>
 			<Select

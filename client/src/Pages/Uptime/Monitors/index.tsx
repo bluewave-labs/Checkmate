@@ -127,8 +127,9 @@ const UptimeMonitorsPage = () => {
 			</Stack>
 
 			<Stack
-				direction="row"
-				justifyContent={"space-between"}
+				direction={isSmall ? "column" : "row"}
+				justifyContent={isSmall ? "flex-start" : "space-between"}
+				gap={theme.spacing(4)}
 			>
 				<FilterControls
 					selectedTypes={selectedTypes}

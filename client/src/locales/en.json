@@ -19,7 +19,8 @@
 				"name": "Name",
 				"status": "Status",
 				"type": "Type"
-			}
+			},
+			"empty": "Nothing h"
 		}
 	},
 	"submit": "Submit",
