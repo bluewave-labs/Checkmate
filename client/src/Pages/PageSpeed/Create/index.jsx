@@ -16,7 +16,7 @@ import Radio from "@/Components/v1/Inputs/Radio/index.jsx";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { monitorValidation } from "../../../Validation/validation.js";
-import { parseDomainName } from "../../../Utils/monitorUtils.js";
+import { parseDomainName } from "../../../Utils/monitorUtilsLegacy.js";
 import { useTranslation } from "react-i18next";
 import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications.js";
 import { useTheme } from "@emotion/react";

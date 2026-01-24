@@ -9,7 +9,7 @@ import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { TypeToPathMap } from "@/Utils/monitorUtils.js";
+import { TypeToPathMap } from "@/Utils/monitorUtilsLegacy.js";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 

@@ -4,7 +4,7 @@ import DataTable from "@/Components/v1/Table/index.jsx";
 
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
-import { TypeToPathMap } from "../../../../../Utils/monitorUtils.js";
+import { TypeToPathMap } from "../../../../../Utils/monitorUtilsLegacy.js";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
