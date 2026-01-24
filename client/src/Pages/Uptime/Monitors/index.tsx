@@ -98,7 +98,7 @@ const UptimeMonitorsPage = () => {
 	} = useGet<MonitorsWithChecksResponse>(
 		monitorsWithChecksUrl,
 		{},
-		{ refreshInterval: 5000 }
+		{ refreshInterval: 10000 }
 	);
 
 	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};
@@ -168,10 +168,11 @@ const UptimeMonitorsPage = () => {
 				setSortField={setSortField}
 				sortOrder={sortOrder}
 				setSortOrder={setSortOrder}
-				setRowsPerPage={(e: any) => {
+				setRowsPerPage={(rowsPerPage: number) => {
+					console.log("wtf");
 					dispatch(
 						setRowsPerPage({
-							value: parseInt(e.target.value, 10),
+							value: rowsPerPage,
 							table: "monitors",
 						})
 					);
