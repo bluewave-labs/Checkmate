@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 import TablePagination from "@mui/material/TablePagination";
-import type { TablePaginationProps, TablePaginationOwnProps } from "@mui/material/TablePagination";
+import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
 
 import { useTranslation } from "react-i18next";
 import { useState, Fragment } from "react";

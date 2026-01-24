@@ -15,20 +15,19 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
+import { useSelector } from "react-redux";
 
-import type { Check } from "@/Types/Check";
 import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/v2/actions-menu";
-// import type { ChartType } from "@/features/uiSlice";
+import type { RootState } from "@/Types/state";
 
 export const MonitorTable = ({
 	monitors,
 	refetch,
-	// setSelectedMonitor,
-	// sortField,
-	// setSortField,
-	// sortOrder,
-	// setSortOrder,
+	sortField,
+	setSortField,
+	sortOrder,
+	setSortOrder,
 	count,
 	page,
 	setPage,
@@ -37,11 +36,10 @@ export const MonitorTable = ({
 }: {
 	monitors: Monitor[];
 	refetch: Function;
-	// setSelectedMonitor: Function;
-	// sortField: string;
-	// setSortField: (field: string) => void;
-	// sortOrder: "asc" | "desc";
-	// setSortOrder: (order: "asc" | "desc") => void;
+	sortField: string;
+	setSortField: (field: string) => void;
+	sortOrder: "asc" | "desc";
+	setSortOrder: (order: "asc" | "desc") => void;
 	count: number;
 	page: number;
 	setPage: (page: number) => void;
@@ -51,40 +49,25 @@ export const MonitorTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const chartType = "histogram";
+	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const {
 		post,
 		// loading: isPosting,
 		// error: postError,
 	} = usePost<any, Monitor>();
 
-	// const handlePageChange = (
-	// 	_e: React.MouseEvent<HTMLButtonElement> | null,
-	// 	newPage: number
-	// ) => {
-	// 	setPage(newPage);
-	// };
-
-	// const handleRowsPerPageChange = (
-	// 	e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-	// ) => {
-	// 	const value = Number(e.target.value);
-	// 	setPage(0);
-	// 	setRowsPerPage(value);
-	// };
-
-	// const handleSort = (e: any, field: string) => {
-	// 	e.preventDefault();
-	// 	e.stopPropagation();
-	// 	if (sortField === field) {
-	// 		const newOrder = sortOrder === "asc" ? "desc" : "asc";
-	// 		setSortOrder(newOrder);
-	// 	} else {
-	// 		setSortField(field);
-	// 		setSortOrder("asc");
-	// 	}
-	// 	refetch();
-	// };
+	const handleSort = (e: any, field: string) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (sortField === field) {
+			const newOrder = sortOrder === "asc" ? "desc" : "asc";
+			setSortOrder(newOrder);
+		} else {
+			setSortField(field);
+			setSortOrder("asc");
+		}
+		refetch();
+	};
 
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
 		return [
@@ -158,13 +141,13 @@ export const MonitorTable = ({
 				display="inline-flex"
 				justifyContent="center"
 			>
-				{/* {isActive ? (
+				{isActive ? (
 					sortOrder === "asc" ? (
 						<ArrowUp size={16} />
 					) : (
 						<ArrowDown size={16} />
 					)
-				) : null} */}
+				) : null}
 			</Box>
 		);
 		const headers: Header<Monitor>[] = [
@@ -175,11 +158,11 @@ export const MonitorTable = ({
 						gap={theme.spacing(4)}
 						direction={"row"}
 						alignItems={"center"}
-						// onClick={(e) => handleSort(e, "name")}
+						onClick={(e) => handleSort(e, "name")}
 						sx={{ cursor: "pointer" }}
 					>
 						{t("common.table.headers.name")}
-						{/* {renderSortIcon(sortField === "name")} */}
+						{renderSortIcon(sortField === "name")}
 					</Stack>
 				),
 
@@ -195,11 +178,11 @@ export const MonitorTable = ({
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
-						// onClick={(e) => handleSort(e, "status")}
+						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
 						{t("common.table.headers.status")}
-						{/* {renderSortIcon(sortField === "status")} */}
+						{renderSortIcon(sortField === "status")}
 					</Stack>
 				),
 				render: (row) => {
@@ -230,11 +213,11 @@ export const MonitorTable = ({
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
-						// onClick={(e) => handleSort(e, "type")}
+						onClick={(e) => handleSort(e, "type")}
 						sx={{ cursor: "pointer" }}
 					>
 						{t("common.table.headers.type")}
-						{/* {renderSortIcon(sortField === "type")} */}
+						{renderSortIcon(sortField === "type")}
 					</Stack>
 				),
 				render: (row) => {

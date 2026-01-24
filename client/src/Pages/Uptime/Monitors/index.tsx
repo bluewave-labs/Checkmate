@@ -36,9 +36,8 @@ const UptimeMonitorsPage = () => {
 	const [selectedState, setSelectedState] = useState<string>("");
 	const [page, setPage] = useState<number>(0);
 	const [search, setSearch] = useState<string>("");
-	const [sort, setSort] = useState<{ field: string; order: "asc" | "desc" } | undefined>(
-		undefined
-	);
+	const [sortField, setSortField] = useState<string>("");
+	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
 	// Convert filter selections to API filter values
 	// Status: "up" -> true, "down" -> false
@@ -62,7 +61,7 @@ const UptimeMonitorsPage = () => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (search ? "name" : sort?.field);
+	const field = activeFilter?.[1] || (search ? "name" : sortField || undefined);
 	const filter = activeFilter?.[0] || search;
 
 	// Default to all types when none selected
@@ -78,9 +77,9 @@ const UptimeMonitorsPage = () => {
 		if (rowsPerPage) params.append("rowsPerPage", String(rowsPerPage));
 		if (filter) params.append("filter", filter);
 		if (field) params.append("field", field);
-		if (sort?.order) params.append("order", sort.order);
+		if (sortOrder) params.append("order", sortOrder);
 		return `/monitors/team/with-checks?${params.toString()}`;
-	}, [effectiveTypes, page, rowsPerPage, filter, field, sort?.order]);
+	}, [effectiveTypes, page, rowsPerPage, filter, field, sortOrder]);
 
 	// Data fetching
 	const {
@@ -155,6 +154,10 @@ const UptimeMonitorsPage = () => {
 				page={page}
 				setPage={setPage}
 				rowsPerPage={rowsPerPage}
+				sortField={sortField}
+				setSortField={setSortField}
+				sortOrder={sortOrder}
+				setSortOrder={setSortOrder}
 				setRowsPerPage={(e: any) => {
 					dispatch(
 						setRowsPerPage({
