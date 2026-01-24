@@ -17,7 +17,13 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage, setShowURL, setChartType } from "@/Features/UI/uiSlice.js";
+import {
+	setTimezone,
+	setMode,
+	setLanguage,
+	setShowURL,
+	setChartType,
+} from "@/Features/UI/uiSlice.js";
 import SettingsStats from "./SettingsStats.jsx";
 
 import { useFetchSettings, useSaveSettings } from "@/Hooks/settingsHooks.js";
@@ -33,7 +39,13 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language = "en", timezone, showURL, chartType = "histogram" } = useSelector((state) => state.ui);
+	const {
+		mode,
+		language = "en",
+		timezone,
+		showURL,
+		chartType = "histogram",
+	} = useSelector((state) => state.ui);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
