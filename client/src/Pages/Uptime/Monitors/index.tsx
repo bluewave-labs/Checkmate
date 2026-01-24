@@ -8,6 +8,8 @@ import {
 import { TextField } from "@/Components/v2/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
+import { HeaderCreate } from "@/Components/v2/common";
+
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useGet } from "@/Hooks/UseApi";
@@ -15,7 +17,7 @@ import type { Monitor, MonitorType, MonitorsWithChecksResponse } from "@/Types/M
 import { useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
-
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 
@@ -24,7 +26,7 @@ const UptimeMonitorsPage = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const dispatch = useDispatch();
-
+	const isAdmin = useIsAdmin();
 	// Redux state
 	const rowsPerPage = useSelector(
 		(state: RootState) => state.ui?.monitors?.rowsPerPage ?? 10
@@ -84,7 +86,7 @@ const UptimeMonitorsPage = () => {
 	// Data fetching
 	const {
 		data: monitors,
-		isLoading,
+		isLoading: monitorsLoading,
 		error,
 	} = useGet<Monitor[]>("/monitors/team?type=http&type=ping&type=port&type=docker");
 
@@ -109,14 +111,21 @@ const UptimeMonitorsPage = () => {
 		setSearch("");
 	}, []);
 
+	const isLoading = monitorsLoading || monitorsWithChecksLoading;
+
 	return (
 		<MonitorBasePageWithStates
-			loading={isLoading || monitorsWithChecksLoading}
+			loading={isLoading}
 			error={error || monitorsWithChecksError}
 			items={monitors || []}
 			page="uptime"
 			actionLink="/uptime/create"
 		>
+			<HeaderCreate
+				path="/uptime/create"
+				isLoading={isLoading}
+				isAdmin={isAdmin}
+			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				gap={theme.spacing(8)}

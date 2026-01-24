@@ -3,7 +3,8 @@
 		"appName": "Checkmate",
 		"monitoringAgentName": "Capture",
 		"buttons": {
-			"toggleTheme": "Toggles light & dark"
+			"toggleTheme": "Toggles light & dark",
+			"create": "Create"
 		},
 		"toasts": {
 			"networkError": "Network error",
