@@ -123,7 +123,6 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
-	__v: number;
 	createdAt: string;
 	updatedAt: string;
 }

@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage, setShowURL } from "@/Features/UI/uiSlice.js";
+import { setTimezone, setMode, setLanguage, setShowURL, setChartType } from "@/Features/UI/uiSlice.js";
 import SettingsStats from "./SettingsStats.jsx";
 
 import { useFetchSettings, useSaveSettings } from "@/Hooks/settingsHooks.js";
@@ -33,7 +33,7 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language = "en", timezone, showURL } = useSelector((state) => state.ui);
+	const { mode, language = "en", timezone, showURL, chartType = "histogram" } = useSelector((state) => state.ui);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
@@ -109,6 +109,11 @@ const Settings = () => {
 
 		if (name === "language") {
 			dispatch(setLanguage(value));
+			return;
+		}
+
+		if (name === "chartType") {
+			dispatch(setChartType(value));
 			return;
 		}
 
@@ -209,6 +214,7 @@ const Settings = () => {
 				handleChange={handleChange}
 				mode={mode}
 				language={language}
+				chartType={chartType}
 			/>
 			<SettingsPagespeed
 				isAdmin={isAdmin}

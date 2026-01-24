@@ -974,6 +974,9 @@
 			"description": "Switch between light and dark mode, or change user interface language.",
 			"labelLanguage": "Language",
 			"labelTheme": "Theme mode",
+			"labelChartType": "Chart type",
+			"chartTypeHistogram": "Histogram",
+			"chartTypeHeatmap": "Heatmap",
 			"title": "Appearance"
 		},
 		"urlSettings": {
