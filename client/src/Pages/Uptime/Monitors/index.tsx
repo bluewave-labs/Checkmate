@@ -1,4 +1,4 @@
-import { FilterControls } from "@/Components/v2/monitors";
+import { ControlsFilter } from "@/Components/v2/monitors";
 import {
 	MonitorBasePageWithStates,
 	UpStatusBox,
@@ -131,7 +131,7 @@ const UptimeMonitorsPage = () => {
 				justifyContent={isSmall ? "flex-start" : "space-between"}
 				gap={theme.spacing(4)}
 			>
-				<FilterControls
+				<ControlsFilter
 					selectedTypes={selectedTypes}
 					setSelectedTypes={setSelectedTypes}
 					selectedStatus={selectedStatus}

@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { Check } from "@/Types/Check";
 import { getResponseColor } from "@/Utils/DataUtils";
-import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
+import { HeatmapResponseTimeTooltip } from "@/Components/v2/common/charts/HeatmapResponseTimeTooltip";
 import type { SxProps } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
 

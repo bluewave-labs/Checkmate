@@ -1,1 +1,1 @@
-export * from "./FilterControls";
+export * from "./ControlsFilter";

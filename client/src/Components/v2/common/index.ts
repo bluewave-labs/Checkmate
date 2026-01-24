@@ -1,3 +1,4 @@
-export * from "./HistogramResponseTime";
-export * from "./HeatmapResponseTime";
-export * from "./HeatmapResponseTimeTooltip";
+export * from "../common/charts/HistogramResponseTime";
+export * from "../common/charts/HeatmapResponseTime";
+export * from "../common/charts/HeatmapResponseTimeTooltip";
+export * from "../common/controls/HeaderCreate";

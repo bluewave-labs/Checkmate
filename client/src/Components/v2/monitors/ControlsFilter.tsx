@@ -10,7 +10,7 @@ const types = ["http", "ping", "port", "docker"];
 const statuses = ["up", "down"];
 const states = ["active", "paused"];
 
-export const FilterControls = ({
+export const ControlsFilter = ({
 	selectedTypes,
 	setSelectedTypes,
 	selectedStatus,
