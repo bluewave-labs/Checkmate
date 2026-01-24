@@ -1,3 +1,7 @@
+// Temp v2 theme
+import { ThemeProvider } from "@mui/material";
+import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
+
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
@@ -11,7 +15,7 @@ import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
 import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 
 // Uptime
-import Uptime from "../Pages/Uptime/Monitors/index.jsx";
+import Uptime from "../Pages/Uptime/Monitors";
 import UptimeDetails from "../Pages/Uptime/Details/index.jsx";
 import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
@@ -75,7 +79,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime"
-					element={<Uptime />}
+					element={
+						<>
+							<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+								<Uptime />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route

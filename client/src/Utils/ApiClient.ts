@@ -1,38 +1,54 @@
 import axios from "axios";
 import type { AxiosError } from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import { store } from "@/store";
+
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 const api = axios.create({
 	baseURL: BASE_URL,
 });
 
-api.interceptors.request.use(
-	(config) => {
-		const authToken = store.getState().auth?.authToken ?? "";
-
-		config.headers.set("Authorization", `Bearer ${authToken}`);
-		if (!config.headers.has("Accept-Language")) {
-			config.headers.set("Accept-Language", "en");
-		}
-
-		return config;
-	},
-	(error) => {
-		return Promise.reject(error);
-	}
-);
-
-const onSuccess = (response: AxiosResponse) => response;
-const onError = (error: AxiosError) => {
-	if (error.response?.status === 401) {
-		window.location.href = "/login";
-	}
-	return Promise.reject(error);
+type StoreType = {
+	getState: () => { auth?: { authToken?: string } };
 };
 
-api.interceptors.response.use(onSuccess, onError);
+let storeInstance: StoreType | null = null;
+let interceptorsInitialized = false;
+
+export const initApiClient = (store: StoreType): void => {
+	storeInstance = store;
+
+	if (interceptorsInitialized) {
+		return;
+	}
+	interceptorsInitialized = true;
+
+	api.interceptors.request.use(
+		(config) => {
+			const authToken = storeInstance?.getState()?.auth?.authToken ?? "";
+
+			config.headers.set("Authorization", `Bearer ${authToken}`);
+			if (!config.headers.has("Accept-Language")) {
+				config.headers.set("Accept-Language", "en");
+			}
+
+			return config;
+		},
+		(error) => {
+			return Promise.reject(error);
+		}
+	);
+
+	const onSuccess = (response: AxiosResponse) => response;
+	const onError = (error: AxiosError) => {
+		if (error.response?.status === 401) {
+			window.location.href = "/login";
+		}
+		return Promise.reject(error);
+	};
+
+	api.interceptors.response.use(onSuccess, onError);
+};
 
 export const get = <T>(
 	url: string,

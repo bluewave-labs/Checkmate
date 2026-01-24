@@ -1,14 +1,25 @@
-import store from "../store";
 const LOG_LEVEL = import.meta.env.VITE_APP_LOG_LEVEL || "debug";
 const NO_OP = () => {};
 
 class Logger {
 	constructor() {
 		let logLevel = LOG_LEVEL;
-		this.unsubscribe = store.subscribe(() => {
-			logLevel = "debug";
-			this.updateLogLevel(logLevel);
-		});
+		this.updateLogLevel(logLevel);
+		// Defer store subscription to avoid circular dependency during HMR
+		setTimeout(() => {
+			try {
+				import("../store").then(({ default: store }) => {
+					if (store) {
+						this.unsubscribe = store.subscribe(() => {
+							logLevel = "debug";
+							this.updateLogLevel(logLevel);
+						});
+					}
+				});
+			} catch (e) {
+				// Store not ready yet, ignore
+			}
+		}, 0);
 	}
 
 	updateLogLevel(logLevel) {

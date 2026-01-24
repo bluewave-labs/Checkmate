@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import { TypeToPathMap } from "../../../../../Utils/monitorUtils.js";
+import { TypeToPathMap } from "../../../../../Utils/monitorUtilsLegacy.js";
 import { useTranslation } from "react-i18next";
 import { createHeaderFactory } from "@/Components/v1/Table/TableUtils.js";
 

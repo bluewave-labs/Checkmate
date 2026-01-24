@@ -1,5 +1,17 @@
 import type { Check } from "@/Types/Check";
-export type MonitorStatus = "up" | "down" | "initializing";
+export type MonitorStatus = boolean | undefined;
+
+export const MonitorTypes = [
+	"http",
+	"ping",
+	"pagespeed",
+	"hardware",
+	"docker",
+	"port",
+	"game",
+	"unknown",
+] as const;
+export type MonitorType = (typeof MonitorTypes)[number];
 
 export interface Monitor {
 	checks: Check[];
@@ -15,6 +27,23 @@ export interface Monitor {
 	updatedAt: string;
 	updatedBy: string;
 	url: string;
-	__v: number;
-	_id: string;
+	id: string;
+}
+
+export interface MonitorWithChecks extends Monitor {
+	checks: Check[];
+	uptimePercentage?: number;
+}
+
+export interface MonitorsSummary {
+	totalMonitors: number;
+	upMonitors: number;
+	downMonitors: number;
+	pausedMonitors: number;
+}
+
+export interface MonitorsWithChecksResponse {
+	count: number;
+	monitors: MonitorWithChecks[];
+	summary: MonitorsSummary;
 }

@@ -1,4 +1,29 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"buttons": {
+			"toggleTheme": "Toggles light & dark",
+			"create": "Create"
+		},
+		"toasts": {
+			"networkError": "Network error",
+			"checkConnection": "Please check your connection",
+			"unknownError": "Unknown error"
+		},
+		"table": {
+			"headers": {
+				"actions": "Actions",
+				"active": "Active",
+				"message": "Message",
+				"monitor": "Monitor",
+				"name": "Name",
+				"status": "Status",
+				"type": "Type"
+			},
+			"empty": "Nothing h"
+		}
+	},
 	"submit": "Submit",
 	"title": "Title",
 	"distributedStatusHeaderText": "Real-time, real-device coverage",
@@ -125,6 +150,49 @@
 	"testLocale": "testLocale",
 	"add": "Add",
 	"monitors": "monitors",
+	"pages": {
+		"common": {
+			"monitors": {
+				"status": {
+					"up": "up",
+					"down": "down",
+					"paused": "paused",
+					"initializing": "initializing"
+				},
+				"actions": {
+					"openSite": "Open site",
+					"details": "Details",
+					"incidents": "Incidents",
+					"configure": "Configure",
+					"pause": "Pause",
+					"resume": "Resume",
+					"delete": "Delete"
+				}
+			}
+		},
+		"uptime": {
+			"table": {
+				"headers": {
+					"responseTime": "Response time"
+				}
+			},
+			"fallback": {
+				"title": "An uptime monitor is used to:",
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Check if websites or servers are online & responsive",
+					"Alert teams about downtime or performance issues",
+					"Monitor HTTP endpoints, pings, containers & ports",
+					"Track historical uptime and reliability trends"
+				]
+			},
+			"filters": {
+				"search": {
+					"placeholder": "Search monitors..."
+				}
+			}
+		}
+	},
 	"distributedUptimeStatusCreateStatusPage": "status page",
 	"distributedUptimeStatusCreateStatusPageAccess": "Access",
 	"distributedUptimeStatusCreateStatusPageReady": "If your status page is ready, you can mark it as published.",
@@ -509,18 +577,7 @@
 		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 		"https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
 	},
-	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
-		"buttons": {
-			"toggleTheme": "Toggles light & dark"
-		},
-		"toasts": {
-			"networkError": "Network error",
-			"checkConnection": "Please check your connection",
-			"unknownError": "Unknown error"
-		}
-	},
+
 	"auth": {
 		"common": {
 			"navigation": {
@@ -919,6 +976,9 @@
 			"description": "Switch between light and dark mode, or change user interface language.",
 			"labelLanguage": "Language",
 			"labelTheme": "Theme mode",
+			"labelChartType": "Chart type",
+			"chartTypeHistogram": "Histogram",
+			"chartTypeHeatmap": "Heatmap",
 			"title": "Appearance"
 		},
 		"urlSettings": {
