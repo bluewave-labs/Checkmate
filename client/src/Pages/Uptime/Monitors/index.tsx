@@ -98,7 +98,7 @@ const UptimeMonitorsPage = () => {
 	} = useGet<MonitorsWithChecksResponse>(
 		monitorsWithChecksUrl,
 		{},
-		{ refreshInterval: 10000 }
+		{ refreshInterval: 5000 }
 	);
 
 	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};
