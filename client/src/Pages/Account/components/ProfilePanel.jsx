@@ -210,7 +210,11 @@ const ProfilePanel = () => {
 						autoComplete="given-name"
 						onChange={handleChange}
 						error={errors[idToName["edit-first-name"]] ? true : false}
-						helperText={errors[idToName["edit-first-name"]]}
+						helperText={
+							errors[idToName["edit-first-name"]]
+								? t(errors[idToName["edit-first-name"]])
+								: ""
+						}
 						flex={1}
 					/>
 				</Stack>
@@ -228,7 +232,11 @@ const ProfilePanel = () => {
 						value={localData.lastName}
 						onChange={handleChange}
 						error={errors[idToName["edit-last-name"]] ? true : false}
-						helperText={errors[idToName["edit-last-name"]]}
+						helperText={
+							errors[idToName["edit-last-name"]]
+								? t(errors[idToName["edit-last-name"]])
+								: ""
+						}
 						flex={1}
 					/>
 				</Stack>

@@ -167,7 +167,11 @@ const PasswordPanel = () => {
 						value={localData.password}
 						onChange={handleChange}
 						error={errors[idToName["edit-current-password"]] ? true : false}
-						helperText={errors[idToName["edit-current-password"]]}
+						helperText={
+							errors[idToName["edit-current-password"]]
+								? t(errors[idToName["edit-current-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -193,7 +197,11 @@ const PasswordPanel = () => {
 						value={localData.newPassword}
 						onChange={handleChange}
 						error={errors[idToName["edit-new-password"]] ? true : false}
-						helperText={errors[idToName["edit-new-password"]]}
+						helperText={
+							errors[idToName["edit-new-password"]]
+								? t(errors[idToName["edit-new-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -219,7 +227,11 @@ const PasswordPanel = () => {
 						value={localData.confirm}
 						onChange={handleChange}
 						error={errors[idToName["edit-confirm-password"]] ? true : false}
-						helperText={errors[idToName["edit-confirm-password"]]}
+						helperText={
+							errors[idToName["edit-confirm-password"]]
+								? t(errors[idToName["edit-confirm-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
