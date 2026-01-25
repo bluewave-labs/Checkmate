@@ -85,7 +85,10 @@ const PasswordPanel = () => {
 		// Check for expired/invalid token before submitting
 		if (!authToken) {
 			createToast({
-				body: t("passwordPanel.sessionExpired", "Your session has expired. Please log in again."),
+				body: t(
+					"passwordPanel.sessionExpired",
+					"Your session has expired. Please log in again."
+				),
 			});
 			dispatch(clearAuthState());
 			navigate("/login");
@@ -179,7 +182,7 @@ const PasswordPanel = () => {
 						value={localData.password}
 						onChange={handleChange}
 						error={errors[idToName["edit-current-password"]] ? true : false}
-						helperText={errors[idToName["edit-current-password"]]}
+						helperText={t(errors[idToName["edit-current-password"]])}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -205,7 +208,7 @@ const PasswordPanel = () => {
 						value={localData.newPassword}
 						onChange={handleChange}
 						error={errors[idToName["edit-new-password"]] ? true : false}
-						helperText={errors[idToName["edit-new-password"]]}
+						helperText={t(errors[idToName["edit-new-password"]])}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -231,7 +234,7 @@ const PasswordPanel = () => {
 						value={localData.confirm}
 						onChange={handleChange}
 						error={errors[idToName["edit-confirm-password"]] ? true : false}
-						helperText={errors[idToName["edit-confirm-password"]]}
+						helperText={t(errors[idToName["edit-confirm-password"]])}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
