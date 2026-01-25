@@ -1,6 +1,9 @@
 import { BasePage } from "@/Components/v2/design-elements";
 import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
+import Stack from "@mui/material/Stack";
+import { HistogramStatus } from "@/Components/v2/monitors";
 
+import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -19,6 +22,7 @@ interface CertificateResponse {
 }
 
 const UptimeDetailsPage = () => {
+	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 	const { monitorId } = useParams<{ monitorId: string }>();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
@@ -111,6 +115,16 @@ const UptimeDetailsPage = () => {
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
+			<Stack
+				direction={{ xs: "column", md: "row" }}
+				gap={theme.spacing(8)}
+			>
+				<HistogramStatus
+					monitorData={monitorData}
+					checks={monitorData?.groupedUpChecks}
+					range={dateRange}
+				/>
+			</Stack>
 		</BasePage>
 	);
 };
