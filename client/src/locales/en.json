@@ -4,7 +4,9 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": "Toggles light & dark",
-			"create": "Create"
+			"testNotifications": "Test notifications",
+			"create": "Create",
+			"incidents": "Incidents"
 		},
 		"toasts": {
 			"networkError": "Network error",

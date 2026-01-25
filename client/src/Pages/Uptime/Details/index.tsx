@@ -1,3 +1,7 @@
+import { BasePage } from "@/Components/v2/design-elements";
+import { HeaderMonitorControls } from "@/Components/v2/common";
+
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -6,12 +10,11 @@ import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import useCertificateFetch from "./Hooks/useCertificateFetch";
-import { BasePage } from "@/Components/v2/design-elements";
-import { HeaderMonitorControls } from "@/Components/v2/common";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
 const UptimeDetailsPage = () => {
+	const isAdmin = useIsAdmin();
 	const { monitorId } = useParams<{ monitorId: string }>();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
@@ -86,9 +89,17 @@ const UptimeDetailsPage = () => {
 		setDateRange,
 	});
 
+	if (!monitor) {
+		return null;
+	}
+
 	return (
 		<BasePage>
-			<HeaderMonitorControls monitor={monitor} />
+			<HeaderMonitorControls
+				path="uptime"
+				monitor={monitor}
+				isAdmin={isAdmin}
+			/>
 		</BasePage>
 	);
 };
