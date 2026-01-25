@@ -1,17 +1,25 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/Components/v2/design-elements";
-import { TrendingUp, AlertTriangle } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { formatDateWithTz } from "@/Utils/timeUtils";
 import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
+import type { GroupedCheck } from "@/Types/Check";
+import type { MonitorData } from "@/Types/Monitor";
+import type { RootState } from "@/Types/state";
 
-const XLabel = ({ p1, p2, range }: { p1: any; p2: any; range: string }) => {
+interface XLabelProps {
+	p1: GroupedCheck;
+	p2: GroupedCheck;
+	range: string;
+}
+
+const XLabel = ({ p1, p2, range }: XLabelProps) => {
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: any) => state.ui.timezone);
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const dateFormat = range === "day" ? "MMM D, h:mm A" : "MMM D";
 	return (
 		<>
@@ -23,7 +31,7 @@ const XLabel = ({ p1, p2, range }: { p1: any; p2: any; range: string }) => {
 				fontSize={11}
 				fill={theme.palette.text.secondary}
 			>
-				{formatDateWithTz(p1.bucketDate, dateFormat, uiTimezone)}
+				{formatDateWithTz(p1._id, dateFormat, uiTimezone)}
 			</text>
 			<text
 				x="100%"
@@ -33,28 +41,45 @@ const XLabel = ({ p1, p2, range }: { p1: any; p2: any; range: string }) => {
 				fontSize={11}
 				fill={theme.palette.text.secondary}
 			>
-				{formatDateWithTz(p2.bucketDate, dateFormat, uiTimezone)}
+				{formatDateWithTz(p2._id, dateFormat, uiTimezone)}
 			</text>
 		</>
 	);
 };
 
-export const HistogramStatus = ({ monitorData, checks = [], range }) => {
-	console.log(checks);
+interface HistogramStatusProps {
+	title: string;
+	icon: React.ReactNode;
+	monitorData?: MonitorData;
+	checks?: GroupedCheck[];
+	range: string;
+}
+
+export const HistogramStatus = ({
+	title,
+	icon,
+	monitorData,
+	checks = [],
+	range,
+}: HistogramStatusProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const CustomTooltip = ({ active, payload }: any) => {
-		const uiTimezone = useSelector((state: any) => state.ui.timezone);
+	const CustomTooltip = ({
+		active,
+		payload,
+	}: {
+		active?: boolean;
+		payload?: Array<{ payload: GroupedCheck }>;
+	}) => {
+		const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 		if (!active || !payload?.length) return null;
-		const d = payload[0]?.payload as any & {
-			avgResponseTime?: number;
-		};
+		const d = payload[0]?.payload;
 		const avg = d?.avgResponseTime ?? 0;
-		const titleText = t("common.charts.uptime.avgResponseTime");
+		const titleText = t("common.charts.labels.averageRepsonseTime");
 		const fmt = range === "30d" ? "MMM D, YYYY" : "ddd, MMM D, YYYY, h:mm A";
 		let dateLabel = "";
-		if (d?.bucketDate) {
-			const base = new Date(d.bucketDate);
+		if (d?._id) {
+			const base = new Date(d._id);
 			const midBucket =
 				range === "30d" ? new Date(base.getTime() + 12 * 60 * 60 * 1000) : base;
 			dateLabel = formatDateWithTz(midBucket.toISOString(), fmt, uiTimezone);
@@ -83,10 +108,12 @@ export const HistogramStatus = ({ monitorData, checks = [], range }) => {
 		);
 	};
 
+	const totalChecks = checks.reduce((acc, check) => acc + (check.totalChecks || 0), 0);
+
 	return (
 		<BaseChart
-			icon={<TrendingUp />}
-			title={"Test"}
+			icon={icon}
+			title={title}
 		>
 			<Stack gap={theme.spacing(8)}>
 				<Stack
@@ -95,7 +122,7 @@ export const HistogramStatus = ({ monitorData, checks = [], range }) => {
 					justifyContent="space-between"
 				>
 					<Stack>
-						<Typography>Checks: {"totalChecks"}</Typography>
+						<Typography>Total checks: {totalChecks}</Typography>
 					</Stack>
 				</Stack>
 				<ResponsiveContainer

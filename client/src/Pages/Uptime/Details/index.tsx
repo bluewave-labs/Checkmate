@@ -2,6 +2,7 @@ import { BasePage } from "@/Components/v2/design-elements";
 import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
 import Stack from "@mui/material/Stack";
 import { HistogramStatus } from "@/Components/v2/monitors";
+import { TrendingUp, AlertTriangle } from "lucide-react";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -14,6 +15,7 @@ import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { MonitorStatBoxes } from "@/Components/v2/monitors";
 import { formatDateWithTz } from "@/Utils/timeUtils";
+import { t } from "i18next";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
@@ -120,8 +122,17 @@ const UptimeDetailsPage = () => {
 				gap={theme.spacing(8)}
 			>
 				<HistogramStatus
+					title={t("common.charts.labels.uptime")}
+					icon={<TrendingUp />}
 					monitorData={monitorData}
 					checks={monitorData?.groupedUpChecks}
+					range={dateRange}
+				/>
+				<HistogramStatus
+					title={t("common.charts.labels.downtime")}
+					icon={<AlertTriangle />}
+					monitorData={monitorData}
+					checks={monitorData?.groupedDownChecks}
 					range={dateRange}
 				/>
 			</Stack>

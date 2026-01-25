@@ -24,6 +24,13 @@
 				"type": "Type"
 			},
 			"empty": "Nothing h"
+		},
+		"charts": {
+			"labels": {
+				"uptime": "Uptime",
+				"downtime": "Downtime",
+				"averageRepsonseTime": "Average response time"
+			}
 		}
 	},
 	"submit": "Submit",
