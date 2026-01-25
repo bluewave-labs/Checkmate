@@ -182,7 +182,12 @@ const PasswordPanel = () => {
 						value={localData.password}
 						onChange={handleChange}
 						error={errors[idToName["edit-current-password"]] ? true : false}
-						helperText={t(errors[idToName["edit-current-password"]])}
+						helperText={
+							//Only call t() if there is an error to prevent unnecessary localization calls
+							errors[idToName["edit-current-password"]]
+								? t(errors[idToName["edit-current-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -208,7 +213,12 @@ const PasswordPanel = () => {
 						value={localData.newPassword}
 						onChange={handleChange}
 						error={errors[idToName["edit-new-password"]] ? true : false}
-						helperText={t(errors[idToName["edit-new-password"]])}
+						helperText={
+							//Only call t() if there is an error to prevent unnecessary localization calls
+							errors[idToName["edit-new-password"]]
+								? t(errors[idToName["edit-new-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -234,7 +244,12 @@ const PasswordPanel = () => {
 						value={localData.confirm}
 						onChange={handleChange}
 						error={errors[idToName["edit-confirm-password"]] ? true : false}
-						helperText={t(errors[idToName["edit-confirm-password"]])}
+						helperText={
+							//Only call t() if there is an error to prevent unnecessary localization calls
+							errors[idToName["edit-confirm-password"]]
+								? t(errors[idToName["edit-confirm-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
