@@ -56,7 +56,14 @@ const Check = ({ text, noHighlightText, variant = "info", outlined = false }) =>
 					fontWeight: 450,
 				}}
 			>
-				{noHighlightText && <Typography component="span">{noHighlightText}</Typography>}{" "}
+				{noHighlightText && (
+					<Typography
+						component="span"
+						sx={{ color: "inherit" }}
+					>
+						{noHighlightText}
+					</Typography>
+				)}{" "}
 				{text}
 			</Typography>
 		</Stack>

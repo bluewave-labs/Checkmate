@@ -75,7 +75,7 @@ const PasswordTooltip = ({ feedback, form, children }) => {
 			slotProps={{
 				tooltip: {
 					sx: {
-						backgroundColor: theme.palette.tertiary.background,
+						backgroundColor: theme.palette.tertiary.main,
 						border: `0.5px solid ${theme.palette.primary.lowContrast}90`,
 						borderRadius: theme.spacing(4),
 						color: theme.palette.primary.contrastText,
@@ -88,7 +88,7 @@ const PasswordTooltip = ({ feedback, form, children }) => {
 				},
 				arrow: {
 					sx: {
-						color: theme.palette.tertiary.background,
+						color: theme.palette.tertiary.main,
 					},
 				},
 			}}
