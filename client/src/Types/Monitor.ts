@@ -47,3 +47,28 @@ export interface MonitorsWithChecksResponse {
 	monitors: MonitorWithChecks[];
 	summary: MonitorsSummary;
 }
+
+export interface MonitorGroupedCheck {
+	time: number;
+	responseTime: number;
+	originalResponseTime: number;
+	totalChecks: number;
+}
+
+export interface MonitorStats {
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	uptimePercentage: number;
+	averageResponseTime: number;
+}
+
+export interface MonitorData {
+	monitor: Monitor;
+	groupedChecks: MonitorGroupedCheck[];
+}
+
+export interface MonitorDetailsResponse {
+	monitorData: MonitorData;
+	monitorStats: MonitorStats;
+}

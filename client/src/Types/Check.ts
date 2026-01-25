@@ -139,3 +139,8 @@ export interface LatestCheck {
 	checkedAt: string;
 	id: string;
 }
+
+export interface ChecksResponse {
+	checks: Check[];
+	checksCount: number;
+}
