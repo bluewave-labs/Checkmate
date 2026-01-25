@@ -1,5 +1,5 @@
 import { BasePage } from "@/Components/v2/design-elements";
-import { HeaderMonitorControls } from "@/Components/v2/common";
+import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
 
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useState, useMemo } from "react";
@@ -62,7 +62,13 @@ const UptimeDetailsPage = () => {
 		if (!certificateData?.certificateDate) {
 			return undefined;
 		}
-		return formatDateWithTz(certificateData.certificateDate, certificateDateFormat, uiTimezone) ?? "N/A";
+		return (
+			formatDateWithTz(
+				certificateData.certificateDate,
+				certificateDateFormat,
+				uiTimezone
+			) ?? "N/A"
+		);
 	}, [certificateData, uiTimezone]);
 
 	const checksUrl = useMemo(() => {
@@ -87,22 +93,6 @@ const UptimeDetailsPage = () => {
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
 
-	// TODO: Add UI components here
-	// Placeholder to consume all data fetching results
-	console.log({
-		monitorIsLoading,
-		monitorError,
-		refetchMonitor,
-		monitorStats,
-		checksIsLoading,
-		checksError,
-		checks,
-		checksCount,
-		setPage,
-		setRowsPerPage,
-		setDateRange,
-	});
-
 	return (
 		<BasePage>
 			<HeaderMonitorControls
@@ -114,6 +104,12 @@ const UptimeDetailsPage = () => {
 				monitor={monitor}
 				monitorStats={monitorStats}
 				certificateExpiry={certificateExpiry}
+			/>
+			<HeaderTimeRange
+				isLoading={monitorIsLoading || checksIsLoading}
+				hasDateRange={true}
+				dateRange={dateRange}
+				setDateRange={setDateRange}
 			/>
 		</BasePage>
 	);
