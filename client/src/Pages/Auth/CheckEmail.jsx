@@ -2,7 +2,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { createToast } from "../../Utils/toastUtils.jsx";
 import { forgotPassword } from "../../Features/Auth/authSlice.js";
 import { Trans, useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ const CheckEmail = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
+	const location = useLocation();
 
 	const [email, setEmail] = useState();
 	const [disabled, setDisabled] = useState(false);
@@ -83,7 +84,9 @@ const CheckEmail = () => {
 
 	const handleNavigate = () => {
 		sessionStorage.removeItem("email");
-		navigate("/login");
+		location.state?.from
+			? navigate(location.state.from, { replace: true })
+			: navigate("/login");
 	};
 
 	return (
@@ -219,7 +222,11 @@ const CheckEmail = () => {
 			>
 				<Typography display="inline-block">
 					<Trans
-						i18nKey="auth.forgotPassword.links.login"
+						i18nKey={
+							location.state?.from === "/account/password"
+								? "auth.forgotPassword.links.accountPassword"
+								: "auth.forgotPassword.links.login"
+						}
 						components={{
 							a: (
 								<Typography

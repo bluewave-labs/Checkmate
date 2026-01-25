@@ -13,6 +13,8 @@ import { getTouchedFieldErrors } from "../../../Validation/error.js";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { clearAuthState } from "../../../Features/Auth/authSlice.js";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
+import { useLocation } from "react-router-dom";
 
 const defaultPasswordsState = {
 	password: "",
@@ -31,6 +33,7 @@ const PasswordPanel = () => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const SPACING_GAP = theme.spacing(12);
 
@@ -267,8 +270,15 @@ const PasswordPanel = () => {
 				)}
 				<Stack
 					direction="row"
-					justifyContent="flex-end"
+					justifyContent="space-between"
+					alignItems="center"
 				>
+					<TextLink
+						text={t("passwordPanel.forgotPasswordText", "Forgot password?")}
+						linkText={t("passwordPanel.resetPasswordText", "Reset password")}
+						state={{ from: location.pathname }}
+						href={"/forgot-password"}
+					/>
 					<Button
 						variant="contained"
 						color="accent"
@@ -281,7 +291,6 @@ const PasswordPanel = () => {
 						}
 						sx={{
 							px: theme.spacing(12),
-							mt: theme.spacing(20),
 						}}
 					>
 						{t("commonSave", "Save")}
