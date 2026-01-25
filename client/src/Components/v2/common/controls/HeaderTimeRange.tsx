@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ToggleButton from "@mui/material/ToggleButton";
+import { ToggleButtonGroup, ToggleButton } from "@/Components/v2/inputs";
 import { useTheme } from "@mui/material/styles";
 
 interface MonitorTimeFrameHeaderProps {
