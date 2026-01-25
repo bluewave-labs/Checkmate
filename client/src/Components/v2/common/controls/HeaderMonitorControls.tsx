@@ -11,7 +11,7 @@ import type { Monitor } from "@/Types/Monitor.js";
 
 interface HeaderMonitorControlsProps {
 	path: string;
-	monitor: Monitor;
+	monitor?: Monitor;
 	isAdmin: boolean;
 }
 
@@ -23,9 +23,13 @@ export const HeaderMonitorControls = ({
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const theme = useTheme();
+
+	if (!monitor) {
+		return null;
+	}
 	return (
 		<Stack
-			spacing={{ xs: theme.spacing(4), md: 0 }}
+			spacing={{ xs: theme.spacing(8), md: 0 }}
 			direction={{ xs: "column", md: "row" }}
 			alignItems={"center"}
 			justifyContent={"space-between"}

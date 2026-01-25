@@ -9,9 +9,14 @@ import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
-import useCertificateFetch from "./Hooks/useCertificateFetch";
+import { MonitorStatBoxes } from "@/Components/v2/monitors";
+import { formatDateWithTz } from "@/Utils/timeUtils";
 
 const certificateDateFormat = "MMM D, YYYY h A";
+
+interface CertificateResponse {
+	certificateDate: string;
+}
 
 const UptimeDetailsPage = () => {
 	const isAdmin = useIsAdmin();
@@ -43,12 +48,22 @@ const UptimeDetailsPage = () => {
 	const monitor = monitorData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
 
-	const [certificateExpiry] = useCertificateFetch({
-		monitor,
-		monitorId,
-		certificateDateFormat,
-		uiTimezone,
-	});
+	// Certificate fetch - only for HTTP monitors
+	const certificateUrl = useMemo(() => {
+		if (!monitorId || monitor?.type !== "http") {
+			return null;
+		}
+		return `/monitors/certificate/${monitorId}`;
+	}, [monitorId, monitor?.type]);
+
+	const { data: certificateData } = useGet<CertificateResponse>(certificateUrl);
+
+	const certificateExpiry = useMemo(() => {
+		if (!certificateData?.certificateDate) {
+			return undefined;
+		}
+		return formatDateWithTz(certificateData.certificateDate, certificateDateFormat, uiTimezone) ?? "N/A";
+	}, [certificateData, uiTimezone]);
 
 	const checksUrl = useMemo(() => {
 		if (!monitorId || !monitor?.type) {
@@ -79,7 +94,6 @@ const UptimeDetailsPage = () => {
 		monitorError,
 		refetchMonitor,
 		monitorStats,
-		certificateExpiry,
 		checksIsLoading,
 		checksError,
 		checks,
@@ -89,16 +103,17 @@ const UptimeDetailsPage = () => {
 		setDateRange,
 	});
 
-	if (!monitor) {
-		return null;
-	}
-
 	return (
 		<BasePage>
 			<HeaderMonitorControls
 				path="uptime"
 				monitor={monitor}
 				isAdmin={isAdmin}
+			/>
+			<MonitorStatBoxes
+				monitor={monitor}
+				monitorStats={monitorStats}
+				certificateExpiry={certificateExpiry}
 			/>
 		</BasePage>
 	);

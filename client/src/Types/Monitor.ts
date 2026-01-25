@@ -56,11 +56,18 @@ export interface MonitorGroupedCheck {
 }
 
 export interface MonitorStats {
+	id: string;
+	monitorId: string;
+	avgResponseTime: number;
 	totalChecks: number;
-	upChecks: number;
-	downChecks: number;
+	totalUpChecks: number;
+	totalDownChecks: number;
 	uptimePercentage: number;
-	averageResponseTime: number;
+	lastCheckTimestamp: number;
+	lastResponseTime: number;
+	timeOfLastFailure?: number;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface MonitorData {

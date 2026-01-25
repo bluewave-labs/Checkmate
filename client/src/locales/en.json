@@ -169,6 +169,12 @@
 					"pause": "Pause",
 					"resume": "Resume",
 					"delete": "Delete"
+				},
+				"statBoxes": {
+					"activeFor": "Active for",
+					"lastCheck": "Last check",
+					"lastResponseTime": "Last response time",
+					"certificateExpiry": "Certificate expiry"
 				}
 			}
 		},

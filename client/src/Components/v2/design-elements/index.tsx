@@ -12,3 +12,5 @@ export * from "./PulseDot";
 export * from "./Dot";
 export * from "./MonitorStatus";
 export { default as Icon } from "./Icon";
+export * from "./Tooltip";
+export * from "./StatBox";
