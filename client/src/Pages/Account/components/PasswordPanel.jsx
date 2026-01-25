@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils.jsx";
 import { getTouchedFieldErrors } from "../../../Validation/error.js";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { clearAuthState } from "../../../Features/Auth/authSlice.js";
 
 const defaultPasswordsState = {
 	password: "",
@@ -28,11 +30,12 @@ const PasswordPanel = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 
 	const SPACING_GAP = theme.spacing(12);
 
 	//redux state
-	const { isLoading } = useSelector((state) => state.auth);
+	const { isLoading, authToken } = useSelector((state) => state.auth);
 
 	const idToName = {
 		"edit-current-password": "password",
@@ -79,6 +82,16 @@ const PasswordPanel = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
+		// Check for expired/invalid token before submitting
+		if (!authToken) {
+			createToast({
+				body: t("passwordPanel.sessionExpired", "Your session has expired. Please log in again."),
+			});
+			dispatch(clearAuthState());
+			navigate("/login");
+			return;
+		}
+
 		const { error } = newOrChangedCredentials.validate(localData, {
 			abortEarly: false,
 			context: { password: localData.newPassword },
@@ -105,7 +118,6 @@ const PasswordPanel = () => {
 					confirm: "",
 				});
 			} else {
-				// TODO: Check for other errors?
 				createToast({
 					body: t(
 						"passwordPanel.passwordInputIncorrect",

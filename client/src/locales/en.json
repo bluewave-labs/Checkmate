@@ -555,7 +555,7 @@
 		"enterNewPassword": "Enter your new password",
 		"confirmNewPassword": "Confirm new password",
 		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`).",
-		"saving": "Saving..."
+		"sessionExpired": "Your session has expired, please log in again to continue."
 	},
 	"emailSent": "Email sent successfully",
 	"failedToSendEmail": "Failed to send email",
