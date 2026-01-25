@@ -53,12 +53,12 @@ const ForgotPassword = () => {
 			if (action.payload.success) {
 				sessionStorage.setItem("email", form.email);
 				navigate("/check-email", {
-					state: location.state || { from: "/login" }  // Preserve original from, fallback to login
+					state: location.state || { from: "/login" }, // Preserve original from, fallback to login
 				});
 				createToast({
 					body: t("auth.forgotPassword.toasts.sent").replace("<email/>", form.email),
 				});
-				} else {
+			} else {
 				if (action.payload) {
 					// dispatch errors
 					createToast({
