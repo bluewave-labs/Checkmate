@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { HistogramPageSpeedTooltip } from "@/Components/v2/monitors/charts/HistogramPageSpeedTooltip";
-
 import { useTheme } from "@mui/material/styles";
 import type { Check } from "@/Types/Check";
 import type { MonitorStatus } from "@/Types/Monitor";
@@ -17,7 +16,7 @@ const processData = (checks: Check[]) => {
 		const bestPractices = entry?.bestPractices || 0;
 		const performance = entry?.performance || 0;
 		const seo = entry?.seo || 0;
-		return Math.floor(((accessibility + bestPractices + performance + seo) / 4) * 100);
+		return Math.floor((accessibility + bestPractices + performance + seo) / 4);
 	};
 
 	checks.forEach((entry) => {

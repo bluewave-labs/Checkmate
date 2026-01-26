@@ -7,16 +7,21 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 
 export const HistogramPageSpeedTooltip = ({
+	active,
 	payload,
-}: TooltipProps<string | number, string>) => {
+}: TooltipProps<number, string>) => {
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const theme = useTheme();
+
+	if (!active || !payload || payload.length === 0) {
+		return null;
+	}
+
+	const data = payload[0]?.payload;
+
 	return (
 		<Stack
-			alignItems={"flex-start"}
-			top={0}
-			left={0}
-			zIndex={10}
+			alignItems="flex-start"
 			sx={{
 				backgroundColor: theme.palette.secondary.main,
 				border: 1,
@@ -25,15 +30,11 @@ export const HistogramPageSpeedTooltip = ({
 				p: theme.spacing(4),
 			}}
 		>
-			<Typography color={theme.palette.primary.contrastText}>
-				{formatDateWithTz(
-					payload?.[0]?.payload?.date ?? 0,
-					"MMMM D, YYYY, HH:mm A",
-					uiTimezone
-				)}
+			<Typography>
+				{formatDateWithTz(data?.date, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone)}
 			</Typography>
-			<Typography color={theme.palette.primary.contrastText}>
-				Score: {payload?.[0]?.payload?.score}
+			<Typography>
+				Score: {data?.score}
 			</Typography>
 		</Stack>
 	);
