@@ -45,7 +45,8 @@ export const HistogramPageSpeed = ({
 			flexWrap="nowrap"
 			gap={theme.spacing(1.5)}
 			height="100px"
-			width="400px"
+			maxWidth="400px"
+			width="100%"
 			onClick={(event) => event.stopPropagation()}
 			overflow={"hidden"}
 			sx={{

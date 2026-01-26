@@ -147,7 +147,7 @@ export function DataTable<
 		<TableContainer
 			component={Paper}
 			elevation={0}
-			sx={{ boxShadow: "none" }}
+			sx={{ boxShadow: "none", overflowX: "hidden" }}
 		>
 			<Table
 				sx={{
