@@ -1,7 +1,11 @@
 import { BasePage } from "@/Components/v2/design-elements";
 import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
 import Stack from "@mui/material/Stack";
-import { HistogramStatus } from "@/Components/v2/monitors";
+import {
+	HistogramStatus,
+	RadialAvgResponse,
+	HistogramDetails,
+} from "@/Components/v2/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 
 import { useTheme } from "@mui/material/styles";
@@ -14,7 +18,7 @@ import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { MonitorStatBoxes } from "@/Components/v2/monitors";
-import { formatDateWithTz } from "@/Utils/timeUtils";
+import { formatDateWithTz } from "@/Utils/timeUtilsLegacy";
 import { t } from "i18next";
 
 const certificateDateFormat = "MMM D, YYYY h A";
@@ -135,7 +139,15 @@ const UptimeDetailsPage = () => {
 					checks={monitorData?.groupedDownChecks}
 					range={dateRange}
 				/>
+				<RadialAvgResponse
+					avg={monitorStats?.avgResponseTime || 0}
+					max={500}
+				/>
 			</Stack>
+			<HistogramDetails
+				checks={monitorData?.groupedChecks || []}
+				range={dateRange}
+			/>
 		</BasePage>
 	);
 };

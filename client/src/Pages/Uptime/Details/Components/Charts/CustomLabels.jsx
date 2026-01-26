@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { formatDateWithTz } from "../../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../../Utils/timeUtilsLegacy.js";
 
 const CustomLabels = ({ x, width, height, firstDataPoint, lastDataPoint, type }) => {
 	const uiTimezone = useSelector((state) => state.ui.timezone);

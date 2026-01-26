@@ -3,7 +3,7 @@ import { StatBox } from "@/Components/v2/design-elements";
 
 import { useTheme } from "@mui/material/styles";
 import type { MonitorStats, Monitor } from "@/Types/Monitor";
-import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
+import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
 

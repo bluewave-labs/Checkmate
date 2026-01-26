@@ -13,7 +13,7 @@ import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 
 //Utils
-import { formatDateWithTz } from "@/Utils/timeUtils.js";
+import { formatDateWithTz } from "@/Utils/timeUtilsLegacy.js";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import PropTypes from "prop-types";

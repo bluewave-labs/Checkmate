@@ -5,7 +5,7 @@ import Table from "@/Components/v1/Table/index.jsx";
 import TablePagination from "@/Components/v1/Table/TablePagination/index.jsx";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz } from "../../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../../Utils/timeUtilsLegacy.js";
 import SkeletonLayout from "./skeleton.jsx";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";

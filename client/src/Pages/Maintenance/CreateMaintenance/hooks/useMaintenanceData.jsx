@@ -6,7 +6,7 @@ import {
 	MS_PER_HOUR,
 	MS_PER_DAY,
 	MS_PER_WEEK,
-} from "../../../../Utils/timeUtils.js";
+} from "../../../../Utils/timeUtilsLegacy.js";
 const useMaintenanceData = () => {
 	const REVERSE_REPEAT_LOOKUP = {
 		0: "none",

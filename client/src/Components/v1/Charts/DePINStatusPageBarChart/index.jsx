@@ -5,7 +5,7 @@ import { Stack, Box, Tooltip, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../Utils/timeUtilsLegacy.js";
 import { useSelector } from "react-redux";
 
 const PlaceholderCheck = ({ daysToShow }) => {

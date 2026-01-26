@@ -7,7 +7,7 @@ import DownBarChart from "../Charts/DownBarChart.jsx";
 import ResponseGaugeChart from "../Charts/ResponseGaugeChart.jsx";
 import SkeletonLayout from "./skeleton.jsx";
 // Utils
-import { formatDateWithTz } from "../../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../../Utils/timeUtilsLegacy.js";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { useState } from "react";

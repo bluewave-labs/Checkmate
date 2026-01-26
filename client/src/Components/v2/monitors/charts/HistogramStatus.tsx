@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/Components/v2/design-elements";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
-import { formatDateWithTz } from "@/Utils/timeUtils";
+import { formatDateWithTz } from "@/Utils/timeUtilsLegacy";
 import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";

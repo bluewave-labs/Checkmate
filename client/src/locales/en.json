@@ -29,7 +29,9 @@
 			"labels": {
 				"uptime": "Uptime",
 				"downtime": "Downtime",
-				"averageRepsonseTime": "Average response time"
+				"averageResponseTime": "Average response time",
+				"low": "Low",
+				"high": "High"
 			}
 		}
 	},
