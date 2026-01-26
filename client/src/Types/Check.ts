@@ -128,7 +128,7 @@ export interface Check {
 }
 
 export interface GroupedCheck {
-	_id: string;
+	bucketDate: string;
 	avgResponseTime: number;
 	totalChecks: number;
 }

@@ -88,7 +88,11 @@ const UptimeMonitorsPage = () => {
 		data: monitors,
 		isLoading: monitorsLoading,
 		error,
-	} = useGet<Monitor[]>("/monitors/team?type=http&type=ping&type=port&type=docker");
+	} = useGet<Monitor[]>(
+		"/monitors/team?type=http&type=ping&type=port&type=docker",
+		{},
+		{ keepPreviousData: true }
+	);
 
 	const {
 		data: monitorsWithChecksData,
@@ -98,7 +102,7 @@ const UptimeMonitorsPage = () => {
 	} = useGet<MonitorsWithChecksResponse>(
 		monitorsWithChecksUrl,
 		{},
-		{ refreshInterval: 5000 }
+		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
 	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};

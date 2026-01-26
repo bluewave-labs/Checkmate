@@ -131,7 +131,7 @@ export const HistogramDetails = ({
 					<XAxis
 						axisLine={false}
 						tickLine={false}
-						dataKey="_id"
+						dataKey="bucketDate"
 						tick={(props) => (
 							<XTick
 								{...props}

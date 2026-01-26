@@ -31,7 +31,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				fontSize={11}
 				fill={theme.palette.text.secondary}
 			>
-				{formatDateWithTz(p1._id, dateFormat, uiTimezone)}
+				{formatDateWithTz(p1.bucketDate, dateFormat, uiTimezone)}
 			</text>
 			<text
 				x="100%"
@@ -41,7 +41,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				fontSize={11}
 				fill={theme.palette.text.secondary}
 			>
-				{formatDateWithTz(p2._id, dateFormat, uiTimezone)}
+				{formatDateWithTz(p2.bucketDate, dateFormat, uiTimezone)}
 			</text>
 		</>
 	);
@@ -78,8 +78,8 @@ export const HistogramStatus = ({
 		const titleText = t("common.charts.labels.averageResponseTime");
 		const fmt = range === "30d" ? "MMM D, YYYY" : "ddd, MMM D, YYYY, h:mm A";
 		let dateLabel = "";
-		if (d?._id) {
-			const base = new Date(d._id);
+		if (d?.bucketDate) {
+			const base = new Date(d.bucketDate);
 			const midBucket =
 				range === "30d" ? new Date(base.getTime() + 12 * 60 * 60 * 1000) : base;
 			dateLabel = formatDateWithTz(midBucket.toISOString(), fmt, uiTimezone);
@@ -151,11 +151,11 @@ export const HistogramStatus = ({
 							maxBarSize={7}
 							background={{ fill: "transparent" }}
 						>
-							{checks?.map((groupedCheck) => {
+							{checks?.map((groupedCheck, index) => {
 								const fillColor = getResponseTimeColor(groupedCheck.avgResponseTime);
 								return (
 									<Cell
-										key={groupedCheck._id}
+										key={groupedCheck.bucketDate || `check-${index}`}
 										fill={theme.palette[fillColor].main}
 									/>
 								);

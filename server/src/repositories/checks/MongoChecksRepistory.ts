@@ -483,6 +483,7 @@ class MongoChecksRepository implements IChecksRepository {
 							},
 						},
 						{ $sort: { _id: 1 } },
+						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
 					groupedUpChecks: [
 						{ $match: { status: true } },
@@ -496,6 +497,7 @@ class MongoChecksRepository implements IChecksRepository {
 							},
 						},
 						{ $sort: { _id: 1 } },
+						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
 					groupedDownChecks: [
 						{ $match: { status: false } },
@@ -509,6 +511,7 @@ class MongoChecksRepository implements IChecksRepository {
 							},
 						},
 						{ $sort: { _id: 1 } },
+						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
 				},
 			},

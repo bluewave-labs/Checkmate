@@ -53,7 +53,11 @@ const UptimeDetailsPage = () => {
 		isLoading: monitorIsLoading,
 		error: monitorError,
 		refetch: refetchMonitor,
-	} = useGet<MonitorDetailsResponse>(monitorDetailsUrl);
+	} = useGet<MonitorDetailsResponse>(
+		monitorDetailsUrl,
+		{},
+		{ refreshInterval: 10000, keepPreviousData: true }
+	);
 
 	const monitorData = monitorDetailsData?.monitorData;
 	const monitor = monitorData?.monitor;
