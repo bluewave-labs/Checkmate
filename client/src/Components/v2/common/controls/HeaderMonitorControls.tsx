@@ -66,7 +66,7 @@ export const HeaderMonitorControls = ({
 					variant="contained"
 					color="secondary"
 					startIcon={<Icon icon={Bug} />}
-					onClick={(e) => {
+					onClick={() => {
 						navigate(`/incidents/${monitor?.id}`);
 					}}
 				>

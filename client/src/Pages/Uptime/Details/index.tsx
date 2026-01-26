@@ -51,7 +51,6 @@ const UptimeDetailsPage = () => {
 	const {
 		data: monitorDetailsData,
 		isLoading: monitorIsLoading,
-		error: monitorError,
 		refetch: refetchMonitor,
 	} = useGet<MonitorDetailsResponse>(
 		monitorDetailsUrl,
@@ -99,11 +98,11 @@ const UptimeDetailsPage = () => {
 		return `/checks/${monitorId}?${params.toString()}`;
 	}, [monitorId, monitor?.type, dateRange, page, rowsPerPage]);
 
-	const {
-		data: checksData,
-		isLoading: checksIsLoading,
-		error: checksError,
-	} = useGet<ChecksResponse>(checksUrl, {}, { keepPreviousData: true });
+	const { data: checksData, isLoading: checksIsLoading } = useGet<ChecksResponse>(
+		checksUrl,
+		{},
+		{ keepPreviousData: true }
+	);
 
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
@@ -134,15 +133,13 @@ const UptimeDetailsPage = () => {
 				<HistogramStatus
 					title={t("common.charts.labels.uptime")}
 					icon={<TrendingUp />}
-					monitorData={monitorData}
-					checks={monitorData?.groupedUpChecks}
+					checks={monitorData?.groupedUpChecks ?? []}
 					range={dateRange}
 				/>
 				<HistogramStatus
 					title={t("common.charts.labels.downtime")}
 					icon={<AlertTriangle />}
-					monitorData={monitorData}
-					checks={monitorData?.groupedDownChecks}
+					checks={monitorData?.groupedDownChecks ?? []}
 					range={dateRange}
 				/>
 				<RadialAvgResponse

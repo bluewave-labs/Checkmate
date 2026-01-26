@@ -37,10 +37,30 @@ export const HeaderTimeRange = ({
 				onChange={handleChange}
 				size="small"
 			>
-				<ToggleButton value="recent">Recent</ToggleButton>
-				<ToggleButton value="day">Day</ToggleButton>
-				<ToggleButton value="week">Week</ToggleButton>
-				<ToggleButton value="month">Month</ToggleButton>
+				<ToggleButton
+					disabled={isLoading}
+					value="recent"
+				>
+					Recent
+				</ToggleButton>
+				<ToggleButton
+					disabled={isLoading}
+					value="day"
+				>
+					Day
+				</ToggleButton>
+				<ToggleButton
+					disabled={isLoading}
+					value="week"
+				>
+					Week
+				</ToggleButton>
+				<ToggleButton
+					disabled={isLoading}
+					value="month"
+				>
+					Month
+				</ToggleButton>
 			</ToggleButtonGroup>
 		);
 	}

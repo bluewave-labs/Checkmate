@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
-import type { MonitorData } from "@/Types/Monitor";
 import type { RootState } from "@/Types/state";
 
 interface XLabelProps {
@@ -50,7 +49,6 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 interface HistogramStatusProps {
 	title: string;
 	icon: React.ReactNode;
-	monitorData?: MonitorData;
 	checks?: GroupedCheck[];
 	range: string;
 }
@@ -58,7 +56,6 @@ interface HistogramStatusProps {
 export const HistogramStatus = ({
 	title,
 	icon,
-	monitorData,
 	checks = [],
 	range,
 }: HistogramStatusProps) => {
