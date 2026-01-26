@@ -13,13 +13,13 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePatch } from "@/Hooks/UseApi";
 
-import type { Check } from "@/Types/Check";
 import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/v2/actions-menu";
 
 export const PageSpeedMonitorsTable = ({
 	monitors,
 	refetch,
+	setSelectedMonitor,
 	sortField,
 	setSortField,
 	sortOrder,
@@ -32,6 +32,7 @@ export const PageSpeedMonitorsTable = ({
 }: {
 	monitors: MonitorWithChecks[];
 	refetch: Function;
+	setSelectedMonitor: Function;
 	sortField: string;
 	setSortField: (field: string) => void;
 	sortOrder: "asc" | "desc";
@@ -138,7 +139,7 @@ export const PageSpeedMonitorsTable = ({
 					</Typography>
 				),
 				action: () => {
-					// setSelectedMonitor(monitor);
+					setSelectedMonitor(monitor);
 				},
 				closeMenu: true,
 			},

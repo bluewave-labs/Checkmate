@@ -9,7 +9,15 @@
 			"incidents": "Incidents",
 			"pause": "Pause",
 			"resume": "Resume",
-			"delete": "Delete"
+			"delete": "Delete",
+			"cancel": "Cancel",
+			"confirm": "Confirm"
+		},
+		"dialogs": {
+			"delete": {
+				"description": "This action cannot be undone.",
+				"title": "Are you sure you want to delete this?"
+			}
 		},
 		"toasts": {
 			"networkError": "Network error",

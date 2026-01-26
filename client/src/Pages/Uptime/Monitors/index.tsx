@@ -173,7 +173,6 @@ const UptimeMonitorsPage = () => {
 				sortOrder={sortOrder}
 				setSortOrder={setSortOrder}
 				setRowsPerPage={(rowsPerPage: number) => {
-					console.log("wtf");
 					dispatch(
 						setRowsPerPage({
 							value: rowsPerPage,
