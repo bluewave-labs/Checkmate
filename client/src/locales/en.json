@@ -6,7 +6,10 @@
 			"toggleTheme": "Toggles light & dark",
 			"testNotifications": "Test notifications",
 			"create": "Create",
-			"incidents": "Incidents"
+			"incidents": "Incidents",
+			"pause": "Pause",
+			"resume": "Resume",
+			"delete": "Delete"
 		},
 		"toasts": {
 			"networkError": "Network error",
@@ -214,6 +217,13 @@
 				"headers": {
 					"dateTime": "Date & time",
 					"statusCode": "Status code"
+				}
+			}
+		},
+		"pageSpeed": {
+			"table": {
+				"headers": {
+					"pageSpeedScore": "PageSpeed score"
 				}
 			}
 		}
