@@ -48,7 +48,6 @@ export interface MonitorsWithChecksResponse {
 	summary: MonitorsSummary;
 }
 
-
 export interface MonitorStats {
 	id: string;
 	monitorId: string;

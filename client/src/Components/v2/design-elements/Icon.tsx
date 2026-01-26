@@ -7,7 +7,12 @@ interface IconProps {
 }
 
 const Icon = ({ icon: Icon, size = 20, strokeWidth = 1.5 }: IconProps) => {
-	return <Icon size={size} strokeWidth={strokeWidth} />;
+	return (
+		<Icon
+			size={size}
+			strokeWidth={strokeWidth}
+		/>
+	);
 };
 
 export default Icon;
