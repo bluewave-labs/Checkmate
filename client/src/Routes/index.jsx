@@ -16,7 +16,7 @@ import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 
 // Uptime
 import Uptime from "../Pages/Uptime/Monitors";
-import UptimeDetails from "../Pages/Uptime/Details/index.jsx";
+import UptimeDetails from "../Pages/Uptime/Details";
 import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
 // PageSpeed
@@ -103,7 +103,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/:monitorId/"
-					element={<UptimeDetails />}
+					element={
+						<>
+							<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+								<UptimeDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"

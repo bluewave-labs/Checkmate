@@ -1,4 +1,4 @@
-import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
+import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
 const useGetIncidentsDuration = (incident, isActive) => {
 	if (!incident?.startTime) {
 		return "-";

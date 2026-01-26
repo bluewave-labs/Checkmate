@@ -4,7 +4,7 @@ import PulseDot from "../Animated/PulseDot.jsx";
 import Typography from "@mui/material/Typography";
 import Dot from "../Dot/index.jsx";
 // Utils
-import { formatDurationRounded } from "../../../Utils/timeUtils.js";
+import { formatDurationRounded } from "../../../Utils/timeUtilsLegacy.js";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { useMonitorUtils } from "../../../Hooks/useMonitorUtils.js";

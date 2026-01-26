@@ -7,7 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
-import { getHumanReadableDuration } from "../../../../../Utils/timeUtils.js";
+import { getHumanReadableDuration } from "../../../../../Utils/timeUtilsLegacy.js";
 import { formatBytes } from "../../utils/utils.js";
 import { useTranslation } from "react-i18next";
 

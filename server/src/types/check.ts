@@ -157,7 +157,7 @@ export interface HardwareChecksResult {
 }
 
 export interface GroupedCheck {
-	_id: string;
+	bucketDate: string;
 	avgResponseTime: number;
 	totalChecks: number;
 }

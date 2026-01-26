@@ -135,3 +135,33 @@ export const formatDateWithTz = (timestamp, format, timezone) => {
 	const formattedDate = dayjs(timestamp).tz(timezone).format(format);
 	return formattedDate;
 };
+
+export const tickDateFormatLookup = (range) => {
+	switch (range) {
+		case "recent":
+			return "h:mm A";
+		case "day":
+			return "h A";
+		case "week":
+			return "MMM D";
+		case "month":
+			return "MMM D";
+		default:
+			return "MMM D, h A";
+	}
+};
+
+export const tooltipDateFormatLookup = (range) => {
+	switch (range) {
+		case "recent":
+			return "MMM D, h:mm A";
+		case "day":
+			return "MMM D, h:mm A";
+		case "week":
+			return "ddd, MMM D";
+		case "month":
+			return "ddd, MMM D";
+		default:
+			return "MMM D, h:mm A";
+	}
+};

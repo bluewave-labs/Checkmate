@@ -4,7 +4,9 @@
 		"monitoringAgentName": "Capture",
 		"buttons": {
 			"toggleTheme": "Toggles light & dark",
-			"create": "Create"
+			"testNotifications": "Test notifications",
+			"create": "Create",
+			"incidents": "Incidents"
 		},
 		"toasts": {
 			"networkError": "Network error",
@@ -22,6 +24,15 @@
 				"type": "Type"
 			},
 			"empty": "Nothing h"
+		},
+		"charts": {
+			"labels": {
+				"uptime": "Uptime",
+				"downtime": "Downtime",
+				"averageResponseTime": "Average response time",
+				"low": "Low",
+				"high": "High"
+			}
 		}
 	},
 	"submit": "Submit",
@@ -167,6 +178,12 @@
 					"pause": "Pause",
 					"resume": "Resume",
 					"delete": "Delete"
+				},
+				"statBoxes": {
+					"activeFor": "Active for",
+					"lastCheck": "Last check",
+					"lastResponseTime": "Last response time",
+					"certificateExpiry": "Certificate expiry"
 				}
 			}
 		},
@@ -189,6 +206,14 @@
 			"filters": {
 				"search": {
 					"placeholder": "Search monitors..."
+				}
+			}
+		},
+		"checks": {
+			"table": {
+				"headers": {
+					"dateTime": "Date & time",
+					"statusCode": "Status code"
 				}
 			}
 		}

@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
-import { getHumanReadableDuration } from "@/Utils/timeUtils.js";
+import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
 import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 import useGetIncidentsDuration from "../../hooks/useGetIncidentsDuration";

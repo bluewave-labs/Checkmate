@@ -128,7 +128,7 @@ export interface Check {
 }
 
 export interface GroupedCheck {
-	_id: string;
+	bucketDate: string;
 	avgResponseTime: number;
 	totalChecks: number;
 }
@@ -138,4 +138,9 @@ export interface LatestCheck {
 	responseTime: number;
 	checkedAt: string;
 	id: string;
+}
+
+export interface ChecksResponse {
+	checks: Check[];
+	checksCount: number;
 }

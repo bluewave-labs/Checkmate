@@ -11,7 +11,7 @@ import {
 import { useTheme } from "@emotion/react";
 import { useMemo, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import { formatDateWithTz } from "../../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../../Utils/timeUtilsLegacy.js";
 import { useSelector } from "react-redux";
 
 const config = {

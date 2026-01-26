@@ -1,7 +1,7 @@
 import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
 import StatBox from "@/Components/v1/StatBox/index.jsx";
 import { Typography } from "@mui/material";
-import { getHumanReadableDuration } from "../../../../../Utils/timeUtils.js";
+import { getHumanReadableDuration } from "../../../../../Utils/timeUtilsLegacy.js";
 import { useTranslation } from "react-i18next";
 
 const PageSpeedStatusBoxes = ({ shouldRender, monitorStats }) => {

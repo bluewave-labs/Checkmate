@@ -1,4 +1,4 @@
-import type { Check } from "@/Types/Check";
+import type { Check, GroupedCheck } from "@/Types/Check";
 export type MonitorStatus = boolean | undefined;
 
 export const MonitorTypes = [
@@ -46,4 +46,33 @@ export interface MonitorsWithChecksResponse {
 	count: number;
 	monitors: MonitorWithChecks[];
 	summary: MonitorsSummary;
+}
+
+export interface MonitorStats {
+	id: string;
+	monitorId: string;
+	avgResponseTime: number;
+	totalChecks: number;
+	totalUpChecks: number;
+	totalDownChecks: number;
+	uptimePercentage: number;
+	lastCheckTimestamp: number;
+	lastResponseTime: number;
+	timeOfLastFailure?: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface MonitorData {
+	monitor: Monitor;
+	groupedChecks: GroupedCheck[];
+	groupedUpChecks: GroupedCheck[];
+	groupedDownChecks: GroupedCheck[];
+	groupedAvgResponseTime: number;
+	groupedUptimePercentage: number;
+}
+
+export interface MonitorDetailsResponse {
+	monitorData: MonitorData;
+	monitorStats: MonitorStats | null;
 }
