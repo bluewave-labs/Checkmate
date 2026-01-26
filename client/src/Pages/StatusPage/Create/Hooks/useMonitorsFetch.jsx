@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { networkService } from "../../../../main";
+import { networkService } from "../../../../main.jsx";
 import { useSelector } from "react-redux";
-import { createToast } from "../../../../Utils/toastUtils";
+import { createToast } from "../../../../Utils/toastUtils.jsx";
 
 const useMonitorsFetch = () => {
 	const { user } = useSelector((state) => state.auth);
@@ -14,9 +14,9 @@ const useMonitorsFetch = () => {
 			try {
 				const response = await networkService.getMonitorsByTeamId({
 					limit: null, // donot return any checks for the monitors
-					types: ["http", "ping", "port"], // status page is available for uptime, ping, and port monitors
+					types: ["http", "ping", "port", "game"], // include game servers in status page monitor selection
 				});
-				setMonitors(response.data.data.monitors);
+				setMonitors(response.data.data);
 			} catch (error) {
 				setNetworkError(true);
 				createToast({ body: error.message });

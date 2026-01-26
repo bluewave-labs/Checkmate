@@ -1,8 +1,8 @@
-import ChartBox from "../../../../../Components/Charts/ChartBox";
-import AreaChart from "../Charts/AreaChart";
-import AreaChartLegend from "../Charts/AreaChartLegend";
-import SkeletonLayout from "./skeleton";
-import ScoreIcon from "../../../../../assets/icons/monitor-graph-line.svg?react";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
+import AreaChart from "../Charts/AreaChart.jsx";
+import AreaChartLegend from "../Charts/AreaChartLegend.jsx";
+import SkeletonLayout from "./skeleton.jsx";
+import Icon from "@/Components/v1/Icon";
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 
@@ -24,7 +24,12 @@ const PageSpeedAreaChart = ({ shouldRender, monitor, metrics, handleMetrics }) =
 		>
 			<ChartBox
 				justifyContent="flex-start"
-				icon={<ScoreIcon />}
+				icon={
+					<Icon
+						name="TrendingUp"
+						size={20}
+					/>
+				}
 				header="Score history"
 				height="100%"
 				borderRadiusRight={16}

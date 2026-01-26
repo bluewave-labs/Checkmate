@@ -1,7 +1,7 @@
-import { logger } from "../../../../Utils/Logger";
+import { logger } from "../../../../Utils/Logger.js";
 import { useEffect, useState } from "react";
-import { networkService } from "../../../../main";
-import { formatDateWithTz } from "../../../../Utils/timeUtils";
+import { networkService } from "../../../../main.jsx";
+import { formatDateWithTz } from "../../../../Utils/timeUtilsLegacy.js";
 
 const useCertificateFetch = ({
 	monitor,

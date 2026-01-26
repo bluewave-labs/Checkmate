@@ -1,10 +1,10 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import ConfigBox from "../../Components/ConfigBox";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import Link from "../../Components/Link";
+import Link from "@/Components/v1/Link/index.jsx";
 
 const SettingsAbout = () => {
 	const theme = useTheme();

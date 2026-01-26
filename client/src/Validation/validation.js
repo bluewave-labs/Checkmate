@@ -112,7 +112,7 @@ const loginCredentials = joi.object({
 });
 
 const monitorValidation = joi.object({
-	_id: joi.string(),
+	id: joi.string(),
 	userId: joi.string(),
 	teamId: joi.string(),
 	statusWindowSize: joi.number().min(1).max(20).default(5).messages({
@@ -328,6 +328,7 @@ const settingsValidation = joi.object({
 	systemEmailIgnoreTLS: joi.boolean(),
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
+	showURL: joi.boolean().optional(),
 	globalThresholds: joi
 		.object({
 			cpu: joi.number().min(1).max(100).allow("").optional(),
@@ -448,6 +449,7 @@ const infrastructureMonitorValidation = joi.object({
 		"number.max": "Status window threshold cannot exceed 100%.",
 	}),
 	notifications: joi.array().items(joi.string()),
+	selectedDisks: joi.array().items(joi.string()).optional(),
 });
 
 const notificationValidation = joi.object({
@@ -458,7 +460,7 @@ const notificationValidation = joi.object({
 
 	type: joi
 		.string()
-		.valid("email", "webhook", "slack", "discord", "pager_duty")
+		.valid("email", "webhook", "slack", "discord", "pager_duty", "matrix")
 		.required()
 		.messages({
 			"string.empty": "Notification type is required",
@@ -495,7 +497,39 @@ const notificationValidation = joi.object({
 					"string.uri": "Please enter a valid Webhook URL",
 				}),
 			},
+			{
+				is: "matrix",
+				then: joi.string().allow("").optional(),
+			},
 		],
+	}),
+
+	homeserverUrl: joi.when("type", {
+		is: "matrix",
+		then: joi.string().uri().required().messages({
+			"string.empty": "Homeserver URL cannot be empty",
+			"any.required": "Homeserver URL is required",
+			"string.uri": "Please enter a valid Homeserver URL",
+		}),
+		otherwise: joi.string().allow("").optional(),
+	}),
+
+	roomId: joi.when("type", {
+		is: "matrix",
+		then: joi.string().required().messages({
+			"string.empty": "Room ID cannot be empty",
+			"any.required": "Room ID is required",
+		}),
+		otherwise: joi.string().allow("").optional(),
+	}),
+
+	accessToken: joi.when("type", {
+		is: "matrix",
+		then: joi.string().required().messages({
+			"string.empty": "Access Token cannot be empty",
+			"any.required": "Access Token is required",
+		}),
+		otherwise: joi.string().allow("").optional(),
 	}),
 });
 

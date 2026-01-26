@@ -1,13 +1,13 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Button from "@mui/material/Button";
-import ConfigBox from "../../../Components/ConfigBox";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import Box from "@mui/material/Box";
-import Select from "../../../Components/Inputs/Select";
-import TextInput from "../../../Components/Inputs/TextInput";
-import Dialog from "../../../Components/Dialog";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 
 // Utils
 import { useState } from "react";
@@ -18,9 +18,9 @@ import {
 	useEditNotification,
 	useTestNotification,
 	useDeleteNotification,
-} from "../../../Hooks/useNotifications";
-import { notificationValidation } from "../../../Validation/validation";
-import { createToast } from "../../../Utils/toastUtils";
+} from "../../../Hooks/useNotifications.js";
+import { notificationValidation } from "../../../Validation/validation.js";
+import { createToast } from "../../../Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -29,7 +29,7 @@ import {
 	DESCRIPTION_MAP,
 	LABEL_MAP,
 	PLACEHOLDER_MAP,
-} from "../utils";
+} from "../utils.js";
 
 // Setup
 
@@ -56,7 +56,7 @@ const CreateNotifications = () => {
 	const [notification, setNotification] = useState({
 		notificationName: "",
 		address: "",
-		type: NOTIFICATION_TYPES[0]._id,
+		type: NOTIFICATION_TYPES[0].id,
 	});
 	const [errors, setErrors] = useState({});
 	const { t } = useTranslation();
@@ -66,7 +66,7 @@ const CreateNotifications = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const getNotificationTypeValue = (typeId) => {
-		return NOTIFICATION_TYPES.find((type) => type._id === typeId)?.value || "email";
+		return NOTIFICATION_TYPES.find((type) => type.id === typeId)?.value || "email";
 	};
 
 	const extractError = (error, field) =>
@@ -223,18 +223,54 @@ const CreateNotifications = () => {
 						<Typography component="p">{t(DESCRIPTION_MAP[type])}</Typography>
 					</Box>
 					<Stack gap={theme.spacing(12)}>
-						<TextInput
-							label={t(LABEL_MAP[type])}
-							name="address"
-							placeholder={t(PLACEHOLDER_MAP[type])}
-							value={notification.address}
-							onChange={onChange}
-							error={Boolean(errors.address)}
-							helperText={errors["address"]}
-						/>
+						{type === "matrix" ? (
+							<>
+								<TextInput
+									label={t("createNotifications.matrixSettings.homeserverLabel")}
+									name="homeserverUrl"
+									placeholder={t(
+										"createNotifications.matrixSettings.homeserverPlaceholder"
+									)}
+									value={notification.homeserverUrl || ""}
+									onChange={onChange}
+									error={Boolean(errors.homeserverUrl)}
+									helperText={errors["homeserverUrl"]}
+								/>
+								<TextInput
+									label={t("createNotifications.matrixSettings.roomIdLabel")}
+									name="roomId"
+									placeholder={t("createNotifications.matrixSettings.roomIdPlaceholder")}
+									value={notification.roomId || ""}
+									onChange={onChange}
+									error={Boolean(errors.roomId)}
+									helperText={errors["roomId"]}
+								/>
+								<TextInput
+									label={t("createNotifications.matrixSettings.accessTokenLabel")}
+									name="accessToken"
+									type="password"
+									placeholder={t(
+										"createNotifications.matrixSettings.accessTokenPlaceholder"
+									)}
+									value={notification.accessToken || ""}
+									onChange={onChange}
+									error={Boolean(errors.accessToken)}
+									helperText={errors["accessToken"]}
+								/>
+							</>
+						) : (
+							<TextInput
+								label={t(LABEL_MAP[type])}
+								name="address"
+								placeholder={t(PLACEHOLDER_MAP[type])}
+								value={notification.address}
+								onChange={onChange}
+								error={Boolean(errors.address)}
+								helperText={errors["address"]}
+							/>
+						)}
 					</Stack>
-				</ConfigBox>
-
+				</ConfigBox>{" "}
 				<Stack
 					direction="row"
 					justifyContent="flex-end"

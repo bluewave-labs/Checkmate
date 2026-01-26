@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { createToast } from "../Utils/toastUtils";
-import { networkService } from "../main";
+import { createToast } from "../Utils/toastUtils.jsx";
+import { networkService } from "../main.jsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { NOTIFICATION_TYPES } from "../Pages/Notifications/utils";
+import { NOTIFICATION_TYPES } from "../Pages/Notifications/utils.js";
 
 const useCreateNotification = () => {
 	const navigate = useNavigate();
@@ -102,7 +102,7 @@ const useGetNotificationById = (id, setNotification) => {
 			const notificationData = {
 				address: notification?.address,
 				notificationName: notification?.notificationName,
-				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?._id,
+				type: NOTIFICATION_TYPES.find((type) => type.value === notification?.type)?.id,
 			};
 
 			setNotification(notificationData);

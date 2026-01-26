@@ -1,13 +1,13 @@
 // Components
 import { Stack } from "@mui/material";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import MonitorCreateHeader from "../../../Components/MonitorCreateHeader";
-import StatusPagesTable from "./Components/StatusPagesTable";
-import PageStateWrapper from "../../../Components/PageStateWrapper";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorCreateHeader from "@/Components/v1/MonitorCreateHeader/index.jsx";
+import StatusPagesTable from "./Components/StatusPagesTable/index.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useStatusPagesFetch } from "./Hooks/useStatusPagesFetch";
-import { useIsAdmin } from "../../../Hooks/useIsAdmin";
+import { useStatusPagesFetch } from "./Hooks/useStatusPagesFetch.jsx";
+import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 const BREADCRUMBS = [{ name: `Status Pages`, path: "" }];
 
 const StatusPages = () => {

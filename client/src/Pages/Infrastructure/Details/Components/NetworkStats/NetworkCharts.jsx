@@ -1,15 +1,15 @@
 import PropTypes from "prop-types";
 import { Stack, Typography } from "@mui/material";
-import InfraAreaChart from "../../../../../Pages/Infrastructure/Details/Components/AreaChartBoxes/InfraAreaChart";
+import InfraAreaChart from "../AreaChartBoxes/InfraAreaChart.jsx";
 
 import {
 	TzTick,
 	InfrastructureTooltip,
 	NetworkTick,
-} from "../../../../../Components/Charts/Utils/chartUtils";
+} from "@/Components/v1/Charts/Utils/chartUtils.jsx";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 
 const NetworkCharts = ({ ethernetData, dateRange }) => {
 	const theme = useTheme();

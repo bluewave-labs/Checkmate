@@ -1,10 +1,10 @@
 import Stack from "@mui/material/Stack";
-import Breadcrumbs from "../../Components/Breadcrumbs";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Queue from "./Queue";
-import LogsComponent from "./Logs";
-import Diagnostics from "./Diagnostics";
+import Queue from "./Queue/index.jsx";
+import LogsComponent from "./Logs/index.jsx";
+import Diagnostics from "./Diagnostics/index.jsx";
 
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";

@@ -2,11 +2,11 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { clearAuthState } from "../../Features/Auth/authSlice";
-import Background from "../../assets/Images/background-grid.svg?react";
-import ConfirmIcon from "../../assets/icons/check-outlined.svg?react";
-import Logo from "../../assets/icons/checkmate-icon.svg?react";
-import IconBox from "../../Components/IconBox";
+import { clearAuthState } from "../../Features/Auth/authSlice.js";
+import Background from "@/assets/Images/background-grid.svg?react";
+import Logo from "@/assets/icons/checkmate-icon.svg?react";
+import IconBox from "@/Components/v1/IconBox/index.jsx";
+import Icon from "@/Components/v1/Icon";
 import { Trans, useTranslation } from "react-i18next";
 import "./index.css";
 
@@ -94,7 +94,7 @@ const NewPasswordConfirmed = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<ConfirmIcon alt={t("auth.forgotPassword.imageAlts.passwordConfirm")} />
+								<Icon name="CheckCircle" />
 							</IconBox>
 						</Stack>
 						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>

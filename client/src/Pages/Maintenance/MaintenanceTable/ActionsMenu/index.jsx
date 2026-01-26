@@ -3,14 +3,14 @@ import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import { logger } from "../../../../Utils/Logger";
-import Settings from "../../../../assets/icons/settings-bold.svg?react";
+import { logger } from "@/Utils/Logger.js";
+import Icon from "@/Components/v1/Icon";
 import PropTypes from "prop-types";
-import { networkService } from "../../../../main";
-import { createToast } from "../../../../Utils/toastUtils";
+import { networkService } from "../../../../main.jsx";
+import { createToast } from "@/Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 
-import Dialog from "../../../../Components/Dialog";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 
 const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 	maintenanceWindow;
@@ -27,7 +27,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 		try {
 			setIsLoading(true);
 			await networkService.deleteMaintenanceWindow({
-				maintenanceWindowId: maintenanceWindow._id,
+				maintenanceWindowId: maintenanceWindow.id,
 			});
 			updateCallback();
 			createToast({ body: "Maintenance window deleted successfully." });
@@ -47,7 +47,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 				active: !maintenanceWindow.active,
 			};
 			await networkService.editMaintenanceWindow({
-				maintenanceWindowId: maintenanceWindow._id,
+				maintenanceWindowId: maintenanceWindow.id,
 				maintenanceWindow: data,
 			});
 			updateCallback();
@@ -60,7 +60,7 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 	};
 
 	const handleEdit = () => {
-		navigate(`/maintenance/create/${maintenanceWindow._id}`);
+		navigate(`/maintenance/create/${maintenanceWindow.id}`);
 	};
 
 	const openMenu = (event) => {
@@ -98,7 +98,10 @@ const ActionsMenu = ({ /* isAdmin, */ maintenanceWindow, updateCallback }) => {
 					},
 				}}
 			>
-				<Settings />
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu

@@ -1,16 +1,17 @@
 // Components
-import { Stack } from "@mui/material";
-import Gauge from "./Gauge";
-import SkeletonLayout from "./skeleton";
+import { Box } from "@mui/material";
+import Gauge from "./Gauge.jsx";
+import SkeletonLayout from "./skeleton.jsx";
 import PropTypes from "prop-types";
 
 // Utils
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
 const Gauges = ({ isLoading = false, monitor }) => {
-	const { decimalToPercentage, formatBytes } = useHardwareUtils();
+	const { decimalToPercentage, formatBytes, formatDeviceName, formatMountpoint } =
+		useHardwareUtils();
 	const theme = useTheme();
 	const { t } = useTranslation();
 
@@ -46,23 +47,41 @@ const Gauges = ({ isLoading = false, monitor }) => {
 			metricTwo: t("frequency"),
 			valueTwo: `${(cpuFrequency / 1000).toFixed(2)} Ghz`,
 		},
-		...(latestCheck?.disk ?? []).map((disk, idx) => ({
-			type: "disk",
-			diskIndex: idx,
-			value: decimalToPercentage(disk.usage_percent),
-			heading: `Disk${idx} usage`,
-			metricOne: t("used"),
-			valueOne: formatBytes(disk.total_bytes - disk.free_bytes, true),
-			metricTwo: t("total"),
-			valueTwo: formatBytes(disk.total_bytes, true),
-		})),
+		...(latestCheck?.disk ?? [])
+			.filter((disk) => {
+				if (!monitor?.selectedDisks || monitor.selectedDisks.length === 0) {
+					return true;
+				}
+				return monitor.selectedDisks.includes(disk.mountpoint || disk.device);
+			})
+			.map((disk, idx) => ({
+				type: "disk",
+				diskIndex: idx,
+				value: decimalToPercentage(disk.usage_percent),
+				heading: `Disk${idx} usage`,
+				metricOne: t("used"),
+				valueOne: formatBytes(disk.total_bytes - disk.free_bytes, true),
+				metricTwo: t("total"),
+				valueTwo: formatBytes(disk.total_bytes, true),
+				metricThree: t("device"),
+				valueThree: formatDeviceName(disk.device),
+				metricFour: t("mountedOn"),
+				valueFour: formatMountpoint(disk.mountpoint),
+			})),
 	];
 
+	// Only expand gauges to fill row when there are 4 or more
+	const shouldExpand = gauges.length >= 4;
+
 	return (
-		<Stack
-			direction="row"
-			flexWrap="wrap"
-			gap={theme.spacing(8)}
+		<Box
+			sx={{
+				display: "grid",
+				gridTemplateColumns: shouldExpand
+					? "repeat(auto-fill, minmax(200px, 1fr))"
+					: "repeat(auto-fill, 225px)",
+				gap: theme.spacing(4),
+			}}
 		>
 			{gauges.map((gauge) => {
 				return (
@@ -74,10 +93,15 @@ const Gauges = ({ isLoading = false, monitor }) => {
 						valueOne={gauge.valueOne}
 						metricTwo={gauge.metricTwo}
 						valueTwo={gauge.valueTwo}
+						metricThree={gauge.metricThree}
+						valueThree={gauge.valueThree}
+						metricFour={gauge.metricFour}
+						valueFour={gauge.valueFour}
+						shouldExpand={shouldExpand}
 					/>
 				);
 			})}
-		</Stack>
+		</Box>
 	);
 };
 

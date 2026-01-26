@@ -8,7 +8,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import NetworkServiceProvider from "./Utils/NetworkServiceProvider.jsx";
 import { networkService } from "./Utils/NetworkService";
 export { networkService };
-import I18nLoader from "./Components/I18nLoader";
+import I18nLoader from "./Components/v1/I18nLoader";
+import { initApiClient } from "./Utils/ApiClient";
+
+initApiClient(store);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<Provider store={store}>

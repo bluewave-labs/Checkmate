@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, Tooltip } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 
@@ -120,6 +120,85 @@ const useHardwareUtils = () => {
 		}
 	};
 
+	const formatDeviceName = (device) => {
+		const deviceStr = String(device || "");
+
+		// Show full device path
+		return (
+			<Tooltip
+				title={deviceStr}
+				arrow
+				placement="top"
+			>
+				<Typography
+					component="span"
+					sx={{
+						cursor: "default",
+						display: "inline-block",
+						userSelect: "none",
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						maxWidth: "100%",
+					}}
+				>
+					{deviceStr}
+				</Typography>
+			</Tooltip>
+		);
+	};
+
+	const formatMountpoint = (mountpoint) => {
+		const mountpointStr = String(mountpoint || "");
+
+		if (!mountpointStr) {
+			return (
+				<Tooltip
+					title="No mountpoint available"
+					arrow
+					placement="top"
+				>
+					<Typography
+						component="span"
+						sx={{
+							cursor: "default",
+							display: "inline-block",
+							userSelect: "none",
+							color: "text.secondary",
+							fontStyle: "italic",
+						}}
+					>
+						N/A
+					</Typography>
+				</Tooltip>
+			);
+		}
+
+		// Show full mountpoint path
+		return (
+			<Tooltip
+				title={mountpointStr}
+				arrow
+				placement="top"
+			>
+				<Typography
+					component="span"
+					sx={{
+						cursor: "default",
+						display: "inline-block",
+						userSelect: "none",
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						maxWidth: "100%",
+					}}
+				>
+					{mountpointStr}
+				</Typography>
+			</Tooltip>
+		);
+	};
+
 	/**
 	 * Converts a decimal value to a percentage
 	 *
@@ -178,6 +257,8 @@ const useHardwareUtils = () => {
 
 	return {
 		formatBytes,
+		formatDeviceName,
+		formatMountpoint,
 		decimalToPercentage,
 		buildTemps,
 		getDimensions,

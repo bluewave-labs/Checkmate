@@ -1,20 +1,20 @@
 // Components
 import { Stack, Typography, Tab } from "@mui/material";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import MonitorDetailsControlHeader from "../../../Components/MonitorDetailsControlHeader";
-import MonitorTimeFrameHeader from "../../../Components/MonitorTimeFrameHeader";
-import StatusBoxes from "./Components/StatusBoxes";
-import GaugeBoxes from "./Components/GaugeBoxes";
-import AreaChartBoxes from "./Components/AreaChartBoxes";
-import GenericFallback from "../../../Components/GenericFallback";
-import NetworkStats from "./Components/NetworkStats";
-import CustomTabList from "../../../Components/Tab";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorDetailsControlHeader from "@/Components/v1/MonitorDetailsControlHeader/index.jsx";
+import MonitorTimeFrameHeader from "@/Components/v1/MonitorTimeFrameHeader/index.jsx";
+import StatusBoxes from "./Components/StatusBoxes/index.jsx";
+import GaugeBoxes from "./Components/GaugeBoxes/index.jsx";
+import AreaChartBoxes from "./Components/AreaChartBoxes/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
+import NetworkStats from "./Components/NetworkStats/index.jsx";
+import CustomTabList from "@/Components/v1/Tab/index.jsx";
 import TabContext from "@mui/lab/TabContext";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useIsAdmin } from "../../../Hooks/useIsAdmin";
-import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks";
+import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
+import { useFetchHardwareMonitorById } from "../../../Hooks/monitorHooks.js";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";

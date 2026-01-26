@@ -4,18 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography, Button } from "@mui/material";
-import { setNewPassword } from "../../Features/Auth/authSlice";
-import { createToast } from "../../Utils/toastUtils";
-import { newOrChangedCredentials } from "../../Validation/validation";
-import Check from "../../Components/Check/Check";
-import TextInput from "../../Components/Inputs/TextInput";
-import { PasswordEndAdornment } from "../../Components/Inputs/TextInput/Adornments";
-import IconBox from "../../Components/IconBox";
-import LockIcon from "../../assets/icons/lock.svg?react";
-import Logo from "../../assets/icons/checkmate-icon.svg?react";
-import Background from "../../assets/Images/background-grid.svg?react";
+import { setNewPassword } from "../../Features/Auth/authSlice.js";
+import { createToast } from "../../Utils/toastUtils.jsx";
+import { newOrChangedCredentials } from "../../Validation/validation.js";
+import Check from "@/Components/v1/Check/Check.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import IconBox from "@/Components/v1/IconBox/index.jsx";
+import Logo from "@/assets/icons/checkmate-icon.svg?react";
+import Background from "@/assets/Images/background-grid.svg?react";
+import Icon from "@/Components/v1/Icon";
 import "./index.css";
-import { useValidatePassword } from "./hooks/useValidatePassword";
+import { useValidatePassword } from "./hooks/useValidatePassword.jsx";
 import { Trans, useTranslation } from "react-i18next";
 
 const SetNewPassword = () => {
@@ -140,7 +140,7 @@ const SetNewPassword = () => {
 								svgHeight={24}
 								mb={theme.spacing(4)}
 							>
-								<LockIcon alt={t("auth.forgotPassword.imageAlts.lock")} />
+								<Icon name="Lock" />
 							</IconBox>
 						</Stack>
 						<Typography component="h1">{t("auth.forgotPassword.heading")}</Typography>

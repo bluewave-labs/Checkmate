@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Box, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
-import Dialog from "../../../../Components/Dialog";
+import Icon from "@/Components/v1/Icon";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 import PropTypes from "prop-types";
 
 const MonitorActionButtons = ({ monitor, isBusy, handlePause, handleRemove }) => {
@@ -36,12 +35,18 @@ const MonitorActionButtons = ({ monitor, isBusy, handlePause, handleRemove }) =>
 			>
 				{monitor?.isActive ? (
 					<>
-						<PauseCircleOutlineIcon />
+						<Icon
+							name="PauseCircle"
+							size={20}
+						/>
 						{t("pause")}
 					</>
 				) : (
 					<>
-						<PlayCircleOutlineRoundedIcon />
+						<Icon
+							name="PlayCircle"
+							size={20}
+						/>
 						{t("resume")}
 					</>
 				)}

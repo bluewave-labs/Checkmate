@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
-import { networkService } from "../../../../main";
+import { networkService } from "../../../../main.jsx";
 import { useSelector } from "react-redux";
-import { createToast } from "../../../../Utils/toastUtils";
+import { createToast } from "../../../../Utils/toastUtils.jsx";
 import { useTheme } from "@emotion/react";
-import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils";
+import { useMonitorUtils } from "../../../../Hooks/useMonitorUtils.js";
 
 const useStatusPageFetch = (isCreate = false, url) => {
 	const [isLoading, setIsLoading] = useState(true);

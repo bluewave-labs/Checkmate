@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { infrastructureMonitorValidation } from "../../../../Validation/validation";
-import { createToast } from "../../../../Utils/toastUtils";
+import { infrastructureMonitorValidation } from "../../../../Validation/validation.js";
+import { createToast } from "../../../../Utils/toastUtils.jsx";
 const useValidateInfrastructureForm = () => {
 	const [errors, setErrors] = useState({});
 

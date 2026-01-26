@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import DataTable from "../../../../../Components/Table";
+import DataTable from "@/Components/v1/Table/index.jsx";
 
 // Utils
 import { useTranslation } from "react-i18next";

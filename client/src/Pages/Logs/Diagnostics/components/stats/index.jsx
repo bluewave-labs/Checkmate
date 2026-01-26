@@ -7,8 +7,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
-import { getHumanReadableDuration } from "../../../../../Utils/timeUtils";
-import { formatBytes } from "../../utils/utils";
+import { getHumanReadableDuration } from "../../../../../Utils/timeUtilsLegacy.js";
+import { formatBytes } from "../../utils/utils.js";
 import { useTranslation } from "react-i18next";
 
 const StatsCard = ({ title, value, unit = "", isLoading }) => {

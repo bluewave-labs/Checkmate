@@ -1,1 +1,5 @@
+.idea
 .vscode
+.VSCodeCounter
+*.sh
+mongo

@@ -1,19 +1,18 @@
 // Components
 import { Box, Stack } from "@mui/material";
-import DataTable from "../../../../../Components/Table";
-import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
-import Host from "../../../../../Components/Host";
-import { StatusLabel } from "../../../../../Components/Label";
-import BarChart from "../../../../../Components/Charts/BarChart";
-import ActionsMenu from "../../../../../Components/ActionsMenu";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import Icon from "@/Components/v1/Icon";
+import Host from "@/Components/v1/Host/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
+import BarChart from "@/Components/v1/Charts/BarChart/index.jsx";
+import ActionsMenu from "@/Components/v1/ActionsMenu/index.jsx";
 
-import LoadingSpinner from "../LoadingSpinner";
-import TableSkeleton from "../../../../../Components/Table/skeleton";
+import LoadingSpinner from "../LoadingSpinner/index.jsx";
+import TableSkeleton from "@/Components/v1/Table/skeleton.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils.js";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -24,13 +23,13 @@ import { useTranslation } from "react-i18next";
  * @param {boolean} props.isAdmin - Whether the current user has admin privileges
  * @param {boolean} props.isLoading - Loading state of the table
  * @param {Array<{
- *   _id: string,
+ *   id: string,
  *   url: string,
  *   title: string,
  *   percentage: number,
  *   percentageColor: string,
  *   monitor: {
- *     _id: string,
+ *     id: string,
  *     type: string,
  *     checks: Array
  *   }
@@ -92,16 +91,22 @@ const UptimeDataTable = ({
 						}}
 					>
 						{sort?.order === "asc" ? (
-							<ArrowUpwardRoundedIcon />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</Stack>
 				</Stack>
 			),
 			render: (row) => (
 				<Host
-					key={row._id}
+					key={row.id}
 					url={row.url}
 					title={row.name}
 					percentageColor={row.percentageColor}
@@ -128,9 +133,15 @@ const UptimeDataTable = ({
 						}}
 					>
 						{sort?.order === "asc" ? (
-							<ArrowUpwardRoundedIcon fontSize="18px" />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon fontSize="18px" />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</Stack>
 				</Stack>
@@ -200,7 +211,7 @@ const UptimeDataTable = ({
 						},
 					},
 					onRowClick: (row) => {
-						navigate(`/uptime/${row._id}`);
+						navigate(`/uptime/${row.id}`);
 					},
 					emptyView: "No monitors found",
 				}}

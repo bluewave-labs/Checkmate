@@ -1,10 +1,10 @@
-import ChartBox from "../../../../../Components/Charts/ChartBox";
-import PerformanceIcon from "../../../../../assets/icons/performance-report.svg?react";
-import PieChart from "../Charts/PieChart";
+import ChartBox from "@/Components/v1/Charts/ChartBox/index.jsx";
+import Icon from "@/Components/v1/Icon";
+import PieChart from "../Charts/PieChart.jsx";
 import { Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import PieChartLegend from "../Charts/PieChartLegend";
-import SkeletonLayout from "./skeleton";
+import PieChartLegend from "../Charts/PieChartLegend.jsx";
+import SkeletonLayout from "./skeleton.jsx";
 import { useTranslation } from "react-i18next";
 
 const PerformanceReport = ({ shouldRender, audits }) => {
@@ -17,7 +17,12 @@ const PerformanceReport = ({ shouldRender, audits }) => {
 
 	return (
 		<ChartBox
-			icon={<PerformanceIcon />}
+			icon={
+				<Icon
+					name="Layers"
+					size={20}
+				/>
+			}
 			header="Performance report"
 			Legend={<PieChartLegend audits={audits} />}
 			borderRadiusRight={16}

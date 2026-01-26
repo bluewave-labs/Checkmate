@@ -1,4 +1,4 @@
-import { useCreateMonitor, useUpdateMonitor } from "../../../../Hooks/monitorHooks";
+import { useCreateMonitor, useUpdateMonitor } from "../../../../Hooks/monitorHooks.js";
 const useInfrastructureSubmit = () => {
 	const [createMonitor, isCreating] = useCreateMonitor();
 	const [updateMonitor, isUpdating] = useUpdateMonitor();
@@ -26,11 +26,11 @@ const useInfrastructureSubmit = () => {
 			...(infrastructureMonitor.disk
 				? { usage_disk: infrastructureMonitor.usage_disk }
 				: {}),
-			temperature: infrastructureMonitor.temperature,
 			...(infrastructureMonitor.temperature
 				? { usage_temperature: infrastructureMonitor.usage_temperature }
 				: {}),
 			secret: infrastructureMonitor.secret,
+			selectedDisks: infrastructureMonitor.selectedDisks,
 		};
 		return form;
 	};
@@ -49,6 +49,7 @@ const useInfrastructureSubmit = () => {
 			usage_disk,
 			temperature,
 			usage_temperature,
+			selectedDisks,
 			...rest
 		} = form;
 
@@ -60,11 +61,12 @@ const useInfrastructureSubmit = () => {
 		};
 
 		const finalForm = {
-			...(isCreate ? {} : { _id: monitorId }),
+			...(isCreate ? {} : { id: monitorId }),
 			...rest,
 			description: form.name,
 			type: "hardware",
 			notifications: infrastructureMonitor.notifications,
+			selectedDisks,
 			thresholds,
 		};
 		// Handle create or update

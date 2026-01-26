@@ -1,7 +1,7 @@
 import { Stack, Box, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import LegendBox from "../../../../../Components/Charts/LegendBox";
-import SpeedometerIcon from "../../../../../assets/icons/speedometer-icon.svg?react";
+import LegendBox from "@/Components/v1/Charts/LegendBox/index.jsx";
+import Icon from "@/Components/v1/Icon";
 import PropTypes from "prop-types";
 
 const PieChartLegend = ({ audits }) => {
@@ -9,7 +9,12 @@ const PieChartLegend = ({ audits }) => {
 
 	return (
 		<LegendBox
-			icon={<SpeedometerIcon />}
+			icon={
+				<Icon
+					name="Gauge"
+					size={20}
+				/>
+			}
 			header="Performance metrics"
 			sx={{ flex: 1 }}
 		>

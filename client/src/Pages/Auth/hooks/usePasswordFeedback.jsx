@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { newOrChangedCredentials } from "../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../Validation/validation.js";
 
 const usePasswordFeedback = () => {
 	const [feedback, setFeedback] = useState({});

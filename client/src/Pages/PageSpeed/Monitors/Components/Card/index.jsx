@@ -1,17 +1,16 @@
 import PropTypes from "prop-types";
-// import PageSpeedIcon from "../../../../assets/icons/page-speed.svg?react";
-import PageSpeedIcon from "../../../../../assets/icons/page-speed.svg?react";
-import { StatusLabel } from "../../../../../Components/Label";
+import Icon from "@/Components/v1/Icon";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { useSelector } from "react-redux";
-import { formatDateWithTz, formatDurationSplit } from "../../../../../Utils/timeUtils";
-import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
+import { formatDateWithTz, formatDurationSplit } from "@/Utils/timeUtilsLegacy.js";
+import { useMonitorUtils } from "@/Hooks/useMonitorUtils.js";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import IconBox from "../../../../../Components/IconBox";
+import IconBox from "@/Components/v1/IconBox/index.jsx";
 /**
  * CustomToolTip displays a tooltip with formatted date and score information.
  * @param {Object} props
@@ -221,7 +220,7 @@ const Card = ({ monitor }) => {
 			<Box
 				position="relative"
 				p={theme.spacing(8)}
-				onClick={() => navigate(`/pagespeed/${monitor._id}`)}
+				onClick={() => navigate(`/pagespeed/${monitor.id}`)}
 				border={1}
 				borderColor={theme.palette.primary.lowContrast}
 				borderRadius={theme.shape.borderRadius}
@@ -241,7 +240,10 @@ const Card = ({ monitor }) => {
 				}}
 			>
 				<IconBox>
-					<PageSpeedIcon />
+					<Icon
+						name="Gauge"
+						size={20}
+					/>
 				</IconBox>
 				<Typography
 					component="h2"

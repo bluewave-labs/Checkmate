@@ -5,8 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
-		"build-dev": "vite build --mode development",
+		"build": "tsc -b && vite build",
+		"build-dev": "tsc -b && vite build --mode development",
 		"lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"format": "prettier --write .",
@@ -16,7 +16,7 @@
 		"@emotion/react": "^11.13.3",
 		"@emotion/styled": "^11.13.0",
 		"@hello-pangea/dnd": "^18.0.0",
-		"@mui/icons-material": "6.4.11",
+		"@hookform/resolvers": "5.2.2",
 		"@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
 		"@mui/material": "6.4.11",
 		"@mui/x-charts": "^7.5.1",
@@ -26,11 +26,15 @@
 		"dayjs": "1.11.13",
 		"flag-icons": "7.3.2",
 		"html2canvas": "^1.4.1",
+		"human-interval": "2.0.1",
 		"i18next": "25.4.2",
 		"joi": "17.13.3",
+		"lucide-react": "^0.562.0",
 		"mui-color-input": "^6.0.0",
+		"pretty-ms": "^9.3.0",
 		"react": "18.3.1",
 		"react-dom": "^18.2.0",
+		"react-hook-form": "7.63.0",
 		"react-i18next": "^15.4.0",
 		"react-icons": "5.5.0",
 		"react-redux": "9.2.0",
@@ -39,17 +43,12 @@
 		"react-toastify": "^10.0.5",
 		"recharts": "2.15.2",
 		"redux-persist": "6.0.0",
-		"vite-plugin-svgr": "^4.2.0"
-	},
-	"unusedDepencies": {
-		"@solana/wallet-adapter-base": "0.9.25",
-		"@solana/wallet-adapter-material-ui": "0.16.35",
-		"@solana/wallet-adapter-react": "0.15.37",
-		"@solana/wallet-adapter-react-ui": "0.9.37",
-		"@solana/wallet-adapter-wallets": "0.19.34",
-		"@solana/web3.js": "1.98.0"
+		"swr": "^2.3.6",
+		"vite-plugin-svgr": "^4.2.0",
+		"zod": "4.1.11"
 	},
 	"devDependencies": {
+		"@types/node": "24.5.2",
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
 		"@vitejs/plugin-react": "^4.2.1",
@@ -58,6 +57,7 @@
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
 		"prettier": "^3.3.3",
+		"typescript": "5.9.3",
 		"vite": "6.3.6"
 	}
 }

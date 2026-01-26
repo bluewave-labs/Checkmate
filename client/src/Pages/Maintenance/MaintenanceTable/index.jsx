@@ -1,15 +1,14 @@
 import PropTypes from "prop-types";
 import { Box } from "@mui/material";
-import DataTable from "../../../Components/Table";
-import Pagination from "../../../Components/Table/TablePagination";
-import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
-import ActionsMenu from "./ActionsMenu";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
+import Icon from "@/Components/v1/Icon";
+import ActionsMenu from "./ActionsMenu/index.jsx";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { formatDurationRounded } from "../../../Utils/timeUtils";
-import { StatusLabel } from "../../../Components/Label";
-import { setRowsPerPage } from "../../../Features/UI/uiSlice";
+import { formatDurationRounded } from "../../../Utils/timeUtilsLegacy.js";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
+import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
@@ -68,9 +67,15 @@ const MaintenanceTable = ({
 						}}
 					>
 						{sort.order === "asc" ? (
-							<ArrowUpwardRoundedIcon />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</span>
 				</Box>
@@ -89,9 +94,15 @@ const MaintenanceTable = ({
 						}}
 					>
 						{sort.order === "asc" ? (
-							<ArrowUpwardRoundedIcon />
+							<Icon
+								name="ArrowUp"
+								size={18}
+							/>
 						) : (
-							<ArrowDownwardRoundedIcon />
+							<Icon
+								name="ArrowDown"
+								size={18}
+							/>
 						)}
 					</span>
 				</Box>
@@ -192,7 +203,7 @@ const MaintenanceTable = ({
 						},
 					},
 					onRowClick: (row) => {
-						navigate(`/maintenance/create/${row._id}`);
+						navigate(`/maintenance/create/${row.id}`);
 					},
 				}}
 				headers={headers}

@@ -1,12 +1,12 @@
 // Components
 import { TabContext } from "@mui/lab";
 import { Tab } from "@mui/material";
-import Settings from "./Settings";
-import Content from "./Content";
+import Settings from "./Settings.jsx";
+import Content from "./Content.jsx";
 
 // Utils
 import PropTypes from "prop-types";
-import CustomTabList from "../../../../../Components/Tab";
+import CustomTabList from "@/Components/v1/Tab/index.jsx";
 
 const Tabs = ({
 	isCreate,

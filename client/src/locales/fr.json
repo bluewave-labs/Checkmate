@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": ""
+		"role": "",
+		"changeTeamPassword": {
+			"changePasswordMenu": "",
+			"title": "",
+			"description": "",
+			"success": ""
+		}
 	},
 	"monitorState": {
 		"paused": "Pause",
@@ -487,7 +493,8 @@
 		"ping": "Entrez l'adresse IP ou le nom d'hôte à tester (par exemple, 192.168.1.100 ou exemple.fr) et ajoutez un nom familier qui apparaîtra sur le tableau de bord.",
 		"docker": "Entrer l'ID Docker du container. Les identifiants Docker doivent être les 64 caractères de l'ID Docker. Vous pouvez utiliser la commande docker inspect <short_id> pour avoir l'ID complet.",
 		"port": "Entrez l'URL ou l'adresse IP du serveur, le numéro de port et un nom d'affichage familier qui apparaîtra sur le tableau de bord.",
-		"game": ""
+		"game": "",
+		"https": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1096,7 +1103,11 @@
 		"incidentConfigDescription": "",
 		"incidentConfigStatusWindowLabel": "",
 		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": ""
+		"incidentConfigTitle": "",
+		"incidentConfigDescriptionV2": "",
+		"incidentConfigStatusCheckNumber": "",
+		"intervalTitle": "",
+		"intervalDescription": ""
 	},
 	"dataRate": "",
 	"dataReceived": "",
@@ -1118,5 +1129,12 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "Sélection des disques",
+			"disk_selection_info": "Aucun disque détecté pour le moment.",
+			"disk_selection_description": "Sélectionnez les disques spécifiques que vous souhaitez surveiller."
+		}
+	}
 }

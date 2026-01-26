@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
-import StatusBoxes from "../../../../../Components/StatusBoxes";
-import StatBox from "../../../../../Components/StatBox";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 
 function formatNumber(num) {
 	return num != null ? num.toLocaleString() : "0";

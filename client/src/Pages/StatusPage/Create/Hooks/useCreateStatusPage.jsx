@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { networkService } from "../../../../main";
-import { createToast } from "../../../../Utils/toastUtils";
+import { networkService } from "../../../../main.jsx";
+import { createToast } from "../../../../Utils/toastUtils.jsx";
 
-const useCreateStatusPage = (isCreate, url) => {
+const useCreateStatusPage = (isCreate) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
-	const createStatusPage = async ({ form }) => {
+	const createStatusPage = async ({ form, id }) => {
+		console.log(id);
 		setIsLoading(true);
 		try {
-			await networkService.createStatusPage({ form, isCreate, url });
+			await networkService.createStatusPage({ form, isCreate, id });
 			return true;
 		} catch (error) {
 			setNetworkError(true);

@@ -1,9 +1,9 @@
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
-import FilterHeader from "../../../../../Components/FilterHeader";
+import FilterHeader from "@/Components/v1/FilterHeader/index.jsx";
 import { useMemo } from "react";
 import { Box, Button } from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
+import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -68,7 +68,12 @@ const Filter = ({
 				color={theme.palette.primary.contrastText}
 				onClick={handleReset}
 				variant="contained"
-				endIcon={<ClearIcon />}
+				endIcon={
+					<Icon
+						name="X"
+						size={18}
+					/>
+				}
 				sx={{
 					visibility: isFilterActive ? "visible" : "hidden",
 				}}

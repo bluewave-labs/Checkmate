@@ -1,4 +1,4 @@
-import { networkService } from "../../../../main";
+import { networkService } from "../../../../main.jsx";
 import dayjs from "dayjs";
 import {
 	MS_PER_SECOND,
@@ -6,7 +6,7 @@ import {
 	MS_PER_HOUR,
 	MS_PER_DAY,
 	MS_PER_WEEK,
-} from "../../../../Utils/timeUtils";
+} from "../../../../Utils/timeUtilsLegacy.js";
 const useMaintenanceData = () => {
 	const REVERSE_REPEAT_LOOKUP = {
 		0: "none",
@@ -41,7 +41,7 @@ const useMaintenanceData = () => {
 			limit: null,
 			types: ["http", "ping", "pagespeed", "port"],
 		});
-		const fetchedMonitors = response.data.data.monitors;
+		const fetchedMonitors = response.data.data;
 		return fetchedMonitors;
 	};
 
@@ -55,7 +55,9 @@ const useMaintenanceData = () => {
 		const endTime = dayjs(end);
 		const durationInMs = endTime.diff(startTime, "milliseconds").toString();
 		const { duration, durationUnit } = getDurationAndUnit(durationInMs);
-		const monitor = monitorList.find((monitor) => monitor._id === monitorId);
+		const monitor = monitorList.find(
+			(monitor) => (monitor._id ?? monitor.id) === monitorId
+		);
 		const maintenanceWindowInformation = {
 			name,
 			repeat: REVERSE_REPEAT_LOOKUP[repeat],

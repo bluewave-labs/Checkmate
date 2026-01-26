@@ -1,11 +1,11 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../Components/Breadcrumbs";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 import Button from "@mui/material/Button";
-import DataTable from "../../Components/Table";
-import ActionMenu from "./components/ActionMenu";
-import PageStateWrapper from "../../Components/PageStateWrapper";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import ActionMenu from "./components/ActionMenu.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
 
 // Utils
 import { useState } from "react";
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import {
 	useGetNotificationsByTeamId,
 	useDeleteNotification,
-} from "../../Hooks/useNotifications";
+} from "../../Hooks/useNotifications.js";
 import { useTranslation } from "react-i18next";
 
 const Notifications = () => {
@@ -100,7 +100,7 @@ const Notifications = () => {
 					<Typography variant="h1">{t("notifications.createTitle")}</Typography>
 					<DataTable
 						config={{
-							onRowClick: (row) => navigate(`/notifications/${row._id}`),
+							onRowClick: (row) => navigate(`/notifications/${row.id}`),
 							rowSX: {
 								cursor: "pointer",
 								"&:hover td": {

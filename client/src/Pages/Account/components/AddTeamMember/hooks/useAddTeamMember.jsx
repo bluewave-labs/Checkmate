@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { newOrChangedCredentials } from "../../../../../Validation/validation";
+import { newOrChangedCredentials } from "../../../../../Validation/validation.js";
 import { useTranslation } from "react-i18next";
 const useAddTeamMember = () => {
 	const { t } = useTranslation();

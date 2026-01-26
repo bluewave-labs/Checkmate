@@ -2,10 +2,21 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: client-ingress
+  name: checkmate-client-ingress
+  {{- if .Values.client.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    {{- range $key, $value := .Values.client.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
+  ingressClassName: {{ .Values.client.ingress.className }}
+  {{- if .Values.client.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.client.ingress.host }}
+      secretName: {{ default (printf "%s-client-tls" .Release.Name) .Values.client.ingress.tls.secretName }}
+  {{- end }}
   rules:
     - host: {{ .Values.client.ingress.host }}
       http:
@@ -14,7 +25,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: client
+                name: checkmate-client
                 port:
                   number: {{ .Values.client.port }}
 {{- end }}

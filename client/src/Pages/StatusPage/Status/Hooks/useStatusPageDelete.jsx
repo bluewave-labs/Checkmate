@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { networkService } from "../../../../Utils/NetworkService";
-import { createToast } from "../../../../Utils/toastUtils";
+import { networkService } from "../../../../Utils/NetworkService.js";
+import { createToast } from "../../../../Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 
 /**

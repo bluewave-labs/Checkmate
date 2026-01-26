@@ -1,4 +1,4 @@
-import Check from "../../../Components/Check/Check";
+import Check from "@/Components/v1/Check/Check.jsx";
 import Stack from "@mui/material/Stack";
 import { Tooltip, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -75,7 +75,7 @@ const PasswordTooltip = ({ feedback, form, children }) => {
 			slotProps={{
 				tooltip: {
 					sx: {
-						backgroundColor: theme.palette.tertiary.background,
+						backgroundColor: theme.palette.tertiary.main,
 						border: `0.5px solid ${theme.palette.primary.lowContrast}90`,
 						borderRadius: theme.spacing(4),
 						color: theme.palette.primary.contrastText,
@@ -88,7 +88,7 @@ const PasswordTooltip = ({ feedback, form, children }) => {
 				},
 				arrow: {
 					sx: {
-						color: theme.palette.tertiary.background,
+						color: theme.palette.tertiary.main,
 					},
 				},
 			}}

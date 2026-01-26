@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { networkService } from "../main";
+import { networkService } from "../main.jsx";
 import { useTranslation } from "react-i18next";
 
 const CLIENT_HOST = import.meta.env.VITE_APP_CLIENT_HOST;

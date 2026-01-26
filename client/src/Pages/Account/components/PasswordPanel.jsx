@@ -2,14 +2,14 @@ import TabPanel from "@mui/lab/TabPanel";
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Typography, Button } from "@mui/material";
-import { PasswordEndAdornment } from "../../../Components/Inputs/TextInput/Adornments";
-import TextInput from "../../../Components/Inputs/TextInput";
-import { newOrChangedCredentials } from "../../../Validation/validation";
-import Alert from "../../../Components/Alert";
-import { update } from "../../../Features/Auth/authSlice";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { newOrChangedCredentials } from "../../../Validation/validation.js";
+import Alert from "@/Components/v1/Alert/index.jsx";
+import { update } from "../../../Features/Auth/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import { createToast } from "../../../Utils/toastUtils";
-import { getTouchedFieldErrors } from "../../../Validation/error";
+import { createToast } from "../../../Utils/toastUtils.jsx";
+import { getTouchedFieldErrors } from "../../../Validation/error.js";
 import { useTranslation } from "react-i18next";
 
 const defaultPasswordsState = {
@@ -167,7 +167,11 @@ const PasswordPanel = () => {
 						value={localData.password}
 						onChange={handleChange}
 						error={errors[idToName["edit-current-password"]] ? true : false}
-						helperText={errors[idToName["edit-current-password"]]}
+						helperText={
+							errors[idToName["edit-current-password"]]
+								? t(errors[idToName["edit-current-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -193,7 +197,11 @@ const PasswordPanel = () => {
 						value={localData.newPassword}
 						onChange={handleChange}
 						error={errors[idToName["edit-new-password"]] ? true : false}
-						helperText={errors[idToName["edit-new-password"]]}
+						helperText={
+							errors[idToName["edit-new-password"]]
+								? t(errors[idToName["edit-new-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>
@@ -219,7 +227,11 @@ const PasswordPanel = () => {
 						value={localData.confirm}
 						onChange={handleChange}
 						error={errors[idToName["edit-confirm-password"]] ? true : false}
-						helperText={errors[idToName["edit-confirm-password"]]}
+						helperText={
+							errors[idToName["edit-confirm-password"]]
+								? t(errors[idToName["edit-confirm-password"]])
+								: ""
+						}
 						endAdornment={<PasswordEndAdornment />}
 						flex={1}
 					/>

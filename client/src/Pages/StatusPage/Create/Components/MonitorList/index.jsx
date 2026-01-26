@@ -1,7 +1,6 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Icon from "@/Components/v1/Icon";
 
 // Utils
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -28,10 +27,15 @@ const MonitorListItem = ({
 			justifyContent={"start"}
 			border={`1px solid ${theme.palette.primary.lowContrast}`}
 		>
-			<ReorderRoundedIcon />
+			<Icon
+				name="GripVertical"
+				size={20}
+			/>
 			<Typography>{monitor.name}</Typography>
-			<DeleteIcon
-				sx={{ marginLeft: "auto" }}
+			<Icon
+				name="Trash2"
+				size={20}
+				style={{ marginLeft: "auto", cursor: "pointer" }}
 				onClick={() => {
 					onDelete(monitor);
 				}}
@@ -43,7 +47,7 @@ const MonitorListItem = ({
 const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 	const onDelete = (monitorToDelete) => {
 		const newMonitors = selectedMonitors.filter(
-			(monitor) => monitor._id !== monitorToDelete._id
+			(monitor) => monitor.id !== monitorToDelete.id
 		);
 		setSelectedMonitors(newMonitors);
 	};
@@ -80,8 +84,8 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 					>
 						{selectedMonitors?.map((monitor, index) => (
 							<Draggable
-								key={monitor._id}
-								draggableId={monitor._id}
+								key={monitor.id}
+								draggableId={monitor.id}
 								index={index}
 							>
 								{(provided, snapshot) => (

@@ -1,37 +1,51 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Breadcrumbs from "../../Components/Breadcrumbs";
-import SettingsTimeZone from "./SettingsTimeZone";
-import SettingsUI from "./SettingsUI";
-import SettingsURL from "./SettingsURL";
-import SettingsPagespeed from "./SettingsPagespeed";
-import SettingsDemoMonitors from "./SettingsDemoMonitors";
-import SettingsAbout from "./SettingsAbout";
-import SettingsEmail from "./SettingsEmail";
-import SettingsGlobalThresholds from "./SettingsGlobalThresholds";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import SettingsTimeZone from "./SettingsTimeZone.jsx";
+import SettingsUI from "./SettingsUI.jsx";
+import SettingsURL from "./SettingsURL.jsx";
+import SettingsPagespeed from "./SettingsPagespeed.jsx";
+import SettingsDemoMonitors from "./SettingsDemoMonitors.jsx";
+import SettingsAbout from "./SettingsAbout.jsx";
+import SettingsEmail from "./SettingsEmail.jsx";
+import SettingsGlobalThresholds from "./SettingsGlobalThresholds.jsx";
+import SettingsExport from "./SettingsExport.jsx";
 import Button from "@mui/material/Button";
 // Utils
-import { settingsValidation } from "../../Validation/validation";
+import { settingsValidation } from "@/Validation/validation.js";
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { setTimezone, setMode, setLanguage, setShowURL } from "../../Features/UI/uiSlice";
-import SettingsStats from "./SettingsStats";
+import {
+	setTimezone,
+	setMode,
+	setLanguage,
+	setShowURL,
+	setChartType,
+} from "@/Features/UI/uiSlice.js";
+import SettingsStats from "./SettingsStats.jsx";
 
-import { useFetchSettings, useSaveSettings } from "../../Hooks/settingsHooks";
-import { useIsAdmin } from "../../Hooks/useIsAdmin";
+import { useFetchSettings, useSaveSettings } from "@/Hooks/settingsHooks.js";
+import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import {
 	useAddDemoMonitors,
 	useDeleteAllMonitors,
 	useDeleteMonitorStats,
-} from "../../Hooks/monitorHooks";
+	useFetchJson,
+} from "@/Hooks/monitorHooks.js";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
 const Settings = () => {
 	// Redux state
-	const { mode, language, timezone, showURL } = useSelector((state) => state.ui);
+	const {
+		mode,
+		language = "en",
+		timezone,
+		showURL,
+		chartType = "histogram",
+	} = useSelector((state) => state.ui);
 
 	// Local state
 	const [settingsData, setSettingsData] = useState({});
@@ -61,6 +75,7 @@ const Settings = () => {
 	});
 	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
 	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
+	const [fetchJson, isFetchingJson] = useFetchJson();
 
 	// Setup
 	const isAdmin = useIsAdmin();
@@ -72,11 +87,6 @@ const Settings = () => {
 	const handleChange = async (e) => {
 		const { name, value, checked } = e.target;
 
-		// Special case for showURL until handled properly in the backend
-		if (name === "showURL") {
-			dispatch(setShowURL(value));
-			return;
-		}
 		let newValue;
 		if (
 			name === "systemEmailIgnoreTLS" ||
@@ -87,6 +97,12 @@ const Settings = () => {
 		) {
 			newValue = checked;
 		}
+
+		// Ensure showURL is a proper boolean
+		if (name === "showURL") {
+			newValue = value === true || value === "true";
+		}
+
 		// Build next state early
 		const newSettingsData = {
 			...settingsData,
@@ -108,6 +124,11 @@ const Settings = () => {
 			return;
 		}
 
+		if (name === "chartType") {
+			dispatch(setChartType(value));
+			return;
+		}
+
 		if (name === "deleteStats") {
 			await deleteMonitorStats();
 			return;
@@ -123,38 +144,72 @@ const Settings = () => {
 			return;
 		}
 
-		// Validate
-		const { error } = settingsValidation.validate(newSettingsData.settings, {
-			abortEarly: false,
-		});
-		if (!error || error.details.length === 0) {
-			setErrors({});
-		} else {
-			const newErrors = {};
-			error.details.forEach((err) => {
-				newErrors[err.path[0]] = err.message;
+		if (name === "export") {
+			const json = await fetchJson();
+			if (!json || json.length === 0) {
+				return;
+			}
+
+			const blob = new Blob([JSON.stringify(json, null, 2)], {
+				type: "application/json",
 			});
-			setErrors(newErrors);
+			const url = URL.createObjectURL(blob);
+
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = "monitors.json";
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(url);
+			return;
 		}
 
 		setSettingsData(newSettingsData);
+
+		// Update Redux immediately for UI feedback
+		if (name === "showURL") {
+			dispatch(setShowURL(newValue));
+		}
 	};
 
 	const handleSave = () => {
-		const { error } = settingsValidation.validate(settingsData.settings, {
+		// Validate]
+
+		const toSubmit = {
+			checkTTL: settingsData.settings.checkTTL,
+			pagespeedApiKey: settingsData.settings.pagespeedApiKey,
+			language: settingsData.settings.language,
+			timezone: settingsData.settings.timezone,
+			systemEmailHost: settingsData.settings.systemEmailHost,
+			systemEmailPort: settingsData.settings.systemEmailPort,
+			systemEmailSecure: settingsData.settings.systemEmailSecure,
+			systemEmailPool: settingsData.settings.systemEmailPool,
+			systemEmailAddress: settingsData.settings.systemEmailAddress,
+			systemEmailPassword: settingsData.settings.systemEmailPassword,
+			systemEmailUser: settingsData.settings.systemEmailUser,
+			systemEmailConnectionHost: settingsData.settings.systemEmailConnectionHost,
+			systemEmailTLSServername: settingsData.settings.systemEmailTLSServername,
+			systemEmailIgnoreTLS: settingsData.settings.systemEmailIgnoreTLS,
+			systemEmailRequireTLS: settingsData.settings.systemEmailRequireTLS,
+			systemEmailRejectUnauthorized: settingsData.settings.systemEmailRejectUnauthorized,
+			showURL: settingsData.settings.showURL,
+			globalThresholds: settingsData.settings.globalThresholds,
+		};
+
+		const { error } = settingsValidation.validate(toSubmit, {
 			abortEarly: false,
 		});
 		if (!error || error.details.length === 0) {
 			setErrors({});
+			saveSettings(toSubmit);
 		} else {
 			const newErrors = {};
 			error.details.forEach((err) => {
 				newErrors[err.path[0]] = err.message;
 			});
-
 			setErrors(newErrors);
 		}
-		saveSettings(settingsData?.settings);
 	};
 
 	return (
@@ -171,6 +226,7 @@ const Settings = () => {
 				handleChange={handleChange}
 				mode={mode}
 				language={language}
+				chartType={chartType}
 			/>
 			<SettingsPagespeed
 				isAdmin={isAdmin}
@@ -219,6 +275,12 @@ const Settings = () => {
 				setEmailPasswordHasBeenReset={setEmailPasswordHasBeenReset}
 			/>
 
+			<SettingsExport
+				isAdmin={isAdmin}
+				HEADER_SX={HEADING_SX}
+				handleChange={handleChange}
+				isLoading={isSettingsLoading || isSaving || isFetchingJson}
+			/>
 			<SettingsAbout />
 			<Stack
 				direction="row"

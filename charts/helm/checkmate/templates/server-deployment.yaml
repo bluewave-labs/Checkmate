@@ -1,17 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server
+  name: checkmate-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: server
+      app: checkmate-server
   template:
     metadata:
       labels:
-        app: server
+        app: checkmate-server
     spec:
+    {{- with .Values.server.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.server.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
       containers:
         - name: server
           image: {{ .Values.server.image }}
@@ -20,3 +28,10 @@ spec:
           envFrom:
             - secretRef:
                 name: checkmate-secrets
+          {{- with .Values.server.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
+          env:
+          - name: CLIENT_HOST
+            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"

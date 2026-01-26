@@ -9,8 +9,7 @@ import { CssBaseline, GlobalStyles } from "@mui/material";
 import { logger } from "./Utils/Logger"; // Import the logger
 import { networkService } from "./main";
 import { Routes } from "./Routes";
-import WalletProvider from "./Components/WalletProvider";
-import AppLayout from "./Components/Layouts/AppLayout";
+import AppLayout from "@/Components/v1/Layouts/AppLayout";
 
 function App() {
 	const mode = useSelector((state) => state.ui.mode);
@@ -23,17 +22,29 @@ function App() {
 		};
 	}, []);
 
-	return (
-		/* Extract Themeprovider, baseline and global styles to Styles */
-		<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
-			<WalletProvider>
-				<CssBaseline />
+	const theme = mode === "light" ? lightTheme : darkTheme;
 
-				<AppLayout>
-					<Routes />
-				</AppLayout>
-				<ToastContainer />
-			</WalletProvider>
+	return (
+		<ThemeProvider theme={theme}>
+			<CssBaseline />
+			<GlobalStyles
+				styles={{
+					body: {
+						backgroundColor: theme.palette.background.main,
+					},
+				}}
+			/>
+			<AppLayout>
+				<Routes />
+			</AppLayout>
+			<ToastContainer
+				newestOnTop={true}
+				theme={mode}
+				style={{
+					"--toastify-color-progress-light": "#7C8BA1",
+					"--toastify-color-progress-dark": "#7C8BA1",
+				}}
+			/>
 		</ThemeProvider>
 	);
 }

@@ -1,23 +1,23 @@
 // Components
 import { Stack, Button, Typography } from "@mui/material";
-import Tabs from "./Components/Tabs";
-import GenericFallback from "../../../Components/GenericFallback";
-import SkeletonLayout from "./Components/Skeleton";
-import Dialog from "../../../Components/Dialog";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
+import Tabs from "./Components/Tabs/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
+import SkeletonLayout from "./Components/Skeleton/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
 //Utils
 import { useTheme } from "@emotion/react";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { statusPageValidation } from "../../../Validation/validation";
-import { buildErrors } from "../../../Validation/error";
-import { useMonitorsFetch } from "./Hooks/useMonitorsFetch";
-import { useCreateStatusPage } from "./Hooks/useCreateStatusPage";
-import { createToast } from "../../../Utils/toastUtils";
+import { statusPageValidation } from "../../../Validation/validation.js";
+import { buildErrors } from "../../../Validation/error.js";
+import { useMonitorsFetch } from "./Hooks/useMonitorsFetch.jsx";
+import { useCreateStatusPage } from "./Hooks/useCreateStatusPage.jsx";
+import { createToast } from "../../../Utils/toastUtils.jsx";
 import { useNavigate } from "react-router-dom";
-import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch";
+import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch.jsx";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete";
+import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete.jsx";
 //Constants
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
@@ -54,15 +54,14 @@ const CreateStatusPage = () => {
 	//Utils
 	const theme = useTheme();
 	const [monitors, isLoading, networkError] = useMonitorsFetch();
-	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
+	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const [statusPage, statusPageMonitors, statusPageIsLoading, , fetchStatusPage] =
 		useStatusPageFetch(isCreate, url);
 	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
-	console.log(JSON.stringify(form, null, 2));
 	// Handlers
 	const handleFormChange = (e) => {
 		let { type, name, value, checked } = e.target;
@@ -144,12 +143,13 @@ const CreateStatusPage = () => {
 			...form,
 			logo: { type: form.logo?.type ?? null, size: form.logo?.size ?? null },
 		};
+
 		const { error } = statusPageValidation.validate(toSubmit, {
 			abortEarly: false,
 		});
 
 		if (typeof error === "undefined") {
-			const success = await createStatusPage({ form });
+			const success = await createStatusPage({ form, id: statusPage?.id });
 			if (success) {
 				createToast({
 					body: isCreate ? t("statusPage.createSuccess") : t("statusPage.updateSuccess"),
@@ -205,7 +205,7 @@ const CreateStatusPage = () => {
 				companyName: statusPage?.companyName,
 				isPublished: statusPage?.isPublished,
 				timezone: statusPage?.timezone,
-				monitors: statusPageMonitors.map((monitor) => monitor._id),
+				monitors: statusPageMonitors.map((monitor) => monitor.id),
 				color: statusPage?.color,
 				logo: newLogo,
 				showCharts: statusPage?.showCharts ?? true,

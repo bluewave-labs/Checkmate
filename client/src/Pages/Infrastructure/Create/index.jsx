@@ -1,18 +1,20 @@
 //Components
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import ConfigBox from "../../../Components/ConfigBox";
-import FieldWrapper from "../../../Components/Inputs/FieldWrapper";
-import Link from "../../../Components/Link";
-import Select from "../../../Components/Inputs/Select";
-import TextInput from "../../../Components/Inputs/TextInput";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import FieldWrapper from "@/Components/v1/Inputs/FieldWrapper/index.jsx";
+import Link from "@/Components/v1/Link/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import { Box, Stack, Typography, Button, ButtonGroup } from "@mui/material";
-import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
-import MonitorStatusHeader from "./Components/MonitorStatusHeader";
-import MonitorActionButtons from "./Components/MonitorActionButtons";
-import CustomAlertsSection from "./Components/CustomAlertsSection";
+import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import MonitorStatusHeader from "./Components/MonitorStatusHeader.jsx";
+import MonitorActionButtons from "./Components/MonitorActionButtons.jsx";
+import CustomAlertsSection from "./Components/CustomAlertsSection.jsx";
+import DiskSelection from "./Components/DiskSelection.jsx";
 // Utils
-import NotificationsConfig from "../../../Components/NotificationConfig";
-import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications.js";
+import { networkService } from "../../../Utils/NetworkService.js";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
@@ -20,12 +22,12 @@ import { useTranslation } from "react-i18next";
 import {
 	useDeleteMonitor,
 	useFetchGlobalSettings,
-	useFetchHardwareMonitorById,
+	useFetchMonitorById,
 	usePauseMonitor,
-} from "../../../Hooks/monitorHooks";
-import useInfrastructureMonitorForm from "./hooks/useInfrastructureMonitorForm";
-import useValidateInfrastructureForm from "./hooks/useValidateInfrastructureForm";
-import useInfrastructureSubmit from "./hooks/useInfrastructureSubmit";
+} from "@/Hooks/monitorHooks.js";
+import useInfrastructureMonitorForm from "./hooks/useInfrastructureMonitorForm.jsx";
+import useValidateInfrastructureForm from "./hooks/useValidateInfrastructureForm.jsx";
+import useInfrastructureSubmit from "./hooks/useInfrastructureSubmit.jsx";
 
 const CreateInfrastructureMonitor = () => {
 	const { monitorId } = useParams();
@@ -35,13 +37,16 @@ const CreateInfrastructureMonitor = () => {
 	const { t } = useTranslation();
 
 	// State
+	const [monitor, setMonitor] = useState(null);
 	const [https, setHttps] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [availableDisks, setAvailableDisks] = useState([]);
 
 	// Fetch monitor details if editing
-	const [monitor, isLoading] = useFetchHardwareMonitorById({
+	const [isLoading] = useFetchMonitorById({
 		monitorId,
-		updateTrigger,
+		setMonitor,
+		updateTrigger: true,
 	});
 	const [deleteMonitor, isDeleting] = useDeleteMonitor();
 	const [globalSettings, globalSettingsLoading] = useFetchGlobalSettings();
@@ -85,6 +90,31 @@ const CreateInfrastructureMonitor = () => {
 		} else if (monitor) {
 			setHttps(monitor.url.startsWith("https"));
 			initializeInfrastructureMonitorForUpdate(monitor);
+			const fetchLastCheck = async () => {
+				try {
+					const { stats } = monitor ?? {};
+					let latestCheck = stats?.aggregateData?.latestCheck;
+					let disks = latestCheck?.disk || [];
+
+					if (disks.length > 0) {
+						setAvailableDisks(disks);
+						return;
+					}
+
+					const response = await networkService.getChecksByMonitor({
+						monitorId,
+						dateRange: "all",
+						rowsPerPage: 1,
+						sortOrder: "desc",
+					});
+					disks = response?.data?.data?.checks?.[0]?.disk || [];
+					setAvailableDisks(disks);
+				} catch (error) {
+					setAvailableDisks([]);
+				}
+			};
+
+			fetchLastCheck();
 		}
 	}, [
 		isCreate,
@@ -99,7 +129,9 @@ const CreateInfrastructureMonitor = () => {
 	const onSubmit = async (event) => {
 		event.preventDefault();
 		const form = buildForm(infrastructureMonitor, https);
-		const error = validateForm(form);
+		// When editing, exclude URL from validation since it's disabled and can't be changed
+		const formToValidate = isCreate ? form : { ...form, url: monitor.url };
+		const error = validateForm(formToValidate);
 		if (error) {
 			return;
 		}
@@ -175,14 +207,14 @@ const CreateInfrastructureMonitor = () => {
 								<></>
 							)}
 						</Typography>
-						{!isCreate && (
+						{!isCreate && monitor && (
 							<MonitorStatusHeader
 								monitor={monitor}
 								infrastructureMonitor={infrastructureMonitor}
 							/>
 						)}
 					</Box>
-					{!isCreate && (
+					{!isCreate && monitor && (
 						<MonitorActionButtons
 							monitor={monitor}
 							isBusy={isBusy}
@@ -327,6 +359,17 @@ const CreateInfrastructureMonitor = () => {
 					infrastructureMonitor={infrastructureMonitor}
 					handleCheckboxChange={handleCheckboxChange}
 				/>
+
+				{monitorId && (
+					<DiskSelection
+						availableDisks={availableDisks}
+						selectedDisks={infrastructureMonitor.selectedDisks}
+						onChange={(newSelectedDisks) =>
+							onChangeForm("selectedDisks", newSelectedDisks)
+						}
+					/>
+				)}
+
 				<ConfigBox>
 					<Box>
 						<Typography

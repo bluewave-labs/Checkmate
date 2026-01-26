@@ -1,10 +1,10 @@
-import Background from "../../../assets/Images/background-grid.svg?react";
+import Background from "@/assets/Images/background-grid.svg?react";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import AuthHeader from "../components/AuthHeader";
+import AuthHeader from "./AuthHeader.jsx";
 import { useTheme } from "@mui/material/styles";
-import Logo from "../../../assets/icons/checkmate-icon.svg?react";
+import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import PropTypes from "prop-types";
 
 const AuthPageWrapper = ({ children, heading, welcome }) => {

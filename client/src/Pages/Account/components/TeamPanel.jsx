@@ -3,18 +3,18 @@ import TabPanel from "@mui/lab/TabPanel";
 import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import TextInput from "../../../Components/Inputs/TextInput";
-import { newOrChangedCredentials } from "../../../Validation/validation";
-import { networkService } from "../../../main";
-import { createToast } from "../../../Utils/toastUtils";
-import Select from "../../../Components/Inputs/Select";
-import { GenericDialog } from "../../../Components/Dialog/genericDialog";
-import AddTeamMember from "../components/AddTeamMember";
-import DataTable from "../../../Components/Table";
-import { useGetInviteToken } from "../../../Hooks/inviteHooks";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { newOrChangedCredentials } from "../../../Validation/validation.js";
+import { networkService } from "../../../main.jsx";
+import { createToast } from "../../../Utils/toastUtils.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
+import AddTeamMember from "./AddTeamMember/index.jsx";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import { useGetInviteToken } from "../../../Hooks/inviteHooks.js";
 import { useNavigate } from "react-router-dom";
-import { useIsSuperAdmin } from "../../../Hooks/useIsAdmin";
-import AddMemberMenu from "./AddMemberMenu";
+import { useIsSuperAdmin } from "@/Hooks/useIsAdmin.js";
+import AddMemberMenu from "./AddMemberMenu/index.jsx";
 /**
  * TeamPanel component manages the organization and team members,
  * providing functionalities like renaming the organization, managing team members,
@@ -104,7 +104,7 @@ const TeamPanel = () => {
 
 		team = team.map((member) => ({
 			...member,
-			id: member._id,
+			id: member.id,
 			role: member.role.map((role) => ROLE_MAP[role]).join(","),
 		}));
 		setData(team);
@@ -268,6 +268,7 @@ const TeamPanel = () => {
 							cursor: isSuperAdmin ? "pointer" : "default",
 						},
 						onRowClick: (row) => {
+							console.log(row);
 							if (isSuperAdmin) {
 								navigate(`/account/team/${row.id}`);
 							}

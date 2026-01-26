@@ -1,7 +1,7 @@
 // Components
 import { Stack } from "@mui/material";
-import InfraAreaChart from "./InfraAreaChart";
-import SkeletonLayout from "./skeleton";
+import InfraAreaChart from "./InfraAreaChart.jsx";
+import SkeletonLayout from "./skeleton.jsx";
 
 // Utils
 import {
@@ -9,9 +9,9 @@ import {
 	TzTick,
 	InfrastructureTooltip,
 	TemperatureTooltip,
-} from "../../../../../Components/Charts/Utils/chartUtils";
+} from "@/Components/v1/Charts/Utils/chartUtils.jsx";
 import { useTheme } from "@emotion/react";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 import { useTranslation } from "react-i18next";
 const AreaChartBoxes = ({ shouldRender, monitor, dateRange }) => {
 	const theme = useTheme();

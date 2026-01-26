@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { networkService } from "../main";
-import { createToast } from "../Utils/toastUtils";
+import { networkService } from "../main.jsx";
+import { createToast } from "../Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 
 const useFetchSettings = ({ setSettingsData, setIsApiKeySet, setIsEmailPasswordSet }) => {
@@ -42,11 +42,11 @@ const useSaveSettings = ({
 		setIsLoading(true);
 		try {
 			const settingsResponse = await networkService.updateAppSettings({ settings });
-			if (settings.checkTTL) {
-				await networkService.updateChecksTTL({
-					ttl: settings.checkTTL,
-				});
-			}
+			// if (settings.checkTTL) {
+			// 	await networkService.updateChecksTTL({
+			// 		ttl: settings.checkTTL,
+			// 	});
+			// }
 			setIsApiKeySet(settingsResponse.data.data.pagespeedKeySet);
 			setIsEmailPasswordSet(settingsResponse.data.data.emailPasswordSet);
 			if (settingsResponse.data.data.pagespeedKeySet === true) {
@@ -56,6 +56,7 @@ const useSaveSettings = ({
 				setEmailPasswordHasBeenReset(false);
 			}
 			setSettingsData(settingsResponse.data.data);
+
 			createToast({ body: t("settingsSuccessSaved") });
 		} catch (error) {
 			createToast({ body: t("settingsFailedToSave") });

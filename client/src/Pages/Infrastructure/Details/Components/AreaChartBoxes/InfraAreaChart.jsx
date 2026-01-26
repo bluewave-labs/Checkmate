@@ -1,10 +1,10 @@
 // Components
 import { Typography } from "@mui/material";
-import BaseContainer from "../BaseContainer";
-import AreaChart from "../../../../../Components/Charts/AreaChart";
+import BaseContainer from "../BaseContainer/index.jsx";
+import AreaChart from "@/Components/v1/Charts/AreaChart/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 const InfraAreaChart = ({ config }) => {
 	const theme = useTheme();
 	const { getDimensions } = useHardwareUtils();

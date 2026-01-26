@@ -1,6 +1,6 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Icon from "@/Components/v1/Icon";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
@@ -14,8 +14,10 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 			width="100%"
 		>
 			<Typography flexGrow={1}>{monitor.name}</Typography>
-			<DeleteIcon
-				sx={{ cursor: "pointer" }}
+			<Icon
+				name="Trash2"
+				size={20}
+				style={{ cursor: "pointer" }}
 				onClick={() => onDelete(monitor)}
 			/>
 		</Stack>
@@ -24,7 +26,7 @@ const MonitorListItem = ({ monitor, onDelete }) => {
 
 MonitorListItem.propTypes = {
 	monitor: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
+		id: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 	}).isRequired,
 	onDelete: PropTypes.func.isRequired,
@@ -33,7 +35,7 @@ MonitorListItem.propTypes = {
 const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 	const onDelete = (monitorToDelete) => {
 		const newMonitors = selectedMonitors.filter(
-			(monitor) => monitor._id !== monitorToDelete._id
+			(monitor) => monitor.id !== monitorToDelete.id
 		);
 		setSelectedMonitors(newMonitors);
 	};
@@ -47,7 +49,7 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 		>
 			{selectedMonitors?.map((monitor) => (
 				<MonitorListItem
-					key={monitor._id}
+					key={monitor.id}
 					monitor={monitor}
 					onDelete={onDelete}
 				/>
@@ -59,7 +61,7 @@ const MonitorList = ({ selectedMonitors, setSelectedMonitors }) => {
 MonitorList.propTypes = {
 	selectedMonitors: PropTypes.arrayOf(
 		PropTypes.shape({
-			_id: PropTypes.string.isRequired,
+			id: PropTypes.string.isRequired,
 			name: PropTypes.string.isRequired,
 		})
 	).isRequired,

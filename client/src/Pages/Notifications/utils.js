@@ -1,9 +1,10 @@
 export const NOTIFICATION_TYPES = [
-	{ _id: 1, name: "E-mail", value: "email" },
-	{ _id: 2, name: "Slack", value: "slack" },
-	{ _id: 3, name: "PagerDuty", value: "pager_duty" },
-	{ _id: 4, name: "Webhook", value: "webhook" },
-	{ _id: 5, name: "Discord", value: "discord" },
+	{ id: 1, name: "E-mail", value: "email" },
+	{ id: 2, name: "Slack", value: "slack" },
+	{ id: 3, name: "PagerDuty", value: "pager_duty" },
+	{ id: 4, name: "Webhook", value: "webhook" },
+	{ id: 5, name: "Discord", value: "discord" },
+	{ id: 6, name: "Matrix", value: "matrix" },
 ];
 
 export const TITLE_MAP = {
@@ -12,6 +13,7 @@ export const TITLE_MAP = {
 	pager_duty: "createNotifications.pagerdutySettings.title",
 	webhook: "createNotifications.webhookSettings.title",
 	discord: "createNotifications.discordSettings.title",
+	matrix: "createNotifications.matrixSettings.title",
 };
 
 export const DESCRIPTION_MAP = {
@@ -20,6 +22,7 @@ export const DESCRIPTION_MAP = {
 	pager_duty: "createNotifications.pagerdutySettings.description",
 	webhook: "createNotifications.webhookSettings.description",
 	discord: "createNotifications.discordSettings.description",
+	matrix: "createNotifications.matrixSettings.description",
 };
 
 export const LABEL_MAP = {
@@ -28,6 +31,7 @@ export const LABEL_MAP = {
 	pager_duty: "createNotifications.pagerdutySettings.integrationKeyLabel",
 	webhook: "createNotifications.webhookSettings.webhookLabel",
 	discord: "createNotifications.discordSettings.webhookLabel",
+	matrix: "createNotifications.matrixSettings.homeserverLabel",
 };
 
 export const PLACEHOLDER_MAP = {
@@ -36,4 +40,5 @@ export const PLACEHOLDER_MAP = {
 	pager_duty: "createNotifications.pagerdutySettings.integrationKeyPlaceholder",
 	webhook: "createNotifications.webhookSettings.webhookPlaceholder",
 	discord: "createNotifications.discordSettings.webhookPlaceholder",
+	matrix: "createNotifications.matrixSettings.homeserverPlaceholder",
 };

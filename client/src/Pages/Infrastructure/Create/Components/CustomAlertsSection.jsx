@@ -1,7 +1,7 @@
-import ConfigBox from "../../../../Components/ConfigBox";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 import { Box, Stack, Typography } from "@mui/material";
-import { CustomThreshold } from "../Components/CustomThreshold";
-import { capitalizeFirstLetter } from "../../../../Utils/stringUtils";
+import { CustomThreshold } from "./CustomThreshold/index.jsx";
+import { capitalizeFirstLetter } from "../../../../Utils/stringUtils.js";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";

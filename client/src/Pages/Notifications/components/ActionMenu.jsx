@@ -1,7 +1,7 @@
 // Components
 import Menu from "@mui/material/Menu";
 import IconButton from "@mui/material/IconButton";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import Icon from "@/Components/v1/Icon";
 import MenuItem from "@mui/material/MenuItem";
 
 // Utils
@@ -32,13 +32,13 @@ const ActionMenu = ({ notification, onDelete }) => {
 
 	const handleRemove = (e) => {
 		e.stopPropagation();
-		onDelete(notification._id);
+		onDelete(notification.id);
 		handleClose();
 	};
 
 	const handleConfigure = (e) => {
 		e.stopPropagation();
-		navigate(`/notifications/${notification._id}`);
+		navigate(`/notifications/${notification.id}`);
 		handleClose();
 	};
 
@@ -49,7 +49,10 @@ const ActionMenu = ({ notification, onDelete }) => {
 				onClick={handleClick}
 				onMouseDown={(e) => e.stopPropagation()}
 			>
-				<SettingsOutlinedIcon />
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu

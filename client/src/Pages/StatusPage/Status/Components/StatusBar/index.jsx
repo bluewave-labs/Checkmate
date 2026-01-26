@@ -1,7 +1,6 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import Icon from "@/Components/v1/Icon";
 
 // Utils
 import { useTheme } from "@mui/material/styles";
@@ -10,8 +9,10 @@ import PropTypes from "prop-types";
 const getMonitorStatus = (monitors, theme) => {
 	const monitorsStatus = {
 		icon: (
-			<ErrorOutlineIcon
-				sx={{ color: theme.palette.primary.contrastTextSecondaryDarkBg }}
+			<Icon
+				name="AlertTriangle"
+				size={24}
+				color="primary.contrastTextSecondaryDarkBg"
 			/>
 		),
 	};
@@ -19,8 +20,10 @@ const getMonitorStatus = (monitors, theme) => {
 		monitorsStatus.msg = "All systems operational";
 		monitorsStatus.color = theme.palette.success.lowContrast;
 		monitorsStatus.icon = (
-			<CheckCircleIcon
-				sx={{ color: theme.palette.primary.contrastTextSecondaryDarkBg }}
+			<Icon
+				name="CheckCircle2"
+				size={24}
+				color="primary.contrastTextSecondaryDarkBg"
 			/>
 		);
 	}

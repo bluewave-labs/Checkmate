@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { networkService } from "../main";
+import { networkService } from "../main.jsx";
 import { useSelector } from "react-redux";
-import { createToast } from "../Utils/toastUtils";
+import { createToast } from "../Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 
 const useSendTestEmail = () => {

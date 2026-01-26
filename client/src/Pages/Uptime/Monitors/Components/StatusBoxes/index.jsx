@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import { Stack } from "@mui/material";
-import StatusBox from "./statusBox";
+import StatusBox from "./statusBox.jsx";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import SkeletonLayout from "./skeleton";
+import SkeletonLayout from "./skeleton.jsx";
 
 const StatusBoxes = ({ shouldRender, monitorsSummary }) => {
 	const theme = useTheme();

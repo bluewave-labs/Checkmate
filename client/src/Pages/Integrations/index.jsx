@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import { Stack, Typography, Grid, Button } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import Discord from "../../assets/icons/discord-icon.svg?react";
-import Slack from "../../assets/icons/slack-icon.svg?react";
-import Zapier from "../../assets/icons/zapier-icon.svg?react";
+import Discord from "../../../assets/icons/discord-icon.svg?react";
+import Slack from "../../../assets/icons/slack-icon.svg?react";
+import Zapier from "../../../assets/icons/zapier-icon.svg?react";
 import { useTranslation } from "react-i18next";
 
 import "./index.css";

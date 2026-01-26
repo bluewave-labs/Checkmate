@@ -1,14 +1,14 @@
 // Components
 import { Stack, Typography } from "@mui/material";
 import { TabPanel } from "@mui/lab";
-import MonitorList from "../MonitorList";
-import Search from "../../../../../Components/Inputs/Search";
-import Checkbox from "../../../../../Components/Inputs/Checkbox";
+import MonitorList from "../MonitorList/index.jsx";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
 // Utils
 import { useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import ConfigStack from "./ConfigStack";
+import ConfigStack from "./ConfigStack.jsx";
 const Content = ({
 	tabValue,
 	form,
@@ -24,7 +24,7 @@ const Content = ({
 	// Handlers
 	const handleMonitorsChange = (selectedMonitors) => {
 		handleFormChange({
-			target: { name: "monitors", value: selectedMonitors.map((monitor) => monitor._id) },
+			target: { name: "monitors", value: selectedMonitors.map((monitor) => monitor.id) },
 		});
 		setSelectedMonitors(selectedMonitors);
 	};

@@ -1,17 +1,17 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import TextInput from "../../../Components/Inputs/TextInput";
-import { PasswordEndAdornment } from "../../../Components/Inputs/TextInput/Adornments";
-import TextLink from "../../../Components/TextLink";
-import AuthPageWrapper from "../components/AuthPageWrapper";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
+import AuthPageWrapper from "../components/AuthPageWrapper.jsx";
 // Utils
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import useLoginForm from "./hooks/useLoginForm";
-import useValidateLoginForm from "./hooks/useValidateLoginForm";
-import useLoginSubmit from "./hooks/useLoginSubmit";
-import useLoadingSubmit from "./hooks/useLoadingSubmit";
+import useLoginForm from "./hooks/useLoginForm.jsx";
+import useValidateLoginForm from "./hooks/useValidateLoginForm.jsx";
+import useLoginSubmit from "./hooks/useLoginSubmit.jsx";
+import useLoadingSubmit from "./hooks/useLoadingSubmit.jsx";
 
 const Login = () => {
 	// Hooks

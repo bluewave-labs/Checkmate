@@ -52,7 +52,7 @@ Usage instructions can be found [here](https://docs.checkmate.so/checkmate-2.1).
 
 See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). 
 
-Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, you can also use [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
 
@@ -91,6 +91,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 - Website monitoring
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
+  - Selective disk monitoring with mountpoint selection
 - Docker monitoring
 - Ping monitoring
 - SSL monitoring
@@ -162,6 +163,7 @@ Here's how you can contribute:
 4. Open an issue if you believe you've encountered a bug.
 5. Check for good-first-issue's if you are a newcomer.
 6. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
+7. Check out this interactive walkthrough of the `Checkmate` codebase on CodeCanvas [here](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). To refine existing dataflow simulation or create new ones, follow the quick tutorial [here](https://docs.code-canvas.com/updating-diagram).
 
 <a href="https://github.com/bluewave-labs/checkmate/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />

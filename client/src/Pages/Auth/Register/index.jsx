@@ -1,10 +1,10 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import TextInput from "../../../Components/Inputs/TextInput";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import PasswordTooltip from "../components/PasswordTooltip";
+import PasswordTooltip from "../components/PasswordTooltip.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";
@@ -13,11 +13,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { networkService } from "../../../main";
-import { newOrChangedCredentials } from "../../../Validation/validation";
-import { register } from "../../../Features/Auth/authSlice";
-import AuthPageWrapper from "../components/AuthPageWrapper";
-import { createToast } from "../../../Utils/toastUtils";
+import { networkService } from "../../../main.jsx";
+import { newOrChangedCredentials } from "../../../Validation/validation.js";
+import { register } from "../../../Features/Auth/authSlice.js";
+import AuthPageWrapper from "../components/AuthPageWrapper.jsx";
+import { createToast } from "../../../Utils/toastUtils.jsx";
 import PropTypes from "prop-types";
 
 const getFeedbackStatus = (form, errors, field, criteria) => {
@@ -176,7 +176,7 @@ const Register = ({ superAdminExists }) => {
 
 		delete toSubmit.confirm;
 
-		const action = await dispatch(register(toSubmit));
+		const action = await dispatch(register({ user: toSubmit, token }));
 		if (action.payload.success) {
 			navigate("/uptime");
 			createToast({

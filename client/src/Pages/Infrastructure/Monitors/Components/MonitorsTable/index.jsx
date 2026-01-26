@@ -1,18 +1,18 @@
 // Components
 import { Box } from "@mui/material";
-import DataTable from "../../../../../Components/Table";
-import Host from "../../../../../Components/Host";
-import { StatusLabel } from "../../../../../Components/Label";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import Host from "@/Components/v1/Host/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { Stack } from "@mui/material";
-import { InfrastructureMenu } from "../MonitorsTableMenu";
-import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner";
+import { InfrastructureMenu } from "../MonitorsTableMenu/index.jsx";
+import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner/index.jsx";
 // Assets
-import CPUChipIcon from "../../../../../assets/icons/cpu-chip.svg?react";
-import CustomGauge from "../../../../../Components/Charts/CustomGauge";
+import Icon from "@/Components/v1/Icon";
+import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";
-import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils.js";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -67,9 +67,9 @@ const MonitorsTable = ({
 					alignItems={"center"}
 					gap=".25rem"
 				>
-					<CPUChipIcon
-						width={20}
-						height={20}
+					<Icon
+						name="Cpu"
+						size={20}
 					/>
 					{row.processor}
 				</Stack>
@@ -115,7 +115,7 @@ const MonitorsTable = ({
 					: theme.palette.success.main;
 
 		return {
-			id: monitor._id,
+			id: monitor.id,
 			name: monitor.name,
 			url: monitor.url,
 			processor,

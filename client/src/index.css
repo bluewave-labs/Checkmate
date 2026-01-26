@@ -4,6 +4,11 @@
 	box-sizing: border-box;
 }
 
+html,
+body {
+	overscroll-behavior: none;
+}
+
 html {
 	scroll-behavior: smooth;
 }
@@ -15,15 +20,11 @@ html {
 	-moz-osx-font-smoothing: grayscale;
 
 	/* Generalized Stylings */
-	--env-var-radius-1: 4px;
 	--env-var-radius-2: 8px;
 
-	--env-var-width-1: 100vw;
 	--env-var-width-2: 360px;
-	--env-var-width-3: 250px;
 	--env-var-width-4: 100px;
 
-	--env-var-height-1: 100vh;
 	--env-var-height-2: 34px;
 
 	--env-var-nav-bar-height: 70px;
@@ -35,9 +36,6 @@ html {
 	--env-var-spacing-1-plus: 16px;
 	--env-var-spacing-1-minus: 10px;
 	--env-var-spacing-2: 24px;
-	--env-var-spacing-3: 32px;
-	--env-var-spacing-4: 40px;
-	--env-var-spacing-5: 65px;
 
 	--env-var-font-size-small: 11px;
 	--env-var-font-size-small-plus: 12px;
@@ -46,23 +44,14 @@ html {
 	--env-var-font-size-large: 16px;
 	--env-var-font-size-large-plus: 22px;
 	--env-var-font-size-xlarge: 30px;
-
-	--env-var-img-width-1: 20px;
-	--env-var-img-width-2: 16px;
-	--env-var-img-width-3: 12px;
-
-	--env-var-default-1: 24px;
-	--env-var-default-2: 40px;
-
-	--env-var-shadow-1:
-		0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03);
 }
 
 .MuiInputBase-root.Mui-disabled input {
 	cursor: not-allowed;
 }
 
-.Toastify__toast-container {
+/* .Toastify__toast-container {
+	min-width: 300px;
 	width: auto;
 }
 .Toastify__toast-body .alert {
@@ -80,7 +69,7 @@ html {
 }
 .Toastify [class*="Toastify__toast-theme"] {
 	background-color: transparent;
-}
+} */
 
 .MuiTouchRipple-root {
 	display: none;

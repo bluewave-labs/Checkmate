@@ -1,4 +1,4 @@
-import Select from "../../../../../Components/Inputs/Select";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
 import PropTypes from "prop-types";
 const ConfigSelect = ({ configSelection, valueSelect, onChange, ...props }) => {
 	const getValueById = (config, id) => {

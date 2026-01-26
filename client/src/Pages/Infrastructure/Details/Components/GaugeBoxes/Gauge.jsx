@@ -1,26 +1,42 @@
 // Components
-import CustomGauge from "../../../../../Components/Charts/CustomGauge";
-import BaseContainer from "../BaseContainer";
+import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
+import BaseContainer from "../BaseContainer/index.jsx";
 import { Stack, Typography, Box } from "@mui/material";
 // Utils
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 
-const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => {
+const Gauge = ({
+	value,
+	heading,
+	metricOne,
+	valueOne,
+	metricTwo,
+	valueTwo,
+	metricThree,
+	valueThree,
+	metricFour,
+	valueFour,
+	shouldExpand = false,
+}) => {
 	const theme = useTheme();
 
 	const valueStyle = {
 		borderRadius: theme.spacing(2),
 		backgroundColor: theme.palette.tertiary.main,
-		width: "40%",
+		minWidth: "40%",
+		maxWidth: "60%",
 		mb: theme.spacing(2),
 		mt: theme.spacing(2),
 		pr: theme.spacing(2),
 		textAlign: "right",
+		overflow: "hidden",
+		textOverflow: "ellipsis",
+		whiteSpace: "nowrap",
 	};
 
 	return (
-		<BaseContainer>
+		<BaseContainer shouldExpand={shouldExpand}>
 			<Stack
 				direction="column"
 				gap={theme.spacing(2)}
@@ -70,6 +86,24 @@ const Gauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => 
 						<Typography>{metricTwo}</Typography>
 						<Typography sx={valueStyle}>{valueTwo}</Typography>
 					</Stack>
+					<Stack
+						justifyContent={"space-between"}
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+					>
+						<Typography>{metricThree}</Typography>
+						<Typography sx={valueStyle}>{valueThree}</Typography>
+					</Stack>
+					<Stack
+						justifyContent={"space-between"}
+						direction="row"
+						alignItems="center"
+						gap={theme.spacing(2)}
+					>
+						<Typography>{metricFour}</Typography>
+						<Typography sx={valueStyle}>{valueFour}</Typography>
+					</Stack>
 				</Box>
 			</Stack>
 		</BaseContainer>
@@ -83,6 +117,11 @@ Gauge.propTypes = {
 	valueOne: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 	metricTwo: PropTypes.string,
 	valueTwo: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricThree: PropTypes.string,
+	valueThree: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricFour: PropTypes.string,
+	valueFour: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	shouldExpand: PropTypes.bool,
 };
 
 export default Gauge;

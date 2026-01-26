@@ -1,8 +1,8 @@
 // Components
 import Stack from "@mui/material/Stack";
-import JobTable from "./components/JobTable";
-import Metrics from "./components/Metrics";
-import FailedJobTable from "./components/FailedJobTable";
+import JobTable from "./components/JobTable/index.jsx";
+import Metrics from "./components/Metrics/index.jsx";
+import FailedJobTable from "./components/FailedJobTable/index.jsx";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -10,7 +10,7 @@ import Divider from "@mui/material/Divider";
 
 // Utils
 import { useState } from "react";
-import { useFetchQueueData, useFlushQueue } from "../../../Hooks/logHooks";
+import { useFetchQueueData, useFlushQueue } from "../../../Hooks/logHooks.js";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 

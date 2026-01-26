@@ -136,8 +136,8 @@ const Greeting = ({ type = "" }) => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const { firstName } = useSelector((state) => state.auth.user);
-	const index = useSelector((state) => state.ui.greeting.index);
-	const lastUpdate = useSelector((state) => state.ui.greeting.lastUpdate);
+	const index = useSelector((state) => state.ui.greeting?.index ?? 0);
+	const lastUpdate = useSelector((state) => state.ui.greeting?.lastUpdate ?? null);
 
 	const now = new Date();
 	const hour = now.getHours();

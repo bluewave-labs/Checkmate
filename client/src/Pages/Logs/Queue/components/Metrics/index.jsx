@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
-import StatBox from "../../../../../Components/StatBox";
-import StatusBoxes from "../../../../../Components/StatusBoxes";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 

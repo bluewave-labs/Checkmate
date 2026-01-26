@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Tab, useTheme } from "@mui/material";
-import CustomTabList from "../../Components/Tab";
+import CustomTabList from "@/Components/v1/Tab/index.jsx";
 import TabContext from "@mui/lab/TabContext";
-import ProfilePanel from "./components/ProfilePanel";
-import PasswordPanel from "./components/PasswordPanel";
-import TeamPanel from "./components/TeamPanel";
+import ProfilePanel from "./components/ProfilePanel.jsx";
+import PasswordPanel from "./components/PasswordPanel.jsx";
+import TeamPanel from "./components/TeamPanel.jsx";
 import { useTranslation } from "react-i18next";
 
 /**

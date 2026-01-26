@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": ""
+		"role": "",
+		"changeTeamPassword": {
+			"changePasswordMenu": "",
+			"title": "",
+			"description": "",
+			"success": ""
+		}
 	},
 	"monitorState": {
 		"paused": "一時停止",
@@ -487,7 +493,8 @@
 		"ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
 		"docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
 		"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。",
-		"game": ""
+		"game": "",
+		"https": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1075,7 +1082,11 @@
 		"incidentConfigDescription": "",
 		"incidentConfigStatusWindowLabel": "",
 		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": ""
+		"incidentConfigTitle": "",
+		"incidentConfigDescriptionV2": "",
+		"incidentConfigStatusCheckNumber": "",
+		"intervalTitle": "",
+		"intervalDescription": ""
 	},
 	"dataRate": "",
 	"dataReceived": "",
@@ -1097,5 +1108,12 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "ディスク選択",
+			"disk_selection_info": "現在ディスクが検出されていません。",
+			"disk_selection_description": "監視したい特定のディスクを選択してください。"
+		}
+	}
 }

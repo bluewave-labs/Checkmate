@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
-import TextInput from "../../../../../Components/Inputs/TextInput";
-import Checkbox from "../../../../../Components/Inputs/Checkbox";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 

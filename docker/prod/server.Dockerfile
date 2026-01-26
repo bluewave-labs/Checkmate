@@ -15,6 +15,8 @@ RUN npm install
 
 COPY ./server ./
 
+RUN npm run build
+
 EXPOSE 52345
 
 CMD ["node", "src/index.js"]

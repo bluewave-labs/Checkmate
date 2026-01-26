@@ -1,17 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client
+  name: checkmate-client
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      app: checkmate-client
   template:
     metadata:
       labels:
-        app: client
+        app: checkmate-client
     spec:
+    {{- with .Values.client.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.client.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
       containers:
         - name: client
           image: {{ .Values.client.image }}
@@ -20,3 +28,17 @@ spec:
           env:
             - name: UPTIME_APP_API_BASE_URL
               value: "{{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api/v1"
+            - name: UPTIME_APP_CLIENT_HOST
+              value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+          {{- with .Values.client.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: checkmate-server-nginx-cm

@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import ConfigBox from "../../Components/ConfigBox";
-import TextInput from "../../Components/Inputs/TextInput";
-import Dialog from "../../Components/Dialog";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 
 // Utils
 import { useTheme } from "@emotion/react";
@@ -36,16 +36,6 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
-				<TextInput
-					name="checkTTL"
-					label={t("settingsPage.statsSettings.labelTTL")}
-					optionalLabel={t("settingsPage.statsSettings.labelTTLOptional")}
-					value={settingsData?.settings?.checkTTL ?? ""}
-					onChange={handleChange}
-					type="number"
-					error={errors.checkTTL ? true : false}
-					helperText={errors.checkTTL}
-				/>
 				<Box>
 					<Typography>
 						{t("settingsPage.statsSettings.clearAllStatsDescription")}

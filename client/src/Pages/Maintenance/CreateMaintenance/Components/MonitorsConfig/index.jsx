@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import Search from "../../../../../Components/Inputs/Search";
+import Search from "@/Components/v1/Inputs/Search/index.jsx";
 import { useState } from "react";
-import ConfigRow from "../../../../../Components/ConfigRow";
+import ConfigRow from "@/Components/v1/ConfigRow/index.jsx";
 
 /**
  * MonitorsConfig is a component that allows users to select and apply a maintenance window to a list of monitors.

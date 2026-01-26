@@ -1,11 +1,11 @@
 // Components
 import { Stack, Typography } from "@mui/material";
-import StatusBoxes from "../../../../../Components/StatusBoxes";
-import StatBox from "../../../../../Components/StatBox";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
 
 //Utils
-import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils";
-import { useHardwareUtils } from "../../Hooks/useHardwareUtils";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils.js";
+import { useHardwareUtils } from "../../Hooks/useHardwareUtils.jsx";
 import { useTranslation } from "react-i18next";
 
 const InfraStatBoxes = ({ shouldRender, monitor }) => {

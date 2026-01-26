@@ -9,31 +9,28 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import TextInput from "../../../Components/Inputs/TextInput";
-import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
-import Radio from "../../../Components/Inputs/Radio";
-import Select from "../../../Components/Inputs/Select";
-import ConfigBox from "../../../Components/ConfigBox";
-import NotificationsConfig from "../../../Components/NotificationConfig";
-import Checkbox from "../../../Components/Inputs/Checkbox";
-import Dialog from "../../../Components/Dialog";
-import PulseDot from "../../../Components/Animated/PulseDot";
-import SkeletonLayout from "./skeleton";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import Radio from "@/Components/v1/Inputs/Radio/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
+import Checkbox from "@/Components/v1/Inputs/Checkbox/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
+import PulseDot from "@/Components/v1/Animated/PulseDot.jsx";
+import SkeletonLayout from "./skeleton.jsx";
 
 // Utils
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { monitorValidation } from "../../../Validation/validation";
-import { createToast } from "../../../Utils/toastUtils";
-import {
-	PauseOutlined as PauseOutlinedIcon,
-	PlayArrowOutlined as PlayArrowOutlinedIcon,
-} from "@mui/icons-material";
-import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
-import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import { monitorValidation } from "../../../Validation/validation.js";
+import { createToast } from "../../../Utils/toastUtils.jsx";
+import Icon from "@/Components/v1/Icon";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils.js";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications.js";
 import { useParams } from "react-router-dom";
 import {
 	useCreateMonitor,
@@ -42,7 +39,7 @@ import {
 	usePauseMonitor,
 	useFetchMonitorById,
 	useFetchMonitorGames,
-} from "../../../Hooks/monitorHooks";
+} from "../../../Hooks/monitorHooks.js";
 
 /**
  * Create page renders monitor creation or configuration views.
@@ -83,13 +80,13 @@ const UptimeCreate = ({ isClone = false }) => {
 	const [isFetchingMonitor] = useFetchMonitorById({
 		monitorId,
 		setMonitor,
-		updateTrigger: true,
+		updateTrigger,
 	});
 
 	// Fetch games
 	const [isFetchingGames] = useFetchMonitorGames({
 		setGames,
-		triggerUpdate: true,
+		updateTrigger,
 	});
 
 	// Combine the loading states
@@ -107,11 +104,16 @@ const UptimeCreate = ({ isClone = false }) => {
 	// Constants
 	const MS_PER_MINUTE = 60000;
 	const FREQUENCIES = [
+		{ _id: 0.25, name: t("time.fifteenSeconds") },
+		{ _id: 0.5, name: t("time.thirtySeconds") },
 		{ _id: 1, name: t("time.oneMinute") },
 		{ _id: 2, name: t("time.twoMinutes") },
 		{ _id: 3, name: t("time.threeMinutes") },
 		{ _id: 4, name: t("time.fourMinutes") },
 		{ _id: 5, name: t("time.fiveMinutes") },
+		{ _id: 10, name: t("time.tenMinutes") },
+		{ _id: 15, name: t("time.fifteenMinutes") },
+		{ _id: 30, name: t("time.thirtyMinutes") },
 	];
 
 	const GAMELIST = Object.entries(games).map(([key, value]) => ({
@@ -194,7 +196,7 @@ const UptimeCreate = ({ isClone = false }) => {
 			};
 		} else {
 			form = {
-				_id: monitor._id,
+				id: monitor.id,
 				url: monitor.url,
 				name: monitor.name || monitor.url.substring(0, 50),
 				statusWindowSize: monitor.statusWindowSize,
@@ -281,13 +283,10 @@ const UptimeCreate = ({ isClone = false }) => {
 		}));
 	};
 
-	const handlePause = async () => {
-		await pauseMonitor({ monitorId, triggerUpdate });
-	};
-
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		await deleteMonitor({ monitor, redirect: "/uptime" });
+		const TEMP_MONITOR = { id: monitor.id };
+		await deleteMonitor({ monitor: TEMP_MONITOR, redirect: "/uptime" });
 	};
 
 	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
@@ -423,9 +422,24 @@ const UptimeCreate = ({ isClone = false }) => {
 								color="secondary"
 								loading={isBusy}
 								startIcon={
-									monitor?.isActive ? <PauseOutlinedIcon /> : <PlayArrowOutlinedIcon />
+									monitor?.isActive ? (
+										<Icon
+											name="Pause"
+											size={18}
+										/>
+									) : (
+										<Icon
+											name="Play"
+											size={18}
+										/>
+									)
 								}
-								onClick={handlePause}
+								onClick={() => {
+									pauseMonitor({
+										monitorId: monitor?.id,
+										triggerUpdate,
+									});
+								}}
 							>
 								{monitor?.isActive ? t("pause") : t("resume")}
 							</Button>

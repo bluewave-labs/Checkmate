@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"rootDir": "./src",
+		"allowJs": true,
+		"checkJs": false,
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"outDir": "./dist",
+		"strict": true,
+		"esModuleInterop": true,
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"skipLibCheck": true,
+		"noUncheckedIndexedAccess": true,
+		"isolatedModules": true
+	},
+	"include": ["src"],
+	"exclude": ["tests", "dist", "node_modules"]
+}

@@ -1,12 +1,12 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import ConfigBox from "../../Components/ConfigBox";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
-import Dialog from "../../Components/Dialog";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 import { useState } from "react";
 
 const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) => {

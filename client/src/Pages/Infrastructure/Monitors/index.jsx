@@ -1,21 +1,22 @@
 // Components
 import { Stack } from "@mui/material";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import MonitorCountHeader from "../../../Components/MonitorCountHeader";
-import MonitorCreateHeader from "../../../Components/MonitorCreateHeader";
-import MonitorsTable from "./Components/MonitorsTable";
-import Pagination from "../../..//Components/Table/TablePagination";
-import PageStateWrapper from "../../../Components/PageStateWrapper";
-import Filter from "./Components/Filters";
-import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import MonitorCountHeader from "@/Components/v1/MonitorCountHeader/index.jsx";
+import MonitorCreateHeader from "@/Components/v1/MonitorCreateHeader/index.jsx";
+import MonitorsTable from "./Components/MonitorsTable/index.jsx";
+import Pagination from "@/Components/v1/Table/TablePagination/index.jsx";
+import PageStateWrapper from "@/Components/v1/PageStateWrapper/index.jsx";
+import Filter from "./Components/Filters/index.jsx";
+import SearchComponent from "../../Uptime/Monitors/Components/SearchComponent/index.jsx";
 // Utils
 import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
-import { useIsAdmin } from "../../../Hooks/useIsAdmin";
+import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import { useTranslation } from "react-i18next";
-import { useFetchMonitorsByTeamId } from "../../../Hooks/monitorHooks";
+import { useFetchMonitorsWithChecks } from "@/Hooks/monitorHooks.js";
+
 import { useDispatch, useSelector } from "react-redux";
-import { setRowsPerPage } from "../../../Features/UI/uiSlice";
+import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 // Constants
 const TYPES = ["hardware"];
 const BREADCRUMBS = [{ name: `infrastructure`, path: "/infrastructure" }];
@@ -70,14 +71,14 @@ const InfrastructureMonitors = () => {
 
 	const field = toFilterStatus !== undefined ? "status" : undefined;
 
-	const [monitors, summary, isLoading, networkError] = useFetchMonitorsByTeamId({
-		limit: 1,
+	const [summary, monitors, count, isLoading, networkError] = useFetchMonitorsWithChecks({
 		types: TYPES,
-		page,
+		limit: 1,
+		page: page,
 		field: field,
 		filter: toFilterStatus ?? search,
-		rowsPerPage,
-		updateTrigger,
+		rowsPerPage: rowsPerPage,
+		monitorUpdateTrigger: updateTrigger,
 	});
 
 	return (
@@ -99,7 +100,7 @@ const InfrastructureMonitors = () => {
 					<Stack direction={"row"}>
 						<MonitorCountHeader
 							isLoading={isLoading}
-							monitorCount={summary?.totalMonitors ?? 0}
+							monitorCount={count || 0}
 						/>
 						<Filter
 							selectedStatus={selectedStatus}
@@ -122,7 +123,7 @@ const InfrastructureMonitors = () => {
 						isSearching={isSearching}
 					/>
 					<Pagination
-						itemCount={summary?.totalMonitors}
+						itemCount={count || 0}
 						paginationLabel={t("monitors")}
 						page={page}
 						rowsPerPage={rowsPerPage}

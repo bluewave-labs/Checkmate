@@ -1,9 +1,9 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Logo from "../../../assets/icons/checkmate-icon.svg?react";
-import LanguageSelector from "../../../Components/LanguageSelector";
-import ThemeSwitch from "../../../Components/ThemeSwitch";
+import Logo from "@/assets/icons/checkmate-icon.svg?react";
+import LanguageSelector from "@/Components/LanguageSelector.jsx";
+import ThemeSwitch from "@/Components/v1/ThemeSwitch/index.jsx";
 
 // Utils
 import { useTheme } from "@mui/material/styles";

@@ -1,16 +1,16 @@
 import { Button, Stack } from "@mui/material";
-import { GenericDialog } from "../../../../Components/Dialog/genericDialog";
-import TextInput from "../../../../Components/Inputs/TextInput";
-import Select from "../../../../Components/Inputs/Select";
-import { useGetInviteToken } from "../../../../Hooks/inviteHooks";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import { useGetInviteToken } from "../../../../Hooks/inviteHooks.js";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { createToast } from "../../../../Utils/toastUtils";
+import { createToast } from "../../../../Utils/toastUtils.jsx";
 import { useState } from "react";
-import PasswordTooltip from "../../../Auth/components/PasswordTooltip";
-import useAddTeamMember from "./hooks/useAddTeamMember";
-import usePasswordFeedback from "../../../Auth/hooks/usePasswordFeedback";
-import { PasswordEndAdornment } from "../../../../Components/Inputs/TextInput/Adornments";
+import PasswordTooltip from "../../../Auth/components/PasswordTooltip.jsx";
+import useAddTeamMember from "./hooks/useAddTeamMember.jsx";
+import usePasswordFeedback from "../../../Auth/hooks/usePasswordFeedback.jsx";
+import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
 import PropTypes from "prop-types";
 
 const INITIAL_FORM_STATE = {

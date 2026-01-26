@@ -1,14 +1,14 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import Gauges from "./components/gauges";
+import Gauges from "./components/gauges/index.jsx";
 import Button from "@mui/material/Button";
-import StatBox from "../../../Components/StatBox";
-import StatusBoxes from "../../../Components/StatusBoxes";
+import StatBox from "@/Components/v1/StatBox/index.jsx";
+import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { useFetchDiagnostics } from "../../../Hooks/logHooks";
-import { getHumanReadableDuration } from "../../../Utils/timeUtils";
-import { formatBytes, getPercentage } from "./utils/utils";
+import { useFetchDiagnostics } from "../../../Hooks/logHooks.js";
+import { getHumanReadableDuration } from "../../../Utils/timeUtilsLegacy.js";
+import { formatBytes, getPercentage } from "./utils/utils.js";
 
 const Diagnostics = () => {
 	// Local state
@@ -26,12 +26,12 @@ const Diagnostics = () => {
 					status="up"
 					heading={t("status")}
 					subHeading={
-						error 
+						error
 							? t("logsPage.logLevelSelect.values.error")
-							: isLoading 
+							: isLoading
 								? t("commonSaving")
-								: diagnostics 
-									? t("diagnosticsPage.diagnosticDescription") 
+								: diagnostics
+									? t("diagnosticsPage.diagnosticDescription")
 									: t("general.noOptionsFound", { unit: "data" })
 					}
 				/>

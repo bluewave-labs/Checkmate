@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
-import Select from "../../../../../Components/Inputs/Select";
-import NetworkStatBoxes from "./NetworkStatBoxes";
-import NetworkCharts from "./NetworkCharts";
-import MonitorTimeFrameHeader from "../../../../../Components/MonitorTimeFrameHeader";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import NetworkStatBoxes from "./NetworkStatBoxes.jsx";
+import NetworkCharts from "./NetworkCharts.jsx";
+import MonitorTimeFrameHeader from "@/Components/v1/MonitorTimeFrameHeader/index.jsx";
 
 const getAvailableInterfaces = (net) => {
 	return (net || []).map((iface) => iface.name).filter(Boolean);

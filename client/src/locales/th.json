@@ -425,7 +425,13 @@
 				}
 			}
 		},
-		"role": "บทบาท"
+		"role": "บทบาท",
+		"changeTeamPassword": {
+			"changePasswordMenu": "",
+			"title": "",
+			"description": "",
+			"success": ""
+		}
 	},
 	"monitorState": {
 		"paused": "หยุดชั่วคราว",
@@ -487,7 +493,8 @@
 		"ping": "กรอกที่อยู่ IP หรือชื่อโฮสต์ที่ต้องการ ping (เช่น 192.168.1.100 หรือ example.com) และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
 		"docker": "กรอกชื่อหรือ ID ของคอนเทนเนอร์ Docker คุณสามารถใช้ชื่อคอนเทนเนอร์ (เช่น my-app) หรือ ID ของคอนเทนเนอร์ (ID เต็ม 64 ตัวอักษร หรือ ID สั้น)",
 		"port": "กรอก URL หรือ IP ของเซิร์ฟเวอร์ หมายเลขพอร์ต และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
-		"game": "กรอกที่อยู่ IP หรือชื่อโฮสต์และหมายเลขพอร์ตเพื่อทำการ ping (เช่น 192.168.1.100 หรือ example.com) และเลือกประเภทเกม"
+		"game": "กรอกที่อยู่ IP หรือชื่อโฮสต์และหมายเลขพอร์ตเพื่อทำการ ping (เช่น 192.168.1.100 หรือ example.com) และเลือกประเภทเกม",
+		"https": ""
 	},
 	"common": {
 		"appName": "Checkmate",
@@ -1096,7 +1103,11 @@
 		"incidentConfigDescription": "การใช้หน้าต่างเลื่อนจะช่วยกำหนดเวลาที่ตัวตรวจสอบล้มเหลว สถานะของตัวตรวจสอบจะเปลี่ยนก็ต่อเมื่อเปอร์เซ็นต์ของการตรวจสอบในหน้าต่างเลื่อนตรงตามค่าที่กำหนด",
 		"incidentConfigStatusWindowLabel": "ต้องมีการตรวจสอบกี่ครั้งในหน้าต่างเลื่อน?",
 		"incidentConfigStatusWindowThresholdLabel": "ต้องการให้กี่เปอร์เซ็นต์ของการตรวจสอบในหน้าต่างเลื่อนล้มเหลว/สำเร็จ ก่อนที่จะเปลี่ยนสถานะของตัวตรวจสอบ?",
-		"incidentConfigTitle": "เหตุการณ์"
+		"incidentConfigTitle": "เหตุการณ์",
+		"incidentConfigDescriptionV2": "",
+		"incidentConfigStatusCheckNumber": "",
+		"intervalTitle": "",
+		"intervalDescription": ""
 	},
 	"dataRate": "อัตราการส่งข้อมูล",
 	"dataReceived": "ข้อมูลที่รับ",
@@ -1118,5 +1129,12 @@
 	"packetsReceivedRate": "อัตราการรับแพ็กเก็ต",
 	"packetsSent": "แพ็กเก็ตที่ส่ง",
 	"rate": "อัตรา",
-	"selectInterface": "เลือกอินเทอร์เฟซ"
+	"selectInterface": "เลือกอินเทอร์เฟซ",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "การเลือกดิสก์",
+			"disk_selection_info": "ไม่พบดิสก์ในขณะนี้",
+			"disk_selection_description": "เลือกดิสก์ที่คุณต้องการตรวจสอบ"
+		}
+	}
 }

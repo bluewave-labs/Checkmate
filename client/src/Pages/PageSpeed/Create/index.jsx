@@ -1,37 +1,36 @@
 // Components
 import { Box, Stack, Tooltip, Typography, Button, ButtonGroup } from "@mui/material";
-import ConfigBox from "../../../Components/ConfigBox";
-import Select from "../../../Components/Inputs/Select";
-import TextInput from "../../../Components/Inputs/TextInput";
-import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
-import Breadcrumbs from "../../../Components/Breadcrumbs";
-import PulseDot from "../../../Components/Animated/PulseDot";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
-import SkeletonLayout from "./skeleton";
-import NotificationsConfig from "../../../Components/NotificationConfig";
-import Dialog from "../../../Components/Dialog";
-import { HttpAdornment } from "../../../Components/Inputs/TextInput/Adornments";
-import Radio from "../../../Components/Inputs/Radio";
+import ConfigBox from "@/Components/v1/ConfigBox/index.jsx";
+import Select from "@/Components/v1/Inputs/Select/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import Icon from "@/Components/v1/Icon";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import PulseDot from "@/Components/v1/Animated/PulseDot.jsx";
+import SkeletonLayout from "./skeleton.jsx";
+import NotificationsConfig from "@/Components/v1/NotificationConfig/index.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
+import { HttpAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
+import Radio from "@/Components/v1/Inputs/Radio/index.jsx";
 
 // Utils
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { monitorValidation } from "../../../Validation/validation";
-import { parseDomainName } from "../../../Utils/monitorUtils";
+import { monitorValidation } from "../../../Validation/validation.js";
+import { parseDomainName } from "../../../Utils/monitorUtilsLegacy.js";
 import { useTranslation } from "react-i18next";
-import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications";
+import { useGetNotificationsByTeamId } from "../../../Hooks/useNotifications.js";
 import { useTheme } from "@emotion/react";
-import { createToast } from "../../../Utils/toastUtils";
+import { createToast } from "../../../Utils/toastUtils.jsx";
 
 import { useParams } from "react-router";
-import { useMonitorUtils } from "../../../Hooks/useMonitorUtils";
+import { useMonitorUtils } from "../../../Hooks/useMonitorUtils.js";
 import {
 	useCreateMonitor,
 	useFetchMonitorById,
 	useDeleteMonitor,
 	useUpdateMonitor,
 	usePauseMonitor,
-} from "../../../Hooks/monitorHooks";
+} from "../../../Hooks/monitorHooks.js";
 
 const PageSpeedSetup = () => {
 	const { monitorId } = useParams();
@@ -178,7 +177,7 @@ const PageSpeedSetup = () => {
 
 	const handleRemove = async (event) => {
 		event.preventDefault();
-		await deleteMonitor({ monitor, redirect: "/pagespeed" });
+		await deleteMonitor({ monitor: { id: monitorId }, redirect: "/pagespeed" });
 	};
 
 	const isBusy = isLoading || isCreating || isDeleting || isUpdating || isPausing;
@@ -313,12 +312,18 @@ const PageSpeedSetup = () => {
 							>
 								{monitor?.isActive ? (
 									<>
-										<PauseCircleOutlineIcon />
+										<Icon
+											name="PauseCircle"
+											size={20}
+										/>
 										{t("pause")}
 									</>
 								) : (
 									<>
-										<PlayCircleOutlineRoundedIcon />
+										<Icon
+											name="PlayCircle"
+											size={20}
+										/>
 										{t("resume")}
 									</>
 								)}

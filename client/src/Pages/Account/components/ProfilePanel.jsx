@@ -2,16 +2,16 @@ import { useTheme } from "@emotion/react";
 import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
-import Avatar from "../../../Components/Avatar";
-import TextInput from "../../../Components/Inputs/TextInput";
-import ImageUpload from "../../../Components/Inputs/ImageUpload";
-import { newOrChangedCredentials } from "../../../Validation/validation";
+import Avatar from "@/Components/v1/Avatar/index.jsx";
+import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
+import ImageUpload from "@/Components/v1/Inputs/ImageUpload/index.jsx";
+import { newOrChangedCredentials } from "../../../Validation/validation.js";
 import { useDispatch, useSelector } from "react-redux";
-import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice";
-import { createToast } from "../../../Utils/toastUtils";
-import { logger } from "../../../Utils/Logger";
-import { GenericDialog } from "../../../Components/Dialog/genericDialog";
-import Dialog from "../../../Components/Dialog";
+import { clearAuthState, deleteUser, update } from "../../../Features/Auth/authSlice.js";
+import { createToast } from "../../../Utils/toastUtils.jsx";
+import { logger } from "../../../Utils/Logger.js";
+import { GenericDialog } from "@/Components/v1/Dialog/genericDialog.jsx";
+import Dialog from "@/Components/v1/Dialog/index.jsx";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -210,7 +210,11 @@ const ProfilePanel = () => {
 						autoComplete="given-name"
 						onChange={handleChange}
 						error={errors[idToName["edit-first-name"]] ? true : false}
-						helperText={errors[idToName["edit-first-name"]]}
+						helperText={
+							errors[idToName["edit-first-name"]]
+								? t(errors[idToName["edit-first-name"]])
+								: ""
+						}
 						flex={1}
 					/>
 				</Stack>
@@ -228,7 +232,11 @@ const ProfilePanel = () => {
 						value={localData.lastName}
 						onChange={handleChange}
 						error={errors[idToName["edit-last-name"]] ? true : false}
-						helperText={errors[idToName["edit-last-name"]]}
+						helperText={
+							errors[idToName["edit-last-name"]]
+								? t(errors[idToName["edit-last-name"]])
+								: ""
+						}
 						flex={1}
 					/>
 				</Stack>

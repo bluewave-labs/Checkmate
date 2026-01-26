@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { networkService } from "../main";
-import { createToast } from "../Utils/toastUtils";
+import { networkService } from "../main.jsx";
+import { createToast } from "../Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
 
 const useFetchLogs = () => {

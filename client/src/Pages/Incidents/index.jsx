@@ -1,73 +1,113 @@
 // Components
 import { Stack } from "@mui/material";
-import Breadcrumbs from "../../Components/Breadcrumbs";
-import GenericFallback from "../../Components/GenericFallback";
-import IncidentTable from "./Components/IncidentTable";
-import OptionsHeader from "./Components/OptionsHeader";
-import StatusBoxes from "./Components/StatusBoxes";
-import { Box, Button } from "@mui/material";
-
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
+import IncidentTable from "./Components/IncidentTable/index.jsx";
+import OptionsHeader from "./Components/OptionsHeader/index.jsx";
+import IncidentsSummaryPanel from "./Components/IncidentsSummaryPanel/index.jsx";
+import IncidentDetailsModal from "./Components/IncidentDetailsModal/index.jsx";
 //Utils
 import { useTheme } from "@emotion/react";
-import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks";
-import { useFetchChecksSummaryByTeamId } from "../../Hooks/checkHooks";
-import { useAcknowledgeChecks } from "../../Hooks/checkHooks";
 import { useState, useEffect } from "react";
-import NetworkError from "../../Components/GenericFallback/NetworkError";
+import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-//Constants
-const Incidents = () => {
-	// Redux state
+// Hooks
+import useFetchIncidents from "./hooks/useFetchIncidents.js";
+import { useFetchMonitorsByTeamId } from "../../Hooks/monitorHooks.js";
+
+const Incidents2 = () => {
+	const { monitorId } = useParams();
 	const { t } = useTranslation();
 
 	const BREADCRUMBS = [
 		{ name: t("incidentsPageTitle", "Incidents"), path: "/incidents" },
 	];
 
-	// Local state
-	const [selectedMonitor, setSelectedMonitor] = useState("0");
-	const [filter, setFilter] = useState(undefined);
-	const [dateRange, setDateRange] = useState(undefined);
+	const [selectedMonitor, setSelectedMonitor] = useState(monitorId || "0");
+	const [filter, setFilter] = useState("all");
+	const [dateRange, setDateRange] = useState("all");
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [monitorLookup, setMonitorLookup] = useState(undefined);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+	const [selectedIncidentId, setSelectedIncidentId] = useState(null);
+	const handleUpdateTrigger = () => {
+		setUpdateTrigger((prev) => !prev);
+	};
 
-	//Hooks
-	const { acknowledge, isLoadingAcknowledge } = useAcknowledgeChecks();
+	const [monitors, isLoadingMonitors, monitorsNetworkError] = useFetchMonitorsByTeamId(
+		{}
+	);
 
-	//Utils
+	const {
+		incidents,
+		incidentsCount,
+		isLoading: isLoadingIncidents,
+		networkError: incidentsNetworkError,
+		fetchIncidents,
+		fetchActiveIncidents,
+		fetchResolvedIncidents,
+		resolveIncident,
+		fetchIncidentsByResolutionType,
+	} = useFetchIncidents();
+
+	const networkError = monitorsNetworkError || incidentsNetworkError;
+
 	const theme = useTheme();
-	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
-	const [summary, isLoadingSummary, networkErrorSummary] = useFetchChecksSummaryByTeamId({
-		updateTrigger,
-	});
-	const { monitorId } = useParams();
 
 	useEffect(() => {
-		if (monitorId) {
-			setSelectedMonitor(monitorId);
+		setPage(0);
+	}, [selectedMonitor, filter, dateRange]);
+
+	useEffect(() => {
+		const config = {
+			monitorId: selectedMonitor !== "0" ? selectedMonitor : undefined,
+			sortOrder: "desc",
+			dateRange,
+			page,
+			rowsPerPage,
+		};
+
+		if (filter === "active") {
+			fetchActiveIncidents(config);
+		} else if (filter === "resolved") {
+			fetchResolvedIncidents(config);
+		} else if (filter === "manual") {
+			fetchIncidentsByResolutionType("manual", config);
+		} else if (filter === "automatic") {
+			fetchIncidentsByResolutionType("automatic", config);
+		} else {
+			fetchIncidents(config);
 		}
-	}, [monitorId]);
+	}, [
+		selectedMonitor,
+		filter,
+		dateRange,
+		page,
+		rowsPerPage,
+		updateTrigger,
+		fetchActiveIncidents,
+		fetchResolvedIncidents,
+		fetchIncidents,
+		fetchIncidentsByResolutionType,
+	]);
 
 	useEffect(() => {
-		const monitorLookup = monitors?.reduce((acc, monitor) => {
-			acc[monitor._id] = {
-				_id: monitor._id,
+		const lookup = monitors?.reduce((acc, monitor) => {
+			acc[monitor.id] = {
+				id: monitor.id,
 				name: monitor.name,
 				type: monitor.type,
 			};
 			return acc;
 		}, {});
-		setMonitorLookup(monitorLookup);
+		setMonitorLookup(lookup);
 	}, [monitors]);
 
-	const handleAcknowledge = () => {
-		const monitorId = selectedMonitor === "0" ? null : selectedMonitor;
-		acknowledge(setUpdateTrigger, monitorId);
-	};
-
-	if (networkError || networkErrorSummary) {
+	if (networkError) {
 		return (
 			<GenericFallback>
 				<NetworkError />
@@ -75,27 +115,33 @@ const Incidents = () => {
 		);
 	}
 
+	const handleChangePage = (_, newPage) => {
+		setPage(newPage);
+	};
+
+	const handleChangeRowsPerPage = (event) => {
+		setRowsPerPage(parseInt(event.target.value, 10));
+		setPage(0);
+	};
+	const handleOpenDetails = (id) => {
+		if (!id) return;
+		setSelectedIncidentId(id);
+		setIsDetailsOpen(true);
+	};
+
+	const handleCloseDetails = () => {
+		setIsDetailsOpen(false);
+		setSelectedIncidentId(null);
+	};
+
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
-			<Box alignSelf="flex-end">
-				<Button
-					variant="contained"
-					color="accent"
-					onClick={handleAcknowledge}
-					disabled={isLoadingAcknowledge}
-				>
-					{selectedMonitor === "0"
-						? t("incidentsPageActionResolveAll")
-						: t("incidentsPageActionResolveMonitor")}
-				</Button>
-			</Box>
-			<StatusBoxes
-				isLoading={isLoadingSummary}
-				summary={summary}
-			/>
+
+			<IncidentsSummaryPanel updateTrigger={updateTrigger} />
+
 			<OptionsHeader
-				shouldRender={!isLoading}
+				shouldRender={!isLoadingMonitors}
 				monitors={monitorLookup}
 				selectedMonitor={selectedMonitor}
 				setSelectedMonitor={setSelectedMonitor}
@@ -104,17 +150,29 @@ const Incidents = () => {
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
+
 			<IncidentTable
-				isLoading={isLoading}
-				monitors={monitorLookup ? monitorLookup : {}}
-				selectedMonitor={selectedMonitor}
-				filter={filter}
-				dateRange={dateRange}
-				updateTrigger={updateTrigger}
-				setUpdateTrigger={setUpdateTrigger}
+				monitors={monitors || []}
+				incidents={incidents || []}
+				incidentsCount={incidentsCount || 0}
+				isLoading={isLoadingIncidents}
+				networkError={incidentsNetworkError}
+				page={page}
+				rowsPerPage={rowsPerPage}
+				handleChangePage={handleChangePage}
+				handleChangeRowsPerPage={handleChangeRowsPerPage}
+				resolveIncident={resolveIncident}
+				handleUpdateTrigger={handleUpdateTrigger}
+				onOpenDetails={handleOpenDetails}
+			/>
+			<IncidentDetailsModal
+				open={isDetailsOpen}
+				incidentId={selectedIncidentId}
+				onClose={handleCloseDetails}
+				onResolved={handleUpdateTrigger}
 			/>
 		</Stack>
 	);
 };
 
-export default Incidents;
+export default Incidents2;

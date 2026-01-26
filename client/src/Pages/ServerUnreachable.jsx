@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import { networkService } from "../Utils/NetworkService";
-import Alert from "../Components/Alert";
-import { createToast } from "../Utils/toastUtils";
+import { networkService } from "@/Utils/NetworkService.js";
+import Alert from "@/Components/v1/Alert/index.jsx";
+import { createToast } from "@/Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
-import Background from "../assets/Images/background-grid.svg?react";
-import Logo from "../assets/icons/checkmate-icon.svg?react";
-import ThemeSwitch from "../Components/ThemeSwitch";
-import LanguageSelector from "../Components/LanguageSelector";
+import Background from "@/assets/Images/background-grid.svg?react";
+import Logo from "@/assets/icons/checkmate-icon.svg?react";
+import ThemeSwitch from "@/Components/v1/ThemeSwitch/index.jsx";
+import LanguageSelector from "@/Components/LanguageSelector.jsx";
 
 const ServerUnreachable = () => {
 	const theme = useTheme();

@@ -1,18 +1,18 @@
 // Components
 import { Typography, Stack } from "@mui/material";
-import GenericFallback from "../../../Components/GenericFallback";
-import AdminLink from "./Components/AdminLink";
-import ControlsHeader from "./Components/ControlsHeader";
-import SkeletonLayout from "./Components/Skeleton";
-import StatusBar from "./Components/StatusBar";
-import MonitorsList from "./Components/MonitorsList";
-import Breadcrumbs from "../../../Components/Breadcrumbs/index.jsx";
-import TextLink from "../../../Components/TextLink";
+import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
+import AdminLink from "./Components/AdminLink/index.jsx";
+import ControlsHeader from "./Components/ControlsHeader/index.jsx";
+import SkeletonLayout from "./Components/Skeleton/index.jsx";
+import StatusBar from "./Components/StatusBar/index.jsx";
+import MonitorsList from "./Components/MonitorsList/index.jsx";
+import Breadcrumbs from "@/Components/v1/Breadcrumbs/index.jsx";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
 
 // Utils
-import { useStatusPageFetch } from "./Hooks/useStatusPageFetch";
+import { useStatusPageFetch } from "./Hooks/useStatusPageFetch.jsx";
 import { useTheme } from "@emotion/react";
-import { useIsAdmin } from "../../../Hooks/useIsAdmin";
+import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
