@@ -2,6 +2,9 @@
 	"common": {
 		"appName": "Checkmate",
 		"monitoringAgentName": "Capture",
+		"labels": {
+			"responseTime": "Response time"
+		},
 		"buttons": {
 			"toggleTheme": "Toggles light & dark",
 			"testNotifications": "Test notifications",
