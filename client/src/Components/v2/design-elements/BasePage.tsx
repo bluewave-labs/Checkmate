@@ -1,15 +1,51 @@
 import Stack from "@mui/material/Stack";
+import Alert from "@mui/material/Alert";
+import Link from "@mui/material/Link";
 import {
 	ErrorFallback,
 	EmptyFallback,
 	EmptyMonitorFallback,
+	BaseFallback,
 } from "@/Components/v2/design-elements/Fallback";
 import { Breadcrumb } from "@/Components/v2/design-elements/Breadcrumb";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
+import { Typography } from "@mui/material";
+
+export const PageSpeedKeyPriorityFallback = () => {
+	return (
+		<BaseFallback>
+			<Alert
+				severity="warning"
+				sx={{
+					width: "100%",
+					maxWidth: 600,
+				}}
+			>
+				<Typography>
+					<Trans
+						i18nKey="common.alerts.pageSpeedApiKey.content"
+						components={{
+							settingsLink: (
+								<Link
+									component={RouterLink}
+									to="/settings"
+									color="inherit"
+									fontWeight="inherit"
+								/>
+							),
+						}}
+					/>
+				</Typography>
+			</Alert>
+		</BaseFallback>
+	);
+};
+
 interface BasePageProps extends StackProps {
 	loading?: boolean;
 	error?: boolean;
@@ -114,6 +150,7 @@ interface MonitorBasePageWithStatesProps extends StackProps {
 	page: string;
 	actionLink?: string;
 	children: React.ReactNode;
+	priorityFallback?: React.ReactNode;
 }
 
 const isEmpty = (items: any[]) => {
@@ -129,11 +166,24 @@ export const MonitorBasePageWithStates = ({
 	page,
 	actionLink,
 	children,
+	priorityFallback,
 	...props
 }: MonitorBasePageWithStatesProps) => {
 	const { t } = useTranslation();
 
 	const showLoading = loading && (!items || items.length === 0);
+
+	if (priorityFallback) {
+		return (
+			<BasePage
+				loading={loading}
+				error={error}
+				{...props}
+			>
+				{priorityFallback}
+			</BasePage>
+		);
+	}
 
 	if (!loading && isEmpty(items)) {
 		return (

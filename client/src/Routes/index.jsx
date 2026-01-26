@@ -20,7 +20,7 @@ import UptimeDetails from "../Pages/Uptime/Details";
 import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
 // PageSpeed
-import PageSpeed from "../Pages/PageSpeed/Monitors/index.jsx";
+import PageSpeed from "../Pages/PageSpeed/Monitors/index";
 import PageSpeedDetails from "../Pages/PageSpeed/Details/index.jsx";
 import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
@@ -63,6 +63,7 @@ import Logs from "../Pages/Logs/index.jsx";
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
+	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
 			<Route
@@ -81,7 +82,7 @@ const Routes = () => {
 					path="/uptime"
 					element={
 						<>
-							<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+							<ThemeProvider theme={v2theme}>
 								<Uptime />
 							</ThemeProvider>
 						</>
@@ -105,7 +106,7 @@ const Routes = () => {
 					path="/uptime/:monitorId/"
 					element={
 						<>
-							<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+							<ThemeProvider theme={v2theme}>
 								<UptimeDetails />
 							</ThemeProvider>
 						</>
@@ -118,7 +119,13 @@ const Routes = () => {
 
 				<Route
 					path="pagespeed"
-					element={<PageSpeed />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeed />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/create"

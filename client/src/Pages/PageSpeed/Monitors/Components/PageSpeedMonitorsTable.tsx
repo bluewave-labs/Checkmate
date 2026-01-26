@@ -1,27 +1,22 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {
-	Table,
-	type Header,
-	Pagination,
-	StatusLabel,
-} from "@/Components/v2/design-elements";
-import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/v2/common";
-import { ActionsMenu } from "@/Components/v2/actions-menu";
+import { Table, Pagination, StatusLabel } from "@/Components/v2/design-elements";
+import { HistogramPageSpeed } from "@/Components/v2/monitors";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import type { Header } from "@/Components/v2/design-elements/Table";
+import { ActionsMenu } from "@/Components/v2/actions-menu";
 
 import { useTranslation } from "react-i18next";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { usePost } from "@/Hooks/UseApi";
-import { useSelector } from "react-redux";
+import { usePatch } from "@/Hooks/UseApi";
 
-import type { Monitor } from "@/Types/Monitor";
+import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/v2/actions-menu";
-import type { RootState } from "@/Types/state";
 
-export const MonitorTable = ({
+export const PageSpeedMonitorsTable = ({
 	monitors,
 	refetch,
 	setSelectedMonitor,
@@ -35,9 +30,9 @@ export const MonitorTable = ({
 	rowsPerPage,
 	setRowsPerPage,
 }: {
-	monitors: Monitor[];
+	monitors: MonitorWithChecks[];
 	refetch: Function;
-	setSelectedMonitor: (monitor: Monitor | null) => void;
+	setSelectedMonitor: Function;
 	sortField: string;
 	setSortField: (field: string) => void;
 	sortOrder: "asc" | "desc";
@@ -50,13 +45,28 @@ export const MonitorTable = ({
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
-	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const {
-		post,
-		// loading: isPosting,
+		patch,
+		// loading: isPatching,
 		// error: postError,
-	} = usePost<any, Monitor>();
+	} = usePatch<any, Monitor>();
+
+	const handlePageChange = (
+		_e: React.MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		setPage(newPage);
+	};
+
+	const handleRowsPerPageChange = (
+		e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) => {
+		const value = Number(e.target.value);
+		setPage(0);
+		setRowsPerPage(value);
+	};
 
 	const handleSort = (e: any, field: string) => {
 		e.preventDefault();
@@ -99,7 +109,7 @@ export const MonitorTable = ({
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
 				action: () => {
-					navigate(`/uptime/configure/${monitor.id}`);
+					navigate(`/pagespeed/configure/${monitor.id}`);
 				},
 			},
 			// {
@@ -113,10 +123,10 @@ export const MonitorTable = ({
 				id: 6,
 				label:
 					monitor.isActive === false
-						? t("pages.common.monitors.actions.resume")
-						: t("pages.common.monitors.actions.pause"),
+						? t("common.buttons.resume")
+						: t("common.buttons.pause"),
 				action: async () => {
-					await post(`/monitors/pause/${monitor.id}`, {});
+					await patch(`/monitors/${monitor.id}/active`);
 					refetch();
 				},
 				closeMenu: true,
@@ -125,16 +135,18 @@ export const MonitorTable = ({
 				id: 7,
 				label: (
 					<Typography color={theme.palette.error.main}>
-						{t("pages.common.monitors.actions.delete")}
+						{t("common.buttons.delete")}
 					</Typography>
 				),
-				action: () => setSelectedMonitor(monitor),
+				action: () => {
+					setSelectedMonitor(monitor);
+				},
 				closeMenu: true,
 			},
 		];
 	};
 
-	const getHeaders = (chartType: string) => {
+	const getHeaders = () => {
 		const renderSortIcon = (isActive: boolean) => (
 			<Box
 				width={16}
@@ -150,6 +162,7 @@ export const MonitorTable = ({
 				) : null}
 			</Box>
 		);
+
 		const headers: Header<Monitor>[] = [
 			{
 				id: "name",
@@ -165,9 +178,8 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "name")}
 					</Stack>
 				),
-
 				render: (row) => {
-					return row?.name;
+					return row.name;
 				},
 			},
 			{
@@ -186,44 +198,24 @@ export const MonitorTable = ({
 					</Stack>
 				),
 				render: (row) => {
-					return (
-						<StatusLabel
-							status={row.status}
-							isActive={row.isActive}
-						/>
-					);
+					return <StatusLabel status={row.status} />;
 				},
 			},
 			{
 				id: "histogram",
-				content: t("pages.uptime.table.headers.responseTime"),
+				content: t("pages.pageSpeed.table.headers.pageSpeedScore"),
 				render: (row) => {
-					if (chartType === "histogram") {
-						return <HistogramResponseTime checks={row.checks} />;
-					} else {
-						return <HeatmapResponseTime checks={row.checks} />;
-					}
+					return (
+						<Stack alignItems={"center"}>
+							<HistogramPageSpeed
+								checks={row.checks}
+								status={row.status}
+							/>
+						</Stack>
+					);
 				},
 			},
-			{
-				id: "type",
-				content: (
-					<Stack
-						gap={theme.spacing(4)}
-						direction={"row"}
-						justifyContent={"center"}
-						alignItems={"center"}
-						onClick={(e) => handleSort(e, "type")}
-						sx={{ cursor: "pointer" }}
-					>
-						{t("common.table.headers.type")}
-						{renderSortIcon(sortField === "type")}
-					</Stack>
-				),
-				render: (row) => {
-					return row.type;
-				},
-			},
+
 			{
 				id: "actions",
 				content: t("common.table.headers.actions"),
@@ -235,15 +227,18 @@ export const MonitorTable = ({
 		return headers;
 	};
 
-	const headers = getHeaders(chartType);
+	let headers = getHeaders();
 
+	if (isSmall) {
+		headers = headers.filter((h) => h.id !== "histogram");
+	}
 	return (
 		<Box>
 			<Table
 				headers={headers}
 				data={monitors}
 				onRowClick={(row) => {
-					navigate(`/uptime/${row.id}`);
+					navigate(`/pagespeed/${row.id}`);
 				}}
 			/>
 			<Pagination
@@ -251,8 +246,8 @@ export const MonitorTable = ({
 				count={count}
 				page={page}
 				rowsPerPage={rowsPerPage}
-				onPageChange={(_e, newPage) => setPage(newPage)}
-				onRowsPerPageChange={(e) => setRowsPerPage(Number(e.target.value))}
+				onPageChange={handlePageChange}
+				onRowsPerPageChange={handleRowsPerPageChange}
 			/>
 		</Box>
 	);

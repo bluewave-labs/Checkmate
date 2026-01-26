@@ -147,7 +147,7 @@ export function DataTable<
 		<TableContainer
 			component={Paper}
 			elevation={0}
-			sx={{ boxShadow: "none" }}
+			sx={{ boxShadow: "none", overflowX: "hidden" }}
 		>
 			<Table
 				sx={{
@@ -173,6 +173,7 @@ export function DataTable<
 						color: theme.palette.text.secondary,
 						padding: `${theme.spacing(7)} ${theme.spacing(8)}`,
 						fontSize: theme.typography.fontSize,
+						overflowX: "hidden",
 					},
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",

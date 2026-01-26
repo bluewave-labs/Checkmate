@@ -8,3 +8,4 @@ export {
 	ToggleButtonInput as ToggleButton,
 	ToggleButtonGroupInput as ToggleButtonGroup,
 } from "./ToggleButton";
+export { DialogInput as Dialog } from "./Dialog";

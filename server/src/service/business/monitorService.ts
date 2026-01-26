@@ -342,7 +342,7 @@ export class MonitorService implements IMonitorService {
 		order?: "asc" | "desc";
 		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
-		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId);
+		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type });
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
@@ -402,9 +402,27 @@ export class MonitorService implements IMonitorService {
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
-		await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
-		await this.checksRepository.deleteByMonitorId(monitor.id);
-		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
 		await this.jobQueue.deleteJob(monitor);
 		return monitor;
 	};
