@@ -43,10 +43,7 @@ const backupAndDropExistingCollection = async () => {
 	}
 	const backupExists = await db.listCollections({ name: BACKUP_COLLECTION }).toArray();
 	if (backupExists.length > 0) {
-		throw new Error(
-			`Backup collection "${BACKUP_COLLECTION}" already exists. ` +
-			`Please remove it manually before running migration.`
-		);
+		throw new Error(`Backup collection "${BACKUP_COLLECTION}" already exists. ` + `Please remove it manually before running migration.`);
 	}
 
 	await db
@@ -142,7 +139,6 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 				continue;
 			}
 
-
 			const { _id, monitorId, teamId, type, ...rest } = doc;
 			const metadata = { monitorId, teamId, type };
 			operations.push({ insertOne: { document: { ...rest, metadata } } });
@@ -182,7 +178,7 @@ export const convertChecksToTimeSeries = async () => {
 		const stats = await migrateBackupData(backedUp);
 		console.log(
 			`Migration completed: ${stats.totalMigrated} documents migrated, ` +
-			`${stats.totalFailed} documents failed (stored in ${FAILED_DOCS_COLLECTION})`
+				`${stats.totalFailed} documents failed (stored in ${FAILED_DOCS_COLLECTION})`
 		);
 	}
 };
