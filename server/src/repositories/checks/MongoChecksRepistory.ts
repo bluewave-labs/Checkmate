@@ -440,11 +440,11 @@ class MongoChecksRepository implements IChecksRepository {
 	) => {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
-			updatedAt: { $gte: startDate, $lte: endDate },
+			createdAt: { $gte: startDate, $lte: endDate },
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },
-			{ $sort: { updatedAt: 1 } },
+			{ $sort: { createdAt: 1 } },
 			{
 				$facet: {
 					uptimePercentage: [
@@ -646,7 +646,7 @@ class MongoChecksRepository implements IChecksRepository {
 					avgTemperatures: { $push: { $ifNull: ["$cpu.temperature", [0]] } },
 					disks: { $push: "$disk" },
 					net: { $push: "$net" },
-					updatedAts: { $push: "$updatedAt" },
+					createdAts: { $push: "$createdAt" },
 					sampleDoc: { $first: "$$ROOT" },
 				},
 			},
@@ -685,7 +685,7 @@ class MongoChecksRepository implements IChecksRepository {
 								bytesSentPerSecond: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.bytes_sent" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.bytes_sent" } }, "$$nIdx"] },
 										},
@@ -695,7 +695,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaBytesRecv: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.bytes_recv" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.bytes_recv" } }, "$$nIdx"] },
 										},
@@ -705,7 +705,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaPacketsSent: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.packets_sent" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.packets_sent" } }, "$$nIdx"] },
 										},
@@ -715,7 +715,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaPacketsRecv: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.packets_recv" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.packets_recv" } }, "$$nIdx"] },
 										},
@@ -725,7 +725,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaErrIn: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.err_in" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.err_in" } }, "$$nIdx"] },
 										},
@@ -735,7 +735,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaErrOut: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.err_out" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.err_out" } }, "$$nIdx"] },
 										},
@@ -745,7 +745,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaDropIn: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_in" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_in" } }, "$$nIdx"] },
 										},
@@ -755,7 +755,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaDropOut: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
 										},
