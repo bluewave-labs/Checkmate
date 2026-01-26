@@ -284,12 +284,12 @@ const CheckSchema = new Schema<CheckDocument>(
 	}
 );
 
-CheckSchema.index({ updatedAt: 1 });
-CheckSchema.index({ "metadata.monitorId": 1, updatedAt: 1 });
-CheckSchema.index({ "metadata.monitorId": 1, updatedAt: -1 });
 CheckSchema.index({ "metadata.monitorId": 1, createdAt: -1 });
-CheckSchema.index({ "metadata.teamId": 1, updatedAt: -1 });
+CheckSchema.index({ "metadata.monitorId": 1, createdAt: 1 });
+CheckSchema.index({ createdAt: 1 });
 CheckSchema.index({ "metadata.teamId": 1, createdAt: -1 });
+CheckSchema.index({ "metadata.monitorId": 1, "metadata.type": 1, createdAt: -1 });
+CheckSchema.index({ "metadata.teamId": 1, status: 1, createdAt: -1 });
 
 const CheckModel = model<CheckDocument>("Check", CheckSchema);
 
