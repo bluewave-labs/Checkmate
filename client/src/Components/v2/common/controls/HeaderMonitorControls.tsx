@@ -6,6 +6,7 @@ import { Settings, Pause, Play, Mail, Bug } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor.js";
 
@@ -13,16 +14,23 @@ interface HeaderMonitorControlsProps {
 	path: string;
 	monitor?: Monitor;
 	isAdmin: boolean;
+	refetch: Function;
 }
 
 export const HeaderMonitorControls = ({
 	path,
 	monitor,
 	isAdmin,
+	refetch,
 }: HeaderMonitorControlsProps) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const {
+		post,
+		loading: isPosting,
+		// error: postError,
+	} = usePost<any, Monitor>();
 
 	if (!monitor) {
 		return null;
@@ -43,11 +51,10 @@ export const HeaderMonitorControls = ({
 				<Button
 					variant="contained"
 					color="secondary"
-					// loading={isSending}
+					loading={isPosting}
 					startIcon={<Icon icon={Mail} />}
-					// disabled={isTestNotificationsDisabled}
-					onClick={() => {
-						// testAllNotifications({ monitorId: monitor?.id });
+					onClick={async () => {
+						await post(`/notifications/test/all`, { monitorId: monitor.id });
 					}}
 					sx={{
 						whiteSpace: "nowrap",
@@ -69,13 +76,11 @@ export const HeaderMonitorControls = ({
 					<Button
 						variant="contained"
 						color="secondary"
-						// loading={isPausing}
+						loading={isPosting}
 						startIcon={monitor?.isActive ? <Icon icon={Pause} /> : <Icon icon={Play} />}
-						onClick={() => {
-							// pauseMonitor({
-							// 	monitorId: monitor?.id,
-							// 	triggerUpdate,
-							// });
+						onClick={async () => {
+							await post(`/monitors/pause/${monitor.id}`, {});
+							await refetch();
 						}}
 					>
 						{monitor?.isActive ? t("pause") : t("resume")}

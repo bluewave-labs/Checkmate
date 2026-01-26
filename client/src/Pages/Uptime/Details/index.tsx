@@ -7,6 +7,7 @@ import {
 	HistogramDetails,
 } from "@/Components/v2/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
+import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -98,7 +99,7 @@ const UptimeDetailsPage = () => {
 		data: checksData,
 		isLoading: checksIsLoading,
 		error: checksError,
-	} = useGet<ChecksResponse>(checksUrl);
+	} = useGet<ChecksResponse>(checksUrl, {}, { keepPreviousData: true });
 
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
@@ -109,6 +110,7 @@ const UptimeDetailsPage = () => {
 				path="uptime"
 				monitor={monitor}
 				isAdmin={isAdmin}
+				refetch={refetchMonitor}
 			/>
 			<MonitorStatBoxes
 				monitor={monitor}
@@ -147,6 +149,14 @@ const UptimeDetailsPage = () => {
 			<HistogramDetails
 				checks={monitorData?.groupedChecks || []}
 				range={dateRange}
+			/>
+			<ChecksTable
+				checks={checks}
+				count={checksCount}
+				page={page}
+				setPage={setPage}
+				rowsPerPage={rowsPerPage}
+				setRowsPerPage={setRowsPerPage}
 			/>
 		</BasePage>
 	);
