@@ -53,8 +53,7 @@ const PageSpeedMonitorsPage = () => {
 
 	const isLoading = monitorsIsLoading || settingsIsLoading;
 
-	const showApiKeyWarning =
-		isAdmin && settingsData && !settingsData.pagespeedKeySet;
+	const showApiKeyWarning = isAdmin && settingsData && !settingsData.pagespeedKeySet;
 
 	const handleConfirm = async () => {
 		if (!selectedMonitor) return;
