@@ -13,6 +13,11 @@
 			"cancel": "Cancel",
 			"confirm": "Confirm"
 		},
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
+			}
+		},
 		"dialogs": {
 			"delete": {
 				"description": "This action cannot be undone.",

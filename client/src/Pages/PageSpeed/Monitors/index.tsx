@@ -3,6 +3,7 @@ import {
 	UpStatusBox,
 	DownStatusBox,
 	PausedStatusBox,
+	PageSpeedKeyPriorityFallback,
 } from "@/Components/v2/design-elements";
 import { Dialog } from "@/Components/v2/inputs";
 import { HeaderCreate } from "@/Components/v2/common";
@@ -52,6 +53,9 @@ const PageSpeedMonitorsPage = () => {
 
 	const isLoading = monitorsIsLoading || settingsIsLoading;
 
+	const showApiKeyWarning =
+		isAdmin && settingsData && !settingsData.pagespeedKeySet;
+
 	const handleConfirm = async () => {
 		if (!selectedMonitor) return;
 		await deleteFn(`/monitors/${selectedMonitor.id}`);
@@ -70,6 +74,7 @@ const PageSpeedMonitorsPage = () => {
 			items={monitors || []}
 			page="pageSpeed"
 			actionLink="/pagespeed/create"
+			priorityFallback={showApiKeyWarning ? <PageSpeedKeyPriorityFallback /> : undefined}
 		>
 			<HeaderCreate
 				path="/pagespeed/create"

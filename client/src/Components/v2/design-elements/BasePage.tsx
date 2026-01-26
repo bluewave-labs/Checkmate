@@ -12,13 +12,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 export const PageSpeedKeyPriorityFallback = () => {
-	const theme = useTheme();
-	const { t } = useTranslation();
-
 	return (
 		<BaseFallback>
 			<Alert
@@ -26,23 +24,23 @@ export const PageSpeedKeyPriorityFallback = () => {
 				sx={{
 					width: "100%",
 					maxWidth: 600,
-					backgroundColor: theme.palette.warning.light,
-					color: theme.palette.warning.contrastText,
-					"& .MuiAlert-icon": {
-						color: theme.palette.warning.contrastText,
-					},
 				}}
 			>
-				{t("pageSpeedWarning")}{" "}
-				<Link
-					component={RouterLink}
-					to="/settings"
-					color="inherit"
-					fontWeight="inherit"
-				>
-					{t("pageSpeedLearnMoreLink")}
-				</Link>{" "}
-				{t("pageSpeedAddApiKey")}
+				<Typography>
+					<Trans
+						i18nKey="common.alerts.pageSpeedApiKey.content"
+						components={{
+							settingsLink: (
+								<Link
+									component={RouterLink}
+									to="/settings"
+									color="inherit"
+									fontWeight="inherit"
+								/>
+							),
+						}}
+					/>
+				</Typography>
 			</Alert>
 		</BaseFallback>
 	);
@@ -178,8 +176,8 @@ export const MonitorBasePageWithStates = ({
 	if (priorityFallback) {
 		return (
 			<BasePage
-				loading={false}
-				error={false}
+				loading={loading}
+				error={error}
 				{...props}
 			>
 				{priorityFallback}
