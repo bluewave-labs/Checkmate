@@ -78,6 +78,8 @@ const createTimeSeriesCollection = async (backedUp: boolean) => {
 				{ key: { "metadata.monitorId": 1, createdAt: 1 } },
 				{ key: { "metadata.monitorId": 1, createdAt: -1 } },
 				{ key: { "metadata.teamId": 1, createdAt: -1 } },
+				{ key: { "metadata.monitorId": 1, "metadata.type": 1, createdAt: -1 } },
+				{ key: { "metadata.teamId": 1, status: 1, createdAt: -1 } },
 			]);
 	} catch (error) {
 		if (backedUp) {
