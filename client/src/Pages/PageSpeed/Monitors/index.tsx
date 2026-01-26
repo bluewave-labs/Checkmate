@@ -1,15 +1,16 @@
 import {
 	MonitorBasePageWithStates,
-	// UpStatusBox,
-	// DownStatusBox,
-	// PausedStatusBox,
+	UpStatusBox,
+	DownStatusBox,
+	PausedStatusBox,
 } from "@/Components/v2/design-elements";
 import { Dialog } from "@/Components/v2/inputs";
 import { HeaderCreate } from "@/Components/v2/common";
-// import Stack from "@mui/material/Stack";
+import Stack from "@mui/material/Stack";
 import { PageSpeedMonitorsTable } from "@/Pages/PageSpeed/Monitors/Components/PageSpeedMonitorsTable";
 import type { Monitor } from "@/Types/Monitor";
 
+import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -19,6 +20,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 
 const PageSpeedMonitorsPage = () => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 	const { deleteFn, loading: isDeleting } = useDelete();
 
@@ -46,7 +48,7 @@ const PageSpeedMonitorsPage = () => {
 
 	const monitors = monitorsData?.monitors;
 	const monitorsCount = monitorsData?.count;
-	// const summary = monitorsData?.summary;
+	const summary = monitorsData?.summary;
 
 	const isLoading = monitorsIsLoading || settingsIsLoading;
 
@@ -74,14 +76,14 @@ const PageSpeedMonitorsPage = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			{/* <Stack
+			<Stack
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(8)}
 			>
 				<UpStatusBox n={summary?.upMonitors || 0} />
 				<DownStatusBox n={summary?.downMonitors || 0} />
 				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack> */}
+			</Stack>
 			<PageSpeedMonitorsTable
 				monitors={monitors || []}
 				refetch={refetch}

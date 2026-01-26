@@ -24,6 +24,7 @@ import type { RootState } from "@/Types/state";
 export const MonitorTable = ({
 	monitors,
 	refetch,
+	setSelectedMonitor,
 	sortField,
 	setSortField,
 	sortOrder,
@@ -36,6 +37,7 @@ export const MonitorTable = ({
 }: {
 	monitors: Monitor[];
 	refetch: Function;
+	setSelectedMonitor: (monitor: Monitor | null) => void;
 	sortField: string;
 	setSortField: (field: string) => void;
 	sortOrder: "asc" | "desc";
@@ -126,9 +128,7 @@ export const MonitorTable = ({
 						{t("pages.common.monitors.actions.delete")}
 					</Typography>
 				),
-				action: () => {
-					// setSelectedMonitor(monitor);
-				},
+				action: () => setSelectedMonitor(monitor),
 				closeMenu: true,
 			},
 		];

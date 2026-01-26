@@ -5,14 +5,14 @@ import {
 	DownStatusBox,
 	PausedStatusBox,
 } from "@/Components/v2/design-elements";
-import { TextField } from "@/Components/v2/inputs";
+import { TextField, Dialog } from "@/Components/v2/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/v2/common";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useGet } from "@/Hooks/UseApi";
+import { useGet, useDelete } from "@/Hooks/UseApi";
 import type { Monitor, MonitorType, MonitorsWithChecksResponse } from "@/Types/Monitor";
 import { useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -40,6 +40,8 @@ const UptimeMonitorsPage = () => {
 	const [search, setSearch] = useState<string>("");
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+	const isDialogOpen = Boolean(selectedMonitor);
 
 	// Convert filter selections to API filter values
 	// Status: "up" -> true, "down" -> false
@@ -88,6 +90,7 @@ const UptimeMonitorsPage = () => {
 		data: monitors,
 		isLoading: monitorsLoading,
 		error,
+		refetch: refetchMonitorsAndSummary,
 	} = useGet<Monitor[]>(
 		"/monitors/team?type=http&type=ping&type=port&type=docker",
 		{},
@@ -107,6 +110,9 @@ const UptimeMonitorsPage = () => {
 
 	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};
 
+	// Delete hook
+	const { deleteFn, loading: isDeleting } = useDelete();
+
 	// Handlers
 	const handleClearFilters = useCallback(() => {
 		setSelectedTypes([]);
@@ -114,6 +120,18 @@ const UptimeMonitorsPage = () => {
 		setSelectedState("");
 		setSearch("");
 	}, []);
+
+	const handleConfirm = async () => {
+		if (!selectedMonitor) return;
+		await deleteFn(`/monitors/${selectedMonitor.id}`);
+		setSelectedMonitor(null);
+		refetch();
+		refetchMonitorsAndSummary();
+	};
+
+	const handleCancel = () => {
+		setSelectedMonitor(null);
+	};
 
 	const isLoading = monitorsLoading || monitorsWithChecksLoading;
 
@@ -164,6 +182,7 @@ const UptimeMonitorsPage = () => {
 			<MonitorTable
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
+				setSelectedMonitor={setSelectedMonitor}
 				count={count || 0}
 				page={page}
 				setPage={setPage}
@@ -181,6 +200,14 @@ const UptimeMonitorsPage = () => {
 					);
 					setPage(0);
 				}}
+			/>
+			<Dialog
+				open={isDialogOpen}
+				title={t("common.dialogs.delete.title")}
+				content={t("common.dialogs.delete.description")}
+				onConfirm={handleConfirm}
+				onCancel={handleCancel}
+				loading={isDeleting}
 			/>
 		</MonitorBasePageWithStates>
 	);
