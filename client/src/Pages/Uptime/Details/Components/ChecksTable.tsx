@@ -20,7 +20,7 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 		},
 		{
 			id: "date",
-			content: t("checks.table.headers.dateTime"),
+			content: t("pages.checks.table.headers.dateTime"),
 			render: (row) => {
 				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone);
 			},
@@ -34,7 +34,7 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 		},
 		{
 			id: "statusCode",
-			content: t("checks.table.headers.statusCode"),
+			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
 				return row.statusCode || "N/A";
 			},

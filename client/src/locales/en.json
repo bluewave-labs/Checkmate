@@ -208,6 +208,14 @@
 					"placeholder": "Search monitors..."
 				}
 			}
+		},
+		"checks": {
+			"table": {
+				"headers": {
+					"dateTime": "Date & time",
+					"statusCode": "Status code"
+				}
+			}
 		}
 	},
 	"distributedUptimeStatusCreateStatusPage": "status page",

@@ -75,7 +75,7 @@ export const HistogramStatus = ({
 		if (!active || !payload?.length) return null;
 		const d = payload[0]?.payload;
 		const avg = d?.avgResponseTime ?? 0;
-		const titleText = t("common.charts.labels.averageRepsonseTime");
+		const titleText = t("common.charts.labels.averageResponseTime");
 		const fmt = range === "30d" ? "MMM D, YYYY" : "ddd, MMM D, YYYY, h:mm A";
 		let dateLabel = "";
 		if (d?._id) {

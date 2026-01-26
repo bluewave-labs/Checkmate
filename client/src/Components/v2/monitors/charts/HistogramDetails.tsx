@@ -84,7 +84,6 @@ export const HistogramDetails = ({
 	checks: GroupedCheck[];
 	range: string;
 }) => {
-	console.log(range);
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	return (
