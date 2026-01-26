@@ -33,9 +33,7 @@ export const HistogramPageSpeedTooltip = ({
 			<Typography>
 				{formatDateWithTz(data?.date, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone)}
 			</Typography>
-			<Typography>
-				Score: {data?.score}
-			</Typography>
+			<Typography>Score: {data?.score}</Typography>
 		</Stack>
 	);
 };
