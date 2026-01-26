@@ -24,7 +24,9 @@ const PageSpeedDetails = () => {
 		error,
 		refetch,
 	} = useGet<PageSpeedDetailsResponse>(
-		monitorId ? `/monitors/pagespeed/details/${monitorId}?dateRange=day` : null
+		monitorId ? `/monitors/pagespeed/details/${monitorId}?dateRange=day` : null,
+		{},
+		{ keepPreviousData: true, refreshInterval: 30000 }
 	);
 
 	const monitor = monitorData?.monitor;
