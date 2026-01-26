@@ -39,7 +39,7 @@
 				"status": "Status",
 				"type": "Type"
 			},
-			"empty": "Nothing h"
+			"empty": "Nothing here"
 		},
 		"charts": {
 			"labels": {
@@ -227,6 +227,21 @@
 			"table": {
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
+				}
+			},
+			"charts": {
+				"common": {
+					"cls": "Cumulative Layout Shift (CLS)",
+					"fcp": "First Contentful Paint (FCP)",
+					"lcp": "Largest Contentful Paint (LCP)",
+					"si": "Speed Index (SI)",
+					"tbt": "Total Blocking Time (TBT)"
+				},
+				"pie": { "title": "Performance report" },
+				"legend": {
+					"title": "PageSpeed report",
+
+					"weight": "Weight"
 				}
 			}
 		}

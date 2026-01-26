@@ -34,7 +34,6 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 			>
 				<PulseDot color={getStatusColor(monitor.status, theme)} />
 				<Typography
-					color={theme.palette.text.secondary}
 					fontSize={typographyLevels.l}
 					fontWeight={"bolder"}
 					fontFamily={"monospace"}

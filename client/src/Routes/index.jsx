@@ -133,7 +133,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/:monitorId"
-					element={<PageSpeedDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeedDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"

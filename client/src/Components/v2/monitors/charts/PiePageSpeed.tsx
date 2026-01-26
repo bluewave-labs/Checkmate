@@ -1,5 +1,6 @@
 import { BaseChart } from "@/Components/v2/design-elements";
 import { FileText } from "lucide-react";
+import type { Check, CheckAudits } from "@/Types/Check";
 import { Pie, PieChart, ResponsiveContainer, Label } from "recharts";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -29,19 +30,20 @@ const CenterLabel = ({ viewBox, value }: any) => {
 	);
 };
 
-export const PiePageSpeed = ({ latestCheck }: { latestCheck: any }) => {
+export const PiePageSpeed = ({ latestCheck }: { latestCheck?: Check }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const [hoverTitle, setHoverTitle] = useState<string | null>(null);
 
+	if (!latestCheck) return null;
 	const LABELS: Record<string, string> = {
-		FCP: t("common.charts.pageSpeed.fcp"),
-		SI: t("common.charts.pageSpeed.si"),
-		LCP: t("common.charts.pageSpeed.lcp"),
-		TBT: t("common.charts.pageSpeed.tbt"),
-		CLS: t("common.charts.pageSpeed.cls"),
+		FCP: t("pages.pageSpeed.charts.common.fcp"),
+		SI: t("pages.pageSpeed.charts.common.si"),
+		LCP: t("pages.pageSpeed.charts.common.lcp"),
+		TBT: t("pages.pageSpeed.charts.common.tbt"),
+		CLS: t("pages.pageSpeed.charts.common.cls"),
 	};
-	const metrics = [
+	const metrics: { key: keyof CheckAudits; color: string; weight: number }[] = [
 		{ key: "fcp", color: alpha("#1DE9B6", 0.6), weight: 0.1 },
 		{ key: "si", color: alpha("#7C4DFF", 0.6), weight: 0.1 },
 		{ key: "lcp", color: alpha("#FFB200", 0.6), weight: 0.25 },
@@ -50,7 +52,8 @@ export const PiePageSpeed = ({ latestCheck }: { latestCheck: any }) => {
 	];
 
 	const scores = metrics.flatMap(({ key, color, weight }) => {
-		const val = Math.floor((latestCheck?.[key] ?? 0) * 100);
+		const audit = latestCheck?.audits?.[key];
+		const val = Math.floor((audit?.score ?? 0) * 100);
 		const inverse = 100 - val;
 		return [
 			{
@@ -71,12 +74,11 @@ export const PiePageSpeed = ({ latestCheck }: { latestCheck: any }) => {
 	});
 
 	const totalScore =
-		(latestCheck?.fcp || 0) * 0.1 +
-		(latestCheck?.si || 0) * 0.1 +
-		(latestCheck?.lcp || 0) * 0.25 +
-		(latestCheck?.tbt || 0) * 0.3 +
-		(latestCheck?.cls || 0) * 0.25;
-
+		(latestCheck.audits?.fcp?.score || 0) * 0.1 +
+		(latestCheck.audits?.si?.score || 0) * 0.1 +
+		(latestCheck.audits?.lcp?.score || 0) * 0.25 +
+		(latestCheck.audits?.tbt?.score || 0) * 0.3 +
+		(latestCheck.audits?.cls?.score || 0) * 0.25;
 	const pageSpeedPalette = getPageSpeedPalette(Math.floor(totalScore * 100));
 
 	const score = [
@@ -95,7 +97,7 @@ export const PiePageSpeed = ({ latestCheck }: { latestCheck: any }) => {
 					strokeWidth={1.5}
 				/>
 			}
-			title={t("common.charts.pageSpeed.title")}
+			title={t("pages.pageSpeed.charts.pie.title")}
 		>
 			<Tooltip
 				open={Boolean(hoverTitle)}
