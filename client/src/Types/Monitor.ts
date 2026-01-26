@@ -76,3 +76,8 @@ export interface MonitorDetailsResponse {
 	monitorData: MonitorData;
 	monitorStats: MonitorStats | null;
 }
+
+export interface PageSpeedDetailsResponse {
+	monitor: MonitorWithChecks;
+	monitorStats: MonitorStats | null;
+}

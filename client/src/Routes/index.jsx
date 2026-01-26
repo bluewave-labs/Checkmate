@@ -21,7 +21,7 @@ import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors/index";
-import PageSpeedDetails from "../Pages/PageSpeed/Details/index.jsx";
+import PageSpeedDetails from "../Pages/PageSpeed/Details/";
 import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
 // Infrastructure
@@ -133,7 +133,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/:monitorId"
-					element={<PageSpeedDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeedDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"

@@ -5,3 +5,7 @@ export * from "./charts/RadialAvgResponse";
 export * from "./charts/HistogramDetails";
 export * from "./charts/HistogramPageSpeed";
 export * from "./charts/HistogramPageSpeedTooltip";
+export * from "./charts/PiePageSpeed";
+export * from "./charts/PiePageSpeedLegend";
+export * from "./charts/HistogramPageSpeedDetails";
+export * from "./charts/HistogramPageSpeedDetailsTooltip";
