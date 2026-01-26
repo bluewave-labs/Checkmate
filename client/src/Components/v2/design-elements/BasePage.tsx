@@ -1,8 +1,11 @@
 import Stack from "@mui/material/Stack";
+import Alert from "@mui/material/Alert";
+import Link from "@mui/material/Link";
 import {
 	ErrorFallback,
 	EmptyFallback,
 	EmptyMonitorFallback,
+	BaseFallback,
 } from "@/Components/v2/design-elements/Fallback";
 import { Breadcrumb } from "@/Components/v2/design-elements/Breadcrumb";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -10,6 +13,41 @@ import CircularProgress from "@mui/material/CircularProgress";
 import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
+
+export const PageSpeedKeyPriorityFallback = () => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+
+	return (
+		<BaseFallback>
+			<Alert
+				severity="warning"
+				sx={{
+					width: "100%",
+					maxWidth: 600,
+					backgroundColor: theme.palette.warning.light,
+					color: theme.palette.warning.contrastText,
+					"& .MuiAlert-icon": {
+						color: theme.palette.warning.contrastText,
+					},
+				}}
+			>
+				{t("pageSpeedWarning")}{" "}
+				<Link
+					component={RouterLink}
+					to="/settings"
+					color="inherit"
+					fontWeight="inherit"
+				>
+					{t("pageSpeedLearnMoreLink")}
+				</Link>{" "}
+				{t("pageSpeedAddApiKey")}
+			</Alert>
+		</BaseFallback>
+	);
+};
+
 interface BasePageProps extends StackProps {
 	loading?: boolean;
 	error?: boolean;
@@ -114,6 +152,7 @@ interface MonitorBasePageWithStatesProps extends StackProps {
 	page: string;
 	actionLink?: string;
 	children: React.ReactNode;
+	priorityFallback?: React.ReactNode;
 }
 
 const isEmpty = (items: any[]) => {
@@ -129,11 +168,24 @@ export const MonitorBasePageWithStates = ({
 	page,
 	actionLink,
 	children,
+	priorityFallback,
 	...props
 }: MonitorBasePageWithStatesProps) => {
 	const { t } = useTranslation();
 
 	const showLoading = loading && (!items || items.length === 0);
+
+	if (priorityFallback) {
+		return (
+			<BasePage
+				loading={false}
+				error={false}
+				{...props}
+			>
+				{priorityFallback}
+			</BasePage>
+		);
+	}
 
 	if (!loading && isEmpty(items)) {
 		return (

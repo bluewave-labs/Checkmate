@@ -30,7 +30,7 @@ const PageSpeedMonitorsPage = () => {
 		isLoading: monitorsIsLoading,
 		error: monitorsError,
 		refetch,
-	} = useGet<MonitorsWithChecksResponse>(monitorsUrl);
+	} = useGet<MonitorsWithChecksResponse>(monitorsUrl, {}, { refreshInterval: 30000 });
 
 	const settingsUrl = "/settings";
 	const {
