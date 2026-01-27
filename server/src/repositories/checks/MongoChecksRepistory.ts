@@ -333,32 +333,20 @@ class MongoChecksRepository implements IChecksRepository {
 		if (monitorIds.length === 0) {
 			return {};
 		}
-		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const checkGroups = await CheckModel.aggregate([
-			{
-				$match: {
-					"metadata.monitorId": { $in: mongoIds },
-				},
-			},
-			{ $sort: { "metadata.monitorId": 1, createdAt: -1 } },
-			{
-				$group: {
-					_id: "$metadata.monitorId",
-					latestChecks: {
-						$topN: {
-							n: limitPerMonitor,
-							sortBy: { createdAt: -1 },
-							output: "$$ROOT",
-						},
-					},
-				},
-			},
-		]);
 
-		return checkGroups.reduce<LatestChecksMap>((acc, group) => {
-			const monitorId = group._id.toString();
-			acc[monitorId] = (group.latestChecks ?? []).map((doc: CheckDocument) => this.toEntity(doc));
+		const results = await Promise.all(
+			monitorIds.map(async (monitorId) => {
+				const docs = await CheckModel.find({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) })
+					.sort({ createdAt: -1 })
+					.limit(limitPerMonitor)
+					.lean();
+				return { monitorId, docs };
+			})
+		);
+
+		return results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
+			acc[monitorId] = docs.map((doc) => this.toEntity(doc as CheckDocument));
 			return acc;
 		}, {});
 	};
