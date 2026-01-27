@@ -178,7 +178,11 @@ export interface ChecksSummary {
 	cannotResolveChecks: number;
 }
 
-export type NormalizedCheck<T extends Check = Check> = T & {
+export interface HasResponseTime {
+	responseTime: number;
+}
+
+export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
 	originalResponseTime: number;
 };
 

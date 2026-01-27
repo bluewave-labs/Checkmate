@@ -9,6 +9,7 @@ import type {
 	Check,
 	HardwareStatusPayload,
 	PageSpeedStatusPayload,
+	CheckSnapshot,
 } from "@/types/index.js";
 const SERVICE_NAME = "StatusService";
 
@@ -24,13 +25,11 @@ export interface IStatusService {
 
 export class StatusService implements IStatusService {
 	static SERVICE_NAME = SERVICE_NAME;
-	private db: any;
 	private logger: any;
 	private buffer: any;
 	private monitorsRepository: IMonitorsRepository;
 
-	constructor({ db, logger, buffer, monitorsRepository }: { db: any; logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
-		this.db = db;
+	constructor({ logger, buffer, monitorsRepository }: { logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
 		this.logger = logger;
 		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
@@ -175,12 +174,39 @@ export class StatusService implements IStatusService {
 			// Update running stats
 			this.updateRunningStats({ monitor, networkResponse: statusResponse });
 
-			// If the status window size has changed, empty
-
 			monitor.statusWindow = monitor.statusWindow || [];
 			monitor.statusWindow.push(status);
 			while (monitor.statusWindow.length > monitor.statusWindowSize) {
 				monitor.statusWindow.shift();
+			}
+
+			// Update recentChecks with check snapshot (excludes metadata, ack, expiry, __v, updatedAt)
+			const checkSnapshot: CheckSnapshot = {
+				id: check.id,
+				status: check.status,
+				responseTime: check.responseTime,
+				timings: check.timings,
+				statusCode: check.statusCode,
+				message: check.message,
+				cpu: check.cpu,
+				memory: check.memory,
+				disk: check.disk,
+				host: check.host,
+				errors: check.errors,
+				capture: check.capture,
+				net: check.net,
+				accessibility: check.accessibility,
+				bestPractices: check.bestPractices,
+				seo: check.seo,
+				performance: check.performance,
+				audits: check.audits,
+				createdAt: check.createdAt,
+			};
+			monitor.recentChecks = monitor.recentChecks || [];
+			monitor.recentChecks.push(checkSnapshot);
+			const maxRecentChecks = 25;
+			while (monitor.recentChecks.length > maxRecentChecks) {
+				monitor.recentChecks.shift();
 			}
 
 			if (monitor.status === undefined || monitor.status === null) {

@@ -1,4 +1,7 @@
 import type { Check } from "@/types/check.js";
+
+export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt">;
+
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
@@ -42,6 +45,7 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
+	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
 }
@@ -54,7 +58,7 @@ export interface MonitorsSummary {
 }
 
 export interface MonitorWithChecks extends Monitor {
-	checks: Check[];
+	checks: Check[] | CheckSnapshot[];
 }
 
 export interface MonitorsWithChecksByTeamIdResult {

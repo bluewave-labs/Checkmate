@@ -309,6 +309,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
+			recentChecks: (doc.recentChecks ?? []).map((check: any) => ({ ...check, createdAt: check.createdAt instanceof Date ? check.createdAt.toISOString() : check.createdAt })),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -392,6 +393,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
+			recentChecks: (doc.recentChecks ?? []).map((check: any) => ({ ...check, createdAt: check.createdAt instanceof Date ? check.createdAt.toISOString() : check.createdAt })),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 			checks,
