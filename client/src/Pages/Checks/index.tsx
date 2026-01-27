@@ -19,7 +19,7 @@ const Checks = () => {
 
 	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState<string>(monitorId || "0");
-	const [dateRange, setDateRange] = useState<string>("hour");
+	const [dateRange, setDateRange] = useState<string>("recent");
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 

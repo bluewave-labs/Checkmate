@@ -19,7 +19,7 @@ import mongoose from "mongoose";
 const SERVICE_NAME = "StatusService";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setDate(new Date().getDate() - 2)),
+	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
 	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
 	day: new Date(new Date().setDate(new Date().getDate() - 1)),
 	week: new Date(new Date().setDate(new Date().getDate() - 7)),
