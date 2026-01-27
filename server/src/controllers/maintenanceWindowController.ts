@@ -80,7 +80,10 @@ class MaintenanceWindowController {
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByMonitorId({ monitorId: req.params.monitorId as string, teamId });
+			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByMonitorId({
+				monitorId: req.params.monitorId as string,
+				teamId,
+			});
 
 			return res.status(200).json({
 				success: true,
@@ -115,7 +118,11 @@ class MaintenanceWindowController {
 
 			const teamId = requireTeamId(req.user?.teamId);
 
-			const editedMaintenanceWindow = await this.maintenanceWindowService.editMaintenanceWindow({ id: req.params.id as string, body: req.body, teamId });
+			const editedMaintenanceWindow = await this.maintenanceWindowService.editMaintenanceWindow({
+				id: req.params.id as string,
+				body: req.body,
+				teamId,
+			});
 			return res.status(200).json({
 				success: true,
 				msg: "Maintenance window edited successfully",
