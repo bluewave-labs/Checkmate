@@ -368,6 +368,7 @@ class MongoChecksRepository implements IChecksRepository {
 	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
 		const matchStage = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -377,44 +378,17 @@ class MongoChecksRepository implements IChecksRepository {
 		const checks = await CheckModel.aggregate([
 			{ $match: matchStage },
 			{
-				$facet: {
-					summary: [
-						{
-							$group: {
-								_id: null,
-								totalChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
-								resolvedChecks: {
-									$sum: {
-										$cond: [{ $and: [{ $eq: ["$ack", true] }, { $eq: ["$status", false] }] }, 1, 0],
-									},
-								},
-								downChecks: {
-									$sum: {
-										$cond: [{ $and: [{ $eq: ["$ack", false] }, { $eq: ["$status", false] }] }, 1, 0],
-									},
-								},
-								cannotResolveChecks: {
-									$sum: {
-										$cond: [{ $eq: ["$statusCode", 5000] }, 1, 0],
-									},
-								},
-							},
-						},
-						{
-							$project: {
-								_id: 0,
-							},
-						},
-					],
+				$group: {
+					_id: null,
+					totalChecks: { $sum: 1 },
+					resolvedChecks: { $sum: { $cond: [{ $eq: ["$ack", true] }, 1, 0] } },
+					downChecks: { $sum: { $cond: [{ $eq: ["$ack", false] }, 1, 0] } },
+					cannotResolveChecks: { $sum: { $cond: [{ $eq: ["$statusCode", 5000] }, 1, 0] } },
 				},
 			},
-			{
-				$project: {
-					summary: { $arrayElemAt: ["$summary", 0] },
-				},
-			},
+			{ $project: { _id: 0 } },
 		]);
-		return checks[0].summary;
+		return checks[0] ?? { totalChecks: 0, resolvedChecks: 0, downChecks: 0, cannotResolveChecks: 0 };
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
