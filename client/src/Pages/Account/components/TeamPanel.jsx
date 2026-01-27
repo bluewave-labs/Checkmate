@@ -268,7 +268,6 @@ const TeamPanel = () => {
 							cursor: isSuperAdmin ? "pointer" : "default",
 						},
 						onRowClick: (row) => {
-							console.log(row);
 							if (isSuperAdmin) {
 								navigate(`/account/team/${row.id}`);
 							}
