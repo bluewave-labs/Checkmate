@@ -10,6 +10,31 @@ PS: **We work closely with contributors on our [Discord channel](https://discord
 
 ---
 
+
+## 🚀 Quick Setup Checklist
+
+Before you dive in, make sure you have these installed:
+
+```bash
+# Check Node.js (v16+ required)
+node --version
+
+# Check npm
+npm --version
+
+# Check Docker
+docker --version
+
+# Check Git
+git --version
+```
+
+**New to contributing?** Start here:
+1. Pick a [`good-first-issue`](https://github.com/bluewave-labs/checkmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+2. Comment that you'd like to work on it
+3. Follow the [setup guide](#set-up-checkmate-locally) below
+4. Join our [Discord](https://discord.com/invite/NAb6H3UTjK) if you get stuck
+
 ## Table of contents
 
 - [How do I...?](#how-do-i)
@@ -66,7 +91,7 @@ cd Checkmate
 Navigate to the Docker dev directory:
 
 ```bash
-cd server/docker/dev
+cd docker/dev
 ```
 
 Build the Docker images:
@@ -78,13 +103,13 @@ Build the Docker images:
 Run MongoDB container:
 
 ```bash
-docker run -d -p 27017:27017 -v $(pwd)/mongo/data:/data/db --name uptime_database_mongo uptime_database_mongo
+docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:6.0
 ```
 
 Navigate back to the root directory:
 
 ```bash
-cd ../../..
+cd ../..
 ```
 
 #### Step 3: Set Up the Backend (Server)
@@ -161,7 +186,7 @@ Start the frontend:
 npm run dev
 ```
 
-The client will run at `http://localhost:5173`.
+The client will run at `http://localhost:5173`.  
 
 #### Step 5: Access the Application
 

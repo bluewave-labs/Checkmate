@@ -1,27 +1,28 @@
-import LeftArrow from "../../../assets/icons/left-arrow.svg?react";
-import LeftArrowDouble from "../../../assets/icons/left-arrow-double.svg?react";
-import LeftArrowLong from "../../../assets/icons/left-arrow-long.svg?react";
+import Icon from "../Icon";
 import PropTypes from "prop-types";
 
 const ArrowLeft = ({ type, color = "#667085", ...props }) => {
 	if (type === "double") {
 		return (
-			<LeftArrowDouble
-				style={{ color }}
+			<Icon
+				name="ChevronsLeft"
+				color={color}
 				{...props}
 			/>
 		);
 	} else if (type === "long") {
 		return (
-			<LeftArrowLong
-				style={{ color }}
+			<Icon
+				name="ArrowLeft"
+				color={color}
 				{...props}
 			/>
 		);
 	} else {
 		return (
-			<LeftArrow
-				style={{ color }}
+			<Icon
+				name="ChevronLeft"
+				color={color}
 				{...props}
 			/>
 		);

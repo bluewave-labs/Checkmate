@@ -1,0 +1,141 @@
+// Components
+import { Box, Stack, Typography, Button } from "@mui/material";
+import Image from "@/Components/v1/Image/index.jsx";
+import Icon from "@/Components/v1/Icon";
+import ThemeSwitch from "@/Components/v1/ThemeSwitch/index.jsx";
+//Utils
+import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+
+const Controls = ({ url, type }) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	const location = useLocation();
+	const currentPath = location.pathname;
+	const navigate = useNavigate();
+
+	if (currentPath.startsWith("/status/uptime/public")) {
+		return null;
+	}
+
+	return (
+		<Stack
+			direction="row"
+			gap={theme.spacing(2)}
+		>
+			<Box>
+				<Button
+					variant="contained"
+					color="secondary"
+					onClick={() => {
+						if (type === "uptime") {
+							navigate(`/status/uptime/configure/${url}`);
+						}
+					}}
+					sx={{
+						px: theme.spacing(5),
+						"& svg": {
+							mr: theme.spacing(3),
+							"& path": {
+								stroke: theme.palette.secondary.contrastText,
+							},
+						},
+					}}
+				>
+					<Icon
+						name="Settings"
+						size={18}
+						style={{ marginRight: "8px" }}
+					/>{" "}
+					{t("configure")}
+				</Button>
+			</Box>
+		</Stack>
+	);
+};
+
+Controls.propTypes = {
+	type: PropTypes.string,
+	url: PropTypes.string,
+};
+
+const ControlsHeader = ({ statusPage, isPublic, url, type = "uptime" }) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	const publicUrl = `/status/uptime/public/${url}`;
+
+	return (
+		<Stack
+			alignSelf="flex-start"
+			direction="row"
+			width="100%"
+			gap={theme.spacing(2)}
+			justifyContent="space-between"
+			alignItems="flex-end"
+		>
+			<Stack
+				direction="row"
+				gap={theme.spacing(8)}
+				alignItems="flex-end"
+			>
+				<Image
+					shouldRender={statusPage?.logo?.data ? true : false}
+					alt={"Company logo"}
+					maxWidth={"300px"}
+					maxHeight={"50px"}
+					base64={statusPage?.logo?.data}
+				/>
+				<Typography
+					variant="h1"
+					overflow="hidden"
+					textOverflow="ellipsis"
+					sx={{
+						maxWidth: { xs: "200px", sm: "100%" },
+					}}
+				>
+					{statusPage?.companyName}
+				</Typography>
+				{statusPage?.isPublished && !isPublic && (
+					<Stack
+						direction="row"
+						alignItems="center"
+						justifyContent="center"
+						onClick={() => {
+							window.open(publicUrl, "_blank", "noopener,noreferrer");
+						}}
+						sx={{
+							display: "inline-flex",
+							":hover": {
+								cursor: "pointer",
+								borderBottom: 1,
+							},
+						}}
+					>
+						<Typography>{t("publicLink")}</Typography>
+						<Icon
+							name="ExternalLink"
+							size={18}
+						/>
+					</Stack>
+				)}
+			</Stack>
+			<Controls
+				url={url}
+				type={type}
+			/>
+			{isPublic && <ThemeSwitch />}
+		</Stack>
+	);
+};
+
+ControlsHeader.propTypes = {
+	url: PropTypes.string,
+	statusPage: PropTypes.object,
+	isPublic: PropTypes.bool,
+	type: PropTypes.string,
+};
+
+export default ControlsHeader;

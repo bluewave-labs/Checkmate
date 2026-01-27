@@ -1,8 +1,61 @@
 {
+	"common": {
+		"appName": "Checkmate",
+		"monitoringAgentName": "Capture",
+		"labels": {
+			"responseTime": "Response time"
+		},
+		"buttons": {
+			"toggleTheme": "Toggles light & dark",
+			"testNotifications": "Test notifications",
+			"create": "Create",
+			"incidents": "Incidents",
+			"pause": "Pause",
+			"resume": "Resume",
+			"delete": "Delete",
+			"cancel": "Cancel",
+			"confirm": "Confirm"
+		},
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
+			}
+		},
+		"dialogs": {
+			"delete": {
+				"description": "This action cannot be undone.",
+				"title": "Are you sure you want to delete this?"
+			}
+		},
+		"toasts": {
+			"networkError": "Network error",
+			"checkConnection": "Please check your connection",
+			"unknownError": "Unknown error"
+		},
+		"table": {
+			"headers": {
+				"actions": "Actions",
+				"active": "Active",
+				"message": "Message",
+				"monitor": "Monitor",
+				"name": "Name",
+				"status": "Status",
+				"type": "Type"
+			},
+			"empty": "Nothing here"
+		},
+		"charts": {
+			"labels": {
+				"uptime": "Uptime",
+				"downtime": "Downtime",
+				"averageResponseTime": "Average response time",
+				"low": "Low",
+				"high": "High"
+			}
+		}
+	},
 	"submit": "Submit",
 	"title": "Title",
-	"distributedStatusHeaderText": "Real-time, real-device coverage",
-	"distributedStatusSubHeaderText": "Powered by millions devices worldwide, view a system performance by global region, country or city",
 	"settingsDisabled": "Disabled",
 	"settingsSuccessSaved": "Settings saved successfully",
 	"settingsFailedToSave": "Failed to save settings",
@@ -20,6 +73,13 @@
 	"delete": "Delete",
 	"configure": "Configure",
 	"responseTime": "Response time",
+	"responseTimeBreakdown": "Response time breakdown",
+	"dnsLookup": "DNS lookup",
+	"tcpConnection": "TCP connection",
+	"tlsHandshake": "TLS handshake",
+	"waitTime": "Wait time",
+	"timeToFirstByte": "Time to first byte",
+	"download": "Download",
 	"ms": "ms",
 	"bar": "Bar",
 	"area": "Area",
@@ -31,18 +91,11 @@
 	"webhookSendSuccess": "Webhook notification sent successfully",
 	"webhookSendError": "Error sending webhook notification to {platform}",
 	"webhookUnsupportedPlatform": "Unsupported platform: {platform}",
-	"distributedRightCategoryTitle": "Monitor",
-	"distributedStatusServerMonitors": "Server Monitors",
-	"distributedStatusServerMonitorsDescription": "Monitor status of related servers",
 	"distributedUptimeCreateSelectURL": "Here you can select the URL of the host, together with the type of monitor.",
 	"distributedUptimeCreateChecks": "Checks to perform",
 	"distributedUptimeCreateChecksDescription": "You can always add or remove checks after adding your site.",
-	"distributedUptimeCreateIncidentNotification": "Incident notifications",
-	"distributedUptimeCreateIncidentDescription": "When there is an incident, notify users.",
 	"distributedUptimeCreateAdvancedSettings": "Advanced settings",
 	"distributedUptimeDetailsNoMonitorHistory": "There is no check history for this monitor yet.",
-	"distributedUptimeDetailsStatusHeaderUptime": "Uptime:",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "Last updated",
 	"notifications": {
 		"enableNotifications": "Enable {{platform}} notifications",
 		"testNotification": "Test notification",
@@ -115,37 +168,87 @@
 			"failed": "Failed to send test notification"
 		}
 	},
-	"testLocale": "testLocale",
 	"add": "Add",
 	"monitors": "monitors",
-	"distributedUptimeStatusCreateStatusPage": "status page",
-	"distributedUptimeStatusCreateStatusPageAccess": "Access",
-	"distributedUptimeStatusCreateStatusPageReady": "If your status page is ready, you can mark it as published.",
-	"distributedUptimeStatusBasicInfoHeader": "Basic Information",
-	"distributedUptimeStatusBasicInfoDescription": "Define company name and the subdomain that your status page points to.",
-	"distributedUptimeStatusLogoHeader": "Logo",
-	"distributedUptimeStatusLogoDescription": "Upload a logo for your status page",
-	"distributedUptimeStatusLogoUploadButton": "Upload logo",
-	"distributedUptimeStatusStandardMonitorsHeader": "Standard Monitors",
-	"distributedUptimeStatusStandardMonitorsDescription": "Attach standard monitors to your status page.",
-	"distributedUptimeStatusCreateYour": "Create your",
-	"distributedUptimeStatusEditYour": "Edit your",
-	"distributedUptimeStatusPublishedLabel": "Published and visible to the public",
-	"distributedUptimeStatusCompanyNameLabel": "Company name",
-	"distributedUptimeStatusPageAddressLabel": "Your status page address",
-	"distributedUptimeStatus30Days": "30 days",
-	"distributedUptimeStatus60Days": "60 days",
-	"distributedUptimeStatus90Days": "90 days",
-	"distributedUptimeStatusPageNotSetUp": "A status page is not set up.",
-	"distributedUptimeStatusContactAdmin": "Please contact your administrator",
-	"distributedUptimeStatusPageNotPublic": "This status page is not public.",
-	"distributedUptimeStatusPageDeleteDialog": "Do you want to delete this status page?",
-	"distributedUptimeStatusPageDeleteConfirm": "Yes, delete status page",
-	"distributedUptimeStatusPageDeleteDescription": "Once deleted, your status page cannot be retrieved.",
-	"distributedUptimeStatusDevices": "Devices",
-	"distributedUptimeStatusUpt": "UPT",
-	"distributedUptimeStatusUptBurned": "UPT Burned",
-	"distributedUptimeStatusUptLogo": "Upt Logo",
+	"pages": {
+		"common": {
+			"monitors": {
+				"status": {
+					"up": "up",
+					"down": "down",
+					"paused": "paused",
+					"initializing": "initializing"
+				},
+				"actions": {
+					"openSite": "Open site",
+					"details": "Details",
+					"incidents": "Incidents",
+					"configure": "Configure",
+					"pause": "Pause",
+					"resume": "Resume",
+					"delete": "Delete"
+				},
+				"statBoxes": {
+					"activeFor": "Active for",
+					"lastCheck": "Last check",
+					"lastResponseTime": "Last response time",
+					"certificateExpiry": "Certificate expiry"
+				}
+			}
+		},
+		"uptime": {
+			"table": {
+				"headers": {
+					"responseTime": "Response time"
+				}
+			},
+			"fallback": {
+				"title": "An uptime monitor is used to:",
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Check if websites or servers are online & responsive",
+					"Alert teams about downtime or performance issues",
+					"Monitor HTTP endpoints, pings, containers & ports",
+					"Track historical uptime and reliability trends"
+				]
+			},
+			"filters": {
+				"search": {
+					"placeholder": "Search monitors..."
+				}
+			}
+		},
+		"checks": {
+			"table": {
+				"headers": {
+					"dateTime": "Date & time",
+					"statusCode": "Status code"
+				}
+			}
+		},
+		"pageSpeed": {
+			"table": {
+				"headers": {
+					"pageSpeedScore": "PageSpeed score"
+				}
+			},
+			"charts": {
+				"common": {
+					"cls": "Cumulative Layout Shift (CLS)",
+					"fcp": "First Contentful Paint (FCP)",
+					"lcp": "Largest Contentful Paint (LCP)",
+					"si": "Speed Index (SI)",
+					"tbt": "Total Blocking Time (TBT)"
+				},
+				"pie": { "title": "Performance report" },
+				"legend": {
+					"title": "PageSpeed report",
+
+					"weight": "Weight"
+				}
+			}
+		}
+	},
 	"incidentsTableNoIncidents": "No incidents recorded",
 	"incidentsTablePaginationLabel": "incidents",
 	"incidentsTableMonitorName": "Monitor Name",
@@ -185,6 +288,8 @@
 	"total": "Total",
 	"cores": "Cores",
 	"frequency": "Frequency",
+	"device": "Device",
+	"mountedOn": "Mounted on",
 	"status": "Status",
 	"cpuPhysical": "CPU (Physical)",
 	"cpuLogical": "CPU (Logical)",
@@ -239,6 +344,7 @@
 	"addMonitors": "Add monitors",
 	"window": "window",
 	"cancel": "Cancel",
+	"close": "Close",
 	"message": "Message",
 	"low": "low",
 	"high": "high",
@@ -456,7 +562,8 @@
 		"team": "Team",
 		"logOut": "Log out",
 		"notifications": "Notifications",
-		"logs": "Logs"
+		"logs": "Logs",
+		"checks": "Checks"
 	},
 	"settingsEmailUser": "Email user - Username for authentication, overrides email address if specified",
 	"state": "State",
@@ -465,6 +572,7 @@
 	"commonSaving": "Saving...",
 	"navControls": "Controls",
 	"incidentsPageTitle": "Incidents",
+	"checksPageTitle": "Checks",
 	"passwordPanel": {
 		"passwordChangedSuccess": "Your password was changed successfully.",
 		"passwordInputIncorrect": "Your password input was incorrect.",
@@ -473,7 +581,7 @@
 		"newPassword": "New password",
 		"enterNewPassword": "Enter your new password",
 		"confirmNewPassword": "Confirm new password",
-		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
+		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`).",
 		"saving": "Saving..."
 	},
 	"emailSent": "Email sent successfully",
@@ -495,18 +603,6 @@
 		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 		"https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard."
-	},
-	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "Capture",
-		"buttons": {
-			"toggleTheme": "Toggles light & dark"
-		},
-		"toasts": {
-			"networkError": "Network error",
-			"checkConnection": "Please check your connection",
-			"unknownError": "Unknown error"
-		}
 	},
 	"auth": {
 		"common": {
@@ -532,7 +628,7 @@
 						},
 						"special": {
 							"beginning": "Must contain at least",
-							"highlighted": "one special character"
+							"highlighted": "one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 						},
 						"number": {
 							"beginning": "Must contain at least",
@@ -557,7 +653,7 @@
 						"uppercase": "Password must contain at least 1 uppercase letter",
 						"lowercase": "Password must contain at least 1 lowercase letter",
 						"number": "Password must contain at least 1 number",
-						"special": "Password must contain at least 1 special character",
+						"special": "Password must contain at least 1 special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)",
 						"incorrect": "The password you provided does not match our records"
 					}
 				},
@@ -781,7 +877,16 @@
 				"error": "Error",
 				"debug": "Debug"
 			}
-		}
+		},
+		"table": {
+			"timestamp": "Timestamp",
+			"level": "Level",
+			"service": "Service",
+			"method": "Method",
+			"message": "Message",
+			"logs": "logs"
+		},
+		"noLogs": "No logs found"
 	},
 	"queuePage": {
 		"title": "Queue",
@@ -897,6 +1002,9 @@
 			"description": "Switch between light and dark mode, or change user interface language.",
 			"labelLanguage": "Language",
 			"labelTheme": "Theme mode",
+			"labelChartType": "Chart type",
+			"chartTypeHistogram": "Histogram",
+			"chartTypeHeatmap": "Heatmap",
 			"title": "Appearance"
 		},
 		"urlSettings": {
@@ -975,6 +1083,10 @@
 	},
 	"pageSpeedLighthouseAPI": "Use the Lighthouse PageSpeed API to monitor your website",
 	"time": {
+		"fifteenSeconds": "15 seconds",
+		"thirtySeconds": "30 seconds",
+		"fifteenMinutes": "15 minutes",
+		"thirtyMinutes": "30 minutes",
 		"threeMinutes": "3 minutes",
 		"fiveMinutes": "5 minutes",
 		"tenMinutes": "10 minutes",
@@ -984,9 +1096,7 @@
 		"oneWeek": "1 week",
 		"fourMinutes": "4 minutes",
 		"oneMinute": "1 minute",
-		"twoMinutes": "2 minutes",
-		"fifteenSeconds": "15 seconds",
-		"thirtySeconds": "30 seconds"
+		"twoMinutes": "2 minutes"
 	},
 	"general": {
 		"noOptionsFound": "No {{unit}} found"
@@ -1055,7 +1165,9 @@
 		}
 	},
 	"incidentsPageActionResolveMonitor": "Resolve monitor incidents",
+	"checksPageActionResolveMonitor": "Resolve monitor checks",
 	"incidentsPageActionResolveAll": "Resolve all incidents",
+	"checksPageActionResolveAllMonitor": "Resolve all checks",
 	"matchMethodOptions": {
 		"equal": "Equal",
 		"equalPlaceholder": "success",
@@ -1129,5 +1241,88 @@
 	"packetsReceivedRate": "Packets Received Rate",
 	"packetsSent": "Packets Sent",
 	"rate": "Rate",
-	"selectInterface": "Select Interface"
+	"selectInterface": "Select Interface",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "Disk Selection",
+			"disk_selection_info": "No disk detected for the moment.",
+			"disk_selection_description": "Select the specific disks you want to monitor."
+		}
+	},
+	"incidentsPage": {
+		"title": "Incidents",
+		"description": "Manage incidents for your monitors. You can resolve incidents here.",
+		"resolved": "Resolved",
+		"active": "Active",
+		"startTime": "Start Time",
+		"endTime": "End Time",
+		"resolutionType": "Resolution Type",
+		"unresolved": "Unresolved",
+		"all": "All",
+		"filterByMonitor": "Filter by monitor",
+		"filterByStatus": "Filter by status",
+		"filterByType": "Filter by type",
+		"filterByDate": "Filter by date",
+		"filterByPriority": "Filter by priority",
+		"incidentsActivePanelError": "Error loading active incidents",
+		"allSystemsAreOperational": "All Systems Are Operational",
+		"incidentsActivePanelTitle": "Total Active Incidents",
+		"incidentsLatestPanelError": "Error loading latest incidents",
+		"incidentsLatestPanelTitle": "Latest Incidents",
+		"incidentsLatestPanelEmpty": "No recent incidents",
+		"incidentItemMonitor": "Monitor",
+		"incidentItemStatus": "Status",
+		"unknownMonitor": "Unknown Monitor",
+		"incidentsStatisticsPanelError": "Error loading statistics",
+		"incidentsStatisticsPanelTitle": "General Statistics",
+		"totalIncidents": "Total Incidents",
+		"mostAffectedMonitor": "Most Affected Monitor",
+		"avgResolutionTime": "Avg. Resolution Time",
+		"resolutions": "Resolutions",
+		"automatic": "Automatic",
+		"manual": "Manual",
+		"incidentResolvedSuccessfully": "Incident resolved successfully",
+		"incidentResolvedFailed": "Error resolving incident",
+		"errorFetchingIncidents": "Error fetching incidents",
+		"errorFetchingIncident": "Error fetching incident",
+		"noIncidentIdProvided": "No incident ID provided",
+		"errorFetchingIncidentSummary": "Error fetching incident summary",
+		"incidentsOptionsHeaderFilterManual": "Manual",
+		"incidentsOptionsHeaderFilterAutomatic": "Automatic",
+		"incidentsOptionsHeaderFilterAll": "All",
+		"incidentsOptionsHeaderFilterActive": "Active",
+		"incidentsOptionsHeaderFilterResolved": "Resolved",
+		"incidentsTableResolved": "Closed",
+		"incidentsTableActionResolveManually": "Resolve Manually",
+		"incidentsTableActionDetails": "Details",
+		"incidentsTableActionGoToMonitor": "Go to monitor",
+		"resolveIncidentDialogTitle": "Resolve Incident",
+		"resolveIncidentDialogDescription": "Are you sure you want to resolve this incident manually?",
+		"resolveIncidentDialogCommentLabel": "Comment (optional)",
+		"resolveIncidentDialogCommentPlaceholder": "Add a comment about the resolution...",
+		"resolveIncidentDialogConfirm": "Resolve",
+		"hours": "hours",
+		"loading": "Loading incident details...",
+		"incidentNotFound": "Incident not found",
+		"incidentDetails": "INCIDENT DETAILS",
+		"activeIncident": "ACTIVE INCIDENT",
+		"resolvedIncident": "RESOLVED INCIDENT",
+		"overview": "OVERVIEW",
+		"URL": "URL",
+		"incidentAnalysis": "INCIDENT ANALYSIS",
+		"timeline": "Timeline",
+		"startedAt": "Started at",
+		"endedAt": "Ended at",
+		"downtime": "Downtime",
+		"errorDetails": "Error details",
+		"resolutionDetails": "Resolution details",
+		"statusCode": "Status code",
+		"resolutionMethod": "Resolution method",
+		"resolvedBy": "Resolved by",
+		"comment": "Comment",
+		"noCommentProvided": "No comment provided",
+		"loadingIncidentDetails": "Loading incident details...",
+		"none": "None",
+		"message": "Message"
+	}
 }

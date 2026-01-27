@@ -1129,5 +1129,12 @@
 	"packetsReceivedRate": "อัตราการรับแพ็กเก็ต",
 	"packetsSent": "แพ็กเก็ตที่ส่ง",
 	"rate": "อัตรา",
-	"selectInterface": "เลือกอินเทอร์เฟซ"
+	"selectInterface": "เลือกอินเทอร์เฟซ",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "การเลือกดิสก์",
+			"disk_selection_info": "ไม่พบดิสก์ในขณะนี้",
+			"disk_selection_description": "เลือกดิสก์ที่คุณต้องการตรวจสอบ"
+		}
+	}
 }

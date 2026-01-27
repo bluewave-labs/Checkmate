@@ -16,7 +16,7 @@ const langMap = {
 const LanguageSelector = () => {
 	const { i18n } = useTranslation();
 	const theme = useTheme();
-	const { language } = useSelector((state) => state.ui);
+	const { language = "en" } = useSelector((state) => state.ui);
 	const dispatch = useDispatch();
 	const handleChange = (event) => {
 		const newLang = event.target.value;

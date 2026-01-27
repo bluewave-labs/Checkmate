@@ -2,7 +2,7 @@
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Settings from "../../../assets/icons/settings-bold.svg?react";
+import Icon from "../Icon";
 import Dialog from "../Dialog/index.jsx";
 
 // Utils
@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { createToast } from "../../../Utils/toastUtils.jsx";
 
 import PropTypes from "prop-types";
-import { usePauseMonitor, useDeleteMonitor } from "../../../Hooks/v1/monitorHooks.js";
+import { usePauseMonitor, useDeleteMonitor } from "../../../Hooks/monitorHooks.js";
 
 const ActionsMenu = ({
 	monitor,
@@ -31,7 +31,7 @@ const ActionsMenu = ({
 	const handleRemove = async (event) => {
 		event.preventDefault();
 		event.stopPropagation();
-		let monitor = { _id: actions.id };
+		let monitor = { id: actions.id };
 		await deleteMonitor({ monitor });
 		updateRowCallback();
 	};
@@ -39,7 +39,7 @@ const ActionsMenu = ({
 	const handlePause = async () => {
 		try {
 			setIsLoading(true);
-			await pauseMonitor({ monitorId: monitor._id });
+			await pauseMonitor({ monitorId: monitor.id });
 			pauseCallback();
 		} catch (error) {
 			createToast({ body: "Failed to pause monitor." });
@@ -72,7 +72,7 @@ const ActionsMenu = ({
 				aria-label="monitor actions"
 				onClick={(event) => {
 					event.stopPropagation();
-					openMenu(event, monitor._id, monitor.type === "ping" ? null : monitor.url);
+					openMenu(event, monitor.id, monitor.type === "ping" ? null : monitor.url);
 				}}
 				sx={{
 					"&:focus": {
@@ -83,7 +83,10 @@ const ActionsMenu = ({
 					},
 				}}
 			>
-				<Settings />
+				<Icon
+					name="Settings"
+					size={20}
+				/>
 			</IconButton>
 
 			<Menu
@@ -197,6 +200,7 @@ const ActionsMenu = ({
 				confirmationButtonLabel="Delete"
 				/* Do we need stop propagation? */
 				onConfirm={(e) => {
+					console.log(e);
 					e.stopPropagation();
 					handleRemove(e);
 				}}
@@ -210,7 +214,7 @@ const ActionsMenu = ({
 
 ActionsMenu.propTypes = {
 	monitor: PropTypes.shape({
-		_id: PropTypes.string,
+		id: PropTypes.string,
 		url: PropTypes.string,
 		type: PropTypes.string,
 		isActive: PropTypes.bool,

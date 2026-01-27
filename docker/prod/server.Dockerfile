@@ -19,4 +19,4 @@ RUN npm run build
 
 EXPOSE 52345
 
-CMD ["node", "src/index.js"]
+CMD ["node", "dist/index.js"]

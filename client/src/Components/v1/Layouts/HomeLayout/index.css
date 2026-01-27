@@ -3,6 +3,8 @@
 	min-height: 100vh;
 	margin: 0 auto;
 	padding: 0;
+	overflow-x: hidden;
+	width: 100%;
 }
 
 /* TODO go for this approach for responsiveness. The aside needs to be taken care of */
@@ -12,15 +14,7 @@
 	}
 } */
 
-/* .home-layout aside {
-	position: sticky;
-	top: 0;
-	left: 0;
-	height: 100vh;
-	max-width: var(--env-var-side-bar-width);
-} */
-
-.home-layout > div {
+.home-layout > .home-content-wrapper {
 	min-height: calc(100vh - var(--env-var-spacing-2) * 2);
 	flex: 1;
 }
@@ -30,4 +24,6 @@
 	max-width: 1400px;
 	margin: 0 auto;
 	flex: 1;
+	min-width: 0;
+	overflow-x: hidden;
 }

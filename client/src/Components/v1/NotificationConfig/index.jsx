@@ -2,7 +2,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import Icon from "../Icon";
 import Search from "../Inputs/Search/index.jsx";
 
 // Utils
@@ -31,7 +31,7 @@ const NotificationConfig = ({
 		setMonitor((prev) => {
 			return {
 				...prev,
-				notifications: value.map((notification) => notification._id),
+				notifications: value.map((notification) => notification.id),
 			};
 		});
 	};
@@ -39,14 +39,14 @@ const NotificationConfig = ({
 	// Handlers
 	const handleDelete = (id) => {
 		const updatedNotifications = selectedNotifications.filter(
-			(notification) => notification._id !== id
+			(notification) => notification.id !== id
 		);
 
 		setSelectedNotifications(updatedNotifications);
 		setMonitor((prev) => {
 			return {
 				...prev,
-				notifications: updatedNotifications.map((notification) => notification._id),
+				notifications: updatedNotifications.map((notification) => notification.id),
 			};
 		});
 	};
@@ -57,7 +57,7 @@ const NotificationConfig = ({
 	useEffect(() => {
 		if (setNotifications) {
 			const toSet = setNotifications.map((notification) => {
-				return notifications.find((n) => n._id === notification);
+				return notifications.find((n) => n.id === notification);
 			});
 			setSelectedNotifications(toSet);
 		}
@@ -94,7 +94,7 @@ const NotificationConfig = ({
 					<Stack
 						direction="row"
 						alignItems="center"
-						key={notification._id}
+						key={notification.id}
 						width="100%"
 					>
 						<Typography
@@ -102,11 +102,13 @@ const NotificationConfig = ({
 						>
 							{notification.notificationName}
 						</Typography>
-						<DeleteOutlineRoundedIcon
+						<Icon
+							name="Trash2"
+							size={20}
 							onClick={() => {
-								handleDelete(notification._id);
+								handleDelete(notification.id);
 							}}
-							sx={{ cursor: "pointer" }}
+							style={{ cursor: "pointer" }}
 						/>
 						{index < selectedNotifications.length - 1 && <Divider />}
 					</Stack>

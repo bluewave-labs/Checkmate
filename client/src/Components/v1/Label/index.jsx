@@ -147,11 +147,9 @@ const StatusLabel = ({ status, text, customStyles }) => {
 			}}
 		>
 			<Box
-				width={7}
-				height={7}
 				bgcolor={theme.palette[themeColor].lowContrast}
-				borderRadius="50%"
-				marginRight="5px"
+				borderRadius="0%"
+				marginRight="1px"
 			/>
 		</BaseLabel>
 	);

@@ -29,6 +29,7 @@ const initialState = {
 	distributedUptimeEnabled: false,
 	language: "en",
 	starPromptOpen: true,
+	chartType: "histogram",
 };
 
 const uiSlice = createSlice({
@@ -58,6 +59,9 @@ const uiSlice = createSlice({
 			state.showURL = action.payload;
 		},
 		setGreeting(state, action) {
+			if (!state.greeting) {
+				state.greeting = { index: 0, lastUpdate: null };
+			}
 			state.greeting.index = action.payload.index;
 			state.greeting.lastUpdate = action.payload.lastUpdate;
 		},
@@ -69,6 +73,9 @@ const uiSlice = createSlice({
 		},
 		setStarPromptOpen: (state, action) => {
 			state.starPromptOpen = action.payload;
+		},
+		setChartType: (state, action) => {
+			state.chartType = action.payload;
 		},
 	},
 });
@@ -85,4 +92,5 @@ export const {
 	setDistributedUptimeEnabled,
 	setLanguage,
 	setStarPromptOpen,
+	setChartType,
 } = uiSlice.actions;

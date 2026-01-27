@@ -1,0 +1,162 @@
+// Components
+import { Box } from "@mui/material";
+import DataTable from "@/Components/v1/Table/index.jsx";
+import Host from "@/Components/v1/Host/index.jsx";
+import { StatusLabel } from "@/Components/v1/Label/index.jsx";
+import { Stack } from "@mui/material";
+import { InfrastructureMenu } from "../MonitorsTableMenu/index.jsx";
+import LoadingSpinner from "../../../../Uptime/Monitors/Components/LoadingSpinner/index.jsx";
+// Assets
+import Icon from "@/Components/v1/Icon";
+import CustomGauge from "@/Components/v1/Charts/CustomGauge/index.jsx";
+
+// Utils
+import { useTheme } from "@emotion/react";
+import { useMonitorUtils } from "../../../../../Hooks/useMonitorUtils.js";
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+
+const MonitorsTable = ({
+	isLoading,
+	monitors,
+	isAdmin,
+	handleActionMenuDelete,
+	isSearching,
+}) => {
+	// Utils
+	const theme = useTheme();
+	const { t } = useTranslation();
+	const { determineState } = useMonitorUtils();
+	const navigate = useNavigate();
+
+	// Handlers
+	const openDetails = (id) => {
+		navigate(`/infrastructure/${id}`);
+	};
+	const headers = [
+		{
+			id: "host",
+			content: t("host"),
+			render: (row) => (
+				<Host
+					title={row.name}
+					url={row.url}
+					percentage={row.uptimePercentage}
+					percentageColor={row.percentageColor}
+				/>
+			),
+		},
+		{
+			id: "status",
+			content: t("incidentsTableStatus"),
+			render: (row) => (
+				<StatusLabel
+					status={row.status}
+					text={row.status}
+				/>
+			),
+		},
+		{
+			id: "frequency",
+			content: t("frequency"),
+			render: (row) => (
+				<Stack
+					direction={"row"}
+					justifyContent={"center"}
+					alignItems={"center"}
+					gap=".25rem"
+				>
+					<Icon
+						name="Cpu"
+						size={20}
+					/>
+					{row.processor}
+				</Stack>
+			),
+		},
+		{ id: "cpu", content: t("cpu"), render: (row) => <CustomGauge progress={row.cpu} /> },
+		{
+			id: "memory",
+			content: t("memory"),
+			render: (row) => <CustomGauge progress={row.mem} />,
+		},
+		{
+			id: "disk",
+			content: t("disk"),
+			render: (row) => <CustomGauge progress={row.disk} />,
+		},
+		{
+			id: "actions",
+			content: t("actions"),
+			render: (row) => (
+				<InfrastructureMenu
+					monitor={row}
+					isAdmin={isAdmin}
+					updateCallback={handleActionMenuDelete}
+					isLoading={isLoading}
+				/>
+			),
+		},
+	];
+
+	const data = monitors?.map((monitor) => {
+		const processor =
+			((monitor.recentChecks?.[0]?.cpu?.frequency ?? 0) / 1000).toFixed(2) + " GHz";
+		const cpu = (monitor?.recentChecks?.[0]?.cpu?.usage_percent ?? 0) * 100;
+		const mem = (monitor?.recentChecks?.[0]?.memory?.usage_percent ?? 0) * 100;
+		const disk = (monitor?.recentChecks?.[0]?.disk?.[0]?.usage_percent ?? 0) * 100;
+		const status = determineState(monitor);
+		const percentageColor =
+			monitor.uptimePercentage < 0.25
+				? theme.palette.error.main
+				: monitor.uptimePercentage < 0.5
+					? theme.palette.warning.main
+					: theme.palette.success.main;
+
+		return {
+			id: monitor.id,
+			name: monitor.name,
+			url: monitor.url,
+			processor,
+			cpu,
+			mem,
+			disk,
+			status,
+			percentageColor,
+		};
+	});
+
+	return (
+		<Box position="relative">
+			<LoadingSpinner shouldRender={isSearching} />
+			<DataTable
+				shouldRender={!isLoading}
+				headers={headers}
+				data={data}
+				config={{
+					/* TODO this behavior seems to be repeated. Put it on the root table? */
+					rowSX: {
+						cursor: "pointer",
+						"&:hover td": {
+							backgroundColor: theme.palette.tertiary.main,
+							transition: "background-color .3s ease",
+						},
+					},
+					onRowClick: (row) => openDetails(row.id),
+					emptyView: "No monitors found",
+				}}
+			/>
+		</Box>
+	);
+};
+
+MonitorsTable.propTypes = {
+	isLoading: PropTypes.bool,
+	monitors: PropTypes.array,
+	isAdmin: PropTypes.bool,
+	handleActionMenuDelete: PropTypes.func,
+	isSearching: PropTypes.bool,
+};
+
+export default MonitorsTable;

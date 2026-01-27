@@ -8,8 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import MenuItem from "@mui/material/MenuItem";
 import Drawer from "@mui/material/Drawer";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import Icon from "../Icon";
 import ThemeSwitch from "../ThemeSwitch/index.jsx";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
@@ -153,7 +152,11 @@ const AppAppBar = () => {
 							aria-label="Menu button"
 							onClick={toggleDrawer(true)}
 						>
-							<MenuIcon sx={{ color: theme.palette.text.primary }} />
+							<Icon
+								name="Menu"
+								size={24}
+								color={theme.palette.text.primary}
+							/>
 						</IconButton>
 						<Drawer
 							anchor="top"
@@ -176,7 +179,11 @@ const AppAppBar = () => {
 									}}
 								>
 									<IconButton onClick={toggleDrawer(false)}>
-										<CloseRoundedIcon sx={{ color: theme.palette.text.primary }} />
+										<Icon
+											name="X"
+											size={24}
+											color={theme.palette.text.primary}
+										/>
 									</IconButton>
 								</Box>
 

@@ -1,9 +1,10 @@
-import { ITokenizedUser } from "../db/models/index.ts";
+import type { User } from "@/types/index.js";
 
 declare global {
 	namespace Express {
 		interface Request {
-			user?: ITokenizedUser;
+			file?: Multer.File;
+			user?: User | undefined;
 			resource?: any;
 		}
 	}

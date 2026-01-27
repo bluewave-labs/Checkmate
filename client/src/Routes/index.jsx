@@ -1,71 +1,71 @@
+// Temp v2 theme
+import { ThemeProvider } from "@mui/material";
+import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
+
 import { useSelector } from "react-redux";
-import { lightTheme, darkTheme } from "@/Utils/Theme/v2/theme";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
-import NotFound from "../Pages/v1/NotFound";
+import NotFound from "../Pages/NotFound/index.jsx";
 // Auth
-import AuthLogin from "../Pages/v1/Auth/Login";
-import AuthRegister from "../Pages/v1/Auth/Register/";
-import AuthForgotPassword from "../Pages/v1/Auth/ForgotPassword";
-import AuthCheckEmail from "../Pages/v1/Auth/CheckEmail";
-import AuthSetNewPassword from "../Pages/v1/Auth/SetNewPassword";
-import AuthNewPasswordConfirmed from "../Pages/v1/Auth/NewPasswordConfirmed";
+import AuthLogin from "../Pages/Auth/Login/index.jsx";
+import AuthRegister from "../Pages/Auth/Register/index.jsx";
+import AuthForgotPassword from "../Pages/Auth/ForgotPassword.jsx";
+import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
+import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
+import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 
 // Uptime
-import Uptime from "../Pages/v1/Uptime/Monitors";
-import UptimeDetails from "../Pages/v1/Uptime/Details";
-import UptimeCreate from "../Pages/v1/Uptime/Create";
+import Uptime from "../Pages/Uptime/Monitors";
+import UptimeDetails from "../Pages/Uptime/Details";
+import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
 // PageSpeed
-import PageSpeed from "../Pages/v1/PageSpeed/Monitors";
-import PageSpeedDetails from "../Pages/v1/PageSpeed/Details";
-import PageSpeedCreate from "../Pages/v1/PageSpeed/Create";
+import PageSpeed from "../Pages/PageSpeed/Monitors/index";
+import PageSpeedDetails from "../Pages/PageSpeed/Details/";
+import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
 // Infrastructure
-import Infrastructure from "../Pages/v1/Infrastructure/Monitors";
-import InfrastructureCreate from "../Pages/v1/Infrastructure/Create";
-import InfrastructureDetails from "../Pages/v1/Infrastructure/Details";
+import Infrastructure from "../Pages/Infrastructure/Monitors/index.jsx";
+import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
+import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
 
 // Server Status
-import ServerUnreachable from "../Pages/v1/ServerUnreachable.jsx";
+import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
+
+// Checks
+import Checks from "../Pages/Checks/index.jsx";
 
 // Incidents
-import Incidents from "../Pages/v1/Incidents";
+import Incidents from "../Pages/Incidents/index.jsx";
 
 // Status pages
-import CreateStatus from "../Pages/v1/StatusPage/Create";
-import StatusPages from "../Pages/v1/StatusPage/StatusPages";
-import Status from "../Pages/v1/StatusPage/Status";
+import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
+import StatusPages from "../Pages/StatusPage/StatusPages/index.jsx";
+import Status from "../Pages/StatusPage/Status/index.jsx";
 
-import Notifications from "../Pages/v1/Notifications";
-import CreateNotifications from "../Pages/v1/Notifications/create";
+import Notifications from "../Pages/Notifications/index.jsx";
+import CreateNotifications from "../Pages/Notifications/create/index.jsx";
 
 // Settings
-import Account from "../Pages/v1/Account";
-import EditUser from "../Pages/v1/Account/EditUser";
-import Settings from "../Pages/v1/Settings";
+import Account from "../Pages/Account/index.jsx";
+import EditUser from "../Pages/Account/EditUser/index.jsx";
+import Settings from "../Pages/Settings";
 
-import Maintenance from "../Pages/v1/Maintenance";
+import Maintenance from "../Pages/Maintenance/index.jsx";
 
 import ProtectedRoute from "../Components/v1/ProtectedRoute";
 import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
-import CreateNewMaintenanceWindow from "../Pages/v1/Maintenance/CreateMaintenance";
+import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance/index.jsx";
 import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
-import BulkImport from "../Pages/v1/Uptime/BulkImport";
-import Logs from "../Pages/v1/Logs";
-
-import V2Routes from "@/Routes/v2router";
+import BulkImport from "../Pages/Uptime/BulkImport/index.jsx";
+import Logs from "../Pages/Logs/index.jsx";
 
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
+	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
-			<Route
-				path="/v2/*"
-				element={<V2Routes mode={mode} />}
-			/>
-
 			<Route
 				path="/"
 				element={
@@ -80,7 +80,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime"
-					element={<Uptime />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Uptime />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
@@ -98,7 +104,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/:monitorId/"
-					element={<UptimeDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<UptimeDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
@@ -107,7 +119,13 @@ const Routes = () => {
 
 				<Route
 					path="pagespeed"
-					element={<PageSpeed />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeed />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/create"
@@ -115,7 +133,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/:monitorId"
-					element={<PageSpeedDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeedDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
@@ -136,6 +160,10 @@ const Routes = () => {
 				<Route
 					path="infrastructure/:monitorId"
 					element={<InfrastructureDetails />}
+				/>
+				<Route
+					path="checks/:monitorId?"
+					element={<Checks />}
 				/>
 				<Route
 					path="incidents/:monitorId?"

@@ -112,7 +112,7 @@ const loginCredentials = joi.object({
 });
 
 const monitorValidation = joi.object({
-	_id: joi.string(),
+	id: joi.string(),
 	userId: joi.string(),
 	teamId: joi.string(),
 	statusWindowSize: joi.number().min(1).max(20).default(5).messages({
@@ -328,6 +328,7 @@ const settingsValidation = joi.object({
 	systemEmailIgnoreTLS: joi.boolean(),
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
+	showURL: joi.boolean().optional(),
 	globalThresholds: joi
 		.object({
 			cpu: joi.number().min(1).max(100).allow("").optional(),
@@ -448,6 +449,7 @@ const infrastructureMonitorValidation = joi.object({
 		"number.max": "Status window threshold cannot exceed 100%.",
 	}),
 	notifications: joi.array().items(joi.string()),
+	selectedDisks: joi.array().items(joi.string()).optional(),
 });
 
 const notificationValidation = joi.object({
