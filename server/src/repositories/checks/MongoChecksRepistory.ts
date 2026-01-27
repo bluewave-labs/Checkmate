@@ -366,27 +366,24 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
-		const matchStage = {
+		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
 				},
 			}),
 		};
-		const checks = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{
-				$group: {
-					_id: null,
-					totalChecks: { $sum: 1 },
-					downChecks: { $sum: { $cond: [{ $eq: ["$ack", false] }, 1, 0] } },
-				},
-			},
-			{ $project: { _id: 0 } },
+
+		const [totalResult, downResult] = await Promise.all([
+			CheckModel.countDocuments(baseMatch),
+			CheckModel.countDocuments({ ...baseMatch, status: false }),
 		]);
-		return checks[0] ?? { totalChecks: 0, downChecks: 0 };
+
+		return {
+			totalChecks: totalResult,
+			downChecks: downResult,
+		};
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {

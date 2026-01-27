@@ -1,13 +1,22 @@
 import Stack from "@mui/material/Stack";
 import { BasePage, TotalChecksBox, DownChecksBox } from "@/Components/v2/design-elements";
+import { HeaderTimeRange } from "@/Components/v2/common";
+import { Select } from "@/Components/v2/inputs";
+import IncidentTable from "./Components/IncidentTable/index.jsx";
 
-import { useTheme } from "@mui/material";
+import { MenuItem, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { ChecksSummary } from "@/Types/Check";
+
+interface MonitorLookupEntry {
+	id: string;
+	name: string;
+	type: string;
+}
 
 const Checks = () => {
 	const { t } = useTranslation();
@@ -16,8 +25,9 @@ const Checks = () => {
 
 	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState<string>("0");
-	const [filter, setFilter] = useState<boolean | undefined>(undefined);
+	const [filter, setFilter] = useState<string | undefined>(undefined);
 	const [dateRange, setDateRange] = useState<string>("hour");
+	const [updateTrigger, setUpdateTrigger] = useState<boolean>(false);
 
 	// Data fetching with SWR
 	const monitorsUrl = "/monitors/team";
@@ -35,8 +45,6 @@ const Checks = () => {
 		error: summaryError,
 	} = useGet<ChecksSummary>(summaryUrl);
 
-	console.log(monitorsResponse, summaryResponse);
-
 	return (
 		<BasePage>
 			<Stack
@@ -45,6 +53,33 @@ const Checks = () => {
 			>
 				<TotalChecksBox n={summaryResponse?.totalChecks || 0} />
 				<DownChecksBox n={summaryResponse?.downChecks || 0} />
+			</Stack>
+
+			<Stack
+				direction={{ xs: "column", md: "row" }}
+				justifyContent={"space-between"}
+				alignItems={"center"}
+			>
+				<Select
+					value={selectedMonitor}
+					onChange={(e: any) => {
+						setSelectedMonitor(e.target.value);
+					}}
+				>
+					<MenuItem value="0">All monitors</MenuItem>
+					{monitorsResponse?.map((monitor) => (
+						<MenuItem
+							key={monitor.id}
+							value={monitor.id}
+						>
+							{monitor.name}
+						</MenuItem>
+					))}
+				</Select>
+				<HeaderTimeRange
+					dateRange={dateRange}
+					setDateRange={setDateRange}
+				/>
 			</Stack>
 		</BasePage>
 	);
