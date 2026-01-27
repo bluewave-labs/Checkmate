@@ -334,10 +334,13 @@ class MongoChecksRepository implements IChecksRepository {
 			return {};
 		}
 		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-
+		const dateFilter = new Date(Date.now() - 24 * 60 * 60 * 1000);
 		const results = await Promise.all(
 			monitorIds.map(async (monitorId) => {
-				const docs = await CheckModel.find({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) })
+				const docs = await CheckModel.find({
+					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+					createdAt: { $gte: dateFilter },
+				})
 					.sort({ createdAt: -1 })
 					.limit(limitPerMonitor)
 					.lean();
@@ -345,10 +348,11 @@ class MongoChecksRepository implements IChecksRepository {
 			})
 		);
 
-		return results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
-			acc[monitorId] = docs.map((doc) => this.toEntity(doc as CheckDocument));
+		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
+			acc[monitorId] = docs.map((doc: any) => this.toEntity(doc as CheckDocument));
 			return acc;
 		}, {});
+		return mapped;
 	};
 
 	findByDateRangeAndMonitorId = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
