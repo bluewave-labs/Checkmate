@@ -137,7 +137,7 @@ const useFetchChecksByMonitor = ({
 	return [checks, checksCount, isLoading, networkError];
 };
 
-const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
+const useFetchChecksSummaryByTeamId = ({ dateRange, updateTrigger } = {}) => {
 	const [summary, setSummary] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
@@ -147,7 +147,7 @@ const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
 			try {
 				setIsLoading(true);
 
-				const res = await networkService.getChecksAndSummaryByTeamId();
+				const res = await networkService.getChecksAndSummaryByTeamId({ dateRange });
 				setSummary(res.data.data);
 			} catch (error) {
 				setNetworkError(true);
@@ -158,7 +158,7 @@ const useFetchChecksSummaryByTeamId = ({ updateTrigger } = {}) => {
 		};
 
 		fetchSummary();
-	}, [updateTrigger]);
+	}, [dateRange, updateTrigger]);
 
 	return [summary, isLoading, networkError];
 };

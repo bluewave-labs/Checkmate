@@ -5,7 +5,6 @@ import GenericFallback from "@/Components/v1/GenericFallback/index.jsx";
 import IncidentTable from "./Components/IncidentTable/index.jsx";
 import OptionsHeader from "./Components/OptionsHeader/index.jsx";
 import StatusBoxes from "./Components/StatusBoxes/index.jsx";
-import { Box, Button } from "@mui/material";
 
 //Utils
 import { useTheme } from "@emotion/react";
@@ -26,7 +25,7 @@ const Checks = () => {
 	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState("0");
 	const [filter, setFilter] = useState(undefined);
-	const [dateRange, setDateRange] = useState(undefined);
+	const [dateRange, setDateRange] = useState("hour");
 	const [monitorLookup, setMonitorLookup] = useState(undefined);
 	const [updateTrigger, setUpdateTrigger] = useState(false);
 
@@ -36,6 +35,7 @@ const Checks = () => {
 	const theme = useTheme();
 	const [monitors, , isLoading, networkError] = useFetchMonitorsByTeamId({});
 	const [summary, isLoadingSummary, networkErrorSummary] = useFetchChecksSummaryByTeamId({
+		dateRange,
 		updateTrigger,
 	});
 	const { monitorId } = useParams();

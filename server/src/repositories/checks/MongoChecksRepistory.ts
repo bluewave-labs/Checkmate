@@ -365,9 +365,14 @@ class MongoChecksRepository implements IChecksRepository {
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
 	};
 
-	findSummaryByTeamId = async (teamId: string) => {
+	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
 		const matchStage = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			...(dateRangeLookup[dateRange] && {
+				createdAt: {
+					$gte: dateRangeLookup[dateRange],
+				},
+			}),
 		};
 		const checks = await CheckModel.aggregate([
 			{ $match: matchStage },
