@@ -127,7 +127,7 @@ const InfrastructureDetails = () => {
 				)}
 				{tab === "network" && (
 					<NetworkStats
-						net={monitor?.stats?.aggregateData?.latestCheck?.net || []}
+						net={monitor?.recentChecks?.[0]?.net || []}
 						isLoading={isLoading}
 						checks={monitor?.stats?.checks}
 						dateRange={dateRange}

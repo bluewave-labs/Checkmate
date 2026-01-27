@@ -33,7 +33,7 @@ export interface IChecksRepository {
 		dateString: string,
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
-	findSummaryByTeamId(teamId: string): Promise<ChecksSummary>;
+	findSummaryByTeamId(teamId: string, dateRange: string): Promise<ChecksSummary>;
 	// update
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;

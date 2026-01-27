@@ -29,7 +29,6 @@ const dateRangeLookup: Record<string, Date | undefined> = {
 
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
-type HardwareAggregateData = { latestCheck: CheckDocument | null; totalChecks: number };
 type HardwareUpChecks = { totalChecks: number };
 
 class MongoChecksRepository implements IChecksRepository {
@@ -366,51 +365,30 @@ class MongoChecksRepository implements IChecksRepository {
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
 	};
 
-	findSummaryByTeamId = async (teamId: string) => {
+	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
 		const matchStage = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			status: false,
+			...(dateRangeLookup[dateRange] && {
+				createdAt: {
+					$gte: dateRangeLookup[dateRange],
+				},
+			}),
 		};
 		const checks = await CheckModel.aggregate([
 			{ $match: matchStage },
 			{
-				$facet: {
-					summary: [
-						{
-							$group: {
-								_id: null,
-								totalChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
-								resolvedChecks: {
-									$sum: {
-										$cond: [{ $and: [{ $eq: ["$ack", true] }, { $eq: ["$status", false] }] }, 1, 0],
-									},
-								},
-								downChecks: {
-									$sum: {
-										$cond: [{ $and: [{ $eq: ["$ack", false] }, { $eq: ["$status", false] }] }, 1, 0],
-									},
-								},
-								cannotResolveChecks: {
-									$sum: {
-										$cond: [{ $eq: ["$statusCode", 5000] }, 1, 0],
-									},
-								},
-							},
-						},
-						{
-							$project: {
-								_id: 0,
-							},
-						},
-					],
+				$group: {
+					_id: null,
+					totalChecks: { $sum: 1 },
+					resolvedChecks: { $sum: { $cond: [{ $eq: ["$ack", true] }, 1, 0] } },
+					downChecks: { $sum: { $cond: [{ $eq: ["$ack", false] }, 1, 0] } },
+					cannotResolveChecks: { $sum: { $cond: [{ $eq: ["$statusCode", 5000] }, 1, 0] } },
 				},
 			},
-			{
-				$project: {
-					summary: { $arrayElemAt: ["$summary", 0] },
-				},
-			},
+			{ $project: { _id: 0 } },
 		]);
-		return checks[0].summary;
+		return checks[0] ?? { totalChecks: 0, resolvedChecks: 0, downChecks: 0, cannotResolveChecks: 0 };
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
@@ -526,14 +504,13 @@ class MongoChecksRepository implements IChecksRepository {
 		const monitorId = monitorObjectId.toHexString();
 		const dates = { start: startDate, end: endDate };
 		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
-			this.getHardwareAggregateData(monitorId, dates),
+			this.getHardwareTotalChecks(monitorId, dates),
 			this.getHardwareUpChecks(monitorId, dates),
 			this.getHardwareStats(monitorId, dates, dateString),
 		]);
 
 		const aggregateData = {
-			latestCheck: aggregateDataDoc?.latestCheck ? this.toEntity(aggregateDataDoc.latestCheck as CheckDocument) : null,
-			totalChecks: aggregateDataDoc?.totalChecks ?? 0,
+			totalChecks: aggregateDataDoc ?? 0,
 		};
 
 		const upChecks = {
@@ -589,25 +566,12 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	private getHardwareAggregateData = async (monitorId: string, dates: DateRange): Promise<HardwareAggregateData> => {
-		const result = await CheckModel.aggregate([
-			{
-				$match: {
-					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-					"metadata.type": "hardware",
-					createdAt: { $gte: dates.start, $lte: dates.end },
-				},
-			},
-			{ $sort: { createdAt: -1 } },
-			{
-				$group: {
-					_id: null,
-					latestCheck: { $first: "$$ROOT" },
-					totalChecks: { $sum: 1 },
-				},
-			},
-		]);
-		return result[0] || { totalChecks: 0, latestCheck: null };
+	private getHardwareTotalChecks = async (monitorId: string, dates: DateRange): Promise<number> => {
+		return await CheckModel.countDocuments({
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			"metadata.type": "hardware",
+			createdAt: { $gte: dates.start, $lte: dates.end },
+		});
 	};
 
 	private getHardwareUpChecks = async (monitorId: string, dates: DateRange): Promise<HardwareUpChecks> => {

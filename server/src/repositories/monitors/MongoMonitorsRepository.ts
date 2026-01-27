@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
-import type { MonitorDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, MonitorWithChecks, Check } from "@/types/index.js";
+import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
+import type { Monitor, MonitorsSummary, CheckSnapshot, Check } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
@@ -79,7 +79,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.mapDocuments(monitors);
 	};
 
-	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<MonitorWithChecks[]> => {
+	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<Monitor[]> => {
 		if (!monitorIds.length) {
 			return [];
 		}
@@ -309,12 +309,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
+			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 
-	private toEntityWithChecks = (doc: any): MonitorWithChecks => {
+	private toEntityWithChecks = (doc: any): Monitor => {
 		const toStringId = (value: unknown): string => {
 			if (value instanceof mongoose.Types.ObjectId) {
 				return value.toString();
@@ -392,9 +393,37 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
+			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
-			checks,
+		};
+	};
+
+	private toCheckSnapshot = (doc: CheckSnapshotDocument): CheckSnapshot => {
+		const toDateString = (value: Date | string): string => {
+			return value instanceof Date ? value.toISOString() : value;
+		};
+
+		return {
+			id: doc.id,
+			status: doc.status,
+			responseTime: doc.responseTime,
+			timings: doc.timings,
+			statusCode: doc.statusCode,
+			message: doc.message,
+			cpu: doc.cpu,
+			memory: doc.memory,
+			disk: doc.disk,
+			host: doc.host,
+			errors: doc.errors,
+			capture: doc.capture,
+			net: doc.net,
+			accessibility: doc.accessibility,
+			bestPractices: doc.bestPractices,
+			seo: doc.seo,
+			performance: doc.performance,
+			audits: doc.audits,
+			createdAt: toDateString(doc.createdAt),
 		};
 	};
 }

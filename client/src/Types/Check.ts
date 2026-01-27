@@ -1,7 +1,15 @@
 export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
-	type: string;
+	type:
+		| "http"
+		| "ping"
+		| "pagespeed"
+		| "hardware"
+		| "docker"
+		| "port"
+		| "game"
+		| "unknown";
 }
 
 export interface CheckCpuInfo {
@@ -83,6 +91,7 @@ export interface CheckTimings {
 	lookup?: number;
 	connect?: number;
 	secureConnect?: number;
+	upload?: number;
 	response?: number;
 	end?: number;
 	abort?: number;
@@ -103,7 +112,6 @@ export interface Check {
 	id: string;
 	metadata: CheckMetadata;
 	status: boolean;
-	originalResponseTime?: number;
 	responseTime: number;
 	timings?: CheckTimings;
 	statusCode: number;
@@ -123,6 +131,7 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	__v: number;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -144,3 +153,93 @@ export interface ChecksResponse {
 	checks: Check[];
 	checksCount: number;
 }
+
+export type MonitorType =
+	| "http"
+	| "ping"
+	| "pagespeed"
+	| "hardware"
+	| "docker"
+	| "port"
+	| "game"
+	| "unknown";
+
+export interface ChecksQueryResult {
+	checksCount: number;
+	checks: Check[];
+}
+
+export interface PageSpeedChecksResult {
+	monitorType: "pagespeed";
+	checks: Check[];
+}
+
+export interface HardwareChecksResult {
+	monitorType: "hardware";
+	aggregateData: {
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	checks: Array<{
+		_id: string;
+		avgCpuUsage: number;
+		avgMemoryUsage: number;
+		avgTemperature: number[];
+		disks: Array<{
+			name: string;
+			readSpeed: number;
+			writeSpeed: number;
+			totalBytes: number;
+			freeBytes: number;
+			usagePercent: number;
+		}>;
+		net: Array<{
+			name: string;
+			bytesSentPerSecond: number;
+			deltaBytesRecv: number;
+			deltaPacketsSent: number;
+			deltaPacketsRecv: number;
+			deltaErrIn: number;
+			deltaErrOut: number;
+			deltaDropIn: number;
+			deltaDropOut: number;
+			deltaFifoIn: number;
+			deltaFifoOut: number;
+		}>;
+	}>;
+}
+
+export interface UptimeChecksResult {
+	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
+	groupedChecks: GroupedCheck[];
+	groupedUpChecks: GroupedCheck[];
+	groupedDownChecks: GroupedCheck[];
+	uptimePercentage: number;
+	avgResponseTime: number;
+}
+
+export interface ChecksSummary {
+	totalChecks: number;
+	resolvedChecks: number;
+	downChecks: number;
+	cannotResolveChecks: number;
+}
+
+export type CheckSnapshot = Omit<
+	Check,
+	"metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt"
+>;
+
+export interface HasResponseTime {
+	responseTime: number;
+}
+
+export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
+	originalResponseTime: number;
+};
+
+export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
+	originalAvgResponseTime: number;
+};

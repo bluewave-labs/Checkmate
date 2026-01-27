@@ -102,10 +102,10 @@ const MonitorsTable = ({
 
 	const data = monitors?.map((monitor) => {
 		const processor =
-			((monitor.checks[0]?.cpu?.frequency ?? 0) / 1000).toFixed(2) + " GHz";
-		const cpu = (monitor?.checks[0]?.cpu.usage_percent ?? 0) * 100;
-		const mem = (monitor?.checks[0]?.memory.usage_percent ?? 0) * 100;
-		const disk = (monitor?.checks[0]?.disk[0]?.usage_percent ?? 0) * 100;
+			((monitor.recentChecks?.[0]?.cpu?.frequency ?? 0) / 1000).toFixed(2) + " GHz";
+		const cpu = (monitor?.recentChecks?.[0]?.cpu?.usage_percent ?? 0) * 100;
+		const mem = (monitor?.recentChecks?.[0]?.memory?.usage_percent ?? 0) * 100;
+		const disk = (monitor?.recentChecks?.[0]?.disk?.[0]?.usage_percent ?? 0) * 100;
 		const status = determineState(monitor);
 		const percentageColor =
 			monitor.uptimePercentage < 0.25

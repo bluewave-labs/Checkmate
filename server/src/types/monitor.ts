@@ -1,4 +1,7 @@
 import type { Check } from "@/types/check.js";
+import type { CheckSnapshot } from "@/types/check.js";
+export type { CheckSnapshot } from "@/types/check.js";
+
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
@@ -42,6 +45,7 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
+	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
 }
@@ -53,14 +57,10 @@ export interface MonitorsSummary {
 	pausedMonitors: number;
 }
 
-export interface MonitorWithChecks extends Monitor {
-	checks: Check[];
-}
-
 export interface MonitorsWithChecksByTeamIdResult {
 	summary: MonitorsSummary | null;
 	count: number;
-	monitors: MonitorWithChecks[];
+	monitors: Monitor[];
 }
 
 export interface UptimeDetailsResult {
@@ -78,7 +78,6 @@ export interface UptimeDetailsResult {
 export interface HardwareDetailsResult extends Monitor {
 	stats: {
 		aggregateData: {
-			latestCheck: import("./check.js").Check | null;
 			totalChecks: number;
 		};
 		upChecks: {
