@@ -50,7 +50,7 @@ class StatusPageController {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 			const teamId = requireTeamId(req?.user?.teamId);
-			const statusPageId = req.params.id;
+			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
 				throw new AppError({ message: "Status page ID is required", status: 400 });
 			}
@@ -77,7 +77,7 @@ class StatusPageController {
 				throw new AppError({ message: "Status page URL is required", status: 400 });
 			}
 
-			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url);
+			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
 			const settings = await this.settingsService.getDBSettings();
 			const showURL = settings.showURL;
 
@@ -116,7 +116,7 @@ class StatusPageController {
 
 	deleteStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const statusPageId = req.params.id;
+			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
 				throw new AppError({ message: "Status page ID is required", status: 400 });
 			}
