@@ -20,7 +20,6 @@ const OptionsHeader = ({
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	console.log(monitors);
 	const monitorNames = typeof monitors !== "undefined" ? Object.values(monitors) : [];
 	const filterOptions = [
 		{ id: "all", name: t("incidentsOptionsHeaderFilterAll") },

@@ -112,8 +112,6 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 	};
 
 	const renderContent = () => {
-		console.log(incidentData);
-
 		if (isLoading) {
 			return (
 				<GenericFallback
