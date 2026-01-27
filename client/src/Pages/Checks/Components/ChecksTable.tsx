@@ -9,15 +9,18 @@ import type { Header } from "@/Components/v2/design-elements/Table";
 import type { Monitor, MonitorStatus } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { useNavigate } from "react-router";
-import type { Check } from "@/Types/Check";
+import type { Check, ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
+import { useGet } from "@/Hooks/UseApi";
 
 export const ChecksTable = ({
 	monitors,
 	selectedMonitorId,
+	dateRange,
 	page,
 	setPage,
 	rowsPerPage,
@@ -25,6 +28,7 @@ export const ChecksTable = ({
 }: {
 	monitors: Monitor[] | null;
 	selectedMonitorId: string;
+	dateRange: string;
 	page: number;
 	setPage: (page: number) => void;
 	rowsPerPage: number;
@@ -34,7 +38,47 @@ export const ChecksTable = ({
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const navigate = useNavigate();
 
-	// DATA FETCHING HERE
+	// Get selected monitor type
+	const selectedMonitorType = monitors?.find((m) => m.id === selectedMonitorId)?.type;
+
+	// Team checks URL (when selectedMonitorId === "0")
+	const teamChecksUrl = useMemo(() => {
+		if (selectedMonitorId !== "0") return null;
+		const params = new URLSearchParams();
+		params.append("sortOrder", "desc");
+		if (dateRange) params.append("dateRange", dateRange);
+		params.append("page", String(page));
+		params.append("rowsPerPage", String(rowsPerPage));
+		return `/checks/team?${params.toString()}`;
+	}, [selectedMonitorId, dateRange, page, rowsPerPage]);
+
+	// Monitor checks URL (when specific monitor selected)
+	const monitorChecksUrl = useMemo(() => {
+		if (selectedMonitorId === "0" || !selectedMonitorType) return null;
+		const params = new URLSearchParams();
+		params.append("type", selectedMonitorType);
+		params.append("sortOrder", "desc");
+		params.append("status", "false");
+		if (dateRange) params.append("dateRange", dateRange);
+		params.append("page", String(page));
+		params.append("rowsPerPage", String(rowsPerPage));
+		return `/checks/${selectedMonitorId}?${params.toString()}`;
+	}, [selectedMonitorId, selectedMonitorType, dateRange, page, rowsPerPage]);
+
+	// Fetch data - null key skips the request
+	const { data: teamData, isLoading: isLoadingTeam } =
+		useGet<ChecksResponse>(teamChecksUrl);
+	const { data: monitorData, isLoading: isLoadingMonitor } =
+		useGet<ChecksResponse>(monitorChecksUrl);
+
+	// Select correct data based on selection
+	const checks =
+		selectedMonitorId === "0" ? (teamData?.checks ?? []) : (monitorData?.checks ?? []);
+	const checksCount =
+		selectedMonitorId === "0"
+			? (teamData?.checksCount ?? 0)
+			: (monitorData?.checksCount ?? 0);
+	const isLoading = isLoadingTeam || isLoadingMonitor;
 
 	const getHeaders = (t: Function, uiTimezone: string) => {
 		const headers: Header<Check>[] = [
@@ -121,7 +165,7 @@ export const ChecksTable = ({
 			/>
 			<Pagination
 				component="div"
-				count={checks.length}
+				count={checksCount}
 				page={page}
 				rowsPerPage={rowsPerPage}
 				onPageChange={handlePageChange}

@@ -2,21 +2,15 @@ import Stack from "@mui/material/Stack";
 import { BasePage, TotalChecksBox, DownChecksBox } from "@/Components/v2/design-elements";
 import { HeaderTimeRange } from "@/Components/v2/common";
 import { Select } from "@/Components/v2/inputs";
-import IncidentTable from "./Components/IncidentTable/index.jsx";
+import { ChecksTable } from "./Components/ChecksTable";
 
 import { MenuItem, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { ChecksSummary } from "@/Types/Check";
-
-interface MonitorLookupEntry {
-	id: string;
-	name: string;
-	type: string;
-}
 
 const Checks = () => {
 	const { t } = useTranslation();
@@ -24,10 +18,10 @@ const Checks = () => {
 	const { monitorId } = useParams<{ monitorId?: string }>();
 
 	// Local state
-	const [selectedMonitor, setSelectedMonitor] = useState<string>("0");
-	const [filter, setFilter] = useState<string | undefined>(undefined);
+	const [selectedMonitor, setSelectedMonitor] = useState<string>(monitorId || "0");
 	const [dateRange, setDateRange] = useState<string>("hour");
-	const [updateTrigger, setUpdateTrigger] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(0);
+	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
 	// Data fetching with SWR
 	const monitorsUrl = "/monitors/team";
@@ -81,6 +75,16 @@ const Checks = () => {
 					setDateRange={setDateRange}
 				/>
 			</Stack>
+
+			<ChecksTable
+				monitors={monitorsResponse ?? null}
+				selectedMonitorId={selectedMonitor}
+				dateRange={dateRange}
+				page={page}
+				setPage={setPage}
+				rowsPerPage={rowsPerPage}
+				setRowsPerPage={setRowsPerPage}
+			/>
 		</BasePage>
 	);
 };
