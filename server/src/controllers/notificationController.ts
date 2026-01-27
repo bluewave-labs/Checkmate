@@ -97,7 +97,7 @@ class NotificationController {
 				throw new AppError({ message: "Team ID is required", status: 400 });
 			}
 
-			const notificationId = req.params.id;
+			const notificationId = req.params.id as string;
 			if (!notificationId) {
 				throw new AppError({ message: "Notification ID is required", status: 400 });
 			}
@@ -115,7 +115,7 @@ class NotificationController {
 	getNotificationById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const teamId = requireTeamId(req.user?.teamId);
-			const notificationId = req.params.id;
+			const notificationId = req.params.id as string;
 			if (!notificationId) {
 				throw new AppError({ message: "Notification ID is required", status: 400 });
 			}
@@ -139,7 +139,7 @@ class NotificationController {
 			});
 
 			const teamId = requireTeamId(req.user?.teamId);
-			const notificationId = req.params.id;
+			const notificationId = req.params.id as string;
 			if (!notificationId) {
 				throw new AppError({ message: "Notification ID is required", status: 400 });
 			}
