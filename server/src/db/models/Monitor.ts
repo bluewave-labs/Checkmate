@@ -218,6 +218,6 @@ MonitorSchema.index({ teamId: 1, type: 1 });
 
 const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
 
-export type { MonitorDocument };
+export type { MonitorDocument, CheckSnapshotDocument };
 export { MonitorModel };
 export default MonitorModel;

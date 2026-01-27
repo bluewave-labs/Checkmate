@@ -1,5 +1,5 @@
 import { MonitorModel } from "@/db/models/index.js";
-import type { MonitorDocument } from "@/db/models/index.js";
+import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
 import type { Monitor, MonitorsSummary, MonitorWithChecks, CheckSnapshot, Check } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
@@ -400,28 +400,31 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 	};
 
-	private toCheckSnapshot = (doc: any): CheckSnapshot => {
-		const plain = typeof doc.toObject === "function" ? doc.toObject() : doc;
+	private toCheckSnapshot = (doc: CheckSnapshotDocument): CheckSnapshot => {
+		const toDateString = (value: Date | string): string => {
+			return value instanceof Date ? value.toISOString() : value;
+		};
+
 		return {
-			id: plain.id ?? plain._id?.toString() ?? "",
-			status: plain.status,
-			responseTime: plain.responseTime,
-			timings: plain.timings,
-			statusCode: plain.statusCode,
-			message: plain.message,
-			cpu: plain.cpu,
-			memory: plain.memory,
-			disk: plain.disk,
-			host: plain.host,
-			errors: plain.errors,
-			capture: plain.capture,
-			net: plain.net,
-			accessibility: plain.accessibility,
-			bestPractices: plain.bestPractices,
-			seo: plain.seo,
-			performance: plain.performance,
-			audits: plain.audits,
-			createdAt: plain.createdAt instanceof Date ? plain.createdAt.toISOString() : plain.createdAt,
+			id: doc.id,
+			status: doc.status,
+			responseTime: doc.responseTime,
+			timings: doc.timings,
+			statusCode: doc.statusCode,
+			message: doc.message,
+			cpu: doc.cpu,
+			memory: doc.memory,
+			disk: doc.disk,
+			host: doc.host,
+			errors: doc.errors,
+			capture: doc.capture,
+			net: doc.net,
+			accessibility: doc.accessibility,
+			bestPractices: doc.bestPractices,
+			seo: doc.seo,
+			performance: doc.performance,
+			audits: doc.audits,
+			createdAt: toDateString(doc.createdAt),
 		};
 	};
 }
