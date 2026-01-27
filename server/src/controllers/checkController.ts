@@ -83,7 +83,7 @@ class CheckController {
 			await deleteChecksParamValidation.validateAsync(req.params);
 
 			const deletedCount = await this.checkService.deleteChecks({
-				monitorId: req.params.monitorId,
+				monitorId: req.params.monitorId as string,
 				teamId: req?.user?.teamId,
 			});
 

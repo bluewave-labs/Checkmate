@@ -197,7 +197,7 @@ class AuthController {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
-			const userId = req.params.userId;
+			const userId = req.params.userId as string;
 			const user = { ...req.body };
 
 			await editUserByIdParamValidation.validateAsync(req.params);
@@ -222,7 +222,7 @@ class AuthController {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
-			const userId = req.params.userId;
+			const userId = req.params.userId as string;
 			await editUserByIdParamValidation.validateAsync(req.params);
 			await editUserPasswordByIdBodyValidation.validateAsync(req.body);
 			const updatedPassword = req.body.password;
