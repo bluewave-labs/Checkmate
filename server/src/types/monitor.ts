@@ -78,7 +78,6 @@ export interface UptimeDetailsResult {
 export interface HardwareDetailsResult extends Monitor {
 	stats: {
 		aggregateData: {
-			latestCheck: import("./check.js").Check | null;
 			totalChecks: number;
 		};
 		upChecks: {

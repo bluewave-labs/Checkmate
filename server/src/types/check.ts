@@ -121,7 +121,6 @@ export interface PageSpeedChecksResult {
 export interface HardwareChecksResult {
 	monitorType: "hardware";
 	aggregateData: {
-		latestCheck: Check | null;
 		totalChecks: number;
 	};
 	upChecks: {

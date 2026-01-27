@@ -19,8 +19,7 @@ const Gauges = ({ isLoading = false, monitor }) => {
 		return <SkeletonLayout />;
 	}
 
-	const { stats } = monitor ?? {};
-	let latestCheck = stats?.aggregateData?.latestCheck;
+	const latestCheck = monitor?.recentChecks?.[0];
 	const memoryUsagePercent = latestCheck?.memory?.usage_percent ?? 0;
 	const memoryUsedBytes = latestCheck?.memory?.used_bytes ?? 0;
 	const memoryTotalBytes = latestCheck?.memory?.total_bytes ?? 0;
