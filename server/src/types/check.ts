@@ -172,9 +172,7 @@ export interface UptimeChecksResult {
 
 export interface ChecksSummary {
 	totalChecks: number;
-	resolvedChecks: number;
 	downChecks: number;
-	cannotResolveChecks: number;
 }
 
 export interface HasResponseTime {

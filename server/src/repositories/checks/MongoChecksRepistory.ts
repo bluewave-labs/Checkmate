@@ -381,14 +381,12 @@ class MongoChecksRepository implements IChecksRepository {
 				$group: {
 					_id: null,
 					totalChecks: { $sum: 1 },
-					resolvedChecks: { $sum: { $cond: [{ $eq: ["$ack", true] }, 1, 0] } },
 					downChecks: { $sum: { $cond: [{ $eq: ["$ack", false] }, 1, 0] } },
-					cannotResolveChecks: { $sum: { $cond: [{ $eq: ["$statusCode", 5000] }, 1, 0] } },
 				},
 			},
 			{ $project: { _id: 0 } },
 		]);
-		return checks[0] ?? { totalChecks: 0, resolvedChecks: 0, downChecks: 0, cannotResolveChecks: 0 };
+		return checks[0] ?? { totalChecks: 0, downChecks: 0 };
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {

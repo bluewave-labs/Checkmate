@@ -1,19 +1,13 @@
-import { BasePage, Breadcrumb } from "@/Components/v2/design-elements";
+import Stack from "@mui/material/Stack";
+import { BasePage, TotalChecksBox, DownChecksBox } from "@/Components/v2/design-elements";
+
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
-
-interface MonitorLookupItem {
-	id: string;
-	name: string;
-	type: string;
-}
-
-interface MonitorLookup {
-	[key: string]: MonitorLookupItem;
-}
+import type { Monitor } from "@/Types/Monitor";
+import type { ChecksSummary } from "@/Types/Check";
 
 const Checks = () => {
 	const { t } = useTranslation();
@@ -45,7 +39,13 @@ const Checks = () => {
 
 	return (
 		<BasePage>
-			<Breadcrumb />
+			<Stack
+				direction={{ xs: "column", md: "row" }}
+				gap={4}
+			>
+				<TotalChecksBox n={summaryResponse?.totalChecks || 0} />
+				<DownChecksBox n={summaryResponse?.downChecks || 0} />
+			</Stack>
 		</BasePage>
 	);
 };
