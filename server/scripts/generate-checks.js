@@ -54,8 +54,8 @@ async function ensureMonitor({ monitorId, teamId, userId, type }) {
 async function run() {
 	const mongoUri = process.env.MONGO_URI ?? "mongodb://localhost:27017/uptime_db";
 	const monitorId = parseObjectId(process.env.MONITOR_ID ?? DEFAULT_MONITOR_ID, DEFAULT_MONITOR_ID);
-	const teamId = parseObjectId("69648b0578209af45f9ffe30");
-	const userId = parseObjectId("69648b0678209af45f9ffe32");
+	const teamId = parseObjectId("6971546de1b2bc3de6498e6e");
+	const userId = parseObjectId("6971546de1b2bc3de6498e70");
 	const monitorType = process.env.MONITOR_TYPE ?? DEFAULT_MONITOR_TYPE;
 	const total = Number(process.env.CHECK_TOTAL ?? DEFAULT_TOTAL);
 	const batchSize = Number(process.env.CHECK_BATCH_SIZE ?? DEFAULT_BATCH_SIZE);

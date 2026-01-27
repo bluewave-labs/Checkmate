@@ -154,6 +154,79 @@ export interface ChecksResponse {
 	checksCount: number;
 }
 
+export type MonitorType =
+	| "http"
+	| "ping"
+	| "pagespeed"
+	| "hardware"
+	| "docker"
+	| "port"
+	| "game"
+	| "unknown";
+
+export interface ChecksQueryResult {
+	checksCount: number;
+	checks: Check[];
+}
+
+export interface PageSpeedChecksResult {
+	monitorType: "pagespeed";
+	checks: Check[];
+}
+
+export interface HardwareChecksResult {
+	monitorType: "hardware";
+	aggregateData: {
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	checks: Array<{
+		_id: string;
+		avgCpuUsage: number;
+		avgMemoryUsage: number;
+		avgTemperature: number[];
+		disks: Array<{
+			name: string;
+			readSpeed: number;
+			writeSpeed: number;
+			totalBytes: number;
+			freeBytes: number;
+			usagePercent: number;
+		}>;
+		net: Array<{
+			name: string;
+			bytesSentPerSecond: number;
+			deltaBytesRecv: number;
+			deltaPacketsSent: number;
+			deltaPacketsRecv: number;
+			deltaErrIn: number;
+			deltaErrOut: number;
+			deltaDropIn: number;
+			deltaDropOut: number;
+			deltaFifoIn: number;
+			deltaFifoOut: number;
+		}>;
+	}>;
+}
+
+export interface UptimeChecksResult {
+	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
+	groupedChecks: GroupedCheck[];
+	groupedUpChecks: GroupedCheck[];
+	groupedDownChecks: GroupedCheck[];
+	uptimePercentage: number;
+	avgResponseTime: number;
+}
+
+export interface ChecksSummary {
+	totalChecks: number;
+	resolvedChecks: number;
+	downChecks: number;
+	cannotResolveChecks: number;
+}
+
 export type CheckSnapshot = Omit<
 	Check,
 	"metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt"

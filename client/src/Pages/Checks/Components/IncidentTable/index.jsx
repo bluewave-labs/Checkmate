@@ -19,7 +19,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useFetchChecksTeam, useFetchChecksByMonitor } from "@/Hooks/checkHooks.js";
-import { Button, Typography, useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import { lighten } from "@mui/material/styles";
 
 const GetTooltip = (row) => {

@@ -594,8 +594,8 @@ class NetworkService {
 	 * @async
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
 	 */
-	getChecksAndSummaryByTeamId = async () => {
-		return this.axiosInstance.get(`/checks/team/summary`);
+	getChecksAndSummaryByTeamId = async ({ dateRange }) => {
+		return this.axiosInstance.get(`/checks/team/summary?dateRange=${dateRange}`);
 	};
 
 	/**
