@@ -1,7 +1,7 @@
 # ---------------------
 # Frontend build stage
 # ---------------------
-FROM node:24-slim AS frontend-build
+FROM node:20-slim AS frontend-build
 
 
 
@@ -20,7 +20,7 @@ RUN npm run build
 # ---------------------
 # Backend stage
 # ---------------------
-FROM node:24-slim AS backend
+FROM node:20-slim AS backend
 
 # Install ping
 RUN apt-get update \
