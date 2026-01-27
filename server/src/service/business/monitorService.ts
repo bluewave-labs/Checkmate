@@ -360,22 +360,13 @@ export class MonitorService implements IMonitorService {
 		const snapshotOnlyRequest =
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
 
-		const limitPerMonitor = snapshotOnlyRequest ? 1 : 25;
-		const checksMap = await this.checksRepository.findLatestByMonitorIds(
-			monitorsList.map((monitor) => monitor.id),
-			{ limitPerMonitor }
-		);
-
 		const monitorsWithChecks = monitorsList.map((monitor: Monitor) => {
-			const rawChecks = checksMap[monitor.id] ?? [];
+			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
 			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
-			return {
-				...monitor,
-				checks,
-			};
+			monitor.recentChecks = checks;
+			return monitor;
 		});
-
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 

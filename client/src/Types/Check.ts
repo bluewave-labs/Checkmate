@@ -1,7 +1,15 @@
 export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
-	type: string;
+	type:
+		| "http"
+		| "ping"
+		| "pagespeed"
+		| "hardware"
+		| "docker"
+		| "port"
+		| "game"
+		| "unknown";
 }
 
 export interface CheckCpuInfo {
@@ -83,6 +91,7 @@ export interface CheckTimings {
 	lookup?: number;
 	connect?: number;
 	secureConnect?: number;
+	upload?: number;
 	response?: number;
 	end?: number;
 	abort?: number;
@@ -103,7 +112,6 @@ export interface Check {
 	id: string;
 	metadata: CheckMetadata;
 	status: boolean;
-	originalResponseTime?: number;
 	responseTime: number;
 	timings?: CheckTimings;
 	statusCode: number;
@@ -123,6 +131,7 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	__v: number;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -144,3 +153,20 @@ export interface ChecksResponse {
 	checks: Check[];
 	checksCount: number;
 }
+
+export type CheckSnapshot = Omit<
+	Check,
+	"metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt"
+>;
+
+export interface HasResponseTime {
+	responseTime: number;
+}
+
+export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
+	originalResponseTime: number;
+};
+
+export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
+	originalAvgResponseTime: number;
+};

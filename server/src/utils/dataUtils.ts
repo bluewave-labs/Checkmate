@@ -1,6 +1,6 @@
-import type { Check, GroupedCheck, NormalizedCheck, NormalizedUptimeCheck } from "@/types/index.js";
+import type { GroupedCheck, NormalizedCheck, NormalizedUptimeCheck, HasResponseTime } from "@/types/index.js";
 
-const calculatePercentile = (arr: Check[], percentile: number): number => {
+const calculatePercentile = <T extends HasResponseTime>(arr: T[], percentile: number): number => {
 	const sorted = arr.slice().sort((a, b) => a.responseTime - b.responseTime);
 	const index = (percentile / 100) * (sorted.length - 1);
 	const lower = Math.floor(index);
@@ -20,7 +20,7 @@ const calculatePercentileUptimeDetails = (arr: GroupedCheck[], percentile: numbe
 	return sorted[lower]!.avgResponseTime * (1 - weight) + sorted[upper]!.avgResponseTime * weight;
 };
 
-export const NormalizeData = <T extends Check>(checks: T[], rangeMin: number, rangeMax: number): NormalizedCheck<T>[] => {
+export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: number, rangeMax: number): NormalizedCheck<T>[] => {
 	if (checks.length > 1) {
 		const min = calculatePercentile(checks, 0);
 		const max = calculatePercentile(checks, 95);

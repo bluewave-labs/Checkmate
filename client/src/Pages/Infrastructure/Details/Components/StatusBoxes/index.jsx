@@ -14,8 +14,7 @@ const InfraStatBoxes = ({ shouldRender, monitor }) => {
 	const { determineState } = useMonitorUtils();
 	const { t } = useTranslation();
 
-	const { stats } = monitor ?? {};
-	const latestCheck = stats?.aggregateData?.latestCheck;
+	const latestCheck = monitor?.recentChecks?.[0];
 
 	// Get data from latest check
 	const physicalCores = latestCheck?.cpu?.physical_core ?? 0;

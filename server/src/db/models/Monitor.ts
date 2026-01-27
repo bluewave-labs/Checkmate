@@ -1,15 +1,18 @@
 import { Schema, model, Types, type UpdateQuery } from "mongoose";
-import type { Monitor, MonitorMatchMethod, MonitorThresholds } from "@/types/monitor.js";
+import type { Monitor, MonitorMatchMethod, MonitorThresholds, CheckSnapshot } from "@/types/monitor.js";
 import { MonitorTypes } from "@/types/monitor.js";
 import Check from "./Check.js";
 import MonitorStats from "./MonitorStats.js";
 import StatusPage from "./StatusPage.js";
 
+type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
+
 type MonitorDocumentBase = Omit<
 	Monitor,
-	"id" | "userId" | "teamId" | "notifications" | "selectedDisks" | "statusWindow" | "createdAt" | "updatedAt"
+	"id" | "userId" | "teamId" | "notifications" | "selectedDisks" | "statusWindow" | "recentChecks" | "createdAt" | "updatedAt"
 > & {
 	statusWindow: boolean[];
+	recentChecks: CheckSnapshotDocument[];
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
@@ -32,6 +35,15 @@ const thresholdsSchema = new Schema<MonitorThresholds>(
 		usage_temperature: { type: Number },
 	},
 	{ _id: false }
+);
+
+const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
+	{
+		id: { type: String, required: true },
+		status: { type: Boolean, required: true },
+		createdAt: { type: Date, required: true },
+	},
+	{ _id: false, strict: false }
 );
 
 const MonitorSchema = new Schema<MonitorDocument>(
@@ -165,6 +177,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				return value && value.trim() ? value.trim() : null;
 			},
 		},
+		recentChecks: {
+			type: [checkSnapshotSchema],
+			default: [],
+		},
 	},
 	{
 		timestamps: true,
@@ -202,6 +218,6 @@ MonitorSchema.index({ teamId: 1, type: 1 });
 
 const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
 
-export type { MonitorDocument };
+export type { MonitorDocument, CheckSnapshotDocument };
 export { MonitorModel };
 export default MonitorModel;

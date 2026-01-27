@@ -2,16 +2,16 @@ import Stack from "@mui/material/Stack";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { HistogramPageSpeedTooltip } from "@/Components/v2/monitors/charts/HistogramPageSpeedTooltip";
 import { useTheme } from "@mui/material/styles";
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import type { MonitorStatus } from "@/Types/Monitor";
 
 import { getStatusColor } from "@/Utils/MonitorUtils";
 
-const processData = (checks: Check[]) => {
+const processData = (checks: CheckSnapshot[]) => {
 	if (checks.length === 0) return [];
 	const formattedData: { score: number; date: string }[] = [];
 
-	const calculateScore = (entry: Check) => {
+	const calculateScore = (entry: CheckSnapshot) => {
 		const accessibility = entry?.accessibility || 0;
 		const bestPractices = entry?.bestPractices || 0;
 		const performance = entry?.performance || 0;
@@ -32,7 +32,7 @@ export const HistogramPageSpeed = ({
 	checks,
 	status,
 }: {
-	checks: Check[];
+	checks: CheckSnapshot[];
 	status: MonitorStatus;
 }) => {
 	const theme = useTheme();

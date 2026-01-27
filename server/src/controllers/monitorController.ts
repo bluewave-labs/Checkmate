@@ -324,7 +324,6 @@ class MonitorController {
 		try {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsWithChecksQueryValidation.validateAsync(req.query);
-
 			const explain = optionalBoolean(req?.query?.explain, "explain");
 			const limit = optionalNumber(req?.query?.limit, "limit");
 			const page = optionalNumber(req?.query?.page, "page");

@@ -1,4 +1,5 @@
-import type { Check, GroupedCheck } from "@/Types/Check";
+import type { GroupedCheck } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 export type MonitorStatus = boolean | undefined;
 
 export const MonitorTypes = [
@@ -13,27 +14,52 @@ export const MonitorTypes = [
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export interface Monitor {
-	checks: Check[];
-	createdAt: string;
-	createdBy: string;
-	interval: number;
-	isActive: boolean;
-	latestChecks: Check[];
-	n: number;
-	name: string;
-	status: MonitorStatus;
-	type: string;
-	updatedAt: string;
-	updatedBy: string;
-	url: string;
-	id: string;
+export interface MonitorThresholds {
+	usage_cpu?: number;
+	usage_memory?: number;
+	usage_disk?: number;
+	usage_temperature?: number;
 }
 
-export interface MonitorWithChecks extends Monitor {
-	checks: Check[];
+export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+
+export interface Monitor {
+	id: string;
+	userId: string;
+	teamId: string;
+	name: string;
+	description?: string;
+	status?: boolean;
+	statusWindow: boolean[];
+	statusWindowSize: number;
+	statusWindowThreshold: number;
+	type: MonitorType;
+	ignoreTlsErrors: boolean;
+	jsonPath?: string;
+	expectedValue?: string;
+	matchMethod?: MonitorMatchMethod;
+	url: string;
+	port?: number;
+	isActive: boolean;
+	interval: number;
 	uptimePercentage?: number;
+	notifications: string[];
+	secret?: string;
+	thresholds?: MonitorThresholds;
+	alertThreshold: number;
+	cpuAlertThreshold: number;
+	memoryAlertThreshold: number;
+	diskAlertThreshold: number;
+	tempAlertThreshold: number;
+	selectedDisks: string[];
+	gameId?: string;
+	group: string | null;
+	recentChecks: CheckSnapshot[];
+	createdAt: string;
+	updatedAt: string;
 }
+
+export type MonitorWithChecks = Monitor;
 
 export interface MonitorsSummary {
 	totalMonitors: number;
@@ -45,7 +71,7 @@ export interface MonitorsSummary {
 export interface MonitorsWithChecksResponse {
 	count: number;
 	monitors: MonitorWithChecks[];
-	summary: MonitorsSummary;
+	summary: MonitorsSummary | null;
 }
 
 export interface MonitorStats {

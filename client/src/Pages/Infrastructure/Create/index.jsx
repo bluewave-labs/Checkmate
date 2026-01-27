@@ -92,9 +92,7 @@ const CreateInfrastructureMonitor = () => {
 			initializeInfrastructureMonitorForUpdate(monitor);
 			const fetchLastCheck = async () => {
 				try {
-					const { stats } = monitor ?? {};
-					let latestCheck = stats?.aggregateData?.latestCheck;
-					let disks = latestCheck?.disk || [];
+					let disks = monitor?.recentChecks?.[0]?.disk || [];
 
 					if (disks.length > 0) {
 						setAvailableDisks(disks);

@@ -4,7 +4,7 @@ import { BarChart3 } from "lucide-react";
 import { BaseChart } from "@/Components/v2/design-elements";
 import Typography from "@mui/material/Typography";
 
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import { useTranslation } from "react-i18next";
 import { getPageSpeedPalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
@@ -56,7 +56,7 @@ const MetricBox = ({
 	);
 };
 
-export const PiePageSpeedLegend = ({ latestCheck }: { latestCheck?: Check }) => {
+export const PiePageSpeedLegend = ({ latestCheck }: { latestCheck?: CheckSnapshot }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 

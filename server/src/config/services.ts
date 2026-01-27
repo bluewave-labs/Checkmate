@@ -176,7 +176,7 @@ export const initializeServices = async ({
 
 	const bufferService = new BufferService({ logger, checkService, settingsService });
 
-	const statusService = new StatusService({ db, logger, buffer: bufferService, monitorsRepository });
+	const statusService = new StatusService({ logger, buffer: bufferService, monitorsRepository });
 
 	const webhookProvider = new WebhookProvider(logger);
 	const slackProvider = new SlackProvider(logger);

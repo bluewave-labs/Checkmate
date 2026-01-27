@@ -1,6 +1,6 @@
 import { BaseChart } from "@/Components/v2/design-elements";
 import { FileText } from "lucide-react";
-import type { Check, CheckAudits } from "@/Types/Check";
+import type { CheckAudits, CheckSnapshot } from "@/Types/Check";
 import { Pie, PieChart, ResponsiveContainer, Label } from "recharts";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -30,7 +30,7 @@ const CenterLabel = ({ viewBox, value }: any) => {
 	);
 };
 
-export const PiePageSpeed = ({ latestCheck }: { latestCheck?: Check }) => {
+export const PiePageSpeed = ({ latestCheck }: { latestCheck?: CheckSnapshot }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const [hoverTitle, setHoverTitle] = useState<string | null>(null);

@@ -29,7 +29,6 @@ const dateRangeLookup: Record<string, Date | undefined> = {
 
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
-type HardwareAggregateData = { latestCheck: CheckDocument | null; totalChecks: number };
 type HardwareUpChecks = { totalChecks: number };
 
 class MongoChecksRepository implements IChecksRepository {
@@ -526,14 +525,13 @@ class MongoChecksRepository implements IChecksRepository {
 		const monitorId = monitorObjectId.toHexString();
 		const dates = { start: startDate, end: endDate };
 		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
-			this.getHardwareAggregateData(monitorId, dates),
+			this.getHardwareTotalChecks(monitorId, dates),
 			this.getHardwareUpChecks(monitorId, dates),
 			this.getHardwareStats(monitorId, dates, dateString),
 		]);
 
 		const aggregateData = {
-			latestCheck: aggregateDataDoc?.latestCheck ? this.toEntity(aggregateDataDoc.latestCheck as CheckDocument) : null,
-			totalChecks: aggregateDataDoc?.totalChecks ?? 0,
+			totalChecks: aggregateDataDoc ?? 0,
 		};
 
 		const upChecks = {
@@ -589,25 +587,12 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	private getHardwareAggregateData = async (monitorId: string, dates: DateRange): Promise<HardwareAggregateData> => {
-		const result = await CheckModel.aggregate([
-			{
-				$match: {
-					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-					"metadata.type": "hardware",
-					createdAt: { $gte: dates.start, $lte: dates.end },
-				},
-			},
-			{ $sort: { createdAt: -1 } },
-			{
-				$group: {
-					_id: null,
-					latestCheck: { $first: "$$ROOT" },
-					totalChecks: { $sum: 1 },
-				},
-			},
-		]);
-		return result[0] || { totalChecks: 0, latestCheck: null };
+	private getHardwareTotalChecks = async (monitorId: string, dates: DateRange): Promise<number> => {
+		return await CheckModel.countDocuments({
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			"metadata.type": "hardware",
+			createdAt: { $gte: dates.start, $lte: dates.end },
+		});
 	};
 
 	private getHardwareUpChecks = async (monitorId: string, dates: DateRange): Promise<HardwareUpChecks> => {

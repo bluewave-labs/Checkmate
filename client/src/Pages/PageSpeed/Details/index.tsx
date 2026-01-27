@@ -48,15 +48,15 @@ const PageSpeedDetails = () => {
 				monitorStats={monitorStats}
 			/>
 			<HistogramPageSpeedDetails
-				checks={monitor?.checks || []}
+				checks={monitor?.recentChecks || []}
 				range="day"
 			/>
 			<Stack
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(10)}
 			>
-				<PiePageSpeed latestCheck={monitor?.checks?.[0]} />
-				<PiePageSpeedLegend latestCheck={monitor?.checks?.[0]} />
+				<PiePageSpeed latestCheck={monitor?.recentChecks?.[0]} />
+				<PiePageSpeedLegend latestCheck={monitor?.recentChecks?.[0]} />
 			</Stack>
 		</BasePage>
 	);

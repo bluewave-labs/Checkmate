@@ -1,4 +1,5 @@
 import { requireTeamId } from "@/controllers/controllerUtils.js";
+import { Types } from "mongoose";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
@@ -39,6 +40,8 @@ class CheckService {
 		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings } = statusResponse;
 
 		const check: Partial<Check> = {
+			id: new Types.ObjectId().toString(),
+			createdAt: new Date().toISOString(),
 			metadata: {
 				monitorId,
 				teamId,
