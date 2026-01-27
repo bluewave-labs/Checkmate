@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { BulkWriteResult } from "mongodb";
 
 const CHECKS_COLLECTION = "checks";
 const BACKUP_COLLECTION = "checks_backup";
@@ -144,14 +143,14 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 			operations.push({ insertOne: { document: { ...rest, metadata } } });
 
 			if (operations.length >= BATCH_SIZE) {
-				const result: BulkWriteResult = await target.bulkWrite(operations, { ordered: false });
+				const result = await target.bulkWrite(operations, { ordered: false });
 				stats.totalMigrated += result.insertedCount;
 				operations.length = 0;
 			}
 		}
 
 		if (operations.length) {
-			const result: BulkWriteResult = await target.bulkWrite(operations, { ordered: false });
+			const result = await target.bulkWrite(operations, { ordered: false });
 			stats.totalMigrated += result.insertedCount;
 		}
 
