@@ -1,7 +1,15 @@
 export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
-	type: "http" | "ping" | "pagespeed" | "hardware" | "docker" | "port" | "game" | "unknown";
+	type:
+		| "http"
+		| "ping"
+		| "pagespeed"
+		| "hardware"
+		| "docker"
+		| "port"
+		| "game"
+		| "unknown";
 }
 
 export interface CheckCpuInfo {
@@ -146,7 +154,10 @@ export interface ChecksResponse {
 	checksCount: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt">;
+export type CheckSnapshot = Omit<
+	Check,
+	"metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt"
+>;
 
 export interface HasResponseTime {
 	responseTime: number;
