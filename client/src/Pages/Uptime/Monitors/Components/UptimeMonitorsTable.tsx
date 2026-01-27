@@ -199,9 +199,9 @@ export const MonitorTable = ({
 				content: t("pages.uptime.table.headers.responseTime"),
 				render: (row) => {
 					if (chartType === "histogram") {
-						return <HistogramResponseTime checks={row.checks} />;
+						return <HistogramResponseTime checks={row.recentChecks} />;
 					} else {
-						return <HeatmapResponseTime checks={row.checks} />;
+						return <HeatmapResponseTime checks={row.recentChecks} />;
 					}
 				},
 			},

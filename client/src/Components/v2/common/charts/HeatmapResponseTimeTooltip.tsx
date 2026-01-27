@@ -2,12 +2,14 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { useTranslation } from "react-i18next";
-type HeatmapCheck = Check | { status: "placeholder"; responseTime: 0; createdAt: "" };
+type HeatmapCheck =
+	| CheckSnapshot
+	| { status: "placeholder"; responseTime: 0; createdAt: "" };
 
 export const HeatmapResponseTimeTooltip = ({
 	children,

@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import { getResponseColor } from "@/Utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "@/Components/v2/common/charts/HeatmapResponseTimeTooltip";
 import type { SxProps } from "@mui/material/styles";
@@ -13,7 +13,7 @@ interface PlaceholderCheck {
 }
 
 interface HeatmapResponseTimeProps {
-	checks: Check[];
+	checks: CheckSnapshot[];
 	gap?: ResponsiveStyleValue<number | string>;
 	availabilityCellSx?: SxProps;
 	responseCellSx?: SxProps;
@@ -34,7 +34,7 @@ export const HeatmapResponseTime = ({
 
 	const latestChecks = checks.slice(-25).reverse();
 
-	let data: Array<Check | PlaceholderCheck>;
+	let data: Array<CheckSnapshot | PlaceholderCheck>;
 	if (latestChecks.length !== 25) {
 		const placeholders = Array(25 - latestChecks.length).fill({
 			status: "placeholder" as const,

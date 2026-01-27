@@ -144,3 +144,5 @@ export interface ChecksResponse {
 	checks: Check[];
 	checksCount: number;
 }
+
+export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "updatedAt">;

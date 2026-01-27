@@ -12,7 +12,7 @@ import {
 import { HistogramPageSpeedScoresTooltip } from "@/Components/v2/monitors";
 
 import { useTheme } from "@mui/material/styles";
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import type { Palette } from "@mui/material/styles";
 type PaletteColorKey = Extract<
 	keyof Palette,
@@ -52,7 +52,7 @@ export const HistogramPageSpeedDetails = ({
 	checks,
 	range,
 }: {
-	checks: Check[];
+	checks: CheckSnapshot[];
 	range: string;
 }) => {
 	const theme = useTheme();

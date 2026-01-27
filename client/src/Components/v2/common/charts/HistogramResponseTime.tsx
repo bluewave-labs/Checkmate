@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 
 interface HistogramResponseTimeProps {
-	checks: Check[];
+	checks: CheckSnapshot[];
 	height?: ResponsiveStyleValue<number | string>;
 	gap?: ResponsiveStyleValue<number | string>;
 }
