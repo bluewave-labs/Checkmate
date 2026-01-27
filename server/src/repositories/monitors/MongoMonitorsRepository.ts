@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, MonitorWithChecks, Check } from "@/types/index.js";
+import type { Monitor, MonitorsSummary, MonitorWithChecks, CheckSnapshot, Check } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
@@ -309,7 +309,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: any) => ({ ...check, createdAt: check.createdAt instanceof Date ? check.createdAt.toISOString() : check.createdAt })),
+			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -393,10 +393,35 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: any) => ({ ...check, createdAt: check.createdAt instanceof Date ? check.createdAt.toISOString() : check.createdAt })),
+			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 			checks,
+		};
+	};
+
+	private toCheckSnapshot = (doc: any): CheckSnapshot => {
+		const plain = typeof doc.toObject === "function" ? doc.toObject() : doc;
+		return {
+			id: plain.id ?? plain._id?.toString() ?? "",
+			status: plain.status,
+			responseTime: plain.responseTime,
+			timings: plain.timings,
+			statusCode: plain.statusCode,
+			message: plain.message,
+			cpu: plain.cpu,
+			memory: plain.memory,
+			disk: plain.disk,
+			host: plain.host,
+			errors: plain.errors,
+			capture: plain.capture,
+			net: plain.net,
+			accessibility: plain.accessibility,
+			bestPractices: plain.bestPractices,
+			seo: plain.seo,
+			performance: plain.performance,
+			audits: plain.audits,
+			createdAt: plain.createdAt instanceof Date ? plain.createdAt.toISOString() : plain.createdAt,
 		};
 	};
 }

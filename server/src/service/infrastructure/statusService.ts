@@ -180,7 +180,6 @@ export class StatusService implements IStatusService {
 				monitor.statusWindow.shift();
 			}
 
-			// Update recentChecks with check snapshot (excludes metadata, ack, expiry, __v, updatedAt)
 			const checkSnapshot: CheckSnapshot = {
 				id: check.id,
 				status: check.status,
