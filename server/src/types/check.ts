@@ -189,3 +189,5 @@ export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
 export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
 	originalAvgResponseTime: number;
 };
+
+export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt">;

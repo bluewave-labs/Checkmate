@@ -7,7 +7,6 @@ import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
 import { ParseBoolean } from "@/utils/utils.js";
-import { MonitorWithChecks } from "@/types/index.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
@@ -84,7 +83,7 @@ class StatusPageController {
 
 			const monitors = await this.monitorsRepository.findByIdsWithChecks(statusPage.monitors);
 			const normalizedMonitors = monitors.map((monitor) => {
-				const normalizedChecks = NormalizeData(monitor.checks, 10, 100);
+				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
 					const { url, port, secret, notifications, ...rest } = monitor;
 					return { ...rest, checks: normalizedChecks };

@@ -1,6 +1,6 @@
 import type { Check } from "@/types/check.js";
-
-export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt">;
+import type { CheckSnapshot } from "@/types/check.js";
+export type { CheckSnapshot } from "@/types/check.js";
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
@@ -57,14 +57,10 @@ export interface MonitorsSummary {
 	pausedMonitors: number;
 }
 
-export interface MonitorWithChecks extends Monitor {
-	checks: Check[] | CheckSnapshot[];
-}
-
 export interface MonitorsWithChecksByTeamIdResult {
 	summary: MonitorsSummary | null;
 	count: number;
-	monitors: MonitorWithChecks[];
+	monitors: Monitor[];
 }
 
 export interface UptimeDetailsResult {

@@ -363,15 +363,10 @@ export class MonitorService implements IMonitorService {
 		const monitorsWithChecks = monitorsList.map((monitor: Monitor) => {
 			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
-			// recentChecks are stored oldest-first, reverse to get newest-first for display
-			const reversedChecks = [...rawChecks].reverse();
-			const checks = isSnapshotType ? reversedChecks.slice(0, 1) : NormalizeData(reversedChecks, 10, 100);
-			return {
-				...monitor,
-				checks,
-			};
+			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
+			monitor.recentChecks = checks;
+			return monitor;
 		});
-
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
