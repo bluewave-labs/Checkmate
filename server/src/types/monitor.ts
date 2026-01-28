@@ -75,43 +75,51 @@ export interface UptimeDetailsResult {
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 
+export interface HardwareDiskStats {
+	name: string;
+	readSpeed: number;
+	writeSpeed: number;
+	totalBytes: number;
+	freeBytes: number;
+	usagePercent: number;
+}
+
+export interface HardwareNetStats {
+	name: string;
+	bytesSentPerSecond: number;
+	deltaBytesRecv: number;
+	deltaPacketsSent: number;
+	deltaPacketsRecv: number;
+	deltaErrIn: number;
+	deltaErrOut: number;
+	deltaDropIn: number;
+	deltaDropOut: number;
+	deltaFifoIn: number;
+	deltaFifoOut: number;
+}
+
+export interface HardwareCheckStats {
+	_id: string;
+	avgCpuUsage: number;
+	avgMemoryUsage: number;
+	avgTemperature: number[];
+	disks: HardwareDiskStats[];
+	net: HardwareNetStats[];
+}
+
+export interface HardwareStats {
+	aggregateData: {
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	checks: HardwareCheckStats[];
+}
+
 export interface HardwareDetailsResult {
 	monitor: Monitor;
-	stats: {
-		aggregateData: {
-			totalChecks: number;
-		};
-		upChecks: {
-			totalChecks: number;
-		};
-		checks: Array<{
-			_id: string;
-			avgCpuUsage: number;
-			avgMemoryUsage: number;
-			avgTemperature: number[];
-			disks: Array<{
-				name: string;
-				readSpeed: number;
-				writeSpeed: number;
-				totalBytes: number;
-				freeBytes: number;
-				usagePercent: number;
-			}>;
-			net: Array<{
-				name: string;
-				bytesSentPerSecond: number;
-				deltaBytesRecv: number;
-				deltaPacketsSent: number;
-				deltaPacketsRecv: number;
-				deltaErrIn: number;
-				deltaErrOut: number;
-				deltaDropIn: number;
-				deltaDropOut: number;
-				deltaFifoIn: number;
-				deltaFifoOut: number;
-			}>;
-		}>;
-	};
+	stats: HardwareStats;
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 

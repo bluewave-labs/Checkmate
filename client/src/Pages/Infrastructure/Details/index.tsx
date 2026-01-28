@@ -1,6 +1,5 @@
 import { BasePage, Tab, Tabs } from "@/Components/v2/design-elements";
 import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
-import Stack from "@mui/material/Stack";
 import { MonitorStatBoxes } from "@/Components/v2/monitors";
 import { TabNetwork } from "@/Pages/Infrastructure/Details/Components/TabNetwork";
 import { TabOverview } from "@/Pages/Infrastructure/Details/Components/TabOverview";
@@ -46,6 +45,7 @@ const InfrastructureDetails = () => {
 
 	const monitor = monitorDetailsData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
+	const stats = monitorDetailsData?.stats;
 
 	return (
 		<BasePage>
@@ -68,7 +68,12 @@ const InfrastructureDetails = () => {
 				<Tab label={t("pages.infrastructure.tabs.labels.overview")} />
 				<Tab label={t("pages.infrastructure.tabs.labels.network")} />
 			</Tabs>
-			{selectedTab === 0 && <TabOverview monitor={monitor} />}
+			{selectedTab === 0 && (
+				<TabOverview
+					monitor={monitor}
+					stats={stats}
+				/>
+			)}
 			{selectedTab === 1 && <TabNetwork />}
 		</BasePage>
 	);

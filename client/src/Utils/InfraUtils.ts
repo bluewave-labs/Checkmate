@@ -13,7 +13,6 @@ export const getCores = (cores: number | undefined) => {
 };
 
 export const getAvgTemp = (temps: number[]): string => {
-	console.log(temps);
 	if (!temps || temps.length === 0) return "N/A";
 	const avgTemp = temps.reduce((a, b) => a + b, 0) / temps.length;
 	return `${avgTemp?.toFixed(2)} °C`;

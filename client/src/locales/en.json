@@ -299,6 +299,31 @@
 				"memory": "Memory",
 				"disk": "Disk",
 				"os": "OS"
+			},
+			"gauges": {
+				"cpu": {
+					"lowerLabel": "Max frequency",
+					"title": "CPU usage",
+					"upperLabel": "Current frequency"
+				},
+				"disk": {
+					"lowerLabel": "Free",
+					"title": "Disk {{idx}} usage",
+					"upperLabel": "Used"
+				},
+				"memory": {
+					"lowerLabel": "Free",
+					"title": "Memory usage",
+					"upperLabel": "Used"
+				}
+			},
+			"charts": {
+				"labels": {
+					"memory": "Memory usage",
+					"cpu": "CPU usage",
+					"temp": "Temp",
+					"disk": "Disk usage"
+				}
 			}
 		}
 	},
