@@ -259,11 +259,7 @@ class MongoChecksRepository implements IChecksRepository {
 
 		const [checksCount, checks] = await Promise.all([
 			CheckModel.countDocuments(matchStage),
-			CheckModel.find(matchStage)
-				.sort({ createdAt: convertedSortOrder })
-				.skip(skip)
-				.limit(rowsPerPage)
-				.lean() as Promise<CheckDocument[]>,
+			CheckModel.find(matchStage).sort({ createdAt: convertedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<CheckDocument[]>,
 		]);
 
 		return { checksCount, checks: this.mapDocuments(checks) };
@@ -313,11 +309,7 @@ class MongoChecksRepository implements IChecksRepository {
 
 		const [checksCount, checks] = await Promise.all([
 			CheckModel.countDocuments(matchStage),
-			CheckModel.find(matchStage)
-				.sort({ createdAt: parsedSortOrder })
-				.skip(skip)
-				.limit(rowsPerPage)
-				.lean() as Promise<CheckDocument[]>,
+			CheckModel.find(matchStage).sort({ createdAt: parsedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<CheckDocument[]>,
 		]);
 
 		return { checksCount, checks: this.mapDocuments(checks) };
