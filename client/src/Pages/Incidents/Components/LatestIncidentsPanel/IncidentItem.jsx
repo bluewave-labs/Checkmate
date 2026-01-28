@@ -30,12 +30,22 @@ const IncidentItem = ({ incident }) => {
 	return (
 		<Box
 			sx={{
-				display: "grid",
-				gridTemplateColumns: "1fr 100px 80px",
+				display: {
+					xs: "flex",
+					lg: "grid",
+				},
 				alignItems: "center",
+				flexWrap: {
+					xs: "wrap",
+					lg: "nowrap",
+				},
 				gap: theme.spacing(2),
 				width: "100%",
 				py: theme.spacing(0.5),
+
+				gridTemplateColumns: {
+					lg: "1fr 100px 80px",
+				},
 			}}
 		>
 			<Stack
