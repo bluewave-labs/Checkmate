@@ -62,7 +62,7 @@ export const HeaderTimeRange = ({
 
 	return (
 		<Stack
-			direction={{ xs: "column", sm: "row" }}
+			direction={{ xs: "column", md: "row" }}
 			justifyContent="flex-end"
 			alignItems="center"
 			gap={theme.spacing(4)}
