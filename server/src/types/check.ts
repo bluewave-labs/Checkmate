@@ -136,7 +136,7 @@ export interface HardwareChecksResult {
 		totalChecks: number;
 	};
 	checks: Array<{
-		_id: string;
+		bucketDate: string;
 		avgCpuUsage: number;
 		avgMemoryUsage: number;
 		avgTemperature: number[];

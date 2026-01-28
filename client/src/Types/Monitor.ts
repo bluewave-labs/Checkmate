@@ -132,7 +132,7 @@ export interface HardwareNetStats {
 }
 
 export interface HardwareCheckStats {
-	_id: string;
+	bucketDate: string;
 	avgCpuUsage: number;
 	avgMemoryUsage: number;
 	avgTemperature: number[];

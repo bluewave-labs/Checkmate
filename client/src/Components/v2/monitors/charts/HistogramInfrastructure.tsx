@@ -132,10 +132,10 @@ export const HistogramInfrastructure = ({
 	if (type === "temp") {
 		avgTemps = data.map((check) => {
 			const temps = check.avgTemperature || [];
-			if (temps.length === 0) return { bucketDate: check._id, avg_temp: null };
+			if (temps.length === 0) return { bucketDate: check.bucketDate, avg_temp: null };
 			const totalTemp = temps.reduce((sum, temp) => sum + (temp || 0), 0);
 			const avgTemp = totalTemp / temps.length;
-			return { bucketDate: check?._id, avg_temp: avgTemp };
+			return { bucketDate: check.bucketDate, avg_temp: avgTemp };
 		});
 
 		const maxTemp: number = avgTemps.reduce((max, item) => {

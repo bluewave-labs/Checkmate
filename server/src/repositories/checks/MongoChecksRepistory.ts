@@ -529,7 +529,7 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 
 		const checks = (hardwareMetrics ?? []).map((metric) => ({
-			_id: metric._id,
+			bucketDate: metric._id,
 			avgCpuUsage: metric.avgCpuUsage ?? 0,
 			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
 			avgTemperature: metric.avgTemperature ?? [],
