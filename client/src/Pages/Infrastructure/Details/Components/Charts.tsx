@@ -1,4 +1,4 @@
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { HistogramInfrastructure } from "@/Components/v2/monitors";
 
 import { useTranslation } from "react-i18next";
