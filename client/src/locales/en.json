@@ -276,6 +276,15 @@
 					"weight": "Weight"
 				}
 			}
+		},
+		"infrastructure": {
+			"table": {
+				"headers": {
+					"cpu": "CPU",
+					"disk": "Disk",
+					"memory": "Memory"
+				}
+			}
 		}
 	},
 	"incidentsTableNoIncidents": "No incidents recorded",
