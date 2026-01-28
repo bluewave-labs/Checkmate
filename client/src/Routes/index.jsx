@@ -25,7 +25,7 @@ import PageSpeedDetails from "../Pages/PageSpeed/Details/";
 import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
 // Infrastructure
-import Infrastructure from "../Pages/Infrastructure/Monitors/index.jsx";
+import Infrastructure from "../Pages/Infrastructure/Monitors";
 import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
 import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
 
@@ -147,7 +147,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure"
-					element={<Infrastructure />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Infrastructure />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/create"
