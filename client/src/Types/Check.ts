@@ -32,6 +32,7 @@ export interface CheckHostInfo {
 	os?: string;
 	platform?: string;
 	kernel_version?: string;
+	pretty_name?: string;
 }
 
 export interface CheckCaptureInfo {

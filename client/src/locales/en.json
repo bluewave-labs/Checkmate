@@ -284,6 +284,21 @@
 					"disk": "Disk",
 					"memory": "Memory"
 				}
+			},
+			"tabs": {
+				"labels": {
+					"overview": "Overview",
+					"network": "Network"
+				}
+			},
+			"statBoxes": {
+				"cpuPhysical": "CPU (Physical)",
+				"cpuLogical": "CPU (Logical)",
+				"cpuFrequency": "CPU Frequency",
+				"avgCpuTemperature": "Average CPU Temperature",
+				"memory": "Memory",
+				"disk": "Disk",
+				"os": "OS"
 			}
 		}
 	},
