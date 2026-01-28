@@ -19,7 +19,11 @@ export class EmailProvider implements INotificationProvider {
 	};
 
 	async sendAlert(notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> {
-		const subject = `Monitor ${monitor.name} infrastructure alerts`;
+		// For grouped notifications (identified by ":" in name), customize subject to indicate multiple services.
+		// Example: "2 services: Service A, Service B" becomes "Alert: 2 services are down"
+		const isGroupedNotification = monitor.name.includes(":");
+		const subject = isGroupedNotification ? `Alert: ${monitor.name} are down` : `Monitor ${monitor.name} is down`;
+
 		let html;
 		if (monitor.type === "hardware") {
 			html = this.buildHardwareEmail(monitor, monitorStatusResponse);

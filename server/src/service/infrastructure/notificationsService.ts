@@ -194,36 +194,37 @@ export class NotificationsService implements INotificationsService {
 	 * To avoid changing email templates, we construct a synthetic Monitor
 	 * whose name concisely lists all affected services. The existing
 	 * `serverIsDownTemplate` is then reused.
+	 *
+	 * @param notification The email notification to send to
+	 * @param monitors Array of monitors that went down
+	 * @param statusResponses Array of status responses (parallel to monitors)
+	 * @returns true if email was sent successfully, false otherwise
 	 */
-	private flushEmailGroup = async (
-		notification: Notification,
-		monitors: Monitor[],
-		statusResponses: MonitorStatusResponse[]
-	): Promise<boolean> => {
+	private flushEmailGroup = async (notification: Notification, monitors: Monitor[], statusResponses: MonitorStatusResponse[]): Promise<boolean> => {
 		if (!monitors.length || !statusResponses.length) {
 			return false;
 		}
 
-		// Build a combined monitor name, e.g.:
-		// "2 services are down: A, B"
+		// Build a combined monitor name listing all affected services.
+		// Example: "Service A, Service B" (2 services) or "Service A" (1 service)
 		const uniqueNames = Array.from(new Set(monitors.map((m) => m.name)));
 		const servicesCount = uniqueNames.length;
-		const combinedName =
-			servicesCount === 1
-				? `${uniqueNames[0]}`
-				: `${servicesCount} services are down: ${uniqueNames.join(", ")}`;
+		const servicesList = uniqueNames.join(", ");
+
+		const combinedName = servicesCount === 1 ? servicesList : `${servicesCount} services: ${servicesList}`;
 
 		// Use the first monitor as a base for URL and other fields.
 		const baseMonitor = monitors[0];
 		const baseStatus = statusResponses[0];
 
 		// Create a shallow clone so we don't mutate the original entity.
+		// This preserves monitor properties while overriding the name for grouped display.
 		const syntheticMonitor: Monitor = {
 			...baseMonitor,
 			name: combinedName,
 		};
 
-		// Reuse existing email provider to build and send the email.
+		// Reuse existing email provider to send grouped notification.
 		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus);
 	};
 
