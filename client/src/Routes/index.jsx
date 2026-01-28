@@ -27,7 +27,7 @@ import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 // Infrastructure
 import Infrastructure from "../Pages/Infrastructure/Monitors";
 import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
-import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
+import InfrastructureDetails from "../Pages/Infrastructure/Details/index";
 
 // Server Status
 import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
@@ -165,7 +165,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/:monitorId"
-					element={<InfrastructureDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<InfrastructureDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="checks/:monitorId?"
