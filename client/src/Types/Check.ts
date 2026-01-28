@@ -222,9 +222,7 @@ export interface UptimeChecksResult {
 
 export interface ChecksSummary {
 	totalChecks: number;
-	resolvedChecks: number;
 	downChecks: number;
-	cannotResolveChecks: number;
 }
 
 export type CheckSnapshot = Omit<

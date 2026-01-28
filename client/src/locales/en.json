@@ -40,7 +40,8 @@
 				"monitor": "Monitor",
 				"name": "Name",
 				"status": "Status",
-				"type": "Type"
+				"type": "Type",
+				"dateTime": "Date & time"
 			},
 			"empty": "Nothing here"
 		},
@@ -170,6 +171,22 @@
 	},
 	"add": "Add",
 	"monitors": "monitors",
+	"components": {
+		"headerTimeRange": {
+			"labels": {
+				"recent": "Recent",
+				"day": "Day",
+				"week": "Week",
+				"month": "Month"
+			},
+			"description": {
+				"recent": "Showing statistics for past 2 hours.",
+				"day": "Showing statistics for past 24 hours.",
+				"week": "Showing statistics for past 7 days.",
+				"month": "Showing statistics for past 30 days."
+			}
+		}
+	},
 	"pages": {
 		"common": {
 			"monitors": {
@@ -177,6 +194,7 @@
 					"up": "up",
 					"down": "down",
 					"paused": "paused",
+					"total": "total",
 					"initializing": "initializing"
 				},
 				"actions": {
@@ -223,6 +241,17 @@
 				"headers": {
 					"dateTime": "Date & time",
 					"statusCode": "Status code"
+				},
+				"empty": "No down checks in this time range"
+			},
+			"selects": {
+				"monitor": {
+					"all": "All monitors"
+				},
+				"status": {
+					"all": "All",
+					"down": "Down",
+					"up": "Up"
 				}
 			}
 		},
