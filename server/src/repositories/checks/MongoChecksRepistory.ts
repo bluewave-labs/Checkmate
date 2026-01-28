@@ -205,15 +205,17 @@ class MongoChecksRepository implements IChecksRepository {
 		const { id, metadata, ...rest } = check;
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
-			metadata: metadata ? {
-				monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
-				teamId: new mongoose.Types.ObjectId(metadata.teamId),
-				type: metadata.type,
-			} : {
-				monitorId: new mongoose.Types.ObjectId(),
-				teamId: new mongoose.Types.ObjectId(),
-				type: "http",
-			},
+			metadata: metadata
+				? {
+						monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
+						teamId: new mongoose.Types.ObjectId(metadata.teamId),
+						type: metadata.type,
+					}
+				: {
+						monitorId: new mongoose.Types.ObjectId(),
+						teamId: new mongoose.Types.ObjectId(),
+						type: "http",
+					},
 			...rest,
 		} as unknown as CheckDocument;
 	};
