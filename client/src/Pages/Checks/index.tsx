@@ -11,24 +11,22 @@ import { ChecksTable } from "./Components/ChecksTable";
 
 import { MenuItem, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
-import type { ChecksSummary } from "@/Types/Check";
+import type { ChecksSummary, ChecksResponse } from "@/Types/Check";
 
 const Checks = () => {
 	const { t } = useTranslation();
 	const { monitorId } = useParams<{ monitorId?: string }>();
 
-	// Local state
 	const [selectedMonitor, setSelectedMonitor] = useState<string>(monitorId || "0");
 	const [dateRange, setDateRange] = useState<string>("recent");
 	const [statusFilter, setStatusFilter] = useState<string>("down");
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
-	// Data fetching with SWR
 	const monitorsUrl = "/monitors/team";
 	const summaryUrl = `/checks/team/summary?dateRange=${dateRange}`;
 
@@ -38,7 +36,68 @@ const Checks = () => {
 	const { data: summaryResponse, isLoading: isLoadingSummary } =
 		useGet<ChecksSummary>(summaryUrl);
 
-	const isLoading = isLoadingMonitors || isLoadingSummary;
+	const selectedMonitorType = monitorsResponse?.find(
+		(m) => m.id === selectedMonitor
+	)?.type;
+
+	const teamChecksUrl = useMemo(() => {
+		if (selectedMonitor !== "0") return null;
+		const params = new URLSearchParams();
+		params.append("sortOrder", "desc");
+		if (dateRange) params.append("dateRange", dateRange);
+		if (statusFilter) params.append("filter", statusFilter);
+		params.append("page", String(page));
+		params.append("rowsPerPage", String(rowsPerPage));
+		return `/checks/team?${params.toString()}`;
+	}, [selectedMonitor, dateRange, statusFilter, page, rowsPerPage]);
+
+	const monitorChecksUrl = useMemo(() => {
+		if (selectedMonitor === "0" || !selectedMonitorType) return null;
+		const params = new URLSearchParams();
+		params.append("type", selectedMonitorType);
+		params.append("sortOrder", "desc");
+		if (statusFilter) params.append("filter", statusFilter);
+		if (dateRange) params.append("dateRange", dateRange);
+		params.append("page", String(page));
+		params.append("rowsPerPage", String(rowsPerPage));
+		return `/checks/${selectedMonitor}?${params.toString()}`;
+	}, [selectedMonitor, selectedMonitorType, dateRange, statusFilter, page, rowsPerPage]);
+
+	const {
+		data: teamChecksData,
+		isLoading: isLoadingTeamChecks,
+		isValidating: isValidatingTeamChecks,
+	} = useGet<ChecksResponse>(
+		teamChecksUrl,
+		{},
+		{ keepPreviousData: true, refreshInterval: 30000 }
+	);
+	const {
+		data: monitorChecksData,
+		isLoading: isLoadingMonitorChecks,
+		isValidating: isValidatingMonitorChecks,
+	} = useGet<ChecksResponse>(
+		monitorChecksUrl,
+		{},
+		{ keepPreviousData: true, refreshInterval: 30000 }
+	);
+
+	const checks =
+		selectedMonitor === "0"
+			? (teamChecksData?.checks ?? [])
+			: (monitorChecksData?.checks ?? []);
+	const checksCount =
+		selectedMonitor === "0"
+			? (teamChecksData?.checksCount ?? 0)
+			: (monitorChecksData?.checksCount ?? 0);
+
+	const isLoadingChecks =
+		isLoadingTeamChecks ||
+		isLoadingMonitorChecks ||
+		isValidatingTeamChecks ||
+		isValidatingMonitorChecks;
+
+	const isLoading = isLoadingMonitors || isLoadingSummary || isLoadingChecks;
 	const totalChecks = summaryResponse?.totalChecks || 0;
 	const downChecks = summaryResponse?.downChecks || 0;
 	const upChecks = totalChecks - (summaryResponse?.downChecks || 0);
@@ -61,7 +120,7 @@ const Checks = () => {
 				gap={2}
 			>
 				<Stack
-					direction="row"
+					direction={{ xs: "column", md: "row" }}
 					gap={2}
 				>
 					<Select
@@ -94,7 +153,7 @@ const Checks = () => {
 					</Select>
 				</Stack>
 				<HeaderTimeRange
-					isLoading={isLoading}
+					isLoading={isLoading || isLoadingChecks}
 					dateRange={dateRange}
 					setDateRange={setDateRange}
 				/>
@@ -102,9 +161,8 @@ const Checks = () => {
 
 			<ChecksTable
 				monitors={monitorsResponse ?? null}
-				selectedMonitorId={selectedMonitor}
-				statusFilter={statusFilter}
-				dateRange={dateRange}
+				checks={checks}
+				checksCount={checksCount}
 				page={page}
 				setPage={setPage}
 				rowsPerPage={rowsPerPage}

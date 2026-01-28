@@ -113,9 +113,6 @@ export const TotalChecksBox = ({ n }: { n: number }) => {
 			label={t("pages.common.monitors.status.total")}
 			n={n}
 			color={theme.palette.primary.light}
-			sx={{
-				maxWidth: "300px",
-			}}
 		/>
 	);
 };
@@ -127,9 +124,6 @@ export const DownChecksBox = ({ n }: { n: number }) => {
 			label={t("pages.common.monitors.status.down")}
 			n={n}
 			color={theme.palette.error.light}
-			sx={{
-				maxWidth: "300px",
-			}}
 		/>
 	);
 };
@@ -141,9 +135,6 @@ export const UpChecksBox = ({ n }: { n: number }) => {
 			label={t("pages.common.monitors.status.up")}
 			n={n}
 			color={theme.palette.success.light}
-			sx={{
-				maxWidth: "300px",
-			}}
 		/>
 	);
 };

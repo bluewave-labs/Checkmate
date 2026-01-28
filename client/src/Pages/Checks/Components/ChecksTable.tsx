@@ -9,28 +9,24 @@ import type { Header } from "@/Components/v2/design-elements/Table";
 import type { Monitor, MonitorStatus } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { useNavigate } from "react-router";
-import type { Check, ChecksResponse } from "@/Types/Check";
+import type { Check } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
-import { useGet } from "@/Hooks/UseApi";
 
 export const ChecksTable = ({
 	monitors,
-	selectedMonitorId,
-	statusFilter,
-	dateRange,
+	checks,
+	checksCount,
 	page,
 	setPage,
 	rowsPerPage,
 	setRowsPerPage,
 }: {
 	monitors: Monitor[] | null;
-	selectedMonitorId: string;
-	statusFilter: string;
-	dateRange: string;
+	checks: Check[];
+	checksCount: number;
 	page: number;
 	setPage: (page: number) => void;
 	rowsPerPage: number;
@@ -39,44 +35,6 @@ export const ChecksTable = ({
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const navigate = useNavigate();
-
-	const selectedMonitorType = monitors?.find((m) => m.id === selectedMonitorId)?.type;
-
-	const teamChecksUrl = useMemo(() => {
-		if (selectedMonitorId !== "0") return null;
-		const params = new URLSearchParams();
-		params.append("sortOrder", "desc");
-		if (dateRange) params.append("dateRange", dateRange);
-		if (statusFilter) params.append("filter", statusFilter);
-		params.append("page", String(page));
-		params.append("rowsPerPage", String(rowsPerPage));
-		return `/checks/team?${params.toString()}`;
-	}, [selectedMonitorId, dateRange, statusFilter, page, rowsPerPage]);
-
-	const monitorChecksUrl = useMemo(() => {
-		if (selectedMonitorId === "0" || !selectedMonitorType) return null;
-		const params = new URLSearchParams();
-		params.append("type", selectedMonitorType);
-		params.append("sortOrder", "desc");
-		if (statusFilter) params.append("filter", statusFilter);
-		if (dateRange) params.append("dateRange", dateRange);
-		params.append("page", String(page));
-		params.append("rowsPerPage", String(rowsPerPage));
-		return `/checks/${selectedMonitorId}?${params.toString()}`;
-	}, [selectedMonitorId, selectedMonitorType, dateRange, statusFilter, page, rowsPerPage]);
-
-	const { data: teamData, isLoading: isLoadingTeam } =
-		useGet<ChecksResponse>(teamChecksUrl);
-	const { data: monitorData, isLoading: isLoadingMonitor } =
-		useGet<ChecksResponse>(monitorChecksUrl);
-
-	const checks =
-		selectedMonitorId === "0" ? (teamData?.checks ?? []) : (monitorData?.checks ?? []);
-	const checksCount =
-		selectedMonitorId === "0"
-			? (teamData?.checksCount ?? 0)
-			: (monitorData?.checksCount ?? 0);
-	const isLoading = isLoadingTeam || isLoadingMonitor;
 
 	const getHeaders = (t: Function, uiTimezone: string) => {
 		const headers: Header<Check>[] = [
