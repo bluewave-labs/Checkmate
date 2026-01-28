@@ -111,7 +111,7 @@ const getMonitorByIdQueryValidation = joi.object({
 	status: joi.boolean(),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
-	dateRange: joi.string().valid("hour", "day", "week", "month", "all"),
+	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
 	numToDisplay: joi.number(),
 	normalize: joi.boolean(),
 });
@@ -307,7 +307,7 @@ const getChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
-	filter: joi.string().valid("all", "down", "resolve"),
+	filter: joi.string().valid("all", "up", "down", "resolve"),
 	ack: joi.boolean(),
 	page: joi.number(),
 	rowsPerPage: joi.number(),
@@ -317,8 +317,8 @@ const getChecksQueryValidation = joi.object({
 const getTeamChecksQueryValidation = joi.object({
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
-	dateRange: joi.string().valid("hour", "day", "week", "month", "all"),
-	filter: joi.string().valid("all", "down", "resolve"),
+	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
+	filter: joi.string().valid("all", "up", "down", "resolve"),
 	ack: joi.boolean(),
 	page: joi.number(),
 	rowsPerPage: joi.number(),

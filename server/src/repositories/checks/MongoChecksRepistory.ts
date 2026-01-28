@@ -19,7 +19,7 @@ import mongoose from "mongoose";
 const SERVICE_NAME = "StatusService";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setDate(new Date().getDate() - 2)),
+	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
 	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
 	day: new Date(new Date().setDate(new Date().getDate() - 1)),
 	week: new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -193,6 +193,13 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
+	private mapDocuments = (documents: CheckDocument[]): Check[] => {
+		if (!documents?.length) {
+			return [];
+		}
+		return documents.map((doc) => this.toEntity(doc));
+	};
+
 	createChecks = async (checks: Check[]) => {
 		return await CheckModel.insertMany(checks);
 	};
@@ -221,9 +228,14 @@ class MongoChecksRepository implements IChecksRepository {
 			switch (filter) {
 				case "all":
 					break;
+				case "up":
+					matchStage.status = true;
+					break;
 				case "down":
+					matchStage.status = false;
 					break;
 				case "resolve":
+					matchStage.status = false;
 					matchStage.statusCode = 5000;
 					break;
 				default:
@@ -245,33 +257,17 @@ class MongoChecksRepository implements IChecksRepository {
 			skip = page * rowsPerPage;
 		}
 
-		const checks = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{ $sort: { createdAt: convertedSortOrder } },
-			{
-				$facet: {
-					summary: [{ $count: "checksCount" }],
-					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
-				},
-			},
-			{
-				$project: {
-					checksCount: {
-						$ifNull: [{ $arrayElemAt: ["$summary.checksCount", 0] }, 0],
-					},
-					checks: {
-						$ifNull: ["$checks", []],
-					},
-				},
-			},
+		const [checksCount, checks] = await Promise.all([
+			CheckModel.countDocuments(matchStage),
+			CheckModel.find(matchStage).sort({ createdAt: convertedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<CheckDocument[]>,
 		]);
-		return checks[0];
+
+		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
 		const matchStage: Record<string, any> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -283,9 +279,14 @@ class MongoChecksRepository implements IChecksRepository {
 			switch (filter) {
 				case "all":
 					break;
+				case "up":
+					matchStage.status = true;
+					break;
 				case "down":
+					matchStage.status = false;
 					break;
 				case "resolve":
+					matchStage.status = false;
 					matchStage.statusCode = 5000;
 					break;
 				default:
@@ -306,26 +307,12 @@ class MongoChecksRepository implements IChecksRepository {
 			skip = page * rowsPerPage;
 		}
 
-		const aggregatePipeline: any = [
-			{ $match: matchStage },
+		const [checksCount, checks] = await Promise.all([
+			CheckModel.countDocuments(matchStage),
+			CheckModel.find(matchStage).sort({ createdAt: parsedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<CheckDocument[]>,
+		]);
 
-			{ $sort: { createdAt: parsedSortOrder } },
-			{
-				$facet: {
-					summary: [{ $count: "checksCount" }],
-					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
-				},
-			},
-			{
-				$project: {
-					checksCount: { $arrayElemAt: ["$summary.checksCount", 0] },
-					checks: "$checks",
-				},
-			},
-		];
-
-		const checks = await CheckModel.aggregate(aggregatePipeline);
-		return checks[0];
+		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
 	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
@@ -366,29 +353,24 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
-		const matchStage = {
+		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
 				},
 			}),
 		};
-		const checks = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{
-				$group: {
-					_id: null,
-					totalChecks: { $sum: 1 },
-					resolvedChecks: { $sum: { $cond: [{ $eq: ["$ack", true] }, 1, 0] } },
-					downChecks: { $sum: { $cond: [{ $eq: ["$ack", false] }, 1, 0] } },
-					cannotResolveChecks: { $sum: { $cond: [{ $eq: ["$statusCode", 5000] }, 1, 0] } },
-				},
-			},
-			{ $project: { _id: 0 } },
+
+		const [totalResult, downResult] = await Promise.all([
+			CheckModel.countDocuments(baseMatch),
+			CheckModel.countDocuments({ ...baseMatch, status: false }),
 		]);
-		return checks[0] ?? { totalChecks: 0, resolvedChecks: 0, downChecks: 0, cannotResolveChecks: 0 };
+
+		return {
+			totalChecks: totalResult,
+			downChecks: downResult,
+		};
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
@@ -562,7 +544,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
 		return {
 			monitorType: "pagespeed" as const,
-			checks: checks.map((doc) => this.toEntity(doc)),
+			checks: this.mapDocuments(checks),
 		};
 	};
 

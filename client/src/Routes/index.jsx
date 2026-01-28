@@ -33,7 +33,7 @@ import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
 import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
 
 // Checks
-import Checks from "../Pages/Checks/index.jsx";
+import Checks from "../Pages/Checks/index";
 
 // Incidents
 import Incidents from "../Pages/Incidents/index.jsx";
@@ -163,7 +163,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="checks/:monitorId?"
-					element={<Checks />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Checks />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="incidents/:monitorId?"
