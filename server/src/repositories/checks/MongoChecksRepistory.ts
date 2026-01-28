@@ -193,6 +193,13 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
+	private mapDocuments = (documents: CheckDocument[]): Check[] => {
+		if (!documents?.length) {
+			return [];
+		}
+		return documents.map((doc) => this.toEntity(doc));
+	};
+
 	createChecks = async (checks: Check[]) => {
 		return await CheckModel.insertMany(checks);
 	};
@@ -250,27 +257,16 @@ class MongoChecksRepository implements IChecksRepository {
 			skip = page * rowsPerPage;
 		}
 
-		const checks = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{ $sort: { createdAt: convertedSortOrder } },
-			{
-				$facet: {
-					summary: [{ $count: "checksCount" }],
-					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
-				},
-			},
-			{
-				$project: {
-					checksCount: {
-						$ifNull: [{ $arrayElemAt: ["$summary.checksCount", 0] }, 0],
-					},
-					checks: {
-						$ifNull: ["$checks", []],
-					},
-				},
-			},
+		const [checksCount, checks] = await Promise.all([
+			CheckModel.countDocuments(matchStage),
+			CheckModel.find(matchStage)
+				.sort({ createdAt: convertedSortOrder })
+				.skip(skip)
+				.limit(rowsPerPage)
+				.lean() as Promise<CheckDocument[]>,
 		]);
-		return checks[0];
+
+		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
@@ -315,26 +311,16 @@ class MongoChecksRepository implements IChecksRepository {
 			skip = page * rowsPerPage;
 		}
 
-		const aggregatePipeline: any = [
-			{ $match: matchStage },
+		const [checksCount, checks] = await Promise.all([
+			CheckModel.countDocuments(matchStage),
+			CheckModel.find(matchStage)
+				.sort({ createdAt: parsedSortOrder })
+				.skip(skip)
+				.limit(rowsPerPage)
+				.lean() as Promise<CheckDocument[]>,
+		]);
 
-			{ $sort: { createdAt: parsedSortOrder } },
-			{
-				$facet: {
-					summary: [{ $count: "checksCount" }],
-					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
-				},
-			},
-			{
-				$project: {
-					checksCount: { $arrayElemAt: ["$summary.checksCount", 0] },
-					checks: "$checks",
-				},
-			},
-		];
-
-		const checks = await CheckModel.aggregate(aggregatePipeline);
-		return checks[0];
+		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
 	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
@@ -566,7 +552,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
 		return {
 			monitorType: "pagespeed" as const,
-			checks: checks.map((doc) => this.toEntity(doc)),
+			checks: this.mapDocuments(checks),
 		};
 	};
 
