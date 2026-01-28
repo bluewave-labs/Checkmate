@@ -1,4 +1,5 @@
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import {
 	BasePage,
 	TotalChecksBox,
@@ -9,7 +10,7 @@ import { HeaderTimeRange } from "@/Components/v2/common";
 import { Select } from "@/Components/v2/inputs";
 import { ChecksTable } from "./Components/ChecksTable";
 
-import { MenuItem, useTheme } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -115,15 +116,16 @@ const Checks = () => {
 
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				justifyContent={"space-between"}
-				alignItems={"center"}
+				justifyContent="space-between"
+				alignItems={{ xs: "stretch", md: "center" }}
 				gap={2}
 			>
 				<Stack
-					direction={{ xs: "column", md: "row" }}
 					gap={2}
+					direction={{ xs: "column", md: "row" }}
 				>
 					<Select
+						fullWidth
 						value={selectedMonitor}
 						onChange={(e: any) => {
 							setSelectedMonitor(e.target.value);
