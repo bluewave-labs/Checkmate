@@ -107,3 +107,43 @@ export interface PageSpeedDetailsResponse {
 	monitor: MonitorWithChecks;
 	monitorStats: MonitorStats | null;
 }
+
+export interface HardwareDetailsResponse {
+	monitor: Monitor;
+	stats: {
+		aggregateData: {
+			totalChecks: number;
+		};
+		upChecks: {
+			totalChecks: number;
+		};
+		checks: Array<{
+			_id: string;
+			avgCpuUsage: number;
+			avgMemoryUsage: number;
+			avgTemperature: number[];
+			disks: Array<{
+				name: string;
+				readSpeed: number;
+				writeSpeed: number;
+				totalBytes: number;
+				freeBytes: number;
+				usagePercent: number;
+			}>;
+			net: Array<{
+				name: string;
+				bytesSentPerSecond: number;
+				deltaBytesRecv: number;
+				deltaPacketsSent: number;
+				deltaPacketsRecv: number;
+				deltaErrIn: number;
+				deltaErrOut: number;
+				deltaDropIn: number;
+				deltaDropOut: number;
+				deltaFifoIn: number;
+				deltaFifoOut: number;
+			}>;
+		}>;
+	};
+	monitorStats: MonitorStats | null;
+}

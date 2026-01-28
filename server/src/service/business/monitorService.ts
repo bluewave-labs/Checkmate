@@ -257,9 +257,12 @@ export class MonitorService implements IMonitorService {
 			checks: checksData.checks,
 		};
 
+		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+
 		return {
-			...monitor,
+			monitor,
 			stats,
+			monitorStats,
 		};
 	};
 

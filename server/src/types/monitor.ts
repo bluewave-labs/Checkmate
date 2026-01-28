@@ -75,7 +75,8 @@ export interface UptimeDetailsResult {
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 
-export interface HardwareDetailsResult extends Monitor {
+export interface HardwareDetailsResult {
+	monitor: Monitor;
 	stats: {
 		aggregateData: {
 			totalChecks: number;
@@ -111,6 +112,7 @@ export interface HardwareDetailsResult extends Monitor {
 			}>;
 		}>;
 	};
+	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 
 export interface PageSpeedDetailsResult {

@@ -1,5 +1,61 @@
+import { BasePage } from "@/Components/v2/design-elements";
+import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
+import Stack from "@mui/material/Stack";
+import { MonitorStatBoxes } from "@/Components/v2/monitors";
+
+import { useTheme } from "@mui/material";
+import { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useGet } from "@/Hooks/UseApi";
+import type { HardwareDetailsResponse } from "@/Types/Monitor";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
+
 const InfrastructureDetails = () => {
-	return null;
+	const theme = useTheme();
+	const isAdmin = useIsAdmin();
+
+	const { monitorId } = useParams<{ monitorId: string }>();
+
+	const [dateRange, setDateRange] = useState<string>("recent");
+
+	const monitorDetailsUrl = useMemo(() => {
+		if (!monitorId) {
+			return null;
+		}
+		const params = new URLSearchParams();
+		params.append("dateRange", dateRange);
+		return `/monitors/hardware/details/${monitorId}?${params.toString()}`;
+	}, [monitorId, dateRange]);
+
+	const {
+		data: monitorDetailsData,
+		isLoading: monitorIsLoading,
+		refetch: refetchMonitor,
+	} = useGet<HardwareDetailsResponse>(
+		monitorDetailsUrl,
+		{},
+		{ refreshInterval: 10000, keepPreviousData: true }
+	);
+
+	console.log(monitorDetailsData);
+
+	const monitor = monitorDetailsData?.monitor;
+	const monitorStats = monitorDetailsData?.monitorStats ?? null;
+
+	return (
+		<BasePage>
+			<HeaderMonitorControls
+				path="hardware"
+				monitor={monitor}
+				isAdmin={isAdmin}
+				refetch={refetchMonitor}
+			/>
+			<MonitorStatBoxes
+				monitor={monitor}
+				monitorStats={monitorStats}
+			/>
+		</BasePage>
+	);
 };
 
 export default InfrastructureDetails;
