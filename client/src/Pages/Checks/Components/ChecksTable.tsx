@@ -20,6 +20,7 @@ import { useGet } from "@/Hooks/UseApi";
 export const ChecksTable = ({
 	monitors,
 	selectedMonitorId,
+	statusFilter,
 	dateRange,
 	page,
 	setPage,
@@ -28,6 +29,7 @@ export const ChecksTable = ({
 }: {
 	monitors: Monitor[] | null;
 	selectedMonitorId: string;
+	statusFilter: string;
 	dateRange: string;
 	page: number;
 	setPage: (page: number) => void;
@@ -38,40 +40,36 @@ export const ChecksTable = ({
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const navigate = useNavigate();
 
-	// Get selected monitor type
 	const selectedMonitorType = monitors?.find((m) => m.id === selectedMonitorId)?.type;
 
-	// Team checks URL (when selectedMonitorId === "0")
 	const teamChecksUrl = useMemo(() => {
 		if (selectedMonitorId !== "0") return null;
 		const params = new URLSearchParams();
 		params.append("sortOrder", "desc");
 		if (dateRange) params.append("dateRange", dateRange);
+		if (statusFilter) params.append("filter", statusFilter);
 		params.append("page", String(page));
 		params.append("rowsPerPage", String(rowsPerPage));
 		return `/checks/team?${params.toString()}`;
-	}, [selectedMonitorId, dateRange, page, rowsPerPage]);
+	}, [selectedMonitorId, dateRange, statusFilter, page, rowsPerPage]);
 
-	// Monitor checks URL (when specific monitor selected)
 	const monitorChecksUrl = useMemo(() => {
 		if (selectedMonitorId === "0" || !selectedMonitorType) return null;
 		const params = new URLSearchParams();
 		params.append("type", selectedMonitorType);
 		params.append("sortOrder", "desc");
-		params.append("status", "false");
+		if (statusFilter) params.append("filter", statusFilter);
 		if (dateRange) params.append("dateRange", dateRange);
 		params.append("page", String(page));
 		params.append("rowsPerPage", String(rowsPerPage));
 		return `/checks/${selectedMonitorId}?${params.toString()}`;
-	}, [selectedMonitorId, selectedMonitorType, dateRange, page, rowsPerPage]);
+	}, [selectedMonitorId, selectedMonitorType, dateRange, statusFilter, page, rowsPerPage]);
 
-	// Fetch data - null key skips the request
 	const { data: teamData, isLoading: isLoadingTeam } =
 		useGet<ChecksResponse>(teamChecksUrl);
 	const { data: monitorData, isLoading: isLoadingMonitor } =
 		useGet<ChecksResponse>(monitorChecksUrl);
 
-	// Select correct data based on selection
 	const checks =
 		selectedMonitorId === "0" ? (teamData?.checks ?? []) : (monitorData?.checks ?? []);
 	const checksCount =
@@ -101,7 +99,7 @@ export const ChecksTable = ({
 			},
 			{
 				id: "date",
-				content: t("checks.table.headers.dateTime"),
+				content: t("common.table.headers.dateTime"),
 				render: (row) => {
 					return formatDateWithTz(
 						row.createdAt,
@@ -112,7 +110,7 @@ export const ChecksTable = ({
 			},
 			{
 				id: "statusCode",
-				content: t("checks.table.headers.statusCode"),
+				content: t("pages.checks.table.headers.statusCode"),
 				render: (row) => {
 					const code = row.statusCode;
 					if (!code) return "N/A";
@@ -161,7 +159,7 @@ export const ChecksTable = ({
 				onRowClick={(row) => {
 					navigate(`/checks/${row.id}`);
 				}}
-				emptyViewText={t("checks.table.empty")}
+				emptyViewText={t("pages.checks.table.empty")}
 			/>
 			<Pagination
 				component="div"

@@ -221,9 +221,14 @@ class MongoChecksRepository implements IChecksRepository {
 			switch (filter) {
 				case "all":
 					break;
+				case "up":
+					matchStage.status = true;
+					break;
 				case "down":
+					matchStage.status = false;
 					break;
 				case "resolve":
+					matchStage.status = false;
 					matchStage.statusCode = 5000;
 					break;
 				default:
@@ -271,7 +276,6 @@ class MongoChecksRepository implements IChecksRepository {
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
 		const matchStage: Record<string, any> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -283,9 +287,14 @@ class MongoChecksRepository implements IChecksRepository {
 			switch (filter) {
 				case "all":
 					break;
+				case "up":
+					matchStage.status = true;
+					break;
 				case "down":
+					matchStage.status = false;
 					break;
 				case "resolve":
+					matchStage.status = false;
 					matchStage.statusCode = 5000;
 					break;
 				default:

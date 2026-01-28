@@ -2,6 +2,8 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { ToggleButtonGroup, ToggleButton } from "@/Components/v2/inputs";
 import { useTheme } from "@mui/material/styles";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 interface MonitorTimeFrameHeaderProps {
 	isLoading?: boolean;
@@ -72,6 +74,9 @@ export const HeaderTimeRange = ({
 			alignItems="center"
 			gap={theme.spacing(4)}
 		>
+			<Box sx={{ width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
+				{isLoading && <CircularProgress size={16} />}
+			</Box>
 			<Typography variant="body2">
 				Showing statistics for past{" "}
 				{dateRange === "recent"

@@ -40,7 +40,8 @@
 				"monitor": "Monitor",
 				"name": "Name",
 				"status": "Status",
-				"type": "Type"
+				"type": "Type",
+				"dateTime": "Date & time"
 			},
 			"empty": "Nothing here"
 		},
@@ -177,6 +178,7 @@
 					"up": "up",
 					"down": "down",
 					"paused": "paused",
+					"total": "total",
 					"initializing": "initializing"
 				},
 				"actions": {
@@ -223,6 +225,17 @@
 				"headers": {
 					"dateTime": "Date & time",
 					"statusCode": "Status code"
+				},
+				"empty": "No down checks in this time range"
+			},
+			"selects": {
+				"monitor": {
+					"all": "All monitors"
+				},
+				"status": {
+					"all": "All",
+					"down": "Down",
+					"up": "Up"
 				}
 			}
 		},

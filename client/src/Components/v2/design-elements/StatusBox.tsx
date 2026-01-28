@@ -133,6 +133,20 @@ export const DownChecksBox = ({ n }: { n: number }) => {
 		/>
 	);
 };
+export const UpChecksBox = ({ n }: { n: number }) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	return (
+		<StatusBox
+			label={t("pages.common.monitors.status.up")}
+			n={n}
+			color={theme.palette.success.light}
+			sx={{
+				maxWidth: "300px",
+			}}
+		/>
+	);
+};
 
 export const InitializingStatusBox = ({ n }: { n: number }) => {
 	const theme = useTheme();
