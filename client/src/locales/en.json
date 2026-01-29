@@ -342,6 +342,14 @@
 				"headers": {
 					"destination": "Destination"
 				}
+			},
+			"form": {
+				"notificationName": {
+					"description": "A descriptive name for the notification channel",
+					"optionName": "Channel name",
+					"placeholder": "e.g. Production Alerts",
+					"title": "Channel name"
+				}
 			}
 		}
 	},

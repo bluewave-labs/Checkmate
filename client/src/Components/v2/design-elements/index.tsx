@@ -17,3 +17,4 @@ export * from "./StatBox";
 export * from "./BaseChart";
 export * from "./Gauge";
 export * from "./Tabs";
+export * from "./SplitBox";
