@@ -30,6 +30,7 @@ const NotificationsCreatePage = () => {
 
 	const { post, loading: isSubmitting } = usePost<NotificationFormData, Notification>();
 	const { patch, loading: isPatching } = usePatch<NotificationFormData, Notification>();
+	const { post: testPost, loading: isTesting } = usePost<NotificationFormData, void>();
 
 	const { schema, defaults } = useNotificationForm({ data: existingNotification });
 
@@ -38,7 +39,7 @@ const NotificationsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, watch, reset, handleSubmit, clearErrors } = form;
+	const { control, watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -84,8 +85,11 @@ const NotificationsCreatePage = () => {
 		}
 	};
 
-	const handleTest = () => {
-		console.log("Test notification");
+	const handleTest = async () => {
+		const isValid = await trigger();
+		if (!isValid) return;
+		const data = getValues();
+		await testPost("/notifications/test", data);
 	};
 
 	return (
@@ -236,7 +240,7 @@ const NotificationsCreatePage = () => {
 					variant="contained"
 					color="primary"
 					onClick={handleTest}
-					loading={false}
+					loading={isTesting}
 				>
 					{t("common.buttons.test")}
 				</Button>
