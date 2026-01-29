@@ -59,6 +59,12 @@ const InfrastructureDetails = () => {
 				monitor={monitor}
 				monitorStats={monitorStats}
 			/>
+			<HeaderTimeRange
+				isLoading={monitorIsLoading}
+				hasDateRange={true}
+				dateRange={dateRange}
+				setDateRange={setDateRange}
+			/>
 			<Tabs
 				value={selectedTab}
 				onChange={(_e, value) => {
@@ -72,9 +78,15 @@ const InfrastructureDetails = () => {
 				<TabOverview
 					monitor={monitor}
 					stats={stats}
+					dateRange={dateRange}
 				/>
 			)}
-			{selectedTab === 1 && <TabNetwork />}
+			{selectedTab === 1 && (
+				<TabNetwork
+					stats={stats}
+					dateRange={dateRange}
+				/>
+			)}
 		</BasePage>
 	);
 };

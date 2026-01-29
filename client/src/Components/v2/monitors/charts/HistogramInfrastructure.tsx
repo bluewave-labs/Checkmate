@@ -93,7 +93,7 @@ const createGradient = ({
 );
 
 export const HistogramInfrastructure = ({
-	range,
+	dateRange,
 	title,
 	type,
 	idx: _idx,
@@ -107,8 +107,9 @@ export const HistogramInfrastructure = ({
 	gradientEndColor,
 	strokeColor,
 	fillColor,
+	yAxisFormatter,
 }: {
-	range: string;
+	dateRange: string;
 	title: string;
 	type: string;
 	idx: number | null;
@@ -122,6 +123,7 @@ export const HistogramInfrastructure = ({
 	gradientEndColor?: string;
 	strokeColor: string;
 	fillColor?: string;
+	yAxisFormatter?: (value: number) => string;
 }) => {
 	const theme = useTheme();
 	const uniqueId = useId();
@@ -160,11 +162,14 @@ export const HistogramInfrastructure = ({
 						tick={(props) => (
 							<XTick
 								{...props}
-								range={range}
+								range={dateRange}
 							/>
 						)}
 					/>
-					<YAxis domain={type === "temp" ? tempYDomain : yDomain} />
+					<YAxis
+						domain={type === "temp" ? tempYDomain : yDomain}
+						tickFormatter={yAxisFormatter}
+					/>
 
 					<CartesianGrid
 						stroke={theme.palette.divider}

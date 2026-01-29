@@ -9,9 +9,11 @@ import type { HardwareStats, Monitor } from "@/Types/Monitor";
 export const TabOverview = ({
 	monitor,
 	stats,
+	dateRange,
 }: {
 	monitor: Monitor | undefined;
 	stats: HardwareStats | undefined;
+	dateRange: string;
 }) => {
 	const theme = useTheme();
 	if (!monitor) {
@@ -25,7 +27,7 @@ export const TabOverview = ({
 			<InfraDetailsGauges snapshot={monitor.recentChecks?.[0]} />
 			<InfraDetailsCharts
 				checks={checks}
-				range={"recent"}
+				dateRange={dateRange}
 			/>
 		</Stack>
 	);

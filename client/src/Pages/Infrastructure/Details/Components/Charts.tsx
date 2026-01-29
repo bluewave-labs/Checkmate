@@ -50,10 +50,10 @@ const getChartConfigs = (theme: any, checks: HardwareCheckStats[], t: any) => {
 
 export const InfraDetailsCharts = ({
 	checks,
-	range,
+	dateRange,
 }: {
 	checks: HardwareCheckStats[];
-	range: string;
+	dateRange: string;
 }) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -63,7 +63,6 @@ export const InfraDetailsCharts = ({
 		[theme, checks, t]
 	);
 
-	console.log(checks);
 	return (
 		<Grid
 			container
@@ -76,7 +75,7 @@ export const InfraDetailsCharts = ({
 						key={`${config.type}-${config.idx ?? ""}`}
 					>
 						<HistogramInfrastructure
-							range={range}
+							dateRange={dateRange}
 							title={config.title}
 							type={config.type}
 							idx={config.idx}

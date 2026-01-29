@@ -322,7 +322,9 @@
 					"memory": "Memory usage",
 					"cpu": "CPU usage",
 					"temp": "Temp",
-					"disk": "Disk usage"
+					"disk": "Disk usage",
+					"netBytesSent": "{{name}} - Bytes Sent",
+					"netBytesRecv": "{{name}} - Bytes Received"
 				}
 			}
 		}
