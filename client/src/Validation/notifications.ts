@@ -9,7 +9,10 @@ const baseSchema = z.object({
 
 const emailSchema = baseSchema.extend({
 	type: z.literal("email"),
-	address: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+	address: z
+		.string()
+		.min(1, "Email is required")
+		.email("Please enter a valid email address"),
 });
 
 const slackSchema = baseSchema.extend({
@@ -34,7 +37,10 @@ const pagerDutySchema = baseSchema.extend({
 
 const matrixSchema = baseSchema.extend({
 	type: z.literal("matrix"),
-	homeserverUrl: z.string().min(1, "Homeserver URL is required").url("Please enter a valid URL"),
+	homeserverUrl: z
+		.string()
+		.min(1, "Homeserver URL is required")
+		.url("Please enter a valid URL"),
 	roomId: z.string().min(1, "Room ID is required"),
 	accessToken: z.string().min(1, "Access token is required"),
 });
