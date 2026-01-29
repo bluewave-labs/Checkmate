@@ -349,6 +349,11 @@
 					"optionName": "Channel name",
 					"placeholder": "e.g. Production Alerts",
 					"title": "Channel name"
+				},
+				"type": {
+					"description": "Select the type of notification channel to create.",
+					"optionType": "Type",
+					"title": "Channel type"
 				}
 			}
 		}

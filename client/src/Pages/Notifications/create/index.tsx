@@ -1,5 +1,7 @@
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { TextField } from "@/Components/v2/inputs";
+import { TextField, Select } from "@/Components/v2/inputs";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
 
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -10,6 +12,7 @@ import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
+import { NotificationChannels } from "@/Types/Notification";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -68,6 +71,38 @@ const NotificationsCreatePage = () => {
 								}
 							/>
 						)}
+					/>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.notifications.form.type.title")}
+				subtitle={t("pages.notifications.form.type.description")}
+				rightContent={
+					<Controller
+						name="type"
+						control={control}
+						defaultValue={defaults.type}
+						render={({ field }) => {
+							return (
+								<Select
+									value={field.value}
+									fieldLabel={t("pages.notifications.form.type.optionType")}
+									error={!!errors.type}
+									onChange={field.onChange}
+								>
+									{NotificationChannels.map((type: string) => {
+										return (
+											<MenuItem
+												key={type}
+												value={type}
+											>
+												<Typography textTransform={"capitalize"}>{type}</Typography>
+											</MenuItem>
+										);
+									})}
+								</Select>
+							);
+						}}
 					/>
 				}
 			/>
