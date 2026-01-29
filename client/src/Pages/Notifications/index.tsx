@@ -1,14 +1,17 @@
 import { BasePageWithStates } from "@/Components/v2/design-elements";
 import { NotificationsTable } from "@/Pages/Notifications/components/NotificationsTable";
 import { Dialog } from "@/Components/v2/inputs";
+import { HeaderCreate } from "@/Components/v2/common";
 
 import { useState } from "react";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import { useTranslation } from "react-i18next";
 import type { Notification } from "@/Types/Notification";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 const NotificationsPage = () => {
 	const { t } = useTranslation();
+	const isAdmin = useIsAdmin();
 
 	const [selectedChannel, setSelectedChannel] = useState<Notification | null>(null);
 	const isDialogOpen = Boolean(selectedChannel);
@@ -46,6 +49,11 @@ const NotificationsPage = () => {
 			actionButtonText={t("pages.notifications.fallback.actionButton")}
 			actionLink="/notifications/create"
 		>
+			<HeaderCreate
+				path="/notifications/create"
+				isLoading={isLoading || isValidating}
+				isAdmin={isAdmin}
+			/>
 			<NotificationsTable
 				notifications={notifications ?? []}
 				setSelectedChannel={setSelectedChannel}
