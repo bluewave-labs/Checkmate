@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
@@ -11,13 +12,14 @@ const isId = (segment: string): boolean => {
 const actionSegments = ["create", "configure"];
 
 export const Breadcrumb = () => {
+	const { t } = useTranslation();
 	const theme = useTheme();
 	const location = useLocation();
 
 	const segments = location.pathname.split("/").filter((x) => x);
 
 	// Build simplified breadcrumb: "uptime" or "uptime / details" or "uptime / create"
-	const basePage = segments[0] || "home";
+	const basePage = segments[0] || t("common.breadcrumbs.home");
 
 	const secondSegment = segments[1];
 	const isActionPage = secondSegment && actionSegments.includes(secondSegment); // create/config
@@ -28,7 +30,7 @@ export const Breadcrumb = () => {
 		if (isActionPage) {
 			return secondSegment.charAt(0).toUpperCase() + secondSegment.slice(1);
 		}
-		return "Details";
+		return t("common.breadcrumbs.details");
 	};
 
 	return (

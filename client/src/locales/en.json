@@ -2,6 +2,10 @@
 	"common": {
 		"appName": "Checkmate",
 		"monitoringAgentName": "Capture",
+		"breadcrumbs": {
+			"home": "Home",
+			"details": "Details"
+		},
 		"labels": {
 			"responseTime": "Response time"
 		},
