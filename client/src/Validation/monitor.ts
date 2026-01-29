@@ -76,8 +76,8 @@ const pagespeedSchema = baseSchema.extend({
 // Hardware/Infrastructure monitor schema
 const hardwareSchema = baseSchema.extend({
 	type: z.literal("hardware"),
-	url: z.string().optional(),
-	secret: z.string().optional(),
+	url: z.string({ message: "URL is required" }).min(1, "URL is required"),
+	secret: z.string({ message: "Secret is required" }).min(1, "Secret is required"),
 	cpuAlertThreshold: z
 		.number()
 		.min(0, "CPU threshold must be at least 0")

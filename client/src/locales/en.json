@@ -235,7 +235,11 @@
 					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"optionGame": "Game",
-					"optionGameDescription": "Monitor if a specific game server is online."
+					"optionGameDescription": "Monitor if a specific game server is online.",
+					"optionPagespeed": "PageSpeed",
+					"optionPagespeedDescription": "Analyze page performance using Google PageSpeed Insights.",
+					"optionHardware": "Hardware",
+					"optionHardwareDescription": "Monitor server hardware metrics like CPU, memory, and disk."
 				},
 				"general": {
 					"title": "General settings",
@@ -245,8 +249,30 @@
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
-						"pagespeed": "Here you can select the URL of the host, together with the type of monitor.",
-						"infrastructure": "Here you can select the URL of the host, together with the friendly name and authorization secret to connect to the server agent."
+						"pagespeed": "Enter the URL of the page to analyze with Google PageSpeed and add a clear display name that appears on the dashboard.",
+						"hardware": "Enter the URL of your infrastructure agent, the authorization secret, and a clear display name that appears on the dashboard."
+					},
+					"option": {
+						"url": {
+							"label": "URL",
+							"placeholder": "https://www.google.com"
+						},
+						"name": {
+							"label": "Display name",
+							"placeholder": "e.g. My Website"
+						},
+						"host": {
+							"label": "Host",
+							"placeholder": "192.168.1.100 or example.com"
+						},
+						"container": {
+							"label": "Container name/ID",
+							"placeholder": "my-app or abcd1234"
+						},
+						"secret": {
+							"label": "Authorization secret",
+							"placeholder": "Enter your secret key"
+						}
 					}
 				}
 			}

@@ -8,6 +8,7 @@ import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
 import { useTranslation } from "react-i18next";
+import MenuItem from "@mui/material/MenuItem";
 
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import { RadioWithDescription, Button, TextField, Select } from "@/Components/v2/inputs";
@@ -15,14 +16,15 @@ import { useGet } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 import type { MonitorFormData } from "@/Validation/monitor";
-import MenuItem from "@mui/material/MenuItem";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
 	urlPlaceholder: string;
 	namePlaceholder: string;
+	showUrl: boolean;
 	showPort: boolean;
 	showGameSelect: boolean;
+	showSecret: boolean;
 }
 
 const getGeneralSettingsConfig = (
@@ -31,39 +33,67 @@ const getGeneralSettingsConfig = (
 ): GeneralSettingsConfig => {
 	const configs: Record<string, GeneralSettingsConfig> = {
 		http: {
-			urlLabel: t("monitorType.http.label"),
-			urlPlaceholder: t("monitorType.http.placeholder"),
-			namePlaceholder: t("monitorType.http.namePlaceholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
 			showPort: false,
 			showGameSelect: false,
+			showSecret: false,
 		},
 		ping: {
-			urlLabel: t("monitorType.ping.label"),
-			urlPlaceholder: t("monitorType.ping.placeholder"),
-			namePlaceholder: t("monitorType.ping.namePlaceholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.host.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
 			showPort: false,
 			showGameSelect: false,
+			showSecret: false,
 		},
 		docker: {
-			urlLabel: t("monitorType.docker.label"),
-			urlPlaceholder: t("monitorType.docker.placeholder"),
-			namePlaceholder: t("monitorType.docker.namePlaceholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.container.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.container.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
 			showPort: false,
 			showGameSelect: false,
+			showSecret: false,
 		},
 		port: {
-			urlLabel: t("monitorType.port.label"),
-			urlPlaceholder: t("monitorType.port.placeholder"),
-			namePlaceholder: t("monitorType.port.namePlaceholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
 			showPort: true,
 			showGameSelect: false,
+			showSecret: false,
 		},
 		game: {
-			urlLabel: t("monitorType.game.label"),
-			urlPlaceholder: t("monitorType.game.placeholder"),
-			namePlaceholder: t("monitorType.game.namePlaceholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
 			showPort: true,
 			showGameSelect: true,
+			showSecret: false,
+		},
+		pagespeed: {
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+		},
+		hardware: {
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: true,
 		},
 	};
 	return configs[type] || configs.http;
@@ -156,6 +186,20 @@ const CreateMonitorPage = () => {
 										label={t("pages.createMonitor.form.type.optionGame")}
 										description={t("pages.createMonitor.form.type.optionGameDescription")}
 									/>
+									<RadioWithDescription
+										value="pagespeed"
+										label={t("pages.createMonitor.form.type.optionPagespeed")}
+										description={t(
+											"pages.createMonitor.form.type.optionPagespeedDescription"
+										)}
+									/>
+									<RadioWithDescription
+										value="hardware"
+										label={t("pages.createMonitor.form.type.optionHardware")}
+										description={t(
+											"pages.createMonitor.form.type.optionHardwareDescription"
+										)}
+									/>
 								</RadioGroup>
 							</FormControl>
 						)}
@@ -169,22 +213,24 @@ const CreateMonitorPage = () => {
 				subtitle={t(`pages.createMonitor.form.general.description.${watchedType}`)}
 				rightContent={
 					<Stack spacing={theme.spacing(8)}>
-						{/* URL/Host/Container field */}
-						<Controller
-							name="url"
-							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={generalSettingsConfig.urlLabel}
-									placeholder={generalSettingsConfig.urlPlaceholder}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
+						{/* URL/Host/Container field - not shown for hardware */}
+						{generalSettingsConfig.showUrl && (
+							<Controller
+								name="url"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={generalSettingsConfig.urlLabel}
+										placeholder={generalSettingsConfig.urlPlaceholder}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						)}
 
 						{/* Port field - only for port and game types */}
 						{generalSettingsConfig.showPort && (
@@ -225,6 +271,28 @@ const CreateMonitorPage = () => {
 							/>
 						)}
 
+						{/* Secret field - only for hardware type */}
+						{generalSettingsConfig.showSecret && (
+							<Controller
+								name="secret"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										type="text"
+										fieldLabel={t("pages.createMonitor.form.general.option.secret.label")}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.secret.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						)}
+
 						{/* Display name field - common to all types */}
 						<Controller
 							name="name"
@@ -233,7 +301,7 @@ const CreateMonitorPage = () => {
 								<TextField
 									{...field}
 									type="text"
-									fieldLabel={t("displayName")}
+									fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
 									placeholder={generalSettingsConfig.namePlaceholder}
 									fullWidth
 									error={!!fieldState.error}
