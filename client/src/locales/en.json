@@ -337,6 +337,11 @@
 					"Keep administrators informed of system changes"
 				],
 				"title": "Notification channles are used to:"
+			},
+			"table": {
+				"headers": {
+					"destination": "Destination"
+				}
 			}
 		}
 	},
