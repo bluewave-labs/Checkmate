@@ -7,9 +7,10 @@ import { useTheme } from "@mui/material/styles";
 
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGet } from "@/Hooks/UseApi";
+import { useGet, usePost } from "@/Hooks/UseApi";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
@@ -17,73 +18,74 @@ import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
 
 const NotificationsCreatePage = () => {
-  const { t } = useTranslation();
-  const theme = useTheme();
-  const { notificationId } = useParams<{ notificationId: string }>();
-  const isEditMode = Boolean(notificationId);
+	const { t } = useTranslation();
+	const theme = useTheme();
+	const navigate = useNavigate();
+	const { notificationId } = useParams<{ notificationId: string }>();
+	const isEditMode = Boolean(notificationId);
 
-  const { data: existingNotification } = useGet<Notification>(
-    isEditMode ? `/notifications/${notificationId}` : null
-  );
+	const { data: existingNotification } = useGet<Notification>(
+		isEditMode ? `/notifications/${notificationId}` : null
+	);
 
-  const { schema, defaults } = useNotificationForm({ data: existingNotification });
+	const { post, loading: isSubmitting } = usePost<NotificationFormData, Notification>();
 
-  const form = useForm<NotificationFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: defaults,
-  });
+	const { schema, defaults } = useNotificationForm({ data: existingNotification });
 
-  const {
-    control,
-    watch,
-    reset,
-    handleSubmit,
-  } = form;
+	const form = useForm<NotificationFormData>({
+		resolver: zodResolver(schema),
+		defaultValues: defaults,
+	});
 
-  useEffect(() => {
-    reset(defaults);
-  }, [defaults, reset]);
+	const { control, watch, reset, handleSubmit } = form;
 
-  const watchedType = watch("type");
+	useEffect(() => {
+		reset(defaults);
+	}, [defaults, reset]);
 
-  const addressConfig = useMemo(() => {
-    if (watchedType === "pager_duty") {
-      return {
-        title: t("pages.notifications.form.pagerDuty.title"),
-        description: t("pages.notifications.form.pagerDuty.description"),
-        fieldLabel: t("pages.notifications.form.pagerDuty.optionIntegrationKey"),
-        placeholder: t("pages.notifications.form.pagerDuty.placeholder"),
-      };
-    }
-    if (watchedType === "email") {
-      return {
-        title: t("pages.notifications.form.address.title"),
-        description: t("pages.notifications.form.address.description"),
-        fieldLabel: t("pages.notifications.form.address.optionAddress"),
-        placeholder: t("pages.notifications.form.address.placeholderEmail"),
-      };
-    }
-    return {
-      title: t("pages.notifications.form.address.title"),
-      description: t("pages.notifications.form.address.description"),
-      fieldLabel: t("pages.notifications.form.address.optionAddress"),
-      placeholder: t("pages.notifications.form.address.placeholderWebhook"),
-    };
-  }, [watchedType, t]);
+	const watchedType = watch("type");
 
-  const onSubmit = (data: NotificationFormData) => {
-    console.log(data);
-  };
+	const addressConfig = useMemo(() => {
+		if (watchedType === "pager_duty") {
+			return {
+				title: t("pages.notifications.form.pagerDuty.title"),
+				description: t("pages.notifications.form.pagerDuty.description"),
+				fieldLabel: t("pages.notifications.form.pagerDuty.optionIntegrationKey"),
+				placeholder: t("pages.notifications.form.pagerDuty.placeholder"),
+			};
+		}
+		if (watchedType === "email") {
+			return {
+				title: t("pages.notifications.form.address.title"),
+				description: t("pages.notifications.form.address.description"),
+				fieldLabel: t("pages.notifications.form.address.optionAddress"),
+				placeholder: t("pages.notifications.form.address.placeholderEmail"),
+			};
+		}
+		return {
+			title: t("pages.notifications.form.address.title"),
+			description: t("pages.notifications.form.address.description"),
+			fieldLabel: t("pages.notifications.form.address.optionAddress"),
+			placeholder: t("pages.notifications.form.address.placeholderWebhook"),
+		};
+	}, [watchedType, t]);
 
-  const handleTest = () => {
-    console.log("Test notification");
-  };
+	const onSubmit = async (data: NotificationFormData) => {
+		const result = await post("/notifications", data);
+		if (result) {
+			navigate("/notifications");
+		}
+	};
 
-  return (
-    <BasePage
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+	const handleTest = () => {
+		console.log("Test notification");
+	};
+
+	return (
+		<BasePage
+			component="form"
+			onSubmit={handleSubmit(onSubmit)}
+		>
 			<ConfigBox
 				title={t("pages.notifications.form.notificationName.title")}
 				subtitle={t("pages.notifications.form.notificationName.description")}
@@ -232,7 +234,7 @@ const NotificationsCreatePage = () => {
 					{t("common.buttons.test")}
 				</Button>
 				<Button
-					loading={false}
+					loading={isSubmitting}
 					type="submit"
 					variant="contained"
 					color="primary"
