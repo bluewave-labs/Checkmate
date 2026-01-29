@@ -276,6 +276,73 @@
 					"weight": "Weight"
 				}
 			}
+		},
+		"infrastructure": {
+			"table": {
+				"headers": {
+					"cpu": "CPU",
+					"disk": "Disk",
+					"memory": "Memory"
+				}
+			},
+			"tabs": {
+				"labels": {
+					"overview": "Overview",
+					"network": "Network"
+				}
+			},
+			"statBoxes": {
+				"cpuPhysical": "CPU (Physical)",
+				"cpuLogical": "CPU (Logical)",
+				"cpuFrequency": "CPU Frequency",
+				"avgCpuTemperature": "Average CPU Temperature",
+				"memory": "Memory",
+				"disk": "Disk",
+				"os": "OS"
+			},
+			"gauges": {
+				"cpu": {
+					"lowerLabel": "Max frequency",
+					"title": "CPU usage",
+					"upperLabel": "Current frequency"
+				},
+				"disk": {
+					"lowerLabel": "Free",
+					"title": "Disk {{idx}} usage",
+					"upperLabel": "Used"
+				},
+				"memory": {
+					"lowerLabel": "Free",
+					"title": "Memory usage",
+					"upperLabel": "Used"
+				}
+			},
+			"charts": {
+				"labels": {
+					"memory": "Memory usage",
+					"cpu": "CPU usage",
+					"temp": "Temp",
+					"disk": "Disk usage",
+					"netBytesSent": "{{name}} - Bytes Sent",
+					"netBytesRecv": "{{name}} - Bytes Received"
+				}
+			}
+		},
+		"notifications": {
+			"fallback": {
+				"actionButton": "Create a channel",
+				"checks": [
+					"Alert teams about downtime or performance issues",
+					"Let engineers know when incidents happen",
+					"Keep administrators informed of system changes"
+				],
+				"title": "Notification channles are used to:"
+			},
+			"table": {
+				"headers": {
+					"destination": "Destination"
+				}
+			}
 		}
 	},
 	"incidentsTableNoIncidents": "No incidents recorded",

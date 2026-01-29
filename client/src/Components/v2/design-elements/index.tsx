@@ -15,3 +15,5 @@ export { default as Icon } from "./Icon";
 export * from "./Tooltip";
 export * from "./StatBox";
 export * from "./BaseChart";
+export * from "./Gauge";
+export * from "./Tabs";

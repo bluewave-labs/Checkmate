@@ -25,9 +25,9 @@ import PageSpeedDetails from "../Pages/PageSpeed/Details/";
 import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
 // Infrastructure
-import Infrastructure from "../Pages/Infrastructure/Monitors/index.jsx";
+import Infrastructure from "../Pages/Infrastructure/Monitors";
 import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
-import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
+import InfrastructureDetails from "../Pages/Infrastructure/Details/index";
 
 // Server Status
 import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
@@ -43,7 +43,7 @@ import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
 import StatusPages from "../Pages/StatusPage/StatusPages/index.jsx";
 import Status from "../Pages/StatusPage/Status/index.jsx";
 
-import Notifications from "../Pages/Notifications/index.jsx";
+import Notifications from "../Pages/Notifications";
 import CreateNotifications from "../Pages/Notifications/create/index.jsx";
 
 // Settings
@@ -147,7 +147,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure"
-					element={<Infrastructure />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Infrastructure />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/create"
@@ -159,7 +165,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/:monitorId"
-					element={<InfrastructureDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<InfrastructureDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="checks/:monitorId?"
@@ -198,7 +210,13 @@ const Routes = () => {
 
 				<Route
 					path="notifications"
-					element={<Notifications />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Notifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="notifications/create"

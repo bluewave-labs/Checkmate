@@ -1,0 +1,64 @@
+import MuiTabs from "@mui/material/Tabs";
+import type { TabsProps } from "@mui/material/Tabs";
+import { useTheme } from "@mui/material/styles";
+interface CustomTabsProps extends TabsProps {}
+
+export const Tabs = (props: CustomTabsProps) => {
+	const theme = useTheme();
+	return (
+		<MuiTabs
+			sx={{
+				minHeight: 34,
+				borderBottom: `1px solid ${theme.palette.divider}`,
+				"& .MuiTabs-indicator": {
+					backgroundColor: theme.palette.primary.main,
+					height: 2,
+					bottom: 0,
+				},
+				"& .MuiTabs-flexContainer": {
+					gap: theme.spacing(16),
+				},
+			}}
+			{...props}
+		>
+			{props.children}
+		</MuiTabs>
+	);
+};
+
+import MuiTab from "@mui/material/Tab";
+import type { TabProps } from "@mui/material/Tab";
+interface CustomTabProps extends TabProps {}
+
+export const Tab = (props: CustomTabProps) => {
+	const theme = useTheme();
+	return (
+		<MuiTab
+			disableRipple
+			iconPosition="start"
+			sx={{
+				textTransform: "none",
+				fontSize: 14,
+				fontWeight: 500,
+				minHeight: 34,
+				padding: theme.spacing(1, 0),
+				paddingBottom: 0,
+				minWidth: "auto",
+				alignItems: "flex-start",
+				color: theme.palette.text.secondary,
+				"&.Mui-selected": {
+					color: theme.palette.primary.main,
+					fontWeight: 600,
+				},
+				"&:hover": {
+					color: theme.palette.text.secondary,
+				},
+				"& .MuiTab-iconWrapper": {
+					marginRight: theme.spacing(2),
+					marginBottom: 0,
+				},
+			}}
+			{...props}
+		/>
+	);
+};
