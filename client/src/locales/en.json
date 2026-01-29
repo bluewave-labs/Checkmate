@@ -220,6 +220,37 @@
 				}
 			}
 		},
+		"createMonitor": {
+			"form": {
+				"type": {
+					"description": "Select the type of check to perform",
+					"optionType": "Type",
+					"title": "Type",
+					"optionHttp": "HTTP(S)",
+					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
+					"optionPing": "Ping",
+					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
+					"optionDocker": "Docker",
+					"optionDockerDescription": "Use Docker to monitor if a container is running.",
+					"optionPort": "Port",
+					"optionPortDescription": "Monitor if a specific port on a server is open.",
+					"optionGame": "Game",
+					"optionGameDescription": "Monitor if a specific game server is online."
+				},
+				"general": {
+					"title": "General settings",
+					"description": {
+						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
+						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
+						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
+						"pagespeed": "Here you can select the URL of the host, together with the type of monitor.",
+						"infrastructure": "Here you can select the URL of the host, together with the friendly name and authorization secret to connect to the server agent."
+					}
+				}
+			}
+		},
 		"uptime": {
 			"table": {
 				"headers": {

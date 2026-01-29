@@ -60,6 +60,8 @@ import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport/index.jsx";
 import Logs from "../Pages/Logs/index.jsx";
 
+import CreateMonitor from "@/Pages/CreateMonitor";
+
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
@@ -77,6 +79,16 @@ const Routes = () => {
 				<Route
 					path="/"
 					element={<Navigate to="/uptime" />}
+				/>
+				<Route
+					path="/testing"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime"
