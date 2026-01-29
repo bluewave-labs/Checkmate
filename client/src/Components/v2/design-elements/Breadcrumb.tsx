@@ -8,15 +8,28 @@ const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
 };
 
+const actionSegments = ["create", "configure"];
+
 export const Breadcrumb = () => {
 	const theme = useTheme();
 	const location = useLocation();
 
 	const segments = location.pathname.split("/").filter((x) => x);
 
-	// Build simplified breadcrumb: "uptime" or "uptime / details"
+	// Build simplified breadcrumb: "uptime" or "uptime / details" or "uptime / create"
 	const basePage = segments[0] || "home";
-	const hasDetailsPage = segments.length > 1 && isId(segments[1]);
+
+	const secondSegment = segments[1];
+	const isActionPage = secondSegment && actionSegments.includes(secondSegment); // create/config
+	const isDetailsPage = secondSegment && isId(secondSegment); // details
+	const hasSubPage = isActionPage || isDetailsPage;
+
+	const getSubPageLabel = (): string => {
+		if (isActionPage) {
+			return secondSegment.charAt(0).toUpperCase() + secondSegment.slice(1);
+		}
+		return "Details";
+	};
 
 	return (
 		<MuiBreadcrumbs
@@ -34,7 +47,7 @@ export const Breadcrumb = () => {
 				},
 			}}
 		>
-			{hasDetailsPage ? (
+			{hasSubPage ? (
 				<Link
 					to={`/${basePage}`}
 					style={{ textDecoration: "none" }}
@@ -62,7 +75,7 @@ export const Breadcrumb = () => {
 					{basePage.charAt(0).toUpperCase() + basePage.slice(1)}
 				</Typography>
 			)}
-			{hasDetailsPage && (
+			{hasSubPage && (
 				<Typography
 					sx={{
 						fontSize: "14px",
@@ -70,7 +83,7 @@ export const Breadcrumb = () => {
 						color: theme.palette.primary.main,
 					}}
 				>
-					Details
+					{getSubPageLabel()}
 				</Typography>
 			)}
 		</MuiBreadcrumbs>

@@ -230,7 +230,7 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="notifications/:notificationId"
+					path="notifications/configure/:notificationId"
 					element={
 						<>
 							<ThemeProvider theme={v2theme}>
