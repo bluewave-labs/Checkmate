@@ -3,7 +3,6 @@ import { StatBox } from "@/Components/v2/design-elements";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import prettyMilliseconds from "pretty-ms";
 import type { Monitor } from "@/Types/Monitor";
 import {
 	getAvgTemp,

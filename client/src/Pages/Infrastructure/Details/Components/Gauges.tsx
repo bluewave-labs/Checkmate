@@ -6,8 +6,7 @@ import { useTranslation } from "react-i18next";
 import { getGbs, getFrequency } from "@/Utils/InfraUtils";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import type { CheckSnapshot, GroupedCheck } from "@/Types/Check";
-import type { HardwareCheckStats } from "@/Types/Monitor";
+import type { CheckSnapshot } from "@/Types/Check";
 
 const InfraDetailGauge = ({
 	title,

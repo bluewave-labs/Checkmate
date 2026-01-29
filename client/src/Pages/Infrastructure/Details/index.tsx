@@ -4,7 +4,6 @@ import { MonitorStatBoxes } from "@/Components/v2/monitors";
 import { TabNetwork } from "@/Pages/Infrastructure/Details/Components/TabNetwork";
 import { TabOverview } from "@/Pages/Infrastructure/Details/Components/TabOverview";
 
-import { useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
@@ -14,7 +13,6 @@ import { useTranslation } from "react-i18next";
 
 const InfrastructureDetails = () => {
 	const { t } = useTranslation();
-	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 
 	const { monitorId } = useParams<{ monitorId: string }>();
