@@ -27,7 +27,7 @@ export const NotificationsTable = ({
 				id: 1,
 				label: t("pages.common.monitors.actions.configure"),
 				action: () => {
-					navigate(`/notifications/${channel.id}`);
+					navigate(`/notifications/configure/${channel.id}`);
 				},
 				closeMenu: true,
 			},
@@ -89,7 +89,7 @@ export const NotificationsTable = ({
 			headers={headers}
 			data={notifications}
 			onRowClick={(row) => {
-				navigate(`/notifications/${row.id}`);
+				navigate(`/notifications/configure/${row.id}`);
 			}}
 		/>
 	);

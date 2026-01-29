@@ -1076,7 +1076,7 @@ class NetworkService {
 
 	async editNotification(config) {
 		const { id, notification } = config;
-		return this.axiosInstance.put(`/notifications/${id}`, notification);
+		return this.axiosInstance.patch(`/notifications/${id}`, notification);
 	}
 
 	async getQueueData() {

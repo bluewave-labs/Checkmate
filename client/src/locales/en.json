@@ -2,6 +2,10 @@
 	"common": {
 		"appName": "Checkmate",
 		"monitoringAgentName": "Capture",
+		"breadcrumbs": {
+			"home": "Home",
+			"details": "Details"
+		},
 		"labels": {
 			"responseTime": "Response time"
 		},
@@ -14,7 +18,9 @@
 			"resume": "Resume",
 			"delete": "Delete",
 			"cancel": "Cancel",
-			"confirm": "Confirm"
+			"confirm": "Confirm",
+			"save": "Save",
+			"test": "Test"
 		},
 		"alerts": {
 			"pageSpeedApiKey": {
@@ -269,10 +275,11 @@
 					"si": "Speed Index (SI)",
 					"tbt": "Total Blocking Time (TBT)"
 				},
-				"pie": { "title": "Performance report" },
+				"pie": {
+					"title": "Performance report"
+				},
 				"legend": {
 					"title": "PageSpeed report",
-
 					"weight": "Weight"
 				}
 			}
@@ -341,6 +348,50 @@
 			"table": {
 				"headers": {
 					"destination": "Destination"
+				}
+			},
+			"form": {
+				"notificationName": {
+					"description": "A descriptive name for the notification channel",
+					"optionName": "Channel name",
+					"placeholder": "e.g. Production Alerts",
+					"title": "Channel name"
+				},
+				"type": {
+					"description": "Select the type of notification channel to create.",
+					"optionType": "Type",
+					"title": "Channel type"
+				},
+				"homeServer": {
+					"description": "Select the home server for this notification channel.",
+					"optionHomeServer": "Home server",
+					"placeholder": "example.com",
+					"title": "Home server"
+				},
+				"roomId": {
+					"optionRoomId": "Room ID",
+					"placeholder": "!abcdefg:matrix.org"
+				},
+				"accessToken": {
+					"optionAccessToken": "Access token",
+					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+				},
+				"address": {
+					"description": "The address where notifications will be sent.",
+					"optionAddress": "Address",
+					"placeholderEmail": "example@example.com",
+					"placeholderWebhook": "https://your-server.com/webhook",
+					"title": "Address"
+				},
+				"pagerDuty": {
+					"description": "Your PagerDuty integration key for receiving alerts.",
+					"optionIntegrationKey": "Integration key",
+					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+					"title": "Integration key"
+				},
+				"matrix": {
+					"description": "Configure your Matrix homeserver connection for notifications.",
+					"title": "Matrix configuration"
 				}
 			}
 		}
