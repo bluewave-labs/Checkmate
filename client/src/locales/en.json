@@ -284,6 +284,18 @@
 						}
 					}
 				},
+				"incidents": {
+					"title": "Incidents",
+					"description": "A sliding window is used to determine when a monitor goes down. The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
+					"option": {
+						"checks": {
+							"label": "Number of checks in sliding window"
+						},
+						"percentage": {
+							"label": "What percentage of checks in the sliding window fail/succeed before monitor status changes?"
+						}
+					}
+				},
 				"notifications": {
 					"title": "Notifications",
 					"description": "Select the notification channels you want to use"

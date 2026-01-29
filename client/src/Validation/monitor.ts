@@ -9,11 +9,11 @@ const baseSchema = z.object({
 	interval: z.number().min(15000, "Interval must be at least 15 seconds"),
 	notifications: z.array(z.string()),
 	statusWindowSize: z
-		.number()
+		.number({ message: "Status window size is required" })
 		.min(1, "Status window size must be at least 1")
-		.max(20, "Status window size must be at most 20"),
+		.max(25, "Status window size must be at most 25"),
 	statusWindowThreshold: z
-		.number()
+		.number({ message: "Threshold percentage is required" })
 		.min(1, "Incident percentage must be at least 1")
 		.max(100, "Incident percentage must be at most 100"),
 });

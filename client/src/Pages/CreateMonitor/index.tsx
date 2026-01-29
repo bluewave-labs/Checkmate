@@ -359,6 +359,54 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{/* Incidents ConfigBox */}
+			<ConfigBox
+				title={t("pages.createMonitor.form.incidents.title")}
+				subtitle={t("pages.createMonitor.form.incidents.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(8)}>
+						<Controller
+							name="statusWindowSize"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									value={field.value ?? ""}
+									onChange={(e) => {
+										const val = e.target.value;
+										field.onChange(val === "" ? undefined : Number(val));
+									}}
+									onBlur={field.onBlur}
+									type="number"
+									fieldLabel={t("pages.createMonitor.form.incidents.option.checks.label")}
+									fullWidth
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+								/>
+							)}
+						/>
+						<Controller
+							name="statusWindowThreshold"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									value={field.value ?? ""}
+									onChange={(e) => {
+										const val = e.target.value;
+										field.onChange(val === "" ? undefined : Number(val));
+									}}
+									onBlur={field.onBlur}
+									type="number"
+									fieldLabel={t("pages.createMonitor.form.incidents.option.percentage.label")}
+									fullWidth
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+								/>
+							)}
+						/>
+					</Stack>
+				}
+			/>
+
 			{/* Notifications ConfigBox */}
 			<ConfigBox
 				title={t("pages.createMonitor.form.notifications.title")}
