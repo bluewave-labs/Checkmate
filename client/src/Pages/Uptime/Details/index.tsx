@@ -8,6 +8,7 @@ import {
 } from "@/Components/v2/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
+import { MonitorStatBoxes } from "@/Components/v2/monitors";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -18,7 +19,6 @@ import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
-import { MonitorStatBoxes } from "@/Components/v2/monitors";
 import { formatDateWithTz } from "@/Utils/timeUtilsLegacy";
 import { t } from "i18next";
 

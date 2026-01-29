@@ -117,11 +117,18 @@ class MongoChecksRepository implements IChecksRepository {
 			(disks ?? []).map((disk) => ({
 				device: disk?.device ?? "",
 				mountpoint: disk?.mountpoint ?? "",
-				read_speed_bytes: disk?.read_speed_bytes ?? 0,
-				write_speed_bytes: disk?.write_speed_bytes ?? 0,
 				total_bytes: disk?.total_bytes ?? 0,
 				free_bytes: disk?.free_bytes ?? 0,
+				used_bytes: disk?.used_bytes ?? 0,
 				usage_percent: disk?.usage_percent ?? 0,
+				total_inodes: disk?.total_inodes ?? 0,
+				free_inodes: disk?.free_inodes ?? 0,
+				used_inodes: disk?.used_inodes ?? 0,
+				inodes_usage_percent: disk?.inodes_usage_percent ?? 0,
+				read_bytes: disk?.read_bytes ?? 0,
+				write_bytes: disk?.write_bytes ?? 0,
+				read_time: disk?.read_time ?? 0,
+				write_time: disk?.write_time ?? 0,
 			}));
 
 		const mapErrors = (errors?: CheckErrorInfo[]): CheckErrorInfo[] =>
@@ -522,7 +529,7 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 
 		const checks = (hardwareMetrics ?? []).map((metric) => ({
-			_id: metric._id,
+			bucketDate: metric._id,
 			avgCpuUsage: metric.avgCpuUsage ?? 0,
 			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
 			avgTemperature: metric.avgTemperature ?? [],
@@ -628,8 +635,8 @@ class MongoChecksRepository implements IChecksRepository {
 							as: "dIdx",
 							in: {
 								name: { $concat: ["disk", { $toString: "$$dIdx" }] },
-								readSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.read_speed_bytes", "$$dIdx"] } } } },
-								writeSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.write_speed_bytes", "$$dIdx"] } } } },
+								readSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.read_bytes", "$$dIdx"] } } } },
+								writeSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.write_bytes", "$$dIdx"] } } } },
 								totalBytes: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.total_bytes", "$$dIdx"] } } } },
 								freeBytes: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.free_bytes", "$$dIdx"] } } } },
 								usagePercent: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.usage_percent", "$$dIdx"] } } } },
