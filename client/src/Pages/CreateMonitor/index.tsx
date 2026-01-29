@@ -9,12 +9,23 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
 import { useTranslation } from "react-i18next";
 import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import { Trash2 } from "lucide-react";
 
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { RadioWithDescription, Button, TextField, Select } from "@/Components/v2/inputs";
+import {
+	RadioWithDescription,
+	Button,
+	TextField,
+	Select,
+	Autocomplete,
+} from "@/Components/v2/inputs";
 import { useGet } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
+import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
 
 interface GeneralSettingsConfig {
@@ -108,6 +119,9 @@ const CreateMonitorPage = () => {
 	const { data: existingMonitor } = useGet<Monitor>(
 		isEditMode ? `/monitors/${monitorId}` : null
 	);
+
+	// Fetch notifications for the team
+	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 
 	const { schema, defaults } = useMonitorForm({ data: existingMonitor ?? null });
 
@@ -310,6 +324,75 @@ const CreateMonitorPage = () => {
 							)}
 						/>
 					</Stack>
+				}
+			/>
+
+			{/* Notifications ConfigBox */}
+			<ConfigBox
+				title={t("pages.createMonitor.form.notifications.title")}
+				subtitle={t("pages.createMonitor.form.notifications.description")}
+				rightContent={
+					<Controller
+						name="notifications"
+						control={control}
+						render={({ field }) => {
+							// Map notifications to have 'name' property for v2 Autocomplete
+							const notificationOptions = (notifications ?? []).map((n) => ({
+								...n,
+								name: n.notificationName,
+							}));
+							const selectedNotifications = notificationOptions.filter((n) =>
+								(field.value ?? []).includes(n.id)
+							);
+							return (
+								<Stack spacing={theme.spacing(4)}>
+									<Autocomplete
+										multiple
+										options={notificationOptions}
+										value={selectedNotifications}
+										getOptionLabel={(option) => option.name}
+										onChange={(_: unknown, newValue: typeof notificationOptions) => {
+											field.onChange(newValue.map((n) => n.id));
+										}}
+										isOptionEqualToValue={(option, value) => option.id === value.id}
+									/>
+									{selectedNotifications.length > 0 && (
+										<Stack
+											flex={1}
+											width="100%"
+										>
+											{selectedNotifications.map((notification, index) => (
+												<Stack
+													direction="row"
+													alignItems="center"
+													key={notification.id}
+													width="100%"
+												>
+													<Typography flexGrow={1}>
+														{notification.notificationName}
+													</Typography>
+													<IconButton
+														size="small"
+														onClick={() => {
+															field.onChange(
+																(field.value ?? []).filter(
+																	(id: string) => id !== notification.id
+																)
+															);
+														}}
+														aria-label="Remove notification"
+													>
+														<Trash2 size={16} />
+													</IconButton>
+													{index < selectedNotifications.length - 1 && <Divider />}
+												</Stack>
+											))}
+										</Stack>
+									)}
+								</Stack>
+							);
+						}}
+					/>
 				}
 			/>
 

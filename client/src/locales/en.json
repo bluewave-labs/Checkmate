@@ -274,6 +274,10 @@
 							"placeholder": "Enter your secret key"
 						}
 					}
+				},
+				"notifications": {
+					"title": "Notifications",
+					"description": "Select the notification channels you want to use"
 				}
 			}
 		},
@@ -1048,7 +1052,8 @@
 	},
 	"notificationConfig": {
 		"title": "Notifications",
-		"description": "Select the notifications channels you want to use"
+		"description": "Select the notifications channels you want to use",
+		"placeholder": "Search notifications..."
 	},
 	"monitorStatus": {
 		"checkingEvery": "Checking every {{interval}}",
