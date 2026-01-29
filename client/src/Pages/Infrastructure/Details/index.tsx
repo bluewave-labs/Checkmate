@@ -41,8 +41,6 @@ const InfrastructureDetails = () => {
 		{ refreshInterval: 10000, keepPreviousData: true }
 	);
 
-	console.log(monitorDetailsData);
-
 	const monitor = monitorDetailsData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
 	const stats = monitorDetailsData?.stats;

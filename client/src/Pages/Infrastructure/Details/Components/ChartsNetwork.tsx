@@ -7,8 +7,7 @@ import { useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-const formatBytesToMB = (value: number) =>
-	`${(value / (1024 * 1024)).toFixed(2)} MB`;
+const formatBytesToMB = (value: number) => `${(value / (1024 * 1024)).toFixed(2)} MB`;
 
 interface ChartConfig {
 	title: string;
