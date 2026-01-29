@@ -127,7 +127,7 @@ export const HistogramInfrastructure = ({
 }) => {
 	const theme = useTheme();
 	const uniqueId = useId();
-	let data = checks.reverse();
+	const data = checks;
 
 	let avgTemps: { bucketDate: string; avg_temp: number | null }[] = [];
 	let tempYDomain: number[] = [];

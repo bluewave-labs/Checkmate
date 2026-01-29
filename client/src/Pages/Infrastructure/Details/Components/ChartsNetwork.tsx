@@ -26,7 +26,9 @@ const getChartConfigs = (
 ): ChartConfig[] => {
 	const configs: ChartConfig[] = [];
 
-	const netInterfaces = checks[0]?.net || [];
+	// Find the first check that has network data to get interface names
+	const checkWithNet = checks.find((c) => c.net && c.net.length > 0);
+	const netInterfaces = checkWithNet?.net || [];
 
 	netInterfaces.forEach((iface, idx) => {
 		configs.push(
