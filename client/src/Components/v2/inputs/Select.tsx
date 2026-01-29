@@ -1,7 +1,7 @@
 import Select from "@mui/material/Select";
-import React from "react";
-import { useTheme } from "@mui/material/styles";
 import type { SelectProps } from "@mui/material/Select";
+import React, { forwardRef } from "react";
+import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
@@ -14,18 +14,21 @@ interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 	placeholderColor?: string;
 }
 
-export const SelectInput = <T,>({
-	fieldLabel,
-	required,
-	placeholder,
-	placeholderColor,
-	...props
-}: SelectInputProps<T>) => {
+const SelectInputInner = <T,>(
+	{
+		fieldLabel,
+		required,
+		placeholder,
+		placeholderColor,
+		...props
+	}: SelectInputProps<T>,
+	ref: React.ForwardedRef<HTMLDivElement>
+) => {
 	const theme = useTheme();
 	const emptyPlaceholderColor = placeholderColor || theme.palette.text.disabled;
 
-	const renderValue = (selected: any) => {
-		const isMultiple = Boolean((props as any).multiple);
+	const renderValue = (selected: unknown) => {
+		const isMultiple = Boolean((props as { multiple?: boolean }).multiple);
 		const isEmpty = isMultiple
 			? !Array.isArray(selected) || selected.length === 0
 			: selected === undefined || selected === null || selected === "";
@@ -39,7 +42,7 @@ export const SelectInput = <T,>({
 			const capitalized = items.map(
 				(item) => item.charAt(0).toUpperCase() + item.slice(1)
 			);
-			return (<Typography>{capitalized.join(" | ")}</Typography>) as any;
+			return <Typography>{capitalized.join(" | ")}</Typography>;
 		}
 
 		const nodes = React.Children.toArray(props.children as React.ReactNode);
@@ -59,6 +62,7 @@ export const SelectInput = <T,>({
 	const select = (
 		<Select<T>
 			{...props}
+			ref={ref}
 			displayEmpty
 			renderValue={renderValue}
 			inputProps={{
@@ -100,3 +104,7 @@ export const SelectInput = <T,>({
 
 	return select;
 };
+
+export const SelectInput = forwardRef(SelectInputInner) as <T>(
+	props: SelectInputProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
+) => React.ReactElement;
