@@ -21,6 +21,7 @@ import {
 	TextField,
 	Select,
 	Autocomplete,
+	SwitchComponent as Switch,
 } from "@/Components/v2/inputs";
 import { useGet } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
@@ -395,6 +396,35 @@ const CreateMonitorPage = () => {
 					/>
 				}
 			/>
+
+			{/* TLS/SSL ConfigBox - only for HTTP monitors */}
+			{watchedType === "http" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.ignoreTls.title")}
+					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
+					rightContent={
+						<Controller
+							name="ignoreTlsErrors"
+							control={control}
+							render={({ field }) => (
+								<Stack
+									direction="row"
+									alignItems="center"
+									spacing={theme.spacing(2)}
+								>
+									<Switch
+										checked={field.value ?? false}
+										onChange={(e) => field.onChange(e.target.checked)}
+									/>
+									<Typography>
+										{t("pages.createMonitor.form.ignoreTls.option.tls.label")}
+									</Typography>
+								</Stack>
+							)}
+						/>
+					}
+				/>
+			)}
 
 			{/* Submit Button */}
 			<Stack

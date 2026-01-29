@@ -278,6 +278,15 @@
 				"notifications": {
 					"title": "Notifications",
 					"description": "Select the notification channels you want to use"
+				},
+				"ignoreTls": {
+					"title": "TLS/SSL settings",
+					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
+					"option": {
+						"tls": {
+							"label": "Ignore TLS/SSL errors"
+						}
+					}
 				}
 			}
 		},

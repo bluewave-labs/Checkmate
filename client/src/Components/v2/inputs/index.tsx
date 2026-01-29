@@ -10,3 +10,4 @@ export {
 } from "./ToggleButton";
 export { DialogInput as Dialog } from "./Dialog";
 export * from "./Radio";
+export * from "./Switch";
