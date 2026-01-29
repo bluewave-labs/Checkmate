@@ -22,6 +22,7 @@ import {
 	Select,
 	Autocomplete,
 	SwitchComponent as Switch,
+	SliderInput as Slider,
 } from "@/Components/v2/inputs";
 import { useGet } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
@@ -340,7 +341,9 @@ const CreateMonitorPage = () => {
 							<Select
 								{...field}
 								value={field.value ?? 60000}
-								fieldLabel={t("pages.createMonitor.form.frequency.option.frequency.label")}
+								fieldLabel={t(
+									"pages.createMonitor.form.frequency.option.frequency.label"
+								)}
 								error={!!fieldState.error}
 							>
 								<MenuItem value={15000}>{t("time.fifteenSeconds")}</MenuItem>
@@ -364,43 +367,41 @@ const CreateMonitorPage = () => {
 				title={t("pages.createMonitor.form.incidents.title")}
 				subtitle={t("pages.createMonitor.form.incidents.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(12)}>
 						<Controller
 							name="statusWindowSize"
 							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									value={field.value ?? ""}
-									onChange={(e) => {
-										const val = e.target.value;
-										field.onChange(val === "" ? undefined : Number(val));
-									}}
-									onBlur={field.onBlur}
-									type="number"
-									fieldLabel={t("pages.createMonitor.form.incidents.option.checks.label")}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
+							render={({ field }) => (
+								<Stack spacing={theme.spacing(2)}>
+									<Typography variant="body2">
+										{t("pages.createMonitor.form.incidents.option.checks.label")}:{" "}
+										{field.value}
+									</Typography>
+									<Slider
+										{...field}
+										min={1}
+										max={25}
+										valueLabelDisplay="auto"
+									/>
+								</Stack>
 							)}
 						/>
 						<Controller
 							name="statusWindowThreshold"
 							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									value={field.value ?? ""}
-									onChange={(e) => {
-										const val = e.target.value;
-										field.onChange(val === "" ? undefined : Number(val));
-									}}
-									onBlur={field.onBlur}
-									type="number"
-									fieldLabel={t("pages.createMonitor.form.incidents.option.percentage.label")}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
+							render={({ field }) => (
+								<Stack spacing={theme.spacing(2)}>
+									<Typography variant="body2">
+										{t("pages.createMonitor.form.incidents.option.percentage.label")}:{" "}
+										{field.value}%
+									</Typography>
+									<Slider
+										{...field}
+										min={1}
+										max={100}
+										valueLabelDisplay="auto"
+									/>
+								</Stack>
 							)}
 						/>
 					</Stack>
