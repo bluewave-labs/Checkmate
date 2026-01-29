@@ -328,6 +328,37 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{/* Frequency ConfigBox */}
+			<ConfigBox
+				title={t("pages.createMonitor.form.frequency.title")}
+				subtitle={t("pages.createMonitor.form.frequency.description")}
+				rightContent={
+					<Controller
+						name="interval"
+						control={control}
+						render={({ field, fieldState }) => (
+							<Select
+								{...field}
+								value={field.value ?? 60000}
+								fieldLabel={t("pages.createMonitor.form.frequency.option.frequency.label")}
+								error={!!fieldState.error}
+							>
+								<MenuItem value={15000}>{t("time.fifteenSeconds")}</MenuItem>
+								<MenuItem value={30000}>{t("time.thirtySeconds")}</MenuItem>
+								<MenuItem value={60000}>{t("time.oneMinute")}</MenuItem>
+								<MenuItem value={120000}>{t("time.twoMinutes")}</MenuItem>
+								<MenuItem value={180000}>{t("time.threeMinutes")}</MenuItem>
+								<MenuItem value={240000}>{t("time.fourMinutes")}</MenuItem>
+								<MenuItem value={300000}>{t("time.fiveMinutes")}</MenuItem>
+								<MenuItem value={600000}>{t("time.tenMinutes")}</MenuItem>
+								<MenuItem value={900000}>{t("time.fifteenMinutes")}</MenuItem>
+								<MenuItem value={1800000}>{t("time.thirtyMinutes")}</MenuItem>
+							</Select>
+						)}
+					/>
+				}
+			/>
+
 			{/* Notifications ConfigBox */}
 			<ConfigBox
 				title={t("pages.createMonitor.form.notifications.title")}

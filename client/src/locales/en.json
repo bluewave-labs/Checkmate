@@ -275,6 +275,15 @@
 						}
 					}
 				},
+				"frequency": {
+					"title": "Check frequency",
+					"description": "How often do you want to check the status of this monitor?",
+					"option": {
+						"frequency": {
+							"label": "Check frequency"
+						}
+					}
+				},
 				"notifications": {
 					"title": "Notifications",
 					"description": "Select the notification channels you want to use"
