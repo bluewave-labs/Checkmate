@@ -327,6 +327,17 @@
 					"netBytesRecv": "{{name}} - Bytes Received"
 				}
 			}
+		},
+		"notifications": {
+			"fallback": {
+				"actionButton": "Create a channel",
+				"checks": [
+					"Alert teams about downtime or performance issues",
+					"Let engineers know when incidents happen",
+					"Keep administrators informed of system changes"
+				],
+				"title": "Notification channles are used to:"
+			}
 		}
 	},
 	"incidentsTableNoIncidents": "No incidents recorded",

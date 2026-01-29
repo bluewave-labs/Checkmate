@@ -43,7 +43,7 @@ import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
 import StatusPages from "../Pages/StatusPage/StatusPages/index.jsx";
 import Status from "../Pages/StatusPage/Status/index.jsx";
 
-import Notifications from "../Pages/Notifications/index.jsx";
+import Notifications from "../Pages/Notifications";
 import CreateNotifications from "../Pages/Notifications/create/index.jsx";
 
 // Settings
@@ -210,7 +210,13 @@ const Routes = () => {
 
 				<Route
 					path="notifications"
-					element={<Notifications />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Notifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="notifications/create"
