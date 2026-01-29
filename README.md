@@ -79,9 +79,8 @@ You can see the memory footprint of MongoDB and Redis on the same server (398Mb 
 
 If you have any questions, suggestions or comments, you have several options: 
 
-- [Discord channel](https://discord.gg/NAb6H3UTjK)
-- [GitHub Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions)
-- [Reddit group](https://www.reddit.com/r/CheckmateMonitoring/)
+- [Discord channel](https://discord.gg/NAb6H3UTjK) (preferred)
+- [GitHub Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions) (we check here from time to time)
 
 Feel free to ask questions or share your ideas - we'd love to hear from you!
 
