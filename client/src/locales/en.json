@@ -14,7 +14,9 @@
 			"resume": "Resume",
 			"delete": "Delete",
 			"cancel": "Cancel",
-			"confirm": "Confirm"
+			"confirm": "Confirm",
+			"save": "Save",
+			"test": "Test"
 		},
 		"alerts": {
 			"pageSpeedApiKey": {

@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGet, usePost } from "@/Hooks/UseApi";
+import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
@@ -29,6 +29,7 @@ const NotificationsCreatePage = () => {
 	);
 
 	const { post, loading: isSubmitting } = usePost<NotificationFormData, Notification>();
+	const { patch, loading: isPatching } = usePatch<NotificationFormData, Notification>();
 
 	const { schema, defaults } = useNotificationForm({ data: existingNotification });
 
@@ -37,13 +38,17 @@ const NotificationsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, watch, reset, handleSubmit } = form;
+	const { control, watch, reset, handleSubmit, clearErrors } = form;
 
 	useEffect(() => {
 		reset(defaults);
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+
+	useEffect(() => {
+		clearErrors();
+	}, [watchedType, clearErrors]);
 
 	const addressConfig = useMemo(() => {
 		if (watchedType === "pager_duty") {
@@ -71,7 +76,9 @@ const NotificationsCreatePage = () => {
 	}, [watchedType, t]);
 
 	const onSubmit = async (data: NotificationFormData) => {
-		const result = await post("/notifications", data);
+		const result = isEditMode
+			? await patch(`/notifications/${notificationId}`, data)
+			: await post("/notifications", data);
 		if (result) {
 			navigate("/notifications");
 		}
@@ -234,7 +241,7 @@ const NotificationsCreatePage = () => {
 					{t("common.buttons.test")}
 				</Button>
 				<Button
-					loading={isSubmitting}
+					loading={isSubmitting || isPatching}
 					type="submit"
 					variant="contained"
 					color="primary"
