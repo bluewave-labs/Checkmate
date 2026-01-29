@@ -214,8 +214,8 @@ export class NotificationsService implements INotificationsService {
 		const combinedName = servicesCount === 1 ? servicesList : `${servicesCount} services: ${servicesList}`;
 
 		// Use the first monitor as a base for URL and other fields.
-		const baseMonitor = monitors[0];
-		const baseStatus = statusResponses[0];
+		const baseMonitor = monitors[0]!;
+		const baseStatus = statusResponses[0]!;
 
 		// Create a shallow clone so we don't mutate the original entity.
 		// This preserves monitor properties while overriding the name for grouped display.
