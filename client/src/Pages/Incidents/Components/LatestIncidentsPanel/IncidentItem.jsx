@@ -6,6 +6,7 @@ import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
 import Icon from "@/Components/v1/Icon";
 import { useTranslation } from "react-i18next";
 import useGetIncidentsDuration from "../../hooks/useGetIncidentsDuration";
+import { Grid } from "@mui/material";
 
 const IncidentItem = ({ incident }) => {
 	const { t } = useTranslation();
@@ -28,20 +29,24 @@ const IncidentItem = ({ incident }) => {
 	};
 
 	return (
-		<Box
+		<Grid
+			container
+			alignItems="center"
+			spacing={2}
 			sx={{
-				display: "grid",
-				gridTemplateColumns: "1fr 100px 80px",
-				alignItems: "center",
-				gap: theme.spacing(2),
 				width: "100%",
 				py: theme.spacing(0.5),
 			}}
 		>
-			<Stack
-				direction="row"
-				alignItems="center"
-				gap={theme.spacing(2)}
+			<Grid
+				item
+				xs={12}
+				lg={5}
+				sx={{
+					display: "flex",
+					alignItems: "center",
+					gap: theme.spacing(2),
+				}}
 			>
 				<Box sx={iconWrapperStyle}>
 					<Icon
@@ -56,9 +61,18 @@ const IncidentItem = ({ incident }) => {
 				>
 					{incident.monitorName || t("incidentsPage.unknownMonitor")}
 				</Typography>
-			</Stack>
+			</Grid>
 
-			<Box sx={{ display: "flex", justifyContent: "center" }}>
+			<Grid
+				item
+				xs={12}
+				md={6}
+				lg={3}
+				sx={{
+					display: "flex",
+					justifyContent: { xs: "flex-start", md: "center" },
+				}}
+			>
 				<StatusLabel
 					status={isActive ? "down" : "up"}
 					text={isActive ? t("incidentsPage.active") : t("incidentsPage.resolved")}
@@ -66,16 +80,21 @@ const IncidentItem = ({ incident }) => {
 						textTransform: "capitalize",
 					}}
 				/>
-			</Box>
+			</Grid>
 
-			<Typography
-				variant="body1"
-				fontWeight={500}
-				textAlign="right"
+			<Grid
+				item
+				xs={12}
+				md={6}
+				lg={4}
+				sx={{
+					textAlign: { xs: "left", md: "right" },
+					fontWeight: 500,
+				}}
 			>
-				{duration}
-			</Typography>
-		</Box>
+				<Typography variant="body1">{duration}</Typography>
+			</Grid>
+		</Grid>
 	);
 };
 
