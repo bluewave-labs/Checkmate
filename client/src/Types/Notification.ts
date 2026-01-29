@@ -1,4 +1,11 @@
-export const NotificationChannels = ["email", "slack", "discord", "webhook", "pager_duty", "matrix"] as const;
+export const NotificationChannels = [
+	"email",
+	"slack",
+	"discord",
+	"webhook",
+	"pager_duty",
+	"matrix",
+] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
 export interface Notification {
