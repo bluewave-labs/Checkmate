@@ -1,7 +1,9 @@
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { TextField, Select } from "@/Components/v2/inputs";
+import { TextField, Select, Button } from "@/Components/v2/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -15,68 +17,73 @@ import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
 
 const NotificationsCreatePage = () => {
-	const { t } = useTranslation();
-	const { notificationId } = useParams<{ notificationId: string }>();
-	const isEditMode = Boolean(notificationId);
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { notificationId } = useParams<{ notificationId: string }>();
+  const isEditMode = Boolean(notificationId);
 
-	const { data: existingNotification } = useGet<Notification>(
-		isEditMode ? `/notifications/${notificationId}` : null
-	);
+  const { data: existingNotification } = useGet<Notification>(
+    isEditMode ? `/notifications/${notificationId}` : null
+  );
 
-	const { schema, defaults } = useNotificationForm({ data: existingNotification });
+  const { schema, defaults } = useNotificationForm({ data: existingNotification });
 
-	const form = useForm<NotificationFormData>({
-		resolver: zodResolver(schema),
-		defaultValues: defaults,
-	});
+  const form = useForm<NotificationFormData>({
+    resolver: zodResolver(schema),
+    defaultValues: defaults,
+  });
 
-	const {
-		register,
-		control,
-		watch,
-		reset,
-		formState: {},
-	} = form;
+  const {
+    control,
+    watch,
+    reset,
+    handleSubmit,
+  } = form;
 
-	// Reset form when defaults change (i.e., when data is fetched)
-	useEffect(() => {
-		reset(defaults);
-	}, [defaults, reset]);
+  useEffect(() => {
+    reset(defaults);
+  }, [defaults, reset]);
 
-	const watchedType = watch("type");
+  const watchedType = watch("type");
 
-	const addressConfig = useMemo(() => {
-		if (watchedType === "pager_duty") {
-			return {
-				title: t("pages.notifications.form.pagerDuty.title"),
-				description: t("pages.notifications.form.pagerDuty.description"),
-				fieldLabel: t("pages.notifications.form.pagerDuty.optionIntegrationKey"),
-				placeholder: t("pages.notifications.form.pagerDuty.placeholder"),
-			};
-		}
-		if (watchedType === "email") {
-			return {
-				title: t("pages.notifications.form.address.title"),
-				description: t("pages.notifications.form.address.description"),
-				fieldLabel: t("pages.notifications.form.address.optionAddress"),
-				placeholder: t("pages.notifications.form.address.placeholderEmail"),
-			};
-		}
-		return {
-			title: t("pages.notifications.form.address.title"),
-			description: t("pages.notifications.form.address.description"),
-			fieldLabel: t("pages.notifications.form.address.optionAddress"),
-			placeholder: t("pages.notifications.form.address.placeholderWebhook"),
-		};
-	}, [watchedType, t]);
+  const addressConfig = useMemo(() => {
+    if (watchedType === "pager_duty") {
+      return {
+        title: t("pages.notifications.form.pagerDuty.title"),
+        description: t("pages.notifications.form.pagerDuty.description"),
+        fieldLabel: t("pages.notifications.form.pagerDuty.optionIntegrationKey"),
+        placeholder: t("pages.notifications.form.pagerDuty.placeholder"),
+      };
+    }
+    if (watchedType === "email") {
+      return {
+        title: t("pages.notifications.form.address.title"),
+        description: t("pages.notifications.form.address.description"),
+        fieldLabel: t("pages.notifications.form.address.optionAddress"),
+        placeholder: t("pages.notifications.form.address.placeholderEmail"),
+      };
+    }
+    return {
+      title: t("pages.notifications.form.address.title"),
+      description: t("pages.notifications.form.address.description"),
+      fieldLabel: t("pages.notifications.form.address.optionAddress"),
+      placeholder: t("pages.notifications.form.address.placeholderWebhook"),
+    };
+  }, [watchedType, t]);
 
+  const onSubmit = (data: NotificationFormData) => {
+    console.log(data);
+  };
 
-	// Suppress unused variable warnings - these will be used when UI is built
-	void register;
-	void control;
+  const handleTest = () => {
+    console.log("Test notification");
+  };
 
-	return (
-		<BasePage>
+  return (
+    <BasePage
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
 			<ConfigBox
 				title={t("pages.notifications.form.notificationName.title")}
 				subtitle={t("pages.notifications.form.notificationName.description")}
@@ -107,27 +114,23 @@ const NotificationsCreatePage = () => {
 						name="type"
 						control={control}
 						defaultValue={defaults.type}
-						render={({ field, fieldState }) => {
-							return (
-								<Select
-									value={field.value}
-									fieldLabel={t("pages.notifications.form.type.optionType")}
-									error={!!fieldState.error}
-									onChange={field.onChange}
-								>
-									{NotificationChannels.map((type: string) => {
-										return (
-											<MenuItem
-												key={type}
-												value={type}
-											>
-												<Typography textTransform={"capitalize"}>{type}</Typography>
-											</MenuItem>
-										);
-									})}
-								</Select>
-							);
-						}}
+						render={({ field, fieldState }) => (
+							<Select
+								value={field.value}
+								fieldLabel={t("pages.notifications.form.type.optionType")}
+								error={!!fieldState.error}
+								onChange={field.onChange}
+							>
+								{NotificationChannels.map((type: string) => (
+									<MenuItem
+										key={type}
+										value={type}
+									>
+										<Typography textTransform="capitalize">{type}</Typography>
+									</MenuItem>
+								))}
+							</Select>
+						)}
 					/>
 				}
 			/>
@@ -157,76 +160,86 @@ const NotificationsCreatePage = () => {
 			)}
 			{watchedType === "matrix" && (
 				<ConfigBox
-					title={t("pages.notifications.form.homeServer.title")}
-					subtitle={t("pages.notifications.form.homeServer.description")}
+					title={t("pages.notifications.form.matrix.title")}
+					subtitle={t("pages.notifications.form.matrix.description")}
 					rightContent={
-						<Controller
-							name="homeserverUrl"
-							control={control}
-							defaultValue={defaults.homeserverUrl}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={t("pages.notifications.form.homeServer.optionHomeServer")}
-									placeholder={t("pages.notifications.form.homeServer.placeholder")}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="homeserverUrl"
+								control={control}
+								defaultValue={defaults.homeserverUrl}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.homeServer.optionHomeServer")}
+										placeholder={t("pages.notifications.form.homeServer.placeholder")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="roomId"
+								control={control}
+								defaultValue={defaults.roomId}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.roomId.optionRoomId")}
+										placeholder={t("pages.notifications.form.roomId.placeholder")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={defaults.accessToken}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t(
+											"pages.notifications.form.accessToken.optionAccessToken"
+										)}
+										placeholder={t("pages.notifications.form.accessToken.placeholder")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
 					}
 				/>
 			)}
-			{watchedType === "matrix" && (
-				<ConfigBox
-					title={t("pages.notifications.form.roomId.title")}
-					subtitle={t("pages.notifications.form.roomId.description")}
-					rightContent={
-						<Controller
-							name="roomId"
-							control={control}
-							defaultValue={defaults.roomId}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={t("pages.notifications.form.roomId.optionRoomId")}
-									placeholder={t("pages.notifications.form.roomId.placeholder")}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-					}
-				/>
-			)}
-			{watchedType === "matrix" && (
-				<ConfigBox
-					title={t("pages.notifications.form.accessToken.title")}
-					subtitle={t("pages.notifications.form.accessToken.description")}
-					rightContent={
-						<Controller
-							name="accessToken"
-							control={control}
-							defaultValue={defaults.accessToken}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={t("pages.notifications.form.accessToken.optionAccessToken")}
-									placeholder={t("pages.notifications.form.accessToken.placeholder")}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-					}
-				/>
-			)}
+			<Stack
+				direction="row"
+				justifyContent="flex-end"
+				spacing={theme.spacing(2)}
+			>
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={handleTest}
+					loading={false}
+				>
+					{t("common.buttons.test")}
+				</Button>
+				<Button
+					loading={false}
+					type="submit"
+					variant="contained"
+					color="primary"
+				>
+					{t("common.buttons.save")}
+				</Button>
+			</Stack>
 		</BasePage>
 	);
 };
