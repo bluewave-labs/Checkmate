@@ -33,7 +33,7 @@ import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
 import Checks from "../Pages/Checks/index";
 
 // Incidents
-import Incidents from "../Pages/Incidents/index.jsx";
+import Incidents from "../Pages/Incidents/";
 
 // Status pages
 import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
