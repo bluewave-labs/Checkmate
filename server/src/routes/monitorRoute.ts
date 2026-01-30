@@ -50,7 +50,7 @@ class MonitorRoutes {
 
 		// Individual monitor CRUD routes
 		this.router.get("/:monitorId", this.monitorController.getMonitorById);
-		this.router.put("/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.editMonitor);
+		this.router.patch("/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.editMonitor);
 		this.router.delete("/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.deleteMonitor);
 	}
 

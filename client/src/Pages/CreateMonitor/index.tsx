@@ -24,7 +24,7 @@ import {
 	SwitchComponent as Switch,
 	SliderWithLabel,
 } from "@/Components/v2/inputs";
-import { useGet, usePost, usePut } from "@/Hooks/UseApi";
+import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
@@ -163,13 +163,13 @@ const CreateMonitorPage = () => {
 	);
 
 	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
-	const { put, loading: isUpdating } = usePut<MonitorFormData, Monitor>();
+	const { patch, loading: isUpdating } = usePatch<MonitorFormData, Monitor>();
 	const isSubmitting = isCreating || isUpdating;
 
 	const onSubmit = async (data: MonitorFormData) => {
 		let result;
 		if (isEditMode && monitorId) {
-			result = await put(`/monitors/${monitorId}`, data);
+			result = await patch(`/monitors/${monitorId}`, data);
 		} else {
 			result = await post("/monitors", data);
 		}
