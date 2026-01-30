@@ -67,6 +67,12 @@ export const patch = <T>(
 	config: AxiosRequestConfig = {}
 ): Promise<AxiosResponse<T>> => api.patch<T>(url, data, config);
 
+export const put = <T>(
+	url: string,
+	data: unknown,
+	config: AxiosRequestConfig = {}
+): Promise<AxiosResponse<T>> => api.put<T>(url, data, config);
+
 export const deleteOp = <T>(
 	url: string,
 	config: AxiosRequestConfig = {}

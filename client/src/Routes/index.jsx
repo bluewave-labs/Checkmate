@@ -81,16 +81,6 @@ const Routes = () => {
 					element={<Navigate to="/uptime" />}
 				/>
 				<Route
-					path="/testing"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
-				/>
-				<Route
 					path="/uptime"
 					element={
 						<>
@@ -108,7 +98,13 @@ const Routes = () => {
 
 				<Route
 					path="/uptime/create"
-					element={<UptimeCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/create/:monitorId"
@@ -126,7 +122,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<UptimeCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
@@ -141,7 +143,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/create"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
@@ -155,7 +163,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure"
@@ -169,11 +183,23 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/create"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/:monitorId"

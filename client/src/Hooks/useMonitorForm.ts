@@ -9,6 +9,7 @@ interface UseMonitorFormOptions {
 
 const getBaseDefaults = (data?: Monitor | null) => ({
 	name: data?.name || "",
+	description: data?.description || "",
 	interval: data?.interval || 60000,
 	notifications: data?.notifications || [],
 	statusWindowSize: data?.statusWindowSize || 5,

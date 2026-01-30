@@ -1,11 +1,15 @@
 import { z } from "zod";
 
+// URL schema with custom error message
+const urlSchema = z.url({ message: "Please enter a valid URL" });
+
 // Common base schema for all monitor types
 const baseSchema = z.object({
 	name: z
 		.string()
 		.min(1, "Monitor name is required")
 		.max(50, "Monitor name must be at most 50 characters"),
+	description: z.string().optional(),
 	interval: z.number().min(15000, "Interval must be at least 15 seconds"),
 	notifications: z.array(z.string()),
 	statusWindowSize: z
@@ -21,10 +25,7 @@ const baseSchema = z.object({
 // HTTP monitor schema
 const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
-	url: z
-		.string()
-		.min(1, "URL is required")
-		.url("Please enter a valid URL"),
+	url: urlSchema,
 	ignoreTlsErrors: z.boolean(),
 	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
 	expectedValue: z.string().optional(),
@@ -67,16 +68,13 @@ const gameSchema = baseSchema.extend({
 // PageSpeed monitor schema
 const pagespeedSchema = baseSchema.extend({
 	type: z.literal("pagespeed"),
-	url: z
-		.string()
-		.min(1, "URL is required")
-		.url("Please enter a valid URL"),
+	url: urlSchema,
 });
 
 // Hardware/Infrastructure monitor schema
 const hardwareSchema = baseSchema.extend({
 	type: z.literal("hardware"),
-	url: z.string({ message: "URL is required" }).min(1, "URL is required"),
+	url: urlSchema,
 	secret: z.string({ message: "Secret is required" }).min(1, "Secret is required"),
 	cpuAlertThreshold: z
 		.number()

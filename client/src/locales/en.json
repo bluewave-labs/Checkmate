@@ -353,6 +353,15 @@
 			}
 		},
 		"pageSpeed": {
+			"fallback": {
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Report on the user experience of a page",
+					"Help analyze webpage speed",
+					"Give suggestions on how the page can be improved"
+				],
+				"title": "A PageSpeed monitor is used to:"
+			},
 			"table": {
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
@@ -376,6 +385,15 @@
 			}
 		},
 		"infrastructure": {
+			"fallback": {
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Track the performance of your servers",
+					"Identify bottlenecks and optimize usage",
+					"Ensure reliability with real-time monitoring"
+				],
+				"title": "An infrastructure monitor is used to:"
+			},
 			"table": {
 				"headers": {
 					"cpu": "CPU",

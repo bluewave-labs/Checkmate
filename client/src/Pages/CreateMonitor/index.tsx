@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
@@ -24,7 +24,7 @@ import {
 	SwitchComponent as Switch,
 	SliderWithLabel,
 } from "@/Components/v2/inputs";
-import { useGet } from "@/Hooks/UseApi";
+import { useGet, usePost, usePut } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
@@ -116,7 +116,21 @@ const CreateMonitorPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const { monitorId } = useParams();
+	const location = useLocation();
+	const navigate = useNavigate();
 	const isEditMode = Boolean(monitorId);
+
+	// Extract page type from URL path (e.g., /pagespeed/create -> pagespeed)
+	const pageType = useMemo(() => {
+		const pathSegments = location.pathname.split("/").filter(Boolean);
+		const firstSegment = pathSegments[0];
+		if (firstSegment === "pagespeed") return "pagespeed";
+		if (firstSegment === "infrastructure") return "hardware";
+		return "uptime";
+	}, [location.pathname]);
+
+	const showTypeSelector = pageType === "uptime" && !isEditMode;
+	const defaultType: MonitorType = pageType === "pagespeed" ? "pagespeed" : pageType === "hardware" ? "hardware" : "http";
 
 	const { data: existingMonitor } = useGet<Monitor>(
 		isEditMode ? `/monitors/${monitorId}` : null
@@ -125,7 +139,7 @@ const CreateMonitorPage = () => {
 	// Fetch notifications for the team
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 
-	const { schema, defaults } = useMonitorForm({ data: existingMonitor ?? null });
+	const { schema, defaults } = useMonitorForm({ data: existingMonitor ?? null, defaultType });
 
 	const form = useForm<MonitorFormData>({
 		resolver: zodResolver(schema),
@@ -148,8 +162,28 @@ const CreateMonitorPage = () => {
 		[watchedType, t]
 	);
 
+	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
+	const { put, loading: isUpdating } = usePut<MonitorFormData, Monitor>();
+	const isSubmitting = isCreating || isUpdating;
+
 	const onSubmit = async (data: MonitorFormData) => {
-		console.log(data);
+		let result;
+		if (isEditMode && monitorId) {
+			result = await put(`/monitors/${monitorId}`, data);
+		} else {
+			result = await post("/monitors", data);
+		}
+
+		if (result?.success) {
+			// Navigate based on page type
+			if (pageType === "pagespeed") {
+				navigate("/pagespeed");
+			} else if (pageType === "hardware") {
+				navigate("/infrastructure");
+			} else {
+				navigate("/uptime");
+			}
+		}
 	};
 
 	const onError = (errors: unknown) => {
@@ -161,67 +195,55 @@ const CreateMonitorPage = () => {
 			component="form"
 			onSubmit={handleSubmit(onSubmit, onError)}
 		>
-			{/* Monitor Type Selection */}
-			<ConfigBox
-				title={t("pages.createMonitor.form.type.title")}
-				subtitle={t("pages.createMonitor.form.type.description")}
-				rightContent={
-					<Controller
-						name="type"
-						control={control}
-						render={({ field, fieldState }) => (
-							<FormControl error={!!fieldState.error}>
-								<RadioGroup
-									{...field}
-									sx={{ gap: theme.spacing(6) }}
-								>
-									<RadioWithDescription
-										value="http"
-										label={t("pages.createMonitor.form.type.optionHttp")}
-										description={t("pages.createMonitor.form.type.optionHttpDescription")}
-									/>
-									<RadioWithDescription
-										value="ping"
-										label={t("pages.createMonitor.form.type.optionPing")}
-										description={t("pages.createMonitor.form.type.optionPingDescription")}
-									/>
-									<RadioWithDescription
-										value="docker"
-										label={t("pages.createMonitor.form.type.optionDocker")}
-										description={t(
-											"pages.createMonitor.form.type.optionDockerDescription"
-										)}
-									/>
-									<RadioWithDescription
-										value="port"
-										label={t("pages.createMonitor.form.type.optionPort")}
-										description={t("pages.createMonitor.form.type.optionPortDescription")}
-									/>
-									<RadioWithDescription
-										value="game"
-										label={t("pages.createMonitor.form.type.optionGame")}
-										description={t("pages.createMonitor.form.type.optionGameDescription")}
-									/>
-									<RadioWithDescription
-										value="pagespeed"
-										label={t("pages.createMonitor.form.type.optionPagespeed")}
-										description={t(
-											"pages.createMonitor.form.type.optionPagespeedDescription"
-										)}
-									/>
-									<RadioWithDescription
-										value="hardware"
-										label={t("pages.createMonitor.form.type.optionHardware")}
-										description={t(
-											"pages.createMonitor.form.type.optionHardwareDescription"
-										)}
-									/>
-								</RadioGroup>
-							</FormControl>
-						)}
-					/>
-				}
-			/>
+			{/* Monitor Type Selection - only shown for uptime monitors */}
+			{showTypeSelector && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.type.title")}
+					subtitle={t("pages.createMonitor.form.type.description")}
+					rightContent={
+						<Controller
+							name="type"
+							control={control}
+							render={({ field, fieldState }) => (
+								<FormControl error={!!fieldState.error}>
+									<RadioGroup
+										{...field}
+										sx={{ gap: theme.spacing(6) }}
+									>
+										<RadioWithDescription
+											value="http"
+											label={t("pages.createMonitor.form.type.optionHttp")}
+											description={t("pages.createMonitor.form.type.optionHttpDescription")}
+										/>
+										<RadioWithDescription
+											value="ping"
+											label={t("pages.createMonitor.form.type.optionPing")}
+											description={t("pages.createMonitor.form.type.optionPingDescription")}
+										/>
+										<RadioWithDescription
+											value="docker"
+											label={t("pages.createMonitor.form.type.optionDocker")}
+											description={t(
+												"pages.createMonitor.form.type.optionDockerDescription"
+											)}
+										/>
+										<RadioWithDescription
+											value="port"
+											label={t("pages.createMonitor.form.type.optionPort")}
+											description={t("pages.createMonitor.form.type.optionPortDescription")}
+										/>
+										<RadioWithDescription
+											value="game"
+											label={t("pages.createMonitor.form.type.optionGame")}
+											description={t("pages.createMonitor.form.type.optionGameDescription")}
+										/>
+									</RadioGroup>
+								</FormControl>
+							)}
+						/>
+					}
+				/>
+			)}
 
 			{/* General Settings - Dynamic based on type */}
 			<ConfigBox
@@ -241,6 +263,7 @@ const CreateMonitorPage = () => {
 										fieldLabel={generalSettingsConfig.urlLabel}
 										placeholder={generalSettingsConfig.urlPlaceholder}
 										fullWidth
+										disabled={isEditMode}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
 									/>
@@ -506,7 +529,7 @@ const CreateMonitorPage = () => {
 				justifyContent="flex-end"
 			>
 				<Button
-					loading={false}
+					loading={isSubmitting}
 					type="submit"
 					variant="contained"
 					color="primary"
