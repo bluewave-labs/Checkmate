@@ -216,7 +216,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="incidents/:monitorId?"
-					element={<Incidents />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Incidents />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route

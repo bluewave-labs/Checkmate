@@ -350,6 +350,17 @@
 					"title": "Matrix configuration"
 				}
 			}
+		},
+		"incidents": {
+			"summaryCard": {
+				"activeIncidents": {
+					"title": "Active Incidents",
+					"noActive": "No active incidents",
+					"active": "Active incident(s)"
+				},
+				"latestIncidents": { "title": "Latest Incidents" },
+				"incidentStats": { "title": "Incident Statistics" }
+			}
 		}
 	},
 	"incidentsTableNoIncidents": "No incidents recorded",
