@@ -130,3 +130,19 @@ export interface PageSpeedDetailsResult {
 	};
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
+
+
+export interface Game {
+	name: string;
+	release_year?: number;
+	options?: {
+		port?: number;
+		port_query?: number;
+		protocol?: string;
+	};
+	extra?: {
+		old_id?: string;
+	};
+}
+
+export type GamesMap = Record<string, Game>;
