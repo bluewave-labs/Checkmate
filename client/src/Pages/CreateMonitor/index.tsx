@@ -374,6 +374,7 @@ const CreateMonitorPage = () => {
 							render={({ field }) => (
 								<SliderWithLabel
 									{...field}
+									sliderMaxWidth={{ xs: "100%", md: "50%" }}
 									fieldLabel={t("pages.createMonitor.form.incidents.option.checks.label")}
 									min={1}
 									max={25}
@@ -387,10 +388,10 @@ const CreateMonitorPage = () => {
 							render={({ field }) => (
 								<SliderWithLabel
 									{...field}
+									sliderMaxWidth={{ xs: "100%", md: "50%" }}
 									fieldLabel={t(
 										"pages.createMonitor.form.incidents.option.percentage.label"
 									)}
-									valueSuffix="%"
 									min={1}
 									max={100}
 									valueLabelDisplay="auto"
