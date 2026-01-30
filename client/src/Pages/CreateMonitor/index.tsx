@@ -22,7 +22,7 @@ import {
 	Select,
 	Autocomplete,
 	SwitchComponent as Switch,
-	SliderInput as Slider,
+	SliderWithLabel,
 } from "@/Components/v2/inputs";
 import { useGet } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
@@ -372,36 +372,29 @@ const CreateMonitorPage = () => {
 							name="statusWindowSize"
 							control={control}
 							render={({ field }) => (
-								<Stack spacing={theme.spacing(2)}>
-									<Typography variant="body2">
-										{t("pages.createMonitor.form.incidents.option.checks.label")}:{" "}
-										{field.value}
-									</Typography>
-									<Slider
-										{...field}
-										min={1}
-										max={25}
-										valueLabelDisplay="auto"
-									/>
-								</Stack>
+								<SliderWithLabel
+									{...field}
+									fieldLabel={t("pages.createMonitor.form.incidents.option.checks.label")}
+									min={1}
+									max={25}
+									valueLabelDisplay="auto"
+								/>
 							)}
 						/>
 						<Controller
 							name="statusWindowThreshold"
 							control={control}
 							render={({ field }) => (
-								<Stack spacing={theme.spacing(2)}>
-									<Typography variant="body2">
-										{t("pages.createMonitor.form.incidents.option.percentage.label")}:{" "}
-										{field.value}%
-									</Typography>
-									<Slider
-										{...field}
-										min={1}
-										max={100}
-										valueLabelDisplay="auto"
-									/>
-								</Stack>
+								<SliderWithLabel
+									{...field}
+									fieldLabel={t(
+										"pages.createMonitor.form.incidents.option.percentage.label"
+									)}
+									valueSuffix="%"
+									min={1}
+									max={100}
+									valueLabelDisplay="auto"
+								/>
 							)}
 						/>
 					</Stack>
