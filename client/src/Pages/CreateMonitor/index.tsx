@@ -14,6 +14,7 @@ import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { Trash2 } from "lucide-react";
+import { HeaderDeleteControls } from "@/Components/v2/common";
 
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import {
@@ -138,7 +139,7 @@ const CreateMonitorPage = () => {
 				? "hardware"
 				: "http";
 
-	const { data: existingMonitor } = useGet<Monitor>(
+	const { data: existingMonitor, refetch: refetchMonitor } = useGet<Monitor>(
 		isEditMode ? `/monitors/${monitorId}` : null
 	);
 
@@ -206,6 +207,11 @@ const CreateMonitorPage = () => {
 			component="form"
 			onSubmit={handleSubmit(onSubmit, onError)}
 		>
+			<HeaderDeleteControls
+				monitor={existingMonitor}
+				isAdmin={true}
+				refetch={refetchMonitor}
+			/>
 			{/* Monitor Type Selection - only shown for uptime monitors */}
 			{showTypeSelector && (
 				<ConfigBox
@@ -562,7 +568,11 @@ const CreateMonitorPage = () => {
 											checked={field.value ?? false}
 											onChange={(e) => field.onChange(e.target.checked)}
 										/>
-										<Typography>{t("pages.createMonitor.form.advanced.option.advancedMatching.label")}</Typography>
+										<Typography>
+											{t(
+												"pages.createMonitor.form.advanced.option.advancedMatching.label"
+											)}
+										</Typography>
 									</Stack>
 								)}
 							/>

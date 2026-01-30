@@ -17,16 +17,13 @@ import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 // Uptime
 import Uptime from "../Pages/Uptime/Monitors";
 import UptimeDetails from "../Pages/Uptime/Details";
-import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors/index";
 import PageSpeedDetails from "../Pages/PageSpeed/Details/";
-import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
 // Infrastructure
 import Infrastructure from "../Pages/Infrastructure/Monitors";
-import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
 import InfrastructureDetails from "../Pages/Infrastructure/Details/index";
 
 // Server Status
@@ -105,10 +102,6 @@ const Routes = () => {
 							</ThemeProvider>
 						</>
 					}
-				/>
-				<Route
-					path="/uptime/create/:monitorId"
-					element={<UptimeCreate isClone={true} />}
 				/>
 				<Route
 					path="/uptime/:monitorId/"

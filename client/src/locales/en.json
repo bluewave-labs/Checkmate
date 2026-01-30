@@ -22,7 +22,8 @@
 			"cancel": "Cancel",
 			"confirm": "Confirm",
 			"save": "Save",
-			"test": "Test"
+			"test": "Test",
+			"configure": "Configure"
 		},
 		"alerts": {
 			"pageSpeedApiKey": {
