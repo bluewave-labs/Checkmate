@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
-import MonitorActions from "../MonitorActions/index.jsx";
 
 const CreateMonitorHeader = ({ isAdmin, label, isLoading = true, path, bulkPath }) => {
 	const navigate = useNavigate();

@@ -159,14 +159,14 @@ export const HeaderDeleteControls = ({
 					</Button>
 				)}
 				{isAdmin && (
-						<Button
-							variant="contained"
-							color="error"
-							startIcon={<Icon icon={Trash} />}
-							onClick={() => {
-								onDelete?.();
-							}}
-						>
+					<Button
+						variant="contained"
+						color="error"
+						startIcon={<Icon icon={Trash} />}
+						onClick={() => {
+							onDelete?.();
+						}}
+					>
 						{t("common.buttons.delete")}
 					</Button>
 				)}

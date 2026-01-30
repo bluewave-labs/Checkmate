@@ -15,13 +15,7 @@ interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 }
 
 const SelectInputInner = <T,>(
-	{
-		fieldLabel,
-		required,
-		placeholder,
-		placeholderColor,
-		...props
-	}: SelectInputProps<T>,
+	{ fieldLabel, required, placeholder, placeholderColor, ...props }: SelectInputProps<T>,
 	ref: React.ForwardedRef<HTMLDivElement>
 ) => {
 	const theme = useTheme();
