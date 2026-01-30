@@ -28,7 +28,10 @@ const SummaryCard = ({
 			padding={8}
 			flex={1}
 		>
-			<Stack gap={theme.spacing(4)}>
+			<Stack
+				gap={theme.spacing(4)}
+				height="100%"
+			>
 				<Typography
 					component="h2"
 					sx={{
@@ -65,11 +68,17 @@ export const SummaryCardActiveIncidents = ({ incidents }: SummaryCardIncidentsPr
 	) : (
 		<CircleCheck color={color} />
 	);
-	const msg = t("pages.incidents.summaryCard.activeIncidents.active", { count: activeCount });
+	const msg = t("pages.incidents.summaryCard.activeIncidents.active", {
+		count: activeCount,
+	});
 
 	return (
-		<SummaryCard title={t("pages.incidents.summaryCard.activeIncidents.title")}>
+		<SummaryCard
+			title={t("pages.incidents.summaryCard.activeIncidents.title")}
+			sx={{ height: "100%" }}
+		>
 			<Stack
+				flex={1}
 				alignItems="center"
 				justifyContent="center"
 				gap={theme.spacing(4)}
