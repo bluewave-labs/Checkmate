@@ -144,9 +144,7 @@ const CreateMonitorPage = () => {
 		isEditMode ? `/monitors/${monitorId}` : null
 	);
 
-	// Fetch notifications for the team
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
-	// Fetch games for game type monitors
 	const { data: games } = useGet<GamesMap>("/monitors/games");
 
 	const { schema, defaults } = useMonitorForm({
@@ -215,7 +213,6 @@ const CreateMonitorPage = () => {
 		}
 
 		if (result?.success) {
-			// Navigate based on page type
 			if (pageType === "pagespeed") {
 				navigate("/pagespeed");
 			} else if (pageType === "hardware") {
@@ -299,7 +296,6 @@ const CreateMonitorPage = () => {
 				/>
 			)}
 
-			{/* General Settings - Dynamic based on type */}
 			<ConfigBox
 				title={t("pages.createMonitor.form.general.title")}
 				subtitle={t(`pages.createMonitor.form.general.description.${watchedType}`)}
@@ -395,7 +391,6 @@ const CreateMonitorPage = () => {
 							/>
 						)}
 
-						{/* Display name field - common to all types */}
 						<Controller
 							name="name"
 							control={control}
@@ -415,7 +410,6 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{/* Frequency ConfigBox */}
 			<ConfigBox
 				title={t("pages.createMonitor.form.frequency.title")}
 				subtitle={t("pages.createMonitor.form.frequency.description")}
@@ -448,7 +442,6 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{/* Incidents ConfigBox */}
 			<ConfigBox
 				title={t("pages.createMonitor.form.incidents.title")}
 				subtitle={t("pages.createMonitor.form.incidents.description")}
@@ -488,7 +481,6 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{/* Notifications ConfigBox */}
 			<ConfigBox
 				title={t("pages.createMonitor.form.notifications.title")}
 				subtitle={t("pages.createMonitor.form.notifications.description")}
@@ -557,7 +549,6 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{/* TLS/SSL ConfigBox - only for HTTP monitors */}
 			{watchedType === "http" && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.ignoreTls.title")}
@@ -586,7 +577,6 @@ const CreateMonitorPage = () => {
 				/>
 			)}
 
-			{/* Advanced Settings ConfigBox - only for HTTP monitors */}
 			{watchedType === "http" && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.advanced.title")}
@@ -692,7 +682,6 @@ const CreateMonitorPage = () => {
 				/>
 			)}
 
-			{/* Submit Button */}
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
