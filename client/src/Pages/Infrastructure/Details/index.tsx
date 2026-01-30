@@ -46,7 +46,7 @@ const InfrastructureDetails = () => {
 	return (
 		<BasePage>
 			<HeaderMonitorControls
-				path="hardware"
+				path="infrastructure"
 				monitor={monitor}
 				isAdmin={isAdmin}
 				refetch={refetchMonitor}
