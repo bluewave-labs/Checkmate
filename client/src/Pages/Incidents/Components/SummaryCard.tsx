@@ -57,19 +57,15 @@ export const SummaryCardActiveIncidents = ({ incidents }: SummaryCardIncidentsPr
 
 	if (!incidents) return null;
 
-	const hasActive = incidents.some((incident) => incident.status === true);
-	const activeCount = hasActive
-		? incidents.filter((incident) => incident.status === true).length
-		: 0;
+	const activeCount = incidents.filter((incident) => incident.status === true).length;
+	const hasActive = activeCount > 0;
 	const color = hasActive ? theme.palette.error.main : theme.palette.success.main;
 	const icon = hasActive ? (
 		<TriangleAlert color={color} />
 	) : (
 		<CircleCheck color={color} />
 	);
-	const msg = hasActive
-		? `${activeCount} ${t("pages.incidents.summaryCard.activeIncidents.active")}`
-		: t("pages.incidents.summaryCard.activeIncidents.noActive");
+	const msg = t("pages.incidents.summaryCard.activeIncidents.active", { count: activeCount });
 
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.activeIncidents.title")}>
@@ -109,7 +105,7 @@ export const SummaryCardLatestIncidents = ({
 };
 
 interface SummaryCardStatsProps {
-	summary?: IncidentSummary;
+	summary?: IncidentSummary | null;
 }
 
 export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {

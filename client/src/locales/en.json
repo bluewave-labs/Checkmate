@@ -355,8 +355,9 @@
 			"summaryCard": {
 				"activeIncidents": {
 					"title": "Active Incidents",
-					"noActive": "No active incidents",
-					"active": "Active incident(s)"
+					"active_zero": "No active incidents",
+					"active_one": "{{count}} Active incident",
+					"active_other": "{{count}} Active incidents"
 				},
 				"latestIncidents": { "title": "Latest Incidents" },
 				"incidentStats": { "title": "Incident Statistics" }
