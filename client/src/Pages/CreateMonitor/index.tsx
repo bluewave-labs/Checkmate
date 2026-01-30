@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
@@ -25,8 +25,9 @@ import {
 	Autocomplete,
 	SwitchComponent as Switch,
 	SliderWithLabel,
+	Dialog,
 } from "@/Components/v2/inputs";
-import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
+import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
@@ -177,6 +178,31 @@ const CreateMonitorPage = () => {
 	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
 	const { patch, loading: isUpdating } = usePatch<MonitorFormData, Monitor>();
 	const isSubmitting = isCreating || isUpdating;
+	// Delete functionality
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const { deleteFn, loading: isDeleting } = useDelete();
+
+	const handleDeleteClick = () => {
+		setIsDeleteDialogOpen(true);
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (!monitorId) return;
+		await deleteFn(`/monitors/${monitorId}`);
+		setIsDeleteDialogOpen(false);
+		// Navigate based on page type
+		if (pageType === "pagespeed") {
+			navigate("/pagespeed");
+		} else if (pageType === "hardware") {
+			navigate("/infrastructure");
+		} else {
+			navigate("/uptime");
+		}
+	};
+
+	const handleDeleteCancel = () => {
+		setIsDeleteDialogOpen(false);
+	};
 
 	const onSubmit = async (data: MonitorFormData) => {
 		let result;
@@ -211,6 +237,7 @@ const CreateMonitorPage = () => {
 				monitor={existingMonitor}
 				isAdmin={true}
 				refetch={refetchMonitor}
+				onDelete={handleDeleteClick}
 			/>
 			{/* Monitor Type Selection - only shown for uptime monitors */}
 			{showTypeSelector && (
@@ -668,6 +695,14 @@ const CreateMonitorPage = () => {
 					{t("common.buttons.save")}
 				</Button>
 			</Stack>
+			<Dialog
+				open={isDeleteDialogOpen}
+				title={t("common.dialogs.delete.title")}
+				content={t("common.dialogs.delete.description")}
+				onConfirm={handleDeleteConfirm}
+				onCancel={handleDeleteCancel}
+				loading={isDeleting}
+			/>
 		</BasePage>
 	);
 };

@@ -42,8 +42,8 @@ export const HeaderMonitorControls = ({
 	refetch,
 }: HeaderMonitorControlsProps) => {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const theme = useTheme();
+	const navigate = useNavigate();
 	const {
 		post,
 		loading: isPosting,
@@ -117,15 +117,16 @@ interface HeaderDeleteControlsProps {
 	monitor?: Monitor | null;
 	isAdmin: boolean;
 	refetch: Function;
+	onDelete?: () => void;
 }
 
 export const HeaderDeleteControls = ({
 	monitor,
 	isAdmin,
 	refetch,
+	onDelete,
 }: HeaderDeleteControlsProps) => {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const theme = useTheme();
 	const {
 		post,
@@ -158,14 +159,14 @@ export const HeaderDeleteControls = ({
 					</Button>
 				)}
 				{isAdmin && (
-					<Button
-						variant="contained"
-						color="error"
-						startIcon={<Icon icon={Trash} />}
-						onClick={() => {
-							console.log("delete");
-						}}
-					>
+						<Button
+							variant="contained"
+							color="error"
+							startIcon={<Icon icon={Trash} />}
+							onClick={() => {
+								onDelete?.();
+							}}
+						>
 						{t("common.buttons.delete")}
 					</Button>
 				)}
