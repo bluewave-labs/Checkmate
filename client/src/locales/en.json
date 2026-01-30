@@ -360,7 +360,12 @@
 					"active_other": "{{count}} Active incidents"
 				},
 				"latestIncidents": { "title": "Latest Incidents" },
-				"incidentStats": { "title": "Incident Statistics" }
+				"incidentStats": {
+					"title": "Incident Statistics",
+					"totalIncidents": "Total incidents",
+					"mostAffectedMonitor": "Most affected monitor",
+					"avgResolutionTime": "Average resolution time"
+				}
 			}
 		}
 	},

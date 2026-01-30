@@ -128,17 +128,17 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 		<SummaryCard title={t("pages.incidents.summaryCard.incidentStats.title")}>
 			<SummaryItem
 				icon={<Bell size={18} />}
-				label="Total incidents"
+				label={t("pages.incidents.summaryCard.incidentStats.totalIncidents")}
 				value={summary?.total || 0}
 			/>
 			<SummaryItem
 				icon={<TriangleAlert size={18} />}
-				label="Most affected monitor"
+				label={t("pages.incidents.summaryCard.incidentStats.mostAffectedMonitor")}
 				value={mostAffected}
 			/>
 			<SummaryItem
 				icon={<Wrench size={18} />}
-				label="Average resolution time"
+				label={t("pages.incidents.summaryCard.incidentStats.avgResolutionTime")}
 				value={summary.total > 0 ? `${summary.avgResolutionTimeHours || 0} hours` : "N/A"}
 			/>
 		</SummaryCard>
