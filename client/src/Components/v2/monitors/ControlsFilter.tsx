@@ -6,7 +6,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import type { MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
 
-const types = ["http", "ping", "port", "docker"];
+const types = ["http", "ping", "port", "docker", "game"];
 const statuses = ["up", "down"];
 const states = ["active", "paused"];
 

@@ -152,12 +152,13 @@ const getCertificateParamValidation = joi.object({
 const createMonitorBodyValidation = joi.object({
 	_id: joi.string(),
 	name: joi.string().required(),
-	description: joi.string().required(),
+	description: joi.string().allow(null, ""),
 	type: joi.string().required(),
 	statusWindowSize: joi.number().min(1).max(20).default(5),
 	statusWindowThreshold: joi.number().min(1).max(100).default(60),
 	url: joi.string().required(),
 	ignoreTlsErrors: joi.boolean().default(false),
+	useAdvancedMatching: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
 	interval: joi.number(),
@@ -171,7 +172,7 @@ const createMonitorBodyValidation = joi.object({
 	secret: joi.string(),
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
-	matchMethod: joi.string(),
+	matchMethod: joi.string().allow(null, ""),
 	gameId: joi.string().allow(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
@@ -184,29 +185,32 @@ const createMonitorsBodyValidation = joi.array().items(
 	})
 );
 
-const editMonitorBodyValidation = joi.object({
-	name: joi.string(),
-	statusWindowSize: joi.number().min(1).max(20).default(5),
-	statusWindowThreshold: joi.number().min(1).max(100).default(60),
-	description: joi.string(),
-	interval: joi.number(),
-	notifications: joi.array().items(joi.string()),
-	secret: joi.string(),
-	ignoreTlsErrors: joi.boolean(),
-	jsonPath: joi.string().allow(""),
-	expectedValue: joi.string().allow(""),
-	matchMethod: joi.string().allow(null, ""),
-	port: joi.number().min(1).max(65535),
-	thresholds: joi.object().keys({
-		usage_cpu: joi.number(),
-		usage_memory: joi.number(),
-		usage_disk: joi.number(),
-		usage_temperature: joi.number(),
-	}),
-	gameId: joi.string(),
-	selectedDisks: joi.array().items(joi.string()).optional(),
-	group: joi.string().max(50).trim().allow(null, "").optional(),
-});
+const editMonitorBodyValidation = joi
+	.object({
+		name: joi.string(),
+		statusWindowSize: joi.number().min(1).max(20).default(5),
+		statusWindowThreshold: joi.number().min(1).max(100).default(60),
+		description: joi.string().allow(null, ""),
+		interval: joi.number(),
+		notifications: joi.array().items(joi.string()),
+		secret: joi.string(),
+		ignoreTlsErrors: joi.boolean(),
+		useAdvancedMatching: joi.boolean(),
+		jsonPath: joi.string().allow(""),
+		expectedValue: joi.string().allow(""),
+		matchMethod: joi.string().allow(null, ""),
+		port: joi.number().min(1).max(65535),
+		thresholds: joi.object().keys({
+			usage_cpu: joi.number(),
+			usage_memory: joi.number(),
+			usage_disk: joi.number(),
+			usage_temperature: joi.number(),
+		}),
+		gameId: joi.string().allow(""),
+		selectedDisks: joi.array().items(joi.string()).optional(),
+		group: joi.string().max(50).trim().allow(null, "").optional(),
+	})
+	.options({ stripUnknown: true });
 
 const pauseMonitorParamValidation = joi.object({
 	monitorId: joi.string().required(),

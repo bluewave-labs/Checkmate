@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Checkmate",
 		"monitoringAgentName": "Capture",
+		"see": "See",
+		"forDocumentation": "for query language documentation.",
 		"breadcrumbs": {
 			"home": "Home",
 			"details": "Details"
@@ -20,7 +22,8 @@
 			"cancel": "Cancel",
 			"confirm": "Confirm",
 			"save": "Save",
-			"test": "Test"
+			"test": "Test",
+			"configure": "Configure"
 		},
 		"alerts": {
 			"pageSpeedApiKey": {
@@ -220,6 +223,117 @@
 				}
 			}
 		},
+		"createMonitor": {
+			"form": {
+				"type": {
+					"description": "Select the type of check to perform",
+					"optionType": "Type",
+					"title": "Type",
+					"optionHttp": "HTTP(S)",
+					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
+					"optionPing": "Ping",
+					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
+					"optionDocker": "Docker",
+					"optionDockerDescription": "Use Docker to monitor if a container is running.",
+					"optionPort": "Port",
+					"optionPortDescription": "Monitor if a specific port on a server is open.",
+					"optionGame": "Game",
+					"optionGameDescription": "Monitor if a specific game server is online.",
+					"optionPagespeed": "PageSpeed",
+					"optionPagespeedDescription": "Analyze page performance using Google PageSpeed Insights.",
+					"optionHardware": "Hardware",
+					"optionHardwareDescription": "Monitor server hardware metrics like CPU, memory, and disk."
+				},
+				"general": {
+					"title": "General settings",
+					"description": {
+						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
+						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
+						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
+						"pagespeed": "Enter the URL of the page to analyze with Google PageSpeed and add a clear display name that appears on the dashboard.",
+						"hardware": "Enter the URL of your infrastructure agent, the authorization secret, and a clear display name that appears on the dashboard."
+					},
+					"option": {
+						"url": {
+							"label": "URL",
+							"placeholder": "https://www.google.com"
+						},
+						"name": {
+							"label": "Display name",
+							"placeholder": "e.g. My Website"
+						},
+						"host": {
+							"label": "Host",
+							"placeholder": "192.168.1.100 or example.com"
+						},
+						"container": {
+							"label": "Container name/ID",
+							"placeholder": "my-app or abcd1234"
+						},
+						"secret": {
+							"label": "Authorization secret",
+							"placeholder": "Enter your secret key"
+						}
+					}
+				},
+				"frequency": {
+					"title": "Check frequency",
+					"description": "How often do you want to check the status of this monitor?",
+					"option": {
+						"frequency": {
+							"label": "Check frequency"
+						}
+					}
+				},
+				"incidents": {
+					"title": "Incidents",
+					"description": "A sliding window is used to determine when a monitor goes down. The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
+					"option": {
+						"checks": {
+							"label": "Number of checks in sliding window"
+						},
+						"percentage": {
+							"label": "What percentage of checks in the sliding window fail/succeed before monitor status changes?"
+						}
+					}
+				},
+				"notifications": {
+					"title": "Notifications",
+					"description": "Select the notification channels you want to use"
+				},
+				"ignoreTls": {
+					"title": "TLS/SSL settings",
+					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
+					"option": {
+						"tls": {
+							"label": "Ignore TLS/SSL errors"
+						}
+					}
+				},
+				"advanced": {
+					"title": "Advanced settings",
+					"description": "Optional settings for advanced use cases",
+					"option": {
+						"advancedMatching": {
+							"label": "Use advanced matching"
+						},
+						"matchMethod": {
+							"label": "Match method"
+						},
+						"expectedValue": {
+							"label": "Expected value",
+							"description": "The expected value is used to match against response result, and the match determines the status."
+						},
+						"jsonPath": {
+							"label": "JSONPath expression",
+							"description": "This expression will be evaluated against the response JSON data and the result will be used to match against the expected value. See <jmesLink>jmespath.org</jmesLink> for query language documentation."
+						}
+					}
+				}
+			}
+		},
 		"uptime": {
 			"table": {
 				"headers": {
@@ -262,6 +376,15 @@
 			}
 		},
 		"pageSpeed": {
+			"fallback": {
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Report on the user experience of a page",
+					"Help analyze webpage speed",
+					"Give suggestions on how the page can be improved"
+				],
+				"title": "A PageSpeed monitor is used to:"
+			},
 			"table": {
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
@@ -285,6 +408,15 @@
 			}
 		},
 		"infrastructure": {
+			"fallback": {
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Track the performance of your servers",
+					"Identify bottlenecks and optimize usage",
+					"Ensure reliability with real-time monitoring"
+				],
+				"title": "An infrastructure monitor is used to:"
+			},
 			"table": {
 				"headers": {
 					"cpu": "CPU",
@@ -991,7 +1123,8 @@
 	},
 	"notificationConfig": {
 		"title": "Notifications",
-		"description": "Select the notifications channels you want to use"
+		"description": "Select the notifications channels you want to use",
+		"placeholder": "Search notifications..."
 	},
 	"monitorStatus": {
 		"checkingEvery": "Checking every {{interval}}",

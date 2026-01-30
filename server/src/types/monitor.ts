@@ -26,6 +26,7 @@ export interface Monitor {
 	statusWindowThreshold: number;
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
+	useAdvancedMatching: boolean;
 	jsonPath?: string;
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;
@@ -129,3 +130,18 @@ export interface PageSpeedDetailsResult {
 	};
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
+
+export interface Game {
+	name: string;
+	release_year?: number;
+	options?: {
+		port?: number;
+		port_query?: number;
+		protocol?: string;
+	};
+	extra?: {
+		old_id?: string;
+	};
+}
+
+export type GamesMap = Record<string, Game>;

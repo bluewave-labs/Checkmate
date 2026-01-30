@@ -9,3 +9,6 @@ export {
 	ToggleButtonGroupInput as ToggleButtonGroup,
 } from "./ToggleButton";
 export { DialogInput as Dialog } from "./Dialog";
+export * from "./Radio";
+export * from "./Switch";
+export * from "./Slider";

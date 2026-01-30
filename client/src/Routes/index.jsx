@@ -17,16 +17,13 @@ import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 // Uptime
 import Uptime from "../Pages/Uptime/Monitors";
 import UptimeDetails from "../Pages/Uptime/Details";
-import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
 
 // PageSpeed
 import PageSpeed from "../Pages/PageSpeed/Monitors/index";
 import PageSpeedDetails from "../Pages/PageSpeed/Details/";
-import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
 
 // Infrastructure
 import Infrastructure from "../Pages/Infrastructure/Monitors";
-import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
 import InfrastructureDetails from "../Pages/Infrastructure/Details/index";
 
 // Server Status
@@ -59,6 +56,8 @@ import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance/i
 import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport/index.jsx";
 import Logs from "../Pages/Logs/index.jsx";
+
+import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
@@ -96,11 +95,13 @@ const Routes = () => {
 
 				<Route
 					path="/uptime/create"
-					element={<UptimeCreate />}
-				/>
-				<Route
-					path="/uptime/create/:monitorId"
-					element={<UptimeCreate isClone={true} />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
@@ -114,7 +115,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<UptimeCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
@@ -129,7 +136,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/create"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
@@ -143,7 +156,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure"
@@ -157,11 +176,23 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/create"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/:monitorId"

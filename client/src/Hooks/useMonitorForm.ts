@@ -1,0 +1,108 @@
+import { useMemo } from "react";
+import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
+import type { Monitor, MonitorType } from "@/Types/Monitor";
+
+interface UseMonitorFormOptions {
+	data?: Monitor | null;
+	defaultType?: MonitorType;
+}
+
+const getBaseDefaults = (data?: Monitor | null) => ({
+	name: data?.name || "",
+	description: data?.description || "",
+	interval: data?.interval || 60000,
+	notifications: data?.notifications || [],
+	statusWindowSize: data?.statusWindowSize || 5,
+	statusWindowThreshold: data?.statusWindowThreshold || 60,
+});
+
+export const useMonitorForm = ({
+	data = null,
+	defaultType = "http",
+}: UseMonitorFormOptions = {}) => {
+	return useMemo(() => {
+		const type = data?.type || defaultType;
+		const base = getBaseDefaults(data);
+
+		let defaults: MonitorFormData;
+
+		switch (type) {
+			case "http":
+				defaults = {
+					...base,
+					type: "http",
+					url: data?.url || "",
+					ignoreTlsErrors: data?.ignoreTlsErrors || false,
+					useAdvancedMatching: data?.useAdvancedMatching || false,
+					matchMethod: data?.matchMethod || "",
+					expectedValue: data?.expectedValue || "",
+					jsonPath: data?.jsonPath || "",
+				};
+				break;
+			case "ping":
+				defaults = {
+					...base,
+					type: "ping",
+					url: data?.url || "",
+				};
+				break;
+			case "port":
+				defaults = {
+					...base,
+					type: "port",
+					url: data?.url || "",
+					port: data?.port || 80,
+				};
+				break;
+			case "docker":
+				defaults = {
+					...base,
+					type: "docker",
+					url: data?.url || "",
+				};
+				break;
+			case "game":
+				defaults = {
+					...base,
+					type: "game",
+					url: data?.url || "",
+					port: data?.port || 27015,
+					gameId: data?.gameId || "",
+				};
+				break;
+			case "pagespeed":
+				defaults = {
+					...base,
+					type: "pagespeed",
+					url: data?.url || "",
+				};
+				break;
+			case "hardware":
+				defaults = {
+					...base,
+					type: "hardware",
+					url: data?.url || "",
+					secret: data?.secret || "",
+					cpuAlertThreshold: data?.cpuAlertThreshold ?? 80,
+					memoryAlertThreshold: data?.memoryAlertThreshold ?? 80,
+					diskAlertThreshold: data?.diskAlertThreshold ?? 80,
+					tempAlertThreshold: data?.tempAlertThreshold ?? 80,
+					selectedDisks: data?.selectedDisks || [],
+				};
+				break;
+			default:
+				defaults = {
+					...base,
+					type: "http",
+					url: "",
+					ignoreTlsErrors: false,
+					useAdvancedMatching: false,
+					matchMethod: "",
+					expectedValue: "",
+					jsonPath: "",
+				};
+		}
+
+		return { schema: monitorSchema, defaults };
+	}, [data, defaultType]);
+};

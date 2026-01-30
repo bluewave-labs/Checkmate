@@ -70,7 +70,7 @@ const UptimeMonitorsPage = () => {
 
 	// Default to all types when none selected
 	const effectiveTypes =
-		selectedTypes.length > 0 ? selectedTypes : ["http", "ping", "docker", "port"];
+		selectedTypes.length > 0 ? selectedTypes : ["http", "ping", "docker", "port", "game"];
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {

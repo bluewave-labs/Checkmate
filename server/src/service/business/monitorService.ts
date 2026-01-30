@@ -6,6 +6,7 @@ import type {
 	UptimeDetailsResult,
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
+	GamesMap,
 } from "@/types/monitor.js";
 import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
 import fs from "fs";
@@ -51,7 +52,7 @@ export interface IMonitorService {
 		order?: "asc" | "desc";
 		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
-	getAllGames(): any;
+	getAllGames(): GamesMap;
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
@@ -373,7 +374,7 @@ export class MonitorService implements IMonitorService {
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
-	getAllGames = (): any => {
+	getAllGames = (): GamesMap => {
 		return this.games;
 	};
 

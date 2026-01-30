@@ -1,10 +1,11 @@
 import { BasePage } from "@/Components/v2/design-elements";
-import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
+import { HeaderTimeRange } from "@/Components/v2/common";
 import Stack from "@mui/material/Stack";
 import {
 	HistogramStatus,
 	RadialAvgResponse,
 	HistogramDetails,
+	HeaderMonitorControls,
 } from "@/Components/v2/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";

@@ -1,6 +1,6 @@
 import { BasePage, Tab, Tabs } from "@/Components/v2/design-elements";
-import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
-import { MonitorStatBoxes } from "@/Components/v2/monitors";
+import { HeaderTimeRange } from "@/Components/v2/common";
+import { MonitorStatBoxes, HeaderMonitorControls } from "@/Components/v2/monitors";
 import { TabNetwork } from "@/Pages/Infrastructure/Details/Components/TabNetwork";
 import { TabOverview } from "@/Pages/Infrastructure/Details/Components/TabOverview";
 
