@@ -14,7 +14,7 @@ import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { Trash2 } from "lucide-react";
-import { HeaderDeleteControls } from "@/Components/v2/common";
+import { HeaderDeleteControls } from "@/Components/v2/monitors";
 
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import {
