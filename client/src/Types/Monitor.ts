@@ -156,3 +156,13 @@ export interface HardwareDetailsResponse {
 	stats: HardwareStats;
 	monitorStats: MonitorStats | null;
 }
+
+
+export interface Game {
+	name: string;
+	options?: {
+		port?: number;
+	};
+}
+
+export type GamesMap = Record<string, Game>;

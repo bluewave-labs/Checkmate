@@ -29,7 +29,7 @@ import {
 } from "@/Components/v2/inputs";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
-import type { Monitor, MonitorType } from "@/Types/Monitor";
+import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
 
@@ -146,6 +146,8 @@ const CreateMonitorPage = () => {
 
 	// Fetch notifications for the team
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
+	// Fetch games for game type monitors
+	const { data: games } = useGet<GamesMap>("/monitors/games");
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
@@ -357,6 +359,12 @@ const CreateMonitorPage = () => {
 										error={!!fieldState.error}
 									>
 										<MenuItem value="">Select a game</MenuItem>
+										{games &&
+											Object.entries(games).map(([key, game]) => (
+												<MenuItem key={key} value={key}>
+													{game.name}
+												</MenuItem>
+											))}
 									</Select>
 								)}
 							/>
