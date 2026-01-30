@@ -315,6 +315,9 @@
 					"title": "Advanced settings",
 					"description": "Optional settings for advanced use cases",
 					"option": {
+						"advancedMatching": {
+							"label": "Use advanced matching"
+						},
 						"matchMethod": {
 							"label": "Match method"
 						},

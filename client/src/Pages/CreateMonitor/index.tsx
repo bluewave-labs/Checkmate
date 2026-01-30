@@ -13,7 +13,6 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import { Trash2 } from "lucide-react";
 
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
@@ -25,7 +24,6 @@ import {
 	Autocomplete,
 	SwitchComponent as Switch,
 	SliderWithLabel,
-	Checkbox,
 } from "@/Components/v2/inputs";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
@@ -555,15 +553,17 @@ const CreateMonitorPage = () => {
 								name="useAdvancedMatching"
 								control={control}
 								render={({ field }) => (
-									<FormControlLabel
-										control={
-											<Checkbox
-												checked={field.value ?? false}
-												onChange={(e) => field.onChange(e.target.checked)}
-											/>
-										}
-										label={t("advancedMatching")}
-									/>
+									<Stack
+										direction="row"
+										alignItems="center"
+										spacing={theme.spacing(2)}
+									>
+										<Switch
+											checked={field.value ?? false}
+											onChange={(e) => field.onChange(e.target.checked)}
+										/>
+										<Typography>{t("pages.createMonitor.form.advanced.option.advancedMatching.label")}</Typography>
+									</Stack>
 								)}
 							/>
 							{watchedUseAdvancedMatching && (
