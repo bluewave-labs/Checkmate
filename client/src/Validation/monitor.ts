@@ -27,6 +27,7 @@ const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
 	url: urlSchema,
 	ignoreTlsErrors: z.boolean(),
+	useAdvancedMatching: z.boolean(),
 	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
 	expectedValue: z.string().optional(),
 	jsonPath: z.string().optional(),

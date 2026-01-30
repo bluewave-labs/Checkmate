@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,9 +7,10 @@ import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -163,7 +164,7 @@ const CreateMonitorPage = () => {
 
 	const watchedType = watch("type") as MonitorType;
 
-	const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 
 	useEffect(() => {
 		clearErrors();
@@ -550,16 +551,22 @@ const CreateMonitorPage = () => {
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={
 						<Stack spacing={theme.spacing(8)}>
-							<FormControlLabel
-								control={
-									<Checkbox
-										checked={showAdvancedSettings}
-										onChange={(e) => setShowAdvancedSettings(e.target.checked)}
+							<Controller
+								name="useAdvancedMatching"
+								control={control}
+								render={({ field }) => (
+									<FormControlLabel
+										control={
+											<Checkbox
+												checked={field.value ?? false}
+												onChange={(e) => field.onChange(e.target.checked)}
+											/>
+										}
+										label={t("advancedMatching")}
 									/>
-								}
-								label={t("advancedMatching")}
+								)}
 							/>
-							{showAdvancedSettings && (
+							{watchedUseAdvancedMatching && (
 								<Stack spacing={theme.spacing(8)}>
 									<Controller
 										name="matchMethod"
@@ -568,10 +575,14 @@ const CreateMonitorPage = () => {
 											<Select
 												{...field}
 												value={field.value ?? "equal"}
-												fieldLabel={t("pages.createMonitor.form.advanced.option.matchMethod.label")}
+												fieldLabel={t(
+													"pages.createMonitor.form.advanced.option.matchMethod.label"
+												)}
 											>
 												<MenuItem value="equal">{t("matchMethodOptions.equal")}</MenuItem>
-												<MenuItem value="include">{t("matchMethodOptions.include")}</MenuItem>
+												<MenuItem value="include">
+													{t("matchMethodOptions.include")}
+												</MenuItem>
 												<MenuItem value="regex">{t("matchMethodOptions.regex")}</MenuItem>
 											</Select>
 										)}
@@ -583,7 +594,9 @@ const CreateMonitorPage = () => {
 											<TextField
 												{...field}
 												value={field.value ?? ""}
-												fieldLabel={t("pages.createMonitor.form.advanced.option.expectedValue.label")}
+												fieldLabel={t(
+													"pages.createMonitor.form.advanced.option.expectedValue.label"
+												)}
 												fullWidth
 												error={!!fieldState.error}
 												helperText={fieldState.error?.message ?? ""}
@@ -597,13 +610,33 @@ const CreateMonitorPage = () => {
 											<TextField
 												{...field}
 												value={field.value ?? ""}
-												fieldLabel={t("pages.createMonitor.form.advanced.option.jsonPath.label")}
+												fieldLabel={t(
+													"pages.createMonitor.form.advanced.option.jsonPath.label"
+												)}
 												fullWidth
 												error={!!fieldState.error}
 												helperText={fieldState.error?.message ?? ""}
 											/>
 										)}
 									/>
+									<Typography
+										component="span"
+										color="text.secondary"
+										sx={{ opacity: 0.8 }}
+									>
+										<Trans
+											i18nKey="pages.createMonitor.form.advanced.option.jsonPath.description"
+											components={{
+												jmesLink: (
+													<Link
+														href="https://jmespath.org/"
+														target="_blank"
+														rel="noopener noreferrer"
+													/>
+												),
+											}}
+										/>
+									</Typography>
 								</Stack>
 							)}
 						</Stack>

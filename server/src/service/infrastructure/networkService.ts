@@ -255,7 +255,7 @@ class NetworkService implements INetworkService {
 	}
 
 	private async requestHttp(monitor: Monitor): Promise<MonitorStatusResponse> {
-		const { url, secret, id, teamId, type, ignoreTlsErrors, jsonPath, matchMethod, expectedValue } = monitor;
+		const { url, secret, id, teamId, type, ignoreTlsErrors, useAdvancedMatching, jsonPath, matchMethod, expectedValue } = monitor;
 		const httpResponse = this.buildStatusResponse({
 			monitor,
 			overrides: {
@@ -305,7 +305,7 @@ class NetworkService implements INetworkService {
 				timings: response.timings,
 			});
 
-			if (!expectedValue && !jsonPath) {
+			if (!useAdvancedMatching) {
 				return httpResponse;
 			}
 

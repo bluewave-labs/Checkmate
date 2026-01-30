@@ -92,6 +92,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		useAdvancedMatching: {
+			type: Boolean,
+			default: false,
+		},
 		jsonPath: {
 			type: String,
 		},

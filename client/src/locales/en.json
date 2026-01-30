@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Checkmate",
 		"monitoringAgentName": "Capture",
+		"see": "See",
+		"forDocumentation": "for query language documentation.",
 		"breadcrumbs": {
 			"home": "Home",
 			"details": "Details"
@@ -322,7 +324,7 @@
 						},
 						"jsonPath": {
 							"label": "JSONPath expression",
-							"description": "This expression will be evaluated against the response JSON data and the result will be used to match against the expected value."
+							"description": "This expression will be evaluated against the response JSON data and the result will be used to match against the expected value. See <jmesLink>jmespath.org</jmesLink> for query language documentation."
 						}
 					}
 				}
