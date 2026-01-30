@@ -361,7 +361,10 @@ const CreateMonitorPage = () => {
 										<MenuItem value="">Select a game</MenuItem>
 										{games &&
 											Object.entries(games).map(([key, game]) => (
-												<MenuItem key={key} value={key}>
+												<MenuItem
+													key={key}
+													value={key}
+												>
 													{game.name}
 												</MenuItem>
 											))}

@@ -157,7 +157,6 @@ export interface HardwareDetailsResponse {
 	monitorStats: MonitorStats | null;
 }
 
-
 export interface Game {
 	name: string;
 	options?: {

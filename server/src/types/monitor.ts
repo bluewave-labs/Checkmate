@@ -131,7 +131,6 @@ export interface PageSpeedDetailsResult {
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 
-
 export interface Game {
 	name: string;
 	release_year?: number;
