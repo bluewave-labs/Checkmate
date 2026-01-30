@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { Trash2 } from "lucide-react";
 
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
@@ -23,6 +24,7 @@ import {
 	Autocomplete,
 	SwitchComponent as Switch,
 	SliderWithLabel,
+	Checkbox,
 } from "@/Components/v2/inputs";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
@@ -130,7 +132,12 @@ const CreateMonitorPage = () => {
 	}, [location.pathname]);
 
 	const showTypeSelector = pageType === "uptime" && !isEditMode;
-	const defaultType: MonitorType = pageType === "pagespeed" ? "pagespeed" : pageType === "hardware" ? "hardware" : "http";
+	const defaultType: MonitorType =
+		pageType === "pagespeed"
+			? "pagespeed"
+			: pageType === "hardware"
+				? "hardware"
+				: "http";
 
 	const { data: existingMonitor } = useGet<Monitor>(
 		isEditMode ? `/monitors/${monitorId}` : null
@@ -139,7 +146,10 @@ const CreateMonitorPage = () => {
 	// Fetch notifications for the team
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 
-	const { schema, defaults } = useMonitorForm({ data: existingMonitor ?? null, defaultType });
+	const { schema, defaults } = useMonitorForm({
+		data: existingMonitor ?? null,
+		defaultType,
+	});
 
 	const form = useForm<MonitorFormData>({
 		resolver: zodResolver(schema),
@@ -152,6 +162,8 @@ const CreateMonitorPage = () => {
 	}, [defaults, form]);
 
 	const watchedType = watch("type") as MonitorType;
+
+	const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
 	useEffect(() => {
 		clearErrors();
@@ -213,12 +225,16 @@ const CreateMonitorPage = () => {
 										<RadioWithDescription
 											value="http"
 											label={t("pages.createMonitor.form.type.optionHttp")}
-											description={t("pages.createMonitor.form.type.optionHttpDescription")}
+											description={t(
+												"pages.createMonitor.form.type.optionHttpDescription"
+											)}
 										/>
 										<RadioWithDescription
 											value="ping"
 											label={t("pages.createMonitor.form.type.optionPing")}
-											description={t("pages.createMonitor.form.type.optionPingDescription")}
+											description={t(
+												"pages.createMonitor.form.type.optionPingDescription"
+											)}
 										/>
 										<RadioWithDescription
 											value="docker"
@@ -230,12 +246,16 @@ const CreateMonitorPage = () => {
 										<RadioWithDescription
 											value="port"
 											label={t("pages.createMonitor.form.type.optionPort")}
-											description={t("pages.createMonitor.form.type.optionPortDescription")}
+											description={t(
+												"pages.createMonitor.form.type.optionPortDescription"
+											)}
 										/>
 										<RadioWithDescription
 											value="game"
 											label={t("pages.createMonitor.form.type.optionGame")}
-											description={t("pages.createMonitor.form.type.optionGameDescription")}
+											description={t(
+												"pages.createMonitor.form.type.optionGameDescription"
+											)}
 										/>
 									</RadioGroup>
 								</FormControl>
@@ -519,6 +539,74 @@ const CreateMonitorPage = () => {
 								</Stack>
 							)}
 						/>
+					}
+				/>
+			)}
+
+			{/* Advanced Settings ConfigBox - only for HTTP monitors */}
+			{watchedType === "http" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.advanced.title")}
+					subtitle={t("pages.createMonitor.form.advanced.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={showAdvancedSettings}
+										onChange={(e) => setShowAdvancedSettings(e.target.checked)}
+									/>
+								}
+								label={t("advancedMatching")}
+							/>
+							{showAdvancedSettings && (
+								<Stack spacing={theme.spacing(8)}>
+									<Controller
+										name="matchMethod"
+										control={control}
+										render={({ field }) => (
+											<Select
+												{...field}
+												value={field.value ?? "equal"}
+												fieldLabel={t("pages.createMonitor.form.advanced.option.matchMethod.label")}
+											>
+												<MenuItem value="equal">{t("matchMethodOptions.equal")}</MenuItem>
+												<MenuItem value="include">{t("matchMethodOptions.include")}</MenuItem>
+												<MenuItem value="regex">{t("matchMethodOptions.regex")}</MenuItem>
+											</Select>
+										)}
+									/>
+									<Controller
+										name="expectedValue"
+										control={control}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												value={field.value ?? ""}
+												fieldLabel={t("pages.createMonitor.form.advanced.option.expectedValue.label")}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+									<Controller
+										name="jsonPath"
+										control={control}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												value={field.value ?? ""}
+												fieldLabel={t("pages.createMonitor.form.advanced.option.jsonPath.label")}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+								</Stack>
+							)}
+						</Stack>
 					}
 				/>
 			)}
