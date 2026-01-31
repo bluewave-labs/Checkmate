@@ -368,7 +368,21 @@
 				}
 			},
 			"table": {
-				"headers": {}
+				"headers": {
+					"startTime": "Start Time",
+					"endTime": "End Time",
+					"resolutionType": "Resolution Type",
+					"statusCode": "Status Code"
+				},
+				"status": {
+					"active": "Active",
+					"resolved": "Resolved"
+				},
+				"actions": {
+					"details": "Details",
+					"goToMonitor": "Go to monitor",
+					"resolveManually": "Resolve Manually"
+				}
 			}
 		}
 	},

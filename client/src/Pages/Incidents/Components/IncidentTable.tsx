@@ -1,7 +1,7 @@
 import { Table } from "@/Components/v2/design-elements";
 import { Pagination } from "@/Components/v2/design-elements/Table";
 import type { Header } from "@/Components/v2/design-elements/Table";
-import { StatusLabel, ValueLabel } from "@/Components/v2/design-elements";
+import { ValueLabel } from "@/Components/v2/design-elements";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
 import { ActionsMenu } from "@/Components/v2/actions-menu";
 import type { Incident } from "@/Types/Incident";
@@ -52,13 +52,13 @@ export const IncidentsTable = ({
 		const actions: ActionMenuItem[] = [
 			{
 				id: "details",
-				label: t("incidentsPage.incidentsTableActionDetails"),
+				label: t("pages.incidents.table.actions.details"),
 				action: () => onOpenDetails?.(incident.id),
 				closeMenu: true,
 			},
 			{
 				id: "goToMonitor",
-				label: t("incidentsPage.incidentsTableActionGoToMonitor"),
+				label: t("pages.incidents.table.actions.goToMonitor"),
 				action: () => {
 					if (monitor) {
 						const path = TypeToPathMap[monitor.type as keyof typeof TypeToPathMap];
@@ -74,7 +74,7 @@ export const IncidentsTable = ({
 		if (isActive) {
 			actions.push({
 				id: "resolve",
-				label: t("incidentsPage.incidentsTableActionResolveManually"),
+				label: t("pages.incidents.table.actions.resolveManually"),
 				action: () => onResolve?.(incident.id),
 				closeMenu: true,
 			});
@@ -97,13 +97,18 @@ export const IncidentsTable = ({
 				id: "status",
 				content: t("common.table.headers.status"),
 				render: (row) => {
-					const status = row.status === true ? false : true;
-					return <StatusLabel status={status} />;
+					const isActive = row.status === true;
+					return (
+						<ValueLabel
+							value={isActive ? "negative" : "positive"}
+							text={isActive ? t("pages.incidents.table.status.active") : t("pages.incidents.table.status.resolved")}
+						/>
+					);
 				},
 			},
 			{
 				id: "startTime",
-				content: t("incidentsPage.startTime"),
+				content: t("pages.incidents.table.headers.startTime"),
 				render: (row) => {
 					return formatDateWithTz(
 						row.createdAt,
@@ -114,7 +119,7 @@ export const IncidentsTable = ({
 			},
 			{
 				id: "endTime",
-				content: t("incidentsPage.endTime"),
+				content: t("pages.incidents.table.headers.endTime"),
 				render: (row) => {
 					if (row.endTime) {
 						return formatDateWithTz(
@@ -128,7 +133,7 @@ export const IncidentsTable = ({
 			},
 			{
 				id: "resolutionType",
-				content: t("incidentsPage.resolutionType"),
+				content: t("pages.incidents.table.headers.resolutionType"),
 				render: (row) => {
 					if (row.resolutionType) {
 						return (
@@ -151,7 +156,7 @@ export const IncidentsTable = ({
 			},
 			{
 				id: "statusCode",
-				content: t("incidentsPage.statusCode"),
+				content: t("pages.incidents.table.headers.statusCode"),
 				render: (row) => {
 					const code = row.statusCode;
 					if (!code) return "N/A";

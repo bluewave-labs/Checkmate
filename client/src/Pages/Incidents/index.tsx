@@ -6,6 +6,7 @@ import {
 	SummaryCardStats,
 } from "@/Pages/Incidents/Components/SummaryCard";
 import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
+import { DialogResolution } from "@/Pages/Incidents/Components/DialogResolution";
 
 import { useGet } from "@/Hooks/UseApi";
 import { useState, useEffect, useMemo } from "react";
@@ -13,10 +14,6 @@ import { useParams } from "react-router-dom";
 import type { IncidentsResponse, IncidentSummary } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
 import { useTheme } from "@mui/material";
-
-interface MonitorLookup {
-	[key: string]: { id: string; name: string; type: string };
-}
 
 const IncidentsPage = () => {
 	const theme = useTheme();
@@ -28,6 +25,10 @@ const IncidentsPage = () => {
 	const [dateRange, setDateRange] = useState("all");
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
+
+	// Resolve dialog state
+	const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
+	const [resolveIncidentId, setResolveIncidentId] = useState<string | null>(null);
 
 	// Build incidents URL with query params
 	const incidentsUrl = useMemo(() => {
@@ -50,7 +51,11 @@ const IncidentsPage = () => {
 		isLoading: isLoadingIncidents,
 		error: incidentsError,
 		refetch: refetchIncidents,
-	} = useGet<IncidentsResponse>(incidentsUrl);
+	} = useGet<IncidentsResponse>(
+		incidentsUrl,
+		{},
+		{ keepPreviousData: true, refreshInterval: 10000 }
+	);
 
 	// Fetch monitors for lookup
 	const {
@@ -66,19 +71,6 @@ const IncidentsPage = () => {
 		error: summaryError,
 		refetch: refetchSummary,
 	} = useGet<IncidentSummary>("/incidents/team/summary");
-
-	// Build monitor lookup
-	const monitorLookup = useMemo<MonitorLookup | undefined>(() => {
-		if (!monitorsData) return undefined;
-		return monitorsData.reduce<MonitorLookup>((acc, monitor) => {
-			acc[monitor.id] = {
-				id: monitor.id,
-				name: monitor.name,
-				type: monitor.type,
-			};
-			return acc;
-		}, {});
-	}, [monitorsData]);
 
 	// Reset page when filters change
 	useEffect(() => {
@@ -100,10 +92,6 @@ const IncidentsPage = () => {
 	void isLoadingIncidents;
 	void isLoadingMonitors;
 	void isLoadingSummary;
-	void refetchIncidents;
-	void refetchSummary;
-	void monitorLookup;
-	void summaryData;
 	void networkError;
 
 	const handleOpenDetails = (incidentId: string) => {
@@ -111,7 +99,18 @@ const IncidentsPage = () => {
 	};
 
 	const handleResolve = (incidentId: string) => {
-		console.log("Resolve incident:", incidentId);
+		setResolveIncidentId(incidentId);
+		setIsResolveDialogOpen(true);
+	};
+
+	const handleResolveClose = () => {
+		setIsResolveDialogOpen(false);
+		setResolveIncidentId(null);
+	};
+
+	const handleResolved = () => {
+		refetchIncidents();
+		refetchSummary();
 	};
 
 	return (
@@ -137,6 +136,12 @@ const IncidentsPage = () => {
 				setRowsPerPage={setRowsPerPage}
 				onOpenDetails={handleOpenDetails}
 				onResolve={handleResolve}
+			/>
+			<DialogResolution
+				open={isResolveDialogOpen}
+				incidentId={resolveIncidentId}
+				onClose={handleResolveClose}
+				onResolved={handleResolved}
 			/>
 		</BasePage>
 	);
