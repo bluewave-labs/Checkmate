@@ -366,6 +366,9 @@
 					"mostAffectedMonitor": "Most affected monitor",
 					"avgResolutionTime": "Average resolution time"
 				}
+			},
+			"table": {
+				"headers": {}
 			}
 		}
 	},
