@@ -87,6 +87,12 @@
 				"day": "Day",
 				"week": "Week",
 				"month": "Month"
+			},
+			"description": {
+				"recent": "Showing statistics for past 2 hours.",
+				"day": "Showing statistics for past 24 hours.",
+				"week": "Showing statistics for past 7 days.",
+				"month": "Showing statistics for past 30 days."
 			}
 		}
 	},

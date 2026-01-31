@@ -7,6 +7,7 @@ import {
 } from "@/Pages/Incidents/Components/SummaryCard";
 import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
 import { DialogResolution } from "@/Pages/Incidents/Components/DialogResolution";
+import { HeaderTimeRange } from "@/Components/v2/common";
 
 import { useGet } from "@/Hooks/UseApi";
 import { useState, useEffect, useMemo } from "react";
@@ -22,7 +23,7 @@ const IncidentsPage = () => {
 	// Filter state
 	const [selectedMonitor, setSelectedMonitor] = useState(monitorId || "0");
 	const [filter, setFilter] = useState("all");
-	const [dateRange, setDateRange] = useState("all");
+	const [dateRange, setDateRange] = useState("recent");
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -87,8 +88,6 @@ const IncidentsPage = () => {
 	void setSelectedMonitor;
 	void filter;
 	void setFilter;
-	void dateRange;
-	void setDateRange;
 	void isLoadingIncidents;
 	void isLoadingMonitors;
 	void isLoadingSummary;
@@ -126,6 +125,11 @@ const IncidentsPage = () => {
 				/>
 				<SummaryCardStats summary={summaryData} />
 			</Stack>
+			<HeaderTimeRange
+				dateRange={dateRange}
+				setDateRange={setDateRange}
+				isLoading={isLoadingIncidents}
+			/>
 			<IncidentsTable
 				incidents={incidents}
 				monitors={monitorsData ?? undefined}
