@@ -16,6 +16,8 @@ export const DialogInput = ({
 	confirmColor = "primary",
 	cancelColor = "error",
 	loading = false,
+	cancelText,
+	confirmText,
 }: {
 	open: boolean;
 	title?: string;
@@ -25,6 +27,8 @@ export const DialogInput = ({
 	confirmColor?: "error" | "primary";
 	cancelColor?: "error" | "primary";
 	loading?: boolean;
+	cancelText?: string;
+	confirmText?: string;
 }) => {
 	const { t } = useTranslation();
 	return (
@@ -40,7 +44,7 @@ export const DialogInput = ({
 					color={cancelColor}
 					onClick={onCancel}
 				>
-					{t("common.buttons.cancel")}
+					{cancelText ?? t("common.buttons.cancel")}
 				</Button>
 				<Button
 					loading={loading}
@@ -48,7 +52,7 @@ export const DialogInput = ({
 					color={confirmColor}
 					onClick={onConfirm}
 				>
-					{t("common.buttons.confirm")}
+					{confirmText ?? t("common.buttons.confirm")}
 				</Button>
 			</DialogActions>
 		</Dialog>

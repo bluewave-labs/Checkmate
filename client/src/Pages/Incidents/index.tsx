@@ -5,6 +5,7 @@ import {
 	SummaryCardLatestIncidents,
 	SummaryCardStats,
 } from "@/Pages/Incidents/Components/SummaryCard";
+import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
 
 import { useGet } from "@/Hooks/UseApi";
 import { useState, useEffect, useMemo } from "react";
@@ -96,20 +97,22 @@ const IncidentsPage = () => {
 	void setFilter;
 	void dateRange;
 	void setDateRange;
-	void page;
-	void setPage;
-	void rowsPerPage;
-	void setRowsPerPage;
 	void isLoadingIncidents;
 	void isLoadingMonitors;
 	void isLoadingSummary;
 	void refetchIncidents;
 	void refetchSummary;
 	void monitorLookup;
-	void incidents;
-	void incidentsCount;
 	void summaryData;
 	void networkError;
+
+	const handleOpenDetails = (incidentId: string) => {
+		console.log("Open details for incident:", incidentId);
+	};
+
+	const handleResolve = (incidentId: string) => {
+		console.log("Resolve incident:", incidentId);
+	};
 
 	return (
 		<BasePage>
@@ -124,6 +127,17 @@ const IncidentsPage = () => {
 				/>
 				<SummaryCardStats summary={summaryData} />
 			</Stack>
+			<IncidentsTable
+				incidents={incidents}
+				monitors={monitorsData ?? undefined}
+				incidentsCount={incidentsCount}
+				page={page}
+				setPage={setPage}
+				rowsPerPage={rowsPerPage}
+				setRowsPerPage={setRowsPerPage}
+				onOpenDetails={handleOpenDetails}
+				onResolve={handleResolve}
+			/>
 		</BasePage>
 	);
 };

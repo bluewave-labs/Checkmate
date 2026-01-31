@@ -1,4 +1,5 @@
 import { Table } from "@/Components/v2/design-elements";
+import { Pagination } from "@/Components/v2/design-elements/Table";
 import type { Header } from "@/Components/v2/design-elements/Table";
 import { StatusLabel, ValueLabel } from "@/Components/v2/design-elements";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
@@ -14,10 +15,16 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 
 interface IncidentsTableProps {
 	incidents?: Incident[];
 	monitors?: Monitor[];
+	incidentsCount: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
 	onOpenDetails?: (incidentId: string) => void;
 	onResolve?: (incidentId: string) => void;
 }
@@ -25,6 +32,11 @@ interface IncidentsTableProps {
 export const IncidentsTable = ({
 	incidents,
 	monitors,
+	incidentsCount,
+	page,
+	setPage,
+	rowsPerPage,
+	setRowsPerPage,
 	onOpenDetails,
 	onResolve,
 }: IncidentsTableProps) => {
@@ -162,13 +174,41 @@ export const IncidentsTable = ({
 		];
 	};
 
+	const handlePageChange = (
+		_e: React.MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		setPage(newPage);
+	};
+
+	const handleRowsPerPageChange = (
+		e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) => {
+		const value = Number(e.target.value);
+		setPage(0);
+		setRowsPerPage(value);
+	};
+
 	if (!incidents || !monitors) {
 		return null;
 	}
 
-	void getHeaders;
-	void Table;
-
-	// Headers: Monitor name, status, start time, end time, resolution type, status code, message, actions
-	return "Table here";
+	return (
+		<Box>
+			<Table
+				headers={getHeaders()}
+				data={incidents}
+				onRowClick={(row) => onOpenDetails?.(row.id)}
+				emptyViewText={t("common.table.empty")}
+			/>
+			<Pagination
+				component="div"
+				count={incidentsCount}
+				page={page}
+				rowsPerPage={rowsPerPage}
+				onPageChange={handlePageChange}
+				onRowsPerPageChange={handleRowsPerPageChange}
+			/>
+		</Box>
+	);
 };
