@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { ValueLabel } from "@/Components/v2/design-elements";
 import { Globe } from "lucide-react";

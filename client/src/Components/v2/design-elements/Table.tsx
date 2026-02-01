@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import Grid2 from "@mui/material/Grid2";
+import Grid2 from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
