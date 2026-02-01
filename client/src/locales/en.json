@@ -389,6 +389,12 @@
 					"goToMonitor": "Go to monitor",
 					"resolveManually": "Resolve Manually"
 				}
+			},
+			"dialog": {
+				"details": {
+					"title": "Incident Details",
+					"resolve": "Resolve Incident"
+				}
 			}
 		}
 	},

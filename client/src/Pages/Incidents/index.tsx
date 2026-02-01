@@ -7,12 +7,13 @@ import {
 } from "@/Pages/Incidents/Components/SummaryCard";
 import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
 import { DialogResolution } from "@/Pages/Incidents/Components/DialogResolution";
+import { DialogIncidentDetails } from "@/Pages/Incidents/Components/DialogIncidentDetails";
 import { HeaderTimeRange } from "@/Components/v2/common";
 
 import { useGet } from "@/Hooks/UseApi";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import type { IncidentsResponse, IncidentSummary } from "@/Types/Incident";
+import type { Incident, IncidentsResponse, IncidentSummary } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
 import { useTheme } from "@mui/material";
 
@@ -30,6 +31,10 @@ const IncidentsPage = () => {
 	// Resolve dialog state
 	const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
 	const [resolveIncidentId, setResolveIncidentId] = useState<string | null>(null);
+
+	// Details dialog state
+	const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+	const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
 	// Build incidents URL with query params
 	const incidentsUrl = useMemo(() => {
@@ -94,7 +99,21 @@ const IncidentsPage = () => {
 	void networkError;
 
 	const handleOpenDetails = (incidentId: string) => {
-		console.log("Open details for incident:", incidentId);
+		const incident = incidents.find((i) => i.id === incidentId) ?? null;
+		setSelectedIncident(incident);
+		setIsDetailsDialogOpen(true);
+	};
+
+	const handleDetailsClose = () => {
+		setIsDetailsDialogOpen(false);
+		setSelectedIncident(null);
+	};
+
+	const handleDetailsResolve = () => {
+		if (selectedIncident) {
+			handleDetailsClose();
+			handleResolve(selectedIncident.id);
+		}
 	};
 
 	const handleResolve = (incidentId: string) => {
@@ -146,6 +165,12 @@ const IncidentsPage = () => {
 				incidentId={resolveIncidentId}
 				onClose={handleResolveClose}
 				onResolved={handleResolved}
+			/>
+			<DialogIncidentDetails
+				open={isDetailsDialogOpen}
+				incident={selectedIncident}
+				onClose={handleDetailsClose}
+				onResolve={handleDetailsResolve}
 			/>
 		</BasePage>
 	);
