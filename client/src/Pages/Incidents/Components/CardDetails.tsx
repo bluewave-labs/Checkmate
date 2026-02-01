@@ -1,6 +1,5 @@
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import { BaseBox, ValueLabel } from "@/Components/v2/design-elements";
@@ -9,6 +8,10 @@ import { useTranslation } from "react-i18next";
 import type { Incident } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
 import { useTheme } from "@mui/material";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/Types/state";
+import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { getIncidentsDuration } from "@/Pages/Incidents/utils";
 
 interface CardDetailsProps {
 	incident: Incident | null;
@@ -19,8 +22,7 @@ interface CardDetailsProps {
 export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-
-	void monitor; // Will be used in future UI implementation
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
 	if (!incident) {
 		return null;
@@ -42,22 +44,83 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 
 					<Grid
 						container
-						gap={theme.spacing(4)}
+						spacing={theme.spacing(4)}
+						alignItems="center"
 					>
-						<Grid size={12}>
-							<Box>
-								<ValueLabel
-									value={incident.status ? "positive" : "negative"}
-									text={
-										incident.status
-											? t("common.labels.active")
-											: t("common.labels.resolved")
-									}
-								/>
-							</Box>
+						<Grid size={2}>{t("pages.incidents.dialog.details.status")}</Grid>
+						<Grid size={10}>
+							<ValueLabel
+								value={incident.status ? "negative" : "positive"}
+								text={
+									incident.status
+										? t("common.labels.active")
+										: t("common.labels.resolved")
+								}
+							/>
 						</Grid>
-						<Grid size={6}>Test</Grid>
-						<Grid size={6}>Test</Grid>
+						{monitor && (
+							<>
+								<Grid size={2}>{t("pages.incidents.dialog.details.monitor")}</Grid>
+								<Grid size={10}>
+									<Typography>{monitor.name ?? "N/A"}</Typography>
+								</Grid>
+								<Grid size={2}>
+									<Typography>{t("pages.incidents.dialog.details.url")}</Typography>
+								</Grid>
+								<Grid size={10}>
+									<Typography>{monitor.url ?? "N/A"}</Typography>
+								</Grid>
+							</>
+						)}
+					</Grid>
+				</Stack>
+			</BaseBox>
+			<BaseBox padding={8}>
+				<Stack gap={theme.spacing(4)}>
+					<Typography textTransform={"uppercase"}>{t("pages.incidents.dialog.details.analysis")}</Typography>
+					<Divider />
+					<Grid
+						container
+						spacing={theme.spacing(2)}
+					>
+						<Grid size={6}>
+							<Typography>{t("pages.incidents.dialog.details.timeline")}</Typography>
+						</Grid>
+						<Grid size={6}>
+							<Typography>{t("pages.incidents.dialog.details.detailsLabel")}</Typography>
+						</Grid>
+						<Grid size={6}>
+							<Divider></Divider>
+						</Grid>
+						<Grid size={6}>
+							<Divider></Divider>
+						</Grid>
+						<Grid size={2}>
+							<Typography>{t("pages.incidents.dialog.details.startedAt")}</Typography>
+						</Grid>
+						<Grid size={4}>
+							<Typography>
+								{formatDateWithTz(incident.startTime, "D MMM YYYY, h:mm A", uiTimezone)}
+							</Typography>
+						</Grid>
+						<Grid size={2}>
+							<Typography>{t("pages.incidents.dialog.details.statusCode")}</Typography>
+						</Grid>
+						<Grid size={4}>
+							<Typography>{incident.statusCode ?? "N/A"}</Typography>
+						</Grid>
+						<Grid size={2}>
+							<Typography>{t("pages.incidents.dialog.details.downtime")}</Typography>
+						</Grid>
+						<Grid size={4}>
+							<Typography>{getIncidentsDuration(incident)}</Typography>
+						</Grid>
+						<Grid size={2}>
+							<Typography>{t("pages.incidents.dialog.details.message")}</Typography>
+						</Grid>
+						<Grid size={4}>
+							<Typography>{incident.message ?? "N/A"}</Typography>
+						</Grid>
 					</Grid>
 				</Stack>
 			</BaseBox>

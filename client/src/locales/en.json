@@ -398,7 +398,17 @@
 				"details": {
 					"title": "Incident details",
 					"resolve": "Resolve Incident",
-					"overview": "Overview"
+					"overview": "Overview",
+					"status": "Status:",
+					"monitor": "Monitor:",
+					"url": "URL:",
+					"analysis": "Incident analysis",
+					"timeline": "Timeline",
+					"detailsLabel": "Details",
+					"startedAt": "Started at:",
+					"statusCode": "Status code:",
+					"downtime": "Downtime:",
+					"message": "Message:"
 				}
 			}
 		}

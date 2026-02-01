@@ -29,7 +29,7 @@ export const DialogIncidentDetails = ({
 			onConfirm={onResolve}
 			cancelText={t("common.buttons.cancel")}
 			confirmText={t("pages.incidents.dialog.details.resolve")}
-			maxWidth="md"
+			maxWidth="sm"
 			fullWidth
 		>
 			<CardDetails
