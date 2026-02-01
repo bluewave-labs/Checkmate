@@ -1,10 +1,14 @@
 import { Dialog } from "@/Components/v2/inputs";
+import { CardDetails } from "@/Pages/Incidents/Components/CardDetails";
+
 import { useTranslation } from "react-i18next";
 import type { Incident } from "@/Types/Incident";
+import type { Monitor } from "@/Types/Monitor";
 
 interface DialogIncidentDetailsProps {
 	open: boolean;
 	incident: Incident | null;
+	monitor: Monitor | null;
 	onClose: () => void;
 	onResolve: () => void;
 }
@@ -12,19 +16,15 @@ interface DialogIncidentDetailsProps {
 export const DialogIncidentDetails = ({
 	open,
 	incident,
+	monitor,
 	onClose,
 	onResolve,
 }: DialogIncidentDetailsProps) => {
 	const { t } = useTranslation();
 
-	if (!incident) {
-		return null;
-	}
-
 	return (
 		<Dialog
 			open={open}
-			title={t("pages.incidents.dialog.details.title")}
 			onCancel={onClose}
 			onConfirm={onResolve}
 			cancelText={t("common.buttons.cancel")}
@@ -32,7 +32,10 @@ export const DialogIncidentDetails = ({
 			maxWidth="md"
 			fullWidth
 		>
-			<pre>{JSON.stringify(incident, null, 2)}</pre>
+			<CardDetails
+				incident={incident}
+				monitor={monitor}
+			/>
 		</Dialog>
 	);
 };

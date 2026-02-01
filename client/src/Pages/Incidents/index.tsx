@@ -4,7 +4,7 @@ import {
 	SummaryCardActiveIncidents,
 	SummaryCardLatestIncidents,
 	SummaryCardStats,
-} from "@/Pages/Incidents/Components/SummaryCard";
+} from "@/Pages/Incidents/Components/CardSummary";
 import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
 import { DialogResolution } from "@/Pages/Incidents/Components/DialogResolution";
 import { DialogIncidentDetails } from "@/Pages/Incidents/Components/DialogIncidentDetails";
@@ -35,6 +35,9 @@ const IncidentsPage = () => {
 	// Details dialog state
 	const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 	const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+	const [selectedIncidentMonitor, setSelectedIncidentMonitor] = useState<Monitor | null>(
+		null
+	);
 
 	// Build incidents URL with query params
 	const incidentsUrl = useMemo(() => {
@@ -100,13 +103,16 @@ const IncidentsPage = () => {
 
 	const handleOpenDetails = (incidentId: string) => {
 		const incident = incidents.find((i) => i.id === incidentId) ?? null;
-		setSelectedIncident(incident);
+		const monitor = monitorsData?.find((m) => m.id === incident?.monitorId) ?? null;
 		setIsDetailsDialogOpen(true);
+		setSelectedIncident(incident);
+		setSelectedIncidentMonitor(monitor);
 	};
 
 	const handleDetailsClose = () => {
 		setIsDetailsDialogOpen(false);
 		setSelectedIncident(null);
+		setSelectedIncidentMonitor(null);
 	};
 
 	const handleDetailsResolve = () => {
@@ -169,6 +175,7 @@ const IncidentsPage = () => {
 			<DialogIncidentDetails
 				open={isDetailsDialogOpen}
 				incident={selectedIncident}
+				monitor={selectedIncidentMonitor}
 				onClose={handleDetailsClose}
 				onResolve={handleDetailsResolve}
 			/>

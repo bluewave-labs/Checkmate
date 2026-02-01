@@ -6,7 +6,9 @@
 			"details": "Details"
 		},
 		"labels": {
-			"responseTime": "Response time"
+			"responseTime": "Response time",
+			"active": "Active",
+			"resolved": "Resolved"
 		},
 		"buttons": {
 			"toggleTheme": "Toggles light & dark",
@@ -21,6 +23,7 @@
 			"save": "Save",
 			"test": "Test"
 		},
+
 		"alerts": {
 			"pageSpeedApiKey": {
 				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
@@ -373,6 +376,7 @@
 					"avgResolutionTime": "Average resolution time"
 				}
 			},
+
 			"table": {
 				"headers": {
 					"startTime": "Start Time",
@@ -392,8 +396,9 @@
 			},
 			"dialog": {
 				"details": {
-					"title": "Incident Details",
-					"resolve": "Resolve Incident"
+					"title": "Incident details",
+					"resolve": "Resolve Incident",
+					"overview": "Overview"
 				}
 			}
 		}

@@ -45,7 +45,7 @@ export const DialogInput = ({
 			maxWidth={maxWidth}
 			fullWidth={fullWidth}
 		>
-			<DialogTitle sx={{ fontSize: typographyLevels.l }}>{title}</DialogTitle>
+			{title && <DialogTitle sx={{ fontSize: typographyLevels.l }}>{title}</DialogTitle>}
 			<DialogContent>
 				{content && <DialogContentText>{content}</DialogContentText>}
 				{children}
