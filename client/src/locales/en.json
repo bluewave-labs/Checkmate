@@ -414,6 +414,16 @@
 					"resolveManually": "Resolve Manually"
 				}
 			},
+			"filters": {
+				"monitor": "Monitor",
+				"allMonitors": "All monitors",
+				"resolutionType": "Resolution type",
+				"resolutionTypes": {
+					"automatic": "Automatic",
+					"manual": "Manual"
+				},
+				"clearFilters": "Clear Filters"
+			},
 			"dialog": {
 				"details": {
 					"title": "Incident details",

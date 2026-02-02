@@ -12,6 +12,7 @@ import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
 import { DialogResolution } from "@/Pages/Incidents/Components/DialogResolution";
 import { DialogIncidentDetails } from "@/Pages/Incidents/Components/DialogIncidentDetails";
 import { HeaderTimeRange } from "@/Components/v2/common";
+import { ControlsIncidentFilter } from "@/Pages/Incidents/Components/ControlsIncidentFilter";
 
 import { useGet } from "@/Hooks/UseApi";
 import { useState, useEffect, useMemo } from "react";
@@ -64,7 +65,6 @@ const IncidentsPage = () => {
 	const {
 		data: incidentsData,
 		isLoading: isLoadingIncidents,
-		error: incidentsError,
 		refetch: refetchIncidents,
 	} = useGet<IncidentsResponse>(
 		incidentsUrl,
@@ -73,11 +73,7 @@ const IncidentsPage = () => {
 	);
 
 	// Fetch monitors for lookup
-	const {
-		data: monitorsData,
-		isLoading: isLoadingMonitors,
-		error: monitorsError,
-	} = useGet<Monitor[]>("/monitors/team");
+	const { data: monitorsData } = useGet<Monitor[]>("/monitors/team");
 
 	// Build active incidents URL (always fetch all active, no date filter)
 	const activeIncidentsUrl = useMemo(() => {
@@ -99,12 +95,9 @@ const IncidentsPage = () => {
 		);
 
 	// Fetch incident summary
-	const {
-		data: summaryData,
-		isLoading: isLoadingSummary,
-		error: summaryError,
-		refetch: refetchSummary,
-	} = useGet<IncidentSummary>("/incidents/team/summary");
+	const { data: summaryData, refetch: refetchSummary } = useGet<IncidentSummary>(
+		"/incidents/team/summary"
+	);
 
 	// Reset page when filters change
 	useEffect(() => {
@@ -116,17 +109,11 @@ const IncidentsPage = () => {
 	const incidentsCount = incidentsData?.count ?? 0;
 	const activeIncidents = activeIncidentsData?.incidents ?? [];
 	const activeIncidentsCount = activeIncidentsData?.count ?? 0;
-	const networkError = !!incidentsError || !!monitorsError || !!summaryError;
 
-	// Expose state and handlers for future UI use
-	void selectedMonitor;
-	void setSelectedMonitor;
-	void filter;
-	void setFilter;
-	void isLoadingIncidents;
-	void isLoadingMonitors;
-	void isLoadingSummary;
-	void networkError;
+	const handleClearFilters = () => {
+		setSelectedMonitor("0");
+		setFilter("all");
+	};
 
 	const handleOpenDetails = (incidentId: string) => {
 		const incident =
@@ -176,15 +163,23 @@ const IncidentsPage = () => {
 				<SummaryCardLatestIncidents summary={summaryData} />
 				<SummaryCardStats summary={summaryData} />
 			</Stack>
-			<Typography
-				variant="h6"
-				sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
-			>
-				{t("pages.incidents.table.activeIncidents")}
-			</Typography>
-
+			<ControlsIncidentFilter
+				monitors={monitorsData ?? undefined}
+				selectedMonitor={selectedMonitor}
+				setSelectedMonitor={setSelectedMonitor}
+				selectedResolutionType={filter}
+				setSelectedResolutionType={setFilter}
+				onClearFilters={handleClearFilters}
+			/>
 			{activeIncidentsCount > 0 && (
 				<>
+					<Typography
+						variant="h6"
+						sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+					>
+						{t("pages.incidents.table.activeIncidents")}
+					</Typography>
+
 					<IncidentsTable
 						incidents={activeIncidents}
 						monitors={monitorsData ?? undefined}
@@ -206,6 +201,7 @@ const IncidentsPage = () => {
 			>
 				{t("pages.incidents.table.resolvedIncidents")}
 			</Typography>
+
 			<HeaderTimeRange
 				dateRange={dateRange}
 				setDateRange={setDateRange}

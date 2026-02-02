@@ -18,6 +18,7 @@ import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
 interface IncidentsTableProps {
+	title?: string;
 	incidents?: Incident[];
 	monitors?: Monitor[];
 	incidentsCount: number;
@@ -30,7 +31,6 @@ interface IncidentsTableProps {
 }
 
 export const IncidentsTable = ({
-	title,
 	incidents,
 	monitors,
 	incidentsCount,
