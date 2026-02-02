@@ -171,7 +171,7 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 										</Typography>
 									</Grid>
 									<Grid size={10}>
-										<Typography>{incident.resolvedBy}</Typography>
+										<Typography>{incident.resolvedByEmail ?? incident.resolvedBy}</Typography>
 									</Grid>
 								</>
 							)}

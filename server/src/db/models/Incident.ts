@@ -64,6 +64,10 @@ const IncidentSchema = new Schema<IncidentDocument>(
 			ref: "User",
 			default: null,
 		},
+		resolvedByEmail: {
+			type: String,
+			default: null,
+		},
 		comment: {
 			type: String,
 			default: null,

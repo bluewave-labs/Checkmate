@@ -9,6 +9,7 @@ export interface Incident {
 	statusCode?: number | null;
 	resolutionType: "automatic" | "manual" | null;
 	resolvedBy?: string | null;
+	resolvedByEmail?: string | null;
 	comment?: string | null;
 	createdAt: string;
 	updatedAt: string;

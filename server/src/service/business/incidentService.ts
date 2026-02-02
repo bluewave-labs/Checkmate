@@ -71,7 +71,7 @@ class IncidentService {
 		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
 
-	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string) => {
+	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {
 		try {
 			if (!incidentId) {
 				throw new AppError({ message: "No incident ID in request", service: SERVICE_NAME, method: "resolveIncident" });
@@ -98,6 +98,7 @@ class IncidentService {
 			incident.resolutionType = "manual";
 			incident.status = false;
 			incident.resolvedBy = userId;
+			incident.resolvedByEmail = userEmail || null;
 			incident.comment = comment || null;
 			incident.endTime = Date.now().toString();
 
