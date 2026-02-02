@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import { useStatusPageFetch } from "../Status/Hooks/useStatusPageFetch.jsx";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useStatusPageDelete } from "../Status/Hooks/useStatusPageDelete.jsx";
 //Constants
 const ERROR_TAB_MAPPING = [
 	["companyName", "url", "timezone", "color", "isPublished", "logo"],
@@ -60,7 +59,7 @@ const CreateStatusPage = () => {
 	const [createStatusPage] = useCreateStatusPage(isCreate);
 	const [statusPage, statusPageMonitors, statusPageIsLoading, , fetchStatusPage] =
 		useStatusPageFetch(isCreate, url);
-	const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
+	// const [deleteStatusPage, isDeleting] = useStatusPageDelete(fetchStatusPage, url);
 
 	// Handlers
 	const handleFormChange = (e) => {
@@ -133,7 +132,7 @@ const CreateStatusPage = () => {
 	const handleDelete = async () => {
 		setIsDeleteOpen(false);
 		// Start deletion process but don't wait for it
-		deleteStatusPage();
+		// deleteStatusPage();
 		// Immediately navigate away to prevent additional fetches for the deleted page
 		navigate("/status");
 	};
@@ -252,7 +251,7 @@ const CreateStatusPage = () => {
 					justifyContent="flex-end"
 				>
 					<Button
-						loading={isDeleting}
+						// loading={isDeleting}
 						variant="contained"
 						color="error"
 						onClick={() => setIsDeleteOpen(true)}
@@ -266,7 +265,7 @@ const CreateStatusPage = () => {
 						open={isDeleteOpen}
 						confirmationButtonLabel={t("deleteStatusPageConfirm")}
 						description={t("deleteStatusPageDescription")}
-						isLoading={isDeleting || statusPageIsLoading}
+						// isLoading={isDeleting || statusPageIsLoading}
 					/>
 				</Stack>
 			)}
@@ -290,7 +289,7 @@ const CreateStatusPage = () => {
 				handleDelete={handleDelete}
 				isDeleteOpen={isDeleteOpen}
 				setIsDeleteOpen={setIsDeleteOpen}
-				isDeleting={isDeleting}
+				// isDeleting={isDeleting}
 				isLoading={statusPageIsLoading}
 			/>
 			<Stack

@@ -3,6 +3,8 @@ import { StatusPagesTable } from "./Components/StatusPagesTable";
 import { useGet } from "@/Hooks/UseApi";
 import type { StatusPage } from "@/Types/StatusPage";
 import { useTranslation } from "react-i18next";
+import { HeaderCreate } from "@/Components/v2/common";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 const StatusPages = () => {
 	const { t } = useTranslation();
@@ -12,6 +14,8 @@ const StatusPages = () => {
 		isLoading,
 		error,
 	} = useGet<StatusPage[]>("/status-page/team");
+
+	const isAdmin = useIsAdmin();
 
 	return (
 		<BasePageWithStates
@@ -25,6 +29,10 @@ const StatusPages = () => {
 			actionButtonText={t("pages.statusPages.fallback.actionButton")}
 			actionLink="/status/uptime/create"
 		>
+			<HeaderCreate
+				path="/status/uptime/create"
+				isAdmin={isAdmin}
+			/>
 			<StatusPagesTable data={statusPages ?? []} />
 		</BasePageWithStates>
 	);
