@@ -1,5 +1,6 @@
 import { BasePage } from "@/Components/v2/design-elements";
 import { StatusBar } from "@/Pages/StatusPage/Status/Components/StatusBar";
+import { MonitorsList } from "@/Pages/StatusPage/Status/Components/MonitorsList";
 import Typography from "@mui/material/Typography";
 
 import { useTranslation } from "react-i18next";
@@ -43,6 +44,10 @@ const StatusPageView = () => {
 			/>
 			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
+			<MonitorsList
+				stautsPage={statusPage}
+				monitors={monitors}
+			/>
 			<pre> {JSON.stringify(data, null, 2)}</pre>
 		</BasePage>
 	);
