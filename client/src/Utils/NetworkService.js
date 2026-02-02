@@ -594,8 +594,8 @@ class NetworkService {
 	 * @async
 	 * @returns {Promise<AxiosResponse>} The response from the axios GET request.
 	 */
-	getChecksAndSummaryByTeamId = async () => {
-		return this.axiosInstance.get(`/checks/team/summary`);
+	getChecksAndSummaryByTeamId = async ({ dateRange }) => {
+		return this.axiosInstance.get(`/checks/team/summary?dateRange=${dateRange}`);
 	};
 
 	/**
@@ -1076,7 +1076,7 @@ class NetworkService {
 
 	async editNotification(config) {
 		const { id, notification } = config;
-		return this.axiosInstance.put(`/notifications/${id}`, notification);
+		return this.axiosInstance.patch(`/notifications/${id}`, notification);
 	}
 
 	async getQueueData() {

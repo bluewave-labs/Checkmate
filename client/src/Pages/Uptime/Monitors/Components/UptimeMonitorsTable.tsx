@@ -24,6 +24,7 @@ import type { RootState } from "@/Types/state";
 export const MonitorTable = ({
 	monitors,
 	refetch,
+	setSelectedMonitor,
 	sortField,
 	setSortField,
 	sortOrder,
@@ -36,6 +37,7 @@ export const MonitorTable = ({
 }: {
 	monitors: Monitor[];
 	refetch: Function;
+	setSelectedMonitor: (monitor: Monitor | null) => void;
 	sortField: string;
 	setSortField: (field: string) => void;
 	sortOrder: "asc" | "desc";
@@ -97,7 +99,7 @@ export const MonitorTable = ({
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
 				action: () => {
-					navigate(`/uptime/create/${monitor.id}`);
+					navigate(`/uptime/configure/${monitor.id}`);
 				},
 			},
 			// {
@@ -126,9 +128,7 @@ export const MonitorTable = ({
 						{t("pages.common.monitors.actions.delete")}
 					</Typography>
 				),
-				action: () => {
-					// setSelectedMonitor(monitor);
-				},
+				action: () => setSelectedMonitor(monitor),
 				closeMenu: true,
 			},
 		];
@@ -199,9 +199,9 @@ export const MonitorTable = ({
 				content: t("pages.uptime.table.headers.responseTime"),
 				render: (row) => {
 					if (chartType === "histogram") {
-						return <HistogramResponseTime checks={row.checks} />;
+						return <HistogramResponseTime checks={row.recentChecks} />;
 					} else {
-						return <HeatmapResponseTime checks={row.checks} />;
+						return <HeatmapResponseTime checks={row.recentChecks} />;
 					}
 				},
 			},

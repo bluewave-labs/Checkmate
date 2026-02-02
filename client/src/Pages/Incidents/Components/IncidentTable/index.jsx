@@ -9,7 +9,7 @@ import NetworkError from "@/Components/v1/GenericFallback/NetworkError.jsx";
 import IncidentActionsMenu from "./IncidentActionsMenu.jsx";
 
 //Utils
-import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../Utils/timeUtilsLegacy.js";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";

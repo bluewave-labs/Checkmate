@@ -6,7 +6,6 @@ const useCreateStatusPage = (isCreate) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [networkError, setNetworkError] = useState(false);
 	const createStatusPage = async ({ form, id }) => {
-		console.log(id);
 		setIsLoading(true);
 		try {
 			await networkService.createStatusPage({ form, isCreate, id });

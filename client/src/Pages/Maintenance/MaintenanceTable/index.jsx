@@ -6,7 +6,7 @@ import Icon from "@/Components/v1/Icon";
 import ActionsMenu from "./ActionsMenu/index.jsx";
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { formatDurationRounded } from "../../../Utils/timeUtils.js";
+import { formatDurationRounded } from "../../../Utils/timeUtilsLegacy.js";
 import { StatusLabel } from "@/Components/v1/Label/index.jsx";
 import { setRowsPerPage } from "../../../Features/UI/uiSlice.js";
 import { useTranslation } from "react-i18next";

@@ -19,7 +19,7 @@ import mongoose from "mongoose";
 const SERVICE_NAME = "StatusService";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setDate(new Date().getDate() - 2)),
+	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
 	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
 	day: new Date(new Date().setDate(new Date().getDate() - 1)),
 	week: new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -29,7 +29,6 @@ const dateRangeLookup: Record<string, Date | undefined> = {
 
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
-type HardwareAggregateData = { latestCheck: CheckDocument | null; totalChecks: number };
 type HardwareUpChecks = { totalChecks: number };
 
 class MongoChecksRepository implements IChecksRepository {
@@ -118,11 +117,18 @@ class MongoChecksRepository implements IChecksRepository {
 			(disks ?? []).map((disk) => ({
 				device: disk?.device ?? "",
 				mountpoint: disk?.mountpoint ?? "",
-				read_speed_bytes: disk?.read_speed_bytes ?? 0,
-				write_speed_bytes: disk?.write_speed_bytes ?? 0,
 				total_bytes: disk?.total_bytes ?? 0,
 				free_bytes: disk?.free_bytes ?? 0,
+				used_bytes: disk?.used_bytes ?? 0,
 				usage_percent: disk?.usage_percent ?? 0,
+				total_inodes: disk?.total_inodes ?? 0,
+				free_inodes: disk?.free_inodes ?? 0,
+				used_inodes: disk?.used_inodes ?? 0,
+				inodes_usage_percent: disk?.inodes_usage_percent ?? 0,
+				read_bytes: disk?.read_bytes ?? 0,
+				write_bytes: disk?.write_bytes ?? 0,
+				read_time: disk?.read_time ?? 0,
+				write_time: disk?.write_time ?? 0,
 			}));
 
 		const mapErrors = (errors?: CheckErrorInfo[]): CheckErrorInfo[] =>
@@ -194,8 +200,37 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
+	private mapDocuments = (documents: CheckDocument[]): Check[] => {
+		if (!documents?.length) {
+			return [];
+		}
+		return documents.map((doc) => this.toEntity(doc));
+	};
+
+	private toDocument = (check: Partial<Check>): CheckDocument => {
+		// Map id to _id for MongoDB storage
+		const { id, metadata, ...rest } = check;
+		return {
+			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
+			metadata: metadata
+				? {
+						monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
+						teamId: new mongoose.Types.ObjectId(metadata.teamId),
+						type: metadata.type,
+					}
+				: {
+						monitorId: new mongoose.Types.ObjectId(),
+						teamId: new mongoose.Types.ObjectId(),
+						type: "http",
+					},
+			...rest,
+		} as unknown as CheckDocument;
+	};
+
 	createChecks = async (checks: Check[]) => {
-		return await CheckModel.insertMany(checks);
+		const docs = checks.map((check) => this.toDocument(check));
+		const inserted = await CheckModel.insertMany(docs);
+		return this.mapDocuments(inserted as unknown as CheckDocument[]);
 	};
 
 	findByMonitorId = async (
@@ -222,9 +257,14 @@ class MongoChecksRepository implements IChecksRepository {
 			switch (filter) {
 				case "all":
 					break;
+				case "up":
+					matchStage.status = true;
+					break;
 				case "down":
+					matchStage.status = false;
 					break;
 				case "resolve":
+					matchStage.status = false;
 					matchStage.statusCode = 5000;
 					break;
 				default:
@@ -246,33 +286,17 @@ class MongoChecksRepository implements IChecksRepository {
 			skip = page * rowsPerPage;
 		}
 
-		const checks = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{ $sort: { createdAt: convertedSortOrder } },
-			{
-				$facet: {
-					summary: [{ $count: "checksCount" }],
-					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
-				},
-			},
-			{
-				$project: {
-					checksCount: {
-						$ifNull: [{ $arrayElemAt: ["$summary.checksCount", 0] }, 0],
-					},
-					checks: {
-						$ifNull: ["$checks", []],
-					},
-				},
-			},
+		const [checksCount, checks] = await Promise.all([
+			CheckModel.countDocuments(matchStage),
+			CheckModel.find(matchStage).sort({ createdAt: convertedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<CheckDocument[]>,
 		]);
-		return checks[0];
+
+		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
 		const matchStage: Record<string, any> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			status: false,
 			...(dateRangeLookup[dateRange] && {
 				createdAt: {
 					$gte: dateRangeLookup[dateRange],
@@ -284,9 +308,14 @@ class MongoChecksRepository implements IChecksRepository {
 			switch (filter) {
 				case "all":
 					break;
+				case "up":
+					matchStage.status = true;
+					break;
 				case "down":
+					matchStage.status = false;
 					break;
 				case "resolve":
+					matchStage.status = false;
 					matchStage.statusCode = 5000;
 					break;
 				default:
@@ -307,60 +336,38 @@ class MongoChecksRepository implements IChecksRepository {
 			skip = page * rowsPerPage;
 		}
 
-		const aggregatePipeline: any = [
-			{ $match: matchStage },
+		const [checksCount, checks] = await Promise.all([
+			CheckModel.countDocuments(matchStage),
+			CheckModel.find(matchStage).sort({ createdAt: parsedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<CheckDocument[]>,
+		]);
 
-			{ $sort: { createdAt: parsedSortOrder } },
-			{
-				$facet: {
-					summary: [{ $count: "checksCount" }],
-					checks: [{ $skip: skip }, { $limit: rowsPerPage }],
-				},
-			},
-			{
-				$project: {
-					checksCount: { $arrayElemAt: ["$summary.checksCount", 0] },
-					checks: "$checks",
-				},
-			},
-		];
-
-		const checks = await CheckModel.aggregate(aggregatePipeline);
-		return checks[0];
+		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
 	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
 		if (monitorIds.length === 0) {
 			return {};
 		}
-		const mongoIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const checkGroups = await CheckModel.aggregate([
-			{
-				$match: {
-					"metadata.monitorId": { $in: mongoIds },
-				},
-			},
-			{ $sort: { "metadata.monitorId": 1, createdAt: -1 } },
-			{
-				$group: {
-					_id: "$metadata.monitorId",
-					latestChecks: {
-						$topN: {
-							n: limitPerMonitor,
-							sortBy: { createdAt: -1 },
-							output: "$$ROOT",
-						},
-					},
-				},
-			},
-		]);
+		const dateFilter = new Date(Date.now() - 24 * 60 * 60 * 1000);
+		const results = await Promise.all(
+			monitorIds.map(async (monitorId) => {
+				const docs = await CheckModel.find({
+					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+					createdAt: { $gte: dateFilter },
+				})
+					.sort({ createdAt: -1 })
+					.limit(limitPerMonitor)
+					.lean();
+				return { monitorId, docs };
+			})
+		);
 
-		return checkGroups.reduce<LatestChecksMap>((acc, group) => {
-			const monitorId = group._id.toString();
-			acc[monitorId] = (group.latestChecks ?? []).map((doc: CheckDocument) => this.toEntity(doc));
+		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
+			acc[monitorId] = docs.map((doc: any) => this.toEntity(doc as CheckDocument));
 			return acc;
 		}, {});
+		return mapped;
 	};
 
 	findByDateRangeAndMonitorId = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
@@ -374,51 +381,25 @@ class MongoChecksRepository implements IChecksRepository {
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
 	};
 
-	findSummaryByTeamId = async (teamId: string) => {
-		const matchStage = {
+	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
+		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			...(dateRangeLookup[dateRange] && {
+				createdAt: {
+					$gte: dateRangeLookup[dateRange],
+				},
+			}),
 		};
-		const checks = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{
-				$facet: {
-					summary: [
-						{
-							$group: {
-								_id: null,
-								totalChecks: { $sum: { $cond: [{ $eq: ["$status", false] }, 1, 0] } },
-								resolvedChecks: {
-									$sum: {
-										$cond: [{ $and: [{ $eq: ["$ack", true] }, { $eq: ["$status", false] }] }, 1, 0],
-									},
-								},
-								downChecks: {
-									$sum: {
-										$cond: [{ $and: [{ $eq: ["$ack", false] }, { $eq: ["$status", false] }] }, 1, 0],
-									},
-								},
-								cannotResolveChecks: {
-									$sum: {
-										$cond: [{ $eq: ["$statusCode", 5000] }, 1, 0],
-									},
-								},
-							},
-						},
-						{
-							$project: {
-								_id: 0,
-							},
-						},
-					],
-				},
-			},
-			{
-				$project: {
-					summary: { $arrayElemAt: ["$summary", 0] },
-				},
-			},
+
+		const [totalResult, downResult] = await Promise.all([
+			CheckModel.countDocuments(baseMatch),
+			CheckModel.countDocuments({ ...baseMatch, status: false }),
 		]);
-		return checks[0].summary;
+
+		return {
+			totalChecks: totalResult,
+			downChecks: downResult,
+		};
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
@@ -440,11 +421,11 @@ class MongoChecksRepository implements IChecksRepository {
 	) => {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
-			updatedAt: { $gte: startDate, $lte: endDate },
+			createdAt: { $gte: startDate, $lte: endDate },
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },
-			{ $sort: { updatedAt: 1 } },
+			{ $sort: { createdAt: 1 } },
 			{
 				$facet: {
 					uptimePercentage: [
@@ -483,6 +464,7 @@ class MongoChecksRepository implements IChecksRepository {
 							},
 						},
 						{ $sort: { _id: 1 } },
+						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
 					groupedUpChecks: [
 						{ $match: { status: true } },
@@ -496,6 +478,7 @@ class MongoChecksRepository implements IChecksRepository {
 							},
 						},
 						{ $sort: { _id: 1 } },
+						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
 					groupedDownChecks: [
 						{ $match: { status: false } },
@@ -509,6 +492,7 @@ class MongoChecksRepository implements IChecksRepository {
 							},
 						},
 						{ $sort: { _id: 1 } },
+						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
 				},
 			},
@@ -531,14 +515,13 @@ class MongoChecksRepository implements IChecksRepository {
 		const monitorId = monitorObjectId.toHexString();
 		const dates = { start: startDate, end: endDate };
 		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
-			this.getHardwareAggregateData(monitorId, dates),
+			this.getHardwareTotalChecks(monitorId, dates),
 			this.getHardwareUpChecks(monitorId, dates),
 			this.getHardwareStats(monitorId, dates, dateString),
 		]);
 
 		const aggregateData = {
-			latestCheck: aggregateDataDoc?.latestCheck ? this.toEntity(aggregateDataDoc.latestCheck as CheckDocument) : null,
-			totalChecks: aggregateDataDoc?.totalChecks ?? 0,
+			totalChecks: aggregateDataDoc ?? 0,
 		};
 
 		const upChecks = {
@@ -546,7 +529,7 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 
 		const checks = (hardwareMetrics ?? []).map((metric) => ({
-			_id: metric._id,
+			bucketDate: metric._id,
 			avgCpuUsage: metric.avgCpuUsage ?? 0,
 			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
 			avgTemperature: metric.avgTemperature ?? [],
@@ -590,29 +573,16 @@ class MongoChecksRepository implements IChecksRepository {
 		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
 		return {
 			monitorType: "pagespeed" as const,
-			checks: checks.map((doc) => this.toEntity(doc)),
+			checks: this.mapDocuments(checks),
 		};
 	};
 
-	private getHardwareAggregateData = async (monitorId: string, dates: DateRange): Promise<HardwareAggregateData> => {
-		const result = await CheckModel.aggregate([
-			{
-				$match: {
-					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-					"metadata.type": "hardware",
-					createdAt: { $gte: dates.start, $lte: dates.end },
-				},
-			},
-			{ $sort: { createdAt: -1 } },
-			{
-				$group: {
-					_id: null,
-					latestCheck: { $first: "$$ROOT" },
-					totalChecks: { $sum: 1 },
-				},
-			},
-		]);
-		return result[0] || { totalChecks: 0, latestCheck: null };
+	private getHardwareTotalChecks = async (monitorId: string, dates: DateRange): Promise<number> => {
+		return await CheckModel.countDocuments({
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			"metadata.type": "hardware",
+			createdAt: { $gte: dates.start, $lte: dates.end },
+		});
 	};
 
 	private getHardwareUpChecks = async (monitorId: string, dates: DateRange): Promise<HardwareUpChecks> => {
@@ -643,7 +613,7 @@ class MongoChecksRepository implements IChecksRepository {
 					avgTemperatures: { $push: { $ifNull: ["$cpu.temperature", [0]] } },
 					disks: { $push: "$disk" },
 					net: { $push: "$net" },
-					updatedAts: { $push: "$updatedAt" },
+					createdAts: { $push: "$createdAt" },
 					sampleDoc: { $first: "$$ROOT" },
 				},
 			},
@@ -665,8 +635,8 @@ class MongoChecksRepository implements IChecksRepository {
 							as: "dIdx",
 							in: {
 								name: { $concat: ["disk", { $toString: "$$dIdx" }] },
-								readSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.read_speed_bytes", "$$dIdx"] } } } },
-								writeSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.write_speed_bytes", "$$dIdx"] } } } },
+								readSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.read_bytes", "$$dIdx"] } } } },
+								writeSpeed: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.write_bytes", "$$dIdx"] } } } },
 								totalBytes: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.total_bytes", "$$dIdx"] } } } },
 								freeBytes: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.free_bytes", "$$dIdx"] } } } },
 								usagePercent: { $avg: { $map: { input: "$disks", as: "dA", in: { $arrayElemAt: ["$$dA.usage_percent", "$$dIdx"] } } } },
@@ -682,7 +652,7 @@ class MongoChecksRepository implements IChecksRepository {
 								bytesSentPerSecond: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.bytes_sent" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.bytes_sent" } }, "$$nIdx"] },
 										},
@@ -692,7 +662,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaBytesRecv: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.bytes_recv" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.bytes_recv" } }, "$$nIdx"] },
 										},
@@ -702,7 +672,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaPacketsSent: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.packets_sent" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.packets_sent" } }, "$$nIdx"] },
 										},
@@ -712,7 +682,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaPacketsRecv: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.packets_recv" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.packets_recv" } }, "$$nIdx"] },
 										},
@@ -722,7 +692,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaErrIn: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.err_in" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.err_in" } }, "$$nIdx"] },
 										},
@@ -732,7 +702,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaErrOut: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.err_out" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.err_out" } }, "$$nIdx"] },
 										},
@@ -742,7 +712,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaDropIn: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_in" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_in" } }, "$$nIdx"] },
 										},
@@ -752,7 +722,7 @@ class MongoChecksRepository implements IChecksRepository {
 								deltaDropOut: {
 									$let: {
 										vars: {
-											tDiff: { $divide: [{ $subtract: [{ $last: "$updatedAts" }, { $first: "$updatedAts" }] }, 1000] },
+											tDiff: { $divide: [{ $subtract: [{ $last: "$createdAts" }, { $first: "$createdAts" }] }, 1000] },
 											f: { $arrayElemAt: [{ $map: { input: { $first: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
 											l: { $arrayElemAt: [{ $map: { input: { $last: "$net" }, as: "i", in: "$$i.drop_out" } }, "$$nIdx"] },
 										},

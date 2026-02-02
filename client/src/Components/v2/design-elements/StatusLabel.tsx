@@ -17,14 +17,17 @@ export const StatusLabel = ({
 	sx,
 }: {
 	status: MonitorStatus;
-	isActive: boolean;
+	isActive?: boolean;
 	sx?: SxProps;
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const palette = getStatusPalette(status);
 
-	const determineStatus = (isActive: boolean, status: MonitorStatus): string => {
+	const determineStatus = (
+		isActive: boolean | undefined,
+		status: MonitorStatus
+	): string => {
 		if (isActive === false) {
 			return t("pages.common.monitors.status.paused");
 		}

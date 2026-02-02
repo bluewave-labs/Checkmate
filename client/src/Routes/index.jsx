@@ -16,24 +16,21 @@ import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 
 // Uptime
 import Uptime from "../Pages/Uptime/Monitors";
-import UptimeDetails from "../Pages/Uptime/Details/index.jsx";
-import UptimeCreate from "../Pages/Uptime/Create/index.jsx";
+import UptimeDetails from "../Pages/Uptime/Details";
 
 // PageSpeed
-import PageSpeed from "../Pages/PageSpeed/Monitors/index.jsx";
-import PageSpeedDetails from "../Pages/PageSpeed/Details/index.jsx";
-import PageSpeedCreate from "../Pages/PageSpeed/Create/index.jsx";
+import PageSpeed from "../Pages/PageSpeed/Monitors/index";
+import PageSpeedDetails from "../Pages/PageSpeed/Details/";
 
 // Infrastructure
-import Infrastructure from "../Pages/Infrastructure/Monitors/index.jsx";
-import InfrastructureCreate from "../Pages/Infrastructure/Create/index.jsx";
-import InfrastructureDetails from "../Pages/Infrastructure/Details/index.jsx";
+import Infrastructure from "../Pages/Infrastructure/Monitors";
+import InfrastructureDetails from "../Pages/Infrastructure/Details/index";
 
 // Server Status
 import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
 
 // Checks
-import Checks from "../Pages/Checks/index.jsx";
+import Checks from "../Pages/Checks/index";
 
 // Incidents
 import Incidents from "../Pages/Incidents/index.jsx";
@@ -43,8 +40,8 @@ import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
 import StatusPages from "../Pages/StatusPage/StatusPages/index.jsx";
 import Status from "../Pages/StatusPage/Status/index.jsx";
 
-import Notifications from "../Pages/Notifications/index.jsx";
-import CreateNotifications from "../Pages/Notifications/create/index.jsx";
+import Notifications from "../Pages/Notifications";
+import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
 import Account from "../Pages/Account/index.jsx";
@@ -60,9 +57,12 @@ import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport/index.jsx";
 import Logs from "../Pages/Logs/index.jsx";
 
+import CreateMonitor from "@/Pages/CreateMonitor";
+
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
+	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
 			<Route
@@ -81,7 +81,7 @@ const Routes = () => {
 					path="/uptime"
 					element={
 						<>
-							<ThemeProvider theme={mode === "light" ? lightTheme : darkTheme}>
+							<ThemeProvider theme={v2theme}>
 								<Uptime />
 							</ThemeProvider>
 						</>
@@ -95,56 +95,124 @@ const Routes = () => {
 
 				<Route
 					path="/uptime/create"
-					element={<UptimeCreate />}
-				/>
-				<Route
-					path="/uptime/create/:monitorId"
-					element={<UptimeCreate isClone={true} />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
-					element={<UptimeDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<UptimeDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<UptimeCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
 					path="pagespeed"
-					element={<PageSpeed />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeed />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/create"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
-					element={<PageSpeedDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeedDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure"
-					element={<Infrastructure />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Infrastructure />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/create"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/:monitorId"
-					element={<InfrastructureDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<InfrastructureDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="checks/:monitorId?"
-					element={<Checks />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Checks />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="incidents/:monitorId?"
@@ -173,16 +241,34 @@ const Routes = () => {
 
 				<Route
 					path="notifications"
-					element={<Notifications />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Notifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="notifications/create"
-					element={<CreateNotifications />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateNotifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
-					path="notifications/:notificationId"
-					element={<CreateNotifications />}
+					path="notifications/configure/:notificationId"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateNotifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route

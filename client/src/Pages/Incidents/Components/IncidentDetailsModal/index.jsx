@@ -9,7 +9,7 @@ import ResolveIncidentDialog from "../ResolveIncidentDialog/index.jsx";
 import { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz } from "@/Utils/timeUtils";
+import { formatDateWithTz } from "@/Utils/timeUtilsLegacy.js";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -112,8 +112,6 @@ const IncidentDetailsModal = ({ open, incidentId, onClose, onResolved }) => {
 	};
 
 	const renderContent = () => {
-		console.log(incidentData);
-
 		if (isLoading) {
 			return (
 				<GenericFallback

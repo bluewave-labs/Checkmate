@@ -6,6 +6,7 @@ import type {
 	UptimeDetailsResult,
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
+	GamesMap,
 } from "@/types/monitor.js";
 import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
 import fs from "fs";
@@ -51,7 +52,7 @@ export interface IMonitorService {
 		order?: "asc" | "desc";
 		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
-	getAllGames(): any;
+	getAllGames(): GamesMap;
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
@@ -257,9 +258,12 @@ export class MonitorService implements IMonitorService {
 			checks: checksData.checks,
 		};
 
+		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+
 		return {
-			...monitor,
+			monitor,
 			stats,
+			monitorStats,
 		};
 	};
 
@@ -342,7 +346,7 @@ export class MonitorService implements IMonitorService {
 		order?: "asc" | "desc";
 		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
-		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId);
+		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type });
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
@@ -360,26 +364,17 @@ export class MonitorService implements IMonitorService {
 		const snapshotOnlyRequest =
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
 
-		const limitPerMonitor = snapshotOnlyRequest ? 1 : 25;
-		const checksMap = await this.checksRepository.findLatestByMonitorIds(
-			monitorsList.map((monitor) => monitor.id),
-			{ limitPerMonitor }
-		);
-
 		const monitorsWithChecks = monitorsList.map((monitor: Monitor) => {
-			const rawChecks = checksMap[monitor.id] ?? [];
+			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
 			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
-			return {
-				...monitor,
-				checks,
-			};
+			monitor.recentChecks = checks;
+			return monitor;
 		});
-
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
-	getAllGames = (): any => {
+	getAllGames = (): GamesMap => {
 		return this.games;
 	};
 
@@ -402,9 +397,27 @@ export class MonitorService implements IMonitorService {
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
-		await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
-		await this.checksRepository.deleteByMonitorId(monitor.id);
-		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
 		await this.jobQueue.deleteJob(monitor);
 		return monitor;
 	};

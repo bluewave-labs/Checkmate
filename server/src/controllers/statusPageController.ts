@@ -7,7 +7,6 @@ import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
 import { ParseBoolean } from "@/utils/utils.js";
-import { MonitorWithChecks } from "@/types/index.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
@@ -51,7 +50,7 @@ class StatusPageController {
 			await createStatusPageBodyValidation.validateAsync(req.body);
 			await imageValidation.validateAsync(req.file);
 			const teamId = requireTeamId(req?.user?.teamId);
-			const statusPageId = req.params.id;
+			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
 				throw new AppError({ message: "Status page ID is required", status: 400 });
 			}
@@ -78,13 +77,13 @@ class StatusPageController {
 				throw new AppError({ message: "Status page URL is required", status: 400 });
 			}
 
-			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url);
+			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
 			const settings = await this.settingsService.getDBSettings();
 			const showURL = settings.showURL;
 
 			const monitors = await this.monitorsRepository.findByIdsWithChecks(statusPage.monitors);
 			const normalizedMonitors = monitors.map((monitor) => {
-				const normalizedChecks = NormalizeData(monitor.checks, 10, 100);
+				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
 					const { url, port, secret, notifications, ...rest } = monitor;
 					return { ...rest, checks: normalizedChecks };
@@ -117,7 +116,7 @@ class StatusPageController {
 
 	deleteStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const statusPageId = req.params.id;
+			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
 				throw new AppError({ message: "Status page ID is required", status: 400 });
 			}

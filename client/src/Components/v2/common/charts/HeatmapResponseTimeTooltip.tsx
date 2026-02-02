@@ -2,12 +2,14 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-import type { Check } from "@/Types/Check";
+import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
-
-type HeatmapCheck = Check | { status: "placeholder"; responseTime: 0; createdAt: "" };
+import { useTranslation } from "react-i18next";
+type HeatmapCheck =
+	| CheckSnapshot
+	| { status: "placeholder"; responseTime: 0; createdAt: "" };
 
 export const HeatmapResponseTimeTooltip = ({
 	children,
@@ -16,6 +18,7 @@ export const HeatmapResponseTimeTooltip = ({
 	children: React.ReactElement;
 	check: HeatmapCheck;
 }) => {
+	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const theme = useTheme();
 
@@ -52,15 +55,19 @@ export const HeatmapResponseTimeTooltip = ({
 					<Typography>
 						{formatDateWithTz(check?.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone)}
 					</Typography>
-					{check?.originalResponseTime && (
+					{check?.responseTime && (
 						<Typography>
-							Response Time: {check.originalResponseTime.toFixed()} ms
+							{t("common.labels.responseTime")}: {check.responseTime.toFixed()} ms
 						</Typography>
 					)}
 
 					<Typography textTransform={"capitalize"}>
 						Status:{" "}
-						<span style={{ color: getColor(check?.status) }}>{check?.status}</span>
+						<span style={{ color: getColor(check?.status) }}>
+							{check?.status === true
+								? t("pages.common.monitors.status.up")
+								: t("pages.common.monitors.status.down")}
+						</span>
 					</Typography>
 				</Stack>
 			}

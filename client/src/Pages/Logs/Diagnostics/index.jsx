@@ -7,7 +7,7 @@ import StatusBoxes from "@/Components/v1/StatusBoxes/index.jsx";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useFetchDiagnostics } from "../../../Hooks/logHooks.js";
-import { getHumanReadableDuration } from "../../../Utils/timeUtils.js";
+import { getHumanReadableDuration } from "../../../Utils/timeUtilsLegacy.js";
 import { formatBytes, getPercentage } from "./utils/utils.js";
 
 const Diagnostics = () => {

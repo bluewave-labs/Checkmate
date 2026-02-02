@@ -37,7 +37,14 @@ function App() {
 			<AppLayout>
 				<Routes />
 			</AppLayout>
-			<ToastContainer />
+			<ToastContainer
+				newestOnTop={true}
+				theme={mode}
+				style={{
+					"--toastify-color-progress-light": "#7C8BA1",
+					"--toastify-color-progress-dark": "#7C8BA1",
+				}}
+			/>
 		</ThemeProvider>
 	);
 }

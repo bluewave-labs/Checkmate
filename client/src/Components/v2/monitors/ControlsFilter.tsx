@@ -6,11 +6,12 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import type { MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
 
-const types = ["http", "ping", "port", "docker"];
+const types = ["http", "ping", "port", "docker", "game"];
 const statuses = ["up", "down"];
 const states = ["active", "paused"];
 
 export const ControlsFilter = ({
+	showTypes = true,
 	selectedTypes,
 	setSelectedTypes,
 	selectedStatus,
@@ -19,8 +20,9 @@ export const ControlsFilter = ({
 	setSelectedState,
 	onClearFilters,
 }: {
-	selectedTypes: MonitorType[];
-	setSelectedTypes: React.Dispatch<React.SetStateAction<MonitorType[]>>;
+	showTypes?: boolean;
+	selectedTypes?: MonitorType[];
+	setSelectedTypes?: React.Dispatch<React.SetStateAction<MonitorType[]>>;
 	selectedStatus: string;
 	setSelectedStatus: React.Dispatch<React.SetStateAction<string>>;
 	selectedState: string;
@@ -30,27 +32,29 @@ export const ControlsFilter = ({
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isFilterActive =
-		selectedTypes.length > 0 || selectedStatus !== "" || selectedState !== "";
+		(selectedTypes?.length ?? 0) > 0 || selectedStatus !== "" || selectedState !== "";
 	return (
 		<Stack
 			direction={isSmall ? "column" : "row"}
 			gap={theme.spacing(2)}
 		>
-			<Select
-				multiple
-				placeholder="Type"
-				value={selectedTypes}
-				onChange={(e) => setSelectedTypes(e.target.value as MonitorType[])}
-			>
-				{types.map((type) => (
-					<MenuItem
-						key={type}
-						value={type}
-					>
-						<Typography textTransform={"capitalize"}>{type}</Typography>
-					</MenuItem>
-				))}
-			</Select>
+			{showTypes && setSelectedTypes && (
+				<Select
+					multiple
+					placeholder="Type"
+					value={selectedTypes ?? []}
+					onChange={(e) => setSelectedTypes(e.target.value as MonitorType[])}
+				>
+					{types.map((type) => (
+						<MenuItem
+							key={type}
+							value={type}
+						>
+							<Typography textTransform={"capitalize"}>{type}</Typography>
+						</MenuItem>
+					))}
+				</Select>
+			)}
 			<Select
 				placeholder="Status"
 				value={selectedStatus}

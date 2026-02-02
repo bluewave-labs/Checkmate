@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { useTheme } from "@mui/material";
 import { Text } from "recharts";
-import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../Utils/timeUtilsLegacy.js";
 import { Box, Stack, Typography } from "@mui/material";
 import { tickDateFormatLookup, tooltipDateFormatLookup } from "./chartUtilFunctions.js";
 /**

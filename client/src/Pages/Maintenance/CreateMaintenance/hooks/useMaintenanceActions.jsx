@@ -6,7 +6,7 @@ import {
 	MS_PER_HOUR,
 	MS_PER_DAY,
 	MS_PER_WEEK,
-} from "../../../../Utils/timeUtils.js";
+} from "../../../../Utils/timeUtilsLegacy.js";
 
 const useMaintenanceActions = () => {
 	const MS_LOOKUP = {

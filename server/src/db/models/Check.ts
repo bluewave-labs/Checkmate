@@ -71,6 +71,7 @@ const cpuSchema = new Schema<CheckCpuInfo>(
 		physical_core: { type: Number, default: 0 },
 		logical_core: { type: Number, default: 0 },
 		frequency: { type: Number, default: 0 },
+		current_frequency: { type: Number, default: 0 },
 		temperature: { type: [Number], default: [] },
 		free_percent: { type: Number, default: 0 },
 		usage_percent: { type: Number, default: 0 },
@@ -92,11 +93,18 @@ const diskSchema = new Schema<CheckDiskInfo>(
 	{
 		device: { type: String, default: "" },
 		mountpoint: { type: String, default: "" },
-		read_speed_bytes: { type: Number, default: 0 },
-		write_speed_bytes: { type: Number, default: 0 },
 		total_bytes: { type: Number, default: 0 },
 		free_bytes: { type: Number, default: 0 },
+		used_bytes: { type: Number, default: 0 },
 		usage_percent: { type: Number, default: 0 },
+		total_inodes: { type: Number, default: 0 },
+		free_inodes: { type: Number, default: 0 },
+		used_inodes: { type: Number, default: 0 },
+		inodes_usage_percent: { type: Number, default: 0 },
+		read_bytes: { type: Number, default: 0 },
+		write_bytes: { type: Number, default: 0 },
+		read_time: { type: Number, default: 0 },
+		write_time: { type: Number, default: 0 },
 	},
 	{ _id: false }
 );
@@ -106,6 +114,7 @@ const hostSchema = new Schema<CheckHostInfo>(
 		os: { type: String, default: "" },
 		platform: { type: String, default: "" },
 		kernel_version: { type: String, default: "" },
+		pretty_name: { type: String, default: "" },
 	},
 	{ _id: false }
 );
@@ -284,12 +293,12 @@ const CheckSchema = new Schema<CheckDocument>(
 	}
 );
 
-CheckSchema.index({ updatedAt: 1 });
-CheckSchema.index({ "metadata.monitorId": 1, updatedAt: 1 });
-CheckSchema.index({ "metadata.monitorId": 1, updatedAt: -1 });
 CheckSchema.index({ "metadata.monitorId": 1, createdAt: -1 });
-CheckSchema.index({ "metadata.teamId": 1, updatedAt: -1 });
+CheckSchema.index({ "metadata.monitorId": 1, createdAt: 1 });
+CheckSchema.index({ createdAt: 1 });
 CheckSchema.index({ "metadata.teamId": 1, createdAt: -1 });
+CheckSchema.index({ "metadata.monitorId": 1, "metadata.type": 1, createdAt: -1 });
+CheckSchema.index({ "metadata.teamId": 1, status: 1, createdAt: -1 });
 
 const CheckModel = model<CheckDocument>("Check", CheckSchema);
 

@@ -66,7 +66,8 @@ class CheckController {
 
 	getChecksSummaryByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const summary = await this.checkService.getChecksSummaryByTeamId({ teamId: req?.user?.teamId });
+			const dateRange = req.query?.dateRange || "hour";
+			const summary = await this.checkService.getChecksSummaryByTeamId({ teamId: req?.user?.teamId, dateRange });
 			return res.status(200).json({
 				success: true,
 				msg: "Checks summary retrieved successfully",
@@ -82,7 +83,7 @@ class CheckController {
 			await deleteChecksParamValidation.validateAsync(req.params);
 
 			const deletedCount = await this.checkService.deleteChecks({
-				monitorId: req.params.monitorId,
+				monitorId: req.params.monitorId as string,
 				teamId: req?.user?.teamId,
 			});
 

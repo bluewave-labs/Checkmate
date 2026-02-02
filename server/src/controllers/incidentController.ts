@@ -67,7 +67,7 @@ class IncidentController {
 	getIncidentById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const teamId = requireTeamId(req.user?.teamId);
-			const incidentId = req.params.incidentId;
+			const incidentId = req.params.incidentId as string;
 			if (!incidentId) {
 				throw new AppError({ message: "Incident ID is required", service: SERVICE_NAME, status: 400 });
 			}

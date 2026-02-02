@@ -93,7 +93,7 @@ class MonitorController {
 			const dateRange = optionalString(req?.query?.dateRange, "dateRange") || "recent";
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const monitor = await this.monitorService.getHardwareDetailsById({
+			const data = await this.monitorService.getHardwareDetailsById({
 				teamId,
 				monitorId,
 				dateRange,
@@ -102,7 +102,7 @@ class MonitorController {
 			return res.status(200).json({
 				success: true,
 				msg: "Hardware details retrieved successfully",
-				data: monitor,
+				data: data,
 			});
 		} catch (error) {
 			next(error);
@@ -324,7 +324,6 @@ class MonitorController {
 		try {
 			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
 			await getMonitorsWithChecksQueryValidation.validateAsync(req.query);
-
 			const explain = optionalBoolean(req?.query?.explain, "explain");
 			const limit = optionalNumber(req?.query?.limit, "limit");
 			const page = optionalNumber(req?.query?.page, "page");

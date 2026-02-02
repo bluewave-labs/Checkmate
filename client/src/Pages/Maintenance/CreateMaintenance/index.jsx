@@ -228,6 +228,13 @@ const CreateMaintenance = () => {
 									slotProps={{
 										switchViewButton: { sx: { display: "none" } },
 										nextIconButton: { sx: { ml: theme.spacing(2) } },
+										day: {
+											sx: {
+												"&.MuiPickersDay-root.Mui-disabled": {
+													color: theme.palette.primary.contrastTextTertiary,
+												},
+											},
+										},
 										field: {
 											sx: {
 												width: "fit-content",

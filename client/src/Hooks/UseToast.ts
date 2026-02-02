@@ -1,4 +1,5 @@
 import { toast, type ToastOptions } from "react-toastify";
+
 export const useToast = () => {
 	const showToast = (message: string, options?: ToastOptions) => {
 		toast.dismiss();

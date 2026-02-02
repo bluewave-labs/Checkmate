@@ -2,25 +2,36 @@ import MuiBreadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export const Breadcrumb = ({ breadcrumbOverride }: { breadcrumbOverride?: string[] }) => {
+const isId = (segment: string): boolean => {
+	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
+};
+
+const actionSegments = ["create", "configure"];
+
+export const Breadcrumb = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const location = useLocation();
 
-	// Don't show breadcrumb on dashboard
-	if (location.pathname === "/" || location.pathname === "/uptime") {
-		return null;
-	}
+	const segments = location.pathname.split("/").filter((x) => x);
 
-	const pathnames = breadcrumbOverride || location.pathname.split("/").filter((x) => x);
+	// Build simplified breadcrumb: "uptime" or "uptime / details" or "uptime / create"
+	const basePage = segments[0] || t("common.breadcrumbs.home");
 
-	// Don't show if only one level (e.g., /uptime)
-	if (pathnames.length === 0) {
-		return null;
-	}
+	const secondSegment = segments[1];
+	const isActionPage = secondSegment && actionSegments.includes(secondSegment); // create/config
+	const isDetailsPage = secondSegment && isId(secondSegment); // details
+	const hasSubPage = isActionPage || isDetailsPage;
+
+	const getSubPageLabel = (): string => {
+		if (isActionPage) {
+			return secondSegment.charAt(0).toUpperCase() + secondSegment.slice(1);
+		}
+		return t("common.breadcrumbs.details");
+	};
 
 	return (
 		<MuiBreadcrumbs
@@ -38,80 +49,45 @@ export const Breadcrumb = ({ breadcrumbOverride }: { breadcrumbOverride?: string
 				},
 			}}
 		>
-			<Link
-				to="/uptime"
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: theme.spacing(2),
-					textDecoration: "none",
-					color: theme.palette.text.secondary,
-				}}
-			>
-				<Home
-					size={16}
-					strokeWidth={1.5}
-				/>
+			{hasSubPage ? (
+				<Link
+					to={`/${basePage}`}
+					style={{ textDecoration: "none" }}
+				>
+					<Typography
+						sx={{
+							fontSize: "14px",
+							color: theme.palette.text.secondary,
+							"&:hover": {
+								color: theme.palette.primary.main,
+							},
+						}}
+					>
+						{basePage.charAt(0).toUpperCase() + basePage.slice(1)}
+					</Typography>
+				</Link>
+			) : (
 				<Typography
 					sx={{
 						fontSize: "14px",
-						color: theme.palette.text.secondary,
-						"&:hover": {
-							color: theme.palette.primary.main,
-						},
+						fontWeight: 600,
+						color: theme.palette.primary.main,
 					}}
 				>
-					Home
+					{basePage.charAt(0).toUpperCase() + basePage.slice(1)}
 				</Typography>
-			</Link>
-			{pathnames.map((value, index) => {
-				const last = index === pathnames.length - 1;
-				const to = `/${pathnames.slice(0, index + 1).join("/")}`;
-
-				let displayName = "";
-
-				// Paths that are IDs should be detail pages
-				if (value.length === 24 || value.match(/^[a-f0-9-]{36}$/)) {
-					displayName = "Details";
-				} else {
-					displayName =
-						t(`common.breadcrumbs.${value}`) ||
-						value.charAt(0).toUpperCase() + value.slice(1);
-				}
-
-				return last ? (
-					<Typography
-						key={to}
-						sx={{
-							fontSize: "14px",
-							fontWeight: 600,
-							color: theme.palette.primary.main,
-						}}
-					>
-						{displayName}
-					</Typography>
-				) : (
-					<Link
-						key={to}
-						to={to}
-						style={{
-							textDecoration: "none",
-						}}
-					>
-						<Typography
-							sx={{
-								fontSize: "14px",
-								color: theme.palette.text.secondary,
-								"&:hover": {
-									color: theme.palette.primary.main,
-								},
-							}}
-						>
-							{displayName}
-						</Typography>
-					</Link>
-				);
-			})}
+			)}
+			{hasSubPage && (
+				<Typography
+					sx={{
+						fontSize: "14px",
+						fontWeight: 600,
+						color: theme.palette.primary.main,
+					}}
+				>
+					{getSubPageLabel()}
+				</Typography>
+			)}
 		</MuiBreadcrumbs>
 	);
 };

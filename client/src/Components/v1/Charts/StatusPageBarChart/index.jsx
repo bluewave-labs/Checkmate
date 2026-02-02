@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../Utils/timeUtilsLegacy.js";
 import { useEffect, useState, forwardRef } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";

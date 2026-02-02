@@ -12,7 +12,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { formatDateWithTz } from "../../../../Utils/timeUtils.js";
+import { formatDateWithTz } from "../../../../Utils/timeUtilsLegacy.js";
 import {
 	tooltipDateFormatLookup,
 	tickDateFormatLookup,
