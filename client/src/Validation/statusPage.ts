@@ -15,7 +15,7 @@ export const statusPageSchema = z.object({
 		),
 	timezone: z.string().optional(),
 	color: z.string().min(1, "Color is required"),
-	monitors: z.array(z.string()),
+	monitors: z.array(z.string()).min(1, "At least one monitor is required"),
 	isPublished: z.boolean(),
 	showCharts: z.boolean(),
 	showUptimePercentage: z.boolean(),

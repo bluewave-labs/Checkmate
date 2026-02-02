@@ -2,8 +2,9 @@ import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import Divider from "@mui/material/Divider";
-import { Trash2 } from "lucide-react";
+import { Trash2, GripVertical } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 import {
 	ImageUpload,
 	SwitchComponent,
@@ -135,8 +136,11 @@ const CreateStatusPage = () => {
 					<Controller
 						name="monitors"
 						control={control}
-						render={({ field }) => {
-							const selectedMonitors = monitors.filter((m) => field.value.includes(m.id));
+						render={({ field, fieldState }) => {
+							// Preserve order from field.value (IDs) when building selectedMonitors
+							const selectedMonitors = field.value
+								.map((id: string) => monitors.find((m) => m.id === id))
+								.filter((m): m is Monitor => m !== undefined);
 							return (
 								<Stack spacing={theme.spacing(4)}>
 									<Autocomplete
@@ -157,37 +161,76 @@ const CreateStatusPage = () => {
 												placeholder={t(
 													"pages.statusPages.form.monitors.option.monitors.placeholder"
 												)}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
 											/>
 										)}
 									/>
 									{selectedMonitors.length > 0 && (
-										<Stack
-											flex={1}
-											width="100%"
+										<DragDropContext
+											onDragEnd={(result: DropResult) => {
+												if (!result.destination) return;
+												const reordered = Array.from(field.value);
+												const [removed] = reordered.splice(result.source.index, 1);
+												reordered.splice(result.destination.index, 0, removed);
+												field.onChange(reordered);
+											}}
 										>
-											{selectedMonitors.map((monitor, index) => (
-												<Stack
-													direction="row"
-													alignItems="center"
-													key={monitor.id}
-													width="100%"
-												>
-													<Typography flexGrow={1}>{monitor.name}</Typography>
-													<IconButton
-														size="small"
-														onClick={() => {
-															field.onChange(
-																field.value.filter((id: string) => id !== monitor.id)
-															);
-														}}
-														aria-label="Remove monitor"
+											<Droppable droppableId="monitors-list">
+												{(provided) => (
+													<Stack
+														{...provided.droppableProps}
+														ref={provided.innerRef}
+														flex={1}
+														width="100%"
 													>
-														<Trash2 size={16} />
-													</IconButton>
-													{index < selectedMonitors.length - 1 && <Divider />}
-												</Stack>
-											))}
-										</Stack>
+														{selectedMonitors.map((monitor, index) => (
+															<Draggable
+																key={monitor.id}
+																draggableId={monitor.id}
+																index={index}
+															>
+																{(provided) => (
+																	<Stack
+																		ref={provided.innerRef}
+																		{...provided.draggableProps}
+																		{...provided.dragHandleProps}
+																		direction="row"
+																		alignItems="center"
+																		spacing={theme.spacing(4)}
+																		padding={theme.spacing(4)}
+																		marginTop={theme.spacing(2)}
+																		borderRadius={1}
+																		sx={{
+																			border: `1px solid ${theme.palette.divider}`,
+																			cursor: "grab",
+																			"&:active": { cursor: "grabbing" },
+																		}}
+																	>
+																		<GripVertical size={20} />
+																		<Typography flexGrow={1}>{monitor.name}</Typography>
+																		<IconButton
+																			size="small"
+																			onClick={() => {
+																				field.onChange(
+																					field.value.filter(
+																						(id: string) => id !== monitor.id
+																					)
+																				);
+																			}}
+																			aria-label="Remove monitor"
+																		>
+																			<Trash2 size={16} />
+																		</IconButton>
+																	</Stack>
+																)}
+															</Draggable>
+														))}
+														{provided.placeholder}
+													</Stack>
+												)}
+											</Droppable>
+										</DragDropContext>
 									)}
 								</Stack>
 							);
