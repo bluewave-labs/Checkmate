@@ -95,7 +95,7 @@ export const HeaderMonitorControls = ({
 							await refetch();
 						}}
 					>
-						{monitor?.isActive ? t("pause") : t("resume")}
+						{monitor?.isActive ? t("common.buttons.pause") : t("common.buttons.resume")}
 					</Button>
 				)}
 				{isAdmin && (
@@ -105,7 +105,7 @@ export const HeaderMonitorControls = ({
 						startIcon={<Icon icon={Settings} />}
 						onClick={() => navigate(`/${path}/configure/${monitor.id}`)}
 					>
-						Configure
+						{t("common.buttons.configure")}
 					</Button>
 				)}
 			</Stack>
@@ -155,7 +155,7 @@ export const HeaderDeleteControls = ({
 							await refetch();
 						}}
 					>
-						{monitor?.isActive ? t("pause") : t("resume")}
+						{monitor?.isActive ? t("common.buttons.pause") : t("common.buttons.resume")}
 					</Button>
 				)}
 				{isAdmin && (

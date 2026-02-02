@@ -2,6 +2,13 @@ import type { Monitor, MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/v2Theme";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
 
+export const determineState = (monitor: Monitor) => {
+	if (typeof monitor === "undefined") return "pending";
+	if (monitor?.isActive === false) return "paused";
+	if (monitor?.status === undefined) return "pending";
+	return monitor?.status == true ? "up" : "down";
+};
+
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
 		http: "uptime",

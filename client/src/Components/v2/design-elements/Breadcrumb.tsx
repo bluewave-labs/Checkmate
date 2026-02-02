@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { ReactNode } from "react";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
@@ -11,28 +12,8 @@ const isId = (segment: string): boolean => {
 
 const actionSegments = ["create", "configure"];
 
-export const Breadcrumb = () => {
-	const { t } = useTranslation();
+const BreadcrumbWrapper = ({ children }: { children: ReactNode }) => {
 	const theme = useTheme();
-	const location = useLocation();
-
-	const segments = location.pathname.split("/").filter((x) => x);
-
-	// Build simplified breadcrumb: "uptime" or "uptime / details" or "uptime / create"
-	const basePage = segments[0] || t("common.breadcrumbs.home");
-
-	const secondSegment = segments[1];
-	const isActionPage = secondSegment && actionSegments.includes(secondSegment); // create/config
-	const isDetailsPage = secondSegment && isId(secondSegment); // details
-	const hasSubPage = isActionPage || isDetailsPage;
-
-	const getSubPageLabel = (): string => {
-		if (isActionPage) {
-			return secondSegment.charAt(0).toUpperCase() + secondSegment.slice(1);
-		}
-		return t("common.breadcrumbs.details");
-	};
-
 	return (
 		<MuiBreadcrumbs
 			separator={
@@ -49,6 +30,72 @@ export const Breadcrumb = () => {
 				},
 			}}
 		>
+			{children}
+		</MuiBreadcrumbs>
+	);
+};
+
+export const Breadcrumb = ({
+	breadcrumbOverride,
+}: {
+	breadcrumbOverride?: string[] | undefined;
+}) => {
+	const { t } = useTranslation();
+	const theme = useTheme();
+	const location = useLocation();
+
+	// If override is an empty array, hide entirely
+	if (breadcrumbOverride !== undefined && breadcrumbOverride.length === 0) {
+		return null;
+	}
+
+	// If override has items, render them directly
+	if (breadcrumbOverride !== undefined && breadcrumbOverride.length > 0) {
+		return (
+			<BreadcrumbWrapper>
+				{breadcrumbOverride.map((item, index) => {
+					const isLast = index === breadcrumbOverride.length - 1;
+					return (
+						<Typography
+							key={index}
+							sx={{
+								fontSize: "14px",
+								fontWeight: isLast ? 600 : 400,
+								color: isLast ? theme.palette.primary.main : theme.palette.text.secondary,
+							}}
+						>
+							{item}
+						</Typography>
+					);
+				})}
+			</BreadcrumbWrapper>
+		);
+	}
+
+	// Default behavior: use location pathname
+	const segments = location.pathname.split("/").filter((x) => x);
+
+	if (segments.length === 0) {
+		return null;
+	}
+
+	// Build simplified breadcrumb: "uptime" or "uptime / details" or "uptime / create"
+	const basePage = segments[0] || t("common.breadcrumbs.home");
+
+	const secondSegment = segments[1];
+	const isActionPage = secondSegment && actionSegments.includes(secondSegment);
+	const isDetailsPage = secondSegment && isId(secondSegment);
+	const hasSubPage = isActionPage || isDetailsPage;
+
+	const getSubPageLabel = (): string => {
+		if (isActionPage) {
+			return secondSegment.charAt(0).toUpperCase() + secondSegment.slice(1);
+		}
+		return t("common.breadcrumbs.details");
+	};
+
+	return (
+		<BreadcrumbWrapper>
 			{hasSubPage ? (
 				<Link
 					to={`/${basePage}`}
@@ -88,6 +135,6 @@ export const Breadcrumb = () => {
 					{getSubPageLabel()}
 				</Typography>
 			)}
-		</MuiBreadcrumbs>
+		</BreadcrumbWrapper>
 	);
 };
