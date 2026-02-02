@@ -11,10 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils.jsx";
 import { getTouchedFieldErrors } from "../../../Validation/error.js";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { clearAuthState } from "../../../Features/Auth/authSlice.js";
 import TextLink from "@/Components/v1/TextLink/index.jsx";
-import { useLocation } from "react-router-dom";
 
 const defaultPasswordsState = {
 	password: "",
