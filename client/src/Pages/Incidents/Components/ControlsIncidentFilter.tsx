@@ -28,7 +28,9 @@ export const ControlsIncidentFilter = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-	const isFilterActive = selectedMonitor !== "0" || (selectedResolutionType !== "" && selectedResolutionType !== "all");
+	const isFilterActive =
+		selectedMonitor !== "0" ||
+		(selectedResolutionType !== "" && selectedResolutionType !== "all");
 
 	return (
 		<Stack

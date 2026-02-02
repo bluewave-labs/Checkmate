@@ -408,7 +408,7 @@
 				"status": {
 					"active": "Active",
 					"resolved": "Resolved",
-			"na": "N/A"
+					"na": "N/A"
 				},
 				"actions": {
 					"details": "Details",

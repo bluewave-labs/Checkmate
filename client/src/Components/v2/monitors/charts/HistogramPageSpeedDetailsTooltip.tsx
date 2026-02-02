@@ -8,8 +8,9 @@ import type { TooltipProps } from "recharts";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 
-interface HistogramPageSpeedScoresTooltipProps
-	extends Partial<TooltipProps<number, string>> {
+interface HistogramPageSpeedScoresTooltipProps extends Partial<
+	TooltipProps<number, string>
+> {
 	config: Record<string, ConfigItem>;
 }
 export const HistogramPageSpeedScoresTooltip = ({

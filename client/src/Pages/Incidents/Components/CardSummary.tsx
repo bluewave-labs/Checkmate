@@ -86,7 +86,9 @@ interface SummaryCardActiveIncidentsProps {
 	summary?: IncidentSummary | null;
 }
 
-export const SummaryCardActiveIncidents = ({ summary }: SummaryCardActiveIncidentsProps) => {
+export const SummaryCardActiveIncidents = ({
+	summary,
+}: SummaryCardActiveIncidentsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
@@ -184,7 +186,9 @@ interface SummaryCardLatestIncidentsProps {
 	summary?: IncidentSummary | null;
 }
 
-export const SummaryCardLatestIncidents = ({ summary }: SummaryCardLatestIncidentsProps) => {
+export const SummaryCardLatestIncidents = ({
+	summary,
+}: SummaryCardLatestIncidentsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
@@ -232,7 +236,11 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 			<SummaryItem
 				icon={<Wrench size={18} />}
 				label={t("pages.incidents.summaryCard.incidentStats.avgResolutionTime")}
-				value={summary.total > 0 ? `${summary.avgResolutionTimeHours || 0} hours` : t("common.labels.na")}
+				value={
+					summary.total > 0
+						? `${summary.avgResolutionTimeHours || 0} hours`
+						: t("common.labels.na")
+				}
 			/>
 		</SummaryCard>
 	);
