@@ -397,7 +397,7 @@
 
 			"table": {
 				"activeIncidents": "Active Incidents",
-				"allIncidents": "All Incidents",
+				"resolvedIncidents": "Resolved Incidents",
 				"headers": {
 					"startTime": "Start Time",
 					"endTime": "End Time",

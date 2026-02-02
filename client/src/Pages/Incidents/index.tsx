@@ -1,5 +1,7 @@
 import { BasePage } from "@/Components/v2/design-elements";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
 import { useTranslation } from "react-i18next";
 import {
 	SummaryCardActiveIncidents,
@@ -47,9 +49,9 @@ const IncidentsPage = () => {
 	const incidentsUrl = useMemo(() => {
 		const params = new URLSearchParams();
 		if (selectedMonitor !== "0") params.append("monitorId", selectedMonitor);
-		if (filter === "active") params.append("status", "true");
-		else if (filter === "resolved") params.append("status", "false");
-		else if (filter === "manual" || filter === "automatic")
+		// Always show only resolved incidents (active ones are in the separate table above)
+		params.append("status", "false");
+		if (filter === "manual" || filter === "automatic")
 			params.append("resolutionType", filter);
 		params.append("sortOrder", "desc");
 		if (dateRange !== "all") params.append("dateRange", dateRange);
@@ -89,14 +91,12 @@ const IncidentsPage = () => {
 	}, [selectedMonitor, activeIncidentsPage, activeIncidentsRowsPerPage]);
 
 	// Fetch active incidents
-	const {
-		data: activeIncidentsData,
-		refetch: refetchActiveIncidents,
-	} = useGet<IncidentsResponse>(
-		activeIncidentsUrl,
-		{},
-		{ keepPreviousData: true, refreshInterval: 10000 }
-	);
+	const { data: activeIncidentsData, refetch: refetchActiveIncidents } =
+		useGet<IncidentsResponse>(
+			activeIncidentsUrl,
+			{},
+			{ keepPreviousData: true, refreshInterval: 10000 }
+		);
 
 	// Fetch incident summary
 	const {
@@ -129,7 +129,10 @@ const IncidentsPage = () => {
 	void networkError;
 
 	const handleOpenDetails = (incidentId: string) => {
-		const incident = incidents.find((i) => i.id === incidentId) ?? activeIncidents.find((i) => i.id === incidentId) ?? null;
+		const incident =
+			incidents.find((i) => i.id === incidentId) ??
+			activeIncidents.find((i) => i.id === incidentId) ??
+			null;
 		const monitor = monitorsData?.find((m) => m.id === incident?.monitorId) ?? null;
 		setIsDetailsDialogOpen(true);
 		setSelectedIncident(incident);
@@ -173,27 +176,42 @@ const IncidentsPage = () => {
 				<SummaryCardLatestIncidents summary={summaryData} />
 				<SummaryCardStats summary={summaryData} />
 			</Stack>
+			<Typography
+				variant="h6"
+				sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+			>
+				{t("pages.incidents.table.activeIncidents")}
+			</Typography>
+
+			{activeIncidentsCount > 0 && (
+				<>
+					<IncidentsTable
+						incidents={activeIncidents}
+						monitors={monitorsData ?? undefined}
+						incidentsCount={activeIncidentsCount}
+						page={activeIncidentsPage}
+						setPage={setActiveIncidentsPage}
+						rowsPerPage={activeIncidentsRowsPerPage}
+						setRowsPerPage={setActiveIncidentsRowsPerPage}
+						onOpenDetails={handleOpenDetails}
+						onResolve={handleResolve}
+					/>
+					<Divider />
+				</>
+			)}
+
+			<Typography
+				variant="h6"
+				sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+			>
+				{t("pages.incidents.table.resolvedIncidents")}
+			</Typography>
 			<HeaderTimeRange
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 				isLoading={isLoadingIncidents}
 			/>
-			{activeIncidentsCount > 0 && (
-				<IncidentsTable
-					title={t("pages.incidents.table.activeIncidents")}
-					incidents={activeIncidents}
-					monitors={monitorsData ?? undefined}
-					incidentsCount={activeIncidentsCount}
-					page={activeIncidentsPage}
-					setPage={setActiveIncidentsPage}
-					rowsPerPage={activeIncidentsRowsPerPage}
-					setRowsPerPage={setActiveIncidentsRowsPerPage}
-					onOpenDetails={handleOpenDetails}
-					onResolve={handleResolve}
-				/>
-			)}
 			<IncidentsTable
-				title={t("pages.incidents.table.allIncidents")}
 				incidents={incidents}
 				monitors={monitorsData ?? undefined}
 				incidentsCount={incidentsCount}

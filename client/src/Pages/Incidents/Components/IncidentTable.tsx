@@ -18,7 +18,6 @@ import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
 interface IncidentsTableProps {
-	title?: string;
 	incidents?: Incident[];
 	monitors?: Monitor[];
 	incidentsCount: number;
@@ -103,7 +102,11 @@ export const IncidentsTable = ({
 					return (
 						<ValueLabel
 							value={isActive ? "negative" : "positive"}
-							text={isActive ? t("pages.incidents.table.status.active") : t("pages.incidents.table.status.resolved")}
+							text={
+								isActive
+									? t("pages.incidents.table.status.active")
+									: t("pages.incidents.table.status.resolved")
+							}
 						/>
 					);
 				},
@@ -112,11 +115,7 @@ export const IncidentsTable = ({
 				id: "startTime",
 				content: t("pages.incidents.table.headers.startTime"),
 				render: (row) => {
-					return formatDateWithTz(
-						row.createdAt,
-						"YYYY-MM-DD HH:mm:ss A",
-						uiTimezone
-					);
+					return formatDateWithTz(row.createdAt, "YYYY-MM-DD HH:mm:ss A", uiTimezone);
 				},
 			},
 			{
@@ -124,11 +123,7 @@ export const IncidentsTable = ({
 				content: t("pages.incidents.table.headers.endTime"),
 				render: (row) => {
 					if (row.endTime) {
-						return formatDateWithTz(
-							row.endTime,
-							"YYYY-MM-DD HH:mm:ss A",
-							uiTimezone
-						);
+						return formatDateWithTz(row.endTime, "YYYY-MM-DD HH:mm:ss A", uiTimezone);
 					}
 					return "-";
 				},
@@ -165,7 +160,12 @@ export const IncidentsTable = ({
 					let value: ValueType = "neutral";
 					if (code < 300) value = "positive";
 					else if (code >= 400) value = "negative";
-					return <ValueLabel value={value} text={String(code)} />;
+					return (
+						<ValueLabel
+							value={value}
+							text={String(code)}
+						/>
+					);
 				},
 			},
 			{
@@ -202,14 +202,6 @@ export const IncidentsTable = ({
 
 	return (
 		<Box>
-			{title && (
-				<Typography
-					variant="h6"
-					sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
-				>
-					{title}
-				</Typography>
-			)}
 			<Table
 				headers={getHeaders()}
 				data={incidents}
