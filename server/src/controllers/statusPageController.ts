@@ -81,7 +81,7 @@ class StatusPageController {
 			const settings = await this.settingsService.getDBSettings();
 			const showURL = settings.showURL;
 
-			const monitors = await this.monitorsRepository.findByIdsWithChecks(statusPage.monitors);
+			const monitors = await this.monitorsRepository.findByIds(statusPage.monitors);
 			const normalizedMonitors = monitors.map((monitor) => {
 				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
