@@ -38,7 +38,7 @@ import Incidents from "../Pages/Incidents/";
 // Status pages
 import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
 import StatusPages from "../Pages/StatusPage/StatusPages";
-import Status from "../Pages/StatusPage/Status/index.jsx";
+import Status from "../Pages/StatusPage/Status";
 
 import Notifications from "../Pages/Notifications";
 import CreateNotifications from "../Pages/Notifications/create";
@@ -238,7 +238,13 @@ const Routes = () => {
 
 				<Route
 					path="status/uptime/:url"
-					element={<Status />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Status />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
@@ -360,7 +366,13 @@ const Routes = () => {
 			/>
 			<Route
 				path="/status/uptime/public/:url"
-				element={<Status />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<Status />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route

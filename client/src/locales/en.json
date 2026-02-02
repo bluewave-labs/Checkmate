@@ -22,7 +22,8 @@
 			"cancel": "Cancel",
 			"confirm": "Confirm",
 			"save": "Save",
-			"test": "Test"
+			"test": "Test",
+			"configure": "Configure"
 		},
 
 		"alerts": {
@@ -202,10 +203,6 @@
 		"uptime": {
 			"table": {
 				"headers": {
-					"name": "Status page name",
-					"url": "Public URL"
-				},
-				"headers": {
 					"responseTime": "Response time"
 				}
 			},
@@ -217,10 +214,6 @@
 		},
 		"checks": {
 			"table": {
-				"headers": {
-					"name": "Status page name",
-					"url": "Public URL"
-				},
 				"headers": {
 					"dateTime": "Date & time",
 					"statusCode": "Status code"
@@ -249,10 +242,6 @@
 				"actionButton": "Let's create your first PageSpeed monitor!"
 			},
 			"table": {
-				"headers": {
-					"name": "Status page name",
-					"url": "Public URL"
-				},
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
 				}
@@ -285,10 +274,6 @@
 				"actionButton": "Let's create your first infrastructure monitor!"
 			},
 			"table": {
-				"headers": {
-					"name": "Status page name",
-					"url": "Public URL"
-				},
 				"headers": {
 					"cpu": "CPU",
 					"disk": "Disk",
@@ -349,10 +334,6 @@
 				"title": "Notification channles are used to:"
 			},
 			"table": {
-				"headers": {
-					"name": "Status page name",
-					"url": "Public URL"
-				},
 				"headers": {
 					"destination": "Destination"
 				}
@@ -417,10 +398,6 @@
 			},
 
 			"table": {
-				"headers": {
-					"name": "Status page name",
-					"url": "Public URL"
-				},
 				"activeIncidents": "Active Incidents",
 				"resolvedIncidents": "Resolved Incidents",
 				"headers": {
@@ -495,6 +472,13 @@
 					"Keep users informed about outages and performance"
 				],
 				"title": "A status page is used to:"
+			},
+			"serviceStauts": "Service stauts",
+			"statusBar": {
+				"allUp": "All systems operational",
+				"allDown": "All systems down",
+				"degraded": "Degraded performance",
+				"unknown": "Unknown status"
 			}
 		}
 	},
