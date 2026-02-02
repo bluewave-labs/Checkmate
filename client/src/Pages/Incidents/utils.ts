@@ -1,10 +1,14 @@
+import type { Incident, IncidentSummaryItem } from "@/Types/Incident";
 import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
-const useGetIncidentsDuration = (incident, isActive) => {
+
+type IncidentLike = Pick<Incident, "startTime" | "endTime" | "status">;
+
+export const getIncidentsDuration = (incident: IncidentLike | IncidentSummaryItem) => {
 	if (!incident?.startTime) {
 		return "-";
 	}
 	const startTime = new Date(incident?.startTime);
-	const endTime = isActive
+	const endTime = incident.status
 		? new Date()
 		: incident?.endTime
 			? new Date(incident.endTime)
@@ -22,4 +26,3 @@ const useGetIncidentsDuration = (incident, isActive) => {
 
 	return getHumanReadableDuration(durationMs);
 };
-export default useGetIncidentsDuration;

@@ -98,7 +98,7 @@ export const ValueLabel = ({ value, text }: { value: ValueType; text: string }) 
 				borderRadius="50%"
 				marginRight="5px"
 			/>
-			{transformedText}
+			<Typography>{transformedText}</Typography>
 		</BaseBox>
 	);
 };

@@ -1,8 +1,3 @@
-// export type IncidentResolutionType = "automatic" | "manual" | null;
-
-export const IncidentResolutionTypes = ["automatic", "manual", null] as const;
-export type IncidentResolutionType = (typeof IncidentResolutionTypes)[number];
-
 export interface Incident {
 	id: string;
 	monitorId: string;
@@ -12,12 +7,17 @@ export interface Incident {
 	status: boolean;
 	message?: string | null;
 	statusCode?: number | null;
-	resolutionType: IncidentResolutionType;
+	resolutionType: "automatic" | "manual" | null;
 	resolvedBy?: string | null;
 	resolvedByEmail?: string | null;
 	comment?: string | null;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface IncidentsResponse {
+	incidents: Incident[];
+	count: number;
 }
 
 export interface IncidentSummaryTopMonitor {
@@ -33,7 +33,7 @@ export interface IncidentSummaryItem {
 	status: boolean;
 	startTime: string;
 	endTime: string | null;
-	resolutionType: IncidentResolutionType;
+	resolutionType: "automatic" | "manual" | null;
 	message: string | null;
 	statusCode: number | null;
 	createdAt: string;

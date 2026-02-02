@@ -6,7 +6,10 @@
 			"details": "Details"
 		},
 		"labels": {
-			"responseTime": "Response time"
+			"responseTime": "Response time",
+			"active": "Active",
+			"resolved": "Resolved",
+			"na": "N/A"
 		},
 		"buttons": {
 			"toggleTheme": "Toggles light & dark",
@@ -21,6 +24,7 @@
 			"save": "Save",
 			"test": "Test"
 		},
+
 		"alerts": {
 			"pageSpeedApiKey": {
 				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
@@ -87,6 +91,12 @@
 				"day": "Day",
 				"week": "Week",
 				"month": "Month"
+			},
+			"description": {
+				"recent": "Showing statistics for past 2 hours.",
+				"day": "Showing statistics for past 24 hours.",
+				"week": "Showing statistics for past 7 days.",
+				"month": "Showing statistics for past 30 days."
 			}
 		}
 	},
@@ -221,6 +231,15 @@
 			}
 		},
 		"pageSpeed": {
+			"fallback": {
+				"checks": [
+					"Report on the user experience of a page",
+					"Help analyze webpage speed",
+					"Give suggestions on how the page can be improved"
+				],
+				"title": "A PageSpeed monitor is used to:",
+				"actionButton": "Let's create your first PageSpeed monitor!"
+			},
 			"table": {
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
@@ -244,6 +263,15 @@
 			}
 		},
 		"infrastructure": {
+			"fallback": {
+				"checks": [
+					"Track the performance of your servers",
+					"Identify bottlenecks and optimize usage",
+					"Ensure reliability with real-time monitoring"
+				],
+				"title": "An infrastructure monitor is used to:",
+				"actionButton": "Let's create your first infrastructure monitor!"
+			},
 			"table": {
 				"headers": {
 					"cpu": "CPU",
@@ -350,22 +378,82 @@
 					"title": "Matrix configuration"
 				}
 			}
+		},
+		"incidents": {
+			"summaryCard": {
+				"activeIncidents": {
+					"title": "Active Incidents",
+					"active_zero": "No active incidents",
+					"active_one": "{{count}} Active incident",
+					"active_other": "{{count}} Active incidents"
+				},
+				"latestIncidents": { "title": "Latest Incidents" },
+				"incidentStats": {
+					"title": "Incident Statistics",
+					"totalIncidents": "Total incidents",
+					"mostAffectedMonitor": "Most affected monitor",
+					"avgResolutionTime": "Average resolution time"
+				}
+			},
+
+			"table": {
+				"activeIncidents": "Active Incidents",
+				"resolvedIncidents": "Resolved Incidents",
+				"headers": {
+					"startTime": "Start Time",
+					"endTime": "End Time",
+					"resolutionType": "Resolution Type",
+					"statusCode": "Status Code"
+				},
+				"status": {
+					"active": "Active",
+					"resolved": "Resolved",
+					"na": "N/A"
+				},
+				"actions": {
+					"details": "Details",
+					"goToMonitor": "Go to monitor",
+					"resolveManually": "Resolve Manually"
+				}
+			},
+			"filters": {
+				"monitor": "Monitor",
+				"allMonitors": "All monitors",
+				"resolutionType": "Resolution type",
+				"resolutionTypes": {
+					"automatic": "Automatic",
+					"manual": "Manual"
+				},
+				"clearFilters": "Clear Filters"
+			},
+			"dialog": {
+				"details": {
+					"title": "Incident details",
+					"resolve": "Resolve Incident",
+					"overview": "Overview",
+					"status": "Status:",
+					"monitor": "Monitor:",
+					"url": "URL:",
+					"analysis": "Incident analysis",
+					"timeline": "Timeline",
+					"detailsLabel": "Details",
+					"startedAt": "Started at:",
+					"statusCode": "Status code:",
+					"downtime": "Downtime:",
+					"message": "Message:",
+					"resolutionDetails": "Resolution details",
+					"resolvedAt": "Resolved at:",
+					"resolutionType": "Type:",
+					"resolvedBy": "Resolved by:",
+					"comment": "Comment:",
+					"resolutionTypes": {
+						"automatic": "Automatic",
+						"manual": "Manual"
+					}
+				}
+			}
 		}
 	},
-	"incidentsTableNoIncidents": "No incidents recorded",
-	"incidentsTablePaginationLabel": "incidents",
-	"incidentsTableMonitorName": "Monitor Name",
-	"incidentsTableStatus": "Status",
-	"incidentsTableStatusCode": "Status Code",
-	"incidentsTableMessage": "Message",
-	"incidentsOptionsHeader": "Incidents for:",
-	"incidentsOptionsHeaderFilterBy": "Filter by:",
-	"incidentsOptionsHeaderFilterAll": "All",
-	"incidentsOptionsHeaderShow": "Show:",
-	"incidentsOptionsHeaderLastHour": "Last hour",
-	"incidentsOptionsHeaderLastDay": "Last day",
-	"incidentsOptionsHeaderLastWeek": "Last week",
-	"incidentsOptionsPlaceholderAllServers": "All servers",
 	"used": "Used",
 	"total": "Total",
 	"status": "Status",
@@ -548,7 +636,6 @@
 	"statusBreadCrumbsDetails": "Details",
 	"commonSaving": "Saving...",
 	"navControls": "Controls",
-	"incidentsPageTitle": "Incidents",
 	"passwordPanel": {
 		"currentPassword": "Current password",
 		"newPassword": "New password",
@@ -902,61 +989,9 @@
 	},
 	"chooseGame": "Choose game",
 	"incidentsPage": {
-		"resolved": "Resolved",
-		"active": "Active",
-		"startTime": "Start Time",
-		"endTime": "End Time",
-		"resolutionType": "Resolution Type",
-		"incidentsActivePanelError": "Error loading active incidents",
-		"allSystemsAreOperational": "All Systems Are Operational",
-		"incidentsActivePanelTitle": "Total Active Incidents",
-		"incidentsLatestPanelError": "Error loading latest incidents",
-		"incidentsLatestPanelTitle": "Latest Incidents",
-		"incidentsLatestPanelEmpty": "No recent incidents",
-		"incidentItemMonitor": "Monitor",
-		"unknownMonitor": "Unknown Monitor",
-		"incidentsStatisticsPanelError": "Error loading statistics",
-		"incidentsStatisticsPanelTitle": "General Statistics",
-		"totalIncidents": "Total Incidents",
-		"mostAffectedMonitor": "Most Affected Monitor",
-		"avgResolutionTime": "Avg. Resolution Time",
-		"incidentResolvedSuccessfully": "Incident resolved successfully",
-		"errorFetchingIncidents": "Error fetching incidents",
-		"errorFetchingIncident": "Error fetching incident",
-		"noIncidentIdProvided": "No incident ID provided",
-		"errorFetchingIncidentSummary": "Error fetching incident summary",
-		"incidentsOptionsHeaderFilterManual": "Manual",
-		"incidentsOptionsHeaderFilterAutomatic": "Automatic",
-		"incidentsOptionsHeaderFilterAll": "All",
-		"incidentsOptionsHeaderFilterActive": "Active",
-		"incidentsOptionsHeaderFilterResolved": "Resolved",
-		"incidentsTableActionResolveManually": "Resolve Manually",
-		"incidentsTableActionDetails": "Details",
-		"incidentsTableActionGoToMonitor": "Go to monitor",
 		"resolveIncidentDialogTitle": "Resolve Incident",
-		"resolveIncidentDialogDescription": "Are you sure you want to resolve this incident manually?",
 		"resolveIncidentDialogCommentLabel": "Comment (optional)",
 		"resolveIncidentDialogCommentPlaceholder": "Add a comment about the resolution...",
-		"resolveIncidentDialogConfirm": "Resolve",
-		"hours": "hours",
-		"incidentNotFound": "Incident not found",
-		"incidentDetails": "INCIDENT DETAILS",
-		"overview": "OVERVIEW",
-		"URL": "URL",
-		"incidentAnalysis": "INCIDENT ANALYSIS",
-		"timeline": "Timeline",
-		"startedAt": "Started at",
-		"endedAt": "Ended at",
-		"downtime": "Downtime",
-		"errorDetails": "Error details",
-		"resolutionDetails": "Resolution details",
-		"statusCode": "Status code",
-		"resolutionMethod": "Resolution method",
-		"resolvedBy": "Resolved by",
-		"comment": "Comment",
-		"noCommentProvided": "No comment provided",
-		"loadingIncidentDetails": "Loading incident details...",
-		"none": "None",
-		"message": "Message"
+		"resolveIncidentDialogConfirm": "Resolve"
 	}
 }

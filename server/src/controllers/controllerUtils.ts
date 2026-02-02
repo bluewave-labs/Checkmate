@@ -105,6 +105,12 @@ const requireUserId = (userId?: string): string => {
 	}
 	return userId;
 };
+const requireUserEmail = (userEmail?: string): string => {
+	if (!userEmail) {
+		throw new AppError({ message: "User email is required", status: 400 });
+	}
+	return userEmail;
+};
 
 export {
 	fetchMonitorCertificate,
@@ -116,4 +122,5 @@ export {
 	parseSortOrder,
 	requireTeamId,
 	requireUserId,
+	requireUserEmail,
 };
