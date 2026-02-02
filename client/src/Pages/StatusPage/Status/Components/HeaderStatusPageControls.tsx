@@ -77,7 +77,7 @@ export const HeaderStatusPageControls = ({
 					variant="contained"
 					color="secondary"
 					startIcon={<Icon icon={Settings} />}
-					onClick={() => navigate(`status/uptime/configure/${statusPage.url}`)}
+					onClick={() => navigate(`/status/uptime/configure/${statusPage.url}`)}
 				>
 					{t("common.buttons.configure")}
 				</Button>
