@@ -91,7 +91,7 @@ export const BasePage = ({
 			spacing={theme.spacing(10)}
 			{...props}
 		>
-			<Breadcrumb />
+			<Breadcrumb breadcrumbOverride={breadcrumbOverride} />
 			{children}
 		</Stack>
 	);

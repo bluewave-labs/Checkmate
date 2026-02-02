@@ -72,7 +72,7 @@ export const HeaderStatusPageControls = ({
 					</>
 				)}
 			</Stack>
-			{isAdmin && (
+			{isAdmin && !isPublic && (
 				<Button
 					variant="contained"
 					color="secondary"

@@ -479,6 +479,10 @@
 				"allDown": "All systems down",
 				"degraded": "Degraded performance",
 				"unknown": "Unknown status"
+			},
+			"monitorsList": {
+				"chartTypeHeatmap": "Heatmap",
+				"chartTypeHistogram": "Histogram"
 			}
 		}
 	},

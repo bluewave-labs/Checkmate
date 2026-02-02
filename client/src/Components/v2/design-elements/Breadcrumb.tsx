@@ -11,12 +11,63 @@ const isId = (segment: string): boolean => {
 
 const actionSegments = ["create", "configure"];
 
-export const Breadcrumb = () => {
+export const Breadcrumb = ({
+	breadcrumbOverride,
+}: {
+	breadcrumbOverride?: string[] | undefined;
+}) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const location = useLocation();
 
+	// If override is an empty array, hide entirely
+	if (breadcrumbOverride !== undefined && breadcrumbOverride.length === 0) {
+		return null;
+	}
+
+	// If override has items, render them directly
+	if (breadcrumbOverride !== undefined && breadcrumbOverride.length > 0) {
+		return (
+			<MuiBreadcrumbs
+				separator={
+					<ChevronRight
+						size={16}
+						strokeWidth={1.5}
+					/>
+				}
+				sx={{
+					fontSize: "14px",
+					marginBottom: theme.spacing(6),
+					"& .MuiBreadcrumbs-separator": {
+						color: theme.palette.text.secondary,
+					},
+				}}
+			>
+				{breadcrumbOverride.map((item, index) => {
+					const isLast = index === breadcrumbOverride.length - 1;
+					return (
+						<Typography
+							key={index}
+							sx={{
+								fontSize: "14px",
+								fontWeight: isLast ? 600 : 400,
+								color: isLast ? theme.palette.primary.main : theme.palette.text.secondary,
+							}}
+						>
+							{item}
+						</Typography>
+					);
+				})}
+			</MuiBreadcrumbs>
+		);
+	}
+
+	// Default behavior: use location pathname
 	const segments = location.pathname.split("/").filter((x) => x);
+
+	if (segments.length === 0) {
+		return null;
+	}
 
 	// Build simplified breadcrumb: "uptime" or "uptime / details" or "uptime / create"
 	const basePage = segments[0] || t("common.breadcrumbs.home");
