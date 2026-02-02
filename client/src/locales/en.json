@@ -202,6 +202,10 @@
 		"uptime": {
 			"table": {
 				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
+				"headers": {
 					"responseTime": "Response time"
 				}
 			},
@@ -213,6 +217,10 @@
 		},
 		"checks": {
 			"table": {
+				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
 				"headers": {
 					"dateTime": "Date & time",
 					"statusCode": "Status code"
@@ -241,6 +249,10 @@
 				"actionButton": "Let's create your first PageSpeed monitor!"
 			},
 			"table": {
+				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
 				}
@@ -273,6 +285,10 @@
 				"actionButton": "Let's create your first infrastructure monitor!"
 			},
 			"table": {
+				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
 				"headers": {
 					"cpu": "CPU",
 					"disk": "Disk",
@@ -333,6 +349,10 @@
 				"title": "Notification channles are used to:"
 			},
 			"table": {
+				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
 				"headers": {
 					"destination": "Destination"
 				}
@@ -397,6 +417,10 @@
 			},
 
 			"table": {
+				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
 				"activeIncidents": "Active Incidents",
 				"resolvedIncidents": "Resolved Incidents",
 				"headers": {
@@ -451,6 +475,26 @@
 						"manual": "Manual"
 					}
 				}
+			}
+		},
+		"statusPages": {
+			"title": "Status Pages",
+			"table": {
+				"headers": {
+					"name": "Status page name",
+					"url": "Public URL"
+				},
+				"published": "Published",
+				"unpublished": "Unpublished"
+			},
+			"fallback": {
+				"actionButton": "Create a status page!",
+				"checks": [
+					"Monitor and display the health of your services in real time",
+					"Track multiple services and share their status",
+					"Keep users informed about outages and performance"
+				],
+				"title": "A status page is used to:"
 			}
 		}
 	},
@@ -589,6 +633,10 @@
 		"getToken": "Get token",
 		"emailToken": "E-mail token",
 		"table": {
+			"headers": {
+				"name": "Status page name",
+				"url": "Public URL"
+			},
 			"name": "Name",
 			"email": "Email",
 			"role": "Role",
@@ -793,6 +841,10 @@
 			}
 		},
 		"table": {
+			"headers": {
+				"name": "Status page name",
+				"url": "Public URL"
+			},
 			"timestamp": "Timestamp",
 			"level": "Level",
 			"service": "Service",
@@ -973,6 +1025,10 @@
 			"save": "Save"
 		},
 		"table": {
+			"headers": {
+				"name": "Status page name",
+				"url": "Public URL"
+			},
 			"actionHeader": "Action",
 			"roleHeader": "Role"
 		},

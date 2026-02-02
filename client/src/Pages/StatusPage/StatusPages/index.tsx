@@ -1,0 +1,33 @@
+import { BasePageWithStates } from "@/Components/v2/design-elements";
+import { StatusPagesTable } from "./Components/StatusPagesTable";
+import { useGet } from "@/Hooks/UseApi";
+import type { StatusPage } from "@/Types/StatusPage";
+import { useTranslation } from "react-i18next";
+
+const StatusPages = () => {
+	const { t } = useTranslation();
+
+	const {
+		data: statusPages,
+		isLoading,
+		error,
+	} = useGet<StatusPage[]>("/status-page/team");
+
+	return (
+		<BasePageWithStates
+			page={t("pages.statusPages.title")}
+			loading={isLoading}
+			bullets={
+				t("pages.statusPages.fallback.checks", { returnObjects: true }) as string[]
+			}
+			error={!!error}
+			items={statusPages ?? []}
+			actionButtonText={t("pages.statusPages.fallback.actionButton")}
+			actionLink="/status/uptime/create"
+		>
+			<StatusPagesTable data={statusPages ?? []} />
+		</BasePageWithStates>
+	);
+};
+
+export default StatusPages;
