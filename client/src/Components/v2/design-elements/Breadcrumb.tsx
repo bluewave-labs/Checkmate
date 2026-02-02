@@ -4,12 +4,36 @@ import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { ReactNode } from "react";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
 };
 
 const actionSegments = ["create", "configure"];
+
+const BreadcrumbWrapper = ({ children }: { children: ReactNode }) => {
+	const theme = useTheme();
+	return (
+		<MuiBreadcrumbs
+			separator={
+				<ChevronRight
+					size={16}
+					strokeWidth={1.5}
+				/>
+			}
+			sx={{
+				fontSize: "14px",
+				marginBottom: theme.spacing(6),
+				"& .MuiBreadcrumbs-separator": {
+					color: theme.palette.text.secondary,
+				},
+			}}
+		>
+			{children}
+		</MuiBreadcrumbs>
+	);
+};
 
 export const Breadcrumb = ({
 	breadcrumbOverride,
@@ -28,21 +52,7 @@ export const Breadcrumb = ({
 	// If override has items, render them directly
 	if (breadcrumbOverride !== undefined && breadcrumbOverride.length > 0) {
 		return (
-			<MuiBreadcrumbs
-				separator={
-					<ChevronRight
-						size={16}
-						strokeWidth={1.5}
-					/>
-				}
-				sx={{
-					fontSize: "14px",
-					marginBottom: theme.spacing(6),
-					"& .MuiBreadcrumbs-separator": {
-						color: theme.palette.text.secondary,
-					},
-				}}
-			>
+			<BreadcrumbWrapper>
 				{breadcrumbOverride.map((item, index) => {
 					const isLast = index === breadcrumbOverride.length - 1;
 					return (
@@ -58,7 +68,7 @@ export const Breadcrumb = ({
 						</Typography>
 					);
 				})}
-			</MuiBreadcrumbs>
+			</BreadcrumbWrapper>
 		);
 	}
 
@@ -73,8 +83,8 @@ export const Breadcrumb = ({
 	const basePage = segments[0] || t("common.breadcrumbs.home");
 
 	const secondSegment = segments[1];
-	const isActionPage = secondSegment && actionSegments.includes(secondSegment); // create/config
-	const isDetailsPage = secondSegment && isId(secondSegment); // details
+	const isActionPage = secondSegment && actionSegments.includes(secondSegment);
+	const isDetailsPage = secondSegment && isId(secondSegment);
 	const hasSubPage = isActionPage || isDetailsPage;
 
 	const getSubPageLabel = (): string => {
@@ -85,21 +95,7 @@ export const Breadcrumb = ({
 	};
 
 	return (
-		<MuiBreadcrumbs
-			separator={
-				<ChevronRight
-					size={16}
-					strokeWidth={1.5}
-				/>
-			}
-			sx={{
-				fontSize: "14px",
-				marginBottom: theme.spacing(6),
-				"& .MuiBreadcrumbs-separator": {
-					color: theme.palette.text.secondary,
-				},
-			}}
-		>
+		<BreadcrumbWrapper>
 			{hasSubPage ? (
 				<Link
 					to={`/${basePage}`}
@@ -139,6 +135,6 @@ export const Breadcrumb = ({
 					{getSubPageLabel()}
 				</Typography>
 			)}
-		</MuiBreadcrumbs>
+		</BreadcrumbWrapper>
 	);
 };

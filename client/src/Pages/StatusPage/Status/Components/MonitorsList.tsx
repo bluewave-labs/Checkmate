@@ -67,8 +67,8 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 							gap={theme.spacing(4)}
 							mb={statusPage.showCharts !== false ? theme.spacing(4) : 0}
 						>
-							<Box>
-								<Typography variant="h6">{monitor.name}</Typography>
+							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
+								<Typography variant="h6" sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{monitor.name}</Typography>
 								{showURL && (
 									<Typography
 										variant="body2"
@@ -84,7 +84,7 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 							/>
 						</Stack>
 						{statusPage.showCharts !== false && (
-							<Box>
+							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
 								{chartType === "histogram" ? (
 									<HistogramResponseTime
 										checks={monitor?.checks?.slice().reverse() ?? []}
