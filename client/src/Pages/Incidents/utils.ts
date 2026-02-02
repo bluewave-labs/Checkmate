@@ -1,6 +1,9 @@
-import type { Incident } from "@/Types/Incident";
+import type { Incident, IncidentSummaryItem } from "@/Types/Incident";
 import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
-export const getIncidentsDuration = (incident: Incident) => {
+
+type IncidentLike = Pick<Incident, "startTime" | "endTime" | "status">;
+
+export const getIncidentsDuration = (incident: IncidentLike | IncidentSummaryItem) => {
 	if (!incident?.startTime) {
 		return "-";
 	}

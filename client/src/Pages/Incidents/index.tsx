@@ -1,5 +1,6 @@
 import { BasePage } from "@/Components/v2/design-elements";
 import Stack from "@mui/material/Stack";
+import { useTranslation } from "react-i18next";
 import {
 	SummaryCardActiveIncidents,
 	SummaryCardLatestIncidents,
@@ -18,6 +19,7 @@ import type { Monitor } from "@/Types/Monitor";
 import { useTheme } from "@mui/material";
 
 const IncidentsPage = () => {
+	const { t } = useTranslation();
 	const theme = useTheme();
 	const { monitorId } = useParams();
 
@@ -27,6 +29,8 @@ const IncidentsPage = () => {
 	const [dateRange, setDateRange] = useState("recent");
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const [activeIncidentsPage, setActiveIncidentsPage] = useState(0);
+	const [activeIncidentsRowsPerPage, setActiveIncidentsRowsPerPage] = useState(5);
 
 	// Resolve dialog state
 	const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
@@ -73,6 +77,27 @@ const IncidentsPage = () => {
 		error: monitorsError,
 	} = useGet<Monitor[]>("/monitors/team");
 
+	// Build active incidents URL (always fetch all active, no date filter)
+	const activeIncidentsUrl = useMemo(() => {
+		const params = new URLSearchParams();
+		if (selectedMonitor !== "0") params.append("monitorId", selectedMonitor);
+		params.append("status", "true");
+		params.append("sortOrder", "desc");
+		params.append("page", String(activeIncidentsPage));
+		params.append("rowsPerPage", String(activeIncidentsRowsPerPage));
+		return `/incidents/team?${params.toString()}`;
+	}, [selectedMonitor, activeIncidentsPage, activeIncidentsRowsPerPage]);
+
+	// Fetch active incidents
+	const {
+		data: activeIncidentsData,
+		refetch: refetchActiveIncidents,
+	} = useGet<IncidentsResponse>(
+		activeIncidentsUrl,
+		{},
+		{ keepPreviousData: true, refreshInterval: 10000 }
+	);
+
 	// Fetch incident summary
 	const {
 		data: summaryData,
@@ -89,6 +114,8 @@ const IncidentsPage = () => {
 	// Derived state
 	const incidents = incidentsData?.incidents ?? [];
 	const incidentsCount = incidentsData?.count ?? 0;
+	const activeIncidents = activeIncidentsData?.incidents ?? [];
+	const activeIncidentsCount = activeIncidentsData?.count ?? 0;
 	const networkError = !!incidentsError || !!monitorsError || !!summaryError;
 
 	// Expose state and handlers for future UI use
@@ -102,7 +129,7 @@ const IncidentsPage = () => {
 	void networkError;
 
 	const handleOpenDetails = (incidentId: string) => {
-		const incident = incidents.find((i) => i.id === incidentId) ?? null;
+		const incident = incidents.find((i) => i.id === incidentId) ?? activeIncidents.find((i) => i.id === incidentId) ?? null;
 		const monitor = monitorsData?.find((m) => m.id === incident?.monitorId) ?? null;
 		setIsDetailsDialogOpen(true);
 		setSelectedIncident(incident);
@@ -132,6 +159,7 @@ const IncidentsPage = () => {
 
 	const handleResolved = () => {
 		refetchIncidents();
+		refetchActiveIncidents();
 		refetchSummary();
 	};
 
@@ -141,11 +169,8 @@ const IncidentsPage = () => {
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(8)}
 			>
-				<SummaryCardActiveIncidents incidents={incidents} />
-				<SummaryCardLatestIncidents
-					incidents={incidents}
-					monitors={monitorsData}
-				/>
+				<SummaryCardActiveIncidents summary={summaryData} />
+				<SummaryCardLatestIncidents summary={summaryData} />
 				<SummaryCardStats summary={summaryData} />
 			</Stack>
 			<HeaderTimeRange
@@ -153,7 +178,22 @@ const IncidentsPage = () => {
 				setDateRange={setDateRange}
 				isLoading={isLoadingIncidents}
 			/>
+			{activeIncidentsCount > 0 && (
+				<IncidentsTable
+					title={t("pages.incidents.table.activeIncidents")}
+					incidents={activeIncidents}
+					monitors={monitorsData ?? undefined}
+					incidentsCount={activeIncidentsCount}
+					page={activeIncidentsPage}
+					setPage={setActiveIncidentsPage}
+					rowsPerPage={activeIncidentsRowsPerPage}
+					setRowsPerPage={setActiveIncidentsRowsPerPage}
+					onOpenDetails={handleOpenDetails}
+					onResolve={handleResolve}
+				/>
+			)}
 			<IncidentsTable
+				title={t("pages.incidents.table.allIncidents")}
 				incidents={incidents}
 				monitors={monitorsData ?? undefined}
 				incidentsCount={incidentsCount}

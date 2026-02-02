@@ -1,22 +1,23 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import { BaseBox } from "@/Components/v2/design-elements";
-import { CircleCheck, TriangleAlert, Bell, Wrench } from "lucide-react";
+import Grid from "@mui/material/Grid";
+import { BaseBox, ValueLabel } from "@/Components/v2/design-elements";
+import { CircleCheck, TriangleAlert, Bell, Wrench, Globe } from "lucide-react";
 import Box from "@mui/material/Box";
-import { IncidentItem, SummaryItem } from "@/Pages/Incidents/Components/IncidentItem";
+import { SummaryItem } from "@/Pages/Incidents/Components/IncidentItem";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
-import type { Incident, IncidentSummary } from "@/Types/Incident";
-import type { Monitor } from "@/Types/Monitor";
+import type { IncidentSummary, IncidentSummaryItem } from "@/Types/Incident";
+import { getIncidentsDuration } from "@/Pages/Incidents/utils";
 
 interface SummaryCardProps {
 	title: string;
 	sx?: React.CSSProperties;
 }
 
-const SummaryCard = ({
+export const SummaryCard = ({
 	title,
 	sx,
 	children,
@@ -49,18 +50,17 @@ const SummaryCard = ({
 	);
 };
 
-interface SummaryCardIncidentsProps {
-	incidents?: Incident[];
-	monitors?: Monitor[] | null;
+interface SummaryCardActiveIncidentsProps {
+	summary?: IncidentSummary | null;
 }
 
-export const SummaryCardActiveIncidents = ({ incidents }: SummaryCardIncidentsProps) => {
+export const SummaryCardActiveIncidents = ({ summary }: SummaryCardActiveIncidentsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
-	if (!incidents) return null;
+	if (!summary) return null;
 
-	const activeCount = incidents.filter((incident) => incident.status === true).length;
+	const activeCount = summary.totalActive;
 	const hasActive = activeCount > 0;
 	const color = hasActive ? theme.palette.error.main : theme.palette.success.main;
 	const icon = hasActive ? (
@@ -90,22 +90,82 @@ export const SummaryCardActiveIncidents = ({ incidents }: SummaryCardIncidentsPr
 	);
 };
 
-export const SummaryCardLatestIncidents = ({
-	incidents,
-	monitors,
-}: SummaryCardIncidentsProps) => {
+const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) => {
+	const theme = useTheme();
+	const duration = getIncidentsDuration(incident);
+	return (
+		<Grid
+			container
+			alignItems="center"
+			spacing={2}
+			sx={{
+				width: "100%",
+				py: theme.spacing(0.5),
+			}}
+		>
+			<Grid
+				size={{ xs: 12, lg: 5 }}
+				sx={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "flex-start",
+					gap: theme.spacing(2),
+				}}
+			>
+				<Globe />
+				<Typography
+					variant="body1"
+					fontWeight={500}
+					noWrap
+				>
+					{incident.monitorName ?? "N/A"}
+				</Typography>
+			</Grid>
+
+			<Grid
+				size={{ xs: 12, md: 6, lg: 3 }}
+				sx={{
+					display: "flex",
+				}}
+			>
+				<ValueLabel
+					value={incident.status ? "negative" : "positive"}
+					text={incident.status ? "Active" : "Resolved"}
+				/>
+			</Grid>
+
+			<Grid
+				size={{ xs: 12, md: 6, lg: 4 }}
+				sx={{
+					textAlign: { xs: "left", md: "right" },
+					fontWeight: 500,
+				}}
+			>
+				<Typography variant="body1">{duration}</Typography>
+			</Grid>
+		</Grid>
+	);
+};
+
+interface SummaryCardLatestIncidentsProps {
+	summary?: IncidentSummary | null;
+}
+
+export const SummaryCardLatestIncidents = ({ summary }: SummaryCardLatestIncidentsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+
+	const latestIncidents = summary?.latestIncidents ?? [];
+
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.latestIncidents.title")}>
 			<Stack gap={theme.spacing(4)}>
-				{incidents?.slice(0, 3).map((incident, index) => (
+				{latestIncidents.slice(0, 3).map((incident, index) => (
 					<Box key={incident.id}>
-						<IncidentItem
-							incident={incident}
-							monitor={monitors?.find((m) => m.id === incident.monitorId)}
-						/>
-						{index < incidents.length - 1 && <Divider sx={{ mt: theme.spacing(2) }} />}
+						<SummaryIncidentItem incident={incident} />
+						{index < latestIncidents.length - 1 && (
+							<Divider sx={{ mt: theme.spacing(2) }} />
+						)}
 					</Box>
 				))}
 			</Stack>
