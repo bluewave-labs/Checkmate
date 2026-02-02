@@ -508,6 +508,41 @@
 					"title": "Appearance",
 					"description": "Define the default look and feel of your public status page",
 					"option": {}
+				},
+				"basicInfo": {
+					"title": "Basic information",
+					"description": "Name and address of your status page",
+					"option": {
+						"name": {
+							"label": "Name",
+							"placeholder": "My status page"
+						},
+						"url": {
+							"label": "URL",
+							"placeholder": "my-status-page"
+						}
+					}
+				},
+				"monitors": {
+					"title": "Monitors",
+					"description": "Select which monitors to display on your status page",
+					"noMonitors": "No monitors available. Create uptime monitors first.",
+					"option": {
+						"monitors": {
+							"label": "Monitors",
+							"placeholder": "Select monitors..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "Timezone",
+					"description": "Select the timezone for your status page",
+					"option": {
+						"timezone": {
+							"label": "Timezone",
+							"placeholder": "Search timezones..."
+						}
+					}
 				}
 			},
 			"settings": {
