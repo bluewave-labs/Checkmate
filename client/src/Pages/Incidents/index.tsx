@@ -171,7 +171,7 @@ const IncidentsPage = () => {
 				setSelectedResolutionType={setFilter}
 				onClearFilters={handleClearFilters}
 			/>
-			{activeIncidentsCount > 0 && (
+			{activeIncidentsCount > 0 ? (
 				<>
 					<Typography
 						variant="h6"
@@ -193,6 +193,13 @@ const IncidentsPage = () => {
 					/>
 					<Divider />
 				</>
+			) : (
+				<Typography
+					variant="body1"
+					sx={{ mb: theme.spacing(4), color: theme.palette.success.main }}
+				>
+					{t("pages.incidents.summaryCard.activeIncidents.active_zero")}
+				</Typography>
 			)}
 
 			<Typography
