@@ -111,8 +111,6 @@ const IncidentsPage = () => {
 
 	const handleDetailsClose = () => {
 		setIsDetailsDialogOpen(false);
-		setSelectedIncident(null);
-		setSelectedIncidentMonitor(null);
 	};
 
 	const handleDetailsResolve = () => {

@@ -27,6 +27,7 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	if (!incident) {
 		return null;
 	}
+	console.log(incident);
 	return (
 		<Stack
 			gap={theme.spacing(4)}
@@ -77,7 +78,9 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 			</BaseBox>
 			<BaseBox padding={8}>
 				<Stack gap={theme.spacing(4)}>
-					<Typography textTransform={"uppercase"}>{t("pages.incidents.dialog.details.analysis")}</Typography>
+					<Typography textTransform={"uppercase"}>
+						{t("pages.incidents.dialog.details.analysis")}
+					</Typography>
 					<Divider />
 					<Grid
 						container
@@ -124,6 +127,68 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 					</Grid>
 				</Stack>
 			</BaseBox>
+			{!incident.status && (
+				<BaseBox padding={8}>
+					<Stack gap={theme.spacing(4)}>
+						<Typography textTransform={"uppercase"}>
+							{t("pages.incidents.dialog.details.resolutionDetails")}
+						</Typography>
+						<Divider />
+						<Grid
+							container
+							spacing={theme.spacing(2)}
+							alignItems="center"
+						>
+							<Grid size={2}>
+								<Typography>{t("pages.incidents.dialog.details.resolvedAt")}</Typography>
+							</Grid>
+							<Grid size={10}>
+								<Typography>
+									{incident.endTime
+										? formatDateWithTz(incident.endTime, "D MMM YYYY, h:mm A", uiTimezone)
+										: "N/A"}
+								</Typography>
+							</Grid>
+							<Grid size={2}>
+								<Typography>
+									{t("pages.incidents.dialog.details.resolutionType")}
+								</Typography>
+							</Grid>
+							<Grid size={10}>
+								<Typography>
+									{incident.resolutionType
+										? t(
+												`pages.incidents.dialog.details.resolutionTypes.${incident.resolutionType}`
+											)
+										: "N/A"}
+								</Typography>
+							</Grid>
+							{incident.resolvedBy && (
+								<>
+									<Grid size={2}>
+										<Typography>
+											{t("pages.incidents.dialog.details.resolvedBy")}
+										</Typography>
+									</Grid>
+									<Grid size={10}>
+										<Typography>{incident.resolvedBy}</Typography>
+									</Grid>
+								</>
+							)}
+							{incident.comment && (
+								<>
+									<Grid size={2}>
+										<Typography>{t("pages.incidents.dialog.details.comment")}</Typography>
+									</Grid>
+									<Grid size={10}>
+										<Typography>{incident.comment}</Typography>
+									</Grid>
+								</>
+							)}
+						</Grid>
+					</Stack>
+				</BaseBox>
+			)}
 		</Stack>
 	);
 };

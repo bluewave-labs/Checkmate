@@ -408,7 +408,16 @@
 					"startedAt": "Started at:",
 					"statusCode": "Status code:",
 					"downtime": "Downtime:",
-					"message": "Message:"
+					"message": "Message:",
+					"resolutionDetails": "Resolution details",
+					"resolvedAt": "Resolved at:",
+					"resolutionType": "Type:",
+					"resolvedBy": "Resolved by:",
+					"comment": "Comment:",
+					"resolutionTypes": {
+						"automatic": "Automatic",
+						"manual": "Manual"
+					}
 				}
 			}
 		}
