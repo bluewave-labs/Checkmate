@@ -12,3 +12,4 @@ export { DialogInput as Dialog } from "./Dialog";
 export * from "./Radio";
 export * from "./Switch";
 export * from "./Slider";
+export * from "./ImageUpload";

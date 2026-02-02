@@ -11,6 +11,16 @@
 			"resolved": "Resolved",
 			"na": "N/A"
 		},
+		"imageUpload": {
+			"clickToUpload": "Click to upload",
+			"orDragAndDrop": "or drag and drop",
+			"maxSize": "Max size",
+			"supportedFormats": "Supported formats"
+		},
+		"errors": {
+			"invalidFileFormat": "Invalid file format",
+			"invalidFileSize": "File size exceeds maximum allowed"
+		},
 		"buttons": {
 			"toggleTheme": "Toggles light & dark",
 			"testNotifications": "Test notifications",
@@ -483,6 +493,42 @@
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
 				"chartTypeHistogram": "Histogram"
+			},
+			"form": {
+				"access": {
+					"title": "Access",
+					"description": "Choose if you want your status page to be public",
+					"option": {
+						"published": {
+							"name": "Published and publicly visible"
+						}
+					}
+				},
+				"appearance": {
+					"title": "Appearance",
+					"description": "Define the default look and feel of your public status page",
+					"option": {}
+				}
+			},
+			"settings": {
+				"title": "Status page settings",
+				"description": "Configure basic settings for your status page.",
+				"option": {
+					"name": {
+						"label": "Status page name",
+						"placeholder": "e.g. My Company Status Page"
+					},
+					"subdomain": {
+						"label": "Subdomain",
+						"placeholder": "e.g. my-company"
+					},
+					"timezone": {
+						"label": "Timezone"
+					},
+					"published": {
+						"label": "Published and visible to the public"
+					}
+				}
 			}
 		}
 	},

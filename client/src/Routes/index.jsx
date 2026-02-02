@@ -36,7 +36,7 @@ import Checks from "../Pages/Checks/index";
 import Incidents from "../Pages/Incidents/";
 
 // Status pages
-import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
+import CreateStatus from "../Pages/StatusPage/Create/";
 import StatusPages from "../Pages/StatusPage/StatusPages";
 import Status from "../Pages/StatusPage/Status";
 
@@ -249,7 +249,13 @@ const Routes = () => {
 
 				<Route
 					path="status/uptime/create"
-					element={<CreateStatus />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateStatus />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
