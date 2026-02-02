@@ -5,12 +5,44 @@ import Grid from "@mui/material/Grid";
 import { BaseBox, ValueLabel } from "@/Components/v2/design-elements";
 import { CircleCheck, TriangleAlert, Bell, Wrench, Globe } from "lucide-react";
 import Box from "@mui/material/Box";
-import { SummaryItem } from "@/Pages/Incidents/Components/IncidentItem";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
 import type { IncidentSummary, IncidentSummaryItem } from "@/Types/Incident";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
+
+interface SummaryItemProps {
+	icon: React.ReactNode;
+	label: string;
+	value: string | number;
+}
+
+const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
+	const theme = useTheme();
+	return (
+		<Stack
+			direction="row"
+			alignItems="center"
+			justifyContent="space-between"
+			gap={theme.spacing(2)}
+		>
+			<Stack
+				direction="row"
+				alignItems="center"
+				gap={theme.spacing(2)}
+			>
+				{icon}
+				<Typography variant="body2">{label}</Typography>
+			</Stack>
+			<Typography
+				variant="body2"
+				fontWeight={600}
+			>
+				{value}
+			</Typography>
+		</Stack>
+	);
+};
 
 interface SummaryCardProps {
 	title: string;
@@ -92,6 +124,7 @@ export const SummaryCardActiveIncidents = ({ summary }: SummaryCardActiveInciden
 
 const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const duration = getIncidentsDuration(incident);
 	return (
 		<Grid
@@ -118,7 +151,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 					fontWeight={500}
 					noWrap
 				>
-					{incident.monitorName ?? "N/A"}
+					{incident.monitorName ?? t("common.labels.na")}
 				</Typography>
 			</Grid>
 
@@ -130,7 +163,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 			>
 				<ValueLabel
 					value={incident.status ? "negative" : "positive"}
-					text={incident.status ? "Active" : "Resolved"}
+					text={incident.status ? t("common.labels.active") : t("common.labels.resolved")}
 				/>
 			</Grid>
 
@@ -182,8 +215,8 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 	if (!summary) return null;
 	const mostAffected =
 		!summary.total || summary.total === 0
-			? "N/A"
-			: summary.topMonitor?.monitorName || t("N/A");
+			? t("common.labels.na")
+			: summary.topMonitor?.monitorName || t("common.labels.na");
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.incidentStats.title")}>
 			<SummaryItem
@@ -199,7 +232,7 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 			<SummaryItem
 				icon={<Wrench size={18} />}
 				label={t("pages.incidents.summaryCard.incidentStats.avgResolutionTime")}
-				value={summary.total > 0 ? `${summary.avgResolutionTimeHours || 0} hours` : "N/A"}
+				value={summary.total > 0 ? `${summary.avgResolutionTimeHours || 0} hours` : t("common.labels.na")}
 			/>
 		</SummaryCard>
 	);
