@@ -29,6 +29,7 @@ import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { MuiColorInput } from "mui-color-input";
+import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
 
 interface TimezoneOption {
 	_id: string;
@@ -135,6 +136,13 @@ const CreateStatusPage = () => {
 			component="form"
 			onSubmit={handleSubmit(onSubmit, onError)}
 		>
+			{!isCreate && (
+				<HeaderConfigStatusControls
+					onDelete={() => {
+						console.log("poo");
+					}}
+				/>
+			)}
 			<ConfigBox
 				title={t("pages.statusPages.form.access.title")}
 				subtitle={t("pages.statusPages.form.access.description")}
