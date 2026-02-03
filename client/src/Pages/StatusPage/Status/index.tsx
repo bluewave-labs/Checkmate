@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
-import { useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useLocation, useParams } from "react-router-dom";
@@ -20,6 +20,7 @@ const StatusPageView = () => {
 	const { url } = useParams();
 	const isAdmin = useIsAdmin();
 	const location = useLocation();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isPublic = location.pathname.startsWith("/status/public");
 
 	const apiUrl = url ? `/status-page/${url}?type=uptime` : null;
@@ -61,8 +62,8 @@ const StatusPageView = () => {
 	let sx: React.CSSProperties = {};
 	if (isPublic) {
 		sx.paddingTop = theme.spacing(20);
-		sx.paddingLeft = "20vw";
-		sx.paddingRight = "20vw";
+		sx.paddingLeft = isSmall ? "5vw" : "20vw";
+		sx.paddingRight = isSmall ? "5vw" : "20vw";
 	}
 
 	const logoSrc = statusPage.logo?.data
