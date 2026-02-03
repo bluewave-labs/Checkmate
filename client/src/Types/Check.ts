@@ -237,7 +237,9 @@ export interface ChecksSummary {
 export type CheckSnapshot = Omit<
 	Check,
 	"metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt"
->;
+> & {
+	originalResponseTime: number;
+};
 
 export interface HasResponseTime {
 	responseTime: number;
