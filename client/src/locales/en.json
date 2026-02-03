@@ -936,7 +936,8 @@
 					"description": "Select the timezone that your status page will be displayed in.",
 					"option": {
 						"timezone": {
-							"label": "Timezone"
+							"label": "Timezone",
+							"placeholder": "Select timezone..."
 						}
 					}
 				},
