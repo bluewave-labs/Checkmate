@@ -116,12 +116,12 @@ class StatusPageController {
 
 	deleteStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const statusPageId = req.params.id as string;
-			if (!statusPageId) {
-				throw new AppError({ message: "Status page ID is required", status: 400 });
+			const statusPageUrl = req.params.url as string;
+			if (!statusPageUrl) {
+				throw new AppError({ message: "Status page URL is required", status: 400 });
 			}
 			const teamId = requireTeamId(req.user?.teamId);
-			await this.statusPageService.deleteStatusPage(statusPageId, teamId);
+			await this.statusPageService.deleteStatusPage(statusPageUrl, teamId);
 			return res.status(200).json({
 				success: true,
 				msg: "Status page deleted successfully",
