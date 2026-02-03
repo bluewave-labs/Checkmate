@@ -22,13 +22,15 @@ export const DialogIncidentDetails = ({
 }: DialogIncidentDetailsProps) => {
 	const { t } = useTranslation();
 
+	const isActive = incident?.status === true;
+
 	return (
 		<Dialog
 			open={open}
 			onCancel={onClose}
-			onConfirm={onResolve}
-			cancelText={t("common.buttons.cancel")}
-			confirmText={t("pages.incidents.dialog.details.resolve")}
+			onConfirm={isActive ? onResolve : undefined}
+			cancelText={t("common.buttons.close")}
+			confirmText={isActive ? t("pages.incidents.dialog.details.resolve") : undefined}
 			maxWidth="sm"
 			fullWidth
 		>
