@@ -43,11 +43,6 @@ const CreateStatusPage = () => {
 
 	const isCreate = typeof url === "undefined";
 
-	const { schema, defaults } = useStatusPageForm();
-	const { post, loading: isSubmittingPost } = usePost();
-	const { put, loading: isSubmittingPut } = usePut();
-	const isSubmitting = isSubmittingPost || isSubmittingPut;
-
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
 		useGet<StatusPageResponse>(isCreate ? null : `/status-page/${url}?type=uptime`);
@@ -57,6 +52,15 @@ const CreateStatusPage = () => {
 	);
 	const monitors = monitorsResponse ?? [];
 
+	const { post, loading: isSubmittingPost } = usePost();
+	const { put, loading: isSubmittingPut } = usePut();
+	const isSubmitting = isSubmittingPost || isSubmittingPut;
+
+	const { schema, defaults } = useStatusPageForm({
+		data: statusPageData?.statusPage ?? null,
+		monitors: statusPageData?.monitors ?? null,
+	});
+
 	const form = useForm<StatusPageFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
@@ -64,34 +68,10 @@ const CreateStatusPage = () => {
 
 	const { control, reset, handleSubmit } = form;
 
-	// Populate form with existing data when configuring
+	// Reset form when defaults change (from fetched data)
 	useEffect(() => {
-		if (isCreate) {
-			reset(defaults);
-			return;
-		}
-
-		if (!statusPageData) return;
-
-		const { statusPage, monitors: statusPageMonitors } = statusPageData;
-
-		let logoData: { data: string; contentType: string } | null = null;
-		if (statusPage.logo && statusPage.logo.data) {
-			logoData = {
-				data: `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`,
-				contentType: statusPage.logo.contentType,
-			};
-		}
-
-		reset({
-			isPublished: statusPage.isPublished ?? false,
-			companyName: statusPage.companyName ?? "",
-			url: statusPage.url ?? "",
-			timezone: statusPage.timezone ?? "America/Toronto",
-			monitors: statusPageMonitors?.map((m) => m.id) ?? [],
-			logo: logoData,
-		});
-	}, [isCreate, statusPageData, reset, defaults]);
+		reset(defaults);
+	}, [defaults, reset]);
 
 	const onError = (errors: any) => {
 		console.log(errors);
@@ -104,6 +84,10 @@ const CreateStatusPage = () => {
 		if (data.companyName) fd.append("companyName", data.companyName);
 		if (data.url) fd.append("url", data.url);
 		if (data.timezone) fd.append("timezone", data.timezone);
+		if (data.color) fd.append("color", data.color);
+		fd.append("showCharts", String(data.showCharts));
+		fd.append("showUptimePercentage", String(data.showUptimePercentage));
+		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
@@ -144,7 +128,6 @@ const CreateStatusPage = () => {
 	if (!isCreate && isLoadingStatusPage) {
 		return <BasePage>Loading...</BasePage>;
 	}
-
 	return (
 		<BasePage
 			component="form"
