@@ -37,7 +37,7 @@ class InviteController {
 			await inviteBodyValidation.validateAsync(inviteRequest);
 
 			const inviteToken = await this.inviteService.sendInviteEmail({
-				inviteRequest,
+				invite: inviteRequest,
 				firstName: req?.user?.firstName,
 			});
 			return res.status(200).json({
