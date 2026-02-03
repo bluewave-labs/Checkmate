@@ -13,3 +13,4 @@ export * from "./Radio";
 export * from "./Switch";
 export * from "./Slider";
 export * from "./ImageUpload";
+export * from "./ColorPicker";

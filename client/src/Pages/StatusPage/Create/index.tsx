@@ -14,6 +14,7 @@ import {
 	Autocomplete,
 	Checkbox,
 	Dialog,
+	ColorInput,
 } from "@/Components/v2/inputs";
 
 import { useTheme } from "@mui/material/styles";
@@ -29,7 +30,6 @@ import type { StatusPageResponse } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { MuiColorInput } from "mui-color-input";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
 
 interface TimezoneOption {
@@ -393,11 +393,11 @@ const CreateStatusPage = () => {
 							name="color"
 							control={control}
 							render={({ field }) => (
-								<MuiColorInput
+								<ColorInput
 									format="hex"
 									value={field.value}
 									onChange={field.onChange}
-									label={t("pages.statusPages.form.appearance.option.color.label")}
+									fieldLabel={t("pages.statusPages.form.appearance.option.color.label")}
 								/>
 							)}
 						/>
