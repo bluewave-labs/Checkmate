@@ -480,6 +480,7 @@ const createStatusPageBodyValidation = joi.object({
 	showCharts: joi.boolean().optional(),
 	showUptimePercentage: joi.boolean(),
 	showAdminLoginLink: joi.boolean().optional(),
+	removeLogo: joi.string().valid("true", "false").optional(),
 });
 
 const imageValidation = joi

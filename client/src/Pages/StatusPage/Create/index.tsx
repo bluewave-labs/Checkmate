@@ -94,8 +94,10 @@ const CreateStatusPage = () => {
 		});
 
 		// Handle logo upload
-		if (data.logo?.data && data.logo.data !== "") {
-			// Only upload if it's a blob URL (new upload), not base64 (existing)
+		if (data.logo === null) {
+			// Signal to remove the logo
+			fd.append("removeLogo", "true");
+		} else if (data.logo?.data && data.logo.data !== "") {
 			if (data.logo.data.startsWith("blob:")) {
 				try {
 					const imageResult = await axios.get(data.logo.data, {

@@ -105,14 +105,16 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		return this.mapDocuments(statusPages);
 	};
 
-	updateById = async (id: string, teamId: string, image: Express.Multer.File | undefined, patch: Partial<StatusPage>): Promise<StatusPage> => {
-		const { logo: _logo, ...restPatch } = patch;
+	updateById = async (id: string, teamId: string, image: Express.Multer.File | undefined, patch: Partial<StatusPage> & { removeLogo?: string }): Promise<StatusPage> => {
+		const { logo: _logo, removeLogo, ...restPatch } = patch;
 		const updateData: StatusPageUpdateData = { ...restPatch };
 		if (image) {
 			updateData.logo = {
 				data: image.buffer as Buffer,
 				contentType: image.mimetype,
 			};
+		} else if (removeLogo === "true") {
+			updateData.logo = null;
 		}
 
 		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, updateData, {
