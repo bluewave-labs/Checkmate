@@ -1,67 +1,42 @@
 {
+	"ClickUpload": "Click to upload",
+	"DeleteAccountButton": "Remove account",
+	"DeleteAccountTitle": "Remove account",
+	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
+	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
+	"DeleteWarningTitle": "Really remove this account?",
+	"DragandDrop": "drag and drop",
+	"EmailDescriptionText": "This is your current email address — it cannot be changed.",
+	"FirstName": "First name",
+	"LastName": "Last name",
+	"MaxSize": "Maximum Size",
+	"PhotoDescriptionText": "This photo will be displayed in your profile page.",
+	"SupportedFormats": "Supported formats",
+	"YourPhoto": "Profile photo",
 	"aboutus": "About Us",
 	"access": "Access",
 	"actions": "Actions",
 	"add": "Add",
 	"addMonitors": "Add monitors",
-	"administrator": "Administrator?",
-	"advancedMatching": "Advanced matching",
-	"ago": "ago",
-	"area": "Area",
 	"auth": {
 		"common": {
 			"errors": {
 				"validation": "Error validating data."
 			},
-			"fields": {
-				"password": {
-					"errors": {
-						"incorrect": "The password you provided does not match our records"
-					}
-				},
-				"role": {
-					"errors": {
-						"min": "At least one role is required"
-					}
-				}
-			},
 			"inputs": {
 				"email": {
-					"errors": {
-						"empty": "To continue, please enter your email address",
-						"invalid": "Please recheck validity of entered email address"
-					},
 					"label": "Email",
 					"placeholder": "jordan.ellis@domain.com"
 				},
 				"firstName": {
-					"errors": {
-						"empty": "Please enter your name",
-						"length": "Name must be less than 50 characters",
-						"pattern": "Name must contain only letters, spaces, apostrophes, or hyphens"
-					},
 					"label": "Name",
 					"placeholder": "Jordan"
 				},
 				"lastName": {
-					"errors": {
-						"empty": "Please enter your surname",
-						"length": "Surname must be less than 50 characters",
-						"pattern": "Surname must contain only letters, spaces, apostrophes, or hyphens"
-					},
 					"label": "Surname",
 					"placeholder": "Ellis"
 				},
 				"password": {
-					"errors": {
-						"empty": "Please enter your password",
-						"incorrect": "The password you provided does not match our records",
-						"length": "Password must be at least 8 characters long",
-						"lowercase": "Password must contain at least 1 lowercase letter",
-						"number": "Password must contain at least 1 number",
-						"special": "Password must contain at least 1 special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)",
-						"uppercase": "Password must contain at least 1 uppercase letter"
-					},
 					"label": "Password",
 					"rules": {
 						"length": {
@@ -91,16 +66,11 @@
 					}
 				},
 				"passwordConfirm": {
-					"errors": {
-						"different": "Entered passwords don't match, so one of them is probably mistyped",
-						"empty": "Please enter your password again for confirmation (helps with typos)"
-					},
 					"label": "Confirm password",
 					"placeholder": "Re-enter password to confirm"
 				}
 			},
 			"navigation": {
-				"back": "Back",
 				"continue": "Continue"
 			}
 		},
@@ -110,21 +80,10 @@
 				"resetPassword": "Reset password"
 			},
 			"heading": "Forgot password?",
-			"imageAlts": {
-				"email": "Email icon",
-				"lock": "Lock icon",
-				"passwordConfirm": "Password confirm icon",
-				"passwordKey": "Password key icon"
-			},
-			"links": {
-				"login": "Go back to <a>Log In</a>",
-				"resend": "Didn't receive the email? <a>Click to resend</a>"
-			},
 			"subheadings": {
 				"stepFour": "Your password has been successfully reset. Click below to log in magically.",
 				"stepOne": "No worries, we'll send you reset instructions.",
-				"stepThree": "Your new password must be different from previously used passwords.",
-				"stepTwo": "We sent a password reset link to <email/>"
+				"stepThree": "Your new password must be different from previously used passwords."
 			},
 			"toasts": {
 				"emailNotFound": "Email not found.",
@@ -147,10 +106,6 @@
 				"register": "Do not have an account?",
 				"registerLink": "Register here"
 			},
-			"subheadings": {
-				"stepOne": "Enter your email",
-				"stepTwo": "Enter your password"
-			},
 			"toasts": {
 				"incorrectPassword": "Incorrect password",
 				"success": "Welcome back! You're successfully logged in."
@@ -162,70 +117,32 @@
 				"superAdmin": "Create your super admin account to get started",
 				"user": "Sign up as a user and ask super admin for access to your monitors"
 			},
-			"gettingStartedButton": {
-				"superAdmin": "Create super admin account",
-				"user": "Sign up regular user"
-			},
 			"heading": {
-				"superAdmin": "Create super admin",
 				"user": "Sign Up"
 			},
-			"links": {
-				"login": "Already have an account? <a>Log In</a>"
-			},
-			"subheadings": {
-				"stepOne": "Enter your personal details",
-				"stepThree": "Create your password",
-				"stepTwo": "Enter your email"
-			},
-			"termsAndPolicies": "By creating an account, you agree to our <a1>Terms of Service</a1> and <a2>Privacy Policy</a2>.",
 			"toasts": {
 				"success": "Welcome! Your account was created successfully."
 			},
 			"welcome": "Welcome to Checkmate!"
 		}
 	},
-	"avgCpuTemperature": "Average CPU Temperature",
-	"bar": "Bar",
 	"basicInformation": "Basic Information",
 	"bulkImport": {
 		"fallbackPage": "Import a file to upload a list of servers in bulk",
 		"invalidFileType": "Invalid file type",
 		"noFileSelected": "No file selected",
-		"parsingFailed": "Parsing failed",
 		"selectFile": "Select File",
-		"selectFileDescription": "You can download our <template>template</template> or <sample>sample</sample>",
 		"selectFileTips": "Select CSV file to upload",
 		"title": "Bulk Import",
 		"uploadFailed": "Upload failed",
-		"uploadSuccess": "Monitors created successfully!",
-		"validationFailed": "Validation failed"
+		"uploadSuccess": "Monitors created successfully!"
 	},
-	"bytesPerSecond": "Bytes per second",
-	"bytesReceived": "Bytes Received",
-	"bytesSent": "Bytes Sent",
 	"cancel": "Cancel",
-	"checkFormError": "Please check the form for errors.",
-	"checkFrequency": "Check frequency",
 	"checkHooks": {
-		"failureResolveAll": "Failed to resolve all incidents.",
-		"failureResolveMonitor": "Failed to resolve monitor incidents.",
 		"failureResolveOne": "Failed to resolve incident."
 	},
-	"checkingEvery": "Checking every",
-	"checksPageActionResolveAllMonitor": "Resolve all checks",
-	"checksPageActionResolveMonitor": "Resolve monitor checks",
-	"checksPageTitle": "Checks",
 	"chooseGame": "Choose game",
-	"city": "CITY",
-	"ClickUpload": "Click to upload",
-	"close": "Close",
 	"common": {
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
-			}
-		},
 		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "Details",
@@ -260,30 +177,16 @@
 				"title": "Are you sure you want to delete this?"
 			}
 		},
-		"errors": {
-			"invalidFileFormat": "Invalid file format",
-			"invalidFileSize": "File size exceeds maximum allowed"
-		},
-		"forDocumentation": "for query language documentation.",
-		"imageUpload": {
-			"clickToUpload": "Click to upload",
-			"maxSize": "Max size",
-			"orDragAndDrop": "or drag and drop",
-			"supportedFormats": "Supported formats"
-		},
 		"labels": {
 			"active": "Active",
 			"na": "N/A",
 			"resolved": "Resolved",
 			"responseTime": "Response time"
 		},
-		"monitoringAgentName": "Capture",
-		"see": "See",
 		"table": {
 			"empty": "Nothing here",
 			"headers": {
 				"actions": "Actions",
-				"active": "Active",
 				"dateTime": "Date & time",
 				"message": "Message",
 				"monitor": "Monitor",
@@ -296,6 +199,16 @@
 			"checkConnection": "Please check your connection",
 			"networkError": "Network error",
 			"unknownError": "Unknown error"
+		},
+		"imageUpload": {
+			"clickToUpload": "Click to upload",
+			"dragAndDrop": "or drag and drop",
+			"supportedFormats": "Supported formats",
+			"maxSize": "Max size"
+		},
+		"errors": {
+			"invalidFileType": "Invalid file type",
+			"fileTooLarge": "File too large"
 		}
 	},
 	"commonSave": "Save",
@@ -303,12 +216,6 @@
 	"companyName": "Company name",
 	"components": {
 		"headerTimeRange": {
-			"description": {
-				"day": "Showing statistics for past 24 hours.",
-				"month": "Showing statistics for past 30 days.",
-				"recent": "Showing statistics for past 2 hours.",
-				"week": "Showing statistics for past 7 days."
-			},
 			"labels": {
 				"day": "Day",
 				"month": "Month",
@@ -319,94 +226,14 @@
 	},
 	"configure": "Configure",
 	"confirmPassword": "Confirm password",
-	"cores": "Cores",
-	"country": "COUNTRY",
-	"cpu": "CPU",
-	"cpuFrequency": "CPU Frequency",
-	"cpuLogical": "CPU (Logical)",
-	"cpuPhysical": "CPU (Physical)",
-	"cpuTemperature": "CPU Temperature",
-	"cpuUsage": "CPU usage",
 	"createA": "Create a",
 	"createMaintenance": "Create maintenance",
 	"createMaintenanceWindow": "Create maintenance window",
-	"createMonitor": "Create monitor",
-	"createMonitorPage": {
-		"incidentConfigDescription": "A sliding window is used to determine when a monitor goes down.  The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
-		"incidentConfigDescriptionV2": "Number of consecutive checks needed to change monitor status.  Maximum 25",
-		"incidentConfigStatusCheckNumber": "How many checks before status change?",
-		"incidentConfigStatusWindowLabel": "How many checks should be in the sliding window?",
-		"incidentConfigStatusWindowThresholdLabel": "What percentage of checks in the sliding window fail/succeed before monitor status changes?",
-		"incidentConfigTitle": "Incidents",
-		"intervalDescription": "How often the monitor should be checked.",
-		"intervalTitle": "Check interval"
-	},
 	"createNew": "Create new",
-	"createNotifications": {
-		"dialogDeleteConfirm": "Delete",
-		"dialogDeleteTitle": "Are you sure you want to delete this notification?",
-		"discordSettings": {
-			"description": "Configure your Discord webhook here",
-			"title": "Discord",
-			"webhookLabel": "Discord Webhook URL",
-			"webhookPlaceholder": "https://your-server.com/webhook"
-		},
-		"emailSettings": {
-			"description": "Destination email addresses.",
-			"emailLabel": "Email address",
-			"emailPlaceholder": "e.g. john@example.com",
-			"title": "Email"
-		},
-		"nameSettings": {
-			"description": "A descriptive name for your integration.",
-			"nameLabel": "Name",
-			"namePlaceholder": "e.g. Slack notifications",
-			"title": "Name"
-		},
-		"pagerdutySettings": {
-			"description": "Configure your PagerDuty integration here",
-			"integrationKeyLabel": "Integration key",
-			"integrationKeyPlaceholder": "1234567890",
-			"title": "PagerDuty"
-		},
-		"slackSettings": {
-			"description": "Configure your Slack webhook here",
-			"title": "Slack",
-			"webhookLabel": "Slack webhook URL",
-			"webhookPlaceholder": "https://hooks.slack.com/services/..."
-		},
-		"testNotification": "Test notification",
-		"title": "Create notification channel",
-		"typeSettings": {
-			"description": "Select the type of notification channel you want to create.",
-			"title": "Type",
-			"typeLabel": "Type"
-		},
-		"webhookSettings": {
-			"description": "Configure your webhook here",
-			"title": "Webhook",
-			"webhookLabel": "Webhook URL",
-			"webhookPlaceholder": "https://your-server.com/webhook"
-		}
-	},
-	"createYour": "Create your",
-	"dataRate": "Data Rate",
-	"dataReceived": "Data Received",
-	"dataSent": "Data Sent",
-	"date&Time": "Date & Time",
 	"delete": "Delete",
-	"DeleteAccountButton": "Remove account",
-	"DeleteAccountTitle": "Remove account",
-	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
-	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
-	"deleteDialogDescription": "Once deleted, this monitor cannot be retrieved.",
-	"deleteDialogTitle": "Do you really want to delete this monitor?",
 	"deleteStatusPage": "Do you want to delete this status page?",
 	"deleteStatusPageConfirm": "Yes, delete status page",
 	"deleteStatusPageDescription": "Once deleted, your status page cannot be retrieved.",
-	"DeleteWarningTitle": "Really remove this account?",
-	"details": "Details",
-	"device": "Device",
 	"diagnosticsPage": {
 		"diagnosticDescription": "System diagnostics",
 		"gauges": {
@@ -425,26 +252,10 @@
 			"totalHeapSizeTitle": "Total heap size",
 			"uptimeTitle": "Uptime",
 			"usedHeapSizeTitle": "Used heap size"
-		},
-		"statsDescription": "System statistics"
+		}
 	},
-	"disk": "Disk",
-	"diskUsage": "Disk Usage",
-	"displayName": "Display name",
-	"distributedUptimeCreateAdvancedSettings": "Advanced settings",
-	"distributedUptimeCreateChecks": "Checks to perform",
-	"distributedUptimeCreateChecksDescription": "You can always add or remove checks after adding your site.",
-	"distributedUptimeCreateSelectURL": "Here you can select the URL of the host, together with the type of monitor.",
-	"distributedUptimeDetailsNoMonitorHistory": "There is no check history for this monitor yet.",
-	"dnsLookup": "DNS lookup",
-	"dockerContainerMonitoring": "Docker container monitoring",
-	"dockerContainerMonitoringDescription": "Check whether your Docker container is running or not.",
-	"download": "Download",
-	"DragandDrop": "drag and drop",
-	"drops": "Drops",
 	"duration": "Duration",
 	"edit": "Edit",
-	"editing": "Editing...",
 	"editMaintenance": "Edit maintenance",
 	"editUserPage": {
 		"form": {
@@ -456,10 +267,6 @@
 		},
 		"table": {
 			"actionHeader": "Action",
-			"headers": {
-				"name": "Status page name",
-				"url": "Public URL"
-			},
 			"roleHeader": "Role"
 		},
 		"title": "Edit user",
@@ -468,10 +275,6 @@
 			"validationErrors": "Validation errors"
 		}
 	},
-	"EmailDescriptionText": "This is your current email address — it cannot be changed.",
-	"emailSent": "Email sent successfully",
-	"errorInvalidFieldId": "Invalid field ID provided",
-	"errorInvalidTypeId": "Invalid notification type provided",
 	"errorPages": {
 		"serverUnreachable": {
 			"alertBox": "Server Connection Error",
@@ -486,24 +289,10 @@
 			}
 		}
 	},
-	"errors": "Errors",
-	"errorsIn": "Errors In",
-	"errorsOut": "Errors Out",
-	"expectedValue": "Expected value",
-	"export": {
-		"failed": "Failed to export monitors",
-		"success": "Monitors exported successfully!",
-		"title": "Export Monitors"
-	},
 	"failedToSendEmail": "Failed to send email",
 	"features": "Features",
-	"FirstName": "First name",
-	"frequency": "Frequency",
 	"friendlyNameInput": "Friendly name",
 	"friendlyNamePlaceholder": "Maintenance at __ : __ for ___ minutes",
-	"gameServerMonitoring": "Game Server Monitoring",
-	"gameServerMonitoringDescription": "Check whether your game server is running or not",
-	"gb": "GB",
 	"general": {
 		"noOptionsFound": "No {{unit}} found"
 	},
@@ -512,113 +301,12 @@
 		"overview": "Here's an overview of your {{type}} monitors.",
 		"prepend": "Hey there"
 	},
-	"high": "high",
-	"host": "Host",
-	"http": "HTTP",
-	"https": "HTTPS",
-	"ignoreTLSError": "Ignore TLS/SSL error",
-	"ignoreTLSErrorDescription": "Ignore TLS/SSL errors and continue checking the website's availability",
-	"incidentsOptionsHeader": "Incidents for:",
-	"incidentsOptionsHeaderFilterAll": "All",
-	"incidentsOptionsHeaderFilterBy": "Filter by:",
-	"incidentsOptionsHeaderFilterCannotResolve": "Cannot Resolve",
-	"incidentsOptionsHeaderFilterDown": "Down",
-	"incidentsOptionsHeaderFilterResolved": "Resolved",
-	"incidentsOptionsHeaderLastDay": "Last day",
-	"incidentsOptionsHeaderLastHour": "Last hour",
-	"incidentsOptionsHeaderLastWeek": "Last week",
-	"incidentsOptionsHeaderShow": "Show:",
-	"incidentsOptionsHeaderTotalIncidents": "Total Incidents",
-	"incidentsOptionsPlaceholderAllServers": "All servers",
 	"incidentsPage": {
-		"active": "Active",
-		"all": "All",
-		"allSystemsAreOperational": "All Systems Are Operational",
-		"automatic": "Automatic",
-		"avgResolutionTime": "Avg. Resolution Time",
-		"description": "Manage incidents for your monitors. You can resolve incidents here.",
-		"endTime": "End Time",
-		"errorFetchingIncident": "Error fetching incident",
-		"errorFetchingIncidents": "Error fetching incidents",
-		"errorFetchingIncidentSummary": "Error fetching incident summary",
-		"filterByDate": "Filter by date",
-		"filterByMonitor": "Filter by monitor",
-		"filterByPriority": "Filter by priority",
-		"filterByStatus": "Filter by status",
-		"filterByType": "Filter by type",
-		"incidentItemMonitor": "Monitor",
-		"incidentItemStatus": "Status",
-		"incidentResolvedFailed": "Error resolving incident",
-		"incidentResolvedSuccessfully": "Incident resolved successfully",
-		"incidentsActivePanelError": "Error loading active incidents",
-		"incidentsActivePanelTitle": "Total Active Incidents",
-		"incidentsLatestPanelEmpty": "No recent incidents",
-		"incidentsLatestPanelError": "Error loading latest incidents",
-		"incidentsLatestPanelTitle": "Latest Incidents",
-		"incidentsOptionsHeaderFilterActive": "Active",
-		"incidentsOptionsHeaderFilterAll": "All",
-		"incidentsOptionsHeaderFilterAutomatic": "Automatic",
-		"incidentsOptionsHeaderFilterManual": "Manual",
-		"incidentsOptionsHeaderFilterResolved": "Resolved",
-		"incidentsStatisticsPanelError": "Error loading statistics",
-		"incidentsStatisticsPanelTitle": "General Statistics",
-		"incidentsTableActionDetails": "Details",
-		"incidentsTableActionGoToMonitor": "Go to monitor",
-		"incidentsTableActionResolveManually": "Resolve Manually",
-		"incidentsTableResolved": "Closed",
-		"manual": "Manual",
-		"mostAffectedMonitor": "Most Affected Monitor",
-		"noIncidentIdProvided": "No incident ID provided",
-		"resolutions": "Resolutions",
-		"resolutionType": "Resolution Type",
-		"resolved": "Resolved",
 		"resolveIncidentDialogCommentLabel": "Comment (optional)",
 		"resolveIncidentDialogCommentPlaceholder": "Add a comment about the resolution...",
 		"resolveIncidentDialogConfirm": "Resolve",
-		"resolveIncidentDialogTitle": "Resolve Incident",
-		"startTime": "Start Time",
-		"title": "Incidents",
-		"totalIncidents": "Total Incidents",
-		"unknownMonitor": "Unknown Monitor",
-		"unresolved": "Unresolved"
+		"resolveIncidentDialogTitle": "Resolve Incident"
 	},
-	"incidentsPageActionResolveAll": "Resolve all incidents",
-	"incidentsPageActionResolveMonitor": "Resolve monitor incidents",
-	"incidentsPageTitle": "Incidents",
-	"incidentsTableActionResolve": "Resolve",
-	"incidentsTableDateTime": "Date & Time",
-	"incidentsTableMessage": "Message",
-	"incidentsTableMonitorName": "Monitor Name",
-	"incidentsTableNoIncidents": "No incidents recorded",
-	"incidentsTablePaginationLabel": "incidents",
-	"incidentsTableResolvedAt": "Resolved at",
-	"incidentsTableStatus": "Status",
-	"incidentsTableStatusCode": "Status Code",
-	"infrastructureAlertNotificationDescription": "Send a notification to user(s) when thresholds exceed a specified percentage.",
-	"infrastructureAuthorizationSecretLabel": "Authorization secret",
-	"infrastructureCreateGeneralSettingsDescription": "Here you can select the URL of the host, together with the friendly name and authorization secret to connect to the server agent.",
-	"infrastructureCreateMonitor": "Create Infrastructure Monitor",
-	"infrastructureCreateYour": "Create your",
-	"infrastructureCustomizeAlerts": "Customize alerts",
-	"infrastructureDisplayNameLabel": "Display name",
-	"infrastructureEditMonitor": "Save Infrastructure Monitor",
-	"infrastructureEditYour": "Edit your",
-	"infrastructureMonitor": {
-		"fallback": {
-			"actionButton": "Let's create your first infrastructure monitor!",
-			"checks": [
-				"Track the performance of your servers",
-				"Identify bottlenecks and optimize usage",
-				"Ensure reliability with real-time monitoring"
-			],
-			"title": "An infrastructure monitor is used to:"
-		}
-	},
-	"infrastructureMonitorCreated": "Infrastructure monitor created successfully!",
-	"infrastructureMonitorUpdated": "Infrastructure monitor updated successfully!",
-	"infrastructureProtocol": "Protocol",
-	"infrastructureServerRequirement": "The server you are monitoring must be running the",
-	"infrastructureServerUrlLabel": "Server URL",
 	"integrations": "Integrations",
 	"integrationsDiscord": "Discord",
 	"integrationsDiscordInfo": "Connect with Discord and view incidents directly in a channel",
@@ -630,10 +318,7 @@
 	"invalidFileFormat": "Unsupported file format!",
 	"invalidFileSize": "File size is too large!",
 	"inviteNoTokenFound": "No invite token found",
-	"LastName": "Last name",
-	"loginHere": "Login here",
 	"logsPage": {
-		"description": "System logs - last 1000 lines",
 		"logLevelSelect": {
 			"title": "Log level",
 			"values": {
@@ -646,10 +331,6 @@
 		},
 		"noLogs": "No logs found",
 		"table": {
-			"headers": {
-				"name": "Status page name",
-				"url": "Public URL"
-			},
 			"level": "Level",
 			"logs": "logs",
 			"message": "Message",
@@ -662,44 +343,18 @@
 			"logs": "Server logs",
 			"queue": "Job queue"
 		},
-		"title": "Logs",
-		"toast": {
-			"fetchLogsSuccess": "Logs fetched successfully"
-		}
+		"title": "Logs"
 	},
-	"low": "low",
 	"maintenance": "maintenance",
 	"maintenanceRepeat": "Maintenance Repeat",
 	"maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
-	"maintenanceWindow": {
-		"fallback": {
-			"actionButton": "Let's create your first maintenance window!",
-			"checks": [
-				"Mark your maintenance periods",
-				"Eliminate any misunderstandings",
-				"Stop sending alerts in maintenance windows"
-			],
-			"title": "A maintenance window is used to:"
-		}
-	},
 	"maintenanceWindowDescription": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations.",
 	"maintenanceWindowName": "Maintenance Window Name",
-	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"matchMethod": "Match Method",
 	"matchMethodOptions": {
 		"equal": "Equal",
-		"equalPlaceholder": "success",
 		"include": "Include",
-		"includePlaceholder": "ok",
-		"regex": "Regex",
-		"regexPlaceholder": "^(success|ok)$",
-		"text": "Match Method"
+		"regex": "Regex"
 	},
-	"MaxSize": "Maximum Size",
-	"mb": "MB",
-	"mem": "Mem",
-	"memory": "Memory",
-	"memoryUsage": "Memory usage",
 	"menu": {
 		"changelog": "Changelog",
 		"checks": "Checks",
@@ -707,7 +362,6 @@
 		"docs": "Docs",
 		"incidents": "Incidents",
 		"infrastructure": "Infrastructure",
-		"integrations": "Integrations",
 		"logOut": "Log out",
 		"logs": "Logs",
 		"maintenance": "Maintenance",
@@ -721,159 +375,25 @@
 		"team": "Team",
 		"uptime": "Uptime"
 	},
-	"message": "Message",
-	"monitor": "monitor",
-	"monitorActions": {
-		"deleteFailed": "Failed to delete monitor",
-		"deleteSuccess": "Monitor deleted successfully",
-		"details": "Details",
-		"export": "Export Monitors",
-		"import": "Import Monitors",
-		"title": "Export/Import"
-	},
-	"monitorDisplayName": "Monitor display name",
 	"monitorHooks": {
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
-	"monitors": "monitors",
-	"monitorState": {
-		"active": "Active",
-		"paused": "Paused",
-		"resumed": "Resumed"
-	},
-	"monitorStatus": {
-		"checkingEvery": "Checking every {{interval}}",
-		"down": "down",
-		"paused": "paused",
-		"up": "up",
-		"withCaptureAgent": "with Capture agent {{version}}"
-	},
-	"monitorStatusDown": "Monitor {name} ({url}) is DOWN and not responding",
-	"monitorStatusUp": "Monitor {name} ({url}) is now UP and responding",
 	"monitorsToApply": "Monitors to apply maintenance window to",
-	"monitorType": {
-		"docker": {
-			"label": "Container Name/ID",
-			"namePlaceholder": "My Container",
-			"placeholder": "my-app or abcd1234"
-		},
-		"game": {
-			"label": "URL to monitor",
-			"namePlaceholder": "localhost:5173",
-			"placeholder": "localhost"
-		},
-		"http": {
-			"label": "URL to monitor",
-			"namePlaceholder": "Google",
-			"placeholder": "google.com"
-		},
-		"ping": {
-			"label": "IP address to monitor",
-			"namePlaceholder": "Google",
-			"placeholder": "1.1.1.1"
-		},
-		"port": {
-			"label": "URL to monitor",
-			"namePlaceholder": "Localhost:5173",
-			"placeholder": "localhost"
-		}
-	},
-	"mountedOn": "Mounted on",
-	"ms": "ms",
 	"navControls": "Controls",
-	"network": "Network",
-	"networkDrops": "Network Drops",
-	"networkErrors": "Network Errors",
-	"networkInterface": "Network Interface",
 	"nextWindow": "Next window",
-	"noNetworkStatsAvailable": "No network stats available.",
 	"notFoundButton": "Go to the main dashboard",
-	"notificationConfig": {
-		"description": "Select the notifications channels you want to use",
-		"placeholder": "Search notifications...",
-		"title": "Notifications"
-	},
 	"notifications": {
-		"addOrEditNotifications": "Add or edit notifications",
-		"create": {
-			"failed": "Failed to create notification",
-			"success": "Notification created successfully"
-		},
-		"createButton": "Create notification channel",
-		"createTitle": "Notification channel",
-		"delete": {
-			"failed": "Failed to delete notification",
-			"success": "Notification deleted successfully"
-		},
-		"discord": {
-			"description": "To send data to a Discord channel from Checkmate via Discord notifications using webhooks, you can use Discord's incoming Webhooks feature.",
-			"label": "Discord",
-			"webhookLabel": "Discord Webhook URL",
-			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
-			"webhookRequired": "Discord webhook URL is required"
-		},
-		"edit": {
-			"failed": "Failed to update notification",
-			"success": "Notification updated successfully"
-		},
-		"enableNotifications": "Enable {{platform}} notifications",
-		"fallback": {
-			"actionButton": "Let's create your first notification channel!",
-			"checks": [
-				"Alert teams about downtime or performance issues",
-				"Let engineers know when incidents happen",
-				"Keep administrators informed of system changes"
-			],
-			"title": "A notification channel is used to:"
-		},
 		"fetch": {
-			"failed": "Failed to fetch notifications",
-			"success": "Notifications fetched successfully"
-		},
-		"integrationButton": "Notification Integration",
-		"networkError": "Network error occurred",
-		"slack": {
-			"description": "To enable Slack notifications, create a Slack app and enable incoming webhooks. After that, simply provide the webhook URL here.",
-			"label": "Slack",
-			"webhookLabel": "Webhook URL",
-			"webhookPlaceholder": "https://hooks.slack.com/services/...",
-			"webhookRequired": "Slack webhook URL is required"
-		},
-		"telegram": {
-			"chatIdLabel": "Your Chat ID",
-			"chatIdPlaceholder": "-1001234567890",
-			"description": "To enable Telegram notifications, create a Telegram bot using BotFather, an official bot for creating and managing Telegram bots. Then, get the API token and chat ID and write them down here.",
-			"fieldsRequired": "Telegram token and chat ID are required",
-			"label": "Telegram",
-			"tokenLabel": "Your bot token",
-			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+			"failed": "Failed to fetch notifications"
 		},
 		"test": {
-			"failed": "Failed to send test notification",
 			"success": "Test notification sent successfully"
-		},
-		"testFailed": "Failed to send test notification",
-		"testNotification": "Test notification",
-		"testNotificationDevelop": "Test notification 2",
-		"testSuccess": "Test notification sent successfully!",
-		"unsupportedType": "Unsupported notification type",
-		"webhook": {
-			"description": "You can set up a custom webhook to receive notifications when incidents occur.",
-			"label": "Webhooks",
-			"urlLabel": "Webhook URL",
-			"urlPlaceholder": "https://your-server.com/webhook",
-			"urlRequired": "Webhook URL is required"
 		}
 	},
-	"notifyEmails": "Also notify via email to multiple addresses (coming soon)",
-	"notifySMS": "Notify via SMS (coming soon)",
-	"now": "Now",
-	"os": "OS",
-	"packetsPerSecond": "Packets per second",
-	"packetsReceived": "Packets Received",
-	"packetsReceivedRate": "Packets Received Rate",
-	"packetsSent": "Packets Sent",
+	"pageSpeedAddApiKey": "to add your API key.",
+	"pageSpeedLearnMoreLink": "Click here",
+	"pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key yet. Without it, the PageSpeed monitor won't function.",
 	"pages": {
 		"checks": {
 			"selects": {
@@ -924,43 +444,13 @@
 			"form": {
 				"advanced": {
 					"description": "Optional settings for advanced use cases",
-					"option": {
-						"advancedMatching": {
-							"label": "Use advanced matching"
-						},
-						"expectedValue": {
-							"description": "The expected value is used to match against response result, and the match determines the status.",
-							"label": "Expected value"
-						},
-						"jsonPath": {
-							"description": "This expression will be evaluated against the response JSON data and the result will be used to match against the expected value. See <jmesLink>jmespath.org</jmesLink> for query language documentation.",
-							"label": "JSONPath expression"
-						},
-						"matchMethod": {
-							"label": "Match method"
-						}
-					},
 					"title": "Advanced settings"
 				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",
-					"option": {
-						"frequency": {
-							"label": "Check frequency"
-						}
-					},
 					"title": "Check frequency"
 				},
 				"general": {
-					"description": {
-						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
-						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
-						"hardware": "Enter the URL of your infrastructure agent, the authorization secret, and a clear display name that appears on the dashboard.",
-						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-						"pagespeed": "Enter the URL of the page to analyze with Google PageSpeed and add a clear display name that appears on the dashboard.",
-						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
-						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
-					},
 					"option": {
 						"container": {
 							"label": "Container name/ID",
@@ -975,8 +465,7 @@
 							"placeholder": "e.g. My Website"
 						},
 						"secret": {
-							"label": "Authorization secret",
-							"placeholder": "Enter your secret key"
+							"label": "Authorization secret"
 						},
 						"url": {
 							"label": "URL",
@@ -999,9 +488,6 @@
 					"option": {
 						"checks": {
 							"label": "Number of checks in sliding window"
-						},
-						"percentage": {
-							"label": "What percentage of checks in the sliding window fail/succeed before monitor status changes?"
 						}
 					},
 					"title": "Incidents"
@@ -1013,20 +499,10 @@
 				"type": {
 					"description": "Select the type of check to perform",
 					"optionDocker": "Docker",
-					"optionDockerDescription": "Use Docker to monitor if a container is running.",
 					"optionGame": "Game",
-					"optionGameDescription": "Monitor if a specific game server is online.",
-					"optionHardware": "Hardware",
-					"optionHardwareDescription": "Monitor server hardware metrics like CPU, memory, and disk.",
 					"optionHttp": "HTTP(S)",
-					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
-					"optionPagespeed": "PageSpeed",
-					"optionPagespeedDescription": "Analyze page performance using Google PageSpeed Insights.",
 					"optionPing": "Ping",
-					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPort": "Port",
-					"optionPortDescription": "Monitor if a specific port on a server is open.",
-					"optionType": "Type",
 					"title": "Type"
 				}
 			}
@@ -1043,10 +519,6 @@
 					"overview": "Overview",
 					"resolutionDetails": "Resolution details",
 					"resolutionType": "Type:",
-					"resolutionTypes": {
-						"automatic": "Automatic",
-						"manual": "Manual"
-					},
 					"resolve": "Resolve Incident",
 					"resolvedAt": "Resolved at:",
 					"resolvedBy": "Resolved by:",
@@ -1060,26 +532,21 @@
 			},
 			"filters": {
 				"allMonitors": "All monitors",
-				"clearFilters": "Clear Filters",
+				"clearFilters": "Clear filters",
 				"monitor": "Monitor",
-				"resolutionType": "Resolution type",
-				"resolutionTypes": {
-					"automatic": "Automatic",
-					"manual": "Manual"
-				}
+				"resolutionType": "Resolution type"
 			},
 			"summaryCard": {
 				"activeIncidents": {
-					"active_one": "{{count}} Active incident",
-					"active_other": "{{count}} Active incidents",
 					"active_zero": "No active incidents",
-					"title": "Active Incidents"
+					"title": "Active Incidents",
+					"active": "active"
 				},
 				"incidentStats": {
-					"avgResolutionTime": "Average resolution time",
-					"mostAffectedMonitor": "Most affected monitor",
+					"avgResolutionTime": "Avg Resolution Time",
+					"mostAffectedMonitor": "Most Affected Monitor",
 					"title": "Incident Statistics",
-					"totalIncidents": "Total incidents"
+					"totalIncidents": "Total Incidents"
 				},
 				"latestIncidents": {
 					"title": "Latest Incidents"
@@ -1101,7 +568,6 @@
 				"resolvedIncidents": "Resolved Incidents",
 				"status": {
 					"active": "Active",
-					"na": "N/A",
 					"resolved": "Resolved"
 				}
 			}
@@ -1116,15 +582,6 @@
 					"netBytesSent": "{{name}} - Bytes Sent",
 					"temp": "Temp"
 				}
-			},
-			"fallback": {
-				"actionButton": "Let's create your first infrastructure monitor!",
-				"checks": [
-					"Track the performance of your servers",
-					"Identify bottlenecks and optimize usage",
-					"Ensure reliability with real-time monitoring"
-				],
-				"title": "An infrastructure monitor is used to:"
 			},
 			"gauges": {
 				"cpu": {
@@ -1178,7 +635,6 @@
 			},
 			"form": {
 				"accessToken": {
-					"optionAccessToken": "Access token",
 					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
 				},
 				"address": {
@@ -1189,10 +645,8 @@
 					"title": "Address"
 				},
 				"homeServer": {
-					"description": "Select the home server for this notification channel.",
 					"optionHomeServer": "Home server",
-					"placeholder": "example.com",
-					"title": "Home server"
+					"placeholder": "example.com"
 				},
 				"matrix": {
 					"description": "Configure your Matrix homeserver connection for notifications.",
@@ -1243,15 +697,6 @@
 					"title": "Performance report"
 				}
 			},
-			"fallback": {
-				"actionButton": "Let's create your first PageSpeed monitor!",
-				"checks": [
-					"Report on the user experience of a page",
-					"Help analyze webpage speed",
-					"Give suggestions on how the page can be improved"
-				],
-				"title": "A PageSpeed monitor is used to:"
-			},
 			"table": {
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
@@ -1260,153 +705,57 @@
 		},
 		"statusPages": {
 			"fallback": {
-				"actionButton": "Create a status page!",
-				"checks": [
-					"Monitor and display the health of your services in real time",
-					"Track multiple services and share their status",
-					"Keep users informed about outages and performance"
-				],
-				"title": "A status page is used to:"
-			},
-			"form": {
-				"access": {
-					"description": "Choose if you want your status page to be public",
-					"option": {
-						"published": {
-							"name": "Published and publicly visible"
-						}
-					},
-					"title": "Access"
-				},
-				"appearance": {
-					"description": "Define the default look and feel of your public status page",
-					"option": {},
-					"title": "Appearance"
-				},
-				"basicInfo": {
-					"description": "Name and address of your status page",
-					"option": {
-						"name": {
-							"label": "Name",
-							"placeholder": "My status page"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "my-status-page"
-						}
-					},
-					"title": "Basic information"
-				},
-				"monitors": {
-					"description": "Select which monitors to display on your status page",
-					"noMonitors": "No monitors available. Create uptime monitors first.",
-					"option": {
-						"monitors": {
-							"label": "Monitors",
-							"placeholder": "Select monitors..."
-						}
-					},
-					"title": "Monitors"
-				},
-				"timezone": {
-					"description": "Select the timezone for your status page",
-					"option": {
-						"timezone": {
-							"label": "Timezone",
-							"placeholder": "Search timezones..."
-						}
-					},
-					"title": "Timezone"
-				}
+				"actionButton": "Create status page",
+				"checks": "No status pages found",
+				"title": "Status pages"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
 				"chartTypeHistogram": "Histogram"
 			},
-			"serviceStauts": "Service stauts",
-			"settings": {
-				"description": "Configure basic settings for your status page.",
-				"option": {
-					"name": {
-						"label": "Status page name",
-						"placeholder": "e.g. My Company Status Page"
-					},
-					"published": {
-						"label": "Published and visible to the public"
-					},
-					"subdomain": {
-						"label": "Subdomain",
-						"placeholder": "e.g. my-company"
-					},
-					"timezone": {
-						"label": "Timezone"
-					}
-				},
-				"title": "Status page settings"
-			},
 			"statusBar": {
-				"allDown": "All systems down",
+				"allDown": "All systems are down",
 				"allUp": "All systems operational",
-				"degraded": "Degraded performance",
-				"unknown": "Unknown status"
-			}
-		},
-		"uptime": {
+				"degraded": "Some systems are experiencing issues",
+				"unknown": "Unable to determine system status"
+			},
 			"table": {
 				"headers": {
-					"responseTime": "Response time"
-				}
+					"name": "Status page name",
+					"url": "Public URL"
+				},
+				"published": "Published",
+				"unpublished": "Unpublished"
 			},
+			"title": "Status pages"
+		},
+		"uptime": {
 			"filters": {
 				"search": {
 					"placeholder": "Search monitors..."
 				}
+			},
+			"table": {
+				"headers": {
+					"responseTime": "Response time"
+				}
 			}
 		}
 	},
-	"pageSpeed": {
-		"fallback": {
-			"actionButton": "Let's create your first PageSpeed monitor!",
-			"checks": [
-				"Report on the user experience of a page",
-				"Help analyze webpage speed",
-				"Give suggestions on how the page can be improved"
-			],
-			"title": "A PageSpeed monitor is used to:"
-		}
-	},
-	"pageSpeedAddApiKey": "to add your API key.",
-	"pageSpeedConfigureSettingsDescription": "Here you can select the URL of the host, together with the type of monitor.",
-	"pageSpeedDetailsPerformanceReport": "Values are estimated and may vary.",
-	"pageSpeedDetailsPerformanceReportCalculator": "See calculator",
-	"pageSpeedLearnMoreLink": "Click here",
-	"pageSpeedLighthouseAPI": "Use the Lighthouse PageSpeed API to monitor your website",
-	"pageSpeedMonitor": "PageSpeed monitor",
-	"pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key yet. Without it, the PageSpeed monitor won't function.",
 	"passwordPanel": {
 		"confirmNewPassword": "Confirm new password",
 		"currentPassword": "Current password",
-		"enterCurrentPassword": "Enter your current password",
 		"enterNewPassword": "Enter your new password",
-		"newPassword": "New password",
-		"passwordChangedSuccess": "Your password was changed successfully.",
-		"passwordInputIncorrect": "Your password input was incorrect.",
-		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`).",
-		"saving": "Saving..."
+		"newPassword": "New password"
 	},
 	"pause": "Pause",
-	"PhotoDescriptionText": "This photo will be displayed in your profile page.",
-	"pingMonitoring": "Ping monitoring",
-	"pingMonitoringDescription": "Check whether your server is available or not.",
-	"portMonitoring": "Port monitoring",
-	"portMonitoringDescription": "Check whether your port is open or not.",
 	"portToMonitor": "Port to monitor",
 	"publicLink": "Public link",
 	"queuePage": {
 		"failedJobTable": {
 			"failCountHeader": "Fail count",
-			"failedAtHeader": "Last failed at",
 			"failReasonHeader": "Fail reason",
+			"failedAtHeader": "Last failed at",
 			"monitorIdHeader": "Monitor ID",
 			"monitorUrlHeader": "Monitor URL",
 			"title": "Failed jobs"
@@ -1431,17 +780,12 @@
 			"title": "Queue metrics",
 			"valueHeader": "Value"
 		},
-		"refreshButton": "Refresh",
-		"title": "Queue"
+		"refreshButton": "Refresh"
 	},
-	"rate": "Rate",
 	"remove": "Remove",
 	"removeLogo": "Remove Logo",
 	"repeat": "Repeat",
 	"reset": "Reset",
-	"response": "RESPONSE",
-	"responseTime": "Response time",
-	"responseTimeBreakdown": "Response time breakdown",
 	"resume": "Resume",
 	"roles": {
 		"admin": "Admin",
@@ -1451,13 +795,7 @@
 	},
 	"save": "Save",
 	"selectAll": "Select all",
-	"selectInterface": "Select Interface",
-	"sendTestNotifications": "Send test notifications",
-	"seperateEmails": "You can separate multiple emails with a comma",
-	"settingsAppearance": "Appearance",
-	"settingsDisabled": "Disabled",
 	"settingsDisplayTimezone": "Display timezone",
-	"settingsEmailUser": "Email user - Username for authentication, overrides email address if specified",
 	"settingsFailedToClearStats": "Failed to clear stats",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
 	"settingsFailedToSave": "Failed to save settings",
@@ -1466,7 +804,6 @@
 	"settingsPage": {
 		"aboutSettings": {
 			"labelDevelopedBy": "Developed by Bluewave Labs",
-			"labelVersion": "Version",
 			"title": "About"
 		},
 		"demoMonitorsSettings": {
@@ -1481,14 +818,9 @@
 			"labelAddress": "Email address - Used for authentication",
 			"labelConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
 			"labelHost": "Email host - Hostname or IP address to connect to",
-			"labelIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
 			"labelPassword": "Email password - Password for authentication",
 			"labelPasswordSet": "Password is set. Click Reset to change it.",
-			"labelPool": "Enable connection pooling: Reuse existing connections to improve performance",
 			"labelPort": "Email port - Port to connect to",
-			"labelRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
-			"labelRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
-			"labelSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
 			"labelTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
 			"labelUser": "Email user - Username for authentication, overrides email address if specified",
 			"linkTransport": "See specifications here",
@@ -1497,7 +829,6 @@
 			"toastEmailRequiredFieldsError": "Email address, host, port and password are required"
 		},
 		"globalThresholds": {
-			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring.",
 			"title": "Global Thresholds"
 		},
 		"pageSpeedSettings": {
@@ -1510,25 +841,20 @@
 		"statsSettings": {
 			"clearAllStatsButton": "Clear all stats",
 			"clearAllStatsDescription": "Clear all stats. This is irreversible.",
-			"clearAllStatsDialogConfirm": "Yes, clear all stats",
 			"clearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
 			"clearAllStatsDialogTitle": "Do you want to clear all stats?",
 			"description": "Define how long you want to retain historical data. You can also clear all existing data.",
-			"labelTTL": "The days you want to keep monitoring history.",
-			"labelTTLOptional": "0 for infinite",
 			"title": "Monitor history"
 		},
 		"systemResetSettings": {
 			"buttonRemoveAllMonitors": "Remove all monitors",
 			"description": "Remove all monitors from your system.",
 			"dialogConfirm": "Yes, remove all monitors",
-			"dialogDescription": "Once removed, the monitors cannot be retrieved.",
 			"dialogTitle": "Do you want to remove all monitors?",
 			"title": "System reset"
 		},
 		"timezoneSettings": {
 			"description": "Select the timezone used to display dates and times throughout the application.",
-			"label": "Display timezone",
 			"title": "Display timezone"
 		},
 		"title": "Settings",
@@ -1549,47 +875,34 @@
 			"title": "Monitor IP/URL on Status Page"
 		}
 	},
-	"settingsSave": "Save",
 	"settingsStatsCleared": "Stats cleared successfully",
 	"settingsSuccessSaved": "Settings saved successfully",
 	"settingsTestEmailFailed": "Failed to send test email",
-	"settingsTestEmailFailedWithReason": "Failed to send test email: {{reason}}",
 	"settingsTestEmailSuccess": "Test email sent successfully",
 	"settingsTestEmailUnknownError": "Unknown error",
 	"showAdminLoginLink": "Show \"Administrator? Login Here\" link on the status page",
 	"showCharts": "Show charts",
-	"shown": "Shown",
 	"showUptimePercentage": "Show uptime percentage",
 	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
 	"starPromptTitle": "Star Checkmate",
 	"startTime": "Start time",
-	"state": "State",
 	"status": "Status",
 	"statusBreadCrumbsDetails": "Details",
 	"statusBreadCrumbsStatusPages": "Status Pages",
-	"statusCode": "Status code",
-	"statusMsg": {
-		"down": "Your site is down.",
-		"paused": "Monitoring is paused.",
-		"pending": "Pending...",
-		"up": "Your site is up."
-	},
 	"statusPage": {
 		"contents": "Contents",
 		"createSuccess": "Status page created successfully",
 		"deleteFailed": "Failed to delete status page",
 		"deleteSuccess": "Status page deleted successfully",
-		"fallback": {
-			"actionButton": "Let's create your first status page!",
-			"checks": [
-				"Monitor and display the health of your services in real time",
-				"Track multiple services and share their status",
-				"Keep users informed about outages and performance"
-			],
-			"title": "A status page is used to:"
-		},
 		"generalSettings": "General settings",
-		"updateSuccess": "Status page updated successfully"
+		"updateSuccess": "Status page updated successfully",
+		"details": {
+			"statusHeader": {
+				"allUp": "All systems operational",
+				"allDown": "All systems are experiencing issues",
+				"anyDown": "Some systems are experiencing issues"
+			}
+		}
 	},
 	"statusPageCreate": {
 		"buttonSave": "Save"
@@ -1606,8 +919,6 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Show more details on the status page",
 	"statusPageStatusServiceStatus": "Service status",
 	"submit": "Submit",
-	"SupportedFormats": "Supported formats",
-	"tcpConnection": "TCP connection",
 	"teamPanel": {
 		"addTeamMember": {
 			"addButton": "Add Member",
@@ -1616,6 +927,12 @@
 			"title": "Register new team member"
 		},
 		"cancel": "Cancel",
+		"changeTeamPassword": {
+			"changePasswordMenu": "Reset Password",
+			"description": "Create a new password for this team member. You will need to share the password with them securely.",
+			"success": "Password successfully reset. Make sure to provide the credentials to the member in a secure way.",
+			"title": "Reset team member password"
+		},
 		"email": "Email",
 		"emailToken": "E-mail token",
 		"filter": {
@@ -1632,111 +949,41 @@
 		"registerToast": {
 			"success": "User created, share credentials with the member securely."
 		},
+		"role": "Role",
 		"selectRole": "Select role",
 		"table": {
 			"created": "Created",
 			"email": "Email",
-			"headers": {
-				"name": "Status page name",
-				"url": "Public URL"
-			},
 			"name": "Name",
 			"role": "Role"
 		},
-		"teamMembers": "Team members",
-		"uptime": {
-			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Check if websites or servers are online & responsive",
-					"Alert teams about downtime or performance issues",
-					"Monitor HTTP endpoints, pings, containers & ports",
-					"Track historical uptime and reliability trends"
-				],
-				"title": "An uptime monitor is used to:"
-			},
-			"filters": {
-				"search": {
-					"placeholder": "Search monitors..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "Response time"
-				}
-			}
-		}
+		"teamMembers": "Team members"
 	},
-	"testNotificationsDisabled": "There are no notifications setup for this monitor. You need to add one by clicking 'Configure' button",
 	"time": {
 		"fifteenMinutes": "15 minutes",
 		"fifteenSeconds": "15 seconds",
 		"fiveMinutes": "5 minutes",
 		"fourMinutes": "4 minutes",
-		"oneDay": "1 day",
-		"oneHour": "1 hour",
 		"oneMinute": "1 minute",
-		"oneWeek": "1 week",
 		"tenMinutes": "10 minutes",
 		"thirtyMinutes": "30 minutes",
 		"thirtySeconds": "30 seconds",
 		"threeMinutes": "3 minutes",
-		"twentyMinutes": "20 minutes",
 		"twoMinutes": "2 minutes"
 	},
-	"timeToFirstByte": "Time to first byte",
-	"timezone": "Timezone",
 	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
-	"title": "Title",
-	"tlsErrorIgnored": "TLS/SSL errors ignored",
-	"tlsHandshake": "TLS handshake",
+	"timezone": "Timezone",
 	"total": "Total",
-	"type": "Type",
 	"update": "Update",
 	"uptime": "Uptime",
-	"uptimeAdvancedMatching": {
-		"jsonPath": "JSON Path"
-	},
-	"uptimeCreate": "The expected value is used to match against response result, and the match determines the status.",
-	"uptimeCreateJsonPath": "This expression will be evaluated against the reponse JSON data and the result will be used to match against the expected value. See",
-	"uptimeCreateJsonPathQuery": "for query language documentation.",
-	"uptimeGeneralInstructions": {
-		"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
-		"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
-		"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-		"https": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
-		"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
-		"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard."
-	},
-	"uptimeMonitor": {
-		"fallback": {
-			"actionButton": "Let's create your first uptime monitor!",
-			"checks": [
-				"Check if websites or servers are online & responsive",
-				"Alert teams about downtime or performance issues",
-				"Monitor HTTP endpoints, pings, containers & ports",
-				"Track historical uptime and reliability trends"
-			],
-			"title": "An uptime monitor is used to:"
-		}
-	},
-	"url": "URL",
-	"urlMonitor": "URL to monitor",
 	"used": "Used",
-	"v1": {
-		"infrastructure": {
-			"disk_selection_description": "Select the specific disks you want to monitor.",
-			"disk_selection_info": "No disk detected for the moment.",
-			"disk_selection_title": "Disk Selection"
-		}
-	},
-	"waitTime": "Wait time",
-	"webhookSendError": "Error sending webhook notification to {platform}",
-	"webhookSendSuccess": "Webhook notification sent successfully",
-	"webhookUnsupportedPlatform": "Unsupported platform: {platform}",
-	"websiteMonitoring": "Website monitoring",
-	"websiteMonitoringDescription": "Use HTTP(s) to monitor your website or API endpoint.",
-	"whenNewIncident": "When there is a new incident,",
 	"window": "window",
-	"YourPhoto": "Profile photo"
+	"failedDeleteMonitor": "Failed to delete monitor",
+	"failedPauseMonitor": "Failed to pause monitor",
+	"hour": "hour",
+	"minute": "minute",
+	"monitorDeleted": "Monitor deleted successfully",
+	"monitorPaused": "Monitor paused successfully",
+	"monitorResumed": "Monitor resumed successfully",
+	"name": "Name"
 }
