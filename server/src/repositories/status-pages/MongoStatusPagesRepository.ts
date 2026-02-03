@@ -32,9 +32,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			return undefined;
 		}
 		// Convert Buffer to base64 string for JSON serialization
-		const base64Data = Buffer.isBuffer(logo.data)
-			? logo.data.toString("base64")
-			: logo.data;
+		const base64Data = Buffer.isBuffer(logo.data) ? logo.data.toString("base64") : logo.data;
 		return {
 			data: base64Data,
 			contentType: logo.contentType,
@@ -105,7 +103,12 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		return this.mapDocuments(statusPages);
 	};
 
-	updateById = async (id: string, teamId: string, image: Express.Multer.File | undefined, patch: Partial<StatusPage> & { removeLogo?: string }): Promise<StatusPage> => {
+	updateById = async (
+		id: string,
+		teamId: string,
+		image: Express.Multer.File | undefined,
+		patch: Partial<StatusPage> & { removeLogo?: string }
+	): Promise<StatusPage> => {
 		const { logo: _logo, removeLogo, ...restPatch } = patch;
 		const updateData: StatusPageUpdateData = { ...restPatch };
 		if (image) {
