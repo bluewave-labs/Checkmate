@@ -20,10 +20,11 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
-import { useGet, usePost } from "@/Hooks/UseApi";
+import { useGet, usePost, usePut } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
+import type { StatusPageResponse } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 interface TimezoneOption {
@@ -35,9 +36,18 @@ const CreateStatusPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const { url } = useParams<{ url: string }>();
+
+	const isCreate = typeof url === "undefined";
 
 	const { schema, defaults } = useStatusPageForm();
-	const { post, loading: isSubmitting } = usePost();
+	const { post, loading: isSubmittingPost } = usePost();
+	const { put, loading: isSubmittingPut } = usePut();
+	const isSubmitting = isSubmittingPost || isSubmittingPut;
+
+	// Fetch existing status page data when configuring
+	const { data: statusPageData, isLoading: isLoadingStatusPage } =
+		useGet<StatusPageResponse>(isCreate ? null : `/status-page/${url}?type=uptime`);
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(
 		"/monitors/team?type=http&type=ping&type=port&type=docker"
@@ -51,9 +61,34 @@ const CreateStatusPage = () => {
 
 	const { control, reset, handleSubmit } = form;
 
+	// Populate form with existing data when configuring
 	useEffect(() => {
-		reset(defaults);
-	}, [defaults, reset]);
+		if (isCreate) {
+			reset(defaults);
+			return;
+		}
+
+		if (!statusPageData) return;
+
+		const { statusPage, monitors: statusPageMonitors } = statusPageData;
+
+		let logoData: { data: string; contentType: string } | null = null;
+		if (statusPage.logo && statusPage.logo.data) {
+			logoData = {
+				data: `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`,
+				contentType: statusPage.logo.contentType,
+			};
+		}
+
+		reset({
+			isPublished: statusPage.isPublished ?? false,
+			companyName: statusPage.companyName ?? "",
+			url: statusPage.url ?? "",
+			timezone: statusPage.timezone ?? "America/Toronto",
+			monitors: statusPageMonitors?.map((m) => m.id) ?? [],
+			logo: logoData,
+		});
+	}, [isCreate, statusPageData, reset, defaults]);
 
 	const onError = (errors: any) => {
 		console.log(errors);
@@ -71,28 +106,41 @@ const CreateStatusPage = () => {
 			fd.append("monitors[]", monitorId);
 		});
 
+		// Handle logo upload
 		if (data.logo?.data && data.logo.data !== "") {
-			try {
-				const imageResult = await axios.get(data.logo.data, {
-					responseType: "blob",
-				});
-				fd.append("logo", imageResult.data);
-				if (data.logo.data.startsWith("blob:")) {
+			// Only upload if it's a blob URL (new upload), not base64 (existing)
+			if (data.logo.data.startsWith("blob:")) {
+				try {
+					const imageResult = await axios.get(data.logo.data, {
+						responseType: "blob",
+					});
+					fd.append("logo", imageResult.data);
 					URL.revokeObjectURL(data.logo.data);
+				} catch (e) {
+					console.error("Error fetching logo blob:", e);
 				}
-			} catch (e) {
-				console.error("Error fetching logo blob:", e);
 			}
 		}
 
-		const result = await post("/status-page", fd, {
-			headers: { "Content-Type": "multipart/form-data" },
-		});
+		let result;
+		if (isCreate) {
+			result = await post("/status-page", fd, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+		} else {
+			result = await put(`/status-page/${url}`, fd, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+		}
 
 		if (result) {
 			navigate(`/status/uptime/${data.url}`);
 		}
 	};
+
+	if (!isCreate && isLoadingStatusPage) {
+		return <BasePage>Loading...</BasePage>;
+	}
 
 	return (
 		<BasePage
@@ -128,7 +176,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.basicInfo.title")}
 				subtitle={t("pages.statusPages.form.basicInfo.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(6)}>
 						<Controller
 							name="companyName"
 							control={control}
@@ -139,9 +187,8 @@ const CreateStatusPage = () => {
 									placeholder={t(
 										"pages.statusPages.form.basicInfo.option.name.placeholder"
 									)}
-									fullWidth
 									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
+									helperText={fieldState.error?.message}
 								/>
 							)}
 						/>
@@ -155,9 +202,8 @@ const CreateStatusPage = () => {
 									placeholder={t(
 										"pages.statusPages.form.basicInfo.option.url.placeholder"
 									)}
-									fullWidth
 									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
+									helperText={fieldState.error?.message}
 								/>
 							)}
 						/>
@@ -174,7 +220,7 @@ const CreateStatusPage = () => {
 						render={({ field, fieldState }) => {
 							const selectedMonitors = field.value
 								.map((id: string) => monitors.find((m) => m.id === id))
-								.filter(Boolean) as Monitor[];
+								.filter((m): m is Monitor => m !== undefined);
 
 							const handleDragEnd = (result: DropResult) => {
 								if (!result.destination) return;
@@ -191,23 +237,27 @@ const CreateStatusPage = () => {
 										options={monitors}
 										getOptionLabel={(option: Monitor) => option.name}
 										value={selectedMonitors}
-										onChange={(_, newValue: Monitor[]) => {
-											field.onChange(newValue.map((m) => m.id));
+										onChange={(_, newValue) => {
+											field.onChange(newValue.map((m: Monitor) => m.id));
 										}}
+										renderTags={() => null}
 										fieldLabel={t(
 											"pages.statusPages.form.monitors.option.monitors.label"
 										)}
 										renderInput={(params) => (
 											<TextField
 												{...params}
-												placeholder={t(
-													"pages.statusPages.form.monitors.option.monitors.placeholder"
-												)}
+												placeholder={
+													selectedMonitors.length === 0
+														? t(
+																"pages.statusPages.form.monitors.option.monitors.placeholder"
+															)
+														: ""
+												}
 												error={!!fieldState.error}
-												helperText={fieldState.error?.message ?? ""}
+												helperText={fieldState.error?.message}
 											/>
 										)}
-										renderTags={() => null}
 									/>
 									{selectedMonitors.length > 0 && (
 										<DragDropContext onDragEnd={handleDragEnd}>

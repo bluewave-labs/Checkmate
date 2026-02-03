@@ -1,6 +1,6 @@
 import { IStatusPagesRepository } from "@/repositories/index.js";
 import { type StatusPageDocument, StatusPageModel } from "@/db/models/StatusPage.js";
-import type { StatusPage, StatusPageLogo } from "@/types/statusPage.js";
+import type { StatusPage, StatusPageLogo, StatusPageLogoDocument } from "@/types/statusPage.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 
@@ -23,12 +23,16 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		return values?.map((value) => this.toStringId(value)) ?? [];
 	};
 
-	private mapLogo = (logo?: StatusPageLogo | null): StatusPageLogo | undefined => {
+	private mapLogo = (logo?: StatusPageLogoDocument | null): StatusPageLogo | undefined => {
 		if (!logo) {
 			return undefined;
 		}
+		// Convert Buffer to base64 string for JSON serialization
+		const base64Data = Buffer.isBuffer(logo.data)
+			? logo.data.toString("base64")
+			: logo.data;
 		return {
-			data: logo.data,
+			data: base64Data,
 			contentType: logo.contentType,
 		};
 	};
@@ -72,7 +76,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		});
 		if (image) {
 			statusPage.logo = {
-				data: image.buffer,
+				data: image.buffer as Buffer,
 				contentType: image.mimetype,
 			};
 		}
@@ -97,16 +101,15 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	};
 
 	updateById = async (id: string, teamId: string, image: Express.Multer.File | undefined, patch: Partial<StatusPage>): Promise<StatusPage> => {
+		const updateData: any = { ...patch };
 		if (image) {
-			patch.logo = {
-				data: image.buffer,
+			updateData.logo = {
+				data: image.buffer as Buffer,
 				contentType: image.mimetype,
 			};
-		} else {
-			patch.logo = null;
 		}
 
-		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, patch, {
+		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, updateData, {
 			new: true,
 		});
 
