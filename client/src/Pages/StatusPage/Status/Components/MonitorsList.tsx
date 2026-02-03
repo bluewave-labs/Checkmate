@@ -96,6 +96,8 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
 								{chartType === "histogram" ? (
 									<HistogramResponseTime
+										height={{ xs: 50, md: 100 }}
+										gap={{ xs: theme.spacing(0.5), md: theme.spacing(5) }}
 										checks={monitor?.checks?.slice().reverse() ?? []}
 									/>
 								) : (

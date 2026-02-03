@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Table, type Header, ValueLabel } from "@/Components/v2/design-elements";
+import { ActionsMenu, type ActionMenuItem } from "@/Components/v2/actions-menu";
 import { ExternalLink } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -12,17 +13,44 @@ import type { StatusPage } from "@/Types/StatusPage";
 
 interface StatusPagesTableProps {
 	data: StatusPage[];
+	setSelectedStatusPage: (statusPage: StatusPage | null) => void;
 }
 
-export const StatusPagesTable = ({ data }: StatusPagesTableProps) => {
+export const StatusPagesTable = ({
+	data,
+	setSelectedStatusPage,
+}: StatusPagesTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
 
+	const getActions = (row: StatusPage): ActionMenuItem[] => {
+		return [
+			{
+				id: 1,
+				label: t("common.buttons.configure"),
+				action: () => {
+					navigate(`/status/configure/${row.url}`);
+				},
+				closeMenu: true,
+			},
+			{
+				id: 2,
+				label: (
+					<Typography color={theme.palette.error.main}>
+						{t("common.buttons.delete")}
+					</Typography>
+				),
+				action: () => setSelectedStatusPage(row),
+				closeMenu: true,
+			},
+		];
+	};
+
 	const handleUrlClick = (e: React.MouseEvent, row: StatusPage) => {
 		if (row.isPublished) {
 			e.stopPropagation();
-			const url = `/status/uptime/public/${row.url}`;
+			const url = `/status/public/${row.url}`;
 			window.open(url, "_blank", "noopener,noreferrer");
 		}
 	};
@@ -87,11 +115,18 @@ export const StatusPagesTable = ({ data }: StatusPagesTableProps) => {
 					);
 				},
 			},
+			{
+				id: "actions",
+				content: t("common.table.headers.actions"),
+				render: (row) => {
+					return <ActionsMenu items={getActions(row)} />;
+				},
+			},
 		];
 	};
 
 	const handleRowClick = (statusPage: StatusPage) => {
-		navigate(`/status/uptime/${statusPage.url}`);
+		navigate(`/status/${statusPage.url}`);
 	};
 
 	return (

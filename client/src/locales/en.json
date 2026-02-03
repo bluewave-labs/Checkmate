@@ -242,7 +242,8 @@
 			"clickToUpload": "Click to upload",
 			"dragAndDrop": "or drag and drop",
 			"supportedFormats": "Supported formats",
-			"maxSize": "Max size"
+			"maxSize": "Max size",
+			"orDragAndDrop": "or drag and drop"
 		},
 		"errors": {
 			"invalidFileType": "Invalid file type",
@@ -358,7 +359,6 @@
 	"errors": "Errors",
 	"expectedValue": "Expected value",
 	"failedToSendEmail": "Failed to send email",
-	"features": "Features",
 	"FirstName": "First name",
 	"frequency": "Frequency",
 	"friendlyNameInput": "Friendly name",
@@ -595,7 +595,9 @@
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
-						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
+						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
 					}
 				},
 				"ignoreTls": {
@@ -860,10 +862,16 @@
 			}
 		},
 		"statusPages": {
+			"deleteSuccess": "Status page deleted successfully",
 			"fallback": {
-				"actionButton": "Create status page",
-				"checks": "No status pages found",
-				"title": "Status pages"
+				"title": "A status page is used to:",
+				"checks": [
+					"Communicate system status to users and stakeholders",
+					"Display real-time uptime information publicly",
+					"Build trust with transparent service monitoring",
+					"Reduce support requests during incidents"
+				],
+				"actionButton": "Let's create your first status page!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
@@ -883,7 +891,86 @@
 				"published": "Published",
 				"unpublished": "Unpublished"
 			},
-			"title": "Status pages"
+			"title": "Status pages",
+			"details": {
+				"empty": {
+					"title": "There's nothing here yet",
+					"addMonitor": "Add a monitor to get started"
+				}
+			},
+			"form": {
+				"access": {
+					"title": "Access",
+					"description": "If your status page is ready, you can mark it as published.",
+					"option": {
+						"published": {
+							"name": "Published and visible to the public"
+						}
+					}
+				},
+				"basicInfo": {
+					"title": "Basic information",
+					"description": "Define company name and the subdomain that your status page points to.",
+					"option": {
+						"name": {
+							"label": "Company name",
+							"placeholder": "Acme Inc."
+						},
+						"url": {
+							"label": "Your status page address",
+							"placeholder": "my-status-page"
+						}
+					}
+				},
+				"monitors": {
+					"title": "Monitors",
+					"description": "Select the monitors to display on your status page.",
+					"noMonitors": "No monitors selected",
+					"option": {
+						"monitors": {
+							"label": "Select monitors",
+							"placeholder": "Search and select monitors..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "Timezone",
+					"description": "Select the timezone that your status page will be displayed in.",
+					"option": {
+						"timezone": {
+							"label": "Timezone",
+							"placeholder": "Select timezone..."
+						}
+					}
+				},
+				"appearance": {
+					"title": "Appearance",
+					"description": "Define the default look and feel of your public status page.",
+					"option": {
+						"logo": {
+							"label": "Logo"
+						},
+						"color": {
+							"label": "Brand color"
+						}
+					}
+				},
+				"features": {
+					"title": "Features",
+					"description": "Configure what information is displayed on your status page.",
+					"option": {
+						"showCharts": {
+							"label": "Show response time charts"
+						},
+						"showUptimePercentage": {
+							"label": "Show uptime percentage"
+						},
+						"showAdminLoginLink": {
+							"label": "Show admin login link"
+						}
+					}
+				}
+			}
 		},
 		"uptime": {
 			"filters": {
@@ -958,7 +1045,6 @@
 	},
 	"rate": "Rate",
 	"remove": "Remove",
-	"removeLogo": "Remove Logo",
 	"repeat": "Repeat",
 	"reset": "Reset",
 	"response": "RESPONSE",
@@ -972,7 +1058,6 @@
 	},
 	"save": "Save",
 	"selectAll": "Select all",
-	"settingsDisplayTimezone": "Display timezone",
 	"settingsFailedToClearStats": "Failed to clear stats",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
 	"settingsFailedToSave": "Failed to save settings",
@@ -1065,25 +1150,18 @@
 	"settingsTestEmailFailedWithReason": "Failed to send test email: {{reason}}",
 	"settingsTestEmailSuccess": "Test email sent successfully",
 	"settingsTestEmailUnknownError": "Unknown error",
-	"showAdminLoginLink": "Show \"Administrator? Login Here\" link on the status page",
-	"showCharts": "Show charts",
 	"shown": "Shown",
-	"showUptimePercentage": "Show uptime percentage",
 	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
 	"starPromptTitle": "Star Checkmate",
 	"startTime": "Start time",
 	"state": "State",
 	"status": "Status",
-	"statusBreadCrumbsDetails": "Details",
-	"statusBreadCrumbsStatusPages": "Status Pages",
 	"statusCode": "Status code",
 	"statusPage": {
 		"contents": "Contents",
-		"createSuccess": "Status page created successfully",
 		"deleteFailed": "Failed to delete status page",
 		"deleteSuccess": "Status page deleted successfully",
 		"generalSettings": "General settings",
-		"updateSuccess": "Status page updated successfully",
 		"details": {
 			"statusHeader": {
 				"allUp": "All systems operational",
@@ -1095,16 +1173,6 @@
 	"statusPageCreate": {
 		"buttonSave": "Save"
 	},
-	"statusPageCreateAppearanceDescription": "Define the default look and feel of your public status page.",
-	"statusPageCreateAppearanceTitle": "Appearance",
-	"statusPageCreateBasicInfoDescription": "Define company name and the subdomain that your status page points to.",
-	"statusPageCreateBasicInfoStatusPageAddress": "Your status page address",
-	"statusPageCreateSelectTimeZoneDescription": "Select the timezone that your status page will be displayed in.",
-	"statusPageCreateSettings": "If your status page is ready, you can mark it as published.",
-	"statusPageCreateSettingsCheckboxLabel": "Published and visible to the public",
-	"statusPageCreateTabsContent": "Status page servers",
-	"statusPageCreateTabsContentDescription": "You can add any number of servers that you monitor to your status page. You can also reorder them for the best viewing experience.",
-	"statusPageCreateTabsContentFeaturesDescription": "Show more details on the status page",
 	"statusPageStatusServiceStatus": "Service status",
 	"submit": "Submit",
 	"SupportedFormats": "Supported formats",

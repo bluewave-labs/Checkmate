@@ -36,7 +36,7 @@ import Checks from "../Pages/Checks/index";
 import Incidents from "../Pages/Incidents/";
 
 // Status pages
-import CreateStatus from "../Pages/StatusPage/Create/index.jsx";
+import CreateStatus from "../Pages/StatusPage/Create/";
 import StatusPages from "../Pages/StatusPage/StatusPages";
 import Status from "../Pages/StatusPage/Status";
 
@@ -237,7 +237,7 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="status/uptime/:url"
+					path="status/:url"
 					element={
 						<>
 							<ThemeProvider theme={v2theme}>
@@ -248,13 +248,25 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="status/uptime/create"
-					element={<CreateStatus />}
+					path="status/create"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateStatus />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
-					path="status/uptime/configure/:url"
-					element={<CreateStatus />}
+					path="status/configure/:url"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateStatus />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
@@ -365,7 +377,7 @@ const Routes = () => {
 				element={<AuthNewPasswordConfirmed />}
 			/>
 			<Route
-				path="/status/uptime/public/:url"
+				path="/status/public/:url"
 				element={
 					<>
 						<ThemeProvider theme={v2theme}>

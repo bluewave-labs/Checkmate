@@ -7,6 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { useTranslation } from "react-i18next";
+
 type HeatmapCheck =
 	| CheckSnapshot
 	| { status: "placeholder"; responseTime: 0; createdAt: "" };
@@ -55,12 +56,9 @@ export const HeatmapResponseTimeTooltip = ({
 					<Typography>
 						{formatDateWithTz(check?.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone)}
 					</Typography>
-					{check?.responseTime && (
-						<Typography>
-							{t("common.labels.responseTime")}: {check.responseTime.toFixed()} ms
-						</Typography>
-					)}
-
+					<Typography>
+						{t("common.labels.responseTime")}: {check.originalResponseTime.toFixed()} ms
+					</Typography>
 					<Typography textTransform={"capitalize"}>
 						Status:{" "}
 						<span style={{ color: getColor(check?.status) }}>

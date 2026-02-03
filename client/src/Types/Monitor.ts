@@ -1,5 +1,4 @@
-import type { GroupedCheck } from "@/Types/Check";
-import type { CheckSnapshot } from "@/Types/Check";
+import type { GroupedCheck, CheckSnapshot } from "@/Types/Check";
 export type MonitorStatus = boolean | undefined;
 
 export const MonitorTypes = [

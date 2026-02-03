@@ -82,7 +82,15 @@ class StatusPageController {
 			const showURL = settings.showURL;
 
 			const monitors = await this.monitorsRepository.findByIds(statusPage.monitors);
-			const normalizedMonitors = monitors.map((monitor) => {
+			// Sort monitors according to the order in statusPage.monitors
+			const monitorOrder = new Map(statusPage.monitors.map((id, index) => [id, index]));
+			const sortedMonitors = [...monitors].sort((a, b) => {
+				const orderA = monitorOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+				const orderB = monitorOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+				return orderA - orderB;
+			});
+
+			const normalizedMonitors = sortedMonitors.map((monitor) => {
 				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
 					const { url, port, secret, notifications, ...rest } = monitor;

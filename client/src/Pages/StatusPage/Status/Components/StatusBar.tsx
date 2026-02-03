@@ -16,24 +16,20 @@ const getMonitorStatus = (monitors: Monitor[], theme: Theme, t: Function) => {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.allUp");
 		monitorsStatus.color = theme.palette.success.main;
 		monitorsStatus.icon = <CircleCheck size={24} />;
-	}
-
-	if (monitors.every((monitor) => monitor.status === false)) {
+		return monitorsStatus;
+	} else if (monitors.every((monitor) => monitor.status === false)) {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.allDown");
 		monitorsStatus.color = theme.palette.error.main;
-	}
-
-	if (monitors.some((monitor) => monitor.status === false)) {
+		return monitorsStatus;
+	} else if (monitors.some((monitor) => monitor.status === false)) {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.degraded");
 		monitorsStatus.color = theme.palette.warning.main;
-	}
-
-	// Paused or unknown
-	if (monitors.some((monitor) => typeof monitor.status === "undefined")) {
+		return monitorsStatus;
+	} else {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.unknown");
 		monitorsStatus.color = theme.palette.warning.main;
+		return monitorsStatus;
 	}
-	return monitorsStatus;
 };
 
 interface StatusBarProps {

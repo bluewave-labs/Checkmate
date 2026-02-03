@@ -50,7 +50,7 @@ export const HeaderStatusPageControls = ({
 						<Typography
 							onClick={() => {
 								window.open(
-									`/status/uptime/public/${statusPage.url}`,
+									`/status/public/${statusPage.url}`,
 									"_blank",
 									"noopener,noreferrer"
 								);
@@ -77,7 +77,7 @@ export const HeaderStatusPageControls = ({
 					variant="contained"
 					color="secondary"
 					startIcon={<Icon icon={Settings} />}
-					onClick={() => navigate(`/status/uptime/configure/${statusPage.url}`)}
+					onClick={() => navigate(`/status/configure/${statusPage.url}`)}
 				>
 					{t("common.buttons.configure")}
 				</Button>
