@@ -13,6 +13,7 @@ const StatusPages = () => {
 		data: statusPages,
 		isLoading,
 		error,
+		refetch,
 	} = useGet<StatusPage[]>("/status-page/team");
 
 	const isAdmin = useIsAdmin();
@@ -33,7 +34,10 @@ const StatusPages = () => {
 				path="/status/create"
 				isAdmin={isAdmin}
 			/>
-			<StatusPagesTable data={statusPages ?? []} />
+			<StatusPagesTable
+				data={statusPages ?? []}
+				refetch={refetch}
+			/>
 		</BasePageWithStates>
 	);
 };

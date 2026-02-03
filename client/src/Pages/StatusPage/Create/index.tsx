@@ -145,7 +145,7 @@ const CreateStatusPage = () => {
 		}
 
 		if (result) {
-			navigate(`/status/uptime/${data.url}`);
+			navigate(`/status/${data.url}`);
 		}
 	};
 
