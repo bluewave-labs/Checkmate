@@ -943,7 +943,15 @@
 				},
 				"appearance": {
 					"title": "Appearance",
-					"description": "Define the default look and feel of your public status page."
+					"description": "Define the default look and feel of your public status page.",
+					"option": {
+						"logo": {
+							"label": "Logo"
+						},
+						"color": {
+							"label": "Brand color"
+						}
+					}
 				},
 				"features": {
 					"title": "Features",

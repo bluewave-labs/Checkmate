@@ -28,6 +28,7 @@ import type { StatusPageResponse } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { MuiColorInput } from "mui-color-input";
 
 interface TimezoneOption {
 	_id: string;
@@ -130,7 +131,7 @@ const CreateStatusPage = () => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 		} else {
-			result = await put(`/status-page/${url}`, fd, {
+			result = await put(`/status-page/${statusPageData?.statusPage.id}`, fd, {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 		}
@@ -358,23 +359,37 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.appearance.title")}
 				subtitle={t("pages.statusPages.form.appearance.description")}
 				rightContent={
-					<Stack alignItems={"center"}>
+					<Stack spacing={theme.spacing(8)}>
+						<Stack alignItems={"center"}>
+							<Controller
+								name="logo"
+								control={control}
+								render={({ field }) => (
+									<ImageUpload
+										src={field.value?.data}
+										onChange={(file) => {
+											if (file) {
+												field.onChange({
+													data: file.src,
+													contentType: file.file.type,
+												});
+											} else {
+												field.onChange(null);
+											}
+										}}
+									/>
+								)}
+							/>
+						</Stack>
 						<Controller
-							name="logo"
+							name="color"
 							control={control}
 							render={({ field }) => (
-								<ImageUpload
-									src={field.value?.data}
-									onChange={(file) => {
-										if (file) {
-											field.onChange({
-												data: file.src,
-												contentType: file.file.type,
-											});
-										} else {
-											field.onChange(null);
-										}
-									}}
+								<MuiColorInput
+									format="hex"
+									value={field.value}
+									onChange={field.onChange}
+									label={t("pages.statusPages.form.appearance.option.color.label")}
 								/>
 							)}
 						/>
