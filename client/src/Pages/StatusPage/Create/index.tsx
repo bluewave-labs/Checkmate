@@ -251,7 +251,6 @@ const CreateStatusPage = () => {
 										onChange={(_, newValue) => {
 											field.onChange(newValue.map((m: Monitor) => m.id));
 										}}
-										renderTags={() => null}
 										fieldLabel={t(
 											"pages.statusPages.form.monitors.option.monitors.label"
 										)}
@@ -424,7 +423,7 @@ const CreateStatusPage = () => {
 								/>
 							)}
 						/>
-						<Controller
+						{/* <Controller
 							name="showUptimePercentage"
 							control={control}
 							render={({ field }) => (
@@ -457,7 +456,7 @@ const CreateStatusPage = () => {
 									)}
 								/>
 							)}
-						/>
+						/> */}
 					</Stack>
 				}
 			/>
