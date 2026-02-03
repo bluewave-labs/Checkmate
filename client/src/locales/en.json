@@ -1,42 +1,59 @@
 {
-	"ClickUpload": "Click to upload",
-	"DeleteAccountButton": "Remove account",
-	"DeleteAccountTitle": "Remove account",
-	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
-	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
-	"DeleteWarningTitle": "Really remove this account?",
-	"DragandDrop": "drag and drop",
-	"EmailDescriptionText": "This is your current email address — it cannot be changed.",
-	"FirstName": "First name",
-	"LastName": "Last name",
-	"MaxSize": "Maximum Size",
-	"PhotoDescriptionText": "This photo will be displayed in your profile page.",
-	"SupportedFormats": "Supported formats",
-	"YourPhoto": "Profile photo",
 	"aboutus": "About Us",
 	"access": "Access",
 	"actions": "Actions",
 	"add": "Add",
 	"addMonitors": "Add monitors",
+	"advancedMatching": "Advanced matching",
+	"area": "Area",
 	"auth": {
 		"common": {
 			"errors": {
 				"validation": "Error validating data."
 			},
+			"fields": {
+				"role": {
+					"errors": {
+						"min": "At least one role is required"
+					}
+				}
+			},
 			"inputs": {
 				"email": {
+					"errors": {
+						"empty": "To continue, please enter your email address",
+						"invalid": "Please recheck validity of entered email address"
+					},
 					"label": "Email",
 					"placeholder": "jordan.ellis@domain.com"
 				},
 				"firstName": {
+					"errors": {
+						"empty": "Please enter your name",
+						"length": "Name must be less than 50 characters",
+						"pattern": "Name must contain only letters, spaces, apostrophes, or hyphens"
+					},
 					"label": "Name",
 					"placeholder": "Jordan"
 				},
 				"lastName": {
+					"errors": {
+						"empty": "Please enter your surname",
+						"length": "Surname must be less than 50 characters",
+						"pattern": "Surname must contain only letters, spaces, apostrophes, or hyphens"
+					},
 					"label": "Surname",
 					"placeholder": "Ellis"
 				},
 				"password": {
+					"errors": {
+						"empty": "Please enter your password",
+						"length": "Password must be at least 8 characters long",
+						"lowercase": "Password must contain at least 1 lowercase letter",
+						"number": "Password must contain at least 1 number",
+						"special": "Password must contain at least 1 special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)",
+						"uppercase": "Password must contain at least 1 uppercase letter"
+					},
 					"label": "Password",
 					"rules": {
 						"length": {
@@ -66,6 +83,10 @@
 					}
 				},
 				"passwordConfirm": {
+					"errors": {
+						"different": "Entered passwords don't match, so one of them is probably mistyped",
+						"empty": "Please enter your password again for confirmation (helps with typos)"
+					},
 					"label": "Confirm password",
 					"placeholder": "Re-enter password to confirm"
 				}
@@ -80,10 +101,15 @@
 				"resetPassword": "Reset password"
 			},
 			"heading": "Forgot password?",
+			"links": {
+				"login": "Go back to <a>Log In</a>",
+				"resend": "Didn't receive the email? <a>Click to resend</a>"
+			},
 			"subheadings": {
 				"stepFour": "Your password has been successfully reset. Click below to log in magically.",
 				"stepOne": "No worries, we'll send you reset instructions.",
-				"stepThree": "Your new password must be different from previously used passwords."
+				"stepThree": "Your new password must be different from previously used passwords.",
+				"stepTwo": "We sent a password reset link to <email/>"
 			},
 			"toasts": {
 				"emailNotFound": "Email not found.",
@@ -126,23 +152,35 @@
 			"welcome": "Welcome to Checkmate!"
 		}
 	},
+	"avgCpuTemperature": "Average CPU Temperature",
+	"bar": "Bar",
 	"basicInformation": "Basic Information",
 	"bulkImport": {
 		"fallbackPage": "Import a file to upload a list of servers in bulk",
 		"invalidFileType": "Invalid file type",
 		"noFileSelected": "No file selected",
 		"selectFile": "Select File",
+		"selectFileDescription": "You can download our <template>template</template> or <sample>sample</sample>",
 		"selectFileTips": "Select CSV file to upload",
 		"title": "Bulk Import",
 		"uploadFailed": "Upload failed",
 		"uploadSuccess": "Monitors created successfully!"
 	},
+	"bytesSent": "Bytes Sent",
 	"cancel": "Cancel",
 	"checkHooks": {
 		"failureResolveOne": "Failed to resolve incident."
 	},
 	"chooseGame": "Choose game",
+	"city": "CITY",
+	"ClickUpload": "Click to upload",
+	"close": "Close",
 	"common": {
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
+			}
+		},
 		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "Details",
@@ -221,19 +259,40 @@
 				"month": "Month",
 				"recent": "Recent",
 				"week": "Week"
+			},
+			"description": {
+				"recent": "Showing statistics for past 2 hours.",
+				"day": "Showing statistics for past 24 hours.",
+				"week": "Showing statistics for past 7 days.",
+				"month": "Showing statistics for past 30 days."
 			}
 		}
 	},
 	"configure": "Configure",
 	"confirmPassword": "Confirm password",
+	"cores": "Cores",
+	"cpu": "CPU",
+	"cpuFrequency": "CPU Frequency",
+	"cpuLogical": "CPU (Logical)",
+	"cpuPhysical": "CPU (Physical)",
+	"cpuTemperature": "CPU Temperature",
+	"cpuUsage": "CPU usage",
 	"createA": "Create a",
 	"createMaintenance": "Create maintenance",
 	"createMaintenanceWindow": "Create maintenance window",
+	"createMonitor": "Create monitor",
 	"createNew": "Create new",
 	"delete": "Delete",
+	"DeleteAccountButton": "Remove account",
+	"DeleteAccountTitle": "Remove account",
+	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
+	"DeleteDescriptionText": "This will remove the account and all associated data from the server. This isn't reversible.",
 	"deleteStatusPage": "Do you want to delete this status page?",
 	"deleteStatusPageConfirm": "Yes, delete status page",
 	"deleteStatusPageDescription": "Once deleted, your status page cannot be retrieved.",
+	"DeleteWarningTitle": "Really remove this account?",
+	"details": "Details",
+	"device": "Device",
 	"diagnosticsPage": {
 		"diagnosticDescription": "System diagnostics",
 		"gauges": {
@@ -254,8 +313,14 @@
 			"usedHeapSizeTitle": "Used heap size"
 		}
 	},
+	"disk": "Disk",
+	"diskUsage": "Disk Usage",
+	"displayName": "Display name",
+	"download": "Download",
+	"DragandDrop": "drag and drop",
 	"duration": "Duration",
 	"edit": "Edit",
+	"editing": "Editing...",
 	"editMaintenance": "Edit maintenance",
 	"editUserPage": {
 		"form": {
@@ -275,6 +340,7 @@
 			"validationErrors": "Validation errors"
 		}
 	},
+	"EmailDescriptionText": "This is your current email address — it cannot be changed.",
 	"errorPages": {
 		"serverUnreachable": {
 			"alertBox": "Server Connection Error",
@@ -289,10 +355,15 @@
 			}
 		}
 	},
+	"errors": "Errors",
+	"expectedValue": "Expected value",
 	"failedToSendEmail": "Failed to send email",
 	"features": "Features",
+	"FirstName": "First name",
+	"frequency": "Frequency",
 	"friendlyNameInput": "Friendly name",
 	"friendlyNamePlaceholder": "Maintenance at __ : __ for ___ minutes",
+	"gb": "GB",
 	"general": {
 		"noOptionsFound": "No {{unit}} found"
 	},
@@ -301,6 +372,10 @@
 		"overview": "Here's an overview of your {{type}} monitors.",
 		"prepend": "Hey there"
 	},
+	"high": "high",
+	"host": "Host",
+	"http": "HTTP",
+	"https": "HTTPS",
 	"incidentsPage": {
 		"resolveIncidentDialogCommentLabel": "Comment (optional)",
 		"resolveIncidentDialogCommentPlaceholder": "Add a comment about the resolution...",
@@ -318,6 +393,7 @@
 	"invalidFileFormat": "Unsupported file format!",
 	"invalidFileSize": "File size is too large!",
 	"inviteNoTokenFound": "No invite token found",
+	"LastName": "Last name",
 	"logsPage": {
 		"logLevelSelect": {
 			"title": "Log level",
@@ -345,16 +421,23 @@
 		},
 		"title": "Logs"
 	},
+	"low": "low",
 	"maintenance": "maintenance",
 	"maintenanceRepeat": "Maintenance Repeat",
 	"maintenanceTableActionMenuDialogTitle": "Do you really want to remove this maintenance window?",
 	"maintenanceWindowDescription": "During maintenance windows, all monitoring is suspended for selected monitors. No network checks will be performed, preventing any status updates or notifications from being triggered. Your monitors will appear frozen at their last known status, and status pages will display a maintenance indicator. Once the maintenance window ends, monitoring automatically resumes, and alerts will trigger if issues are detected. Maintenance periods do not count against uptime calculations.",
 	"maintenanceWindowName": "Maintenance Window Name",
+	"matchMethod": "Match Method",
 	"matchMethodOptions": {
 		"equal": "Equal",
 		"include": "Include",
 		"regex": "Regex"
 	},
+	"MaxSize": "Maximum Size",
+	"mb": "MB",
+	"mem": "Mem",
+	"memory": "Memory",
+	"memoryUsage": "Memory usage",
 	"menu": {
 		"changelog": "Changelog",
 		"checks": "Checks",
@@ -375,15 +458,29 @@
 		"team": "Team",
 		"uptime": "Uptime"
 	},
+	"message": "Message",
+	"monitor": "monitor",
 	"monitorHooks": {
 		"failureAddDemoMonitors": "Failed to add demo monitors",
 		"successAddDemoMonitors": "Successfully added demo monitors"
 	},
+	"monitors": "monitors",
 	"monitorsToApply": "Monitors to apply maintenance window to",
+	"ms": "ms",
 	"navControls": "Controls",
+	"network": "Network",
 	"nextWindow": "Next window",
 	"notFoundButton": "Go to the main dashboard",
 	"notifications": {
+		"fallback": {
+			"actionButton": "Let's create your first notification channel!",
+			"checks": [
+				"Alert teams about downtime or performance issues",
+				"Let engineers know when incidents happen",
+				"Keep administrators informed of system changes"
+			],
+			"title": "A notification channel is used to:"
+		},
 		"fetch": {
 			"failed": "Failed to fetch notifications"
 		},
@@ -391,9 +488,8 @@
 			"success": "Test notification sent successfully"
 		}
 	},
-	"pageSpeedAddApiKey": "to add your API key.",
-	"pageSpeedLearnMoreLink": "Click here",
-	"pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key yet. Without it, the PageSpeed monitor won't function.",
+	"now": "Now",
+	"os": "OS",
 	"pages": {
 		"checks": {
 			"selects": {
@@ -444,10 +540,30 @@
 			"form": {
 				"advanced": {
 					"description": "Optional settings for advanced use cases",
+					"option": {
+						"advancedMatching": {
+							"label": "Use advanced matching"
+						},
+						"expectedValue": {
+							"label": "Expected value"
+						},
+						"jsonPath": {
+							"description": "This expression will be evaluated against the response JSON data and the result will be used to match against the expected value. See <jmesLink>jmespath.org</jmesLink> for query language documentation.",
+							"label": "JSONPath expression"
+						},
+						"matchMethod": {
+							"label": "Match method"
+						}
+					},
 					"title": "Advanced settings"
 				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",
+					"option": {
+						"frequency": {
+							"label": "Check frequency"
+						}
+					},
 					"title": "Check frequency"
 				},
 				"general": {
@@ -465,14 +581,22 @@
 							"placeholder": "e.g. My Website"
 						},
 						"secret": {
-							"label": "Authorization secret"
+							"label": "Authorization secret",
+							"placeholder": "Enter your secret key"
 						},
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
 						}
 					},
-					"title": "General settings"
+					"title": "General settings",
+					"description": {
+						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
+						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
+						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type."
+					}
 				},
 				"ignoreTls": {
 					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
@@ -488,6 +612,9 @@
 					"option": {
 						"checks": {
 							"label": "Number of checks in sliding window"
+						},
+						"percentage": {
+							"label": "What percentage of checks in the sliding window fail/succeed before monitor status changes?"
 						}
 					},
 					"title": "Incidents"
@@ -499,10 +626,15 @@
 				"type": {
 					"description": "Select the type of check to perform",
 					"optionDocker": "Docker",
+					"optionDockerDescription": "Use Docker to monitor if a container is running.",
 					"optionGame": "Game",
+					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionHttp": "HTTP(S)",
+					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPing": "Ping",
+					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPort": "Port",
+					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"title": "Type"
 				}
 			}
@@ -534,7 +666,12 @@
 				"allMonitors": "All monitors",
 				"clearFilters": "Clear filters",
 				"monitor": "Monitor",
-				"resolutionType": "Resolution type"
+				"resolutionType": "Resolution type",
+				"resolutionTypes": {
+					"manual": "Manual",
+					"automatic": "Automatic",
+					"all": "All"
+				}
 			},
 			"summaryCard": {
 				"activeIncidents": {
@@ -621,6 +758,15 @@
 					"network": "Network",
 					"overview": "Overview"
 				}
+			},
+			"fallback": {
+				"actionButton": "Let's create your first infrastructure monitor!",
+				"checks": [
+					"Track the performance of your servers",
+					"Identify bottlenecks and optimize usage",
+					"Ensure reliability with real-time monitoring"
+				],
+				"title": "An infrastructure monitor is used to:"
 			}
 		},
 		"notifications": {
@@ -635,6 +781,7 @@
 			},
 			"form": {
 				"accessToken": {
+					"optionAccessToken": "Access token",
 					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
 				},
 				"address": {
@@ -701,6 +848,15 @@
 				"headers": {
 					"pageSpeedScore": "PageSpeed score"
 				}
+			},
+			"fallback": {
+				"actionButton": "Let's create your first PageSpeed monitor!",
+				"checks": [
+					"Report on the user experience of a page",
+					"Help analyze webpage speed",
+					"Give suggestions on how the page can be improved"
+				],
+				"title": "A PageSpeed monitor is used to:"
 			}
 		},
 		"statusPages": {
@@ -739,23 +895,41 @@
 				"headers": {
 					"responseTime": "Response time"
 				}
+			},
+			"fallback": {
+				"actionButton": "Create a monitor!",
+				"checks": [
+					"Check if websites or servers are online & responsive",
+					"Alert teams about downtime or performance issues",
+					"Monitor HTTP endpoints, pings, containers & ports",
+					"Track historical uptime and reliability trends"
+				],
+				"title": "An uptime monitor is used to:"
 			}
 		}
 	},
+	"pageSpeedAddApiKey": "to add your API key.",
+	"pageSpeedLearnMoreLink": "Click here",
+	"pageSpeedWarning": "Warning: You haven't added a Google PageSpeed API key yet. Without it, the PageSpeed monitor won't function.",
 	"passwordPanel": {
 		"confirmNewPassword": "Confirm new password",
 		"currentPassword": "Current password",
+		"enterCurrentPassword": "Enter your current password",
 		"enterNewPassword": "Enter your new password",
-		"newPassword": "New password"
+		"newPassword": "New password",
+		"passwordChangedSuccess": "Your password was changed successfully.",
+		"passwordInputIncorrect": "Your password input was incorrect.",
+		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)."
 	},
 	"pause": "Pause",
+	"PhotoDescriptionText": "This photo will be displayed in your profile page.",
 	"portToMonitor": "Port to monitor",
 	"publicLink": "Public link",
 	"queuePage": {
 		"failedJobTable": {
 			"failCountHeader": "Fail count",
-			"failReasonHeader": "Fail reason",
 			"failedAtHeader": "Last failed at",
+			"failReasonHeader": "Fail reason",
 			"monitorIdHeader": "Monitor ID",
 			"monitorUrlHeader": "Monitor URL",
 			"title": "Failed jobs"
@@ -782,10 +956,13 @@
 		},
 		"refreshButton": "Refresh"
 	},
+	"rate": "Rate",
 	"remove": "Remove",
 	"removeLogo": "Remove Logo",
 	"repeat": "Repeat",
 	"reset": "Reset",
+	"response": "RESPONSE",
+	"responseTime": "Response time",
 	"resume": "Resume",
 	"roles": {
 		"admin": "Admin",
@@ -818,9 +995,14 @@
 			"labelAddress": "Email address - Used for authentication",
 			"labelConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
 			"labelHost": "Email host - Hostname or IP address to connect to",
+			"labelIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
 			"labelPassword": "Email password - Password for authentication",
 			"labelPasswordSet": "Password is set. Click Reset to change it.",
+			"labelPool": "Enable connection pooling: Reuse existing connections to improve performance",
 			"labelPort": "Email port - Port to connect to",
+			"labelRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
+			"labelRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
+			"labelSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
 			"labelTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
 			"labelUser": "Email user - Username for authentication, overrides email address if specified",
 			"linkTransport": "See specifications here",
@@ -829,6 +1011,7 @@
 			"toastEmailRequiredFieldsError": "Email address, host, port and password are required"
 		},
 		"globalThresholds": {
+			"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring.",
 			"title": "Global Thresholds"
 		},
 		"pageSpeedSettings": {
@@ -841,6 +1024,7 @@
 		"statsSettings": {
 			"clearAllStatsButton": "Clear all stats",
 			"clearAllStatsDescription": "Clear all stats. This is irreversible.",
+			"clearAllStatsDialogConfirm": "Yes, clear all stats",
 			"clearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
 			"clearAllStatsDialogTitle": "Do you want to clear all stats?",
 			"description": "Define how long you want to retain historical data. You can also clear all existing data.",
@@ -878,17 +1062,21 @@
 	"settingsStatsCleared": "Stats cleared successfully",
 	"settingsSuccessSaved": "Settings saved successfully",
 	"settingsTestEmailFailed": "Failed to send test email",
+	"settingsTestEmailFailedWithReason": "Failed to send test email: {{reason}}",
 	"settingsTestEmailSuccess": "Test email sent successfully",
 	"settingsTestEmailUnknownError": "Unknown error",
 	"showAdminLoginLink": "Show \"Administrator? Login Here\" link on the status page",
 	"showCharts": "Show charts",
+	"shown": "Shown",
 	"showUptimePercentage": "Show uptime percentage",
 	"starPromptDescription": "See the latest releases and help grow the community on GitHub",
 	"starPromptTitle": "Star Checkmate",
 	"startTime": "Start time",
+	"state": "State",
 	"status": "Status",
 	"statusBreadCrumbsDetails": "Details",
 	"statusBreadCrumbsStatusPages": "Status Pages",
+	"statusCode": "Status code",
 	"statusPage": {
 		"contents": "Contents",
 		"createSuccess": "Status page created successfully",
@@ -919,6 +1107,7 @@
 	"statusPageCreateTabsContentFeaturesDescription": "Show more details on the status page",
 	"statusPageStatusServiceStatus": "Service status",
 	"submit": "Submit",
+	"SupportedFormats": "Supported formats",
 	"teamPanel": {
 		"addTeamMember": {
 			"addButton": "Add Member",
@@ -946,6 +1135,19 @@
 		"inviteTeamMember": "Invite a team member",
 		"noMembers": "There are no team members with this role",
 		"register": "Register a team member",
+		"registerTeamMember": {
+			"auth": {
+				"common": {
+					"inputs": {
+						"role": {
+							"errors": {
+								"empty": "Role is required"
+							}
+						}
+					}
+				}
+			}
+		},
 		"registerToast": {
 			"success": "User created, share credentials with the member securely."
 		},
@@ -971,13 +1173,17 @@
 		"threeMinutes": "3 minutes",
 		"twoMinutes": "2 minutes"
 	},
-	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
 	"timezone": "Timezone",
+	"timeZoneInfo": "All dates and times are in GMT+0 time zone.",
+	"title": "Title",
 	"total": "Total",
+	"type": "Type",
 	"update": "Update",
 	"uptime": "Uptime",
+	"url": "URL",
 	"used": "Used",
 	"window": "window",
+	"YourPhoto": "Profile photo",
 	"failedDeleteMonitor": "Failed to delete monitor",
 	"failedPauseMonitor": "Failed to pause monitor",
 	"hour": "hour",
@@ -985,5 +1191,16 @@
 	"monitorDeleted": "Monitor deleted successfully",
 	"monitorPaused": "Monitor paused successfully",
 	"monitorResumed": "Monitor resumed successfully",
-	"name": "Name"
+	"name": "Name",
+	"maintenanceWindow": {
+		"fallback": {
+			"actionButton": "Let's create your first maintenance window!",
+			"checks": [
+				"Mark your maintenance periods",
+				"Eliminate any misunderstandings",
+				"Stop sending alerts in maintenance windows"
+			],
+			"title": "A maintenance window is used to:"
+		}
+	}
 }
