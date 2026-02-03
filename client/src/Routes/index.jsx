@@ -260,7 +260,13 @@ const Routes = () => {
 
 				<Route
 					path="status/uptime/configure/:url"
-					element={<CreateStatus />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateStatus />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route

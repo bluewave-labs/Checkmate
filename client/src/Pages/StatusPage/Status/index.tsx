@@ -1,7 +1,9 @@
-import { BasePage } from "@/Components/v2/design-elements";
+import { BasePage, BaseFallback } from "@/Components/v2/design-elements";
 import { StatusBar } from "@/Pages/StatusPage/Status/Components/StatusBar";
 import { MonitorsList } from "@/Pages/StatusPage/Status/Components/MonitorsList";
 import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom";
+import Stack from "@mui/material/Stack";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -27,6 +29,33 @@ const StatusPageView = () => {
 	const monitors = data?.monitors ?? [];
 
 	if (!statusPage) return null;
+
+	if (monitors?.length === 0) {
+		return (
+			<BasePage
+				loading={isLoading}
+				error={error}
+				breadcrumbOverride={isPublic ? [] : undefined}
+			>
+				<Stack alignItems={"center"}>
+					<BaseFallback>
+						<Typography
+							variant="h1"
+							marginY={theme.spacing(4)}
+							color={theme.palette.text.secondary}
+						>
+							{t("pages.statusPages.details.empty.title")}
+						</Typography>
+						{isAdmin && (
+							<Link to={`/status/uptime/configure/${url}`}>
+								{t("pages.statusPages.details.empty.addMonitor")}
+							</Link>
+						)}
+					</BaseFallback>
+				</Stack>
+			</BasePage>
+		);
+	}
 
 	let sx: React.CSSProperties = {};
 	if (isPublic) {

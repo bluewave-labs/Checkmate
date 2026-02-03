@@ -20,9 +20,11 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
-import { useGet } from "@/Hooks/UseApi";
+import { useGet, usePost } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import timezones from "@/Utils/timezones.json";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface TimezoneOption {
 	_id: string;
@@ -32,8 +34,10 @@ interface TimezoneOption {
 const CreateStatusPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 
 	const { schema, defaults } = useStatusPageForm();
+	const { post, loading: isSubmitting } = usePost();
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(
 		"/monitors/team?type=http&type=ping&type=port&type=docker"
@@ -55,8 +59,39 @@ const CreateStatusPage = () => {
 		console.log(errors);
 	};
 
-	const onSubmit = (data: StatusPageFormData) => {
-		console.log("Form Data Submitted: ", data);
+	const onSubmit = async (data: StatusPageFormData) => {
+		const fd = new FormData();
+		fd.append("type", "uptime");
+		fd.append("isPublished", String(data.isPublished));
+		if (data.companyName) fd.append("companyName", data.companyName);
+		if (data.url) fd.append("url", data.url);
+		if (data.timezone) fd.append("timezone", data.timezone);
+
+		data.monitors.forEach((monitorId) => {
+			fd.append("monitors[]", monitorId);
+		});
+
+		if (data.logo?.data && data.logo.data !== "") {
+			try {
+				const imageResult = await axios.get(data.logo.data, {
+					responseType: "blob",
+				});
+				fd.append("logo", imageResult.data);
+				if (data.logo.data.startsWith("blob:")) {
+					URL.revokeObjectURL(data.logo.data);
+				}
+			} catch (e) {
+				console.error("Error fetching logo blob:", e);
+			}
+		}
+
+		const result = await post("/status-page", fd, {
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+
+		if (result) {
+			navigate(`/status/uptime/${data.url}`);
+		}
 	};
 
 	return (
@@ -137,10 +172,18 @@ const CreateStatusPage = () => {
 						name="monitors"
 						control={control}
 						render={({ field, fieldState }) => {
-							// Preserve order from field.value (IDs) when building selectedMonitors
 							const selectedMonitors = field.value
 								.map((id: string) => monitors.find((m) => m.id === id))
-								.filter((m): m is Monitor => m !== undefined);
+								.filter(Boolean) as Monitor[];
+
+							const handleDragEnd = (result: DropResult) => {
+								if (!result.destination) return;
+								const reordered = Array.from(field.value);
+								const [removed] = reordered.splice(result.source.index, 1);
+								reordered.splice(result.destination.index, 0, removed);
+								field.onChange(reordered);
+							};
+
 							return (
 								<Stack spacing={theme.spacing(4)}>
 									<Autocomplete
@@ -151,7 +194,6 @@ const CreateStatusPage = () => {
 										onChange={(_, newValue: Monitor[]) => {
 											field.onChange(newValue.map((m) => m.id));
 										}}
-										isOptionEqualToValue={(option, value) => option.id === value.id}
 										fieldLabel={t(
 											"pages.statusPages.form.monitors.option.monitors.label"
 										)}
@@ -165,24 +207,15 @@ const CreateStatusPage = () => {
 												helperText={fieldState.error?.message ?? ""}
 											/>
 										)}
+										renderTags={() => null}
 									/>
 									{selectedMonitors.length > 0 && (
-										<DragDropContext
-											onDragEnd={(result: DropResult) => {
-												if (!result.destination) return;
-												const reordered = Array.from(field.value);
-												const [removed] = reordered.splice(result.source.index, 1);
-												reordered.splice(result.destination.index, 0, removed);
-												field.onChange(reordered);
-											}}
-										>
+										<DragDropContext onDragEnd={handleDragEnd}>
 											<Droppable droppableId="monitors-list">
 												{(provided) => (
 													<Stack
 														{...provided.droppableProps}
 														ref={provided.innerRef}
-														flex={1}
-														width="100%"
 													>
 														{selectedMonitors.map((monitor, index) => (
 															<Draggable
@@ -301,7 +334,7 @@ const CreateStatusPage = () => {
 				justifyContent="flex-end"
 			>
 				<Button
-					// loading={isSubmitting}
+					loading={isSubmitting}
 					type="submit"
 					variant="contained"
 					color="primary"

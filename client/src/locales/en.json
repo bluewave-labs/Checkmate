@@ -242,7 +242,8 @@
 			"clickToUpload": "Click to upload",
 			"dragAndDrop": "or drag and drop",
 			"supportedFormats": "Supported formats",
-			"maxSize": "Max size"
+			"maxSize": "Max size",
+			"orDragAndDrop": "or drag and drop"
 		},
 		"errors": {
 			"invalidFileType": "Invalid file type",
@@ -861,9 +862,14 @@
 		},
 		"statusPages": {
 			"fallback": {
-				"actionButton": "Create status page",
-				"checks": "No status pages found",
-				"title": "Status pages"
+				"title": "A status page is used to:",
+				"checks": [
+					"Communicate system status to users and stakeholders",
+					"Display real-time uptime information publicly",
+					"Build trust with transparent service monitoring",
+					"Reduce support requests during incidents"
+				],
+				"actionButton": "Let's create your first status page!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
@@ -883,7 +889,62 @@
 				"published": "Published",
 				"unpublished": "Unpublished"
 			},
-			"title": "Status pages"
+			"title": "Status pages",
+			"details": {
+				"empty": {
+					"title": "There's nothing here yet",
+					"addMonitor": "Add a monitor to get started"
+				}
+			},
+			"form": {
+				"access": {
+					"title": "Access",
+					"description": "If your status page is ready, you can mark it as published.",
+					"option": {
+						"published": {
+							"name": "Published and visible to the public"
+						}
+					}
+				},
+				"basicInfo": {
+					"title": "Basic information",
+					"description": "Define company name and the subdomain that your status page points to.",
+					"option": {
+						"name": {
+							"label": "Company name",
+							"placeholder": "Acme Inc."
+						},
+						"url": {
+							"label": "Your status page address",
+							"placeholder": "my-status-page"
+						}
+					}
+				},
+				"monitors": {
+					"title": "Monitors",
+					"description": "Select the monitors to display on your status page.",
+					"noMonitors": "No monitors selected",
+					"option": {
+						"monitors": {
+							"label": "Select monitors",
+							"placeholder": "Search and select monitors..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "Timezone",
+					"description": "Select the timezone that your status page will be displayed in.",
+					"option": {
+						"timezone": {
+							"label": "Timezone"
+						}
+					}
+				},
+				"appearance": {
+					"title": "Appearance",
+					"description": "Define the default look and feel of your public status page."
+				}
+			}
 		},
 		"uptime": {
 			"filters": {
