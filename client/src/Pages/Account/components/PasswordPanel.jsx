@@ -123,6 +123,7 @@ const PasswordPanel = () => {
 					confirm: "",
 				});
 			} else {
+				// TODO: Check for other errors?
 				createToast({
 					body: t(
 						"passwordPanel.passwordInputIncorrect",
@@ -185,7 +186,6 @@ const PasswordPanel = () => {
 						onChange={handleChange}
 						error={errors[idToName["edit-current-password"]] ? true : false}
 						helperText={
-							//Only call t() if there is an error to prevent unnecessary localization calls
 							errors[idToName["edit-current-password"]]
 								? t(errors[idToName["edit-current-password"]])
 								: ""
@@ -216,7 +216,6 @@ const PasswordPanel = () => {
 						onChange={handleChange}
 						error={errors[idToName["edit-new-password"]] ? true : false}
 						helperText={
-							//Only call t() if there is an error to prevent unnecessary localization calls
 							errors[idToName["edit-new-password"]]
 								? t(errors[idToName["edit-new-password"]])
 								: ""
@@ -247,7 +246,6 @@ const PasswordPanel = () => {
 						onChange={handleChange}
 						error={errors[idToName["edit-confirm-password"]] ? true : false}
 						helperText={
-							//Only call t() if there is an error to prevent unnecessary localization calls
 							errors[idToName["edit-confirm-password"]]
 								? t(errors[idToName["edit-confirm-password"]])
 								: ""
