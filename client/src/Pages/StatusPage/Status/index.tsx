@@ -4,6 +4,7 @@ import { MonitorsList } from "@/Pages/StatusPage/Status/Components/MonitorsList"
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -64,6 +65,10 @@ const StatusPageView = () => {
 		sx.paddingRight = "20vw";
 	}
 
+	const logoSrc = statusPage.logo?.data
+		? `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`
+		: null;
+
 	return (
 		<BasePage
 			loading={isLoading}
@@ -76,6 +81,20 @@ const StatusPageView = () => {
 				statusPage={statusPage}
 				isPublic={isPublic}
 			/>
+			{logoSrc && (
+				<Box
+					component="img"
+					src={logoSrc}
+					alignSelf={"flex-start"}
+					alt={statusPage.companyName}
+					sx={{
+						maxHeight: 120,
+						maxWidth: "100%",
+						objectFit: "contain",
+						mb: 2,
+					}}
+				/>
+			)}
 			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
 			<MonitorsList
