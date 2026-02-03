@@ -19,7 +19,7 @@ class StatusPageRoutes {
 		this.router.put("/:id", upload.single("logo"), verifyJWT, this.statusPageController.updateStatusPage);
 
 		this.router.get("/:url", this.statusPageController.getStatusPageByUrl);
-		this.router.delete("/:url(*)", verifyJWT, this.statusPageController.deleteStatusPage);
+		this.router.delete("/:id", verifyJWT, this.statusPageController.deleteStatusPage);
 	}
 
 	getRouter() {

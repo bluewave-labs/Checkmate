@@ -22,7 +22,7 @@ export const StatusPagesTable = ({ data }: StatusPagesTableProps) => {
 	const handleUrlClick = (e: React.MouseEvent, row: StatusPage) => {
 		if (row.isPublished) {
 			e.stopPropagation();
-			const url = `/status/uptime/public/${row.url}`;
+			const url = `/status/public/${row.url}`;
 			window.open(url, "_blank", "noopener,noreferrer");
 		}
 	};
@@ -91,7 +91,7 @@ export const StatusPagesTable = ({ data }: StatusPagesTableProps) => {
 	};
 
 	const handleRowClick = (statusPage: StatusPage) => {
-		navigate(`/status/uptime/${statusPage.url}`);
+		navigate(`/status/${statusPage.url}`);
 	};
 
 	return (

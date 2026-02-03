@@ -13,16 +13,17 @@ import {
 	TextField,
 	Autocomplete,
 	Checkbox,
+	Dialog,
 } from "@/Components/v2/inputs";
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
-import { useGet, usePost, usePut } from "@/Hooks/UseApi";
+import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { StatusPageResponse } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
@@ -55,6 +56,10 @@ const CreateStatusPage = () => {
 
 	const { post, loading: isSubmittingPost } = usePost();
 	const { put, loading: isSubmittingPut } = usePut();
+	const { deleteFn, loading: isDeleting } = useDelete();
+
+	// Delete dialog state
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const isSubmitting = isSubmittingPost || isSubmittingPut;
 
 	const { schema, defaults } = useStatusPageForm({
@@ -76,6 +81,22 @@ const CreateStatusPage = () => {
 
 	const onError = (errors: any) => {
 		console.log(errors);
+	};
+
+	const handleDeleteClick = () => {
+		setIsDeleteDialogOpen(true);
+	};
+
+	const handleDeleteConfirm = async () => {
+		const result = await deleteFn(`/status-page/${statusPageData?.statusPage?.id}`);
+		if (result) {
+			navigate("/status");
+		}
+		setIsDeleteDialogOpen(false);
+	};
+
+	const handleDeleteCancel = () => {
+		setIsDeleteDialogOpen(false);
 	};
 
 	const onSubmit = async (data: StatusPageFormData) => {
@@ -136,13 +157,7 @@ const CreateStatusPage = () => {
 			component="form"
 			onSubmit={handleSubmit(onSubmit, onError)}
 		>
-			{!isCreate && (
-				<HeaderConfigStatusControls
-					onDelete={() => {
-						console.log("poo");
-					}}
-				/>
-			)}
+			{!isCreate && <HeaderConfigStatusControls onDelete={handleDeleteClick} />}
 			<ConfigBox
 				title={t("pages.statusPages.form.access.title")}
 				subtitle={t("pages.statusPages.form.access.description")}
@@ -459,6 +474,14 @@ const CreateStatusPage = () => {
 					{t("common.buttons.save")}
 				</Button>
 			</Stack>
+			<Dialog
+				open={isDeleteDialogOpen}
+				title={t("common.dialogs.delete.title")}
+				content={t("common.dialogs.delete.description")}
+				onConfirm={handleDeleteConfirm}
+				onCancel={handleDeleteCancel}
+				loading={isDeleting}
+			/>
 		</BasePage>
 	);
 };

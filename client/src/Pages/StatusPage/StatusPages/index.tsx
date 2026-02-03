@@ -27,10 +27,10 @@ const StatusPages = () => {
 			error={!!error}
 			items={statusPages ?? []}
 			actionButtonText={t("pages.statusPages.fallback.actionButton")}
-			actionLink="/status/uptime/create"
+			actionLink="/status/create"
 		>
 			<HeaderCreate
-				path="/status/uptime/create"
+				path="/status/create"
 				isAdmin={isAdmin}
 			/>
 			<StatusPagesTable data={statusPages ?? []} />

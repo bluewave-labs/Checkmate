@@ -1,12 +1,10 @@
 import Stack from "@mui/material/Stack";
-import { Icon, MonitorStatus } from "@/Components/v2/design-elements";
+import { Icon } from "@/Components/v2/design-elements";
 import { Button } from "@/Components/v2/inputs";
 import { Trash } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { usePost } from "@/Hooks/UseApi";
 
 interface HeaderConfigStatusControlsProps {
 	onDelete: () => void;

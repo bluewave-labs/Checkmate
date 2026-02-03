@@ -237,7 +237,7 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="status/uptime/:url"
+					path="status/:url"
 					element={
 						<>
 							<ThemeProvider theme={v2theme}>
@@ -248,7 +248,7 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="status/uptime/create"
+					path="status/create"
 					element={
 						<>
 							<ThemeProvider theme={v2theme}>
@@ -259,7 +259,7 @@ const Routes = () => {
 				/>
 
 				<Route
-					path="status/uptime/configure/:url"
+					path="status/configure/:url"
 					element={
 						<>
 							<ThemeProvider theme={v2theme}>
@@ -377,7 +377,7 @@ const Routes = () => {
 				element={<AuthNewPasswordConfirmed />}
 			/>
 			<Route
-				path="/status/uptime/public/:url"
+				path="/status/public/:url"
 				element={
 					<>
 						<ThemeProvider theme={v2theme}>

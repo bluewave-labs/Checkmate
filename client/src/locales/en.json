@@ -861,6 +861,7 @@
 			}
 		},
 		"statusPages": {
+			"deleteSuccess": "Status page deleted successfully",
 			"fallback": {
 				"title": "A status page is used to:",
 				"checks": [

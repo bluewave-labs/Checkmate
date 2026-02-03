@@ -19,7 +19,7 @@ const StatusPageView = () => {
 	const { url } = useParams();
 	const isAdmin = useIsAdmin();
 	const location = useLocation();
-	const isPublic = location.pathname.startsWith("/status/uptime/public");
+	const isPublic = location.pathname.startsWith("/status/public");
 
 	const apiUrl = url ? `/status-page/${url}?type=uptime` : null;
 
@@ -47,7 +47,7 @@ const StatusPageView = () => {
 							{t("pages.statusPages.details.empty.title")}
 						</Typography>
 						{isAdmin && (
-							<Link to={`/status/uptime/configure/${url}`}>
+							<Link to={`/status/configure/${url}`}>
 								{t("pages.statusPages.details.empty.addMonitor")}
 							</Link>
 						)}
