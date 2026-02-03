@@ -27,7 +27,6 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	if (!incident) {
 		return null;
 	}
-	console.log(incident);
 	return (
 		<Stack
 			gap={theme.spacing(4)}
