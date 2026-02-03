@@ -4,6 +4,10 @@ import type { StatusPage, StatusPageLogo, StatusPageLogoDocument } from "@/types
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 
+// Type for update data that can include document-level fields (Buffer for logo)
+type StatusPageUpdateData = Partial<Omit<StatusPage, "id" | "userId" | "teamId" | "logo" | "createdAt" | "updatedAt">> & {
+	logo?: StatusPageLogoDocument | null;
+};
 class MongoStatusPagesRepository implements IStatusPagesRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
 		if (!value) {
@@ -69,8 +73,9 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	};
 
 	create = async (userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {
+		const { logo: _logo, ...restData } = data;
 		const statusPage = new StatusPageModel({
-			...data,
+			...restData,
 			userId,
 			teamId,
 		});
@@ -101,7 +106,8 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	};
 
 	updateById = async (id: string, teamId: string, image: Express.Multer.File | undefined, patch: Partial<StatusPage>): Promise<StatusPage> => {
-		const updateData: any = { ...patch };
+		const { logo: _logo, ...restPatch } = patch;
+		const updateData: StatusPageUpdateData = { ...restPatch };
 		if (image) {
 			updateData.logo = {
 				data: image.buffer as Buffer,
