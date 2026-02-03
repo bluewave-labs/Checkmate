@@ -2,6 +2,7 @@ import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { Trash2, GripVertical } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
@@ -11,6 +12,7 @@ import {
 	Button,
 	TextField,
 	Autocomplete,
+	Checkbox,
 } from "@/Components/v2/inputs";
 
 import { useTheme } from "@mui/material/styles";
@@ -373,6 +375,63 @@ const CreateStatusPage = () => {
 											field.onChange(null);
 										}
 									}}
+								/>
+							)}
+						/>
+					</Stack>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.statusPages.form.features.title")}
+				subtitle={t("pages.statusPages.form.features.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(2)}>
+						<Controller
+							name="showCharts"
+							control={control}
+							render={({ field }) => (
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={field.value}
+											onChange={field.onChange}
+										/>
+									}
+									label={t("pages.statusPages.form.features.option.showCharts.label")}
+								/>
+							)}
+						/>
+						<Controller
+							name="showUptimePercentage"
+							control={control}
+							render={({ field }) => (
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={field.value}
+											onChange={field.onChange}
+										/>
+									}
+									label={t(
+										"pages.statusPages.form.features.option.showUptimePercentage.label"
+									)}
+								/>
+							)}
+						/>
+						<Controller
+							name="showAdminLoginLink"
+							control={control}
+							render={({ field }) => (
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={field.value}
+											onChange={field.onChange}
+										/>
+									}
+									label={t(
+										"pages.statusPages.form.features.option.showAdminLoginLink.label"
+									)}
 								/>
 							)}
 						/>

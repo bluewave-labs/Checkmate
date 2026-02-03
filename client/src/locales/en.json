@@ -944,6 +944,21 @@
 				"appearance": {
 					"title": "Appearance",
 					"description": "Define the default look and feel of your public status page."
+				},
+				"features": {
+					"title": "Features",
+					"description": "Configure what information is displayed on your status page.",
+					"option": {
+						"showCharts": {
+							"label": "Show response time charts"
+						},
+						"showUptimePercentage": {
+							"label": "Show uptime percentage"
+						},
+						"showAdminLoginLink": {
+							"label": "Show admin login link"
+						}
+					}
 				}
 			}
 		},
