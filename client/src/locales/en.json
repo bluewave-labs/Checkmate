@@ -550,16 +550,10 @@
 	"navControls": "Controls",
 	"incidentsPageTitle": "Incidents",
 	"passwordPanel": {
-		"forgotPasswordText": "Forgot password?",
-		"passwordChangedSuccess": "Your password was changed successfully.",
-		"passwordInputIncorrect": "Your password input was incorrect.",
 		"currentPassword": "Current password",
 		"newPassword": "New password",
 		"enterNewPassword": "Enter your new password",
-		"confirmNewPassword": "Confirm new password",
-		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
-		"resetPasswordText": "Reset password",
-		"sessionExpired": "Your session has expired, please log in again to continue."
+		"confirmNewPassword": "Confirm new password"
 	},
 	"failedToSendEmail": "Failed to send email",
 	"settingsTestEmailSuccess": "Test email sent successfully",
@@ -667,7 +661,6 @@
 			},
 			"links": {
 				"login": "Go back to <a>Log In</a>",
-				"accountPassword": "Go back to <a>Account Password</a>",
 				"resend": "Didn't receive the email? <a>Click to resend</a>"
 			},
 			"toasts": {
