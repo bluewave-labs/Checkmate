@@ -117,7 +117,7 @@ export const requireUserRoles = (userRoles?: string[]): string[] => {
 		throw new AppError({ message: "User roles are required", status: 400 });
 	}
 	return userRoles;
-}
+};
 
 export {
 	fetchMonitorCertificate,
