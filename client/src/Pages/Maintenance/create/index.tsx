@@ -2,17 +2,24 @@ import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { TextField, Select, DatePicker } from "@/Components/v2/inputs";
+import {
+	TextField,
+	Select,
+	DatePicker,
+	TimePicker,
+	Button,
+} from "@/Components/v2/inputs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import type { MaintenanceWindow } from "@/Types/MaintenanceWindow";
 import type { MaintenanceWindowFormData } from "@/Validation/maintenanceWindow";
-import { repeatOptions } from "@/Validation/maintenanceWindow";
+import { repeatOptions, durationUnitOptions } from "@/Validation/maintenanceWindow";
 import { useMaintenanceWindowForm } from "@/Hooks/useMaintenanceWindowForm";
 import { useGet } from "@/Hooks/UseApi";
 import { useParams } from "react-router-dom";
+import type { Monitor } from "@/Types/Monitor";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 
@@ -26,6 +33,8 @@ const CreateMaintenanceWindowPage = () => {
 		isEditMode ? `/maintenance-window/${maintenanceWindowId}` : null
 	);
 
+	const { data: monitors } = useGet<Monitor[]>("/monitors/team");
+
 	const { schema, defaults } = useMaintenanceWindowForm({
 		data: existingMaintenanceWindow,
 	});
@@ -35,10 +44,21 @@ const CreateMaintenanceWindowPage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control } = form;
+	const { control, handleSubmit } = form;
+
+	const onSubmit = (data: MaintenanceWindowFormData) => {
+		console.log("Form submitted with data:", data);
+	};
+
+	const onError = (errors: any) => {
+		console.log("Form errors:", errors);
+	};
 
 	return (
-		<BasePage>
+		<BasePage
+			component={"form"}
+			onSubmit={handleSubmit(onSubmit, onError)}
+		>
 			<ConfigBox
 				title={t("pages.maintenanceWindow.form.general.title")}
 				subtitle={t("pages.maintenanceWindow.form.general.description")}
@@ -113,6 +133,93 @@ const CreateMaintenanceWindowPage = () => {
 					</Stack>
 				}
 			/>
+			<ConfigBox
+				title={t("pages.maintenanceWindow.form.startTime.title")}
+				subtitle={t("pages.maintenanceWindow.form.startTime.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(8)}>
+						<Controller
+							name="startTime"
+							control={control}
+							defaultValue={defaults.startTime}
+							render={({ field }) => (
+								<TimePicker
+									fieldLabel={t(
+										"pages.maintenanceWindow.form.startTime.option.startTime.label"
+									)}
+									value={field.value ? dayjs(field.value, "HH:mm") : null}
+									onChange={(time) => {
+										field.onChange(time ? time.format("HH:mm") : "");
+									}}
+								/>
+							)}
+						/>
+						<Stack
+							direction="row"
+							alignItems="flex-end"
+							spacing={theme.spacing(4)}
+						>
+							<Controller
+								name="duration"
+								control={control}
+								defaultValue={defaults.duration}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="number"
+										fieldLabel={t(
+											"pages.maintenanceWindow.form.startTime.option.duration.label"
+										)}
+										value={field.value === 0 ? "" : field.value}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+										sx={{ width: 120 }}
+									/>
+								)}
+							/>
+							<Controller
+								name="durationUnit"
+								control={control}
+								defaultValue={defaults.durationUnit}
+								render={({ field }) => (
+									<Select
+										value={field.value}
+										onChange={field.onChange}
+										sx={{ minWidth: 120 }}
+									>
+										{durationUnitOptions.map((option) => (
+											<MenuItem
+												key={option.id}
+												value={option.id}
+											>
+												<Typography>{option.name}</Typography>
+											</MenuItem>
+										))}
+									</Select>
+								)}
+							/>
+						</Stack>
+					</Stack>
+				}
+			/>
+			<Stack
+				direction="row"
+				justifyContent="flex-end"
+				spacing={theme.spacing(2)}
+			>
+				<Button
+					// loading={isSubmitting || isPatching}
+					type="submit"
+					variant="contained"
+					color="primary"
+				>
+					{t("common.buttons.save")}
+				</Button>
+			</Stack>
 		</BasePage>
 	);
 };
