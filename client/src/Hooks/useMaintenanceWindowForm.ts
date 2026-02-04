@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import {
 	maintenanceWindowSchema,
 	repeatOptions,
-	durationUnitOptions,
 	type MaintenanceWindowFormData,
 } from "@/Validation/maintenanceWindow";
 import type { MaintenanceWindow } from "@/Types/MaintenanceWindow";
@@ -17,27 +16,6 @@ const getRepeatId = (repeatMs: number): string => {
 	return option?.id ?? "none";
 };
 
-const getDurationAndUnit = (
-	startMs: number,
-	endMs: number
-): { duration: number; durationUnit: string } => {
-	const diffMs = endMs - startMs;
-
-	for (const unit of [...durationUnitOptions].reverse()) {
-		if (diffMs >= unit.multiplier && diffMs % unit.multiplier === 0) {
-			return {
-				duration: diffMs / unit.multiplier,
-				durationUnit: unit.id,
-			};
-		}
-	}
-
-	return {
-		duration: diffMs / 1000,
-		durationUnit: "seconds",
-	};
-};
-
 export const useMaintenanceWindowForm = ({
 	data = null,
 }: UseMaintenanceWindowFormOptions = {}) => {
@@ -46,19 +24,14 @@ export const useMaintenanceWindowForm = ({
 
 		if (data) {
 			const startDate = dayjs(data.start);
-			const endDate = dayjs(data.end);
-			const { duration, durationUnit } = getDurationAndUnit(
-				startDate.valueOf(),
-				endDate.valueOf()
-			);
 
 			defaults = {
 				name: data.name,
 				repeat: getRepeatId(data.repeat),
 				startDate: startDate.format("YYYY-MM-DD"),
 				startTime: startDate.format("HH:mm"),
-				duration,
-				durationUnit,
+				duration: data.duration ?? 0,
+				durationUnit: data.durationUnit ?? "minutes",
 				monitors: [data.monitorId],
 			};
 		} else {

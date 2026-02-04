@@ -818,7 +818,7 @@
 				},
 				"startTime": {
 					"title": "Start time",
-					"description": "Set the start time and duration for your maintenance window.",
+					"description": "Set the start time and duration for your maintenance window. All values are in UTC",
 					"option": {
 						"duration": {
 							"label": "Duration"
