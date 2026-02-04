@@ -23,14 +23,6 @@ const MaintenanceWindowPage = () => {
 		`/maintenance-window/team?page=${page}&rowsPerPage=${rowsPerPage}`
 	);
 
-	const handleUpdate = useCallback(() => {
-		refetch();
-	}, [refetch]);
-
-	const handlePageChange = useCallback((newPage: number) => {
-		setPage(newPage);
-	}, []);
-
 	const maintenanceWindows = data?.maintenanceWindows ?? [];
 	const maintenanceWindowCount = data?.maintenanceWindowCount ?? 0;
 
@@ -50,8 +42,8 @@ const MaintenanceWindowPage = () => {
 				maintenanceWindows={maintenanceWindows}
 				maintenanceWindowCount={maintenanceWindowCount}
 				page={page}
-				setPage={handlePageChange}
-				updateCallback={handleUpdate}
+				setPage={setPage}
+				refetch={refetch}
 			/>
 		</BasePageWithStates>
 	);

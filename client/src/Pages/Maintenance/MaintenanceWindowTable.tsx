@@ -24,7 +24,7 @@ interface MaintenanceWindowTableProps {
 	maintenanceWindowCount: number;
 	page: number;
 	setPage: (page: number) => void;
-	updateCallback: () => void;
+	refetch: () => void;
 }
 
 const getTimeToNextWindow = (
@@ -68,7 +68,7 @@ export const MaintenanceWindowTable = ({
 	maintenanceWindowCount,
 	page,
 	setPage,
-	updateCallback,
+	refetch,
 }: MaintenanceWindowTableProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -88,7 +88,7 @@ export const MaintenanceWindowTable = ({
 		if (!selectedWindow) return;
 		const result = await deleteFn(`/maintenance-window/${selectedWindow.id}`);
 		if (result) {
-			updateCallback();
+			refetch();
 			setDeleteDialogOpen(false);
 			setSelectedWindow(null);
 		}
@@ -99,7 +99,7 @@ export const MaintenanceWindowTable = ({
 			active: !maintenanceWindow.active,
 		});
 		if (result) {
-			updateCallback();
+			refetch();
 		}
 	};
 

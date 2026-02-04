@@ -121,7 +121,7 @@ export const BasePageWithStates = ({
 }: BasePageWithStatesProps) => {
 	const showLoading = loading && (!items || items.length === 0);
 
-	if (isEmpty(items)) {
+	if (!loading && isEmpty(items)) {
 		return (
 			<EmptyFallback
 				bullets={bullets}
