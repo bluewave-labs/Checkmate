@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import {
 	TextField,
@@ -8,6 +9,7 @@ import {
 	DatePicker,
 	TimePicker,
 	Button,
+	Autocomplete,
 } from "@/Components/v2/inputs";
 
 import { useTheme } from "@mui/material";
@@ -22,6 +24,7 @@ import { useParams } from "react-router-dom";
 import type { Monitor } from "@/Types/Monitor";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
+import { Trash2 } from "lucide-react";
 
 const CreateMaintenanceWindowPage = () => {
 	const theme = useTheme();
@@ -204,6 +207,85 @@ const CreateMaintenanceWindowPage = () => {
 							/>
 						</Stack>
 					</Stack>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.maintenanceWindow.form.startTime.monitors.title")}
+				subtitle={t("pages.maintenanceWindow.form.startTime.monitors.description")}
+				rightContent={
+					<Controller
+						name="monitors"
+						control={control}
+						defaultValue={defaults.monitors}
+						render={({ field, fieldState }) => {
+							const monitorsList = monitors ?? [];
+							const selectedMonitors = field.value
+								.map((id: string) => monitorsList.find((m) => m.id === id))
+								.filter((m): m is Monitor => m !== undefined);
+
+							return (
+								<Stack spacing={theme.spacing(4)}>
+									<Autocomplete
+										multiple
+										options={monitorsList}
+										getOptionLabel={(option: Monitor) => option.name}
+										value={selectedMonitors}
+										onChange={(_, newValue) => {
+											field.onChange(newValue.map((m: Monitor) => m.id));
+										}}
+										fieldLabel={t(
+											"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
+										)}
+										renderInput={(params) => (
+											<TextField
+												{...params}
+												placeholder={
+													selectedMonitors.length === 0
+														? t("pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label")
+														: ""
+												}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message}
+											/>
+										)}
+									/>
+									{selectedMonitors.length > 0 && (
+										<Stack>
+											{selectedMonitors.map((monitor) => (
+												<Stack
+													key={monitor.id}
+													direction="row"
+													alignItems="center"
+													spacing={theme.spacing(4)}
+													padding={theme.spacing(4)}
+													marginTop={theme.spacing(2)}
+													borderRadius={1}
+													sx={{
+														border: `1px solid ${theme.palette.divider}`,
+													}}
+												>
+													<Typography flexGrow={1}>{monitor.name}</Typography>
+													<IconButton
+														size="small"
+														onClick={() => {
+															field.onChange(
+																field.value.filter(
+																	(id: string) => id !== monitor.id
+																)
+															);
+														}}
+														aria-label="Remove monitor"
+													>
+														<Trash2 size={16} />
+													</IconButton>
+												</Stack>
+											))}
+										</Stack>
+									)}
+								</Stack>
+							);
+						}}
+					/>
 				}
 			/>
 			<Stack
