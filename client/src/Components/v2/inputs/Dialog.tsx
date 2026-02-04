@@ -59,14 +59,16 @@ export const DialogInput = ({
 				>
 					{cancelText ?? t("common.buttons.cancel")}
 				</Button>
-				<Button
-					loading={loading}
-					variant="contained"
-					color={confirmColor}
-					onClick={onConfirm}
-				>
-					{confirmText ?? t("common.buttons.confirm")}
-				</Button>
+				{onConfirm && (
+					<Button
+						loading={loading}
+						variant="contained"
+						color={confirmColor}
+						onClick={onConfirm}
+					>
+						{confirmText ?? t("common.buttons.confirm")}
+					</Button>
+				)}
 			</DialogActions>
 		</Dialog>
 	);

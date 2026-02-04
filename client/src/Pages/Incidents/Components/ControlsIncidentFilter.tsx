@@ -6,7 +6,7 @@ import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Monitor } from "@/Types/Monitor";
 
-const resolutionTypes = ["manual", "automatic"];
+const resolutionTypes = ["all", "manual", "automatic"];
 
 interface ControlsIncidentFilterProps {
 	monitors?: Monitor[];

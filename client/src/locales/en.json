@@ -188,6 +188,7 @@
 		},
 		"buttons": {
 			"cancel": "Cancel",
+			"close": "Close",
 			"configure": "Configure",
 			"confirm": "Confirm",
 			"create": "Create",
@@ -653,6 +654,10 @@
 					"overview": "Overview",
 					"resolutionDetails": "Resolution details",
 					"resolutionType": "Type:",
+					"resolutionTypes": {
+						"automatic": "Automatic",
+						"manual": "Manual"
+					},
 					"resolve": "Resolve Incident",
 					"resolvedAt": "Resolved at:",
 					"resolvedBy": "Resolved by:",
