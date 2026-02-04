@@ -807,6 +807,15 @@
 						}
 					}
 				},
+				"startDate": {
+					"title": "Start date",
+					"description": "Select the start date for your maintenance window.",
+					"option": {
+						"startDate": {
+							"label": "Start date"
+						}
+					}
+				},
 				"startTime": {
 					"title": "Start time",
 					"description": "Set the start time and duration for your maintenance window.",
@@ -814,9 +823,7 @@
 						"duration": {
 							"label": "Duration"
 						},
-						"startDate": {
-							"label": "Start date"
-						},
+
 						"startTime": {
 							"label": "Start time"
 						}

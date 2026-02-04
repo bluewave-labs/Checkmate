@@ -90,8 +90,8 @@ const CreateMaintenanceWindowPage = () => {
 				}
 			/>
 			<ConfigBox
-				title={t("pages.maintenanceWindow.form.startTime.title")}
-				subtitle={t("pages.maintenanceWindow.form.startTime.description")}
+				title={t("pages.maintenanceWindow.form.startDate.title")}
+				subtitle={t("pages.maintenanceWindow.form.startDate.description")}
 				rightContent={
 					<Stack spacing={theme.spacing(8)}>
 						<Controller
@@ -101,7 +101,7 @@ const CreateMaintenanceWindowPage = () => {
 							render={({ field }) => (
 								<DatePicker
 									fieldLabel={t(
-										"pages.maintenanceWindow.form.startTime.option.startDate.label"
+										"pages.maintenanceWindow.form.startDate.option.startDate.label"
 									)}
 									value={field.value ? dayjs(field.value, "YYYY-MM-DD") : null}
 									onChange={(date) => {
