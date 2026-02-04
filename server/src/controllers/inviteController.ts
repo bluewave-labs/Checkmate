@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/joi.js";
+import { requireTeamId, requireUserRoles } from "@/controllers/controllerUtils.js";
 const SERVICE_NAME = "inviteController";
 
 class InviteController {
@@ -14,12 +15,14 @@ class InviteController {
 	}
 
 	getInviteToken = async (req: Request, res: Response, next: NextFunction) => {
+		console.log(req.body);
 		try {
+			const teamId = requireTeamId(req.user?.teamId);
+			const userRoles = requireUserRoles(req.user?.role);
 			const invite = req.body;
-			const teamId = req?.user?.teamId;
 			invite.teamId = teamId;
 			await inviteBodyValidation.validateAsync(invite);
-			const inviteToken = await this.inviteService.getInviteToken({ invite, teamId });
+			const inviteToken = await this.inviteService.getInviteToken({ invite, teamId, userRoles });
 			return res.status(200).json({
 				success: true,
 				msg: "Invite token generated successfully",
