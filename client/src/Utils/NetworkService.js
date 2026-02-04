@@ -230,7 +230,7 @@ class NetworkService {
 	async updateMonitor(config) {
 		const { monitorId, updatedFields } = config;
 		const payload = updatedFields;
-		return this.axiosInstance.put(`/monitors/${monitorId}`, payload, {
+		return this.axiosInstance.patch(`/monitors/${monitorId}`, payload, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -378,7 +378,7 @@ class NetworkService {
 	 *
 	 */
 	async updateUser(config) {
-		return this.axiosInstance.put(`/auth/user`, config.form);
+		return this.axiosInstance.patch(`/auth/user`, config.form);
 	}
 
 	/**
@@ -611,7 +611,7 @@ class NetworkService {
 	 *
 	 */
 	async updateCheckStatus(config) {
-		return this.axiosInstance.put(`/checks/check/${config.checkId}`, {
+		return this.axiosInstance.patch(`/checks/check/${config.checkId}`, {
 			ack: config.ack,
 		});
 	}
@@ -629,7 +629,7 @@ class NetworkService {
 	 *
 	 */
 	async updateMonitorChecksStatus(config) {
-		return this.axiosInstance.put(`/checks/monitor/${config.monitorId}`, {
+		return this.axiosInstance.patch(`/checks/monitor/${config.monitorId}`, {
 			ack: config.ack,
 		});
 	}
@@ -646,7 +646,7 @@ class NetworkService {
 	 *
 	 */
 	async updateAllChecksStatus(config) {
-		return this.axiosInstance.put(`/checks/team/`, {
+		return this.axiosInstance.patch(`/checks/team/`, {
 			ack: config.ack,
 		});
 	}
@@ -663,7 +663,7 @@ class NetworkService {
 	 *
 	 */
 	async updateChecksTTL(config) {
-		return this.axiosInstance.put(
+		return this.axiosInstance.patch(
 			`/checks/team/ttl`,
 			{ ttl: config.ttl },
 			{
@@ -705,7 +705,7 @@ class NetworkService {
 	 * @returns {Promise<AxiosResponse>} The response from the axios POST request.
 	 */
 	async updateAppSettings(config) {
-		return this.axiosInstance.put(`/settings`, config.settings, {
+		return this.axiosInstance.patch(`/settings`, config.settings, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -775,7 +775,7 @@ class NetworkService {
 	 */
 
 	async editMaintenanceWindow(config) {
-		return this.axiosInstance.put(
+		return this.axiosInstance.patch(
 			`/maintenance-window/${config.maintenanceWindowId}`,
 			config.maintenanceWindow,
 			{
@@ -955,7 +955,7 @@ class NetworkService {
 			return this.axiosInstance.post(`/status-page`, fd, {});
 		}
 
-		return this.axiosInstance.put(`/status-page/${id}`, fd, {});
+		return this.axiosInstance.patch(`/status-page/${id}`, fd, {});
 	}
 
 	async deleteStatusPage(config) {
@@ -1125,7 +1125,7 @@ class NetworkService {
 
 	async editUser(config) {
 		const { userId, user } = config;
-		return this.axiosInstance.put(`auth/users/${userId}`, user, {
+		return this.axiosInstance.patch(`auth/users/${userId}`, user, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -1134,7 +1134,7 @@ class NetworkService {
 
 	async changePasswordByAdmin(config) {
 		const { userId, passwordForm } = config;
-		return this.axiosInstance.put(`auth/users/${userId}/password`, passwordForm, {
+		return this.axiosInstance.patch(`auth/users/${userId}/password`, passwordForm, {
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -1164,7 +1164,7 @@ class NetworkService {
 	resolveIncidentManually = async (incidentId, options = {}) => {
 		const body = {};
 		if (options.comment) body.comment = options.comment;
-		return this.axiosInstance.put(`/incidents/${incidentId}/resolve`, body);
+		return this.axiosInstance.patch(`/incidents/${incidentId}/resolve`, body);
 	};
 
 	getIncidentSummary = async (config = {}) => {
