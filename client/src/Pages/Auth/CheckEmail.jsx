@@ -224,7 +224,7 @@ const CheckEmail = () => {
 					<Trans
 						i18nKey={
 							location.state?.from === "/account/password"
-								? "auth.forgotPassword.links.accountPassword"
+								? "Go back to <a>Account Password</a>"
 								: "auth.forgotPassword.links.login"
 						}
 						components={{
