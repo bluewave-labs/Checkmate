@@ -14,3 +14,4 @@ export * from "./Switch";
 export * from "./Slider";
 export * from "./ImageUpload";
 export * from "./ColorPicker";
+export { DatePickerComponent as DatePicker } from "./DatePicker";

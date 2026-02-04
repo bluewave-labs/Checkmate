@@ -792,6 +792,45 @@
 					"nextWindow": "Next window",
 					"repeat": "Repeat"
 				}
+			},
+			"form": {
+				"general": {
+					"title": "General settings",
+					"description": "Set a name and repeat option for your maintenance window.",
+					"option": {
+						"name": {
+							"label": "Name",
+							"placeholder": "e.g. Weekly Maintenance"
+						},
+						"repeat": {
+							"label": "Repeat"
+						}
+					}
+				},
+				"startTime": {
+					"title": "Start time",
+					"description": "Set the start time and duration for your maintenance window.",
+					"option": {
+						"duration": {
+							"label": "Duration"
+						},
+						"startDate": {
+							"label": "Start date"
+						},
+						"startTime": {
+							"label": "Start time"
+						}
+					},
+					"monitors": {
+						"title": "Monitors",
+						"description": "Monitors that the maintenance window should apply to",
+						"option": {
+							"addMonitors": {
+								"label": "Add monitors"
+							}
+						}
+					}
+				}
 			}
 		},
 		"notifications": {
@@ -1282,16 +1321,5 @@
 	"monitorDeleted": "Monitor deleted successfully",
 	"monitorPaused": "Monitor paused successfully",
 	"monitorResumed": "Monitor resumed successfully",
-	"name": "Name",
-	"maintenanceWindow": {
-		"fallback": {
-			"actionButton": "Let's create your first maintenance window!",
-			"checks": [
-				"Mark your maintenance periods",
-				"Eliminate any misunderstandings",
-				"Stop sending alerts in maintenance windows"
-			],
-			"title": "A maintenance window is used to:"
-		}
-	}
+	"name": "Name"
 }
