@@ -22,9 +22,10 @@ const MaintenanceWindowPage = () => {
 		(state: RootState) => state?.ui?.maintenance?.rowsPerPage ?? 5
 	);
 
-	const { data, isLoading, isValidating, error, refetch } = useGet<MaintenanceWindowsResponse>(
-		`/maintenance-window/team?page=${page}&rowsPerPage=${rowsPerPage}`
-	);
+	const { data, isLoading, isValidating, error, refetch } =
+		useGet<MaintenanceWindowsResponse>(
+			`/maintenance-window/team?page=${page}&rowsPerPage=${rowsPerPage}`
+		);
 
 	const maintenanceWindows = data?.maintenanceWindows ?? [];
 	const maintenanceWindowCount = data?.maintenanceWindowCount ?? 0;
