@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+import prettyMilliseconds from "pretty-ms";
 import { Table, ValueLabel } from "@/Components/v2/design-elements";
 import { Pagination } from "@/Components/v2/design-elements/Table";
 import { ActionsMenu } from "@/Components/v2/actions-menu";
@@ -35,29 +36,23 @@ const getTimeToNextWindow = (
 	const now = dayjs();
 	let start = dayjs(startTime);
 	let end = dayjs(endTime);
+
+	// For repeating windows, advance to next occurrence
 	if (repeat > 0) {
-		while (start.isBefore(now) && end.isBefore(now)) {
+		while (end.isBefore(now)) {
 			start = start.add(repeat, "milliseconds");
 			end = end.add(repeat, "milliseconds");
 		}
 	}
 
+	// Currently in maintenance window
 	if (now.isAfter(start) && now.isBefore(end)) {
 		return "In maintenance window";
 	}
 
+	// Window is in the future
 	if (start.isAfter(now)) {
-		const diffInMinutes = start.diff(now, "minutes");
-		const diffInHours = start.diff(now, "hours");
-		const diffInDays = start.diff(now, "days");
-
-		if (diffInMinutes < 60) {
-			return diffInMinutes + " minutes";
-		} else if (diffInHours < 24) {
-			return diffInHours + " hours";
-		} else {
-			return diffInDays + " days";
-		}
+		return prettyMilliseconds(start.diff(now), { unitCount: 2, hideSeconds: true });
 	}
 
 	return "N/A";
