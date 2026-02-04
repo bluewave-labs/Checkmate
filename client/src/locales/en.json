@@ -218,6 +218,7 @@
 		},
 		"labels": {
 			"active": "Active",
+			"paused": "paused",
 			"na": "N/A",
 			"resolved": "Resolved",
 			"responseTime": "Response time"
@@ -774,6 +775,23 @@
 					"Ensure reliability with real-time monitoring"
 				],
 				"title": "An infrastructure monitor is used to:"
+			}
+		},
+		"maintenanceWindow": {
+			"fallback": {
+				"actionButton": "Let's create your first maintenance window!",
+				"checks": [
+					"Mark your maintenance periods",
+					"Eliminate any misunderstandings",
+					"Stop sending alerts in maintenance windows"
+				],
+				"title": "A maintenance window is used to:"
+			},
+			"table": {
+				"headers": {
+					"nextWindow": "Next window",
+					"repeat": "Repeat"
+				}
 			}
 		},
 		"notifications": {
