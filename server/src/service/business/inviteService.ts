@@ -51,7 +51,21 @@ class InviteService {
 		return inviteToken;
 	};
 
-	sendInviteEmail = async ({ invite, firstName }: { invite: Partial<Invite>; firstName: any }) => {
+	sendInviteEmail = async ({ invite, firstName, userRoles }: { invite: Partial<Invite>; firstName: any; userRoles: UserRole[] }) => {
+		const inviteRoles = invite.role ?? [];
+
+		for (const targetRole of inviteRoles) {
+			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to create this invite",
+					service: SERVICE_NAME,
+					method: "getInviteToken",
+					status: 403,
+				});
+			}
+		}
+
 		const inviteToken = await this.invitesRepository.create(invite);
 		const { clientHost } = this.settingsService.getSettings();
 

@@ -35,13 +35,17 @@ class InviteController {
 
 	sendInviteEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const teamId = requireTeamId(req?.user?.teamId);
+			const userRoles = requireUserRoles(req?.user?.role);
+
 			const inviteRequest = req.body;
-			inviteRequest.teamId = req?.user?.teamId;
+			inviteRequest.teamId = teamId;
 			await inviteBodyValidation.validateAsync(inviteRequest);
 
 			const inviteToken = await this.inviteService.sendInviteEmail({
 				invite: inviteRequest,
 				firstName: req?.user?.firstName,
+				userRoles,
 			});
 			return res.status(200).json({
 				success: true,
