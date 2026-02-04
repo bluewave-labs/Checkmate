@@ -48,11 +48,11 @@ import Account from "../Pages/Account/index.jsx";
 import EditUser from "../Pages/Account/EditUser/index.jsx";
 import Settings from "../Pages/Settings";
 
-import Maintenance from "../Pages/Maintenance/index.jsx";
+import Maintenance from "../Pages/Maintenance";
+import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance/index.jsx";
 
 import ProtectedRoute from "../Components/v1/ProtectedRoute";
 import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
-import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance/index.jsx";
 import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport/index.jsx";
 import Logs from "../Pages/Logs/index.jsx";
@@ -303,7 +303,13 @@ const Routes = () => {
 
 				<Route
 					path="maintenance"
-					element={<Maintenance />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Maintenance />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/maintenance/create/:maintenanceWindowId?"
