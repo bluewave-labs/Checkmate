@@ -112,6 +112,13 @@ const requireUserEmail = (userEmail?: string): string => {
 	return userEmail;
 };
 
+export const requireUserRoles = (userRoles?: string[]): string[] => {
+	if (!userRoles || userRoles.length === 0) {
+		throw new AppError({ message: "User roles are required", status: 400 });
+	}
+	return userRoles;
+}
+
 export {
 	fetchMonitorCertificate,
 	requireString,
