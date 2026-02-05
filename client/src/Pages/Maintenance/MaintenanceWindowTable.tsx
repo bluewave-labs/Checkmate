@@ -185,6 +185,7 @@ export const MaintenanceWindowTable = ({
 				emptyViewText={t("common.table.empty")}
 			/>
 			<Pagination
+				itemsOnPage={maintenanceWindows.length}
 				component="div"
 				count={maintenanceWindowCount}
 				page={page}

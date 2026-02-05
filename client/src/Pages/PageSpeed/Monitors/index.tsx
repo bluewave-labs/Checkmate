@@ -70,7 +70,7 @@ const PageSpeedMonitorsPage = () => {
 		<MonitorBasePageWithStates
 			loading={isLoading}
 			error={monitorsError || settingsError}
-			items={monitors || []}
+			totalCount={summary?.totalMonitors ?? 0}
 			page="pageSpeed"
 			actionLink="/pagespeed/create"
 			priorityFallback={showApiKeyWarning ? <PageSpeedKeyPriorityFallback /> : undefined}

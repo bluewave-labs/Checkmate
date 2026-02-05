@@ -33,12 +33,12 @@ const MaintenanceWindowPage = () => {
 	return (
 		<BasePageWithStates
 			page={t("pages.maintenanceWindow.fallback.title")}
+			totalCount={maintenanceWindowCount}
 			bullets={
 				t("pages.maintenanceWindow.fallback.checks", { returnObjects: true }) as string[]
 			}
 			loading={isLoading}
 			error={!!error}
-			items={maintenanceWindows}
 			actionButtonText={t("pages.maintenanceWindow.fallback.actionButton")}
 			actionLink="/maintenance/create"
 		>

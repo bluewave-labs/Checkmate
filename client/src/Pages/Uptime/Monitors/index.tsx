@@ -85,18 +85,6 @@ const UptimeMonitorsPage = () => {
 		return `/monitors/team/with-checks?${params.toString()}`;
 	}, [effectiveTypes, page, rowsPerPage, filter, field, sortOrder]);
 
-	// Data fetching
-	const {
-		data: monitors,
-		isLoading: monitorsLoading,
-		error,
-		refetch: refetchMonitorsAndSummary,
-	} = useGet<Monitor[]>(
-		"/monitors/team?type=http&type=ping&type=port&type=docker",
-		{},
-		{ keepPreviousData: true }
-	);
-
 	const {
 		data: monitorsWithChecksData,
 		isLoading: monitorsWithChecksLoading,
@@ -126,20 +114,19 @@ const UptimeMonitorsPage = () => {
 		await deleteFn(`/monitors/${selectedMonitor.id}`);
 		setSelectedMonitor(null);
 		refetch();
-		refetchMonitorsAndSummary();
 	};
 
 	const handleCancel = () => {
 		setSelectedMonitor(null);
 	};
 
-	const isLoading = monitorsLoading || monitorsWithChecksLoading;
+	const isLoading = monitorsWithChecksLoading;
 
 	return (
 		<MonitorBasePageWithStates
 			loading={isLoading}
-			error={error || monitorsWithChecksError}
-			items={monitors || []}
+			error={monitorsWithChecksError}
+			totalCount={summary?.totalMonitors ?? 0}
 			page="uptime"
 			actionLink="/uptime/create"
 		>

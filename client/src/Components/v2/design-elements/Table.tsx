@@ -27,7 +27,7 @@ import TablePagination from "@mui/material/TablePagination";
 import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
 
 import { useTranslation } from "react-i18next";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -454,12 +454,26 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 interface PaginationProps extends TablePaginationOwnProps {
 	component?: React.ElementType;
 	hasMore?: boolean;
+	itemsOnPage?: number;
 }
 
 export const Pagination = ({ ...props }: PaginationProps) => {
-	const { hasMore, ...rest } = props;
+	const { hasMore, itemsOnPage, ...rest } = props;
 	const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
 	const theme = useTheme();
+
+	useEffect(() => {
+		if (
+			typeof itemsOnPage === "number" &&
+			itemsOnPage === 0 &&
+			rest.count > 0 &&
+			rest.page > 0 &&
+			rest.onPageChange
+		) {
+			rest.onPageChange(null, rest.page - 1);
+		}
+	}, [itemsOnPage, rest.count, rest.page, rest.onPageChange]);
+
 	const labelDisplayedRows = ({
 		from,
 		to,

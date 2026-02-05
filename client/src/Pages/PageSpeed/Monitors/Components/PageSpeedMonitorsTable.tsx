@@ -248,6 +248,7 @@ export const PageSpeedMonitorsTable = ({
 				rowsPerPage={rowsPerPage}
 				onPageChange={handlePageChange}
 				onRowsPerPageChange={handleRowsPerPageChange}
+				itemsOnPage={monitors.length}
 			/>
 		</Box>
 	);

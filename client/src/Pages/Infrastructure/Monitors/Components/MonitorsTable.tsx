@@ -269,6 +269,7 @@ export const InfraMonitorsTable = ({
 				rowsPerPage={rowsPerPage}
 				onPageChange={handlePageChange}
 				onRowsPerPageChange={handleRowsPerPageChange}
+				itemsOnPage={monitors.length}
 			/>
 		</Box>
 	);

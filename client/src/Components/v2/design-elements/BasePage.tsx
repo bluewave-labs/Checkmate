@@ -100,7 +100,7 @@ export const BasePage = ({
 interface BasePageWithStatesProps extends StackProps {
 	loading: boolean;
 	error: any;
-	items: any[];
+	totalCount: number;
 	bullets: string[] | unknown;
 	page: string;
 	actionButtonText: string;
@@ -111,7 +111,7 @@ interface BasePageWithStatesProps extends StackProps {
 export const BasePageWithStates = ({
 	loading,
 	error,
-	items,
+	totalCount,
 	page,
 	bullets,
 	actionButtonText,
@@ -119,9 +119,9 @@ export const BasePageWithStates = ({
 	children,
 	...props
 }: BasePageWithStatesProps) => {
-	const showLoading = loading && (!items || items.length === 0);
+	const showLoading = loading && totalCount === 0;
 
-	if (!loading && isEmpty(items)) {
+	if (!loading && totalCount === 0) {
 		return (
 			<EmptyFallback
 				bullets={bullets}
@@ -146,23 +146,17 @@ export const BasePageWithStates = ({
 interface MonitorBasePageWithStatesProps extends StackProps {
 	loading: boolean;
 	error: any;
-	items: any[];
+	totalCount: number;
 	page: string;
 	actionLink?: string;
 	children: React.ReactNode;
 	priorityFallback?: React.ReactNode;
 }
 
-const isEmpty = (items: any[]) => {
-	if (!items) return true;
-	if (Array.isArray(items) && items.length === 0) return true;
-	return false;
-};
-
 export const MonitorBasePageWithStates = ({
 	loading,
 	error,
-	items,
+	totalCount,
 	page,
 	actionLink,
 	children,
@@ -171,7 +165,7 @@ export const MonitorBasePageWithStates = ({
 }: MonitorBasePageWithStatesProps) => {
 	const { t } = useTranslation();
 
-	const showLoading = loading && (!items || items.length === 0);
+	const showLoading = loading && totalCount === 0;
 
 	if (priorityFallback) {
 		return (
@@ -185,7 +179,7 @@ export const MonitorBasePageWithStates = ({
 		);
 	}
 
-	if (!loading && isEmpty(items)) {
+	if (!loading && totalCount === 0) {
 		return (
 			<EmptyMonitorFallback
 				page={page}
