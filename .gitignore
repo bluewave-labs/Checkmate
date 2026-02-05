@@ -3,3 +3,4 @@
 .VSCodeCounter
 *.sh
 mongo
+node_modules/
