@@ -209,7 +209,8 @@ const CreateMaintenanceWindowPage = () => {
 									)}
 									value={field.value ? dayjs(field.value, "HH:mm") : null}
 									onChange={(time) => {
-										field.onChange(time ? time.format("HH:mm") : ""); trigger("startDate");
+										field.onChange(time ? time.format("HH:mm") : "");
+										trigger("startDate");
 									}}
 								/>
 							)}
