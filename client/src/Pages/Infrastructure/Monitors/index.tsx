@@ -99,6 +99,15 @@ const InfrastructureMonitors = () => {
 	const { summary, count } = monitorsWithChecksData ?? {};
 	const isLoading = monitorsWithChecksLoading;
 
+	// Check if any filters are active
+	const hasActiveFilters = Boolean(selectedStatus || selectedState || search);
+
+	// Show empty state only when there are truly no monitors (not just filtered out)
+	const effectiveTotalCount =
+		hasActiveFilters && (summary?.totalMonitors ?? 0) === 0
+			? 1
+			: (summary?.totalMonitors ?? 0);
+
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
 
@@ -117,7 +126,7 @@ const InfrastructureMonitors = () => {
 		<MonitorBasePageWithStates
 			loading={isLoading}
 			error={monitorsWithChecksError}
-			totalCount={summary?.totalMonitors ?? 0}
+			totalCount={effectiveTotalCount}
 			page="infrastructure"
 			actionLink="/infrastructure/create"
 		>
