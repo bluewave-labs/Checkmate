@@ -72,6 +72,12 @@ const SelectInputInner = <T,>(
 			)}
 			sx={{
 				height: "34px",
+				"& .MuiSelect-select": {
+					display: "flex",
+					alignItems: "center",
+					height: "100%",
+					boxSizing: "border-box",
+				},
 				"& .MuiSelect-icon": {
 					right: theme.spacing(3),
 				},
