@@ -217,7 +217,7 @@ const CreateMaintenanceWindowPage = () => {
 						/>
 						<Stack
 							direction="row"
-							alignItems="flex-end"
+							alignItems="flex-start"
 							spacing={theme.spacing(4)}
 						>
 							<Controller
@@ -248,6 +248,7 @@ const CreateMaintenanceWindowPage = () => {
 								defaultValue={defaults.durationUnit}
 								render={({ field }) => (
 									<Select
+										fieldLabel=" "
 										value={field.value}
 										onChange={field.onChange}
 										sx={{ minWidth: 120 }}
