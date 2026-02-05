@@ -122,11 +122,23 @@ const UptimeMonitorsPage = () => {
 
 	const isLoading = monitorsWithChecksLoading;
 
+	// Check if any filters are active
+	const hasActiveFilters = Boolean(
+		selectedTypes.length > 0 || selectedStatus || selectedState || search
+	);
+
+	// Show empty state only when there are truly no monitors (not just filtered out)
+	// If filters are active and count is 0, pass 1 to prevent empty state fallback
+	const effectiveTotalCount =
+		hasActiveFilters && (summary?.totalMonitors ?? 0) === 0
+			? 1
+			: (summary?.totalMonitors ?? 0);
+
 	return (
 		<MonitorBasePageWithStates
 			loading={isLoading}
 			error={monitorsWithChecksError}
-			totalCount={summary?.totalMonitors ?? 0}
+			totalCount={effectiveTotalCount}
 			page="uptime"
 			actionLink="/uptime/create"
 		>
