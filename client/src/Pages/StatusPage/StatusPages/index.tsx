@@ -43,7 +43,7 @@ const StatusPages = () => {
 				t("pages.statusPages.fallback.checks", { returnObjects: true }) as string[]
 			}
 			error={!!error}
-			items={statusPages ?? []}
+			totalCount={statusPages?.length ?? 0}
 			actionButtonText={t("pages.statusPages.fallback.actionButton")}
 			actionLink="/status/create"
 		>

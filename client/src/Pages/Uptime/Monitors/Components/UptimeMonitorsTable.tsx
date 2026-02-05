@@ -253,6 +253,7 @@ export const MonitorTable = ({
 				rowsPerPage={rowsPerPage}
 				onPageChange={(_e, newPage) => setPage(newPage)}
 				onRowsPerPageChange={(e) => setRowsPerPage(Number(e.target.value))}
+				itemsOnPage={monitors.length}
 			/>
 		</Box>
 	);

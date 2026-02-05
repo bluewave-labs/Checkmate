@@ -45,7 +45,7 @@ const NotificationsPage = () => {
 			}
 			loading={isLoading || isValidating}
 			error={!!error}
-			items={notifications ?? []}
+			totalCount={notifications?.length ?? 0}
 			actionButtonText={t("pages.notifications.fallback.actionButton")}
 			actionLink="/notifications/create"
 		>

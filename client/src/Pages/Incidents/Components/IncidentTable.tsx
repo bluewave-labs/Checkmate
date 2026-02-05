@@ -215,6 +215,7 @@ export const IncidentsTable = ({
 				rowsPerPage={rowsPerPage}
 				onPageChange={handlePageChange}
 				onRowsPerPageChange={handleRowsPerPageChange}
+				itemsOnPage={incidents.length}
 			/>
 		</Box>
 	);

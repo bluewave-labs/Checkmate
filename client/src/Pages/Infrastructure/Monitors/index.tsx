@@ -86,13 +86,6 @@ const InfrastructureMonitors = () => {
 	}, [page, rowsPerPage, filter, field, sortOrder]);
 
 	const {
-		data: monitors,
-		isLoading: monitorsLoading,
-		error,
-		refetch: refetchMonitors,
-	} = useGet<Monitor[]>("/monitors/team?type=hardware", {}, { keepPreviousData: true });
-
-	const {
 		data: monitorsWithChecksData,
 		isLoading: monitorsWithChecksLoading,
 		error: monitorsWithChecksError,
@@ -104,7 +97,7 @@ const InfrastructureMonitors = () => {
 	);
 
 	const { summary, count } = monitorsWithChecksData ?? {};
-	const isLoading = monitorsLoading || monitorsWithChecksLoading;
+	const isLoading = monitorsWithChecksLoading;
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -114,7 +107,6 @@ const InfrastructureMonitors = () => {
 		await deleteFn(`/monitors/${selectedMonitor.id}`);
 		setSelectedMonitor(null);
 		refetch();
-		refetchMonitors();
 	};
 
 	const handleCancel = () => {
@@ -124,8 +116,8 @@ const InfrastructureMonitors = () => {
 	return (
 		<MonitorBasePageWithStates
 			loading={isLoading}
-			error={error ?? monitorsWithChecksError}
-			items={monitors || []}
+			error={monitorsWithChecksError}
+			totalCount={summary?.totalMonitors ?? 0}
 			page="infrastructure"
 			actionLink="/infrastructure/create"
 		>
