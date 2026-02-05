@@ -1,0 +1,28 @@
+{
+  "name": "checkmate",
+  "version": "1.0.0",
+  "description": "<p align=center> <a href=\"https://trendshift.io/repositories/12443\" target=\"_blank\"><img src=\"https://trendshift.io/api/badge/repositories/12443\" alt=\"bluewave-labs%2Fcheckmate | Trendshift\" style=\"width: 250px; height: 55px;\" width=\"250\" height=\"55\"/></a></p>",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluewave-labs/Checkmate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bluewave-labs/Checkmate/issues"
+  },
+  "homepage": "https://github.com/bluewave-labs/Checkmate#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

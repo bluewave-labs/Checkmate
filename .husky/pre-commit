@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "Running lint-staged..."
+cd client && npx lint-staged && cd ..
+cd server && npx lint-staged && cd ..
