@@ -9,7 +9,9 @@ interface FieldLabelProps {
 
 export const FieldLabel = ({ children, required = false, htmlFor }: FieldLabelProps) => {
 	const theme = useTheme();
-
+	if (children === " ") {
+		children = "\u00A0";
+	}
 	return (
 		<Typography
 			component="label"
