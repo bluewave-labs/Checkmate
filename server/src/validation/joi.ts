@@ -364,6 +364,8 @@ const createMaintenanceWindowBodyValidation = joi.object({
 	monitors: joi.array().items(joi.string()).required(),
 	name: joi.string().required(),
 	active: joi.boolean(),
+	duration: joi.number().required(),
+	durationUnit: joi.string().valid("seconds", "minutes", "hours", "days").required(),
 	start: joi.date().required(),
 	end: joi.date().required(),
 	repeat: joi.number().required(),
@@ -402,6 +404,8 @@ const editMaintenanceByIdWindowBodyValidation = joi.object({
 	end: joi.date(),
 	expiry: joi.date(),
 	monitors: joi.array(),
+	duration: joi.number(),
+	durationUnit: joi.string().valid("seconds", "minutes", "hours", "days"),
 });
 
 //****************************************

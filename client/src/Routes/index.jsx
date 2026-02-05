@@ -49,7 +49,7 @@ import EditUser from "../Pages/Account/EditUser/index.jsx";
 import Settings from "../Pages/Settings";
 
 import Maintenance from "../Pages/Maintenance";
-import CreateNewMaintenanceWindow from "../Pages/Maintenance/CreateMaintenance/index.jsx";
+import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 
 import ProtectedRoute from "../Components/v1/ProtectedRoute";
 import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
@@ -313,7 +313,13 @@ const Routes = () => {
 				/>
 				<Route
 					path="/maintenance/create/:maintenanceWindowId?"
-					element={<CreateNewMaintenanceWindow />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateNewMaintenanceWindow />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="settings"

@@ -45,6 +45,8 @@ class MaintenanceWindowService {
 				monitorId,
 				name: body.name,
 				active: body.active ? body.active : true,
+				duration: body.duration,
+				durationUnit: body.durationUnit,
 				repeat: body.repeat,
 				start: body.start,
 				end: body.end,
