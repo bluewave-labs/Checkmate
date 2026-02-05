@@ -777,6 +777,32 @@
 				"title": "An infrastructure monitor is used to:"
 			}
 		},
+		"logs": {
+			"tabs": {
+				"diagnostics": "Diagnostics",
+				"logs": "Logs",
+				"queue": "Job queue"
+			},
+			"logLevelSelect": {
+				"label": "Log level"
+			},
+			"noLogs": "No logs found",
+			"table": {
+				"headers": {
+					"timestamp": "Timestamp",
+					"level": "Level",
+					"service": "Service",
+					"method": "Method",
+					"monitorId": "Monitor ID",
+					"runCount": "Run count",
+					"failCount": "Fail count",
+					"lastRunAt": "Last run at",
+					"lockedAt": "Locked at",
+					"lastFinisehdAt": "Last finished at",
+					"lastRunTook": "Last run took"
+				}
+			}
+		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Let's create your first maintenance window!",
