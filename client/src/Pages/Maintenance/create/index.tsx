@@ -183,6 +183,7 @@ const CreateMaintenanceWindowPage = () => {
 									value={field.value ? dayjs(field.value, "YYYY-MM-DD") : null}
 									onChange={(date) => {
 										field.onChange(date ? date.format("YYYY-MM-DD") : "");
+										trigger("startDate");
 									}}
 									error={!!fieldState.error}
 									helperText={fieldState.error?.message}
