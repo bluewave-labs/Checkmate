@@ -85,7 +85,7 @@ const Account = ({ open = "profile" }) => {
 					))}
 				</CustomTabList>
 				<ProfilePanel />
-				{user.role.includes("superadmin") && <PasswordPanel />}
+				<PasswordPanel />
 				{!hideTeams && <TeamPanel />}
 			</TabContext>
 		</Box>

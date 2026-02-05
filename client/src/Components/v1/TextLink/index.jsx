@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 import { Link as RouterLink } from "react-router-dom";
 
-const TextLink = ({ text, linkText, href, target = "_self" }) => {
+const TextLink = ({ text, linkText, href, state, target = "_self" }) => {
 	const theme = useTheme();
 
 	return (
@@ -19,6 +19,7 @@ const TextLink = ({ text, linkText, href, target = "_self" }) => {
 				to={href}
 				component={RouterLink}
 				target={target}
+				state={state}
 			>
 				{linkText}
 			</Link>
@@ -30,6 +31,7 @@ TextLink.propTypes = {
 	text: PropTypes.string,
 	linkText: PropTypes.string,
 	href: PropTypes.string,
+	state: PropTypes.object,
 	target: PropTypes.string,
 };
 

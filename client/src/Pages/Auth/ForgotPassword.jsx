@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "../../Features/Auth/authSlice.js";
 import { useEffect, useState } from "react";
 import { newOrChangedCredentials } from "../../Validation/validation.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import Background from "@/assets/Images/background-grid.svg?react";
@@ -18,6 +18,7 @@ const ForgotPassword = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const theme = useTheme();
+	const location = useLocation();
 
 	const { isLoading } = useSelector((state) => state.auth);
 	const [errors, setErrors] = useState({});
@@ -51,7 +52,9 @@ const ForgotPassword = () => {
 			const action = await dispatch(forgotPassword(form));
 			if (action.payload.success) {
 				sessionStorage.setItem("email", form.email);
-				navigate("/check-email");
+				navigate("/check-email", {
+					state: location.state || { from: "/login" }, // Preserve original from, fallback to login
+				});
 				createToast({
 					body: t("auth.forgotPassword.toasts.sent").replace("<email/>", form.email),
 				});
@@ -86,7 +89,9 @@ const ForgotPassword = () => {
 
 	const handleNavigate = () => {
 		sessionStorage.removeItem("email");
-		navigate("/login");
+		location.state?.from
+			? navigate(location.state.from, { replace: true })
+			: navigate("/login");
 	};
 
 	return (
@@ -212,7 +217,11 @@ const ForgotPassword = () => {
 			>
 				<Typography display="inline-block">
 					<Trans
-						i18nKey="auth.forgotPassword.links.login"
+						i18nKey={
+							location.state?.from
+								? "Go back to <a>Account Password</a>"
+								: "auth.forgotPassword.links.login"
+						}
 						components={{
 							a: (
 								<Typography

@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { createToast } from "../../../Utils/toastUtils.jsx";
 import { getTouchedFieldErrors } from "../../../Validation/error.js";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router-dom";
+import { clearAuthState } from "../../../Features/Auth/authSlice.js";
+import TextLink from "@/Components/v1/TextLink/index.jsx";
 
 const defaultPasswordsState = {
 	password: "",
@@ -28,11 +31,13 @@ const PasswordPanel = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const SPACING_GAP = theme.spacing(12);
 
 	//redux state
-	const { isLoading } = useSelector((state) => state.auth);
+	const { isLoading, authToken } = useSelector((state) => state.auth);
 
 	const idToName = {
 		"edit-current-password": "password",
@@ -78,6 +83,16 @@ const PasswordPanel = () => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
+
+		// Check for expired/invalid token before submitting
+		if (!authToken) {
+			createToast({
+				body: "Your session has expired. Please log in again.",
+			});
+			dispatch(clearAuthState());
+			navigate("/login");
+			return;
+		}
 
 		const { error } = newOrChangedCredentials.validate(localData, {
 			abortEarly: false,
@@ -249,8 +264,15 @@ const PasswordPanel = () => {
 				)}
 				<Stack
 					direction="row"
-					justifyContent="flex-end"
+					justifyContent="space-between"
+					alignItems="center"
 				>
+					<TextLink
+						text={"Forgot password?"}
+						linkText={"Reset password"}
+						state={{ from: location.pathname }}
+						href={"/forgot-password"}
+					/>
 					<Button
 						variant="contained"
 						color="accent"
@@ -263,7 +285,6 @@ const PasswordPanel = () => {
 						}
 						sx={{
 							px: theme.spacing(12),
-							mt: theme.spacing(20),
 						}}
 					>
 						{t("commonSave", "Save")}
