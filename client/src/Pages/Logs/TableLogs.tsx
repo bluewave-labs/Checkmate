@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
+import { formatTimestamp } from "@/Utils/TimeUtils";
 
 type LogWithId = Log & { id: number };
 
@@ -42,12 +43,6 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 	);
 };
 
-const formatTimestamp = (timestamp: string): string => {
-	if (!timestamp) return "-";
-	const date = new Date(timestamp);
-	return date.toLocaleString();
-};
-
 export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
@@ -60,7 +55,7 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			id: "timestamp",
 			content: t("pages.logs.table.headers.timestamp"),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, fontFamily: "monospace" }}>
+				<Typography sx={{ fontFamily: "monospace" }}>
 					{formatTimestamp(row.timestamp)}
 				</Typography>
 			),
@@ -73,17 +68,13 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 		{
 			id: "service",
 			content: t("pages.logs.table.headers.service"),
-			render: (row) => (
-				<Typography sx={{ fontSize: 13 }}>{row.service || "-"}</Typography>
-			),
+			render: (row) => <Typography>{row.service || "-"}</Typography>,
 		},
 		{
 			id: "method",
 			content: t("pages.logs.table.headers.method"),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, fontFamily: "monospace" }}>
-					{row.method || "-"}
-				</Typography>
+				<Typography fontFamily={"monospace"}>{row.method || "-"}</Typography>
 			),
 		},
 		{
@@ -91,13 +82,10 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			content: t("common.table.headers.message"),
 			render: (row) => (
 				<Typography
-					sx={{
-						fontSize: 13,
-						maxWidth: 400,
-						overflow: "hidden",
-						textOverflow: "ellipsis",
-						whiteSpace: "nowrap",
-					}}
+					maxWidth={400}
+					overflow={"hidden"}
+					textOverflow={"ellipsis"}
+					whiteSpace={"nowrap"}
 				>
 					{row.message || "-"}
 				</Typography>

@@ -29,6 +29,7 @@ import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
 import { useTranslation } from "react-i18next";
 import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
+import type { SxProps, Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 export type Header<T> = {
@@ -47,6 +48,7 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	renderExpandedContent?: (row: T) => React.ReactNode;
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
+	getRowSx?: (row: T) => SxProps<Theme>;
 };
 
 export function DataTable<
@@ -64,6 +66,7 @@ export function DataTable<
 	renderExpandedContent,
 	emptyViewText,
 	emptyViewPositive,
+	getRowSx,
 }: DataTableProps<T>) {
 	const theme = useTheme();
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
@@ -204,6 +207,7 @@ export function DataTable<
 								<TableRow
 									sx={{
 										cursor: onRowClick ? "pointer" : "default",
+										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
 										if (expandableRows) handleExpand(row);

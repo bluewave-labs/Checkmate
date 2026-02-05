@@ -199,7 +199,8 @@
 			"save": "Save",
 			"test": "Test",
 			"testNotifications": "Test notifications",
-			"toggleTheme": "Toggles light & dark"
+			"toggleTheme": "Toggles light & dark",
+			"flushQueue": "Flush queue"
 		},
 		"charts": {
 			"labels": {
@@ -230,9 +231,13 @@
 				"dateTime": "Date & time",
 				"message": "Message",
 				"monitor": "Monitor",
+				"monitorId": "Monitor ID",
 				"name": "Name",
 				"status": "Status",
-				"type": "Type"
+				"type": "Type",
+				"url": "Url",
+				"interval": "Interval",
+				"active": "Active"
 			}
 		},
 		"toasts": {
@@ -787,6 +792,13 @@
 				"label": "Log level"
 			},
 			"noLogs": "No logs found",
+			"metrics": {
+				"jobs": "Jobs",
+				"activeJobs": "Active jobs",
+				"failingJobs": "Failing jobs",
+				"totalRuns": "Total runs",
+				"totalFailures": "Total failures"
+			},
 			"table": {
 				"headers": {
 					"timestamp": "Timestamp",
@@ -798,8 +810,10 @@
 					"failCount": "Fail count",
 					"lastRunAt": "Last run at",
 					"lockedAt": "Locked at",
-					"lastFinisehdAt": "Last finished at",
-					"lastRunTook": "Last run took"
+					"lastFinishedAt": "Last finished at",
+					"lastRunTook": "Last run took",
+					"lastFailedAt": "Last failed at",
+					"failReason": "Fail reason"
 				}
 			}
 		},
