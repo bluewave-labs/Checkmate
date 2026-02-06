@@ -9,7 +9,7 @@ import NotFound from "../Pages/NotFound/index.jsx";
 
 // Auth
 import AuthLogin from "../Pages/Auth/Login";
-import AuthRegister from "../Pages/Auth/Register/index.jsx";
+import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
 import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
@@ -372,13 +372,25 @@ const Routes = () => {
 
 			<Route
 				path="/register"
-				element={<AdminCheckedRegister />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AdminCheckedRegister />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route
 				exact
 				path="/register/:token"
-				element={<AuthRegister superAdminExists={true} />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthRegister superAdminExists={true} />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route

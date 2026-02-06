@@ -87,8 +87,9 @@ class UserService {
 		const superAdminExists = await this.usersRepository.findSuperAdmin();
 		if (superAdminExists) {
 			const invite = await this.invitesRepository.findByTokenAndDelete(inviteToken);
-			user.role = invite.role;
+			user.role = invite.role ?? ["user"];
 			user.teamId = invite.teamId;
+			user.email = invite.email;
 		} else {
 			// This is the first account, create JWT secret to use if one is not supplied by env
 			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
@@ -99,6 +100,7 @@ class UserService {
 			}
 			const team = await this.teamsRepository.create(user.email);
 			user.teamId = team.id;
+			user.role = ["superadmin"];
 		}
 
 		const newUser = await this.usersRepository.create({ ...user }, file);

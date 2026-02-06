@@ -509,6 +509,9 @@
 						"password": {
 							"label": "Password",
 							"placeholder": "********"
+						},
+						"confirmPassword": {
+							"label": "Confirm password"
 						}
 					}
 				}
@@ -525,6 +528,23 @@
 					"register": {
 						"text": "Don't have an account?",
 						"linkText": "Register here"
+					}
+				}
+			},
+			"register": {
+				"title": "Welcome back to Checkmate!",
+				"subtitle": "Sign up to get started",
+				"submit": "Register",
+				"form": {
+					"option": {
+						"name": {
+							"label": "Name",
+							"placeholder": "Your name"
+						},
+						"surname": {
+							"label": "Surname",
+							"placeholder": "Your surname"
+						}
 					}
 				}
 			},
