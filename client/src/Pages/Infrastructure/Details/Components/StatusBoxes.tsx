@@ -1,17 +1,11 @@
 import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/v2/design-elements";
 
+import prettyBytes from "pretty-bytes";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Monitor } from "@/Types/Monitor";
-import {
-	getAvgTemp,
-	getCores,
-	getFrequency,
-	getGbs,
-	getDiskTotalGbs,
-	getOsAndPlatform,
-} from "@/Utils/InfraUtils";
+import { getAvgTemp, getCores, getFrequency, getOsAndPlatform } from "@/Utils/InfraUtils";
 
 export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 	const { t } = useTranslation();
@@ -24,8 +18,9 @@ export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 	const cpuFrequency = getFrequency(latestCheck?.cpu?.frequency);
 	const cpuTemps = latestCheck?.cpu?.temperature ?? [];
 	const cpuTemperature = getAvgTemp(cpuTemps);
-	const memoryTotalBytes = getGbs(latestCheck?.memory?.total_bytes);
-	const diskTotalBytes = getDiskTotalGbs(latestCheck?.disk);
+	const memoryTotalBytes = latestCheck?.memory?.total_bytes ?? 0;
+	const diskTotalBytes =
+		latestCheck?.disk?.reduce((acc, disk) => acc + (disk.total_bytes || 0), 0) || 0;
 	const os = getOsAndPlatform(latestCheck?.host);
 
 	const platform = latestCheck?.host?.platform ?? undefined;
@@ -58,11 +53,11 @@ export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 			/>
 			<StatBox
 				title={t("pages.infrastructure.statBoxes.memory")}
-				subtitle={memoryTotalBytes.toString()}
+				subtitle={prettyBytes(memoryTotalBytes)}
 			/>
 			<StatBox
 				title={t("pages.infrastructure.statBoxes.disk")}
-				subtitle={diskTotalBytes.toString()}
+				subtitle={prettyBytes(diskTotalBytes)}
 			/>
 			<StatBox
 				title={t("pages.infrastructure.statBoxes.os")}
