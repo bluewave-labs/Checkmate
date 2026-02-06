@@ -527,6 +527,17 @@
 						"linkText": "Register here"
 					}
 				}
+			},
+			"forgotPassword": {
+				"title": "Forgot your password?",
+				"subtitle": "No worries, we'll send you reset instructions.",
+				"submit": "Request recovery",
+				"links": {
+					"login": {
+						"text": "Go back to",
+						"linkText": "login"
+					}
+				}
 			}
 		},
 		"checks": {

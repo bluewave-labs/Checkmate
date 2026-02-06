@@ -247,7 +247,7 @@ export const BaseAuthPage = ({
 				>
 					{title}
 				</Typography>
-				<Typography variant="h1">{subtitle}</Typography>
+				<Typography variant="h2">{subtitle}</Typography>
 			</Stack>
 			<Stack
 				gap={theme.spacing(8)}
