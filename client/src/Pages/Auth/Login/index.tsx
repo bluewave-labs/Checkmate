@@ -19,7 +19,7 @@ const LoginPage = () => {
 
 	const { schema, defaults } = useLoginForm();
 
-	const { control, handleSubmit, setError } = useForm<LoginFormData>({
+	const { control, handleSubmit } = useForm<LoginFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
@@ -30,13 +30,8 @@ const LoginPage = () => {
 		const result = await post("/auth/login", data);
 
 		if (result?.success) {
-			console.log(result);
-			// dispatch(setAuthState(result));
-			// navigate("/uptime");
-		} else if (result?.msg === "Incorrect password") {
-			setError("password", {
-				message: "auth.login.errors.password.incorrect",
-			});
+			dispatch(setAuthState(result));
+			navigate("/uptime");
 		}
 	};
 
