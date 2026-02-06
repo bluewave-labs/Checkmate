@@ -9,7 +9,8 @@ import NotFound from "../Pages/NotFound/index.jsx";
 
 // Auth
 import AuthLogin from "../Pages/Auth/Login";
-import AuthRegister from "../Pages/Auth/Register/index.jsx";
+import AuthRegister from "@/Pages/Auth/Register";
+import OldAuthRegister from "../Pages/Auth/Register/old.jsx";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
 import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
@@ -62,7 +63,8 @@ import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
-	const AdminCheckedRegister = withAdminCheck(AuthRegister);
+	// const AdminCheckedRegister = withAdminCheck(AuthRegister);
+	const AdminCheckedRegister = AuthRegister;
 	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
@@ -372,7 +374,17 @@ const Routes = () => {
 
 			<Route
 				path="/register"
-				element={<AdminCheckedRegister />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AdminCheckedRegister />
+						</ThemeProvider>
+					</>
+				}
+			/>
+			<Route
+				path="/register-old"
+				element={<OldAuthRegister />}
 			/>
 
 			<Route
