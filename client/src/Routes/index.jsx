@@ -10,7 +10,6 @@ import NotFound from "../Pages/NotFound/index.jsx";
 // Auth
 import AuthLogin from "../Pages/Auth/Login";
 import AuthRegister from "../Pages/Auth/Register/index.jsx";
-// import AuthForgotPassword from "../Pages/Auth/ForgotPassword.jsx";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
 import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
