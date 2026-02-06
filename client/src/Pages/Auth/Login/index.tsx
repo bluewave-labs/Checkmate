@@ -1,4 +1,4 @@
-import { BaseAuthPage } from "@/Components/v2/design-elements";
+import { BaseAuthPage, TextLink } from "@/Components/v2/design-elements";
 import { Button, TextField } from "@/Components/v2/inputs";
 
 import { useTranslation } from "react-i18next";
@@ -76,6 +76,18 @@ const LoginPage = () => {
 			>
 				{t("pages.auth.login.submit")}
 			</Button>
+			<TextLink
+				alignSelf={"center"}
+				text={t("pages.auth.login.links.forgotPassword.text")}
+				linkText={t("pages.auth.login.links.forgotPassword.linkText")}
+				href="/forgot-password"
+			/>
+			<TextLink
+				alignSelf={"center"}
+				text={t("pages.auth.login.links.register.text")}
+				linkText={t("pages.auth.login.links.register.linkText")}
+				href="/register"
+			/>
 		</BaseAuthPage>
 	);
 };
