@@ -801,6 +801,26 @@
 				"totalRuns": "Total runs",
 				"totalFailures": "Total failures"
 			},
+			"diagnostics": {
+				"stats": {
+					"eventLoopDelay": "Event loop delay",
+					"uptime": "Uptime",
+					"usedHeapSize": "Used heap size",
+					"totalHeapSize": "Total heap size",
+					"osMemoryLimit": "OS memory limit"
+				},
+				"gauges": {
+					"heapAllocation": "Heap allocaton",
+					"heapUsage": "Heap usage",
+					"heapUtilization": "Heap utilization",
+					"instantCpuUsage": "Instant CPU usage",
+					"availableMemoryPercentage": "% of available memory",
+					"allocatedPercentage": "% allocated",
+					"usedSPercentage": "% of 1s used by CPU",
+					"total": "Total",
+					"used": "Used"
+				}
+			},
 			"table": {
 				"headers": {
 					"timestamp": "Timestamp",
