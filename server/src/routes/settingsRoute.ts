@@ -13,7 +13,7 @@ class SettingsRoutes {
 
 	initRoutes() {
 		this.router.get("/", this.settingsController.getAppSettings);
-		this.router.put("/", isAllowed(["admin", "superadmin"]), this.settingsController.updateAppSettings);
+		this.router.patch("/", isAllowed(["admin", "superadmin"]), this.settingsController.updateAppSettings);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.settingsController.sendTestEmail);
 	}
 

@@ -29,18 +29,18 @@ class EmailService {
 		this.mjml2html = mjml2html;
 		this.nodemailer = nodemailer;
 		this.logger = logger;
-		this.init();
 		this.templateLookup = {};
 		this.loadTemplate = () => {
 			return () => {};
 		};
+		this.init();
 	}
 
 	get serviceName() {
 		return EmailService.SERVICE_NAME;
 	}
 
-	init = async () => {
+	init = () => {
 		this.loadTemplate = (templateName) => {
 			try {
 				const templatePath = this.path.join(__dirname, `../../templates/${templateName}.mjml`);
