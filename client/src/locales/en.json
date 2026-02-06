@@ -498,6 +498,26 @@
 	"now": "Now",
 	"os": "OS",
 	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": {
+							"label": "Email",
+							"placeholder": "me@example.com"
+						},
+						"password": {
+							"label": "Password",
+							"placeholder": "********"
+						}
+					}
+				}
+			},
+			"login": {
+				"title": "Welcome back to Checkmate!",
+				"subtitle": "Log in to continue"
+			}
+		},
 		"checks": {
 			"selects": {
 				"monitor": {

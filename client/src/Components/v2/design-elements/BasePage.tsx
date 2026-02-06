@@ -1,4 +1,6 @@
+import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
 import {
@@ -9,6 +11,7 @@ import {
 } from "@/Components/v2/design-elements/Fallback";
 import { Breadcrumb } from "@/Components/v2/design-elements/Breadcrumb";
 import CircularProgress from "@mui/material/CircularProgress";
+import { HeaderAuthControls } from "@/Pages/Auth/components/HeaderAuthControls";
 
 import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -197,6 +200,49 @@ export const MonitorBasePageWithStates = ({
 			error={error}
 			{...props}
 		>
+			{children}
+		</BasePage>
+	);
+};
+
+interface BaseAuthPageProps extends React.PropsWithChildren {
+	title: string;
+	subtitle: string;
+}
+
+export const BaseAuthPage = ({ title, subtitle, children }: BaseAuthPageProps) => {
+	const theme = useTheme();
+	return (
+		<BasePage
+			breadcrumbOverride={[]}
+			gap={theme.spacing(8)}
+			alignItems={"center"}
+			justifyContent={"center"}
+			minHeight="100vh"
+			position={"relative"}
+		>
+			<HeaderAuthControls
+				hideLogo
+				py={theme.spacing(4)}
+				position={"absolute"}
+				top={0}
+				left={0}
+			/>
+			<Box width={{ xs: 60, sm: 70, md: 80 }}>
+				<Logo
+					width={"100%"}
+					height={"100%"}
+				/>
+			</Box>
+			<Stack alignItems={"center"}>
+				<Typography
+					variant="h1"
+					mb={theme.spacing(2)}
+				>
+					{title}
+				</Typography>
+				<Typography variant="h1">{subtitle}</Typography>
+			</Stack>
 			{children}
 		</BasePage>
 	);

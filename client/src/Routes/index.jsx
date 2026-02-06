@@ -7,7 +7,7 @@ import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
 import NotFound from "../Pages/NotFound/index.jsx";
 // Auth
-import AuthLogin from "../Pages/Auth/Login/index.jsx";
+import AuthLogin from "../Pages/Auth/Login";
 import AuthRegister from "../Pages/Auth/Register/index.jsx";
 import AuthForgotPassword from "../Pages/Auth/ForgotPassword.jsx";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
@@ -360,7 +360,13 @@ const Routes = () => {
 
 			<Route
 				path="/login"
-				element={<AuthLogin />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthLogin />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route
