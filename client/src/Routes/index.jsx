@@ -55,7 +55,7 @@ import ProtectedRoute from "../Components/v1/ProtectedRoute";
 import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
 import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import BulkImport from "../Pages/Uptime/BulkImport/index.jsx";
-import Logs from "../Pages/Logs/index.jsx";
+import Logs from "../Pages/Logs";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
 
@@ -350,7 +350,9 @@ const Routes = () => {
 					path="logs"
 					element={
 						<RoleProtectedRoute roles={["admin", "superadmin"]}>
-							<Logs />
+							<ThemeProvider theme={v2theme}>
+								<Logs />
+							</ThemeProvider>
 						</RoleProtectedRoute>
 					}
 				/>

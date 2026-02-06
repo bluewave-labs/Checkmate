@@ -19,6 +19,9 @@ export interface UIState {
 	infrastructure: {
 		rowsPerPage: number;
 	};
+	logs: {
+		rowsPerPage: number;
+	};
 	sidebar: {
 		collapsed: boolean;
 	};

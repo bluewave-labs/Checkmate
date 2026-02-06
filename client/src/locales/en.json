@@ -199,7 +199,8 @@
 			"save": "Save",
 			"test": "Test",
 			"testNotifications": "Test notifications",
-			"toggleTheme": "Toggles light & dark"
+			"toggleTheme": "Toggles light & dark",
+			"flushQueue": "Flush queue"
 		},
 		"charts": {
 			"labels": {
@@ -230,9 +231,13 @@
 				"dateTime": "Date & time",
 				"message": "Message",
 				"monitor": "Monitor",
+				"monitorId": "Monitor ID",
 				"name": "Name",
 				"status": "Status",
-				"type": "Type"
+				"type": "Type",
+				"url": "Url",
+				"interval": "Interval",
+				"active": "Active"
 			}
 		},
 		"toasts": {
@@ -775,6 +780,63 @@
 					"Ensure reliability with real-time monitoring"
 				],
 				"title": "An infrastructure monitor is used to:"
+			}
+		},
+		"logs": {
+			"tabs": {
+				"diagnostics": "Diagnostics",
+				"logs": "Logs",
+				"queue": "Job queue"
+			},
+			"logLevelSelect": {
+				"label": "Log level"
+			},
+			"jobQueue": "Job queue",
+			"failedJobs": "Failed jobs",
+			"noLogs": "No logs found",
+			"metrics": {
+				"jobs": "Jobs",
+				"activeJobs": "Active jobs",
+				"failingJobs": "Failing jobs",
+				"totalRuns": "Total runs",
+				"totalFailures": "Total failures"
+			},
+			"diagnostics": {
+				"stats": {
+					"eventLoopDelay": "Event loop delay",
+					"uptime": "Uptime",
+					"usedHeapSize": "Used heap size",
+					"totalHeapSize": "Total heap size",
+					"osMemoryLimit": "OS memory limit"
+				},
+				"gauges": {
+					"heapAllocation": "Heap allocaton",
+					"heapUsage": "Heap usage",
+					"heapUtilization": "Heap utilization",
+					"instantCpuUsage": "Instant CPU usage",
+					"availableMemoryPercentage": "% of available memory",
+					"allocatedPercentage": "% allocated",
+					"usedSPercentage": "% of 1s used by CPU",
+					"total": "Total",
+					"used": "Used"
+				}
+			},
+			"table": {
+				"headers": {
+					"timestamp": "Timestamp",
+					"level": "Level",
+					"service": "Service",
+					"method": "Method",
+					"monitorId": "Monitor ID",
+					"runCount": "Run count",
+					"failCount": "Fail count",
+					"lastRunAt": "Last run at",
+					"lockedAt": "Locked at",
+					"lastFinishedAt": "Last finished at",
+					"lastRunTook": "Last run took",
+					"lastFailedAt": "Last failed at",
+					"failReason": "Fail reason"
+				}
 			}
 		},
 		"maintenanceWindow": {

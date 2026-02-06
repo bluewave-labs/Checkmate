@@ -1,59 +1,11 @@
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { BaseChart, Gauge } from "@/Components/v2/design-elements";
+import { DetailGauge } from "@/Components/v2/design-elements";
 
 import { useTranslation } from "react-i18next";
 import { getGbs, getFrequency } from "@/Utils/InfraUtils";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { CheckSnapshot } from "@/Types/Check";
-
-const InfraDetailGauge = ({
-	title,
-	progress,
-	upperLabel,
-	upperValue,
-	lowerLabel,
-	lowerValue,
-}: {
-	title: string;
-	progress: number;
-	upperLabel?: string;
-	upperValue?: string | number;
-	lowerLabel?: string;
-	lowerValue?: string | number;
-}) => {
-	const theme = useTheme();
-	return (
-		<BaseChart
-			icon={null}
-			title={title}
-			maxWidth={225}
-		>
-			<Stack
-				alignItems={"center"}
-				mb={theme.spacing(4)}
-				gap={theme.spacing(4)}
-			>
-				<Gauge progress={progress} />
-			</Stack>
-			<Stack
-				direction={"row"}
-				justifyContent={"space-between"}
-			>
-				<Typography>{upperLabel}</Typography>
-				<Typography>{upperValue}</Typography>
-			</Stack>
-			<Stack
-				direction={"row"}
-				justifyContent={"space-between"}
-			>
-				<Typography>{lowerLabel}</Typography>
-				<Typography>{lowerValue}</Typography>
-			</Stack>
-		</BaseChart>
-	);
-};
 
 export const InfraDetailsGauges = ({
 	snapshot,
@@ -74,7 +26,7 @@ export const InfraDetailsGauges = ({
 			spacing={theme.spacing(8)}
 			alignItems={"center"}
 		>
-			<InfraDetailGauge
+			<DetailGauge
 				title={t("pages.infrastructure.gauges.memory.title")}
 				progress={(snapshot?.memory?.usage_percent || 0) * 100}
 				upperLabel={t("pages.infrastructure.gauges.memory.upperLabel")}
@@ -82,7 +34,7 @@ export const InfraDetailsGauges = ({
 				lowerLabel={t("pages.infrastructure.gauges.memory.lowerLabel")}
 				lowerValue={getGbs(snapshot?.memory?.total_bytes || 0)}
 			/>
-			<InfraDetailGauge
+			<DetailGauge
 				title={t("pages.infrastructure.gauges.cpu.title")}
 				progress={(snapshot?.cpu?.usage_percent || 0) * 100}
 				upperLabel={t("pages.infrastructure.gauges.cpu.upperLabel")}
@@ -92,7 +44,7 @@ export const InfraDetailsGauges = ({
 			/>
 			{snapshot?.disk?.map((disk, idx) => {
 				return (
-					<InfraDetailGauge
+					<DetailGauge
 						key={disk?.device || 0 + idx}
 						// title={`Disk ${idx} usage`}
 						title={t("pages.infrastructure.gauges.disk.title", { idx })}

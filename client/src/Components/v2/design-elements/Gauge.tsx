@@ -1,3 +1,5 @@
+import { BaseChart } from "@/Components/v2/design-elements";
+import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
@@ -102,5 +104,52 @@ export const Gauge = ({
 				{`${progressWithinRange.toFixed(precision)}${unit}`}
 			</Typography>
 		</Box>
+	);
+};
+
+export const DetailGauge = ({
+	title,
+	progress,
+	upperLabel,
+	upperValue,
+	lowerLabel,
+	lowerValue,
+}: {
+	title: string;
+	progress: number;
+	upperLabel?: string;
+	upperValue?: string | number;
+	lowerLabel?: string;
+	lowerValue?: string | number;
+}) => {
+	const theme = useTheme();
+	return (
+		<BaseChart
+			icon={null}
+			title={title}
+			maxWidth={225}
+		>
+			<Stack
+				alignItems={"center"}
+				mb={theme.spacing(4)}
+				gap={theme.spacing(4)}
+			>
+				<Gauge progress={progress} />
+			</Stack>
+			<Stack
+				direction={"row"}
+				justifyContent={"space-between"}
+			>
+				<Typography>{upperLabel}</Typography>
+				<Typography>{upperValue}</Typography>
+			</Stack>
+			<Stack
+				direction={"row"}
+				justifyContent={"space-between"}
+			>
+				<Typography>{lowerLabel}</Typography>
+				<Typography>{lowerValue}</Typography>
+			</Stack>
+		</BaseChart>
 	);
 };

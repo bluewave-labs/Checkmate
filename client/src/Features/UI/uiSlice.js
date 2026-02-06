@@ -19,6 +19,9 @@ const initialState = {
 	infrastructure: {
 		rowsPerPage: 5,
 	},
+	logs: {
+		rowsPerPage: 15,
+	},
 	sidebar: {
 		collapsed: false,
 	},
@@ -41,9 +44,10 @@ const uiSlice = createSlice({
 		},
 		setRowsPerPage: (state, action) => {
 			const { table, value } = action.payload;
-			if (state[table]) {
-				state[table].rowsPerPage = value;
+			if (!state[table]) {
+				state[table] = {};
 			}
+			state[table].rowsPerPage = value;
 		},
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
