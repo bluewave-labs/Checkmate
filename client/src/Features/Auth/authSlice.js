@@ -196,6 +196,13 @@ const authSlice = createSlice({
 			state.success = true;
 			state.msg = "Logged out successfully";
 		},
+		setAuthState: (state, action) => {
+			state.isLoading = false;
+			state.success = action.payload.success;
+			state.msg = action.payload.msg;
+			state.authToken = action.payload.data.token;
+			state.user = action.payload.data.user;
+		},
 	},
 	extraReducers: (builder) => {
 		// Register thunk
@@ -249,4 +256,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-export const { clearAuthState } = authSlice.actions;
+export const { clearAuthState, setAuthState } = authSlice.actions;

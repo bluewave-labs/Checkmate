@@ -498,6 +498,37 @@
 	"now": "Now",
 	"os": "OS",
 	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": {
+							"label": "Email",
+							"placeholder": "me@example.com"
+						},
+						"password": {
+							"label": "Password",
+							"placeholder": "********"
+						}
+					}
+				}
+			},
+			"login": {
+				"title": "Welcome back to Checkmate!",
+				"subtitle": "Log in to continue",
+				"submit": "Login",
+				"links": {
+					"forgotPassword": {
+						"text": "Forgot password?",
+						"linkText": "Reset password"
+					},
+					"register": {
+						"text": "Don't have an account?",
+						"linkText": "Register here"
+					}
+				}
+			}
+		},
 		"checks": {
 			"selects": {
 				"monitor": {
