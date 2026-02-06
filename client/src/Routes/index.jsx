@@ -390,7 +390,13 @@ const Routes = () => {
 			<Route
 				exact
 				path="/register/:token"
-				element={<AuthRegister superAdminExists={true} />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthRegister superAdminExists={true} />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route

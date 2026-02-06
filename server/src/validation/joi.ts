@@ -51,9 +51,7 @@ const registrationBodyValidation = joi.object({
 		}),
 	password: joi.string().min(8).required().pattern(passwordPattern),
 	profileImage: joi.any(),
-	role: joi.array().items(joi.string().valid("superadmin", "admin", "user", "demo")),
-	teamId: joi.string().allow("").required(),
-	inviteToken: joi.string().allow("").required(),
+	inviteToken: joi.string().allow("").optional(),
 });
 
 const editUserBodyValidation = joi.object({

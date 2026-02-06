@@ -8,11 +8,17 @@ import { useTranslation } from "react-i18next";
 import { usePost } from "@/Hooks/UseApi";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { AuthResponse } from "@/Types/User";
+import { useEffect, useRef } from "react";
 
 interface RegisterPayload {
 	user: Omit<RegisterFormData, "confirm">;
+	token?: string;
+}
+
+interface InviteVerifyResponse {
+	email: string;
 }
 
 const RegisterPage = () => {
@@ -21,17 +27,41 @@ const RegisterPage = () => {
 	const { post, loading } = usePost<RegisterPayload, AuthResponse>();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const { token } = useParams<{ token?: string }>();
 
-	const { control, handleSubmit, setError } = useForm<RegisterFormData>({
+	const { post: verifyToken } = usePost<{ token: string }, InviteVerifyResponse>();
+	const hasVerified = useRef(false);
+
+	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
+
+	useEffect(() => {
+		if (!token || hasVerified.current) return;
+		hasVerified.current = true;
+
+		verifyToken("/invite/verify", { token }).then((result) => {
+			if (result?.success && result?.data) {
+				reset({
+					...defaults,
+					email: result.data.email ?? "",
+				});
+			} else {
+				navigate("/register", { replace: true });
+			}
+		});
+	}, [token]);
 
 	const onSubmit = async (data: RegisterFormData) => {
 		if (loading) return;
 
 		const { confirm, ...userData } = data;
-		const result = await post("/auth/register", { user: userData });
+		const payload: RegisterPayload = { user: userData };
+		if (token) {
+			payload.token = token;
+		}
+		const result = await post("/auth/register", payload);
 
 		if (result?.success) {
 			dispatch(setAuthState(result));
@@ -82,6 +112,7 @@ const RegisterPage = () => {
 				render={({ field, fieldState }) => (
 					<TextField
 						{...field}
+						disabled={!!token}
 						fieldLabel={t("pages.auth.common.form.option.email.label")}
 						placeholder={t("pages.auth.common.form.option.email.placeholder")}
 						error={!!fieldState.error}

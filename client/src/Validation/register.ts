@@ -32,10 +32,7 @@ export const registerSchema = z
 				(val) => specialCharPattern.test(val),
 				"Password must contain a special character"
 			),
-		teamId: z.string().optional(),
-		inviteToken: z.string().optional(),
 		confirm: z.string().min(1, "Please confirm your password"),
-		role: z.array(z.string()).min(1, "Role is required"),
 	})
 	.refine((data) => data.password === data.confirm, {
 		message: "Passwords do not match",
