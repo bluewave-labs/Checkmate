@@ -15,7 +15,7 @@ const getPercentage = (value: number, total: number) => {
 	return (value / total) * 100;
 };
 
-const formatPerecentage = new Intl.NumberFormat("en-US", {
+const formatPercentage = new Intl.NumberFormat("en-US", {
 	style: "percent",
 	minimumFractionDigits: 1,
 	maximumFractionDigits: 1,
@@ -51,7 +51,7 @@ export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 			<DetailGauge
 				title={t("pages.logs.diagnostics.gauges.heapAllocation")}
 				progress={heapTotalSize}
-				upperValue={formatPerecentage.format(heapTotalSize / 100)}
+				upperValue={formatPercentage.format(heapTotalSize / 100)}
 				lowerLabel={t("pages.logs.diagnostics.gauges.total")}
 				lowerValue={prettyBytes(diagnostics.v8HeapStats?.heapSizeLimitBytes ?? 0)}
 			/>
@@ -59,7 +59,7 @@ export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 				title={t("pages.logs.diagnostics.gauges.heapUsage")}
 				progress={heapUsedSize}
 				upperLabel={t("pages.logs.diagnostics.gauges.availableMemoryPercentage")}
-				upperValue={formatPerecentage.format(heapUsedSize / 100)}
+				upperValue={formatPercentage.format(heapUsedSize / 100)}
 				lowerLabel={t("pages.logs.diagnostics.gauges.used")}
 				lowerValue={prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)}
 			/>
@@ -67,7 +67,7 @@ export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 				title={t("pages.logs.diagnostics.gauges.heapUtilization")}
 				progress={actualHeapUsed}
 				upperLabel={t("pages.logs.diagnostics.gauges.allocatedPercentage")}
-				upperValue={formatPerecentage.format(actualHeapUsed / 100)}
+				upperValue={formatPercentage.format(actualHeapUsed / 100)}
 				lowerLabel={t("pages.logs.diagnostics.gauges.total")}
 				lowerValue={prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)}
 			/>
@@ -75,7 +75,7 @@ export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 				title={t("pages.logs.diagnostics.gauges.instantCpuUsage")}
 				progress={diagnostics.cpuUsage?.usagePercentage ?? 0}
 				upperLabel={t("pages.logs.diagnostics.gauges.usedSPercentage")}
-				upperValue={formatPerecentage.format(
+				upperValue={formatPercentage.format(
 					(diagnostics.cpuUsage?.usagePercentage ?? 0) / 100
 				)}
 			/>

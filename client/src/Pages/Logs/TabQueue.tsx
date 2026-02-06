@@ -1,12 +1,12 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { TableJobs, TableFailedJobs } from "@/Pages/Logs/TableJobs";
+import { TableJobs, TableFailedJobs } from "./components/TableJobs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useGet, usePost } from "@/Hooks/UseApi";
 import type { QueueData } from "@/Types/Queue";
-import { Metrics } from "@/Pages/Logs/Metrics";
+import { Metrics } from "@/Pages/Logs/components/Metrics";
 import { Button } from "@/Components/v2/inputs";
 
 export const TabQueue = () => {

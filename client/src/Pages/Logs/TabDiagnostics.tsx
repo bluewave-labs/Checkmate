@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
-import { Stats } from "@/Pages/Logs/Stats";
-import { StatGauges } from "@/Pages/Logs/StatGauges";
+import { Stats } from "@/Pages/Logs/components/Stats";
+import { StatGauges } from "@/Pages/Logs/components/StatGauges";
 
 import { useTheme } from "@mui/material";
 import { useGet } from "@/Hooks/UseApi";

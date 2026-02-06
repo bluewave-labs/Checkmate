@@ -3,7 +3,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 import { Select } from "@/Components/v2/inputs";
-import { TableLogs } from "./TableLogs";
+import { TableLogs } from "@/Pages/Logs/components/TableLogs";
 
 import { useTheme } from "@mui/material";
 import { useGet } from "@/Hooks/UseApi";
