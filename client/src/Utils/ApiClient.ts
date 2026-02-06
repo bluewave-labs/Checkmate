@@ -42,7 +42,9 @@ export const initApiClient = (store: StoreType): void => {
 	const onSuccess = (response: AxiosResponse) => response;
 	const onError = (error: AxiosError) => {
 		if (error.response?.status === 401) {
-			window.location.href = "/login";
+			if (window.location.pathname !== "/login") {
+				window.location.href = "/login";
+			}
 		}
 		return Promise.reject(error);
 	};
