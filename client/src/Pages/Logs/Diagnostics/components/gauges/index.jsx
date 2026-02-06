@@ -9,9 +9,9 @@ import { getPercentage, formatBytes } from "../../utils/utils.js";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 
-const BaseContainer = ({children}) => {
-	const theme = useTheme()
-	return(
+const BaseContainer = ({ children }) => {
+	const theme = useTheme();
+	return (
 		<Box
 			sx={{
 				padding: theme.spacing(3),
@@ -22,13 +22,21 @@ const BaseContainer = ({children}) => {
 				[theme.breakpoints.down("md")]: {
 					width: `calc(50% - (1 * ${theme.spacing(8)} / 2))`,
 				},
-			}}>
-				{children}
+			}}
+		>
+			{children}
 		</Box>
 	);
 };
 
-const InfrastructureStyleGauge = ({ value, heading, metricOne, valueOne, metricTwo, valueTwo }) => {
+const InfrastructureStyleGauge = ({
+	value,
+	heading,
+	metricOne,
+	valueOne,
+	metricTwo,
+	valueTwo,
+}) => {
 	const theme = useTheme();
 
 	const MetricRow = ({ label, value }) => (
@@ -39,40 +47,58 @@ const InfrastructureStyleGauge = ({ value, heading, metricOne, valueOne, metricT
 			gap={theme.spacing(2)}
 		>
 			<Typography>{label}</Typography>
-			<Typography sx={{
-				borderRadius: theme.spacing(2),
-				backgroundColor: theme.palette.tertiary.main,
-				width: "40%",
-				mb: theme.spacing(2),
-				mt: theme.spacing(2),
-				pr: theme.spacing(2),
-				textAlign: "right",
-			}}>
+			<Typography
+				sx={{
+					borderRadius: theme.spacing(2),
+					backgroundColor: theme.palette.tertiary.main,
+					width: "40%",
+					mb: theme.spacing(2),
+					mt: theme.spacing(2),
+					pr: theme.spacing(2),
+					textAlign: "right",
+				}}
+			>
 				{value}
 			</Typography>
 		</Stack>
 	);
 
-	return(
+	return (
 		<BaseContainer>
-			<Stack direction="column" gap={theme.spacing(2)} alignItems="center">
+			<Stack
+				direction="column"
+				gap={theme.spacing(2)}
+				alignItems="center"
+			>
 				<Box
-					sx = {{
+					sx={{
 						display: "flex",
 						flexDirection: "column",
 						alignItems: "center",
 						width: "100%",
 					}}
 				>
-					<CustomGauge progress={value} radius={100}/>
-					<Typography component="h2" sx={{fontWeight: 600}}>
+					<CustomGauge
+						progress={value}
+						radius={100}
+					/>
+					<Typography
+						component="h2"
+						sx={{ fontWeight: 600 }}
+					>
 						{heading}
-					</Typography>		
+					</Typography>
 				</Box>
-				<Box sx={{ width:"100%", borderTop:`1px solid ${theme.palette.divider}`}}>
-					<MetricRow label={metricOne} value={valueOne} />
+				<Box sx={{ width: "100%", borderTop: `1px solid ${theme.palette.divider}` }}>
+					<MetricRow
+						label={metricOne}
+						value={valueOne}
+					/>
 					{metricTwo && valueTwo && (
-						<MetricRow label={metricTwo} value={valueTwo} />
+						<MetricRow
+							label={metricTwo}
+							value={valueTwo}
+						/>
 					)}
 				</Box>
 			</Stack>
@@ -147,16 +173,16 @@ Gauges.propTypes = {
 };
 
 InfrastructureStyleGauge.propTypes = {
-    value: PropTypes.number,
-    heading: PropTypes.string,
-    metricOne: PropTypes.string,
-    valueOne: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-    metricTwo: PropTypes.string,
-    valueTwo: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	value: PropTypes.number,
+	heading: PropTypes.string,
+	metricOne: PropTypes.string,
+	valueOne: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	metricTwo: PropTypes.string,
+	valueTwo: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
- 
+
 BaseContainer.propTypes = {
-    children: PropTypes.node.isRequired,
+	children: PropTypes.node.isRequired,
 };
 
 export default Gauges;

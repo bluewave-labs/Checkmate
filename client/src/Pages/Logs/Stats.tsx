@@ -26,29 +26,25 @@ export const Stats = ({ diagnostics }: StatsProps) => {
 		>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.eventLoopDelay")}
-				subtitle={prettyMilliseconds(diagnostics.eventLoopDelayMs, {
+				subtitle={prettyMilliseconds(diagnostics.eventLoopDelayMs ?? 0, {
 					millisecondsDecimalDigits: 2,
 				})}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.uptime")}
-				subtitle={prettyMilliseconds(diagnostics.uptimeMs, { hideSeconds: true })}
-			/>
-			<StatBox
-				title={t("pages.logs.diagnostics.stats.uptime")}
-				subtitle={prettyMilliseconds(diagnostics.uptimeMs, { hideSeconds: true })}
+				subtitle={prettyMilliseconds(diagnostics.uptimeMs ?? 0, { hideSeconds: true })}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.usedHeapSize")}
-				subtitle={prettyBytes(diagnostics.v8HeapStats.usedHeapSizeBytes)}
+				subtitle={prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.totalHeapSize")}
-				subtitle={prettyBytes(diagnostics.v8HeapStats.totalHeapSizeBytes)}
+				subtitle={prettyBytes(diagnostics.v8HeapStats?.totalHeapSizeBytes ?? 0)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.osMemoryLimit")}
-				subtitle={prettyBytes(diagnostics.osStats.totalMemoryBytes)}
+				subtitle={prettyBytes(diagnostics.osStats?.totalMemoryBytes ?? 0)}
 			/>
 		</Stack>
 	);
