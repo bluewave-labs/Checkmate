@@ -791,6 +791,8 @@
 			"logLevelSelect": {
 				"label": "Log level"
 			},
+			"jobQueue": "Job queue",
+			"failedJobs": "Failed jobs",
 			"noLogs": "No logs found",
 			"metrics": {
 				"jobs": "Jobs",

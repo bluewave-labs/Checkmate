@@ -1,4 +1,5 @@
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { TableJobs, TableFailedJobs } from "@/Pages/Logs/TableJobs";
 
 import { useTheme } from "@mui/material";
@@ -31,7 +32,19 @@ export const TabQueue = () => {
 	return (
 		<Stack gap={theme.spacing(8)}>
 			<Metrics metrics={metrics} />
+			<Typography
+				variant="h6"
+				sx={{ textTransform: "uppercase" }}
+			>
+				{t("pages.logs.jobQueue")}
+			</Typography>
 			<TableJobs jobs={jobs} />
+			<Typography
+				variant="h6"
+				sx={{ textTransform: "uppercase" }}
+			>
+				{t("pages.logs.failedJobs")}
+			</Typography>
 			<TableFailedJobs metrics={metrics} />
 			<Stack alignItems={"flex-end"}>
 				<Button
