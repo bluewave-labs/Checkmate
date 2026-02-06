@@ -1,5 +1,5 @@
 import type { Incident, IncidentSummaryItem } from "@/Types/Incident";
-import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
+import prettyMilliseconds from "pretty-ms";
 
 type IncidentLike = Pick<Incident, "startTime" | "endTime" | "status">;
 
@@ -24,5 +24,8 @@ export const getIncidentsDuration = (incident: IncidentLike | IncidentSummaryIte
 		return "-";
 	}
 
-	return getHumanReadableDuration(durationMs);
+	return prettyMilliseconds(durationMs, {
+		secondsDecimalDigits: 0,
+		millisecondsDecimalDigits: 0,
+	});
 };

@@ -20,7 +20,7 @@ import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
-import { formatDateWithTz } from "@/Utils/timeUtilsLegacy";
+import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
 
 const certificateDateFormat = "MMM D, YYYY h A";
