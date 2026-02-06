@@ -219,7 +219,7 @@ const ForgotPassword = () => {
 					<Trans
 						i18nKey={
 							location.state?.from
-								? "Go back to <a>Account Password</a>"
+								? "auth.forgotPassword.links.accountPassword"
 								: "auth.forgotPassword.links.login"
 						}
 						components={{

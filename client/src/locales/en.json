@@ -98,6 +98,7 @@
 		"forgotPassword": {
 			"buttons": {
 				"openEmail": "Open email app",
+				"accountPassword": "Go back to <a>Account Password</a>",
 				"resetPassword": "Reset password"
 			},
 			"heading": "Forgot password?",
@@ -1134,10 +1135,13 @@
 		"currentPassword": "Current password",
 		"enterCurrentPassword": "Enter your current password",
 		"enterNewPassword": "Enter your new password",
+		"forgotPassword": "Forgot password?",
 		"newPassword": "New password",
 		"passwordChangedSuccess": "Your password was changed successfully.",
 		"passwordInputIncorrect": "Your password input was incorrect.",
-		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)."
+		"passwordRequirements": "New password must contain at least 8 characters and must have at least one uppercase letter, one lowercase letter, one number and one special character.",
+		"resetPassword": "Reset password",
+		"sessionExpired": "Your session has expired. Please log in again to change your password."
 	},
 	"pause": "Pause",
 	"PhotoDescriptionText": "This photo will be displayed in your profile page.",

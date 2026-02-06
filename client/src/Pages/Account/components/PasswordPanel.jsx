@@ -87,7 +87,10 @@ const PasswordPanel = () => {
 		// Check for expired/invalid token before submitting
 		if (!authToken) {
 			createToast({
-				body: "Your session has expired. Please log in again.",
+				body: t(
+					"passwordPanel.sessionExpired",
+					"Your session has expired. Please log in again to continue."
+				),
 			});
 			dispatch(clearAuthState());
 			navigate("/login");
@@ -268,8 +271,8 @@ const PasswordPanel = () => {
 					alignItems="center"
 				>
 					<TextLink
-						text={"Forgot password?"}
-						linkText={"Reset password"}
+						text={t("passwordPanel.forgotPassword", "Forgot password?")}
+						linkText={t("passwordPanel.resetPassword", "Reset password")}
 						state={{ from: location.pathname }}
 						href={"/forgot-password"}
 					/>
