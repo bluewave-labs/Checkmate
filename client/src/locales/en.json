@@ -515,7 +515,18 @@
 			},
 			"login": {
 				"title": "Welcome back to Checkmate!",
-				"subtitle": "Log in to continue"
+				"subtitle": "Log in to continue",
+				"submit": "Login",
+				"links": {
+					"forgotPassword": {
+						"text": "Forgot password?",
+						"linkText": "Reset password"
+					},
+					"register": {
+						"text": "Don't have an account?",
+						"linkText": "Register here"
+					}
+				}
 			}
 		},
 		"checks": {

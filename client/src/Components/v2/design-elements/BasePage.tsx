@@ -205,12 +205,17 @@ export const MonitorBasePageWithStates = ({
 	);
 };
 
-interface BaseAuthPageProps extends React.PropsWithChildren {
+interface BaseAuthPageProps extends React.PropsWithChildren, StackProps {
 	title: string;
 	subtitle: string;
 }
 
-export const BaseAuthPage = ({ title, subtitle, children }: BaseAuthPageProps) => {
+export const BaseAuthPage = ({
+	title,
+	subtitle,
+	children,
+	...props
+}: BaseAuthPageProps) => {
 	const theme = useTheme();
 	return (
 		<BasePage
@@ -220,6 +225,7 @@ export const BaseAuthPage = ({ title, subtitle, children }: BaseAuthPageProps) =
 			justifyContent={"center"}
 			minHeight="100vh"
 			position={"relative"}
+			{...props}
 		>
 			<HeaderAuthControls
 				hideLogo
@@ -243,7 +249,16 @@ export const BaseAuthPage = ({ title, subtitle, children }: BaseAuthPageProps) =
 				</Typography>
 				<Typography variant="h1">{subtitle}</Typography>
 			</Stack>
-			{children}
+			<Stack
+				gap={theme.spacing(8)}
+				width={{
+					xs: "80%",
+					md: "25%",
+					lg: "15%",
+				}}
+			>
+				{children}
+			</Stack>
 		</BasePage>
 	);
 };
