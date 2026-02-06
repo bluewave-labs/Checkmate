@@ -1,8 +1,9 @@
 import Stack from "@mui/material/Stack";
 import { DetailGauge } from "@/Components/v2/design-elements";
 
+import prettyBytes from "pretty-bytes";
 import { useTranslation } from "react-i18next";
-import { getGbs, getFrequency } from "@/Utils/InfraUtils";
+import { getFrequency } from "@/Utils/InfraUtils";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { CheckSnapshot } from "@/Types/Check";
@@ -30,9 +31,9 @@ export const InfraDetailsGauges = ({
 				title={t("pages.infrastructure.gauges.memory.title")}
 				progress={(snapshot?.memory?.usage_percent || 0) * 100}
 				upperLabel={t("pages.infrastructure.gauges.memory.upperLabel")}
-				upperValue={getGbs(snapshot?.memory?.used_bytes || 0)}
+				upperValue={prettyBytes(snapshot?.memory?.used_bytes || 0)}
 				lowerLabel={t("pages.infrastructure.gauges.memory.lowerLabel")}
-				lowerValue={getGbs(snapshot?.memory?.total_bytes || 0)}
+				lowerValue={prettyBytes(snapshot?.memory?.total_bytes || 0)}
 			/>
 			<DetailGauge
 				title={t("pages.infrastructure.gauges.cpu.title")}
@@ -50,9 +51,9 @@ export const InfraDetailsGauges = ({
 						title={t("pages.infrastructure.gauges.disk.title", { idx })}
 						progress={(disk.usage_percent || 0) * 100}
 						upperLabel={t("pages.infrastructure.gauges.disk.upperLabel")}
-						upperValue={getGbs(disk?.used_bytes || 0)}
+						upperValue={prettyBytes(disk?.used_bytes || 0)}
 						lowerLabel={t("pages.infrastructure.gauges.disk.lowerLabel")}
-						lowerValue={getGbs(disk?.total_bytes || 0)}
+						lowerValue={prettyBytes(disk?.total_bytes || 0)}
 					/>
 				);
 			})}

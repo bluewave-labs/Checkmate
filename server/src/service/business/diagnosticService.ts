@@ -55,10 +55,15 @@ class DiagnosticService {
 		};
 
 		const used = process.memoryUsage();
-		const memoryUsage: Record<string, number> = {};
-		for (const key of Object.keys(used) as Array<keyof NodeJS.MemoryUsage>) {
-			memoryUsage[`${key}Mb`] = Math.round((used[key] / 1024 / 1024) * 100) / 100; // MB
-		}
+
+		// In MB
+		const memoryUsage: Record<keyof NodeJS.MemoryUsage, number> = {
+			rss: Math.round((used.rss / 1024 / 1024) * 100) / 100,
+			heapTotal: Math.round((used.heapTotal / 1024 / 1024) * 100) / 100,
+			heapUsed: Math.round((used.heapUsed / 1024 / 1024) * 100) / 100,
+			external: Math.round((used.external / 1024 / 1024) * 100) / 100,
+			arrayBuffers: Math.round((used.arrayBuffers / 1024 / 1024) * 100) / 100,
+		};
 
 		// CPU Usage
 		const cpuMetrics = await this.getCPUUsage();

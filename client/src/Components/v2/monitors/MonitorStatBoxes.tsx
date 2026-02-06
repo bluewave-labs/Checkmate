@@ -1,9 +1,9 @@
 import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/v2/design-elements";
 
+import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material/styles";
 import type { MonitorStats, Monitor } from "@/Types/Monitor";
-import { getHumanReadableDuration } from "@/Utils/timeUtilsLegacy.js";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
 
@@ -32,11 +32,16 @@ export const MonitorStatBoxes = ({
 
 	// Determine time since last check
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp || 0;
-	const timeSinceLastCheck = Date.now() - timeOfLastCheck;
+	const timeSinceLastCheck = Date.now() - timeOfLastCheck || 0;
 
-	const streakTime = getHumanReadableDuration(timeSinceLastFailure);
+	const options = {
+		secondsDecimalDigits: 0,
+		millisecondsDecimalDigits: 0,
+	};
 
-	const lastCheckTime = getHumanReadableDuration(timeSinceLastCheck);
+	const streakTime = prettyMilliseconds(timeSinceLastFailure, options);
+
+	const lastCheckTime = prettyMilliseconds(timeSinceLastCheck, options);
 	const palette = getStatusPalette(monitor?.status);
 
 	return (
@@ -55,7 +60,7 @@ export const MonitorStatBoxes = ({
 			/>
 			<StatBox
 				title={t("pages.common.monitors.statBoxes.lastResponseTime")}
-				subtitle={monitorStats?.lastResponseTime + " ms"}
+				subtitle={prettyMilliseconds(monitorStats?.lastResponseTime ?? 0)}
 			/>
 
 			{monitor?.type === "http" && (

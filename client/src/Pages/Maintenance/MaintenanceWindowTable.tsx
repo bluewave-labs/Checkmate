@@ -1,10 +1,10 @@
 import Typography from "@mui/material/Typography";
-import prettyMilliseconds from "pretty-ms";
 import { Table, ValueLabel } from "@/Components/v2/design-elements";
 import { Pagination } from "@/Components/v2/design-elements/Table";
 import { ActionsMenu } from "@/Components/v2/actions-menu";
 import { DialogInput } from "@/Components/v2/inputs/Dialog";
 
+import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import type { Header } from "@/Components/v2/design-elements/Table";
 import type { ActionMenuItem } from "@/Components/v2/actions-menu";
@@ -15,7 +15,6 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/Types/state";
 import Box from "@mui/material/Box";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
-import { formatDurationRounded } from "@/Utils/timeUtilsLegacy";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useDelete, usePatch } from "@/Hooks/UseApi";
@@ -153,7 +152,9 @@ export const MaintenanceWindowTable = ({
 			id: "repeat",
 			content: t("pages.maintenanceWindow.table.headers.repeat"),
 			render: (row) =>
-				row.repeat === 0 ? t("common.labels.na") : formatDurationRounded(row.repeat),
+				row.repeat === 0
+					? t("common.labels.na")
+					: prettyMilliseconds(row.repeat, { verbose: true }),
 		},
 		{
 			id: "actions",
