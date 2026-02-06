@@ -90,6 +90,7 @@ class UserService {
 			user.role = invite.role;
 			user.teamId = invite.teamId;
 		} else {
+			console.log("WHITFUSKALG");
 			// This is the first account, create JWT secret to use if one is not supplied by env
 			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
 			await this.settingsRepository.update({ jwtSecret });

@@ -7,6 +7,8 @@ export const useRegisterForm = () => {
 		email: "",
 		password: "",
 		confirm: "",
+		teamId: "",
+		inviteToken: "",
 		role: ["superadmin"],
 	};
 

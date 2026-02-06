@@ -5,28 +5,48 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
+import { usePost } from "@/Hooks/UseApi";
+import { setAuthState } from "@/Features/Auth/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { AuthResponse } from "@/Types/User";
+
+interface RegisterPayload {
+	user: Omit<RegisterFormData, "confirm">;
+}
 
 const RegisterPage = () => {
 	const { t } = useTranslation();
 	const { schema, defaults } = useRegisterForm();
+	const { post, loading } = usePost<RegisterPayload, AuthResponse>();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
-	const { control, handleSubmit } = useForm<RegisterFormData>({
+	const { control, handleSubmit, setError } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
 
-	const onSubmit = (data: RegisterFormData) => {
-		console.log("Registration data:", data);
-	};
+	const onSubmit = async (data: RegisterFormData) => {
+		if (loading) return;
 
-	const onError = (errors: any) => {
-		console.log("Validation errors:", errors);
+		const { confirm, ...userData } = data;
+		const result = await post("/auth/register", { user: userData });
+
+		if (result?.success) {
+			dispatch(setAuthState(result));
+			navigate("/uptime");
+		} else if (result?.msg) {
+			if (result.msg.toLowerCase().includes("email")) {
+				setError("email", { message: result.msg });
+			}
+		}
 	};
 
 	return (
 		<BaseAuthPage
 			component="form"
-			onSubmit={handleSubmit(onSubmit, onError)}
+			onSubmit={handleSubmit(onSubmit)}
 			title={t("pages.auth.register.title")}
 			subtitle={t("pages.auth.register.subtitle")}
 		>
@@ -100,6 +120,7 @@ const RegisterPage = () => {
 			<Button
 				variant="contained"
 				type="submit"
+				loading={loading}
 			>
 				{t("pages.auth.register.submit")}
 			</Button>
