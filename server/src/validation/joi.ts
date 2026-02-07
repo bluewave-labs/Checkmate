@@ -60,7 +60,7 @@ const editUserBodyValidation = joi.object({
 	profileImage: joi.any(),
 	newPassword: joi.string().min(8).pattern(passwordPattern),
 	password: joi.string().min(8).pattern(passwordPattern),
-	deleteProfileImage: joi.boolean(),
+	deleteProfileImage: joi.alternatives().try(joi.boolean(), joi.string().valid("true", "false")),
 });
 
 const recoveryValidation = joi.object({

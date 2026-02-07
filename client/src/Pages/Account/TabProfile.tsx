@@ -1,10 +1,12 @@
 import { Stack, Box } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { useForm, Controller } from "react-hook-form";
-import { useSelector, useDispatch } from "react-redux";
 import { ConfigBox } from "@/Components/v2/design-elements";
 import { TextField, Button } from "@/Components/v2/inputs";
 import { ImageUpload } from "@/Components/v2/inputs";
+
+import { useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useForm, Controller } from "react-hook-form";
+import { useSelector, useDispatch } from "react-redux";
 import { useProfileForm } from "@/Hooks/useProfileForm";
 import { usePatch } from "@/Hooks/UseApi";
 import { setUser } from "@/Features/Auth/authSlice";
@@ -13,6 +15,7 @@ import type { RootState } from "@/Types/state";
 import type { User } from "@/Types/User";
 
 export const TabProfile = () => {
+	const theme = useTheme();
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.auth?.user);
@@ -71,74 +74,66 @@ export const TabProfile = () => {
 	};
 
 	return (
-		<>
-			<Box
-				component="form"
-				onSubmit={handleSubmit(onSubmit)}
-				noValidate
+		<Stack
+			gap={theme.spacing(8)}
+			component="form"
+			onSubmit={handleSubmit(onSubmit)}
+		>
+			<ConfigBox
+				title={t("pages.account.form.name.title")}
+				subtitle={t("pages.account.form.name.description")}
+				rightContent={
+					<Stack gap={theme.spacing(8)}>
+						<Controller
+							name="firstName"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									fieldLabel={t("pages.account.form.name.option.firstName.label")}
+									placeholder={t("pages.account.form.name.option.firstName.placeholder")}
+									autoComplete="given-name"
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+								/>
+							)}
+						/>
+						<Controller
+							name="lastName"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									fieldLabel={t("pages.account.form.name.option.lastName.label")}
+									placeholder={t("pages.account.form.name.option.lastName.placeholder")}
+									autoComplete="family-name"
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+								/>
+							)}
+						/>
+					</Stack>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.account.form.photo.title")}
+				subtitle={t("pages.account.form.photo.description")}
+				rightContent={
+					<ImageUpload
+						src={getCurrentImageSrc()}
+						onChange={handleImageChange}
+					/>
+				}
+			/>
+			<Button
+				type="submit"
+				variant="contained"
+				color="primary"
+				loading={patchLoading}
+				sx={{ alignSelf: "flex-end", minWidth: 100 }}
 			>
-				<Stack gap={4}>
-					<ConfigBox
-						title={t("pages.account.form.name.title")}
-						subtitle={t("pages.account.form.name.description")}
-						rightContent={
-							<Stack gap={3}>
-								<Controller
-									name="firstName"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											fieldLabel={t("pages.account.form.name.option.firstName.label")}
-											placeholder={t(
-												"pages.account.form.name.option.firstName.placeholder"
-											)}
-											autoComplete="given-name"
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-								<Controller
-									name="lastName"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											fieldLabel={t("pages.account.form.name.option.lastName.label")}
-											placeholder={t(
-												"pages.account.form.name.option.lastName.placeholder"
-											)}
-											autoComplete="family-name"
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-							</Stack>
-						}
-					/>
-					<ConfigBox
-						title={t("pages.account.form.photo.title")}
-						subtitle={t("pages.account.form.photo.description")}
-						rightContent={
-							<ImageUpload
-								src={getCurrentImageSrc()}
-								onChange={handleImageChange}
-							/>
-						}
-					/>
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						loading={patchLoading}
-						sx={{ alignSelf: "flex-end", minWidth: 100 }}
-					>
-						{t("common.buttons.save")}
-					</Button>
-				</Stack>
-			</Box>
-		</>
+				{t("common.buttons.save")}
+			</Button>
+		</Stack>
 	);
 };
