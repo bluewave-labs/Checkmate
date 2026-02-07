@@ -1,15 +1,13 @@
-import { useState } from "react";
 import { Stack, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { ConfigBox } from "@/Components/v2/design-elements";
 import { TextField, Button } from "@/Components/v2/inputs";
 import { ImageUpload } from "@/Components/v2/inputs";
 import { useProfileForm } from "@/Hooks/useProfileForm";
-import { usePatch, useDelete } from "@/Hooks/UseApi";
-import { setUser, clearAuthState } from "@/Features/Auth/authSlice";
+import { usePatch } from "@/Hooks/UseApi";
+import { setUser } from "@/Features/Auth/authSlice";
 import type { ProfileFormData } from "@/Validation/profile";
 import type { RootState } from "@/Types/state";
 import type { User } from "@/Types/User";
@@ -17,12 +15,9 @@ import type { User } from "@/Types/User";
 export const TabProfile = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
 	const user = useSelector((state: RootState) => state.auth?.user);
 	const { resolver, defaults } = useProfileForm();
 	const { patch, loading: patchLoading } = usePatch<FormData, User>();
-	const { deleteFn, loading: deleteLoading } = useDelete();
-	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
 	const { control, handleSubmit, setValue, watch } = useForm<ProfileFormData>({
 		resolver,
@@ -69,12 +64,10 @@ export const TabProfile = () => {
 			fd.append("deleteProfileImage", "true");
 		}
 
-		console.log(fd);
-
-		// const result = await patch("/auth/user", fd);
-		// if (result?.success && result.data) {
-		// 	dispatch(setUser(result.data));
-		// }
+		const result = await patch("/auth/user", fd);
+		if (result?.success && result.data) {
+			dispatch(setUser(result.data));
+		}
 	};
 
 	return (
