@@ -498,6 +498,37 @@
 	"now": "Now",
 	"os": "OS",
 	"pages": {
+		"account": {
+			"tabs": {
+				"profile": "Profile",
+				"password": "Password",
+				"team": "Team"
+			},
+			"form": {
+				"name": {
+					"title": "Name",
+					"description": "Update your personal information",
+					"option": {
+						"firstName": {
+							"label": "First name",
+							"placeholder": "Enter your first name"
+						},
+						"lastName": {
+							"label": "Last name",
+							"placeholder": "Enter your last name"
+						}
+					}
+				},
+				"photo": {
+					"title": "Profile photo",
+					"description": "Upload a profile picture"
+				},
+				"deleteAccount": {
+					"title": "Delete account",
+					"description": "This action is permanent and cannot be undone"
+				}
+			}
+		},
 		"auth": {
 			"common": {
 				"form": {
