@@ -1,4 +1,4 @@
-import { Stack, Box } from "@mui/material";
+import { Stack } from "@mui/material";
 import { ConfigBox } from "@/Components/v2/design-elements";
 import { TextField, Button } from "@/Components/v2/inputs";
 import { ImageUpload } from "@/Components/v2/inputs";

@@ -523,6 +523,28 @@
 					"title": "Profile photo",
 					"description": "Upload a profile picture"
 				},
+				"currentPassword": {
+					"title": "Current password",
+					"description": "Enter your current password to verify your identity",
+					"option": {
+						"label": "Current password",
+						"placeholder": "Enter current password"
+					}
+				},
+				"newPassword": {
+					"title": "New password",
+					"description": "Choose a strong password with at least 8 characters",
+					"option": {
+						"newPassword": {
+							"label": "New password",
+							"placeholder": "Enter new password"
+						},
+						"confirm": {
+							"label": "Confirm password",
+							"placeholder": "Confirm new password"
+						}
+					}
+				},
 				"deleteAccount": {
 					"title": "Delete account",
 					"description": "This action is permanent and cannot be undone"
