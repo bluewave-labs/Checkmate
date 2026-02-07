@@ -50,24 +50,6 @@ const UserSchema = new Schema<UserDocument>(
 	{ timestamps: true }
 );
 
-UserSchema.pre("save", function (next) {
-	if (!this.isModified("password")) {
-		return next();
-	}
-	const salt = bcrypt.genSaltSync(10);
-	this.password = bcrypt.hashSync(this.password, salt);
-	next();
-});
-
-UserSchema.pre("findOneAndUpdate", function (next) {
-	const update = this.getUpdate();
-	if (update && "password" in update) {
-		const salt = bcrypt.genSaltSync(10);
-		(update as any).password = bcrypt.hashSync((update as any).password, salt);
-	}
-	next();
-});
-
 UserSchema.pre("findOneAndDelete", async function (next) {
 	try {
 		const userToDelete = await this.model.findOne(this.getFilter());

@@ -16,6 +16,11 @@ const SERVICE_NAME = "userService";
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
 
+	private hashPassword = (password: string): string => {
+		const salt = bcrypt.genSaltSync(10);
+		return bcrypt.hashSync(password, salt);
+	};
+
 	private emailService: any;
 	private settingsService: any;
 	private logger: any;
@@ -103,7 +108,12 @@ class UserService {
 			user.role = ["superadmin"];
 		}
 
-		const newUser = await this.usersRepository.create({ ...user }, file);
+		// Hash password before storing
+		if (user.password) {
+			user.password = this.hashPassword(user.password);
+		}
+
+		const newUser = await this.usersRepository.create(user, file);
 
 		this.logger.debug({
 			message: "New user created",
@@ -182,7 +192,8 @@ class UserService {
 				throw new AppError({ message: "Incorrect current password", service: SERVICE_NAME, status: 403 });
 			}
 			// If a match, update the password
-			updates.password = updates.newPassword;
+			updates.password = this.hashPassword(updates.newPassword);
+			delete updates.newPassword;
 		}
 
 		return await this.usersRepository.updateById(currentUser.id, updates, file);
@@ -225,8 +236,8 @@ class UserService {
 			throw new AppError({ message: "New password cannot be same as old password", service: SERVICE_NAME, status: 400 });
 		}
 
-		existingUser.password = password;
-		await this.usersRepository.updateById(existingUser.id, existingUser, null);
+		const hashedPassword = this.hashPassword(password);
+		await this.usersRepository.updateById(existingUser.id, { password: hashedPassword }, null);
 		await this.recoveryTokensRepository.deleteManyByEmail(existingUser.email);
 
 		existingUser.password = "";
@@ -294,7 +305,8 @@ class UserService {
 	};
 
 	setPasswordByUserId = async (userId: any, password: string) => {
-		const updatedUser = await this.usersRepository.updateById(userId, { password }, null);
+		const hashedPassword = this.hashPassword(password);
+		const updatedUser = await this.usersRepository.updateById(userId, { password: hashedPassword }, null);
 		return updatedUser;
 	};
 }
