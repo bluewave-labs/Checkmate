@@ -6,20 +6,29 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { usePasswordForm } from "@/Hooks/usePasswordForm";
+import { usePatch } from "@/Hooks/UseApi";
 import type { PasswordFormData } from "@/Validation/password";
 
 export const TabPassword = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const { resolver, defaults } = usePasswordForm();
+	const { patch, loading } = usePatch<FormData, void>();
 
-	const { control, handleSubmit } = useForm<PasswordFormData>({
+	const { control, handleSubmit, reset, setError } = useForm<PasswordFormData>({
 		resolver,
 		defaultValues: defaults,
 	});
 
-	const onSubmit = (data: PasswordFormData) => {
-		console.log("Password form data:", data);
+	const onSubmit = async (data: PasswordFormData) => {
+		const fd = new FormData();
+		fd.append("password", data.currentPassword);
+		fd.append("newPassword", data.newPassword);
+
+		const result = await patch("/auth/user", fd);
+		if (result?.success) {
+			reset();
+		}
 	};
 
 	return (
@@ -97,6 +106,7 @@ export const TabPassword = () => {
 				type="submit"
 				variant="contained"
 				color="primary"
+				loading={loading}
 				sx={{ alignSelf: "flex-end", minWidth: 100 }}
 			>
 				{t("common.buttons.save")}
