@@ -77,16 +77,6 @@ export const TabProfile = () => {
 		// }
 	};
 
-	const handleDeleteAccount = async () => {
-		const result = await deleteFn("/auth/user");
-		if (result?.success) {
-			dispatch(clearAuthState());
-			navigate("/login");
-		}
-	};
-
-	const showDeleteSection = !user?.role?.includes("demo");
-
 	return (
 		<>
 			<Box
