@@ -10,26 +10,26 @@ export const TabProfile = () => {
 	return (
 		<Stack gap={4}>
 			<ConfigBox
-				title={t("pages.account.profile.name.title")}
-				subtitle={t("pages.account.profile.name.subtitle")}
+				title={t("pages.account.form.name.title")}
+				subtitle={t("pages.account.form.name.description")}
 				rightContent={
 					<Stack gap={3}>
 						<TextField
-							fieldLabel={t("pages.account.profile.name.firstName")}
-							placeholder={t("pages.account.profile.name.firstNamePlaceholder")}
+							fieldLabel={t("pages.account.form.name.option.firstName.label")}
+							placeholder={t("pages.account.form.name.option.firstName.placeholder")}
 							autoComplete="given-name"
 						/>
 						<TextField
-							fieldLabel={t("pages.account.profile.name.lastName")}
-							placeholder={t("pages.account.profile.name.lastNamePlaceholder")}
+							fieldLabel={t("pages.account.form.name.option.lastName.label")}
+							placeholder={t("pages.account.form.name.option.lastName.placeholder")}
 							autoComplete="family-name"
 						/>
 					</Stack>
 				}
 			/>
 			<ConfigBox
-				title={t("pages.account.profile.photo.title")}
-				subtitle={t("pages.account.profile.photo.subtitle")}
+				title={t("pages.account.form.photo.title")}
+				subtitle={t("pages.account.form.photo.description")}
 				rightContent={<ImageUpload />}
 			/>
 			<Button
