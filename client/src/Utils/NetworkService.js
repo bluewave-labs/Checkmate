@@ -374,7 +374,7 @@ class NetworkService {
 	 * @param {Object} config - The configuration object.
 	 * @param {string} config.userId - The ID of the user to be updated.
 	 * @param {Object} config.form - The form data for the user to be updated.
-	 * @returns {Promise<AxiosResponse>} The response from the axios PUT request.
+	 * @returns {Promise<AxiosResponse>} The response from the axios PATCH request.
 	 *
 	 */
 	async updateUser(config) {
