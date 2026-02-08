@@ -13,11 +13,13 @@ import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 interface HeaderTeamControlsProps {
 	filter: UserRole | "";
 	onFilterChange: (value: UserRole | "") => void;
+	onInviteClick?: () => void;
 }
 
 export const HeaderTeamControls = ({
 	filter,
 	onFilterChange,
+	onInviteClick,
 }: HeaderTeamControlsProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -56,6 +58,7 @@ export const HeaderTeamControls = ({
 					variant="contained"
 					color="primary"
 					startIcon={<Icon icon={Mail} />}
+					onClick={onInviteClick}
 				>
 					{t("pages.account.team.inviteMember")}
 				</Button>

@@ -572,6 +572,20 @@
 						"email": "Email",
 						"role": "Role"
 					}
+				},
+				"invite": {
+					"title": "Invite team member",
+					"description": "Send an invitation to join your team",
+					"email": {
+						"label": "Email address",
+						"placeholder": "Enter email address"
+					},
+					"role": {
+						"label": "Role",
+						"placeholder": "Select a role"
+					},
+					"sendInvite": "Send invite",
+					"generateToken": "Generate token"
 				}
 			}
 		},
