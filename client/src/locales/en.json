@@ -176,6 +176,14 @@
 	"ClickUpload": "Click to upload",
 	"close": "Close",
 	"common": {
+		"auth": {
+			"roles": {
+				"admin": "Admin",
+				"demo": "Demo",
+				"superadmin": "Super admin",
+				"user": "User"
+			}
+		},
 		"alerts": {
 			"pageSpeedApiKey": {
 				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
@@ -548,6 +556,22 @@
 				"deleteAccount": {
 					"title": "Delete account",
 					"description": "This action is permanent and cannot be undone"
+				}
+			},
+			"team": {
+				"addMember": "Add member",
+				"inviteMember": "Invite member",
+				"filter": {
+					"placeholder": "Filter by role",
+					"all": "All roles",
+					"admin": "Admin",
+					"member": "Member"
+				},
+				"table": {
+					"headers": {
+						"email": "Email",
+						"role": "Role"
+					}
 				}
 			}
 		},

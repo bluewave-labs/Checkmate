@@ -15,7 +15,7 @@ export const TabPassword = () => {
 	const { resolver, defaults } = usePasswordForm();
 	const { patch, loading } = usePatch<FormData, void>();
 
-	const { control, handleSubmit, reset, setError } = useForm<PasswordFormData>({
+	const { control, handleSubmit, reset } = useForm<PasswordFormData>({
 		resolver,
 		defaultValues: defaults,
 	});

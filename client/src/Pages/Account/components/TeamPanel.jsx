@@ -15,13 +15,6 @@ import { useGetInviteToken } from "../../../Hooks/inviteHooks.js";
 import { useNavigate } from "react-router-dom";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin.js";
 import AddMemberMenu from "./AddMemberMenu/index.jsx";
-/**
- * TeamPanel component manages the organization and team members,
- * providing functionalities like renaming the organization, managing team members,
- * and inviting new members.
- *
- * @returns {JSX.Element}
- */
 
 const TeamPanel = () => {
 	const theme = useTheme();
