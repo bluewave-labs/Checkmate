@@ -23,6 +23,7 @@ export const DialogInput = ({
 	children,
 	maxWidth,
 	fullWidth = false,
+	additionalButtons,
 }: {
 	open: boolean;
 	title?: string;
@@ -37,6 +38,7 @@ export const DialogInput = ({
 	children?: ReactNode;
 	maxWidth?: DialogProps["maxWidth"];
 	fullWidth?: boolean;
+	additionalButtons?: ReactNode;
 }) => {
 	const { t } = useTranslation();
 	return (
@@ -59,6 +61,7 @@ export const DialogInput = ({
 				>
 					{cancelText ?? t("common.buttons.cancel")}
 				</Button>
+				{additionalButtons}
 				{onConfirm && (
 					<Button
 						loading={loading}

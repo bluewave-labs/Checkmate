@@ -32,6 +32,15 @@ export const InviteTeamMemberDialog = ({
 			maxWidth="sm"
 			fullWidth
 			confirmText={t("pages.account.team.invite.sendInvite")}
+			additionalButtons={
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={() => {}}
+				>
+					{t("pages.account.team.invite.generateToken")}
+				</Button>
+			}
 		>
 			<Stack
 				gap={theme.spacing(4)}
@@ -58,14 +67,6 @@ export const InviteTeamMemberDialog = ({
 						</MenuItem>
 					))}
 				</Select>
-				<Button
-					sx={{ alignSelf: "flex-end" }}
-					variant="contained"
-					color="primary"
-					onClick={() => {}}
-				>
-					{t("pages.account.team.invite.generateToken")}
-				</Button>
 			</Stack>
 		</Dialog>
 	);
