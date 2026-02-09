@@ -27,19 +27,22 @@ const EditUserPage = () => {
 					rightContent={
 						<Stack gap={theme.spacing(8)}>
 							<TextField
-								fieldLabel={t("editUserPage.form.firstName")}
+								fieldLabel={t("common.form.name.option.firstName.label")}
+								placeholder={t("common.form.name.option.firstName.placeholder")}
 								value={firstName}
 								onChange={(e) => setFirstName(e.target.value)}
 								autoComplete="given-name"
 							/>
 							<TextField
-								fieldLabel={t("editUserPage.form.lastName")}
+								fieldLabel={t("common.form.name.option.lastName.label")}
+								placeholder={t("common.form.name.option.lastName.placeholder")}
 								value={lastName}
 								onChange={(e) => setLastName(e.target.value)}
 								autoComplete="family-name"
 							/>
 							<TextField
-								fieldLabel={t("editUserPage.form.email")}
+								fieldLabel={t("common.form.email.option.email.label")}
+								placeholder={t("common.form.email.option.email.placeholder")}
 								value={email}
 								disabled
 							/>
