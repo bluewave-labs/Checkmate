@@ -20,6 +20,7 @@ import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
+import useDebounce from "@/Utils/debounce";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -43,6 +44,9 @@ const UptimeMonitorsPage = () => {
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
 
+	// Debounce search input - 300ms delay
+	const debouncedSearch = useDebounce(search, 300);
+
 	// Convert filter selections to API filter values
 	// Status: "up" -> true, "down" -> false
 	// State: "active" -> true, "paused" -> false
@@ -65,8 +69,8 @@ const UptimeMonitorsPage = () => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (search ? "name" : sortField || undefined);
-	const filter = activeFilter?.[0] || search;
+	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
+	const filter = activeFilter?.[0] || debouncedSearch;
 
 	// Default to all types when none selected
 	const effectiveTypes =
