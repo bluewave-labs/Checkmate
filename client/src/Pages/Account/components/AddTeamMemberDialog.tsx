@@ -2,17 +2,39 @@ import { Stack } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { Dialog, TextField, Select } from "@/Components/v2/inputs";
-import type { UserRole } from "@/Types/User";
+import { useAddTeamMemberForm } from "@/Hooks/useAddTeamMemberForm";
+import type { AddTeamMemberFormData } from "@/Validation/addTeamMember";
+import type { UserRole, User } from "@/Types/User";
+import { usePost } from "@/Hooks/UseApi";
 
 interface AddTeamMemberDialogProps {
 	open: boolean;
 	onClose: () => void;
+	onSuccess?: () => void;
 }
 
-export const AddTeamMemberDialog = ({ open, onClose }: AddTeamMemberDialogProps) => {
+interface RegisterPayload {
+	user: Omit<AddTeamMemberFormData, "confirm">;
+}
+
+export const AddTeamMemberDialog = ({
+	open,
+	onClose,
+	onSuccess,
+}: AddTeamMemberDialogProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const { schema, defaults } = useAddTeamMemberForm();
+	const { post, loading } = usePost<RegisterPayload, User>();
+
+	const { control, handleSubmit, reset, setError } = useForm<AddTeamMemberFormData>({
+		resolver: zodResolver(schema),
+		defaultValues: defaults,
+		values: defaults,
+	});
 
 	const roleOptions: { value: UserRole; label: string }[] = [
 		{ value: "admin", label: t("common.auth.roles.admin") },
@@ -20,7 +42,27 @@ export const AddTeamMemberDialog = ({ open, onClose }: AddTeamMemberDialogProps)
 	];
 
 	const handleClose = () => {
+		reset();
 		onClose();
+	};
+
+	const onSubmit = async (data: AddTeamMemberFormData) => {
+		if (loading) return;
+
+		const { confirm, ...userData } = data;
+		const payload: RegisterPayload = { user: userData };
+
+		const result = await post("/auth/register", payload);
+
+		if (result?.success) {
+			reset();
+			onClose();
+			onSuccess?.();
+		} else if (result?.msg) {
+			if (result.msg.toLowerCase().includes("email")) {
+				setError("email", { message: result.msg });
+			}
+		}
 	};
 
 	return (
@@ -29,8 +71,9 @@ export const AddTeamMemberDialog = ({ open, onClose }: AddTeamMemberDialogProps)
 			title={t("pages.account.team.addMember.title")}
 			content={t("pages.account.team.addMember.description")}
 			onCancel={handleClose}
-			onConfirm={() => {}}
+			onConfirm={handleSubmit(onSubmit)}
 			confirmText={t("common.buttons.addMember")}
+			loading={loading}
 			maxWidth="sm"
 			fullWidth
 		>
@@ -38,48 +81,101 @@ export const AddTeamMemberDialog = ({ open, onClose }: AddTeamMemberDialogProps)
 				gap={theme.spacing(4)}
 				mt={theme.spacing(4)}
 			>
-				<TextField
-					fieldLabel={t("pages.auth.register.form.option.name.label")}
-					placeholder={t("pages.auth.register.form.option.name.placeholder")}
-					fullWidth
+				<Controller
+					name="firstName"
+					control={control}
+					render={({ field, fieldState }) => (
+						<TextField
+							{...field}
+							fieldLabel={t("pages.auth.register.form.option.name.label")}
+							placeholder={t("pages.auth.register.form.option.name.placeholder")}
+							error={!!fieldState.error}
+							helperText={fieldState.error?.message ?? ""}
+							fullWidth
+						/>
+					)}
 				/>
-				<TextField
-					fieldLabel={t("pages.auth.register.form.option.surname.label")}
-					placeholder={t("pages.auth.register.form.option.surname.placeholder")}
-					fullWidth
+				<Controller
+					name="lastName"
+					control={control}
+					render={({ field, fieldState }) => (
+						<TextField
+							{...field}
+							fieldLabel={t("pages.auth.register.form.option.surname.label")}
+							placeholder={t("pages.auth.register.form.option.surname.placeholder")}
+							error={!!fieldState.error}
+							helperText={fieldState.error?.message ?? ""}
+							fullWidth
+						/>
+					)}
 				/>
-				<TextField
-					fieldLabel={t("pages.auth.common.form.option.email.label")}
-					placeholder={t("pages.auth.common.form.option.email.placeholder")}
-					type="email"
-					fullWidth
+				<Controller
+					name="email"
+					control={control}
+					render={({ field, fieldState }) => (
+						<TextField
+							{...field}
+							fieldLabel={t("pages.auth.common.form.option.email.label")}
+							placeholder={t("pages.auth.common.form.option.email.placeholder")}
+							type="email"
+							error={!!fieldState.error}
+							helperText={fieldState.error?.message ?? ""}
+							fullWidth
+						/>
+					)}
 				/>
-				<Select
-					fieldLabel={t("pages.account.team.invite.role.label")}
-					placeholder={t("pages.account.team.invite.role.placeholder")}
-					fullWidth
-					defaultValue="user"
-				>
-					{roleOptions.map((option) => (
-						<MenuItem
-							key={option.value}
-							value={option.value}
+				<Controller
+					name="role"
+					control={control}
+					render={({ field }) => (
+						<Select
+							{...field}
+							value={field.value[0] ?? "user"}
+							onChange={(e) => field.onChange([e.target.value])}
+							fieldLabel={t("pages.account.team.invite.role.label")}
+							placeholder={t("pages.account.team.invite.role.placeholder")}
+							fullWidth
 						>
-							{option.label}
-						</MenuItem>
-					))}
-				</Select>
-				<TextField
-					fieldLabel={t("pages.auth.common.form.option.password.label")}
-					placeholder={t("pages.auth.common.form.option.password.placeholder")}
-					type="password"
-					fullWidth
+							{roleOptions.map((option) => (
+								<MenuItem
+									key={option.value}
+									value={option.value}
+								>
+									{option.label}
+								</MenuItem>
+							))}
+						</Select>
+					)}
 				/>
-				<TextField
-					fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
-					placeholder={t("pages.auth.common.form.option.password.placeholder")}
-					type="password"
-					fullWidth
+				<Controller
+					name="password"
+					control={control}
+					render={({ field, fieldState }) => (
+						<TextField
+							{...field}
+							fieldLabel={t("pages.auth.common.form.option.password.label")}
+							placeholder={t("pages.auth.common.form.option.password.placeholder")}
+							type="password"
+							error={!!fieldState.error}
+							helperText={fieldState.error?.message ?? ""}
+							fullWidth
+						/>
+					)}
+				/>
+				<Controller
+					name="confirm"
+					control={control}
+					render={({ field, fieldState }) => (
+						<TextField
+							{...field}
+							fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
+							placeholder={t("pages.auth.common.form.option.password.placeholder")}
+							type="password"
+							error={!!fieldState.error}
+							helperText={fieldState.error?.message ?? ""}
+							fullWidth
+						/>
+					)}
 				/>
 			</Stack>
 		</Dialog>

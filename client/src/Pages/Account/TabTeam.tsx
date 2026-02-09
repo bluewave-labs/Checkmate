@@ -14,7 +14,7 @@ export const TabTeam = () => {
 	const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 	const [addMemberDialogOpen, setAddMemberDialogOpen] = useState(false);
 
-	const { data: users } = useGet<User[]>("/auth/users");
+	const { data: users, refetch } = useGet<User[]>("/auth/users");
 
 	const filteredUsers = useMemo(() => {
 		if (!users) return [];
@@ -28,6 +28,10 @@ export const TabTeam = () => {
 
 	const handleOpenAddMemberDialog = () => setAddMemberDialogOpen(true);
 	const handleCloseAddMemberDialog = () => setAddMemberDialogOpen(false);
+
+	const handleRefetch = () => {
+		refetch();
+	};
 
 	return (
 		<Stack gap={theme.spacing(8)}>
@@ -45,6 +49,7 @@ export const TabTeam = () => {
 			<AddTeamMemberDialog
 				open={addMemberDialogOpen}
 				onClose={handleCloseAddMemberDialog}
+				onSuccess={handleRefetch}
 			/>
 		</Stack>
 	);
