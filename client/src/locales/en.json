@@ -93,6 +93,14 @@
 			},
 			"navigation": {
 				"continue": "Continue"
+			},
+			"passwordRules": {
+				"length": "Must be at least 8 characters long",
+				"special": "Must contain at least one special character (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)",
+				"number": "Must contain at least one number",
+				"uppercase": "Must contain at least one upper character",
+				"lowercase": "Must contain at least one lower character",
+				"match": "Passwords must match"
 			}
 		},
 		"forgotPassword": {
@@ -619,6 +627,7 @@
 		},
 		"auth": {
 			"common": {
+				"passwordRules": {},
 				"form": {
 					"option": {
 						"email": {
