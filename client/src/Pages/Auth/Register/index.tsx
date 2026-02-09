@@ -86,8 +86,8 @@ const RegisterPage = () => {
 				render={({ field, fieldState }) => (
 					<TextField
 						{...field}
-						fieldLabel={t("pages.auth.register.form.option.name.label")}
-						placeholder={t("pages.auth.register.form.option.name.placeholder")}
+						fieldLabel={t("common.form.name.option.firstName.label")}
+						placeholder={t("common.form.name.option.firstName.placeholder")}
 						error={!!fieldState.error}
 						helperText={fieldState.error?.message ?? ""}
 					/>
@@ -99,8 +99,8 @@ const RegisterPage = () => {
 				render={({ field, fieldState }) => (
 					<TextField
 						{...field}
-						fieldLabel={t("pages.auth.register.form.option.surname.label")}
-						placeholder={t("pages.auth.register.form.option.surname.placeholder")}
+						fieldLabel={t("common.form.name.option.lastName.label")}
+						placeholder={t("common.form.name.option.lastName.placeholder")}
 						error={!!fieldState.error}
 						helperText={fieldState.error?.message ?? ""}
 					/>
@@ -113,8 +113,8 @@ const RegisterPage = () => {
 					<TextField
 						{...field}
 						disabled={!!token}
-						fieldLabel={t("pages.auth.common.form.option.email.label")}
-						placeholder={t("pages.auth.common.form.option.email.placeholder")}
+						fieldLabel={t("common.form.email.option.email.label")}
+						placeholder={t("common.form.email.option.email.placeholder")}
 						error={!!fieldState.error}
 						helperText={fieldState.error?.message ?? ""}
 					/>

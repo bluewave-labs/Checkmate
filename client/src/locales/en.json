@@ -237,6 +237,35 @@
 			"resolved": "Resolved",
 			"responseTime": "Response time"
 		},
+		"form": {
+			"role": {
+				"option": {
+					"role": {
+						"label": "Roles"
+					}
+				}
+			},
+			"name": {
+				"option": {
+					"firstName": {
+						"label": "First name",
+						"placeholder": "Enter your first name"
+					},
+					"lastName": {
+						"label": "Last name",
+						"placeholder": "Enter your last name"
+					}
+				}
+			},
+			"email": {
+				"option": {
+					"email": {
+						"label": "Email",
+						"placeholder": "you@example.com"
+					}
+				}
+			}
+		},
 		"table": {
 			"empty": "Nothing here",
 			"headers": {
@@ -522,17 +551,7 @@
 			"form": {
 				"name": {
 					"title": "Name",
-					"description": "Update your personal information",
-					"option": {
-						"firstName": {
-							"label": "First name",
-							"placeholder": "Enter your first name"
-						},
-						"lastName": {
-							"label": "Last name",
-							"placeholder": "Enter your last name"
-						}
-					}
+					"description": "Update your personal information"
 				},
 				"photo": {
 					"title": "Profile photo",
@@ -634,19 +653,7 @@
 			"register": {
 				"title": "Welcome back to Checkmate!",
 				"subtitle": "Sign up to get started",
-				"submit": "Register",
-				"form": {
-					"option": {
-						"name": {
-							"label": "Name",
-							"placeholder": "Your name"
-						},
-						"surname": {
-							"label": "Surname",
-							"placeholder": "Your surname"
-						}
-					}
-				}
+				"submit": "Register"
 			},
 			"forgotPassword": {
 				"title": "Forgot your password?",
@@ -809,6 +816,14 @@
 					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"title": "Type"
+				}
+			}
+		},
+		"editUser": {
+			"form": {
+				"roles": {
+					"title": "Roles",
+					"description": "Assign roles to the user. Multiple roles can be selected."
 				}
 			}
 		},

@@ -689,7 +689,6 @@ const editUserByIdParamValidation = joi.object({
 const editUserByIdBodyValidation = joi.object({
 	firstName: nameValidation.required(),
 	lastName: nameValidation.required(),
-	email: joi.string().email().required(),
 	role: joi
 		.array()
 		.items(joi.string().valid(...UserRoles))
@@ -700,7 +699,6 @@ const editUserByIdBodyValidation = joi.object({
 const editSuperadminUserByIdBodyValidation = joi.object({
 	firstName: nameValidation.required(),
 	lastName: nameValidation.required(),
-	email: joi.string().email().required(),
 	role: joi
 		.array()
 		.items(joi.string().valid(...UserRoles))

@@ -90,8 +90,8 @@ export const TabProfile = () => {
 							render={({ field, fieldState }) => (
 								<TextField
 									{...field}
-									fieldLabel={t("pages.account.form.name.option.firstName.label")}
-									placeholder={t("pages.account.form.name.option.firstName.placeholder")}
+									fieldLabel={t("common.form.name.option.firstName.label")}
+									placeholder={t("common.form.name.option.firstName.placeholder")}
 									autoComplete="given-name"
 									error={!!fieldState.error}
 									helperText={fieldState.error?.message ?? ""}
@@ -104,8 +104,8 @@ export const TabProfile = () => {
 							render={({ field, fieldState }) => (
 								<TextField
 									{...field}
-									fieldLabel={t("pages.account.form.name.option.lastName.label")}
-									placeholder={t("pages.account.form.name.option.lastName.placeholder")}
+									fieldLabel={t("common.form.name.option.lastName.label")}
+									placeholder={t("common.form.name.option.lastName.placeholder")}
 									autoComplete="family-name"
 									error={!!fieldState.error}
 									helperText={fieldState.error?.message ?? ""}

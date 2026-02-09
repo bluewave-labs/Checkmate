@@ -104,8 +104,8 @@ export const InviteTeamMemberDialog = ({
 					render={({ field, fieldState }) => (
 						<TextField
 							{...field}
-							fieldLabel={t("pages.account.team.invite.email.label")}
-							placeholder={t("pages.account.team.invite.email.placeholder")}
+							fieldLabel={t("common.form.email.option.email.label")}
+							placeholder={t("common.form.email.option.email.placeholder")}
 							type="email"
 							fullWidth
 							error={!!fieldState.error}
@@ -122,8 +122,7 @@ export const InviteTeamMemberDialog = ({
 								{...field}
 								value={Array.isArray(value) ? (value[0] ?? "") : ""}
 								onChange={(e) => onChange([e.target.value as UserRole])}
-								fieldLabel={t("pages.account.team.invite.role.label")}
-								placeholder={t("pages.account.team.invite.role.placeholder")}
+								fieldLabel={t("common.form.role.option.role.label")}
 								fullWidth
 								error={!!fieldState.error}
 							>
