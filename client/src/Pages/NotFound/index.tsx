@@ -1,5 +1,6 @@
 import NotFoundSvg from "@/assets/Images/sushi_404.svg";
 import { Button } from "@/Components/v2/inputs";
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
@@ -34,10 +35,11 @@ const NotFoundPage = ({ title, desc }: NotFoundProps) => {
 				gap={theme.spacing(2)}
 				alignItems="center"
 			>
-				<img
+				<Box
+					component="img"
 					src={NotFoundSvg}
 					alt="404"
-					style={{ maxHeight: "25rem" }}
+					maxHeight={"25rem"}
 				/>
 				<Typography
 					component="h1"
