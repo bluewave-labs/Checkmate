@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { logger } from "../../../Utils/Logger.js";
-import { networkService } from "../../../main.jsx";
+import { useLazyGet } from "@/Hooks/UseApi";
 
 const withAdminCheck = (WrappedComponent) => {
 	const WithAdminCheck = (props) => {
 		const navigate = useNavigate();
-		const [isChecking, setIsChecking] = useState(true);
 		const [superAdminExists, setSuperAdminExists] = useState(false);
+		const [hasChecked, setHasChecked] = useState(false);
+		const { get: checkSuperAdmin, loading: isChecking } = useLazyGet();
 
 		useEffect(() => {
-			networkService
-				.doesSuperAdminExist()
+			checkSuperAdmin("/auth/users/superadmin")
 				.then((response) => {
-					if (response?.data?.data === true) {
+					if (response?.data === true) {
 						navigate("/login");
 					} else {
 						setSuperAdminExists(false);
@@ -24,11 +24,11 @@ const withAdminCheck = (WrappedComponent) => {
 					logger.error(error);
 				})
 				.finally(() => {
-					setIsChecking(false);
+					setHasChecked(true);
 				});
-		}, [navigate]);
+		}, [navigate, checkSuperAdmin]);
 
-		if (isChecking) {
+		if (!hasChecked || isChecking) {
 			return null;
 		}
 
