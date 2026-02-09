@@ -14,12 +14,14 @@ interface HeaderTeamControlsProps {
 	filter: UserRole | "";
 	onFilterChange: (value: UserRole | "") => void;
 	onInviteClick?: () => void;
+	onAddMemberClick?: () => void;
 }
 
 export const HeaderTeamControls = ({
 	filter,
 	onFilterChange,
 	onInviteClick,
+	onAddMemberClick,
 }: HeaderTeamControlsProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -68,6 +70,7 @@ export const HeaderTeamControls = ({
 					variant="contained"
 					color="primary"
 					startIcon={<Icon icon={UserPlus} />}
+					onClick={onAddMemberClick}
 				>
 					{t("common.buttons.addMember")}
 				</Button>

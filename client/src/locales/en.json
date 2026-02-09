@@ -578,6 +578,10 @@
 						"role": "Role"
 					}
 				},
+				"addMember": {
+					"title": "Register new team member",
+					"description": "Create a new user account. Share credentials securely after creation."
+				},
 				"invite": {
 					"title": "Invite team member",
 					"description": "Send an invitation to join your team",
