@@ -65,28 +65,12 @@ const SettingsEmail = ({
 	 * Handle sending test email with current form values
 	 */
 	const handleSendTestEmail = () => {
-		// Collect current form values
-		const emailConfig = {
-			systemEmailHost,
-			systemEmailPort,
-			systemEmailSecure,
-			systemEmailPool,
-			systemEmailUser,
-			systemEmailAddress,
-			systemEmailPassword: password || systemEmailPassword,
-			systemEmailTLSServername,
-			systemEmailConnectionHost,
-			systemEmailIgnoreTLS,
-			systemEmailRequireTLS,
-			systemEmailRejectUnauthorized,
-		};
-
 		// Basic validation
 		if (
-			!emailConfig.systemEmailHost ||
-			!emailConfig.systemEmailPort ||
-			!emailConfig.systemEmailAddress ||
-			!emailConfig.systemEmailPassword
+			!systemEmailHost ||
+			!systemEmailPort ||
+			!systemEmailAddress ||
+			!(password || systemEmailPassword)
 		) {
 			createToast({
 				body: t("settingsPage.emailSettings.toastEmailRequiredFieldsError"),
@@ -95,10 +79,21 @@ const SettingsEmail = ({
 			return;
 		}
 
-		// Send test email with current form values
+		// Send test email - only include optional fields if they have values
 		sendTestEmailFn("/settings/test-email", {
 			to: user.email,
-			...emailConfig,
+			systemEmailHost,
+			systemEmailPort,
+			systemEmailAddress,
+			systemEmailPassword: password || systemEmailPassword,
+			systemEmailSecure,
+			systemEmailPool,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
+			...(systemEmailUser && { systemEmailUser }),
+			...(systemEmailTLSServername && { systemEmailTLSServername }),
+			...(systemEmailConnectionHost && { systemEmailConnectionHost }),
 		});
 	};
 
