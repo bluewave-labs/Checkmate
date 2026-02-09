@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "@mui/material";
+import { useTheme, Alert } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
@@ -163,6 +163,7 @@ const CreateMonitorPage = () => {
 	}, [defaults, form]);
 
 	const watchedType = watch("type") as MonitorType;
+	const watchedUrl = watch("url");
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 
@@ -313,13 +314,21 @@ const CreateMonitorPage = () => {
 										fieldLabel={generalSettingsConfig.urlLabel}
 										placeholder={generalSettingsConfig.urlPlaceholder}
 										fullWidth
-										disabled={isEditMode}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
 									/>
 								)}
 							/>
 						)}
+						{isEditMode &&
+							generalSettingsConfig.showUrl &&
+							watchedUrl !== existingMonitor?.url && (
+								<Alert severity="warning">
+									{t(
+										"The dashboard will now pull its data from the updated URL."
+									)}
+								</Alert>
+							)}
 
 						{/* Port field - only for port and game types */}
 						{generalSettingsConfig.showPort && (
