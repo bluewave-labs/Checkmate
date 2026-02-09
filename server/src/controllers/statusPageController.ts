@@ -81,7 +81,7 @@ class StatusPageController {
 			const settings = await this.settingsService.getDBSettings();
 			const showURL = settings.showURL;
 
-			const monitors = await this.monitorsRepository.findByIds(statusPage.monitors);
+			const monitors = await this.monitorsRepository.findByIdsWithChecks(statusPage.monitors);
 			// Sort monitors according to the order in statusPage.monitors
 			const monitorOrder = new Map(statusPage.monitors.map((id, index) => [id, index]));
 			const sortedMonitors = [...monitors].sort((a, b) => {

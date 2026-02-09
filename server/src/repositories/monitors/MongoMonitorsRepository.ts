@@ -396,6 +396,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			isMaintenance: doc.isMaintenance ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

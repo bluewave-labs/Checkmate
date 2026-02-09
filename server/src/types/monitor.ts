@@ -47,6 +47,7 @@ export interface Monitor {
 	gameId?: string;
 	group: string | null;
 	recentChecks: CheckSnapshot[];
+	isMaintenance?: boolean;
 	createdAt: string;
 	updatedAt: string;
 }
