@@ -167,6 +167,7 @@
 		"uploadSuccess": "Monitors created successfully!"
 	},
 	"bytesSent": "Bytes Sent",
+	"addMember": "Add member",
 	"cancel": "Cancel",
 	"checkHooks": {
 		"failureResolveOne": "Failed to resolve incident."
@@ -195,16 +196,20 @@
 			"home": "Home"
 		},
 		"buttons": {
+			"addMember": "Add member",
 			"cancel": "Cancel",
 			"close": "Close",
 			"configure": "Configure",
 			"confirm": "Confirm",
 			"create": "Create",
 			"delete": "Delete",
+			"generateToken": "Generate token",
 			"incidents": "Incidents",
+			"inviteMember": "Invite member",
 			"pause": "Pause",
 			"resume": "Resume",
 			"save": "Save",
+			"sendInvite": "Send invite",
 			"test": "Test",
 			"testNotifications": "Test notifications",
 			"toggleTheme": "Toggles light & dark",
@@ -299,6 +304,7 @@
 	"createMonitor": "Create monitor",
 	"createNew": "Create new",
 	"delete": "Delete",
+	"generateToken": "Generate token",
 	"DeleteAccountButton": "Remove account",
 	"DeleteAccountTitle": "Remove account",
 	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
@@ -459,6 +465,7 @@
 		"discussions": "Discussions",
 		"docs": "Docs",
 		"incidents": "Incidents",
+		"inviteMember": "Invite member",
 		"infrastructure": "Infrastructure",
 		"logOut": "Log out",
 		"logs": "Logs",
@@ -559,8 +566,6 @@
 				}
 			},
 			"team": {
-				"addMember": "Add member",
-				"inviteMember": "Invite member",
 				"filter": {
 					"placeholder": "Filter by role",
 					"all": "All roles",
@@ -584,8 +589,7 @@
 						"label": "Role",
 						"placeholder": "Select a role"
 					},
-					"sendInvite": "Send invite",
-					"generateToken": "Generate token"
+					"linkLabel": "Invite link"
 				}
 			}
 		},
@@ -675,8 +679,10 @@
 				"actions": {
 					"configure": "Configure",
 					"delete": "Delete",
+					"generateToken": "Generate token",
 					"details": "Details",
 					"incidents": "Incidents",
+					"inviteMember": "Invite member",
 					"openSite": "Open site",
 					"pause": "Pause",
 					"resume": "Resume"
@@ -1341,6 +1347,7 @@
 		"teamMember": "Team member"
 	},
 	"save": "Save",
+	"sendInvite": "Send invite",
 	"selectAll": "Select all",
 	"settingsFailedToClearStats": "Failed to clear stats",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
@@ -1467,6 +1474,7 @@
 			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
 			"title": "Register new team member"
 		},
+		"addMember": "Add member",
 		"cancel": "Cancel",
 		"changeTeamPassword": {
 			"changePasswordMenu": "Reset Password",

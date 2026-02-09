@@ -60,7 +60,7 @@ export const HeaderTeamControls = ({
 					startIcon={<Icon icon={Mail} />}
 					onClick={onInviteClick}
 				>
-					{t("pages.account.team.inviteMember")}
+					{t("common.buttons.inviteMember")}
 				</Button>
 			)}
 			{isSuperAdmin && (
@@ -69,7 +69,7 @@ export const HeaderTeamControls = ({
 					color="primary"
 					startIcon={<Icon icon={UserPlus} />}
 				>
-					{t("pages.account.team.addMember")}
+					{t("common.buttons.addMember")}
 				</Button>
 			)}
 		</Stack>
