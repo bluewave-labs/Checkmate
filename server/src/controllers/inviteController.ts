@@ -15,7 +15,6 @@ class InviteController {
 	}
 
 	getInviteToken = async (req: Request, res: Response, next: NextFunction) => {
-		console.log(req.body);
 		try {
 			const teamId = requireTeamId(req.user?.teamId);
 			const userRoles = requireUserRoles(req.user?.role);

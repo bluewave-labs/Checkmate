@@ -7,6 +7,7 @@ import {
 	ITeamsRepository,
 } from "@/repositories/index.js";
 import type { User } from "@/types/index.js";
+import { canManageRole, type UserRole } from "@/types/user.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -151,6 +152,43 @@ class UserService {
 		}
 
 		return { user: newUser, token };
+	};
+
+	createUser = async (userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: any) => {
+		// Validate that the creator can assign the requested roles
+		const targetRoles = userData.role ?? [];
+		for (const targetRole of targetRoles) {
+			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to assign this role",
+					service: SERVICE_NAME,
+					method: "createUser",
+					status: 403,
+				});
+			}
+		}
+
+		userData.teamId = teamId;
+
+		if (userData.password) {
+			userData.password = this.hashPassword(userData.password);
+		}
+
+		const newUser = await this.usersRepository.create(userData, file);
+
+		this.logger.debug({
+			message: "New user created by superadmin",
+			service: SERVICE_NAME,
+			method: "createUser",
+			details: newUser.id,
+		});
+
+		newUser.profileImage = undefined;
+		newUser.avatarImage = undefined;
+		newUser.password = "";
+
+		return newUser;
 	};
 
 	loginUser = async (email: string, password: string) => {

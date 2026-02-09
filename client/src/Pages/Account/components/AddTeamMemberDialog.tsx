@@ -17,7 +17,11 @@ interface AddTeamMemberDialogProps {
 }
 
 interface RegisterPayload {
-	user: Omit<AddTeamMemberFormData, "confirm">;
+	firstName: string;
+	lastName: string;
+	email: string;
+	password: string;
+	role: string[];
 }
 
 export const AddTeamMemberDialog = ({
@@ -50,9 +54,9 @@ export const AddTeamMemberDialog = ({
 		if (loading) return;
 
 		const { confirm, ...userData } = data;
-		const payload: RegisterPayload = { user: userData };
+		const payload: RegisterPayload = userData;
 
-		const result = await post("/auth/register", payload);
+		const result = await post("/auth/users", payload);
 
 		if (result?.success) {
 			reset();

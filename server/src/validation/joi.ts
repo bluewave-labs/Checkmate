@@ -712,6 +712,28 @@ const editUserPasswordByIdBodyValidation = joi.object({
 	password: joi.string().min(8).required().pattern(passwordPattern),
 });
 
+const createUserBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi
+		.string()
+		.email()
+		.required()
+		.custom((value, helpers) => {
+			const lowercasedValue = value.toLowerCase();
+			if (value !== lowercasedValue) {
+				return helpers.message({ custom: "Email must be in lowercase" });
+			}
+			return lowercasedValue;
+		}),
+	password: joi.string().min(8).required().pattern(passwordPattern),
+	role: joi
+		.array()
+		.items(joi.string().valid(...UserRoles))
+		.min(1)
+		.required(),
+});
+
 export {
 	roleValidatior,
 	loginValidation,
@@ -781,4 +803,5 @@ export {
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
 	editUserPasswordByIdBodyValidation,
+	createUserBodyValidation,
 };
