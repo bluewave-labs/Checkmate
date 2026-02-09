@@ -203,6 +203,9 @@ const authSlice = createSlice({
 			state.authToken = action.payload.data.token;
 			state.user = action.payload.data.user;
 		},
+		setUser: (state, action) => {
+			state.user = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
 		// Register thunk
@@ -256,4 +259,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-export const { clearAuthState, setAuthState } = authSlice.actions;
+export const { clearAuthState, setAuthState, setUser } = authSlice.actions;

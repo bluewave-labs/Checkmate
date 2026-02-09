@@ -167,6 +167,7 @@
 		"uploadSuccess": "Monitors created successfully!"
 	},
 	"bytesSent": "Bytes Sent",
+	"addMember": "Add member",
 	"cancel": "Cancel",
 	"checkHooks": {
 		"failureResolveOne": "Failed to resolve incident."
@@ -176,6 +177,14 @@
 	"ClickUpload": "Click to upload",
 	"close": "Close",
 	"common": {
+		"auth": {
+			"roles": {
+				"admin": "Admin",
+				"demo": "Demo",
+				"superadmin": "Super admin",
+				"user": "User"
+			}
+		},
 		"alerts": {
 			"pageSpeedApiKey": {
 				"content": "Warning: You haven't added a Google PageSpeed API key yet. Visit <settingsLink>Settings</settingsLink> to add one. Without it, the PageSpeed monitor won't function."
@@ -187,16 +196,20 @@
 			"home": "Home"
 		},
 		"buttons": {
+			"addMember": "Add member",
 			"cancel": "Cancel",
 			"close": "Close",
 			"configure": "Configure",
 			"confirm": "Confirm",
 			"create": "Create",
 			"delete": "Delete",
+			"generateToken": "Generate token",
 			"incidents": "Incidents",
+			"inviteMember": "Invite member",
 			"pause": "Pause",
 			"resume": "Resume",
 			"save": "Save",
+			"sendInvite": "Send invite",
 			"test": "Test",
 			"testNotifications": "Test notifications",
 			"toggleTheme": "Toggles light & dark",
@@ -291,6 +304,7 @@
 	"createMonitor": "Create monitor",
 	"createNew": "Create new",
 	"delete": "Delete",
+	"generateToken": "Generate token",
 	"DeleteAccountButton": "Remove account",
 	"DeleteAccountTitle": "Remove account",
 	"DeleteAccountWarning": "Removing your account means you won't be able to sign in again and all your data will be removed. This isn't reversible.",
@@ -451,6 +465,7 @@
 		"discussions": "Discussions",
 		"docs": "Docs",
 		"incidents": "Incidents",
+		"inviteMember": "Invite member",
 		"infrastructure": "Infrastructure",
 		"logOut": "Log out",
 		"logs": "Logs",
@@ -498,6 +513,91 @@
 	"now": "Now",
 	"os": "OS",
 	"pages": {
+		"account": {
+			"tabs": {
+				"profile": "Profile",
+				"password": "Password",
+				"team": "Team"
+			},
+			"form": {
+				"name": {
+					"title": "Name",
+					"description": "Update your personal information",
+					"option": {
+						"firstName": {
+							"label": "First name",
+							"placeholder": "Enter your first name"
+						},
+						"lastName": {
+							"label": "Last name",
+							"placeholder": "Enter your last name"
+						}
+					}
+				},
+				"photo": {
+					"title": "Profile photo",
+					"description": "Upload a profile picture"
+				},
+				"currentPassword": {
+					"title": "Current password",
+					"description": "Enter your current password to verify your identity",
+					"option": {
+						"label": "Current password",
+						"placeholder": "Enter current password"
+					}
+				},
+				"newPassword": {
+					"title": "New password",
+					"description": "Choose a strong password with at least 8 characters",
+					"option": {
+						"newPassword": {
+							"label": "New password",
+							"placeholder": "Enter new password"
+						},
+						"confirm": {
+							"label": "Confirm password",
+							"placeholder": "Confirm new password"
+						}
+					}
+				},
+				"deleteAccount": {
+					"title": "Delete account",
+					"description": "This action is permanent and cannot be undone"
+				}
+			},
+			"team": {
+				"filter": {
+					"placeholder": "Filter by role",
+					"all": "All roles",
+					"admin": "Admin",
+					"member": "Member"
+				},
+				"table": {
+					"headers": {
+						"email": "Email",
+						"role": "Role",
+						"created": "Created at"
+					}
+				},
+				"addMember": {
+					"title": "Register new team member",
+					"description": "Create a new user account. Share credentials securely after creation."
+				},
+				"invite": {
+					"title": "Invite team member",
+					"description": "Send an invitation to join your team",
+					"email": {
+						"label": "Email address",
+						"placeholder": "Enter email address"
+					},
+					"role": {
+						"label": "Role",
+						"placeholder": "Select a role"
+					},
+					"linkLabel": "Invite link"
+				}
+			}
+		},
 		"auth": {
 			"common": {
 				"form": {
@@ -584,8 +684,10 @@
 				"actions": {
 					"configure": "Configure",
 					"delete": "Delete",
+					"generateToken": "Generate token",
 					"details": "Details",
 					"incidents": "Incidents",
+					"inviteMember": "Invite member",
 					"openSite": "Open site",
 					"pause": "Pause",
 					"resume": "Resume"
@@ -1250,6 +1352,7 @@
 		"teamMember": "Team member"
 	},
 	"save": "Save",
+	"sendInvite": "Send invite",
 	"selectAll": "Select all",
 	"settingsFailedToClearStats": "Failed to clear stats",
 	"settingsFailedToDeleteMonitors": "Failed to delete all monitors",
@@ -1376,6 +1479,7 @@
 			"description": "Create a new user and share the credentials with them. This method gives the member immediate access to all monitors.",
 			"title": "Register new team member"
 		},
+		"addMember": "Add member",
 		"cancel": "Cancel",
 		"changeTeamPassword": {
 			"changePasswordMenu": "Reset Password",

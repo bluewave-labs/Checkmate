@@ -45,7 +45,7 @@ import Notifications from "../Pages/Notifications";
 import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
-import Account from "../Pages/Account/index.jsx";
+import Account from "@/Pages/Account";
 import EditUser from "../Pages/Account/EditUser/index.jsx";
 import Settings from "../Pages/Settings";
 
@@ -328,15 +328,27 @@ const Routes = () => {
 				/>
 				<Route
 					path="account/profile"
-					element={<Account open={"profile"} />}
+					element={
+						<ThemeProvider theme={v2theme}>
+							<Account open={"profile"} />
+						</ThemeProvider>
+					}
 				/>
 				<Route
 					path="account/password"
-					element={<Account open={"password"} />}
+					element={
+						<ThemeProvider theme={v2theme}>
+							<Account open={"password"} />
+						</ThemeProvider>
+					}
 				/>
 				<Route
 					path="account/team"
-					element={<Account open={"team"} />}
+					element={
+						<ThemeProvider theme={v2theme}>
+							<Account open={"team"} />
+						</ThemeProvider>
+					}
 				/>
 				<Route
 					path="account/team/:userId"
