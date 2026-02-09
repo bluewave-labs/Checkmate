@@ -36,7 +36,6 @@ const EditUserPage = () => {
 
 	return (
 		<BasePage>
-			<Breadcrumb breadcrumbOverride={[t("menu.team"), t("editUserPage.title")]} />
 			<Stack gap={theme.spacing(8)}>
 				<ConfigBox
 					title={t("pages.account.form.name.title")}
@@ -72,7 +71,7 @@ const EditUserPage = () => {
 					rightContent={
 						<Stack spacing={theme.spacing(4)}>
 							<Autocomplete
-								fieldLabel={t("common.form.role.option.label")}
+								fieldLabel={t("common.form.role.option.role.label")}
 								multiple
 								options={roleOptions}
 								value={selectedRoles}
