@@ -46,7 +46,7 @@ import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
 import Account from "@/Pages/Account";
-import EditUser from "../Pages/Account/EditUser/index.jsx";
+import EditUser from "../Pages/Account/EditUser";
 import Settings from "../Pages/Settings";
 
 import Maintenance from "../Pages/Maintenance";
@@ -354,7 +354,9 @@ const Routes = () => {
 					path="account/team/:userId"
 					element={
 						<RoleProtectedRoute roles={["superadmin"]}>
-							<EditUser />
+							<ThemeProvider theme={v2theme}>
+								<EditUser />
+							</ThemeProvider>
 						</RoleProtectedRoute>
 					}
 				/>
