@@ -26,14 +26,9 @@ import {
 } from "@/Features/UI/uiSlice.js";
 import SettingsStats from "./SettingsStats.jsx";
 
-import { useFetchSettings, useSaveSettings } from "@/Hooks/settingsHooks.js";
+import { useFetchSettings, useSaveSettings } from "@/Hooks/settingsHooks";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
-import {
-	useAddDemoMonitors,
-	useDeleteAllMonitors,
-	useDeleteMonitorStats,
-	useFetchJson,
-} from "@/Hooks/monitorHooks.js";
+import { usePost, useDelete, useLazyGet } from "@/Hooks/UseApi";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
@@ -64,8 +59,6 @@ const Settings = () => {
 		setIsEmailPasswordSet,
 	});
 
-	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
-
 	const [isSaving, saveError, saveSettings] = useSaveSettings({
 		setSettingsData,
 		setIsApiKeySet,
@@ -73,9 +66,12 @@ const Settings = () => {
 		setIsEmailPasswordSet,
 		setEmailPasswordHasBeenReset,
 	});
-	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
-	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
-	const [fetchJson, isFetchingJson] = useFetchJson();
+
+	// New API hooks to replace monitorHooks
+	const { post: postDemoMonitors, loading: isAddingDemoMonitors } = usePost();
+	const { deleteFn: deleteAllMonitorsFn, loading: isDeletingMonitors } = useDelete();
+	const { deleteFn: deleteMonitorStatsFn, loading: isDeletingMonitorStats } = useDelete();
+	const { get: fetchJson, loading: isFetchingJson } = useLazyGet();
 
 	// Setup
 	const isAdmin = useIsAdmin();
@@ -130,22 +126,23 @@ const Settings = () => {
 		}
 
 		if (name === "deleteStats") {
-			await deleteMonitorStats();
+			await deleteMonitorStatsFn("/checks/team");
 			return;
 		}
 
 		if (name === "demo") {
-			await addDemoMonitors();
+			await postDemoMonitors("/monitors/demo", {});
 			return;
 		}
 
 		if (name === "deleteMonitors") {
-			await deleteAllMonitors();
+			await deleteAllMonitorsFn("/monitors/");
 			return;
 		}
 
 		if (name === "export") {
-			const json = await fetchJson();
+			const res = await fetchJson("/monitors/export/json");
+			const json = res?.data ?? [];
 			if (!json || json.length === 0) {
 				return;
 			}
