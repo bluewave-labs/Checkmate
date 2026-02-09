@@ -11,9 +11,7 @@ import NotFound from "../Pages/NotFound/index.jsx";
 import AuthLogin from "../Pages/Auth/Login";
 import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
-import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
-import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
-import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
+import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
 
 // Uptime
 import Uptime from "../Pages/Uptime/Monitors";
@@ -418,16 +416,14 @@ const Routes = () => {
 				}
 			/>
 			<Route
-				path="/check-email"
-				element={<AuthCheckEmail />}
-			/>
-			<Route
 				path="/set-new-password/:token"
-				element={<AuthSetNewPassword />}
-			/>
-			<Route
-				path="/new-password-confirmed"
-				element={<AuthNewPasswordConfirmed />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthSetNewPassword />
+						</ThemeProvider>
+					</>
+				}
 			/>
 			<Route
 				path="/status/public/:url"

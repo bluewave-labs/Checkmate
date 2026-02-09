@@ -27,6 +27,7 @@ export const BulletPointCheck = ({
 			<Check
 				size={16}
 				strokeWidth={1.5}
+				color={variant === "info" ? theme.palette.text.secondary : colors[variant]}
 				style={{
 					flexShrink: 0,
 				}}

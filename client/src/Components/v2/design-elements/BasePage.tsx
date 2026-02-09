@@ -177,7 +177,7 @@ export const MonitorBasePageWithStates = ({
 				error={error}
 				{...props}
 			>
-				{priorityFallback}
+				<Stack height={"100%"}>{priorityFallback}</Stack>
 			</BasePage>
 		);
 	}
