@@ -1,10 +1,16 @@
-import { Stack, MenuItem } from "@mui/material";
+import { Stack, Typography, IconButton, Divider } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ConfigBox, BasePage, Breadcrumb } from "@/Components/v2/design-elements";
-import { TextField, Button, Select } from "@/Components/v2/inputs";
+import { TextField, Button, Autocomplete } from "@/Components/v2/inputs";
 import { UserRoles } from "@/Types/User";
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
+
+interface RoleOption {
+	id: string;
+	name: string;
+}
 
 const EditUserPage = () => {
 	const theme = useTheme();
@@ -16,6 +22,17 @@ const EditUserPage = () => {
 	const [roles, setRoles] = useState<string[]>([]);
 
 	const editableRoles = UserRoles.filter((role) => role !== "superadmin");
+
+	const roleOptions: RoleOption[] = editableRoles.map((role) => ({
+		id: role,
+		name: t(`common.auth.roles.${role}`),
+	}));
+
+	const selectedRoles = roleOptions.filter((r) => roles.includes(r.id));
+
+	const handleRemoveRole = (roleToRemove: string) => {
+		setRoles(roles.filter((role) => role !== roleToRemove));
+	};
 
 	return (
 		<BasePage>
@@ -50,25 +67,47 @@ const EditUserPage = () => {
 					}
 				/>
 				<ConfigBox
-					title={t("editUserPage.form.role")}
-					subtitle={t("pages.account.team.invite.role.placeholder")}
+					title={t("pages.editUser.form.roles.title")}
+					subtitle={t("pages.editUser.form.roles.description")}
 					rightContent={
-						<Select
-							multiple
-							value={roles}
-							onChange={(e) => setRoles(e.target.value as string[])}
-							placeholder={t("pages.account.team.invite.role.placeholder")}
-							sx={{ minWidth: 200 }}
-						>
-							{editableRoles.map((role) => (
-								<MenuItem
-									key={role}
-									value={role}
+						<Stack spacing={theme.spacing(4)}>
+							<Autocomplete
+								fieldLabel={t("common.form.role.option.label")}
+								multiple
+								options={roleOptions}
+								value={selectedRoles}
+								getOptionLabel={(option) => option.name}
+								onChange={(_: unknown, newValue: RoleOption[]) => {
+									setRoles(newValue.map((r) => r.id));
+								}}
+								isOptionEqualToValue={(option, value) => option.id === value.id}
+							/>
+							{selectedRoles.length > 0 && (
+								<Stack
+									flex={1}
+									width="100%"
 								>
-									{t(`common.auth.roles.${role}`)}
-								</MenuItem>
-							))}
-						</Select>
+									{selectedRoles.map((role, index) => (
+										<Stack
+											direction="row"
+											alignItems="center"
+											key={role.id}
+											width="100%"
+										>
+											<Typography flexGrow={1}>{role.name}</Typography>
+											<IconButton
+												size="small"
+												onClick={() => handleRemoveRole(role.id)}
+												aria-label="Remove role"
+											>
+												<Trash2 size={16} />
+											</IconButton>
+											{index < selectedRoles.length - 1 && <Divider />}
+										</Stack>
+									))}
+								</Stack>
+							)}
+						</Stack>
 					}
 				/>
 				<Button

@@ -238,6 +238,13 @@
 			"responseTime": "Response time"
 		},
 		"form": {
+			"role": {
+				"option": {
+					"role": {
+						"label": "Roles"
+					}
+				}
+			},
 			"name": {
 				"option": {
 					"firstName": {
@@ -544,17 +551,7 @@
 			"form": {
 				"name": {
 					"title": "Name",
-					"description": "Update your personal information",
-					"option": {
-						"firstName": {
-							"label": "First name",
-							"placeholder": "Enter your first name"
-						},
-						"lastName": {
-							"label": "Last name",
-							"placeholder": "Enter your last name"
-						}
-					}
+					"description": "Update your personal information"
 				},
 				"photo": {
 					"title": "Profile photo",
@@ -819,6 +816,14 @@
 					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"title": "Type"
+				}
+			}
+		},
+		"editUser": {
+			"form": {
+				"roles": {
+					"title": "Roles",
+					"description": "Assign roles to the user. Multiple roles can be selected."
 				}
 			}
 		},
