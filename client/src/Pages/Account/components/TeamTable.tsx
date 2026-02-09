@@ -35,6 +35,13 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 				</Typography>
 			),
 		},
+		{
+			id: "created",
+			content: t("pages.account.team.table.headers.created"),
+			render: (row) => (
+				<Typography>{new Date(row.createdAt).toLocaleDateString()}</Typography>
+			),
+		},
 	];
 
 	const handleRowClick = (row: User) => {

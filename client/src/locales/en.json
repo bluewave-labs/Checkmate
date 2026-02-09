@@ -575,7 +575,8 @@
 				"table": {
 					"headers": {
 						"email": "Email",
-						"role": "Role"
+						"role": "Role",
+						"created": "Created at"
 					}
 				},
 				"addMember": {
