@@ -5,9 +5,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import { persistor, store } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
-import NetworkServiceProvider from "./Utils/NetworkServiceProvider.jsx";
-import { networkService } from "./Utils/NetworkService";
-export { networkService };
 import I18nLoader from "./Components/v1/I18nLoader";
 import { initApiClient } from "./Utils/ApiClient";
 
@@ -21,9 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 		>
 			<I18nLoader />
 			<Router>
-				<NetworkServiceProvider>
-					<App />
-				</NetworkServiceProvider>
+				<App />
 			</Router>
 		</PersistGate>
 	</Provider>

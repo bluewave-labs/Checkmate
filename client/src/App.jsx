@@ -7,7 +7,6 @@ import lightTheme from "./Utils/Theme/lightTheme";
 import darkTheme from "./Utils/Theme/darkTheme";
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import { logger } from "./Utils/Logger"; // Import the logger
-import { networkService } from "./main";
 import { Routes } from "./Routes";
 import AppLayout from "@/Components/v1/Layouts/AppLayout";
 
@@ -18,7 +17,6 @@ function App() {
 	useEffect(() => {
 		return () => {
 			logger.cleanup();
-			networkService.cleanup();
 		};
 	}, []);
 

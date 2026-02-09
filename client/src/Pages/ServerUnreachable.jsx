@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import { networkService } from "@/Utils/NetworkService.js";
+import { get } from "@/Utils/ApiClient";
 import Alert from "@/Components/v1/Alert/index.jsx";
 import { createToast } from "@/Utils/toastUtils.jsx";
 import { useTranslation } from "react-i18next";
@@ -24,7 +24,7 @@ const ServerUnreachable = () => {
 		try {
 			// Try to connect to the backend with a simple API call
 			// We'll use any lightweight endpoint that doesn't require authentication
-			await networkService.axiosInstance.get("/health", { timeout: 5000 });
+			await get("/health", { timeout: 5000 });
 
 			// If successful, show toast and navigate to login page
 			createToast({

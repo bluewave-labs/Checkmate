@@ -12,7 +12,8 @@ import { PropTypes } from "prop-types";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornments/index.jsx";
-import { useSendTestEmail } from "@/Hooks/useSendTestEmail.js";
+import { usePost } from "@/Hooks/UseApi";
+import { useSelector } from "react-redux";
 import { createToast } from "@/Utils/toastUtils.jsx";
 
 const SettingsEmail = ({
@@ -48,7 +49,8 @@ const SettingsEmail = ({
 	const [password, setPassword] = useState("");
 
 	// Network
-	const [isSending, , sendTestEmail] = useSendTestEmail(); // Using empty placeholder for unused error variable
+	const { post: sendTestEmailFn, loading: isSending } = usePost();
+	const user = useSelector((state) => state.auth.user);
 
 	// Handlers
 	const handlePasswordChange = (e) => {
@@ -94,7 +96,10 @@ const SettingsEmail = ({
 		}
 
 		// Send test email with current form values
-		sendTestEmail(emailConfig);
+		sendTestEmailFn("/settings/test-email", {
+			to: user.email,
+			...emailConfig,
+		});
 	};
 
 	if (!isAdmin) {
@@ -296,6 +301,14 @@ const SettingsEmail = ({
 							</code>
 						</Box>
 					</Box>
+
+					<pre>
+						{JSON.stringify({
+							systemEmailHost,
+							systemEmailAddress,
+							systemEmailPassword,
+						})}
+					</pre>
 
 					<Box>
 						{systemEmailHost &&
