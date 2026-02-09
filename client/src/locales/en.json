@@ -665,6 +665,10 @@
 						"linkText": "login"
 					}
 				}
+			},
+			"setNewPassword": {
+				"title": "Reset your password",
+				"subtitle": "Your new password must be different from previously used passwords."
 			}
 		},
 		"checks": {
@@ -1064,7 +1068,6 @@
 						"duration": {
 							"label": "Duration"
 						},
-
 						"startTime": {
 							"label": "Start time"
 						}
