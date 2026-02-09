@@ -5,25 +5,25 @@ import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
-import NotFound from "../Pages/NotFound/index.jsx";
+import NotFound from "@/Pages/NotFound";
 
 // Auth
-import AuthLogin from "../Pages/Auth/Login";
+import AuthLogin from "@/Pages/Auth/Login";
 import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
 
 // Uptime
-import Uptime from "../Pages/Uptime/Monitors";
-import UptimeDetails from "../Pages/Uptime/Details";
+import Uptime from "@/Pages/Uptime/Monitors";
+import UptimeDetails from "@/Pages/Uptime/Details";
 
 // PageSpeed
-import PageSpeed from "../Pages/PageSpeed/Monitors/index";
-import PageSpeedDetails from "../Pages/PageSpeed/Details/";
+import PageSpeed from "@/Pages/PageSpeed/Monitors/";
+import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 
 // Infrastructure
-import Infrastructure from "../Pages/Infrastructure/Monitors";
-import InfrastructureDetails from "../Pages/Infrastructure/Details/index";
+import Infrastructure from "@/Pages/Infrastructure/Monitors";
+import InfrastructureDetails from "@/Pages/Infrastructure/Details/index";
 
 // Server Status
 import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
@@ -442,7 +442,13 @@ const Routes = () => {
 			/>
 			<Route
 				path="*"
-				element={<NotFound />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<NotFound />
+						</ThemeProvider>
+					</>
+				}
 			/>
 		</LibRoutes>
 	);

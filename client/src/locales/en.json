@@ -221,7 +221,8 @@
 			"test": "Test",
 			"testNotifications": "Test notifications",
 			"toggleTheme": "Toggles light & dark",
-			"flushQueue": "Flush queue"
+			"flushQueue": "Flush queue",
+			"notFound": "Go to the main dashboard"
 		},
 		"charts": {
 			"labels": {
@@ -550,6 +551,10 @@
 	"now": "Now",
 	"os": "OS",
 	"pages": {
+		"notFound": {
+			"title": "Oh no!  You dropped your sushi!",
+			"subtitle": "Either the URL doesn’t exist, or you don’t have access to it."
+		},
 		"account": {
 			"tabs": {
 				"profile": "Profile",
