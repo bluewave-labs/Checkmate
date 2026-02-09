@@ -324,9 +324,7 @@ const CreateMonitorPage = () => {
 							generalSettingsConfig.showUrl &&
 							watchedUrl !== existingMonitor?.url && (
 								<Alert severity="warning">
-									{t(
-										"The dashboard will now pull its data from the updated URL."
-									)}
+									{t("urlUpdateWarning")}
 								</Alert>
 							)}
 

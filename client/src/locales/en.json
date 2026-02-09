@@ -947,7 +947,6 @@
 						"duration": {
 							"label": "Duration"
 						},
-
 						"startTime": {
 							"label": "Start time"
 						}
@@ -1452,5 +1451,6 @@
 	"monitorDeleted": "Monitor deleted successfully",
 	"monitorPaused": "Monitor paused successfully",
 	"monitorResumed": "Monitor resumed successfully",
-	"name": "Name"
+	"name": "Name",
+	"urlUpdateWarning": "The dashboard will now pull its data from the updated URL."
 }
