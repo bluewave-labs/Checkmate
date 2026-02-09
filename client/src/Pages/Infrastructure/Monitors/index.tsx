@@ -20,7 +20,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import type { RootState } from "@/Types/state";
 import { InfraMonitorsTable } from "./Components/MonitorsTable";
-import useDebounce from "@/Utils/debounce";
+import useDebounce from "@/Hooks/useDebounce";
 
 const InfrastructureMonitors = () => {
 	const { t } = useTranslation();

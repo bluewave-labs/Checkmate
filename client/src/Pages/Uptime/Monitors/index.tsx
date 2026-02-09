@@ -20,7 +20,7 @@ import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
-import useDebounce from "@/Utils/debounce";
+import useDebounce from "@/Hooks/useDebounce";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
