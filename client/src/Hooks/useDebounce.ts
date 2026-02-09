@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
  * @example
  * const debouncedSearch = useDebounce(search, 300); // Debounces the search input with a 300ms delay
  */
-const useDebounce = <T,>(value: T, delay: number): T => {
+const useDebounce = <T>(value: T, delay: number): T => {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
 	useEffect(() => {
