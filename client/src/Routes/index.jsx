@@ -12,7 +12,7 @@ import AuthLogin from "../Pages/Auth/Login";
 import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthCheckEmail from "../Pages/Auth/CheckEmail.jsx";
-import AuthSetNewPassword from "../Pages/Auth/SetNewPassword.jsx";
+import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
 import AuthNewPasswordConfirmed from "../Pages/Auth/NewPasswordConfirmed.jsx";
 
 // Uptime
@@ -423,7 +423,13 @@ const Routes = () => {
 			/>
 			<Route
 				path="/set-new-password/:token"
-				element={<AuthSetNewPassword />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthSetNewPassword />
+						</ThemeProvider>
+					</>
+				}
 			/>
 			<Route
 				path="/new-password-confirmed"
