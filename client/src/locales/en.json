@@ -333,10 +333,38 @@
 			"reconnected": "Connection restored"
 		},
 		"sidebar": {
-			"menu": {},
-			"bottomMenu": {}
+			"menu": {
+				"uptime": "Uptime",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Infrastructure",
+				"notifications": "Notifications",
+				"checks": "Checks",
+				"incidents": "Incidents",
+				"statusPages": "Status pages",
+				"maintenance": "Maintenance",
+				"logs": "Logs",
+				"settings": "Settings"
+			},
+			"bottomMenu": {
+				"support": "Support",
+				"discussions": "Discussions",
+				"docs": "Docs",
+				"changelog": "Changelog"
+			},
+			"accountMenu": {
+				"profile": "Profile",
+				"password": "Password",
+				"team": "Team"
+			},
+			"starPrompt": {
+				"title": "Star Checkmate",
+				"description": "See the latest releases and help grow the community on GitHub"
+			}
 		},
-		"starPrompt": {}
+		"starPrompt": {
+			"title": "Star Checkmate",
+			"description": "See the latest releases and help grow the community on GitHub"
+		}
 	},
 	"configure": "Configure",
 	"confirmPassword": "Confirm password",

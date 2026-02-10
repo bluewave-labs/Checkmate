@@ -4,7 +4,7 @@ import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/v2/sidebar/Logo";
-import { getMenu, getBottomMenu } from "@/Components/v2/sidebar/Menu";
+import { getMenu, getBottomMenu, getAccountMenu } from "@/Components/v2/sidebar/Menu";
 import { NavItem } from "@/Components/v2/sidebar/NavItem";
 import { StarPrompt } from "@/Components/v2/sidebar/StarPrompt";
 
@@ -31,6 +31,7 @@ export const Sidebar = () => {
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
 	const bottomMenu = getBottomMenu(t);
+	const accountMenu = getAccountMenu(t);
 
 	useEffect(() => {
 		dispatch(setCollapsed({ collapsed: isSmall }));
@@ -109,6 +110,23 @@ export const Sidebar = () => {
 				})}
 			</List>
 			<Divider sx={{ borderColor: theme.palette.divider }} />
+			<List
+				component="nav"
+				disablePadding
+				sx={{ px: theme.spacing(6) }}
+			>
+				{accountMenu.map((item) => {
+					const selected = location.pathname.startsWith(`/${item.path}`);
+					return (
+						<NavItem
+							key={item.path}
+							item={item}
+							selected={selected}
+							onClick={() => handleNavClick(item.path)}
+						/>
+					);
+				})}
+			</List>
 		</Stack>
 	);
 };

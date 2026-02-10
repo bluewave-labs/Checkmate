@@ -54,7 +54,7 @@ export const StarPrompt = ({
 					variant="subtitle2"
 					mt={theme.spacing(3)}
 				>
-					{t("starPromptTitle")}
+					{t("components.sidebar.starPrompt.title")}
 				</Typography>
 				<IconButton
 					onClick={handleClose}
@@ -81,7 +81,7 @@ export const StarPrompt = ({
 					px: theme.spacing(4),
 				}}
 			>
-				{t("starPromptDescription")}
+				{t("components.sidebar.starPrompt.description")}
 			</Typography>
 
 			<Box
