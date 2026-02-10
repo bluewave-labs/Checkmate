@@ -13,7 +13,7 @@ import SettingsExport from "./SettingsExport.jsx";
 import Button from "@mui/material/Button";
 // Utils
 import { settingsValidation } from "@/Validation/validation.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
@@ -26,14 +26,8 @@ import {
 } from "@/Features/UI/uiSlice.js";
 import SettingsStats from "./SettingsStats.jsx";
 
-import { useFetchSettings, useSaveSettings } from "@/Hooks/settingsHooks.js";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
-import {
-	useAddDemoMonitors,
-	useDeleteAllMonitors,
-	useDeleteMonitorStats,
-	useFetchJson,
-} from "@/Hooks/monitorHooks.js";
+import { useGet, usePost, useDelete, useLazyGet, usePut } from "@/Hooks/UseApi";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
@@ -58,24 +52,39 @@ const Settings = () => {
 	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
 
 	// Network
-	const [isSettingsLoading, settingsError] = useFetchSettings({
-		setSettingsData,
-		setIsApiKeySet,
-		setIsEmailPasswordSet,
-	});
+	const { data: fetchedSettings, isLoading: isSettingsLoading } = useGet("/settings");
 
-	const [addDemoMonitors, isAddingDemoMonitors] = useAddDemoMonitors();
+	useEffect(() => {
+		if (fetchedSettings) {
+			setSettingsData(fetchedSettings);
+			setIsApiKeySet(fetchedSettings?.pagespeedKeySet);
+			setIsEmailPasswordSet(fetchedSettings?.emailPasswordSet);
+		}
+	}, [fetchedSettings]);
 
-	const [isSaving, saveError, saveSettings] = useSaveSettings({
-		setSettingsData,
-		setIsApiKeySet,
-		setApiKeyHasBeenReset,
-		setIsEmailPasswordSet,
-		setEmailPasswordHasBeenReset,
-	});
-	const [deleteAllMonitors, isDeletingMonitors] = useDeleteAllMonitors();
-	const [deleteMonitorStats, isDeletingMonitorStats] = useDeleteMonitorStats();
-	const [fetchJson, isFetchingJson] = useFetchJson();
+	const { put: saveSettingsFn, loading: isSaving } = usePut();
+
+	const saveSettings = async (settings) => {
+		const response = await saveSettingsFn("/settings", { settings });
+		if (response?.data) {
+			const data = response.data;
+			setIsApiKeySet(data.pagespeedKeySet);
+			setIsEmailPasswordSet(data.emailPasswordSet);
+			if (data.pagespeedKeySet === true) {
+				setApiKeyHasBeenReset(false);
+			}
+			if (data.emailPasswordSet === true) {
+				setEmailPasswordHasBeenReset(false);
+			}
+			setSettingsData(data);
+		}
+	};
+
+	// New API hooks to replace monitorHooks
+	const { post: postDemoMonitors, loading: isAddingDemoMonitors } = usePost();
+	const { deleteFn: deleteAllMonitorsFn, loading: isDeletingMonitors } = useDelete();
+	const { deleteFn: deleteMonitorStatsFn, loading: isDeletingMonitorStats } = useDelete();
+	const { get: fetchJson, loading: isFetchingJson } = useLazyGet();
 
 	// Setup
 	const isAdmin = useIsAdmin();
@@ -130,22 +139,23 @@ const Settings = () => {
 		}
 
 		if (name === "deleteStats") {
-			await deleteMonitorStats();
+			await deleteMonitorStatsFn("/checks/team");
 			return;
 		}
 
 		if (name === "demo") {
-			await addDemoMonitors();
+			await postDemoMonitors("/monitors/demo", {});
 			return;
 		}
 
 		if (name === "deleteMonitors") {
-			await deleteAllMonitors();
+			await deleteAllMonitorsFn("/monitors/");
 			return;
 		}
 
 		if (name === "export") {
-			const json = await fetchJson();
+			const res = await fetchJson("/monitors/export/json");
+			const json = res?.data ?? [];
 			if (!json || json.length === 0) {
 				return;
 			}

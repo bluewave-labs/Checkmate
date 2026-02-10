@@ -4,8 +4,6 @@ const initialMode = window?.matchMedia?.("(prefers-color-scheme: dark)")?.matche
 	? "dark"
 	: "light";
 
-// Initial state for UI settings.
-// Add more settings as needed (e.g., theme preferences, user settings)
 const initialState = {
 	monitors: {
 		rowsPerPage: 10,
