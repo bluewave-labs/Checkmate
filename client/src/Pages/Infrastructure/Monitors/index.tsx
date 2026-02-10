@@ -44,8 +44,7 @@ const InfrastructureMonitors = () => {
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
 
-	// Debounce search input - 300ms delay
-	const debouncedSearch = useDebounce(search, 300);
+	const debouncedSearch = useDebounce<string>(search, 300);
 
 	const handleClearFilters = useCallback(() => {
 		setSelectedStatus("");
