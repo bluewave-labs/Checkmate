@@ -8,7 +8,7 @@ interface AvatarProps {
 	src?: string;
 	small?: boolean;
 	sx?: object;
-	onClick?: Function;
+	onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const Avatar = ({ src, small, sx, onClick = () => {} }: AvatarProps) => {
@@ -17,7 +17,6 @@ export const Avatar = ({ src, small, sx, onClick = () => {} }: AvatarProps) => {
 	if (!user) return null;
 
 	const style = small ? { width: 32, height: 32 } : { width: 64, height: 64 };
-	const border = small ? 1 : 3;
 
 	const [image, setImage] = useState<string>();
 	useEffect(() => {

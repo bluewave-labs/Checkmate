@@ -7,6 +7,7 @@ import { Logo } from "@/Components/v2/sidebar/Logo";
 import { getMenu, getBottomMenu, getAccountMenu } from "@/Components/v2/sidebar/Menu";
 import { NavItem } from "@/Components/v2/sidebar/NavItem";
 import { StarPrompt } from "@/Components/v2/sidebar/StarPrompt";
+import AuthFooter from "@/Components/v2/sidebar/Authfooter";
 
 import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -26,7 +27,7 @@ export const Sidebar = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { t } = useTranslation();
-	const { width, transition } = useSidebar();
+	const { width, transition, collapsed } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
@@ -110,23 +111,11 @@ export const Sidebar = () => {
 				})}
 			</List>
 			<Divider sx={{ borderColor: theme.palette.divider }} />
-			<List
-				component="nav"
-				disablePadding
-				sx={{ px: theme.spacing(6) }}
-			>
-				{accountMenu.map((item) => {
-					const selected = location.pathname.startsWith(`/${item.path}`);
-					return (
-						<NavItem
-							key={item.path}
-							item={item}
-							selected={selected}
-							onClick={() => handleNavClick(item.path)}
-						/>
-					);
-				})}
-			</List>
+
+			<AuthFooter
+				collapsed={collapsed}
+				accountMenuItems={accountMenu}
+			/>
 		</Stack>
 	);
 };

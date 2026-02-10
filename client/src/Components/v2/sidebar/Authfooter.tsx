@@ -6,7 +6,6 @@ import IconButton from "@mui/material/IconButton";
 import { Avatar, Icon } from "@/Components/v2/design-elements";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
 import { MoreVertical, LogOut } from "lucide-react";
 
 import { useTheme } from "@mui/material";
@@ -97,7 +96,6 @@ const AuthFooter = ({
 	return (
 		<Stack
 			direction="row"
-			height="var(--env-var-side-bar-auth-footer-height)"
 			alignItems="center"
 			py={theme.spacing(4)}
 			px={theme.spacing(8)}
@@ -135,10 +133,8 @@ const AuthFooter = ({
 					}}
 				>
 					<Typography
-						color={theme.palette.primary.contrastText}
 						fontWeight={500}
 						lineHeight={1}
-						fontSize={"var(--env-var-font-size-medium)"}
 						sx={{
 							display: "block",
 							whiteSpace: "nowrap",
@@ -149,8 +145,6 @@ const AuthFooter = ({
 						{authState.user?.firstName} {authState.user?.lastName}
 					</Typography>
 					<Typography
-						color={theme.palette.primary.contrastText}
-						fontSize={"var(--env-var-font-size-small)"}
 						textOverflow="ellipsis"
 						overflow="hidden"
 						whiteSpace="nowrap"
@@ -228,7 +222,6 @@ const AuthFooter = ({
 									display: "block",
 									whiteSpace: "nowrap",
 									overflow: "visible",
-									// wordBreak: "break-word",
 									textOverflow: "clip",
 								}}
 							>
@@ -240,7 +233,6 @@ const AuthFooter = ({
 									fontSize: 12,
 									whiteSpace: "nowrap",
 									overflow: "visible",
-									// wordBreak: "break-word",
 								}}
 							>
 								{authState.user?.role}
@@ -248,9 +240,6 @@ const AuthFooter = ({
 						</Box>
 					</MenuItem>
 				)}
-				{/* TODO Do we need two dividers? */}
-				{collapsed && <Divider />}
-				{/* <Divider /> */}
 				{renderAccountMenuItems(authState.user, accountMenuItems)}
 				<MenuItem
 					onClick={logout}
