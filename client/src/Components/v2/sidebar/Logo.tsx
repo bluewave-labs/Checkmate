@@ -1,4 +1,4 @@
-import Stack from "@mui/material/Stack";
+import Stack, { type StackProps } from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
@@ -7,14 +7,13 @@ import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useSidebar from "@/Hooks/useSidebar";
 
-export const Logo = () => {
+export const Logo = (props: StackProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const { collapsed } = useSidebar();
 	return (
 		<Stack
-			pb={theme.spacing(6)}
 			direction="row"
 			alignItems="center"
 			gap={theme.spacing(4)}
@@ -22,9 +21,10 @@ export const Logo = () => {
 				dispatch(toggleSidebar());
 			}}
 			sx={{ cursor: "pointer" }}
+			{...props}
 		>
 			<Typography
-				minWidth={39}
+				minWidth={theme.spacing(16)}
 				minHeight={theme.spacing(16)}
 				display={"flex"}
 				justifyContent={"center"}

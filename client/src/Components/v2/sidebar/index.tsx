@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import { useSidebar } from "@/Hooks/useSidebar.js";
@@ -5,25 +6,30 @@ import { Logo } from "@/Components/v2/sidebar/Logo";
 import { getMenu } from "@/Components/v2/sidebar/Menu";
 import { NavItem } from "@/Components/v2/sidebar/NavItem";
 
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { toggleSidebar } from "@/Features/UI/uiSlice";
+import { setCollapsed } from "@/Features/UI/uiSlice";
 
 export const Sidebar = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { t } = useTranslation();
 	const { width, transition } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
 
+	useEffect(() => {
+		dispatch(setCollapsed({ collapsed: isSmall }));
+	}, [isSmall, dispatch]);
+
 	return (
 		<Stack
 			component="aside"
-			position={{ xs: "fixed", md: "sticky" }}
+			position={isSmall ? "fixed" : "sticky"}
 			top={0}
 			left={0}
 			minHeight={"100vh"}
@@ -46,7 +52,10 @@ export const Sidebar = () => {
 					height: "100%",
 				}}
 			>
-				<Logo />
+				<Logo
+					pt={theme.spacing(8)}
+					pb={theme.spacing(10)}
+				/>
 				{menu.map((item) => {
 					const selected = location.pathname.startsWith(`/${item.path}`);
 					return (
@@ -57,7 +66,7 @@ export const Sidebar = () => {
 							onClick={() => {
 								navigate(`/${item.path}`);
 								if (isSmall) {
-									dispatch(toggleSidebar());
+									dispatch(setCollapsed({ collapsed: true }));
 								}
 							}}
 						/>

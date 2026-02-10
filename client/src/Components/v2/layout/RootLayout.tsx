@@ -1,8 +1,9 @@
 import { Sidebar } from "@/Components/v2/sidebar";
 import { Outlet } from "react-router";
 import Stack from "@mui/material/Stack";
+import { useMediaQuery } from "@mui/material";
+import { useSidebar } from "@/Hooks/useSidebar";
 
-// TEMP
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
@@ -12,6 +13,9 @@ const RootLayout = () => {
 	const mode = useSelector((state: RootState) => state.ui.mode);
 	const v2theme = mode === "dark" ? darkTheme : lightTheme;
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const { collapsedWidth } = useSidebar();
+
 	return (
 		<Stack flexDirection="row">
 			<ThemeProvider theme={v2theme}>
@@ -28,6 +32,7 @@ const RootLayout = () => {
 							: "rgba(0, 0, 0, 0.01)",
 					display: "flex",
 					alignItems: "center",
+					paddingLeft: isSmall ? `${collapsedWidth + 12}px` : 12,
 				}}
 			>
 				<Stack
