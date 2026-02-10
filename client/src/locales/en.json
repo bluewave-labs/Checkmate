@@ -331,7 +331,12 @@
 			"retry": "Retry",
 			"retrying": "Retrying...",
 			"reconnected": "Connection restored"
-		}
+		},
+		"sidebar": {
+			"menu": {},
+			"bottomMenu": {}
+		},
+		"starPrompt": {}
 	},
 	"configure": "Configure",
 	"confirmPassword": "Confirm password",

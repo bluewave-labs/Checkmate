@@ -52,13 +52,7 @@ export const StarPrompt = ({
 			>
 				<Typography
 					variant="subtitle2"
-					sx={{
-						color:
-							mode === "dark"
-								? theme.palette.primary.contrastText
-								: theme.palette.text.primary,
-						mt: theme.spacing(3),
-					}}
+					mt={theme.spacing(3)}
 				>
 					{t("starPromptTitle")}
 				</Typography>
@@ -68,7 +62,6 @@ export const StarPrompt = ({
 					sx={{
 						color: theme.palette.text.primary,
 						padding: 0,
-						marginTop: theme.spacing(-5),
 						"&:hover": {
 							backgroundColor: "transparent",
 							opacity: 0.8,
@@ -83,10 +76,7 @@ export const StarPrompt = ({
 			</Stack>
 
 			<Typography
-				variant="body1"
 				sx={{
-					fontSize: "0.938rem",
-					lineHeight: 1.5,
 					mb: 1,
 					px: theme.spacing(4),
 				}}
