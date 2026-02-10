@@ -1,30 +1,39 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { WifiOff } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface OfflineBannerProps {
 	visible: boolean;
-	onRetry?: () => void;
-	isRetrying?: boolean;
 }
 
-export const OfflineBanner = ({ visible, onRetry, isRetrying }: OfflineBannerProps) => {
+export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const [shouldRender, setShouldRender] = useState(visible);
+	const [isAnimating, setIsAnimating] = useState(false);
 
-	if (!visible) {
-		return null;
-	}
+	useEffect(() => {
+		if (visible) {
+			setShouldRender(true);
+			requestAnimationFrame(() => setIsAnimating(true));
+		} else {
+			setIsAnimating(false);
+			const timer = setTimeout(() => setShouldRender(false), 1000);
+			return () => clearTimeout(timer);
+		}
+	}, [visible]);
+
+	if (!shouldRender) return null;
 
 	return (
 		<Box
 			sx={{
 				position: "fixed",
-				top: 0,
+				top: isAnimating ? 0 : "-100%",
 				left: 0,
 				right: 0,
 				zIndex: theme.zIndex.snackbar,
@@ -32,6 +41,7 @@ export const OfflineBanner = ({ visible, onRetry, isRetrying }: OfflineBannerPro
 				color: theme.palette.error.contrastText,
 				px: theme.spacing(8),
 				py: theme.spacing(4),
+				transition: "top 1s ease-in-out",
 			}}
 		>
 			<Stack
@@ -47,29 +57,6 @@ export const OfflineBanner = ({ visible, onRetry, isRetrying }: OfflineBannerPro
 				>
 					{t("components.offlineBanner.serverUnreachable")}
 				</Typography>
-				{onRetry && (
-					<Button
-						size="small"
-						variant="outlined"
-						onClick={onRetry}
-						disabled={isRetrying}
-						sx={{
-							color: "inherit",
-							borderColor: "currentColor",
-							minWidth: "auto",
-							py: 0.5,
-							px: 2,
-							"&:hover": {
-								borderColor: "currentColor",
-								backgroundColor: "rgba(255, 255, 255, 0.1)",
-							},
-						}}
-					>
-						{isRetrying
-							? t("components.offlineBanner.retrying")
-							: t("components.offlineBanner.retry")}
-					</Button>
-				)}
 			</Stack>
 		</Box>
 	);

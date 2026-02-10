@@ -48,7 +48,11 @@ export const initApiClient = (store: StoreType): void => {
 		}
 	);
 
-	const onSuccess = (response: AxiosResponse) => response;
+	const onSuccess = (response: AxiosResponse) => {
+		// Server is reachable, hide offline banner if shown
+		serverUnreachableCallback?.(false);
+		return response;
+	};
 	const onError = (error: AxiosError) => {
 		// Handle network errors (server unreachable)
 		if (error.code === "ERR_NETWORK") {

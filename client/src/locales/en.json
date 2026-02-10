@@ -582,7 +582,7 @@
 	"notFoundButton": "Go to the main dashboard",
 	"notifications": {
 		"fallback": {
-			"actionButton": "Let's create your first notification channel!",
+			"actionButton": "Create notification channel!",
 			"checks": [
 				"Alert teams about downtime or performance issues",
 				"Let engineers know when incidents happen",
@@ -1019,7 +1019,7 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Let's create your first infrastructure monitor!",
+				"actionButton": "Create a monitor!",
 				"checks": [
 					"Track the performance of your servers",
 					"Identify bottlenecks and optimize usage",
@@ -1087,7 +1087,7 @@
 		},
 		"maintenanceWindow": {
 			"fallback": {
-				"actionButton": "Let's create your first maintenance window!",
+				"actionButton": "Create a maintenance window!",
 				"checks": [
 					"Mark your maintenance periods",
 					"Eliminate any misunderstandings",
@@ -1228,7 +1228,7 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Let's create your first PageSpeed monitor!",
+				"actionButton": "Create a monitor!",
 				"checks": [
 					"Report on the user experience of a page",
 					"Help analyze webpage speed",
@@ -1247,7 +1247,7 @@
 					"Build trust with transparent service monitoring",
 					"Reduce support requests during incidents"
 				],
-				"actionButton": "Let's create your first status page!"
+				"actionButton": "Create a status page!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",

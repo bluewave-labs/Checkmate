@@ -25,9 +25,6 @@ import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 import Infrastructure from "@/Pages/Infrastructure/Monitors";
 import InfrastructureDetails from "@/Pages/Infrastructure/Details/index";
 
-// Server Status
-import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
-
 // Checks
 import Checks from "../Pages/Checks/index";
 
@@ -432,10 +429,6 @@ const Routes = () => {
 				}
 			/>
 
-			<Route
-				path="/server-unreachable"
-				element={<ServerUnreachable />}
-			/>
 			<Route
 				path="*"
 				element={
