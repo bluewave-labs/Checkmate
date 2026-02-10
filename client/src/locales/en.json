@@ -360,7 +360,16 @@
 				"title": "Star Checkmate",
 				"description": "See the latest releases and help grow the community on GitHub"
 			},
-			"authFooter": {}
+			"authFooter": {
+				"navControls": "Controls",
+				"logOut": "Log out",
+				"roles": {
+					"superAdmin": "Super admin",
+					"admin": "Admin",
+					"teamMember": "Team member",
+					"demoUser": "Demo user"
+				}
+			}
 		},
 		"starPrompt": {
 			"title": "Star Checkmate",

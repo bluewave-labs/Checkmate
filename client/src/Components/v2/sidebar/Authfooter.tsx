@@ -36,10 +36,13 @@ const getFilteredAccountMenuItems = (user: any, items: any[]) => {
 const getRoleDisplayText = (user: any, t: Function) => {
 	if (!user?.role) return "";
 
-	if (user.role.includes("superadmin")) return t("roles.superAdmin");
-	if (user.role.includes("admin")) return t("roles.admin");
-	if (user.role.includes("user")) return t("roles.teamMember");
-	if (user.role.includes("demo")) return t("roles.demoUser");
+	if (user.role.includes("superadmin"))
+		return t("components.sidebar.authFooter.roles.superAdmin");
+	if (user.role.includes("admin")) return t("components.sidebar.authFooter.roles.admin");
+	if (user.role.includes("user"))
+		return t("components.sidebar.authFooter.roles.teamMember");
+	if (user.role.includes("demo"))
+		return t("components.sidebar.authFooter.roles.demoUser");
 
 	return user.role;
 };
@@ -160,7 +163,7 @@ export const AuthFooter = ({
 					</Typography>
 				</Stack>
 				<Tooltip
-					title={t("navControls")}
+					title={t("components.sidebar.authFooter.navControls")}
 					disableInteractive
 				>
 					<IconButton
@@ -265,7 +268,7 @@ export const AuthFooter = ({
 						icon={LogOut}
 						size={20}
 					/>
-					{t("menu.logOut", "Log out")}
+					{t("components.sidebar.authFooter.logOut")}
 				</MenuItem>
 			</Menu>
 		</Stack>
