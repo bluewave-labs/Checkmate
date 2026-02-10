@@ -51,7 +51,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 		if (role.includes("superadmin"))
 			return t("components.sidebar.authFooter.roles.superAdmin");
 		if (role.includes("admin")) return t("components.sidebar.authFooter.roles.admin");
-		if (role.includes("user")) return t("components.sidebar.authFooter.roles.teamMember");
+		if (role.includes("user")) return t("components.sidebar.authFooter.roles.user");
 		if (role.includes("demo")) return t("components.sidebar.authFooter.roles.demoUser");
 		return role;
 	};

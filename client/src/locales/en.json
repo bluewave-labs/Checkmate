@@ -366,7 +366,7 @@
 				"roles": {
 					"superAdmin": "Super admin",
 					"admin": "Admin",
-					"teamMember": "Team member",
+					"user": "User",
 					"demoUser": "Demo user"
 				}
 			}
