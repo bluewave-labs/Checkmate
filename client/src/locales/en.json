@@ -325,6 +325,12 @@
 				"week": "Showing statistics for past 7 days.",
 				"month": "Showing statistics for past 30 days."
 			}
+		},
+		"offlineBanner": {
+			"serverUnreachable": "Unable to reach server",
+			"retry": "Retry",
+			"retrying": "Retrying...",
+			"reconnected": "Connection restored"
 		}
 	},
 	"configure": "Configure",
