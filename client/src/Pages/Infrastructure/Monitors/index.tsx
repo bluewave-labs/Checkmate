@@ -20,6 +20,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import type { RootState } from "@/Types/state";
 import { InfraMonitorsTable } from "./Components/MonitorsTable";
+import useDebounce from "@/Hooks/useDebounce";
 
 const InfrastructureMonitors = () => {
 	const { t } = useTranslation();
@@ -42,6 +43,8 @@ const InfrastructureMonitors = () => {
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
+
+	const debouncedSearch = useDebounce<string>(search, 300);
 
 	const handleClearFilters = useCallback(() => {
 		setSelectedStatus("");
@@ -69,8 +72,8 @@ const InfrastructureMonitors = () => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (search ? "name" : sortField || undefined);
-	const filter = activeFilter?.[0] || search || undefined;
+	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
+	const filter = activeFilter?.[0] || debouncedSearch || undefined;
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
