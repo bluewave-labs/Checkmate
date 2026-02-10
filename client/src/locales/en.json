@@ -359,7 +359,8 @@
 			"starPrompt": {
 				"title": "Star Checkmate",
 				"description": "See the latest releases and help grow the community on GitHub"
-			}
+			},
+			"authFooter": {}
 		},
 		"starPrompt": {
 			"title": "Star Checkmate",

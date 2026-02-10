@@ -7,7 +7,7 @@ import { Logo } from "@/Components/v2/sidebar/Logo";
 import { getMenu, getBottomMenu, getAccountMenu } from "@/Components/v2/sidebar/Menu";
 import { NavItem } from "@/Components/v2/sidebar/NavItem";
 import { StarPrompt } from "@/Components/v2/sidebar/StarPrompt";
-import AuthFooter from "@/Components/v2/sidebar/Authfooter";
+import { AuthFooter } from "@/Components/v2/sidebar/Authfooter";
 
 import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";

@@ -15,7 +15,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { clearAuthState } from "@/Features/Auth/authSlice.js";
 import { useDispatch } from "react-redux";
-import PropTypes from "prop-types";
 import type { RootState } from "@/Types/state.js";
 
 const getFilteredAccountMenuItems = (user: any, items: any[]) => {
@@ -45,7 +44,7 @@ const getRoleDisplayText = (user: any, t: Function) => {
 	return user.role;
 };
 
-const AuthFooter = ({
+export const AuthFooter = ({
 	collapsed,
 	accountMenuItems,
 }: {
@@ -86,6 +85,9 @@ const AuthFooter = ({
 					gap: theme.spacing(2),
 					borderRadius: theme.shape.borderRadius,
 					pl: theme.spacing(4),
+					"& svg": {
+						stroke: theme.palette.text.secondary,
+					},
 				}}
 			>
 				{item.icon}
@@ -140,6 +142,7 @@ const AuthFooter = ({
 							whiteSpace: "nowrap",
 							overflow: "hidden",
 							textOverflow: "ellipsis",
+							color: theme.palette.text.primary,
 						}}
 					>
 						{authState.user?.firstName} {authState.user?.lastName}
@@ -148,7 +151,10 @@ const AuthFooter = ({
 						textOverflow="ellipsis"
 						overflow="hidden"
 						whiteSpace="nowrap"
-						sx={{ textTransform: "capitalize", opacity: 0.8 }}
+						sx={{
+							textTransform: "capitalize",
+							color: theme.palette.text.secondary,
+						}}
 					>
 						{getRoleDisplayText(authState.user, t)}
 					</Typography>
@@ -162,6 +168,9 @@ const AuthFooter = ({
 							ml: "50px",
 							"&:focus": { outline: "none" },
 							alignSelf: "center",
+							"& svg": {
+								stroke: theme.palette.text.secondary,
+							},
 						}}
 						onClick={(event) => openPopup(event)}
 					>
@@ -244,9 +253,12 @@ const AuthFooter = ({
 				<MenuItem
 					onClick={logout}
 					sx={{
-						gap: theme.spacing(4),
+						gap: theme.spacing(2),
 						borderRadius: theme.shape.borderRadius,
 						pl: theme.spacing(4),
+						"& svg": {
+							stroke: theme.palette.text.secondary,
+						},
 					}}
 				>
 					<Icon
@@ -259,10 +271,3 @@ const AuthFooter = ({
 		</Stack>
 	);
 };
-
-AuthFooter.propTypes = {
-	collapsed: PropTypes.bool,
-	accountMenuItems: PropTypes.array,
-};
-
-export default AuthFooter;
