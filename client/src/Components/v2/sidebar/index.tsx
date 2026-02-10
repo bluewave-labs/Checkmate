@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/v2/sidebar/Logo";
-import { getMenu } from "@/Components/v2/sidebar/Menu";
+import { getMenu, getBottomMenu } from "@/Components/v2/sidebar/Menu";
 import { NavItem } from "@/Components/v2/sidebar/NavItem";
 
 import { useNavigate, useLocation } from "react-router";
@@ -11,6 +12,13 @@ import { useTranslation } from "react-i18next";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setCollapsed } from "@/Features/UI/uiSlice";
+
+const URL_MAP: Record<string, string> = {
+	support: "https://discord.com/invite/NAb6H3UTjK",
+	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
+	docs: "https://bluewavelabs.gitbook.io/checkmate",
+	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+};
 
 export const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -21,10 +29,23 @@ export const Sidebar = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
+	const bottomMenu = getBottomMenu(t);
 
 	useEffect(() => {
 		dispatch(setCollapsed({ collapsed: isSmall }));
 	}, [isSmall, dispatch]);
+
+	const handleNavClick = (path: string) => {
+		const url = URL_MAP[path];
+		if (url) {
+			window.open(url, "_blank", "noreferrer");
+		} else {
+			navigate(`/${path}`);
+		}
+		if (isSmall) {
+			dispatch(setCollapsed({ collapsed: true }));
+		}
+	};
 
 	return (
 		<Stack
@@ -49,7 +70,7 @@ export const Sidebar = () => {
 				disablePadding
 				sx={{
 					px: theme.spacing(6),
-					height: "100%",
+					flex: 1,
 				}}
 			>
 				<Logo
@@ -63,16 +84,29 @@ export const Sidebar = () => {
 							key={item.path}
 							item={item}
 							selected={selected}
-							onClick={() => {
-								navigate(`/${item.path}`);
-								if (isSmall) {
-									dispatch(setCollapsed({ collapsed: true }));
-								}
-							}}
+							onClick={() => handleNavClick(item.path)}
 						/>
 					);
 				})}
 			</List>
+			<List
+				component="nav"
+				disablePadding
+				sx={{ px: theme.spacing(6) }}
+			>
+				{bottomMenu.map((item) => {
+					const selected = location.pathname.startsWith(`/${item.path}`);
+					return (
+						<NavItem
+							key={item.path}
+							item={item}
+							selected={selected}
+							onClick={() => handleNavClick(item.path)}
+						/>
+					);
+				})}
+			</List>
+			<Divider sx={{ borderColor: theme.palette.divider }} />
 		</Stack>
 	);
 };

@@ -11,6 +11,12 @@ import {
 	Wrench,
 	Database,
 	Settings,
+	HelpCircle,
+	MessageCircle,
+	Code,
+	User,
+	Lock,
+	Users,
 } from "lucide-react";
 
 export const getMenu = (t: Function) => {
@@ -37,5 +43,18 @@ export const getMenu = (t: Function) => {
 			icon: <Icon icon={Settings} />,
 			path: "settings",
 		},
+	];
+};
+
+export const getBottomMenu = (t: Function) => {
+	return [
+		{ name: t("menu.support"), path: "support", icon: <Icon icon={HelpCircle} /> },
+		{
+			name: t("menu.discussions"),
+			path: "discussions",
+			icon: <Icon icon={MessageCircle} />,
+		},
+		{ name: t("menu.docs"), path: "docs", icon: <Icon icon={FileText} /> },
+		{ name: t("menu.changelog"), path: "changelog", icon: <Icon icon={Code} /> },
 	];
 };
