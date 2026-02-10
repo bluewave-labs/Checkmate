@@ -6,6 +6,7 @@ import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/v2/sidebar/Logo";
 import { getMenu, getBottomMenu } from "@/Components/v2/sidebar/Menu";
 import { NavItem } from "@/Components/v2/sidebar/NavItem";
+import { StarPrompt } from "@/Components/v2/sidebar/StarPrompt";
 
 import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -89,6 +90,7 @@ export const Sidebar = () => {
 					);
 				})}
 			</List>
+			<StarPrompt />
 			<List
 				component="nav"
 				disablePadding
