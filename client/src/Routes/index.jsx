@@ -4,7 +4,7 @@ import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
+import RootLayout from "@/Components/v2/layout/RootLayout";
 import NotFound from "@/Pages/NotFound";
 
 // Auth
@@ -67,7 +67,7 @@ const Routes = () => {
 				path="/"
 				element={
 					<ProtectedRoute>
-						<HomeLayout />
+						<RootLayout />
 					</ProtectedRoute>
 				}
 			>

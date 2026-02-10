@@ -16,23 +16,23 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 	const v2theme = mode === "dark" ? darkTheme : lightTheme;
 
 	return (
-		<ThemeProvider theme={v2theme}>
-			<Box
-				sx={{
-					minHeight: "100vh",
-					// @ts-expect-error custom palette property
-					backgroundColor: theme.palette.primaryBackground.main,
-					backgroundImage: mode === "dark" ? `url("${BackgroundSVG}")` : "none",
-					backgroundSize: "100% 100%",
-					backgroundPosition: "center",
-					backgroundRepeat: "no-repeat",
-					color: theme.palette.primary.contrastText,
-				}}
-			>
+		<Box
+			sx={{
+				minHeight: "100vh",
+				// @ts-expect-error custom palette property
+				backgroundColor: theme.palette.primaryBackground.main,
+				backgroundImage: mode === "dark" ? `url("${BackgroundSVG}")` : "none",
+				backgroundSize: "100% 100%",
+				backgroundPosition: "center",
+				backgroundRepeat: "no-repeat",
+				color: theme.palette.primary.contrastText,
+			}}
+		>
+			<ThemeProvider theme={v2theme}>
 				<OfflineBanner visible={false} />
-				{children}
-			</Box>
-		</ThemeProvider>
+			</ThemeProvider>
+			{children}
+		</Box>
 	);
 };
 

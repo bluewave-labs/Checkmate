@@ -14,7 +14,6 @@ const HomeLayout = () => {
 			flexDirection="row"
 		>
 			<Sidebar />
-			{/* Spacer for fixed sidebar */}
 			<Box
 				sx={{
 					width,
