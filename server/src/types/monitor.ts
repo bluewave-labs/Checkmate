@@ -22,7 +22,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: MonitorStatus;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
