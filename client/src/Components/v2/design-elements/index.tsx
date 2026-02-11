@@ -19,3 +19,5 @@ export * from "./Gauge";
 export * from "./Tabs";
 export * from "./SplitBox";
 export * from "./TextLink";
+export * from "./OfflineBanner";
+export * from "./Avatar";

@@ -4,6 +4,7 @@ interface IconProps {
 	icon: LucideIcon;
 	size?: number;
 	strokeWidth?: number;
+	stroke?: string;
 }
 
 const Icon = ({ icon: Icon, size = 20, strokeWidth = 1.5 }: IconProps) => {

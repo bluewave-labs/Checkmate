@@ -4,7 +4,7 @@ import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
+import RootLayout from "@/Components/v2/layout/RootLayout";
 import NotFound from "@/Pages/NotFound";
 
 // Auth
@@ -24,9 +24,6 @@ import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 // Infrastructure
 import Infrastructure from "@/Pages/Infrastructure/Monitors";
 import InfrastructureDetails from "@/Pages/Infrastructure/Details/index";
-
-// Server Status
-import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
 
 // Checks
 import Checks from "../Pages/Checks/index";
@@ -67,7 +64,7 @@ const Routes = () => {
 				path="/"
 				element={
 					<ProtectedRoute>
-						<HomeLayout />
+						<RootLayout />
 					</ProtectedRoute>
 				}
 			>
@@ -432,10 +429,6 @@ const Routes = () => {
 				}
 			/>
 
-			<Route
-				path="/server-unreachable"
-				element={<ServerUnreachable />}
-			/>
 			<Route
 				path="*"
 				element={

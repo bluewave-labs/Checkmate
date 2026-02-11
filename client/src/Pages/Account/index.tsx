@@ -1,5 +1,5 @@
 import { BasePage, Tabs, Tab } from "@/Components/v2/design-elements";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { TabProfile } from "./TabProfile";
 import { TabPassword } from "./TabPassword";
@@ -18,6 +18,11 @@ const TAB_MAP = {
 const Account = ({ open = "profile" }: AccountProps) => {
 	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState<number>(TAB_MAP[open]);
+
+	// Sync activeTab when open prop changes (e.g., navigating from sidebar)
+	useEffect(() => {
+		setActiveTab(TAB_MAP[open]);
+	}, [open]);
 
 	return (
 		<BasePage>
