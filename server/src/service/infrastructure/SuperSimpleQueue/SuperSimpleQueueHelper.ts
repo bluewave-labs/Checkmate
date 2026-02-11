@@ -3,7 +3,7 @@ import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import IncidentService from "@/service/business/incidentService.js";
-import { IMaintenanceWindowsRepository } from "@/repositories/index.js";
+import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -16,6 +16,7 @@ class SuperSimpleQueueHelper {
 	private buffer: any;
 	private incidentService: IncidentService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	private monitorsRepository: IMonitorsRepository;
 
 	constructor({
 		logger,
@@ -26,6 +27,7 @@ class SuperSimpleQueueHelper {
 		buffer,
 		incidentService,
 		maintenanceWindowsRepository,
+		monitorsRepository,
 	}: {
 		logger: any;
 		networkService: INetworkService;
@@ -35,6 +37,7 @@ class SuperSimpleQueueHelper {
 		buffer: any;
 		incidentService: IncidentService;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+		monitorsRepository: IMonitorsRepository;
 	}) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -44,6 +47,7 @@ class SuperSimpleQueueHelper {
 		this.notificationsService = notificationsService;
 		this.incidentService = incidentService;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
@@ -60,6 +64,7 @@ class SuperSimpleQueueHelper {
 				}
 
 				// Step 1.  Check for maintenance window, if found, skip the check
+
 				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
 				if (maintenanceWindowActive) {
 					this.logger.debug({
@@ -67,7 +72,9 @@ class SuperSimpleQueueHelper {
 						service: SERVICE_NAME,
 						method: "getMonitorJob",
 					});
-					// TODO update monitor status
+					if (monitor.status !== "maintenance") {
+						await this.monitorsRepository.updateById(monitorId, teamId, { status: "maintenance" });
+					}
 					return;
 				}
 
