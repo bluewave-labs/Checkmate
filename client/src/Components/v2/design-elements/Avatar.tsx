@@ -31,6 +31,7 @@ export const Avatar = ({ src, small, sx, onClick = () => {} }: AvatarProps) => {
 			alt={`${user?.firstName} ${user?.lastName}`}
 			src={src ? src : user?.avatarImage ? image : undefined}
 			sx={{
+				color: theme.palette.primary.contrastText,
 				fontSize: small ? "16px" : "22px",
 				fontWeight: 400,
 				backgroundColor: theme.palette.primary.main,
