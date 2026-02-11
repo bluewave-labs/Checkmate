@@ -206,6 +206,7 @@ export const initializeServices = async ({
 		buffer: bufferService,
 		incidentService,
 		maintenanceWindowsRepository,
+		monitorsRepository,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({

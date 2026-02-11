@@ -105,6 +105,29 @@ export const PausedStatusBox = ({ n }: { n: number }) => {
 		/>
 	);
 };
+export const MaintenanceStatusBox = ({ n }: { n: number }) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	return (
+		<StatusBox
+			label={t("pages.common.monitors.status.maintenance")}
+			n={n}
+			color={theme.palette.warning.light}
+		/>
+	);
+};
+export const InitializingStatusBox = ({ n }: { n: number }) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	return (
+		<StatusBox
+			label={t("pages.common.monitors.status.initializing")}
+			n={n}
+			color={theme.palette.warning.light}
+		/>
+	);
+};
+
 export const TotalChecksBox = ({ n }: { n: number }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -135,18 +158,6 @@ export const UpChecksBox = ({ n }: { n: number }) => {
 			label={t("pages.common.monitors.status.up")}
 			n={n}
 			color={theme.palette.success.light}
-		/>
-	);
-};
-
-export const InitializingStatusBox = ({ n }: { n: number }) => {
-	const theme = useTheme();
-	const { t } = useTranslation();
-	return (
-		<StatusBox
-			label={t("pages.common.monitors.status.initializing")}
-			n={n}
-			color={theme.palette.warning.light}
 		/>
 	);
 };

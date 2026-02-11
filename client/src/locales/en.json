@@ -775,6 +775,7 @@
 				"status": {
 					"down": "down",
 					"initializing": "initializing",
+					"maintenance": "maintenance",
 					"paused": "paused",
 					"total": "total",
 					"up": "up"

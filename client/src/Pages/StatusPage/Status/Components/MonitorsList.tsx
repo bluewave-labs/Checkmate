@@ -7,7 +7,6 @@ import { StatusLabel, BaseBox } from "@/Components/v2/design-elements";
 import { SwitchComponent } from "@/Components/v2/inputs";
 
 import { useTheme } from "@mui/material/styles";
-import { determineState } from "@/Utils/MonitorUtils";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import type { Monitor } from "@/Types/Monitor";
@@ -54,7 +53,6 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 			)}
 
 			{monitors?.map((monitor) => {
-				const status = determineState(monitor);
 				return (
 					<BaseBox
 						key={monitor.id}
@@ -87,10 +85,7 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 									</Typography>
 								)}
 							</Box>
-							<StatusLabel
-								status={status === "up"}
-								isActive={monitor.isActive}
-							/>
+							<StatusLabel status={monitor.status} />
 						</Stack>
 						{statusPage.showCharts !== false && (
 							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>

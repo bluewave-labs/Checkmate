@@ -1,7 +1,8 @@
-import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
+import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification, MonitorStatus } from "@/types/index.js";
 import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
+
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
@@ -11,7 +12,7 @@ export interface INotificationsService {
 	handleNotifications: (
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
-		prevStatus: boolean | undefined,
+		prevStatus: MonitorStatus,
 		statusChanged: boolean
 	) => Promise<boolean>;
 
@@ -228,12 +229,7 @@ export class NotificationsService implements INotificationsService {
 		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus);
 	};
 
-	handleNotifications = async (
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		prevStatus: boolean | undefined,
-		statusChanged: boolean
-	) => {
+	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, prevStatus: MonitorStatus, statusChanged: boolean) => {
 		const { type } = monitor;
 		const payload = monitorStatusResponse.payload as HardwareStatusPayload;
 		// If this is a non-hardeware type monitor and status did not change, we're done

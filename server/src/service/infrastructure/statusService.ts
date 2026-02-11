@@ -2,7 +2,6 @@ import { IMonitorsRepository } from "@/repositories/index.js";
 import MonitorStats from "../../db/models/MonitorStats.js";
 import { CheckModel } from "@/db/models/index.js";
 import type {
-	CheckErrorInfo,
 	Monitor,
 	MonitorStatusResponse,
 	StatusChangeResult,
@@ -15,7 +14,6 @@ const SERVICE_NAME = "StatusService";
 
 export interface IStatusService {
 	updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }): Promise<boolean>;
-	getStatusString(status: boolean | undefined): string;
 	handleIncidentForCheck(check: any, monitor: Monitor, action: any, errorContext?: string): Promise<void>;
 	updateMonitorStatus(
 		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
@@ -39,7 +37,7 @@ export class StatusService implements IStatusService {
 		return StatusService.SERVICE_NAME;
 	}
 
-	async updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }) {
+	async updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: MonitorStatusResponse }) {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
@@ -60,7 +58,7 @@ export class StatusService implements IStatusService {
 			// Update stats
 
 			// Last response time
-			stats.lastResponseTime = responseTime;
+			stats.lastResponseTime = responseTime ?? 0;
 
 			// Avg response time:
 			let avgResponseTime = stats.avgResponseTime;
@@ -110,12 +108,6 @@ export class StatusService implements IStatusService {
 			return false;
 		}
 	}
-
-	getStatusString = (status: boolean | undefined) => {
-		if (status === true) return "up";
-		if (status === false) return "down";
-		return "unknown";
-	};
 
 	handleIncidentForCheck = async (check: Check, monitor: Monitor, action: any, errorContext = "incident handling") => {
 		try {
@@ -208,9 +200,7 @@ export class StatusService implements IStatusService {
 				monitor.recentChecks.shift();
 			}
 
-			if (monitor.status === undefined || monitor.status === null) {
-				monitor.status = status;
-			}
+			monitor.status = status === true ? "up" : "down";
 
 			const prevStatus = monitor.status;
 			let newStatus = monitor.status;
@@ -233,13 +223,13 @@ export class StatusService implements IStatusService {
 			const failureRate = (failures / monitor.statusWindow.length) * 100;
 
 			// If threshold has been met and the monitor is not already down, mark down:
-			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== false) {
-				newStatus = false;
+			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== "down") {
+				newStatus = "down";
 				statusChanged = true;
 			}
 			// If the failure rate is below the threshold and the monitor is down, recover:
-			else if (failureRate < monitor.statusWindowThreshold && monitor.status === false) {
-				newStatus = true;
+			else if (failureRate < monitor.statusWindowThreshold && monitor.status === "down") {
+				newStatus = "up";
 				statusChanged = true;
 			}
 

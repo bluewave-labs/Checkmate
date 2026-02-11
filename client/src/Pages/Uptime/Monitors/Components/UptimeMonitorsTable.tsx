@@ -186,12 +186,7 @@ export const MonitorTable = ({
 					</Stack>
 				),
 				render: (row) => {
-					return (
-						<StatusLabel
-							status={row.status}
-							isActive={row.isActive}
-						/>
-					);
+					return <StatusLabel status={row.status} />;
 				},
 			},
 			{

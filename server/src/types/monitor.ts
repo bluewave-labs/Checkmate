@@ -1,9 +1,11 @@
-import type { Check } from "@/types/check.js";
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
+
+export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance"] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export interface MonitorThresholds {
 	usage_cpu?: number;
@@ -20,7 +22,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: boolean;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
@@ -56,6 +58,8 @@ export interface MonitorsSummary {
 	upMonitors: number;
 	downMonitors: number;
 	pausedMonitors: number;
+	initializingMonitors: number;
+	maintenanceMonitors: number;
 }
 
 export interface MonitorsWithChecksByTeamIdResult {
