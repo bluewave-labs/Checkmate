@@ -1,7 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
 import authReducer from "./Features/Auth/authSlice";
-import v2AuthReducer from "./Features/Auth/v2AuthSlice";
 import uiReducer from "./Features/UI/uiSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore, createTransform } from "redux-persist";
@@ -20,13 +19,12 @@ const authTransform = createTransform(
 const persistConfig = {
 	key: "root",
 	storage,
-	whitelist: ["auth", "v2Auth", "ui"],
+	whitelist: ["auth", "ui"],
 	transforms: [authTransform],
 };
 
 const rootReducer = combineReducers({
 	auth: authReducer,
-	v2Auth: v2AuthReducer,
 	ui: uiReducer,
 });
 

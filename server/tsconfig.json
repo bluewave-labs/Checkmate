@@ -1,26 +1,20 @@
 {
 	"compilerOptions": {
 		"rootDir": "./src",
-		"outDir": "./dist",
-		"module": "nodenext",
-		"target": "esnext",
-		"types": ["node"],
-		"sourceMap": true,
-		"declaration": false,
-		"declarationMap": false,
-		"noUncheckedIndexedAccess": true,
-		"exactOptionalPropertyTypes": true,
-		"strict": true,
-		"isolatedModules": true,
-		"noUncheckedSideEffectImports": true,
-		"moduleDetection": "force",
-		"skipLibCheck": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
-		"forceConsistentCasingInFileNames": true,
 		"allowJs": true,
-		"checkJs": false
+		"checkJs": false,
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"outDir": "./dist",
+		"strict": true,
+		"esModuleInterop": true,
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"skipLibCheck": true,
+		"noUncheckedIndexedAccess": true,
+		"isolatedModules": true
 	},
-	"exclude": ["node_modules", "dist/", "**/*.config.js"]
+	"include": ["src"],
+	"exclude": ["tests", "dist", "node_modules"]
 }

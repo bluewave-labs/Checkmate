@@ -12,16 +12,18 @@
 		"format": "prettier --write .",
 		"format-check": "prettier --check ."
 	},
+	"lint-staged": {
+		"**/*": "npm run format"
+	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",
 		"@emotion/styled": "^11.13.0",
 		"@hello-pangea/dnd": "^18.0.0",
 		"@hookform/resolvers": "5.2.2",
-		"@mui/icons-material": "6.4.11",
-		"@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
-		"@mui/material": "6.4.11",
-		"@mui/x-charts": "^7.5.1",
-		"@mui/x-date-pickers": "7.29.0",
+		"@mui/lab": "7.0.0",
+		"@mui/material": "7.3.7",
+		"@mui/x-charts": "7.29.1",
+		"@mui/x-date-pickers": "7.29.4",
 		"@reduxjs/toolkit": "2.7.0",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
@@ -31,11 +33,13 @@
 		"human-interval": "2.0.1",
 		"i18next": "25.4.2",
 		"joi": "17.13.3",
-		"mui-color-input": "^6.0.0",
-		"pretty-ms": "9.3.0",
+		"lucide-react": "^0.562.0",
+		"mui-color-input": "^7.0.0",
+		"pretty-bytes": "^7.1.0",
+		"pretty-ms": "^9.3.0",
 		"react": "18.3.1",
 		"react-dom": "^18.2.0",
-		"react-hook-form": "7.63.0",
+		"react-hook-form": "^7.63.0",
 		"react-i18next": "^15.4.0",
 		"react-icons": "5.5.0",
 		"react-redux": "9.2.0",
@@ -44,9 +48,9 @@
 		"react-toastify": "^10.0.5",
 		"recharts": "2.15.2",
 		"redux-persist": "6.0.0",
-		"swr": "2.3.6",
+		"swr": "^2.3.6",
 		"vite-plugin-svgr": "^4.2.0",
-		"zod": "4.1.11"
+		"zod": "^4.1.11"
 	},
 	"devDependencies": {
 		"@types/node": "24.5.2",
@@ -57,6 +61,7 @@
 		"eslint-plugin-react": "^7.34.1",
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
+		"lint-staged": "^16.2.7",
 		"prettier": "^3.3.3",
 		"typescript": "5.9.3",
 		"vite": "^6.4.1"

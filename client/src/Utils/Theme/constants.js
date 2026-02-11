@@ -1,4 +1,4 @@
-import { lighten, darken } from "@mui/material/styles"; // CAIO_REVIEW
+import { lighten } from "@mui/material/styles"; // CAIO_REVIEW
 
 const typographyBase = 13;
 
@@ -133,12 +133,6 @@ const newSemanticColors = {
 			light: lighten(newColors.blueBlueWave, 0.2), //CAIO_REVIEW
 			dark: lighten(newColors.blueBlueWave, 0.2), //CAIO_REVIEW
 		},
-		darker: {
-			// CAIO_REVIEW
-			light: darken(newColors.blueBlueWave, 0.2), // CAIO_REVIEW
-			dark: darken(newColors.blueBlueWave, 0.2), // CAIO_REVIEW
-		},
-
 		contrastText: {
 			light: newColors.offWhite,
 			dark: newColors.offWhite,
@@ -164,14 +158,6 @@ const newSemanticColors = {
 		contrastTextTertiary: {
 			light: newColors.blueGray500,
 			dark: newColors.gray500,
-		},
-		contrastBorder: {
-			light: newColors.gray500,
-			dark: newColors.blueGray600,
-		},
-		contrastBorderDisabled: {
-			light: newColors.gray100,
-			dark: newColors.blueGray800,
 		},
 		lowContrast: {
 			light: newColors.gray250,
@@ -207,18 +193,6 @@ const newSemanticColors = {
 			light: newColors.blueGray800,
 			dark: newColors.gray100,
 		},
-		background: {
-			light: newColors.gray50,
-			dark: newColors.offBlack,
-		},
-		border: {
-			light: newColors.gray500,
-			dark: newColors.blueGray600,
-		},
-		cardShadow: {
-			light: "0 0 0 1px rgba(0, 0, 0, 0.04), 0 12px 24px rgba(0, 0, 0, 0.08)",
-			dark: "0 2px 10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.04)",
-		},
 	},
 	success: {
 		main: {
@@ -232,20 +206,6 @@ const newSemanticColors = {
 		lowContrast: {
 			light: newColors.green400,
 			dark: newColors.green200,
-		},
-	},
-	successSecondary: {
-		main: {
-			light: undefined,
-			dark: "#073C2D",
-		},
-		contrastText: {
-			light: undefined,
-			dark: "#34D399",
-		},
-		lowContrast: {
-			light: undefined,
-			dark: "#094434",
 		},
 	},
 	warning: {
@@ -316,30 +276,6 @@ const newSemanticColors = {
 		},
 	},
 
-	map: {
-		main: {
-			light: newColors.offWhite,
-			dark: undefined,
-		},
-		lowContrast: {
-			light: newColors.gray200,
-			dark: undefined,
-		},
-		highContrast: {
-			light: newColors.gray500,
-			dark: undefined,
-		},
-	},
-	chatbot: {
-		background: {
-			light: newColors.gray200,
-			dark: "#112B2B",
-		},
-		textAccent: {
-			light: "#C084FC",
-			dark: "#C084FC",
-		},
-	},
 	alert: {
 		main: {
 			light: newColors.gray200,

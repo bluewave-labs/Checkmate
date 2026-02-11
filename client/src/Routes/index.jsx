@@ -1,71 +1,68 @@
+// Temp v2 theme
+import { ThemeProvider } from "@mui/material";
+import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
+
 import { useSelector } from "react-redux";
-import { lightTheme, darkTheme } from "@/Utils/Theme/v2/theme";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
-import NotFound from "../Pages/v1/NotFound";
+import NotFound from "@/Pages/NotFound";
+
 // Auth
-import AuthLogin from "../Pages/v1/Auth/Login";
-import AuthRegister from "../Pages/v1/Auth/Register/";
-import AuthForgotPassword from "../Pages/v1/Auth/ForgotPassword";
-import AuthCheckEmail from "../Pages/v1/Auth/CheckEmail";
-import AuthSetNewPassword from "../Pages/v1/Auth/SetNewPassword";
-import AuthNewPasswordConfirmed from "../Pages/v1/Auth/NewPasswordConfirmed";
+import AuthLogin from "@/Pages/Auth/Login";
+import AuthRegister from "@/Pages/Auth/Register";
+import AuthForgotPassword from "@/Pages/Auth/Recovery";
+import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
 
 // Uptime
-import Uptime from "../Pages/v1/Uptime/Monitors";
-import UptimeDetails from "../Pages/v1/Uptime/Details";
-import UptimeCreate from "../Pages/v1/Uptime/Create";
+import Uptime from "@/Pages/Uptime/Monitors";
+import UptimeDetails from "@/Pages/Uptime/Details";
 
 // PageSpeed
-import PageSpeed from "../Pages/v1/PageSpeed/Monitors";
-import PageSpeedDetails from "../Pages/v1/PageSpeed/Details";
-import PageSpeedCreate from "../Pages/v1/PageSpeed/Create";
+import PageSpeed from "@/Pages/PageSpeed/Monitors/";
+import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 
 // Infrastructure
-import Infrastructure from "../Pages/v1/Infrastructure/Monitors";
-import InfrastructureCreate from "../Pages/v1/Infrastructure/Create";
-import InfrastructureDetails from "../Pages/v1/Infrastructure/Details";
+import Infrastructure from "@/Pages/Infrastructure/Monitors";
+import InfrastructureDetails from "@/Pages/Infrastructure/Details/index";
 
 // Server Status
-import ServerUnreachable from "../Pages/v1/ServerUnreachable.jsx";
+import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
+
+// Checks
+import Checks from "../Pages/Checks/index";
 
 // Incidents
-import Incidents from "../Pages/v1/Incidents";
+import Incidents from "../Pages/Incidents/";
 
 // Status pages
-import CreateStatus from "../Pages/v1/StatusPage/Create";
-import StatusPages from "../Pages/v1/StatusPage/StatusPages";
-import Status from "../Pages/v1/StatusPage/Status";
+import CreateStatus from "../Pages/StatusPage/Create/";
+import StatusPages from "../Pages/StatusPage/StatusPages";
+import Status from "../Pages/StatusPage/Status";
 
-import Notifications from "../Pages/v1/Notifications";
-import CreateNotifications from "../Pages/v1/Notifications/create";
+import Notifications from "../Pages/Notifications";
+import CreateNotifications from "../Pages/Notifications/create";
 
 // Settings
-import Account from "../Pages/v1/Account";
-import EditUser from "../Pages/v1/Account/EditUser";
-import Settings from "../Pages/v1/Settings";
+import Account from "@/Pages/Account";
+import EditUser from "../Pages/Account/EditUser";
+import Settings from "../Pages/Settings";
 
-import Maintenance from "../Pages/v1/Maintenance";
+import Maintenance from "../Pages/Maintenance";
+import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 
 import ProtectedRoute from "../Components/v1/ProtectedRoute";
 import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
-import CreateNewMaintenanceWindow from "../Pages/v1/Maintenance/CreateMaintenance";
 import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
-import BulkImport from "../Pages/v1/Uptime/BulkImport";
-import Logs from "../Pages/v1/Logs";
+import Logs from "../Pages/Logs";
 
-import V2Routes from "@/Routes/v2router";
+import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
 	const AdminCheckedRegister = withAdminCheck(AuthRegister);
+	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
-			<Route
-				path="/v2/*"
-				element={<V2Routes mode={mode} />}
-			/>
-
 			<Route
 				path="/"
 				element={
@@ -80,109 +77,244 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime"
-					element={<Uptime />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Uptime />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
-				<Route
-					path="/uptime/bulk-import"
-					element={<BulkImport />}
-				/>
+				<Route path="/uptime/bulk-import" />
 
 				<Route
 					path="/uptime/create"
-					element={<UptimeCreate />}
-				/>
-				<Route
-					path="/uptime/create/:monitorId"
-					element={<UptimeCreate isClone={true} />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
-					element={<UptimeDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<UptimeDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<UptimeCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
 					path="pagespeed"
-					element={<PageSpeed />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeed />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/create"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
-					element={<PageSpeedDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<PageSpeedDetails />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<PageSpeedCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure"
-					element={<Infrastructure />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Infrastructure />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/create"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={<InfrastructureCreate />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateMonitor />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="infrastructure/:monitorId"
-					element={<InfrastructureDetails />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<InfrastructureDetails />
+							</ThemeProvider>
+						</>
+					}
+				/>
+				<Route
+					path="checks/:monitorId?"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Checks />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="incidents/:monitorId?"
-					element={<Incidents />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Incidents />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
 					path="status"
-					element={<StatusPages />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<StatusPages />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
-					path="status/uptime/:url"
-					element={<Status />}
+					path="status/:url"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Status />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
-					path="status/uptime/create"
-					element={<CreateStatus />}
+					path="status/create"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateStatus />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
-					path="status/uptime/configure/:url"
-					element={<CreateStatus />}
+					path="status/configure/:url"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateStatus />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
 					path="notifications"
-					element={<Notifications />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Notifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="notifications/create"
-					element={<CreateNotifications />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateNotifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
-					path="notifications/:notificationId"
-					element={<CreateNotifications />}
+					path="notifications/configure/:notificationId"
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateNotifications />
+							</ThemeProvider>
+						</>
+					}
 				/>
 
 				<Route
 					path="maintenance"
-					element={<Maintenance />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Maintenance />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="/maintenance/create/:maintenanceWindowId?"
-					element={<CreateNewMaintenanceWindow />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<CreateNewMaintenanceWindow />
+							</ThemeProvider>
+						</>
+					}
 				/>
 				<Route
 					path="settings"
@@ -190,21 +322,35 @@ const Routes = () => {
 				/>
 				<Route
 					path="account/profile"
-					element={<Account open={"profile"} />}
+					element={
+						<ThemeProvider theme={v2theme}>
+							<Account open={"profile"} />
+						</ThemeProvider>
+					}
 				/>
 				<Route
 					path="account/password"
-					element={<Account open={"password"} />}
+					element={
+						<ThemeProvider theme={v2theme}>
+							<Account open={"password"} />
+						</ThemeProvider>
+					}
 				/>
 				<Route
 					path="account/team"
-					element={<Account open={"team"} />}
+					element={
+						<ThemeProvider theme={v2theme}>
+							<Account open={"team"} />
+						</ThemeProvider>
+					}
 				/>
 				<Route
 					path="account/team/:userId"
 					element={
 						<RoleProtectedRoute roles={["superadmin"]}>
-							<EditUser />
+							<ThemeProvider theme={v2theme}>
+								<EditUser />
+							</ThemeProvider>
 						</RoleProtectedRoute>
 					}
 				/>
@@ -213,7 +359,9 @@ const Routes = () => {
 					path="logs"
 					element={
 						<RoleProtectedRoute roles={["admin", "superadmin"]}>
-							<Logs />
+							<ThemeProvider theme={v2theme}>
+								<Logs />
+							</ThemeProvider>
 						</RoleProtectedRoute>
 					}
 				/>
@@ -221,39 +369,67 @@ const Routes = () => {
 
 			<Route
 				path="/login"
-				element={<AuthLogin />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthLogin />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route
 				path="/register"
-				element={<AdminCheckedRegister />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AdminCheckedRegister />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route
 				exact
 				path="/register/:token"
-				element={<AuthRegister superAdminExists={true} />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthRegister superAdminExists={true} />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route
 				path="/forgot-password"
-				element={<AuthForgotPassword />}
-			/>
-			<Route
-				path="/check-email"
-				element={<AuthCheckEmail />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthForgotPassword />
+						</ThemeProvider>
+					</>
+				}
 			/>
 			<Route
 				path="/set-new-password/:token"
-				element={<AuthSetNewPassword />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<AuthSetNewPassword />
+						</ThemeProvider>
+					</>
+				}
 			/>
 			<Route
-				path="/new-password-confirmed"
-				element={<AuthNewPasswordConfirmed />}
-			/>
-			<Route
-				path="/status/uptime/public/:url"
-				element={<Status />}
+				path="/status/public/:url"
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<Status />
+						</ThemeProvider>
+					</>
+				}
 			/>
 
 			<Route
@@ -262,7 +438,13 @@ const Routes = () => {
 			/>
 			<Route
 				path="*"
-				element={<NotFound />}
+				element={
+					<>
+						<ThemeProvider theme={v2theme}>
+							<NotFound />
+						</ThemeProvider>
+					</>
+				}
 			/>
 		</LibRoutes>
 	);

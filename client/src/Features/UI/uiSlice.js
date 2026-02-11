@@ -4,8 +4,6 @@ const initialMode = window?.matchMedia?.("(prefers-color-scheme: dark)")?.matche
 	? "dark"
 	: "light";
 
-// Initial state for UI settings.
-// Add more settings as needed (e.g., theme preferences, user settings)
 const initialState = {
 	monitors: {
 		rowsPerPage: 10,
@@ -19,6 +17,9 @@ const initialState = {
 	infrastructure: {
 		rowsPerPage: 5,
 	},
+	logs: {
+		rowsPerPage: 15,
+	},
 	sidebar: {
 		collapsed: false,
 	},
@@ -29,6 +30,7 @@ const initialState = {
 	distributedUptimeEnabled: false,
 	language: "en",
 	starPromptOpen: true,
+	chartType: "histogram",
 };
 
 const uiSlice = createSlice({
@@ -40,9 +42,10 @@ const uiSlice = createSlice({
 		},
 		setRowsPerPage: (state, action) => {
 			const { table, value } = action.payload;
-			if (state[table]) {
-				state[table].rowsPerPage = value;
+			if (!state[table]) {
+				state[table] = {};
 			}
+			state[table].rowsPerPage = value;
 		},
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
@@ -58,6 +61,9 @@ const uiSlice = createSlice({
 			state.showURL = action.payload;
 		},
 		setGreeting(state, action) {
+			if (!state.greeting) {
+				state.greeting = { index: 0, lastUpdate: null };
+			}
 			state.greeting.index = action.payload.index;
 			state.greeting.lastUpdate = action.payload.lastUpdate;
 		},
@@ -69,6 +75,9 @@ const uiSlice = createSlice({
 		},
 		setStarPromptOpen: (state, action) => {
 			state.starPromptOpen = action.payload;
+		},
+		setChartType: (state, action) => {
+			state.chartType = action.payload;
 		},
 	},
 });
@@ -85,4 +94,5 @@ export const {
 	setDistributedUptimeEnabled,
 	setLanguage,
 	setStarPromptOpen,
+	setChartType,
 } = uiSlice.actions;

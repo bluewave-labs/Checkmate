@@ -64,7 +64,7 @@ const baseTheme = (palette) => ({
 								letterSpacing: "0.5px",
 								textShadow: "0 0 1px rgba(0, 0, 0, 0.15)",
 								"&:hover": {
-									backgroundColor: darken(theme.palette.accent.darker, 0.05),
+									backgroundColor: darken(theme.palette.accent.main, 0.25),
 									boxShadow: `0 2px 6px rgba(0, 0, 0, 0.1)`,
 									transition: "all 0.2s ease-in-out",
 								},
@@ -74,7 +74,7 @@ const baseTheme = (palette) => ({
 							props: (props) => props.color === "accent",
 							style: {
 								"&:hover": {
-									backgroundColor: theme.palette.accent.darker,
+									backgroundColor: darken(theme.palette.accent.main, 0.2),
 								},
 							},
 						},
@@ -684,6 +684,58 @@ const baseTheme = (palette) => ({
 			styleOverrides: {
 				root: ({ theme }) => ({
 					backgroundColor: theme.palette.primary.main,
+				}),
+			},
+		},
+		// DatePicker calendar popup styling
+		MuiPickersPopper: {
+			styleOverrides: {
+				paper: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+				}),
+			},
+		},
+		MuiDateCalendar: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					backgroundColor: theme.palette.primary.main,
+				}),
+			},
+		},
+		MuiPickersCalendarHeader: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					"& .MuiPickersCalendarHeader-label": {
+						color: theme.palette.primary.contrastText,
+					},
+				}),
+			},
+		},
+		MuiDayCalendar: {
+			styleOverrides: {
+				weekDayLabel: ({ theme }) => ({
+					color: theme.palette.primary.contrastTextTertiary,
+				}),
+			},
+		},
+		MuiPickersDay: {
+			styleOverrides: {
+				root: ({ theme }) => ({
+					color: theme.palette.primary.contrastText,
+					"&:hover": {
+						backgroundColor: theme.palette.tertiary.main,
+					},
+					"&.Mui-selected": {
+						backgroundColor: theme.palette.accent.main,
+						color: theme.palette.accent.contrastText,
+						"&:hover": {
+							backgroundColor: theme.palette.accent.main,
+						},
+					},
+					"&.Mui-disabled": {
+						color: theme.palette.primary.contrastTextTertiary,
+						opacity: 0.5,
+					},
 				}),
 			},
 		},

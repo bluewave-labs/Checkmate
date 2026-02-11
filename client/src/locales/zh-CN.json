@@ -1121,5 +1121,12 @@
 	"packetsReceivedRate": "数据包接收率",
 	"packetsSent": "已发送数据包",
 	"rate": "速度",
-	"selectInterface": "选择接口"
+	"selectInterface": "选择接口",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "磁盘选择",
+			"disk_selection_info": "目前没有检测到磁盘。",
+			"disk_selection_description": "选择您要监控的特定磁盘。"
+		}
+	}
 }

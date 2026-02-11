@@ -1,8 +1,7 @@
 import PropTypes from "prop-types";
 import { FormControlLabel, Checkbox as MuiCheckbox } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import CheckboxOutline from "../../../../assets/icons/checkbox-outline.svg?react";
-import CheckboxFilled from "../../../../assets/icons/checkbox-filled.svg?react";
+import Icon from "../../Icon";
 
 /**
  * Checkbox Component
@@ -65,8 +64,8 @@ const Checkbox = ({
 					name={name}
 					value={value}
 					onChange={onChange}
-					icon={<CheckboxOutline />}
-					checkedIcon={<CheckboxFilled />}
+					icon={<Icon name="Square" />}
+					checkedIcon={<Icon name="CheckSquare" />}
 					inputProps={{
 						"aria-label": "controlled checkbox",
 						id: id,

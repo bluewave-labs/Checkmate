@@ -1,3 +1,6 @@
 .idea
 .vscode
 .VSCodeCounter
+*.sh
+mongo
+node_modules/

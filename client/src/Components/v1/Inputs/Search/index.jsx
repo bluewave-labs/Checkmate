@@ -8,7 +8,7 @@ import {
 	Checkbox,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
-import SearchIcon from "../../../../assets/icons/search.svg?react";
+import Icon from "../../Icon";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import FieldWrapper from "../FieldWrapper/index.jsx";
@@ -31,20 +31,13 @@ import FieldWrapper from "../FieldWrapper/index.jsx";
 const SearchAdornment = () => {
 	const theme = useTheme();
 	return (
-		<Box
-			height={16}
-			sx={{
-				"& svg": {
-					width: 16,
-					height: 16,
-					"& path": {
-						stroke: theme.palette.primary.contrastTextTertiary,
-						strokeWidth: 1.2,
-					},
-				},
-			}}
-		>
-			<SearchIcon />
+		<Box height={16}>
+			<Icon
+				name="Search"
+				size={16}
+				color="primary.contrastTextTertiary"
+				strokeWidth={1.2}
+			/>
 		</Box>
 	);
 };
@@ -85,7 +78,12 @@ const Search = ({
 	const enhancedOptions = React.useMemo(() => {
 		return multiple && isAdorned
 			? [
-					{ [filteredBy]: t("selectAll"), isSelectAll: true, _id: "select_all" },
+					{
+						[filteredBy]: t("selectAll"),
+						isSelectAll: true,
+						_id: "select_all",
+						id: "select_all",
+					},
 					...options,
 				]
 			: options;
@@ -93,7 +91,7 @@ const Search = ({
 	const isOptionSelected = (option) => {
 		if (!multiple && !isAdorned) return false;
 		if (Array.isArray(value)) {
-			return value.some((item) => item._id === option._id);
+			return value.some((item) => (item._id ?? item.id) === (option._id ?? option.id));
 		}
 		return false;
 	};
@@ -145,7 +143,9 @@ const Search = ({
 			disableClearable
 			options={enhancedOptions}
 			getOptionLabel={(option) => option[filteredBy]}
-			isOptionEqualToValue={(option, value) => option._id === value._id} // Compare by unique identifier
+			isOptionEqualToValue={(option, value) =>
+				(option._id ?? option.id) === (value?._id ?? value?.id)
+			} // Compare by unique identifier
 			renderInput={(params) => (
 				<FieldWrapper
 					label={label}
@@ -206,7 +206,7 @@ const Search = ({
 				return filtered;
 			}}
 			getOptionKey={(option) => {
-				return option._id;
+				return option._id ?? option.id;
 			}}
 			renderOption={(props, option) => {
 				const { key, ...optionProps } = props;

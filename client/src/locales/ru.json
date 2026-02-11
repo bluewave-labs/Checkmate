@@ -1129,5 +1129,12 @@
 	"packetsReceivedRate": "Скорость получения пакетов",
 	"packetsSent": "Отправлено пакетов",
 	"rate": "коэффициент",
-	"selectInterface": "Выберите интерфейс"
+	"selectInterface": "Выберите интерфейс",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "Выбор дисков",
+			"disk_selection_info": "На данный момент диск не обнаружен.",
+			"disk_selection_description": "Выберите конкретные диски, которые вы хотите отслеживать."
+		}
+	}
 }

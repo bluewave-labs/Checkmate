@@ -7,11 +7,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig(({}) => {
-	let version = "3.2.1";
+	let version = "3.3";
 
 	return {
 		base: "/",
 		plugins: [svgr(), react()],
+		server: {
+			host: true,
+		},
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "src"),

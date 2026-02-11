@@ -1108,5 +1108,12 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "ディスク選択",
+			"disk_selection_info": "現在ディスクが検出されていません。",
+			"disk_selection_description": "監視したい特定のディスクを選択してください。"
+		}
+	}
 }

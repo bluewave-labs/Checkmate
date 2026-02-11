@@ -1129,5 +1129,12 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"v1": {
+		"infrastructure": {
+			"disk_selection_title": "Seleção de Discos",
+			"disk_selection_info": "Nenhum disco detectado no momento.",
+			"disk_selection_description": "Selecione os discos específicos que você deseja monitorar."
+		}
+	}
 }

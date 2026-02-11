@@ -1,0 +1,25 @@
+import type { Config } from "jest";
+
+const config: Config = {
+	rootDir: ".",
+	testEnvironment: "node",
+	extensionsToTreatAsEsm: [".ts"],
+	transform: {
+		"^.+\\.(t|j)sx?$": ["ts-jest", { useESM: true, tsconfig: "./tsconfig.jest.json" }],
+	},
+	moduleNameMapper: {
+		"^@/validation/(.*)\\.js$": "<rootDir>/src/validation/$1.js",
+		"^@/utils/(AppError)\\.js$": "<rootDir>/src/utils/$1.ts",
+		"^@/utils/(.*)\\.js$": "<rootDir>/src/utils/$1.js",
+		"^@/(.*)\\.ts$": "<rootDir>/src/$1.ts",
+		"^@/(.*)\\.js$": "<rootDir>/src/$1.ts",
+		"^@/(.*)$": "<rootDir>/src/$1",
+	},
+	testMatch: ["<rootDir>/test/**/*.test.ts"],
+	setupFilesAfterEnv: [],
+	collectCoverageFrom: ["src/**/*.ts"],
+	coveragePathIgnorePatterns: ["/node_modules/", "/test/"],
+	clearMocks: true,
+};
+
+export default config;

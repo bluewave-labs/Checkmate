@@ -4,6 +4,11 @@
 	box-sizing: border-box;
 }
 
+html,
+body {
+	overscroll-behavior: none;
+}
+
 html {
 	scroll-behavior: smooth;
 }
@@ -45,7 +50,8 @@ html {
 	cursor: not-allowed;
 }
 
-.Toastify__toast-container {
+/* .Toastify__toast-container {
+	min-width: 300px;
 	width: auto;
 }
 .Toastify__toast-body .alert {
@@ -63,7 +69,7 @@ html {
 }
 .Toastify [class*="Toastify__toast-theme"] {
 	background-color: transparent;
-}
+} */
 
 .MuiTouchRipple-root {
 	display: none;
