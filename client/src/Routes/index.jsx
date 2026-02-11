@@ -47,9 +47,14 @@ import Settings from "@/Pages/Settings";
 import Maintenance from "@/Pages/Maintenance";
 import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 
-import ProtectedRoute from "@/Components/v1/ProtectedRoute";
-import RoleProtectedRoute from "@/Components/v1/RoleProtectedRoute";
+// Logs & Diagnostics
 import Logs from "@/Pages/Logs";
+
+// Routing
+import {
+	ProtectedRoute,
+	RoleProtectedRoute,
+} from "@/Components/v2/routing/RouteProtected";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
 
