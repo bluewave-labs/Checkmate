@@ -1,5 +1,4 @@
 import type { GroupedCheck, CheckSnapshot } from "@/Types/Check";
-export type MonitorStatus = boolean | undefined;
 
 export const MonitorTypes = [
 	"http",
@@ -12,6 +11,15 @@ export const MonitorTypes = [
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
+
+export const MonitorStatuses = [
+	"up",
+	"down",
+	"paused",
+	"initializing",
+	"maintenance",
+] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export interface MonitorThresholds {
 	usage_cpu?: number;
@@ -28,7 +36,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: boolean;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;

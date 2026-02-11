@@ -1,0 +1,29 @@
+import {
+	UpStatusBox,
+	DownStatusBox,
+	PausedStatusBox,
+	InitializingStatusBox,
+} from "@/Components/v2/design-elements";
+import Stack from "@mui/material/Stack";
+
+import type { MonitorsSummary } from "@/Types/Monitor";
+import { useTheme } from "@mui/material";
+
+interface MonitorsSummaryProps {
+	summary: MonitorsSummary | null;
+}
+
+export const HeaderMonitorsSummary = ({ summary }: MonitorsSummaryProps) => {
+	const theme = useTheme();
+	return (
+		<Stack
+			direction={{ xs: "column", md: "row" }}
+			gap={theme.spacing(8)}
+		>
+			<UpStatusBox n={summary?.upMonitors || 0} />
+			<DownStatusBox n={summary?.downMonitors || 0} />
+			<PausedStatusBox n={summary?.pausedMonitors || 0} />
+			<InitializingStatusBox n={summary?.initializingMonitors || 0} />
+		</Stack>
+	);
+};

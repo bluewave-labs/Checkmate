@@ -2,13 +2,6 @@ import type { Monitor, MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/v2Theme";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
 
-export const determineState = (monitor: Monitor) => {
-	if (typeof monitor === "undefined") return "pending";
-	if (monitor?.isActive === false) return "paused";
-	if (monitor?.status === undefined) return "pending";
-	return monitor?.status == true ? "up" : "down";
-};
-
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
 		http: "uptime",
@@ -24,10 +17,10 @@ export const getMonitorPath = (type: MonitorType): string => {
 };
 
 export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
-	if (status === true) {
+	if (status === "up") {
 		return "success";
 	}
-	if (status === false) {
+	if (status === "down") {
 		return "error";
 	}
 	return "warning";
@@ -43,11 +36,11 @@ export const getValuePalette = (value: ValueType): PaletteKey => {
 };
 
 export const getStatusColor = (status: MonitorStatus, theme: any): string => {
-	if (status === true) {
+	if (status === "up") {
 		return theme.palette.success.light;
 	}
 
-	if (status === false) {
+	if (status === "down") {
 		return theme.palette.error.light;
 	}
 
@@ -101,9 +94,9 @@ export const getStatusPageHeaderConfig = (
 		return { paletteKey: "error", message: "No monitors available" };
 	}
 
-	const allUp = monitors.every((monitor) => monitor.status === true);
-	const anyDown = monitors.some((monitor) => monitor.status === false);
-	const allDown = monitors.every((monitor) => monitor.status === false);
+	const allUp = monitors.every((monitor) => monitor.status === "up");
+	const anyDown = monitors.some((monitor) => monitor.status === "down");
+	const allDown = monitors.every((monitor) => monitor.status === "down");
 
 	if (allUp)
 		return {
