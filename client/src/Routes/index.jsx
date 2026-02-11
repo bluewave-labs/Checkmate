@@ -49,14 +49,12 @@ import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 
 import ProtectedRoute from "@/Components/v1/ProtectedRoute";
 import RoleProtectedRoute from "@/Components/v1/RoleProtectedRoute";
-import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
 import Logs from "@/Pages/Logs";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
-	const AdminCheckedRegister = withAdminCheck(AuthRegister);
 	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
@@ -380,7 +378,7 @@ const Routes = () => {
 				element={
 					<>
 						<ThemeProvider theme={v2theme}>
-							<AdminCheckedRegister />
+							<AuthRegister />
 						</ThemeProvider>
 					</>
 				}
