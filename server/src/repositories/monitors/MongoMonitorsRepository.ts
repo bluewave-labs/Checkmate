@@ -181,7 +181,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				{
 					$set: {
 						isActive: { $not: "$isActive" },
-						status: "$$REMOVE",
+						status: {
+							$cond: {
+								if: { $eq: ["$status", "paused"] },
+								then: "initializing",
+								else: "paused",
+							},
+						},
 					},
 				},
 			],

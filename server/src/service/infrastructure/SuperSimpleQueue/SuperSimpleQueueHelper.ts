@@ -59,7 +59,7 @@ class SuperSimpleQueueHelper {
 					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getMonitorJob" });
 				}
 
-				// Step 1.  Check for maintenacne window, if found, skip the check
+				// Step 1.  Check for maintenance window, if found, skip the check
 				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
 				if (maintenanceWindowActive) {
 					this.logger.debug({
@@ -67,6 +67,7 @@ class SuperSimpleQueueHelper {
 						service: SERVICE_NAME,
 						method: "getMonitorJob",
 					});
+					// TODO update monitor status
 					return;
 				}
 

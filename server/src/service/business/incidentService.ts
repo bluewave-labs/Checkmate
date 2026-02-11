@@ -46,7 +46,7 @@ class IncidentService {
 	handleIncident = async (monitor: Monitor, code: number): Promise<Incident | null> => {
 		const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
 		// Monitor is down, create an incident
-		if (monitor.status === false) {
+		if (monitor.status === "down") {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
