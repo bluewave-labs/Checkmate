@@ -66,6 +66,8 @@ export interface MonitorsSummary {
 	upMonitors: number;
 	downMonitors: number;
 	pausedMonitors: number;
+	initializingMonitors: number;
+	maintenanceMonitors: number;
 }
 
 export interface MonitorsWithChecksResponse {
