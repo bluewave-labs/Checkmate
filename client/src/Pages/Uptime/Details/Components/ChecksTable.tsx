@@ -15,7 +15,7 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "status",
 			content: t("common.table.headers.status"),
 			render: (row) => {
-				return <StatusLabel status={row.status} />;
+				return <StatusLabel status={row.status === true ? "up" : "down"} />;
 			},
 		},
 		{
