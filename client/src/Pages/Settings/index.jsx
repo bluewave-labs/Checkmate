@@ -27,7 +27,7 @@ import {
 import SettingsStats from "./SettingsStats.jsx";
 
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
-import { useGet, usePost, useDelete, useLazyGet, usePut } from "@/Hooks/UseApi";
+import { useGet, usePost, useDelete, useLazyGet, usePatch } from "@/Hooks/UseApi";
 // Constants
 const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 
@@ -62,10 +62,10 @@ const Settings = () => {
 		}
 	}, [fetchedSettings]);
 
-	const { put: saveSettingsFn, loading: isSaving } = usePut();
+	const { patch: saveSettingsFn, loading: isSaving } = usePatch();
 
 	const saveSettings = async (settings) => {
-		const response = await saveSettingsFn("/settings", { settings });
+		const response = await saveSettingsFn("/settings", settings);
 		if (response?.data) {
 			const data = response.data;
 			setIsApiKeySet(data.pagespeedKeySet);
