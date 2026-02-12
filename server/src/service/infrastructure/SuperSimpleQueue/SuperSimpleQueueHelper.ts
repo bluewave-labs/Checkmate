@@ -89,7 +89,6 @@ class SuperSimpleQueueHelper {
 
 				// Step 4 Add check to buffer
 				this.buffer.addToBuffer({ check });
-
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
