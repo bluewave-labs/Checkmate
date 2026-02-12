@@ -1,18 +1,21 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-
-import authReducer from "./Features/Auth/authSlice";
-import uiReducer from "./Features/UI/uiSlice";
+import authReducer from "@/Features/Auth/authSlice";
+import uiReducer from "@/Features/UI/uiSlice";
 import storage from "redux-persist/lib/storage";
-import { persistReducer, persistStore, createTransform } from "redux-persist";
+import {
+	persistReducer,
+	persistStore,
+	createTransform,
+	PERSIST,
+	REHYDRATE,
+} from "redux-persist";
 
 const authTransform = createTransform(
-	(inboundState) => {
+	(inboundState: Record<string, unknown>) => {
 		const { profileImage, ...rest } = inboundState;
 		return rest;
 	},
-	// No transformation on rehydration
-	null,
-	// Only applies to auth
+	undefined,
 	{ whitelist: ["auth"] }
 );
 
@@ -28,6 +31,7 @@ const rootReducer = combineReducers({
 	ui: uiReducer,
 });
 
+// @ts-expect-error - redux-persist types don't align perfectly with redux-toolkit
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
@@ -35,10 +39,13 @@ export const store = configureStore({
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware({
 			serializableCheck: {
-				ignoredActions: ["persist/PERSIST", "persist/REHYDRATE", "persist/REGISTER"],
+				ignoredActions: [PERSIST, REHYDRATE, "persist/REGISTER"],
 			},
 		}),
 });
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch;
 
 export const persistor = persistStore(store);
 export default store;
