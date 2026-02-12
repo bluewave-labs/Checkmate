@@ -7,11 +7,11 @@ export const getMonitorPath = (type: MonitorType): string => {
 		http: "uptime",
 		port: "uptime",
 		ping: "uptime",
-		hardware: "hardware",
-		pagespeed: "pagespeed",
-		docker: "docker",
-		game: "game-servers",
+		game: "uptime",
 		unknown: "uptime",
+		docker: "uptime",
+		hardware: "infrastructure",
+		pagespeed: "pagespeed",
 	};
 	return pathMap[type];
 };

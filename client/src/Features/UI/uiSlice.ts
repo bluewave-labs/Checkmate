@@ -12,11 +12,6 @@ interface SidebarState {
 	collapsed: boolean;
 }
 
-interface GreetingState {
-	index: number;
-	lastUpdate: string | null;
-}
-
 interface UIState {
 	monitors: TableState;
 	team: TableState;
@@ -26,7 +21,6 @@ interface UIState {
 	sidebar: SidebarState;
 	mode: ThemeMode;
 	showURL: boolean;
-	greeting: GreetingState;
 	timezone: string;
 	distributedUptimeEnabled: boolean;
 	language: string;
@@ -60,7 +54,6 @@ const initialState: UIState = {
 	},
 	mode: initialMode,
 	showURL: false,
-	greeting: { index: 0, lastUpdate: null },
 	timezone: "America/Toronto",
 	distributedUptimeEnabled: false,
 	language: "en",
@@ -94,13 +87,7 @@ const uiSlice = createSlice({
 		setShowURL: (state, action: PayloadAction<boolean>) => {
 			state.showURL = action.payload;
 		},
-		setGreeting: (
-			state,
-			action: PayloadAction<{ index: number; lastUpdate: string | null }>
-		) => {
-			state.greeting.index = action.payload.index;
-			state.greeting.lastUpdate = action.payload.lastUpdate;
-		},
+
 		setTimezone: (state, action: PayloadAction<{ timezone: string }>) => {
 			state.timezone = action.payload.timezone;
 		},
@@ -124,7 +111,6 @@ export const {
 	setCollapsed,
 	setMode,
 	setShowURL,
-	setGreeting,
 	setTimezone,
 	setDistributedUptimeEnabled,
 	setLanguage,
