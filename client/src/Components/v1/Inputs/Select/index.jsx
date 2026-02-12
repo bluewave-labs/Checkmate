@@ -64,7 +64,6 @@ const Select = ({
 	const theme = useTheme();
 	const getItemValue = (item) => item?._id ?? item?.id;
 	const itemStyles = {
-		fontSize: "var(--env-var-font-size-medium)",
 		color: theme.palette.primary.contrastTextTertiary,
 		borderRadius: theme.shape.borderRadius,
 		margin: theme.spacing(2),

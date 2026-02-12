@@ -23,7 +23,6 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				overflow={"hidden"}
 				textOverflow={"ellipsis"}
 				whiteSpace={"nowrap"}
-				maxWidth={isSmall ? "100%" : "calc((100vw - var(--env-var-width-2)) / 2)"}
 			>
 				{monitor.name}
 			</Typography>
@@ -40,7 +39,6 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 					overflow={"hidden"}
 					textOverflow={"ellipsis"}
 					whiteSpace={"nowrap"}
-					maxWidth={isSmall ? "100%" : "calc((100vw - var(--env-var-width-2)) / 2)"}
 				>
 					{formatUrl(monitor?.url)}
 				</Typography>
