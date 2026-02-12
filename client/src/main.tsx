@@ -3,7 +3,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import { persistor, store } from "./store.js";
+import { persistor, store } from "@/store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import I18nLoader from "./Components/v1/I18nLoader/index.jsx";
 import { initApiClient } from "./Utils/ApiClient.js";

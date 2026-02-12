@@ -1,4 +1,17 @@
-import { Box, Stack, useTheme } from "@mui/material";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import { useTheme, keyframes } from "@mui/material";
+
+const ripple = keyframes`
+	from {
+		opacity: 1;
+		transform: scale(0);
+	}
+	to {
+		opacity: 0;
+		transform: scale(2);
+	}
+`;
 
 interface PulseDotProps {
 	color: string;
@@ -28,7 +41,7 @@ export const PulseDot = ({ color }: PulseDotProps) => {
 						height: "100%",
 						backgroundColor: "inherit",
 						borderRadius: "50%",
-						animation: "ripple 1.8s ease-out infinite",
+						animation: `${ripple} 1.8s ease-out infinite`,
 					},
 					"&::after": {
 						content: `""`,

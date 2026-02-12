@@ -3,6 +3,7 @@ import MonitorStats from "../../db/models/MonitorStats.js";
 import { CheckModel } from "@/db/models/index.js";
 import type {
 	Monitor,
+	MonitorStatus,
 	MonitorStatusResponse,
 	StatusChangeResult,
 	Check,
@@ -200,14 +201,13 @@ export class StatusService implements IStatusService {
 				monitor.recentChecks.shift();
 			}
 
-			monitor.status = status === true ? "up" : "down";
-
 			const prevStatus = monitor.status;
-			let newStatus = monitor.status;
+			let newStatus: MonitorStatus = status === true ? "up" : "down";
 			let statusChanged = false;
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
+				monitor.status = newStatus;
 				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 				return {
 					monitor: updated,
