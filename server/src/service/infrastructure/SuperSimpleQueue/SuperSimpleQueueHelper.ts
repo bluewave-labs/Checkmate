@@ -86,7 +86,15 @@ class SuperSimpleQueueHelper {
 
 				// Step 3.  Build check
 				const check = await this.checkService.buildCheck(status);
-
+				if (!check) {
+					this.logger.warn({
+						message: `No check could be built for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						details: { code: status.code, message: status.message },
+					});
+					return;
+				}
 				// Step 4 Add check to buffer
 				this.buffer.addToBuffer({ check });
 				// Step 4.  Update monitor status
