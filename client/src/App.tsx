@@ -6,20 +6,12 @@ import { ThemeProvider } from "@emotion/react";
 import lightTheme from "./Utils/Theme/lightTheme";
 import darkTheme from "./Utils/Theme/darkTheme";
 import { CssBaseline, GlobalStyles } from "@mui/material";
-import { logger } from "./Utils/Logger"; // Import the logger
 import { Routes } from "./Routes";
 import AppLayout from "@/Components/v2/layout/AppLayout";
 import type { RootState } from "@/Types/state";
 
 function App() {
 	const mode = useSelector((state: RootState) => state.ui.mode);
-
-	// Cleanup
-	useEffect(() => {
-		return () => {
-			logger.cleanup();
-		};
-	}, []);
 
 	const theme = mode === "light" ? lightTheme : darkTheme;
 

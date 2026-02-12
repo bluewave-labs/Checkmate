@@ -1,6 +1,18 @@
 import joi from "joi";
 import dayjs from "dayjs";
-import { ROLES } from "../Utils/roleUtils";
+export const ROLES = {
+	SUPERADMIN: "superadmin",
+	ADMIN: "admin",
+	USER: "user",
+	DEMO: "demo",
+};
+
+export const VALID_ROLES = [ROLES.ADMIN, ROLES.USER, ROLES.DEMO];
+
+export const EDITABLE_ROLES = [
+	{ role: ROLES.ADMIN, _id: ROLES.ADMIN },
+	{ role: ROLES.USER, _id: ROLES.USER },
+];
 
 const THRESHOLD_COMMON_BASE_MSG = "Threshold must be a number.";
 

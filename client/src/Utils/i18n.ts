@@ -1,16 +1,26 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import type { Resource } from "i18next";
 
 const primaryLanguage = "en";
 
-// Load all translation files eagerly
-const translations = import.meta.glob("../locales/*.json", { eager: true });
+interface TranslationModule {
+	default?: Record<string, unknown>;
+	[key: string]: unknown;
+}
 
-const resources = {};
+// Load all translation files eagerly
+const translations = import.meta.glob<TranslationModule>("../locales/*.json", {
+	eager: true,
+});
+
+const resources: Resource = {};
 Object.keys(translations).forEach((path) => {
-	const langCode = path.match(/\/([^/]+)\.json$/)[1];
+	const match = path.match(/\/([^/]+)\.json$/);
+	if (!match) return;
+	const langCode = match[1];
 	resources[langCode] = {
-		translation: translations[path].default || translations[path],
+		translation: translations[path].default ?? translations[path],
 	};
 });
 
