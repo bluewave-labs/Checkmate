@@ -52,7 +52,7 @@ export class StatusService implements IStatusService {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			let stats = await this.monitorStatsRepository.findByMonitorId(monitorId);
+			let stats: Omit<MonitorStats, "id" | "createdAt" | "updatedAt"> = await this.monitorStatsRepository.findByMonitorId(monitorId);
 			if (!stats) {
 				stats = {
 					monitorId,
@@ -62,6 +62,7 @@ export class StatusService implements IStatusService {
 					totalDownChecks: 0,
 					uptimePercentage: 0,
 					lastResponseTime: 0,
+					lastCheckTimestamp: 0,
 				};
 			}
 
@@ -105,8 +106,7 @@ export class StatusService implements IStatusService {
 
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
-
-			await stats.save();
+			await this.monitorStatsRepository.create(stats);
 			return true;
 		} catch (error: any) {
 			this.logger.error({
@@ -121,11 +121,10 @@ export class StatusService implements IStatusService {
 
 	handleIncidentForCheck = async (check: Check, monitor: Monitor, action: any, errorContext = "incident handling") => {
 		try {
-			let savedCheck;
+			let savedCheck: Check | null = null;
 			if (!check.id) {
 				try {
-					const checkModel = new CheckModel(check);
-					savedCheck = await checkModel.save();
+					savedCheck = await this.checksRepository.create(check);
 
 					this.buffer.removeCheckFromBuffer(check);
 				} catch (checkError: any) {
