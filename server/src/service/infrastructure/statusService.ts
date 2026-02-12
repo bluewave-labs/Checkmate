@@ -1,6 +1,4 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
-import MonitorStats from "../../db/models/MonitorStats.js";
-import { CheckModel } from "@/db/models/index.js";
+import { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
 import type {
 	Monitor,
 	MonitorStatus,
@@ -10,7 +8,9 @@ import type {
 	HardwareStatusPayload,
 	PageSpeedStatusPayload,
 	CheckSnapshot,
+	MonitorStats,
 } from "@/types/index.js";
+import { ILogger } from "@/utils/logger.js";
 const SERVICE_NAME = "StatusService";
 
 export interface IStatusService {
@@ -27,11 +27,21 @@ export class StatusService implements IStatusService {
 	private logger: any;
 	private buffer: any;
 	private monitorsRepository: IMonitorsRepository;
+	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
 
-	constructor({ logger, buffer, monitorsRepository }: { logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
+	constructor(
+		logger: ILogger,
+		buffer: any,
+		monitorsRepository: IMonitorsRepository,
+		monitorStatsRepository: IMonitorStatsRepository,
+		checksRepository: IChecksRepository
+	) {
 		this.logger = logger;
 		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
@@ -42,18 +52,17 @@ export class StatusService implements IStatusService {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			// Get stats
-			let stats = await MonitorStats.findOne({ monitorId });
+			let stats = await this.monitorStatsRepository.findByMonitorId(monitorId);
 			if (!stats) {
-				stats = new MonitorStats({
+				stats = {
 					monitorId,
 					avgResponseTime: 0,
 					totalChecks: 0,
 					totalUpChecks: 0,
 					totalDownChecks: 0,
 					uptimePercentage: 0,
-					lastCheck: null,
-				});
+					lastResponseTime: 0,
+				};
 			}
 
 			// Update stats

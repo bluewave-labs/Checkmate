@@ -30,7 +30,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 	return {
 		authController: new AuthController(services.userService),
 		monitorController: new MonitorController(services.monitorService),
-		settingsController: new SettingsController(services.settingsService, services.emailService, services.db),
+		settingsController: new SettingsController(services.settingsService, services.emailService),
 		checkController: new CheckController(services.checkService),
 		inviteController: new InviteController(services.inviteService),
 		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
