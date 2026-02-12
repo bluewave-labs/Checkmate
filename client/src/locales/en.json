@@ -325,6 +325,55 @@
 				"week": "Showing statistics for past 7 days.",
 				"month": "Showing statistics for past 30 days."
 			}
+		},
+		"offlineBanner": {
+			"serverUnreachable": "Unable to reach server",
+			"retry": "Retry",
+			"retrying": "Retrying...",
+			"reconnected": "Connection restored"
+		},
+		"sidebar": {
+			"menu": {
+				"uptime": "Uptime",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Infrastructure",
+				"notifications": "Notifications",
+				"checks": "Checks",
+				"incidents": "Incidents",
+				"statusPages": "Status pages",
+				"maintenance": "Maintenance",
+				"logs": "Logs",
+				"settings": "Settings"
+			},
+			"bottomMenu": {
+				"support": "Support",
+				"discussions": "Discussions",
+				"docs": "Docs",
+				"changelog": "Changelog"
+			},
+			"accountMenu": {
+				"profile": "Profile",
+				"password": "Password",
+				"team": "Team"
+			},
+			"starPrompt": {
+				"title": "Star Checkmate",
+				"description": "See the latest releases and help grow the community on GitHub"
+			},
+			"authFooter": {
+				"navControls": "Controls",
+				"logOut": "Log out",
+				"roles": {
+					"superAdmin": "Super admin",
+					"admin": "Admin",
+					"user": "User",
+					"demoUser": "Demo user"
+				}
+			}
+		},
+		"starPrompt": {
+			"title": "Star Checkmate",
+			"description": "See the latest releases and help grow the community on GitHub"
 		}
 	},
 	"configure": "Configure",
@@ -533,7 +582,7 @@
 	"notFoundButton": "Go to the main dashboard",
 	"notifications": {
 		"fallback": {
-			"actionButton": "Let's create your first notification channel!",
+			"actionButton": "Create notification channel!",
 			"checks": [
 				"Alert teams about downtime or performance issues",
 				"Let engineers know when incidents happen",
@@ -726,6 +775,7 @@
 				"status": {
 					"down": "down",
 					"initializing": "initializing",
+					"maintenance": "maintenance",
 					"paused": "paused",
 					"total": "total",
 					"up": "up"
@@ -970,7 +1020,7 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Let's create your first infrastructure monitor!",
+				"actionButton": "Create a monitor!",
 				"checks": [
 					"Track the performance of your servers",
 					"Identify bottlenecks and optimize usage",
@@ -1038,7 +1088,7 @@
 		},
 		"maintenanceWindow": {
 			"fallback": {
-				"actionButton": "Let's create your first maintenance window!",
+				"actionButton": "Create a maintenance window!",
 				"checks": [
 					"Mark your maintenance periods",
 					"Eliminate any misunderstandings",
@@ -1179,7 +1229,7 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Let's create your first PageSpeed monitor!",
+				"actionButton": "Create a monitor!",
 				"checks": [
 					"Report on the user experience of a page",
 					"Help analyze webpage speed",
@@ -1198,7 +1248,7 @@
 					"Build trust with transparent service monitoring",
 					"Reduce support requests during incidents"
 				],
-				"actionButton": "Let's create your first status page!"
+				"actionButton": "Create a status page!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",

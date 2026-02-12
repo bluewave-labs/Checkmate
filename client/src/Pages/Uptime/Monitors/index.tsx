@@ -1,10 +1,5 @@
-import { ControlsFilter } from "@/Components/v2/monitors";
-import {
-	MonitorBasePageWithStates,
-	UpStatusBox,
-	DownStatusBox,
-	PausedStatusBox,
-} from "@/Components/v2/design-elements";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/v2/monitors";
+import { MonitorBasePageWithStates } from "@/Components/v2/design-elements";
 import { TextField, Dialog } from "@/Components/v2/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
@@ -99,7 +94,11 @@ const UptimeMonitorsPage = () => {
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
-	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};
+	const {
+		monitors: monitorsWithChecks,
+		summary,
+		count,
+	} = monitorsWithChecksData ?? { monitors: null, summary: null, count: 0 };
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -150,14 +149,8 @@ const UptimeMonitorsPage = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<Stack
-				direction={isSmall ? "column" : "row"}
-				gap={theme.spacing(8)}
-			>
-				<UpStatusBox n={summary?.upMonitors || 0} />
-				<DownStatusBox n={summary?.downMonitors || 0} />
-				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack>
+
+			<HeaderMonitorsSummary summary={summary} />
 
 			<Stack
 				direction={isSmall ? "column" : "row"}

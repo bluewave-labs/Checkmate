@@ -4,14 +4,14 @@ import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import HomeLayout from "@/Components/v1/Layouts/HomeLayout";
+import RootLayout from "@/Components/v2/layout/RootLayout";
 import NotFound from "@/Pages/NotFound";
 
 // Auth
 import AuthLogin from "@/Pages/Auth/Login";
 import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
-import AuthSetNewPassword from "../Pages/Auth/SetNewPassword";
+import AuthSetNewPassword from "@/Pages/Auth/SetNewPassword";
 
 // Uptime
 import Uptime from "@/Pages/Uptime/Monitors";
@@ -23,43 +23,43 @@ import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 
 // Infrastructure
 import Infrastructure from "@/Pages/Infrastructure/Monitors";
-import InfrastructureDetails from "@/Pages/Infrastructure/Details/index";
-
-// Server Status
-import ServerUnreachable from "../Pages/ServerUnreachable.jsx";
+import InfrastructureDetails from "@/Pages/Infrastructure/Details";
 
 // Checks
-import Checks from "../Pages/Checks/index";
+import Checks from "@/Pages/Checks";
 
 // Incidents
-import Incidents from "../Pages/Incidents/";
+import Incidents from "@/Pages/Incidents";
 
 // Status pages
-import CreateStatus from "../Pages/StatusPage/Create/";
-import StatusPages from "../Pages/StatusPage/StatusPages";
-import Status from "../Pages/StatusPage/Status";
+import CreateStatus from "@/Pages/StatusPage/Create/";
+import StatusPages from "@/Pages/StatusPage/StatusPages";
+import Status from "@/Pages/StatusPage/Status";
 
-import Notifications from "../Pages/Notifications";
-import CreateNotifications from "../Pages/Notifications/create";
+import Notifications from "@/Pages/Notifications";
+import CreateNotifications from "@/Pages/Notifications/create";
 
 // Settings
 import Account from "@/Pages/Account";
-import EditUser from "../Pages/Account/EditUser";
-import Settings from "../Pages/Settings";
+import EditUser from "@/Pages/Account/EditUser";
+import Settings from "@/Pages/Settings";
 
-import Maintenance from "../Pages/Maintenance";
+import Maintenance from "@/Pages/Maintenance";
 import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 
-import ProtectedRoute from "../Components/v1/ProtectedRoute";
-import RoleProtectedRoute from "../Components/v1/RoleProtectedRoute";
-import withAdminCheck from "@/Components/v1/HOC/withAdminCheck";
-import Logs from "../Pages/Logs";
+// Logs & Diagnostics
+import Logs from "@/Pages/Logs";
+
+// Routing
+import {
+	ProtectedRoute,
+	RoleProtectedRoute,
+} from "@/Components/v2/routing/RouteProtected";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
 	const mode = useSelector((state) => state.ui.mode);
-	const AdminCheckedRegister = withAdminCheck(AuthRegister);
 	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
@@ -67,7 +67,7 @@ const Routes = () => {
 				path="/"
 				element={
 					<ProtectedRoute>
-						<HomeLayout />
+						<RootLayout />
 					</ProtectedRoute>
 				}
 			>
@@ -383,7 +383,7 @@ const Routes = () => {
 				element={
 					<>
 						<ThemeProvider theme={v2theme}>
-							<AdminCheckedRegister />
+							<AuthRegister />
 						</ThemeProvider>
 					</>
 				}
@@ -432,10 +432,6 @@ const Routes = () => {
 				}
 			/>
 
-			<Route
-				path="/server-unreachable"
-				element={<ServerUnreachable />}
-			/>
 			<Route
 				path="*"
 				element={

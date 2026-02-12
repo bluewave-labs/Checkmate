@@ -6,7 +6,7 @@ import {
 } from "@/Components/v2/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/v2/design-elements/Table";
-import type { Monitor, MonitorStatus } from "@/Types/Monitor";
+import type { Monitor } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
@@ -52,7 +52,7 @@ export const ChecksTable = ({
 				id: "status",
 				content: "Status",
 				render: (row) => {
-					return <StatusLabel status={row.status as MonitorStatus} />;
+					return <StatusLabel status={row.status === true ? "up" : "down"} />;
 				},
 			},
 			{

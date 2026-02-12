@@ -1,37 +1,37 @@
-import Stack from "@mui/material/Stack";
+import Stack, { type StackProps } from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router";
+import { toggleSidebar } from "@/Features/UI/uiSlice.js";
+import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
-import PropTypes from "prop-types";
+import useSidebar from "@/Hooks/useSidebar";
 
-const Logo = ({ collapsed }) => {
+export const Logo = (props: StackProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const navigate = useNavigate();
-
+	const dispatch = useDispatch();
+	const { collapsed } = useSidebar();
 	return (
 		<Stack
-			pt={theme.spacing(6)}
-			pb={theme.spacing(12)}
-			pl={theme.spacing(8)}
 			direction="row"
 			alignItems="center"
 			gap={theme.spacing(4)}
-			onClick={() => navigate("/")}
+			onClick={() => {
+				dispatch(toggleSidebar());
+			}}
 			sx={{ cursor: "pointer" }}
+			{...props}
 		>
 			<Typography
-				pl={theme.spacing("1px")}
 				minWidth={theme.spacing(16)}
 				minHeight={theme.spacing(16)}
 				display={"flex"}
 				justifyContent={"center"}
 				alignItems={"center"}
-				backgroundColor={theme.palette.accent.main}
+				bgcolor={theme.palette.primary.main}
 				borderRadius={theme.shape.borderRadius}
-				color={theme.palette.accent.contrastText}
+				color={theme.palette.primary.contrastText}
 				fontSize={18}
 			>
 				C
@@ -49,9 +49,8 @@ const Logo = ({ collapsed }) => {
 				<Typography
 					lineHeight={1}
 					mt={theme.spacing(2)}
-					color={theme.palette.primary.contrastText}
-					fontSize={"var(--env-var-font-size-medium-plus)"}
-					sx={{ fontWeight: 500 }}
+					variant="h2"
+					fontWeight={500}
 				>
 					{t("common.appName")}
 				</Typography>
@@ -59,9 +58,3 @@ const Logo = ({ collapsed }) => {
 		</Stack>
 	);
 };
-
-Logo.propTypes = {
-	collapsed: PropTypes.bool,
-};
-
-export default Logo;

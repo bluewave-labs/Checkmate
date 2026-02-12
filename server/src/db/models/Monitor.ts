@@ -1,9 +1,6 @@
 import { Schema, model, Types, type UpdateQuery } from "mongoose";
 import type { Monitor, MonitorMatchMethod, MonitorThresholds, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes } from "@/types/monitor.js";
-import Check from "./Check.js";
-import MonitorStats from "./MonitorStats.js";
-import StatusPage from "./StatusPage.js";
+import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -68,8 +65,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 		},
 		status: {
-			type: Boolean,
-			default: undefined,
+			type: String,
+			enum: MonitorStatuses,
+			default: "initializing",
 		},
 		statusWindow: {
 			type: [Boolean],
