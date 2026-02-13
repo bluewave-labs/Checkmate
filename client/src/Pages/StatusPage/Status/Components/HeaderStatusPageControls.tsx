@@ -64,7 +64,7 @@ export const HeaderStatusPageControls = ({
 								},
 							}}
 						>
-							{t("publicLink")}
+							{t("components.headerStatusPageControls.publicLink")}
 						</Typography>
 						<Box>
 							<ExternalLink size={14} />

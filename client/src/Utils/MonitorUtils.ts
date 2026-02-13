@@ -1,4 +1,4 @@
-import type { Monitor, MonitorStatus, MonitorType } from "@/Types/Monitor";
+import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/v2Theme";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
 
@@ -80,41 +80,4 @@ export const formatUrl = (url: string, maxLength: number = 55) => {
 	return strippedUrl.length > maxLength
 		? `${strippedUrl.slice(0, maxLength)}…`
 		: strippedUrl;
-};
-
-export interface IStatusPageHeaderConfig {
-	paletteKey: PaletteKey;
-	message: string;
-}
-export const getStatusPageHeaderConfig = (
-	monitors: Monitor[],
-	t: any
-): IStatusPageHeaderConfig => {
-	if (!monitors || monitors.length === 0) {
-		return { paletteKey: "error", message: "No monitors available" };
-	}
-
-	const allUp = monitors.every((monitor) => monitor.status === "up");
-	const anyDown = monitors.some((monitor) => monitor.status === "down");
-	const allDown = monitors.every((monitor) => monitor.status === "down");
-
-	if (allUp)
-		return {
-			paletteKey: "success",
-			message: t("statusPage.details.statusHeader.allUp"),
-		};
-	if (allDown)
-		return {
-			paletteKey: "error",
-			message: t("statusPage.details.statusHeader.allDown"),
-		};
-	if (anyDown)
-		return {
-			paletteKey: "warning",
-			message: t("statusPage.details.statusHeader.anyDown"),
-		};
-	return {
-		paletteKey: "warning",
-		message: t("statusPage.details.statusHeader.anyDown"),
-	};
 };
