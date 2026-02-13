@@ -4,3 +4,4 @@
 *.sh
 mongo
 node_modules/
+docs/architecture
