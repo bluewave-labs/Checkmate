@@ -78,8 +78,8 @@ export const HistogramResponseTime = ({
 			alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
 			sx={{
 				minWidth: 70,
-				pr: statsPosition === "left" ? theme.spacing(2) : 0,
-				pl: statsPosition === "right" ? theme.spacing(2) : 0,
+				pr: statsPosition === "left" ? theme.spacing(8) : 0,
+				pl: statsPosition === "right" ? theme.spacing(8) : 0,
 			}}
 		>
 			<Typography
@@ -88,7 +88,7 @@ export const HistogramResponseTime = ({
 					color: theme.palette.text.secondary,
 					fontSize: "0.65rem",
 					fontWeight: 500,
-					lineHeight: 1.4,
+					pt: theme.spacing(2),
 				}}
 			>
 				{t("common.charts.histogram.avg", { value: stats.avg })}
@@ -99,7 +99,7 @@ export const HistogramResponseTime = ({
 					color: theme.palette.text.secondary,
 					fontSize: "0.65rem",
 					fontWeight: 500,
-					lineHeight: 1.4,
+					pt: theme.spacing(2),
 				}}
 			>
 				{t("common.charts.histogram.max", { value: stats.max })}
