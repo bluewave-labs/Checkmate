@@ -46,10 +46,9 @@ export const DialogResolution = ({
 	return (
 		<Dialog
 			open={open}
-			title={t("incidentsPage.resolveIncidentDialogTitle")}
+			title={t("pages.incidents.dialog.resolveIncident.title")}
 			onCancel={handleCancel}
 			onConfirm={handleConfirm}
-			confirmText={t("incidentsPage.resolveIncidentDialogConfirm")}
 			confirmColor="error"
 			cancelColor="primary"
 			loading={isResolving}
@@ -58,8 +57,10 @@ export const DialogResolution = ({
 		>
 			<Box sx={{ mt: theme.spacing(4) }}>
 				<TextField
-					fieldLabel={t("incidentsPage.resolveIncidentDialogCommentLabel")}
-					placeholder={t("incidentsPage.resolveIncidentDialogCommentPlaceholder")}
+					fieldLabel={t("pages.incidents.dialog.resolveIncident.option.comment.label")}
+					placeholder={t(
+						"pages.incidents.dialog.resolveIncident.option.comment.placeholder"
+					)}
 					value={comment}
 					onChange={(e) => setComment(e.target.value)}
 					fullWidth

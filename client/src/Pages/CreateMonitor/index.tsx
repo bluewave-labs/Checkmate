@@ -332,8 +332,10 @@ const CreateMonitorPage = () => {
 										value={field.value ?? ""}
 										onChange={(e) => field.onChange(Number(e.target.value) || 0)}
 										type="number"
-										fieldLabel={t("portToMonitor")}
-										placeholder="5173"
+										fieldLabel={t("pages.createMonitor.form.general.option.port.label")}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.port.placeholder"
+										)}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
@@ -351,10 +353,12 @@ const CreateMonitorPage = () => {
 									<Select
 										{...field}
 										value={field.value ?? ""}
-										fieldLabel={t("chooseGame")}
+										fieldLabel={t("pages.createMonitor.form.general.option.game.label")}
 										error={!!fieldState.error}
 									>
-										<MenuItem value="">Select a game</MenuItem>
+										<MenuItem value="">
+											{t("pages.createMonitor.form.general.option.game.placeholder")}{" "}
+										</MenuItem>
 										{games &&
 											Object.entries(games).map(([key, game]) => (
 												<MenuItem
@@ -426,16 +430,56 @@ const CreateMonitorPage = () => {
 								)}
 								error={!!fieldState.error}
 							>
-								<MenuItem value={15000}>{t("time.fifteenSeconds")}</MenuItem>
-								<MenuItem value={30000}>{t("time.thirtySeconds")}</MenuItem>
-								<MenuItem value={60000}>{t("time.oneMinute")}</MenuItem>
-								<MenuItem value={120000}>{t("time.twoMinutes")}</MenuItem>
-								<MenuItem value={180000}>{t("time.threeMinutes")}</MenuItem>
-								<MenuItem value={240000}>{t("time.fourMinutes")}</MenuItem>
-								<MenuItem value={300000}>{t("time.fiveMinutes")}</MenuItem>
-								<MenuItem value={600000}>{t("time.tenMinutes")}</MenuItem>
-								<MenuItem value={900000}>{t("time.fifteenMinutes")}</MenuItem>
-								<MenuItem value={1800000}>{t("time.thirtyMinutes")}</MenuItem>
+								<MenuItem value={15000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.fifteenSeconds"
+									)}
+								</MenuItem>
+								<MenuItem value={30000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.thirtySeconds"
+									)}
+								</MenuItem>
+								<MenuItem value={60000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.oneMinute"
+									)}
+								</MenuItem>
+								<MenuItem value={120000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.twoMinutes"
+									)}
+								</MenuItem>
+								<MenuItem value={180000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.threeMinutes"
+									)}
+								</MenuItem>
+								<MenuItem value={240000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.fourMinutes"
+									)}
+								</MenuItem>
+								<MenuItem value={300000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.fiveMinutes"
+									)}
+								</MenuItem>
+								<MenuItem value={600000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.tenMinutes"
+									)}
+								</MenuItem>
+								<MenuItem value={900000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.fifteenMinutes"
+									)}
+								</MenuItem>
+								<MenuItem value={1800000}>
+									{t(
+										"pages.createMonitor.form.frequency.option.frequency.value.thirtyMinutes"
+									)}
+								</MenuItem>
 							</Select>
 						)}
 					/>
@@ -617,11 +661,21 @@ const CreateMonitorPage = () => {
 													"pages.createMonitor.form.advanced.option.matchMethod.label"
 												)}
 											>
-												<MenuItem value="equal">{t("matchMethodOptions.equal")}</MenuItem>
-												<MenuItem value="include">
-													{t("matchMethodOptions.include")}
+												<MenuItem value="equal">
+													{t(
+														"pages.createMonitor.form.advanced.option.matchMethod.equal"
+													)}
 												</MenuItem>
-												<MenuItem value="regex">{t("matchMethodOptions.regex")}</MenuItem>
+												<MenuItem value="include">
+													{t(
+														"pages.createMonitor.form.advanced.option.matchMethod.include"
+													)}
+												</MenuItem>
+												<MenuItem value="regex">
+													{t(
+														"pages.createMonitor.form.advanced.option.matchMethod.regex"
+													)}
+												</MenuItem>
 											</Select>
 										)}
 									/>

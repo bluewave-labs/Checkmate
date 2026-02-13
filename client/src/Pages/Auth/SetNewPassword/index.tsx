@@ -97,27 +97,27 @@ const SetNewPasswordPage = () => {
 			/>
 			<Stack gap={theme.spacing(4)}>
 				<BulletPointCheck
-					text={t("auth.common.passwordRules.length")}
+					text={t("pages.auth.common.passwordRules.length")}
 					variant={getVariant(hasLength)}
 				/>
 				<BulletPointCheck
-					text={t("auth.common.passwordRules.special")}
+					text={t("pages.auth.common.passwordRules.special")}
 					variant={getVariant(hasSpecial)}
 				/>
 				<BulletPointCheck
-					text={t("auth.common.passwordRules.number")}
+					text={t("pages.auth.common.passwordRules.number")}
 					variant={getVariant(hasNumber)}
 				/>
 				<BulletPointCheck
-					text={t("auth.common.passwordRules.uppercase")}
+					text={t("pages.auth.common.passwordRules.uppercase")}
 					variant={getVariant(hasUppercase)}
 				/>
 				<BulletPointCheck
-					text={t("auth.common.passwordRules.lowercase")}
+					text={t("pages.auth.common.passwordRules.lowercase")}
 					variant={getVariant(hasLowercase)}
 				/>
 				<BulletPointCheck
-					text={t("auth.common.passwordRules.match")}
+					text={t("pages.auth.common.passwordRules.match")}
 					variant={getVariant(passwordsMatch)}
 				/>
 			</Stack>
@@ -127,7 +127,7 @@ const SetNewPasswordPage = () => {
 				fullWidth
 				loading={loading}
 			>
-				{t("auth.forgotPassword.buttons.resetPassword")}
+				{t("common.buttons.resetPassword")}
 			</Button>
 			<TextLink
 				alignSelf="center"
