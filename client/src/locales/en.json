@@ -231,6 +231,10 @@
 				"high": "High",
 				"low": "Low",
 				"uptime": "Uptime"
+			},
+			"histogram": {
+				"avg": "Avg: {{value}} ms",
+				"max": "Max: {{value}} ms"
 			}
 		},
 		"dialogs": {
