@@ -8,11 +8,9 @@ class SettingsController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settingsService: any;
 	private emailService: any;
-	private db: any;
-	constructor(settingsService: any, emailService: any, db: any) {
+	constructor(settingsService: any, emailService: any) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
-		this.db = db;
 	}
 
 	get serviceName() {

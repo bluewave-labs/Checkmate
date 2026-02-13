@@ -227,6 +227,11 @@ class MongoChecksRepository implements IChecksRepository {
 		} as unknown as CheckDocument;
 	};
 
+	create = async (check: Check) => {
+		const savedCheck = await CheckModel.create(check);
+		return this.toEntity(savedCheck);
+	};
+
 	createChecks = async (checks: Check[]) => {
 		const docs = checks.map((check) => this.toDocument(check));
 		const inserted = await CheckModel.insertMany(docs);
