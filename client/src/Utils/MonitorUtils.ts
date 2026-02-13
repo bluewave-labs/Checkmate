@@ -1,4 +1,4 @@
-import type { Monitor, MonitorStatus, MonitorType } from "@/Types/Monitor";
+import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/v2Theme";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
 
