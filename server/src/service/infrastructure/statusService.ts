@@ -52,7 +52,18 @@ export class StatusService implements IStatusService {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			let stats: Omit<MonitorStats, "id" | "createdAt" | "updatedAt"> = await this.monitorStatsRepository.findByMonitorId(monitorId);
+			let stats: Omit<MonitorStats, "id" | "createdAt" | "updatedAt"> | null = null;
+			stats = await this.monitorStatsRepository
+				.findByMonitorId(monitorId)
+				.then((result) => result)
+				.catch(() => {
+					this.logger.debug({
+						service: SERVICE_NAME,
+						method: "updateRunningStats",
+						message: `No existing stats found for monitor ${monitorId}, initializing new stats.`,
+					});
+					return null;
+				});
 			if (!stats) {
 				stats = {
 					monitorId,
