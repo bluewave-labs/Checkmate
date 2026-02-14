@@ -2,8 +2,23 @@ const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
+import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
+
+export interface MonitorActionDecision {
+	shouldCreateIncident: boolean;
+	shouldResolveIncident: boolean;
+	shouldSendNotification: boolean;
+	incidentReason: "status_down" | "threshold_breach" | null;
+	notificationReason: "status_change" | "threshold_breach" | null;
+	thresholdBreaches?: {
+		cpu?: boolean;
+		memory?: boolean;
+		disk?: boolean;
+		temp?: boolean;
+	};
+}
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -165,6 +180,126 @@ class SuperSimpleQueueHelper {
 			return acc;
 		}, false);
 		return maintenanceWindowIsActive;
+	}
+
+	/**
+	 * Evaluates what actions should be taken based on monitor status and hardware thresholds.
+	 * This is a pure decision function that returns what should happen without executing anything.
+	 *
+	 * @param statusChangeResult - Result from statusService.updateMonitorStatus()
+	 * @param networkResponse - Network response containing payload data
+	 * @returns Decision object indicating what actions to take
+	 */
+	private evaluateMonitorAction(statusChangeResult: StatusChangeResult, networkResponse: MonitorStatusResponse): MonitorActionDecision {
+		const { monitor, statusChanged, prevStatus } = statusChangeResult;
+
+		// Initialize result
+		const decision: MonitorActionDecision = {
+			shouldCreateIncident: false,
+			shouldResolveIncident: false,
+			shouldSendNotification: false,
+			incidentReason: null,
+			notificationReason: null,
+		};
+
+		// CASE 1: Non-hardware monitors (http, ping, port, docker, pagespeed, game)
+		if (monitor.type !== "hardware") {
+			// Only act on status changes
+			if (statusChanged) {
+				if (monitor.status === "down") {
+					decision.shouldCreateIncident = true;
+					decision.shouldSendNotification = true;
+					decision.incidentReason = "status_down";
+					decision.notificationReason = "status_change";
+				} else if (monitor.status === "up" && prevStatus === "down") {
+					decision.shouldResolveIncident = true;
+					decision.shouldSendNotification = true;
+					decision.notificationReason = "status_change";
+				}
+			}
+			return decision;
+		}
+
+		// CASE 2: Hardware monitors
+		const payload = networkResponse.payload as HardwareStatusPayload;
+		const metrics = payload?.data;
+
+		if (!metrics) {
+			return decision; // No metrics, can't evaluate
+		}
+
+		// Check if thresholds exist
+		const thresholds = monitor.thresholds || {};
+		const hasThresholds =
+			thresholds.usage_cpu !== undefined ||
+			thresholds.usage_memory !== undefined ||
+			thresholds.usage_disk !== undefined ||
+			thresholds.usage_temperature !== undefined;
+
+		// Evaluate threshold breaches
+		const breaches = {
+			cpu: false,
+			memory: false,
+			disk: false,
+			temp: false,
+		};
+
+		if (hasThresholds) {
+			// CPU check
+			if (thresholds.usage_cpu !== undefined) {
+				const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+				breaches.cpu = cpuUsage !== -1 && cpuUsage > thresholds.usage_cpu;
+			}
+
+			// Memory check
+			if (thresholds.usage_memory !== undefined) {
+				const memoryUsage = metrics.memory?.usage_percent ?? -1;
+				breaches.memory = memoryUsage !== -1 && memoryUsage > thresholds.usage_memory;
+			}
+
+			// Disk check
+			if (thresholds.usage_disk !== undefined) {
+				breaches.disk = metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > thresholds.usage_disk!) ?? false;
+			}
+
+			// Temperature check (alert if ANY sensor exceeds threshold)
+			if (thresholds.usage_temperature !== undefined) {
+				const temps = metrics.cpu?.temperature ?? [];
+				breaches.temp = temps.some((temp: number) => temp > thresholds.usage_temperature!);
+			}
+		}
+
+		const anyThresholdBreached = Object.values(breaches).some((b) => b);
+
+		// Check if countdown has reached zero for any threshold
+		const shouldNotifyThreshold =
+			(breaches.cpu && (monitor.cpuAlertThreshold ?? monitor.alertThreshold) <= 0) ||
+			(breaches.memory && (monitor.memoryAlertThreshold ?? monitor.alertThreshold) <= 0) ||
+			(breaches.disk && (monitor.diskAlertThreshold ?? monitor.alertThreshold) <= 0) ||
+			(breaches.temp && (monitor.tempAlertThreshold ?? monitor.alertThreshold) <= 0);
+
+		// Decision logic for hardware
+		if (statusChanged && monitor.status === "down") {
+			// Hardware service is DOWN (unreachable)
+			decision.shouldCreateIncident = true;
+			decision.shouldSendNotification = true;
+			decision.incidentReason = "status_down";
+			decision.notificationReason = "status_change";
+		} else if (statusChanged && monitor.status === "up" && prevStatus === "down") {
+			// Hardware service recovered
+			decision.shouldResolveIncident = true;
+			decision.shouldSendNotification = true;
+			decision.notificationReason = "status_change";
+		} else if (anyThresholdBreached && shouldNotifyThreshold) {
+			// Threshold breach alert (service is UP but metrics are high)
+			decision.shouldCreateIncident = true;
+			decision.shouldSendNotification = true;
+			decision.incidentReason = "threshold_breach";
+			decision.notificationReason = "threshold_breach";
+			decision.thresholdBreaches = breaches;
+		}
+
+		return decision;
 	}
 }
 
