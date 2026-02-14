@@ -39,9 +39,14 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 								opacity: 1,
 							},
 							"& .MuiSlider-thumb": {
+								height: 15,
+								width: 15,
 								backgroundColor: "#fff",
 								"&:hover, &.Mui-focusVisible": {
-									boxShadow: `0 0 0 8px ${theme.palette.primary.main}20`,
+									boxShadow: "none",
+								},
+								"&:active": {
+									boxShadow: "none",
 								},
 							},
 							"& .MuiSlider-valueLabel": {
