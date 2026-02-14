@@ -486,6 +486,114 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{/* Alert Thresholds - only for hardware type */}
+			{generalSettingsConfig.showSecret && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.thresholds.title")}
+					subtitle={t("pages.createMonitor.form.thresholds.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="cpuAlertThreshold"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value === 0 ? "" : field.value}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.thresholds.option.cpuThreshold.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="memoryAlertThreshold"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value === 0 ? "" : field.value}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.thresholds.option.memoryThreshold.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="diskAlertThreshold"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value === 0 ? "" : field.value}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.diskThreshold.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.thresholds.option.diskThreshold.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="tempAlertThreshold"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value === 0 ? "" : field.value}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.tempThreshold.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.thresholds.option.tempThreshold.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+
 			<ConfigBox
 				title={t("pages.createMonitor.form.incidents.title")}
 				subtitle={t("pages.createMonitor.form.incidents.description")}

@@ -187,7 +187,6 @@
 			"description": "See the latest releases and help grow the community on GitHub"
 		}
 	},
-
 	"pages": {
 		"notFound": {
 			"title": "Oh no!  You dropped your sushi!",
@@ -521,6 +520,28 @@
 					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"title": "Type"
+				},
+				"thresholds": {
+					"title": "Alert thresholds",
+					"description": "Define the thresholds at which alerts should be triggered for this hardware monitor.",
+					"option": {
+						"cpuThreshold": {
+							"label": "CPU alert threshold (%)",
+							"placeholder": "80"
+						},
+						"memoryThreshold": {
+							"label": "Memory alert threshold (%)",
+							"placeholder": "80"
+						},
+						"diskThreshold": {
+							"label": "Disk alert threshold (%)",
+							"placeholder": "80"
+						},
+						"tempThreshold": {
+							"label": "Temperature alert threshold (°C)",
+							"placeholder": "80"
+						}
+					}
 				}
 			}
 		},
